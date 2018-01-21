@@ -77,6 +77,7 @@ Ver.5.7-dev (in development)
   INTER-Mediator-Format.js file contains IMLibFormat object.
 - All functions have 'use strict';.
 - Update deploy.sh and recipe.rb etc. for the INTER-Mediator-Server virtual machine and CI.
+- Field names that contain ':' can be a variable of expression. It's for FileMaker.
 - [BUG FIX] Fix to add multiple times for target node which has "#" started target description.
 - [BUG FIX] Replace the dataset property to set/get attribute methods for IE10.
 - [BUG FIX] Justify the next line handling in TEXTAREA tagged element for IE9.

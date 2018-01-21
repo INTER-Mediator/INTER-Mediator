@@ -538,6 +538,11 @@ buster.testCase('INTER-Mediator Specific Calculation Test: ', {
         assert.equals(Parser.evaluate('itemIndexOf(x,\'wer\')', {x: items}), 4);
         assert.equals(Parser.evaluate('itemIndexOf(x,\'a\')', {x: items}), -1);
         assert.equals(Parser.evaluate('itemIndexOf(x,\'\')', {x: items}), 2);
+    },
+
+    'FileMaker field name can be variable.': function () {
+        'use strict';
+        assert.equals(Parser.evaluate('テスト::フィールド + 変数', {'テスト::フィールド': 3,変数:4}), 7);
     }
 
 });
