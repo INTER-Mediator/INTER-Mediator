@@ -47,7 +47,7 @@ $g_dbInstance = null;
 
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
-//    global $g_dbInstance, $g_serverSideCall;
+    global $g_dbInstance, $g_serverSideCall;
 
     // check required PHP extensions
     $requiredFunctions = array(
@@ -78,6 +78,12 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     if (isset($_GET['theme'])) {
         $themeManager = new Theme();
         $themeManager->processing();
+    } else if (isset($g_serverSideCall) && $g_serverSideCall) {
+        $dbInstance = new DB_Proxy();
+        $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
+        $dbInstance->processingRequest("NON");
+        $g_dbInstance = $dbInstance;
+        error_log('Deprecated global variables $g_dbInstance, $g_serverSideCall in INTER-Mediator.php will be removed in Ver.6.0');
     } else if (!isset($_POST['access']) && isset($_GET['uploadprocess'])) {
         $fileUploader = new FileUploader();
         $fileUploader->processInfo();
