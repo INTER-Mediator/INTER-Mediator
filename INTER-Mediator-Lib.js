@@ -132,6 +132,9 @@ var INTERMediatorLib = {
         var result = [];
         var i, target = '';
         var linkInfo = INTERMediatorLib.getLinkedElementInfo(node);
+        if (!linkInfo){
+            return null;
+        }
         var linkComp = linkInfo[0].split('@');
         if (linkComp.length>2){
             target = linkComp[2];

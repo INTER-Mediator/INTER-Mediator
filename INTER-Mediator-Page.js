@@ -930,11 +930,11 @@ var INTERMediatorOnPage = {
         for (i = 0; i < enclosureNode.length; i += 1) {
             if (enclosureNode[i] !== null) {
                 if (Array.isArray(enclosureNode[i])) {
-                    for (j = 0; j < enclosureNode.length; j++) {
+                    for (j = 0; j < enclosureNode[i].length; j++) {
                         seekNode(enclosureNode[i][j], imDefinition);
                     }
                 } else {
-                    seekNode(enclosureNode, imDefinition);
+                    seekNode(enclosureNode[i], imDefinition);
                 }
             }
         }
