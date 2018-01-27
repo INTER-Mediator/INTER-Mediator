@@ -18,7 +18,7 @@
         function setPassword(button){
             var passwd, hashvalue, passwdField;
             passwd = document.getElementById('inputpassword').value;
-            passwdField = INTERMediatorOnPage.getNodeIdFromIMDefinition("authuser@hashedpasswd", button);
+            passwdField = INTERMediatorOnPage.getNodeIdsHavingTargetFromRepeater(button, "authuser@hashedpasswd");
             document.getElementById(passwdField).value = INTERMediatorLib.generatePasswordHash(passwd);
             IMLibUI.valueChange(passwdField);
         }

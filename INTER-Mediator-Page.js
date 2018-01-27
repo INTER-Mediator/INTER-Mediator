@@ -841,6 +841,8 @@ var INTERMediatorOnPage = {
      */
     getNodeIdFromIMDefinition: function (imDefinition, fromNode, justFromNode) {
         'use strict';
+        console.error('INTERMediatorOnPage.getNodeIdFromIMDefinition method in INTER-Mediator-Page.js will be removed in Ver.6.0. '+
+        'The alternative method is getNodeIdsHavingTargetFromNode or getNodeIdsHavingTargetFromRepeater.');
         var repeaterNode;
         if (justFromNode) {
             repeaterNode = fromNode;
@@ -878,6 +880,8 @@ var INTERMediatorOnPage = {
 
     getNodeIdFromIMDefinitionOnEnclosure: function (imDefinition, fromNode) {
         'use strict';
+        console.error('INTERMediatorOnPage.getNodeIdFromIMDefinitionOnEnclosure method in INTER-Mediator-Page.js will be removed in Ver.6.0. '+
+            'The alternative method is getNodeIdsHavingTargetFromEnclosure.');
         var repeaterNode;
         repeaterNode = INTERMediatorLib.getParentEnclosure(fromNode);
         return seekNode(repeaterNode, imDefinition);
@@ -911,23 +915,27 @@ var INTERMediatorOnPage = {
 
     getNodeIdsFromIMDefinition: function (imDefinition, fromNode, justFromNode) {
         'use strict';
-        var enclosureNode, nodeIds, i;
+        var enclosureNode, nodeIds = [], i, j;
 
         if (justFromNode === true) {
-            enclosureNode = fromNode;
+            enclosureNode = [fromNode];
         } else if (justFromNode === false) {
-            enclosureNode = INTERMediatorLib.getParentEnclosure(fromNode);
+            enclosureNode = [INTERMediatorLib.getParentEnclosure(fromNode)];
         } else {
-            enclosureNode = INTERMediatorLib.getParentRepeater(fromNode);
+            enclosureNode = INTERMediatorLib.getParentRepeaters(fromNode);
         }
-        if (enclosureNode !== null) {
-            nodeIds = [];
-            if (Array.isArray(enclosureNode)) {
-                for (i = 0; i < enclosureNode.length; i++) {
-                    seekNode(enclosureNode[i], imDefinition);
+        if(!enclosureNode){
+            return [];
+        }
+        for (i = 0; i < enclosureNode.length; i += 1) {
+            if (enclosureNode[i] !== null) {
+                if (Array.isArray(enclosureNode[i])) {
+                    for (j = 0; j < enclosureNode.length; j++) {
+                        seekNode(enclosureNode[i][j], imDefinition);
+                    }
+                } else {
+                    seekNode(enclosureNode, imDefinition);
                 }
-            } else {
-                seekNode(enclosureNode, imDefinition);
             }
         }
         return nodeIds;
@@ -963,7 +971,7 @@ var INTERMediatorOnPage = {
 
     getNodeIdsHavingTargetFromRepeater: function (fromNode, imDefinition) {
         'use strict';
-        return INTERMediatorOnPage.getNodeIdsFromIMDefinition(imDefinition, fromNode, IMLib.zerolength_str);
+        return INTERMediatorOnPage.getNodeIdsFromIMDefinition(imDefinition, fromNode, 'others');
     },
 
     getNodeIdsHavingTargetFromEnclosure: function (fromNode, imDefinition) {

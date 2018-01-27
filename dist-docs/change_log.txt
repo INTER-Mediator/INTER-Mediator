@@ -92,6 +92,7 @@ Ver.5.7-dev (in development)
 - [BUG FIX] IMLibLocalContext.bindingDescendant() didn't detect nodes that generated after page construct.
 - [BUG FIX] jQuery-File-Upload plug-in was improved in case of multiple rows presentation.
 - [BUG FIX] DefinitionChecker did not work fine in extended error range for new PHP version.
+- [BUG FIX] Some expression referring nodes in multiple repeaters collected nodes in other records.
 
 Ver.5.6.1 (September 16, 2017)
 - Fix loading the page of the Practice "search (using JavaScript)".
