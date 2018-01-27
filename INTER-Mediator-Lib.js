@@ -602,6 +602,9 @@ var INTERMediatorLib = {
      */
     getCalcNodeInfoArray: function (idValue) {
         'use strict';
+        console.error('INTERMediatorLib.getCalcNodeInfoArray method in INTER-Mediator-Page.js will be removed in Ver.6.0. '+
+            'Here is no alternative method.');
+
         var comps, tableName, fieldName, targetName, node, attribute;
 
         if (!idValue) {
