@@ -111,6 +111,8 @@ var INTERMediatorLib = {
     },
 
     getParentRepeater: function (node) {
+        console.error('INTERMediatorLib.getParentRepeater method in INTER-Mediator-Lib.js will be removed in Ver.6.0. '+
+            'The alternative method is getParentRepeaters.');
         'use strict';
         var currentNode = node;
         while (currentNode !== null) {
@@ -120,6 +122,29 @@ var INTERMediatorLib = {
             currentNode = currentNode.parentNode;
         }
         return null;
+    },
+
+    getParentRepeaters: function (node) {
+        'use strict';
+        if (!node) {
+            return null;
+        }
+        var result = [];
+        var i, target = '';
+        var linkInfo = INTERMediatorLib.getLinkedElementInfo(node);
+        if (!linkInfo){
+            return null;
+        }
+        var linkComp = linkInfo[0].split('@');
+        if (linkComp.length>2){
+            target = linkComp[2];
+        }
+        var nInfos = IMLibContextPool.getContextInfoFromId(node.id, target);
+        var repeaters = nInfos.context.binding[nInfos.record]._im_repeater;
+        for (i = 0; i < repeaters.length; i += 1) {
+            result.push(document.getElementById(repeaters[i].id));
+        }
+        return result;
     },
 
     getParentEnclosure: function (node) {
@@ -577,6 +602,9 @@ var INTERMediatorLib = {
      */
     getCalcNodeInfoArray: function (idValue) {
         'use strict';
+        console.error('INTERMediatorLib.getCalcNodeInfoArray method in INTER-Mediator-Page.js will be removed in Ver.6.0. '+
+            'Here is no alternative method.');
+
         var comps, tableName, fieldName, targetName, node, attribute;
 
         if (!idValue) {

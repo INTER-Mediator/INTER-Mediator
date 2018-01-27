@@ -11,7 +11,7 @@
 // JSHint support
 /* global IMLibContextPool, INTERMediator, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibLocalContext,
  IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibPageNavigation,
- IMLibEventResponder, IMLibElement, Parser, IMLib */
+ IMLibEventResponder, IMLibElement, Parser, IMLib, INTERMediatorLog, IMLibNodeGraph */
 
 /**
  * @fileoverview IMLibCalc class is defined here.
@@ -60,40 +60,42 @@ var IMLibCalc = {
 
         calcDef = currentContext.calculation;
         for (index in calcDef) {
-            atPos = calcDef[index].field.indexOf(INTERMediator.separator);
-            fieldLength = calcDef[index].field.length;
-            calcDefField = calcDef[index].field.substring(0, atPos >= 0 ? atPos : fieldLength);
-            if (calcDefField == nInfo.field) {
-                try {
-                    exp = calcDef[index].expression;
-                    field = calcDef[index].field;
-                    elements = Parser.parse(exp).variables();
-                    objectKey = nodeId +
-                        (nInfo.target.length > 0 ? (INTERMediator.separator + nInfo.target) : '');
-                } catch (ex) {
-                    INTERMediatorLog.setErrorMessage(ex,
-                        INTERMediatorLib.getInsertedString(
-                            INTERMediatorOnPage.getMessages()[1036], [field, exp]));
-                }
-                if (elements && objectKey) {
-                    values = {};
-                    referes = {};
-                    for (i = 0; i < elements.length; i++) {
-                        itemIndex = elements[i];
-                        if (itemIndex) {
-                            values[itemIndex] = [currentRecord[itemIndex]];
-                            referes[itemIndex] = [undefined];
-                        }
-                        contextObj.setValue(
-                            keyingValue, itemIndex, currentRecord[itemIndex], nodeId, nInfo.target, null);
+            if (calcDef.hasOwnProperty(index)) {
+                atPos = calcDef[index].field.indexOf(INTERMediator.separator);
+                fieldLength = calcDef[index].field.length;
+                calcDefField = calcDef[index].field.substring(0, atPos >= 0 ? atPos : fieldLength);
+                if (calcDefField === nInfo.field) {
+                    try {
+                        exp = calcDef[index].expression;
+                        field = calcDef[index].field;
+                        elements = Parser.parse(exp).variables();
+                        objectKey = nodeId +
+                            (nInfo.target.length > 0 ? (INTERMediator.separator + nInfo.target) : '');
+                    } catch (ex) {
+                        INTERMediatorLog.setErrorMessage(ex,
+                            INTERMediatorLib.getInsertedString(
+                                INTERMediatorOnPage.getMessages()[1036], [field, exp]));
                     }
-                    IMLibCalc.calculateRequiredObject[objectKey] = {
-                        'field': field,
-                        'expression': exp,
-                        'nodeInfo': nInfo,
-                        'values': values,
-                        'referes': referes
-                    };
+                    if (elements && objectKey) {
+                        values = {};
+                        referes = {};
+                        for (i = 0; i < elements.length; i++) {
+                            itemIndex = elements[i];
+                            if (itemIndex) {
+                                values[itemIndex] = currentRecord[itemIndex];
+                                referes[itemIndex] = undefined;
+                            }
+                            contextObj.setValue(
+                                keyingValue, itemIndex, currentRecord[itemIndex], nodeId, nInfo.target, null);
+                        }
+                        IMLibCalc.calculateRequiredObject[objectKey] = {
+                            'field': field,
+                            'expression': exp,
+                            'nodeInfo': nInfo,
+                            'values': values,
+                            'referes': referes
+                        };
+                    }
                 }
             }
         }
@@ -104,23 +106,27 @@ var IMLibCalc = {
      */
     updateCalculationFields: function () {
         'use strict';
-        var nodeId, exp, nInfo, valuesArray, leafNodes, calcObject, ix, refersArray, calcFieldInfo;
+        var nodeId, exp, nInfo, valuesArray, leafNodes, calcObject, ix, refersArray;
         var targetNode, field, valueSeries, targetElement, i, hasReferes, contextInfo, idValue, record;
 
         IMLibCalc.setUndefinedToAllValues();
         IMLibNodeGraph.clear();
         for (nodeId in IMLibCalc.calculateRequiredObject) {
-            calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-            if (calcObject) {
-                hasReferes = false;
-                for (field in calcObject.referes) {
-                    for (ix = 0; ix < calcObject.referes[field].length; ix++) {
-                        IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix]);
-                        hasReferes = false;
+            if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
+                calcObject = IMLibCalc.calculateRequiredObject[nodeId];
+                if (calcObject) {
+                    hasReferes = false;
+                    for (field in calcObject.referes) {
+                        if (calcObject.referes.hasOwnProperty(field)) {
+                            for (ix = 0; ix < calcObject.referes[field].length; ix++) {
+                                IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix]);
+                                hasReferes = false;
+                            }
+                        }
                     }
-                }
-                if (!hasReferes) {
-                    IMLibNodeGraph.addEdge(nodeId);
+                    if (!hasReferes) {
+                        IMLibNodeGraph.addEdge(nodeId);
+                    }
                 }
             }
         }
@@ -129,7 +135,7 @@ var IMLibCalc = {
             leafNodes = IMLibNodeGraph.getLeafNodesWithRemoving();
             for (i = 0; i < leafNodes.length; i++) {
                 calcObject = IMLibCalc.calculateRequiredObject[leafNodes[i]];
-                calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(leafNodes[i]);
+                // calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(leafNodes[i]);
                 if (calcObject) {
                     idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator) ?
                         leafNodes[i].split(IMLibCalc.regexpForSeparator)[0] : leafNodes[i];
@@ -138,32 +144,36 @@ var IMLibCalc = {
                     nInfo = calcObject.nodeInfo;
                     valuesArray = calcObject.values;
                     refersArray = calcObject.referes;
+                    contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nInfo.target);
+                    if (contextInfo && contextInfo.context) {
+                        record = contextInfo.context.getContextRecord(idValue);
+                    } else {
+                        record = null;
+                    }
                     for (field in valuesArray) {
-                        valueSeries = [];
-                        for (ix = 0; ix < valuesArray[field].length; ix++) {
-                            if (valuesArray[field][ix] == undefined) {
-                                if (refersArray[field][ix]) {
-                                    targetElement = document.getElementById(refersArray[field][ix]);
-                                    valueSeries.push(IMLibElement.getValueFromIMNode(targetElement));
-                                } else {
-                                    contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nInfo.target);
-                                    if (contextInfo && contextInfo.context) {
-                                        record = contextInfo.context.getContextRecord(idValue);
+                        if (valuesArray.hasOwnProperty(field)) {
+                            valueSeries = [];
+                            for (ix = 0; ix < valuesArray[field].length; ix++) {
+                                if (valuesArray[field][ix] === undefined) {
+                                    if (record[field]) {
                                         valueSeries.push(record[field]);
+                                    } else if (refersArray[field][ix]) {
+                                        targetElement = document.getElementById(refersArray[field][ix]);
+                                        valueSeries.push(IMLibElement.getValueFromIMNode(targetElement));
                                     }
+                                } else {
+                                    valueSeries.push(valuesArray[field][ix]);
                                 }
-                            } else {
-                                valueSeries.push(valuesArray[field][ix]);
                             }
+                            calcObject.values[field] = valueSeries;
                         }
-                        calcObject.values[field] = valueSeries;
                     }
                     IMLibElement.setValueToIMNode(targetNode, nInfo.target, Parser.evaluate(exp, valuesArray), true);
                 }
             }
         } while (leafNodes.length > 0);
         if (IMLibNodeGraph.nodes.length > 0) {
-            INTERMediatorLog.setErrorMessage(new Exception(),
+            INTERMediatorLog.setErrorMessage(new Error('Expressons are cyclic.'),
                 INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[1037], []));
         }
@@ -176,7 +186,7 @@ var IMLibCalc = {
     recalculation: function (updatedNodeId) {
         'use strict';
         var nodeId, newValueAdded, leafNodes, calcObject, ix, updatedValue, isRecalcAll = false;
-        var newValue, field, i, updatedNodeIds, updateNodeValues, cachedIndex, exp, nInfo, valuesArray;
+        var newValue, field, i, updatedNodeIds, updateNodeValues, cachedIndex, nInfo, valuesArray;
         var refersArray, valueSeries, targetElement, contextInfo, record, idValue;
 
         if (updatedNodeId === undefined) {
@@ -192,12 +202,16 @@ var IMLibCalc = {
         IMLibCalc.setUndefinedToAllValues();
         IMLibNodeGraph.clear();
         for (nodeId in IMLibCalc.calculateRequiredObject) {
-            calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-            idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
-                nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
-            for (field in calcObject.referes) {
-                for (ix = 0; ix < calcObject.referes[field].length; ix++) {
-                    IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix]);
+            if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
+                calcObject = IMLibCalc.calculateRequiredObject[nodeId];
+                idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
+                    nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
+                for (field in calcObject.referes) {
+                    if (calcObject.referes.hasOwnProperty(field)) {
+                        for (ix = 0; ix < calcObject.referes[field].length; ix++) {
+                            IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix]);
+                        }
+                    }
                 }
             }
         }
@@ -209,27 +223,33 @@ var IMLibCalc = {
                 if (calcObject) {
                     idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator) ?
                         leafNodes[i].split(IMLibCalc.regexpForSeparator)[0] : leafNodes[i];
-                    exp = calcObject.expression;
+                    //exp = calcObject.expression;
                     nInfo = calcObject.nodeInfo;
                     valuesArray = calcObject.values;
                     refersArray = calcObject.referes;
+                    contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nInfo.target);
+                    if (contextInfo && contextInfo.context) {
+                        record = contextInfo.context.getContextRecord(idValue);
+                    } else {
+                        record = null;
+                    }
                     for (field in valuesArray) {
-                        valueSeries = [];
-                        for (ix = 0; ix < valuesArray[field].length; ix++) {
-                            if (valuesArray[field][ix] == undefined) {
-                                if (refersArray[field][ix]) {
-                                    targetElement = document.getElementById(refersArray[field][ix]);
-                                    valueSeries.push(IMLibElement.getValueFromIMNode(targetElement));
+                        if (valuesArray.hasOwnProperty(field)) {
+                            valueSeries = [];
+                            for (ix = 0; ix < valuesArray[field].length; ix++) {
+                                if (valuesArray[field][ix] === undefined) {
+                                    if (record[field]) {
+                                        valueSeries.push(record[field]);
+                                    } else if (refersArray[field][ix]) {
+                                        targetElement = document.getElementById(refersArray[field][ix]);
+                                        valueSeries.push(IMLibElement.getValueFromIMNode(targetElement));
+                                    }
                                 } else {
-                                    contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nInfo.target);
-                                    record = contextInfo.context.getContextRecord(idValue);
-                                    valueSeries.push(record[field]);
+                                    valueSeries.push(valuesArray[field][ix]);
                                 }
-                            } else {
-                                valueSeries.push(valuesArray[field][ix]);
                             }
+                            calcObject.values[field] = valueSeries;
                         }
-                        calcObject.values[field] = valueSeries;
                     }
                     if (isRecalcAll) {
                         newValueAdded = true;
@@ -248,7 +268,6 @@ var IMLibCalc = {
                         }
                     }
                     if (newValueAdded) {
-                        //console.log('calc-test', calcObject.expression, calcObject.values);
                         updatedValue = Parser.evaluate(
                             calcObject.expression,
                             calcObject.values
@@ -262,7 +281,9 @@ var IMLibCalc = {
             }
         } while (leafNodes.length > 0);
         if (IMLibNodeGraph.nodes.length > 0) {
-            // Spanning Tree Detected.
+            INTERMediatorLog.setErrorMessage(new Error('Expressons are cyclic.'),
+                INTERMediatorLib.getInsertedString(
+                    INTERMediatorOnPage.getMessages()[1037], []));
         }
 
     },
@@ -272,69 +293,92 @@ var IMLibCalc = {
      */
     setUndefinedToAllValues: function () {
         'use strict';
-        var nodeId, calcObject, ix, targetNode, field, targetExp, targetIds, isRemoved, idValue, repeaterTop;
+        var nodeId, calcObject, ix, targetNode, field, targetExp, targetIds,
+            isRemoved, idValue, repeaterTop, checkRepeater, nodeInfo, linkInfos;
 
         do {
             isRemoved = false;
             for (nodeId in IMLibCalc.calculateRequiredObject) {
-                idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
-                    nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
-                if (!document.getElementById(idValue)) {
-                    delete IMLibCalc.calculateRequiredObject[nodeId];
-                    isRemoved = true;
-                    break;
+                if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
+                    idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
+                        nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
+                    if (!document.getElementById(idValue)) {
+                        delete IMLibCalc.calculateRequiredObject[nodeId];
+                        isRemoved = true;
+                        break;
+                    }
                 }
             }
         } while (isRemoved);
 
         for (nodeId in IMLibCalc.calculateRequiredObject) {
-            calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-            targetNode = document.getElementById(nodeId);
-            for (field in calcObject.values) {
-                if (field.indexOf(INTERMediator.separator) > -1) {
-                    targetExp = field;
-                } else {
-                    targetExp = calcObject.nodeInfo.table + INTERMediator.separator + field;
+            if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
+                calcObject = IMLibCalc.calculateRequiredObject[nodeId];
+                idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
+                    nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
+                targetNode = document.getElementById(idValue);
+                linkInfos = INTERMediatorLib.getLinkedElementInfo(targetNode);
+                if (INTERMediatorLib.is_array(linkInfos)) {
+                    linkInfos = linkInfos[0];
                 }
-                if (nodeId.nodeInfo && nodeId.nodeInfo.crossTable) {
-                    repeaterTop = targetNode;
-                    while (repeaterTop.tagName != 'TD' && repeaterTop.tagName != 'TH') {
-                        repeaterTop = repeaterTop.parentNode;
+                nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos);
+                for (field in calcObject.values) {
+                    if (calcObject.values.hasOwnProperty(field)) {
+                        if (field.indexOf(INTERMediator.separator) > -1) {
+                            targetExp = field;
+                        } else {
+                            targetExp = calcObject.nodeInfo.table + INTERMediator.separator + field;
+                        }
+                        if (nodeInfo && nodeInfo.crossTable) {
+                            repeaterTop = targetNode;
+                            while (repeaterTop.tagName !== 'TD' && repeaterTop.tagName !== 'TH') {
+                                repeaterTop = repeaterTop.parentNode;
+                            }
+                            do {
+                                targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromNode(targetNode, targetExp);
+                                if (targetIds && targetIds.length > 0) {
+                                    break;
+                                }
+                                checkRepeater = getParentRepeater(INTERMediatorLib.getParentEnclosure(targetNode));
+                            } while (checkRepeater);
+                        } else {
+                            do {
+                                targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromRepeater(targetNode, targetExp);
+                                if (targetIds && targetIds.length > 0) {
+                                    break;
+                                }
+                                targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromEnclosure(targetNode, targetExp);
+                                if (targetIds && targetIds.length > 0) {
+                                    break;
+                                }
+                                checkRepeater = getParentRepeater(INTERMediatorLib.getParentEnclosure(targetNode));
+                            } while (checkRepeater);
+                        }
+                        if (INTERMediatorLib.is_array(targetIds) && targetIds.length > 0) {
+                            calcObject.referes[field] = [];
+                            calcObject.values[field] = [];
+                            for (ix = 0; ix < targetIds.length; ix++) {
+                                calcObject.referes[field].push(targetIds[ix]);
+                                calcObject.values[field].push(undefined);
+                            }
+                        } else {
+                            calcObject.referes[field] = [undefined];
+                            calcObject.values[field] = [undefined];
+                        }
                     }
-                    do {
-                        targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromNode(targetNode, targetExp);
-                        if (targetIds && targetIds.length > 0) {
-                            break;
-                        }
-                        targetNode = INTERMediatorLib.getParentRepeater(
-                            INTERMediatorLib.getParentEnclosure(targetNode));
-                    } while (targetNode);
-                } else {
-                    do {
-                        targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromRepeater(targetNode, targetExp);
-                        if (targetIds && targetIds.length > 0) {
-                            break;
-                        }
-                        targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromEnclosure(targetNode, targetExp);
-                        if (targetIds && targetIds.length > 0) {
-                            break;
-                        }
-                        targetNode = INTERMediatorLib.getParentRepeater(
-                            INTERMediatorLib.getParentEnclosure(targetNode));
-                    } while (targetNode);
-                }
-                if (INTERMediatorLib.is_array(targetIds) && targetIds.length > 0) {
-                    calcObject.referes[field] = [];
-                    calcObject.values[field] = [];
-                    for (ix = 0; ix < targetIds.length; ix++) {
-                        calcObject.referes[field].push(targetIds[ix]);
-                        calcObject.values[field].push(undefined);
-                    }
-                } else {
-                    calcObject.referes[field] = [undefined];
-                    calcObject.values[field] = [undefined];
                 }
             }
+        }
+
+        function getParentRepeater(node) {
+            var currentNode = node;
+            while (currentNode !== null) {
+                if (INTERMediatorLib.isRepeater(currentNode, true)) {
+                    return currentNode;
+                }
+                currentNode = currentNode.parentNode;
+            }
+            return null;
         }
     }
 };

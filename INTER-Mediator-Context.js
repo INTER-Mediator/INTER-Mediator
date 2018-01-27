@@ -1221,9 +1221,11 @@ IMLibContext.prototype.getRepeaterEndNode = function (index) {
     for (field in this.binding[recKey]) {
         if (this.binding[recKey].hasOwnProperty(field)) {
             nodeId = this.binding[recKey][field].nodeId;
-            repeater = INTERMediatorLib.getParentRepeater(document.getElementById(nodeId));
-            if (!(repeater in repeaters)) {
-                repeaters.push(repeater);
+            repeater = INTERMediatorLib.getParentRepeaters(document.getElementById(nodeId));
+            for (i = 0; i < repeater.length; i += 1) {
+                if (!(repeater[i] in repeaters)) {
+                    repeaters.push(repeater[i]);
+                }
             }
         }
     }
@@ -1464,7 +1466,7 @@ IMLibContext.prototype.getContextRecord = function (nodeId) {
 
 IMLibContext.prototype.removeEntry = function (pkvalue) {
     'use strict';
-    var keyField, keying, bindingInfo, contextDef, targetNode, repeaterNodes, i, parentNode,
+    var keyField, keying, bindingInfo, contextDef, targetNode, repeaterNodes, i, j, parentNode,
         removingNodeIds = [];
     contextDef = this.getContextDef();
     keyField = contextDef.key;
@@ -1485,10 +1487,7 @@ IMLibContext.prototype.removeEntry = function (pkvalue) {
         for (i = 0; i < removingNodeIds.length; i++) {
             targetNode = document.getElementById(removingNodeIds[i]);
             if (targetNode) {
-                parentNode = INTERMediatorLib.getParentRepeater(targetNode);
-                if (parentNode) {
-                    parentNode.parentNode.removeChild(targetNode);
-                }
+                targetNode.parentNode.removeChild(targetNode);
             }
         }
     }
