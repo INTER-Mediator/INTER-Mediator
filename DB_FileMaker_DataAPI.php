@@ -472,6 +472,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             $neqConditions[] = FALSE;
         }
 
+        $sort = NULL;  // [WIP]
         if (isset($context['sort'])) {
             foreach ($context['sort'] as $condition) {
                 if (isset($condition['direction'])) {
@@ -479,14 +480,19 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                         throw new Exception("Invalid Sort Specifier.");
                     }
                     // [WIP]
+                    if ($sort === NULL) {
+                        $sort = array(array($condition['field'], $this->_adjustSortDirection($condition['direction'])));
+                    }
                     // $this->fmData->AddSortParam($condition['field'], $this->_adjustSortDirection($condition['direction']));
                 } else {
                     // [WIP]
+                    if ($sort === NULL) {
+                        $sort = array(array($condition['field']));
+                    }
                     // $this->fmData->AddSortParam($condition['field']);
                 }
             }
         }
-
 
         $condition = NULL;  // [WIP]
         if ($searchConditions !== array()) {
@@ -496,25 +502,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 } else {
                     $condition = array($condition + array($searchCondition[0] => $searchCondition[1]));
                 }
-            }
-        }
-
-        $sort = NULL;  // [WIP]
-
-        $portal = array();
-        try {
-            $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, $limitParam);
-            $portalNames = $result->getPortalNames();
-            if (count($portalNames) > 1) {
-                foreach ($portalNames as $key => $portalName) {
-                    $portal = array_merge($portal, array($key => $portalName));
-                }
-            }
-            $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, $limitParam, $portal);
-        } catch (Exception $e) {
-            // Don't output error messages if no related records
-            if (strpos($e->getMessage(), 'Error Code: 401, Error Message: No records match the request') === false) {
-                $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
             }
         }
 
@@ -538,6 +525,33 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                         }
                     }
                 }
+            }
+
+            if (substr($key, 0, 7) === 'sortkey' && substr($key, -5, 5) === 'field') {
+                $orderNum = substr($key, 7, 1);
+                if (isset($request['sortkey' . $orderNum . 'direction'])) {
+                    $sortDirection = $request['sortkey' . $orderNum . 'direction'];
+                }
+                if ($sort === NULL) {
+                    $sort = array(array($val, $sortDirection));
+                }
+            }
+        }
+
+        $portal = array();
+        try {
+            $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, $limitParam);
+            $portalNames = $result->getPortalNames();
+            if (count($portalNames) > 1) {
+                foreach ($portalNames as $key => $portalName) {
+                    $portal = array_merge($portal, array($key => $portalName));
+                }
+            }
+            $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, $limitParam, $portal);
+        } catch (Exception $e) {
+            // Don't output error messages if no related records
+            if (strpos($e->getMessage(), 'Error Code: 401, Error Message: No records match the request') === false) {
+                $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
             }
         }
 
