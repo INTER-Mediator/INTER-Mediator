@@ -502,15 +502,21 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         $sort = NULL;  // [WIP]
 
         $portal = array();
-        $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, $limitParam);
-        $portalNames = $result->getPortalNames();
-        if (count($portalNames) > 1) {
-            foreach ($portalNames as $key => $portalName) {
-                $portal = array_merge($portal, array($key => $portalName));
+        try {
+            $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, $limitParam);
+            $portalNames = $result->getPortalNames();
+            if (count($portalNames) > 1) {
+                foreach ($portalNames as $key => $portalName) {
+                    $portal = array_merge($portal, array($key => $portalName));
+                }
+            }
+            $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, $limitParam, $portal);
+        } catch (Exception $e) {
+            // Don't output error messages if no related records
+            if (strpos($e->getMessage(), 'Error Code: 401, Error Message: No records match the request') === false) {
+                $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
             }
         }
-
-        $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, $limitParam, $portal);
 
         $request = filter_input_array(INPUT_POST);
         foreach ($request as $key => $val) {
