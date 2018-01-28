@@ -553,8 +553,8 @@ class FileMakerRelation implements \Iterator
     }
 
     /**
-     *
-     * @return array List of field name
+     * Return the array of field names.
+     * @return array List of field names
      */
     public function getFieldNames()
     {
@@ -584,7 +584,7 @@ class FileMakerRelation implements \Iterator
 
     /**
      * Return the array of portal names.
-     * @return array List of portal name
+     * @return array List of portal names
      */
     public function getPortalNames()
     {
@@ -1032,7 +1032,14 @@ class CommunicationProvider
                 if (key($request) !== $key) {
                     $url .= '&';
                 }
-                $url .= $key . '=' . (is_array($value) ? json_encode($value) : $value);
+                if ($key === 'sort' && is_array($value)) {
+                    $sortParam = $this->_buildSortParameters($value);
+                    if ($sortParam !== '[]') {
+                        $url .= $key . '=' . $sortParam;
+                    }
+                } else {
+                    $url .= $key . '=' . (is_array($value) ? json_encode($value) : $value);
+                }
             }
         }
         $ch = curl_init();
@@ -1152,6 +1159,37 @@ class CommunicationProvider
         } else {
             echo $str;
         }
+    }
+
+    /**
+     * @param array $value
+     * @return string
+     * @ignore
+     */
+    private function _buildSortParameters($value)
+    {
+        $param = '[';
+        foreach ($value as $sortCondition) {
+            if (isset($sortCondition[0])) {
+                if ($param !== '[') {
+                    $param .= ',';
+                }
+                if (isset($sortCondition[1])) {
+                    $sortOrder = $sortCondition[1];
+                    if (strtolower($sortOrder) === 'desc') {
+                        $sortOrder = 'descend';
+                    } elseif (strtolower($sortOrder) === 'asc') {
+                        $sortOrder = 'ascend';
+                    }
+                    $param .= '{"fieldName":"' . $sortCondition[0]. '","sortOrder":"' . $sortOrder . '"}';
+                } else {
+                    $param .= '{"fieldName":"' . $sortCondition[0]. '"}';
+                }
+            }
+        }
+        $param .= ']';
+
+        return $param;
     }
 }
 
