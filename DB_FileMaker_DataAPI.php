@@ -304,7 +304,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         if (isset($context['query'])) {
             foreach ($context['query'] as $condition) {
                 if ($condition['field'] == '__operation__' && $condition['operator'] == 'or') {
-                    $this->fmData->SetLogicalOR();
                     $useOrOperation = true;
                 } else {
                     if (isset($condition['operator'])) {
@@ -338,10 +337,8 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         if ($this->dbSettings->getExtraCriteria()) {
             foreach ($this->dbSettings->getExtraCriteria() as $condition) {
                 if ($condition['field'] == '__operation__' && strtolower($condition['operator']) == 'or') {
-                    $this->fmData->SetLogicalOR();
                     $useOrOperation = true;
                 } else if ($condition['field'] == '__operation__' && strtolower($condition['operator']) == 'ex') {
-                    $this->fmData->SetLogicalOR();
                     $useOrOperation = true;
                 } else {
                     $condition = $this->normalizedCondition($condition);
@@ -472,37 +469,35 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             $neqConditions[] = FALSE;
         }
 
-        $sort = NULL;  // [WIP]
+        $sort = array();
         if (isset($context['sort'])) {
             foreach ($context['sort'] as $condition) {
                 if (isset($condition['direction'])) {
                     if (!$this->specHandler->isPossibleOrderSpecifier($condition['direction'])) {
                         throw new Exception("Invalid Sort Specifier.");
                     }
-                    // [WIP]
-                    if ($sort === NULL) {
-                        $sort = array(array($condition['field'], $this->_adjustSortDirection($condition['direction'])));
-                    }
-                    // $this->fmData->AddSortParam($condition['field'], $this->_adjustSortDirection($condition['direction']));
+                    $sort[] = array($condition['field'], $this->fmData->adjustSortDirection($condition['direction']));
                 } else {
-                    // [WIP]
-                    if ($sort === NULL) {
-                        $sort = array(array($condition['field']));
-                    }
-                    // $this->fmData->AddSortParam($condition['field']);
+                    $sort[] = array($condition['field']);
                 }
             }
         }
+        if ($sort === array()) {
+            $sort = NULL;
+        }
 
-        $condition = NULL;  // [WIP]
+        $condition = array();
         if ($searchConditions !== array()) {
+            $tmpCondition = array();
             foreach ($searchConditions as $searchCondition) {
-                if ($condition === NULL) {
-                    $condition = array(array($searchCondition[0] => $searchCondition[1]));
-                } else {
-                    $condition = array($condition + array($searchCondition[0] => $searchCondition[1]));
-                }
+                $tmpCondition[$searchCondition[0]] = $searchCondition[1];
+                // [WIP] or
+                // $condition[] = array($searchCondition[0] => $searchCondition[1]);
             }
+            $condition[] = $tmpCondition;
+        }
+        if ($condition === array()) {
+            $condition = NULL;
         }
 
         $request = filter_input_array(INPUT_POST);
@@ -556,7 +551,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         }
 
         $recordArray = array();
-        if ($result) {
+        if (isset($result) && $result) {
             foreach ($result as $record) {
                 $dataArray = array();
                 if (!$usePortal) {
@@ -1307,17 +1302,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         } else {
             return $condition;
         }
-    }
-
-    protected function _adjustSortDirection($direction)
-    {
-        if (strtoupper($direction) == 'ASC') {
-            $direction = 'ascend';
-        } else if (strtoupper($direction) == 'DESC') {
-            $direction = 'descend';
-        }
-
-        return $direction;
     }
 
     public function queryForTest($table, $conditions = null)
