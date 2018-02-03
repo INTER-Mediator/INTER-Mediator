@@ -236,7 +236,15 @@ var INTERMediator_DBAdapter = {
                 case 3: // Loading
                     break;
                 case 4:
-                    jsonObject = JSON.parse(myRequest.responseText);
+                    try {
+                        jsonObject = JSON.parse(myRequest.responseText);
+                    } catch (ex) {
+                        INTERMediatorLog.setErrorMessage('Communication Error: ' + myRequest.responseText);
+                        if (failedProc) {
+                            failedProc(new Error('_im_communication_error_'));
+                        }
+                        return;
+                    }
                     resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
                     totalCount = jsonObject.totalCount ? jsonObject.totalCount : null;
                     dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
@@ -806,7 +814,7 @@ var INTERMediator_DBAdapter = {
                             conditionSign = fields[index].trim() + '#' + operator + '#' + value;
                             if (!INTERMediator_DBAdapter.eliminateDuplicatedConditions || conditions.indexOf(conditionSign) < 0) {
                                 params += '&condition' + extCount +
-                                    'field=' + encodeURIComponent(fields[index].replace(';;','::').trim());
+                                    'field=' + encodeURIComponent(fields[index].replace(';;', '::').trim());
                                 params += '&condition' + extCount + 'operator=' + encodeURIComponent(operator);
                                 params += '&condition' + extCount + 'value=' + encodeURIComponent(value);
                                 conditions.push(conditionSign);
