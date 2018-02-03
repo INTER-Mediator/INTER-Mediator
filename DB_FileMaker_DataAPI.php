@@ -476,7 +476,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     if (!$this->specHandler->isPossibleOrderSpecifier($condition['direction'])) {
                         throw new Exception("Invalid Sort Specifier.");
                     }
-                    $sort[] = array($condition['field'], $this->fmData->adjustSortDirection($condition['direction']));
+                    $sort[] = array($condition['field'], $this->_adjustSortDirection($condition['direction']));
                 } else {
                     $sort[] = array($condition['field']);
                 }
@@ -1334,6 +1334,18 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         }
         return $recordSet;
     }
+
+    protected function _adjustSortDirection($direction)
+    {
+        if (strtoupper($direction) == 'ASC') {
+            $direction = 'ascend';
+        } else if (strtoupper($direction) == 'DESC') {
+            $direction = 'descend';
+        }
+
+        return $direction;
+    }
+
 
     public function deleteForTest($table, $conditions = null)
     {
