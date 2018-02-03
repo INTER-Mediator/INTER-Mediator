@@ -828,7 +828,8 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                                                 $relatedArray[$tableOccurrence][$recId] = array('-recid' => $recId);
                                             }
                                             $relatedArray[$tableOccurrence][$recId] += array(
-                                                $relatedFieldName => $relatedFieldValue
+                                                $relatedFieldName =>
+                                                    $relatedFieldValue === array() ? '' : $relatedFieldValue
                                             );
                                             if ($multiFields === false) {
                                                 break;
