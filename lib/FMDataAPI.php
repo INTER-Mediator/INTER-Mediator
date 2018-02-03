@@ -1026,7 +1026,7 @@ class CommunicationProvider
         if ($isAddToken) {
             $header[] = "FM-Data-token: {$this->accessToken}";
         }
-        if ($methodLower == 'get' && !is_null($request)) {
+        if ($methodLower === 'get' && !is_null($request)) {
             $url .= '?';
             foreach ($request as $key => $value) {
                 if (key($request) !== $key) {
@@ -1040,6 +1040,20 @@ class CommunicationProvider
                 } else {
                     $url .= $key . '=' . (is_array($value) ? json_encode($value) : $value);
                 }
+            }
+        } else if ($methodLower !== 'get' && !is_null($request)) {
+            if (isset($request['sort'])) {
+                $sort = array();
+                foreach($request['sort'] as $sortKey => $sortCondition) {
+                    if (isset($sortCondition[0])) {
+                        $sortOrder = 'ascend';
+                        if (isset($sortCondition[1])) {
+                            $sortOrder = $this->adjustSortDirection($sortCondition[1]);
+                        }
+                        $sort[] = array('fieldName' => $sortCondition[0], 'sortOrder' => $sortOrder);
+                    }
+                }
+                $request['sort'] = $sort;
             }
         }
         $ch = curl_init();
@@ -1122,6 +1136,22 @@ class CommunicationProvider
     }
 
     /**
+     * @param string $direction
+     * @return string
+     * @ignore
+     */
+    public function adjustSortDirection($direction)
+    {
+        if (strtoupper($direction) == 'ASC') {
+            $direction = 'ascend';
+        } else if (strtoupper($direction) == 'DESC') {
+            $direction = 'descend';
+        }
+
+        return $direction;
+    }
+
+    /**
      * @param $key
      * @return mixed
      * @ignore
@@ -1175,12 +1205,7 @@ class CommunicationProvider
                     $param .= ',';
                 }
                 if (isset($sortCondition[1])) {
-                    $sortOrder = $sortCondition[1];
-                    if (strtolower($sortOrder) === 'desc') {
-                        $sortOrder = 'descend';
-                    } elseif (strtolower($sortOrder) === 'asc') {
-                        $sortOrder = 'ascend';
-                    }
+                    $sortOrder = adjustSortDirection($sortCondition[1]);
                     $param .= '{"fieldName":"' . $sortCondition[0]. '","sortOrder":"' . $sortOrder . '"}';
                 } else {
                     $param .= '{"fieldName":"' . $sortCondition[0]. '"}';
