@@ -1205,10 +1205,11 @@ class CommunicationProvider
                     $param .= ',';
                 }
                 if (isset($sortCondition[1])) {
-                    $sortOrder = adjustSortDirection($sortCondition[1]);
-                    $param .= '{"fieldName":"' . $sortCondition[0]. '","sortOrder":"' . $sortOrder . '"}';
+                    $sortOrder = $this->adjustSortDirection($sortCondition[1]);
+                    $param .= '{"fieldName":' . json_encode($sortCondition[0]) .
+                        ',"sortOrder":' . json_encode($sortOrder) . '}';
                 } else {
-                    $param .= '{"fieldName":"' . $sortCondition[0]. '"}';
+                    $param .= '{"fieldName":' . json_encode($sortCondition[0]) . '}';
                 }
             }
         }
