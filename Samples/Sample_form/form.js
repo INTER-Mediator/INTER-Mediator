@@ -15,13 +15,3 @@
 INTERMediatorOnPage.doAfterConstruct = function () {
     document.getElementById("wrapper").style.display = "block";
 };
-
-function test() {
-    INTERMediator_DBAdapter.db_createRecord({
-        name: "history_to",
-        dataset: [
-            {field: "startdate", value: document.getElementById('startdate').value}
-        ]
-    });
-    INTERMediatorLog.flushMessage();
-}
