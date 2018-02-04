@@ -9,19 +9,20 @@
  */
 
 INTERMediatorOnPage.doBeforeConstruct = function () {
-    //INTERMediator.addCondition('postalcode', {field: 'f9', operator: 'LIKE', value: '%東%'});
-    //INTERMediator.addCondition('postalcode', {field: 'f9', operator: 'LIKE', value: '%西%'});
-    //INTERMediator.addCondition('postalcode', {field: '__operation__', operator: 'ex'});
+    applyConditions();
 };
 
 INTERMediatorOnPage.doAfterConstruct = function () {
     IMLibKeyDownEventDispatch.setExecuteByCode('condition', 13, function () {
+        INTERMediator.startFrom = 0;
         doSearch();
     });
     IMLibChangeEventDispatch.setExecute('number', function () {
+        INTERMediator.startFrom = 0;
         doSearch();
     });
     IMLibMouseEventDispatch.setExecute('search', function () {
+        INTERMediator.startFrom = 0;
         doSearch();
     });
     IMLibMouseEventDispatch.setExecute('sort1a', function () {
@@ -45,6 +46,12 @@ INTERMediatorOnPage.doAfterConstruct = function () {
 function doSearch() {
     IMLibLocalContext.update('condition');
     IMLibLocalContext.update('number');
+    applyConditions();
+    INTERMediator.construct(IMLibContextPool.contextFromName('postalcode'));
+    IMLibPageNavigation.navigationSetup();
+}
+
+function applyConditions(){
     var limit = IMLibLocalContext.getValue('pagedSize');
     if (parseInt(limit) > 0) {
         INTERMediator.pagedSize = limit;
@@ -58,7 +65,4 @@ function doSearch() {
         INTERMediator.addCondition('postalcode', {field: 'f9', operator: 'LIKE', value: '%' + c1 + '%'});
         INTERMediator.addCondition('postalcode', {field: '__operation__', operator: 'ex'});
     }
-    //INTERMediator.startFrom = 0;
-    INTERMediator.construct(IMLibContextPool.contextFromName('postalcode'));
-    IMLibPageNavigation.navigationSetup();
 }

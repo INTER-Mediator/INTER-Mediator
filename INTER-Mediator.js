@@ -478,6 +478,7 @@ var INTERMediator = {
         if (INTERMediatorOnPage.doAfterConstruct) {
             INTERMediatorOnPage.doAfterConstruct();
         }
+        IMLibPageNavigation.navigationSetup();
         INTERMediatorOnPage.isFinishToConstruct = false;
         INTERMediator.partialConstructing = true;
         INTERMediatorOnPage.hideProgress();
@@ -498,7 +499,7 @@ var INTERMediator = {
 
             // Restoring original HTML Document from backup data.
             bodyNode = document.getElementsByTagName('BODY')[0];
-            if (INTERMediator.rootEnclosure === null) {
+            if (!INTERMediator.rootEnclosure) {
                 INTERMediator.rootEnclosure = bodyNode.innerHTML;
             } else {
                 bodyNode.innerHTML = INTERMediator.rootEnclosure;
@@ -1252,7 +1253,7 @@ var INTERMediator = {
                     targetRecords = {recordset: [], count: 0};
                     counter = 0;
                     for (ix in INTERMediatorOnPage.dbCache[currentContextDef.name].recordset) {
-                        if(INTERMediatorOnPage.dbCache[currentContextDef.name].recordset.hasOwnProperty(ix)) {
+                        if (INTERMediatorOnPage.dbCache[currentContextDef.name].recordset.hasOwnProperty(ix)) {
                             oneRecord = INTERMediatorOnPage.dbCache[currentContextDef.name].recordset[ix];
                             isMatch = true;
                             index = 0;
