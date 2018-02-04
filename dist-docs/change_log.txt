@@ -79,6 +79,7 @@ Ver.5.7-RC1 (in development)
 - All functions have 'use strict';.
 - Update deploy.sh and recipe.rb etc. for the INTER-Mediator-Server virtual machine and CI.
 - Field names that contain ':' can be a variable of expression. It's for FileMaker.
+- The sample of Practices-search(using JavaScript) is updated.
 - [INFO] The following methods are deprecated. These methods will be removed in Ver.6.0.
     INTERMediator_DBAdapter.server_access
     INTERMediator_DBAdapter.db_query
