@@ -3,7 +3,7 @@
 #   - Install gem of rspec and selenium-webdriver on the host of VM ("gem install rspec selenium-webdriver")
 #   - Install Firefox and geckodriver (Chrome and chromedriver) on the host of VM
 #   - Change directory to the root directory of INTER-Mediator on the host of VM
-#   - Run "ADDR=192.168.56.101 rspec --default-path=dist-docs/docker/spec -f doc -c dist-docs/docker/spec/samples/samples_spec.rb" on the host of VM
+#   - Run "ADDR=192.168.56.101 BROWSER=chrome rspec --default-path=dist-docs/docker/spec -f doc -c dist-docs/docker/spec/samples/samples_spec.rb" on the host of VM
 
 require "selenium-webdriver"
 
@@ -57,7 +57,7 @@ describe "INTER-Mediator-Server VM" do
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements[0].text).to eq("1000000")
       expect(elements[1].text).to eq("1020072")
-      expect(elements[19].text).to eq("1006812")
+      expect(elements[9].text).to eq("1006802")
 
       element = @driver.find_element(:id, "_im_progress")
       expect(element.attribute("style")).to eq("opacity: 0; display: flex; z-index: -9999; transition-duration: 0.3s;")
@@ -74,7 +74,7 @@ describe "INTER-Mediator-Server VM" do
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements[0].text).to eq("1000000")
       expect(elements[1].text).to eq("1020072")
-      expect(elements[19].text).to eq("1006812")
+      expect(elements[9].text).to eq("1006802")
 
       element = @driver.find_element(:id, "_im_progress")
       expect(element.attribute("style")).to eq("opacity: 0; display: flex; z-index: -9999; transition-duration: 0.3s;")
