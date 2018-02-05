@@ -55,12 +55,28 @@ describe "INTER-Mediator-Server VM" do
       #@driver.navigate.to "http://" + @addr + "/INTER-Mediator/Samples/Practices/search_page1.html"
       sleep 2
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
+      expect(elements.size).to eq(10)
       expect(elements[0].text).to eq("1000000")
       expect(elements[1].text).to eq("1020072")
       expect(elements[9].text).to eq("1006802")
 
       element = @driver.find_element(:id, "_im_progress")
       expect(element.attribute("style")).to eq("opacity: 0; display: flex; z-index: -9999; transition-duration: 0.3s;")
+
+      Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@limitnumber:postalcode']")).select_by(:value, "4")
+      sleep 2
+      elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
+      expect(elements.size).to eq(4)
+
+      Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@limitnumber:postalcode']")).select_by(:value, "10")
+      sleep 2
+      elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
+      expect(elements.size).to eq(10)
+
+      Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@limitnumber:postalcode']")).select_by(:value, "40")
+      sleep 2
+      elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
+      expect(elements.size).to eq(30)
     }
   end
 
@@ -72,12 +88,28 @@ describe "INTER-Mediator-Server VM" do
       #@driver.navigate.to "http://" + @addr + "/INTER-Mediator/Samples/Practices/search_page2.html"
       sleep 2
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
+      expect(elements.size).to eq(10)
       expect(elements[0].text).to eq("1000000")
       expect(elements[1].text).to eq("1020072")
       expect(elements[9].text).to eq("1006802")
 
       element = @driver.find_element(:id, "_im_progress")
       expect(element.attribute("style")).to eq("opacity: 0; display: flex; z-index: -9999; transition-duration: 0.3s;")
+
+      Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@pagedSize']")).select_by(:value, "4")
+      sleep 2
+      elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
+      expect(elements.size).to eq(4)
+
+      Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@pagedSize']")).select_by(:value, "10")
+      sleep 2
+      elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
+      expect(elements.size).to eq(10)
+
+      Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@pagedSize']")).select_by(:value, "40")
+      sleep 2
+      elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
+      expect(elements.size).to eq(30)
     }
   end
 
