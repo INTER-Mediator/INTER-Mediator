@@ -53,7 +53,7 @@ describe "INTER-Mediator-Server VM" do
       element = @driver.find_element(:xpath, "//a[contains(@href, 'Practices/search_page1.html')]")
       element.click
       #@driver.navigate.to "http://" + @addr + "/INTER-Mediator/Samples/Practices/search_page1.html"
-      sleep 2
+      sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(10)
       expect(elements[0].text).to eq("1000000")
@@ -64,19 +64,25 @@ describe "INTER-Mediator-Server VM" do
       expect(element.attribute("style")).to eq("opacity: 0; display: flex; z-index: -9999; transition-duration: 0.3s;")
 
       Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@limitnumber:postalcode']")).select_by(:value, "4")
-      sleep 2
+      sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(4)
+      element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
+      expect(element.text).to eq("レコード番号1-4 / 3654")
 
       Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@limitnumber:postalcode']")).select_by(:value, "10")
-      sleep 2
+      sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(10)
+      element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
+      expect(element.text).to eq("レコード番号1-10 / 3654")
 
       Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@limitnumber:postalcode']")).select_by(:value, "40")
-      sleep 2
+      sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(30)
+      element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
+      expect(element.text).to eq("レコード番号1-30 / 3654")
     }
   end
 
@@ -86,7 +92,7 @@ describe "INTER-Mediator-Server VM" do
       element = @driver.find_element(:xpath, "//a[contains(@href, 'Practices/search_page2.html')]")
       element.click
       #@driver.navigate.to "http://" + @addr + "/INTER-Mediator/Samples/Practices/search_page2.html"
-      sleep 2
+      sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(10)
       expect(elements[0].text).to eq("1000000")
@@ -97,19 +103,25 @@ describe "INTER-Mediator-Server VM" do
       expect(element.attribute("style")).to eq("opacity: 0; display: flex; z-index: -9999; transition-duration: 0.3s;")
 
       Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@pagedSize']")).select_by(:value, "4")
-      sleep 2
+      sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(4)
+      element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
+      expect(element.text).to eq("レコード番号1-4 / 3654")
 
       Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@pagedSize']")).select_by(:value, "10")
-      sleep 2
+      sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(10)
+      element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
+      expect(element.text).to eq("レコード番号1-10 / 3654")
 
       Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@pagedSize']")).select_by(:value, "40")
-      sleep 2
+      sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(30)
+      element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
+      expect(element.text).to eq("レコード番号1-30 / 3654")
     }
   end
 

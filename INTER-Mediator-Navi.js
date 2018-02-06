@@ -35,8 +35,8 @@ var IMLibPageNavigation = {
 
     navigationSetup: function () {
         'use strict';
-        var navigation, i, insideNav, navLabel, node, start, pageSize, allCount, disableClass, c_node,
-            prevPageCount, nextPageCount, endPageCount, contextName, contextDef, buttonLabel;
+        var navigation, i, insideNav, navLabel, node, start, pageSize, allCount, dataSources, disableClass,
+            c_node, prevPageCount, nextPageCount, endPageCount, contextName, contextDef, buttonLabel;
 
         navigation = document.getElementById('IM_NAVIGATOR');
         if (navigation !== null) {
@@ -70,6 +70,13 @@ var IMLibPageNavigation = {
 
             if (navLabel === null || navLabel[4] !== false) {
                 start = Number(INTERMediator.startFrom);
+
+                dataSources = INTERMediatorOnPage.getDataSources();
+                if (dataSources[0] && dataSources[0].maxrecords &&
+                    dataSources[0].maxrecords < parseInt(INTERMediator.pagedSize, 10)) {
+                    INTERMediator.pagedSize = dataSources[0].maxrecords;
+                }
+
                 pageSize = Number(INTERMediator.pagedSize);
                 allCount = Number(INTERMediator.pagedAllCount);
                 disableClass = ' IM_NAV_disabled';
