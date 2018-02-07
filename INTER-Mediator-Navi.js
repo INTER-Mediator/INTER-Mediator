@@ -1035,7 +1035,7 @@ var IMLibPageNavigation = {
         IMLibPageNavigation.stepCurrentContextName = null;
         IMLibPageNavigation.stepStartContextName = null;
         IMLibPageNavigation.setupStepReturnButton('none');
-        if(INTERMediatorOnPage.getDataSources) { // Avoid processing on unit test
+        if (INTERMediatorOnPage.getDataSources) { // Avoid processing on unit test
             dataSrcs = INTERMediatorOnPage.getDataSources();
             for (key in dataSrcs) {
                 if (dataSrcs.hasOwnProperty(key)) {
@@ -1297,7 +1297,7 @@ var IMLibPageNavigation = {
         if (masterContext.getContextDef().paging && currentContextDef.paging) {
             INTERMediatorLog.setErrorMessage(
                 'The datail context definition has the "paging" key. ' +
-                'This is not required and causes bad effect to the pagenation.',
+                'This is not required and causes bad effect to the pagination.',
                 'Detected Error'
             );
         }
@@ -1354,9 +1354,8 @@ var IMLibPageNavigation = {
                 }
                 INTERMediator.eventListenerPostAdding.push({
                     'id': aNode.id,
-                    'event': 'touchstart',
-                    'todo': moveToMaster(
-                        masterContext, currentContext, isHidePageNavi, isUpdateMaster)
+                    'event': 'touchend',
+                    'todo': moveToMaster(masterContext, currentContext, isHidePageNavi, isUpdateMaster)
                 });
             }
         } else {
@@ -1453,7 +1452,7 @@ var IMLibPageNavigation = {
 
         function moveToMaster(a, b, c, d) {
             var masterContextCL = a, detailContextCL = b, pageNaviShow = c, masterUpdate = d, node;
-            return function () {
+            return function (event) {
                 var showingNode;
                 if (INTERMediatorOnPage.naviBeforeMoveToMaster) {
                     INTERMediatorOnPage.naviBeforeMoveToMaster(masterContextCL, detailContextCL);
@@ -1490,6 +1489,7 @@ var IMLibPageNavigation = {
                         INTERMediatorOnPage.masterScrollPosition.x,
                         INTERMediatorOnPage.masterScrollPosition.y);
                 }
+                event.preventDefault();
             };
         }
     }

@@ -129,7 +129,7 @@ buster.testCase('INTER-Mediator Element Test', {
     },
     'IMLibElement.setValueToIMNode() with # target has to add the value to node': function () {
         'use strict';
-        var value, value1, value2, attr = 'href', tag = 'a';
+        var value, value1, value2, value3, attr = 'href', tag = 'a';
         var tempElement = document.createElement(tag);
         value = 'abc';
         IMLibElement.setValueToIMNode(tempElement, attr, value, true);
@@ -158,15 +158,15 @@ buster.testCase('INTER-Mediator Element Test', {
         assert.equals(tempElement.getAttribute(attr), value1 + value2);
 
         tempElement = document.createElement(tag);
-        value1 = 'base-url$';
+        value1 = 'base-url$$';
         tempElement.setAttribute(attr, value1);
         value1 = 'base-url';
         value2 = 'params';
         IMLibElement.setValueToIMNode(tempElement, '$' + attr, value2, true);
-        assert.equals(tempElement.getAttribute(attr), value1 + value2);
-        value2 = 'another';
-        IMLibElement.setValueToIMNode(tempElement, '$' + attr, value2, true);
-        assert.equals(tempElement.getAttribute(attr), value1 + value2);
+        assert.equals(tempElement.getAttribute(attr), value1 + value2 + '$');
+        value3 = 'another';
+        IMLibElement.setValueToIMNode(tempElement, '$' + attr, value3, true);
+        assert.equals(tempElement.getAttribute(attr), value1 + value2 + value3);
     },
     'IMLibElement.setValueToIMNode() with innerHTML target': function () {
         'use strict';
@@ -202,13 +202,13 @@ buster.testCase('INTER-Mediator Element Test', {
         assert.equals(tempElement.innerHTML, value1 + value2);
 
         tempElement = document.createElement(tag);
-        value1 = '<table><tbody><tr><td>$</td></tr><tr><td>bb</td></tr></tbody></table>';
+        value1 = '<table><tbody><tr><td>$$</td></tr><tr><td>bb</td></tr></tbody></table>';
         tempElement.innerHTML = value1;
-        value1 = '<table><tbody><tr><td>params</td></tr><tr><td>bb</td></tr></tbody></table>';
+        value1 = '<table><tbody><tr><td>params$</td></tr><tr><td>bb</td></tr></tbody></table>';
         value2 = 'params';
         IMLibElement.setValueToIMNode(tempElement, '$' + attr, value2, true);
         assert.equals(tempElement.innerHTML, value1);
-        value1 = '<table><tbody><tr><td>another</td></tr><tr><td>bb</td></tr></tbody></table>';
+        value1 = '<table><tbody><tr><td>paramsanother</td></tr><tr><td>bb</td></tr></tbody></table>';
         value2 = 'another';
         IMLibElement.setValueToIMNode(tempElement, '$' + attr, value2, true);
         assert.equals(tempElement.innerHTML, value1);

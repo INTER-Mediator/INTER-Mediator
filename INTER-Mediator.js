@@ -214,7 +214,6 @@ var INTERMediator = {
 
     eventListenerPostAdding: null,
     appendingNodesAtLast: null,
-    paginationContextName: null,
 
 // Detect Internet Explorer and its version.
     propertyIETridentSetup: function () {
@@ -497,7 +496,6 @@ var INTERMediator = {
             INTERMediator.currentEncNumber = 1;
             INTERMediator.elementIds = [];
             //INTERMediator.widgetElementIds = [];
-            INTERMediator.paginationContextName = null;
 
             // Restoring original HTML Document from backup data.
             bodyNode = document.getElementsByTagName('BODY')[0];
