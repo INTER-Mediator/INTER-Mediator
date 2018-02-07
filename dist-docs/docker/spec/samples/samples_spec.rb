@@ -28,9 +28,17 @@ describe "INTER-Mediator-Server VM" do
       @browser = ENV['BROWSER'].downcase
     end
     if @browser == 'firefox'
-      @driver = Selenium::WebDriver.for :firefox
+      profile = Selenium::WebDriver::Firefox::Profile.new
+      profile['intl.accept_languages'] = "en-US, en"
+      profile['general.useragent.locale'] = "en-US"
+      options = Selenium::WebDriver::Firefox::Options.new
+      options.profile = profile
+      @driver = Selenium::WebDriver.for :firefox, options: options
     elsif @browser == 'chrome'
-      @driver = Selenium::WebDriver.for :chrome
+      options = Selenium::WebDriver::Chrome::Options.new
+      options.add_preference('intl.accept_languages', 'en-US, en')
+      options.add_preference('general.useragent.locale', 'en-US')
+      @driver = Selenium::WebDriver.for :chrome, options: options
     end
     @driver.navigate.to "http://" + @addr + "/"
     @wait = Selenium::WebDriver::Wait.new(:timeout => 15)
@@ -68,21 +76,21 @@ describe "INTER-Mediator-Server VM" do
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(4)
       element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
-      expect(element.text).to eq("レコード番号1-4 / 3654")
+      expect(element.text).to eq("Record #1-4 / 3654")
 
       Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@limitnumber:postalcode']")).select_by(:value, "10")
       sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(10)
       element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
-      expect(element.text).to eq("レコード番号1-10 / 3654")
+      expect(element.text).to eq("Record #1-10 / 3654")
 
       Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@limitnumber:postalcode']")).select_by(:value, "40")
       sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(30)
       element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
-      expect(element.text).to eq("レコード番号1-30 / 3654")
+      expect(element.text).to eq("Record #1-30 / 3654")
     }
   end
 
@@ -107,21 +115,21 @@ describe "INTER-Mediator-Server VM" do
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(4)
       element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
-      expect(element.text).to eq("レコード番号1-4 / 3654")
+      expect(element.text).to eq("Record #1-4 / 3654")
 
       Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@pagedSize']")).select_by(:value, "10")
       sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(10)
       element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
-      expect(element.text).to eq("レコード番号1-10 / 3654")
+      expect(element.text).to eq("Record #1-10 / 3654")
 
       Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@pagedSize']")).select_by(:value, "40")
       sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(30)
       element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
-      expect(element.text).to eq("レコード番号1-30 / 3654")
+      expect(element.text).to eq("Record #1-30 / 3654")
     }
   end
 
