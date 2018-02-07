@@ -245,24 +245,24 @@ var IMLibElement = {
                 curTarget = curTarget.substring(1);
                 originalValue = element.getAttribute('data-im-original-' + curTarget);
                 if (curTarget === 'innerHTML') {
-                    currentValue = originalValue ? originalValue : element.innerHTML;
+                    currentValue = element.innerHTML;
                     curVal = currentValue.replace('$', curVal);
                     if (INTERMediator.isIE && INTERMediator.ieVersion < 10) { // for IE
                         curVal = curVal.replace(/\r\n/g, '\r').replace(/\n/g, '\r').replace(/\r/g, '<br/>');
                     }
                     element.innerHTML = curVal;
                 } else if (curTarget === 'textNode' || curTarget === 'script') {
-                    currentValue = originalValue ? originalValue : element.textContent;
+                    currentValue = element.textContent;
                     element.textContent = currentValue.replace('$', curVal);
                 } else if (curTarget.indexOf('style.') === 0) {
                     styleName = curTarget.substring(6, curTarget.length);
-                    currentValue = originalValue ? originalValue : element.style[styleName];
+                    currentValue = element.style[styleName];
                     if (curTarget !== 'style.color' ||
                         (curTarget === 'style.color' && !negativeColor)) {
                         element.style[styleName] = currentValue.replace('$', curVal);
                     }
                 } else {
-                    currentValue = originalValue ? originalValue : element.getAttribute(curTarget);
+                    currentValue = element.getAttribute(curTarget);
                     if (curVal.indexOf('/fmi/xml/cnt/') === 0 && currentValue.indexOf('?media=') === -1) {
                         curVal = INTERMediatorOnPage.getEntryPath() + '?media=' + curVal;
                     }
