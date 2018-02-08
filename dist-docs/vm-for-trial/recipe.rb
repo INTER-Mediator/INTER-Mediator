@@ -1,4 +1,4 @@
-# Recipe file of Itamae for Alpine Linux 3.5/3.6, Ubuntu Server 14.04/16.04, CentOS 6/7
+# Recipe file of Itamae for Alpine Linux 3.5/3.6/3.7, Ubuntu Server 14.04/16.04, CentOS 6/7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -1709,6 +1709,9 @@ elsif node[:platform] == 'ubuntu'
     end
     execute 'gem2.0 install bundler --no-ri --no-rdoc' do
       command 'gem2.0 install bundler --no-ri --no-rdoc'
+    end
+    execute 'gem2.0 install ffi -v "1.9.18" --no-ri --no-rdoc' do
+      command 'gem2.0 install ffi -v "1.9.18" --no-ri --no-rdoc'
     end
     execute 'gem2.0 install selenium-webdriver --no-ri --no-rdoc' do
       command 'gem2.0 install selenium-webdriver --no-ri --no-rdoc'
