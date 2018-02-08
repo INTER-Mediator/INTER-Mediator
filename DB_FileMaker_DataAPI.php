@@ -964,6 +964,8 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
 
         $keyFieldName = isset($context['key']) ? $context['key'] : $this->specHandler->getDefaultKey();
 
+        $recordData = array();
+
         $this->setupFMDataAPIforDB($this->dbSettings->getEntityForUpdate(), 1);
         $requiredFields = $this->dbSettings->getFieldsRequired();
         $countFields = count($requiredFields);
@@ -972,6 +974,13 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             $field = $requiredFields[$i];
             $value = $fieldValues[$i];
             if ($field != $keyFieldName) {
+                $recordData += array(
+                    $field,
+                    $this->formatter->formatterToDB(
+                        "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}",
+                        $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value))
+                );
+                /*
                 $this->fmData->AddDBParam(
                     $field,
                     $this->formatter->formatterToDB(
@@ -979,6 +988,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                         $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value)
                     )
                 );
+                */
             }
         }
         if (isset($context['default-values'])) {
@@ -988,7 +998,8 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 if ($field != $keyFieldName) {
                     $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                     $convVal = $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value);
-                    $this->fmData->AddDBParam($field, $this->formatter->formatterToDB($filedInForm, $convVal));
+                    //$this->fmData->AddDBParam($field, $this->formatter->formatterToDB($filedInForm, $convVal));
+                    $recordData += array($field, $this->formatter->formatterToDB($filedInForm, $convVal));
                 }
             }
         }
@@ -1001,12 +1012,20 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             $authInfoTarget = $this->authHandler->getTargetForAuthorization("create");
             if ($authInfoTarget == 'field-user') {
                 $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
-                $this->fmData->AddDBParam($authInfoField,
-                    strlen($this->dbSettings->getCurrentUser()) == 0 ? randomString(10) : $signedUser);
+                //$this->fmData->AddDBParam($authInfoField,
+                //    strlen($this->dbSettings->getCurrentUser()) == 0 ? randomString(10) : $signedUser);
+                $recordData += array(
+                    $authInfoField,
+                    strlen($this->dbSettings->getCurrentUser()) == 0 ? randomString(10) : $signedUser
+                );
             } else if ($authInfoTarget == 'field-group') {
                 $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
-                $this->fmData->AddDBParam($authInfoField,
-                    strlen($belongGroups[0]) == 0 ? randomString(10) : $belongGroups[0]);
+                //$this->fmData->AddDBParam($authInfoField,
+                //    strlen($belongGroups[0]) == 0 ? randomString(10) : $belongGroups[0]);
+                $recordData += array(
+                    $authInfoField,
+                    strlen($belongGroups[0]) == 0 ? randomString(10) : $belongGroups[0]
+                );
             } else {
                 if ($this->dbSettings->isDBNative()) {
                 } else {
@@ -1036,36 +1055,30 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             }
         }
 
-        $result = $this->fmData->DoFxAction('new', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
+        $layout = $this->dbSettings->getEntityForUpdate();
+        $recId = $this->fmData->{$layout}->create($recordData);
+        $result = $this->fmData->{$layout}->getRecord($recId);
+        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
-                $this->errorMessage[] = get_class($result) . ': ' . $result->getDebugInfo();
+                // [WIP] $this->errorMessage[] = get_class($result) . ': ' . $result->getDebugInfo();
             }
             return false;
         }
 
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        if ($result['errorCode'] > 0 && $result['errorCode'] != 401) {
+        // [WIP] $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
+        if ($this->fmData->errorCode() > 0 && $this->fmData->errorCode() != 401) {
             $this->logger->setErrorMessage($this->stringWithoutCredential(
-                "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>"));
+                "FileMaker Data API reports error at create action: code={$this->fmData->errorCode()}<hr>"));
             return false;
         }
-        foreach ($result['data'] as $key => $row) {
-            if ($keyFieldName == $this->specHandler->getDefaultKey()) {
-                $recId = substr($key, 0, strpos($key, '.'));
-                $keyValue = $recId;
-            } else {
-                $keyValue = $row[$keyFieldName][0];
-            }
-        }
 
-        $this->notifyHandler->setQueriedPrimaryKeys(array($keyValue));
+        $this->notifyHandler->setQueriedPrimaryKeys(array($recId));
         $this->notifyHandler->setQueriedEntity($this->fmData->layout);
 
-        $this->updatedRecord = $this->createRecordset($result['data'], $dataSourceName, null, null, null);
-        return $keyValue;
+        // [WIP] $this->updatedRecord = $this->createRecordset($result['data'], $dataSourceName, null, null, null);
+        return $recId;
     }
 
     public function deleteFromDB()
