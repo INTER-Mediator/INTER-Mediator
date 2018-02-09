@@ -1458,9 +1458,9 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
             if ($contextDef["name"] == $fieldComp[0] ||
                 (isset($contextDef["table"]) && $contextDef["table"] == $fieldComp[0])
             ) {
-                if ($contextDef["relation"] &&
-                    $contextDef["relation"][0] &&
-                    $contextDef["relation"][0]["portal"] &&
+                if (isset($contextDef["relation"]) &&
+                    isset($contextDef["relation"][0]) &&
+                    isset($contextDef["relation"][0]["portal"]) &&
                     $contextDef["relation"][0]["portal"] = true
                 ) {
                     return "{$fieldComp[0]}{$this->dbSettings->getSeparator()}{$field}";
