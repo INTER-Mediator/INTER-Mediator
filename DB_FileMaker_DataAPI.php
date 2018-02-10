@@ -229,12 +229,10 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         $this->fieldInfo = null;
 
         $this->setupFMDataAPIforDB($this->dbSettings->getEntityForRetrieve(), '');
-        $this->dbSettings->setDbSpecDataType(
-            str_replace('fmpro', 'fmalt',
-                strtolower($this->dbSettings->getDbSpecDataType())));
-        $result = $this->fmData->FMView();
+        $result = $this->fmData->FMView();  // [WIP]
 
-        if (!is_array($result)) {
+        //if (!is_array($result)) {
+        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
@@ -538,6 +536,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         $portal = array();
         $portalNames = array();
         $recordId = NULL;
+        $result = NULL;
         try {
             if (count($condition) === 1 && isset($condition[0]['recordId'])) {
                 $recordId = str_replace('=', '', $condition[0]['recordId']);
@@ -546,13 +545,17 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 }
             } else {
                 $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, 1);
+            }
+            if (!is_null($result)) {
                 $portalNames = $result->getPortalNames();
-                if (count($portalNames) > 1) {
+                if (count($portalNames) >= 1) {
                     foreach ($portalNames as $key => $portalName) {
                         $portal = array_merge($portal, array($key => $portalName));
                     }
+                    if (!is_numeric($recordId)) {
+                        $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, $limitParam, $portal);
+                    }
                 }
-                $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, $limitParam, $portal);
             }
         } catch (Exception $e) {
             // Don't output error messages if no related records
@@ -580,7 +583,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 }
                 
                 $relatedsetArray = array();
-                if (count($portalNames) > 1) {
+                if (count($portalNames) >= 1) {
                     $relatedArray = array();
                     foreach ($portalNames as $key => $portalName) {
                         foreach ($result->{$portalName} as $portalRecord) {
@@ -743,8 +746,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 if (isset($relDef['portal']) && $relDef['portal']) {
                     $usePortal = true;
                     $context['paging'] = true;
-                    $this->dbSettings->setDbSpecDataType(
-                        str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
                 }
             }
         }
@@ -842,12 +843,28 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 return false;
             }
         }
-        //$result = $this->fmData->DoFxAction('perform_find', TRUE, TRUE, 'full');
+
         $condition = array(array($primaryKey => filter_input(INPUT_POST, 'condition0value')));
         $layout = filter_input(INPUT_POST, 'name');;
-        $result = $this->fmData->{$layout}->query($condition);
-        /*
-        if (!is_array($result)) {
+        $result = NULL;
+        $portal = array();
+        if (count($condition) === 1 && isset($condition[0]['recordId'])) {
+            $recordId = str_replace('=', '', $condition[0]['recordId']);
+            if (is_numeric($recordId)) {
+                $result = $this->fmData->{$layout}->getRecord($recordId);
+            }
+        } else {
+            $result = $this->fmData->{$layout}->query($condition, NULL, 1, 1);
+            $portalNames = $result->getPortalNames();
+            if (count($portalNames) >= 1) {
+                foreach ($portalNames as $key => $portalName) {
+                    $portal = array_merge($portal, array($key => $portalName));
+                }
+                $result = $this->fmData->{$layout}->query($condition, NULL, 1, 1, $portal);
+            }
+        }
+
+        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
@@ -856,7 +873,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             }
             return false;
         }
-        */
+
         // [WIP] $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
 //        $this->logger->setDebugMessage($this->stringWithoutCredential(var_export($this->dbSettings->getFieldsRequired(),true)));
 
@@ -969,9 +986,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 if (isset($relDef['portal']) && $relDef['portal']) {
                     $usePortal = true;
                     $context['paging'] = true;
-                    $this->dbSettings->setDbSpecDataType(
-                        str_replace('fmpro', 'fmalt',
-                            strtolower($this->dbSettings->getDbSpecDataType())));
                 }
             }
         }
@@ -1093,9 +1107,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 if (isset($relDef['portal']) && $relDef['portal']) {
                     $usePortal = true;
                     $context['paging'] = true;
-                    $this->dbSettings->setDbSpecDataType(
-                        str_replace('fmpro', 'fmalt',
-                            strtolower($this->dbSettings->getDbSpecDataType())));
                 }
             }
         }
@@ -1155,7 +1166,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             }
         }
         $result = $this->fmData->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
+        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
@@ -1197,8 +1208,9 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
 
                 $this->notifyHandler->setQueriedEntity($this->fmData->layout);
 
-                $result = $this->fmData->DoFxAction('delete', TRUE, TRUE, 'full');
-                if (!is_array($result)) {
+                $result = $this->fmData->DoFxAction('delete', TRUE, TRUE, 'full');  // [WIP]
+                //if (!is_array($result)) {
+                if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                     if ($this->dbSettings->isDBNative()) {
                         $this->dbSettings->setRequireAuthentication(true);
                     } else {
