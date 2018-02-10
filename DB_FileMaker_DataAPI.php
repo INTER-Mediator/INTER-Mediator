@@ -229,7 +229,19 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         $this->fieldInfo = null;
 
         $this->setupFMDataAPIforDB($this->dbSettings->getEntityForRetrieve(), '');
-        $result = $this->fmData->FMView();  // [WIP]
+        $layout = $this->targetLayout;
+        $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 1);
+
+        $portal = array();
+        if (!is_null($result)) {
+            $portalNames = $result->getPortalNames();
+            if (count($portalNames) >= 1) {
+                foreach ($portalNames as $key => $portalName) {
+                    $portal = array_merge($portal, array($key => $portalName));
+                }
+                $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 1, $portal);
+            }
+        }
 
         //if (!is_array($result)) {
         if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
@@ -243,8 +255,8 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         }
 
         $returnArray = array();
-        foreach ($result['fields'] as $key => $fieldInfo) {
-            $returnArray[$fieldInfo['name']] = '';
+        foreach ($result->getFieldNames() as $key => $fieldName) {
+            $returnArray[$fieldName] = '';
         }
 
         return $returnArray;
