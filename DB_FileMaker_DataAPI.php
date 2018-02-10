@@ -365,7 +365,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
 
                     $hasFindParams = true;
                     if ($condition['field'] == $this->specHandler->getDefaultKey()) {
-                        $this->fmData->FMSkipRecords(0);
+                        // [WIP] $this->fmData->FMSkipRecords(0);
                     }
                 }
             }
@@ -502,6 +502,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
 
         $request = filter_input_array(INPUT_POST);
         foreach ($request as $key => $val) {
+            /*
             if (substr($key, 0, 6) !== 'field_') {
                 unset($request[$key]);
             }
@@ -521,6 +522,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     }
                 }
             }
+            */
 
             if (substr($key, 0, 7) === 'sortkey' && substr($key, -5, 5) === 'field') {
                 $orderNum = substr($key, 7, 1);
@@ -534,15 +536,24 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         }
 
         $portal = array();
+        $portalNames = array();
+        $recordId = NULL;
         try {
-            $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, $limitParam);
-            $portalNames = $result->getPortalNames();
-            if (count($portalNames) > 1) {
-                foreach ($portalNames as $key => $portalName) {
-                    $portal = array_merge($portal, array($key => $portalName));
+            if (count($condition) === 1 && isset($condition[0]['recordId'])) {
+                $recordId = str_replace('=', '', $condition[0]['recordId']);
+                if (is_numeric($recordId)) {
+                    $result = $this->fmData->{$layout}->getRecord($recordId);
                 }
+            } else {
+                $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, 1);
+                $portalNames = $result->getPortalNames();
+                if (count($portalNames) > 1) {
+                    foreach ($portalNames as $key => $portalName) {
+                        $portal = array_merge($portal, array($key => $portalName));
+                    }
+                }
+                $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, $limitParam, $portal);
             }
-            $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, $limitParam, $portal);
         } catch (Exception $e) {
             // Don't output error messages if no related records
             if (strpos($e->getMessage(), 'Error Code: 401, Error Message: No records match the request') === false) {
@@ -559,7 +570,8 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                         'recordId' => $record->getRecordId(),
                     );
                 }
-                foreach ($request as $key => $fieldName) {
+                foreach ($result->getFieldNames() as $key => $fieldName) {
+                //foreach ($request as $key => $fieldName) {
                     $dataArray = $dataArray + array(
                         $fieldName => $this->formatter->formatterFromDB(
                             $this->getFieldForFormatter($tableName, $fieldName), $record->{$fieldName}
@@ -612,7 +624,9 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             }
             
 
-            $result = $this->fmData->{$layout}->query($condition, NULL, 1, 100000000);
+            if ($recordId === NULL) {
+                $result = $this->fmData->{$layout}->query($condition, NULL, 1, 100000000);
+            }
             $this->mainTableCount = $result->count();
             $this->mainTableTotalCount = $result->count();
         }
@@ -975,20 +989,11 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             $value = $fieldValues[$i];
             if ($field != $keyFieldName) {
                 $recordData += array(
-                    $field,
+                    $field =>
                     $this->formatter->formatterToDB(
                         "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}",
                         $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value))
                 );
-                /*
-                $this->fmData->AddDBParam(
-                    $field,
-                    $this->formatter->formatterToDB(
-                        "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}",
-                        $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value)
-                    )
-                );
-                */
             }
         }
         if (isset($context['default-values'])) {
@@ -998,8 +1003,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 if ($field != $keyFieldName) {
                     $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                     $convVal = $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value);
-                    //$this->fmData->AddDBParam($field, $this->formatter->formatterToDB($filedInForm, $convVal));
-                    $recordData += array($field, $this->formatter->formatterToDB($filedInForm, $convVal));
+                    $recordData += array($field => $this->formatter->formatterToDB($filedInForm, $convVal));
                 }
             }
         }
@@ -1012,18 +1016,14 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             $authInfoTarget = $this->authHandler->getTargetForAuthorization("create");
             if ($authInfoTarget == 'field-user') {
                 $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
-                //$this->fmData->AddDBParam($authInfoField,
-                //    strlen($this->dbSettings->getCurrentUser()) == 0 ? randomString(10) : $signedUser);
                 $recordData += array(
-                    $authInfoField,
+                    $authInfoField =>
                     strlen($this->dbSettings->getCurrentUser()) == 0 ? randomString(10) : $signedUser
                 );
             } else if ($authInfoTarget == 'field-group') {
                 $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
-                //$this->fmData->AddDBParam($authInfoField,
-                //    strlen($belongGroups[0]) == 0 ? randomString(10) : $belongGroups[0]);
                 $recordData += array(
-                    $authInfoField,
+                    $authInfoField =>
                     strlen($belongGroups[0]) == 0 ? randomString(10) : $belongGroups[0]
                 );
             } else {
@@ -1235,9 +1235,9 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             if ($contextDef["name"] == $fieldComp[0] ||
                 (isset($contextDef["table"]) && $contextDef["table"] == $fieldComp[0])
             ) {
-                if ($contextDef["relation"] &&
-                    $contextDef["relation"][0] &&
-                    $contextDef["relation"][0]["portal"] &&
+                if (isset($contextDef["relation"]) &&
+                    isset($contextDef["relation"][0]) &&
+                    isset($contextDef["relation"][0]["portal"]) &&
                     $contextDef["relation"][0]["portal"] = true
                 ) {
                     return "{$fieldComp[0]}{$this->dbSettings->getSeparator()}{$field}";
