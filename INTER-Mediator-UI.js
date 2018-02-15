@@ -480,7 +480,9 @@ var IMLibUI = {
                                 ],
                                 dataset: [
                                     {
-                                        field: '-delete.related',
+                                        field:
+                                            INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI' ?
+                                                'deleteRelated' : '-delete.related',
                                         operator: '=',
                                         value: currentContextCapt.contextName + '.' + keyValue
                                     }
@@ -628,6 +630,12 @@ var IMLibUI = {
                                 }
                             }
                         }
+
+                        if (targetPortalField === undefined && currentContext.relation &&
+                            currentContext.relation[0] && currentContext.relation[0]['join-field']) {
+                            targetPortalField = targetName + '::' + currentContext.relation[0]['join-field'];
+                        }
+
                         relatedRecordSet.push({field: targetPortalField + '.0', value: targetPortalValue});
                     }
 
