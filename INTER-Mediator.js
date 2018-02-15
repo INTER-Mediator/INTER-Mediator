@@ -646,18 +646,12 @@ var INTERMediator = {
             function seekEnclosureInPostOnly(node) {
                 var children, wInfo, i, target;
                if (node.nodeType === 1) { // Work for an element
-
-                   console.log(node);
-
                    try {
                         target = node.getAttribute('data-im');
                         if(!target){
                             target = node.getAttribute('data-im-group');
                         }
                         if (target) { // Linked element
-
-                            console.log("###",target);
-
                             if (!node.id) {
                                 node.id = 'IMPOST-' + INTERMediator.postOnlyNumber;
                                 INTERMediator.postOnlyNumber++;
