@@ -25,24 +25,15 @@ IM_Entry(
             'records' => 1000,
             'maxrecords' => 1000,
             'key' => 'id',
-            'navi-control' => 'master-hide-touch',
-        ),
-        array(
-            'name' => 'placedetail',
-            'table' => 'not_available',
-            'view' => 'postalcode',
-            'records' => 1,
-            'maxrecords' => 1,
-            'key' => 'id',
-            'navi-control' => 'detail',
         ),
     ),
     array(
         'credit-including' => 'footer',
     ),
     array(
-        'db-class' => 'FileMaker_FX',
+        'db-class' => 'FileMaker_DataAPI',
+        'server' => 'localserver',
     ),
     //todo ## Set the debug level to false, 1 or 2.
-    2
+    false
 );

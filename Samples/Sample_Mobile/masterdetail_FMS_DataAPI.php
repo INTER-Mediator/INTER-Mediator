@@ -41,8 +41,9 @@ IM_Entry(
         'credit-including' => 'footer',
     ),
     array(
-        'db-class' => 'FileMaker_FX',
+        'db-class' => 'FileMaker_DataAPI',
+        'server' => 'localserver',
     ),
     //todo ## Set the debug level to false, 1 or 2.
-    2
+    false
 );
