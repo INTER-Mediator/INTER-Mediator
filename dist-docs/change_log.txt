@@ -15,7 +15,7 @@ Ver.5.7-RC2-dev (in development)
   Please see for detail: <http://inter-mediator.info/ja/for-developers/format.html> (Japanese)
 - Microsoft SQL Server is contained in INTER-Mediator support database.
 - Support PHP 7.2.
-- Start to support FileMaker Data API (Trial) as an experimental feature (support retrieving data only).
+- Start to support FileMaker Data API (Trial) of FileMaker Server 16 as an experimental feature.
 - Step navigation is introduced. The 'nav-control' key can have values 'step' and 'step-hide'.
 - data-im-widget="popupselector" is introduced. This is similar to popup menu. The selections shows on
   scrollable panel.

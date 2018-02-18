@@ -13,36 +13,35 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//todo ## Set the valid path to the file 'INTER-Mediator.php'
-require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
+require_once(dirname(__FILE__) . '/../../../INTER-Mediator.php');
 
 IM_Entry(
     array(
         array(
-            'name' => 'placelist',
-            'table' => 'not_available',
-            'view' => 'postalcode',
-            'records' => 1000,
-            'maxrecords' => 1000,
+            'records' => 10,
+            'name' => 'productlist',
+            'view' => 'product',
             'key' => 'id',
-            'navi-control' => 'master-hide-touch',
+            'sort' => array(array('field' => 'name', 'direction' => 'ASC'),),
+            'navi-control' => 'master-hide',
         ),
         array(
-            'name' => 'placedetail',
-            'table' => 'not_available',
-            'view' => 'postalcode',
             'records' => 1,
-            'maxrecords' => 1,
+            'name' => 'productdetail',
+            'view' => 'product',
+            'table' => 'product',
             'key' => 'id',
-            'navi-control' => 'detail',
+            'navi-control' => 'detail-top',
         ),
     ),
     array(
-        'credit-including' => 'footer',
+        'formatter' => array(
+            array('field' => 'product@unitprice', 'converter-class' => 'Number', 'parameter' => '0'),
+        ),
     ),
     array(
-        'db-class' => 'FileMaker_FX',
+        'db-class' => 'FileMaker_DataAPI',
+        'server' => 'localserver',
     ),
-    //todo ## Set the debug level to false, 1 or 2.
-    2
+    false
 );
