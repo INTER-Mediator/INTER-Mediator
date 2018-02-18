@@ -534,7 +534,7 @@ var INTERMediator = {
             }
             IMLibLocalContext.bindingDescendant(document.documentElement);
             IMLibCalc.updateCalculationFields();
-            IMLibPageNavigation.navigationSetup();
+            //IMLibPageNavigation.navigationSetup();
 
             if (isAcceptNotify && INTERMediator.pusherAvailable) {
                 var channelName = INTERMediatorOnPage.clientNotificationIdentifier();
@@ -645,10 +645,10 @@ var INTERMediator = {
             // -------------------------------------------
             function seekEnclosureInPostOnly(node) {
                 var children, wInfo, i, target;
-               if (node.nodeType === 1) { // Work for an element
-                   try {
+                if (node.nodeType === 1) { // Work for an element
+                    try {
                         target = node.getAttribute('data-im');
-                        if(!target){
+                        if (!target) {
                             target = node.getAttribute('data-im-group');
                         }
                         if (target) { // Linked element
