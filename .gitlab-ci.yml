@@ -18,7 +18,7 @@ test:
     - docker build -t ubuntu ./dist-docs/docker
     - docker image list
     - docker run -d --name ubuntu -it ubuntu /sbin/init
-    - docker exec -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile -e DISPLAY=:99.0 -i ubuntu sh -c "phpunit --configuration /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php; /usr/local/bin/buster-test -r specification -c /var/www/html/INTER-Mediator/spec/buster.js; bundle; rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec -f doc -c /var/www/html/INTER-Mediator/dist-docs/docker/spec/samples/samples_spec.rb"
+    - docker exec -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile -e DISPLAY=:99.0 -i ubuntu sh -c "apt-get update && apt-get -y install ruby git; git clone https://github.com/INTER-Mediator/INTER-Mediator; cd INTER-Mediator; git checkout master; gem install itamae --no-doc; itamae local dist-docs/vm-for-trial/recipe.rb; echo y | sh /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh; /etc/rc.local; bundle; phpunit --configuration /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php; /usr/local/bin/buster-test -r specification -c /var/www/html/INTER-Mediator/spec/buster.js; rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec -f doc -c /var/www/html/INTER-Mediator/dist-docs/docker/spec/samples/samples_spec.rb"
     - docker stop ubuntu
     - docker rm ubuntu
 
