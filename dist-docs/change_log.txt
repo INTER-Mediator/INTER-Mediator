@@ -81,6 +81,9 @@ Ver.5.7-RC2-dev (in development)
 - Field names that contain ':' can be a variable of expression. It's for FileMaker.
 - The sample of Practices-search(using JavaScript) is updated.
 - The sample of Sample_chat is updated without using deprecated method.
+- Add practice and sample applications for FileMaker Data API (Trial) to "Samples" directory.
+- Update FileMaker sample DB ("TestDB.fmp12" and "TestDB_clone.fmp12") to set a object name of
+  the portal object for FileMaker Data API (Trial).
 - [INFO] The following methods are deprecated. These methods will be removed in Ver.6.0.
     INTERMediator_DBAdapter.server_access
     INTERMediator_DBAdapter.db_query
