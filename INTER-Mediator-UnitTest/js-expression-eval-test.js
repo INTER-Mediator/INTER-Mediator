@@ -229,6 +229,54 @@ buster.testCase('Functions Test', {
     }
 });
 
+buster.testCase('Comparison for different type of values: ', {
+    'Equal with zero-len str vs null.': function () {
+        'use strict';
+        var exp, vals, result;
+
+        exp = 'a = b';
+        vals = {a: '', b: null};
+        result = Parser.evaluate(exp, vals);
+        assert.equals(result, false);
+    },
+    'Equal with zero-len str and numerics 0.': function () {
+        'use strict';
+        var exp, vals, result;
+
+        exp = 'a = b';
+        vals = {a: '', b: 0};
+        result = Parser.evaluate(exp, vals);
+        assert.equals(result, true);
+    },
+    'Equal with numbers and numerics 0.': function () {
+        'use strict';
+        var exp, vals, result;
+
+        exp = 'a = b';
+        vals = {a: '0', b: 0};
+        result = Parser.evaluate(exp, vals);
+        assert.equals(result, true);
+    },
+    'Equal with numbers and numerics 1.': function () {
+        'use strict';
+        var exp, vals, result;
+
+        exp = 'a = b';
+        vals = {a: '1', b: 1};
+        result = Parser.evaluate(exp, vals);
+        assert.equals(result, true);
+    },
+    'Not equal with numbers and numerics 0.': function () {
+        'use strict';
+        var exp, vals, result;
+
+        exp = 'a != b';
+        vals = {a: '0', b: 0};
+        result = Parser.evaluate(exp, vals);
+        assert.equals(result, false);
+    },
+});
+
 buster.testCase('INTER-Mediator Specific Calculation Test: ', {
     'Calculate integer values.': function () {
         'use strict';
@@ -542,7 +590,7 @@ buster.testCase('INTER-Mediator Specific Calculation Test: ', {
 
     'FileMaker field name can be variable.': function () {
         'use strict';
-        assert.equals(Parser.evaluate('テスト::フィールド + 変数', {'テスト::フィールド': 3,変数:4}), 7);
+        assert.equals(Parser.evaluate('テスト::フィールド + 変数', {'テスト::フィールド': 3, 変数: 4}), 7);
     }
 
 });
