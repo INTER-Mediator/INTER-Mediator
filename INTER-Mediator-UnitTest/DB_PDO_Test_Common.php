@@ -8,22 +8,8 @@
  *
  */
 
-//require_once('PHPUnit/Framework/TestCase.php');
-require_once(dirname(__FILE__) . '/../DB_Interfaces.php');
-require_once(dirname(__FILE__) . '/../DB_UseSharedObjects.php');
-require_once(dirname(__FILE__) . '/../DB_PDO.php');
-require_once(dirname(__FILE__) . '/../DB_Settings.php');
-require_once(dirname(__FILE__) . '/../DB_Formatters.php');
-require_once(dirname(__FILE__) . '/../DB_Proxy.php');
-require_once(dirname(__FILE__) . '/../DB_Logger.php');
-require_once(dirname(__FILE__) . '/../MessageStrings.php');
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-require_once(dirname(__FILE__) . '/../OAuthAuth.php');
-require_once(dirname(__FILE__) . '/../DB_Support/DB_Auth_Common.php');
-require_once(dirname(__FILE__) . '/../DB_Support/DB_Auth_Handler_PDO.php');
-require_once(dirname(__FILE__) . '/../DB_Support/DB_Notification_Handler_PDO.php');
-require_once(dirname(__FILE__) . '/../DB_Support/DB_PDO_Handler.php');
-require_once(dirname(__FILE__) . '/../DB_Support/DB_Spec_Handler_PDO.php');
+spl_autoload_register('loadClass');
 
 abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
 {
