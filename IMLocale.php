@@ -17,7 +17,6 @@
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'IMLocaleCurrencyTable.php');
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'IMLocaleFormatTable.php');
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'IMLocaleStringTable.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'IMUtil.php');
 
 class IMLocale
 {
