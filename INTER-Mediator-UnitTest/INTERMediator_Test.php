@@ -3,12 +3,7 @@
  * INTERMediator_Test file
  */
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-require_once(dirname(__FILE__) . '/../DB_Interfaces.php');
-require_once(dirname(__FILE__) . '/../DB_Logger.php');
-require_once(dirname(__FILE__) . '/../DB_Settings.php');
-require_once(dirname(__FILE__) . '/../DB_UseSharedObjects.php');
-require_once(dirname(__FILE__) . '/../DB_Proxy.php');
-require_once(dirname(__FILE__) . '/../DB_Formatters.php');
+spl_autoload_register('loadClass');
 
 class INTERMediator_Test extends PHPUnit_Framework_TestCase
 {

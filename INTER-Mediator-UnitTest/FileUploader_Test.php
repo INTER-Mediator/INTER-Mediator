@@ -2,8 +2,8 @@
 /**
  * FileUploader_Test file
  */
-require_once(dirname(__FILE__) . '/../FileUploader.php');
-require_once(dirname(__FILE__) . '/../IMUtil.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
+spl_autoload_register('loadClass');
 require_once(dirname(__FILE__) . '/../params.php');
 
 class FileUploader_Test extends PHPUnit_Framework_TestCase
