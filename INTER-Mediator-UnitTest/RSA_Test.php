@@ -18,11 +18,16 @@ if ((float)phpversion() >= 7.0) {
         define('CRYPT_RSA_ENCRYPTION_PKCS1', constant('phpseclib\Crypt\RSA::ENCRYPTION_PKCS1'));
     }
 } else {
-    require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Crypt/RSA.php');
-    require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Math/BigInteger.php');    
+    if (!class_exists('Crypt_RSA')) {
+        require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Crypt/RSA.php');
+    }
+    if (!class_exists('Math_BigInteger')) {
+        require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Math/BigInteger.php');
+    }
 }
 require_once(dirname(__FILE__) . '/../lib/bi2php/biRSA.php');
-require_once(dirname(__FILE__) . '/../IMUtil.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
+spl_autoload_register('loadClass');
 
 class RSA_Test extends PHPUnit_Framework_TestCase
 {
