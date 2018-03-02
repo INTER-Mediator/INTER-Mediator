@@ -36,6 +36,7 @@
     </tr>
     <tr>
         <td colspan="2">
+            <p>If the product id is no value, popup menu to select the product appears.</p>
             <table border="1">
                 <thead>
                 <tr>
@@ -49,13 +50,17 @@
                 <tbody>
                 <tr>
                     <td>
-                        <input type="text" data-im="item@product_id" size="2">
-
-                        <div class="inline" data-im-control="enclosure">
-                            <div class="inline" data-im-control="repeater">
-                                <span data-im="product@name"></span>
+                        <div data-im="item@pinfo_style@style.display">
+                            <input type="text" data-im="item@product_id" size="2">
+                            <div class="inline" data-im-control="enclosure">
+                                <div class="inline" data-im-control="repeater">
+                                    <span data-im="product@name"></span>
+                                </div>
                             </div>
                         </div>
+                        <select data-im="item@product_id item@popup_style@style.display">
+                            <option data-im="productlist@id@value productlist@name"></option>
+                        </select>
                     </td>
                     <td><input class="price" type="text" data-im="item@qty" size="5"></td>
                     <td>

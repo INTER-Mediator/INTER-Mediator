@@ -38,8 +38,6 @@ IM_Entry(
             'relation' => array(
                 array('foreign-key' => 'invoice_id', 'join-field' => 'id', 'operator' => 'eq')
             ),
-            //    'foreign-key' 	=> 'invoice_id',
-            //    'join-field' 	=> 'id',
             'repeat-control' => 'insert delete',
             'default-values' => array(
                 array('field' => 'product_id', 'value' => 1),
@@ -55,6 +53,14 @@ IM_Entry(
                     'rule' => 'value>=0 && value<10000',
                     'message' => 'Unit price should be between 1.. 9999.'
                 ),
+                 array(
+                    'field' => 'popup_style',
+                    'expression' => "if (length(product_id) = 0, 'block', 'none')",
+                ),
+                 array(
+                    'field' => 'pinfo_style',
+                    'expression' => "if (length(product_id) > 0, 'block', 'none')",
+                ),
             ),
             'calculation' => array(
                 array(
@@ -62,7 +68,6 @@ IM_Entry(
                     'expression' => "im_server",
                 ),
             ),
-//            'post-repeater' => 'itemsExpanded',
         ),
         array(
             'name' => 'product',
@@ -70,8 +75,12 @@ IM_Entry(
             'relation' => array(
                 array('foreign-key' => 'id', 'join-field' => 'product_id', 'operator' => 'eq'),
             ),
-            //    'foreign-key' 	=> 'id',
-            //    'join-field' 	=> 'product_id',
+        ),
+        array(
+            'name' => 'productlist',
+            'view' => 'product',
+            'table' => 'dummy',
+            'key' => 'id',
         ),
     ),
     array(
