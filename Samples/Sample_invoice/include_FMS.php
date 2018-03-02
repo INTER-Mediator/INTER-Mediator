@@ -40,8 +40,6 @@ IM_Entry(
             'relation' => array(
                 array('foreign-key' => 'invoice_id', 'join-field' => 'id', 'operator' => 'eq')
             ),
-            //    'foreign-key' 	=> 'invoice_id',
-            //    'join-field' 	=> 'id',
             'repeat-control' => 'insert delete',
             'default-values' => array(
                 array('field' => 'product_id', 'value' => 1),
@@ -67,8 +65,15 @@ IM_Entry(
                     'field' => 'qty_color',
                     'expression' => "if(qty > 10, 'red', 'black')",
                 ),
+                 array(
+                    'field' => 'popup_style',
+                    'expression' => "if (length(product_id) = 0, 'block', 'none')",
+                ),
+                 array(
+                    'field' => 'pinfo_style',
+                    'expression' => "if (length(product_id) > 0, 'block', 'none')",
+                ),
             ),
-//            'post-repeater' => 'itemsExpanded',
         ),
         array(
             'name' => 'product',
@@ -76,8 +81,12 @@ IM_Entry(
             'relation' => array(
                 array('foreign-key' => 'id', 'join-field' => 'product_id', 'operator' => 'eq'),
             ),
-            //    'foreign-key' 	=> 'id',
-            //    'join-field' 	=> 'product_id',
+        ),
+        array(
+            'name' => 'productlist',
+            'view' => 'product',
+            'table' => 'dummy',
+            'key' => 'id',
         ),
     ),
     array(

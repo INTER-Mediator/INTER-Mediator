@@ -122,6 +122,7 @@ Ver.5.7-RC2-dev (in development)
 - [BUG FIX] Two target specifications with $ just replaced one $ in target attribute.
 - [BUG FIX] Prevent unexpected additional tapping in backing from detail to master.
 - [BUG FIX] Post Only mode didn't involve nodes with data-im-group attribute.
+- [BUG FIX] If a expression set to popup menu, the page generating process went infinite loop (bug on 99fbf43b).
 
 Ver.5.6.1 (September 16, 2017)
 - Fix loading the page of the Practice "search (using JavaScript)".

@@ -93,6 +93,14 @@ IM_Entry(array(
                             'field' => 'qty_color',
                             'expression' => 'if (qty >= 10, \'red\', \'black\')',
                         ),
+                    2 => array(
+                        'field' => 'popup_style',
+                        'expression' => "if (length(product_id) = 0, 'block', 'none')",
+                    ),
+                    3 => array(
+                        'field' => 'pinfo_style',
+                        'expression' => "if (length(product_id) > 0, 'block', 'none')",
+                    ),
                 ),
         ),
     2 =>
@@ -108,6 +116,13 @@ IM_Entry(array(
                             'operator' => '=',
                         ),
                 ),
+        ),
+    3 =>
+        array(
+            'name' => 'productlist',
+            'view' => 'product',
+            'table' => 'dummy',
+            'key' => 'id',
         ),
 ),
     array(),

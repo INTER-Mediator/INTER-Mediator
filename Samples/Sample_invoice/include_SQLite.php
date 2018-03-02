@@ -38,8 +38,6 @@ IM_Entry(
         ),
         array(
             'name' => 'item',
-            //  'table' => 'item',
-            //    'view' => 'item_display',
             'key' => 'id',
             'relation' => array(
                 array('foreign-key' => 'invoice_id', 'join-field' => 'id', 'operator' => '=')
@@ -71,6 +69,14 @@ IM_Entry(
                     'field' => 'qty_color',
                     'expression' => "if (qty >= 10, 'red', 'black')",
                 ),
+                 array(
+                    'field' => 'popup_style',
+                    'expression' => "if (length(product_id) = 0, 'block', 'none')",
+                ),
+                 array(
+                    'field' => 'pinfo_style',
+                    'expression' => "if (length(product_id) > 0, 'block', 'none')",
+                ),
             ),
         ),
         array(
@@ -79,7 +85,13 @@ IM_Entry(
             'relation' => array(
                 array('foreign-key' => 'id', 'join-field' => 'product_id', 'operator' => '=')
             ),
-        )
+        ),
+        array(
+            'name' => 'productlist',
+            'view' => 'product',
+            'table' => 'dummy',
+            'key' => 'id',
+        ),
     ),
     array(
         'formatter' => array(

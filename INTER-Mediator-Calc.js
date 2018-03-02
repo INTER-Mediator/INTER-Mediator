@@ -293,79 +293,78 @@ var IMLibCalc = {
      */
     setUndefinedToAllValues: function () {
         'use strict';
-        var nodeId, calcObject, ix, targetNode, field, targetExp, targetIds,
+        var nodeId, calcObject, ix, targetNode, field, targetExp, targetIds, isContextName,
             isRemoved, idValue, repeaterTop, checkRepeater, nodeInfo, linkInfos;
 
         do {
             isRemoved = false;
             for (nodeId in IMLibCalc.calculateRequiredObject) {
-                if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
-                    idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
-                        nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
-                    if (!document.getElementById(idValue)) {
-                        delete IMLibCalc.calculateRequiredObject[nodeId];
-                        isRemoved = true;
-                        break;
-                    }
+                idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
+                    nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
+                if (!document.getElementById(idValue)) {
+                    delete IMLibCalc.calculateRequiredObject[nodeId];
+                    isRemoved = true;
+                    break;
                 }
             }
         } while (isRemoved);
 
         for (nodeId in IMLibCalc.calculateRequiredObject) {
-            if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
-                calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-                idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
-                    nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
-                targetNode = document.getElementById(idValue);
-                linkInfos = INTERMediatorLib.getLinkedElementInfo(targetNode);
-                if (INTERMediatorLib.is_array(linkInfos)) {
-                    linkInfos = linkInfos[0];
+            calcObject = IMLibCalc.calculateRequiredObject[nodeId];
+            idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
+                nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
+            targetNode = document.getElementById(idValue);
+            linkInfos = INTERMediatorLib.getLinkedElementInfo(targetNode);
+            if (INTERMediatorLib.is_array(linkInfos)) {
+                linkInfos = linkInfos[0];
+            }
+            nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos);
+            for (field in calcObject.values) {
+                if (field.indexOf(INTERMediator.separator) > -1) {
+                    targetExp = field;
+                    isContextName = true;
+                } else {
+                    targetExp = calcObject.nodeInfo.table + INTERMediator.separator + field;
+                    isContextName = false;
                 }
-                nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos);
-                for (field in calcObject.values) {
-                    if (calcObject.values.hasOwnProperty(field)) {
-                        if (field.indexOf(INTERMediator.separator) > -1) {
-                            targetExp = field;
-                        } else {
-                            targetExp = calcObject.nodeInfo.table + INTERMediator.separator + field;
-                        }
-                        if (nodeInfo && nodeInfo.crossTable) {
-                            repeaterTop = targetNode;
-                            while (repeaterTop.tagName !== 'TD' && repeaterTop.tagName !== 'TH') {
-                                repeaterTop = repeaterTop.parentNode;
-                            }
-                            do {
-                                targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromNode(targetNode, targetExp);
-                                if (targetIds && targetIds.length > 0) {
-                                    break;
-                                }
-                                checkRepeater = getParentRepeater(INTERMediatorLib.getParentEnclosure(targetNode));
-                            } while (checkRepeater);
-                        } else {
-                            do {
-                                targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromRepeater(targetNode, targetExp);
-                                if (targetIds && targetIds.length > 0) {
-                                    break;
-                                }
-                                targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromEnclosure(targetNode, targetExp);
-                                if (targetIds && targetIds.length > 0) {
-                                    break;
-                                }
-                                checkRepeater = getParentRepeater(INTERMediatorLib.getParentEnclosure(targetNode));
-                            } while (checkRepeater);
-                        }
-                        if (INTERMediatorLib.is_array(targetIds) && targetIds.length > 0) {
-                            calcObject.referes[field] = [];
-                            calcObject.values[field] = [];
-                            for (ix = 0; ix < targetIds.length; ix++) {
-                                calcObject.referes[field].push(targetIds[ix]);
-                                calcObject.values[field].push(undefined);
-                            }
-                        } else {
-                            calcObject.referes[field] = [undefined];
-                            calcObject.values[field] = [undefined];
-                        }
+                if (nodeInfo && nodeInfo.crossTable) {
+                    repeaterTop = targetNode;
+                    while (repeaterTop.tagName !== 'TD' && repeaterTop.tagName !== 'TH') {
+                        repeaterTop = repeaterTop.parentNode;
                     }
+                    do {
+                        targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromNode(repeaterTop, targetExp);
+                        if (targetIds && targetIds.length > 0) {
+                            break;
+                        }
+                        repeaterTop = getParentRepeater(INTERMediatorLib.getParentEnclosure(repeaterTop));
+                    } while (repeaterTop);
+                } else {
+                    checkRepeater = targetNode;
+                    do {
+                        targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromRepeater(checkRepeater, targetExp);
+                        if (targetIds && targetIds.length > 0) {
+                            break;
+                        }
+                        if (isContextName) {
+                            targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromEnclosure(checkRepeater, targetExp);
+                            if (targetIds && targetIds.length > 0) {
+                                break;
+                            }
+                        }
+                        checkRepeater = getParentRepeater(INTERMediatorLib.getParentEnclosure(checkRepeater));
+                    } while (checkRepeater);
+                }
+                if (INTERMediatorLib.is_array(targetIds) && targetIds.length > 0) {
+                    calcObject.referes[field] = [];
+                    calcObject.values[field] = [];
+                    for (ix = 0; ix < targetIds.length; ix++) {
+                        calcObject.referes[field].push(targetIds[ix]);
+                        calcObject.values[field].push(undefined);
+                    }
+                } else {
+                    calcObject.referes[field] = [undefined];
+                    calcObject.values[field] = [undefined];
                 }
             }
         }
