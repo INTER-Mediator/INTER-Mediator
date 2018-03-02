@@ -14,10 +14,8 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'IMLocaleCurrencyTable.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'IMLocaleFormatTable.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'IMLocaleStringTable.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'IMUtil.php');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.php');
+spl_autoload_register('loadClass');
 
 class IMLocale
 {
