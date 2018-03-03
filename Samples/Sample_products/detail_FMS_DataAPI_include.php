@@ -18,18 +18,17 @@ require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 IM_Entry(
     array(
         array(
-            'records' => 10,
+            'records' => 1,
             'name' => 'product',
             'key' => 'id',
             'query' => array(array('field' => 'name', 'value' => '*', 'operator' => 'cn')),
             'sort' => array(array('field' => 'name', 'direction' => 'ascend'),),
         ),
     ),
+    null,
     array(
-        'formatter' => array(
-            array('field' => 'product@unitprice', 'converter-class' => 'Number', 'parameter' => '0'),
-        ),
+        'db-class' => 'FileMaker_DataAPI',
+        'server' => 'localserver',
     ),
-    array('db-class' => 'FileMaker_FX'),
-    false // debug
+    false
 );
