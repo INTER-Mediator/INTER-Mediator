@@ -785,18 +785,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : $this->specHandler->getDefaultKey();
 
-        /*
-        $fxUtility = new RetrieveFM7Data($this->fmData);
-        $config = array(
-            'urlScheme' => $this->fmData->urlScheme,
-            'dataServer' => $this->fmData->dataServer,
-            'dataPort' => $this->fmData->dataPort,
-            'DBUser' => $this->dbSettings->getAccessUser(),
-            'DBPassword' => $this->dbSettings->getAccessPassword(),
-        );
-        $cwpkit = new CWPKit($config);
-        */
-
         if (isset($tableInfo['query'])) {
             foreach ($tableInfo['query'] as $condition) {
                 if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
@@ -974,8 +962,11 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
 
                 $this->notifyHandler->setQueriedEntity($this->fmData->layout);
 
-                //$result = $this->fmData->DoFxAction('update', TRUE, TRUE, 'full');
-                $this->fmData->{$layout}->update($recId, array(filter_input(INPUT_POST, 'field_0') => filter_input(INPUT_POST, 'value_0')));
+                $originalfield = filter_input(INPUT_POST, 'field_0');
+                $value = filter_input(INPUT_POST, 'value_0');
+                $convVal = $this->formatter->formatterToDB(
+                    $this->getFieldForFormatter($tableSourceName, $originalfield), $value);
+                $this->fmData->{$layout}->update($recId, array($originalfield => $convVal));
                 $result = $this->fmData->{$layout}->getRecord($recId);
                 /* [WIP]
                 if (!is_array($result)) {
