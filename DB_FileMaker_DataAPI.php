@@ -321,18 +321,15 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                         if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
                             throw new Exception("Invalid Operator.: {$condition['operator']}");
                         }
-                        $this->fmData->AddDBParam($condition['field'], $condition['value'], $condition['operator']);
+                        // [WIP] $this->fmData->AddDBParam($condition['field'], $condition['value'], $condition['operator']);
                         $searchConditions[] = $this->setSearchConditionsForCompoundFound(
                             $condition['field'], $condition['value'], $condition['operator']);
                     } else {
-                        $this->fmData->AddDBParam($condition['field'], $condition['value']);
+                        // [WIP] $this->fmData->AddDBParam($condition['field'], $condition['value']);
                         $searchConditions[] = $this->setSearchConditionsForCompoundFound(
                             $condition['field'], $condition['value']);
                     }
                     $hasFindParams = true;
-
-                    //$queryValues[] = 'q' . $qNum;
-                    //$qNum++;
 
                     // [WIP]
                     if (isset($condition['operator']) && $condition['operator'] === 'neq') {
