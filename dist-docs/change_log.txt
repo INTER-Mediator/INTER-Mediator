@@ -84,6 +84,8 @@ Ver.5.7-RC2-dev (in development)
 - Add practice and sample applications for FileMaker Data API (Trial) to "Samples" directory.
 - Update FileMaker sample DB ("TestDB.fmp12" and "TestDB_clone.fmp12") to set a object name of
   the portal object for FileMaker Data API (Trial).
+- Show the "Enrollment" and "Password Reset" button on login panel with 'enroll-page' and 'reset-page' keys
+  in the option parameters (2nd argument of IM_Entry function).
 - [INFO] PHP 5.2 and PHP 5.3 have been deprecated. INTER-Mediator Ver.6.0 will require PHP 5.4 or
   later (or PHP 5.5 or later).
 - [INFO] FileMaker Server 12 and FileMaker Server 13 have been deprecated. INTER-Mediator Ver.6.0
@@ -123,6 +125,8 @@ Ver.5.7-RC2-dev (in development)
 - [BUG FIX] Prevent unexpected additional tapping in backing from detail to master.
 - [BUG FIX] Post Only mode didn't involve nodes with data-im-group attribute.
 - [BUG FIX] If a expression set to popup menu, the page generating process went infinite loop (bug on 99fbf43b).
+- [BUG FIX] Stabilized to detect smtp server info and refactored.
+- [BUG FIX] The method to change password for FileMaker Server had a bug.
 
 Ver.5.6.1 (September 16, 2017)
 - Fix loading the page of the Practice "search (using JavaScript)".

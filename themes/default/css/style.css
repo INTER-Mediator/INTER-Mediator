@@ -335,6 +335,15 @@ span.IM_POSTMESSAGE {
 #_im_changebutton {
 }
 
+#_im_oauthbutton {
+}
+
+#_im_enrollbutton {
+}
+
+#_im_resetbutton {
+}
+
 #_im_login_message {
     text-align: center;
     font-size: 1em;

@@ -197,6 +197,8 @@ class DefinitionChecker
             'email-as-username' => 'boolean',
             'issuedhash-dsn' => 'string',
             'password-policy' => 'string',
+            'enroll-page' => 'string',
+            'reset-page' => 'string',
         ),
         'media-root-dir' => 'string',
         'media-context' => 'string',

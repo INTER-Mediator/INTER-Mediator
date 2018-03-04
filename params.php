@@ -149,6 +149,10 @@ $prohibitDebugMode = false;
 
 $customLoginPanel = '';
 
+// A enrollment page and a password reset page are going to show on login panel.
+//$resetPage = '...url...';
+//$enrollPage = '...url...';
+
 /*
  * If you want to specify the smtp server info, set them below.
 $sendMailSMTP = array(

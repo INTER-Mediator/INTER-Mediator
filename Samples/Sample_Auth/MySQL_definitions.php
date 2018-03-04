@@ -119,6 +119,8 @@ IM_Entry(
             'realm' => 'Sample_Auth/MySQL_definitions', //
 //            'email-as-username' => true,
 //        'password-policy' => "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName",
+            'enroll-page'=>'http://msyk.net/',
+            'reset-page'=>'http://msyk.net/',
         ),
     ),
     array('db-class' => 'PDO'),
