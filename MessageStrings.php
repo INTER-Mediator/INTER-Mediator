@@ -118,6 +118,8 @@ class MessageStrings
         2019 => 'Any punctuations have to contain in new password.',
         2020 => 'New password have to differ from the user name.',
         2021 => 'New password have to contain more than @1@ characters.',
+        2022 => 'Enrollment this site with email',
+        2023 => 'Reset my password with email',
         3101 => 'Drag Here.',
         3102 => 'Dragged File: ',
         3201 => "Exceeded post size limit. Check the post_max_size in php.ini file.",

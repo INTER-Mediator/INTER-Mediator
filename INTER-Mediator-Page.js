@@ -316,7 +316,7 @@ var INTERMediatorOnPage = {
         var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox, msgNumber,
             passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton, panelTitle,
             newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox, keyCode,
-            messageNode, oAuthButton;
+            messageNode, oAuthButton, addingButton;
 
         this.checkPasswordPolicy = function (newPassword, userName, policyString) {
             var terms, i, message = [], minLen;
@@ -426,7 +426,8 @@ var INTERMediatorOnPage = {
             if (panelTitle && panelTitle.length > 0) {
                 realmBox = document.createElement('DIV');
                 realmBox.appendChild(document.createTextNode(panelTitle));
-                realmBox.style.textAlign = 'left';
+                //realmBox.style.textAlign = 'left';
+                realmBox.id = '_im_authrealm';
                 frontPanel.appendChild(realmBox);
                 breakLine = document.createElement('HR');
                 frontPanel.appendChild(breakLine);
@@ -532,10 +533,30 @@ var INTERMediatorOnPage = {
                 breakLine = document.createElement('HR');
                 frontPanel.appendChild(breakLine);
                 oAuthButton = document.createElement('BUTTON');
-                oAuthButton.id = '_im_authbutton';
+                oAuthButton.id = '_im_oauthbutton';
                 oAuthButton.appendChild(document.createTextNode(
                     INTERMediatorLib.getInsertedStringFromErrorNumber(2014)));
                 frontPanel.appendChild(oAuthButton);
+            }
+            if (INTERMediatorOnPage.enrollPageURL){
+                breakLine = document.createElement('HR');
+                frontPanel.appendChild(breakLine);
+                addingButton = document.createElement('BUTTON');
+                addingButton.id = '_im_enrollbutton';
+                addingButton.appendChild(document.createTextNode(
+                    INTERMediatorLib.getInsertedStringFromErrorNumber(2022)));
+                addingButton.onclick=function(){location.href=INTERMediatorOnPage.enrollPageURL;};
+                frontPanel.appendChild(addingButton);
+            }
+            if (INTERMediatorOnPage.resetPageURL){
+                breakLine = document.createElement('HR');
+                frontPanel.appendChild(breakLine);
+                addingButton = document.createElement('BUTTON');
+                addingButton.id = '_im_resetbutton';
+                addingButton.appendChild(document.createTextNode(
+                    INTERMediatorLib.getInsertedStringFromErrorNumber(2023)));
+                addingButton.onclick=function(){location.href=INTERMediatorOnPage.resetPageURL;};
+                frontPanel.appendChild(addingButton);
             }
         }
         passwordBox.onkeydown = function (event) {

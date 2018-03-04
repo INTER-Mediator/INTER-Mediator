@@ -62,7 +62,7 @@ class GenerateJSCode
             "oAuthProvider", "oAuthClientID", "oAuthRedirect",
             "passwordPolicy", "documentRootPrefix", "dbClass", "dbDSN",
             "nonSupportMessageId", "valuesForLocalContext", "themeName",
-            "appLocale", "appCurrency",
+            "appLocale", "appCurrency","resetPage","enrollPage",
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -84,7 +84,10 @@ class GenerateJSCode
             : (isset($params['appLocale']) ? $params["appLocale"] : 'ja_JP');
         $appCurrency = isset($options['app-currency']) ? $options['app-currency']
             : (isset($params['appCurrency']) ? $params["appCurrency"] : 'JP');
-
+        $resetPage = isset($options['authentication']['reset-page']) ? $options['authentication']['reset-page']
+            : (isset($params['resetPage']) ? $params["resetPage"] : null);
+        $enrollPage = isset($options['authentication']['enroll-page']) ? $options['authentication']['enroll-page']
+            : (isset($params['enrollPage']) ? $params["enrollPage"] : null);
         /*
          * Read the JS programs regarding by the developing or deployed.
          */
@@ -280,6 +283,12 @@ class GenerateJSCode
             "INTERMediatorOnPage.requireAuthentication", $boolValue);
         $this->generateAssignJS(
             "INTERMediatorOnPage.authRequiredContext", arrayToJS($requireAuthenticationContext, ''));
+        if (!is_null($enrollPage)) {
+            $this->generateAssignJS("INTERMediatorOnPage.enrollPageURL", $q, $enrollPage, $q);
+        }
+        if (!is_null($resetPage)) {
+            $this->generateAssignJS("INTERMediatorOnPage.resetPageURL", $q, $resetPage, $q);
+        }
 
         $ldap = new LDAPAuth(); // for PHP 5.2, 5.3
         $this->generateAssignJS(
