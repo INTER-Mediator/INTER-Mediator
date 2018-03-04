@@ -161,7 +161,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $dataSource,
                     $result,
                     $this->dbSettings->getSmtpConfiguration());
-                if (!$mailResult) {
+                if ($mailResult !== true) {
                     $this->logger->setErrorMessage("Mail sending error: $mailResult");
                 }
             }
@@ -257,7 +257,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $dataSource,
                     $this->dbClass->updatedRecord(),
                     $this->dbSettings->getSmtpConfiguration());
-                if (!$mailResult) {
+                if ($mailResult !== true) {
                     $this->logger->setErrorMessage("Mail sending error: $mailResult");
                 }
             }
@@ -321,7 +321,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $dataSource,
                     $this->dbClass->updatedRecord(),
                     $this->dbSettings->getSmtpConfiguration());
-                if (!$mailResult) {
+                if ($mailResult !== true) {
                     $this->logger->setErrorMessage("Mail sending error: $mailResult");
                 }
             }
@@ -690,6 +690,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
         if (isset($options['smtp'])) {
             $this->dbSettings->setSmtpConfiguration($options['smtp']);
+        } else if (isset($sendMailSMTP)) {
+            $this->dbSettings->setSmtpConfiguration($sendMailSMTP);
         }
 
         $this->paramAuthUser = isset($this->PostData['authuser']) ? $this->PostData['authuser'] : "";

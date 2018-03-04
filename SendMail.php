@@ -33,10 +33,6 @@ class SendMail
                 $ome->setBodyWidth($sendMailParam['body-wrap']);
             }
 
-            $altSMTPConfig = $this->getSmtpConfigFromParams();
-            if ($altSMTPConfig !== false && is_array($altSMTPConfig)) {
-                $smtpConfig = $altSMTPConfig;
-            }
             if (isset($smtpConfig) && is_array($smtpConfig)) {
                 if (isset($smtpConfig['password'])) {
                     $ome->setSmtpInfo(array(
@@ -151,21 +147,5 @@ class SendMail
             return $errorMsg;
         }
         return true;
-    }
-
-    private function getSmtpConfigFromParams()
-    {
-        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-        $currentDirParam = $currentDir . 'params.php';
-        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
-        if (file_exists($parentDirParam)) {
-            include($parentDirParam);
-        } else if (file_exists($currentDirParam)) {
-            include($currentDirParam);
-        }
-        if (isset($sendMailSMTP)) {
-            return $sendMailSMTP;
-        }
-        return false;
     }
 }
