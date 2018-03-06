@@ -449,7 +449,10 @@ end
 describe service('smbd'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
   it { should be_running }
 end
-describe service('samba'), :if => os[:family] == 'alpine' || os[:family] == 'redhat' || (os[:family] == 'ubuntu' && os[:release].to_f < 16) do
+describe service('smb'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+  it { should be_running }
+end
+describe service('samba'), :if => os[:family] == 'alpine' || (os[:family] == 'redhat' && os[:release].to_f < 7 ) || (os[:family] == 'ubuntu' && os[:release].to_f < 16) do
   it { should be_running }
 end
 
