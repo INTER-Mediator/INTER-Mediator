@@ -282,6 +282,9 @@ EOF
     service 'mariadb' do
       action [ :enable, :start ]
     end
+    execute 'mysqladmin -u root password "im4135dev"' do
+      command 'mysqladmin -u root password "im4135dev"'
+    end
     file '/etc/my.cnf.d/im.cnf' do
       content <<-EOF
 [mysqld]
@@ -490,6 +493,19 @@ elsif node[:platform] == 'redhat'
     #  content 'extension=timezonedb.so'
     #end
   end
+end
+
+if node[:platform] == 'ubuntu'
+  if node[:platform_version].to_f < 16
+    package 'php5-mysql' do
+      action :install
+    end
+  else
+    package 'php7.0-mysql' do
+      action :install
+    end
+  end
+elsif node[:platform] == 'redhat'
   if node[:platform_version].to_f < 7
     package 'php-mysql' do
       action :install
@@ -504,22 +520,6 @@ elsif node[:platform] == 'redhat'
     package 'php-mysqlnd' do
       action :install
     end
-  end
-end
-
-if node[:platform] == 'ubuntu'
-  if node[:platform_version].to_f < 16
-    package 'php5-mysql' do
-      action :install
-    end
-  else
-    package 'php7.0-mysql' do
-      action :install
-    end
-  end
-elsif node[:platform] == 'redhat'
-  package 'php-mysql' do
-    action :install
   end
 end
 
@@ -663,8 +663,10 @@ if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform
   execute 'ln -sf /usr/local/bin/npm /usr/bin/npm' do
     command 'ln -sf /usr/local/bin/npm /usr/bin/npm'
   end
-  execute 'apt-get purge -y nodejs npm' do
-    command 'apt-get purge -y nodejs npm'
+  if node[:platform] == 'ubuntu'
+    execute 'apt-get purge -y nodejs npm' do
+      command 'apt-get purge -y nodejs npm'
+    end
   end
 end
 
@@ -701,8 +703,14 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
     action [ :enable, :start ]
   end
 else
-  service 'samba' do
-    action [ :enable, :start ]
+  if node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
+    service 'smb' do
+      action [ :enable, :start ]
+    end
+  else
+    service 'samba' do
+      action [ :enable, :start ]
+    end
   end
 end
 
@@ -797,7 +805,6 @@ $browserCompatibility = array(
 );
 $dbServer = '192.168.56.1';
 $dbPort = '80';
-$dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
 $passPhrase = '';
@@ -851,7 +858,6 @@ $browserCompatibility = array(
 );
 $dbServer = '127.0.0.1';
 $dbPort = '80';
-$dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
 $passPhrase = '';
@@ -905,7 +911,6 @@ $browserCompatibility = array(
 );
 $dbServer = '192.168.56.1';
 $dbPort = '80';
-$dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
 $webServerName = array('');
