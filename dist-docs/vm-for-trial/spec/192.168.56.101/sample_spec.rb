@@ -422,8 +422,8 @@ describe package('libgudev'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 
-describe package('phantomjs'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
-  it { should be_installed.by('npm').with_version('2.1.7') }
+describe package('phantomjs-prebuilt'), :if => os[:family] == 'alpine' || (os[:family] == 'ubuntu' && os[:release].to_f >= 14) || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+  it { should be_installed.by('npm').with_version('2.1.16') }
 end
 
 describe package('fontconfig-dev'), :if => os[:family] == 'alpine' do
