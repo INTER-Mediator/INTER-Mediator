@@ -862,7 +862,7 @@ $browserCompatibility = array(
     'Safari' => '4+',
     'Trident' => '5+',
 );
-$dbServer = '127.0.0.1';
+$dbServer = '192.168.56.1';
 $dbPort = '80';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
@@ -915,7 +915,7 @@ $browserCompatibility = array(
     'Safari' => '4+',
     'Trident' => '5+',
 );
-$dbServer = '127.0.0.1';
+$dbServer = '192.168.56.1';
 $dbPort = '80';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
