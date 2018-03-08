@@ -409,6 +409,10 @@ if node[:platform] == 'alpine'
   package 'php7-mysqli' do
     action :install
   end
+  package 'libbsd' do
+    action :install
+    version '0.8.6-r2'
+  end
   package 'ca-certificates' do
     action :install
   end
