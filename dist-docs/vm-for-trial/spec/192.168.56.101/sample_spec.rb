@@ -280,6 +280,9 @@ end
 describe package('php7-mysqli'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
+describe package('libbsd'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
 describe package('php-pear'), :if => os[:family] == 'redhat' && os[:release].to_f < 6 do
   it { should be_installed }
 end
@@ -554,7 +557,7 @@ describe file(WEBROOT + '/params.php') do
   it { should be_file }
   its(:content) { should match /\$dbUser = 'web';/ }
   its(:content) { should match /\$dbOption = array\(\);/ }
-  its(:content) { should match /\$dbServer = '127.0.0.1';/ }
+  its(:content) { should match /\$dbServer = '192.168.56.1';/ }
   its(:content) { should match /\$generatedPrivateKey = <<<EOL/ }
   its(:content) { should_not match /\$dbDataType = 'FMPro12';/ }
 end

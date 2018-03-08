@@ -84,6 +84,7 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache php7-simplexml
     apk add --no-cache php7-session
     apk add --no-cache php7-mysqli
+    apk add --no-cache libbsd=0.8.6-r2
     apk add --no-cache git
     apk add --no-cache nodejs
     apk add --no-cache nodejs-npm
@@ -236,7 +237,7 @@ echo "\$dbOption = array();" >> "${WEBROOT}/params.php"
 echo "\$browserCompatibility = array(" >> "${WEBROOT}/params.php"
 echo "'Chrome' => '1+','FireFox' => '2+','msie' => '9+','Opera' => '1+'," >> "${WEBROOT}/params.php"
 echo "'Safari' => '4+','Trident' => '5+',);" >> "${WEBROOT}/params.php"
-echo "\$dbServer = '127.0.0.1';" >> "${WEBROOT}/params.php"
+echo "\$dbServer = '192.168.56.1';" >> "${WEBROOT}/params.php"
 echo "\$dbPort = '80';" >> "${WEBROOT}/params.php"
 echo "\$dbDatabase = 'TestDB';" >> "${WEBROOT}/params.php"
 echo "\$dbProtocol = 'HTTP';" >> "${WEBROOT}/params.php"
