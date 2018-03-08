@@ -26,11 +26,12 @@ SMBCONF = "/etc/samba/smb.conf"
 
 
 if node[:platform] == 'alpine'
-  execute 'ip addr add 192.168.56.101/24 dev eth1' do
-    command 'ip addr add 192.168.56.101/24 dev eth1'
-  end
-  file '/etc/network/interfaces' do
-    content <<-EOF
+  if node[:virtualization][:system] != 'docker'
+    execute 'ip addr add 192.168.56.101/24 dev eth1' do
+      command 'ip addr add 192.168.56.101/24 dev eth1'
+    end
+    file '/etc/network/interfaces' do
+      content <<-EOF
 auto lo
 iface lo inet loopback
 
@@ -43,7 +44,8 @@ iface eth1 inet static
 	address 192.168.56.101
 	netmask 255.255.255.0
 EOF
-  end  
+    end
+  end
   file '/etc/apk/repositories' do
     content <<-EOF
 #/media/cdrom/apks
