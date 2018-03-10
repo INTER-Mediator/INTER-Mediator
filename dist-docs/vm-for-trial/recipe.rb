@@ -46,8 +46,20 @@ iface eth1 inet static
 EOF
     end
   end
-  file '/etc/apk/repositories' do
-    content <<-EOF
+  if node[:platform_version].to_f >= 3.7
+    file '/etc/apk/repositories' do
+      content <<-EOF
+#/media/cdrom/apks
+http://dl-5.alpinelinux.org/alpine/v3.7/main
+http://dl-5.alpinelinux.org/alpine/v3.7/community
+http://dl-5.alpinelinux.org/alpine/edge/main
+http://dl-5.alpinelinux.org/alpine/edge/community
+http://dl-5.alpinelinux.org/alpine/edge/testing
+EOF
+    end
+  else
+    file '/etc/apk/repositories' do
+      content <<-EOF
 #/media/cdrom/apks
 http://dl-5.alpinelinux.org/alpine/v3.5/main
 http://dl-5.alpinelinux.org/alpine/v3.5/community
@@ -55,9 +67,24 @@ http://dl-5.alpinelinux.org/alpine/edge/main
 http://dl-5.alpinelinux.org/alpine/edge/community
 http://dl-5.alpinelinux.org/alpine/edge/testing
 EOF
-  end  
+    end
+  end
   package 'shadow' do
     action :install
+  end
+end
+
+if node[:platform] == 'alpine'
+  package 'openrc' do
+    action :install
+  end
+end
+if node[:virtualization][:system] == 'docker'
+  directory '/run/openrc' do
+    action :create
+  end
+  execute 'touch /run/openrc/softlevel' do
+    command 'touch /run/openrc/softlevel'
   end
 end
 
@@ -81,7 +108,7 @@ if node[:platform] == 'alpine'
   user "developer" do
     action :create
   end
-  execute 'yes im4135dev | sudo passwd developer' do
+  execute 'yes ********* | sudo passwd developer' do
     command 'yes im4135dev | sudo passwd developer'
   end
 else
@@ -162,14 +189,30 @@ elsif node[:platform] == 'redhat'
   end
 end
 if node[:platform] == 'alpine'
-  execute 'yes im4135dev | sudo passwd postgres' do
+  execute 'yes ********* | sudo passwd postgres' do
     command 'yes im4135dev | sudo passwd postgres'
   end
-  execute 'echo "im4135dev" | sudo /etc/init.d/postgresql setup' do
+  execute 'echo "*********" | sudo /etc/init.d/postgresql setup' do
     command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
   end
-  service 'postgresql' do
-    action [ :enable, :start ]
+  if node[:virtualization][:system] != 'docker'
+    service 'postgresql' do
+      action [ :enable, :start ]
+    end
+  else
+    if node[:virtualization][:system] == 'docker'
+      directory '/run/postgresql' do
+        action :create
+        owner 'postgres'
+        group 'postgres'
+      end
+    end    
+    service 'postgresql' do
+      action [ :enable ]
+    end
+    execute 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/10/data -l /var/log/postgresql/postgresql.log"' do
+      command 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/10/data -l /var/log/postgresql/postgresql.log"'
+    end  
   end
 else
   service 'postgresql' do
@@ -187,6 +230,13 @@ if node[:platform] == 'alpine'
   package 'mariadb' do
     action :install
   end
+  if node[:virtualization][:system] == 'docker'
+    directory '/run/mysqld' do
+      action :create
+      owner 'mysql'
+      group 'mysql'
+    end
+  end  
   file '/etc/mysql/my.cnf' do
     content <<-EOF
 [mysqld]
@@ -212,14 +262,23 @@ default-character-set=utf8mb4
 default-character-set=utf8mb4
 EOF
   end
-  execute '/etc/init.d/mariadb setup' do
-    command '/etc/init.d/mariadb setup'
-  end
-  service 'mariadb' do
-    action [ :enable, :start ]
-  end
-  execute 'mysqladmin -u root password "im4135dev"' do
-    command 'mysqladmin -u root password "im4135dev"'
+  if node[:virtualization][:system] != 'docker'
+    execute '/etc/init.d/mariadb setup' do
+      command '/etc/init.d/mariadb setup'
+    end
+    service 'mariadb' do
+      action [ :enable, :start ]
+    end
+    execute 'mysqladmin -u root password "*********"' do
+      command 'mysqladmin -u root password "im4135dev"'
+    end  
+  else
+    service 'mariadb' do
+      action [ :enable ]
+    end
+    execute '/usr/bin/mysql_install_db --user=mysql && cd /usr; /usr/bin/mysqld_safe --datadir=/var/lib/mysql --syslog --nowatch; sleep 10; mysqladmin -u root password "*********"' do
+      command '/usr/bin/mysql_install_db --user=mysql && cd /usr; /usr/bin/mysqld_safe --datadir=/var/lib/mysql --syslog --nowatch; sleep 10; mysqladmin -u root password "im4135dev"'
+    end
   end
 elsif node[:platform] == 'ubuntu'
   package 'mysql-server' do
@@ -244,7 +303,7 @@ EOF
   service 'mysql' do
     action [ :enable, :start ]
   end
-  execute 'mysqladmin -u root password "im4135dev"' do
+  execute 'mysqladmin -u root password "*********"' do
     command 'mysqladmin -u root password "im4135dev"'
   end
 elsif node[:platform] == 'redhat'
@@ -287,7 +346,7 @@ EOF
     service 'mariadb' do
       action [ :enable, :start ]
     end
-    execute 'mysqladmin -u root password "im4135dev"' do
+    execute 'mysqladmin -u root password "*********"' do
       command 'mysqladmin -u root password "im4135dev"'
     end
     file '/etc/my.cnf.d/im.cnf' do
@@ -350,8 +409,8 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
   execute 'sudo /opt/mssql/bin/mssql-conf set telemetry.customerfeedback false' do
     command 'sudo /opt/mssql/bin/mssql-conf set telemetry.customerfeedback false'
   end
-  execute 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="IM4135dev" /opt/mssql/bin/mssql-conf setup' do
-    command 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="IM4135dev" /opt/mssql/bin/mssql-conf setup'
+  execute 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="**********" /opt/mssql/bin/mssql-conf setup' do
+    command 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="im4135devX" /opt/mssql/bin/mssql-conf setup'
   end
   service 'mssql-server' do
     action [ :enable, :start ]
@@ -603,8 +662,29 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
       action :install
     end
   end
-  service 'apache2' do
-    action [ :enable, :start ]
+  if node[:virtualization][:system] != 'docker'
+    service 'apache2' do
+      action [ :enable, :start ]
+    end
+  else
+    if node[:virtualization][:system] == 'docker'
+      directory '/run/apache2/' do
+        action :create
+        owner 'apache'
+        group 'apache'
+      end
+    end
+    file '/etc/apache2/conf.d/im.conf' do
+      content <<-EOF
+LoadModule slotmem_shm_module modules/mod_slotmem_shm.so
+EOF
+    end  
+    service 'apache2' do
+      action [ :enable ]
+    end
+    execute 'httpd' do
+      command 'httpd'
+    end
   end
 elsif node[:platform] == 'redhat'
   package 'httpd' do
@@ -717,8 +797,17 @@ else
       action [ :enable, :start ]
     end
   else
-    service 'samba' do
-      action [ :enable, :start ]
+    if node[:virtualization][:system] != 'docker'
+      service 'samba' do
+        action [ :enable, :start ]
+      end
+    else
+      service 'samba' do
+        action [ :enable ]
+      end
+      execute 'smbd' do
+        command 'smbd'
+      end  
     end
   end
 end
@@ -1584,7 +1673,7 @@ file "#{SMBCONF}" do
 EOF
 end
 
-execute '( echo im4135dev; echo im4135dev ) | sudo smbpasswd -s -a developer' do
+execute '( echo *********; echo ********* ) | sudo smbpasswd -s -a developer' do
   command '( echo im4135dev; echo im4135dev ) | sudo smbpasswd -s -a developer'
 end
 
@@ -1798,8 +1887,10 @@ if node[:platform] == 'alpine'
   execute 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd' do
     command 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd'
   end
-  execute 'poweroff' do
-    command 'poweroff'
+  if node[:virtualization][:system] != 'docker'
+    execute 'poweroff' do
+      command 'poweroff'
+    end
   end
 end
 if node[:platform] == 'ubuntu'
