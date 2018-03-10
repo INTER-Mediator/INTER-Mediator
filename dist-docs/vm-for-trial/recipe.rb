@@ -78,6 +78,9 @@ elsif node[:platform] == 'ubuntu'
 end
 
 if node[:platform] == 'alpine'
+  user "developer" do
+    action :create
+  end
   execute 'yes im4135dev | sudo passwd developer' do
     command 'yes im4135dev | sudo passwd developer'
   end
