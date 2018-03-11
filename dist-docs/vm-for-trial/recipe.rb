@@ -79,7 +79,7 @@ if node[:platform] == 'alpine'
     action :install
   end
 end
-if node[:virtualization][:system] == 'docker'
+if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
   directory '/run/openrc' do
     action :create
   end
@@ -200,7 +200,7 @@ if node[:platform] == 'alpine'
       action [ :enable, :start ]
     end
   else
-    if node[:virtualization][:system] == 'docker'
+    if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
       directory '/run/postgresql' do
         action :create
         owner 'postgres'
@@ -230,7 +230,7 @@ if node[:platform] == 'alpine'
   package 'mariadb' do
     action :install
   end
-  if node[:virtualization][:system] == 'docker'
+  if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
     directory '/run/mysqld' do
       action :create
       owner 'mysql'
@@ -667,7 +667,7 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
       action [ :enable, :start ]
     end
   else
-    if node[:virtualization][:system] == 'docker'
+    if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
       directory '/run/apache2/' do
         action :create
         owner 'apache'
@@ -1083,7 +1083,7 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   end
 end
 
-if node[:platform] == 'alpine'
+if node[:platform] == 'alpine' && node[:virtualization][:system] != 'docker'
   package 'virtualbox-additions-grsec' do
     action :install
   end
@@ -1487,7 +1487,7 @@ file "#{SMBCONF}" do
 # domain controller", "classic backup domain controller", "active
 # directory domain controller".
 #
-# Most people will want "standalone sever" or "member server".
+# Most people will want "standalone server" or "member server".
 # Running as "active directory domain controller" will require first
 # running "samba-tool domain provision" to wipe databases and create a
 # new domain.
@@ -1678,41 +1678,6 @@ execute '( echo *********; echo ********* ) | sudo smbpasswd -s -a developer' do
 end
 
 
-if node[:platform] == 'alpine'
-  file '/etc/local.d/buster-server.start' do
-    owner 'root'
-    group 'root'
-    mode '755'
-    content <<-EOF
-#!/bin/sh -e
-#
-# rc.local
-#
-# This script is executed at the end of each multiuser runlevel.
-# Make sure that the script will "exit 0" on success or any other
-# value on error.
-#
-# In order to enable or disable this script just change the execution
-# bits.
-#
-# By default this script does nothing.
-
-export DISPLAY=:99.0
-Xvfb :99 -screen 0 1024x768x24 &
-/bin/sleep 5
-/usr/bin/buster-server &
-/bin/sleep 5
-firefox http://localhost:1111/capture > /dev/null &
-#chromium-browser --no-sandbox http://localhost:1111/capture > /dev/null &
-/bin/sleep 5
-exit 0
-EOF
-  end
-  execute 'rc-update add local default' do
-    command 'rc-update add local default'
-  end
-end
-
 if node[:platform] == 'ubuntu'
   file '/etc/default/keyboard' do
     owner 'root'
@@ -1882,6 +1847,48 @@ elsif node[:platform] == 'ubuntu'
       command 'npm install -g chromedriver --unsafe-perm'
   end
 end
+
+
+if node[:platform] == 'alpine'
+  file '/etc/local.d/buster-server.start' do
+    owner 'root'
+    group 'root'
+    mode '755'
+    content <<-EOF
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+export DISPLAY=:99.0
+Xvfb :99 -screen 0 1024x768x24 &
+/bin/sleep 5
+/usr/bin/buster-server &
+/bin/sleep 5
+firefox http://localhost:1111/capture > /dev/null &
+#chromium-browser --no-sandbox http://localhost:1111/capture > /dev/null &
+/bin/sleep 5
+exit 0
+EOF
+  end
+  execute 'rc-update add local default' do
+    command 'rc-update add local default'
+  end
+  if node[:virtualization][:system] == 'docker'
+    execute '/etc/local.d/buster-server.start' do
+      command '/etc/local.d/buster-server.start'
+    end
+  end
+end
+
 
 if node[:platform] == 'alpine'
   execute 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd' do
