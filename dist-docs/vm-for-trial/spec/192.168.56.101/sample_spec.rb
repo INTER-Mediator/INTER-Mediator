@@ -18,6 +18,10 @@ end
 #  it { should be_installed }
 #end
 
+describe package('openrc'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+
 describe package('sudo') do
   it { should be_installed }
 end
