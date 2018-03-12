@@ -21,9 +21,9 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'DB_Support' . DIRECTORY_
 
 class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
 {
-    private $fmData = null;     // FMDataAPI class's instance
-    private $fmDataAuth = null; // FMDataAPI class's instance
-    private $fmDataAlt = null;  // FMDataAPI class's instance
+    public $fmData = null;     // FMDataAPI class's instance
+    public $fmDataAuth = null; // FMDataAPI class's instance
+    public $fmDataAlt = null;  // FMDataAPI class's instance
     private $targetLayout = null;
     private $recordCount = null;
     private $mainTableCount = 0;
@@ -69,21 +69,21 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         $this->softDeleteValue = $value;
     }
 
-    private function setupFMDataAPIforAuth($layoutName, $recordCount)
+    public function setupFMDataAPIforAuth($layoutName, $recordCount)
     {
         $this->fmData = null;
         $this->fmDataAuth = $this->setupFMDataAPI_Impl($layoutName, $recordCount,
             $this->dbSettings->getDbSpecUser(), $this->dbSettings->getDbSpecPassword());
     }
 
-    private function setupFMDataAPIforDB($layoutName, $recordCount)
+    public function setupFMDataAPIforDB($layoutName, $recordCount)
     {
         $this->fmDataAuth = null;
         $this->fmData = $this->setupFMDataAPI_Impl($layoutName, $recordCount,
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
     }
 
-    private function setupFMDataAPIforDB_Alt($layoutName, $recordCount)
+    public function setupFMDataAPIforDB_Alt($layoutName, $recordCount)
     {
         $this->fmDataAlt = $this->setupFMDataAPI_Impl($layoutName, $recordCount,
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
@@ -112,7 +112,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         $this->specHandler = new DB_Spec_Handler_FileMaker_DataAPI();
     }
 
-    private function stringWithoutCredential($str)
+    public function stringWithoutCredential($str)
     {
         if (is_null($this->fmData)) {
             $str = str_replace($this->dbSettings->getDbSpecUser(), "********", $str);
