@@ -662,17 +662,11 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
       action :install
     end
   end
-  if node[:virtualization][:system] != 'docker'
-    service 'apache2' do
-      action [ :enable, :start ]
-    end
-  else
-    if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
-      directory '/run/apache2/' do
-        action :create
-        owner 'apache'
-        group 'apache'
-      end
+  if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
+    directory '/run/apache2/' do
+      action :create
+      owner 'apache'
+      group 'apache'
     end
     file '/etc/apache2/conf.d/im.conf' do
       content <<-EOF
@@ -684,6 +678,10 @@ EOF
     end
     execute 'httpd' do
       command 'httpd'
+    end
+  else
+    service 'apache2' do
+      action [ :enable, :start ]
     end
   end
 elsif node[:platform] == 'redhat'
