@@ -9,6 +9,7 @@ require_once(dirname(__FILE__) . '/../DB_Formatters.php');
 require_once(dirname(__FILE__) . '/../DB_Proxy.php');
 require_once(dirname(__FILE__) . '/../DB_Logger.php');
 require_once(dirname(__FILE__) . '/../DB_FileMaker_FX.php');
+require_once(dirname(__FILE__) . '/../DB_FileMaker_DataAPI.php');
 require_once(dirname(__FILE__) . '/../IMUtil.php');
 require_once(dirname(__FILE__) . '/../IMLocale.php');
 require_once(dirname(__FILE__) . '/../LDAPAuth.php');
@@ -51,7 +52,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
             $layoutName = 'person_layout';
             $this->dbProxySetupForAccess($layoutName, 1);
             $this->db_proxy->readFromDB($layoutName);
-            $this->reflectionClass = new ReflectionClass('DB_FileMaker_FX');
+            $this->reflectionClass = new ReflectionClass(get_class($this->db_proxy->dbClass));
             $method = $this->reflectionClass->getMethod('executeScriptsforLoading');
             $method->setAccessible(true);
 
@@ -293,7 +294,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
             $this->dbProxySetupForAccess($layoutName, 1);
             $this->db_proxy->readFromDB($layoutName);
 
-            $this->reflectionClass = new ReflectionClass('DB_FileMaker_FX');
+            $this->reflectionClass = new ReflectionClass(get_class($this->db_proxy->dbClass));
             $method = $this->reflectionClass->getMethod('_adjustSortDirection');
             $method->setAccessible(true);
 
@@ -760,7 +761,11 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAccess('person_layout', 1);
 
         $className = get_class($this->db_proxy->dbClass->specHandler);
-        $this->assertEquals('-recid', call_user_func(array($className, 'defaultKey')));
+        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+            $this->assertEquals('-recid', call_user_func(array($className, 'defaultKey')));
+        } else if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+            $this->assertEquals('recordId', call_user_func(array($className, 'defaultKey')));
+        }
     }
 
     public function testGetDefaultKey()
@@ -768,7 +773,11 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAccess('person_layout', 1);
 
         $value = $this->db_proxy->dbClass->specHandler->getDefaultKey();
-        $this->assertEquals('-recid', $value);
+        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+            $this->assertEquals('-recid', $value);
+        } else if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+            $this->assertEquals('recordId', $value);
+        }
     }
 
     public function testMultiClientSyncTableExsistence()
