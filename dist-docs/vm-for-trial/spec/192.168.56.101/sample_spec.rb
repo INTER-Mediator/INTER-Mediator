@@ -475,13 +475,13 @@ describe package('unifont'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 
-describe package('virtualbox-additions-grsec'), :if => os[:family] == 'alpine' do
+describe package('virtualbox-additions-grsec'), :if => os[:family] == 'alpine' && os[:virtualization][:system] != 'docker' do
   it { should be_installed }
 end
-describe package('virtualbox-guest-additions'), :if => os[:family] == 'alpine' do
+describe package('virtualbox-guest-additions'), :if => os[:family] == 'alpine' && os[:virtualization][:system] != 'docker' do
   it { should be_installed }
 end
-describe package('virtualbox-guest-modules-grsec'), :if => os[:family] == 'alpine' do
+describe package('virtualbox-guest-modules-grsec'), :if => os[:family] == 'alpine' && os[:virtualization][:system] != 'docker' do
   it { should be_installed }
 end
 
