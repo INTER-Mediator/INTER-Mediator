@@ -14,7 +14,7 @@ else
   WEBROOT = "/var/www/html"
 end
 
-#describe package('ruby'), :if => os[:virtualization][:system] == 'docker' do
+#describe package('ruby'), :if => host_inventory['virtualization'][:system] == 'docker' do
 #  it { should be_installed }
 #end
 
@@ -429,7 +429,7 @@ describe package('libgudev'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 
-describe package('phantomjs-prebuilt'), :if => os[:family] == 'alpine' || (os[:family] == 'ubuntu' && os[:release].to_f >= 14) || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+describe package('phantomjs-prebuilt'), :if => (os[:family] == 'ubuntu' && os[:release].to_f >= 14) || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
   it { should be_installed.by('npm').with_version('2.1.16') }
 end
 
@@ -475,13 +475,13 @@ describe package('unifont'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 
-describe package('virtualbox-additions-grsec'), :if => os[:family] == 'alpine' && os[:virtualization][:system] != 'docker' do
+describe package('virtualbox-additions-grsec'), :if => os[:family] == 'alpine' && host_inventory['virtualization'][:system] != 'docker' do
   it { should be_installed }
 end
-describe package('virtualbox-guest-additions'), :if => os[:family] == 'alpine' && os[:virtualization][:system] != 'docker' do
+describe package('virtualbox-guest-additions'), :if => os[:family] == 'alpine' && host_inventory['virtualization'][:system] != 'docker' do
   it { should be_installed }
 end
-describe package('virtualbox-guest-modules-grsec'), :if => os[:family] == 'alpine' && os[:virtualization][:system] != 'docker' do
+describe package('virtualbox-guest-modules-grsec'), :if => os[:family] == 'alpine' && host_inventory['virtualization'][:system] != 'docker' do
   it { should be_installed }
 end
 
