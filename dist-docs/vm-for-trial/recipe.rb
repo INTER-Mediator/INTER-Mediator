@@ -1070,8 +1070,10 @@ if node[:platform] == 'alpine' || (node[:platform] == 'ubuntu' && node[:platform
     end
   end
 
-  execute 'npm install -g phantomjs-prebuilt --unsafe-perm' do
-    command 'npm install -g phantomjs-prebuilt --unsafe-perm'
+  if node[:platform] != 'alpine'
+    execute 'npm install -g phantomjs-prebuilt --unsafe-perm' do
+      command 'npm install -g phantomjs-prebuilt --unsafe-perm'
+    end
   end
 end
 
