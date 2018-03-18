@@ -35,14 +35,22 @@ class DB_Notification_Handler_FileMaker_DataAPI
         $pksTable = $this->dbSettings->registerPKTableName;
         $currentDT = new DateTime();
         $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
-        $this->dbClass->setupFMDataAPIforDB
-($regTable, 1);
-        $this->dbClass->fmData->AddDBParam('clientid', $clientId);
-        $this->dbClass->fmData->AddDBParam('entity', $entity);
-        $this->dbClass->fmData->AddDBParam('conditions', $condition);
-        $this->dbClass->fmData->AddDBParam('registereddt', $currentDTFormat);
-        $result = $this->dbClass->fmData->DoFxAction('new', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
+        $this->dbClass->setupFMDataAPIforDB($regTable, 1);
+
+        // [WIP]
+        //$this->dbClass->fmData->AddDBParam('clientid', $clientId);
+        //$this->dbClass->fmData->AddDBParam('entity', $entity);
+        //$this->dbClass->fmData->AddDBParam('conditions', $condition);
+        //$this->dbClass->fmData->AddDBParam('registereddt', $currentDTFormat);
+        //$result = $this->dbClass->fmData->DoFxAction('new', TRUE, TRUE, 'full');
+        $recordId = $this->dbClass->fmData->{$regTable}->create(array(
+            'clientid' => $clientId,
+            'entity' => $entity,
+            'conditions' => $condition,
+            'registereddt' => $currentDTFormat,
+        ));
+
+        if (!is_null($recordId)) {
             $this->dbClass->errorMessageStore
 (
                 $this->dbClass->stringWithoutCredential
@@ -60,12 +68,17 @@ class DB_Notification_Handler_FileMaker_DataAPI
         }
         if (is_array($pkArray)) {
             foreach ($pkArray as $pk) {
-                $this->dbClass->setupFMDataAPIforDB
-($pksTable, 1);
-                $this->dbClass->fmData->AddDBParam('context_id', $newContextId);
-                $this->dbClass->fmData->AddDBParam('pk', $pk);
-                $result = $this->dbClass->fmData->DoFxAction('new', TRUE, TRUE, 'full');
-                if (!is_array($result)) {
+                $this->dbClass->setupFMDataAPIforDB($pksTable, 1);
+                // [WIP]
+                //$this->dbClass->fmData->AddDBParam('context_id', $newContextId);
+                //$this->dbClass->fmData->AddDBParam('pk', $pk);
+                //$result = $this->dbClass->fmData->DoFxAction('new', TRUE, TRUE, 'full');
+                $recordId = $this->dbClass->fmData->{$pksTable}->create(array(
+                    'context_id' => $newContextId,
+                    'pk' => $pk,
+                ));
+        
+                if (!is_null($recordId)) {
                     $this->logger->setDebugMessage(
                         $this->dbClass->stringWithoutCredential
 ("FX reports error at insert action: " .
@@ -87,16 +100,21 @@ class DB_Notification_Handler_FileMaker_DataAPI
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
 
-        $this->dbClass->setupFMDataAPIforDB
-($regTable, 'all');
-        $this->dbClass->fmData->AddDBParam('clientid', $clientId, 'eq');
+        $this->dbClass->setupFMDataAPIforDB($regTable, 'all');
+        // [WIP]
+        //$this->dbClass->fmData->AddDBParam('clientid', $clientId, 'eq');
         if ($tableKeys) {
             $subCriteria = array();
             foreach ($tableKeys as $regId) {
                 $this->dbClass->fmData->AddDBParam('id', $regId, 'eq');
             }
         }
-        $result = $this->dbClass->fmData->DoFxAction('perform_find', TRUE, TRUE, 'full');
+        //$result = $this->dbClass->fmData->DoFxAction('perform_find', TRUE, TRUE, 'full');
+        $conditions = array(array('clientid' => $clientId), array('clienthost' => $clientId));
+        try {
+            $result = $this->dbClass->fmData->{$regTable}->query($conditions);
+        } catch (Exception $e) {
+        }
 
         if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
             $this->dbClass->errorMessageStore
@@ -125,12 +143,19 @@ class DB_Notification_Handler_FileMaker_DataAPI
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
         $originPK = $pkArray[0];
-        $this->dbClass->setupFMDataAPIforDB
-($regTable, 'all');
-        $this->dbClass->fmData->AddDBParam('clientid', $clientId, 'neq');
-        $this->dbClass->fmData->AddDBParam('entity', $entity, 'eq');
-        $this->dbClass->fmData->AddSortParam('clientid');
-        $result = $this->dbClass->fmData->DoFxAction('perform_find', TRUE, TRUE, 'full');
+        $this->dbClass->setupFMDataAPIforDB($regTable, 'all');
+
+        // [WIP]
+        //$this->dbClass->fmData->AddDBParam('clientid', $clientId, 'neq');
+        //$this->dbClass->fmData->AddDBParam('entity', $entity, 'eq');
+        //$this->dbClass->fmData->AddSortParam('clientid');
+        //$result = $this->dbClass->fmData->DoFxAction('perform_find', TRUE, TRUE, 'full');
+        $conditions = array(array('clientid' => $clientId), array('entity' => $entity));
+        try {
+            $result = $this->dbClass->fmData->{$regTable}->query($conditions);
+        } catch (Exception $e) {
+        }
+
         $contextIds = array();
         $targetClients = array();
         if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
@@ -205,12 +230,17 @@ class DB_Notification_Handler_FileMaker_DataAPI
                             $targetClients[] = $value[0];
                         }
                     }
-                    $this->dbClass->setupFMDataAPIforDB
-($pksTable, 1);
-                    $this->dbClass->fmData->AddDBParam('context_id', $targetId);
-                    $this->dbClass->fmData->AddDBParam('pk', $pkArray[0]);
-                    $result = $this->dbClass->fmData->DoFxAction('new', TRUE, TRUE, 'full');
-                    if (!is_array($result)) {
+                    $this->dbClass->setupFMDataAPIforDB($pksTable, 1);
+                    // [WIP]
+                    //$this->dbClass->fmData->AddDBParam('context_id', $targetId);
+                    //$this->dbClass->fmData->AddDBParam('pk', $pkArray[0]);
+                    //$result = $this->dbClass->fmData->DoFxAction('new', TRUE, TRUE, 'full');
+                    $recordId = $this->dbClass->fmData->{$pksTable}->create(array(
+                        'context_id' => $targetId,
+                        'pk' => $pkArray[0],
+                    ));
+    
+                    if (!is_null($recordId)) {
                         $this->dbClass->errorMessageStore
 (
                             $this->dbClass->stringWithoutCredential

@@ -40,8 +40,10 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
     {
         $layoutName = 'person_layout';
         $expected = '-db=TestDB&-lay=person_layout&-lay.response=person_layout&-max=1&-sortfield.1=id&-sortorder.1=ascend&-findall';
-
         $this->dbProxySetupForAccess($layoutName, 1);
+        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+            $expected = '/fmi/rest/api/find/TestDB/person_layout';
+        }
         $this->db_proxy->readFromDB($layoutName);
         $this->assertEquals($expected, $this->db_proxy->dbClass->notifyHandler->queriedCondition());
     }
@@ -321,7 +323,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $result = $this->db_proxy->readFromDB("person_layout");
         $recordCount = $this->db_proxy->countQueryResult("person_layout");
         $this->assertTrue(count($result) == 1, "After the query, just one should be retrieved.");
-        $this->assertTrue($recordCount == 3, "This table contanins 3 records");
+        $this->assertEquals(3, $recordCount, "This table contanins 3 records");
         $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
         //        var_export($this->db_proxy->logger->getAllErrorMessages());
         //        var_export($this->db_proxy->logger->getDebugMessage());
@@ -333,7 +335,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $result = $this->db_proxy->readFromDB("person_layout");
         $recordCount = $this->db_proxy->countQueryResult("person_layout");
         $this->assertTrue(count($result) == 3, "After the query, some records should be retrieved.");
-        $this->assertTrue($recordCount == 3, "This table contanins 3 records");
+        $this->assertEquals(3, $recordCount, "This table contanins 3 records");
         $this->assertTrue($result[2]["name"] === 'Anyone', "Field value is not same as the definition.");
         $this->assertTrue($result[2]["id"] == 3, "Field value is not same as the definition.");
 
@@ -455,10 +457,17 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($result));
         $this->assertEquals(3654, $totalCount);
 
-        $recId = $result[0]['-recid'];
 
         $this->dbProxySetupForAccess('postalcode', 1000000);
-        $this->db_proxy->dbSettings->addExtraCriteria('-recid', 'eq', $recId);
+        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+            $recId = $result[0]['-recid'];
+            $this->db_proxy->dbSettings->addExtraCriteria('-recid', 'eq', $recId);
+        } else if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+            foreach ($result as $record) {
+                $recId = $record['recordId'];
+                $this->db_proxy->dbSettings->addExtraCriteria('recordId', 'eq', $recId);
+            }
+        }
         $result = $this->db_proxy->readFromDB('postalcode');
         $totalCount = $this->db_proxy->getTotalCount('postalcode');
         $this->assertEquals(1, count($result));
@@ -653,11 +662,24 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($result) == $this->db_proxy->getDatabaseResultCount(), $testName);
 
         //based on INSERT person SET id=2,name='Someone',address='Tokyo, Japan',mail='msyk@msyk.net';
-        foreach ($result as $index => $record) {
-            if ($record['id'] == 2) {
-                $this->assertTrue($result[1]['id'] == 2, $testName);
-                $this->assertTrue($result[1]['name'] == 'Someone', $testName);
-                $this->assertTrue($result[1]['address'] == 'Tokyo, Japan', $testName);
+        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+            foreach ($result as $index => $record) {
+                if ($record['id'] == 2) {
+                    $this->assertTrue($result[1]['id'] == 2, $testName);
+                    $this->assertTrue($result[1]['name'] == 'Someone', $testName);
+                    $this->assertTrue($result[1]['address'] == 'Tokyo, Japan', $testName);
+                }
+            }
+        } else if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+            // [WIP]
+            if (!is_null($result)) {
+                foreach ($result as $record) {
+                    if ($record->id == 2) {
+                        $this->assertTrue($result->id == 2, $testName);
+                        $this->assertTrue($result->name == 'Someone', $testName);
+                        $this->assertTrue($result->address == 'Tokyo, Japan', $testName);
+                    }
+                }
             }
         }
     }

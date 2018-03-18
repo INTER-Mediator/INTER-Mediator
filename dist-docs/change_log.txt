@@ -10,7 +10,7 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.5.7-RC2 (in development)
+Ver.5.7-RC3-dev (in development)
 - The "data-im-format" attribute is introduced.
   Please see for detail: <http://inter-mediator.info/ja/for-developers/format.html> (Japanese)
 - Microsoft SQL Server is contained in INTER-Mediator support database.
