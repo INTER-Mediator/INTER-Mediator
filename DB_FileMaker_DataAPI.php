@@ -136,9 +136,9 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
 
     private function setSearchConditionsForCompoundFound($field, $value, $operator = NULL)
     {
-        if ($operator === NULL || $operator === 'neq') {
+        if ($operator === NULL) {
             return array($field, $value);
-        } else if ($operator === 'eq') {
+        } else if ($operator === 'eq' || $operator === 'neq') {
             return array($field, '=' . $value);
         } else if ($operator === 'cn') {
             return array($field, '*' . $value . '*');
@@ -307,8 +307,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
 
         $searchConditions = array();
         $neqConditions = array();
-        //$queryValues = array();
-        $qNum = 1;
 
         $hasFindParams = false;
         if (isset($context['query'])) {
@@ -365,10 +363,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     $searchConditions[] = $this->setSearchConditionsForCompoundFound(
                         $condition['field'], $condition['value'], $condition['operator']);
                     
-                    //$queryValues[] = 'q' . $qNum;
-                    //$qNum++;
-
-                    // [WIP]
                     if (isset($condition['operator']) && $condition['operator'] === 'neq') {
                         $neqConditions[] = TRUE;
                     } else {
@@ -404,10 +398,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                             $foreignField, $formattedValue, $foreignOperator);
                         $hasFindParams = true;
 
-                        //$queryValues[] = 'q' . $qNum;
-                        //$qNum++;
-
-                        // [WIP]
                         if (isset($foreignOperator) && $foreignOperator === 'neq') {
                             $neqConditions[] = TRUE;
                         } else {
@@ -440,8 +430,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                         $authInfoField, $signedUser, 'eq');
                     $hasFindParams = true;
 
-                    //$queryValues[] = 'q' . $qNum;
-                    //$qNum++;
                     $neqConditions[] = FALSE;
                 }
             } else
@@ -458,8 +446,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                             $authInfoField, $belongGroups[0], 'eq');
                         $hasFindParams = true;
 
-                        //$queryValues[] = 'q' . $qNum;
-                        //$qNum++;
                         $neqConditions[] = FALSE;
                     }
                 }
@@ -473,13 +459,12 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             if ($useOrOperation) {
                 throw new Exception("Condition Incompatible.: The soft-delete record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
             }
+            // [WIP]
             $this->fmData->AddDBParam($this->softDeleteField, $this->softDeleteValue, 'neq');
             $searchConditions[] = $this->setSearchConditionsForCompoundFound(
                 $this->softDeleteField, $this->softDeleteValue, 'eq');
             $hasFindParams = true;
 
-            //$queryValues[] = 'q' . $qNum;
-            //$qNum++;
             $neqConditions[] = FALSE;
         }
 
@@ -500,22 +485,44 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             $sort = NULL;
         }
 
-        $condition = array();
+        $conditions = array();
         if ($searchConditions !== array()) {
             if ($useOrOperation === TRUE) {
+                $i = 0;
                 foreach ($searchConditions as $searchCondition) {
-                    $condition[] = array($searchCondition[0] => $searchCondition[1]);
+                    if ($neqConditions[$i] === TRUE) {
+                        $conditions[] = array(
+                            $searchCondition[0] => $searchCondition[1],
+                            'omit' => 'true'
+                        );
+                    } else {
+                        $conditions[] = array($searchCondition[0] => $searchCondition[1]);
+                    }
+                    $i++;
                 }
             } else {
                 $tmpCondition = array();
+                $i = 0;
                 foreach ($searchConditions as $searchCondition) {
-                    $tmpCondition[$searchCondition[0]] = $searchCondition[1];
+                    if ($neqConditions[$i] === TRUE) {
+                        $conditions[] = $tmpCondition;
+                        $tmpCondition = array();
+                        $conditions[] = array(
+                            $searchCondition[0] => $searchCondition[1],
+                            'omit' => 'true'
+                        );
+                    } else {
+                        $tmpCondition[$searchCondition[0]] = $searchCondition[1];
+                    }
+                    $i++;
                 }
-                $condition[] = $tmpCondition;
+                if ($tmpCondition !== array()) {
+                    $conditions[] = $tmpCondition;
+                }
             }
         }
-        if ($condition === array()) {
-            $condition = NULL;
+        if ($conditions === array()) {
+            $conditions = NULL;
         }
 
         $request = filter_input_array(INPUT_POST);
@@ -538,13 +545,13 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         $recordId = NULL;
         $result = NULL;
         try {
-            if (count($condition) === 1 && isset($condition[0]['recordId'])) {
-                $recordId = str_replace('=', '', $condition[0]['recordId']);
+            if (count($conditions) === 1 && isset($conditions[0]['recordId'])) {
+                $recordId = str_replace('=', '', $conditions[0]['recordId']);
                 if (is_numeric($recordId)) {
                     $result = $this->fmData->{$layout}->getRecord($recordId);
                 }
             } else {
-                $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, 1);
+                $result = $this->fmData->{$layout}->query($conditions, $sort, $skip + 1, 1);
             }
 
             $this->notifyHandler->setQueriedEntity($layout);
@@ -557,10 +564,10 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                         $portal = array_merge($portal, array($key => $portalName));
                     }
                     if (!is_numeric($recordId)) {
-                        $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, $limitParam, $portal);
+                        $result = $this->fmData->{$layout}->query($conditions, $sort, $skip + 1, $limitParam, $portal);
                     }
                 } else {
-                    $result = $this->fmData->{$layout}->query($condition, $sort, $skip + 1, $limitParam);
+                    $result = $this->fmData->{$layout}->query($conditions, $sort, $skip + 1, $limitParam);
                 }
             }
         } catch (Exception $e) {
@@ -634,7 +641,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             
 
             if ($recordId === NULL) {
-                $result = $this->fmData->{$layout}->query($condition, NULL, 1, 100000000);
+                $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 100000000);
             }
             $this->mainTableCount = $result->count();
             $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 100000000);
