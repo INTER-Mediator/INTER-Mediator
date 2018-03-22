@@ -128,6 +128,8 @@ Ver.5.7-RC3-dev (in development)
 - [BUG FIX] If a expression set to popup menu, the page generating process went infinite loop (bug on 99fbf43b).
 - [BUG FIX] Stabilized to detect smtp server info and refactored.
 - [BUG FIX] The method to change password for FileMaker Server had a bug.
+- [BUG FIX] Fix not to show the error message ("element._im_setValue is not a function - EXCEPTION-27") when
+  the JavaScript component plugin hasn't "_im_setValue" method.
 
 Ver.5.6.1 (September 16, 2017)
 - Fix loading the page of the Practice "search (using JavaScript)".
