@@ -44,11 +44,10 @@ IMParts_Catalog.fileupload = {
         if (this.forceOldStyleForm || (INTERMediator.isEdge && INTERMediator.ieVersion < 14)) {
             this.html5DDSuported = false;
         } else {
-            this.html5DDSuported = true;
-            try { // Checking to exists both of classes.
-                FileReader();
-                FormData();
-            } catch (ex) {
+            if (window.FileReader && window.FormData) {
+                // Checking to exists both of classes.
+                this.html5DDSuported = true;
+            } else {
                 this.html5DDSuported = false;
             }
         }
