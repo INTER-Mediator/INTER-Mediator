@@ -35,14 +35,14 @@ var INTERMediatorLog = {
      * @public
      * @type {boolean}
      */
-    supressDebugMessageOnPage: false,
+    suppressDebugMessageOnPage: false,
     /**
      * The error messages are suppressed if it's true. This can temporally stop messages.
      * The default value of false.
      * @public
      * @type {boolean}
      */
-    supressErrorMessageOnPage: false,
+    suppressErrorMessageOnPage: false,
     /**
      * @type {Array}
      */
@@ -110,9 +110,9 @@ var INTERMediatorLog = {
         var debugNode, title, body, i, j, lines, clearButton, tNode;
 
         if (INTERMediatorLog.errorMessageByAlert) {
-            INTERMediatorLog.supressErrorMessageOnPage = true;
+            INTERMediatorLog.suppressErrorMessageOnPage = true;
         }
-        if (!INTERMediatorLog.supressErrorMessageOnPage &&
+        if (!INTERMediatorLog.suppressErrorMessageOnPage &&
             INTERMediatorLog.errorMessages.length > 0) {
             debugNode = document.getElementById('_im_error_panel_4873643897897');
             if (debugNode === null) {
@@ -140,7 +140,7 @@ var INTERMediatorLog = {
                 debugNode.appendChild(document.createElement('hr'));
             }
         }
-        if (!INTERMediatorLog.supressDebugMessageOnPage &&
+        if (!INTERMediatorLog.suppressDebugMessageOnPage &&
             INTERMediatorLog.debugMode &&
             INTERMediatorLog.debugMessages.length > 0) {
             debugNode = document.getElementById('_im_debug_panel_4873643897897');
