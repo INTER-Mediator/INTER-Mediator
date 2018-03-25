@@ -139,6 +139,9 @@ describe "INTER-Mediator-Server VM" do
       element = @driver.find_element(:xpath, "//a[contains(@href, 'Sample_webpage/fileupload_MySQL.html')]")
       element.click
       sleep 1
+      element = @driver.find_element(:id, "IM_Button_1")
+      element.click
+      sleep 1
       element = @driver.find_element(:xpath, "//td[@data-im='testtable@vc1']")
       expect(element.find_element(:tag_name, "div").text).to eq("Drag Here.")
     }
