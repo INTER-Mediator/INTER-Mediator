@@ -247,13 +247,17 @@ IMParts_Catalog.fileupload = {
                             }
                             updateInfo = IMLibContextPool.getContextInfoFromId(eventTarget.getAttribute('id'), '');
                             if (isProgressing) {
-                                infoFrame.style.display = 'block';
+                                if (infoFrame) {
+                                    infoFrame.style.display = 'block';
+                                }
                                 setTimeout((function () {
                                     var frameNode = infoFrame;
                                     var param = uploadId + iframeId;
                                     return function () {
-                                        frameNode.setAttribute('src',
-                                            'upload_frame.php?up_id=' + param);
+                                        if (frameNode) {
+                                            frameNode.setAttribute('src',
+                                                'upload_frame.php?up_id=' + param);
+                                        }
                                     };
                                 })());
 
@@ -278,8 +282,12 @@ IMParts_Catalog.fileupload = {
                                     var infoFrameCapt = infoFrame;
                                     var fileNameNodeCapt = fileNameNode;
                                     return function () {
-                                        infoFrameCapt.setAttribute('src', '');
-                                        fileNameNodeCapt.parentNode.removeChild(fileNameNodeCapt);
+                                        if (infoFrameCapt) {
+                                            infoFrameCapt.setAttribute('src', '');
+                                        }
+                                        if (fileNameNodeCapt) {
+                                            fileNameNodeCapt.parentNode.removeChild(fileNameNodeCapt);
+                                        }
                                     };
                                 })();
                                 return function (completeTask) {
