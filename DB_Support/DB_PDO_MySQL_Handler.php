@@ -1,16 +1,33 @@
 <?php
 
 /**
- * Created by PhpStorm.
- * User: msyk
- * Date: 2016/07/09
- * Time: 0:46
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 {
     public function sqlSELECTCommand()
     {
         return "SELECT ";
+    }
+
+    public function sqlLimitCommand($param)
+    {
+        return "LIMIT {$param}";
+    }
+
+    public function sqlOffsetCommand($param)
+    {
+        return "OFFSET {$param}";
     }
 
     public function sqlDELETECommand()
@@ -64,7 +81,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 
     protected function getTableInfo($tableName)
     {
-        if (! isset($this->tableInfo[$tableName])) {
+        if (!isset($this->tableInfo[$tableName])) {
             $sql = "SHOW COLUMNS FROM " . $this->quotedEntityName($tableName);
             $this->dbClassObj->logger->setDebugMessage($sql);
             $result = $this->dbClassObj->link->query($sql);
@@ -76,7 +93,8 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
             $result = $this->tableInfo[$tableName];
         }
         return $result;
-     }
+    }
+
     /*
       * mysql> show columns from func;
 +-------+------------------------------+------+-----+---------+-------+
@@ -90,7 +108,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 4 rows in set (0.00 sec)
     */
 
-    protected function getFieldLists($tableName, $keyField, $assocField, $assocValue)
+    protected function getFieldListsForCopy($tableName, $keyField, $assocField, $assocValue, $defaultValues)
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -105,6 +123,9 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
             } else if ($assocField === $row['Field']) {
                 $fieldArray[] = $this->quotedEntityName($row['Field']);
                 $listArray[] = $this->dbClassObj->link->quote($assocValue);
+            } else if (isset($defaultValues[$row['Field']])) {
+                $fieldArray[] = $this->quotedEntityName($row['Field']);
+                $listArray[] = $this->dbClassObj->link->quote($defaultValues[$row['Field']]);
             } else {
                 $fieldArray[] = $this->quotedEntityName($row['Field']);
                 $listArray[] = $this->quotedEntityName($row['Field']);
@@ -113,57 +134,6 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return array(implode(',', $fieldArray), implode(',', $listArray));
     }
 
-    public function isPossibleOperator($operator)
-    {
-        return !(FALSE === array_search(strtoupper($operator), array(
-                'AND', '&&', //Logical AND
-                '=', //Assign a value (as part of a SET statement, or as part of the SET clause in an UPDATE statement)
-                ':=', //Assign a value
-                'BETWEEN', //Check whether a value is within a range of values
-                'BINARY', //Cast a string to a binary string
-                '&', //Bitwise AND
-                '~', //Invert bits
-                '|', //Bitwise OR
-                '^', //Bitwise XOR
-                'CASE', //Case operator
-                'DIV', //Integer division
-                '/', //Division operator
-                '<=>', //NULL-safe equal to operator
-                '=', //Equal operator
-                '>=', //Greater than or equal operator
-                '>', //Greater than operator
-                'IS NOT NULL', //	NOT NULL value test
-                'IS NOT', //Test a value against a boolean
-                'IS NULL', //NULL value test
-                'IS', //Test a value against a boolean
-                '<<', //Left shift
-                '<=', //Less than or equal operator
-                '<', //Less than operator
-                'LIKE', //Simple pattern matching
-                '-', //Minus operator
-                '%', 'MOD', //Modulo operator
-                'NOT BETWEEN', //Check whether a value is not within a range of values
-                '!=', '<>', //Not equal operator
-                'NOT LIKE', //Negation of simple pattern matching
-                'NOT REGEXP', //Negation of REGEXP
-                'NOT', '!', //Negates value
-                '||', 'OR', //Logical OR
-                '+', //Addition operator
-                'REGEXP', //Pattern matching using regular expressions
-                '>>', //Right shift
-                'RLIKE', //Synonym for REGEXP
-                'SOUNDS LIKE', //Compare sounds
-                '*', //Multiplication operator
-                '-', //Change the sign of the argument
-                'XOR', //Logical XOR
-                'IN',
-            )));
-    }
-
-    public function isPossibleOrderSpecifier($specifier)
-    {
-        return !(array_search(strtoupper($specifier), array('ASC', 'DESC')) === FALSE);
-    }
 
     public function quotedEntityName($entityName)
     {

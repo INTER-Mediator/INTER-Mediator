@@ -4,7 +4,7 @@
  */
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
 require_once(dirname(__FILE__) . '/../DB_Formatters.php');
-require_once(dirname(__FILE__) . '/../DataConverter_HTMLString.php');
+require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_HTMLString.php');
 
 class DB_Formatters_Test extends PHPUnit_Framework_TestCase
 {

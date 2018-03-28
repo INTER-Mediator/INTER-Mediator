@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# setup shell script for Alpine Linux 3.5/3.6 and Ubuntu Server 14.04
+# setup shell script for Alpine Linux 3.5/3.6/3.7 and Ubuntu Server 14.04
 #
 # This file can get from the URL below.
 # https://raw.githubusercontent.com/INTER-Mediator/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh
@@ -59,7 +59,9 @@ if [ $OS = 'alpine' ] ; then
 
     apk update
     apk upgrade
+    apk add --no-cache curl
     apk add --no-cache apache2
+    apk add --no-cache apache2-proxy
     apk add --no-cache mariadb-client
     apk add --no-cache mariadb
     apk add --no-cache postgresql
@@ -80,6 +82,9 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache php7-mbstring
     apk add --no-cache php7-xml
     apk add --no-cache php7-simplexml
+    apk add --no-cache php7-session
+    apk add --no-cache php7-mysqli
+    apk add --no-cache libbsd=0.8.6-r2
     apk add --no-cache git
     apk add --no-cache nodejs
     apk add --no-cache nodejs-npm
@@ -203,6 +208,10 @@ echo "#Header add Content-Security-Policy \"default-src 'self'\"" > "${APACHEOPT
 
 cd "${WEBROOT}"
 git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git && git checkout stable
+result=`git log master..release 2> /dev/null`
+if [ "$result" = '' ]; then
+    git checkout master
+fi
 
 rm -f "${WEBROOT}/index.html"
 
@@ -230,7 +239,6 @@ echo "'Chrome' => '1+','FireFox' => '2+','msie' => '9+','Opera' => '1+'," >> "${
 echo "'Safari' => '4+','Trident' => '5+',);" >> "${WEBROOT}/params.php"
 echo "\$dbServer = '192.168.56.1';" >> "${WEBROOT}/params.php"
 echo "\$dbPort = '80';" >> "${WEBROOT}/params.php"
-echo "\$dbDataType = 'FMPro12';" >> "${WEBROOT}/params.php"
 echo "\$dbDatabase = 'TestDB';" >> "${WEBROOT}/params.php"
 echo "\$dbProtocol = 'HTTP';" >> "${WEBROOT}/params.php"
 echo "\$passPhrase = '';" >> "${WEBROOT}/params.php"
@@ -289,6 +297,16 @@ cd ~developer
 touch /home/developer/.bashrc
 touch /home/developer/.viminfo
 chown developer:developer .*
+
+# Add a conf file for Apache HTTP Server
+
+if [ $OS = 'alpine' ] ; then
+    echo "LoadModule rewrite_module modules/mod_rewrite.so" > /etc/apache2/conf.d/im.conf
+    echo "LoadModule slotmem_shm_module modules/mod_slotmem_shm.so" >> /etc/apache2/conf.d/im.conf
+    echo "RewriteEngine on" >> /etc/apache2/conf.d/im.conf
+    echo "RewriteRule ^/fmi/rest/(.*) http://192.168.56.1/fmi/rest/\$1 [P,L]" >> /etc/apache2/conf.d/im.conf
+    echo "RewriteRule ^/fmi/xml/(.*)  http://192.168.56.1/fmi/xml/\$1 [P,L]" >> /etc/apache2/conf.d/im.conf
+fi
 
 # Modify php.ini
 

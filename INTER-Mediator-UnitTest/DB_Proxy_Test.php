@@ -1,13 +1,7 @@
 <?php
 
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-require_once(dirname(__FILE__) . '/../DB_Interfaces.php');
-require_once(dirname(__FILE__) . '/../DB_Logger.php');
-require_once(dirname(__FILE__) . '/../DB_Settings.php');
-require_once(dirname(__FILE__) . '/../DB_UseSharedObjects.php');
-require_once(dirname(__FILE__) . '/../DB_Proxy.php');
-require_once(dirname(__FILE__) . '/../DB_Formatters.php');
-require_once(dirname(__FILE__) . '/../DB_AuthCommon.php');
+spl_autoload_register('loadClass');
 
 class DB_Proxy_Test extends PHPUnit_Framework_TestCase
 {
@@ -84,7 +78,7 @@ class DB_Proxy_Test extends PHPUnit_Framework_TestCase
 
     function testAuthGroup()
     {
-        $aGroup = $this->db_proxy->dbClass->getAuthorizedGroups("read");
+        $aGroup = $this->db_proxy->dbClass->authHandler->getAuthorizedGroups("read");
         $this->assertContains('group1', $aGroup);
         $this->assertContains('group2', $aGroup);
         $this->assertNotContains('group3', $aGroup);
@@ -92,7 +86,7 @@ class DB_Proxy_Test extends PHPUnit_Framework_TestCase
 
     function testAuthUser()
     {
-        $aGroup = $this->db_proxy->dbClass->getAuthorizedUsers("read");
+        $aGroup = $this->db_proxy->dbClass->authHandler->getAuthorizedUsers("read");
         $this->assertContains('user1', $aGroup);
         $this->assertNotContains('user2', $aGroup);
         $this->assertNotContains('user3', $aGroup);

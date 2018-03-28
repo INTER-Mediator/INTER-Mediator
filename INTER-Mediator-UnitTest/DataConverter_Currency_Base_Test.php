@@ -3,7 +3,7 @@
  * DataConverter_Currency_Test file
  */
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-require_once(dirname(__FILE__) . '/../DataConverter_Currency.php');
+require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_Currency.php');
 
 abstract class DataConverter_Currency_Base_Test extends PHPUnit_Framework_TestCase
 {

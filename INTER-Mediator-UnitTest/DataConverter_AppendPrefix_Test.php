@@ -3,7 +3,7 @@
  * DataConverter_AppendPrefix_Test file
  */
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-require_once(dirname(__FILE__) . '/../DataConverter_AppendPrefix.php');
+require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_AppendPrefix.php');
 
 class DataConverter_AppendPrefix_Test extends PHPUnit_Framework_TestCase
 {

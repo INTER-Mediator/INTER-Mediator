@@ -1,4 +1,5 @@
 <?php
+
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -12,7 +13,6 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 class NotifyServer
 {
 
@@ -27,7 +27,7 @@ class NotifyServer
         $this->clientId = $clientId;
         if (is_null($dbClass) || is_null($dbSettings) || is_null($clientId)
             || !is_subclass_of($dbClass, 'DB_Interface_Registering')
-            || !$dbClass->isExistRequiredTable()
+            || !$dbClass->notifyHandler->isExistRequiredTable()
             || is_null($dbSettings->pusherAppId) || strlen($dbSettings->pusherAppId) < 1
             || is_null($dbSettings->pusherKey) || strlen($dbSettings->pusherKey) < 1
             || is_null($dbSettings->pusherSecret) || strlen($dbSettings->pusherSecret) < 1
@@ -39,17 +39,17 @@ class NotifyServer
 
     public function register($entity, $condition, $pkArray)
     {
-        return $this->dbClass->register($this->clientId, $entity, $condition, $pkArray);
+        return $this->dbClass->notifyHandler->register($this->clientId, $entity, $condition, $pkArray);
     }
 
     public function unregister($client, $tableKeys)
     {
-        return $this->dbClass->unregister($client, $tableKeys);
+        return $this->dbClass->notifyHandler->unregister($client, $tableKeys);
     }
 
     public function updated($clientId, $entity, $pkArray, $field, $value)
     {
-        $channels = $this->dbClass->matchInRegisterd($clientId, $entity, $pkArray);
+        $channels = $this->dbClass->notifyHandler->matchInRegisterd($clientId, $entity, $pkArray);
 
         $this->loadPusher();
         $pusher = new Pusher(
@@ -57,13 +57,13 @@ class NotifyServer
             $this->dbSettings->pusherSecret,
             $this->dbSettings->pusherAppId
         );
-        $data = array('entity'=>$entity, 'pkvalue'=>$pkArray, 'field'=>$field, 'value'=>$value);
+        $data = array('entity' => $entity, 'pkvalue' => $pkArray, 'field' => $field, 'value' => $value);
         $response = $pusher->trigger($channels, 'update', $data);
     }
 
     public function created($clientId, $entity, $pkArray, $record)
     {
-        $channels = $this->dbClass->appendIntoRegisterd($clientId, $entity, $pkArray);
+        $channels = $this->dbClass->notifyHandler->appendIntoRegisterd($clientId, $entity, $pkArray);
 
         $this->loadPusher();
         $pusher = new Pusher(
@@ -72,17 +72,17 @@ class NotifyServer
             $this->dbSettings->pusherAppId
         );
         $data = array(
-            'entity'=>$entity,
-            'pkvalue'=>$pkArray,
-         //   'field'=>array_keys($record),
-            'value'=>array_values($record)
+            'entity' => $entity,
+            'pkvalue' => $pkArray,
+            //   'field'=>array_keys($record),
+            'value' => array_values($record)
         );
         $response = $pusher->trigger($channels, 'create', $data);
     }
 
     public function deleted($clientId, $entity, $pkArray)
     {
-        $channels = $this->dbClass->removeFromRegisterd($clientId, $entity, $pkArray);
+        $channels = $this->dbClass->notifyHandler->removeFromRegisterd($clientId, $entity, $pkArray);
 
         $this->loadPusher();
         $pusher = new Pusher(
@@ -90,7 +90,7 @@ class NotifyServer
             $this->dbSettings->pusherSecret,
             $this->dbSettings->pusherAppId
         );
-        $data = array('entity'=>$entity, 'pkvalue'=>$pkArray);
+        $data = array('entity' => $entity, 'pkvalue' => $pkArray);
         $response = $pusher->trigger($channels, 'delete', $data);
     }
 
@@ -99,7 +99,8 @@ class NotifyServer
 
     }
 
-    protected function loadPusher() {
+    protected function loadPusher()
+    {
         $paths = explode(PATH_SEPARATOR, get_include_path());
         foreach ($paths as $dirPath) {
             if ($dirPath === '.') {

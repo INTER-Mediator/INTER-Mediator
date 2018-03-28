@@ -2,8 +2,8 @@
 /**
  * GenerateJSCode_Test file
  */
-require_once(dirname(__FILE__) . '/../GenerateJSCode.php');
-require_once(dirname(__FILE__) . '/../IMUtil.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
+spl_autoload_register('loadClass');
 
 class GenerateJSCode_Test extends PHPUnit_Framework_TestCase
 {
@@ -28,7 +28,7 @@ class GenerateJSCode_Test extends PHPUnit_Framework_TestCase
      */
     function test_generateErrorMessageJS()
     {
-        $this->expectOutputString('INTERMediator.setErrorMessage("PHP extension \"mbstring\" is required for running INTER-Mediator. ");');
+        $this->expectOutputString('INTERMediatorLog.setErrorMessage("PHP extension \"mbstring\" is required for running INTER-Mediator. ");');
         $this->generater->generateErrorMessageJS('PHP extension "mbstring" is required for running INTER-Mediator.' . "\n");
     }
 

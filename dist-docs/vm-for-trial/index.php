@@ -3,13 +3,16 @@
 /*
  * INTER-Mediator Server VM for Trial
  *
- *   Copyright (c) 2010-2017 INTER-Mediator Directive Committee
+ *   Copyright (c) 2010-2018 INTER-Mediator Directive Committee
  *
  *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
  *   INTER-Mediator is supplied under MIT License.
  */  -->
 <?php
-$imRoot = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'INTER-Mediator';
+$imRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
+if (!empty($_SERVER['DOCUMENT_ROOT'])) {
+    $imRoot = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'INTER-Mediator';
+}
 
 $currentDirParam = $imRoot . DIRECTORY_SEPARATOR . 'params.php';
 $parentDirParam = dirname($imRoot) . DIRECTORY_SEPARATOR . 'params.php';
@@ -111,7 +114,7 @@ if (file_exists('/etc/alpine-release')) {
             if ($parsedData !== false) {
                 $output = '、FileMaker=2015年7月11日以前';
             }
-            require_once("{$imRoot}/DataConverter_FMDateTime.php");
+            require_once("{$imRoot}" . DIRECTORY_SEPARATOR . 'Data_Converter' . DIRECTORY_SEPARATOR . 'DataConverter_FMDateTime.php');
             $converter = new DataConverter_FMDateTime();
             error_reporting(0);
             foreach ($parsedData->resultset->record->field as $key => $field) {

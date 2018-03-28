@@ -8,7 +8,12 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-//'use strict';
+// JSHint support
+/* global IMLibContextPool, INTERMediator, IMLibMouseEventDispatch, IMLibLocalContext,
+ IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibUI,
+ IMLibEventResponder, INTERMediatorLog, SHA1, IMLib */
+/* jshint -W083 */ // Function within a loop
+
 /**
  * @fileoverview INTERMediatorOnPage class is defined here.
  */
@@ -67,12 +72,13 @@ var INTERMediatorOnPage = {
     getOptionsAliases: null,
     getOptionsTransaction: null,
     dbClassName: null,
+    defaultKeyName: null,
     browserCompatibility: null,
     clientNotificationIdentifier: null,
     metadata: null,
     isLDAP: null,
     appLocale: null,
-    localInfo: {
+    localeInfo: {
         mon_decimal_point: '.',
         mon_thousands_sep: ',',
         currency_symbol: '￥'
@@ -116,7 +122,7 @@ var INTERMediatorOnPage = {
         var dataSources, index;
         dataSources = INTERMediatorOnPage.getDataSources();
         for (index in dataSources) {
-            if (dataSources.hasOwnProperty(index) && dataSources[index].name == contextName) {
+            if (dataSources.hasOwnProperty(index) && dataSources[index].name === contextName) {
                 return dataSources[index];
             }
         }
@@ -168,7 +174,7 @@ var INTERMediatorOnPage = {
             }
             if (INTERMediatorOnPage.authUser.length > 0) {
                 if (!INTERMediator_DBAdapter.getChallenge()) {
-                    INTERMediator.flushMessage();
+                    INTERMediatorLog.flushMessage();
                 }
             }
         }
@@ -187,6 +193,7 @@ var INTERMediatorOnPage = {
     },
 
     storeSessionStorageWithFallDown: function (key, value) {
+        'use strict';
         if (INTERMediator.useSessionStorage === true &&
             typeof sessionStorage !== 'undefined' &&
             sessionStorage !== null) {
@@ -201,6 +208,7 @@ var INTERMediatorOnPage = {
     },
 
     getSessionStorageWithFallDown: function (key) {
+        'use strict';
         var value;
         if (INTERMediator.useSessionStorage === true &&
             typeof sessionStorage !== 'undefined' &&
@@ -218,6 +226,7 @@ var INTERMediatorOnPage = {
     },
 
     removeFromSessionStorageWithFallDown: function (key) {
+        'use strict';
         if (INTERMediator.useSessionStorage === true &&
             typeof sessionStorage !== 'undefined' &&
             sessionStorage !== null) {
@@ -307,10 +316,10 @@ var INTERMediatorOnPage = {
         var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox, msgNumber,
             passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton, panelTitle,
             newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox, keyCode,
-            messageNode, oAuthButton;
+            messageNode, oAuthButton, addingButton;
 
         this.checkPasswordPolicy = function (newPassword, userName, policyString) {
-            var terms, i, policyCheck, message = [], minLen;
+            var terms, i, message = [], minLen;
             if (!policyString) {
                 return message;
             }
@@ -319,37 +328,31 @@ var INTERMediatorOnPage = {
                 switch (terms[i].toUpperCase()) {
                 case 'USEALPHABET':
                     if (!newPassword.match(/[A-Za-z]/)) {
-                        policyCheck = false;
                         message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2015));
                     }
                     break;
                 case 'USENUMBER':
                     if (!newPassword.match(/[0-9]/)) {
-                        policyCheck = false;
                         message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2016));
                     }
                     break;
                 case 'USEUPPER':
                     if (!newPassword.match(/[A-Z]/)) {
-                        policyCheck = false;
                         message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2017));
                     }
                     break;
                 case 'USELOWER':
                     if (!newPassword.match(/[a-z]/)) {
-                        policyCheck = false;
                         message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2018));
                     }
                     break;
                 case 'USEPUNCTUATION':
                     if (!newPassword.match(/[^A-Za-z0-9]/)) {
-                        policyCheck = false;
                         message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2019));
                     }
                     break;
                 case 'NOTUSERNAME':
-                    if (newPassword == userName) {
-                        policyCheck = false;
+                    if (newPassword === userName) {
                         message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2020));
                     }
                     break;
@@ -357,7 +360,6 @@ var INTERMediatorOnPage = {
                     if (terms[i].toUpperCase().indexOf('LENGTH') === 0) {
                         minLen = terms[i].match(/[0-9]+/)[0];
                         if (newPassword.length < minLen) {
-                            policyCheck = false;
                             message.push(
                                 INTERMediatorLib.getInsertedStringFromErrorNumber(2021, [minLen]));
                         }
@@ -374,7 +376,7 @@ var INTERMediatorOnPage = {
         if (INTERMediatorOnPage.authCount > INTERMediatorOnPage.authCountLimit) {
             INTERMediatorOnPage.authenticationError();
             INTERMediatorOnPage.logout();
-            INTERMediator.flushMessage();
+            INTERMediatorLog.flushMessage();
             return;
         }
 
@@ -385,8 +387,8 @@ var INTERMediatorOnPage = {
         if (INTERMediatorOnPage.isSetDefaultStyle) {
             backBox.style.height = '100%';
             backBox.style.width = '100%';
-            backBox.style.backgroundImage = 'url(' + INTERMediatorOnPage.getEntryPath()
-                + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=background.gif)';
+            backBox.style.backgroundImage = 'url(' + INTERMediatorOnPage.getEntryPath() +
+                '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=background.gif)';
             backBox.style.position = 'absolute';
             backBox.style.padding = ' 50px 0 0 0';
             backBox.style.top = '0';
@@ -424,7 +426,8 @@ var INTERMediatorOnPage = {
             if (panelTitle && panelTitle.length > 0) {
                 realmBox = document.createElement('DIV');
                 realmBox.appendChild(document.createTextNode(panelTitle));
-                realmBox.style.textAlign = 'left';
+                //realmBox.style.textAlign = 'left';
+                realmBox.id = '_im_authrealm';
                 frontPanel.appendChild(realmBox);
                 breakLine = document.createElement('HR');
                 frontPanel.appendChild(breakLine);
@@ -530,10 +533,30 @@ var INTERMediatorOnPage = {
                 breakLine = document.createElement('HR');
                 frontPanel.appendChild(breakLine);
                 oAuthButton = document.createElement('BUTTON');
-                oAuthButton.id = '_im_authbutton';
+                oAuthButton.id = '_im_oauthbutton';
                 oAuthButton.appendChild(document.createTextNode(
                     INTERMediatorLib.getInsertedStringFromErrorNumber(2014)));
                 frontPanel.appendChild(oAuthButton);
+            }
+            if (INTERMediatorOnPage.enrollPageURL){
+                breakLine = document.createElement('HR');
+                frontPanel.appendChild(breakLine);
+                addingButton = document.createElement('BUTTON');
+                addingButton.id = '_im_enrollbutton';
+                addingButton.appendChild(document.createTextNode(
+                    INTERMediatorLib.getInsertedStringFromErrorNumber(2022)));
+                addingButton.onclick=function(){location.href=INTERMediatorOnPage.enrollPageURL;};
+                frontPanel.appendChild(addingButton);
+            }
+            if (INTERMediatorOnPage.resetPageURL){
+                breakLine = document.createElement('HR');
+                frontPanel.appendChild(breakLine);
+                addingButton = document.createElement('BUTTON');
+                addingButton.id = '_im_resetbutton';
+                addingButton.appendChild(document.createTextNode(
+                    INTERMediatorLib.getInsertedStringFromErrorNumber(2023)));
+                addingButton.onclick=function(){location.href=INTERMediatorOnPage.resetPageURL;};
+                frontPanel.appendChild(addingButton);
             }
         }
         passwordBox.onkeydown = function (event) {
@@ -575,7 +598,7 @@ var INTERMediatorOnPage = {
                 INTERMediatorOnPage.authHashedPassword = 'need-hash-pls';   // Dummy Hash for getting a challenge
                 challengeResult = INTERMediator_DBAdapter.getChallenge();
                 if (!challengeResult) {
-                    INTERMediator.flushMessage();
+                    INTERMediatorLog.flushMessage();
                     return; // If it's failed to get a challenge, finish everything.
                 }
             }
@@ -590,7 +613,7 @@ var INTERMediatorOnPage = {
             }
 
             doAfterAuth();  // Retry.
-            INTERMediator.flushMessage();
+            INTERMediatorLog.flushMessage();
         };
         if (chgpwButton) {
             var checkPolicyMethod = this.checkPasswordPolicy;
@@ -625,7 +648,7 @@ var INTERMediatorOnPage = {
                     document.createTextNode(
                         INTERMediatorLib.getInsertedStringFromErrorNumber(result ? 2009 : 2010)));
 
-                INTERMediator.flushMessage();
+                INTERMediatorLog.flushMessage();
             };
         }
         if (this.isOAuthAvailable && oAuthButton) {
@@ -665,15 +688,15 @@ var INTERMediatorOnPage = {
 
         bodyNode = document.getElementsByTagName('BODY')[0];
         backBox = document.createElement('div');
-        backBox.id = "_im_autherrorback";
+        backBox.id = '_im_autherrorback';
         bodyNode.insertBefore(backBox, bodyNode.childNodes[0]);
         if (INTERMediatorOnPage.isSetDefaultStyle) {
             backBox.style.height = '100%';
             backBox.style.width = '100%';
             //backBox.style.backgroundColor = '#BBBBBB';
             if (INTERMediatorOnPage.isSetDefaultStyle) {
-                backBox.style.backgroundImage = 'url(' + INTERMediatorOnPage.getEntryPath()
-                    + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=background-error.gif)';
+                backBox.style.backgroundImage = 'url(' + INTERMediatorOnPage.getEntryPath() +
+                    '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=background-error.gif)';
             }
             backBox.style.position = 'absolute';
             backBox.style.padding = ' 50px 0 0 0';
@@ -682,7 +705,7 @@ var INTERMediatorOnPage = {
             backBox.style.zIndex = '999999';
         }
         frontPanel = document.createElement('div');
-        frontPanel.id = "_im_autherrormessage";
+        frontPanel.id = '_im_autherrormessage';
         if (INTERMediatorOnPage.isSetDefaultStyle) {
             frontPanel.style.width = '240px';
             frontPanel.style.backgroundColor = '#333333';
@@ -801,9 +824,9 @@ var INTERMediatorOnPage = {
                     judge = (specifiedVersion <= document.documentMode);
                 }
             } else {
-                judge = (specifiedVersion == versionNum);
+                judge = (specifiedVersion === versionNum);
                 if (document.documentMode) {
-                    judge = (specifiedVersion == document.documentMode);
+                    judge = (specifiedVersion === document.documentMode);
                 }
             }
         }
@@ -839,6 +862,8 @@ var INTERMediatorOnPage = {
      */
     getNodeIdFromIMDefinition: function (imDefinition, fromNode, justFromNode) {
         'use strict';
+        console.error('INTERMediatorOnPage.getNodeIdFromIMDefinition method in INTER-Mediator-Page.js will be removed in Ver.6.0. '+
+        'The alternative method is getNodeIdsHavingTargetFromNode or getNodeIdsHavingTargetFromRepeater.');
         var repeaterNode;
         if (justFromNode) {
             repeaterNode = fromNode;
@@ -849,13 +874,13 @@ var INTERMediatorOnPage = {
 
         function seekNode(node, imDefinition) {
             var children, i, nodeDefs, returnValue;
-            if (node.nodeType != 1) {
+            if (node.nodeType !== 1) {
                 return null;
             }
             children = node.childNodes;
             if (children) {
                 for (i = 0; i < children.length; i++) {
-                    if (children[i].nodeType == 1) {
+                    if (children[i].nodeType === 1) {
                         if (INTERMediatorLib.isLinkedElement(children[i])) {
                             nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
                             if (nodeDefs.indexOf(imDefinition) > -1) {
@@ -876,19 +901,21 @@ var INTERMediatorOnPage = {
 
     getNodeIdFromIMDefinitionOnEnclosure: function (imDefinition, fromNode) {
         'use strict';
+        console.error('INTERMediatorOnPage.getNodeIdFromIMDefinitionOnEnclosure method in INTER-Mediator-Page.js will be removed in Ver.6.0. '+
+            'The alternative method is getNodeIdsHavingTargetFromEnclosure.');
         var repeaterNode;
         repeaterNode = INTERMediatorLib.getParentEnclosure(fromNode);
         return seekNode(repeaterNode, imDefinition);
 
         function seekNode(node, imDefinition) {
             var children, i, nodeDefs, returnValue;
-            if (node.nodeType != 1) {
+            if (node.nodeType !== 1) {
                 return null;
             }
             children = node.childNodes;
             if (children) {
                 for (i = 0; i < children.length; i++) {
-                    if (children[i].nodeType == 1) {
+                    if (children[i].nodeType === 1) {
                         if (INTERMediatorLib.isLinkedElement(children[i])) {
                             nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
                             if (nodeDefs.indexOf(imDefinition) > -1 && children[i].getAttribute) {
@@ -909,36 +936,40 @@ var INTERMediatorOnPage = {
 
     getNodeIdsFromIMDefinition: function (imDefinition, fromNode, justFromNode) {
         'use strict';
-        var enclosureNode, nodeIds, i;
+        var enclosureNode, nodeIds = [], i, j;
 
         if (justFromNode === true) {
-            enclosureNode = fromNode;
+            enclosureNode = [fromNode];
         } else if (justFromNode === false) {
-            enclosureNode = INTERMediatorLib.getParentEnclosure(fromNode);
+            enclosureNode = [INTERMediatorLib.getParentEnclosure(fromNode)];
         } else {
-            enclosureNode = INTERMediatorLib.getParentRepeater(fromNode);
+            enclosureNode = INTERMediatorLib.getParentRepeaters(fromNode);
         }
-        if (enclosureNode !== null) {
-            nodeIds = [];
-            if (Array.isArray(enclosureNode)) {
-                for (i = 0; i < enclosureNode.length; i++) {
+        if(!enclosureNode){
+            return [];
+        }
+        for (i = 0; i < enclosureNode.length; i += 1) {
+            if (enclosureNode[i] !== null) {
+                if (Array.isArray(enclosureNode[i])) {
+                    for (j = 0; j < enclosureNode[i].length; j++) {
+                        seekNode(enclosureNode[i][j], imDefinition);
+                    }
+                } else {
                     seekNode(enclosureNode[i], imDefinition);
                 }
-            } else {
-                seekNode(enclosureNode, imDefinition);
             }
         }
         return nodeIds;
 
         function seekNode(node, imDefinition) {
             var children, i, nodeDefs;
-            if (node.nodeType != 1) {
+            if (node.nodeType !== 1) {
                 return;
             }
             children = node.childNodes;
             if (children) {
                 for (i = 0; i < children.length; i++) {
-                    if (children[i].nodeType == 1) {
+                    if (children[i].nodeType === 1) {
                         nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
                         if (nodeDefs && nodeDefs.indexOf(imDefinition) > -1) {
                             if (children[i].getAttribute('id')) {
@@ -961,7 +992,7 @@ var INTERMediatorOnPage = {
 
     getNodeIdsHavingTargetFromRepeater: function (fromNode, imDefinition) {
         'use strict';
-        return INTERMediatorOnPage.getNodeIdsFromIMDefinition(imDefinition, fromNode, IMLib.zerolength_str);
+        return INTERMediatorOnPage.getNodeIdsFromIMDefinition(imDefinition, fromNode, 'others');
     },
 
     getNodeIdsHavingTargetFromEnclosure: function (fromNode, imDefinition) {
@@ -1017,7 +1048,7 @@ var INTERMediatorOnPage = {
         if (expired > 0) {
             cookieString += 'max-age=' + expired + ';expires=' + d.toUTCString() + ';';
         }
-        if (document.URL.substring(0, 8) == 'https://') {
+        if (document.URL.substring(0, 8) === 'https://') {
             cookieString += 'secure;';
         }
         document.cookie = cookieString;
@@ -1040,11 +1071,12 @@ var INTERMediatorOnPage = {
         frontPanel = document.getElementById('_im_progress');
         if (frontPanel) {
             themeName = INTERMediatorOnPage.getTheme().toLowerCase();
-            if (themeName === "least" || themeName === "thosedays") {
-                frontPanel.style.display = "none";
+            if (themeName === 'least' || themeName === 'thosedays') {
+                frontPanel.style.display = 'none';
             } else {
-                frontPanel.style.transitionDuration = "0.3s";
+                frontPanel.style.transitionDuration = '0.3s';
                 frontPanel.style.opacity = 0;
+                frontPanel.style.zIndex = -9999;
             }
         }
     },
@@ -1071,44 +1103,45 @@ var INTERMediatorOnPage = {
             } else {
                 bodyNode.appendChild(frontPanel);
             }
-            if (themeName === "least" || themeName === "thosedays") {
+            if (themeName === 'least' || themeName === 'thosedays') {
                 imageIM = document.createElement('img');
                 imageIM.setAttribute('id', '_im_logo');
-                imageIM.setAttribute('src', INTERMediatorOnPage.getEntryPath()
-                    + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=logo.gif');
+                imageIM.setAttribute('src', INTERMediatorOnPage.getEntryPath() +
+                    '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=logo.gif');
                 frontPanel.appendChild(imageIM);
                 imageProgress = document.createElement('img');
                 imageProgress.setAttribute('id', '_im_animatedimage');
-                imageProgress.setAttribute('src', INTERMediatorOnPage.getEntryPath()
-                    + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=inprogress.gif');
+                imageProgress.setAttribute('src', INTERMediatorOnPage.getEntryPath() +
+                    '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=inprogress.gif');
                 frontPanel.appendChild(imageProgress);
                 brNode = document.createElement('BR');
                 brNode.setAttribute('clear', 'all');
                 frontPanel.appendChild(brNode);
                 frontPanel.appendChild(document.createTextNode('INTER-Mediator working'));
             } else {
-                imageIM = document.createElement("img");
-                imageIM.setAttribute('src', INTERMediatorOnPage.getEntryPath()
-                    + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=gears.svg');
+                imageIM = document.createElement('img');
+                imageIM.setAttribute('src', INTERMediatorOnPage.getEntryPath() +
+                    '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=gears.svg');
                 frontPanel.appendChild(imageIM);
             }
         }
-        if (themeName === "least" || themeName === "thosedays") {
-
-        } else {
-            frontPanel.style.transitionDuration = "0";
+        if (themeName !== 'least' && themeName !== 'thosedays') {
+            frontPanel.style.transitionDuration = '0';
             frontPanel.style.opacity = 1.0;
+            frontPanel.style.display = 'flex';
+            frontPanel.style.zIndex = 9999;
         }
     },
 
     // Gear SVG was generated on http://loading.io/.
 
     setReferenceToTheme: function () {
+        'use strict';
         var headNode, linkElement, i, styleIndex = -1;
         headNode = document.getElementsByTagName('HEAD')[0];
         linkElement = document.createElement('link');
-        linkElement.setAttribute('href', INTERMediatorOnPage.getEntryPath()
-            + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=css');
+        linkElement.setAttribute('href', INTERMediatorOnPage.getEntryPath() +
+            '?theme=' + INTERMediatorOnPage.getTheme() + '&type=css');
         linkElement.setAttribute('rel', 'stylesheet');
         linkElement.setAttribute('type', 'text/css');
         for (i = 0; i < headNode.childNodes.length; i++) {

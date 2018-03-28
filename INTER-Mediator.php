@@ -17,13 +17,14 @@ if (function_exists('mb_internal_encoding')) {
     mb_internal_encoding('UTF-8');
 }
 
+spl_autoload_register('loadClass');
+
 require_once('DB_Interfaces.php');
-require_once('DB_Logger.php');
-require_once('DB_Settings.php');
-require_once('DB_UseSharedObjects.php');
-require_once('DB_AuthCommon.php');
-require_once('DB_Proxy.php');
-require_once('IMUtil.php');
+require_once('IMUtil.php'); //
+//require_once('DB_Logger.php');
+//require_once('DB_Settings.php');
+//require_once('DB_UseSharedObjects.php');
+//require_once('DB_Proxy.php');
 
 IMUtil::includeLibClasses(IMUtil::phpSecLibRequiredClasses());
 
@@ -39,11 +40,10 @@ if (isset($defaultTimezone)) {
 } else if (ini_get('date.timezone') == null) {
     date_default_timezone_set('UTC');
 }
+IMLocale::setLocale(LC_ALL);
 
 define("IM_TODAY", strftime('%Y-%m-%d'));
 $g_dbInstance = null;
-
-spl_autoload_register('loadClass');
 
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
@@ -75,17 +75,6 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         }
     }
 
-    if ($debug) {
-        $dc = new DefinitionChecker();
-        $defErrorMessage = $dc->checkDefinitions($datasource, $options, $dbspecification);
-        if (strlen($defErrorMessage) > 0) {
-            $generator = new GenerateJSCode();
-            $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
-            $generator->generateErrorMessageJS($defErrorMessage);
-            return;
-        }
-    }
-
     if (isset($_GET['theme'])) {
         $themeManager = new Theme();
         $themeManager->processing();
@@ -94,6 +83,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
         $dbInstance->processingRequest("NON");
         $g_dbInstance = $dbInstance;
+        error_log('Deprecated global variables $g_dbInstance, $g_serverSideCall in INTER-Mediator.php will be removed in Ver.6.0');
     } else if (!isset($_POST['access']) && isset($_GET['uploadprocess'])) {
         $fileUploader = new FileUploader();
         $fileUploader->processInfo();
@@ -115,6 +105,17 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
             $fileUploader->processing($datasource, $options, $dbspecification, $debug);
         }
     } else if (!isset($_POST['access']) && !isset($_GET['media'])) {
+        if ($debug) {
+            $dc = new DefinitionChecker();
+            $defErrorMessage = $dc->checkDefinitions($datasource, $options, $dbspecification);
+            if (strlen($defErrorMessage) > 0) {
+                $generator = new GenerateJSCode();
+                $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
+                $generator->generateErrorMessageJS($defErrorMessage);
+                return;
+            }
+        }
+
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
     } else {
@@ -150,7 +151,31 @@ function loadClass($className)
         if ($className === 'NumberFormatter' && !class_exists($className)) {
             $className = 'IMNumberFormatter';
         }
-        $result = include_once $className . '.php';
+        $imClassPath = array("", "DB_Support" . DIRECTORY_SEPARATOR, "Data_Converter" . DIRECTORY_SEPARATOR);
+        $incSeparator = IMUtil::isPHPExecutingWindows() ? ";" : ":";
+        $incPath = explode($incSeparator, get_include_path());
+        $isFileExists = false;
+        foreach ($incPath as $path) {
+            if (strlen($path)>0) {
+                foreach ($imClassPath as $imPath) {
+                    $classPath = $path . DIRECTORY_SEPARATOR . $imPath;
+                    if (IMUtil::isPHPExecutingWindows() ?
+                        (substr($classPath, 1, 1) !== ':') :
+                        (substr($classPath, 0, 1) !== '/'))   {
+                        $classPath = dirname(__FILE__) . DIRECTORY_SEPARATOR . $classPath;
+                    }
+                    if (file_exists("{$classPath}{$className}.php")) {
+                        $isFileExists = true;
+                        break 2;
+                    }
+                }
+            }
+        }
+        if ($isFileExists) {
+            $result = require_once("{$classPath}{$className}.php");
+        } else {
+            $result = require_once("{$className}.php");
+        }
         if (!$result) {
             $errorGenerator = new GenerateJSCode();
             if (strpos($className, "MessageStrings_") !== 0) {

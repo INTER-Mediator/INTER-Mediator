@@ -58,10 +58,10 @@ class DefinitionChecker
         foreach ($this->path as $value) {
             $nextEndPoint = isset($endPoint[$value]) ? $endPoint[$value] : null;
             if ($nextEndPoint === null && is_integer($value)) {
-                $nextEndPoint = $endPoint['*'];
+                $nextEndPoint = isset($endPoint['*']) ? $endPoint['*'] : null;
             }
             if ($nextEndPoint === null && is_string($value)) {
-                $nextEndPoint = $endPoint['#'];
+                $nextEndPoint = isset($endPoint['#']) ? $endPoint['#'] : null;
             }
             $endPoint = $nextEndPoint;
             $currentPath .= "[{$value}]";
@@ -197,6 +197,8 @@ class DefinitionChecker
             'email-as-username' => 'boolean',
             'issuedhash-dsn' => 'string',
             'password-policy' => 'string',
+            'enroll-page' => 'string',
+            'reset-page' => 'string',
         ),
         'media-root-dir' => 'string',
         'media-context' => 'string',
@@ -257,7 +259,8 @@ class DefinitionChecker
                 )
             ),
             'repeat-control' => 'string(insert|delete|confirm-insert|confirm-delete|copy|copy-*)',
-            'navi-control' => 'string(master|detail|master-hide|detail-top|detail-bottom|detail-update|detail-top-update|detail-bottom-update)',
+            'navi-control' => 'string(master|detail|master-hide|detail-top|detail-bottom|detail-update|detail-top-update|detail-bottom-update|step|step-hide)',
+            'navi-title' => 'string',
             'validation' => array(
                 '*' => array(
                     'field' => 'string',
@@ -269,6 +272,9 @@ class DefinitionChecker
             'post-repeater' => 'string',
             'post-enclosure' => 'string',
             'post-query-stored' => 'string',
+            'before-move-nextstep' => 'string',
+            'just-move-thisstep' => 'string',
+            'just-leave-thisstep' => 'string',
             'script' => array(
                 '*' => array(
                     'db-operation' => 'string(load|read|update|new|create|delete)',
@@ -350,6 +356,8 @@ class DefinitionChecker
             'aggregation-select' => 'string',
             'aggregation-from' => 'string',
             'aggregation-group-by' => 'string',
+            'data' => 'array',
+            'appending-data' => 'array',
             'file-upload' => array(
                 '*' => array(
                     'field' => 'string',

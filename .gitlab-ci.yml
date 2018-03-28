@@ -1,10 +1,34 @@
+stages:
+  - test
+  - deploy
+
+image: docker:17.12.1-ce
+
+variables:
+  DOCKER_DRIVER: overlay2
+
+services:
+- docker:dind
+
+before_script:
+  - docker info
+
+test:
+  script:
+    - docker run --privileged -e "container=docker" --tmpfs /run -v /sys/fs/cgroup:/sys/fs/cgroup:ro -d --name alpine alpine:latest /sbin/init
+    - docker exec -e BUNDLE_GEMFILE=/INTER-Mediator/dist-docs/docker/Gemfile -e DISPLAY=:99.0 -i alpine sh -c "apk add --no-cache sudo curl ruby ruby-json ruby-io-console git && git clone https://github.com/INTER-Mediator/INTER-Mediator && cd INTER-Mediator && git checkout master && gem install itamae --no-doc && itamae local dist-docs/vm-for-trial/recipe.rb; phpunit --configuration /INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php; /usr/bin/buster-test -r specification -c /INTER-Mediator/spec/buster.js"
+    - docker stop alpine
+    - docker rm alpine
+
 pages:
   stage: deploy
   script:
   - export LANG=ja_JP.UTF-8
   - uname -a
-  - apt-get update
-  - apt-get install -y zip git php5-cli
+  - apk update
+  - apk add --no-cache php7
+  - apk add --no-cache git
+  - apk add --no-cache zip
   - mkdir public
   - cd ..
   - git clone https://github.com/matthiasmullie/minify
@@ -15,26 +39,3 @@ pages:
     - public
   only:
   - master
-
-#job:
-#  script:
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DB_Formatters_Test.php
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DB_Settings_Test.php
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_AppendPrefix_Test.php
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_AppendSuffix_Test.php
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_Currency_YenIM_Test.php
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_FMDateTime_Test.php
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_HTMLString_Test.php
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_NullZeroString_Test.php
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_MySQLDateTime_Test.php
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_Number_Test.php
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_NumberBase_Test.php
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/GenerateJSCode_Test.php
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/IMUtil_Test.php
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/INTERMediator_Test.php
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/MediaAccess_Test.php
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/MessageStrings_Test.php
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/MessageStrings_ja_Test.php
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/RSA_Test.php;
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/defedit_Test.php;
-#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/pageedit_Test.php;

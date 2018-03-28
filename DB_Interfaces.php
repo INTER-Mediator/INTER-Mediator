@@ -13,8 +13,10 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-interface DB_Interface extends DB_Spec_Behavior
+interface DB_Interface
 {
+    public function setupConnection();
+    public function setupHandlers($dsn = false);
     public function readFromDB();         // former getFromDB
     public function countQueryResult();
     public function getTotalCount();
@@ -22,28 +24,37 @@ interface DB_Interface extends DB_Spec_Behavior
     public function createInDB($bypassAuth);  // former newToDB
     public function deleteFromDB();
     public function copyInDB();
+    public function normalizedCondition($condition);
+    public function softDeleteActivate($field, $value);
+    public function requireUpdatedRecord($value);
+    public function getFieldInfo($dataSourceName);
+    public function updatedRecord();
+    public function setUpdatedRecord($field, $value, $index = 0);
+    public function queryForTest($table, $conditions = null);
+    public function deleteForTest($table, $conditions = null);
 }
 
 interface DB_Spec_Behavior
 {
-    public function getFieldInfo($dataSourceName);
-    public function setupConnection();
     public static function defaultKey();   // For PHP 5.3 or above
     public function getDefaultKey();   // For PHP 5.2
-    public function requireUpdatedRecord($value);
-    public function updatedRecord();
     public function isContainingFieldName($fname, $fieldnames);
     public function isNullAcceptable();
-    public function softDeleteActivate($field, $value);
     public function isSupportAggregation();
+    public function isPossibleOperator($operator);
+    public function isPossibleOrderSpecifier($specifier);
 }
 
 interface DB_Interface_Registering
 {
     public function isExistRequiredTable();
     public function queriedEntity();
+    public function setQueriedEntity($name);
     public function queriedCondition();
+    public function setQueriedCondition($name);
     public function queriedPrimaryKeys();
+    public function setQueriedPrimaryKeys($name);
+    public function addQueriedPrimaryKeys($name);
     public function register($clientId, $entity, $condition, $pkArray);
     public function unregister($clientId, $tableKeys);
     public function matchInRegisterd($clientId, $entity, $pkArray);

@@ -8,6 +8,7 @@
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
+$result = -3;
 if (isset($_GET['m']) && strlen($_GET['m']) > 0) {
     require_once('../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
     $contextDef = array(
@@ -19,16 +20,18 @@ if (isset($_GET['m']) && strlen($_GET['m']) > 0) {
     );
     $dbInstance = new DB_Proxy();
     $dbInstance->initialize(
-        array($contextDef), 
-        array(), 
-        array("db-class" => "PDO" /* or "FileMaker_FX" */), 
-        false, 
+        array($contextDef),
+        array(),
+        array("db-class" => "PDO" /* or "FileMaker_FX" */),
+        false,
         "authuser"
     );
     $dbInstance->processingRequest("read");
     $result = $dbInstance->getDatabaseResult();
-
-    echo count($result);
-    exit;
+    if (is_array($result)) {
+        $result = count($result);
+    } else {
+        $result = -1;
+    }
 }
-echo 0;
+echo $result;

@@ -8,7 +8,7 @@
 # Please see the full license for details:
 # https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
 
-version="5.6.1"
+version="5.7"
 
 # The file of minify <http://www.minifier.org> can be downloaded from below.
 # git clone https://github.com/matthiasmullie/minify
@@ -72,13 +72,16 @@ cp  "${originalPath}/metadata.json" "${buildPath}/metadata.json"
 echo "PROCESSING: Merging JS files"
 cp  "${originalPath}/INTER-Mediator.js"                          "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Page.js"                  >> "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-Element.js"               >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Context.js"               >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Lib.js"                   >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Format.js"                   >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Element.js"               >> "${buildPath}/temp.js"
+cat "${originalPath}/lib/js_lib/js-expression-eval-parser.js" >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Calc.js"                  >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Parts.js"                 >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Navi.js"                  >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-UI.js"                    >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Log.js"                   >> "${buildPath}/temp.js"
 if [ ! -e "${minifyjsDir}" ]; then
     cat "${originalPath}/lib/js_lib/tinySHA1.js"              >> "${buildPath}/temp.js"
     echo ';'                                                  >> "${buildPath}/temp.js"
@@ -88,8 +91,8 @@ cat "${originalPath}/lib/bi2php/biBigInt.js"                  >> "${buildPath}/t
 cat "${originalPath}/lib/bi2php/biMontgomery.js"              >> "${buildPath}/temp.js"
 cat "${originalPath}/lib/bi2php/biRSA.js"                     >> "${buildPath}/temp.js"
 cat "${originalPath}/Adapter_DBServer.js"                     >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Queuing.js"               >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Events.js"                >> "${buildPath}/temp.js"
-cat "${originalPath}/lib/js_lib/js-expression-eval-parser.js" >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-DoOnStart.js"             >> "${buildPath}/temp.js"
 
 cp "${buildPath}/temp.js" "${buildPath}/INTER-Mediator.js"
@@ -126,11 +129,16 @@ fi
 echo "PROCESSING: ${originalPath}/DB_Support"
 cp -prf "${originalPath}/DB_Support" "${buildPath}"
 
+# Copy "Data_Converter" directory.
+echo "PROCESSING: ${originalPath}/Data_Converter"
+cp -prf "${originalPath}/Data_Converter" "${buildPath}"
+
 # Copy "lib" path php contents.
 echo "PROCESSING: ${originalPath}/lib"
 mkdir -p "${buildPath}/lib/bi2php"
 cp -p "${originalPath}/lib/bi2php/biRSA.php" "${buildPath}/lib/bi2php"
 cp -prf "${originalPath}/lib/CWPKit" "${buildPath}/lib"
+cp -p "${originalPath}/lib/FMDataAPI.php" "${buildPath}/lib/"
 cp -prf "${originalPath}/lib/FX" "${buildPath}/lib"
 cp -prf "${originalPath}/lib/ParagonIE" "${buildPath}/lib"
 cp -prf "${originalPath}/lib/phpseclib_v1" "${buildPath}/lib"

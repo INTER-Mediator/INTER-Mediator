@@ -1,16 +1,33 @@
 <?php
 
 /**
- * Created by PhpStorm.
- * User: msyk
- * Date: 2016/07/09
- * Time: 0:47
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 {
     public function sqlSELECTCommand()
     {
         return "SELECT ";
+    }
+
+    public function sqlLimitCommand($param)
+    {
+        return "LIMIT {$param}";
+    }
+
+    public function sqlOffsetCommand($param)
+    {
+        return "OFFSET {$param}";
     }
 
     public function sqlDELETECommand()
@@ -46,12 +63,12 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         $fieldNameForType = 'type';
         $fieldArray = array();
         $numericFieldTypes = array('integer', 'real', 'numeric',
-            'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2','int8',
-            'double', 'double precision', 'float', 'decimal','boolean','date','datetime',);
+            'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2', 'int8',
+            'double', 'double precision', 'float', 'decimal', 'boolean', 'date', 'datetime',);
         $matches = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             preg_match("/[a-z ]+/", strtolower($row[$fieldNameForType]), $matches);
-            if (! $row[$fieldNameForNullable] &&
+            if (!$row[$fieldNameForNullable] &&
                 in_array($matches[0], $numericFieldTypes)
             ) {
                 $fieldArray[] = $row[$fieldNameForField];
@@ -64,7 +81,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 
     protected function getTableInfo($tableName)
     {
-        if (! isset($this->tableInfo[$tableName])) {
+        if (!isset($this->tableInfo[$tableName])) {
             $sql = "PRAGMA table_info({$tableName})";
             $this->dbClassObj->logger->setDebugMessage($sql);
             $result = $this->dbClassObj->link->query($sql);
@@ -76,6 +93,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         }
         return $result;
     }
+
     /*
       sqlite> PRAGMA table_info(person);
       cid         name        type        notnull     dflt_value  pk
@@ -90,7 +108,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
       7           memo        TEXT        0                       0
        */
 
-    protected function getFieldLists($tableName, $keyField, $assocField, $assocValue)
+    protected function getFieldListsForCopy($tableName, $keyField, $assocField, $assocValue, $defaultValues)
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -105,34 +123,15 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
             } else if ($assocField === $row['name']) {
                 $fieldArray[] = $this->quotedEntityName($row['name']);
                 $listArray[] = $this->dbClassObj->link->quote($assocValue);
+            } else if (isset($defaultValues[$row['name']])) {
+                $fieldArray[] = $this->quotedEntityName($row['name']);
+                $listArray[] = $this->dbClassObj->link->quote($defaultValues[$row['name']]);
             } else {
                 $fieldArray[] = $this->quotedEntityName($row['name']);
                 $listArray[] = $this->quotedEntityName($row['name']);
             }
         }
         return array(implode(',', $fieldArray), implode(',', $listArray));
-    }
-
-    public function isPossibleOperator($operator)
-    {
-        return !(FALSE === array_search(strtoupper($operator), array(
-                '||',
-                '*', '/', '%',
-                '+', '-',
-                '<<', '>>', '&', '|',
-                '<', '<=', '>', '>=',
-                '=', '==', '!=', '<>', 'IS', 'IS NOT', 'IN', 'LIKE', 'GLOB', 'MATCH', 'REGEXP',
-                'AND',
-                'IS NULL', //NULL value test
-                'OR',
-                'IN',
-                '-', '+', '~', 'NOT',
-            )));
-    }
-
-    public function isPossibleOrderSpecifier($specifier)
-    {
-        return !(array_search(strtoupper($specifier), array('ASC', 'DESC')) === FALSE);
     }
 
     public function quotedEntityName($entityName)

@@ -16,26 +16,35 @@ var doAfter = false;
 
 INTERMediatorOnPage.doAfterConstruct = function () {
     if (!doAfter) {
-        INTERMediatorLib.addEvent(document.getElementById("postbutton"), "click", function () {
-            INTERMediator_DBAdapter.db_createRecordWithAuth({
-                    name: "chat",
-                    dataset: [
-                        {
-                            field: "message",
-                            value: document.getElementById("message").value
-                        }
-                    ]},
-                function () {
-                    INTERMediator.constructMain(IMLibContextPool.contextFromName("chat"));
-                    document.getElementById("message").value = "";
-                    INTERMediator.flushMessage();
-                });
-        });
-
-        document.getElementById("logoutbutton").onclick = function () {
+        IMLibMouseEventDispatch.setExecute('logoutbutton', function () {
             INTERMediatorOnPage.logout();
             INTERMediator.construct(true);
-        };
+        });
+        IMLibMouseEventDispatch.setExecute('postbutton', function () {
+            IMLibQueue.setTask(function (completeTask) {
+                INTERMediator_DBAdapter.db_createRecord_async({
+                        name: 'chat',
+                        dataset: [
+                            {
+                                field: 'message',
+                                value: document.getElementById('message').value
+                            }
+                        ]
+                    },
+                    function () {
+                        INTERMediator.constructMain(IMLibContextPool.contextFromName('chat'));
+                        document.getElementById('message').value = '';
+                        INTERMediatorLog.flushMessage();
+                        completeTask();
+                    },
+                    function () {
+                        alert('Error');
+                        INTERMediatorLog.flushMessage();
+                        completeTask();
+                    });
+            });
+        });
         doAfter = true;
     }
-};
+}
+

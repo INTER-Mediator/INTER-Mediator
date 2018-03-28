@@ -18,7 +18,7 @@
         function setPassword(button){
             var passwd, hashvalue, passwdField;
             passwd = document.getElementById('inputpassword').value;
-            passwdField = INTERMediatorOnPage.getNodeIdFromIMDefinition("authuser@hashedpasswd", button);
+            passwdField = INTERMediatorOnPage.getNodeIdsHavingTargetFromRepeater(button, "authuser@hashedpasswd");
             document.getElementById(passwdField).value = INTERMediatorLib.generatePasswordHash(passwd);
             IMLibUI.valueChange(passwdField);
         }
@@ -34,7 +34,7 @@ Set the new password and click "Set" button on each user.
     <thead>
     <tr>
         <th>User Name</th><th>Hashed Password</th><th>Email</th><th>Real Name</th>
-        <th>Groups</th><th>Belongings</th><th></th>
+        <th>Groups</th><th></th>
     </tr>
     </thead>
     <tbody>
@@ -61,7 +61,7 @@ Set the new password and click "Set" button on each user.
                 </span>
             </span>
         </td>
-        <td><span data-im="authuser@belonging"></span></td>
+        <!--<td><span data-im="authuser@belonging"></span></td>-->
         <td></td>
     </tr>
     </tbody>

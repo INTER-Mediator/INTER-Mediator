@@ -22,7 +22,7 @@ IM_Entry(
             'name' => 'productlist',
             'view' => 'product',
             'key' => 'id',
-            'sort' => array(array('field' => 'name', 'direction' => 'ASC'),),
+            'sort' => array(array('field' => 'unitprice', 'direction' => 'ASC'),),
             'navi-control' => 'master',
 //            'repeat-control' => 'insert delete',
 //            'paging' => true,
@@ -37,9 +37,9 @@ IM_Entry(
         ),
     ),
     array(
-        'formatter' => array(
-            array('field' => 'product@unitprice', 'converter-class' => 'Number', 'parameter' => '0'),
-        ),
+//        'formatter' => array(
+//            array('field' => 'product@unitprice', 'converter-class' => 'Number', 'parameter' => '0'),
+//        ),
     ),
     array('db-class' => 'PDO'),
     false

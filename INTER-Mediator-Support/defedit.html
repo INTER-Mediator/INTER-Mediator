@@ -161,6 +161,15 @@
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
+            <th>before-move-nextstep</th>
+            <td><input type="text" data-im="contexts@before-move-nextstep"/></td>
+            <th>post-query-stored</th>
+            <td><input type="text" data-im="contexts@post-query-stored"/></td>
+            <td colspan="2">"data" and "appending-data" are not supported.</td>
+
+        </tr>
+        <tr class="advanced">
+            <td class="firstcolumn"></td>
             <th colspan="6" class="title">Settings for Post-only Mode</th>
         </tr>
         <tr class="advanced">
@@ -666,7 +675,16 @@
             <th>separator</th>
             <td><input type="text" data-im="options@separator"/></td>
             <th>transaction</th>
-            <td colspan="3"><input type="text" data-im="options@transaction"/></td>
+            <td><input type="text" data-im="options@transaction"/></td>
+            <th>credit-including</th>
+            <td><input type="text" data-im="options@credit-including"/></td>
+        </tr>
+        <tr class="advanced">
+            <td class="firstcolumn"></td>
+            <th>app-locale</th>
+            <td><input type="text" data-im="options@app-locale"/></td>
+            <th>app-currency</th>
+            <td colspan="3"><input type="text" data-im="options@app-currency"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
@@ -723,6 +741,10 @@
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
+            <th colspan="6" class="title">Local Context Values</th>
+        </tr>
+        <tr class="advanced">
+            <td class="firstcolumn"></td>
             <th colspan="6" class="title">Authentication and Authorization</th>
         </tr>
         <tr class="advanced">
@@ -776,8 +798,8 @@
             <td class="firstcolumn"></td>
             <th>username</th>
             <td><input type="text" data-im="options@smtp-username"/></td>
-            <th colspan="3">password</th>
-            <td><input type="text" data-im="options@smtp-password"/></td>
+            <th>password</th>
+            <td colspan="3"><input type="text" data-im="options@smtp-password"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>

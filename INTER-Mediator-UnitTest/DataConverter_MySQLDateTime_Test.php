@@ -3,7 +3,7 @@
  * DataConverter_MySQLDateTime_Test file
  */
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-require_once(dirname(__FILE__) . '/../DataConverter_MySQLDateTime.php');
+require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_MySQLDateTime.php');
 
 class DataConverter_MySQLDateTime_Test extends PHPUnit_Framework_TestCase
 {
@@ -36,18 +36,16 @@ class DataConverter_MySQLDateTime_Test extends PHPUnit_Framework_TestCase
         $string = ' ';
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($string));
 
+        $expected = strftime('%x %H:%M:%S', strtotime('01/05/00 12:34:56'));
         if (getenv('TRAVIS') === 'true') {
-            $expected = '01/05/00 12:34:56';  // for Travis CI
-        } else {
-            $expected = strftime('%x %H:%M:%S', strtotime('01/05/00 12:34:56'));
+            //$expected = '05/01/00 12:34:56';  // for Travis CI
         }
         $datetimeString = '2000-01-05 12:34:56';
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($datetimeString));
 
+        $expected = strftime('%x', strtotime('01/05/00'));
         if (getenv('TRAVIS') === 'true') {
-            $expected = '01/05/00';  // for Travis CI
-        } else {
-            $expected = strftime('%x', strtotime('01/05/00'));
+            //$expected = '05/01/00';  // for Travis CI
         }
         $dateString = '2000-01-05';
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($dateString));

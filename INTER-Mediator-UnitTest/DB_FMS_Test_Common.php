@@ -4,12 +4,12 @@
  */
 require_once(dirname(__FILE__) . '/../DB_Interfaces.php');
 require_once(dirname(__FILE__) . '/../DB_UseSharedObjects.php');
-require_once(dirname(__FILE__) . '/../DB_AuthCommon.php');
 require_once(dirname(__FILE__) . '/../DB_Settings.php');
 require_once(dirname(__FILE__) . '/../DB_Formatters.php');
 require_once(dirname(__FILE__) . '/../DB_Proxy.php');
 require_once(dirname(__FILE__) . '/../DB_Logger.php');
 require_once(dirname(__FILE__) . '/../DB_FileMaker_FX.php');
+require_once(dirname(__FILE__) . '/../DB_FileMaker_DataAPI.php');
 require_once(dirname(__FILE__) . '/../IMUtil.php');
 require_once(dirname(__FILE__) . '/../IMLocale.php');
 require_once(dirname(__FILE__) . '/../LDAPAuth.php');
@@ -33,17 +33,19 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
 
         $this->dbProxySetupForAccess($layoutName, 1);
         $this->db_proxy->readFromDB($layoutName);
-        $this->assertEquals($expected, $this->db_proxy->dbClass->queriedEntity());
+        $this->assertEquals($expected, $this->db_proxy->dbClass->notifyHandler->queriedEntity());
     }
 
     public function testQueriedCondition()
     {
         $layoutName = 'person_layout';
         $expected = '-db=TestDB&-lay=person_layout&-lay.response=person_layout&-max=1&-sortfield.1=id&-sortorder.1=ascend&-findall';
-
         $this->dbProxySetupForAccess($layoutName, 1);
+        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+            $expected = '/fmi/rest/api/find/TestDB/person_layout';
+        }
         $this->db_proxy->readFromDB($layoutName);
-        $this->assertEquals($expected, $this->db_proxy->dbClass->queriedCondition());
+        $this->assertEquals($expected, $this->db_proxy->dbClass->notifyHandler->queriedCondition());
     }
 
     public function testExecuteScriptsforLoading()
@@ -52,7 +54,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
             $layoutName = 'person_layout';
             $this->dbProxySetupForAccess($layoutName, 1);
             $this->db_proxy->readFromDB($layoutName);
-            $this->reflectionClass = new ReflectionClass('DB_FileMaker_FX');
+            $this->reflectionClass = new ReflectionClass(get_class($this->db_proxy->dbClass));
             $method = $this->reflectionClass->getMethod('executeScriptsforLoading');
             $method->setAccessible(true);
 
@@ -175,34 +177,34 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
     public function testIsPossibleOperator()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('eq'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('cn'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('bw'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('ew'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('gt'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('gte'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('gte'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('lt'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('lte'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('neq'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('and'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('or'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('AND'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('OR'));
-        $this->assertFalse($this->db_proxy->dbClass->isPossibleOperator('='));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOperator('eq'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOperator('cn'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOperator('bw'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOperator('ew'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOperator('gt'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOperator('gte'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOperator('gte'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOperator('lt'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOperator('lte'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOperator('neq'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOperator('and'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOperator('or'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOperator('AND'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOperator('OR'));
+        $this->assertFalse($this->db_proxy->dbClass->specHandler->isPossibleOperator('='));
     }
 
     public function testIsPossibleOrderSpecifier()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('ascend'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('descend'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('asc'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('desc'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('ASCEND'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('DESCEND'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('ASC'));
-        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('DESC'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOrderSpecifier('ascend'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOrderSpecifier('descend'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOrderSpecifier('asc'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOrderSpecifier('desc'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOrderSpecifier('ASCEND'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOrderSpecifier('DESCEND'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOrderSpecifier('ASC'));
+        $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOrderSpecifier('DESC'));
     }
 
     public function testNormalizedCondition()
@@ -294,7 +296,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
             $this->dbProxySetupForAccess($layoutName, 1);
             $this->db_proxy->readFromDB($layoutName);
 
-            $this->reflectionClass = new ReflectionClass('DB_FileMaker_FX');
+            $this->reflectionClass = new ReflectionClass(get_class($this->db_proxy->dbClass));
             $method = $this->reflectionClass->getMethod('_adjustSortDirection');
             $method->setAccessible(true);
 
@@ -312,7 +314,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
 
         $this->dbProxySetupForAccess($layoutName, 1);
         $this->db_proxy->readFromDB($layoutName);
-        $this->assertFalse($this->db_proxy->dbClass->isNullAcceptable());
+        $this->assertFalse($this->db_proxy->dbClass->specHandler->isNullAcceptable());
     }
 
     public function testQuery1_singleRecord()
@@ -321,7 +323,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $result = $this->db_proxy->readFromDB("person_layout");
         $recordCount = $this->db_proxy->countQueryResult("person_layout");
         $this->assertTrue(count($result) == 1, "After the query, just one should be retrieved.");
-        $this->assertTrue($recordCount == 3, "This table contanins 3 records");
+        $this->assertEquals(3, $recordCount, "This table contanins 3 records");
         $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
         //        var_export($this->db_proxy->logger->getAllErrorMessages());
         //        var_export($this->db_proxy->logger->getDebugMessage());
@@ -333,7 +335,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $result = $this->db_proxy->readFromDB("person_layout");
         $recordCount = $this->db_proxy->countQueryResult("person_layout");
         $this->assertTrue(count($result) == 3, "After the query, some records should be retrieved.");
-        $this->assertTrue($recordCount == 3, "This table contanins 3 records");
+        $this->assertEquals(3, $recordCount, "This table contanins 3 records");
         $this->assertTrue($result[2]["name"] === 'Anyone', "Field value is not same as the definition.");
         $this->assertTrue($result[2]["id"] == 3, "Field value is not same as the definition.");
 
@@ -455,10 +457,17 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($result));
         $this->assertEquals(3654, $totalCount);
 
-        $recId = $result[0]['-recid'];
 
         $this->dbProxySetupForAccess('postalcode', 1000000);
-        $this->db_proxy->dbSettings->addExtraCriteria('-recid', 'eq', $recId);
+        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+            $recId = $result[0]['-recid'];
+            $this->db_proxy->dbSettings->addExtraCriteria('-recid', 'eq', $recId);
+        } else if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+            foreach ($result as $record) {
+                $recId = $record['recordId'];
+                $this->db_proxy->dbSettings->addExtraCriteria('recordId', 'eq', $recId);
+            }
+        }
         $result = $this->db_proxy->readFromDB('postalcode');
         $totalCount = $this->db_proxy->getTotalCount('postalcode');
         $this->assertEquals(1, count($result));
@@ -556,7 +565,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $username = 'user1';
         $expectedPasswd = 'd83eefa0a9bd7190c94e7911688503737a99db0154455354';
 
-        $retrievedPasswd = $this->db_proxy->dbClass->authSupportRetrieveHashedPassword($username);
+        $retrievedPasswd = $this->db_proxy->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
         //echo var_export($this->db_proxy->logger->getDebugMessage(), true);
         $this->assertEquals($expectedPasswd, $retrievedPasswd, $testName);
 
@@ -588,14 +597,14 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $testName = "Generate Challenge and Retrieve it";
         $username = 'user1';
         $challenge = $this->db_proxy->generateChallenge();
-        $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
-        $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
+        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($username, $challenge, "TEST");
+        $this->assertEquals($challenge, $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($username, "TEST"), $testName);
         $challenge = $this->db_proxy->generateChallenge();
-        $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
-        $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
+        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($username, $challenge, "TEST");
+        $this->assertEquals($challenge, $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($username, "TEST"), $testName);
         $challenge = $this->db_proxy->generateChallenge();
-        $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
-        $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
+        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($username, $challenge, "TEST");
+        $this->assertEquals($challenge, $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($username, "TEST"), $testName);
 
     }
 
@@ -610,12 +619,12 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $testName = "Simulation of Authentication";
         $username = 'user1';
         $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
-        $uid = $this->db_proxy->dbClass->authSupportGetUserIdFromUsername($username);
+        $uid = $this->db_proxy->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
 
         $challenge = $this->db_proxy->generateChallenge();
-        $this->db_proxy->dbClass->authSupportStoreChallenge($uid, $challenge, "TEST");
+        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
 
-        //        $challenge = $this->db_pdo->authSupportRetrieveChallenge($username, "TEST");
+        //        $challenge = $this->db_pdo->authHandler->authSupportRetrieveChallenge($username, "TEST");
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
 
@@ -653,11 +662,24 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($result) == $this->db_proxy->getDatabaseResultCount(), $testName);
 
         //based on INSERT person SET id=2,name='Someone',address='Tokyo, Japan',mail='msyk@msyk.net';
-        foreach ($result as $index => $record) {
-            if ($record['id'] == 2) {
-                $this->assertTrue($result[1]['id'] == 2, $testName);
-                $this->assertTrue($result[1]['name'] == 'Someone', $testName);
-                $this->assertTrue($result[1]['address'] == 'Tokyo, Japan', $testName);
+        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+            foreach ($result as $index => $record) {
+                if ($record['id'] == 2) {
+                    $this->assertTrue($result[1]['id'] == 2, $testName);
+                    $this->assertTrue($result[1]['name'] == 'Someone', $testName);
+                    $this->assertTrue($result[1]['address'] == 'Tokyo, Japan', $testName);
+                }
+            }
+        } else if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+            // [WIP]
+            if (!is_null($result)) {
+                foreach ($result as $record) {
+                    if ($record->id == 2) {
+                        $this->assertTrue($result->id == 2, $testName);
+                        $this->assertTrue($result->name == 'Someone', $testName);
+                        $this->assertTrue($result->address == 'Tokyo, Japan', $testName);
+                    }
+                }
             }
         }
     }
@@ -732,7 +754,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAuth();
 
         $testName = "Resolve containing group";
-        $groupArray = $this->db_proxy->dbClass->authSupportGetGroupsOfUser('user1');
+        $groupArray = $this->db_proxy->dbClass->authHandler->authSupportGetGroupsOfUser('user1');
         //echo var_export($groupArray);
         $this->assertTrue(count($groupArray) > 0, $testName);
     }
@@ -750,7 +772,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
 
         $challenge = $this->db_proxy->generateChallenge();
         //echo "\ngenerated=", $challenge;
-        $this->db_proxy->dbClass->authSupportStoreChallenge(0, $challenge, $cliendId);
+        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge(0, $challenge, $cliendId);
 
         $this->assertTrue(
             $this->db_proxy->checkChallenge($challenge, $cliendId), $testName);
@@ -760,23 +782,31 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
     {
         $this->dbProxySetupForAccess('person_layout', 1);
 
-        $className = get_class($this->db_proxy->dbClass);
-        $this->assertEquals('-recid', call_user_func(array($className, 'defaultKey')));
+        $className = get_class($this->db_proxy->dbClass->specHandler);
+        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+            $this->assertEquals('-recid', call_user_func(array($className, 'defaultKey')));
+        } else if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+            $this->assertEquals('recordId', call_user_func(array($className, 'defaultKey')));
+        }
     }
 
     public function testGetDefaultKey()
     {
         $this->dbProxySetupForAccess('person_layout', 1);
 
-        $value = $this->db_proxy->dbClass->getDefaultKey();
-        $this->assertEquals('-recid', $value);
+        $value = $this->db_proxy->dbClass->specHandler->getDefaultKey();
+        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+            $this->assertEquals('-recid', $value);
+        } else if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+            $this->assertEquals('recordId', $value);
+        }
     }
 
     public function testMultiClientSyncTableExsistence()
     {
         $testName = "Tables for storing the context and ids should be existing.";
         $this->dbProxySetupForAuth();
-        $this->assertTrue($this->db_proxy->dbClass->isExistRequiredTable(), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->isExistRequiredTable(), $testName);
     }
 
     public function testMultiClientSyncRegisterAndUnregister()
@@ -790,7 +820,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $pkArray = array(1001, 2001, 3003, 4004);
 
         $entity = "table1";
-        $registResult = $this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray);
+        $registResult = $this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray);
         //var_export($this->db_proxy->logger->getDebugMessage());
         $this->assertTrue($registResult !== false, "Register table1");
         $recSet = $this->db_proxy->dbClass->queryForTest(
@@ -809,7 +839,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
             )) == 0, "Stored pk values");
 
         $entity = "table2";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray) !== false,
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray) !== false,
             "Register table2");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
@@ -827,7 +857,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
             )) == 0, "Stored pk values");
 
         $entity = "table3";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray) !== false,
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray) !== false,
             "Register table3");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
@@ -844,7 +874,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 array($recSet[0]["pk"], $recSet[1]["pk"], $recSet[2]["pk"], $recSet[3]["pk"])
             )) == 0, "Stored pk values");
 
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId, null), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId, null), $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
         $this->assertTrue(count($recSet) == 0, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
@@ -862,9 +892,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $pkArray = array(1001, 2001, 3003, 4004);
 
         $entity = "table1";
-        $registResult1 = $this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray);
-        $registResult2 = $this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray);
-        $registResult3 = $this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray);
+        $registResult1 = $this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray);
+        $registResult2 = $this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray);
+        $registResult3 = $this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray);
         //var_export($this->db_proxy->logger->getDebugMessage());
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
@@ -879,7 +909,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 array($recSet[0]["pk"], $recSet[1]["pk"], $recSet[2]["pk"], $recSet[3]["pk"])
             )) == 0, "Stored pk values");
 
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId, array($registResult2)), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId, array($registResult2)), $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
             array("clientid"=>$clientId, "entity"=>$entity));
@@ -889,7 +919,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
             array("context_id"=>$registResult2));
         $this->assertTrue(count($recSet) == 0, "Count pk values");
 
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId, null), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId, null), $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
         $this->assertTrue(count($recSet) == 0, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
@@ -908,26 +938,26 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
 
         $entity = "table1";
         $clientId1 = "123456789ABCDEF";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId1, $entity, $condition, $pkArray1) !== false, $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId1, $entity, $condition, $pkArray1) !== false, $testName);
         $clientId2 = "ZZYYEEDDFF39887";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
 
-        $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(3003));
+        $result = $this->db_proxy->dbClass->notifyHandler->matchInRegisterd($clientId2, $entity, array(3003));
         $this->assertTrue(count($result) == 1, "Count matching");
         $this->assertTrue($result[0] == $clientId1, "Matched client id");
 
-        $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(2001));
+        $result = $this->db_proxy->dbClass->notifyHandler->matchInRegisterd($clientId2, $entity, array(2001));
         $this->assertTrue(count($result) == 1, "Count matching");
         $this->assertTrue($result[0] == $clientId1, "Matched client id");
 
-        $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(4567));
+        $result = $this->db_proxy->dbClass->notifyHandler->matchInRegisterd($clientId2, $entity, array(4567));
         $this->assertTrue(count($result) == 0, "Count matching 3");
 
-        $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(8001));
+        $result = $this->db_proxy->dbClass->notifyHandler->matchInRegisterd($clientId2, $entity, array(8001));
         $this->assertTrue(count($result) == 0, "Count matching 4");
 
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId1, null) !== false, $testName);
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId2, null) !== false, $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId1, null) !== false, $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId2, null) !== false, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
         $this->assertTrue(count($recSet) == 0, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
@@ -946,36 +976,36 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
 
         $entity = "table1";
         $clientId1 = "123456789ABCDEF";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId1, $entity, $condition, $pkArray1) !== false, $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId1, $entity, $condition, $pkArray1) !== false, $testName);
         $clientId2 = "ZZYYEEDDFF39887";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
         $clientId3 = "555588888DDDDDD";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId3, "table2", $condition, $pkArray2) !== false, $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId3, "table2", $condition, $pkArray2) !== false, $testName);
 
-        $result = $this->db_proxy->dbClass->appendIntoRegisterd($clientId1, $entity, array(101));
+        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegisterd($clientId1, $entity, array(101));
         $this->assertTrue($result[0] == $clientId2, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk"=>101));
         $this->assertTrue(count($recSet) == 2 , $testName);
 
-        $result = $this->db_proxy->dbClass->appendIntoRegisterd($clientId2, $entity, array(102));
+        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegisterd($clientId2, $entity, array(102));
         $this->assertTrue($result[0] == $clientId1, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk"=>102));
         $this->assertTrue(count($recSet) == 2 , $testName);
 
-        $result = $this->db_proxy->dbClass->appendIntoRegisterd($clientId3, "table2", array(103));
+        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegisterd($clientId3, "table2", array(103));
         $this->assertTrue(count($result) == 0, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk"=>103));
         $this->assertTrue(count($recSet) == 1 , $testName);
 
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId1, null) !== false, $testName);
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId2, null) !== false, $testName);
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId3, null) !== false, $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId1, null) !== false, $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId2, null) !== false, $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId3, null) !== false, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
         $this->assertTrue(count($recSet) == 0, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
         $this->assertTrue(count($recSet) == 0, "Count pk values");
 
-        //$result = $this->db_proxy->dbClass->removeFromRegisterd($clientId, $entity, $pkArray);
+        //$result = $this->db_proxy->dbClass->notifyHandler->removeFromRegisterd($clientId, $entity, $pkArray);
     }
 
     public function testMultiClientSyncRemove()    {
@@ -989,20 +1019,20 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
 
         $entity = "table1";
         $clientId1 = "123456789ABCDEF";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId1, $entity, $condition, $pkArray1) !== false, $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId1, $entity, $condition, $pkArray1) !== false, $testName);
         $clientId2 = "ZZYYEEDDFF39887";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
         $clientId3 = "555588888DDDDDD";
 
-        $result = $this->db_proxy->dbClass->removeFromRegisterd($clientId1, $entity, array(3003));
+        $result = $this->db_proxy->dbClass->notifyHandler->removeFromRegisterd($clientId1, $entity, array(3003));
         $this->assertTrue($result[0] == $clientId2, $testName);
 
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk"=>3003));
         $this->assertTrue(count($recSet) == 0 , $testName);
 
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId1, null), $testName);
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId2, null), $testName);
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId3, null), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId1, null), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId2, null), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId3, null), $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
         $this->assertTrue(count($recSet) == 0, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
@@ -1012,6 +1042,6 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
     public function testIsSupportAggregation()
     {
         $this->dbProxySetupForAccess('person_layout', 1);
-        $this->assertFalse($this->db_proxy->dbClass->isSupportAggregation());
+        $this->assertFalse($this->db_proxy->dbClass->specHandler->isSupportAggregation());
     }
 }

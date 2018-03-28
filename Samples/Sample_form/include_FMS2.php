@@ -60,15 +60,15 @@ IM_Entry(
             'key' => 'id',
             'repeat-control' => 'delete insert',
             'relation' => array(
-                array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => 'eq')
+                array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => 'eq', 'portal' => true)
             ),
         ),
     ),
     array(
         'formatter' => array(
-            array('field' => 'history_to@startdate', 'converter-class' => 'FMDateTime'),
+            array('field' => 'history_to@history_to::startdate', 'converter-class' => 'FMDateTime'),
             array('field' => 'contact_to@contact_to::datetime', 'converter-class' => 'FMDateTime'),
-            array('field' => 'history_to@enddate', 'converter-class' => 'FMDateTime'),
+            array('field' => 'history_to@history_to::enddate', 'converter-class' => 'FMDateTime'),
         ),
     ),
     array('db-class' => 'FileMaker_FX'),

@@ -14,14 +14,19 @@ else
   WEBROOT = "/var/www/html"
 end
 
-#describe package('ruby'), :if => os[:virtualization][:system] == 'docker' do
+#describe package('ruby'), :if => host_inventory['virtualization'][:system] == 'docker' do
 #  it { should be_installed }
 #end
 
-describe package('apache2'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
+describe package('openrc'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('httpd'), :if => os[:family] == 'redhat' do
+
+describe package('sudo') do
+  it { should be_installed }
+end
+
+describe package('curl'), :if => os[:family] == 'alpine' || (os[:family] == 'ubuntu' && os[:release].to_f >= 16) do
   it { should be_installed }
 end
 
@@ -183,6 +188,20 @@ describe package('sqlite3'), :if => os[:family] == 'ubuntu' && os[:release].to_f
   it { should be_installed }
 end
 
+describe package('software-properties-common'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_installed }
+end
+describe package('apt-transport-https'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_installed }
+end
+describe package('mssql-server'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_installed }
+end
+describe service('mssql-server'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_enabled }
+  it { should be_running }
+end
+
 describe package('acl'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed }
 end
@@ -190,7 +209,16 @@ end
 describe package('php7'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
+describe package('php7.0'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_installed }
+end
+describe package('php7.0-cli'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_installed }
+end
 describe package('php7-apache2'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('libapache2-mod-php7.0'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
   it { should be_installed }
 end
 describe package('php7-curl'), :if => os[:family] == 'alpine' do
@@ -248,6 +276,15 @@ describe package('php7-xml'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 describe package('php7-simplexml'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('php7-session'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('php7-mysqli'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('libbsd'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 describe package('php-pear'), :if => os[:family] == 'redhat' && os[:release].to_f < 6 do
@@ -334,6 +371,16 @@ describe package('php7.0-intl'), :if => os[:family] == 'ubuntu' && os[:release].
   it { should be_installed }
 end
 
+describe package('apache2'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+describe package('apache2-proxy'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('httpd'), :if => os[:family] == 'redhat' do
+  it { should be_installed }
+end
+
 describe package('git'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed }
 end
@@ -382,8 +429,8 @@ describe package('libgudev'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 
-describe package('phantomjs'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
-  it { should be_installed.by('npm').with_version('2.1.7') }
+describe package('phantomjs-prebuilt'), :if => (os[:family] == 'ubuntu' && os[:release].to_f >= 14) || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+  it { should be_installed.by('npm').with_version('2.1.16') }
 end
 
 describe package('fontconfig-dev'), :if => os[:family] == 'alpine' do
@@ -406,7 +453,13 @@ end
 describe package('samba') do
   it { should be_installed }
 end
-describe service('samba') do
+describe service('smbd'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_running }
+end
+describe service('smb'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+  it { should be_running }
+end
+describe service('samba'), :if => os[:family] == 'alpine' || (os[:family] == 'redhat' && os[:release].to_f < 7 ) || (os[:family] == 'ubuntu' && os[:release].to_f < 16) do
   it { should be_running }
 end
 
@@ -422,13 +475,13 @@ describe package('unifont'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 
-describe package('virtualbox-additions-grsec'), :if => os[:family] == 'alpine' do
+describe package('virtualbox-additions-grsec'), :if => os[:family] == 'alpine' && host_inventory['virtualization'][:system] != 'docker' do
   it { should be_installed }
 end
-describe package('virtualbox-guest-additions'), :if => os[:family] == 'alpine' do
+describe package('virtualbox-guest-additions'), :if => os[:family] == 'alpine' && host_inventory['virtualization'][:system] != 'docker' do
   it { should be_installed }
 end
-describe package('virtualbox-guest-modules-grsec'), :if => os[:family] == 'alpine' do
+describe package('virtualbox-guest-modules-grsec'), :if => os[:family] == 'alpine' && host_inventory['virtualization'][:system] != 'docker' do
   it { should be_installed }
 end
 
@@ -510,6 +563,7 @@ describe file(WEBROOT + '/params.php') do
   its(:content) { should match /\$dbOption = array\(\);/ }
   its(:content) { should match /\$dbServer = '192.168.56.1';/ }
   its(:content) { should match /\$generatedPrivateKey = <<<EOL/ }
+  its(:content) { should_not match /\$dbDataType = 'FMPro12';/ }
 end
 describe file(WEBROOT + '/params.php'), :if => os[:family] == 'alpine' do
   its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8mb4';/ }
@@ -599,7 +653,7 @@ describe command('sqlite3 /var/db/im/sample.sq3 ".tables"') do
   its(:stdout) { should match /cor_way_kind/ }
 end
 
-describe command('getfacl ' + WEBROOT), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
+describe command('getfacl ' + WEBROOT), :if => os[:family] == 'alpine' || os[:family] == 'redhat' do
   its(:stdout) { should match /^group:im-developer:rwx$/ }
   its(:stdout) { should match /^default:group:im-developer:rwx$/ }
 end
@@ -615,6 +669,15 @@ describe file('/home/developer') do
   it { should be_directory }
   it { should be_owned_by 'developer' }
   it { should be_grouped_into 'developer' }
+end
+
+describe file('/etc/apache2/conf.d/im.conf'), :if => os[:family] == 'alpine' do
+  it { should be_file }
+  its(:content) { should match /LoadModule rewrite_module modules\/mod_rewrite.so/ }
+  its(:content) { should match /LoadModule slotmem_shm_module modules\/mod_slotmem_shm.so/ }
+  its(:content) { should match /RewriteEngine on/ }
+  its(:content) { should match /RewriteRule \^\/fmi\/rest\/\(\.\*\) http:\/\/192.168.56.1\/fmi\/rest\/\$1/ }
+  its(:content) { should match /RewriteRule \^\/fmi\/xml\/\(\.\*\)  http:\/\/192.168.56.1\/fmi\/xml\/\$1/ }
 end
 
 describe file('/etc/php7/php.ini'), :if => os[:family] == 'alpine' do

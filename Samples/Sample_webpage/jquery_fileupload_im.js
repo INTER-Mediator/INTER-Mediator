@@ -11,83 +11,83 @@
 // https://github.com/blueimp/jQuery-File-Upload
 // https://blueimp.github.io/jQuery-File-Upload/index.html
 
-IMParts_Catalog["jquery_fileupload"] = {
-    panelWidth:  "200px",
+IMParts_Catalog.jquery_fileupload = {
+    panelWidth: '200px',
 
     instanciate: function (targetNode) {
         var container, node, pNode = targetNode;
         var nodeId = targetNode.getAttribute('id');
         this.ids.push(nodeId);
 
-        container = document.createElement("DIV");
-        container.setAttribute("class", "container");
+        container = document.createElement('DIV');
+        container.setAttribute('class', 'container');
         container.style.width = this.panelWidth;
         pNode.appendChild(container);
 
-        node = document.createElement("SPAN");
-        node.setAttribute("class", "btn btn-success fileinput-button");
+        node = document.createElement('SPAN');
+        node.setAttribute('class', 'btn btn-success fileinput-button');
         container.appendChild(node);
         pNode = node;
 
-        node = document.createElement("I");
-        node.setAttribute("class", "glyphicon glyphicon-plus");
+        node = document.createElement('I');
+        node.setAttribute('class', 'glyphicon glyphicon-plus');
         pNode.appendChild(node);
-        node = document.createElement("SPAN");
+        node = document.createElement('SPAN');
         node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[3209]));
         pNode.appendChild(node);
-        node = document.createElement("INPUT");
-        node.setAttribute("id", nodeId + "-fileupload");
-        node.setAttribute("type", "file");
-        node.setAttribute("name", "files[]");
+        node = document.createElement('INPUT');
+        node.setAttribute('id', nodeId + '-fileupload');
+        node.setAttribute('type', 'file');
+        node.setAttribute('name', 'files[]');
         pNode.appendChild(node);
-        container.appendChild(document.createElement("BR"));
+        container.appendChild(document.createElement('BR'));
 
-        node = document.createElement("DIV");
-        node.setAttribute("id", nodeId + "-filenamearea");
-        node.style.display = "none";
-        node.style.width = "100%";
+        node = document.createElement('DIV');
+        node.setAttribute('id', nodeId + '-filenamearea');
+        node.style.display = 'none';
+        node.style.width = '100%';
         container.appendChild(node);
         pNode = node;
 
-        node = document.createElement("SPAN");
+        node = document.createElement('SPAN');
         node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[3210]));
-        node.style.color = "gray";
+        node.style.color = 'gray';
         pNode.appendChild(node);
-        pNode.appendChild(document.createElement("BR"));
-        node = document.createElement("SPAN");
-        node.setAttribute("id", nodeId + "-filename");
-        node.style.width = "100%";
+        pNode.appendChild(document.createElement('BR'));
+        node = document.createElement('SPAN');
+        node.setAttribute('id', nodeId + '-filename');
+        node.style.width = '100%';
         pNode.appendChild(node);
-        pNode.appendChild(document.createElement("BR"));
-        pNode.appendChild(document.createTextNode(" "));
-        pNode.appendChild(document.createElement("BR"));
+        pNode.appendChild(document.createElement('BR'));
+        pNode.appendChild(document.createTextNode(' '));
+        pNode.appendChild(document.createElement('BR'));
 
-        node = document.createElement("DIV");
-        node.setAttribute("id", nodeId + "-uploadarea");
-        node.style.display = "none";
-        node.style.marginTop = "20px";
-        node.setAttribute("class", "btn btn-primary");
+        node = document.createElement('DIV');
+        node.setAttribute('id', nodeId + '-uploadarea');
+        node.style.display = 'none';
+        node.style.marginTop = '20px';
+        node.setAttribute('class', 'btn btn-primary');
         container.appendChild(node);
         pNode = node;
 
-        node = document.createElement("I");
-        node.setAttribute("class", "glyphicon");
+        node = document.createElement('I');
+        node.setAttribute('class', 'glyphicon');
         pNode.appendChild(node);
-        node = document.createElement("SPAN");
+        node = document.createElement('SPAN');
         node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[3211]));
         pNode.appendChild(node);
 
-        node = document.createElement("DIV");
-        node.style.marginTop = "6px";
-        node.setAttribute("class", "progress");
+        node = document.createElement('DIV');
+        node.style.marginTop = '6px';
+        node.setAttribute('class', 'progress');
         container.appendChild(node);
         pNode = node;
 
-        node = document.createElement("DIV");
-        node.setAttribute("id", nodeId + "-progress");
-        node.style.height = "18px";
-        node.style.background = "green";
-        node.style.width = "0";
+        node = document.createElement('DIV');
+        node.setAttribute('id', nodeId + '-progress');
+        node.style.height = '18px';
+        node.style.background = 'green';
+        node.style.width = '0';
         pNode.appendChild(node);
 
         targetNode._im_getComponentId = (function () {
@@ -116,41 +116,15 @@ IMParts_Catalog["jquery_fileupload"] = {
         var shaObj, hmacValue, formData, targetId, targetNode, cInfo, keyValue;
         for (var i = 0; i < this.ids.length; i++) {
             targetId = this.ids[i];
-            cInfo = IMLibContextPool.getContextInfoFromId(targetId, "");
-            keyValue = cInfo.record.split("=");
-            targetNode = $('#' + targetId + "-fileupload");
+            cInfo = IMLibContextPool.getContextInfoFromId(targetId, '');
+            keyValue = cInfo.record.split('=');
+            targetNode = $('#' + targetId + '-fileupload');
             if (targetNode) {
-                formData = [
-                    {name: 'access', value: 'uploadfile'},
-                    {name: '_im_contextnewrecord', value: 'uploadfile'},
-                    {name: '_im_contextname', value: cInfo.context.contextName},
-                    {name: '_im_field', value: cInfo.field},
-                    {name: '_im_keyfield', value: keyValue[0]},
-                    {name: '_im_keyvalue', value: keyValue[1]},
-                    {name: 'authuser', value: INTERMediatorOnPage.authUser}
-                ];
-                if (INTERMediatorOnPage.authUser.length > 0) {
-                    formData.push({name: 'clientid', value: INTERMediatorOnPage.clientId});
-                    if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
-                        shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, "ASCII");
-                        hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge,
-                            "ASCII", "SHA-256", "HEX");
-                        formData.push({name: 'response', value: hmacValue});
-                    } else {
-                        formData.push({name: 'response', value: 'dummydummy'});
-                    }
-                    formData.push({
-                        name: 'cresponse',
-                        value: INTERMediatorOnPage.publickey.biEncryptedString(
-                            INTERMediatorOnPage.authCryptedPassword + "\n" +
-                            INTERMediatorOnPage.authChallenge)
-                    });
-                }
                 targetNode.fileupload({
                     dataType: 'json',
-                    url: INTERMediatorOnPage.getEntryPath() + "?access=uploadfile",
+                    url: INTERMediatorOnPage.getEntryPath() + '?access=uploadfile',
                     limitConcurrentUploads: 1,
-                    formData: formData,
+                    //formData: formData,
                     add: (function () {
                         var idValue = targetId;
                         return function (e, data) {
@@ -159,16 +133,53 @@ IMParts_Catalog["jquery_fileupload"] = {
                             $('#' + idValue + '-uploadarea').css('display', 'inline');
                             $('#' + idValue + '-uploadarea').click(function () {
                                 data.submit();
-                            })
+                            });
                         };
                     })(),
-                    done:(function () {
+                    submit: (function () {
+                        var cName = cInfo.context.contextName, cField = cInfo.field,
+                            keyField = keyValue[0], kv = keyValue[1];
+                        return function (e, data) {
+                            var fdata = [];
+                            fdata.push({name: 'access', value: 'uploadfile'});
+                            fdata.push({name: '_im_contextnewrecord', value: 'uploadfile'});
+                            fdata.push({name: '_im_contextname', value: cName});
+                            fdata.push({name: '_im_field', value: cField});
+                            fdata.push({name: '_im_keyfield', value: keyField});
+                            fdata.push({name: '_im_keyvalue', value: kv});
+                            fdata.push({name: 'authuser', value: INTERMediatorOnPage.authUser});
+                            if (INTERMediatorOnPage.authUser.length > 0) {
+                                fdata.push({name: 'clientid', value: INTERMediatorOnPage.clientId});
+                                if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
+                                    shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, 'ASCII');
+                                    hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge,
+                                        'ASCII', 'SHA-256', 'HEX');
+                                    fdata.push({name: 'response', value: hmacValue});
+                                } else {
+                                    fdata.push({name: 'response', value: 'dummydummy'});
+                                }
+                                fdata.push({
+                                    name: 'cresponse',
+                                    value: INTERMediatorOnPage.publickey.biEncryptedString(
+                                        INTERMediatorOnPage.authCryptedPassword + '\n' +
+                                        INTERMediatorOnPage.authChallenge)
+                                });
+                            }
+                            data.formData = fdata;
+                        };
+                    })(),
+                    done: (function () {
                         var cName = cInfo.context.contextName;
                         return function (e, data) {
                             var result = INTERMediator_DBAdapter.uploadFileAfterSucceed(
-                                data.jqXHR, function () {}, function () {}, true);
+                                data.jqXHR,
+                                function () {},
+                                function () {},
+                                true
+                            );
                             data.jqXHR.abort();
                             if (result) {
+                                INTERMediatorLog.flushMessage();
                                 INTERMediator.construct(IMLibContextPool.contextFromName(cName));
                             }
                         };

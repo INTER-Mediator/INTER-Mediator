@@ -32,7 +32,6 @@ IM_Entry(
         'port' =>'80',
         'user' => 'web',
         'password' => 'password',
-        'datatype' => 'FMPro7',
         'database' => 'TestDB',
         'protocol' => 'HTTP',
     ),

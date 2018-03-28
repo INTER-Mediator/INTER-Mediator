@@ -27,23 +27,15 @@ IM_Entry(
             'default-values' => array(
                 array('field' => 'postdt', 'value' => date("Y-m-d H:i:s")),
             ),
-//            'repeat-control' => 'delete',
             'authentication' => array(
                 'all' => array( // load, update, new, delete
-//                    'user' => array (),
-//                    'group' => array(),
-//                    'target' => 'table',
                     'target' => 'field-user',
                     'field' => 'user',
-//                    'field' => 'groupname',
                 ),
             ),
         ),
     ),
     array(
-        'formatter' => array(
-            array('field' => 'chat@postdt', 'converter-class' => 'MySQLDateTime'),
-        ),
         'authentication' => array( // table only, for all operations
             'user' => array('user1'), // Itemize permitted users
             'group' => array('group2'), // Itemize permitted groups

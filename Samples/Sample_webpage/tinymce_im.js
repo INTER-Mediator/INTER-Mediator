@@ -8,17 +8,17 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-tinymceOption = {
-    theme: "modern",
+var tinymceOption = {
+    theme: 'modern',
     width: 900,
     height: 100,
-    plugins: ["advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker",
-        "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
-        "save table contextmenu directionality emoticons template paste textcolor"],
-    content_css: "css/content.css",
-    toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify " +
-        "| bullist numlist outdent indent | link image | print preview media fullpage " +
-        "| forecolor backcolor emoticons",
+    plugins: ['advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker',
+        'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+        'save table contextmenu directionality emoticons template paste textcolor'],
+    content_css: 'css/content.css',
+    toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify ' +
+        '| bullist numlist outdent indent | link image | print preview media fullpage ' +
+        '| forecolor backcolor emoticons',
     style_formats: [
         {title: 'Bold text', inline: 'b'},
         {title: 'Red text', inline: 'span', styles: {color: '#ff0000'}},
@@ -30,7 +30,7 @@ tinymceOption = {
     ]
 };
 
-IMParts_Catalog["tinymce"] = {
+IMParts_Catalog['tinymce'] = {
     instanciate: function (parentNode) {
         var newId = parentNode.getAttribute('id') + '-e';
         this.ids.push(newId);
@@ -59,8 +59,8 @@ IMParts_Catalog["tinymce"] = {
         if (!tinymceOption) {
             tinymceOption = {};
         }
-        tinymceOption['mode'] = 'specific_textareas';
-        tinymceOption['elements'] = this.ids.join(',');
+        tinymceOption.mode = 'specific_textareas';
+        tinymceOption.elements = this.ids.join(',');
         if (update) {
             tinymceOption.setup = function (ed) {
                 ed.on('change', (function () {

@@ -23,7 +23,7 @@ class SendMail
     {
         $isError = false;
         $errorMsg = "";
-        for($i = 0 ; $i < count($result) ; $i++) {
+        for ($i = 0; $i < count($result); $i++) {
             $ome = new OME();
 
             if (isset($sendMailParam['f-option']) && $sendMailParam['f-option'] === true) {
@@ -33,10 +33,6 @@ class SendMail
                 $ome->setBodyWidth($sendMailParam['body-wrap']);
             }
 
-            $altSMTPConfig = $this->getSmtpConfigFromParams();
-            if ($altSMTPConfig !== false && is_array($altSMTPConfig)) {
-                $smtpConfig = $altSMTPConfig;
-            }
             if (isset($smtpConfig) && is_array($smtpConfig)) {
                 if (isset($smtpConfig['password'])) {
                     $ome->setSmtpInfo(array(
@@ -94,7 +90,18 @@ class SendMail
                 $ome->setFromField($result[$i][$sendMailParam['from']]);
             }
             if (isset($sendMailParam['subject-constant'])) {
-                $ome->setSubject($sendMailParam['subject-constant']);
+                $subjectStr = $sendMailParam['subject-constant'];
+                $startPos = strpos($subjectStr, '@@');
+                $endPos = strpos($subjectStr, '@@', $startPos + 2);
+                while ($startPos !== false && $endPos !== false) {
+                    $fieldName = trim(substr($subjectStr, $startPos + 2, $endPos - $startPos - 2));
+                    $subjectStr = substr($subjectStr, 0, $startPos) .
+                        (isset($result[$i][$fieldName]) ? $result[$i][$fieldName] : '') .
+                        substr($subjectStr, $endPos + 2);
+                    $startPos = strpos($subjectStr, '@@');
+                    $endPos = strpos($subjectStr, '@@', $startPos + 2);
+                }
+                $ome->setSubject($subjectStr);
             } else if (isset($result[$i]) && isset($sendMailParam['subject']) && isset($result[$i][$sendMailParam['subject']])) {
                 $ome->setSubject($result[$i][$sendMailParam['subject']]);
             }
@@ -105,7 +112,7 @@ class SendMail
                 if (isset($sendMailParam['body-fields'])) {
                     foreach (explode(',', $sendMailParam['body-fields']) as $fieldName) {
                         $fieldName = trim($fieldName);
-                        if (substr($fieldName, 0, 1) == '@')    {
+                        if (substr($fieldName, 0, 1) == '@') {
                             $dataArray[] = substr($fieldName, 1);
                         } else if (isset($result[$i]) && isset($result[$i][$fieldName])) {
                             $dataArray[] = $result[$i][$fieldName];
@@ -116,35 +123,29 @@ class SendMail
                 }
                 $ome->insertToTemplate($dataArray);
             } else if (isset($sendMailParam['body-constant'])) {
-                $ome->setBody($sendMailParam['body-constant']);
+                $bodyStr = $sendMailParam['body-constant'];
+                $startPos = strpos($bodyStr, '@@');
+                $endPos = strpos($bodyStr, '@@', $startPos + 2);
+                while ($startPos !== false && $endPos !== false) {
+                    $fieldName = trim(substr($bodyStr, $startPos + 2, $endPos - $startPos - 2));
+                    $bodyStr = substr($bodyStr, 0, $startPos) .
+                        (isset($result[$i][$fieldName]) ? $result[$i][$fieldName] : '') .
+                        substr($bodyStr, $endPos + 2);
+                    $startPos = strpos($bodyStr, '@@');
+                    $endPos = strpos($bodyStr, '@@', $startPos + 2);
+                }
+                $ome->setBody($bodyStr);
             } else if (isset($result[$i]) && $sendMailParam['body'] && isset($result[$i][$sendMailParam['body']])) {
                 $ome->setBody($result[$i][$sendMailParam['body']]);
             }
             if (!$ome->send()) {
                 $isError = true;
-                $errorMsg .= strlen($errorMsg) > 0 ; " / ";
-                $errorMsg .= $ome->getErrorMessage();
+                $errorMsg .= (strlen($errorMsg) > 0) ? " / {$ome->getErrorMessage()}" : '';
             }
         }
-        if($isError)    {
+        if ($isError) {
             return $errorMsg;
         }
         return true;
-    }
-
-    private function getSmtpConfigFromParams()
-    {
-        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-        $currentDirParam = $currentDir . 'params.php';
-        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
-        if (file_exists($parentDirParam)) {
-            include($parentDirParam);
-        } else if (file_exists($currentDirParam)) {
-            include($currentDirParam);
-        }
-        if (isset($sendMailSMTP)) {
-            return $sendMailSMTP;
-        }
-        return false;
     }
 }

@@ -36,7 +36,6 @@ IM_Entry(
         'server' => '192.168.56.1',
         'port' => '80',
         'protocol' => 'http',
-        'datatype' => 'FMPro12',
     ),
     false
 );

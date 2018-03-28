@@ -25,12 +25,10 @@ IM_Entry(
                 array('field' => 'postdt', 'direction' => 'descend'),
             ),
             'default-values' => array(
-                array('field' => 'postdt', 'value' => date("Y-m-d H:i:s")),
+                array('field' => 'postdt', 'value' => date("m/d/Y H:i:s")),
             ),
             'authentication' => array(
                 'all' => array( // load, update, new, delete
-//                    'user' => array (),
-//                    'group' => array(),
                     'target' => 'field-user',
                     'field' => 'user',
                 ),
@@ -38,9 +36,6 @@ IM_Entry(
         ),
     ),
     array(
-        'formatter' => array(
-            array('field' => 'chat@postdt', 'converter-class' => 'FMDateTime'),
-        ),
         'authentication' => array( // table only, for all operations
             'user' => array('user1'), // Itemize permitted users
             'group' => array('group2'), // Itemize permitted groups

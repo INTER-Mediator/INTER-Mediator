@@ -34,6 +34,12 @@ class DB_Logger
     {
     }
 
+    public function clearLogs()
+    {
+        $this->errorMessage = array();
+        $this->debugMessage = array();
+    }
+
     public function setDebugMessage($str, $level = 1)
     {
         if ($this->debugLevel !== false && $this->debugLevel >= $level) {
@@ -51,11 +57,11 @@ class DB_Logger
         $q = '"';
         $returnData = array();
         foreach ($this->errorMessage as $oneError) {
-            $returnData[] = "INTERMediator.setErrorMessage({$q}"
+            $returnData[] = "INTERMediatorLog.setErrorMessage({$q}"
                 . str_replace("\n", " ", addslashes($oneError)) . "{$q});";
         }
         foreach ($this->debugMessage as $oneError) {
-            $returnData[] = "INTERMediator.setDebugMessage({$q}"
+            $returnData[] = "INTERMediatorLog.setDebugMessage({$q}"
                 . str_replace("\n", " ", addslashes($oneError)) . "{$q});";
         }
         return $returnData;

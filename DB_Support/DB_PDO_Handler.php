@@ -1,10 +1,17 @@
 <?php
 
 /**
- * Created by PhpStorm.
- * User: msyk
- * Date: 2016/07/09
- * Time: 0:54
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 require_once("DB_PDO_MySQL_Handler.php");
@@ -32,11 +39,23 @@ abstract class DB_PDO_Handler
             $instance = new DB_PDO_SQLite_Handler();
             $instance->dbClassObj = $dbObj;
             return $instance;
+        } else if (strpos($dsn, 'sqlsrv:') === 0) {
+            $instance = new DB_PDO_SQLServer_Handler();
+            $instance->dbClassObj = $dbObj;
+            return $instance;
         }
         return null;
     }
 
     public abstract function sqlSELECTCommand();
+
+    public function sqlOrderByCommand($sortClause, $limit, $offset)
+    {
+        return
+            (strlen($sortClause) > 0 ? "ORDER BY {$sortClause} " : "") .
+            (strlen($limit) > 0 ? "LIMIT {$limit} " : "") .
+            (strlen($offset) > 0 ? "OFFSET {$offset} " : "");
+    }
 
     public abstract function sqlDELETECommand();
 
@@ -46,14 +65,14 @@ abstract class DB_PDO_Handler
 
     public abstract function sqlSETClause($setColumnNames, $keyField, $setValues);
 
-    public function copyRecords($tableInfo, $queryClause, $assocField, $assocValue)
+    public function copyRecords($tableInfo, $queryClause, $assocField, $assocValue, $defaultValues)
     {
         $tableName = isset($tableInfo["table"]) ? $tableInfo["table"] : $tableInfo["name"];
         try {
-            list($fieldList, $listList) = $this->getFieldLists(
-                $tableName, $tableInfo['key'], $assocField, $assocValue);
+            list($fieldList, $listList) = $this->getFieldListsForCopy(
+                $tableName, $tableInfo['key'], $assocField, $assocValue, $defaultValues);
             $sql = "{$this->sqlINSERTCommand()}{$tableName} ({$fieldList}) " .
-                "SELECT {$listList} FROM {$tableName} WHERE {$queryClause}";
+                "{$this->sqlSELECTCommand()}{$listList} FROM {$tableName} WHERE {$queryClause}";
             $this->dbClassObj->logger->setDebugMessage($sql);
             $result = $this->dbClassObj->link->query($sql);
             if (!$result) {
@@ -76,5 +95,6 @@ abstract class DB_PDO_Handler
 
     protected abstract function getTableInfo($tableName);
 
-    protected abstract function getFieldLists($tableName, $keyField, $assocField, $assocValue);
+    protected abstract function getFieldListsForCopy(
+        $tableName, $keyField, $assocField, $assocValue, $defaultValues);
 }

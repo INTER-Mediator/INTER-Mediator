@@ -61,7 +61,7 @@ function changeIncludeIMPath($src, $validStatement)
     }
 }
 
-class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
+class DB_DefEditor extends DB_UseSharedObjects implements DB_Interface
 {
     private $recordCount;
     private $isRequiredUpdated = false;
@@ -136,6 +136,9 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         'aggregation-select' => getValueFromArray($context, 'aggregation-select'),
                         'aggregation-from' => getValueFromArray($context, 'aggregation-from'),
                         'aggregation-group-by' => getValueFromArray($context, 'aggregation-group-by'),
+                        'post-query-stored' => getValueFromArray($context, 'post-query-stored'),
+                        'post-query-stored' => getValueFromArray($context, 'post-query-stored'),
+                        'before-move-nextstep' => getValueFromArray($context, 'before-move-nextstep'),
                         'buttonnames-insert' => getValueFromArray($context, 'button-names', 'insert'),
                         'buttonnames-delete' => getValueFromArray($context, 'button-names', 'delete'),
                         'buttonnames-copy' => getValueFromArray($context, 'button-names', 'copy'),
@@ -348,6 +351,9 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     'transaction' => getValueFromArray($globalOptions, 'transaction'),
                     'media-root-dir' => getValueFromArray($globalOptions, 'media-root-dir'),
                     'media-context' => getValueFromArray($globalOptions, 'media-context'),
+                    'credit-including' => getValueFromArray($globalOptions, 'credit-including'),
+                    'app-locale' => getValueFromArray($globalOptions, 'app-locale'),
+                    'app-currency' => getValueFromArray($globalOptions, 'app-currency'),
                     'authentication-user-table' => getValueFromArray(
                         $globalOptions, 'authentication', 'user-table'),
                     'authentication-group-table' => getValueFromArray(
@@ -1187,193 +1193,58 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         }
     }
 
-    public
-    function getDefaultKey()
-    {
-        // TODO: Implement getDefaultKey() method.
-    }
-
-    public
-    function isPossibleOperator($operator)
-    {
-        // TODO: Implement isPossibleOperator() method.
-    }
-
-    public
-    function isPossibleOrderSpecifier($specifier)
-    {
-        // TODO: Implement isPossibleOrderSpecifier() method.
-    }
-
-    public
-    function requireUpdatedRecord($value)
+    public function requireUpdatedRecord($value)
     {
         $this->isRequiredUpdated = $value;
     }
 
-    public
-    function updatedRecord()
+    public function updatedRecord()
     {
         return $this->updatedRecord;
     }
 
-    public
-    function isContainingFieldName($fname, $fieldnames)
-    {
-        // TODO: Implement isContainingFieldName() method.
-    }
-
-    public
-    function isNullAcceptable()
-    {
-        // TODO: Implement isNullAcceptable() method.
-    }
-
-    public
-    function softDeleteActivate($field, $value)
+    public function softDeleteActivate($field, $value)
     {
         // TODO: Implement softDeleteActivate() method.
     }
 
-    public
-    function copyInDB()
+    public function copyInDB()
     {
         return false;
     }
 
-    public
-    function isSupportAggregation()
-    {
-        return false;
-
-    }
-
-    public
-    function getFieldInfo($dataSourceName)
+    public function getFieldInfo($dataSourceName)
     {
         // TODO: Implement getFieldInfo() method.
     }
 
-    public
-    function setupConnection()
+    public function setupConnection()
     {
         return true;
     }
 
-    public
-    static function defaultKey()
+    public function setupHandlers($dsn = false)
     {
-        // TODO: Implement defaultKey() method.
+        // TODO: Implement setupHandlers() method.
     }
 
-    public
-    function authSupportStoreChallenge($uid, $challenge, $clientId)
+    public function normalizedCondition($condition)
     {
-        // TODO: Implement authSupportStoreChallenge() method.
+        // TODO: Implement normalizedCondition() method.
     }
 
-    public
-    function authSupportRemoveOutdatedChallenges()
+    public function setUpdatedRecord($field, $value, $index = 0)
     {
-        // TODO: Implement authSupportRemoveOutdatedChallenges() method.
+        // TODO: Implement setUpdatedRecord() method.
     }
 
-    public
-    function authSupportRetrieveChallenge($uid, $clientId, $isDelete = true)
+    public function queryForTest($table, $conditions = null)
     {
-        // TODO: Implement authSupportRetrieveChallenge() method.
+        // TODO: Implement queryForTest() method.
     }
 
-    public
-    function authSupportCheckMediaToken($uid)
+    public function deleteForTest($table, $conditions = null)
     {
-        // TODO: Implement authSupportCheckMediaToken() method.
-    }
-
-    public
-    function authSupportRetrieveHashedPassword($username)
-    {
-        // TODO: Implement authSupportRetrieveHashedPassword() method.
-    }
-
-    public
-    function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null)
-    {
-        // TODO: Implement authSupportCreateUser() method.
-    }
-
-    public
-    function authSupportChangePassword($username, $hashednewpassword)
-    {
-        // TODO: Implement authSupportChangePassword() method.
-    }
-
-    public
-    function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue)
-    {
-        // TODO: Implement authSupportCheckMediaPrivilege() method.
-    }
-
-    public
-    function authSupportGetUserIdFromEmail($email)
-    {
-        // TODO: Implement authSupportGetUserIdFromEmail() method.
-    }
-
-    public
-    function authSupportGetUserIdFromUsername($username)
-    {
-        // TODO: Implement authSupportGetUserIdFromUsername() method.
-    }
-
-    public
-    function authSupportGetUsernameFromUserId($userid)
-    {
-        // TODO: Implement authSupportGetUsernameFromUserId() method.
-    }
-
-    public
-    function authSupportGetGroupNameFromGroupId($groupid)
-    {
-        // TODO: Implement authSupportGetGroupNameFromGroupId() method.
-    }
-
-    public
-    function authSupportGetGroupsOfUser($user)
-    {
-        // TODO: Implement authSupportGetGroupsOfUser() method.
-    }
-
-    public
-    function authSupportUnifyUsernameAndEmail($username)
-    {
-        // TODO: Implement authSupportUnifyUsernameAndEmail() method.
-    }
-
-    public
-    function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)
-    {
-        // TODO: Implement authSupportStoreIssuedHashForResetPassword() method.
-    }
-
-    public
-    function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
-    {
-        // TODO: Implement authSupportCheckIssuedHashForResetPassword() method.
-    }
-
-    public function authSupportUserEnrollmentStart($userid, $hash)
-    {
-        // TODO: Implement authSupportUserEnrollmentStart() method.
-    }
-
-    public function authSupportUserEnrollmentActivateUser($userID, $password, $rawPWField, $rawPW)
-    {
-        // TODO: Implement authSupportUserEnrollmentActivateUser() method.
-    }
-
-    public function authSupportUserEnrollmentEnrollingUser($hash)
-    {
-        // TODO: Implement authSupportUserEnrollmentEnrollingUser() method.
+        // TODO: Implement deleteForTest() method.
     }
 }

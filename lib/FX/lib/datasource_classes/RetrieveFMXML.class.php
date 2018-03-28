@@ -67,7 +67,7 @@ class RetrieveFMXML extends RetrieveFXData {
             return 'ERROR-TOC name is conflicted.';
         }
         $tocName = substr($fieldName,0,$p);
-        if ($this->FX->remainNamesReverse[$tocName] !== true)   {
+        if (!$this->FX->remainNamesReverse[$tocName])   {
             return $this->FX->remainNamesReverse[$tocName];
         }
         return $tocName;

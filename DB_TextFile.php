@@ -1,4 +1,5 @@
 <?php
+
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -12,8 +13,7 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
-class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
+class DB_TextFile extends DB_UseSharedObjects implements DB_Interface
 {
     private $recordCount;
 
@@ -140,7 +140,7 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
         if ($includeContext && isset($tableInfo['query'][0])) {
             foreach ($tableInfo['query'] as $condition) {
                 if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
-                    if (!$this->isPossibleOperator($condition['operator'])) {
+                    if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
                         throw new Exception("Invalid Operator.: {$condition['operator']}");
                     }
                     $queryClauseArray[] = array(
@@ -155,7 +155,7 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
         if ($includeExtra && isset($exCriteria[0])) {
             foreach ($this->dbSettings->getExtraCriteria() as $condition) {
                 if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
-                    if (!$this->isPossibleOperator($condition['operator'])) {
+                    if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
                         throw new Exception("Invalid Operator.: {$condition['operator']}");
                     }
                     $queryClauseArray[] = array(
@@ -217,14 +217,12 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
         return $sortClause;
     }
 
-    public
-    function updateDB()
+    public function updateDB()
     {
 
     }
 
-    public
-    function deleteFromDB()
+    public function deleteFromDB()
     {
     }
 
@@ -233,101 +231,9 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
         // TODO: Implement getFieldInfo() method.
     }
 
-    function authSupportStoreChallenge($username, $challenge, $clientId)
-    {
-        // TODO: Implement authSupportStoreChallenge() method.
-    }
-
-    function authSupportRemoveOutdatedChallenges()
-    {
-        // TODO: Implement authSupportRemoveOutdatedChallenges() method.
-    }
-
-    function authSupportRetrieveChallenge($username, $clientId, $isDelete = true)
-    {
-        // TODO: Implement authSupportRetrieveChallenge() method.
-    }
-
-    function authSupportRetrieveHashedPassword($username)
-    {
-        // TODO: Implement authSupportRetrieveHashedPassword() method.
-    }
-
-    function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null)
-    {
-        // TODO: Implement authSupportCreateUser() method.
-    }
-
-    function authSupportChangePassword($username, $hashednewpassword)
-    {
-        // TODO: Implement authSupportChangePassword() method.
-    }
-
-    function authSupportCheckMediaToken($user)
-    {
-        // TODO: Implement authSupportCheckMediaToken() method.
-    }
-
-    function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue)
-    {
-        // TODO: Implement authSupportCheckMediaPrivilege() method.
-    }
-
-    function authSupportGetUserIdFromEmail($email)
-    {
-        // TODO: Implement authSupportGetUserIdFromEmail() method.
-    }
-
-    function authSupportGetUserIdFromUsername($username)
-    {
-        // TODO: Implement authSupportGetUserIdFromUsername() method.
-    }
-
-    function authSupportGetUsernameFromUserId($userid)
-    {
-        // TODO: Implement authSupportGetUsernameFromUserId() method.
-    }
-
-    function authSupportGetGroupNameFromGroupId($groupid)
-    {
-        // TODO: Implement authSupportGetGroupNameFromGroupId() method.
-    }
-
-    function authSupportGetGroupsOfUser($user)
-    {
-        // TODO: Implement authSupportGetGroupsOfUser() method.
-    }
-
-    function authSupportUnifyUsernameAndEmail($username)
-    {
-        // TODO: Implement authSupportUnifyUsernameAndEmail() method.
-    }
-
-    function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)
-    {
-        // TODO: Implement authSupportStoreIssuedHashForResetPassword() method.
-    }
-
-    function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
-    {
-        // TODO: Implement authSupportCheckIssuedHashForResetPassword() method.
-    }
-
-    public
-    function setupConnection()
+    public function setupConnection()
     {
         // TODO: Implement setupConnection() method.
-    }
-
-    public
-    static function defaultKey()
-    {
-        // TODO: Implement defaultKey() method.
-    }
-
-    public function getDefaultKey()
-    {
-        // TODO: Implement getDefaultKey() method.
     }
 
     public function isPossibleOperator($operator)
@@ -352,16 +258,6 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
         // TODO: Implement updatedRecord() method.
     }
 
-    public function isContainingFieldName($fname, $fieldnames)
-    {
-        // TODO: Implement isContainingFieldName() method.
-    }
-
-    public function isNullAcceptable()
-    {
-        // TODO: Implement isNullAcceptable() method.
-    }
-
     public function createInDB($bypassAuth)
     {
         // TODO: Implement newToDB() method.
@@ -382,18 +278,28 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
         // TODO: Implement getTotalCount() method.
     }
 
-    public function isSupportAggregation()
+    public function setupHandlers($dsn = false)
     {
-        return false;
+        // TODO: Implement setupHandlers() method.
     }
 
-    public function authSupportUserEnrollmentStart($userid, $hash)
+    public function normalizedCondition($condition)
     {
-        // TODO: Implement authSupportUserEnrollmentStart() method.
+        // TODO: Implement normalizedCondition() method.
     }
 
-    public function authSupportUserEnrollmentActivateUser($hash, $password)
+    public function setUpdatedRecord($field, $value, $index = 0)
     {
-        // TODO: Implement authSupportUserEnrollmentActivateUser() method.
+        // TODO: Implement setUpdatedRecord() method.
+    }
+
+    public function queryForTest($table, $conditions = null)
+    {
+        // TODO: Implement queryForTest() method.
+    }
+
+    public function deleteForTest($table, $conditions = null)
+    {
+        // TODO: Implement deleteForTest() method.
     }
 }

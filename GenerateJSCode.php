@@ -32,18 +32,16 @@ class GenerateJSCode
     public function generateDebugMessageJS($message)
     {
         $q = '"';
-        echo "INTERMediator.setDebugMessage({$q}"
+        echo "INTERMediatorLog.setDebugMessage({$q}"
             . str_replace("\n", " ", addslashes($message)) . "{$q});";
     }
 
     public function generateErrorMessageJS($message)
     {
         $q = '"';
-        echo "INTERMediator.setErrorMessage({$q}"
+        echo "INTERMediatorLog.setErrorMessage({$q}"
             . str_replace("\n", " ", addslashes($message)) . "{$q});";
     }
-
-    private $defaultsArray;
 
     public function generateInitialJSCode($datasource, $options, $dbspecification, $debug)
     {
@@ -58,15 +56,13 @@ class GenerateJSCode
         $oAuthRedirect = null;
         $themeName = "default";
         $dbClass = null;
-        $appLocale = null;
-        $appCurrency = null;
         $params = IMUtil::getFromParamsPHPFile(array(
             "generatedPrivateKey", "passPhrase", "browserCompatibility",
             "scriptPathPrefix", "scriptPathSuffix",
             "oAuthProvider", "oAuthClientID", "oAuthRedirect",
-            "passwordPolicy", "documentRootPrefix", "dbClass",
+            "passwordPolicy", "documentRootPrefix", "dbClass", "dbDSN",
             "nonSupportMessageId", "valuesForLocalContext", "themeName",
-            "appLocale", "appCurrency",
+            "appLocale", "appCurrency","resetPage","enrollPage",
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -78,13 +74,20 @@ class GenerateJSCode
         $oAuthRedirect = $params["oAuthRedirect"];
         $passwordPolicy = $params["passwordPolicy"];
         $dbClass = $params["dbClass"];
+        $dbDSN = isset($options['dsn']) ? $options['dsn']
+            : (isset($params['dbDSN']) ? $params["dbDSN"] : '');
         $nonSupportMessageId = $params["nonSupportMessageId"];
         $documentRootPrefix = is_null($params["documentRootPrefix"]) ? "" : $params["documentRootPrefix"];
         $valuesForLocalContext = $params["valuesForLocalContext"];
         $themeName = is_null($params["themeName"]) ? $themeName : $params["themeName"];
-        $appLocale = isset($options['app-locale']) ? $options['app-locale'] : $params["appLocale"];
-        $appCurrency = isset($options['app-currency']) ? $options['app-currency'] : $params["appCurrency"];
-
+        $appLocale = isset($options['app-locale']) ? $options['app-locale']
+            : (isset($params['appLocale']) ? $params["appLocale"] : 'ja_JP');
+        $appCurrency = isset($options['app-currency']) ? $options['app-currency']
+            : (isset($params['appCurrency']) ? $params["appCurrency"] : 'JP');
+        $resetPage = isset($options['authentication']['reset-page']) ? $options['authentication']['reset-page']
+            : (isset($params['resetPage']) ? $params["resetPage"] : null);
+        $enrollPage = isset($options['authentication']['enroll-page']) ? $options['authentication']['enroll-page']
+            : (isset($params['enrollPage']) ? $params["enrollPage"] : null);
         /*
          * Read the JS programs regarding by the developing or deployed.
          */
@@ -129,13 +132,10 @@ class GenerateJSCode
         } else {
             require_once(dirname(__FILE__) . "/INTER-Mediator-Support/{$dbClassName}.php");
         }
-        if (((float)phpversion()) < 5.3) {
-            $dbInstance = new $dbClassName();
-            if ($dbInstance != null) {
-                $defaultKey = $dbInstance->getDefaultKey();
-            }
-        } else {
-            $defaultKey = call_user_func(array($dbClassName, 'defaultKey'));
+        $dbInstance = new $dbClassName();
+        $dbInstance->setupHandlers($dbDSN);
+        if ($dbInstance != null && $dbInstance->specHandler != null) {
+            $defaultKey = $dbInstance->specHandler->getDefaultKey();
         }
         if ($defaultKey !== null) {
             $items = array();
@@ -187,6 +187,7 @@ class GenerateJSCode
             "INTERMediatorOnPage.getOptionsTransaction",
             "function(){return ", arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";}");
         $this->generateAssignJS("INTERMediatorOnPage.dbClassName", "{$q}{$dbClassName}{$q}");
+        $this->generateAssignJS("INTERMediatorOnPage.defaultKeyName", "{$q}{$defaultKey}{$q}");
 
         $isEmailAsUsernae = isset($options['authentication'])
             && isset($options['authentication']['email-as-username'])
@@ -251,16 +252,16 @@ class GenerateJSCode
             "{version:{$q}{$metadata->version}{$q},releasedate:{$q}{$metadata->releasedate}{$q}}");
 
         if (isset($prohibitDebugMode) && $prohibitDebugMode) {
-            $this->generateAssignJS("INTERMediator.debugMode", "false");
+            $this->generateAssignJS("INTERMediatorLog.debugMode", "false");
         } else {
             $this->generateAssignJS(
-                "INTERMediator.debugMode", ($debug === false) ? "false" : $debug);
+                "INTERMediatorLog.debugMode", ($debug === false) ? "false" : $debug);
         }
 
         if (!is_null($appLocale)) {
             $this->generateAssignJS("INTERMediatorOnPage.appLocale", "{$q}{$appLocale}{$q}");
-            $this->generateAssignJS("INTERMediatorOnPage.localInfo",
-                "JSON.parse('".json_encode(IMLocaleFormatTable::getLocaleFormat($appLocale))."')");
+            $this->generateAssignJS("INTERMediatorOnPage.localeInfo",
+                "JSON.parse('" . json_encode(IMLocaleFormatTable::getCurrentLocaleFormat()) . "')");
         }
         if (!is_null($appCurrency)) {
             $this->generateAssignJS("INTERMediatorOnPage.appCurrency", "{$q}{$appCurrency}{$q}");
@@ -282,6 +283,12 @@ class GenerateJSCode
             "INTERMediatorOnPage.requireAuthentication", $boolValue);
         $this->generateAssignJS(
             "INTERMediatorOnPage.authRequiredContext", arrayToJS($requireAuthenticationContext, ''));
+        if (!is_null($enrollPage)) {
+            $this->generateAssignJS("INTERMediatorOnPage.enrollPageURL", $q, $enrollPage, $q);
+        }
+        if (!is_null($resetPage)) {
+            $this->generateAssignJS("INTERMediatorOnPage.resetPageURL", $q, $resetPage, $q);
+        }
 
         $ldap = new LDAPAuth(); // for PHP 5.2, 5.3
         $this->generateAssignJS(
@@ -374,13 +381,16 @@ class GenerateJSCode
         $content = '';
         $content .= file_get_contents($currentDir . 'INTER-Mediator.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Page.js');
-        $content .= file_get_contents($currentDir . 'INTER-Mediator-Element.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Context.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Format.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Element.js');
+        $content .= file_get_contents($jsLibDir . 'js-expression-eval-parser.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Calc.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Parts.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Navi.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-UI.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Log.js');
         $content .= ';' . file_get_contents($jsLibDir . 'tinySHA1.js');
         $content .= file_get_contents($jsLibDir . 'sha256.js');
         $content .= file_get_contents($bi2phpDir . 'biBigInt.js');
@@ -388,7 +398,7 @@ class GenerateJSCode
         $content .= file_get_contents($bi2phpDir . 'biRSA.js');
         $content .= file_get_contents($currentDir . 'Adapter_DBServer.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Events.js');
-        $content .= file_get_contents($jsLibDir . 'js-expression-eval-parser.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Queuing.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-DoOnStart.js');
 
         return $content;

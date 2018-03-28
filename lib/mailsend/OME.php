@@ -146,9 +146,10 @@ class OME
 
     private function divideMailAddress($addr)
     {
-        if(preg_match(
+        if (preg_match(
                 "/(.*)<(([a-zA-Z0-9])+([a-zA-Z0-9_\.-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+))+>/",
-                $addr, $matches)===1)   {
+                $addr, $matches) === 1
+        ) {
             return array('name' => trim($matches[1]), 'address' => $matches[2]);
         }
         return array('name' => '', 'address' => trim($addr));
@@ -181,7 +182,7 @@ class OME
      */
     public function setFromField($address, $name = false, $isSetToParam = FALSE)
     {
-        if ($name === false)    {
+        if ($name === false) {
             $divided = $this->divideMailAddress($address);
             $address = $divided['address'];
             $name = $divided['name'];
@@ -211,7 +212,7 @@ class OME
      */
     public function setToField($address, $name = false)
     {
-        if ($name === false)    {
+        if ($name === false) {
             $divided = $this->divideMailAddress($address);
             $address = $divided['address'];
             $name = $divided['name'];
@@ -227,7 +228,8 @@ class OME
     }
 
     // This method for unit testing.
-    public function getToField()    {
+    public function getToField()
+    {
         return $this->toField;
     }
 
@@ -239,7 +241,7 @@ class OME
      */
     public function appendToField($address, $name = false)
     {
-        if ($name === false)    {
+        if ($name === false) {
             $divided = $this->divideMailAddress($address);
             $address = $divided['address'];
             $name = $divided['name'];
@@ -266,7 +268,7 @@ class OME
      */
     public function setCcField($address, $name = false)
     {
-        if ($name === false)    {
+        if ($name === false) {
             $divided = $this->divideMailAddress($address);
             $address = $divided['address'];
             $name = $divided['name'];
@@ -289,7 +291,7 @@ class OME
      */
     public function appendCcField($address, $name = false)
     {
-        if ($name === false)    {
+        if ($name === false) {
             $divided = $this->divideMailAddress($address);
             $address = $divided['address'];
             $name = $divided['name'];
@@ -316,7 +318,7 @@ class OME
      */
     public function setBccField($address, $name = false)
     {
-        if ($name === false)    {
+        if ($name === false) {
             $divided = $this->divideMailAddress($address);
             $address = $divided['address'];
             $name = $divided['name'];
@@ -339,7 +341,7 @@ class OME
      */
     public function appendBccField($address, $name = false)
     {
-        if ($name === false)    {
+        if ($name === false) {
             $divided = $this->divideMailAddress($address);
             $address = $divided['address'];
             $name = $divided['name'];
@@ -514,7 +516,7 @@ class OME
                     $temp = array_merge($temp, $array);
                 }
                 if ($temp !== array() && $temp !== array('')) {
-                    $recipients = array_merge($recipients , $temp);
+                    $recipients = array_merge($recipients, $temp);
                 }
             }
             $recipients = array_unique($recipients);
@@ -522,6 +524,7 @@ class OME
             $smtp->data($this->unifyCRLF($this->header_base64_encode($headerField, True))
                 . $this->unifyCRLF($bodyString));
             $resultMail = $smtp->send();
+            $this->errorMessage = var_export($smtp->smtp_log, true) . '\n' . var_export($smtp->error_stack, true);
         }
         return $resultMail;
     }

@@ -1,13 +1,6 @@
 require 'spec_helper'
 
-if ENV['CIRCLECI']
-  class Docker::Container
-    def remove(options={}); end
-    alias_method :delete, :remove
-  end
-end
-
-#describe package('ruby'), :if => os[:virtualization][:system] == 'docker' do
+#describe package('ruby2.0'), :if => os[:virtualization][:system] == 'docker' do
 #  it { should be_installed }
 #end
 
@@ -252,8 +245,8 @@ describe package('bzip2'), :if => os[:family] == 'redhat' && os[:release].to_f >
   it { should be_installed }
 end
 
-describe package('phantomjs'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
-  it { should be_installed.by('npm').with_version('1.9.19') }
+describe package('phantomjs-prebuilt'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+  it { should be_installed.by('npm').with_version('2.1.12') }
 end
 
 describe package('libfontconfig1'), :if => os[:family] == 'ubuntu' do

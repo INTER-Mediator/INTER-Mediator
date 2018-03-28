@@ -3,7 +3,7 @@
  * DataConverter_NumberBase_Test file
  */
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-require_once(dirname(__FILE__) . '/../DataConverter_NumberBase.php');
+require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_NumberBase.php');
 
 class DataConverter_NumberBase_Test extends PHPUnit_Framework_TestCase
 {

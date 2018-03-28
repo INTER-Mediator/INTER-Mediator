@@ -8,7 +8,12 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-//'use strict';
+// JSHint support
+/* global IMLibContextPool, INTERMediator, IMLibMouseEventDispatch, IMLibLocalContext,
+ IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibUI,
+ IMLibEventResponder, INTERMediatorLog, SHA1, jsSHA, IMLib, INTERMediatorOnPage */
+/* jshint -W083 */ // Function within a loop
+
 /**
  * @fileoverview IMParts_Catalog class is defined here.
  */
@@ -19,7 +24,7 @@
  */
 var IMParts_Catalog = {};
 
-IMParts_Catalog['fileupload'] = {
+IMParts_Catalog.fileupload = {
     html5DDSuported: false,
     progressSupported: false,   // see http://www.johnboyproductions.com/php-upload-progress-bar/
     forceOldStyleForm: false,
@@ -28,6 +33,7 @@ IMParts_Catalog['fileupload'] = {
     uploadId: 'sign' + Math.random(),
 
     instanciate: function (parentNode) {
+        'use strict';
         var inputNode, formNode, buttonNode, hasTapEvent;
         var newId = parentNode.getAttribute('id') + '-e';
         var newNode = document.createElement('DIV');
@@ -38,11 +44,10 @@ IMParts_Catalog['fileupload'] = {
         if (this.forceOldStyleForm || (INTERMediator.isEdge && INTERMediator.ieVersion < 14)) {
             this.html5DDSuported = false;
         } else {
-            this.html5DDSuported = true;
-            try {
-                var x = new FileReader();
-                var y = new FormData();
-            } catch (ex) {
+            if (window.FileReader && window.FormData) {
+                // Checking to exists both of classes.
+                this.html5DDSuported = true;
+            } else {
                 this.html5DDSuported = false;
             }
         }
@@ -50,8 +55,8 @@ IMParts_Catalog['fileupload'] = {
         if (hasTapEvent) {
             this.html5DDSuported = false;
         }
-        var autoReload = (parentNode.getAttribute('data-im-widget-reload') !== null)
-            ? parentNode.getAttribute('data-im-widget-reload') : false;
+        var autoReload = (parentNode.getAttribute('data-im-widget-reload') !== null) ?
+            parentNode.getAttribute('data-im-widget-reload') : false;
         newNode.setAttribute('data-im-widget-reload', autoReload);
         if (this.html5DDSuported) {
             newNode.dropzone = 'copy';
@@ -116,7 +121,7 @@ IMParts_Catalog['fileupload'] = {
             inputNode.setAttribute('accept', '*/*');
             inputNode.setAttribute('name', '_im_uploadfile');
             inputNode.className = '_im_uploadfile';
-            inputNode.addEventListener('change',function(){
+            inputNode.addEventListener('change', function () {
                 if (this.files[0].size > 0) {
                     this.nextSibling.removeAttribute('disabled');
                 }
@@ -136,10 +141,10 @@ IMParts_Catalog['fileupload'] = {
             buttonNode.setAttribute('type', 'submit');
             buttonNode.setAttribute('disabled', '');
             buttonNode.appendChild(document.createTextNode(this.uploadButtonLabel));
-            if (!newNode.id)   {
+            if (!newNode.id) {
                 newNode.id = INTERMediator.nextIdValue();
             }
-            IMLibMouseEventDispatch.setExecute(newNode.id, function (event) {
+            IMLibMouseEventDispatch.setExecute(newNode.id, function () {
                 var node = document.getElementById(newNode.id);
                 if (node !== null && node.children.length > 0) {
                     if (node.children[0].style.display === 'none' || node.children[0].style.display === '') {
@@ -148,10 +153,10 @@ IMParts_Catalog['fileupload'] = {
                     }
                 }
             }, true);
-            if (!cancelButtonWrapper.id)   {
+            if (!cancelButtonWrapper.id) {
                 cancelButtonWrapper.id = INTERMediator.nextIdValue();
             }
-            IMLibMouseEventDispatch.setExecute(cancelButtonWrapper.id, function(c) {
+            IMLibMouseEventDispatch.setExecute(cancelButtonWrapper.id, function () {
                 this.parentNode.style.display = 'none';
             });
             divNode.appendChild(cancelButtonWrapper);
@@ -179,16 +184,17 @@ IMParts_Catalog['fileupload'] = {
             return theId;
         };
 
-        parentNode._im_setValue = function (str) {
-            var targetNode = newNode;
-            if (this.html5DDSuported) {
-                //    targetNode.innerHTML = str;
-            }
-        };
+        // parentNode._im_setValue = function (str) {
+        //     var targetNode = newNode;
+        //     if (this.html5DDSuported) {
+        //         //    targetNode.innerHTML = str;
+        //     }
+        // };
     },
     ids: [],
     formFromId: {},
     finish: function () {
+        'use strict';
         var shaObj, hmacValue, targetNode, formNode, i, tagetIdLocal, isProgressingLocal, serialIdLocal, uploadIdLocal;
 
         if (this.html5DDSuported) {
@@ -214,11 +220,11 @@ IMParts_Catalog['fileupload'] = {
                         var uploadId = uploadIdLocal;
                         var tagetId = tagetIdLocal;
                         return function (event) {
-                            var file, fileNameNode;
+                            var file, fileNameNode, i, updateInfo, infoFrame;
                             event.preventDefault();
                             var eventTarget = event.currentTarget;
                             if (isProgressing) {
-                                var infoFrame = document.createElement('iframe');
+                                infoFrame = document.createElement('iframe');
                                 infoFrame.setAttribute('id', 'upload_frame' + serialId);
                                 infoFrame.setAttribute('name', 'upload_frame');
                                 infoFrame.setAttribute('frameborder', '0');
@@ -229,7 +235,7 @@ IMParts_Catalog['fileupload'] = {
                                 infoFrame.style.height = '24px';
                                 eventTarget.appendChild(infoFrame);
                             }
-                            for (var i = 0; i < event.dataTransfer.files.length; i++) {
+                            for (i = 0; i < event.dataTransfer.files.length; i++) {
                                 file = event.dataTransfer.files[i];
                                 fileNameNode = document.createElement('DIV');
                                 fileNameNode.appendChild(document.createTextNode(
@@ -239,60 +245,94 @@ IMParts_Catalog['fileupload'] = {
                                 fileNameNode.style.textAlign = 'center';
                                 event.target.appendChild(fileNameNode);
                             }
-                            var updateInfo = IMLibContextPool.getContextInfoFromId(eventTarget.getAttribute('id'), '');
+                            updateInfo = IMLibContextPool.getContextInfoFromId(eventTarget.getAttribute('id'), '');
                             if (isProgressing) {
-                                infoFrame.style.display = 'block';
-                                setTimeout(function () {
-                                    infoFrame.setAttribute('src',
-                                        'upload_frame.php?up_id=' + uploadId + iframeId);
-                                });
+                                if (infoFrame) {
+                                    infoFrame.style.display = 'block';
+                                }
+                                setTimeout((function () {
+                                    var frameNode = infoFrame;
+                                    var param = uploadId + iframeId;
+                                    return function () {
+                                        if (frameNode) {
+                                            frameNode.setAttribute('src',
+                                                'upload_frame.php?up_id=' + param);
+                                        }
+                                    };
+                                })());
+
                             }
-                            INTERMediator_DBAdapter.uploadFile(
-                                '&_im_contextname=' + encodeURIComponent(updateInfo.context.contextName) +
+                            IMLibQueue.setTask((function () {
+                                var uploadData = '&_im_contextname=' + encodeURIComponent(updateInfo.context.contextName) +
                                     '&_im_field=' + encodeURIComponent(updateInfo.field) +
                                     '&_im_keyfield=' + encodeURIComponent(updateInfo.record.split('=')[0]) +
                                     '&_im_keyvalue=' + encodeURIComponent(updateInfo.record.split('=')[1]) +
                                     '&_im_contextnewrecord=' + encodeURIComponent('uploadfile') +
                                     (isProgressing ?
-                                        ('&APC_UPLOAD_PROGRESS=' + encodeURIComponent(uploadId + iframeId)) : ''),
-                                {
+                                        ('&APC_UPLOAD_PROGRESS=' + encodeURIComponent(uploadId + iframeId)) : '');
+                                var uploadSpec = {
                                     fileName: file.name,
                                     content: file
-                                },
-                                function (dbresult) {
-                                    var contextObj, contextInfo, contextObjects = null, fvalue, i, context;
-                                    context = IMLibContextPool.getContextDef(updateInfo.context.contextName);
-                                    if (context['file-upload']) {
-                                        var relatedContextName = '';
-                                        for (var index in context['file-upload']) {
-                                            if (context['file-upload'][index]['field'] == updateInfo.field) {
-                                                relatedContextName = context['file-upload'][index]['context'];
-                                                break;
+                                };
+                                var contextName = updateInfo.context.contextName;
+                                var updateField = updateInfo.field;
+                                var targetIdCapt = tagetId;
+                                var targetNodeCapt = targetNode;
+                                var finishFunc = (function () {
+                                    var infoFrameCapt = infoFrame;
+                                    var fileNameNodeCapt = fileNameNode;
+                                    return function () {
+                                        if (infoFrameCapt) {
+                                            infoFrameCapt.setAttribute('src', '');
+                                        }
+                                        if (fileNameNodeCapt) {
+                                            fileNameNodeCapt.parentNode.removeChild(fileNameNodeCapt);
+                                        }
+                                    };
+                                })();
+                                return function (completeTask) {
+                                    INTERMediator_DBAdapter.uploadFile(
+                                        uploadData, uploadSpec,
+                                        function (dbresult) {
+                                            var contextObj, contextInfo, contextObjects = null, fvalue, i, context,
+                                                relatedContextName = '', index;
+                                            context = IMLibContextPool.getContextDef(contextName);
+                                            if (context['file-upload']) {
+                                                for (index in context['file-upload']) {
+                                                    if (context['file-upload'][index].field === updateField) {
+                                                        relatedContextName = context['file-upload'][index].context;
+                                                        break;
+                                                    }
+                                                }
+                                                fvalue = IMLibContextPool.getKeyFieldValueFromId(targetIdCapt, '');
+                                                contextObjects = IMLibContextPool.getContextsFromNameAndForeignValue(
+                                                    relatedContextName, fvalue, context.key);
+                                            } else {
+                                                contextObjects = IMLibContextPool.getContextFromName(contextName);
                                             }
-                                        }
-                                        fvalue = IMLibContextPool.getKeyFieldValueFromId(tagetId, '');
-                                        contextObjects = IMLibContextPool.getContextsFromNameAndForeignValue(
-                                            relatedContextName, fvalue, context.key);
-                                    } else {
-                                        contextObjects = IMLibContextPool.getContextFromName(updateInfo.context.contextName);
-                                    }
-                                    contextInfo = IMLibContextPool.getContextInfoFromId(tagetId, '');
-                                    contextInfo.context.setValue(contextInfo.record, contextInfo.field, dbresult);
-                                    if (contextObjects) {
-                                        for (i = 0; i < contextObjects.length; i++) {
-                                            contextObj = contextObjects[i];
-                                            INTERMediator.construct(contextObj);
-                                        }
-                                    }
-                                    INTERMediator.flushMessage();
-                                    if (targetNode.getAttribute('data-im-widget-reload') === 'true') {
-                                        INTERMediator.construct();
-                                    }
-                                    event.target.style.backgroundColor = '#AAAAAA';
-                                },
-                                function () {
-                                    event.target.style.backgroundColor = '#AAAAAA';
-                                });
+                                            contextInfo = IMLibContextPool.getContextInfoFromId(targetIdCapt, '');
+                                            contextInfo.context.setValue(contextInfo.record, contextInfo.field, dbresult);
+                                            if (contextObjects) {
+                                                for (i = 0; i < contextObjects.length; i++) {
+                                                    contextObj = contextObjects[i];
+                                                    INTERMediator.construct(contextObj);
+                                                }
+                                            }
+                                            INTERMediatorLog.flushMessage();
+                                            if (targetNodeCapt.getAttribute('data-im-widget-reload') === 'true') {
+                                                INTERMediator.construct();
+                                            }
+                                            event.target.style.backgroundColor = '#AAAAAA';
+                                            finishFunc();
+                                            completeTask();
+                                        },
+                                        function () {
+                                            event.target.style.backgroundColor = '#AAAAAA';
+                                            finishFunc();
+                                            completeTask();
+                                        });
+                                };
+                            })());
                         };
                     })());
                 }
@@ -381,13 +421,11 @@ IMParts_Catalog['fileupload'] = {
 
                         INTERMediatorLib.addEvent(formNode, 'submit', (function () {
                             var iframeId = i;
-                            return function (event) {
-
+                            return function () {
                                 var iframeNode = document.getElementById('upload_frame' + iframeId);
                                 iframeNode.style.display = 'block';
                                 setTimeout(function () {
-                                    var infoURL = selfURL() + '?uploadprocess=' +
-                                        this.uploadId + iframeId;
+                                    var infoURL = selfURL() + '?uploadprocess=' + this.uploadId + iframeId;
                                     iframeNode.setAttribute('src', infoURL);
                                 });
                                 return true;
@@ -413,26 +451,27 @@ IMParts_Catalog['fileupload'] = {
     }
 };
 
-IMParts_Catalog["jsonformat"] = {
+IMParts_Catalog.jsonformat = {
     instanciate: function (parentNode) {
+        'use strict';
         var newId = parentNode.getAttribute('id') + '-jsonf';
         var newNode = document.createElement('pre');
         newNode.setAttribute('id', newId);
         parentNode.appendChild(newNode);
-        IMParts_Catalog["jsonformat"].ids.push(newId);
+        IMParts_Catalog.jsonformat.ids.push(newId);
 
         parentNode._im_getComponentId = (function () {
             var theId = newId;
             return function () {
                 return theId;
-            }
+            };
         })();
 
         parentNode._im_setValue = (function () {
             var theId = newId;
             return function (str) {
-                IMParts_Catalog["jsonformat"].initialValues[theId]
-                    = str ? JSON.stringify(JSON.parse(str), null, '    ') : "";
+                IMParts_Catalog.jsonformat.initialValues[theId] =
+                    str ? JSON.stringify(JSON.parse(str), null, '    ') : '';
             };
         })();
     },
@@ -441,14 +480,172 @@ IMParts_Catalog["jsonformat"] = {
     initialValues: {},
 
     finish: function () {
-        for (var i = 0; i < IMParts_Catalog["jsonformat"].ids.length; i++) {
-            var targetId = IMParts_Catalog["jsonformat"].ids[i];
+        'use strict';
+        for (var i = 0; i < IMParts_Catalog.jsonformat.ids.length; i++) {
+            var targetId = IMParts_Catalog.jsonformat.ids[i];
             var targetNode = document.getElementById(targetId);
             if (targetNode) {
-                targetNode.appendChild(document.createTextNode(IMParts_Catalog["jsonformat"].initialValues[targetId]));
+                targetNode.appendChild(document.createTextNode(IMParts_Catalog.jsonformat.initialValues[targetId]));
             }
         }
-        IMParts_Catalog["jsonformat"].ids = [];
-        IMParts_Catalog["jsonformat"].initialValues = {};
+        IMParts_Catalog.jsonformat.ids = [];
+        IMParts_Catalog.jsonformat.initialValues = {};
+    }
+};
+
+IMParts_Catalog.popupselector = {
+    instanciate: function (parentNode) {
+        'use strict';
+        var widgetId, node, inNode, valueNode;
+        if (parentNode.getAttribute('class') !== '_im_widget_popup') {
+            parentNode.setAttribute('class', '_im_widget_popup');
+            parentNode.style.zIndex = (IMParts_Catalog.popupselector.zIndex--);
+            node = document.createElement('SPAN');
+            node.setAttribute('data-im-control', 'enclosure');
+            node.setAttribute('class', '_im_widget_popup_panel');
+            parentNode.appendChild(node);
+            IMParts_Catalog.popupselector.selectionRoots.push(node);
+            inNode = document.createElement('SPAN');
+            inNode.setAttribute('data-im-control', 'repeater');
+            inNode.setAttribute('data-im', parentNode.getAttribute('data-im-popup'));
+            node.appendChild(inNode);
+            inNode = document.createElement('DIV');
+            inNode.setAttribute('class', '_im_widget_popup_close');
+            inNode.appendChild(document.createTextNode('×'));
+            node.appendChild(inNode);
+            INTERMediatorLib.addEvent(inNode, 'click', (function () {
+                return function () {
+                    IMParts_Catalog.popupselector.clearSelection();
+                };
+            })());
+            widgetId = parentNode.getAttribute('id');
+            IMParts_Catalog.popupselector.ids.push(widgetId);
+
+            valueNode = document.createElement('span');
+            valueNode.setAttribute('class', '_im_widget_popup_value');
+            INTERMediatorLib.addEvent(valueNode, 'click', (function () {
+                var selRoot = node;
+                return function () {
+                    IMParts_Catalog.popupselector.clearSelection();
+                    IMParts_Catalog.popupselector.clickValue(selRoot);
+                };
+            })());
+            parentNode.appendChild(valueNode);
+
+            parentNode._im_getComponentId = (function () {
+                var theId = widgetId;
+                return function () {
+                    return theId;
+                };
+            })();
+
+            parentNode._im_setValue = (function () {
+                var theId = widgetId;
+                return function (str) {
+                    IMParts_Catalog.popupselector.initialValues[theId] = str;
+                };
+            })();
+        }
+    },
+
+    ids: [],
+    selectionRoots: [],
+    initialValues: {},
+    zIndex: 9000,
+
+    finish: function () {
+        'use strict';
+        var i, targetId, targetNode, j, nodes, selectionRoot, nodeValue, displayValue, innodes, k;
+        for (i = 0; i < IMParts_Catalog.popupselector.ids.length; i++) {
+            targetId = IMParts_Catalog.popupselector.ids[i];
+            targetNode = document.getElementById(targetId);
+            selectionRoot = IMParts_Catalog.popupselector.selectionRoots[i];
+            nodeValue = IMParts_Catalog.popupselector.initialValues[targetId];
+            if (selectionRoot) {
+                displayValue = null;
+                nodes = selectionRoot.childNodes;
+                for (j = 0; j < nodes.length; j++) {
+                    if (nodes[j] &&
+                        nodes[j].nodeType === 1 &&
+                        nodes[j].getAttribute('data-im-control') === 'repeater') {
+                        nodes[j].setAttribute('class', '_im_widget_popup_selection');
+                        if (nodeValue === nodes[j].getAttribute('data-im-value')) {
+                            displayValue = nodes[j].innerHTML;
+                            nodes[j].setAttribute('class', '_im_widget_popup_selection _im_widget_popup_selected');
+                        }
+                        IMLibMouseEventDispatch.setExecute(nodes[j].id, (function () {
+                            // Execute on clicking the selection
+                            var node = nodes[j];
+                            return function () {
+                                IMParts_Catalog.popupselector.clearSelection();
+                                IMParts_Catalog.popupselector.setData(node);
+                            };
+                        })());
+                    }
+                }
+                if (targetNode) {
+                    innodes = targetNode.getElementsByClassName('_im_widget_popup_value');
+                    for (k = 0; k < innodes.length; k++) {
+                        innodes[k].innerHTML = displayValue ? displayValue : '[Not selected]';
+                    }
+                }
+            }
+        }
+    },
+
+    clickValue: function (selectionRoot) {
+        'use strict';
+        var body, panelBack;
+        selectionRoot.style.display = 'block';
+        body = document.getElementsByTagName('BODY')[0];
+        panelBack = document.createElement('DIV');
+        body.appendChild(panelBack);
+        panelBack.setAttribute('class', '_im_widget_popup_panelback');
+        panelBack.setAttribute('id', '_im_widget_popup_panelback');
+        panelBack.style.width = body.clientWidth + 'px';
+        panelBack.style.height = body.clientHeight + 'px';
+        IMLibMouseEventDispatch.setExecute('_im_widget_popup_panelback', function () {
+            IMParts_Catalog.popupselector.clearSelection();
+        });
+    },
+
+    clearSelection: function () {
+        'use strict';
+        var i, body, targetNode, selectionRoot;
+        body = document.getElementsByTagName('BODY')[0];
+        targetNode = document.getElementById('_im_widget_popup_panelback');
+        if (targetNode) {
+            body.removeChild(targetNode);
+        }
+        for (i = 0; i < IMParts_Catalog.popupselector.ids.length; i++) {
+            selectionRoot = IMParts_Catalog.popupselector.selectionRoots[i];
+            if (selectionRoot) {
+                selectionRoot.style.display = 'none';
+            }
+        }
+    },
+
+    setData: function (node) {
+        'use strict';
+        var i, selectedData, target, targetField, bindingId, keyRec, nodes, contextInfo;
+        selectedData = node.getAttribute('data-im-value');
+        target = node.parentNode.parentNode.getAttribute('data-im').split(' ')[0].split('@');
+        targetField = target[1];
+        bindingId = node.parentNode.parentNode.id;
+        contextInfo = IMLibContextPool.getContextInfoFromId(bindingId, target[2]);
+        keyRec = contextInfo.record.split('=');
+        contextInfo.context.setDataWithKey(keyRec[1], targetField, selectedData);
+        nodes = node.parentNode.parentNode.getElementsByClassName('_im_widget_popup_value');
+        for (i = 0; i < nodes.length; i++) {
+            nodes[i].innerHTML = node.innerHTML;
+        }
+        nodes = node.parentNode.getElementsByClassName('_im_widget_popup_selection');
+        for (i = 0; i < nodes.length; i++) {
+            if (node.getAttribute('data-im-value') === nodes[i].getAttribute('data-im-value')) {
+                nodes[i].setAttribute('class', '_im_widget_popup_selection _im_widget_popup_selected');
+            } else {
+                nodes[i].setAttribute('class', '_im_widget_popup_selection');
+            }
+        }
     }
 };

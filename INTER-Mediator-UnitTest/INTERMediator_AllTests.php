@@ -29,6 +29,7 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
         $suite->addTestFile($folder . 'DB_PDO-MySQL_Test.php');
         $suite->addTestFile($folder . 'DB_PDO-PostgreSQL_Test.php');
         $suite->addTestFile($folder . 'DB_PDO-SQLite_Test.php');
+        //$suite->addTestFile($folder . 'DB_FMS_DataAPI_Test.php');
         //$suite->addTestFile($folder . 'DB_FMS_FX_Test.php');
         $suite->addTestFile($folder . 'DB_Proxy_Test.php');
         $suite->addTestFile($folder . 'DB_Settings_Test.php');
@@ -47,12 +48,14 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
         $suite->addTestFile($folder . 'MediaAccess_Test.php');
         $suite->addTestFile($folder . 'MessageStrings_Test.php');
         $suite->addTestFile($folder . 'MessageStrings_ja_Test.php');
+        $suite->addTestFile($folder . 'Line_Field_Divider_Test.php');
         //$suite->addTestFile($folder . 'OME_Test.php');
         /*
-         * TravisCI can't test the SMTP communication. Is that no wander?
+         * Travis CI can't test the SMTP communication. Is that no wander?
          * The test case OME_Test.php should run on the my/your own environment.
          */
         $suite->addTestFile($folder . 'RSA_Test.php');
+        $suite->addTestFile($folder . 'VM_Test.php');
         if (php_uname('n') !== 'inter-mediator-server') {
             $suite->addTestFile($folder . 'defedit_Test.php');
             $suite->addTestFile($folder . 'pageedit_Test.php');
