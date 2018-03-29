@@ -57,6 +57,13 @@ if [ $OS = 'alpine' ] ; then
     echo "	address 192.168.56.101" >> /etc/network/interfaces
     echo "	netmask 255.255.255.0" >> /etc/network/interfaces
 
+    echo "#/media/cdrom/apks" > /etc/apk/repositories
+    echo "http://dl-5.alpinelinux.org/alpine/v3.7/main" >> /etc/apk/repositories
+    echo "http://dl-5.alpinelinux.org/alpine/v3.7/community" >> /etc/apk/repositories
+    echo "#http://dl-5.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
+    echo "#http://dl-5.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+    echo "#http://dl-5.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+
     apk update
     apk upgrade
     apk add --no-cache curl
@@ -90,13 +97,13 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache nodejs-npm
     apk add --no-cache samba
     apk add --no-cache dbus
-    apk add --no-cache firefox
+    #apk add --no-cache firefox
     apk add --no-cache chromium libgudev
     apk add --no-cache xvfb
     apk add --no-cache fontconfig-dev
 
-    apk add --no-cache virtualbox-additions-grsec
-    #apk add --no-cache virtualbox-guest-additions
+    #apk add --no-cache virtualbox-additions-grsec
+    apk add --no-cache virtualbox-guest-additions
     apk add --no-cache virtualbox-guest-modules-grsec
 
     apk add --no-cache ca-certificates
@@ -360,7 +367,7 @@ fi
 # Launch buster-server for unit testing
 
 if [ $OS = 'alpine' ] ; then
-    echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\nexport DISPLAY=:99.0\nXvfb :99 -screen 0 1024x768x24 &\n/bin/sleep 5\n/usr/bin/buster-server &\n/bin/sleep 5\nfirefox http://localhost:1111/capture > /dev/null &\n#chromium-browser --no-sandbox http://localhost:1111/capture > /dev/null &\n/bin/sleep 5\nexit 0' > /etc/local.d/buster-server.start
+    echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\nexport DISPLAY=:99.0\nXvfb :99 -screen 0 1024x768x24 &\n/bin/sleep 5\n/usr/bin/buster-server &\n/bin/sleep 5\n#firefox http://localhost:1111/capture > /dev/null &\nchromium-browser --no-sandbox http://localhost:1111/capture > /dev/null &\n/bin/sleep 5\nexit 0' > /etc/local.d/buster-server.start
     chmod 755 /etc/local.d/buster-server.start
     rc-update add local default
 else

@@ -418,9 +418,9 @@ end
 describe package('dbus'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('firefox'), :if => os[:family] == 'alpine' do
-  it { should be_installed }
-end
+#describe package('firefox'), :if => os[:family] == 'alpine' do
+#  it { should be_installed }
+#end
 
 describe package('chromium'), :if => os[:family] == 'alpine' do
   it { should be_installed }
@@ -475,9 +475,9 @@ describe package('unifont'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 
-describe package('virtualbox-additions-grsec'), :if => os[:family] == 'alpine' && host_inventory['virtualization'][:system] != 'docker' do
-  it { should be_installed }
-end
+#describe package('virtualbox-additions-grsec'), :if => os[:family] == 'alpine' && host_inventory['virtualization'][:system] != 'docker' do
+#  it { should be_installed }
+#end
 describe package('virtualbox-guest-additions'), :if => os[:family] == 'alpine' && host_inventory['virtualization'][:system] != 'docker' do
   it { should be_installed }
 end
