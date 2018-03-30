@@ -27,6 +27,8 @@ matrix:
   allow_failures:
     - php: nightly
     - os: osx
+    - php: 5.2
+    - php: 5.3
 
 ## for Headless Chrome and trusty
 addons:
@@ -45,7 +47,7 @@ before_script:
   - sleep 5
   - firefox http://localhost:1111/capture &
   - sleep 5
-  - phantomjs node_modules/buster/script/phantom.js http://localhost:1111/capture &
+  #- phantomjs node_modules/buster/script/phantom.js http://localhost:1111/capture &
   # Headless Chrome is available on trusty
   - if [[ $TRAVIS_PHP_VERSION != "5.2" && $TRAVIS_PHP_VERSION != "5.3" ]]; then google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost:1111/capture & fi
   - sleep 5

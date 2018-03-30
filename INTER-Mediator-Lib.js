@@ -100,7 +100,7 @@ var INTERMediatorLib = {
         numToHex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
         salt = '';
         saltHex = '';
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < 4; i+=1) {
             code = Math.floor(Math.random() * (128 - 32) + 32);
             lowCode = code & 0xF;
             highCode = (code >> 4) & 0xF;
@@ -435,7 +435,7 @@ var INTERMediatorLib = {
             if (attr !== null && attr.length > 0) {
                 reg = new RegExp('[\\s' + INTERMediator.defDivider + ']+');
                 eachDefs = attr.split(reg);
-                for (i = 0; i < eachDefs.length; i++) {
+                for (i = 0; i < eachDefs.length; i+=1) {
                     if (eachDefs[i] && eachDefs[i].length > 0) {
                         defs.push(resolveAlias(eachDefs[i]));
                     }
@@ -444,7 +444,7 @@ var INTERMediatorLib = {
             }
             if (INTERMediator.titleAsLinkInfo && node.getAttribute('TITLE')) {
                 eachDefs = node.getAttribute('TITLE').split(INTERMediator.defDivider);
-                for (i = 0; i < eachDefs.length; i++) {
+                for (i = 0; i < eachDefs.length; i+=1) {
                     defs.push(resolveAlias(eachDefs[i]));
                 }
                 return defs;
@@ -454,7 +454,7 @@ var INTERMediatorLib = {
                 if (attr !== null && attr.length > 0) {
                     matched = attr.match(/IM\[([^\]]*)\]/);
                     eachDefs = matched[1].split(INTERMediator.defDivider);
-                    for (i = 0; i < eachDefs.length; i++) {
+                    for (i = 0; i < eachDefs.length; i+=1) {
                         defs.push(resolveAlias(eachDefs[i]));
                     }
                 }
@@ -480,7 +480,7 @@ var INTERMediatorLib = {
             if (classAttr && classAttr.length > 0) {
                 reg = new RegExp('[\\s' + INTERMediator.defDivider + ']+');
                 eachDefs = classAttr.split(reg);
-                for (i = 0; i < eachDefs.length; i++) {
+                for (i = 0; i < eachDefs.length; i+=1) {
                     if (eachDefs[i] && eachDefs[i].length > 0) {
                         defs.push(eachDefs[i]);
                     }
@@ -491,7 +491,7 @@ var INTERMediatorLib = {
             if (classAttr && classAttr.length > 0) {
                 matched = classAttr.match(/IM_WIDGET\[([^\]]*)\]/);
                 eachDefs = matched[1].split(INTERMediator.defDivider);
-                for (i = 0; i < eachDefs.length; i++) {
+                for (i = 0; i < eachDefs.length; i+=1) {
                     defs.push(eachDefs[i]);
                 }
                 return defs;
@@ -508,7 +508,7 @@ var INTERMediatorLib = {
             if (nameAttr && nameAttr.length > 0) {
                 reg = new RegExp('[\\s' + INTERMediator.defDivider + ']+');
                 eachDefs = nameAttr.split(reg);
-                for (i = 0; i < eachDefs.length; i++) {
+                for (i = 0; i < eachDefs.length; i+=1) {
                     if (eachDefs[i] && eachDefs[i].length > 0) {
                         defs.push(eachDefs[i]);
                     }
@@ -519,7 +519,7 @@ var INTERMediatorLib = {
             if (nameAttr && nameAttr.length > 0) {
                 matched = nameAttr.match(/IM\[([^\]]*)\]/);
                 eachDefs = matched[1].split(INTERMediator.defDivider);
-                for (i = 0; i < eachDefs.length; i++) {
+                for (i = 0; i < eachDefs.length; i+=1) {
                     defs.push(eachDefs[i]);
                 }
                 return defs;
@@ -703,7 +703,7 @@ var INTERMediatorLib = {
         'use strict';
         var s = '', i, c;
         str = str.toString();
-        for (i = 0; i < str.length; i++) {
+        for (i = 0; i < str.length; i+=1) {
             c = str.charAt(i);
             if ((c >= '0' && c <= '9') || c === '.' || c === '-' ||
                 c === INTERMediatorOnPage.localeInfo['mon_decimal_point']) {
@@ -747,7 +747,7 @@ var INTERMediatorLib = {
         rule = '[^' + rule + ']';
         value = String(value);
         if (value && value.match(/[０１２３４５６７８９]/)) {
-            for (i = 0; i < 10; i++) {
+            for (i = 0; i < 10; i+=1) {
                 value = value.split(String.fromCharCode(65296 + i)).join(String(i));
                 // Full-width numeric characters start from 0xFF10(65296). This is convert to Full to ASCII char for numeric.
             }
@@ -766,7 +766,7 @@ var INTERMediatorLib = {
         if (typeof obj === 'object') {
             str = '';
             if (obj.constructor === Array) {
-                for (i = 0; i < obj.length; i++) {
+                for (i = 0; i < obj.length; i+=1) {
                     str += INTERMediatorLib.objectToString(obj[i]) + ', ';
                 }
                 return '[' + str + ']';
@@ -845,7 +845,7 @@ var INTERMediatorLib = {
     getNamedObjectInObjectArray: function (ar, key, named) {
         'use strict';
         var i;
-        for (i = 0; i < ar.length; i++) {
+        for (i = 0; i < ar.length; i+=1) {
             if (ar[i][key] === named) {
                 return ar[i];
             }
@@ -947,7 +947,7 @@ var INTERMediatorLib = {
             value = INTERMediatorLib.getClassAttributeFromNode(target);
             if (value) {
                 items = value.split('|');
-                for (i = 0; i < items.length; i++) {
+                for (i = 0; i < items.length; i+=1) {
                     if (items[i] === attrValue) {
                         nodes.push(target);
                     }
@@ -956,7 +956,7 @@ var INTERMediatorLib = {
             value = target.getAttribute('data-im-control');
             if (value) {
                 items = value.split(/[| ]/);
-                for (i = 0; i < items.length; i++) {
+                for (i = 0; i < items.length; i+=1) {
                     if (items[i] === attrValue) {
                         nodes.push(target);
                     }
@@ -965,13 +965,13 @@ var INTERMediatorLib = {
             value = target.getAttribute('data-im');
             if (value) {
                 items = value.split(/[| ]/);
-                for (i = 0; i < items.length; i++) {
+                for (i = 0; i < items.length; i+=1) {
                     if (items[i] === attrValue) {
                         nodes.push(target);
                     }
                 }
             }
-            for (i = 0; i < target.children.length; i++) {
+            for (i = 0; i < target.children.length; i+=1) {
                 checkNode(target.children[i]);
             }
         }
@@ -993,7 +993,7 @@ var INTERMediatorLib = {
             if (aValue && aValue.match(reg)) {
                 nodes.push(target);
             }
-            for (i = 0; i < target.children.length; i++) {
+            for (i = 0; i < target.children.length; i+=1) {
                 checkNode(target.children[i]);
             }
         }
@@ -1015,7 +1015,7 @@ var INTERMediatorLib = {
             if (className && className.match(reg)) {
                 nodes.push(target);
             }
-            for (i = 0; i < target.children.length; i++) {
+            for (i = 0; i < target.children.length; i+=1) {
                 checkNode(target.children[i]);
             }
         }
@@ -1037,7 +1037,7 @@ var INTERMediatorLib = {
             if (nodeId && nodeId.match(reg)) {
                 nodes.push(target);
             }
-            for (i = 0; i < target.children.length; i++) {
+            for (i = 0; i < target.children.length; i+=1) {
                 checkNode(target.children[i]);
             }
         }
@@ -1053,7 +1053,7 @@ var INTERMediatorLib = {
             doEncCheck = false;
         }
 
-        for (i = 0; i < nodes.length; i++) {
+        for (i = 0; i < nodes.length; i+=1) {
             seekLinkedElement(nodes[i]);
         }
         return {linkedNode: linkedNodesCollection, widgetNode: widgetNodesCollection};
@@ -1079,7 +1079,7 @@ var INTERMediatorLib = {
                     }
                 }
                 children = node.childNodes;
-                for (i = 0; i < children.length; i++) {
+                for (i = 0; i < children.length; i+=1) {
                     seekLinkedElement(children[i]);
                 }
             }
@@ -1219,7 +1219,7 @@ var IMLibNodeGraph = {
     getAllNodesInEdge: function () {
         'use strict';
         var i, nodes = [];
-        for (i = 0; i < this.edges.length; i++) {
+        for (i = 0; i < this.edges.length; i+=1) {
             if (nodes.indexOf(this.edges[i].from) < 0) {
                 nodes.push(this.edges[i].from);
             }
@@ -1232,15 +1232,15 @@ var IMLibNodeGraph = {
     getLeafNodes: function () {
         'use strict';
         var i, srcs = [], dests = [], srcAndDests = this.getAllNodesInEdge();
-        for (i = 0; i < this.edges.length; i++) {
+        for (i = 0; i < this.edges.length; i+=1) {
             srcs.push(this.edges[i].from);
         }
-        for (i = 0; i < this.edges.length; i++) {
+        for (i = 0; i < this.edges.length; i+=1) {
             if (srcs.indexOf(this.edges[i].to) < 0 && dests.indexOf(this.edges[i].to) < 0) {
                 dests.push(this.edges[i].to);
             }
         }
-        for (i = 0; i < this.nodes.length; i++) {
+        for (i = 0; i < this.nodes.length; i+=1) {
             if (srcAndDests.indexOf(this.nodes[i]) < 0) {
                 dests.push(this.nodes[i]);
             }
@@ -1250,13 +1250,13 @@ var IMLibNodeGraph = {
     getLeafNodesWithRemoving: function () {
         'use strict';
         var i, newEdges = [], dests = this.getLeafNodes();
-        for (i = 0; i < this.edges.length; i++) {
+        for (i = 0; i < this.edges.length; i+=1) {
             if (dests.indexOf(this.edges[i].to) < 0) {
                 newEdges.push(this.edges[i]);
             }
         }
         this.edges = newEdges;
-        for (i = 0; i < dests.length; i++) {
+        for (i = 0; i < dests.length; i+=1) {
             this.nodes.splice(this.nodes.indexOf(dests[i]), 1);
         }
         return dests;
@@ -1264,7 +1264,7 @@ var IMLibNodeGraph = {
     removeNode: function (node) {
         'use strict';
         var i, newEdges = [];
-        for (i = 0; i < this.edges.length; i++) {
+        for (i = 0; i < this.edges.length; i+=1) {
             if (this.edges[i].to != node) {
                 newEdges.push(this.edges[i]);
             }
@@ -1275,7 +1275,7 @@ var IMLibNodeGraph = {
     applyToAllNodes: function (f) {
         'use strict';
         var i;
-        for (i = 0; i < this.nodes.length; i++) {
+        for (i = 0; i < this.nodes.length; i+=1) {
             f(this.nodes[i]);
         }
 
