@@ -26,8 +26,7 @@ Ver.6 (in development)
       INTERMediator_DBAdapter.db_copy
       INTERMediator_DBAdapter.db_copyWithAuth
 - Deprecated global variables $g_dbInstance, $g_serverSideCall in INTER-Mediator.php are removed.
-
-
+- [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 
 Ver.5.7 (March 29, 2018)
 - The "data-im-format" attribute is introduced.

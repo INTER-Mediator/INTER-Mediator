@@ -376,7 +376,7 @@ const INTERMediator = {
                 IMLibContextPool.clearAll();
                 await pageConstruct();
             } else {
-                IMLibPageNavigation.deleteInsertOnNavi = [];
+                //IMLibPageNavigation.deleteInsertOnNavi = [];
                 INTERMediator.partialConstructing = true;
                 postSetFields = [];
                 try {
