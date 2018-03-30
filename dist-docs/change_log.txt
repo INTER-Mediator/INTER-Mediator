@@ -10,6 +10,9 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
+Ver.6.0-dev (in development)
+
+
 Ver.5.7 (March 29, 2018)
 - The "data-im-format" attribute is introduced.
   Please see for detail: <http://inter-mediator.info/ja/for-developers/format.html> (Japanese)
