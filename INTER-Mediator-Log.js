@@ -129,7 +129,7 @@ var INTERMediatorLog = {
             debugNode.appendChild(document.createTextNode(
                 '============ERROR MESSAGE on ' + new Date() + '============'));
             debugNode.appendChild(document.createElement('hr'));
-            for (i = 0; i < INTERMediatorLog.errorMessages.length; i++) {
+            for (i = 0; i < INTERMediatorLog.errorMessages.length; i+=1) {
                 lines = INTERMediatorLog.errorMessages[i].split(IMLib.nl_char);
                 for (j = 0; j < lines.length; j++) {
                     if (j > 0) {
@@ -181,7 +181,7 @@ var INTERMediatorLog = {
                 debugNode.appendChild(aLink);
             }
             debugNode.appendChild(document.createElement('hr'));
-            for (i = 0; i < INTERMediatorLog.debugMessages.length; i++) {
+            for (i = 0; i < INTERMediatorLog.debugMessages.length; i+=1) {
                 lines = INTERMediatorLog.debugMessages[i].split(IMLib.nl_char);
                 for (j = 0; j < lines.length; j++) {
                     if (j > 0) {

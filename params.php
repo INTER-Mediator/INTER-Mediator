@@ -90,7 +90,7 @@ EOL;
 $browserCompatibility = array(
     'Edge' => '12+',
     // Edge/12.0(Microsoft Edge 20)
-    'Trident' => '4+',
+    'Trident' => '7+',
     // Trident/4.0(Internet Explorer 8)
     // Trident/5.0(Internet Explorer 9)
     // Trident/6.0(Internet Explorer 10)
@@ -224,7 +224,7 @@ $uploadFilePathMode = "";
  */
 //$accessControlAllowOrigin = "https://server.msyk.net";
 
-//$altThemePath = "/var/www/thmeme";    //Your original thmeme directory.
+//$altThemePath = "/var/www/theme";    //Your original theme directory.
 //$themeName = "blackbird";      //Default theme name.
 
 // Server side locale for this application. This locale replaces the browser's accepting languages.
