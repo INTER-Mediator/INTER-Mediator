@@ -15,7 +15,7 @@
 // JSHint support
 /* global IMLibContextPool, INTERMediator, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibLocalContext,
  IMLibChangeEventDispatch, INTERMediatorLib, IMLibQueue, IMLibCalc, IMLibPageNavigation, INTERMediatorLog,
- IMLibEventResponder, IMLibElement, Parser, IMLib, jsSHA, SHA1 */
+ IMLibEventResponder, IMLibElement, Parser, IMLib, jsSHA, SHA1, INTERMediatorLog */
 
 /**
  * @fileoverview INTERMediator_DBAdapter class is defined here.
@@ -122,89 +122,6 @@ var INTERMediator_DBAdapter = {
         }
     },
 
-    server_access: function (accessURL, debugMessageNumber, errorMessageNumber) {
-        INTERMediatorLog.setErrorMessage('INTERMediator_DBAdapter.server_access method was discontinued in Ver.6');
-        //     'use strict';
-        //     var newRecordKeyValue = '', dbresult = '', resultCount = 0, totalCount = null, challenge = null,
-        //         clientid = null, requireAuth = false, myRequest = null, changePasswordResult = null,
-        //         mediatoken = null, appPath, authParams, jsonObject, i, notifySupport = false, useNull = false,
-        //         registeredID = '';
-        //     appPath = INTERMediatorOnPage.getEntryPath();
-        //     authParams = INTERMediator_DBAdapter.generate_authParams();
-        //     INTERMediator_DBAdapter.logging_comAction(debugMessageNumber, appPath, accessURL, authParams);
-        //     INTERMediatorOnPage.notifySupport = notifySupport;
-        //     try {
-        //         myRequest = new XMLHttpRequest();
-        //         myRequest.open('POST', appPath, false, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
-        //         myRequest.setRequestHeader('charset', 'utf-8');
-        //         myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        //         myRequest.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        //         myRequest.setRequestHeader('X-From', location.href);
-        //         myRequest.send(accessURL + authParams);
-        //         jsonObject = JSON.parse(myRequest.responseText);
-        //         resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
-        //         totalCount = jsonObject.totalCount ? jsonObject.totalCount : null;
-        //         dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
-        //         requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false;
-        //         challenge = jsonObject.challenge ? jsonObject.challenge : null;
-        //         clientid = jsonObject.clientid ? jsonObject.clientid : null;
-        //         newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : '';
-        //         changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null;
-        //         mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
-        //         notifySupport = jsonObject.notifySupport;
-        //         for (i = 0; i < jsonObject.errorMessages.length; i += 1) {
-        //             INTERMediatorLog.setErrorMessage(jsonObject.errorMessages[i]);
-        //         }
-        //         for (i = 0; i < jsonObject.debugMessages.length; i += 1) {
-        //             INTERMediatorLog.setDebugMessage(jsonObject.debugMessages[i]);
-        //         }
-        //         useNull = jsonObject.usenull;
-        //         registeredID = jsonObject.hasOwnProperty('registeredid') ? jsonObject.registeredid : '';
-        //         INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
-        //             challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);
-        //         INTERMediator_DBAdapter.store_challenge(challenge);
-        //         if (clientid !== null) {
-        //             INTERMediatorOnPage.clientId = clientid;
-        //         }
-        //         if (mediatoken !== null) {
-        //             INTERMediatorOnPage.mediaToken = mediatoken;
-        //         }
-        //         // This is forced fail-over for the password was changed in LDAP auth.
-        //         if (INTERMediatorOnPage.isLDAP === true &&
-        //             INTERMediatorOnPage.authUserHexSalt !== INTERMediatorOnPage.authHashedPassword.substr(-8, 8)) {
-        //             if (accessURL !== 'access=challenge') {
-        //                 requireAuth = true;
-        //             }
-        //         }
-        //     } catch (e) {
-        //         INTERMediatorLog.setErrorMessage(e,
-        //             INTERMediatorLib.getInsertedString(
-        //                 INTERMediatorOnPage.getMessages()[errorMessageNumber], [e, myRequest.responseText]));
-        //     }
-        //     if (accessURL.indexOf('access=changepassword&newpass=') === 0) {
-        //         return changePasswordResult;
-        //     }
-        //     if (requireAuth) {
-        //         INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.');
-        //         INTERMediatorOnPage.clearCredentials();
-        //         throw new Error('_im_auth_required_');
-        //     }
-        //     if (!accessURL.match(/access=challenge/)) {
-        //         INTERMediatorOnPage.authCount = 0;
-        //     }
-        //     INTERMediatorOnPage.storeCredentialsToCookieOrStorage();
-        //     INTERMediatorOnPage.notifySupport = notifySupport;
-        //     return {
-        //         dbresult: dbresult,
-        //         resultCount: resultCount,
-        //         totalCount: totalCount,
-        //         newRecordKeyValue: newRecordKeyValue,
-        //         newPasswordResult: changePasswordResult,
-        //         registeredId: registeredID,
-        //         nullAcceptable: useNull
-        //     };
-    },
-
     /* No return values */
     server_access_async: function (accessURL, debugMessageNumber, errorMessageNumber, successProc, failedProc, authAgainProc) {
         'use strict';
@@ -239,7 +156,9 @@ var INTERMediator_DBAdapter = {
                         jsonObject = JSON.parse(myRequest.responseText);
                     } catch (ex) {
                         INTERMediatorLog.setErrorMessage('Communication Error: ' + myRequest.responseText);
-                        failedProc ? failedProc(new Error('_im_communication_error_')) : false;
+                        if (failedProc) {
+                            failedProc(new Error('_im_communication_error_'));
+                        }
                         return;
                     }
                     resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
@@ -265,7 +184,9 @@ var INTERMediator_DBAdapter = {
                     }
                     if (jsonObject.errorMessages.length > 0) {
                         INTERMediatorLog.setErrorMessage('Communication Error: ' + jsonObject.errorMessages);
-                        failedProc ? failedProc(new Error('_im_communication_error_')) : false;
+                        if (failedProc) {
+                            failedProc(new Error('_im_communication_error_'));
+                        }
                         return;
                     }
                     INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
@@ -297,7 +218,9 @@ var INTERMediator_DBAdapter = {
                         if (authAgainProc) {
                             authAgainProc(myRequest);
                         }
-                        failedProc ? failedProc(new Error('_im_auth_required_')) : false;
+                        if (failedProc) {
+                            failedProc(new Error('_im_auth_required_'));
+                        }
                         return;
                     }
                     if (!accessURL.match(/access=challenge/)) {
@@ -359,19 +282,6 @@ var INTERMediator_DBAdapter = {
                     reject(er);
                     return;
                 }
-                // if (!challengeResult) {
-                //     messageNode = document.getElementById('_im_newpass_message');
-                //     if (messageNode) {
-                //         INTERMediatorLib.removeChildNodes(messageNode);
-                //         messageNode.appendChild(
-                //             document.createTextNode(
-                //                 INTERMediatorLib.getInsertedStringFromErrorNumber(2008)));
-                //     } else {
-                //         window.alert(INTERMediatorLib.getInsertedStringFromErrorNumber(2008));
-                //     }
-                //     INTERMediatorLog.flushMessage();
-                //     return false; // If it's failed to get a challenge, finish everything.
-                // }
             }
             INTERMediatorOnPage.authHashedPassword =
                 SHA1(oldpassword + INTERMediatorOnPage.authUserSalt) +
@@ -387,13 +297,15 @@ var INTERMediator_DBAdapter = {
                             SHA1(newpassword + INTERMediatorOnPage.authUserSalt) + INTERMediatorOnPage.authUserHexSalt;
                         INTERMediatorOnPage.storeCredentialsToCookieOrStorage();
                         resolve(true);
-                    } else {
+                    }
+                    else {
                         reject(new Error('_im_changepw_notchange'));
                     }
                 },
                 (er) => {
                     reject(er);
-                });
+                }
+            );
         }).catch((er) => {
             throw er;
         });
@@ -412,7 +324,8 @@ var INTERMediator_DBAdapter = {
                 },
                 (er) => {
                     reject(er);
-                });
+                }
+            );
         }).catch((er) => {
             throw er;
         });
@@ -528,88 +441,6 @@ var INTERMediator_DBAdapter = {
 
      This function returns recordset of retrieved.
      */
-    db_query: function (args) {
-        INTERMediatorLog.setErrorMessage('INTERMediator_DBAdapter.db_query method was discontinued in Ver.6');
-        //     'use strict';
-        //     var params, returnValue, result, contextDef;
-        //
-        //     if (!INTERMediator_DBAdapter.db_queryChecking(args)) {
-        //         return;
-        //     }
-        //     params = INTERMediator_DBAdapter.db_queryParameters(args);
-        //     // INTERMediator_DBAdapter.eliminateDuplicatedConditions = false;
-        //     // params += '&randkey' + Math.random();    // For ie...
-        //     // IE uses caches as the result in spite of several headers. So URL should be randomly.
-        //     //
-        //     // This is not requred because the Notification feature adds the client Identifier for each communication.
-        //     // msyk June 1, 2014
-        //     returnValue = {};
-        //     try {
-        //         result = this.server_access(params, 1012, 1004);
-        //         returnValue.dbresult = result.dbresult;
-        //         returnValue.totalCount = result.resultCount;
-        //         returnValue.count = 0;
-        //         returnValue.registeredId = result.registeredId;
-        //         returnValue.nullAcceptable = result.nullAcceptable;
-        //         returnValue.count = result.dbresult ? Object.keys(result.dbresult).length : 0;
-        //
-        //         contextDef = INTERMediatorLib.getNamedObject(
-        //             INTERMediatorOnPage.getDataSources(), 'name', args.name);
-        //         if (!contextDef.relation &&
-        //             args.paging && Boolean(args.paging) === true) {
-        //             INTERMediator.pagedAllCount = parseInt(result.resultCount, 10);
-        //             if (result.totalCount) {
-        //                 INTERMediator.totalRecordCount = parseInt(result.totalCount, 10);
-        //             }
-        //         }
-        //         if ((args.paging !== null) && (Boolean(args.paging) === true)) {
-        //             INTERMediator.pagination = true;
-        //             if (!(Number(args.records) >= Number(INTERMediator.pagedSize) &&
-        //                 Number(INTERMediator.pagedSize) > 0)) {
-        //                 INTERMediator.pagedSize = parseInt(args.records, 10);
-        //             }
-        //         }
-        //     } catch (ex) {
-        //         if (ex.message === '_im_auth_required_') {
-        //             throw ex;
-        //         } else {
-        //             INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-17');
-        //         }
-        //         returnValue.dbresult = null;
-        //         returnValue.totalCount = 0;
-        //         returnValue.count = 0;
-        //         returnValue.registeredid = null;
-        //         returnValue.nullAcceptable = null;
-        //     }
-        //     return returnValue;
-    },
-    //
-    db_queryWithAuth: function (args, completion) {
-        INTERMediatorLog.setErrorMessage('INTERMediator_DBAdapter.db_queryWithAuth method was discontinued in Ver.6');
-        //     'use strict';
-        //     var returnValue = false;
-        //     INTERMediatorOnPage.retrieveAuthInfo();
-        //     try {
-        //         returnValue = INTERMediator_DBAdapter.db_query(args);
-        //     } catch (ex) {
-        //         if (ex.message === '_im_auth_required_') {
-        //             if (INTERMediatorOnPage.requireAuthentication) {
-        //                 if (!INTERMediatorOnPage.isComplementAuthData()) {
-        //                     INTERMediatorOnPage.clearCredentials();
-        //                     INTERMediatorOnPage.authenticating(
-        //                         function () {
-        //                             returnValue = INTERMediator_DBAdapter.db_queryWithAuth(args, completion);
-        //                         });
-        //                     return;
-        //                 }
-        //             }
-        //         } else {
-        //             INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-16');
-        //         }
-        //     }
-        //     completion(returnValue);
-    },
-
     db_query_async: function (args, successProc, failedProc) {
         'use strict';
         var params;
@@ -643,13 +474,16 @@ var INTERMediator_DBAdapter = {
                             }
                             successProc ? successProc(result) : false;
                             resolveCapt(result);
-                        };
-                    })(),
+                        }
+                            ;
+                    })
+                    (),
                     (er) => {
                         failedProc ? failedProc(param) : false;
                         reject(er);
                     }
-                );
+                )
+                ;
             }
         ).catch((err) => {
             throw err;
@@ -848,44 +682,6 @@ var INTERMediator_DBAdapter = {
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records>
      dataset:<the array of the object {field:xx,value:xx}. each value will be set to the field.> }
      */
-    db_update: function (args) {
-        INTERMediatorLog.setErrorMessage('INTERMediator_DBAdapter.db_update method was discontinued in Ver.6');
-        //     'use strict';
-        //     var params, result;
-        //     if (!INTERMediator_DBAdapter.db_updateChecking(args)) {
-        //         return;
-        //     }
-        //     params = INTERMediator_DBAdapter.db_updateParameters(args);
-        //     result = this.server_access(params, 1013, 1014);
-        //     return result.dbresult;
-    },
-
-    db_updateWithAuth: function (args, completion) {
-        INTERMediatorLog.setErrorMessage('INTERMediator_DBAdapter.db_updateWithAuth method was discontinued in Ver.6');
-        //     'use strict';
-        //     var returnValue = false;
-        //     INTERMediatorOnPage.retrieveAuthInfo();
-        //     try {
-        //         returnValue = INTERMediator_DBAdapter.db_update(args);
-        //     } catch (ex) {
-        //         if (ex.message === '_im_auth_required_') {
-        //             if (INTERMediatorOnPage.requireAuthentication) {
-        //                 if (!INTERMediatorOnPage.isComplementAuthData()) {
-        //                     INTERMediatorOnPage.clearCredentials();
-        //                     INTERMediatorOnPage.authenticating(
-        //                         function () {
-        //                             returnValue = INTERMediator_DBAdapter.db_updateWithAuth(args, completion);
-        //                         });
-        //                     return;
-        //                 }
-        //             }
-        //         } else {
-        //             INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-15');
-        //         }
-        //     }
-        //     completion(returnValue);
-    },
-
     db_updateChecking: function (args) {
         'use strict';
         var noError = true, contextDef;
@@ -989,45 +785,6 @@ var INTERMediator_DBAdapter = {
      {   name:<Name of the Context>
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
      */
-    db_delete: function (args) {
-        INTERMediatorLog.setErrorMessage('INTERMediator_DBAdapter.db_delete method was discontinued in Ver.6');
-//     'use strict';
-        //     var params, result;
-        //     if (!INTERMediator_DBAdapter.db_deleteChecking(args)) {
-        //         return;
-        //     }
-        //     params = INTERMediator_DBAdapter.db_deleteParameters(args);
-        //     result = this.server_access(params, 1017, 1015);
-        //     INTERMediatorLog.flushMessage();
-        //     return result;
-    },
-
-    db_deleteWithAuth: function (args, completion) {
-        INTERMediatorLog.setErrorMessage('INTERMediator_DBAdapter.db_deleteWithAuth method was discontinued in Ver.6');
-        //     'use strict';
-        //     var returnValue = false;
-        //     INTERMediatorOnPage.retrieveAuthInfo();
-        //     try {
-        //         returnValue = INTERMediator_DBAdapter.db_delete(args);
-        //     } catch (ex) {
-        //         if (ex.message === '_im_auth_required_') {
-        //             if (INTERMediatorOnPage.requireAuthentication) {
-        //                 if (!INTERMediatorOnPage.isComplementAuthData()) {
-        //                     INTERMediatorOnPage.clearCredentials();
-        //                     INTERMediatorOnPage.authenticating(
-        //                         function () {
-        //                             returnValue = INTERMediator_DBAdapter.db_deleteWithAuth(args, completion);
-        //                         });
-        //                     return;
-        //                 }
-        //             }
-        //         } else {
-        //             INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-14');
-        //         }
-        //     }
-        //     completion(returnValue);
-    },
-
     db_deleteChecking: function (args) {
         'use strict';
         var noError = true, contextDef;
@@ -1118,50 +875,6 @@ var INTERMediator_DBAdapter = {
 
      This function returns the value of the key field of the new record.
      */
-    db_createRecord: function (args) {
-        INTERMediatorLog.setErrorMessage('INTERMediator_DBAdapter.db_createRecord method was discontinued in Ver.6');
-        //     'use strict';
-        //     var params, result;
-        //     params = INTERMediator_DBAdapter.db_createParameters(args);
-        //     if (params) {
-        //         result = INTERMediator_DBAdapter.server_access(params, 1018, 1016);
-        //         INTERMediatorLog.flushMessage();
-        //         return {
-        //             newKeyValue: result.newRecordKeyValue,
-        //             recordset: result.dbresult
-        //         };
-        //     }
-        //     return false;
-    },
-
-    db_createRecordWithAuth: function (args, completion) {
-        INTERMediatorLog.setErrorMessage('INTERMediator_DBAdapter.db_createRecordWithAuth method was discontinued in Ver.6');
-        //     'use strict';
-        //     var returnValue = false;
-        //     INTERMediatorOnPage.retrieveAuthInfo();
-        //     try {
-        //         returnValue = INTERMediator_DBAdapter.db_createRecord(args);
-        //     } catch (ex) {
-        //         if (ex.message === '_im_auth_required_') {
-        //             if (INTERMediatorOnPage.requireAuthentication) {
-        //                 if (!INTERMediatorOnPage.isComplementAuthData()) {
-        //                     INTERMediatorOnPage.clearCredentials();
-        //                     INTERMediatorOnPage.authenticating(
-        //                         function () {
-        //                             returnValue = INTERMediator_DBAdapter.db_createRecordWithAuth(args, completion);
-        //                         });
-        //                     return;
-        //                 }
-        //             }
-        //         } else {
-        //             INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-13');
-        //         }
-        //     }
-        //     if (completion) {
-        //         completion(returnValue.newKeyValue);
-        //     }
-    },
-
     db_createRecord_async: function (args, successProc, failedProc) {
         'use strict';
         var params = INTERMediator_DBAdapter.db_createParameters(args);
@@ -1255,48 +968,6 @@ var INTERMediator_DBAdapter = {
      {   name:<Name of the Context>
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
      */
-    db_copy: function (args) {
-        INTERMediatorLog.setErrorMessage('INTERMediator_DBAdapter.db_copy method was discontinued in Ver.6');
-//     'use strict';
-        //     var params, result;
-        //     params = INTERMediator_DBAdapter.db_copyParameters(args);
-        //     if (params) {
-        //         result = INTERMediator_DBAdapter.server_access(params, 1017, 1015);
-        //         INTERMediatorLog.flushMessage();
-        //         return {
-        //             newKeyValue: result.newRecordKeyValue,
-        //             recordset: result.dbresult
-        //         };
-        //     }
-        //     return false;
-    },
-
-    db_copyWithAuth: function (args, completion) {
-        INTERMediatorLog.setErrorMessage('INTERMediator_DBAdapter.db_copyWithAuth method was discontinued in Ver.6');
-//     'use strict';
-        //     var returnValue = false;
-        //     INTERMediatorOnPage.retrieveAuthInfo();
-        //     try {
-        //         returnValue = INTERMediator_DBAdapter.db_copy(args);
-        //     } catch (ex) {
-        //         if (ex.message === '_im_auth_required_') {
-        //             if (INTERMediatorOnPage.requireAuthentication) {
-        //                 if (!INTERMediatorOnPage.isComplementAuthData()) {
-        //                     INTERMediatorOnPage.clearCredentials();
-        //                     INTERMediatorOnPage.authenticating(
-        //                         function () {
-        //                             returnValue = INTERMediator_DBAdapter.db_copyWithAuth(args, completion);
-        //                         });
-        //                     return;
-        //                 }
-        //             }
-        //         } else {
-        //             INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-14');
-        //         }
-        //     }
-        //     completion(returnValue);
-    },
-
     db_copy_async: function (args, successProc, failedProc) {
         'use strict';
         var params = INTERMediator_DBAdapter.db_copyParameters(args);

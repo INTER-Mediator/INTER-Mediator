@@ -10,6 +10,25 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
+Ver.6 (in development)
+- All communications go async.
+- Version number of major build is assigned as interger number.
+- The following methods are removed.
+      INTERMediator_DBAdapter.server_access
+      INTERMediator_DBAdapter.db_query
+      INTERMediator_DBAdapter.db_queryWithAuth
+      INTERMediator_DBAdapter.db_update
+      INTERMediator_DBAdapter.db_updateWithAuth
+      INTERMediator_DBAdapter.db_delete
+      INTERMediator_DBAdapter.db_deleteWithAuth
+      INTERMediator_DBAdapter.db_createRecord
+      INTERMediator_DBAdapter.db_createRecordWithAuth
+      INTERMediator_DBAdapter.db_copy
+      INTERMediator_DBAdapter.db_copyWithAuth
+- Deprecated global variables $g_dbInstance, $g_serverSideCall in INTER-Mediator.php are removed.
+
+
+
 Ver.5.7 (March 29, 2018)
 - The "data-im-format" attribute is introduced.
   Please see for detail: <http://inter-mediator.info/ja/for-developers/format.html> (Japanese)
