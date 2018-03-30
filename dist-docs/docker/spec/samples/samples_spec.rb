@@ -44,8 +44,8 @@ describe "INTER-Mediator-Server VM" do
     @wait = Selenium::WebDriver::Wait.new(:timeout => 15)
   end
 
-  it "The title of the first page should be 'INTER-Mediator 6.0-dev - VM for Trial'." do
-    expect(@driver.title).to eq("INTER-Mediator 6.0-dev - VM for Trial")
+  it "The title of the first page should be 'INTER-Mediator 6-dev - VM for Trial'." do
+    expect(@driver.title).to eq("INTER-Mediator 6-dev - VM for Trial")
   end
 
   it "The path of 'Sample Program' should be '/INTER-Mediator/Samples/'." do
