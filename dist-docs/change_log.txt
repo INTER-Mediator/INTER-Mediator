@@ -10,7 +10,7 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.6 (in development)
+Ver.6-dev (in development)
 - All communications go async.
 - Version number of major build is assigned as interger number.
 - The following methods are removed.
