@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# setup shell script for Alpine Linux 3.5/3.6/3.7 and Ubuntu Server 14.04
+# setup shell script for Alpine Linux 3.7 and Ubuntu Server 14.04
 #
 # This file can get from the URL below.
 # https://raw.githubusercontent.com/INTER-Mediator/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh
@@ -214,11 +214,11 @@ a2enmod headers
 echo "#Header add Content-Security-Policy \"default-src 'self'\"" > "${APACHEOPTCONF}"
 
 cd "${WEBROOT}"
-git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git && git checkout stable
-#result=`git log master..release 2> /dev/null`
-#if [ "$result" = '' ]; then
-#    git checkout master
-#fi
+git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git && git checkout 5.x
+result=`git diff 5.x..release 2> /dev/null`
+if [ "$result" = '' ]; then
+    git checkout stable
+fi
 
 rm -f "${WEBROOT}/index.html"
 
