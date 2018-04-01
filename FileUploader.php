@@ -104,7 +104,8 @@ class FileUploader
 
         $useContainer = FALSE;
         $dbProxyContext = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
-        if ($dbspec['db-class'] === 'FileMaker_FX' && isset($dbProxyContext['file-upload'])) {
+        if (($dbspec['db-class'] === 'FileMaker_FX' || $dbspec['db-class'] === 'FileMaker_DataAPI') &&
+            isset($dbProxyContext['file-upload'])) {
             foreach ($dbProxyContext['file-upload'] as $item) {
                 if (isset($item['container']) && (boolean)$item['container'] === TRUE) {
                     $useContainer = TRUE;
@@ -324,12 +325,22 @@ class FileUploader
         if ($useContainer === FALSE) {
             $dbProxyInstance->addOutputData('dbresult', $filePath);
         } else {
-            $dbProxyInstance->addOutputData('dbresult',
-                '/fmi/xml/cnt/' . $fileName .
-                '?-db=' . urlencode($dbProxyInstance->dbSettings->getDbSpecDatabase()) .
-                '&-lay=' . urlencode($datasource[0]['name']) .
-                '&-recid=' . intval($_POST['_im_keyvalue']) .
-                '&-field=' . urlencode($targetFieldName));
+            if ($dbspec['db-class'] === 'FileMaker_FX') {
+                $dbProxyInstance->addOutputData('dbresult',
+                    '/fmi/xml/cnt/' . $fileName .
+                    '?-db=' . urlencode($dbProxyInstance->dbSettings->getDbSpecDatabase()) .
+                    '&-lay=' . urlencode($datasource[0]['name']) .
+                    '&-recid=' . intval($_POST['_im_keyvalue']) .
+                    '&-field=' . urlencode($targetFieldName));
+            } else if ($dbspec['db-class'] === 'FileMaker_DataAPI') {
+                // [WIP]
+                $dbProxyInstance->addOutputData('dbresult',
+                    '/fmi/xml/cnt/' . $fileName .
+                    '?-db=' . urlencode($dbProxyInstance->dbSettings->getDbSpecDatabase()) .
+                    '&-lay=' . urlencode($datasource[0]['name']) .
+                    '&-recid=' . intval($_POST['_im_keyvalue']) .
+                    '&-field=' . urlencode($targetFieldName));
+            }
         }
         $dbProxyInstance->finishCommunication();
         if (!is_null($url)) {

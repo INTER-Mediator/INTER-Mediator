@@ -587,7 +587,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     );
                 }
                 foreach ($result->getFieldNames() as $key => $fieldName) {
-                //foreach ($request as $key => $fieldName) {
                     $dataArray = $dataArray + array(
                         $fieldName => $this->formatter->formatterFromDB(
                             $this->getFieldForFormatter($tableName, $fieldName), $record->{$fieldName}
@@ -895,7 +894,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         if ($result->count() === 1) {
             $this->notifyHandler->setQueriedPrimaryKeys(array());
             $keyField = isset($context['key']) ? $context['key'] : $this->specHandler->getDefaultKey();
-            //foreach ($result['data'] as $key => $row) {
             foreach ($result as $record) {
                 $recId = $record->getRecordId();
                 if ($keyField == $this->specHandler->getDefaultKey()) {

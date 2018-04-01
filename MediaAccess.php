@@ -70,10 +70,47 @@ class MediaAccess
                 header("Content-Disposition: {$this->disposition}; filename={$dq}" . urlencode($fileName) . $dq);
                 $util = new IMUtil();
                 $util->outputSecurityHeaders();
-
                 $this->outputImage($content);
             } else if (stripos($target, 'http://') === 0 || stripos($target, 'https://') === 0) { // http or https
-                if (intval(get_cfg_var('allow_url_fopen')) === 1) {
+                $parsedUrl = parse_url($target);
+                if (get_class($dbProxyInstance->dbClass) === 'DB_FileMaker_DataAPI' &&
+                    isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver') {
+                    // for FileMaker Data API
+                    $target = 'http://' . $parsedUrl['user'] . ':' . $parsedUrl['pass'] . '@127.0.0.1' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
+                    if (function_exists('curl_init')) {
+                        $session = curl_init($target);
+                        curl_setopt($session, CURLOPT_HEADER, true);
+                        curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+                        $content = curl_exec($session);
+                        $headerSize = curl_getinfo($session, CURLINFO_HEADER_SIZE);
+                        $headers = substr($content, 0, $headerSize);
+                        curl_close($session);
+                        $sessionKey = '';
+                        if ($header = explode("\r\n", $headers)) {
+                            foreach ($header as $line) {
+                                if ($line) {
+                                    $h = explode(': ', $line);
+                                    if (isset($h[0]) && isset($h[1]) && $h[0] == 'Set-Cookie') {
+                                        $sessionKey = str_replace(
+                                            '; HttpOnly', '', str_replace('X-FMS-Session-Key=', '', $h[1])
+                                        );
+                                    }
+                                }
+                            }
+                        }
+
+                        $target = 'http://127.0.0.1' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
+                        $headers = array('X-FMS-Session-Key: ' . $sessionKey);
+                        $session = curl_init($target);
+                        curl_setopt($session, CURLOPT_HEADER, false);
+                        curl_setopt($session, CURLOPT_HTTPHEADER, $headers);
+                        curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+                        $content = curl_exec($session);
+                        curl_close($session);
+                    } else {
+                        $this->exitAsError(500);
+                    }
+                } else if (intval(get_cfg_var('allow_url_fopen')) === 1) {
                     $content = file_get_contents($target);
                 } else {
                     if (function_exists('curl_init')) {
@@ -141,7 +178,9 @@ class MediaAccess
      */
     public function checkForFileMakerMedia($dbProxyInstance, $options, $file, $isURL)
     {
-        if (strpos($file, "/fmi/xml/cnt/") === 0) { // FileMaker's container field storing an image.
+        if (strpos($file, '/fmi/xml/cnt/') === 0 ||
+            strpos($file, '/Streaming_SSL/MainDB') === 0) {
+            // FileMaker's container field storing an image.
             if (isset($options['authentication']['user'][0])
                 && $options['authentication']['user'][0] == 'database_native'
             ) {

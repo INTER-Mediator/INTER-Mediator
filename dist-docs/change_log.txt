@@ -10,6 +10,9 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
+Ver.5.8-dev (in development)
+- Update FMDataAPI.php (Ver.7) for FileMaker Data API (Trial).
+
 Ver.5.7 (March 29, 2018)
 - The "data-im-format" attribute is introduced.
   Please see for detail: <http://inter-mediator.info/ja/for-developers/format.html> (Japanese)
