@@ -1,0 +1,59 @@
+{
+  "name": "imcommittee/INTER-Mediator",
+  "version": "6-dev",
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/INTER-Mediator/INTER-Mediator.git"
+    }
+  ],
+  "require": {
+    "matthiasmullie/minify":"1.3.*",
+    "php": ">=5.4.0",
+    "ext-intl": "*",
+    "ext-mbstring": "*",
+    "ext-PDO": "*",
+    "ext-bcmath": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "INTERMediator\\": "src/php",
+      "INTERMediator\\DB\\":"/src/php/DB",
+      "INTERMediator\\DB\\Support\\":"/src/php/DB/Support",
+      "INTERMediator\\Locale\\":"/src/php/Locale",
+      "INTERMediator\\Message\\":"/src/php/Message"
+    }
+  },
+  "description": "The INTER-Mediator framework",
+  "type": "library",
+  "keywords": [
+    "framework",
+    "declarative",
+    "rapid-development",
+    "binding"
+  ],
+  "homepage": "https://inter-mediator.com",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "INTER-Mediator Directive Committee",
+      "homepage": "http://inter-mediator.org/"
+    }
+  ],
+  "support": {
+    "community-jp": "https://www.facebook.com/groups/233378356708157/",
+    "community-en": "https://www.facebook.com/groups/254446237922985/",
+    "source": "https://github.com/INTER-Mediator/INTER-Mediator",
+    "manual": "http://inter-mediator.info/"
+  },
+  "scripts": {
+    "check": [
+      "@cs-check",
+      "@test"
+    ],
+    "cs-check": "phpcs --colors -p ./src ./tests",
+    "cs-fix": "phpcbf --colors ./src ./tests",
+    "test": "phpunit",
+    "test-coverage": "phpunit --coverage-clover=clover.xml"
+  }
+}

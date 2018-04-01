@@ -125,9 +125,9 @@ else
     rm  "${buildPath}/temp.js"
 fi
 
-# Copy "DB_Support" directory.
-echo "PROCESSING: ${originalPath}/DB_Support"
-cp -prf "${originalPath}/DB_Support" "${buildPath}"
+# Copy "Support" directory.
+echo "PROCESSING: ${originalPath}/Support"
+cp -prf "${originalPath}/Support" "${buildPath}"
 
 # Copy "Data_Converter" directory.
 echo "PROCESSING: ${originalPath}/Data_Converter"
