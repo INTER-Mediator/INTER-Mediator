@@ -14,6 +14,7 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace INTERMediator\DB\Support;
+use \PDO;
 
 class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
 {
@@ -46,7 +47,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $this->logger->setDebugMessage("[authSupportStoreChallenge] {$sql}");
-        $currentDTFormat = IMUtil::currentDTString();
+        $currentDTFormat = \INTERMediator\IMUtil::currentDTString();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $sql = "{$this->dbClass->handler->sqlUPDATECommand()}{$hashTable} SET hash=" . $this->dbClass->link->quote($challenge)
                 . ",expired=" . $this->dbClass->link->quote($currentDTFormat)
@@ -102,7 +103,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
 
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $hashValue = $row['hash'];
-            $seconds = IMUtil::secondsFromNow($row['expired']);
+            $seconds = \INTERMediator\IMUtil::secondsFromNow($row['expired']);
             if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
                 return false;
             }
@@ -152,7 +153,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
                 }
                 $this->logger->setDebugMessage("[authSupportRetrieveChallenge] {$sql}");
             }
-            $seconds = IMUtil::secondsFromNow($row['expired']);
+            $seconds = \INTERMediator\IMUtil::secondsFromNow($row['expired']);
             if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
                 return false;
             }
@@ -176,7 +177,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $currentDTStr = $this->dbClass->link->quote(IMUtil::currentDTString($this->dbSettings->getExpiringSeconds()));
+        $currentDTStr = $this->dbClass->link->quote(\INTERMediator\IMUtil::currentDTString($this->dbSettings->getExpiringSeconds()));
         $sql = "delete from {$hashTable} where expired < {$currentDTStr}";
         $this->logger->setDebugMessage("[authSupportRemoveOutdatedChallenges] {$sql}");
         $result = $this->dbClass->link->query($sql);
@@ -203,7 +204,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return $returnValue;
         }
 
-        $currentDTFormat = $this->dbClass->link->quote(IMUtil::currentDTString());
+        $currentDTFormat = $this->dbClass->link->quote(\INTERMediator\IMUtil::currentDTString());
         $keys = array("limitdt");
         $values = array($currentDTFormat);
         $updates = array("limitdt=" . $currentDTFormat);
@@ -260,7 +261,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $limitSeconds = $this->dbSettings->getLDAPExpiringSeconds();
             if (isset($row['limitdt']) && !is_null($row['limitdt'])
-                && IMUtil::secondsFromNow($row['limitdt']) < $limitSeconds
+                && \INTERMediator\IMUtil::secondsFromNow($row['limitdt']) < $limitSeconds
             ) {
                 return false;
             }
@@ -320,7 +321,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
                 }
                 $user_id = $row['id'];
             }
-            $currentDTFormat = IMUtil::currentDTString();
+            $currentDTFormat = \INTERMediator\IMUtil::currentDTString();
             if ($user_id > 0) {
                 $setClause = "limitdt=" . $this->dbClass->link->quote($currentDTFormat);
                 if ($timeUp) {
@@ -710,7 +711,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $currentDTFormat = IMUtil::currentDTString();
+        $currentDTFormat = \INTERMediator\IMUtil::currentDTString();
         $sql = "{$this->dbClass->handler->sqlINSERTCommand()}{$hashTable} (hash,expired,clienthost,user_id) VALUES("
             . implode(',', array($this->dbClass->link->quote($hash), $this->dbClass->link->quote($currentDTFormat),
                 $this->dbClass->link->quote($clienthost), $this->dbClass->link->quote($userid))) . ')';
@@ -752,7 +753,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $this->logger->setDebugMessage("[authSupportCheckIssuedHashForResetPassword] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $hashValue = $row['hash'];
-            if (IMUtil::secondsFromNow($row['expired']) > 3600) {
+            if (\INTERMediator\IMUtil::secondsFromNow($row['expired']) > 3600) {
                 return false;
             }
             if ($hash == $hashValue) {
@@ -771,7 +772,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $currentDTFormat = IMUtil::currentDTString();
+        $currentDTFormat = \INTERMediator\IMUtil::currentDTString();
         $sql = "{$this->dbClass->handler->sqlINSERTCommand()}{$hashTable} (hash,expired,user_id) VALUES(" . implode(',', array(
                 $this->dbClass->link->quote($hash),
                 $this->dbClass->link->quote($currentDTFormat),
@@ -794,7 +795,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $currentDTFormat = IMUtil::currentDTString(3600);
+        $currentDTFormat = \INTERMediator\IMUtil::currentDTString(3600);
         $sql = "{$this->dbClass->handler->sqlSELECTCommand()}user_id FROM {$hashTable} WHERE hash = " . $this->dbClass->link->quote($hash) .
             " AND clienthost IS NULL AND expired > " . $this->dbClass->link->quote($currentDTFormat);
         $resultHash = $this->dbClass->link->query($sql);

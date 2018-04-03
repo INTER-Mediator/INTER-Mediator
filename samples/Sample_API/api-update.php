@@ -14,7 +14,7 @@
  */
 
 require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
-spl_autoload_register('loadClass');
+//spl_autoload_register('loadClass');
 
 $pid = mb_eregi_replace("/[^0-9]/", "", $_GET["id"]);
 if ($pid < 1) {

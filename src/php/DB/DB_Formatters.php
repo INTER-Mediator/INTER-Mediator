@@ -25,7 +25,7 @@ class DB_Formatters
             $this->formatter = array();
             foreach ($fmt as $oneItem) {
                 if (!isset($this->formatter[$oneItem['field']])) {
-                    $cvClassName = "DataConverter_{$oneItem['converter-class']}";
+                    $cvClassName = "\INTERMediator\Data_Converter\DataConverter_{$oneItem['converter-class']}";
                     //    require_once("{$cvClassName}.php");
                     $this->formatter[$oneItem['field']]
                         = new $cvClassName(isset($oneItem['parameter']) ? $oneItem['parameter'] : '');

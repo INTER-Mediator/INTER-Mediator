@@ -682,7 +682,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             if (!isset($this->PostData["value_{$i}"])) {
                 break;
             }
-            $value = IMUtil::removeNull(filter_var($this->PostData["value_{$i}"]));
+            $value = \INTERMediator\IMUtil::removeNull(filter_var($this->PostData["value_{$i}"]));
             $this->dbSettings->addValue(get_magic_quotes_gpc() ? stripslashes($value) : $value);
         }
         if (isset($options['authentication']) && isset($options['authentication']['email-as-username'])) {
@@ -1059,13 +1059,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             include($currentDirParam);
         }
 
-        $rsaClass = IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
+        $rsaClass = \INTERMediator\IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
         $rsa = new $rsaClass;
         $rsa->setPassword($passPhrase);
         $rsa->loadKey($generatedPrivateKey);
         $rsa->setPassword();
         $privatekey = $rsa->getPrivateKey();
-        if (IMUtil::phpVersion() < 6) {
+        if (\INTERMediator\IMUtil::phpVersion() < 6) {
             $priv = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
         } else {
             $priv = $rsa->_parseKey($privatekey, constant('phpseclib\Crypt\RSA::PRIVATE_FORMAT_PKCS1'));

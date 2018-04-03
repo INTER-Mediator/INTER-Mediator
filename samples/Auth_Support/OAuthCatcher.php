@@ -19,7 +19,7 @@ $pathToIM = "..";   // Modify this to match your directories.
 
 require_once("{$pathToIM}/INTER-Mediator.php");
 require_once("{$pathToIM}/DB_PDO.php");
-spl_autoload_register('loadClass');
+//spl_autoload_register('loadClass');
 $authObj = new OAuthAuth();
 $authObj->setDoRedirect(true);
 if (is_null($authObj)) {

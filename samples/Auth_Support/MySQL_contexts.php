@@ -7,7 +7,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-require_once('../INTER-Mediator.php');
+require_once('../../INTER-Mediator.php');
 
 IM_Entry(
     array(

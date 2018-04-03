@@ -2,8 +2,8 @@
 /**
  * IMUtil_Test file
  */
-require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-spl_autoload_register('loadClass');
+//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
+//spl_autoload_register('loadClass');
 
 class IMUtil_Test extends PHPUnit_Framework_TestCase {
 

@@ -657,7 +657,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         //$result = $this->dbClass->fmDataAuth->DoFxAction('new', TRUE, TRUE, 'full');
         $this->dbClass->fmDataAuth->{$hashTable}->create(array(
             'hash' => $hash,
-            'expired' => IMUtil::currentDTStringFMS(),
+            'expired' => \INTERMediator\IMUtil::currentDTStringFMS(),
             'user_id' => $userid,
         ));
 
@@ -682,7 +682,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         //$this->dbClass->fmDataAuth->AddDBParam("clienthost", "", "eq");
         //$this->dbClass->fmDataAuth->AddDBParam("expired", IMUtil::currentDTStringFMS(3600), "gt");
         //$result = $this->dbClass->fmDataAuth->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        $conditions = array(array('hasu' => $hash), array('clienthost' => '='), array('expired' => IMUtil::currentDTStringFMS(3600) . '...'));
+        $conditions = array(
+            array('hash' => $hash),
+            array('clienthost' => '='),
+            array('expired' => \INTERMediator\IMUtil::currentDTStringFMS(3600) . '...'));
         $result = $this->dbClass->fmDataAuth->{$hashTable}->query($conditions);
 
         if (!is_array($result)) {

@@ -927,7 +927,7 @@ var INTERMediatorOnPage = {
         } else if (justFromNode === false) {
             enclosureNode = INTERMediatorLib.getParentEnclosure(fromNode);
         } else {
-            enclosureNode = INTERMediatorLib.getParentRepeater(fromNode);
+            enclosureNode = INTERMediatorLib.getParentRepeaters(fromNode);
         }
         if (enclosureNode !== null) {
             nodeIds = [];

@@ -27,7 +27,7 @@ if ((float)phpversion() >= 7.0) {
 }
 require_once(dirname(__FILE__) . '/../lib/bi2php/biRSA.php');
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-spl_autoload_register('loadClass');
+//spl_autoload_register('loadClass');
 
 class RSA_Test extends PHPUnit_Framework_TestCase
 {
@@ -35,7 +35,7 @@ class RSA_Test extends PHPUnit_Framework_TestCase
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
-        $rsaClass = IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
+        $rsaClass = \INTERMediator\IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
         $this->rsa = new $rsaClass;
     }
 

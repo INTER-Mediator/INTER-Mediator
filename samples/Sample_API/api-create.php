@@ -14,7 +14,7 @@
  */
 
 require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
-spl_autoload_register('loadClass');
+//spl_autoload_register('loadClass');
 
 $prodName = $_GET["n"];
 $prodPrice = mb_eregi_replace("/[^0-9]/", "", $_GET["p"]);

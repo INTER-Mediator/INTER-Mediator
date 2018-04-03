@@ -1,7 +1,7 @@
 <?php
 
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-spl_autoload_register('loadClass');
+//spl_autoload_register('loadClass');
 
 class DB_Proxy_Test extends PHPUnit_Framework_TestCase
 {

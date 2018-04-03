@@ -50,7 +50,7 @@ class DB_Notification_Handler_PDO
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $currentDTFormat = IMUtil::currentDTString();
+        $currentDTFormat = \INTERMediator\IMUtil::currentDTString();
         $sql = "{$this->dbClass->handler->sqlINSERTCommand()}{$regTable} (clientid,entity,conditions,registereddt) VALUES("
             . implode(',', array(
                 $this->dbClass->link->quote($clientId),
