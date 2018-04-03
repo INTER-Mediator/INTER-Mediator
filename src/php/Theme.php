@@ -54,11 +54,12 @@ class Theme
 
     private function pathToTheme($themeName)
     {
+        $imPath = IMUtil::pathToINTERMediator();
         $themeName = str_replace('..', '', $themeName);
         $candidateDirs = is_null($this->altThemePath) ? array() : array($this->altThemePath . "/{$themeName}");
-        $candidateDirs[] = dirname(__FILE__) . "/themes/{$themeName}";
+        $candidateDirs[] = $imPath . "/themes/{$themeName}";
         if (is_null($this->altThemePath)) {
-            $candidateDirs[] = dirname(__FILE__) . "/themes/{$themeName}";
+            $candidateDirs[] = $imPath . "/themes/{$themeName}";
         }
         foreach ($candidateDirs as $item) {
             if (file_exists($item)) {

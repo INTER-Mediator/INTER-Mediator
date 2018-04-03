@@ -14,6 +14,8 @@
  */
 
 namespace INTERMediator\DB;
+use \PDO;
+use \PDOException;
 
 /**
  * Class DB_PDO

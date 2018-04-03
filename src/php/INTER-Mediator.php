@@ -118,7 +118,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
     } else {
-        $dbInstance = new DB_Proxy();
+        $dbInstance = new DB\DB_Proxy();
         if (!$dbInstance->initialize($datasource, $options, $dbspecification, $debug)) {
             $dbInstance->finishCommunication(true);
         } else {

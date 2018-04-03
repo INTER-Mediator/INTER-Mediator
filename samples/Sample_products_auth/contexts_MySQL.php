@@ -54,7 +54,7 @@ IM_Entry(
             'storing' => 'cookie',
             'realm' => 'Sample_products_auth',
         ),
-        'media-root-dir' => $_SERVER['DOCUMENT_ROOT'] . '/INTER-Mediator/Samples/Sample_products/images',
+        'media-root-dir' => $_SERVER['DOCUMENT_ROOT'] . '/INTER-Mediator/samples/Sample_products/images',
         'media-context' => 'productlist',
     ),
     array('db-class' => 'PDO'),

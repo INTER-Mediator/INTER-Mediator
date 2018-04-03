@@ -406,7 +406,7 @@ var IMLibPageNavigation = {
                     //INTERMediatorOnPage.retrieveAuthInfo();
                     INTERMediator_DBAdapter.db_delete_async(
                         deleteArgs,
-                        async function () {
+                        async () =>{
                             INTERMediator.pagedAllCount--;
                             INTERMediator.totalRecordCount--;
                             if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 1) {
@@ -420,7 +420,7 @@ var IMLibPageNavigation = {
                             INTERMediatorOnPage.hideProgress();
                             INTERMediatorLog.flushMessage();
                         },
-                        completeTask()
+                        ()=>{completeTask();}
                     );
                 } catch (ex) {
                     INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-6');

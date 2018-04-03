@@ -188,7 +188,7 @@ $pusherParameters = array(
 
 /* Initial values for local context with their keys. */
 //$valuesForLocalContext = array(
-//    "pagetitle" => "INTER-Mediator Samples",
+//    "pagetitle" => "INTER-Mediator samples",
 //    "copyright" => "INTER-Mediator Directive Committee",
 //);
 
