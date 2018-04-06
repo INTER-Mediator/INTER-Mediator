@@ -234,10 +234,10 @@ var IMLibElement = {
                     currentValue = originalValue ? originalValue : element.getAttribute(curTarget);
                     if (curVal.indexOf('/fmi/xml/cnt/') === 0 && currentValue.indexOf('?media=') === -1) {
                         curVal = INTERMediatorOnPage.getEntryPath() + '?media=' + curVal;
-                    } else if (curVal.indexOf('https://undefined/Streaming_SSL/MainDB') === 0 &&
+                    } else if (curVal.indexOf('https://' + location.hostname + '/Streaming_SSL/MainDB') === 0 &&
                         currentValue.indexOf('?media=') === -1) {
                         curVal = INTERMediatorOnPage.getEntryPath() +
-                            '?media=' + encodeURIComponent(curVal.replace('https://undefined', ''));
+                            '?media=' + encodeURIComponent(curVal.replace('https://' + location.hostname, ''));
                     }
                     element.setAttribute(curTarget, currentValue + curVal);
                 }
@@ -269,10 +269,10 @@ var IMLibElement = {
                     currentValue = element.getAttribute(curTarget);
                     if (curVal.indexOf('/fmi/xml/cnt/') === 0 && currentValue.indexOf('?media=') === -1) {
                         curVal = INTERMediatorOnPage.getEntryPath() + '?media=' + curVal;
-                    } else if (curVal.indexOf('https://undefined/Streaming_SSL/MainDB') === 0 &&
+                    } else if (curVal.indexOf('https://' + location.hostname + '/Streaming_SSL/MainDB') === 0 &&
                         currentValue.indexOf('?media=') === -1) {
                         curVal = INTERMediatorOnPage.getEntryPath() +
-                            '?media=' + curVal.replace('https://undefined', '');
+                            '?media=' + curVal.replace('https://' + location.hostname, '');
                     }
                     element.setAttribute(curTarget, currentValue.replace('$', curVal));
                 }

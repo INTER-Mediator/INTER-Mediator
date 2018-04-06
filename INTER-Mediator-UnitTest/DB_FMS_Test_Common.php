@@ -684,7 +684,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testAuthByInvalidUsder()
+    public function testAuthByInvalidUser()
     {
         $this->dbProxySetupForAuth();
 
