@@ -27,6 +27,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $this->dbClass->setupFMDataAPIforAuth($hashTable, 1);
 
         $conditions = array(array('user_id' => $uid, 'clienthost' => $clientId));
+        $result = NULL;
         try {
             $result = $this->dbClass->fmDataAuth->{$hashTable}->query($conditions);
         } catch (Exception $e) {
@@ -178,8 +179,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         foreach ($result as $record) {
             $recordId = $record->getRecordId();
             $this->dbClass->setupFMDataAPIforAuth($hashTable, 1);
-            $result = $this->dbClass->fmDataAuth->{$hashTable}->delete($recordId);
-            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            try {
+                $result = $this->dbClass->fmDataAuth->{$hashTable}->delete($recordId);
+            } catch (Exception $e) {
                 // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
                 return false;
             }
@@ -204,7 +206,8 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         }
 
         // [WIP] $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
-        if ((!is_array($result) || $result['foundCount'] < 1) && $this->dbSettings->getEmailAsAccount()) {
+        if ((get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation' ||
+            $result->count() < 1) && $this->dbSettings->getEmailAsAccount()) {
             $this->dbClass->setupFMDataAPIforDB($userTable, 1);
             $conditions = array(array('email' => str_replace('@', '\\@', $username)));
             try {
@@ -395,23 +398,22 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         }
 
         $this->dbClass->setupFMDataAPIforDB_Alt($userTable, 55555);
-        $this->dbClass->fmDataAlt->AddDBParam('username', str_replace("@", "\\@", $username), "eq");
-        $this->dbClass->fmDataAlt->AddDBParam('email', str_replace("@", "\\@", $username), "eq");
-        $this->dbClass->fmDataAlt->SetLogicalOR();
-        $result = $this->dbClass->fmDataAlt->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
+        $conditions = array(array('username' => str_replace("@", "\\@", $username)), array('email' => str_replace("@", "\\@", $username)));
+        try {
+            $result = $this->dbClass->fmDataAlt->{$userTable}->query($conditions);
+            // [WIP] $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
+            $usernameCandidate = '';
+            foreach ($result as $record) {
+                if ($record->username == $username) {
+                    $usernameCandidate = $username;
+                }
+                if ($record->email == $username) {
+                    $usernameCandidate = $record->username;
+                }
+            }
+        } catch (Exception $e) {
+            // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
             return false;
-        }
-        // [WIP] $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
-        $usernameCandidate = '';
-        foreach ($result as $record) {
-            if ($record->username == $username) {
-                $usernameCandidate = $username;
-            }
-            if ($record->email == $username) {
-                $usernameCandidate = $record->username;
-            }
         }
         return $usernameCandidate;
     }
@@ -475,17 +477,17 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         }
         try {
             $result = $this->dbClass->fmDataAlt->{$this->dbSettings->getCorrTable()}->query($conditions);
+            // [WIP] $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
+            foreach ($result as $record) {
+                if (!in_array($record->dest_group_id, $this->belongGroups)) {
+                    if (!$this->resolveGroup($record->dest_group_id)) {
+                        return false;
+                    }
+                }
+            }
         } catch (Exception $e) {
             // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
-        }
-        // [WIP] $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
-        foreach ($result as $record) {
-            if (!in_array($record->dest_group_id, $this->belongGroups)) {
-                if (!$this->resolveGroup($record->dest_group_id)) {
-                    return false;
-                }
-            }
         }
     }
 

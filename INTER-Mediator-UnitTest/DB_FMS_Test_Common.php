@@ -1044,4 +1044,18 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAccess('person_layout', 1);
         $this->assertFalse($this->db_proxy->dbClass->specHandler->isSupportAggregation());
     }
+
+    public function testGetAuthorizedUsers()
+    {
+        $this->dbProxySetupForAuth();
+        $authorizedUsers = $this->db_proxy->dbClass->authHandler->getAuthorizedUsers('read');
+        $this->assertTrue($authorizedUsers == array('user1'));
+    }
+
+    public function testGetAuthorizedGroups()
+    {
+        $this->dbProxySetupForAuth();
+        $authorizedGroups = $this->db_proxy->dbClass->authHandler->getAuthorizedGroups('read');
+        $this->assertTrue($authorizedGroups == array('group2'));
+    }
 }

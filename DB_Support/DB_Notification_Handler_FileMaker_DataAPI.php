@@ -104,6 +104,16 @@ class DB_Notification_Handler_FileMaker_DataAPI
         $conditions = array($conditions);
         try {
             $result = $this->dbClass->fmData->{$regTable}->query($conditions);
+            if ($result->count() > 0) {
+                $this->dbClass->setupFMDataAPIforDB($regTable, '');
+                foreach ($result as $record) {
+                    $recId = $record->getRecordId();
+                    try {
+                        $result = $this->dbClass->fmData->{$regTable}->delete($recId);
+                    } catch (Exception $e) {
+                    }
+                }
+            }
         } catch (Exception $e) {
         }
 
@@ -116,17 +126,6 @@ class DB_Notification_Handler_FileMaker_DataAPI
                 )
             );
             return false;
-        } else {
-            if ($result->count() > 0) {
-                $this->dbClass->setupFMDataAPIforDB($regTable, '');
-                foreach ($result as $record) {
-                    $recId = $record->getRecordId();
-                    try {
-                        $result = $this->dbClass->fmData->{$regTable}->delete($recId);
-                    } catch (Exception $e) {
-                    }
-                }
-            }
         }
 
         return true;
@@ -138,7 +137,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
         $pksTable = $this->dbSettings->registerPKTableName;
         $originPK = $pkArray[0];
         $this->dbClass->setupFMDataAPIforDB($regTable, 'all');
-        $conditions = array(array('clientid' => $clientId, 'entity' => $entity));
+        $conditions = array(array('entity' => $entity), array('clientid' => $clientId,  "omit"=>"true"));
         $sort = array(array('clientid', 'ascend'));
         try {
             $result = $this->dbClass->fmData->{$regTable}->query($conditions, $sort);
@@ -276,7 +275,6 @@ class DB_Notification_Handler_FileMaker_DataAPI
                                 }
                             }
                         }
-                        echo "Deleted count: " . $resultForRemove->count();
                         $this->logger->setDebugMessage("Deleted count: " . $resultForRemove->count(), 2);
                     } catch (Exception $e) {
                     }
