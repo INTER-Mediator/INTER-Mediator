@@ -1059,7 +1059,12 @@ class CommunicationProvider
         $url = $this->getURL($action, $layout, $recordId);
         $header = array();
         if ($this->isLocalServer) {
-            $header[] = "X-Forwarded-For: 127.0.0.1";
+            $header[] = 'X-Forwarded-For: 127.0.0.1';
+            $host = filter_input(INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_URL);
+            if ($host === NULL || $host === FALSE) {
+                $host = 'localhost';
+            }
+            $header[] = 'X-Forwarded-Host: ' . $host;
         }
         if ($this->useOAuth) {
             $header[] = "X-FM-Data-Login-Type: oauth";
@@ -1086,6 +1091,24 @@ class CommunicationProvider
                 }
             }
         } else if ($methodLower !== 'get' && !is_null($request)) {
+            // cast a number
+            if (isset($request['data'])) {
+                foreach ($request['data'] as $fieldName => $fieldValue) {
+                    if (is_numeric($fieldValue)) {
+                        $request['data'][$fieldName] = (string)$fieldValue;
+                    }
+                }
+            }
+            if (isset($request['query'])) {
+                foreach ($request['query'] as $key => $array) {
+                    foreach ($array as $fieldName => $fieldValue) {
+                        if (!is_array($fieldValue)) {
+                            $request['query'][$key][$fieldName] = (string)$fieldValue;
+                        }
+                    }
+                }
+            }
+
             if (isset($request['sort'])) {
                 $sort = array();
                 foreach ($request['sort'] as $sortKey => $sortCondition) {

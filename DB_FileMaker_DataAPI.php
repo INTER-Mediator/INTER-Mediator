@@ -243,7 +243,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             }
         }
 
-        //if (!is_array($result)) {
         if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
@@ -540,6 +539,8 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             }
         }
 
+        $this->fmData->{$layout}->startCommunication();
+
         $portal = array();
         $portalNames = array();
         $recordId = NULL;
@@ -548,6 +549,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             if (count($conditions) === 1 && isset($conditions[0]['recordId'])) {
                 $recordId = str_replace('=', '', $conditions[0]['recordId']);
                 if (is_numeric($recordId)) {
+                    $conditions[0]['recordId'] = $recordId;
                     $result = $this->fmData->{$layout}->getRecord($recordId);
                 }
             } else {
@@ -646,6 +648,8 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 100000000);
             $this->mainTableTotalCount = $result->count();
         }
+
+        $this->fmData->{$layout}->endCommunication();
 
         return $recordArray;
     }
@@ -757,6 +761,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         $dataSourceName = $this->dbSettings->getDataSourceName();
         $tableSourceName = $this->dbSettings->getEntityForUpdate();
         $context = $this->dbSettings->getDataSourceTargetArray();
+        $data = array();
 
         $usePortal = false;
         if (isset($context['relation'])) {
@@ -788,6 +793,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     $convertedValue = $this->formatter->formatterToDB(
                         "{$tableSourceName}{$this->dbSettings->getSeparator()}{$condition['field']}",
                         $condition['value']);
+                    $data += array($condition['field'] => $convertedValue);
                     // [WIP] $this->fmData->AddDBParam($condition['field'], $convertedValue, $condition['operator']);
                 }
             }
@@ -801,12 +807,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 }
                 $convertedValue = $this->formatter->formatterToDB(
                     "{$tableSourceName}{$this->dbSettings->getSeparator()}{$value['field']}", $value['value']);
-                /*
-                [WIP]
-                if ($cwpkit->_checkDuplicatedFXCondition($fxUtility->CreateCurrentSearch(), $value['field'], $convertedValue) === TRUE) {
-                    $this->fmData->AddDBParam($value['field'], $convertedValue, $value['operator']);
-                }
-                */
+                $data += array($value['field'] => $convertedValue);
             }
         }
         if (isset($tableInfo['authentication'])
@@ -852,10 +853,15 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             }
         }
 
-        $condition = array(array($primaryKey => filter_input(INPUT_POST, 'condition0value')));
+        $pKey = filter_input(INPUT_POST, 'condition0value');
+        if ($pKey === NULL || $pKey === FALSE) {
+            $condition = array($data);
+        } else {
+            $condition = array(array($primaryKey => filter_input(INPUT_POST, 'condition0value')));
+        }
         $result = NULL;
         $portal = array();
-        if (count($condition) === 1 && isset($condition[0]['recordId'])) {
+        if (count($condition) === 1 && isset($condition[0]) && isset($condition[0]['recordId'])) {
             $recordId = str_replace('=', '', $condition[0]['recordId']);
             if (is_numeric($recordId)) {
                 $result = $this->fmData->{$layout}->getRecord($recordId);
@@ -924,11 +930,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     $convVal = $this->stringReturnOnly((is_array($value)) ? implode("\n", $value) : $value);
                     $convVal = $this->formatter->formatterToDB(
                         $this->getFieldForFormatter($tableSourceName, $originalfield), $convVal);
-                    /* [WIP]
-                    if ($cwpkit->_checkDuplicatedFXCondition($fxUtility->CreateCurrentSearch(), $field, $convVal) === TRUE) {
-                        $this->fmData->AddDBParam($field, $convVal);
-                    }
-                    */
+                    $data += array($field => $convVal);
                 }
                 if ($counter < 1) {
                     $this->logger->setErrorMessage('No data to update.');
@@ -958,7 +960,10 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 $value = filter_input(INPUT_POST, 'value_0');
                 $convVal = $this->formatter->formatterToDB(
                     $this->getFieldForFormatter($tableSourceName, $originalfield), $value);
-                $this->fmData->{$layout}->update($recId, array($originalfield => $convVal));
+                if ($originalfield !== FALSE && $originalfield !== NULL) {
+                    $data += array($originalfield => $convVal);
+                }
+                $this->fmData->{$layout}->update($recId, $data);
                 $result = $this->fmData->{$layout}->getRecord($recId);
                 /* [WIP]
                 if (!is_array($result)) {
@@ -1110,6 +1115,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         // [WIP]
         //$this->updatedRecord = $this->createRecordset($result['data'], $dataSourceName, null, null, null);
         $this->updatedRecord = $this->createRecordset($result, $dataSourceName, null, null, null);
+
         return $recId;
     }
 
@@ -1237,9 +1243,9 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
 
                 $this->notifyHandler->setQueriedEntity($this->fmData->layout);
 
-                $result = $this->fmData->{$layout}->delete($recId);
-                //if (!is_array($result)) {
-                if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                try {
+                    $result = $this->fmData->{$layout}->delete($recId);
+                } catch (Exception $e) {
                     if ($this->dbSettings->isDBNative()) {
                         $this->dbSettings->setRequireAuthentication(true);
                     } else {
@@ -1368,37 +1374,20 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             return false;
         }
         $this->setupFMDataAPIforAuth($table, 'all');
-        if (count($conditions) > 0) {
-            $condition = array();
-            $tmpCondition = array();
-            foreach ($conditions as $field => $value) {
-                $tmpCondition[$field] = $value;
-            }
-            $condition[] = $tmpCondition;
-        }
-        // [WIP]
-        $result = $this->fmDataAuth->{$table}->query($condition, NULL, 1, 100000000);
-        /*if (count($conditions) > 0) {
-            $result = $this->fmDataAuth->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        } else {
-            $result = $this->fmDataAuth->DoFxAction('show_all', TRUE, TRUE, 'full');
-        }*/
-
-        if (is_null($result)) {
-            return false;
-        }
-        return $result;
-        /*
         $recordSet = array();
-        foreach ($result['data'] as $key => $row) {
-            $oneRecord = array();
-            foreach ($row as $field => $value) {
-                $oneRecord[$field] = $value[0];
+        try {
+            $result = $this->fmDataAuth->{$table}->query(array($conditions), NULL, 1, 100000000);
+            foreach ($result as $record) {
+                $oneRecord = array();
+                foreach ($result->getFieldNames() as $key => $fieldName) {
+                    $oneRecord[$fieldName] = $record->{$fieldName};
+                }
+                $recordSet[] = $oneRecord;
             }
-            $recordSet[] = $oneRecord;
+        } catch (Exception $e) {
         }
+
         return $recordSet;
-        */
     }
 
     protected function _adjustSortDirection($direction)
