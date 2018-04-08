@@ -18,6 +18,7 @@ namespace INTERMediator;
 $imRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
 
 require($imRoot . 'src/vendor/autoload.php');
+require($imRoot . 'src/php/DB/DB_Interfaces.php');
 //require('DB_Interfaces.php');
 
 if (function_exists('mb_internal_encoding')) {

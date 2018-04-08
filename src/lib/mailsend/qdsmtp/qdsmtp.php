@@ -19,6 +19,9 @@
  * Qdsmtp is SMTP Taler library ,easy , quickly , usefull .
  * Copyright (C) 2008  spok 
 */
+
+namespace \QDSMTP;
+
 if ( defined('CAKE_CORE_INCLUDE_PATH') || defined('CAKE')) {
 	class QdsmtpBranch extends Object{}
 }else{

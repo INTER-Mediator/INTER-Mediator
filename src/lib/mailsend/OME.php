@@ -39,6 +39,8 @@
  * @since PHP 4.0
  * @version
  */
+namespace INTERMediator\OME;
+
 class OME
 {
     private $bodyWidth = 74;

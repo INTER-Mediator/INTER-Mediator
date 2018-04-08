@@ -13,6 +13,8 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+use \INTERMediator\DB\Extending_Interface_AfterRead;
+
 class SumForCustomers implements Extending_Interface_AfterRead
 {
     public function doAfterReadFromDB($result)
