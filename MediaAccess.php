@@ -199,22 +199,13 @@ class MediaAccess
                 $rsa = new $rsaClass;
                 $rsa->setPassword($passPhrase);
                 $rsa->loadKey($generatedPrivateKey);
-                $rsa->setPassword();
-                $privatekey = $rsa->getPrivateKey();
-                if (IMUtil::phpVersion() < 6) {
-                    $priv = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
-                } else {
-                    $priv = $rsa->_parseKey($privatekey, constant('phpseclib\Crypt\RSA::PRIVATE_FORMAT_PKCS1'));
-                }
-
-                require_once('lib/bi2php/biRSA.php');
-                $keyDecrypt = new biRSAKeyPair('0', $priv['privateExponent']->toHex(), $priv['modulus']->toHex());
+                $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
 
                 $cookieNameUser = '_im_username';
                 $cookieNamePassword = '_im_crypted';
                 $credential = isset($_COOKIE[$cookieNameUser]) ? urlencode($_COOKIE[$cookieNameUser]) : '';
-                if (isset($_COOKIE[$cookieNamePassword])) {
-                    $credential .= ':' . urlencode($keyDecrypt->biDecryptedString($_COOKIE[$cookieNamePassword]));
+                if (isset($_COOKIE[$cookieNamePassword]) && strlen($_COOKIE[$cookieNamePassword]) > 0) {
+                    $credential .= ':' . urnencode($rsa->decrypt(base64_decode($_COOKIE[$cookieNamePassword])));
                 }
                 $urlHost = $dbProxyInstance->dbSettings->getDbSpecProtocol() . '://' . $credential . '@'
                     . $dbProxyInstance->dbSettings->getDbSpecServer() . ':'

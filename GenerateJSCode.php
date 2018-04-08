@@ -329,15 +329,10 @@ class GenerateJSCode
             $rsa->setPassword($passPhrase);
             $rsa->loadKey($generatedPrivateKey);
             $rsa->setPassword();
-            if (IMUtil::phpVersion() < 6) {
-                $publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_RAW);
-            } else {
-                $publickey = $rsa->getPublicKey(constant('phpseclib\Crypt\RSA::PUBLIC_FORMAT_RAW'));
-            }
-
+            $publickey = $rsa->getPublicKey();
             $this->generateAssignJS(
                 "INTERMediatorOnPage.publickey",
-                "new biRSAKeyPair('", $publickey['e']->toHex(), "','0','", $publickey['n']->toHex(), "')");
+                "'" . str_replace(array("\r\n", "\r", "\n"), '', $publickey) . "'");
             if (in_array(sha1($generatedPrivateKey), array(
                     '413351603fa756ecd8270147d1a84e9a2de2a3f9',  // Ver. 5.2
                     '094f61a9db51e0159fb0bf7d02a321d37f29a715',  // Ver. 5.3
@@ -377,7 +372,6 @@ class GenerateJSCode
     private function combineScripts($currentDir)
     {
         $jsLibDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
-        $bi2phpDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'bi2php' . DIRECTORY_SEPARATOR;
         $content = '';
         $content .= file_get_contents($currentDir . 'INTER-Mediator.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Page.js');
@@ -393,9 +387,7 @@ class GenerateJSCode
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Log.js');
         $content .= ';' . file_get_contents($jsLibDir . 'tinySHA1.js');
         $content .= file_get_contents($jsLibDir . 'sha256.js');
-        $content .= file_get_contents($bi2phpDir . 'biBigInt.js');
-        $content .= file_get_contents($bi2phpDir . 'biMontgomery.js');
-        $content .= file_get_contents($bi2phpDir . 'biRSA.js');
+        $content .= file_get_contents($jsLibDir . 'jsencrypt.min.js');
         $content .= file_get_contents($currentDir . 'Adapter_DBServer.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Events.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Queuing.js');
