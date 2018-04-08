@@ -13,6 +13,8 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+namespace INTERMediator\Data_Converter;
+
 class DataConverter_MarkdownString extends DataConverter_HTMLString
 {
 

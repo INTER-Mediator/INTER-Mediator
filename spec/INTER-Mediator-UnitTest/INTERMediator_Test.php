@@ -2,10 +2,14 @@
 /**
  * INTERMediator_Test file
  */
-require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-spl_autoload_register('loadClass');
+use \PHPUnit\Framework\TestCase;
+use \INTERMediator\DB\DB_Proxy;
+use \INTERMediator\Locale\IMLocale;
+use \INTERMediator\IMUtil;
+//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
+//spl_autoload_register('loadClass');
 
-class INTERMediator_Test extends PHPUnit_Framework_TestCase
+class INTERMediator_Test extends TestCase
 {
     public function setUp()
     {
@@ -40,7 +44,8 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
     {
         $testName = "Check parameters in params.php.";
 
-        include(dirname(__FILE__) . '/../params.php');
+        $imPath = IMUtil::pathToINTERMediator();
+        include($imPath . '/params.php');
 
         $this->assertFalse(isset($issuedHashDSN), $testName);
         $this->assertFalse(isset($scriptPathPrefix), $testName);
@@ -52,43 +57,43 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
     {
         $expected = "\\'";
         $string = "'";
-        $this->assertSame($expected, valueForJSInsert($string));
+        $this->assertSame($expected, IMUtil::valueForJSInsert($string));
 
         $expected = '\\"';
         $string = '"';
-        $this->assertSame($expected, valueForJSInsert($string));
+        $this->assertSame($expected, IMUtil::valueForJSInsert($string));
 
         $expected = '\\/';
         $string = '/';
-        $this->assertSame($expected, valueForJSInsert($string));
+        $this->assertSame($expected, IMUtil::valueForJSInsert($string));
 
         $expected = '\\x3e';
         $string = '>';
-        $this->assertSame($expected, valueForJSInsert($string));
+        $this->assertSame($expected, IMUtil::valueForJSInsert($string));
 
         $expected = '\\x3c';
         $string = '<';
-        $this->assertSame($expected, valueForJSInsert($string));
+        $this->assertSame($expected, IMUtil::valueForJSInsert($string));
 
         $expected = '\\n';
         $string = "\n";
-        $this->assertSame($expected, valueForJSInsert($string));
+        $this->assertSame($expected, IMUtil::valueForJSInsert($string));
 
         $expected = '\\r';
         $string = "\r";
-        $this->assertSame($expected, valueForJSInsert($string));
+        $this->assertSame($expected, IMUtil::valueForJSInsert($string));
 
         $expected = '\\n';
         $string = "\xe2\x80\xa8";
-        $this->assertSame($expected, valueForJSInsert($string));
+        $this->assertSame($expected, IMUtil::valueForJSInsert($string));
 
         $expected = '\\n';
         $string = "\xe2\x80\xa9";
-        $this->assertSame($expected, valueForJSInsert($string));
+        $this->assertSame($expected, IMUtil::valueForJSInsert($string));
 
         $expected = '\\\\';
         $string = '\\';
-        $this->assertSame($expected, valueForJSInsert($string));
+        $this->assertSame($expected, IMUtil::valueForJSInsert($string));
     }
 
     public function test_arrayToJS()
@@ -99,7 +104,7 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
         $prefix = '0';
         $resultString = "'0':{'database':'TestDB','user':'web','password':'password'}";
 
-        $this->assertSame(arrayToJS($ar, $prefix), $resultString, $testName);
+        $this->assertSame(IMUtil::arrayToJS($ar, $prefix), $resultString, $testName);
     }
 
     public function test_arrayToJSExcluding()
@@ -110,13 +115,13 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
         $prefix = '0';
         $exarray = array('password');
         $resultString = "'0':{'database':'TestDB','user':'web'}";
-        $this->assertSame(arrayToJSExcluding($ar, $prefix, $exarray), $resultString, $testName);
+        $this->assertSame(IMUtil::arrayToJSExcluding($ar, $prefix, $exarray), $resultString, $testName);
 
         $ar = array('user' => 'web', 'password' => 'password', 'database' => 'TestDB');
         $prefix = '';
         $exarray = array('password');
         $resultString = "{'user':'web','database':'TestDB'}";
-        $this->assertSame(arrayToJSExcluding($ar, $prefix, $exarray), $resultString, $testName);
+        $this->assertSame(IMUtil::arrayToJSExcluding($ar, $prefix, $exarray), $resultString, $testName);
     }
 
     public function test_hex2bin_for53()
@@ -126,27 +131,27 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
         $hexString = "616263643132333441424344242526";
         $binaryString = "abcd1234ABCD$%&";
 
-        $this->assertTrue(hex2bin_for53($hexString) === $binaryString, $testName);
+        $this->assertTrue(IMUtil::hex2bin_for53($hexString) === $binaryString, $testName);
 
         $version = explode('.', PHP_VERSION);
         if ($version[0] >= 5 && $version[1] >= 4) {
-            $this->assertTrue(hex2bin_for53($hexString) === hex2bin($hexString), $testName);
+            $this->assertTrue(IMUtil::hex2bin_for53($hexString) === hex2bin($hexString), $testName);
         }
     }
 
     public function test_randomString()
     {
         $testName = "Check randamString function in INTER-Mediator.php.";
-        $str = randomString(10);
+        $str = IMUtil::randomString(10);
         $this->assertTrue(is_string($str), $testName);
         $this->assertTrue(strlen($str) == 10, $testName);
-        $str = randomString(100);
+        $str = IMUtil::randomString(100);
         $this->assertTrue(is_string($str), $testName);
         $this->assertTrue(strlen($str) == 100, $testName);
-        $str = randomString(1000);
+        $str = IMUtil::randomString(1000);
         $this->assertTrue(is_string($str), $testName);
         $this->assertTrue(strlen($str) == 1000, $testName);
-        $str = randomString(0);
+        $str = IMUtil::randomString(0);
         $this->assertTrue(is_string($str), $testName);
         $this->assertTrue(strlen($str) == 0, $testName);
     }

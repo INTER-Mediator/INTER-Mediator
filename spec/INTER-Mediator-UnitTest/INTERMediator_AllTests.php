@@ -13,11 +13,14 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
+use \PHPUnit\Framework\TestCase;
+use \PHPUnit\Framework\TestSuite;
+
+class INTERMediator_AllTests extends TestCase
 {
     public static function suite()
     {
-        $suite = new PHPUnit_Framework_TestSuite( 'all tests' );
+        $suite = new TestSuite( 'all tests' );
         $folder = dirname( __FILE__ ) . '/';
         $suite->addTestFile($folder . 'DataConverter_Currency_YenIM_Test.php');
         $suite->addTestFile($folder . 'DataConverter_Currency_YenIntl_Test.php');

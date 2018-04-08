@@ -2,10 +2,12 @@
 /**
  * DataConverter_NullZeroString_Test file
  */
-require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_NullZeroString.php');
+use \PHPUnit\Framework\TestCase;
 
-class DataConverter_NullZeroString_Test extends PHPUnit_Framework_TestCase
+//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
+//require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_NullZeroString.php');
+
+class DataConverter_NullZeroString_Test extends TestCase
 {
     public function setUp()
     {

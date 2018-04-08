@@ -2,10 +2,12 @@
 /**
  * DataConverter_Number_Test file
  */
-require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_Number.php');
+use \PHPUnit\Framework\TestCase;
 
-class DataConverter_Number_Test extends PHPUnit_Framework_TestCase
+//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
+//require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_Number.php');
+
+class DataConverter_Number_Test extends TestCase
 {
     public function setUp()
     {

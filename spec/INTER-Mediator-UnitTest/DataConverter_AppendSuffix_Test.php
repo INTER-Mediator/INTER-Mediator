@@ -2,10 +2,12 @@
 /**
  * DataConverter_AppendSuffix_Test file
  */
-require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_AppendSuffix.php');
+use \PHPUnit\Framework\TestCase;
 
-class DataConverter_AppendSuffix_Test extends PHPUnit_Framework_TestCase
+//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
+//require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_AppendSuffix.php');
+
+class DataConverter_AppendSuffix_Test extends TestCase
 {
     public function setUp()
     {

@@ -2,10 +2,12 @@
 /**
  * IMUtil_Test file
  */
+use \PHPUnit\Framework\TestCase;
+use \INTERMediator\IMUtil;
 //require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
 //spl_autoload_register('loadClass');
 
-class IMUtil_Test extends PHPUnit_Framework_TestCase {
+class IMUtil_Test extends TestCase {
 
     private $util;
     public function setUp()
@@ -53,7 +55,7 @@ class IMUtil_Test extends PHPUnit_Framework_TestCase {
     public function test_checkHost()
     {
         if (((float)phpversion()) >= 5.3) {
-            $this->reflectionMethod = new ReflectionMethod('IMUtil', 'checkHost');
+            $this->reflectionMethod = new ReflectionMethod('\INTERMediator\IMUtil', 'checkHost');
             $this->reflectionMethod->setAccessible(true);
 
             $result = $this->reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', 'www.inter-mediator.com'));

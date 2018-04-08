@@ -15,7 +15,7 @@ require_once(dirname(__FILE__) . '/../IMLocale.php');
 require_once(dirname(__FILE__) . '/../LDAPAuth.php');
 require_once(dirname(__FILE__) . '/../MessageStrings.php');
 
-class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
+class DB_FMS_Test_Common extends TestCase
 {
     protected $db_proxy;
     protected $schemaName = "";

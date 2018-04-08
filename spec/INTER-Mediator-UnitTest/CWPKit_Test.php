@@ -2,7 +2,7 @@
 
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'CWPKit' . DIRECTORY_SEPARATOR . 'CWPKit.php');
 
-class CWPKit_Test extends PHPUnit_Framework_TestCase
+class CWPKit_Test extends TestCase
 {
     public function setUp()
     {

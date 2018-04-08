@@ -12,9 +12,10 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+namespace INTERMediator\Data_Converter;
 
 //require_once('INTER-Mediator.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'IMLocale.php');
+//require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'IMLocale.php');
 
 class DataConverter_FMDateTime
 {

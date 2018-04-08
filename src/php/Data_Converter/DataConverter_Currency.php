@@ -12,6 +12,7 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+namespace INTERMediator\Data_Converter;
 
 //require_once('DataConverter_NumberBase.php');
 
@@ -29,7 +30,7 @@ class DataConverter_Currency extends DataConverter_NumberBase
     function converterFromDBtoUser($str)
     {
         $this->formatter->setAttribute(8 /*NumberFormatter::FRACTION_DIGITS*/, $this->d);
-        return $this->formatter->formatCurrency($str, IMLocale::$currencyCode);
+        return $this->formatter->formatCurrency($str, \INTERMediator\Locale\IMLocale::$currencyCode);
     }
 
     function converterFromUserToDB($str)

@@ -435,4 +435,150 @@ class IMUtil
         }
         header('X-XSS-Protection: 1; mode=block');
     }
+
+
+    /**
+     * Convert strings to JavaScript friendly strings.
+     * Contributed by Atsushi Matsuo at Jan 17, 2010
+     * @return string strings for JavaScript
+     */
+    public static function valueForJSInsert($str)
+    {
+        return str_replace("'", "\\'",
+            str_replace('"', '\\"',
+                str_replace("/", "\\/",
+                    str_replace(">", "\\x3e",
+                        str_replace("<", "\\x3c",
+                            str_replace("\n", "\\n",
+                                str_replace("\r", "\\r",
+                                    str_replace("\xe2\x80\xa8", "\\n",      // U+2028
+                                        str_replace("\xe2\x80\xa9", "\\n",  // U+2029
+                                            str_replace("\\", "\\\\", $str))))))))));
+    }
+
+    /**
+     * Create JavaScript source from array
+     * @param array ar parameter array
+     * @param string prefix strings for the prefix for key
+     * @return string JavaScript source
+     */
+    public static function arrayToJS($ar, $prefix = "")
+    {
+        if (is_array($ar)) {
+            $items = array();
+            foreach ($ar as $key => $value) {
+                $items[] = IMUtil::arrayToJS($value, $key);
+            }
+            $currentKey = (string)$prefix;
+            if ($currentKey == '')
+                $returnStr = "{" . implode(',', $items) . '}';
+            else
+                $returnStr = "'{$currentKey}':{" . implode(',', $items) . '}';
+        } else {
+            $currentKey = (string)$prefix;
+            if ($currentKey == '') {
+                $returnStr = "'" . IMUtil::valueForJSInsert($ar) . "'";
+            } else {
+                $returnStr = "'{$prefix}':'" . IMUtil::valueForJSInsert($ar) . "'";
+            }
+        }
+        return $returnStr;
+    }
+
+    /**
+     * Create JavaScript source from array
+     * @param array ar parameter array
+     * @param string prefix strings for the prefix for key
+     * @param array exarray array containing excluding keys
+     * @return string JavaScript source
+     */
+    public static function arrayToJSExcluding($ar, $prefix, $exarray)
+    {
+        $returnStr = '';
+
+        if (is_array($ar)) {
+            $items = array();
+            foreach ($ar as $key => $value) {
+                $items[] = IMUtil::arrayToJSExcluding($value, $key, $exarray);
+            }
+            $currentKey = (string)$prefix;
+            foreach ($items as $item) {
+                if (!in_array($currentKey, $exarray) && $item != '') {
+                    if ($returnStr == '') {
+                        $returnStr .= $item;
+                    } else {
+                        $returnStr .= ',' . $item;
+                    }
+                }
+            }
+            if ($currentKey == '') {
+                $returnStr = '{' . $returnStr . '}';
+            } else {
+                $returnStr = "'{$currentKey}':{" . $returnStr . '}';
+            }
+        } else {
+            $currentKey = (string)$prefix;
+            if ($currentKey == '') {
+                $returnStr = "'" . IMUtil::valueForJSInsert($ar) . "'";
+            } else if (!in_array($currentKey, $exarray)) {
+                $returnStr = "'{$prefix}':'" . IMUtil::valueForJSInsert($ar) . "'";
+            }
+        }
+
+        return $returnStr;
+    }
+
+    /**
+     * Create parameter strng from array (UNUSED)
+     * @param array ar parameter array
+     * @param string prefix strings for the prefix for key
+     * @return string parameter string
+     */
+//    public static function arrayToQuery($ar, $prefix)
+//    {
+//        if (is_array($ar)) {
+//            $items = array();
+//            foreach ($ar as $key => $value) {
+//                $items[] = IMUtil::arrayToQuery($value, "{$prefix}_{$key}");
+//            }
+//            $returnStr = implode('', $items);
+//        } else {
+//            $returnStr = "&{$prefix}=" . urlencode($ar);
+//        }
+//        return $returnStr;
+//    }
+
+    /**
+     * Get the relative path from the caller to the directory of 'INTER-Mediator.php'. (UNUSED)
+     * @return Relative path as a part of URL.
+     */
+//    public static function getRelativePath()
+//    {
+//        $caller = explode(DIRECTORY_SEPARATOR, dirname($_SERVER['SCRIPT_FILENAME']));
+//        $imDirectory = explode(DIRECTORY_SEPARATOR, dirname(__FILE__));
+//        $shorterLength = min(count($caller), count($imDirectory));
+//        for ($i = 0; $i < $shorterLength; $i++) {
+//            if ($caller[$i] != $imDirectory[$i]) {
+//                break;
+//            }
+//        }
+//        $relPath = str_repeat('../', count($caller) - $i)
+//            . implode('/', array_slice($imDirectory, $i));
+//        return $relPath;
+//    }
+
+    public static function hex2bin_for53($str)
+    {
+        return pack("H*", $str);
+    }
+
+    public static function randomString($digit)
+    {
+        $resultStr = '';
+        for ($i = 0; $i < $digit; $i++) {
+            $resultStr .= chr(rand(20, 126));
+        }
+        return $resultStr;
+    }
+
 }

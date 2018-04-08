@@ -23,10 +23,10 @@ class IMLocale
 {
     public static function numberFormatterClassName()
     {
-        $cName = "IMNumberFormatter";
+        $cName = "INTERMediator\Locale\IMNumberFormatter";
         try {   // This exception handling requires just PHP 5.2. On above 5.3 or later, it doesn't need to 'try.'
-            if (class_exists("NumberFormatter") && !IMLocale::$alwaysIMClasses) {
-                $cName = "NumberFormatter";
+            if (class_exists("\NumberFormatter") && !IMLocale::$alwaysIMClasses) {
+                $cName = "\NumberFormatter";
             }
         } catch (Exception $e) {
 

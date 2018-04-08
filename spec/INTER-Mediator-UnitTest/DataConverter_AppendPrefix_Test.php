@@ -2,10 +2,12 @@
 /**
  * DataConverter_AppendPrefix_Test file
  */
-require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_AppendPrefix.php');
+use \PHPUnit\Framework\TestCase;
 
-class DataConverter_AppendPrefix_Test extends PHPUnit_Framework_TestCase
+//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
+//require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_AppendPrefix.php');
+
+class DataConverter_AppendPrefix_Test extends TestCase
 {
     public function setUp()
     {

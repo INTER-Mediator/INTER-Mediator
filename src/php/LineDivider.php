@@ -8,6 +8,7 @@
  */
 
 namespace INTERMediator;
+use \Iterator;
 
 class LineDivider implements Iterator
 {

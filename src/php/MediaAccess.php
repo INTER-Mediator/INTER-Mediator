@@ -16,6 +16,8 @@
 
 namespace INTERMediator;
 
+use \Exception;
+
 class MediaAccess
 {
     private $contextRecord = null;
@@ -389,7 +391,7 @@ class MediaAccess
                 $tmpDir = sys_get_temp_dir();
             }
             $temp = 'IM_TEMP_' .
-                str_replace(base64_encode(randomString(12)), DIRECTORY_SEPARATOR, '-') .
+                str_replace(base64_encode(IMUtil::randomString(12)), DIRECTORY_SEPARATOR, '-') .
                 '.jpg';
             if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
                 $tempPath = $tmpDir . $temp;

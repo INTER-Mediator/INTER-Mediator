@@ -2,10 +2,12 @@
 /**
  * GenerateJSCode_Test file
  */
-require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
+use \PHPUnit\Framework\TestCase;
+use \INTERMediator\GenerateJSCode;
+//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
 //spl_autoload_register('loadClass');
 
-class GenerateJSCode_Test extends PHPUnit_Framework_TestCase
+class GenerateJSCode_Test extends TestCase
 {
     protected function setUp()
     {

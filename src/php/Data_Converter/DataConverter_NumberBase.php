@@ -12,6 +12,7 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+namespace INTERMediator\Data_Converter;
 
 //require_once('INTER-Mediator.php');
 
@@ -26,10 +27,10 @@ class DataConverter_NumberBase
 
     public function __construct()
     {
-        IMLocale::setLocale(LC_ALL);
-        $this->choosenLocale = IMLocale::$choosenLocale;
-        $this->useMbstring = IMLocale::$useMbstring;
-        $nfClass = IMLocale::numberFormatterClassName();
+        \INTERMediator\Locale\IMLocale::setLocale(LC_ALL);
+        $this->choosenLocale = \INTERMediator\Locale\IMLocale::$choosenLocale;
+        $this->useMbstring = \INTERMediator\Locale\IMLocale::$useMbstring;
+        $nfClass = \INTERMediator\Locale\IMLocale::numberFormatterClassName();
         $this->formatter = new $nfClass($this->choosenLocale, 2 /*NumberFormatter::CURRENCY*/);
         if (!$this->formatter) {
             return null;

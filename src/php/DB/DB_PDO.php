@@ -14,8 +14,9 @@
  */
 
 namespace INTERMediator\DB;
-use \PDO;
-use \PDOException;
+
+use PDO;
+use PDOException;
 
 /**
  * Class DB_PDO
@@ -91,14 +92,14 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
 
     public function setupHandlers($dsn = false)
     {
-        if ($dsn === false){
+        if ($dsn === false) {
             $dsn = $this->dbSettings->getDbSpecDSN();
         }
         if (!is_null($this->dbSettings)) {
             $this->handler = Support\DB_PDO_Handler::generateHandler($this, $dsn);
             $this->handler->optionalOperationInSetup();
             $this->specHandler = Support\DB_Spec_Handler_PDO::generateHandler($this, $dsn);
-       }
+        }
         $this->authHandler = new Support\DB_Auth_Handler_PDO($this);
         $this->notifyHandler = new Support\DB_Notification_Handler_PDO($this);
     }
@@ -694,12 +695,12 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
             if ($authInfoTarget == 'field-user') {
                 $setColumnNames[] = $authInfoField;
                 $setValues[] = $this->link->quote(
-                    strlen($signedUser) == 0 ? randomString(10) : $signedUser);
+                    strlen($signedUser) == 0 ? IMUtil::randomString(10) : $signedUser);
             } else if ($authInfoTarget == 'field-group') {
                 $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($signedUser);
                 $setColumnNames[] = $authInfoField;
                 $setValues[] = $this->link->quote(
-                    strlen($belongGroups[0]) == 0 ? randomString(10) : $belongGroups[0]);
+                    strlen($belongGroups[0]) == 0 ? IMUtil::randomString(10) : $belongGroups[0]);
             }
         }
 

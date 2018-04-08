@@ -6,10 +6,13 @@
  * Date: 2017/10/08
  * Time: 0:18
  */
-require_once(dirname(__FILE__) . '/../LineDivider.php');
-require_once(dirname(__FILE__) . '/../FieldDivider.php');
+use \PHPUnit\Framework\TestCase;
+use \INTERMediator\LineDivider;
+use \INTERMediator\FieldDivider;
+//require_once(dirname(__FILE__) . '/../LineDivider.php');
+//require_once(dirname(__FILE__) . '/../FieldDivider.php');
 
-class LineFieldDividerTest extends PHPUnit_Framework_TestCase
+class LineFieldDividerTest extends TestCase
 {
 
     private function checkLines($d)

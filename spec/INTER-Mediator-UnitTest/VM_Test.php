@@ -1,12 +1,14 @@
 <?php
+use PHPUnit\Framework\TestCase;
 
-class VM_Test extends PHPUnit_Framework_TestCase
+class VM_Test extends TestCase
 {
 
     public function test_checkVersionString()
     {
         $expected = '';
-        $content = file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'dist-docs' . DIRECTORY_SEPARATOR . 'change_log.txt');
+        $imPath = \INTERMediator\IMUtil::pathToINTERMediator();
+        $content = file_get_contents($imPath . DIRECTORY_SEPARATOR . 'dist-docs' . DIRECTORY_SEPARATOR . 'change_log.txt');
         $pos = strpos($content, 'Ver.');
         if ($pos !== FALSE) {
             $pos2 = strpos(substr($content, $pos + 4, strlen($content) - $pos + 1), ' ');
@@ -14,7 +16,7 @@ class VM_Test extends PHPUnit_Framework_TestCase
         }
 
         $version = '-';
-        $cmd = 'php -f "'. dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'metadata.json' . '"';
+        $cmd = 'php -f "' . $imPath . DIRECTORY_SEPARATOR . 'metadata.json' . '"';
         exec($cmd, $output);
         if (isset($output[0])) {
             $content = json_decode($output[0]);

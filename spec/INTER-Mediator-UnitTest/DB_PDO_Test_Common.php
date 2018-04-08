@@ -8,10 +8,12 @@
  *
  */
 
-require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
+use \PHPUnit\Framework\TestCase;
+
+//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
 //spl_autoload_register('loadClass');
 
-abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
+abstract class DB_PDO_Test_Common extends TestCase
 {
     protected $db_proxy;
     protected $schemaName = "";

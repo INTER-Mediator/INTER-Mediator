@@ -2,9 +2,12 @@
 /**
  * DB_Settings_Test file
  */
-require_once(dirname(__FILE__) . '/../DB_Settings.php');
 
-class DB_Settings_Test extends PHPUnit_Framework_TestCase
+use \PHPUnit\Framework\TestCase;
+
+//require_once(dirname(__FILE__) . '/../DB_Settings.php');
+
+class DB_Settings_Test extends TestCase
 {
     public function setUp()
     {

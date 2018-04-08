@@ -32,13 +32,13 @@ class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
             'user' => 'web',
             'password' => 'password',
         );
-        $this->db_proxy = new DB_Proxy(true);
+        $this->db_proxy = new \INTERMediator\DB\DB_Proxy(true);
         $this->db_proxy->initialize($contexts, $options, $dbSettings, false, $contextName);
     }
 
     function dbProxySetupForAuth()
     {
-        $this->db_proxy = new DB_Proxy(true);
+        $this->db_proxy = new \INTERMediator\DB\DB_Proxy(true);
         $this->db_proxy->initialize(array(
                 array(
                 'records' => 1000,

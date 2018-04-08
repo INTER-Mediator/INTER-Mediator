@@ -119,9 +119,9 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
 
     public function setupHandlers($dsn = false)
     {
-        $this->authHandler = new DB_Auth_Handler_FileMaker_FX($this);
-        $this->notifyHandler = new DB_Notification_Handler_FileMaker_FX($this);
-        $this->specHandler = new DB_Spec_Handler_FileMaker_FX();
+        $this->authHandler = new Support\DB_Auth_Handler_FileMaker_FX($this);
+        $this->notifyHandler = new Support\DB_Notification_Handler_FileMaker_FX($this);
+        $this->specHandler = new Support\DB_Spec_Handler_FileMaker_FX();
     }
 
     public function stringWithoutCredential($str)
@@ -1238,11 +1238,11 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
             if ($authInfoTarget == 'field-user') {
                 $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
                 $this->fx->AddDBParam($authInfoField,
-                    strlen($this->dbSettings->getCurrentUser()) == 0 ? randomString(10) : $signedUser);
+                    strlen($this->dbSettings->getCurrentUser()) == 0 ? IMUtil::randomString(10) : $signedUser);
             } else if ($authInfoTarget == 'field-group') {
                 $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
                 $this->fx->AddDBParam($authInfoField,
-                    strlen($belongGroups[0]) == 0 ? randomString(10) : $belongGroups[0]);
+                    strlen($belongGroups[0]) == 0 ? IMUtil::randomString(10) : $belongGroups[0]);
             } else {
                 if ($this->dbSettings->isDBNative()) {
                 } else {

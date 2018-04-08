@@ -182,13 +182,13 @@ class GenerateJSCode
 //            "INTERMediatorOnPage.getIMRootPath", "function(){return {$q}{$pathToIMRootDir}{$q};}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getDataSources", "function(){return ",
-            arrayToJSExcluding($datasource, '', array('password')), ";}");
+            IMUtil::arrayToJSExcluding($datasource, '', array('password')), ";}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getOptionsAliases",
-            "function(){return ", arrayToJS(isset($options['aliases']) ? $options['aliases'] : array(), ''), ";}");
+            "function(){return ", IMUtil::arrayToJS(isset($options['aliases']) ? $options['aliases'] : array(), ''), ";}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getOptionsTransaction",
-            "function(){return ", arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";}");
+            "function(){return ", IMUtil::arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";}");
         $this->generateAssignJS("INTERMediatorOnPage.dbClassName", "{$q}{$dbClassName}{$q}");
         $this->generateAssignJS("INTERMediatorOnPage.defaultKeyName", "{$q}{$defaultKey}{$q}");
 
@@ -201,7 +201,7 @@ class GenerateJSCode
         $messageClass = IMUtil::getMessageClassInstance();
         $this->generateAssignJS(
             "INTERMediatorOnPage.getMessages",
-            "function(){return ", arrayToJS($messageClass->getMessages(), ''), ";}");
+            "function(){return ", IMUtil::arrayToJS($messageClass->getMessages(), ''), ";}");
         if (isset($options['browser-compatibility'])) {
             $browserCompatibility = $options['browser-compatibility'];
         }
@@ -213,7 +213,7 @@ class GenerateJSCode
         }
         $this->generateAssignJS(
             "INTERMediatorOnPage.browserCompatibility",
-            "function(){return ", arrayToJS($browserCompatibility, ''), ";}");
+            "function(){return ", IMUtil::arrayToJS($browserCompatibility, ''), ";}");
 
         $remoteAddr = filter_var($_SERVER['REMOTE_ADDR']);
         if (is_null($remoteAddr) || $remoteAddr === FALSE) {
@@ -225,7 +225,7 @@ class GenerateJSCode
 
         $this->generateAssignJS(
             "INTERMediatorOnPage.clientNotificationIdentifier",
-            "function(){return ", arrayToJS($clientId, ''), ";}");
+            "function(){return ", IMUtil::arrayToJS($clientId, ''), ";}");
 
         if ($nonSupportMessageId != "") {
             $this->generateAssignJS(
@@ -244,10 +244,10 @@ class GenerateJSCode
             $chName = isset($pusherParams['channel']) ? $pusherParams['channel'] : "_im_pusher_default_channel";
             $this->generateAssignJS(
                 "INTERMediatorOnPage.clientNotificationKey",
-                "function(){return ", arrayToJS($appKey, ''), ";}");
+                "function(){return ", IMUtil::arrayToJS($appKey, ''), ";}");
             $this->generateAssignJS(
                 "INTERMediatorOnPage.clientNotificationChannel",
-                "function(){return ", arrayToJS($chName, ''), ";}");
+                "function(){return ", IMUtil::arrayToJS($chName, ''), ";}");
         }
         $metadata = json_decode(file_get_contents(
             dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . "metadata.json"));
@@ -285,7 +285,7 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.requireAuthentication", $boolValue);
         $this->generateAssignJS(
-            "INTERMediatorOnPage.authRequiredContext", arrayToJS($requireAuthenticationContext, ''));
+            "INTERMediatorOnPage.authRequiredContext", IMUtil::arrayToJS($requireAuthenticationContext, ''));
         if (!is_null($enrollPage)) {
             $this->generateAssignJS("INTERMediatorOnPage.enrollPageURL", $q, $enrollPage, $q);
         }
@@ -373,7 +373,7 @@ class GenerateJSCode
             }
         }
         if (isset($valuesForLocalContext) && is_array($valuesForLocalContext) && count($valuesForLocalContext) > 0) {
-            $this->generateAssignJS("INTERMediatorOnPage.initLocalContext", arrayToJS($valuesForLocalContext));
+            $this->generateAssignJS("INTERMediatorOnPage.initLocalContext", IMUtil::arrayToJS($valuesForLocalContext));
         }
     }
 

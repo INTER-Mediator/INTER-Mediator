@@ -2,9 +2,11 @@
 /**
  * MediaAccess_Test file
  */
-require_once(dirname(__FILE__) . '/../MediaAccess.php');
+use \PHPUnit\Framework\TestCase;
+use \INTERMediator\MediaAccess;
+//require_once(dirname(__FILE__) . '/../MediaAccess.php');
 
-class MediaAccess_Test extends PHPUnit_Framework_TestCase
+class MediaAccess_Test extends TestCase
 {
     protected function setUp()
     {
@@ -14,7 +16,7 @@ class MediaAccess_Test extends PHPUnit_Framework_TestCase
     public function test_asAttachment()
     {
         if (((float)phpversion()) >= 5.3) {
-            $this->reflectionClass = new ReflectionClass('MediaAccess');
+            $this->reflectionClass = new ReflectionClass('\INTERMediator\MediaAccess');
             $disposition = $this->reflectionClass->getProperty('disposition');
             $disposition->setAccessible(true);
         
@@ -32,7 +34,7 @@ class MediaAccess_Test extends PHPUnit_Framework_TestCase
     public function test_exitAsError()
     {
         if (((float)phpversion()) >= 5.3) {
-            $this->reflectionMethod = new ReflectionMethod('MediaAccess', 'exitAsError');
+            $this->reflectionMethod = new ReflectionMethod('\INTERMediator\MediaAccess', 'exitAsError');
             $this->reflectionMethod->setAccessible(true);
     
             $code = '';
@@ -49,7 +51,7 @@ class MediaAccess_Test extends PHPUnit_Framework_TestCase
     public function test_getMimeType()
     {
         if (((float)phpversion()) >= 5.3) {
-            $this->reflectionMethod = new ReflectionMethod('MediaAccess', 'getMimeType');
+            $this->reflectionMethod = new ReflectionMethod('\INTERMediator\MediaAccess', 'getMimeType');
             $this->reflectionMethod->setAccessible(true);
     
             $path = '';

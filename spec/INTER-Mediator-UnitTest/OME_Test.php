@@ -9,7 +9,7 @@
 require_once(dirname(__FILE__) . '/../lib/mailsend/OME.php');
 require_once(dirname(__FILE__) . '/../lib/mailsend/qdsmtp/qdsmtp.php');
 
-class OME_Test extends PHPUnit_Framework_TestCase
+class OME_Test extends TestCase
 {
 
     var $mailAddress = "msyk@msyk.net";

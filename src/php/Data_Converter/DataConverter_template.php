@@ -27,6 +27,8 @@
  * however Japanese date time system is Y/m/d order. DataConverter_FMDateTime class can covert
  * the date-time data to/from each other.
  */
+namespace INTERMediator\Data_Converter;
+
 class DataConverter_template
 {
     // "Data Converter Class" name must have the prefix "DataConverter_".

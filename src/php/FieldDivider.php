@@ -9,6 +9,8 @@
 
 namespace INTERMediator;
 
+use \Iterator;
+
 class FieldDivider implements Iterator
 {
     private $data;
