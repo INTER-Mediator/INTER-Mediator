@@ -1,5 +1,5 @@
 // JSHint support
-/* global INTERMediator,buster,INTERMediatorLib,INTERMediatorOnPage,IMLibElement, biRSAKeyPair */
+/* global INTERMediator,buster,INTERMediatorLib,INTERMediatorOnPage,IMLibElement,jsencrypt */
 
 /**
  * Created by msyk on 15/09/13.
