@@ -32,7 +32,7 @@ config['My tests'] = {
         'INTER-Mediator-UnitTest/INTER-Mediator-Context-test.js',
         'INTER-Mediator-UnitTest/INTER-Mediator-Lib-test.js',
         'INTER-Mediator-UnitTest/sha1-test.js',
-        //'INTER-Mediator-UnitTest/RSA_JavaScript-test.js',
+        'INTER-Mediator-UnitTest/JSEncrypt-test.js',
         'INTER-Mediator-UnitTest/js-expression-eval-test.js',
         'spec/run.js'
     ]
