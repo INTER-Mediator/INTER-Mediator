@@ -45,7 +45,7 @@ var IMLibPageNavigation = {
                 return;
             }
             insideNav = navigation.childNodes;
-            for (i = 0; i < insideNav.length; i+=1) {
+            for (i = 0; i < insideNav.length; i += 1) {
                 navigation.removeChild(insideNav[i]);
             }
             navigation.innerHTML = '';
@@ -181,7 +181,7 @@ var IMLibPageNavigation = {
             }
 
             if (navLabel === null || navLabel[9] !== false) {
-                for (i = 0; i < IMLibPageNavigation.deleteInsertOnNavi.length; i+=1) {
+                for (i = 0; i < IMLibPageNavigation.deleteInsertOnNavi.length; i += 1) {
                     switch (IMLibPageNavigation.deleteInsertOnNavi[i].kind) {
                     case 'INSERT':
                         node = document.createElement('SPAN');
@@ -406,7 +406,7 @@ var IMLibPageNavigation = {
                     //INTERMediatorOnPage.retrieveAuthInfo();
                     INTERMediator_DBAdapter.db_delete_async(
                         deleteArgs,
-                        async () =>{
+                        async () => {
                             INTERMediator.pagedAllCount--;
                             INTERMediator.totalRecordCount--;
                             if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 1) {
@@ -420,7 +420,9 @@ var IMLibPageNavigation = {
                             INTERMediatorOnPage.hideProgress();
                             INTERMediatorLog.flushMessage();
                         },
-                        ()=>{completeTask();}
+                        () => {
+                            completeTask();
+                        }
                     );
                 } catch (ex) {
                     INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-6');
@@ -459,7 +461,7 @@ var IMLibPageNavigation = {
                             copyTerm = copyTerm.substr(0, pStart);
                         }
                         assocContexts = copyTerm.split(',');
-                        for (i = 0; i < assocContexts.length; i+=1) {
+                        for (i = 0; i < assocContexts.length; i += 1) {
                             def = IMLibContextPool.getContextDef(assocContexts[i]);
                             if (def.relation[0]['foreign-key']) {
                                 assocDef.push({
@@ -518,7 +520,7 @@ var IMLibPageNavigation = {
 
         INTERMediatorOnPage.showProgress();
         //INTERMediatorOnPage.retrieveAuthInfo();
-        for (i = 0; i < IMLibContextPool.poolingContexts.length; i+=1) {
+        for (i = 0; i < IMLibContextPool.poolingContexts.length; i += 1) {
             context = IMLibContextPool.poolingContexts[i];
             updateData = context.getModified();
             for (keying in updateData) {
@@ -549,7 +551,12 @@ var IMLibPageNavigation = {
                             primaryKeyOnly: true
                         };
                         try {
-                            currentVal = INTERMediator_DBAdapter.db_query_async(checkQueryParameter);
+                            await INTERMediator_DBAdapter.db_query_async(
+                                checkQueryParameter,
+                                function (result) {
+                                    currentVal = result;
+                                },
+                                null);
                         } catch (ex) {
                             if (ex.message === '_im_auth_required_') {
                                 if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
@@ -557,8 +564,8 @@ var IMLibPageNavigation = {
                                     INTERMediatorOnPage.authenticating(
                                         (function () {
                                             var qParam = checkQueryParameter;
-                                            return function () {
-                                                INTERMediator.db_query_async(qParam);
+                                            return async function () {
+                                                await INTERMediator_DBAdapter.db_query_async(qParam, null, null);
                                             };
                                         })()
                                     );
@@ -795,7 +802,7 @@ var IMLibPageNavigation = {
                     enclosedNode = node.parentNode;
                     firstLevelNodes = enclosedNode.childNodes;
                     footNode = null;
-                    for (i = 0; i < firstLevelNodes.length; i+=1) {
+                    for (i = 0; i < firstLevelNodes.length; i += 1) {
                         if (firstLevelNodes[i].tagName === targetNodeTag) {
                             footNode = firstLevelNodes[i];
                             break;
@@ -933,7 +940,7 @@ var IMLibPageNavigation = {
             moveToDetailFunc = IMLibPageNavigation.moveToNextStep(contextObj, keyField, keyValue);
         }
         if (isTouchRepeater) {
-            for (i = 0; i < repeaters.length; i+=1) {
+            for (i = 0; i < repeaters.length; i += 1) {
                 var originalColor = repeaters[i].style.backgroundColor;
                 INTERMediator.eventListenerPostAdding.push({
                     'id': repeaters[i].id,
@@ -1058,7 +1065,7 @@ var IMLibPageNavigation = {
         'use strict';
         var nodes, i;
         nodes = document.getElementsByClassName('IM_Button_StepBack');
-        for (i = 0; i < nodes.length; i+=1) {
+        for (i = 0; i < nodes.length; i += 1) {
             nodes[i].style.display = style;
             if (!INTERMediatorLib.isProcessed(nodes[i])) {
                 INTERMediatorLib.addEvent(nodes[i], 'click', function () {
@@ -1378,7 +1385,7 @@ var IMLibPageNavigation = {
             enclosedNode = node.parentNode;
             firstLevelNodes = enclosedNode.childNodes;
             targetNode = null;
-            for (i = 0; i < firstLevelNodes.length; i+=1) {
+            for (i = 0; i < firstLevelNodes.length; i += 1) {
                 if (firstLevelNodes[i].tagName === targetNodeTag) {
                     targetNode = firstLevelNodes[i];
                     break;

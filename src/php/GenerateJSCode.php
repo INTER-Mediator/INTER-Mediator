@@ -387,6 +387,7 @@ class GenerateJSCode
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Element.js');
         $content .= file_get_contents($jsLibDir . 'js-expression-eval-parser.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Calc.js');
+        $content .= file_get_contents($currentDir . 'Adapter_DBServer.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Parts.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Navi.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-UI.js');
@@ -394,7 +395,6 @@ class GenerateJSCode
         $content .= ';' . file_get_contents($jsLibDir . 'tinySHA1.js');
         $content .= file_get_contents($jsLibDir . 'sha256.js');
         $content .= file_get_contents($jsLibDir . 'jsencrypt.min.js');
-        $content .= file_get_contents($currentDir . 'Adapter_DBServer.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Events.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Queuing.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-DoOnStart.js');

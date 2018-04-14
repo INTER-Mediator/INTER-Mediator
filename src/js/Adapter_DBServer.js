@@ -308,7 +308,7 @@ let INTERMediator_DBAdapter = {
         });
     },
 
-    getChallenge: function () {
+    getChallenge: async function () {
         'use strict';
         return new Promise((resolve, reject) => {
             this.server_access_async('access=challenge', 1027, 1028,
@@ -432,7 +432,7 @@ let INTERMediator_DBAdapter = {
      primaryKeyOnly: true/false
      }
      */
-    db_query_async: function (args, successProc, failedProc) {
+    db_query_async: async function (args, successProc, failedProc) {
         'use strict';
         let params;
         if (!INTERMediator_DBAdapter.db_queryChecking(args)) {
@@ -465,13 +465,21 @@ let INTERMediator_DBAdapter = {
                             }
                             successProc ? successProc(result) : false;
                             resolveCapt(result);
-                        }
-                            ;
+                        };
                     })(),
-                    (er) => {
-                        failedProc ? failedProc(param) : false;
-                        reject(er);
-                    }
+                    failedProc,
+                    INTERMediator_DBAdapter.createExceptionFunc(
+                        1016,
+                        (function () {
+                            var argsCapt = args;
+                            var succesProcCapt = successProc;
+                            var failedProcCapt = failedProc;
+                            return function () {
+                                INTERMediator_DBAdapter.db_query_async(
+                                    argsCapt, succesProcCapt, failedProcCapt);
+                            };
+                        })()
+                    )
                 );
             }
         ).catch((err) => {

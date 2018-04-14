@@ -22,7 +22,7 @@
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-var IMLibUI = {
+let IMLibUI = {
 
     mobileSelectionColor: '#BBBBBB',
     mobileNaviBackButtonId: null,
@@ -35,7 +35,7 @@ var IMLibUI = {
      */
     valueChange: function (idValue, validationOnly) {
         'use strict';
-        var changedObj, contextInfo, linkInfo, nodeInfo, returnValue = true;
+        let changedObj, contextInfo, linkInfo, nodeInfo, returnValue = true;
 
         changedObj = document.getElementById(idValue);
         if (!changedObj) {
@@ -51,8 +51,8 @@ var IMLibUI = {
             nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);  // Suppose to be the first definition.
             contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target);
             window.setTimeout((function () {
-                var originalObj = changedObj;
-                var originalContextInfo = contextInfo;
+                let originalObj = changedObj;
+                let originalContextInfo = contextInfo;
                 return function () {
                     if (originalContextInfo) {
                         originalObj.value = originalContextInfo.context.getValue(
@@ -74,7 +74,7 @@ var IMLibUI = {
 
         // After validating, update nodes and database.
         async function valueChangeImpl(idValue, completeTask) {
-            var changedObj, objType, i, newValue, result, linkInfo, nodeInfo, contextInfo, parentContext,
+            let changedObj, objType, i, newValue, result, linkInfo, nodeInfo, contextInfo, parentContext,
                 targetField, targetNode, targetSpec, returnValue = true;
             try {
                 changedObj = document.getElementById(idValue);
@@ -127,14 +127,14 @@ var IMLibUI = {
                 await contextInfo.context.updateFieldValue(
                     idValue,
                     (function () {
-                        var idValueCapt2 = idValue;
-                        var contextInfoCapt = contextInfo;
-                        var newValueCapt = newValue;
-                        var completeTaskCapt = completeTask;
+                        let idValueCapt2 = idValue;
+                        let contextInfoCapt = contextInfo;
+                        let newValueCapt = newValue;
+                        let completeTaskCapt = completeTask;
                         return async function (result) {
-                            var updateRequiredContext, currentValue, associatedNode, field, node, children, delNodes,
+                            let updateRequiredContext, currentValue, associatedNode, field, node, children, delNodes,
                                 recordObj, keepProp;
-                            var keyField = contextInfoCapt.context.getKeyField();
+                            let keyField = contextInfoCapt.context.getKeyField();
                             if (result && result.dbresult) {
                                 recordObj = result.dbresult[0];
                                 keepProp = INTERMediator.partialConstructing;
@@ -183,8 +183,8 @@ var IMLibUI = {
                         };
                     })(),
                     (function () {
-                        var targetFieldCapt = targetField;
-                        var completeTaskCapt = completeTask;
+                        let targetFieldCapt = targetField;
+                        let completeTaskCapt = completeTask;
                         return function () {
                             window.alert(INTERMediatorLib.getInsertedString(
                                 INTERMediatorOnPage.getMessages()[1003], [targetFieldCapt]));
@@ -195,7 +195,7 @@ var IMLibUI = {
                         };
                     })(),
                     function () {
-                        var response = window.confirm(INTERMediatorOnPage.getMessages()[1024]);
+                        let response = window.confirm(INTERMediatorOnPage.getMessages()[1024]);
                         if (!response) {
                             INTERMediatorOnPage.hideProgress();
                         }
@@ -205,8 +205,8 @@ var IMLibUI = {
                         return response;
                     },
                     (function () {
-                        var changedObjectCapt = changedObj;
-                        var completeTaskCapt = completeTask;
+                        let changedObjectCapt = changedObj;
+                        let completeTaskCapt = completeTask;
                         return function (initialvalue, newValue, currentFieldVal) {
                             if (completeTaskCapt) {
                                 completeTaskCapt();
@@ -236,7 +236,7 @@ var IMLibUI = {
 
     validation: function (changedObj) {
         'use strict';
-        var linkInfo, matched, context, i, index, didValidate, contextInfo,
+        let linkInfo, matched, context, i, index, didValidate, contextInfo,
             result, messageNodes = [], messageNode;
         if (messageNodes) {
             while (messageNodes.length > 0) {
@@ -333,17 +333,17 @@ var IMLibUI = {
 
     copyButton: function (contextObj, keyValue) {
         'use strict';
-        var contextDef = contextObj.getContextDef();
+        let contextDef = contextObj.getContextDef();
         if (contextDef['repeat-control'].match(/confirm-copy/)) {
             if (!window.confirm(INTERMediatorOnPage.getMessages()[1041])) {
                 return;
             }
         }
         IMLibQueue.setTask((function () {
-            var contextObjCapt = contextObj;
-            var keyValueCapt = keyValue;
+            let contextObjCapt = contextObj;
+            let keyValueCapt = keyValue;
             return function (completeTask) {
-                var contextDef, assocDef, i, index, def, assocContexts, pStart, copyTerm;
+                let contextDef, assocDef, i, index, def, assocContexts, pStart, copyTerm;
                 contextDef = contextObjCapt.getContextDef();
                 INTERMediatorOnPage.showProgress();
                 try {
@@ -383,12 +383,12 @@ var IMLibUI = {
                             associated: assocDef.length > 0 ? assocDef : null
                         },
                         (function () {
-                            var contextDefCapt = contextDef;
-                            var contextObjCapt2 = contextObjCapt;
-                            var completeTaskCapt = completeTask;
+                            let contextDefCapt = contextDef;
+                            let contextObjCapt2 = contextObjCapt;
+                            let completeTaskCapt = completeTask;
                             return async function (result) {
-                                var restore, conditions, sameOriginContexts;
-                                var newId = result.newRecordKeyValue;
+                                let restore, conditions, sameOriginContexts;
+                                let newId = result.newRecordKeyValue;
                                 if (newId > -1) {
                                     restore = INTERMediator.additionalCondition;
                                     INTERMediator.startFrom = 0;
@@ -425,7 +425,7 @@ var IMLibUI = {
 
     deleteButton: function (currentContext, keyField, keyValue, isConfirm) {
         'use strict';
-        var dialogMessage;
+        let dialogMessage;
         if (isConfirm) {
             dialogMessage = INTERMediatorOnPage.getMessages()[1025];
             if (!window.confirm(dialogMessage)) {
@@ -433,18 +433,18 @@ var IMLibUI = {
             }
         }
         IMLibQueue.setTask((function () {
-            var currentContextCapt = currentContext;
-            var keyFieldCapt = keyField;
-            var keyValueCapt = keyValue;
+            let currentContextCapt = currentContext;
+            let keyFieldCapt = keyField;
+            let keyValueCapt = keyValue;
             return function (completeTask) {
-                var i, parentKeyValue, deleteSuccessProc, targetRepeaters;
+                let i, parentKeyValue, deleteSuccessProc, targetRepeaters;
                 INTERMediatorOnPage.showProgress();
                 try {
                     //INTERMediatorOnPage.retrieveAuthInfo();
                     deleteSuccessProc = (function () {
-                        var currentContextCapt2 = currentContextCapt;
-                        var completeTaskCapt = completeTask;
-                        var keying = keyFieldCapt + '=' + keyValueCapt;
+                        let currentContextCapt2 = currentContextCapt;
+                        let completeTaskCapt = completeTask;
+                        let keying = keyFieldCapt + '=' + keyValueCapt;
                         return function () {
                             if (currentContextCapt2.relation === true) {
                                 INTERMediator.pagedAllCount--;
@@ -480,9 +480,8 @@ var IMLibUI = {
                                 ],
                                 dataset: [
                                     {
-                                        field:
-                                            INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI' ?
-                                                'deleteRelated' : '-delete.related',
+                                        field: INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI' ?
+                                            'deleteRelated' : '-delete.related',
                                         operator: '=',
                                         value: currentContextCapt.contextName + '.' + keyValue
                                     }
@@ -533,19 +532,17 @@ var IMLibUI = {
             }
         }
         IMLibQueue.setTask((function () {
-            var currentContext, targetName, isPortal, parentContextName;
-            var keyValueCapt = keyValue;
-            var foreignValuesCapt = foreignValues;
-            var updateNodesCapt = updateNodes;
+            let currentContext, targetName, isPortal, parentContextName;
+            let keyValueCapt = keyValue;
+            let foreignValuesCapt = foreignValues;
+            let updateNodesCapt = updateNodes;
 
             targetName = currentObj.contextName;
             currentContext = currentObj.getContextDef();
             isPortal = currentObj.isPortal;
             parentContextName = currentObj.parentContext ? currentObj.parentContext.contextName : null;
             return async function (completeTask) {
-                var targetRecord, portalField, recordSet, index, targetPortalField, targetPortalValue,
-                    existRelated = false,
-                    relatedRecordSet;
+                let portalField, recordSet, index, targetPortalField, targetPortalValue, existRelated = false, relatedRecordSet;
 
                 INTERMediatorOnPage.showProgress();
                 recordSet = [];
@@ -574,8 +571,7 @@ var IMLibUI = {
 
                     if (relatedRecordSet.length === 0) {
                         targetPortalValue = '';
-                        targetRecord = await INTERMediator_DBAdapter.db_query_async(
-                            {
+                        await INTERMediator_DBAdapter.db_query_async({
                                 name: targetName,
                                 records: 1,
                                 conditions: [
@@ -585,74 +581,78 @@ var IMLibUI = {
                                         value: keyValueCapt
                                     }
                                 ]
-                            }
-                        );
-                        for (portalField in targetRecord.dbresult[0][0]) {
-                            if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::' + INTERMediatorOnPage.defaultKeyName) {
-                                existRelated = true;
-                                targetPortalField = portalField;
-                                if (portalField === targetName + '::' + recordSet[0].field) {
-                                    targetPortalValue = recordSet[0].value;
-                                    break;
-                                }
-                                if (portalField !== targetName + '::id' &&
-                                    portalField !== targetName + '::' + recordSet[0].field) {
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (existRelated === false) {
-                            targetRecord = await INTERMediator_DBAdapter.db_query_async(
-                                {
-                                    name: targetName,
-                                    records: 0,
-                                    conditions: [
-                                        {
-                                            field: currentContext.key ? currentContext.key : INTERMediatorOnPage.defaultKeyName,
-                                            operator: '=',
-                                            value: keyValueCapt
+                            },
+                            async function (targetRecord) {
+                                for (portalField in targetRecord.dbresult[0][0]) {
+                                    if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::' + INTERMediatorOnPage.defaultKeyName) {
+                                        existRelated = true;
+                                        targetPortalField = portalField;
+                                        if (portalField === targetName + '::' + recordSet[0].field) {
+                                            targetPortalValue = recordSet[0].value;
+                                            break;
                                         }
-                                    ]
-                                }
-                            );
-                            for (portalField in targetRecord.dbresult) {
-                                if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::' + INTERMediatorOnPage.defaultKeyName) {
-                                    targetPortalField = portalField;
-                                    if (portalField === targetName + '::' + recordSet[0].field) {
-                                        targetPortalValue = recordSet[0].value;
-                                        break;
-                                    }
-                                    if (portalField !== targetName + '::id' &&
-                                        portalField !== targetName + '::' + recordSet[0].field) {
-                                        break;
+                                        if (portalField !== targetName + '::id' &&
+                                            portalField !== targetName + '::' + recordSet[0].field) {
+                                            break;
+                                        }
                                     }
                                 }
-                            }
-                        }
-
+                                if (existRelated === false) {
+                                    await INTERMediator_DBAdapter.db_query_async({
+                                            name: targetName,
+                                            records: 0,
+                                            conditions: [
+                                                {
+                                                    field: currentContext.key ? currentContext.key : INTERMediatorOnPage.defaultKeyName,
+                                                    operator: '=',
+                                                    value: keyValueCapt
+                                                }
+                                            ]
+                                        },
+                                        function (targetRecord) {
+                                            for (portalField in targetRecord.dbresult) {
+                                                if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::' + INTERMediatorOnPage.defaultKeyName) {
+                                                    targetPortalField = portalField;
+                                                    if (portalField === targetName + '::' + recordSet[0].field) {
+                                                        targetPortalValue = recordSet[0].value;
+                                                        break;
+                                                    }
+                                                    if (portalField !== targetName + '::id' &&
+                                                        portalField !== targetName + '::' + recordSet[0].field) {
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        null
+                                    );
+                                }
+                            },
+                            null
+                        );
                         if (targetPortalField === undefined && currentContext.relation &&
                             currentContext.relation[0] && currentContext.relation[0]['join-field']) {
                             targetPortalField = targetName + '::' + currentContext.relation[0]['join-field'];
                         }
-
                         relatedRecordSet.push({field: targetPortalField + '.0', value: targetPortalValue});
                     }
 
                     completeTask();
-                    //IMLibUI.unlockUIElement(idValue);
                     if (currentContext.relation && currentContext.relation[0] &&
                         currentContext.relation[0]['join-field']) {
-                        INTERMediator_DBAdapter.db_update({
-                            name: parentContextName,
-                            conditions: [{
-                                field: currentContext.relation[0]['join-field'],
-                                operator: '=',
-                                value: foreignValuesCapt.id
-                            }],
-                            dataset: relatedRecordSet
-                        });
-                        INTERMediator.constructMain();
+                        INTERMediator_DBAdapter.db_update_async({
+                                name: parentContextName,
+                                conditions: [{
+                                    field: currentContext.relation[0]['join-field'],
+                                    operator: '=',
+                                    value: foreignValuesCapt.id
+                                }],
+                                dataset: relatedRecordSet
+                            },
+                            function (result) {
+                                INTERMediator.constructMain();
+                            },
+                            null);
                     } else {
                         INTERMediatorLog.setErrorMessage('Insert Error (Portal Access Mode)', 'EXCEPTION-4');
                     }
@@ -660,14 +660,14 @@ var IMLibUI = {
                     INTERMediator_DBAdapter.db_createRecord_async(
                         {name: targetName, dataset: recordSet},
                         (function () {
-                            var targetNameCapt = targetName;
-                            var currentContextCapt = currentContext;
-                            var updateNodesCapt2 = updateNodesCapt;
-                            var foreignValuesCapt2 = foreignValuesCapt;
-                            var existRelatedCapt = existRelated;
-                            var keyValueCapt2 = keyValueCapt;
+                            let targetNameCapt = targetName;
+                            let currentContextCapt = currentContext;
+                            let updateNodesCapt2 = updateNodesCapt;
+                            let foreignValuesCapt2 = foreignValuesCapt;
+                            let existRelatedCapt = existRelated;
+                            let keyValueCapt2 = keyValueCapt;
                             return async function (result) {
-                                var keyField, newRecordId, associatedContext, conditions, createdRecord,
+                                let keyField, newRecordId, associatedContext, conditions, createdRecord,
                                     i, sameOriginContexts;
                                 newRecordId = result.newRecordKeyValue;
                                 keyField = currentContextCapt.key ? currentContextCapt.key : INTERMediatorOnPage.defaultKeyName;
@@ -709,10 +709,10 @@ var IMLibUI = {
 
     clickPostOnlyButton: function (node) {
         'use strict';
-        var i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo;
-        var mergedValues, inputNodes, typeAttr, k, messageNode, result, alertmessage;
-        var linkedNodes, namedNodes, index, hasInvalid, isMerged, contextNodes;
-        var targetNode = node.parentNode;
+        let i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo;
+        let mergedValues, inputNodes, typeAttr, k, messageNode, result, alertmessage;
+        let linkedNodes, namedNodes, index, hasInvalid, isMerged, contextNodes;
+        let targetNode = node.parentNode;
         while (!INTERMediatorLib.isEnclosure(targetNode, true)) {
             targetNode = targetNode.parentNode;
             if (!targetNode) {
@@ -747,8 +747,8 @@ var IMLibUI = {
         if (contextCount.length < 1) {
             return;
         }
-        var maxCount = -100;
-        for (var contextName in contextCount) {
+        let maxCount = -100;
+        for (let contextName in contextCount) {
             if (maxCount < contextCount[contextName]) {
                 maxCount = contextCount[contextName];
                 selectedContext = contextName;
@@ -766,7 +766,7 @@ var IMLibUI = {
                 if (comp[0] === selectedContext) {
                     if (contextInfo.validation) {
                         for (index in contextInfo.validation) {
-                            if(contextInfo.validation.hasOwnProperty(index)) {
+                            if (contextInfo.validation.hasOwnProperty(index)) {
                                 validationInfo = contextInfo.validation[index];
                                 if (validationInfo && validationInfo.field === comp[1]) {
                                     switch (validationInfo.notify) {
@@ -890,7 +890,7 @@ var IMLibUI = {
         INTERMediator_DBAdapter.db_createRecord_async(
             {name: selectedContext, dataset: fieldData},
             function (result) {
-                var newNode, parentOfTarget, targetNode = node, thisContext = contextInfo,
+                let newNode, parentOfTarget, targetNode = node, thisContext = contextInfo,
                     isSetMsg = false;
                 INTERMediatorLog.flushMessage();
                 if (INTERMediatorOnPage.processingAfterPostOnlyContext) {
@@ -918,7 +918,7 @@ var IMLibUI = {
             }, null);
 
         function seekLinkedElementInThisContext(node) {    // Just seek out side of inner enclosure
-            var children, i;
+            let children, i;
             if (node.nodeType === 1) {
                 if (INTERMediatorLib.isLinkedElement(node)) {
                     contextNodes.push(node);
@@ -937,7 +937,7 @@ var IMLibUI = {
         }
 
         function seekLinkedElementInAllChildren(node) {   // Traverse inside of enclosure
-            var children, i;
+            let children, i;
             if (node.nodeType === 1) {
                 if (INTERMediatorLib.isNamedElement(node)) {
                     namedNodes.push(node);
@@ -958,13 +958,13 @@ var IMLibUI = {
     eventUpdateHandler: async function (contextName) {
         'use strict';
         IMLibLocalContext.updateAll();
-        var context = IMLibContextPool.getContextFromName(contextName);
+        let context = IMLibContextPool.getContextFromName(contextName);
         await INTERMediator.constructMain(context[0]);
     },
 
     eventAddOrderHandler: function (e) {    // e is mouse event
         'use strict';
-        var targetKey, targetSplit, key, itemSplit, extValue;
+        let targetKey, targetSplit, key, itemSplit, extValue;
         if (e.target) {
             targetKey = e.target.getAttribute('data-im');
         } else {
@@ -975,7 +975,7 @@ var IMLibUI = {
             return;
         }
         for (key in IMLibLocalContext.store) {
-            if(IMLibLocalContext.store.hasOwnProperty(key)) {
+            if (IMLibLocalContext.store.hasOwnProperty(key)) {
                 itemSplit = key.split(':');
                 if (itemSplit.length > 3 && itemSplit[0] === 'valueofaddorder' && itemSplit[1] === targetSplit[1]) {
                     extValue = IMLibLocalContext.getValue(key);
