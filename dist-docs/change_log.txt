@@ -27,6 +27,13 @@ Ver.6-dev (in development)
       INTERMediator_DBAdapter.db_copyWithAuth
 - Deprecated global variables $g_dbInstance, $g_serverSideCall in INTER-Mediator.php are removed.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
+Ver.5.8-dev (in development)
+- Improve speed performance of Native Authentication.
+- [WIP] Support FileMaker Data API (Trial) of FileMaker Server 16.
+- Support retrieving image files in container fields in FileMaker Data API (Trial).
+- Add JSEncrypt <http://travistidwell.com/jsencrypt/> to "js_lib" directory in "lib" directory and
+  remove "bi2php" from "lib" directory to improve speed performance of Native Authentication.
+- Update FMDataAPI.php (Ver.7) for FileMaker Data API (Trial).
 
 Ver.5.7 (March 29, 2018)
 - The "data-im-format" attribute is introduced.

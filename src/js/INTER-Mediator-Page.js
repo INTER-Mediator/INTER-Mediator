@@ -106,7 +106,7 @@ var INTERMediatorOnPage = {
         var i, params, eqPos, result, key, value;
         result = {};
         params = location.search.substring(1).split('&');
-        for (i = 0; i < params.length; i+=1) {
+        for (i = 0; i < params.length; i++) {
             eqPos = params[i].indexOf('=');
             if (eqPos > 0) {
                 key = params[i].substring(0, eqPos);
@@ -137,7 +137,7 @@ var INTERMediatorOnPage = {
             INTERMediatorOnPage.authChallenge !== null && INTERMediatorOnPage.authChallenge.length > 0;
     },
 
-    retrieveAuthInfo: async function () {
+    retrieveAuthInfo: function () {
         'use strict';
         if (INTERMediatorOnPage.requireAuthentication) {
             if (INTERMediatorOnPage.isOnceAtStarting) {
@@ -173,8 +173,9 @@ var INTERMediatorOnPage = {
                 INTERMediatorOnPage.isOnceAtStarting = false;
             }
             if (INTERMediatorOnPage.authUser.length > 0) {
-                await INTERMediator_DBAdapter.getChallenge();
-                //INTERMediatorLog.flushMessage();
+                if (!INTERMediator_DBAdapter.getChallenge()) {
+                    INTERMediatorLog.flushMessage();
+                }
             }
         }
     },
@@ -315,7 +316,7 @@ var INTERMediatorOnPage = {
         var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox, msgNumber,
             passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton, panelTitle,
             newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox, keyCode,
-            messageNode, oAuthButton;
+            messageNode, oAuthButton, addingButton;
 
         this.checkPasswordPolicy = function (newPassword, userName, policyString) {
             var terms, i, message = [], minLen;
@@ -323,7 +324,7 @@ var INTERMediatorOnPage = {
                 return message;
             }
             terms = policyString.split(/[\s,]/);
-            for (i = 0; i < terms.length; i+=1) {
+            for (i = 0; i < terms.length; i++) {
                 switch (terms[i].toUpperCase()) {
                 case 'USEALPHABET':
                     if (!newPassword.match(/[A-Za-z]/)) {
@@ -425,7 +426,8 @@ var INTERMediatorOnPage = {
             if (panelTitle && panelTitle.length > 0) {
                 realmBox = document.createElement('DIV');
                 realmBox.appendChild(document.createTextNode(panelTitle));
-                realmBox.style.textAlign = 'left';
+                //realmBox.style.textAlign = 'left';
+                realmBox.id = '_im_authrealm';
                 frontPanel.appendChild(realmBox);
                 breakLine = document.createElement('HR');
                 frontPanel.appendChild(breakLine);
@@ -531,10 +533,30 @@ var INTERMediatorOnPage = {
                 breakLine = document.createElement('HR');
                 frontPanel.appendChild(breakLine);
                 oAuthButton = document.createElement('BUTTON');
-                oAuthButton.id = '_im_authbutton';
+                oAuthButton.id = '_im_oauthbutton';
                 oAuthButton.appendChild(document.createTextNode(
                     INTERMediatorLib.getInsertedStringFromErrorNumber(2014)));
                 frontPanel.appendChild(oAuthButton);
+            }
+            if (INTERMediatorOnPage.enrollPageURL){
+                breakLine = document.createElement('HR');
+                frontPanel.appendChild(breakLine);
+                addingButton = document.createElement('BUTTON');
+                addingButton.id = '_im_enrollbutton';
+                addingButton.appendChild(document.createTextNode(
+                    INTERMediatorLib.getInsertedStringFromErrorNumber(2022)));
+                addingButton.onclick=function(){location.href=INTERMediatorOnPage.enrollPageURL;};
+                frontPanel.appendChild(addingButton);
+            }
+            if (INTERMediatorOnPage.resetPageURL){
+                breakLine = document.createElement('HR');
+                frontPanel.appendChild(breakLine);
+                addingButton = document.createElement('BUTTON');
+                addingButton.id = '_im_resetbutton';
+                addingButton.appendChild(document.createTextNode(
+                    INTERMediatorLib.getInsertedStringFromErrorNumber(2023)));
+                addingButton.onclick=function(){location.href=INTERMediatorOnPage.resetPageURL;};
+                frontPanel.appendChild(addingButton);
             }
         }
         passwordBox.onkeydown = function (event) {
@@ -550,7 +572,7 @@ var INTERMediatorOnPage = {
                 passwordBox.focus();
             }
         };
-        authButton.onclick = async function () {
+        authButton.onclick = function () {
             var inputUsername, inputPassword, challengeResult, messageNode;
 
             messageNode = document.getElementById('_im_newpass_message');
@@ -574,7 +596,7 @@ var INTERMediatorOnPage = {
             if (inputUsername !== '' &&  // No usename and no challenge, get a challenge.
                 (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24 )) {
                 INTERMediatorOnPage.authHashedPassword = 'need-hash-pls';   // Dummy Hash for getting a challenge
-                challengeResult = await INTERMediator_DBAdapter.getChallenge();
+                challengeResult = INTERMediator_DBAdapter.getChallenge();
                 if (!challengeResult) {
                     INTERMediatorLog.flushMessage();
                     return; // If it's failed to get a challenge, finish everything.
@@ -595,8 +617,8 @@ var INTERMediatorOnPage = {
         };
         if (chgpwButton) {
             var checkPolicyMethod = this.checkPasswordPolicy;
-            chgpwButton.onclick = async function () {
-                var inputUsername, inputPassword, inputNewPassword, result, messageNode, message, msgNum;
+            chgpwButton.onclick = function () {
+                var inputUsername, inputPassword, inputNewPassword, result, messageNode, message;
 
                 messageNode = document.getElementById('_im_login_message');
                 INTERMediatorLib.removeChildNodes(messageNode);
@@ -621,21 +643,11 @@ var INTERMediatorOnPage = {
                     return;
                 }
 
-                try {
-                    result = await INTERMediator_DBAdapter.changePassword(inputUsername, inputPassword, inputNewPassword);
-                    msgNum = 2009;
-                } catch(er){
-                    if(er.message==='_im_changepw_noparams'){
-                        msgNum = 2007;
-                    }else if(er.message==='_im_changepw_notchange'){
-                        msgNum = 2010;
-                    }else {
-                        msgNum = 2008;
-                    }
-                }
+                result = INTERMediator_DBAdapter.changePassword(inputUsername, inputPassword, inputNewPassword);
                 messageNode.appendChild(
                     document.createTextNode(
-                        INTERMediatorLib.getInsertedStringFromErrorNumber(msgNum)));
+                        INTERMediatorLib.getInsertedStringFromErrorNumber(result ? 2009 : 2010)));
+
                 INTERMediatorLog.flushMessage();
             };
         }
@@ -850,6 +862,8 @@ var INTERMediatorOnPage = {
      */
     getNodeIdFromIMDefinition: function (imDefinition, fromNode, justFromNode) {
         'use strict';
+        console.error('INTERMediatorOnPage.getNodeIdFromIMDefinition method in INTER-Mediator-Page.js will be removed in Ver.6.0. '+
+        'The alternative method is getNodeIdsHavingTargetFromNode or getNodeIdsHavingTargetFromRepeater.');
         var repeaterNode;
         if (justFromNode) {
             repeaterNode = fromNode;
@@ -865,7 +879,7 @@ var INTERMediatorOnPage = {
             }
             children = node.childNodes;
             if (children) {
-                for (i = 0; i < children.length; i+=1) {
+                for (i = 0; i < children.length; i++) {
                     if (children[i].nodeType === 1) {
                         if (INTERMediatorLib.isLinkedElement(children[i])) {
                             nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
@@ -887,6 +901,8 @@ var INTERMediatorOnPage = {
 
     getNodeIdFromIMDefinitionOnEnclosure: function (imDefinition, fromNode) {
         'use strict';
+        console.error('INTERMediatorOnPage.getNodeIdFromIMDefinitionOnEnclosure method in INTER-Mediator-Page.js will be removed in Ver.6.0. '+
+            'The alternative method is getNodeIdsHavingTargetFromEnclosure.');
         var repeaterNode;
         repeaterNode = INTERMediatorLib.getParentEnclosure(fromNode);
         return seekNode(repeaterNode, imDefinition);
@@ -898,7 +914,7 @@ var INTERMediatorOnPage = {
             }
             children = node.childNodes;
             if (children) {
-                for (i = 0; i < children.length; i+=1) {
+                for (i = 0; i < children.length; i++) {
                     if (children[i].nodeType === 1) {
                         if (INTERMediatorLib.isLinkedElement(children[i])) {
                             nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
@@ -920,23 +936,27 @@ var INTERMediatorOnPage = {
 
     getNodeIdsFromIMDefinition: function (imDefinition, fromNode, justFromNode) {
         'use strict';
-        var enclosureNode, nodeIds, i;
+        var enclosureNode, nodeIds = [], i, j;
 
         if (justFromNode === true) {
-            enclosureNode = fromNode;
+            enclosureNode = [fromNode];
         } else if (justFromNode === false) {
-            enclosureNode = INTERMediatorLib.getParentEnclosure(fromNode);
+            enclosureNode = [INTERMediatorLib.getParentEnclosure(fromNode)];
         } else {
             enclosureNode = INTERMediatorLib.getParentRepeaters(fromNode);
         }
-        if (enclosureNode !== null) {
-            nodeIds = [];
-            if (Array.isArray(enclosureNode)) {
-                for (i = 0; i < enclosureNode.length; i+=1) {
+        if(!enclosureNode){
+            return [];
+        }
+        for (i = 0; i < enclosureNode.length; i += 1) {
+            if (enclosureNode[i] !== null) {
+                if (Array.isArray(enclosureNode[i])) {
+                    for (j = 0; j < enclosureNode[i].length; j++) {
+                        seekNode(enclosureNode[i][j], imDefinition);
+                    }
+                } else {
                     seekNode(enclosureNode[i], imDefinition);
                 }
-            } else {
-                seekNode(enclosureNode, imDefinition);
             }
         }
         return nodeIds;
@@ -948,7 +968,7 @@ var INTERMediatorOnPage = {
             }
             children = node.childNodes;
             if (children) {
-                for (i = 0; i < children.length; i+=1) {
+                for (i = 0; i < children.length; i++) {
                     if (children[i].nodeType === 1) {
                         nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
                         if (nodeDefs && nodeDefs.indexOf(imDefinition) > -1) {
@@ -972,7 +992,7 @@ var INTERMediatorOnPage = {
 
     getNodeIdsHavingTargetFromRepeater: function (fromNode, imDefinition) {
         'use strict';
-        return INTERMediatorOnPage.getNodeIdsFromIMDefinition(imDefinition, fromNode, IMLib.zerolength_str);
+        return INTERMediatorOnPage.getNodeIdsFromIMDefinition(imDefinition, fromNode, 'others');
     },
 
     getNodeIdsHavingTargetFromEnclosure: function (fromNode, imDefinition) {
@@ -994,7 +1014,7 @@ var INTERMediatorOnPage = {
         var s, i, targetKey;
         s = document.cookie.split('; ');
         targetKey = this.getKeyWithRealm(key);
-        for (i = 0; i < s.length; i+=1) {
+        for (i = 0; i < s.length; i++) {
             if (s[i].indexOf(targetKey + '=') === 0) {
                 return decodeURIComponent(s[i].substring(s[i].indexOf('=') + 1));
             }
@@ -1124,7 +1144,7 @@ var INTERMediatorOnPage = {
             '?theme=' + INTERMediatorOnPage.getTheme() + '&type=css');
         linkElement.setAttribute('rel', 'stylesheet');
         linkElement.setAttribute('type', 'text/css');
-        for (i = 0; i < headNode.childNodes.length; i+=1) {
+        for (i = 0; i < headNode.childNodes.length; i++) {
             if (headNode.childNodes[i] &&
                 headNode.childNodes[i].nodeType === 1 &&
                 headNode.childNodes[i].tagName === 'LINK' &&
