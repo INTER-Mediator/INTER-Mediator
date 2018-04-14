@@ -7,13 +7,10 @@
  * To change this template use File | Settings | File Templates.
  */
 
-use \PHPUnit\Framework\TestCase;
-use \INTERMediator\IMUtil;
-
 if ((float)phpversion() >= 7.0) {
-//    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/RSA.php');
-//    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Math/BigInteger.php');
-//    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/Random.php');
+    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/RSA.php');
+    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Math/BigInteger.php');
+    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/Random.php');
     if (!defined('CRYPT_RSA_PRIVATE_FORMAT_PKCS1')) {
         define('CRYPT_RSA_PRIVATE_FORMAT_PKCS1', constant('phpseclib\Crypt\RSA::PRIVATE_FORMAT_PKCS1'));
     }
@@ -28,11 +25,10 @@ if ((float)phpversion() >= 7.0) {
         require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Math/BigInteger.php');
     }
 }
-//require_once(dirname(__FILE__) . '/../lib/bi2php/biRSA.php');
-//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-//spl_autoload_register('loadClass');
+require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
+spl_autoload_register('loadClass');
 
-class RSA_Test extends TestCase
+class RSA_Test extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
@@ -163,14 +159,17 @@ EOL;
         $privatekey = $rsa->getPrivateKey();
         $keyComp = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
         $publickey = $rsa->getPublicKey();
+
         $data = "happySAD200333#$#$#$#";
         $enc = $rsa->encrypt($data);
+        //var_dump($enc);
         $rsa->loadKey($publickey);
         $rsa->setPassword();
         $decrypted = $rsa->decrypt($enc);
         $this->assertEquals($data, $decrypted, "Encrypt and decrypt with phpseclib.");
     }
-/*
+
+    /*
     public function testDecryptJSGenerated()
     {
         $generatedKey = <<<EOL
@@ -218,5 +217,5 @@ EOL;
         $decrypted = $keyDecrypt->biDecryptedString($enc);
         $this->assertEquals("1234OhmyGOD#", $decrypted, "Decrypt from JavaScript encripted date.");
     }
-*/
+    */
 }
