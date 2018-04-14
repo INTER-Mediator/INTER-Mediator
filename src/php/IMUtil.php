@@ -222,10 +222,9 @@ class IMUtil
         return str_replace("\x00", '', $str);
     }
 
+    // Message Class Detection
     public static function getMessageClassInstance()
     {
-        // Message Class Detection
-        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
         $messageClass = null;
         if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
             $clientLangArray = explode(',', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
@@ -233,10 +232,12 @@ class IMUtil
                 $langCountry = explode(';', $oneLanguage);
                 if (strlen($langCountry[0]) > 0) {
                     $clientLang = explode('-', $langCountry[0]);
-                    $messageClass = "Message\MessageStrings_$clientLang[0]";
-                    if (file_exists("{$currentDir}{$messageClass}.php")) {
+                    $messageClass = "\INTERMediator\Message\MessageStrings_{$clientLang[0]}";
+                    try{
                         $messageClass = new $messageClass();
                         break;
+                    } catch(Exception $ex){
+                        $messageClass = null;
                     }
                 }
                 $messageClass = null;

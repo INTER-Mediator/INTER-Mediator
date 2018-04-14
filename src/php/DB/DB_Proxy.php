@@ -841,7 +841,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
                         $authSucceed = true;
                     } else {
-                        $ldap = new LDAPAuth();
+                        $ldap = new \INTERMediator\LDAPAuth();
                         $ldap->setLogger($this->logger);
                         if ($ldap->isActive) {
                             list($password, $challenge) = $this->decrypting($this->paramCryptResponse);

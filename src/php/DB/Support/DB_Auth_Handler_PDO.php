@@ -470,8 +470,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      */
     public function authSupportGetGroupsOfUser($user)
     {
-        $ldap = new LDAPAuth();
-        $oAuth = new OAuthAuth();
+        $ldap = new \INTERMediator\LDAPAuth();
+        $oAuth = new \INTERMediator\OAuthAuth();
         if ($ldap->isActive || $oAuth->isActive) {
             return $this->privateGetGroupsOfUser($user, true);
         } else {
