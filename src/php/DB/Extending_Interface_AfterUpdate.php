@@ -15,8 +15,7 @@
 
 namespace INTERMediator\DB;
 
-interface Extending_Interface_BeforeDelete
+interface Extending_Interface_AfterUpdate
 {
-    public function doBeforeDeleteFromDB();
+    public function doAfterUpdateToDB($result);
 }
-

@@ -7,8 +7,8 @@ $baseDir = dirname($vendorDir);
 $imDir = dirname($baseDir);
 
 return array(
-    'phpseclib\\Math\\' => array($baseDir . '/lib/phpseclib_v2/Math', $baseDir . '/lib/phpseclib_v1/Math'),
-    'phpseclib\\Crypt\\' => array($baseDir . '/lib/phpseclib_v2/Crypt', $baseDir . '/lib/phpseclib_v1/Math'),
+    'phpseclib\\Math\\' => array($baseDir . '/lib/phpseclib_v2/Math'),
+    'phpseclib\\Crypt\\' => array($baseDir . '/lib/phpseclib_v2/Crypt'),
     'QDSMTP\\' => array($baseDir . '/lib/mailsend/qdsmtp'),
     'ParagonIE\\ConstantTime\\' => array($baseDir . '/lib/ParagonIE/ConstantTime'),
     'INTERMediator\\OME\\' => array($baseDir . '/lib/mailsend'),

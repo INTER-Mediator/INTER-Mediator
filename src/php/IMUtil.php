@@ -174,14 +174,14 @@ class IMUtil
         $comp = explode("\\", $aClass);
         if (count($comp) >= 2) {
             if (IMUtil::phpVersion() < 6) {
-                return $comp[count($comp) - 2] . "_" . $comp[count($comp) - 1];
+                return "\\" . $comp[count($comp) - 2] . "_" . $comp[count($comp) - 1];
             } else {
                 return $aClass;
             }
         }
         return "Invalid_Class_Specification";
     }
-
+/*
     public static function phpSecLibRequiredClasses()
     {
         if (IMUtil::phpVersion() < 6) {
@@ -216,7 +216,7 @@ class IMUtil
             );
         }
     }
-
+*/
     public static function removeNull($str)
     {
         return str_replace("\x00", '', $str);

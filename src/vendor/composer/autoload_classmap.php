@@ -6,4 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    "Crypt_RSA"=>$baseDir . '/lib/phpseclib_v1/Crypt/RSA.php',
+    "Math_BigInteger"=>$baseDir . '/lib/phpseclib_v1/Math/BigInteger.php',
 );

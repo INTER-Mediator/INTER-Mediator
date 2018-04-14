@@ -15,8 +15,8 @@
 
 namespace INTERMediator\DB;
 
-interface Extending_Interface_BeforeDelete
-{
-    public function doBeforeDeleteFromDB();
-}
 
+interface Extending_Interface_BeforeCopy
+{
+    public function doBeforeCopyInDB();
+}

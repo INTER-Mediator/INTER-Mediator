@@ -15,26 +15,12 @@
 
 namespace INTERMediator;
 
-$imRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
-
+$imRoot = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR;
 require($imRoot . 'src/vendor/autoload.php');
-require($imRoot . 'src/php/DB/DB_Interfaces.php');
-//require('DB_Interfaces.php');
 
 if (function_exists('mb_internal_encoding')) {
     mb_internal_encoding('UTF-8');
 }
-
-//spl_autoload_register('loadClass');
-
-//require_once('DB_Interfaces.php');
-//require_once('IMUtil.php'); //
-//require_once('DB_Logger.php');
-//require_once('DB_Settings.php');
-//require_once('DB_UseSharedObjects.php');
-//require_once('DB_Proxy.php');
-
-//IMUtil::includeLibClasses(IMUtil::phpSecLibRequiredClasses());
 
 $currentDirParam = $imRoot . 'params.php';
 $parentDirParam = dirname($imRoot) . DIRECTORY_SEPARATOR . 'params.php';
@@ -51,7 +37,6 @@ if (isset($defaultTimezone)) {
 Locale\IMLocale::setLocale(LC_ALL);
 
 define("IM_TODAY", strftime('%Y-%m-%d'));
-$g_dbInstance = null;
 
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {

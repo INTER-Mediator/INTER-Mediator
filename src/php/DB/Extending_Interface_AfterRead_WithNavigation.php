@@ -15,8 +15,9 @@
 
 namespace INTERMediator\DB;
 
-interface Extending_Interface_BeforeDelete
+interface Extending_Interface_AfterRead_WithNavigation
 {
-    public function doBeforeDeleteFromDB();
+    public function doAfterReadFromDB( $result);
+    public function countQueryResult();
+    public function getTotalCount();
 }
-
