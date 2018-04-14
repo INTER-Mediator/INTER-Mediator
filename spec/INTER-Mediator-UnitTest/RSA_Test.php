@@ -7,10 +7,13 @@
  * To change this template use File | Settings | File Templates.
  */
 
+use \PHPUnit\Framework\TestCase;
+use \phpseclib\Crypt\RSA;
+
 if ((float)phpversion() >= 7.0) {
-    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/RSA.php');
-    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Math/BigInteger.php');
-    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/Random.php');
+//    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/RSA.php');
+//    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Math/BigInteger.php');
+//    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/Random.php');
     if (!defined('CRYPT_RSA_PRIVATE_FORMAT_PKCS1')) {
         define('CRYPT_RSA_PRIVATE_FORMAT_PKCS1', constant('phpseclib\Crypt\RSA::PRIVATE_FORMAT_PKCS1'));
     }
@@ -25,16 +28,16 @@ if ((float)phpversion() >= 7.0) {
         require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Math/BigInteger.php');
     }
 }
-require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-spl_autoload_register('loadClass');
+//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
+//spl_autoload_register('loadClass');
 
-class RSA_Test extends PHPUnit_Framework_TestCase
+class RSA_Test extends TestCase
 {
     protected function setUp()
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
-        $rsaClass = IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
+        $rsaClass = \INTERMediator\IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
         $this->rsa = new $rsaClass;
     }
 
