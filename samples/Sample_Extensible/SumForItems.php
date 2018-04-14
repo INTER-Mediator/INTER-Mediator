@@ -13,9 +13,7 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-use \INTERMediator\DB\Extending_Interface_AfterRead;
-
-class SumForItems implements Extending_Interface_AfterRead
+class SumForItems implements \INTERMediator\DB\Extending\AfterRead
 {
     public function doAfterReadFromDB($result)
     {

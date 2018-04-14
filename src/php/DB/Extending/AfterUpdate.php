@@ -13,9 +13,9 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-namespace INTERMediator\DB;
+namespace INTERMediator\DB\Extending;
 
-interface Extending_Interface_AfterUpdate
+interface AfterUpdate
 {
     public function doAfterUpdateToDB($result);
 }

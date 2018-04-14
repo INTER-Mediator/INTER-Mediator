@@ -13,9 +13,11 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-namespace INTERMediator\DB;
+namespace INTERMediator\DB\Extending;
 
-interface Extending_Interface_AfterCopy
+interface AfterRead_WithNavigation
 {
-    public function doAfterCopyInDB($result);
+    public function doAfterReadFromDB( $result);
+    public function countQueryResult();
+    public function getTotalCount();
 }

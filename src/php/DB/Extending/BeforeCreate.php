@@ -13,9 +13,9 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-namespace INTERMediator\DB;
+namespace INTERMediator\DB\Extending;
 
-interface Extending_Interface_BeforeCreate
+interface BeforeCreate
 {
     public function doBeforeCreateToDB();
 }

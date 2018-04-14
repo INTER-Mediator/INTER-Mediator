@@ -17,8 +17,6 @@ namespace INTERMediator\DB;
 
 use \DateTime;
 
-require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
-
 class DB_Extended_PDO extends DB_PDO
 {
     function readFromDB()

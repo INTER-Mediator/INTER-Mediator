@@ -13,9 +13,10 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-namespace INTERMediator\DB;
+namespace INTERMediator\DB\Extending;
 
-interface Extending_Interface_AfterRead
+interface BeforeDelete
 {
-    public function doAfterReadFromDB($result);
+    public function doBeforeDeleteFromDB();
 }
+
