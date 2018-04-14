@@ -11,22 +11,22 @@ use \PHPUnit\Framework\TestCase;
 use \phpseclib\Crypt\RSA;
 
 if ((float)phpversion() >= 7.0) {
-//    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/RSA.php');
-//    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Math/BigInteger.php');
-//    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/Random.php');
+////    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/RSA.php');
+////    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Math/BigInteger.php');
+////    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/Random.php');
     if (!defined('CRYPT_RSA_PRIVATE_FORMAT_PKCS1')) {
         define('CRYPT_RSA_PRIVATE_FORMAT_PKCS1', constant('phpseclib\Crypt\RSA::PRIVATE_FORMAT_PKCS1'));
     }
     if (!defined('CRYPT_RSA_ENCRYPTION_PKCS1')) {
         define('CRYPT_RSA_ENCRYPTION_PKCS1', constant('phpseclib\Crypt\RSA::ENCRYPTION_PKCS1'));
     }
-} else {
-    if (!class_exists('Crypt_RSA')) {
-        require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Crypt/RSA.php');
-    }
-    if (!class_exists('Math_BigInteger')) {
-        require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Math/BigInteger.php');
-    }
+//} else {
+//    if (!class_exists('Crypt_RSA')) {
+//        require_once(dirname(__FILE__) . '/../../src/lib/phpseclib_v1/Crypt/RSA.php');
+//    }
+//    if (!class_exists('Math_BigInteger')) {
+//        require_once(dirname(__FILE__) . '/../../src/lib/phpseclib_v1/Math/BigInteger.php');
+//    }
 }
 //require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
 //spl_autoload_register('loadClass');

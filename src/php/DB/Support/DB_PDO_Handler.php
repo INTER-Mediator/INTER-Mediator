@@ -15,9 +15,10 @@
  */
 namespace INTERMediator\DB\Support;
 
-require_once("DB_PDO_MySQL_Handler.php");
-require_once("DB_PDO_PostgreSQL_Handler.php");
-require_once("DB_PDO_SQLite_Handler.php");
+use \Exception;
+//require_once("DB_PDO_MySQL_Handler.php");
+//require_once("DB_PDO_PostgreSQL_Handler.php");
+//require_once("DB_PDO_SQLite_Handler.php");
 
 abstract class DB_PDO_Handler
 {
