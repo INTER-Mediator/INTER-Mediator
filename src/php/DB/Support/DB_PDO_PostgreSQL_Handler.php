@@ -14,6 +14,7 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace INTERMediator\DB\Support;
+use \PDO;
 
 class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
 {
