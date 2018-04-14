@@ -63,8 +63,8 @@ before_script:
   - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" || $TRAVIS_PHP_VERSION == "nightly" ]]; then composer require 'phpunit/phpunit=5.7.x'; composer install; fi
 
 script:
-  - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.2' ]; then phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi"
-  - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.2' ]; then vendor/bin/phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi"
+  - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.2' ]; then phpunit --bootstrap ./src/vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit.xml ./spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi"
+  - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.2' ]; then vendor/bin/phpunit --bootstrap ./src/vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit.xml ./spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi"
   - npm test
 
 notifications:
