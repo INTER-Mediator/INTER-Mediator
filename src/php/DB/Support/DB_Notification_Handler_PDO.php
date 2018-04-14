@@ -14,6 +14,7 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace INTERMediator\DB\Support;
+use \PDO;
 
 class DB_Notification_Handler_PDO
     extends DB_Notification_Common
