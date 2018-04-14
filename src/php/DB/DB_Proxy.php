@@ -13,6 +13,9 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
+namespace INTERMediator\DB;
+
 class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 {
     /**
@@ -103,7 +106,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
             header('Expires: 0');
             header('X-Content-Type-Options: nosniff');
-            $util = new IMUtil();
+            $util = new \INTERMediator\IMUtil();
             $util->outputSecurityHeaders();
         }
     }
@@ -151,7 +154,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 || isset($currentDataSource['send-mail']['read'])
             ) {
                 $this->logger->setDebugMessage("Try to send an email.", 2);
-                $mailSender = new SendMail();
+                $mailSender = new \INTERMediator\SendMail();
                 if (isset($currentDataSource['send-mail']['load'])) {
                     $dataSource = $currentDataSource['send-mail']['load'];
                 } else if (isset($currentDataSource['send-mail']['read'])) {
@@ -247,7 +250,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 || isset($currentDataSource['send-mail']['update'])
             ) {
                 $this->logger->setDebugMessage("Try to send an email.", 2);
-                $mailSender = new SendMail();
+                $mailSender = new \INTERMediator\SendMail();
                 if (isset($currentDataSource['send-mail']['edit'])) {
                     $dataSource = $currentDataSource['send-mail']['edit'];
                 } else if (isset($currentDataSource['send-mail']['update'])) {
@@ -311,7 +314,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 isset($currentDataSource['send-mail']['create'])
             ) {
                 $this->logger->setDebugMessage("Try to send an email.");
-                $mailSender = new SendMail();
+                $mailSender = new \INTERMediator\SendMail();
                 if (isset($currentDataSource['send-mail']['new'])) {
                     $dataSource = $currentDataSource['send-mail']['new'];
                 } else if (isset($currentDataSource['send-mail']['create'])) {
@@ -474,20 +477,25 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->PostData = $this->ignorePost ? array() : $_POST;
         $this->setUpSharedObjects();
 
-        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-        $currentDirParam = $currentDir . 'params.php';
-        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
+        $params = \INTERMediator\IMUtil::getFromParamsPHPFile(array(
+            "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
+            "dbOption", "dbDSN", "pusherParameters", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
+        ), true);
 
-        if (file_exists($parentDirParam)) {
-            include($parentDirParam);
-        } else if (file_exists($currentDirParam)) {
-            include($currentDirParam);
-        }
+//        $currentDir = \INTERMediator\IMUtil::pathToINTERMediator();
+//        $currentDirParam = $currentDir . 'params.php';
+//        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
+//
+//        if (file_exists($parentDirParam)) {
+//            include($parentDirParam);
+//        } else if (file_exists($currentDirParam)) {
+//            include($currentDirParam);
+//        }
 
         $this->clientPusherAvailable = (isset($this->PostData["pusher"]) && $this->PostData["pusher"] == "yes");
         $this->dbSettings->setDataSource($datasource);
         $this->dbSettings->setOptions($options);
-        IMLocale::$options = $options;
+        \INTERMediator\Locale\IMLocale::$options = $options;
         $this->dbSettings->setDbSpec($dbspec);
 
         $this->dbSettings->setSeparator(isset($options['separator']) ? $options['separator'] : '@');
@@ -495,54 +503,54 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->dbSettings->setDataSourceName(!is_null($target) ? $target : (isset($this->PostData['name']) ? $this->PostData['name'] : "_im_auth"));
         $context = $this->dbSettings->getDataSourceTargetArray();
 
-        $dbClassName = 'DB_' .
+        $dbClassName = '\INTERMediator\DB\DB_' .
             (isset($context['db-class']) ? $context['db-class'] :
                 (isset($dbspec['db-class']) ? $dbspec['db-class'] :
-                    (isset ($dbClass) ? $dbClass : '')));
+                    (isset ($params['dbClass']) ? $params['$dbClass'] : '')));
         $this->dbSettings->setDbSpecServer(
             isset($context['server']) ? $context['server'] :
                 (isset($dbspec['server']) ? $dbspec['server'] :
-                    (isset ($dbServer) ? $dbServer : '')));
+                    (isset ($params['dbServer']) ? $params['dbServer'] : '')));
         $this->dbSettings->setDbSpecPort(
             isset($context['port']) ? $context['port'] :
                 (isset($dbspec['port']) ? $dbspec['port'] :
-                    (isset ($dbPort) ? $dbPort : '')));
+                    (isset ($params['dbPort']) ? $params['dbPort'] : '')));
         $this->dbSettings->setDbSpecUser(
             isset($context['user']) ? $context['user'] :
                 (isset($dbspec['user']) ? $dbspec['user'] :
-                    (isset ($dbUser) ? $dbUser : '')));
+                    (isset ($params['dbUser']) ? $params['dbUser'] : '')));
         $this->dbSettings->setDbSpecPassword(
             isset($context['password']) ? $context['password'] :
                 (isset($dbspec['password']) ? $dbspec['password'] :
-                    (isset ($dbPassword) ? $dbPassword : '')));
+                    (isset ($params['dbPassword']) ? $params['dbPassword'] : '')));
         $this->dbSettings->setDbSpecDataType(
             isset($context['datatype']) ? $context['datatype'] :
                 (isset($dbspec['datatype']) ? $dbspec['datatype'] :
-                    (isset ($dbDataType) ? $dbDataType : '')));
+                    (isset ($params['dbDataType']) ? $params['dbDataType'] : '')));
         $this->dbSettings->setDbSpecDatabase(
             isset($context['database']) ? $context['database'] :
                 (isset($dbspec['database']) ? $dbspec['database'] :
-                    (isset ($dbDatabase) ? $dbDatabase : '')));
+                    (isset ($params['dbDatabase']) ? $params['dbDatabase'] : '')));
         $this->dbSettings->setDbSpecProtocol(
             isset($context['protocol']) ? $context['protocol'] :
                 (isset($dbspec['protocol']) ? $dbspec['protocol'] :
-                    (isset ($dbProtocol) ? $dbProtocol : '')));
+                    (isset ($params['dbProtocol']) ? $params['dbProtocol'] : '')));
         $this->dbSettings->setDbSpecOption(
             isset($context['option']) ? $context['option'] :
                 (isset($dbspec['option']) ? $dbspec['option'] :
-                    (isset ($dbOption) ? $dbOption : '')));
+                    (isset ($params['dbOption']) ? $params['dbOption'] : '')));
         if (isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn'])) {
             $this->dbSettings->setDbSpecDSN($options['authentication']['issuedhash-dsn']);
         } else {
             $this->dbSettings->setDbSpecDSN(
                 isset($context['dsn']) ? $context['dsn'] :
                     (isset($dbspec['dsn']) ? $dbspec['dsn'] :
-                        (isset ($dbDSN) ? $dbDSN : '')));
+                        (isset ($params['dbDSN']) ? $params['dbDSN'] : '')));
         }
 
         $pusherParams = null;
-        if (isset($pusherParameters)) {
-            $pusherParams = $pusherParameters;
+        if (isset($params['pusherParameters'])) {
+            $pusherParams = $params['pusherParameters'];
         } else if (isset($options['pusher'])) {
             $pusherParams = $options['pusher'];
         }
@@ -556,7 +564,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         }
 
         /* Setup Database Class's Object */
-        require_once("{$dbClassName}.php");
+//        require_once("{$dbClassName}.php");
         $isDBClassNull = is_null($this->dbClass);
         if ($isDBClassNull) {
             $this->dbClass = new $dbClassName();
@@ -574,7 +582,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             }
             $this->dbClass->setupHandlers();
         }
-        if ((!isset($prohibitDebugMode) || !$prohibitDebugMode) && $debug) {
+        if ((!isset($params['prohibitDebugMode']) || !$params['prohibitDebugMode']) && $debug) {
             $this->logger->setDebugMode($debug);
         }
         $this->dbSettings->setAggregationSelect(
@@ -588,11 +596,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $challengeDSN = null;
         if (isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn'])) {
             $challengeDSN = $options['authentication']['issuedhash-dsn'];
-        } else if (isset($issuedHashDSN)) {
-            $challengeDSN = $issuedHashDSN;
+        } else if (isset($params['issuedHashDSN'])) {
+            $challengeDSN = $params['issuedHashDSN'];
         }
         if (!is_null($challengeDSN)) {
-            require_once("DB_PDO.php");
+            //require_once("DB_PDO.php");
             $this->authDbClass = new DB_PDO();
             $this->authDbClass->setUpSharedObjects($this);
             $this->authDbClass->setupWithDSN($challengeDSN);
@@ -605,7 +613,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
         $this->dbSettings->notifyServer = null;
         if ($this->clientPusherAvailable) {
-            require_once("NotifyServer.php");
+            //require_once("NotifyServer.php");
             $this->dbSettings->notifyServer = new NotifyServer();
             if (isset($this->PostData['notifyid'])
                 && $this->dbSettings->notifyServer->initialize($this->authDbClass, $this->dbSettings, $this->PostData['notifyid'])
@@ -624,7 +632,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             } else {
                 $this->logger->setDebugMessage("The class '{$className}' was instanciated.", 2);
             }
-            if (is_subclass_of($this->userExpanded, 'DB_UseSharedObjects')) {
+            if (is_subclass_of($this->userExpanded, '\INTERMediator\DB\DB_UseSharedObjects')) {
                 $this->userExpanded->setUpSharedObjects($this);
             }
         }
@@ -673,7 +681,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             if (!isset($this->PostData["value_{$i}"])) {
                 break;
             }
-            $value = IMUtil::removeNull(filter_var($this->PostData["value_{$i}"]));
+            $value = \INTERMediator\IMUtil::removeNull(filter_var($this->PostData["value_{$i}"]));
             $this->dbSettings->addValue(get_magic_quotes_gpc() ? stripslashes($value) : $value);
         }
         if (isset($options['authentication']) && isset($options['authentication']['email-as-username'])) {
@@ -690,8 +698,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
         if (isset($options['smtp'])) {
             $this->dbSettings->setSmtpConfiguration($options['smtp']);
-        } else if (isset($sendMailSMTP)) {
-            $this->dbSettings->setSmtpConfiguration($sendMailSMTP);
+        } else if (isset($params['sendMailSMTP'])) {
+            $this->dbSettings->setSmtpConfiguration($params['sendMailSMTP']);
         }
 
         $this->paramAuthUser = isset($this->PostData['authuser']) ? $this->PostData['authuser'] : "";
@@ -727,7 +735,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $options = $this->dbSettings->getAuthentication();
 
         $this->outputOfProcessing = array();
-        $messageClass = IMUtil::getMessageClassInstance();
+        $messageClass = \INTERMediator\IMUtil::getMessageClassInstance();
 
         /* Aggregation Judgement */
         $isSelect = $this->dbSettings->getAggregationSelect();
@@ -1053,25 +1061,16 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $rsa = new $rsaClass;
         $rsa->setPassword($passPhrase);
         $rsa->loadKey($generatedPrivateKey);
-        $rsa->setPassword();
-        $privatekey = $rsa->getPrivateKey();
-        if (IMUtil::phpVersion() < 6) {
-            $priv = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
+        $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
+        $nlPos = strpos($paramCryptResponse, '|');
+        $encryptedPassword = substr($paramCryptResponse, 0, $nlPos);
+        $encryptedChallenge = substr($paramCryptResponse, $nlPos + 1);
+        if (strlen($encryptedPassword) > 0 && strlen($encryptedChallenge) > 0) {
+            $password = $rsa->decrypt(base64_decode($encryptedPassword));
+            $challenge = $rsa->decrypt(base64_decode($encryptedChallenge));
         } else {
-            $priv = $rsa->_parseKey($privatekey, constant('phpseclib\Crypt\RSA::PRIVATE_FORMAT_PKCS1'));
+            return array('', '');
         }
-        require_once('lib/bi2php/biRSA.php');
-        $keyDecrypt = new biRSAKeyPair('0', $priv['privateExponent']->toHex(), $priv['modulus']->toHex());
-        $decrypted = $keyDecrypt->biDecryptedString($paramCryptResponse);
-        if ($decrypted === false) {
-            return array(false, false);
-        }
-
-        $nlPos = strpos($decrypted, "\n");
-        $nlPos = ($nlPos === false) ? strlen($decrypted) : $nlPos;
-        $password = $keyDecrypt->biDecryptedString(substr($decrypted, 0, $nlPos));
-        $password = (strlen($password) == 0) ? "f32b309d4759446fc81de858322ed391a0c167a0" : $password;
-        $challenge = substr($decrypted, $nlPos + 1);
         return array($password, $challenge);
     }
 

@@ -2,8 +2,9 @@
 /**
  * GenerateJSCode_Test file
  */
-use \PHPUnit\Framework\TestCase;
-use \INTERMediator\GenerateJSCode;
+use INTERMediator\GenerateJSCode;
+use PHPUnit\Framework\TestCase;
+
 //require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
 //spl_autoload_register('loadClass');
 
@@ -46,7 +47,7 @@ class GenerateJSCode_Test extends TestCase
             $headers = xdebug_get_headers();
             header_remove();
             ob_clean();
-            
+
             $this->assertContains('Content-Type: text/javascript;charset="UTF-8"', $headers);
             $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
             $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
@@ -60,11 +61,13 @@ class GenerateJSCode_Test extends TestCase
     public function test_combineScripts()
     {
         if (((float)phpversion()) >= 5.3) {
-            $this->reflectionMethod = new ReflectionMethod('GenerateJSCode', 'combineScripts');
+            $this->reflectionMethod = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'combineScripts');
             $this->reflectionMethod->setAccessible(true);
-            $currentDir = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR;
+            $currentDir = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR .
+                'src' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
             $content = $this->reflectionMethod->invokeArgs($this->generater, array($currentDir));
-            $jsLibDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
+            $jsLibDir = dirname($currentDir) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR .
+                'js_lib' . DIRECTORY_SEPARATOR;
             $this->assertContains(';' . file_get_contents($jsLibDir . 'tinySHA1.js'), $content);
         }
     }

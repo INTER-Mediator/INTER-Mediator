@@ -3,7 +3,7 @@
  * DataConverter_HTMLString_Test file
  */
 use \PHPUnit\Framework\TestCase;
-
+use \INTERMediator\Data_Converter\DataConverter_HTMLString;
 //require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
 //require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_HTMLString.php');
 

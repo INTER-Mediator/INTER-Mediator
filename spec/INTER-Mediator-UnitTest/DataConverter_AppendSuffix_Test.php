@@ -3,7 +3,7 @@
  * DataConverter_AppendSuffix_Test file
  */
 use \PHPUnit\Framework\TestCase;
-
+use \INTERMediator\Data_Converter\DataConverter_AppendSuffix;
 //require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
 //require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_AppendSuffix.php');
 

@@ -3,7 +3,7 @@
  * DataConverter_NullZeroString_Test file
  */
 use \PHPUnit\Framework\TestCase;
-
+use \INTERMediator\Data_Converter\DataConverter_NullZeroString;
 //require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
 //require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_NullZeroString.php');
 

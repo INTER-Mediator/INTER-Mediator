@@ -14,6 +14,7 @@
  */
 namespace INTERMediator\Data_Converter;
 
+use \DateTime;
 //require_once('INTER-Mediator.php');
 //require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'IMLocale.php');
 
@@ -34,9 +35,9 @@ class DataConverter_FMDateTime
     public function __construct($format = '')
     {
         $this->fmt = $format;
-        IMLocale::setLocale(LC_ALL);
-        $this->choosenLocale = IMLocale::$choosenLocale;
-        $this->useMbstring = IMLocale::$useMbstring;
+        \INTERMediator\Locale\IMLocale::setLocale(LC_ALL);
+        $this->choosenLocale = \INTERMediator\Locale\IMLocale::$choosenLocale;
+        $this->useMbstring = \INTERMediator\Locale\IMLocale::$useMbstring;
         date_default_timezone_set($this->tz);
     }
 

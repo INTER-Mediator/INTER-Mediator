@@ -296,7 +296,7 @@ class IMUtil
 
     public static function getFromParamsPHPFile($vars, $permitUndef = false)
     {
-        $imRootDir = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR;
+        $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
         $currentDirParam = $imRootDir . 'params.php';
         $parentDirParam = dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php';
         if (file_exists($parentDirParam)) {

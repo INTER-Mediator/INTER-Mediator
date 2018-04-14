@@ -4,6 +4,7 @@
  */
 
 use \PHPUnit\Framework\TestCase;
+use \INTERMediator\DB\DB_Settings;
 
 //require_once(dirname(__FILE__) . '/../DB_Settings.php');
 

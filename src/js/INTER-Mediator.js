@@ -793,7 +793,7 @@ const INTERMediator = {
                         contextObj.sequencing = false;
                     }
                     return contextObj;
-                } catch(ex){
+                } catch (ex) {
                     throw ex;
                 }
             }
@@ -1194,16 +1194,20 @@ const INTERMediator = {
                         useLimit = contextObj.isUseLimit();
                         recordNumber = INTERMediator.pagedSize > 0 ? INTERMediator.pagedSize
                             : contextObj.getRecordNumber();
-                        targetRecords = await INTERMediator_DBAdapter.db_query_async({
-                            'name': contextObj.contextDefinition.name,
-                            'records': isNaN(recordNumber) ? 100000000 : recordNumber,
-                            'paging': contextObj.contextDefinition.paging,
-                            'fields': fieldList,
-                            'parentkeyvalue': relationValue,
-                            'conditions': null,
-                            'useoffset': true,
-                            'uselimit': useLimit
-                        });
+                        await INTERMediator_DBAdapter.db_query_async({
+                                'name': contextObj.contextDefinition.name,
+                                'records': isNaN(recordNumber) ? 100000000 : recordNumber,
+                                'paging': contextObj.contextDefinition.paging,
+                                'fields': fieldList,
+                                'parentkeyvalue': relationValue,
+                                'conditions': null,
+                                'useoffset': true,
+                                'uselimit': useLimit
+                            },
+                            function (result) {
+                                targetRecords = result
+                            },
+                            null);
                     }
                 } catch (ex) {
                     if (ex.message === '_im_auth_required_') {

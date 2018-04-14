@@ -317,6 +317,7 @@ var INTERMediatorOnPage = {
             passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton, panelTitle,
             newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox, keyCode,
             messageNode, oAuthButton, addingButton;
+        var encrypt = new JSEncrypt();
 
         this.checkPasswordPolicy = function (newPassword, userName, policyString) {
             var terms, i, message = [], minLen;
@@ -602,8 +603,9 @@ var INTERMediatorOnPage = {
                     return; // If it's failed to get a challenge, finish everything.
                 }
             }
-            INTERMediatorOnPage.authCryptedPassword =
-                INTERMediatorOnPage.publickey.biEncryptedString(inputPassword);
+            encrypt.setPublicKey(INTERMediatorOnPage.publickey);
+            INTERMediatorOnPage.authCryptedPassword = encrypt.encrypt(inputPassword);
+
             INTERMediatorOnPage.authHashedPassword =
                 SHA1(inputPassword + INTERMediatorOnPage.authUserSalt) +
                 INTERMediatorOnPage.authUserHexSalt;

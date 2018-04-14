@@ -1,5 +1,4 @@
 <?php
-
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -13,7 +12,6 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 namespace INTERMediator;
 
 use \Exception;
@@ -22,12 +20,10 @@ class MediaAccess
 {
     private $contextRecord = null;
     private $disposition = "inline";
-
     function asAttachment()
     {
         $this->disposition = "attachment";
     }
-
     function processing($dbProxyInstance, $options, $file)
     {
         try {
@@ -35,7 +31,6 @@ class MediaAccess
             if (strlen($file) === 0) {
                 $this->exitAsError(204);
             }
-
             // If the media parameter is an URL, the variable isURL will be set to true.
             $schema = array("https:", "http:", "class:");
             $isURL = false;
@@ -103,7 +98,6 @@ class MediaAccess
                                 }
                             }
                         }
-
                         $target = 'http://127.0.0.1' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
                         $headers = array('X-FMS-Session-Key: ' . $sessionKey);
                         $session = curl_init($target);
@@ -139,7 +133,6 @@ class MediaAccess
                     . str_replace("+", "%20", urlencode($fileName)) . $dq);
                 $util = new IMUtil();
                 $util->outputSecurityHeaders();
-
                 $this->outputImage($content);
             } else if (stripos($target, 'class://') === 0) { // class
                 $noscheme = substr($target, 8);
@@ -151,7 +144,6 @@ class MediaAccess
             // do nothing
         }
     }
-
     /**
      * @param $code any error code, but supported just 204, 401 and 500.
      * @throws Exception happens anytime.
@@ -169,11 +161,9 @@ class MediaAccess
                 header("HTTP/1.1 500 Internal Server Error");
                 break;
             default: // for debug purpose mainly.
-
         }
         throw new Exception('Respond HTTP Error.');
     }
-
     /**
      * @param $dbProxyInstance
      * @param $options
@@ -199,13 +189,11 @@ class MediaAccess
                 } else if (file_exists($currentDirParam)) {
                     include($currentDirParam);
                 }
-
                 $rsaClass = IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
                 $rsa = new $rsaClass;
                 $rsa->setPassword($passPhrase);
                 $rsa->loadKey($generatedPrivateKey);
                 $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
-
                 $cookieNameUser = '_im_username';
                 $cookieNamePassword = '_im_crypted';
                 $credential = isset($_COOKIE[$cookieNameUser]) ? urlencode($_COOKIE[$cookieNameUser]) : '';
@@ -233,7 +221,6 @@ class MediaAccess
         }
         return array($file, $isURL);
     }
-
     /**
      * @param $dbProxyInstance
      * @param $options
@@ -371,7 +358,6 @@ class MediaAccess
             $this->contextRecord = $dbProxyInstance->readFromDB();
         }
     }
-
     private function getMimeType($path)
     {
         $type = "application/octet-stream";
@@ -409,7 +395,6 @@ class MediaAccess
         }
         return $type;
     }
-
     private function outputImage($content)
     {
         $rotate = false;
@@ -421,19 +406,17 @@ class MediaAccess
                 $tmpDir = sys_get_temp_dir();
             }
             $temp = 'IM_TEMP_' .
-                str_replace(base64_encode(IMUtil::randomString(12)), DIRECTORY_SEPARATOR, '-') .
+                str_replace(base64_encode(randomString(12)), DIRECTORY_SEPARATOR, '-') .
                 '.jpg';
             if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
                 $tempPath = $tmpDir . $temp;
             } else {
                 $tempPath = $tmpDir . DIRECTORY_SEPARATOR . $temp;
             }
-
             $fp = fopen($tempPath, 'w');
             if ($fp !== false) {
                 fwrite($fp, $content);
                 fclose($fp);
-
                 $imageType = image_type_to_mime_type(exif_imagetype($tempPath));
                 if ($imageType === 'image/jpeg') {
                     $image = imagecreatefromstring($content);
@@ -468,7 +451,6 @@ class MediaAccess
                         header('Content-Length: ' . $size);
                         $util = new IMUtil();
                         $util->outputSecurityHeaders();
-
                         ob_end_flush();
                     }
                     imagedestroy($image);
@@ -476,10 +458,8 @@ class MediaAccess
                 unlink($tempPath);
             }
         }
-
         if ($rotate === false) {
             echo $content;
         }
     }
-
 }

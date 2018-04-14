@@ -27,6 +27,7 @@ Ver.6-dev (in development)
       INTERMediator_DBAdapter.db_copyWithAuth
 - Deprecated global variables $g_dbInstance, $g_serverSideCall in INTER-Mediator.php are removed.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
+
 Ver.5.8-dev (in development)
 - Improve speed performance of Native Authentication.
 - [WIP] Support FileMaker Data API (Trial) of FileMaker Server 16.

@@ -3,7 +3,8 @@
  * DataConverter_NumberBase_Test file
  */
 use \PHPUnit\Framework\TestCase;
-
+use \INTERMediator\Locale\IMLocale;
+use \INTERMediator\Data_Converter\DataConverter_NumberBase;
 //require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
 //require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_NumberBase.php');
 

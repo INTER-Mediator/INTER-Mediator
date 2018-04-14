@@ -13,6 +13,8 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+namespace INTERMediator;
+
 class GenerateJSCode
 {
     public function __construct()
@@ -91,7 +93,8 @@ class GenerateJSCode
         /*
          * Read the JS programs regarding by the developing or deployed.
          */
-        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+        $currentDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR . 'src' .
+            DIRECTORY_SEPARATOR . 'js'. DIRECTORY_SEPARATOR;
         if (file_exists($currentDir . 'INTER-Mediator-Lib.js')) {
             echo $this->combineScripts($currentDir);
         } else {
@@ -103,7 +106,10 @@ class GenerateJSCode
          */
         $relativeToDefFile = '';
         $editorPath = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator-Support';
-        $defFilePath = $_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME'];
+        $defFilePath = 'Not on web server';
+        if($_SERVER && isset($_SERVER['DOCUMENT_ROOT'])&& isset($_SERVER['SCRIPT_NAME'])) {
+            $defFilePath = $_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME'];
+        }
         while (strpos($defFilePath, $editorPath) !== 0 && strlen($editorPath) > 1) {
             $editorPath = dirname($editorPath);
             $relativeToDefFile .= '..' . DIRECTORY_SEPARATOR;
@@ -124,14 +130,14 @@ class GenerateJSCode
          * from db-class, determine the default key field string
          */
         $defaultKey = null;
-        $dbClassName = 'DB_' .
+        $dbClassName = '\INTERMediator\DB\DB_' .
             (isset($dbspecification['db-class']) ? $dbspecification['db-class'] :
                 (!is_null($dbClass) ? $dbClass : ''));
-        if ($dbClassName !== 'DB_DefEditor' && $dbClassName !== 'DB_PageEditor') {
-            require_once("{$dbClassName}.php");
-        } else {
-            require_once(dirname(__FILE__) . "/INTER-Mediator-Support/{$dbClassName}.php");
-        }
+//        if ($dbClassName !== 'DB_DefEditor' && $dbClassName !== 'DB_PageEditor') {
+//            require_once("{$dbClassName}.php");
+//        } else {
+//            require_once(dirname(__FILE__) . "/INTER-Mediator-Support/{$dbClassName}.php");
+//        }
         $dbInstance = new $dbClassName();
         $dbInstance->setupHandlers($dbDSN);
         if ($dbInstance != null && $dbInstance->specHandler != null) {
@@ -179,13 +185,13 @@ class GenerateJSCode
 //            "INTERMediatorOnPage.getIMRootPath", "function(){return {$q}{$pathToIMRootDir}{$q};}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getDataSources", "function(){return ",
-            arrayToJSExcluding($datasource, '', array('password')), ";}");
+            IMUtil::arrayToJSExcluding($datasource, '', array('password')), ";}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getOptionsAliases",
-            "function(){return ", arrayToJS(isset($options['aliases']) ? $options['aliases'] : array(), ''), ";}");
+            "function(){return ", IMUtil::arrayToJS(isset($options['aliases']) ? $options['aliases'] : array(), ''), ";}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getOptionsTransaction",
-            "function(){return ", arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";}");
+            "function(){return ", IMUtil::arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";}");
         $this->generateAssignJS("INTERMediatorOnPage.dbClassName", "{$q}{$dbClassName}{$q}");
         $this->generateAssignJS("INTERMediatorOnPage.defaultKeyName", "{$q}{$defaultKey}{$q}");
 
@@ -198,7 +204,7 @@ class GenerateJSCode
         $messageClass = IMUtil::getMessageClassInstance();
         $this->generateAssignJS(
             "INTERMediatorOnPage.getMessages",
-            "function(){return ", arrayToJS($messageClass->getMessages(), ''), ";}");
+            "function(){return ", IMUtil::arrayToJS($messageClass->getMessages(), ''), ";}");
         if (isset($options['browser-compatibility'])) {
             $browserCompatibility = $options['browser-compatibility'];
         }
@@ -210,7 +216,7 @@ class GenerateJSCode
         }
         $this->generateAssignJS(
             "INTERMediatorOnPage.browserCompatibility",
-            "function(){return ", arrayToJS($browserCompatibility, ''), ";}");
+            "function(){return ", IMUtil::arrayToJS($browserCompatibility, ''), ";}");
 
         $remoteAddr = filter_var($_SERVER['REMOTE_ADDR']);
         if (is_null($remoteAddr) || $remoteAddr === FALSE) {
@@ -222,7 +228,7 @@ class GenerateJSCode
 
         $this->generateAssignJS(
             "INTERMediatorOnPage.clientNotificationIdentifier",
-            "function(){return ", arrayToJS($clientId, ''), ";}");
+            "function(){return ", IMUtil::arrayToJS($clientId, ''), ";}");
 
         if ($nonSupportMessageId != "") {
             $this->generateAssignJS(
@@ -241,13 +247,12 @@ class GenerateJSCode
             $chName = isset($pusherParams['channel']) ? $pusherParams['channel'] : "_im_pusher_default_channel";
             $this->generateAssignJS(
                 "INTERMediatorOnPage.clientNotificationKey",
-                "function(){return ", arrayToJS($appKey, ''), ";}");
+                "function(){return ", IMUtil::arrayToJS($appKey, ''), ";}");
             $this->generateAssignJS(
                 "INTERMediatorOnPage.clientNotificationChannel",
-                "function(){return ", arrayToJS($chName, ''), ";}");
+                "function(){return ", IMUtil::arrayToJS($chName, ''), ";}");
         }
-        $metadata = json_decode(file_get_contents(
-            dirname(__FILE__) . DIRECTORY_SEPARATOR . "metadata.json"));
+        $metadata = json_decode(file_get_contents(IMUtil::pathToINTERMediator(). DIRECTORY_SEPARATOR . "metadata.json"));
         $this->generateAssignJS("INTERMediatorOnPage.metadata",
             "{version:{$q}{$metadata->version}{$q},releasedate:{$q}{$metadata->releasedate}{$q}}");
 
@@ -261,7 +266,7 @@ class GenerateJSCode
         if (!is_null($appLocale)) {
             $this->generateAssignJS("INTERMediatorOnPage.appLocale", "{$q}{$appLocale}{$q}");
             $this->generateAssignJS("INTERMediatorOnPage.localeInfo",
-                "JSON.parse('" . json_encode(IMLocaleFormatTable::getCurrentLocaleFormat()) . "')");
+                "JSON.parse('" . json_encode(Locale\IMLocaleFormatTable::getCurrentLocaleFormat()) . "')");
         }
         if (!is_null($appCurrency)) {
             $this->generateAssignJS("INTERMediatorOnPage.appCurrency", "{$q}{$appCurrency}{$q}");
@@ -282,7 +287,7 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.requireAuthentication", $boolValue);
         $this->generateAssignJS(
-            "INTERMediatorOnPage.authRequiredContext", arrayToJS($requireAuthenticationContext, ''));
+            "INTERMediatorOnPage.authRequiredContext", IMUtil::arrayToJS($requireAuthenticationContext, ''));
         if (!is_null($enrollPage)) {
             $this->generateAssignJS("INTERMediatorOnPage.enrollPageURL", $q, $enrollPage, $q);
         }
@@ -329,15 +334,11 @@ class GenerateJSCode
             $rsa->setPassword($passPhrase);
             $rsa->loadKey($generatedPrivateKey);
             $rsa->setPassword();
-            if (IMUtil::phpVersion() < 6) {
-                $publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_RAW);
-            } else {
-                $publickey = $rsa->getPublicKey(constant('phpseclib\Crypt\RSA::PUBLIC_FORMAT_RAW'));
-            }
+            $publickey = $rsa->getPublicKey();
 
             $this->generateAssignJS(
                 "INTERMediatorOnPage.publickey",
-                "new biRSAKeyPair('", $publickey['e']->toHex(), "','0','", $publickey['n']->toHex(), "')");
+                "'" . str_replace(array("\r\n", "\r", "\n"), '', $publickey) . "'");
             if (in_array(sha1($generatedPrivateKey), array(
                     '413351603fa756ecd8270147d1a84e9a2de2a3f9',  // Ver. 5.2
                     '094f61a9db51e0159fb0bf7d02a321d37f29a715',  // Ver. 5.3
@@ -370,14 +371,13 @@ class GenerateJSCode
             }
         }
         if (isset($valuesForLocalContext) && is_array($valuesForLocalContext) && count($valuesForLocalContext) > 0) {
-            $this->generateAssignJS("INTERMediatorOnPage.initLocalContext", arrayToJS($valuesForLocalContext));
+            $this->generateAssignJS("INTERMediatorOnPage.initLocalContext", IMUtil::arrayToJS($valuesForLocalContext));
         }
     }
 
     private function combineScripts($currentDir)
     {
-        $jsLibDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
-        $bi2phpDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'bi2php' . DIRECTORY_SEPARATOR;
+        $jsLibDir = dirname($currentDir)  . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR. 'js_lib' . DIRECTORY_SEPARATOR;
         $content = '';
         $content .= file_get_contents($currentDir . 'INTER-Mediator.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Page.js');
@@ -393,9 +393,7 @@ class GenerateJSCode
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Log.js');
         $content .= ';' . file_get_contents($jsLibDir . 'tinySHA1.js');
         $content .= file_get_contents($jsLibDir . 'sha256.js');
-        $content .= file_get_contents($bi2phpDir . 'biBigInt.js');
-        $content .= file_get_contents($bi2phpDir . 'biMontgomery.js');
-        $content .= file_get_contents($bi2phpDir . 'biRSA.js');
+        $content .= file_get_contents($jsLibDir . 'jsencrypt.min.js');
         $content .= file_get_contents($currentDir . 'Adapter_DBServer.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Events.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Queuing.js');

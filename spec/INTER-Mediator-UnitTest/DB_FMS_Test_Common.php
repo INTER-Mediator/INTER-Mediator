@@ -2,18 +2,20 @@
 /**
  * DB_FMS_Test_Common file
  */
-require_once(dirname(__FILE__) . '/../DB_Interfaces.php');
-require_once(dirname(__FILE__) . '/../DB_UseSharedObjects.php');
-require_once(dirname(__FILE__) . '/../DB_Settings.php');
-require_once(dirname(__FILE__) . '/../DB_Formatters.php');
-require_once(dirname(__FILE__) . '/../DB_Proxy.php');
-require_once(dirname(__FILE__) . '/../DB_Logger.php');
-require_once(dirname(__FILE__) . '/../DB_FileMaker_FX.php');
-require_once(dirname(__FILE__) . '/../DB_FileMaker_DataAPI.php');
-require_once(dirname(__FILE__) . '/../IMUtil.php');
-require_once(dirname(__FILE__) . '/../IMLocale.php');
-require_once(dirname(__FILE__) . '/../LDAPAuth.php');
-require_once(dirname(__FILE__) . '/../MessageStrings.php');
+//require_once(dirname(__FILE__) . '/../DB_Interfaces.php');
+//require_once(dirname(__FILE__) . '/../DB_UseSharedObjects.php');
+//require_once(dirname(__FILE__) . '/../DB_Settings.php');
+//require_once(dirname(__FILE__) . '/../DB_Formatters.php');
+//require_once(dirname(__FILE__) . '/../DB_Proxy.php');
+//require_once(dirname(__FILE__) . '/../DB_Logger.php');
+//require_once(dirname(__FILE__) . '/../DB_FileMaker_FX.php');
+//require_once(dirname(__FILE__) . '/../DB_FileMaker_DataAPI.php');
+//require_once(dirname(__FILE__) . '/../IMUtil.php');
+//require_once(dirname(__FILE__) . '/../IMLocale.php');
+//require_once(dirname(__FILE__) . '/../LDAPAuth.php');
+//require_once(dirname(__FILE__) . '/../MessageStrings.php');
+
+use \PHPUnit\Framework\TestCase;
 
 class DB_FMS_Test_Common extends TestCase
 {
