@@ -4,7 +4,7 @@
   "repositories": [
     {
       "type": "git",
-      "url": "https://github.com/INTER-Mediator/INTER-Mediator.git"
+      "url": "https://github.com/msyk/INTER-Mediator.git"
     }
   ],
   "_require": {
