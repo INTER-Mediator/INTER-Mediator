@@ -136,78 +136,105 @@ let INTERMediator_DBAdapter = {
         authParams = INTERMediator_DBAdapter.generate_authParams();
         INTERMediator_DBAdapter.logging_comAction(debugMessageNumber, appPath, accessURL, authParams);
         INTERMediatorOnPage.notifySupport = notifySupport;
-        try {
-            myRequest = new XMLHttpRequest();
-            myRequest.open('POST', appPath, true,
-                INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
-            myRequest.setRequestHeader('charset', 'utf-8');
-            myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            myRequest.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-            myRequest.setRequestHeader('X-From', location.href);
-            myRequest.onreadystatechange = function () {
-                switch (myRequest.readyState) {
-                case 0: // Unsent
-                    break;
-                case 1: // Opened
-                    break;
-                case 2: // Headers Received
-                    break;
-                case 3: // Loading
-                    break;
-                case 4:
-                    try {
-                        jsonObject = JSON.parse(myRequest.responseText);
-                    } catch (ex) {
-                        INTERMediatorLog.setErrorMessage('Communication Error: ' + myRequest.responseText);
-                        if (failedProc) {
-                            failedProc(new Error('_im_communication_error_'));
+        const promise = new Promise((resolve, reject) => {
+            try {
+                myRequest = new XMLHttpRequest();
+                myRequest.open('POST', appPath, true,
+                    INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
+                myRequest.setRequestHeader('charset', 'utf-8');
+                myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                myRequest.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                myRequest.setRequestHeader('X-From', location.href);
+                myRequest.onreadystatechange = () => {
+                    switch (myRequest.readyState) {
+                    case 0: // Unsent
+                        break;
+                    case 1: // Opened
+                        break;
+                    case 2: // Headers Received
+                        break;
+                    case 3: // Loading
+                        break;
+                    case 4:
+                        try {
+                            jsonObject = JSON.parse(myRequest.responseText);
+                        } catch (ex) {
+                            INTERMediatorLog.setErrorMessage('Communication Error: ' + myRequest.responseText);
+                            if (failedProc) {
+                                failedProc(new Error('_im_communication_error_'));
+                            }
+                            return;
                         }
-                        return;
-                    }
-                    resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
-                    totalCount = jsonObject.totalCount ? jsonObject.totalCount : null;
-                    dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
-                    requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false;
-                    challenge = jsonObject.challenge ? jsonObject.challenge : null;
-                    clientid = jsonObject.clientid ? jsonObject.clientid : null;
-                    newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : '';
-                    changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null;
-                    mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
-                    notifySupport = jsonObject.notifySupport;
-                    for (i = 0; i < jsonObject.errorMessages.length; i++) {
-                        INTERMediatorLog.setErrorMessage(jsonObject.errorMessages[i]);
-                    }
-                    for (i = 0; i < jsonObject.debugMessages.length; i++) {
-                        INTERMediatorLog.setDebugMessage(jsonObject.debugMessages[i]);
-                    }
-                    useNull = jsonObject.usenull;
-                    registeredID = jsonObject.hasOwnProperty('registeredid') ? jsonObject.registeredid : '';
+                        resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
+                        totalCount = jsonObject.totalCount ? jsonObject.totalCount : null;
+                        dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
+                        requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false;
+                        challenge = jsonObject.challenge ? jsonObject.challenge : null;
+                        clientid = jsonObject.clientid ? jsonObject.clientid : null;
+                        newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : '';
+                        changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null;
+                        mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
+                        notifySupport = jsonObject.notifySupport;
+                        for (i = 0; i < jsonObject.errorMessages.length; i++) {
+                            INTERMediatorLog.setErrorMessage(jsonObject.errorMessages[i]);
+                        }
+                        for (i = 0; i < jsonObject.debugMessages.length; i++) {
+                            INTERMediatorLog.setDebugMessage(jsonObject.debugMessages[i]);
+                        }
+                        useNull = jsonObject.usenull;
+                        registeredID = jsonObject.hasOwnProperty('registeredid') ? jsonObject.registeredid : '';
 
-                    if (jsonObject.errorMessages.length > 0) {
-                        INTERMediatorLog.setErrorMessage('Communication Error: ' + jsonObject.errorMessages);
-                        if (failedProc) {
-                            failedProc();
+                        if (jsonObject.errorMessages.length > 0) {
+                            INTERMediatorLog.setErrorMessage('Communication Error: ' + jsonObject.errorMessages);
+                            if (failedProc) {
+                                failedProc();
+                            }
+                            throw 'Communication Error';
                         }
-                        throw 'Communication Error';
-                    }
 
-                    INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
-                        challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);
-                    INTERMediator_DBAdapter.store_challenge(challenge);
-                    if (clientid !== null) {
-                        INTERMediatorOnPage.clientId = clientid;
-                    }
-                    if (mediatoken !== null) {
-                        INTERMediatorOnPage.mediaToken = mediatoken;
-                    }
-                    // This is forced fail-over for the password was changed in LDAP auth.
-                    if (INTERMediatorOnPage.isLDAP === true &&
-                        INTERMediatorOnPage.authUserHexSalt !== INTERMediatorOnPage.authHashedPassword.substr(-8, 8)) {
-                        if (accessURL !== 'access=challenge') {
-                            requireAuth = true;
+                        INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
+                            challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);
+                        INTERMediator_DBAdapter.store_challenge(challenge);
+                        if (clientid !== null) {
+                            INTERMediatorOnPage.clientId = clientid;
                         }
-                    }
-                    if (accessURL.indexOf('access=changepassword&newpass=') === 0) {
+                        if (mediatoken !== null) {
+                            INTERMediatorOnPage.mediaToken = mediatoken;
+                        }
+                        // This is forced fail-over for the password was changed in LDAP auth.
+                        if (INTERMediatorOnPage.isLDAP === true &&
+                            INTERMediatorOnPage.authUserHexSalt !== INTERMediatorOnPage.authHashedPassword.substr(-8, 8)) {
+                            if (accessURL !== 'access=challenge') {
+                                requireAuth = true;
+                            }
+                        }
+                        if (accessURL.indexOf('access=changepassword&newpass=') === 0) {
+                            if (successProc) {
+                                successProc({
+                                    dbresult: dbresult,
+                                    resultCount: resultCount,
+                                    totalCount: totalCount,
+                                    newRecordKeyValue: newRecordKeyValue,
+                                    newPasswordResult: changePasswordResult,
+                                    registeredId: registeredID,
+                                    nullAcceptable: useNull
+                                });
+                            }
+                            return;
+                        }
+                        if (requireAuth) {
+                            INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.');
+                            INTERMediatorOnPage.clearCredentials();
+                            if (authAgainProc) {
+                                authAgainProc(myRequest);
+                            }
+                            return;
+                        }
+                        if (!accessURL.match(/access=challenge/)) {
+                            INTERMediatorOnPage.authCount = 0;
+                        }
+                        INTERMediatorOnPage.storeCredentialsToCookieOrStorage();
+                        INTERMediatorOnPage.notifySupport = notifySupport;
                         if (successProc) {
                             successProc({
                                 dbresult: dbresult,
@@ -219,49 +246,27 @@ let INTERMediator_DBAdapter = {
                                 nullAcceptable: useNull
                             });
                         }
-                        return;
+                        resolve();
+                        break;
                     }
-                    if (requireAuth) {
-                        INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.');
-                        INTERMediatorOnPage.clearCredentials();
-                        if (authAgainProc) {
-                            authAgainProc(myRequest);
-                        }
-                        return;
-                    }
-                    if (!accessURL.match(/access=challenge/)) {
-                        INTERMediatorOnPage.authCount = 0;
-                    }
-                    INTERMediatorOnPage.storeCredentialsToCookieOrStorage();
-                    INTERMediatorOnPage.notifySupport = notifySupport;
-                    if (successProc) {
-                        successProc({
-                            dbresult: dbresult,
-                            resultCount: resultCount,
-                            totalCount: totalCount,
-                            newRecordKeyValue: newRecordKeyValue,
-                            newPasswordResult: changePasswordResult,
-                            registeredId: registeredID,
-                            nullAcceptable: useNull
-                        });
-                    }
-                    break;
+                };
+                myRequest.send(accessURL + authParams);
+            } catch (e) {
+                INTERMediatorLog.setErrorMessage(e,
+                    INTERMediatorLib.getInsertedString(
+                        INTERMediatorOnPage.getMessages()[errorMessageNumber], [e, myRequest.responseText]));
+                if (failedProc) {
+                    failedProc();
                 }
-            };
-            myRequest.send(accessURL + authParams);
-        } catch (e) {
-            INTERMediatorLog.setErrorMessage(e,
-                INTERMediatorLib.getInsertedString(
-                    INTERMediatorOnPage.getMessages()[errorMessageNumber], [e, myRequest.responseText]));
-            if (failedProc) {
-                failedProc();
+                reject();
             }
-        }
+        });
+        return promise;
     },
 
     changePassword: async function (username, oldpassword, newpassword) {
         'use strict';
-        let challengeResult, params;
+        let params;
         var encrypt = new JSEncrypt();
 
         return new Promise(async (resolve, reject) => {
@@ -274,7 +279,7 @@ let INTERMediator_DBAdapter = {
                 (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24 )) {
                 INTERMediatorOnPage.authHashedPassword = 'need-hash-pls';   // Dummy Hash for getting a challenge
                 try {
-                    challengeResult = await INTERMediator_DBAdapter.getChallenge();
+                    await INTERMediator_DBAdapter.getChallenge();
                 } catch (er) {
                     reject(er);
                     return;
@@ -310,18 +315,7 @@ let INTERMediator_DBAdapter = {
 
     getChallenge: async function () {
         'use strict';
-        return new Promise((resolve, reject) => {
-            this.server_access_async('access=challenge', 1027, 1028,
-                (result) => {
-                    resolve(result);
-                },
-                (er) => {
-                    reject(er);
-                }
-            );
-        }).catch((er) => {
-            throw er;
-        });
+        await INTERMediator_DBAdapter.server_access_async('access=challenge', 1027, 1028, null, null, null);
     },
 
     uploadFile: function (parameters, uploadingFile, doItOnFinish, exceptionProc) {
@@ -475,8 +469,7 @@ let INTERMediator_DBAdapter = {
                             var succesProcCapt = successProc;
                             var failedProcCapt = failedProc;
                             return function () {
-                                INTERMediator_DBAdapter.db_query_async(
-                                    argsCapt, succesProcCapt, failedProcCapt);
+                                INTERMediator.constructMain(INTERMediator.currentContext,INTERMediator.currentRecordset);
                             };
                         })()
                     )
@@ -745,7 +738,7 @@ let INTERMediator_DBAdapter = {
         return params;
     },
 
-    db_update_async: function (args, successProc, failedProc) {
+    db_update_async: async function (args, successProc, failedProc) {
         'use strict';
         let params;
         if (!INTERMediator_DBAdapter.db_updateChecking(args)) {
@@ -753,7 +746,7 @@ let INTERMediator_DBAdapter = {
         }
         params = INTERMediator_DBAdapter.db_updateParameters(args);
         if (params) {
-            INTERMediatorOnPage.retrieveAuthInfo();
+            await INTERMediatorOnPage.retrieveAuthInfo();
             INTERMediator_DBAdapter.server_access_async(
                 params,
                 1013,
@@ -767,8 +760,7 @@ let INTERMediator_DBAdapter = {
                         let succesProcCapt = successProc;
                         let failedProcCapt = failedProc;
                         return function () {
-                            INTERMediator_DBAdapter.db_update_async(
-                                argsCapt, succesProcCapt, failedProcCapt);
+                            INTERMediator.constructMain(INTERMediator.currentContext,INTERMediator.currentRecordset);
                         };
                     })()
                 )
@@ -833,7 +825,7 @@ let INTERMediator_DBAdapter = {
         return params;
     },
 
-    db_delete_async: function (args, successProc, failedProc) {
+    db_delete_async: async function (args, successProc, failedProc) {
         'use strict';
         let params;
         if (!INTERMediator_DBAdapter.db_deleteChecking(args)) {
@@ -841,7 +833,7 @@ let INTERMediator_DBAdapter = {
         }
         params = INTERMediator_DBAdapter.db_deleteParameters(args);
         if (params) {
-            INTERMediatorOnPage.retrieveAuthInfo();
+            await INTERMediatorOnPage.retrieveAuthInfo();
             INTERMediator_DBAdapter.server_access_async(
                 params,
                 1017,
@@ -855,8 +847,7 @@ let INTERMediator_DBAdapter = {
                         let succesProcCapt = successProc;
                         let failedProcCapt = failedProc;
                         return function () {
-                            INTERMediator_DBAdapter.db_delete_async(
-                                argsCapt, succesProcCapt, failedProcCapt);
+                            INTERMediator.constructMain(INTERMediator.currentContext,INTERMediator.currentRecordset);
                         };
                     })()
                 )
@@ -873,11 +864,11 @@ let INTERMediator_DBAdapter = {
 
      This function returns the value of the key field of the new record.
      */
-    db_createRecord_async: function (args, successProc, failedProc) {
+    db_createRecord_async: async function (args, successProc, failedProc) {
         'use strict';
         let params = INTERMediator_DBAdapter.db_createParameters(args);
         if (params) {
-            INTERMediatorOnPage.retrieveAuthInfo();
+            await INTERMediatorOnPage.retrieveAuthInfo();
             INTERMediator_DBAdapter.server_access_async(
                 params,
                 1018,
@@ -891,8 +882,7 @@ let INTERMediator_DBAdapter = {
                         let succesProcCapt = successProc;
                         let failedProcCapt = failedProc;
                         return function () {
-                            INTERMediator_DBAdapter.db_createRecord_async(
-                                argsCapt, succesProcCapt, failedProcCapt);
+                            INTERMediator.constructMain(INTERMediator.currentContext,INTERMediator.currentRecordset);
                         };
                     })()
                 )
@@ -966,11 +956,11 @@ let INTERMediator_DBAdapter = {
      {   name:<Name of the Context>
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
      */
-    db_copy_async: function (args, successProc, failedProc) {
+    db_copy_async: async function (args, successProc, failedProc) {
         'use strict';
         let params = INTERMediator_DBAdapter.db_copyParameters(args);
         if (params) {
-            INTERMediatorOnPage.retrieveAuthInfo();
+            await INTERMediatorOnPage.retrieveAuthInfo();
             INTERMediator_DBAdapter.server_access_async(
                 params,
                 1017,
@@ -984,8 +974,7 @@ let INTERMediator_DBAdapter = {
                         let succesProcCapt = successProc;
                         let failedProcCapt = failedProc;
                         return function () {
-                            INTERMediator_DBAdapter.db_copy_async(
-                                argsCapt, succesProcCapt, failedProcCapt);
+                            INTERMediator.constructMain(INTERMediator.currentContext,INTERMediator.currentRecordset);
                         };
                     })()
                 )
