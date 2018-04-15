@@ -13,6 +13,7 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator;
 
 class GenerateJSCode
@@ -64,7 +65,7 @@ class GenerateJSCode
             "oAuthProvider", "oAuthClientID", "oAuthRedirect",
             "passwordPolicy", "documentRootPrefix", "dbClass", "dbDSN",
             "nonSupportMessageId", "valuesForLocalContext", "themeName",
-            "appLocale", "appCurrency","resetPage","enrollPage",
+            "appLocale", "appCurrency", "resetPage", "enrollPage",
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -90,11 +91,15 @@ class GenerateJSCode
             : (isset($params['resetPage']) ? $params["resetPage"] : null);
         $enrollPage = isset($options['authentication']['enroll-page']) ? $options['authentication']['enroll-page']
             : (isset($params['enrollPage']) ? $params["enrollPage"] : null);
+
+        $serverName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
+        $documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : 'Not_on_web_server';
+        $scriptName = isset($_SERVER['SCRIPT_NAME'])?$_SERVER['SCRIPT_NAME']:'Not_on_web_server';
         /*
          * Read the JS programs regarding by the developing or deployed.
          */
         $currentDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR . 'src' .
-            DIRECTORY_SEPARATOR . 'js'. DIRECTORY_SEPARATOR;
+            DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
         if (file_exists($currentDir . 'INTER-Mediator-Lib.js')) {
             echo $this->combineScripts($currentDir);
         } else {
@@ -106,10 +111,7 @@ class GenerateJSCode
          */
         $relativeToDefFile = '';
         $editorPath = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator-Support';
-        $defFilePath = 'Not on web server';
-        if($_SERVER && isset($_SERVER['DOCUMENT_ROOT'])&& isset($_SERVER['SCRIPT_NAME'])) {
-            $defFilePath = $_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME'];
-        }
+        $defFilePath = $documentRoot . $serverName;
         while (strpos($defFilePath, $editorPath) !== 0 && strlen($editorPath) > 1) {
             $editorPath = dirname($editorPath);
             $relativeToDefFile .= '..' . DIRECTORY_SEPARATOR;
@@ -161,10 +163,10 @@ class GenerateJSCode
             $pathToMySelf = $callURL;
         } else if (isset($scriptPathPrefix) || isset($scriptPathSuffix)) {
             $pathToMySelf = (isset($scriptPathPrefix) ? $scriptPathPrefix : '')
-                . filter_var($_SERVER['SCRIPT_NAME'])
+                . filter_var($scriptName)
                 . (isset($scriptPathSufix) ? $scriptPathSuffix : '');
         } else {
-            $pathToMySelf = filter_var($_SERVER['SCRIPT_NAME']);
+            $pathToMySelf = filter_var($scriptName);
         }
 
         $pathToIMRootDir = '';
@@ -252,7 +254,7 @@ class GenerateJSCode
                 "INTERMediatorOnPage.clientNotificationChannel",
                 "function(){return ", IMUtil::arrayToJS($chName, ''), ";}");
         }
-        $metadata = json_decode(file_get_contents(IMUtil::pathToINTERMediator(). DIRECTORY_SEPARATOR . "metadata.json"));
+        $metadata = json_decode(file_get_contents(IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR . "metadata.json"));
         $this->generateAssignJS("INTERMediatorOnPage.metadata",
             "{version:{$q}{$metadata->version}{$q},releasedate:{$q}{$metadata->releasedate}{$q}}");
 
@@ -377,7 +379,7 @@ class GenerateJSCode
 
     private function combineScripts($currentDir)
     {
-        $jsLibDir = dirname($currentDir)  . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR. 'js_lib' . DIRECTORY_SEPARATOR;
+        $jsLibDir = dirname($currentDir) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
         $content = '';
         $content .= file_get_contents($currentDir . 'INTER-Mediator.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Page.js');

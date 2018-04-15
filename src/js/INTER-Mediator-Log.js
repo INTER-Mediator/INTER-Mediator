@@ -22,7 +22,7 @@
  * @constructor
  */
 
-var INTERMediatorLog = {
+const INTERMediatorLog = {
     /**
      * Show the debug messages at the top of the page.
      * @public

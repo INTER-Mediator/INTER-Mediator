@@ -22,7 +22,7 @@
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-var IMLibPageNavigation = {
+const IMLibPageNavigation = {
     deleteInsertOnNavi: [],
     previousModeDetail: null,
     stepNavigation: [],
@@ -337,7 +337,7 @@ var IMLibPageNavigation = {
             var isConfirmCapt = isConfirm;
             return function (completeTask) {
                 try {
-                    //INTERMediatorOnPage.retrieveAuthInfo();
+                    //await INTERMediatorOnPage.retrieveAuthInfo();
                     INTERMediator_DBAdapter.db_createRecord_async(
                         {name: targetNameCapt, dataset: []},
                         async function (response) {
@@ -403,7 +403,7 @@ var IMLibPageNavigation = {
             return function (completeTask) {
                 INTERMediatorOnPage.showProgress();
                 try {
-                    //INTERMediatorOnPage.retrieveAuthInfo();
+                    //await INTERMediatorOnPage.retrieveAuthInfo();
                     INTERMediator_DBAdapter.db_delete_async(
                         deleteArgs,
                         async () => {
@@ -472,7 +472,7 @@ var IMLibPageNavigation = {
                             }
                         }
                     }
-                    //INTERMediatorOnPage.retrieveAuthInfo();
+                    //await INTERMediatorOnPage.retrieveAuthInfo();
                     INTERMediator_DBAdapter.db_copy_async(
                         {
                             name: contextDefCapt.name,
@@ -519,7 +519,7 @@ var IMLibPageNavigation = {
             currentVal, fieldArray, valueArray, difference, needUpdate = true, context, updateData, response;
 
         INTERMediatorOnPage.showProgress();
-        //INTERMediatorOnPage.retrieveAuthInfo();
+        //await INTERMediatorOnPage.retrieveAuthInfo();
         for (i = 0; i < IMLibContextPool.poolingContexts.length; i += 1) {
             context = IMLibContextPool.poolingContexts[i];
             updateData = context.getModified();
@@ -608,7 +608,7 @@ var IMLibPageNavigation = {
                                     INTERMediatorOnPage.getMessages()[1034], [difference]))) {
                                 return;
                             }
-                            //INTERMediatorOnPage.retrieveAuthInfo(); // This is required. Why?
+                            //await INTERMediatorOnPage.retrieveAuthInfo(); // This is required. Why?
                         }
                     }
 

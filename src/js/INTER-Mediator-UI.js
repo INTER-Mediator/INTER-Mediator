@@ -22,7 +22,7 @@
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-let IMLibUI = {
+const IMLibUI = {
 
     mobileSelectionColor: '#BBBBBB',
     mobileNaviBackButtonId: null,
@@ -375,7 +375,7 @@ let IMLibUI = {
                         }
                     }
 
-                    //INTERMediatorOnPage.retrieveAuthInfo();
+                    //await INTERMediatorOnPage.retrieveAuthInfo();
                     INTERMediator_DBAdapter.db_copy_async(
                         {
                             name: contextDef.name,
@@ -440,7 +440,7 @@ let IMLibUI = {
                 let i, parentKeyValue, deleteSuccessProc, targetRepeaters;
                 INTERMediatorOnPage.showProgress();
                 try {
-                    //INTERMediatorOnPage.retrieveAuthInfo();
+                    //await INTERMediatorOnPage.retrieveAuthInfo();
                     deleteSuccessProc = (function () {
                         let currentContextCapt2 = currentContextCapt;
                         let completeTaskCapt = completeTask;

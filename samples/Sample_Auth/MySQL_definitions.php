@@ -26,9 +26,9 @@ IM_Entry(
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
             'repeat-control' => 'insert delete',
             'button-names' => array(
-                'insert'=>'レコード追加',
-                'delete'=>'レコード削除',
-                'copy'=>'レコード複製',
+                'insert' => 'レコード追加',
+                'delete' => 'レコード削除',
+                'copy' => 'レコード複製',
             ),
 //            'authentication' => array(
 //                'read' => array( /* load, update, new, delete*/
@@ -114,13 +114,13 @@ IM_Entry(
 //            'group-table' => 'authgroup',
 //            'corresponding-table' => 'authcor',
 //            'challenge-table' => 'issuedhash',
-//            'authexpired' => '600', // Set as seconds.
+            'authexpired' => '10', // Set as seconds.
             'storing' => 'session-storage', // 'cookie'(default), 'cookie-domainwide', 'none'
             'realm' => 'Sample_Auth/MySQL_definitions', //
 //            'email-as-username' => true,
 //        'password-policy' => "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName",
-            'enroll-page'=>'http://msyk.net/',
-            'reset-page'=>'http://msyk.net/',
+//            'enroll-page' => 'http://msyk.net/',
+//            'reset-page' => 'http://msyk.net/',
         ),
     ),
     array('db-class' => 'PDO'),

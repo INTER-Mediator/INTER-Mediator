@@ -214,6 +214,8 @@ const INTERMediator = {
 
     eventListenerPostAdding: null,
     appendingNodesAtLast: null,
+    currentContext:null,
+    currentRecordset:null,
 
 // Detect Internet Explorer and its version.
     propertyIETridentSetup: () => {
@@ -337,6 +339,8 @@ const INTERMediator = {
         let i, theNode, postSetFields = [], radioName = {}, nameSerial = 1,
             nameAttrCounter = 1, imPartsShouldFinished = [],
             isAcceptNotify = false, originalNodes, parentNode, sybilingNode;
+        INTERMediator.currentContext = updateRequiredContext;
+        INTERMediator.currentRecordset = recordset;
 
         INTERMediator.eventListenerPostAdding = [];
         if (INTERMediatorOnPage.doBeforeConstruct) {

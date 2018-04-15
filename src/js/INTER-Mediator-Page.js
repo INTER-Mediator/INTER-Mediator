@@ -22,7 +22,7 @@
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-var INTERMediatorOnPage = {
+const INTERMediatorOnPage = {
     authCountLimit: 4,
     authCount: 0,
     authUser: '',
@@ -137,7 +137,7 @@ var INTERMediatorOnPage = {
             INTERMediatorOnPage.authChallenge !== null && INTERMediatorOnPage.authChallenge.length > 0;
     },
 
-    retrieveAuthInfo: function () {
+    retrieveAuthInfo: async function () {
         'use strict';
         if (INTERMediatorOnPage.requireAuthentication) {
             if (INTERMediatorOnPage.isOnceAtStarting) {
@@ -173,9 +173,8 @@ var INTERMediatorOnPage = {
                 INTERMediatorOnPage.isOnceAtStarting = false;
             }
             if (INTERMediatorOnPage.authUser.length > 0) {
-                if (!INTERMediator_DBAdapter.getChallenge()) {
-                    INTERMediatorLog.flushMessage();
-                }
+                await INTERMediator_DBAdapter.getChallenge();
+                INTERMediatorLog.flushMessage();
             }
         }
     },
@@ -573,8 +572,8 @@ var INTERMediatorOnPage = {
                 passwordBox.focus();
             }
         };
-        authButton.onclick = function () {
-            var inputUsername, inputPassword, challengeResult, messageNode;
+        authButton.onclick = async function () {
+            var inputUsername, inputPassword, messageNode;
 
             messageNode = document.getElementById('_im_newpass_message');
             if (messageNode) {
@@ -597,11 +596,7 @@ var INTERMediatorOnPage = {
             if (inputUsername !== '' &&  // No usename and no challenge, get a challenge.
                 (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24 )) {
                 INTERMediatorOnPage.authHashedPassword = 'need-hash-pls';   // Dummy Hash for getting a challenge
-                challengeResult = INTERMediator_DBAdapter.getChallenge();
-                if (!challengeResult) {
-                    INTERMediatorLog.flushMessage();
-                    return; // If it's failed to get a challenge, finish everything.
-                }
+                await INTERMediator_DBAdapter.getChallenge();
             }
             encrypt.setPublicKey(INTERMediatorOnPage.publickey);
             INTERMediatorOnPage.authCryptedPassword = encrypt.encrypt(inputPassword);

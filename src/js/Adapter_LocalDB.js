@@ -14,7 +14,7 @@
 
 //'use strict';
 
-var INTERMediator_DBAdapter_Template = {
+const INTERMediator_DBAdapter_Template = {
     /*
      db_query
      Querying from database. The parameter of this function should be the object as below:

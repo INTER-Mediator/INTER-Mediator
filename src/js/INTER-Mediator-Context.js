@@ -22,7 +22,7 @@
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-var IMLibContextPool = {
+const IMLibContextPool = {
     poolingContexts: null,
 
     clearAll: function () {
@@ -617,7 +617,7 @@ IMLibContext.prototype.updateFieldValue = async function (idValue, succeedProc, 
         newValue = IMLibElement.getValueFromIMNode(changedObj);
         if (newValue !== null) {
             criteria = contextInfo.record.split('=');
-            //INTERMediatorOnPage.retrieveAuthInfo();
+            //await INTERMediatorOnPage.retrieveAuthInfo();
             if (contextInfo.context.isPortal) {
                 criteria = contextInfo.context.potalContainingRecordKV.split('=');
                 INTERMediator_DBAdapter.db_update_async(
@@ -738,7 +738,7 @@ IMLibContext.prototype.updateFieldValue = async function (idValue, succeedProc, 
                         if (!warnOthersModifyProc(initialvalue, newValue, currentFieldVal)) {
                             return;
                         }
-                        //INTERMediatorOnPage.retrieveAuthInfo(); // This is required. Why?
+                        //await INTERMediatorOnPage.retrieveAuthInfo(); // This is required. Why?
                     }
                     IMLibContextPool.updateContext(idValueCapt, nodeInfoCapt.target);
                     newValue = IMLibElement.getValueFromIMNode(changedObjectCapt);
