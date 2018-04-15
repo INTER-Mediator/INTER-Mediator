@@ -1,0 +1,58 @@
+{
+  "name": "imcommittee/INTER-Mediator",
+  "version": "6-dev",
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/msyk/INTER-Mediator.git"
+    }
+  ],
+  "require": {
+    "matthiasmullie/minify": "1.3.*",
+    "php": ">=5.4.0",
+    "ext-intl": "*",
+    "ext-mbstring": "*",
+    "ext-PDO": "*",
+    "ext-bcmath": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "INTERMediator\\": "/php",
+      "INTERMediator\\DataConverter\\": "/php/Data_Converter",
+      "INTERMediator\\DB\\": "/php/DB",
+      "INTERMediator\\DB\\Support\\": "/php/DB/Support",
+      "INTERMediator\\Locale\\": "/php/Locale",
+      "INTERMediator\\Message\\": "/php/Message",
+      "phpseclib\\Crypt\\": "/lib/phpseclib_v2/Crypt",
+      "phpseclib\\Math\\": "/lib/phpseclib_v2/Math",
+      "ParagonIE\\ConstantTime\\": "/lib/ParagonIE/ConstantTime",
+      "QDSMTP\\": "/lib/mailsend/qdsmtp",
+      "INTERMediator\\OME\\": "/lib/mailsend",
+      "INTERMediator\\FileMakerServer\\RESTAPI\\": "/lib"
+    }
+  },
+  "description": "The INTER-Mediator framework",
+  "type": "library",
+  "keywords": [
+    "framework",
+    "declarative",
+    "rapid-development",
+    "binding"
+  ],
+  "homepage": "https://inter-mediator.com",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "INTER-Mediator Directive Committee",
+      "homepage": "http://inter-mediator.org/"
+    }
+  ],
+  "support": {
+    "community-jp": "https://www.facebook.com/groups/233378356708157/",
+    "community-en": "https://www.facebook.com/groups/254446237922985/",
+    "source": "https://github.com/INTER-Mediator/INTER-Mediator",
+    "manual": "http://inter-mediator.info/"
+  },
+  "scripts": {
+  }
+}

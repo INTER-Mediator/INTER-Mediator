@@ -6,7 +6,7 @@ exclude_paths:
 - "Auth_Support/*"
 - "INTER-Mediator-Support/*"
 - "INTER-Mediator-UnitTest/*"
-- "Samples/*"
+- "samples/*"
 - "buster.js"
 - "lib/*"
 - "dist-docs/*"

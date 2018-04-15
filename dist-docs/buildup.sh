@@ -125,9 +125,9 @@ else
     rm  "${buildPath}/temp.js"
 fi
 
-# Copy "DB_Support" directory.
-echo "PROCESSING: ${originalPath}/DB_Support"
-cp -prf "${originalPath}/DB_Support" "${buildPath}"
+# Copy "Support" directory.
+echo "PROCESSING: ${originalPath}/Support"
+cp -prf "${originalPath}/Support" "${buildPath}"
 
 # Copy "Data_Converter" directory.
 echo "PROCESSING: ${originalPath}/Data_Converter"
@@ -150,7 +150,7 @@ if [ $choice = 3 ]; then
 elif [ $choice = 2 ]; then
     dirs=""
 else
-    dirs="Auth_Support INTER-Mediator-Support INTER-Mediator-UnitTest Samples"
+    dirs="Auth_Support INTER-Mediator-Support INTER-Mediator-UnitTest samples"
 fi
 
 for TARGET in ${dirs}
@@ -190,8 +190,8 @@ if [ $choice = 1 ]; then
     echo "PROCESSING: ${originalPath}/dist-docs"
     cp -prf "${originalPath}/dist-docs" "${buildPath}"
 
-    echo "PROCESSING: Rest of ${originalPath}/Samples"
-    cp -pr  "${originalPath}/Samples/Sample_products/images" "${buildPath}/Samples/Sample_products/"
+    echo "PROCESSING: Rest of ${originalPath}/samples"
+    cp -pr  "${originalPath}/samples/Sample_products/images" "${buildPath}/samples/Sample_products/"
 
 # Invalidate the definition file of the DefEditor.
 #    echo "PROCESSING: Invalidate the Definition File Editor for security reason."

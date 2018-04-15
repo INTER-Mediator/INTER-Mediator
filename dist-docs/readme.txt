@@ -21,9 +21,6 @@ Thanks for nice works.
 
 * jsSHA by Brian Turek (http://caligatio.github.com/jsSHA/)
 
-* bi2php v0.1.113.alfa from http://code.google.com/p/bi2php/
-  This library is based on the work of Dave Shapiro (http://www.ohdave.com/rsa/)
-
 * phpseclib (http://phpseclib.sourceforge.net/)
 
 * Qdsmtp (http://hal456.net/qdsmtp/)
@@ -34,7 +31,17 @@ Thanks for nice works.
 
 * Constant-Time Encoding (https://paragonie.com/blog/2016/06/constant-time-encoding-boring-cryptography-rfc-4648-and-you)
 
+* JSEncrypt (http://travistidwell.com/jsencrypt/)
+
 * CodeMirror (https://codemirror.net/)
+
+
+JSEncrypt includes the following libraries.
+
+* YUI LIBRARY (http://yuilibrary.com/license/)
+* jsrsasign by Kenji Urushima (https://kjur.github.io/jsrsasign/)
+* jsbn by Tom Wu (http://www-cs-students.stanford.edu/~tjw/jsbn/)
+* ASN.1 JavaScript decoder by Lapo Luchini (https://lapo.it/asn1js/)
 
 ==========================================
 Account Information for FileMaker Database
