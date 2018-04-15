@@ -10,12 +10,21 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.5.7-RC2-dev (in development)
+Ver.5.8-dev (in development)
+- Improve speed performance of Native Authentication.
+- [WIP] Support FileMaker Data API (Trial) of FileMaker Server 16.
+- Support retrieving image files in container fields in FileMaker Data API (Trial).
+- Add JSEncrypt <http://travistidwell.com/jsencrypt/> to "js_lib" directory in "lib" directory and
+  remove "bi2php" from "lib" directory to improve speed performance of Native Authentication.
+- Update FMDataAPI.php (Ver.7) for FileMaker Data API (Trial).
+
+Ver.5.7 (March 29, 2018)
 - The "data-im-format" attribute is introduced.
   Please see for detail: <http://inter-mediator.info/ja/for-developers/format.html> (Japanese)
 - Microsoft SQL Server is contained in INTER-Mediator support database.
 - Support PHP 7.2.
 - Start to support FileMaker Data API (Trial) of FileMaker Server 16 as an experimental feature.
+- Add FMDataAPI.php (FMDataAPI Ver.6) in "lib" directory for FileMaker Data API (Trial).
 - Step navigation is introduced. The 'nav-control' key can have values 'step' and 'step-hide'.
 - data-im-widget="popupselector" is introduced. This is similar to popup menu. The selections shows on
   scrollable panel.
@@ -66,13 +75,13 @@ Ver.5.7-RC2-dev (in development)
     [Method] INTERMediatorLog.flushMessage <- INTERMediator.flushMessage()
              INTERMediatorLog.setErrorMessage <- INTERMediatorLog.setErrorMessage(...)
              INTERMediatorLog.setDebugMessage <- INTERMediatorLog.setDebugMessage(...)
-    [Property] INTERMediatorLog.debugMode
-               INTERMediatorLog.supressDebugMessageOnPage
-               INTERMediatorLog.supressErrorMessageOnPage
-               INTERMediatorLog.errorMessages
-               INTERMediatorLog.debugMessages
-               INTERMediatorLog.errorMessageByAlert
-               INTERMediatorLog.errorMessageOnAlert
+    [Property] INTERMediatorLog.debugMode <- INTERMediator.debugMode
+               INTERMediatorLog.suppressDebugMessageOnPage <- INTERMediator.supressDebugMessageOnPage
+               INTERMediatorLog.suppressErrorMessageOnPage <- INTERMediator.supressErrorMessageOnPage
+               INTERMediatorLog.errorMessages <- INTERMediator.errorMessages
+               INTERMediatorLog.debugMessages <- INTERMediator.debugMessages
+               INTERMediatorLog.errorMessageByAlert <- INTERMediator.errorMessageByAlert
+               INTERMediatorLog.errorMessageOnAlert <- INTERMediator.errorMessageOnAlert
 - IMLibFormat object is added, and it's a devided portion of INTERMediatorLib object.
   INTER-Mediator-Format.js file contains IMLibFormat object.
 - Add 'asis' operator for FileMaker Server.
@@ -127,6 +136,8 @@ Ver.5.7-RC2-dev (in development)
 - [BUG FIX] If a expression set to popup menu, the page generating process went infinite loop (bug on 99fbf43b).
 - [BUG FIX] Stabilized to detect smtp server info and refactored.
 - [BUG FIX] The method to change password for FileMaker Server had a bug.
+- [BUG FIX] Fix not to show the error message ("element._im_setValue is not a function - EXCEPTION-27") when
+  the JavaScript component plugin hasn't "_im_setValue" method.
 
 Ver.5.6.1 (September 16, 2017)
 - Fix loading the page of the Practice "search (using JavaScript)".

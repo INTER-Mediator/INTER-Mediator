@@ -8,7 +8,7 @@
 # Please see the full license for details:
 # https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
 
-version="5.7-RC2-dev"
+version="5.8-dev"
 
 # The file of minify <http://www.minifier.org> can be downloaded from below.
 # git clone https://github.com/matthiasmullie/minify
@@ -138,6 +138,7 @@ echo "PROCESSING: ${originalPath}/lib"
 mkdir -p "${buildPath}/lib/bi2php"
 cp -p "${originalPath}/lib/bi2php/biRSA.php" "${buildPath}/lib/bi2php"
 cp -prf "${originalPath}/lib/CWPKit" "${buildPath}/lib"
+cp -p "${originalPath}/lib/FMDataAPI.php" "${buildPath}/lib/"
 cp -prf "${originalPath}/lib/FX" "${buildPath}/lib"
 cp -prf "${originalPath}/lib/ParagonIE" "${buildPath}/lib"
 cp -prf "${originalPath}/lib/phpseclib_v1" "${buildPath}/lib"

@@ -234,6 +234,10 @@ var IMLibElement = {
                     currentValue = originalValue ? originalValue : element.getAttribute(curTarget);
                     if (curVal.indexOf('/fmi/xml/cnt/') === 0 && currentValue.indexOf('?media=') === -1) {
                         curVal = INTERMediatorOnPage.getEntryPath() + '?media=' + curVal;
+                    } else if (curVal.indexOf('https://' + location.hostname + '/Streaming_SSL/MainDB') === 0 &&
+                        currentValue.indexOf('?media=') === -1) {
+                        curVal = INTERMediatorOnPage.getEntryPath() +
+                            '?media=' + encodeURIComponent(curVal.replace('https://' + location.hostname, ''));
                     }
                     element.setAttribute(curTarget, currentValue + curVal);
                 }
@@ -265,6 +269,10 @@ var IMLibElement = {
                     currentValue = element.getAttribute(curTarget);
                     if (curVal.indexOf('/fmi/xml/cnt/') === 0 && currentValue.indexOf('?media=') === -1) {
                         curVal = INTERMediatorOnPage.getEntryPath() + '?media=' + curVal;
+                    } else if (curVal.indexOf('https://' + location.hostname + '/Streaming_SSL/MainDB') === 0 &&
+                        currentValue.indexOf('?media=') === -1) {
+                        curVal = INTERMediatorOnPage.getEntryPath() +
+                            '?media=' + curVal.replace('https://' + location.hostname, '');
                     }
                     element.setAttribute(curTarget, currentValue.replace('$', curVal));
                 }
@@ -274,7 +282,9 @@ var IMLibElement = {
                 }
             } else { // Setting
                 if (INTERMediatorLib.isWidgetElement(element)) {
-                    element._im_setValue(curVal);
+                    if (element._im_setValue) {
+                        element._im_setValue(curVal);
+                    }
                 } else if (curTarget === 'innerHTML') { // Setting
                     if (INTERMediator.isIE && INTERMediator.ieVersion < 10) { // for IE
                         curVal = curVal.replace(/\r\n/g, '\r').replace(/\n/g, '\r').replace(/\r/g, '<br/>');
@@ -308,7 +318,9 @@ var IMLibElement = {
             }
         } else { // if the 'target' is not specified.
             if (INTERMediatorLib.isWidgetElement(element)) {
-                element._im_setValue(curVal);
+                if (element._im_setValue) {
+                    element._im_setValue(curVal);
+                }
             } else if (element.tagName === 'INPUT') {
                 typeAttr = element.getAttribute('type');
                 if (typeAttr === 'checkbox' || typeAttr === 'radio') { // set the value

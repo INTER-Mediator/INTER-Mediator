@@ -9,6 +9,7 @@ require_once(dirname(__FILE__) . '/../DB_Formatters.php');
 require_once(dirname(__FILE__) . '/../DB_Proxy.php');
 require_once(dirname(__FILE__) . '/../DB_Logger.php');
 require_once(dirname(__FILE__) . '/../DB_FileMaker_FX.php');
+require_once(dirname(__FILE__) . '/../DB_FileMaker_DataAPI.php');
 require_once(dirname(__FILE__) . '/../IMUtil.php');
 require_once(dirname(__FILE__) . '/../IMLocale.php');
 require_once(dirname(__FILE__) . '/../LDAPAuth.php');
@@ -39,8 +40,10 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
     {
         $layoutName = 'person_layout';
         $expected = '-db=TestDB&-lay=person_layout&-lay.response=person_layout&-max=1&-sortfield.1=id&-sortorder.1=ascend&-findall';
-
         $this->dbProxySetupForAccess($layoutName, 1);
+        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+            $expected = '/fmi/rest/api/find/TestDB/person_layout';
+        }
         $this->db_proxy->readFromDB($layoutName);
         $this->assertEquals($expected, $this->db_proxy->dbClass->notifyHandler->queriedCondition());
     }
@@ -51,7 +54,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
             $layoutName = 'person_layout';
             $this->dbProxySetupForAccess($layoutName, 1);
             $this->db_proxy->readFromDB($layoutName);
-            $this->reflectionClass = new ReflectionClass('DB_FileMaker_FX');
+            $this->reflectionClass = new ReflectionClass(get_class($this->db_proxy->dbClass));
             $method = $this->reflectionClass->getMethod('executeScriptsforLoading');
             $method->setAccessible(true);
 
@@ -293,7 +296,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
             $this->dbProxySetupForAccess($layoutName, 1);
             $this->db_proxy->readFromDB($layoutName);
 
-            $this->reflectionClass = new ReflectionClass('DB_FileMaker_FX');
+            $this->reflectionClass = new ReflectionClass(get_class($this->db_proxy->dbClass));
             $method = $this->reflectionClass->getMethod('_adjustSortDirection');
             $method->setAccessible(true);
 
@@ -320,7 +323,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $result = $this->db_proxy->readFromDB("person_layout");
         $recordCount = $this->db_proxy->countQueryResult("person_layout");
         $this->assertTrue(count($result) == 1, "After the query, just one should be retrieved.");
-        $this->assertTrue($recordCount == 3, "This table contanins 3 records");
+        $this->assertEquals(3, $recordCount, "This table contanins 3 records");
         $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
         //        var_export($this->db_proxy->logger->getAllErrorMessages());
         //        var_export($this->db_proxy->logger->getDebugMessage());
@@ -332,7 +335,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $result = $this->db_proxy->readFromDB("person_layout");
         $recordCount = $this->db_proxy->countQueryResult("person_layout");
         $this->assertTrue(count($result) == 3, "After the query, some records should be retrieved.");
-        $this->assertTrue($recordCount == 3, "This table contanins 3 records");
+        $this->assertEquals(3, $recordCount, "This table contanins 3 records");
         $this->assertTrue($result[2]["name"] === 'Anyone', "Field value is not same as the definition.");
         $this->assertTrue($result[2]["id"] == 3, "Field value is not same as the definition.");
 
@@ -454,10 +457,17 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($result));
         $this->assertEquals(3654, $totalCount);
 
-        $recId = $result[0]['-recid'];
 
         $this->dbProxySetupForAccess('postalcode', 1000000);
-        $this->db_proxy->dbSettings->addExtraCriteria('-recid', 'eq', $recId);
+        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+            $recId = $result[0]['-recid'];
+            $this->db_proxy->dbSettings->addExtraCriteria('-recid', 'eq', $recId);
+        } else if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+            foreach ($result as $record) {
+                $recId = $record['recordId'];
+                $this->db_proxy->dbSettings->addExtraCriteria('recordId', 'eq', $recId);
+            }
+        }
         $result = $this->db_proxy->readFromDB('postalcode');
         $totalCount = $this->db_proxy->getTotalCount('postalcode');
         $this->assertEquals(1, count($result));
@@ -652,16 +662,29 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($result) == $this->db_proxy->getDatabaseResultCount(), $testName);
 
         //based on INSERT person SET id=2,name='Someone',address='Tokyo, Japan',mail='msyk@msyk.net';
-        foreach ($result as $index => $record) {
-            if ($record['id'] == 2) {
-                $this->assertTrue($result[1]['id'] == 2, $testName);
-                $this->assertTrue($result[1]['name'] == 'Someone', $testName);
-                $this->assertTrue($result[1]['address'] == 'Tokyo, Japan', $testName);
+        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+            foreach ($result as $index => $record) {
+                if ($record['id'] == 2) {
+                    $this->assertTrue($result[1]['id'] == 2, $testName);
+                    $this->assertTrue($result[1]['name'] == 'Someone', $testName);
+                    $this->assertTrue($result[1]['address'] == 'Tokyo, Japan', $testName);
+                }
+            }
+        } else if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+            // [WIP]
+            if (!is_null($result)) {
+                foreach ($result as $record) {
+                    if ($record->id == 2) {
+                        $this->assertTrue($result->id == 2, $testName);
+                        $this->assertTrue($result->name == 'Someone', $testName);
+                        $this->assertTrue($result->address == 'Tokyo, Japan', $testName);
+                    }
+                }
             }
         }
     }
 
-    public function testAuthByInvalidUsder()
+    public function testAuthByInvalidUser()
     {
         $this->dbProxySetupForAuth();
 
@@ -760,7 +783,11 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAccess('person_layout', 1);
 
         $className = get_class($this->db_proxy->dbClass->specHandler);
-        $this->assertEquals('-recid', call_user_func(array($className, 'defaultKey')));
+        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+            $this->assertEquals('-recid', call_user_func(array($className, 'defaultKey')));
+        } else if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+            $this->assertEquals('recordId', call_user_func(array($className, 'defaultKey')));
+        }
     }
 
     public function testGetDefaultKey()
@@ -768,7 +795,11 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAccess('person_layout', 1);
 
         $value = $this->db_proxy->dbClass->specHandler->getDefaultKey();
-        $this->assertEquals('-recid', $value);
+        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+            $this->assertEquals('-recid', $value);
+        } else if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+            $this->assertEquals('recordId', $value);
+        }
     }
 
     public function testMultiClientSyncTableExsistence()
@@ -1012,5 +1043,19 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
     {
         $this->dbProxySetupForAccess('person_layout', 1);
         $this->assertFalse($this->db_proxy->dbClass->specHandler->isSupportAggregation());
+    }
+
+    public function testGetAuthorizedUsers()
+    {
+        $this->dbProxySetupForAuth();
+        $authorizedUsers = $this->db_proxy->dbClass->authHandler->getAuthorizedUsers('read');
+        $this->assertTrue($authorizedUsers == array('user1'));
+    }
+
+    public function testGetAuthorizedGroups()
+    {
+        $this->dbProxySetupForAuth();
+        $authorizedGroups = $this->db_proxy->dbClass->authHandler->getAuthorizedGroups('read');
+        $this->assertTrue($authorizedGroups == array('group2'));
     }
 }

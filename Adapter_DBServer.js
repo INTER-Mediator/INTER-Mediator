@@ -38,14 +38,16 @@ var INTERMediator_DBAdapter = {
     generate_authParams: function () {
         'use strict';
         var authParams = '', shaObj, hmacValue;
+        var encrypt = new JSEncrypt();
         if (INTERMediatorOnPage.authUser.length > 0) {
             authParams = '&clientid=' + encodeURIComponent(INTERMediatorOnPage.clientId);
             authParams += '&authuser=' + encodeURIComponent(INTERMediatorOnPage.authUser);
             if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
                 if (INTERMediatorOnPage.authCryptedPassword && INTERMediatorOnPage.authChallenge) {
+                    encrypt.setPublicKey(INTERMediatorOnPage.publickey);
                     authParams += '&cresponse=' + encodeURIComponent(
-                            INTERMediatorOnPage.publickey.biEncryptedString(INTERMediatorOnPage.authCryptedPassword +
-                                IMLib.nl_char + INTERMediatorOnPage.authChallenge));
+                        INTERMediatorOnPage.authCryptedPassword + '|' +
+                        encrypt.encrypt(INTERMediatorOnPage.authChallenge));
                     if (INTERMediator_DBAdapter.debugMessage) {
                         INTERMediatorLog.setDebugMessage('generate_authParams/authCryptedPassword=' +
                             INTERMediatorOnPage.authCryptedPassword);
@@ -343,6 +345,7 @@ var INTERMediator_DBAdapter = {
     changePassword: function (username, oldpassword, newpassword) {
         'use strict';
         var challengeResult, params, result, messageNode;
+        var encrypt = new JSEncrypt();
 
         if (username && oldpassword) {
             INTERMediatorOnPage.authUser = username;
@@ -374,8 +377,8 @@ var INTERMediator_DBAdapter = {
         try {
             result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
             if (result) {
-                INTERMediatorOnPage.authCryptedPassword =
-                    INTERMediatorOnPage.publickey.biEncryptedString(newpassword);
+                encrypt.setPublicKey(INTERMediatorOnPage.publickey);
+                INTERMediatorOnPage.authCryptedPassword = encrypt.encrypt(newpassword);
                 INTERMediatorOnPage.authHashedPassword =
                     SHA1(newpassword + INTERMediatorOnPage.authUserSalt) + INTERMediatorOnPage.authUserHexSalt;
                 INTERMediatorOnPage.storeCredentialsToCookieOrStorage();

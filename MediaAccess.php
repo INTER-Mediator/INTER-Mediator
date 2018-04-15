@@ -70,10 +70,47 @@ class MediaAccess
                 header("Content-Disposition: {$this->disposition}; filename={$dq}" . urlencode($fileName) . $dq);
                 $util = new IMUtil();
                 $util->outputSecurityHeaders();
-
                 $this->outputImage($content);
             } else if (stripos($target, 'http://') === 0 || stripos($target, 'https://') === 0) { // http or https
-                if (intval(get_cfg_var('allow_url_fopen')) === 1) {
+                $parsedUrl = parse_url($target);
+                if (get_class($dbProxyInstance->dbClass) === 'DB_FileMaker_DataAPI' &&
+                    isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver') {
+                    // for FileMaker Data API
+                    $target = 'http://' . $parsedUrl['user'] . ':' . $parsedUrl['pass'] . '@127.0.0.1' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
+                    if (function_exists('curl_init')) {
+                        $session = curl_init($target);
+                        curl_setopt($session, CURLOPT_HEADER, true);
+                        curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+                        $content = curl_exec($session);
+                        $headerSize = curl_getinfo($session, CURLINFO_HEADER_SIZE);
+                        $headers = substr($content, 0, $headerSize);
+                        curl_close($session);
+                        $sessionKey = '';
+                        if ($header = explode("\r\n", $headers)) {
+                            foreach ($header as $line) {
+                                if ($line) {
+                                    $h = explode(': ', $line);
+                                    if (isset($h[0]) && isset($h[1]) && $h[0] == 'Set-Cookie') {
+                                        $sessionKey = str_replace(
+                                            '; HttpOnly', '', str_replace('X-FMS-Session-Key=', '', $h[1])
+                                        );
+                                    }
+                                }
+                            }
+                        }
+
+                        $target = 'http://127.0.0.1' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
+                        $headers = array('X-FMS-Session-Key: ' . $sessionKey);
+                        $session = curl_init($target);
+                        curl_setopt($session, CURLOPT_HEADER, false);
+                        curl_setopt($session, CURLOPT_HTTPHEADER, $headers);
+                        curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+                        $content = curl_exec($session);
+                        curl_close($session);
+                    } else {
+                        $this->exitAsError(500);
+                    }
+                } else if (intval(get_cfg_var('allow_url_fopen')) === 1) {
                     $content = file_get_contents($target);
                 } else {
                     if (function_exists('curl_init')) {
@@ -141,7 +178,9 @@ class MediaAccess
      */
     public function checkForFileMakerMedia($dbProxyInstance, $options, $file, $isURL)
     {
-        if (strpos($file, "/fmi/xml/cnt/") === 0) { // FileMaker's container field storing an image.
+        if (strpos($file, '/fmi/xml/cnt/') === 0 ||
+            strpos($file, '/Streaming_SSL/MainDB') === 0) {
+            // FileMaker's container field storing an image.
             if (isset($options['authentication']['user'][0])
                 && $options['authentication']['user'][0] == 'database_native'
             ) {
@@ -160,22 +199,13 @@ class MediaAccess
                 $rsa = new $rsaClass;
                 $rsa->setPassword($passPhrase);
                 $rsa->loadKey($generatedPrivateKey);
-                $rsa->setPassword();
-                $privatekey = $rsa->getPrivateKey();
-                if (IMUtil::phpVersion() < 6) {
-                    $priv = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
-                } else {
-                    $priv = $rsa->_parseKey($privatekey, constant('phpseclib\Crypt\RSA::PRIVATE_FORMAT_PKCS1'));
-                }
-
-                require_once('lib/bi2php/biRSA.php');
-                $keyDecrypt = new biRSAKeyPair('0', $priv['privateExponent']->toHex(), $priv['modulus']->toHex());
+                $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
 
                 $cookieNameUser = '_im_username';
                 $cookieNamePassword = '_im_crypted';
                 $credential = isset($_COOKIE[$cookieNameUser]) ? urlencode($_COOKIE[$cookieNameUser]) : '';
-                if (isset($_COOKIE[$cookieNamePassword])) {
-                    $credential .= ':' . urlencode($keyDecrypt->biDecryptedString($_COOKIE[$cookieNamePassword]));
+                if (isset($_COOKIE[$cookieNamePassword]) && strlen($_COOKIE[$cookieNamePassword]) > 0) {
+                    $credential .= ':' . urnencode($rsa->decrypt(base64_decode($_COOKIE[$cookieNamePassword])));
                 }
                 $urlHost = $dbProxyInstance->dbSettings->getDbSpecProtocol() . '://' . $credential . '@'
                     . $dbProxyInstance->dbSettings->getDbSpecServer() . ':'

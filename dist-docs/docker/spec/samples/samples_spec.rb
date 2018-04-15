@@ -44,8 +44,8 @@ describe "INTER-Mediator-Server VM" do
     @wait = Selenium::WebDriver::Wait.new(:timeout => 15)
   end
 
-  it "The title of the first page should be 'INTER-Mediator 5.7-RC2-dev - VM for Trial'." do
-    expect(@driver.title).to eq("INTER-Mediator 5.7-RC2-dev - VM for Trial")
+  it "The title of the first page should be 'INTER-Mediator 5.8-dev - VM for Trial'." do
+    expect(@driver.title).to eq("INTER-Mediator 5.8-dev - VM for Trial")
   end
 
   it "The path of 'Sample Program' should be '/INTER-Mediator/Samples/'." do
@@ -130,6 +130,20 @@ describe "INTER-Mediator-Server VM" do
       expect(elements.size).to eq(30)
       element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
       expect(element.text).to eq("Record #1-30 / 3654")
+    }
+  end
+
+  it "Sample 'file upload' for MySQL/MariaDB should be working" do
+    @driver.navigate.to "http://" + @addr + "/INTER-Mediator/Samples/"
+    @wait.until {
+      element = @driver.find_element(:xpath, "//a[contains(@href, 'Sample_webpage/fileupload_MySQL.html')]")
+      element.click
+      sleep 1
+      element = @driver.find_element(:id, "IM_Button_1")
+      element.click
+      sleep 1
+      element = @driver.find_element(:xpath, "//td[@data-im='testtable@vc1']")
+      expect(element.find_element(:tag_name, "div").text).to eq("Drag Here.")
     }
   end
 

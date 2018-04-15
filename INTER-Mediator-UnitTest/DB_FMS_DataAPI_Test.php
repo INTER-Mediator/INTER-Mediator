@@ -28,6 +28,7 @@ class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
         $options = null;
         $dbSettings = array(
             'db-class' => 'FileMaker_DataAPI',
+            'server' => 'localserver',
             'user' => 'web',
             'password' => 'password',
         );
@@ -66,6 +67,7 @@ class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
             ),
             array(
                 'db-class' => 'FileMaker_DataAPI',
+                'server' => 'localserver',
                 'user' => 'web',
                 'password' => 'password',
             ),

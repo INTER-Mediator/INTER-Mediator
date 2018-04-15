@@ -14,9 +14,13 @@ else
   WEBROOT = "/var/www/html"
 end
 
-#describe package('ruby'), :if => os[:virtualization][:system] == 'docker' do
+#describe package('ruby'), :if => host_inventory['virtualization'][:system] == 'docker' do
 #  it { should be_installed }
 #end
+
+describe package('openrc'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
 
 describe package('sudo') do
   it { should be_installed }
@@ -280,6 +284,9 @@ end
 describe package('php7-mysqli'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
+describe package('libbsd'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
 describe package('php-pear'), :if => os[:family] == 'redhat' && os[:release].to_f < 6 do
   it { should be_installed }
 end
@@ -411,9 +418,9 @@ end
 describe package('dbus'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('firefox'), :if => os[:family] == 'alpine' do
-  it { should be_installed }
-end
+#describe package('firefox'), :if => os[:family] == 'alpine' do
+#  it { should be_installed }
+#end
 
 describe package('chromium'), :if => os[:family] == 'alpine' do
   it { should be_installed }
@@ -422,8 +429,8 @@ describe package('libgudev'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 
-describe package('phantomjs'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
-  it { should be_installed.by('npm').with_version('2.1.7') }
+describe package('phantomjs-prebuilt'), :if => (os[:family] == 'ubuntu' && os[:release].to_f >= 14) || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+  it { should be_installed.by('npm').with_version('2.1.16') }
 end
 
 describe package('fontconfig-dev'), :if => os[:family] == 'alpine' do
@@ -449,7 +456,10 @@ end
 describe service('smbd'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
   it { should be_running }
 end
-describe service('samba'), :if => os[:family] == 'alpine' || os[:family] == 'redhat' || (os[:family] == 'ubuntu' && os[:release].to_f < 16) do
+describe service('smb'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+  it { should be_running }
+end
+describe service('samba'), :if => os[:family] == 'alpine' || (os[:family] == 'redhat' && os[:release].to_f < 7 ) || (os[:family] == 'ubuntu' && os[:release].to_f < 16) do
   it { should be_running }
 end
 
@@ -465,13 +475,13 @@ describe package('unifont'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 
-describe package('virtualbox-additions-grsec'), :if => os[:family] == 'alpine' do
+#describe package('virtualbox-additions-grsec'), :if => os[:family] == 'alpine' && host_inventory['virtualization'][:system] != 'docker' do
+#  it { should be_installed }
+#end
+describe package('virtualbox-guest-additions'), :if => os[:family] == 'alpine' && host_inventory['virtualization'][:system] != 'docker' do
   it { should be_installed }
 end
-describe package('virtualbox-guest-additions'), :if => os[:family] == 'alpine' do
-  it { should be_installed }
-end
-describe package('virtualbox-guest-modules-grsec'), :if => os[:family] == 'alpine' do
+describe package('virtualbox-guest-modules-grsec'), :if => os[:family] == 'alpine' && host_inventory['virtualization'][:system] != 'docker' do
   it { should be_installed }
 end
 
@@ -551,7 +561,7 @@ describe file(WEBROOT + '/params.php') do
   it { should be_file }
   its(:content) { should match /\$dbUser = 'web';/ }
   its(:content) { should match /\$dbOption = array\(\);/ }
-  its(:content) { should match /\$dbServer = '127.0.0.1';/ }
+  its(:content) { should match /\$dbServer = '192.168.56.1';/ }
   its(:content) { should match /\$generatedPrivateKey = <<<EOL/ }
   its(:content) { should_not match /\$dbDataType = 'FMPro12';/ }
 end

@@ -1053,25 +1053,19 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $rsa = new $rsaClass;
         $rsa->setPassword($passPhrase);
         $rsa->loadKey($generatedPrivateKey);
-        $rsa->setPassword();
-        $privatekey = $rsa->getPrivateKey();
-        if (IMUtil::phpVersion() < 6) {
-            $priv = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
+        $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
+
+        $nlPos = strpos($paramCryptResponse, '|');
+        $encryptedPassword = substr($paramCryptResponse, 0, $nlPos);
+        $encryptedChallenge = substr($paramCryptResponse, $nlPos + 1);
+
+        if (strlen($encryptedPassword) > 0 && strlen($encryptedChallenge) > 0) {
+            $password = $rsa->decrypt(base64_decode($encryptedPassword));
+            $challenge = $rsa->decrypt(base64_decode($encryptedChallenge));
         } else {
-            $priv = $rsa->_parseKey($privatekey, constant('phpseclib\Crypt\RSA::PRIVATE_FORMAT_PKCS1'));
-        }
-        require_once('lib/bi2php/biRSA.php');
-        $keyDecrypt = new biRSAKeyPair('0', $priv['privateExponent']->toHex(), $priv['modulus']->toHex());
-        $decrypted = $keyDecrypt->biDecryptedString($paramCryptResponse);
-        if ($decrypted === false) {
-            return array(false, false);
+            return array('', '');
         }
 
-        $nlPos = strpos($decrypted, "\n");
-        $nlPos = ($nlPos === false) ? strlen($decrypted) : $nlPos;
-        $password = $keyDecrypt->biDecryptedString(substr($decrypted, 0, $nlPos));
-        $password = (strlen($password) == 0) ? "f32b309d4759446fc81de858322ed391a0c167a0" : $password;
-        $challenge = substr($decrypted, $nlPos + 1);
         return array($password, $challenge);
     }
 

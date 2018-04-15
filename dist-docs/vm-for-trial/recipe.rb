@@ -26,11 +26,12 @@ SMBCONF = "/etc/samba/smb.conf"
 
 
 if node[:platform] == 'alpine'
-  execute 'ip addr add 192.168.56.101/24 dev eth1' do
-    command 'ip addr add 192.168.56.101/24 dev eth1'
-  end
-  file '/etc/network/interfaces' do
-    content <<-EOF
+  if node[:virtualization][:system] != 'docker'
+    execute 'ip addr add 192.168.56.101/24 dev eth1' do
+      command 'ip addr add 192.168.56.101/24 dev eth1'
+    end
+    file '/etc/network/interfaces' do
+      content <<-EOF
 auto lo
 iface lo inet loopback
 
@@ -43,9 +44,22 @@ iface eth1 inet static
 	address 192.168.56.101
 	netmask 255.255.255.0
 EOF
-  end  
-  file '/etc/apk/repositories' do
-    content <<-EOF
+    end
+  end
+  if node[:platform_version].to_f >= 3.7
+    file '/etc/apk/repositories' do
+      content <<-EOF
+#/media/cdrom/apks
+http://dl-5.alpinelinux.org/alpine/v3.7/main
+http://dl-5.alpinelinux.org/alpine/v3.7/community
+http://dl-5.alpinelinux.org/alpine/edge/main
+http://dl-5.alpinelinux.org/alpine/edge/community
+http://dl-5.alpinelinux.org/alpine/edge/testing
+EOF
+    end
+  else
+    file '/etc/apk/repositories' do
+      content <<-EOF
 #/media/cdrom/apks
 http://dl-5.alpinelinux.org/alpine/v3.5/main
 http://dl-5.alpinelinux.org/alpine/v3.5/community
@@ -53,9 +67,24 @@ http://dl-5.alpinelinux.org/alpine/edge/main
 http://dl-5.alpinelinux.org/alpine/edge/community
 http://dl-5.alpinelinux.org/alpine/edge/testing
 EOF
-  end  
+    end
+  end
   package 'shadow' do
     action :install
+  end
+end
+
+if node[:platform] == 'alpine'
+  package 'openrc' do
+    action :install
+  end
+end
+if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
+  directory '/run/openrc' do
+    action :create
+  end
+  execute 'touch /run/openrc/softlevel' do
+    command 'touch /run/openrc/softlevel'
   end
 end
 
@@ -76,7 +105,10 @@ elsif node[:platform] == 'ubuntu'
 end
 
 if node[:platform] == 'alpine'
-  execute 'yes im4135dev | sudo passwd developer' do
+  user "developer" do
+    action :create
+  end
+  execute 'yes ********* | sudo passwd developer' do
     command 'yes im4135dev | sudo passwd developer'
   end
 else
@@ -157,14 +189,30 @@ elsif node[:platform] == 'redhat'
   end
 end
 if node[:platform] == 'alpine'
-  execute 'yes im4135dev | sudo passwd postgres' do
+  execute 'yes ********* | sudo passwd postgres' do
     command 'yes im4135dev | sudo passwd postgres'
   end
-  execute 'echo "im4135dev" | sudo /etc/init.d/postgresql setup' do
+  execute 'echo "*********" | sudo /etc/init.d/postgresql setup' do
     command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
   end
-  service 'postgresql' do
-    action [ :enable, :start ]
+  if node[:virtualization][:system] != 'docker'
+    service 'postgresql' do
+      action [ :enable, :start ]
+    end
+  else
+    if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
+      directory '/run/postgresql' do
+        action :create
+        owner 'postgres'
+        group 'postgres'
+      end
+    end    
+    service 'postgresql' do
+      action [ :enable ]
+    end
+    execute 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/10/data -l /var/log/postgresql/postgresql.log"' do
+      command 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/10/data -l /var/log/postgresql/postgresql.log"'
+    end  
   end
 else
   service 'postgresql' do
@@ -182,6 +230,13 @@ if node[:platform] == 'alpine'
   package 'mariadb' do
     action :install
   end
+  if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
+    directory '/run/mysqld' do
+      action :create
+      owner 'mysql'
+      group 'mysql'
+    end
+  end  
   file '/etc/mysql/my.cnf' do
     content <<-EOF
 [mysqld]
@@ -207,14 +262,23 @@ default-character-set=utf8mb4
 default-character-set=utf8mb4
 EOF
   end
-  execute '/etc/init.d/mariadb setup' do
-    command '/etc/init.d/mariadb setup'
-  end
-  service 'mariadb' do
-    action [ :enable, :start ]
-  end
-  execute 'mysqladmin -u root password "im4135dev"' do
-    command 'mysqladmin -u root password "im4135dev"'
+  if node[:virtualization][:system] != 'docker'
+    execute '/etc/init.d/mariadb setup' do
+      command '/etc/init.d/mariadb setup'
+    end
+    service 'mariadb' do
+      action [ :enable, :start ]
+    end
+    execute 'mysqladmin -u root password "*********"' do
+      command 'mysqladmin -u root password "im4135dev"'
+    end  
+  else
+    service 'mariadb' do
+      action [ :enable ]
+    end
+    execute '/usr/bin/mysql_install_db --user=mysql && cd /usr; /usr/bin/mysqld_safe --datadir=/var/lib/mysql --syslog --nowatch; sleep 10; mysqladmin -u root password "*********"' do
+      command '/usr/bin/mysql_install_db --user=mysql && cd /usr; /usr/bin/mysqld_safe --datadir=/var/lib/mysql --syslog --nowatch; sleep 10; mysqladmin -u root password "im4135dev"'
+    end
   end
 elsif node[:platform] == 'ubuntu'
   package 'mysql-server' do
@@ -239,7 +303,7 @@ EOF
   service 'mysql' do
     action [ :enable, :start ]
   end
-  execute 'mysqladmin -u root password "im4135dev"' do
+  execute 'mysqladmin -u root password "*********"' do
     command 'mysqladmin -u root password "im4135dev"'
   end
 elsif node[:platform] == 'redhat'
@@ -281,6 +345,9 @@ EOF
     end
     service 'mariadb' do
       action [ :enable, :start ]
+    end
+    execute 'mysqladmin -u root password "*********"' do
+      command 'mysqladmin -u root password "im4135dev"'
     end
     file '/etc/my.cnf.d/im.cnf' do
       content <<-EOF
@@ -342,8 +409,8 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
   execute 'sudo /opt/mssql/bin/mssql-conf set telemetry.customerfeedback false' do
     command 'sudo /opt/mssql/bin/mssql-conf set telemetry.customerfeedback false'
   end
-  execute 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="IM4135dev" /opt/mssql/bin/mssql-conf setup' do
-    command 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="IM4135dev" /opt/mssql/bin/mssql-conf setup'
+  execute 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="**********" /opt/mssql/bin/mssql-conf setup' do
+    command 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="im4135devX" /opt/mssql/bin/mssql-conf setup'
   end
   service 'mssql-server' do
     action [ :enable, :start ]
@@ -405,6 +472,10 @@ if node[:platform] == 'alpine'
   end
   package 'php7-mysqli' do
     action :install
+  end
+  package 'libbsd' do
+    action :install
+    version '0.8.6-r2'
   end
   package 'ca-certificates' do
     action :install
@@ -490,6 +561,19 @@ elsif node[:platform] == 'redhat'
     #  content 'extension=timezonedb.so'
     #end
   end
+end
+
+if node[:platform] == 'ubuntu'
+  if node[:platform_version].to_f < 16
+    package 'php5-mysql' do
+      action :install
+    end
+  else
+    package 'php7.0-mysql' do
+      action :install
+    end
+  end
+elsif node[:platform] == 'redhat'
   if node[:platform_version].to_f < 7
     package 'php-mysql' do
       action :install
@@ -504,22 +588,6 @@ elsif node[:platform] == 'redhat'
     package 'php-mysqlnd' do
       action :install
     end
-  end
-end
-
-if node[:platform] == 'ubuntu'
-  if node[:platform_version].to_f < 16
-    package 'php5-mysql' do
-      action :install
-    end
-  else
-    package 'php7.0-mysql' do
-      action :install
-    end
-  end
-elsif node[:platform] == 'redhat'
-  package 'php-mysql' do
-    action :install
   end
 end
 
@@ -594,8 +662,27 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
       action :install
     end
   end
-  service 'apache2' do
-    action [ :enable, :start ]
+  if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
+    directory '/run/apache2/' do
+      action :create
+      owner 'apache'
+      group 'apache'
+    end
+    file '/etc/apache2/conf.d/im.conf' do
+      content <<-EOF
+LoadModule slotmem_shm_module modules/mod_slotmem_shm.so
+EOF
+    end  
+    service 'apache2' do
+      action [ :enable ]
+    end
+    execute 'httpd' do
+      command 'httpd'
+    end
+  else
+    service 'apache2' do
+      action [ :enable, :start ]
+    end
   end
 elsif node[:platform] == 'redhat'
   package 'httpd' do
@@ -663,8 +750,10 @@ if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform
   execute 'ln -sf /usr/local/bin/npm /usr/bin/npm' do
     command 'ln -sf /usr/local/bin/npm /usr/bin/npm'
   end
-  execute 'apt-get purge -y nodejs npm' do
-    command 'apt-get purge -y nodejs npm'
+  if node[:platform] == 'ubuntu'
+    execute 'apt-get purge -y nodejs npm' do
+      command 'apt-get purge -y nodejs npm'
+    end
   end
 end
 
@@ -701,8 +790,23 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
     action [ :enable, :start ]
   end
 else
-  service 'samba' do
-    action [ :enable, :start ]
+  if node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
+    service 'smb' do
+      action [ :enable, :start ]
+    end
+  else
+    if node[:virtualization][:system] != 'docker'
+      service 'samba' do
+        action [ :enable, :start ]
+      end
+    else
+      service 'samba' do
+        action [ :enable ]
+      end
+      execute 'smbd' do
+        command 'smbd'
+      end  
+    end
   end
 end
 
@@ -749,8 +853,8 @@ if node[:platform] == 'ubuntu'
   end
 end
 
-execute "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout master && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git" do
-  command "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout master && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git"
+execute "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout 5.x && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git" do
+  command "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout 5.x && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git"
 end
 
 if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
@@ -797,7 +901,6 @@ $browserCompatibility = array(
 );
 $dbServer = '192.168.56.1';
 $dbPort = '80';
-$dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
 $passPhrase = '';
@@ -849,9 +952,8 @@ $browserCompatibility = array(
     'Safari' => '4+',
     'Trident' => '5+',
 );
-$dbServer = '127.0.0.1';
+$dbServer = '192.168.56.1';
 $dbPort = '80';
-$dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
 $passPhrase = '';
@@ -905,9 +1007,38 @@ $browserCompatibility = array(
 );
 $dbServer = '192.168.56.1';
 $dbPort = '80';
-$dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
+$passPhrase = '';
+$generatedPrivateKey = <<<EOL
+-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEAyTFuj/i52z0pXsoa6HNTUFcmWBcaG5DodB5ac6WAKBxn4G/j
+knKwIBjRluCjIcRdFk6m91ChSOoDvW3p3rk2UFMIfq9e6ojhsWO3AFrHXOVHt+P/
+QWnI2KUtUmxO0jw9hbqK/Hl4IbWc8aGnxP/uGOmLJnLSP3wEtahXXaVSJrGTPZuk
+pbzarqzS3waraUYP+b2aMGLL/BbPnc7xCF13TtkVdcVdjyQtofn7hM3Kd8fOFFOg
+ix+JYOrf5jMG0aTs9NxwcHXb6DMwt/L30s+eIMI/81/sthT5TD7kEMUudz+yomnM
+G6C+bFYgykcFlYwEeUD//5naitc3ZNYXEpyzWwIDAQABAoIBAQCWmpwqxYNKrBPl
+0uAllP6Oq04WruRqMiTvlzEaVI8Ed48CoH73x0Y0IJ/zkyBKTJVp92Jgy0iQLiyy
+hi6E/Ju9sQow2tHwOprHkN8SMuH9ldwDuXX/31HramnswwqVsWZUTnlv2PWmNi7P
+abUOcI4os9nn5BeiUhGsceFERlaigwFJ1eWI7M+XfIh9YfLx8ERaZYi9g6MDNZ1k
+TEirV/rGbts4K62IJ+UGiW5UYW4qfPvOdmsOKcr0IMmM4hu5/ZlGg/xDXrLRCQzj
+Pt0+dJ1UZyb5PuhlUyjqF0vBBr/hLQhkAUPLE1CyXCgbDWrXEJkoT7DVILskZHo0
+1+DmgbsxAoGBAPp8upw+vsY2yzxZep0GtXqqXQOVQ8f+XPeDK9kE5TgNPofCr8+3
+cqerbwGPBRJueYnYNANNc0aVgNnX+rkUYEJMlrkeEqPPpNvEzOd/l067EprGgA5s
+HZkMLJsxLTrJEuj5NczMtsJia6ufWD8l4XTvB6WKNSDCf4/sdZCFF0JVAoGBAM2e
++YU7AsC70q9BxPR4sc0vLk8kEY9eKuP7PCb991qpIxD/VFpRWy9znO7t9+EQKsJ1
+U1HdU/YTSuSTmg9z+a7s4En1tI+ryUHmwv8run9r11lx7yuXgJhx6mg5Lc6BaFIN
+QsbQIm/7HL0p5ugPfDiObPIxQUgR1s+Xl7HnkK7vAoGAaHzjMw4Rcomk2bXRqfME
+fPjX+Aipz6FRkoYLImoiW/FaZjNWN2Wk1EB0+8d3LCsdU9z2RXJnZcgziavIkK/p
+P37HWM0spVyWvn4no2Hb8iGjLyEiheGfrxoe+VXYMi9yTfC2+oliq0927o53t0/L
+7oVPQUSXyOSZZaYTnIeIHkkCgYBYr+f5ohE25gwiUWDM/T3bPS1hLzJvvvMK8DLq
+soG81dTtIOPWLN8CoYAfwf43UczPoOE2Hxt2uK2F13AMmD4qR7sZy2N80GB3Dzwt
+6UOAcBgrWSwKhkcN+ZxcJcVvG3vOYC/cJquj1xB3OpqAnyU6E5xD/iClICSh10Wz
+kyhhewKBgC1bAmPbOHoaNecuHTSO+pe5s29KagojaWMFsH1+Zs5HiVBmLmO9UdG9
+UeplZBKmxW3+wQ5gVWIguqisfvi9/m07Z/3+uwCLSryHU6Kgg7Md9ezU9Obx+jxp
+cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
+-----END RSA PRIVATE KEY-----
+EOL;
 $webServerName = array('');
 EOF
   end
@@ -939,8 +1070,10 @@ if node[:platform] == 'alpine' || (node[:platform] == 'ubuntu' && node[:platform
     end
   end
 
-  execute 'npm install -g phantomjs-prebuilt --unsafe-perm' do
-    command 'npm install -g phantomjs-prebuilt --unsafe-perm'
+  if node[:platform] != 'alpine'
+    execute 'npm install -g phantomjs-prebuilt --unsafe-perm' do
+      command 'npm install -g phantomjs-prebuilt --unsafe-perm'
+    end
   end
 end
 
@@ -950,7 +1083,7 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   end
 end
 
-if node[:platform] == 'alpine'
+if node[:platform] == 'alpine' && node[:virtualization][:system] != 'docker'
   package 'virtualbox-additions-grsec' do
     action :install
   end
@@ -1159,6 +1292,15 @@ elsif node[:platform] == 'redhat'
   end
 end
 
+if node[:platform] == 'alpine'
+  package 'bash' do
+    action :install
+  end
+end
+execute "echo \"y\" | bash \"#{IMVMROOT}/dbupdate.sh\"" do
+  command "echo \"y\" | bash \"#{IMVMROOT}/dbupdate.sh\""
+end
+
 if node[:platform] == 'ubuntu'
   file '/var/db/im/sample.sq3' do
     owner 'www-data'
@@ -1171,15 +1313,6 @@ elsif node[:platform] == 'redhat'
     group 'im-developer'
     mode '664'
   end
-end
-  
-if node[:platform] == 'alpine'
-  package 'bash' do
-    action :install
-  end
-end
-execute "echo \"y\" | bash \"#{IMVMROOT}/dbupdate.sh\"" do
-  command "echo \"y\" | bash \"#{IMVMROOT}/dbupdate.sh\""
 end
 
 if node[:platform] == 'alpine' || node[:platform] == 'redhat'
@@ -1354,7 +1487,7 @@ file "#{SMBCONF}" do
 # domain controller", "classic backup domain controller", "active
 # directory domain controller".
 #
-# Most people will want "standalone sever" or "member server".
+# Most people will want "standalone server" or "member server".
 # Running as "active directory domain controller" will require first
 # running "samba-tool domain provision" to wipe databases and create a
 # new domain.
@@ -1540,45 +1673,10 @@ file "#{SMBCONF}" do
 EOF
 end
 
-execute '( echo im4135dev; echo im4135dev ) | sudo smbpasswd -s -a developer' do
+execute '( echo *********; echo ********* ) | sudo smbpasswd -s -a developer' do
   command '( echo im4135dev; echo im4135dev ) | sudo smbpasswd -s -a developer'
 end
 
-
-if node[:platform] == 'alpine'
-  file '/etc/local.d/buster-server.start' do
-    owner 'root'
-    group 'root'
-    mode '755'
-    content <<-EOF
-#!/bin/sh -e
-#
-# rc.local
-#
-# This script is executed at the end of each multiuser runlevel.
-# Make sure that the script will "exit 0" on success or any other
-# value on error.
-#
-# In order to enable or disable this script just change the execution
-# bits.
-#
-# By default this script does nothing.
-
-export DISPLAY=:99.0
-Xvfb :99 -screen 0 1024x768x24 &
-/bin/sleep 5
-/usr/bin/buster-server &
-/bin/sleep 5
-firefox http://localhost:1111/capture > /dev/null &
-#chromium-browser --no-sandbox http://localhost:1111/capture > /dev/null &
-/bin/sleep 5
-exit 0
-EOF
-  end
-  execute 'rc-update add local default' do
-    command 'rc-update add local default'
-  end
-end
 
 if node[:platform] == 'ubuntu'
   file '/etc/default/keyboard' do
@@ -1631,8 +1729,10 @@ EOF
 
 /usr/local/bin/buster-server &
 /bin/sleep 5
-/usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &
+#/usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &
 /usr/bin/Xvfb :99 -screen 0 1024x768x24 -extension RANDR > /dev/null 2>&1 &
+firefox http://localhost:1111/capture > /dev/null &
+chromium-browser --no-sandbox http://localhost:1111/capture > /dev/null &
 exit 0
 EOF
   end
@@ -1750,12 +1850,56 @@ elsif node[:platform] == 'ubuntu'
   end
 end
 
+
+if node[:platform] == 'alpine'
+  file '/etc/local.d/buster-server.start' do
+    owner 'root'
+    group 'root'
+    mode '755'
+    content <<-EOF
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+export DISPLAY=:99.0
+Xvfb :99 -screen 0 1024x768x24 &
+/bin/sleep 5
+/usr/bin/buster-server &
+/bin/sleep 5
+firefox http://localhost:1111/capture > /dev/null &
+#chromium-browser --no-sandbox http://localhost:1111/capture > /dev/null &
+/bin/sleep 5
+exit 0
+EOF
+  end
+  execute 'rc-update add local default' do
+    command 'rc-update add local default'
+  end
+  if node[:virtualization][:system] == 'docker'
+    execute '/etc/local.d/buster-server.start' do
+      command '/etc/local.d/buster-server.start'
+    end
+  end
+end
+
+
 if node[:platform] == 'alpine'
   execute 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd' do
     command 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd'
   end
-  execute 'poweroff' do
-    command 'poweroff'
+  if node[:virtualization][:system] != 'docker'
+    execute 'poweroff' do
+      command 'poweroff'
+    end
   end
 end
 if node[:platform] == 'ubuntu'

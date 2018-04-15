@@ -104,7 +104,8 @@ class FileUploader
 
         $useContainer = FALSE;
         $dbProxyContext = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
-        if ($dbspec['db-class'] === 'FileMaker_FX' && isset($dbProxyContext['file-upload'])) {
+        if (($dbspec['db-class'] === 'FileMaker_FX' || $dbspec['db-class'] === 'FileMaker_DataAPI') &&
+            isset($dbProxyContext['file-upload'])) {
             foreach ($dbProxyContext['file-upload'] as $item) {
                 if (isset($item['container']) && (boolean)$item['container'] === TRUE) {
                     $useContainer = TRUE;
@@ -324,12 +325,30 @@ class FileUploader
         if ($useContainer === FALSE) {
             $dbProxyInstance->addOutputData('dbresult', $filePath);
         } else {
-            $dbProxyInstance->addOutputData('dbresult',
-                '/fmi/xml/cnt/' . $fileName .
-                '?-db=' . urlencode($dbProxyInstance->dbSettings->getDbSpecDatabase()) .
-                '&-lay=' . urlencode($datasource[0]['name']) .
-                '&-recid=' . intval($_POST['_im_keyvalue']) .
-                '&-field=' . urlencode($targetFieldName));
+            if ($dbspec['db-class'] === 'FileMaker_FX') {
+                $dbProxyInstance->addOutputData('dbresult',
+                    '/fmi/xml/cnt/' . $fileName .
+                    '?-db=' . urlencode($dbProxyInstance->dbSettings->getDbSpecDatabase()) .
+                    '&-lay=' . urlencode($datasource[0]['name']) .
+                    '&-recid=' . intval($_POST['_im_keyvalue']) .
+                    '&-field=' . urlencode($targetFieldName));
+            } else if ($dbspec['db-class'] === 'FileMaker_DataAPI') {
+                // [WIP] FileMaker Data API (Trial) doesn't support uploading to container fields
+                $layout = $datasource[0]['name'];
+                $dbProxyInstance->dbClass->setupFMDataAPIforDB($layout, urlencode($targetFieldName));
+                $result = $dbProxyInstance->dbClass->fmData->{$layout}->query(NULL, NULL, 1, 1);
+                $path = '';
+                $host = filter_input(INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_URL);
+                if ($host === NULL || $host === FALSE) {
+                    $host = 'localhost';
+                }
+                foreach ($result as $record) {
+                    $path = str_replace('https://' . $host, '', $record->{$targetFieldName});
+                    break;
+                }
+                $path = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL) . '?media=' . urlencode($path);
+                $dbProxyInstance->addOutputData('dbresult', $path);
+            }
         }
         $dbProxyInstance->finishCommunication();
         if (!is_null($url)) {

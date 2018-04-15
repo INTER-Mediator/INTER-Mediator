@@ -44,11 +44,10 @@ IMParts_Catalog.fileupload = {
         if (this.forceOldStyleForm || (INTERMediator.isEdge && INTERMediator.ieVersion < 14)) {
             this.html5DDSuported = false;
         } else {
-            this.html5DDSuported = true;
-            try { // Checking to exists both of classes.
-                FileReader();
-                FormData();
-            } catch (ex) {
+            if (window.FileReader && window.FormData) {
+                // Checking to exists both of classes.
+                this.html5DDSuported = true;
+            } else {
                 this.html5DDSuported = false;
             }
         }
@@ -248,13 +247,17 @@ IMParts_Catalog.fileupload = {
                             }
                             updateInfo = IMLibContextPool.getContextInfoFromId(eventTarget.getAttribute('id'), '');
                             if (isProgressing) {
-                                infoFrame.style.display = 'block';
+                                if (infoFrame) {
+                                    infoFrame.style.display = 'block';
+                                }
                                 setTimeout((function () {
                                     var frameNode = infoFrame;
                                     var param = uploadId + iframeId;
                                     return function () {
-                                        frameNode.setAttribute('src',
-                                            'upload_frame.php?up_id=' + param);
+                                        if (frameNode) {
+                                            frameNode.setAttribute('src',
+                                                'upload_frame.php?up_id=' + param);
+                                        }
                                     };
                                 })());
 
@@ -279,8 +282,12 @@ IMParts_Catalog.fileupload = {
                                     var infoFrameCapt = infoFrame;
                                     var fileNameNodeCapt = fileNameNode;
                                     return function () {
-                                        infoFrameCapt.setAttribute('src', '');
-                                        fileNameNodeCapt.parentNode.removeChild(fileNameNodeCapt);
+                                        if (infoFrameCapt) {
+                                            infoFrameCapt.setAttribute('src', '');
+                                        }
+                                        if (fileNameNodeCapt) {
+                                            fileNameNodeCapt.parentNode.removeChild(fileNameNodeCapt);
+                                        }
                                     };
                                 })();
                                 return function (completeTask) {
