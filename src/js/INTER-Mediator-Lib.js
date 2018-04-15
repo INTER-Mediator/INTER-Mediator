@@ -22,7 +22,7 @@
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-var IMLib = {
+const IMLib = {
     nl_char: '\n',
     cr_char: '\r',
     tab_char: '\t',
@@ -52,7 +52,7 @@ var IMLib = {
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-var INTERMediatorLib = {
+const INTERMediatorLib = {
 
     ignoreEnclosureRepeaterClassName: '_im_ignore_enc_rep',
     ignoreEnclosureRepeaterControlName: 'ignore_enc_rep',

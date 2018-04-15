@@ -17,7 +17,7 @@
  * Thanks for nice idea from: http://stackoverflow.com/questions/17718673/how-is-a-promise-defer-library-implemented
  * @constructor
  */
-var IMLibQueue = {
+const IMLibQueue = {
     tasks: [],
     isExecute: false,
     dataStore: {},

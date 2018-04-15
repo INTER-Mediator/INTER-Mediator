@@ -25,7 +25,7 @@
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-let INTERMediator_DBAdapter = {
+const INTERMediator_DBAdapter = {
 
     eliminateDuplicatedConditions: false,
     /*

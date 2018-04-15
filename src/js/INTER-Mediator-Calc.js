@@ -33,7 +33,7 @@
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-var IMLibCalc = {
+const IMLibCalc = {
     /**
      * This property stores IMType_CalculateFieldDefinition objects for each calculation required nodes.
      * The property name is the id attribute of the node which bond to the calculated property

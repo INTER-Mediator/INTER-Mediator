@@ -22,7 +22,7 @@
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-var IMParts_Catalog = {};
+const IMParts_Catalog = {};
 
 IMParts_Catalog.fileupload = {
     html5DDSuported: false,

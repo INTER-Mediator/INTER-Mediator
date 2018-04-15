@@ -13,7 +13,7 @@
  IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibPageNavigation,
  IMLibEventResponder, IMLibElement, Parser, IMLib */
 
-var IMLibFormat = {
+const IMLibFormat = {
     /**
      * This method returns the rounded value of the 1st parameter to the 2nd parameter from decimal point
      * with a thousands separator.

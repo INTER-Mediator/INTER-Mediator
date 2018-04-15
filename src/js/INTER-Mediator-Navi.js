@@ -22,7 +22,7 @@
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-var IMLibPageNavigation = {
+const IMLibPageNavigation = {
     deleteInsertOnNavi: [],
     previousModeDetail: null,
     stepNavigation: [],

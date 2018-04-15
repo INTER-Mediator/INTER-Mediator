@@ -22,7 +22,7 @@
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-var INTERMediatorOnPage = {
+const INTERMediatorOnPage = {
     authCountLimit: 4,
     authCount: 0,
     authUser: '',
