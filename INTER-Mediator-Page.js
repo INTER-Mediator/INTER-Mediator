@@ -316,7 +316,7 @@ var INTERMediatorOnPage = {
         var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox, msgNumber,
             passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton, panelTitle,
             newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox, keyCode,
-            messageNode, oAuthButton, addingButton;
+            messageNode, oAuthButton, addingButton, resetMessage;
 
         this.checkPasswordPolicy = function (newPassword, userName, policyString) {
             var terms, i, message = [], minLen;
@@ -557,6 +557,10 @@ var INTERMediatorOnPage = {
                     INTERMediatorLib.getInsertedStringFromErrorNumber(2023)));
                 addingButton.onclick=function(){location.href=INTERMediatorOnPage.resetPageURL;};
                 frontPanel.appendChild(addingButton);
+                resetMessage = document.createElement('div');
+                resetMessage.appendChild(document.createTextNode(
+                    INTERMediatorLib.getInsertedStringFromErrorNumber(2024)));
+                frontPanel.appendChild(resetMessage);
             }
         }
         passwordBox.onkeydown = function (event) {
