@@ -18,9 +18,36 @@ buildRootName="im_build"
 imRootName="INTER-Mediator"
 receipt="receipt.txt"
 
-echo "================================================="
-echo " Start to build the INTER-Mediator Ver.${version}"
-echo "-------------------------------------------------"
+param=""
+
+if [ $# -gt 1 ]; then
+    echo "*** No parameter of just 1 parameter is allowed. ***" 1>&2
+    exit 1
+fi
+
+for opt in "$@"
+do
+	case "$opt" in
+		-a | --all)
+			param=1
+			;;
+		-c | --core)
+			param=2
+			;;
+		-d | --deploy)
+		    param=3
+			;;
+		* )
+			echo "invalid option -- $opt"
+			exit 1
+	esac
+done
+
+echo $param
+
+/bin/echo "================================================="
+/bin/echo " Start to build the INTER-Mediator Ver.${version}"
+/bin/echo "-------------------------------------------------"
 
 dt=$(date "+%Y-%m-%d")
 distDocDir=$(cd $(dirname "$0"); pwd)
@@ -30,168 +57,152 @@ printf '{"version":"%s","releasedate":"%s"}' "${version}" "${dt}" > "${originalP
 
 topOfDir=$(dirname "${originalPath}")
 minifyjsDir="${topOfDir}/${MINIFYJS}"
+minifyjsBin="${topOfDir}/${MINIFYJS}/bin/${MINIFYJS}js"
 buildDir="${topOfDir}/${buildRootName}"
 buildPath="${buildDir}/${imRootName}"
 
-echo " Original: ${originalPath}"
-echo " Build to: ${buildPath}"
-if [ -e "${minifyjsDir}" ]; then
-    echo " Path of minifier: ${minifyjsDir}"
+/bin/echo " Original: ${originalPath}"
+/bin/echo " Build to: ${buildPath}"
+if [ -e "${minifyjsDir}" -a -e "${minifyjsBin}" ]; then
+    /bin/echo " Path of minifier: ${minifyjsDir}"
+else
+    /bin/echo "*** Minifyer isn't exist. ***"
+    /bin/echo -n "Y or y: clone the minify, others: nothing to do----> "
+    read choice
+    if [ $choice = 'Y' -o $choice = 'y' ]; then
+        git clone https://github.com/matthiasmullie/minify "${minifyjsDir}"
+    fi
 fi
 
-echo "-------------------------------------------------"
-echo "Choose the build result from these:"
-echo ' (1) Complete (everything contains)'
-echo ' (2) Core only (the least set to work web applications)'
-echo ' (3) Core + Support (add Auth_Support and INTER-Mediator-Support)'
-echo ' (4) Write just version and release date to metadata.json'
-/bin/echo -n "Type 1, 2, 3 or 4, and then type return----> "
-read choice
-echo ""
+/bin/echo "-------------------------------------------------"
+/bin/echo "Choose the build result from these:"
+/bin/echo ' (1) Complete (everything contains)'
+/bin/echo ' (2) Core only (the least set to work web applications)'
+/bin/echo ' (3) Core only, and move it to 3-up directory (the ancestor of original INTER-Mediator)'
+#/bin/echo ' (4) Write just version and release date to metadata.json'
+choice=$param
+if [ ${#param} = 0 ]; then
+    /bin/echo -n "Type 1, 2 or 3, and then type return----> "
+    read choice
+    /bin/echo ""
+else
+    /bin/echo "Choice by command line parameter: $choice"
+fi
 
-if [ $choice = 4 ]; then
+if [ ${#choice} -lt 1 -o ${#choice} -gt 3 ]; then
+    /bin/echo "*** Do nothing at all. ***"
     exit 0;
 fi
 
 if [ -d "${buildDir}" ]; then
     rm -r "${buildDir}"
 fi
-mkdir -p "${buildPath}"
+mkdir -p "${buildPath}/src/js/"
+mkdir -p "${buildPath}/src/php/"
 
-echo "PROCESSING: Copying php files in root"
-cd "${originalPath}"
-for aFile in $(ls *.php)
-do
-    filename=$(basename "${aFile}")
-    cp "${aFile}" "${buildPath}/${filename}"
-done
+/bin/echo "PROCESSING: Copying php files"
+cp -f "${originalPath}/INTER-Mediator.php" "${buildPath}/"
+cp -rf "${originalPath}/src/php" "${buildPath}/src"
+cp -rf "${originalPath}/src/vendor" "${buildPath}/src"
 
-cp  "${originalPath}/metadata.json" "${buildPath}/metadata.json"
+cp  "${originalPath}/metadata.json" "${buildPath}/"
+cp  "${originalPath}/composer.json" "${buildPath}/"
+cp  "${originalPath}/params.php" "${buildPath}/"
+cp  "${originalPath}/index.html" "${buildPath}/"
+cp  "${originalPath}/LICENSE.md" "${buildPath}/"
 
 #### Merge js files
-echo "PROCESSING: Merging JS files"
-cp  "${originalPath}/INTER-Mediator.js"                          "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-Page.js"                  >> "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-Context.js"               >> "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-Lib.js"                   >> "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-Format.js"                   >> "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-Element.js"               >> "${buildPath}/temp.js"
-cat "${originalPath}/lib/js_lib/js-expression-eval-parser.js" >> "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-Calc.js"                  >> "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-Parts.js"                 >> "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-Navi.js"                  >> "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-UI.js"                    >> "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-Log.js"                   >> "${buildPath}/temp.js"
+/bin/echo "PROCESSING: Merging JS files"
+cp  "${originalPath}/src/js/INTER-Mediator.js"                          "${buildPath}/src/js/temp.js"
+cat "${originalPath}/src/js/INTER-Mediator-Page.js"                  >> "${buildPath}/src/js/temp.js"
+cat "${originalPath}/src/js/INTER-Mediator-Context.js"               >> "${buildPath}/src/js/temp.js"
+cat "${originalPath}/src/js/INTER-Mediator-Lib.js"                   >> "${buildPath}/src/js/temp.js"
+cat "${originalPath}/src/js/INTER-Mediator-Format.js"                >> "${buildPath}/src/js/temp.js"
+cat "${originalPath}/src/js/INTER-Mediator-Element.js"               >> "${buildPath}/src/js/temp.js"
+cat "${originalPath}/src/lib/js_lib/js-expression-eval-parser.js"    >> "${buildPath}/src/js/temp.js"
+cat "${originalPath}/src/js/INTER-Mediator-Calc.js"                  >> "${buildPath}/src/js/temp.js"
+cat "${originalPath}/src/js/Adapter_DBServer.js"                     >> "${buildPath}/src/js/temp.js"
+cat "${originalPath}/src/js/INTER-Mediator-Parts.js"                 >> "${buildPath}/src/js/temp.js"
+cat "${originalPath}/src/js/INTER-Mediator-Navi.js"                  >> "${buildPath}/src/js/temp.js"
+cat "${originalPath}/src/js/INTER-Mediator-UI.js"                    >> "${buildPath}/src/js/temp.js"
+cat "${originalPath}/src/js/INTER-Mediator-Log.js"                   >> "${buildPath}/src/js/temp.js"
 if [ ! -e "${minifyjsDir}" ]; then
-    cat "${originalPath}/lib/js_lib/tinySHA1.js"              >> "${buildPath}/temp.js"
-    echo ';'                                                  >> "${buildPath}/temp.js"
-    cat "${originalPath}/lib/js_lib/sha256.js"                >> "${buildPath}/temp.js"
+    cat "${originalPath}/src/lib/js_lib/tinySHA1.js"                 >> "${buildPath}/src/js/temp.js"
+    echo ';'                                                         >> "${buildPath}/src/js/temp.js"
+    cat "${originalPath}/src/lib/js_lib/sha256.js"                   >> "${buildPath}/src/js/temp.js"
+    echo ';'                                                         >> "${buildPath}/src/js/temp.js"
+    cat "${originalPath}/src/lib/bi2php/jsencrypt.min.js"            >> "${buildPath}/src/js/temp.js"
 fi
-cat "${originalPath}/lib/bi2php/biBigInt.js"                  >> "${buildPath}/temp.js"
-cat "${originalPath}/lib/bi2php/biMontgomery.js"              >> "${buildPath}/temp.js"
-cat "${originalPath}/lib/bi2php/biRSA.js"                     >> "${buildPath}/temp.js"
-cat "${originalPath}/Adapter_DBServer.js"                     >> "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-Queuing.js"               >> "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-Events.js"                >> "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-DoOnStart.js"             >> "${buildPath}/temp.js"
+cat "${originalPath}/src/js/INTER-Mediator-Queuing.js"               >> "${buildPath}/src/js/temp.js"
+cat "${originalPath}/src/js/INTER-Mediator-Events.js"                >> "${buildPath}/src/js/temp.js"
+cat "${originalPath}/src/js/INTER-Mediator-DoOnStart.js"             >> "${buildPath}/src/js/temp.js"
 
-cp "${buildPath}/temp.js" "${buildPath}/INTER-Mediator.js"
+cp "${buildPath}/src/js/temp.js" "${buildPath}/src/js/INTER-Mediator.js"
 
 #### Compress INTER-Mediator.js
 if [ -e "${minifyjsDir}" ]; then
-    sed '1s/*/*!/' "${buildPath}/temp.js" > "${buildPath}/temp2.js"
+    sed '1s/*/*!/' "${buildPath}/src/js/temp.js" > "${buildPath}/src/js/temp2.js"
 
     osName=$(uname -s)
-    echo "Detected OS: ${osName}"
+    /bin/echo "Detected OS: ${osName}"
     if [[ "${osName}" == CYGWIN* ]];  then
-        temp2Path=$(cygpath -w "${buildPath}/temp2.js")
-        temp3Path=$(cygpath -w "${buildPath}/temp3.js")
+        temp2Path=$(cygpath -w "${buildPath}/src/js/temp2.js")
+        temp3Path=$(cygpath -w "${buildPath}/src/js/temp3.js")
     else
-        temp2Path="${buildPath}/temp2.js"
-        temp3Path="${buildPath}/temp3.js"
+        temp2Path="${buildPath}/src/js/temp2.js"
+        temp3Path="${buildPath}/src/js/temp3.js"
     fi
-	"${minifyjsDir}"/bin/minifyjs "${temp2Path}" > "${temp3Path}"
-    sed '1s/*!/*/' "${temp3Path}" > "${buildPath}/INTER-Mediator.js"
-    head -n 9 "${originalPath}/INTER-Mediator.js"        > "${buildPath}/temp.js"
-	cat "${temp3Path}"                                  >> "${buildPath}/temp.js"
-	echo ";\n"                                          >> "${buildPath}/temp.js"
-	tail -n 1 "${originalPath}/lib/js_lib/tinySHA1.js"  >> "${buildPath}/temp.js"
-    echo ';'                                            >> "${buildPath}/temp.js"
-    tail -n 1 "${originalPath}/lib/js_lib/sha256.js"    >> "${buildPath}/temp.js"
-	echo "\n"                                           >> "${buildPath}/temp.js"
-    mv  "${buildPath}/temp.js" "${buildPath}/INTER-Mediator.js"
+    /bin/echo "MINIFYING."
+	"${minifyjsBin}" "${temp2Path}" > "${temp3Path}"
+    sed '1s/*!/*/' "${temp3Path}" > "${buildPath}/src/js/INTER-Mediator.js"
+    head -n 9 "${originalPath}/src/js/INTER-Mediator.js"                > "${buildPath}/src/js/temp.js"
+	cat "${temp3Path}"                                                 >> "${buildPath}/src/js/temp.js"
+	/bin/echo ";"                                                    >> "${buildPath}/src/js/temp.js"
+	tail -n 1 "${originalPath}/src/lib/js_lib/tinySHA1.js"             >> "${buildPath}/src/js/temp.js"
+    /bin/echo ";"                                                      >> "${buildPath}/src/js/temp.js"
+    tail -n 1 "${originalPath}/src/lib/js_lib/sha256.js"               >> "${buildPath}/src/js/temp.js"
+	/bin/echo ";"                                                     >> "${buildPath}/src/js/temp.js"
+    cat "${originalPath}/src/lib/js_lib/jsencrypt.min.js" >> "${buildPath}/src/js/temp.js"
+	/bin/echo ""                                                     >> "${buildPath}/src/js/temp.js"
+    mv  "${buildPath}/src/js/temp.js" "${buildPath}/src/js/INTER-Mediator.js"
     rm  "${temp2Path}" "${temp3Path}"
 else
-    rm  "${buildPath}/temp.js"
+    rm  "${buildPath}/src/js/temp.js"
 fi
 
 # Copy "Support" directory.
-echo "PROCESSING: ${originalPath}/Support"
-cp -prf "${originalPath}/Support" "${buildPath}"
+#cho "PROCESSING: ${originalPath}/Support"
+#cp -prf "${originalPath}/Support" "${buildPath}"
 
 # Copy "Data_Converter" directory.
-echo "PROCESSING: ${originalPath}/Data_Converter"
-cp -prf "${originalPath}/Data_Converter" "${buildPath}"
+#echo "PROCESSING: ${originalPath}/Data_Converter"
+#cp -prf "${originalPath}/Data_Converter" "${buildPath}"
 
 # Copy "lib" path php contents.
-echo "PROCESSING: ${originalPath}/lib"
-mkdir -p "${buildPath}/lib/bi2php"
-cp -p "${originalPath}/lib/bi2php/biRSA.php" "${buildPath}/lib/bi2php"
-cp -prf "${originalPath}/lib/CWPKit" "${buildPath}/lib"
-cp -p "${originalPath}/lib/FMDataAPI.php" "${buildPath}/lib/"
-cp -prf "${originalPath}/lib/FX" "${buildPath}/lib"
-cp -prf "${originalPath}/lib/ParagonIE" "${buildPath}/lib"
-cp -prf "${originalPath}/lib/phpseclib_v1" "${buildPath}/lib"
-cp -prf "${originalPath}/lib/phpseclib_v2" "${buildPath}/lib"
-cp -prf "${originalPath}/lib/mailsend" "${buildPath}/lib"
-
-if [ $choice = 3 ]; then
-    dirs="Auth_Support INTER-Mediator-Support"
-elif [ $choice = 2 ]; then
-    dirs=""
-else
-    dirs="Auth_Support INTER-Mediator-Support INTER-Mediator-UnitTest samples"
-fi
-
-for TARGET in ${dirs}
-do
-    echo "PROCESSING: ${originalPath}/${TARGET}"
-    mkdir -p "${buildPath}/${TARGET}"
-    for DIR in $(ls "${originalPath}/${TARGET}/")
-    do
-#        echo "Processing: ${originalPath}/${TARGET}/${DIR}"
-        if [ -f "${originalPath}/${TARGET}/${DIR}" ]; then
-            cp "${originalPath}/${TARGET}/${DIR}" "${buildPath}/${TARGET}/${DIR}"
-        else
-            mkdir -p "${buildPath}/${TARGET}/${DIR}"
-            for FILE in $(ls "${originalPath}/${TARGET}/${DIR}")
-            do
-                if [ -f "${originalPath}/${TARGET}/${DIR}/${FILE}" ]; then
-                    case "${FILE}" in
-                        *\.html | *\.php | *\.js | *\.css | *\.txt)
-#                          echo "SED: ${originalPath}/${TARGET}/${DIR}/${FILE}"
-                            cp "${originalPath}/${TARGET}/${DIR}/${FILE}" "${buildPath}/${TARGET}/${DIR}/${FILE}"
-                            ;;
-                        *)
-#                            echo "CP: ${originalPath}/${TARGET}/${DIR}/${FILE}"
-                            cp -p "${originalPath}/${TARGET}/${DIR}/${FILE}" "${buildPath}/${TARGET}/${DIR}/${FILE}"
-                            ;;
-                    esac
-                fi
-            done
-        fi
-    done
-done
+/bin/echo "PROCESSING: ${originalPath}/src/lib"
+cp -prf "${originalPath}/src/lib/CWPKit"        "${buildPath}/src/lib"
+cp -p   "${originalPath}/src/lib/FMDataAPI.php" "${buildPath}/src/lib/"
+cp -prf "${originalPath}/src/lib/FX"            "${buildPath}/src/lib"
+cp -prf "${originalPath}/src/lib/ParagonIE"     "${buildPath}/src/lib"
+cp -prf "${originalPath}/src/lib/phpseclib_v1"  "${buildPath}/src/lib"
+cp -prf "${originalPath}/src/lib/phpseclib_v2"  "${buildPath}/src/lib"
+cp -prf "${originalPath}/src/lib/mailsend"      "${buildPath}/src/lib"
 
 if [ $choice = 1 ]; then
-    echo "PROCESSING: ${originalPath}/README.md"
+    /bin/echo "PROCESSING: ${originalPath}/README.md"
     cp -p   "${originalPath}/README.md" "${buildPath}"
 
-    echo "PROCESSING: ${originalPath}/dist-docs"
+    /bin/echo "PROCESSING: ${originalPath}/dist-docs"
     cp -prf "${originalPath}/dist-docs" "${buildPath}"
 
-    echo "PROCESSING: Rest of ${originalPath}/samples"
-    cp -pr  "${originalPath}/samples/Sample_products/images" "${buildPath}/samples/Sample_products/"
+    /bin/echo "PROCESSING: ${originalPath}/spec"
+    cp -prf "${originalPath}/spec" "${buildPath}"
+
+    /bin/echo "PROCESSING: ${originalPath}/samples"
+    cp -pr  "${originalPath}/samples" "${buildPath}"
+
+    /bin/echo "PROCESSING: ${originalPath}/editors"
+    cp -pr  "${originalPath}/editors" "${buildPath}"
 
 # Invalidate the definition file of the DefEditor.
 #    echo "PROCESSING: Invalidate the Definition File Editor for security reason."
@@ -199,44 +210,52 @@ if [ $choice = 1 ]; then
 #    sed 's|IM_Entry|/* IM_Entry|' "${defeditdeffile}" > /tmp/defedit.php
 #    cp -p /tmp/defedit.php "${defeditdeffile}"
 else
-    echo "PROCESSING: ${originalPath}/dist-docs/License.txt"
+    /bin/echo "PROCESSING: ${originalPath}/dist-docs/License.txt"
     cp -p   "${originalPath}/dist-docs/License.txt" "${buildPath}"
     readmeLines=`wc -l "${originalPath}/dist-docs/readme.txt" | awk '{print $1}'`
     lines=`expr $readmeLines - 8`
-    echo "PROCESSING: ${originalPath}/dist-docs/readme.txt"
-    head -n `echo $lines` "${originalPath}/dist-docs/readme.txt" > "${buildPath}/readme.txt"
+    /bin/echo "PROCESSING: ${originalPath}/dist-docs/readme.txt"
+    head -n `/bin/echo $lines` "${originalPath}/dist-docs/readme.txt" > "${buildPath}/readme.txt"
 fi
 
-echo "PROCESSING: ${originalPath}/themes"
+/bin/echo "PROCESSING: ${originalPath}/themes"
 cp -prf "${originalPath}/themes" "${buildPath}"
 
-find "${buildPath}" -name "\.*" -exec rm -rf {} \;
+/bin/echo "Clean up dot files."
+find "${buildPath}" -name "\.*" -exec rm -rf {} \; -prune
+
+if [ $choice = 3 ]; then
+    targetDir=$(dirname "${topOfDir}")
+    /bin/echo "Move ${imRootName} directory to: ${targetDir}"
+    if [ -e "${targetDir}/${imRootName}" ]; then
+        rm -rf "${targetDir}/${imRootName}"
+    fi
+    mv "${buildPath}" "${targetDir}"
+fi
 
 #
-echo ""
-echo "=================================================" >> "${buildDir}/${receipt}"
-echo " INTER-Mediator Ver.${version} was successfully Build" >> "${buildDir}/${receipt}"
-echo " Check out: ${buildDir}" >> "${buildDir}/${receipt}"
-echo "=================================================" >> "${buildDir}/${receipt}"
-echo "Date: $(date)" >> "${buildDir}/${receipt}"
-echo "OS Info: $(uname -a)" >> "${buildDir}/${receipt}"
-echo "Original: ${originalPath}" >> "${buildDir}/${receipt}"
-echo "Build to: ${buildPath}" >> "${buildDir}/${receipt}"
+/bin/echo ""
+/bin/echo "=================================================" >> "${buildDir}/${receipt}"
+/bin/echo " INTER-Mediator Ver.${version} was successfully Build" >> "${buildDir}/${receipt}"
+/bin/echo " Check out: ${buildDir}" >> "${buildDir}/${receipt}"
+/bin/echo "=================================================" >> "${buildDir}/${receipt}"
+/bin/echo "Date: $(date)" >> "${buildDir}/${receipt}"
+/bin/echo "OS Info: $(uname -a)" >> "${buildDir}/${receipt}"
+/bin/echo "Original: ${originalPath}" >> "${buildDir}/${receipt}"
+/bin/echo "Build to: ${buildPath}" >> "${buildDir}/${receipt}"
 if [ $choice = 1 ]; then
-    echo 'Your Choice: (1) Complete (everything contains)' >> "${buildDir}/${receipt}"
+    /bin/echo 'Your Choice: (1) Complete (everything contains)' >> "${buildDir}/${receipt}"
 elif [ $choice = 2 ]; then
-    echo 'Your Choice: (2) Core only (the least set to work web applications)' >> "${buildDir}/${receipt}"
+    /bin/echo 'Your Choice: (2) Core only (the least set to work web applications)' >> "${buildDir}/${receipt}"
 elif [ $choice = 3 ]; then
-    echo 'Your Choice: (3) Core + Support (add Auth_Support and INTER-Mediator-Support)' >> "${buildDir}/${receipt}"
-else
-    echo 'Your Choice: (1) Complete (everything contains)' >> "${buildDir}/${receipt}"
+    /bin/echo 'Your Choice: (3) Core only, and move it to 3-up directory (the ancestor of original INTER-Mediator)' >> "${buildDir}/${receipt}"
 fi
-echo "" >> "${buildDir}/${receipt}"
-echo "You can deploy the 'INTER-Mediator' folder into your web applications. Enjoy!!" >> "${buildDir}/${receipt}"
-echo "" >> "${buildDir}/${receipt}"
-echo "INTER-Mediator Web Site: https://inter-mediator.com/" >> "${buildDir}/${receipt}"
+/bin/echo "" >> "${buildDir}/${receipt}"
+/bin/echo "You can deploy the 'INTER-Mediator' folder into your web applications. Enjoy!!" >> "${buildDir}/${receipt}"
+/bin/echo "" >> "${buildDir}/${receipt}"
+/bin/echo "INTER-Mediator Web Site: https://inter-mediator.com/" >> "${buildDir}/${receipt}"
 
-echo "================================================="
-echo " INTER-Mediator Ver.${version} was successfully Build"
-echo " Check out: ${buildDir}"
-echo "================================================="
+/bin/echo "================================================="
+/bin/echo " INTER-Mediator Ver.${version} was successfully Build"
+/bin/echo " Check out: ${buildDir}"
+/bin/echo "================================================="
