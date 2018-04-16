@@ -1,6 +1,7 @@
 {
-  "name": "imcommittee/INTER-Mediator",
+  "name": "inter-mediator/inter-mediator",
   "version": "6-dev",
+  "releasedate": "2018-04-16",
   "repositories": [
     {
       "type": "git",
@@ -8,12 +9,15 @@
     }
   ],
   "require": {
-    "matthiasmullie/minify": "1.3.*",
     "php": ">=5.4.0",
     "ext-intl": "*",
     "ext-mbstring": "*",
     "ext-PDO": "*",
     "ext-bcmath": "*"
+  },
+  "require-dev": {
+    "matthiasmullie/minify": "1.3.*",
+    "phpunit/phpunit": "^5"
   },
   "autoload": {
     "psr-4": {
@@ -31,7 +35,7 @@
       "INTERMediator\\FileMakerServer\\RESTAPI\\": "/lib"
     }
   },
-  "description": "The INTER-Mediator framework",
+  "description": "The INTER-Mediator is framework for database-driven web application.",
   "type": "library",
   "keywords": [
     "framework",
@@ -54,5 +58,14 @@
     "manual": "http://inter-mediator.info/"
   },
   "scripts": {
+    "test": [
+      "./vendor/bin/phpunit --bootstrap src/vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+    ],
+    "deploy":[
+      "cd ..",
+      "mkdir -p lib/src",
+      "cp -rf INTER-Mediator lib/src",
+      "lib/src/INTER-Mediator/dist-docs/buildup.sh --deploy"
+    ]
   }
 }
