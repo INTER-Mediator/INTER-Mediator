@@ -560,7 +560,7 @@ var INTERMediatorOnPage = {
                 frontPanel.appendChild(addingButton);
                 resetMessage = document.createElement('div');
                 resetMessage.appendChild(document.createTextNode(
-                    INTERMediatorLib.getInsertedStringFromErrorNumber(2024)));
+                INTERMediatorLib.getInsertedStringFromErrorNumber(2024)));
                 frontPanel.appendChild(resetMessage);
             }
         }
@@ -672,7 +672,13 @@ var INTERMediatorOnPage = {
             };
         }
 
-        if (INTERMediatorOnPage.authCount > 0) {
+        if (INTERMediatorOnPage.publickeysize < 2048) {
+            messageNode = document.getElementById('_im_login_message');
+            INTERMediatorLib.removeChildNodes(messageNode);
+            messageNode.appendChild(
+                document.createTextNode(
+                    INTERMediatorLib.getInsertedStringFromErrorNumber(2025)));
+        } else if (INTERMediatorOnPage.authCount > 0) {
             messageNode = document.getElementById('_im_login_message');
             INTERMediatorLib.removeChildNodes(messageNode);
             messageNode.appendChild(
