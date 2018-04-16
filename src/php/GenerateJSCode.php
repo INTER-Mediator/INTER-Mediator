@@ -20,6 +20,7 @@ class GenerateJSCode
 {
     public function __construct()
     {
+        session_start();
         header('Content-Type: text/javascript;charset="UTF-8"');
         header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
         header('Expires: 0');
@@ -341,6 +342,7 @@ class GenerateJSCode
             $this->generateAssignJS(
                 "INTERMediatorOnPage.publickey",
                 "'" . str_replace(array("\r\n", "\r", "\n"), '', $publickey) . "'");
+            $this->generateAssignJS("INTERMediatorOnPage.publickeysize", $rsa->getSize());
             if (in_array(sha1($generatedPrivateKey), array(
                     '413351603fa756ecd8270147d1a84e9a2de2a3f9',  // Ver. 5.2
                     '094f61a9db51e0159fb0bf7d02a321d37f29a715',  // Ver. 5.3

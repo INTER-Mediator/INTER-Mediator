@@ -196,6 +196,7 @@ IMParts_Catalog.fileupload = {
     finish: function () {
         'use strict';
         var shaObj, hmacValue, targetNode, formNode, i, tagetIdLocal, isProgressingLocal, serialIdLocal, uploadIdLocal;
+        let encrypt = new JSEncrypt();
 
         if (this.html5DDSuported) {
             for (i = 0; i < this.ids.length; i+=1) {
@@ -399,11 +400,12 @@ IMParts_Catalog.fileupload = {
                     formNode.appendChild(inputNode);
 
                     if (INTERMediatorOnPage.authUser.length > 0) {
+                        encrypt.setPublicKey(INTERMediatorOnPage.publickey);
                         inputNode = document.createElement('INPUT');
                         inputNode.setAttribute('type', 'hidden');
                         inputNode.setAttribute('name', 'cresponse');
                         inputNode.setAttribute('value',
-                            INTERMediatorOnPage.publickey.biEncryptedString(
+                            encrypt.encrypt(
                                 INTERMediatorOnPage.authCryptedPassword + IMLib.nl_char +
                                 INTERMediatorOnPage.authChallenge));
                         formNode.appendChild(inputNode);
