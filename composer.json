@@ -1,6 +1,7 @@
 {
-  "name": "imcommittee/INTER-Mediator",
+  "name": "inter-mediator/inter-mediator",
   "version": "6-dev",
+  "releasedate": "2018-04-16",
   "repositories": [
     {
       "type": "git",
@@ -31,7 +32,7 @@
       "INTERMediator\\FileMakerServer\\RESTAPI\\": "/lib"
     }
   },
-  "description": "The INTER-Mediator framework",
+  "description": "The INTER-Mediator is framework for database-driven web application.",
   "type": "library",
   "keywords": [
     "framework",
