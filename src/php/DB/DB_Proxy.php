@@ -169,7 +169,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 }
             }
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
             return false;
         }
@@ -238,7 +238,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         $this->dbSettings->getFieldsRequired(),
                         $this->dbSettings->getValue()
                     );
-                } catch (Exception $ex) {
+                } catch (\Exception $ex) {
                     if ($ex->getMessage() == '_im_no_pusher_exception') {
                         $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
                     } else {
@@ -264,7 +264,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $this->logger->setErrorMessage("Mail sending error: $mailResult");
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
             return false;
         }
@@ -302,7 +302,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         $this->dbClass->notifyHandler->queriedPrimaryKeys(),
                         $result
                     );
-                } catch (Exception $ex) {
+                } catch (\Exception $ex) {
                     if ($ex->getMessage() == '_im_no_pusher_exception') {
                         $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
                     } else {
@@ -328,7 +328,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $this->logger->setErrorMessage("Mail sending error: $mailResult");
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
             return false;
         }
@@ -374,7 +374,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         $this->dbClass->notifyHandler->queriedEntity(),
                         $this->dbClass->notifyHandler->queriedPrimaryKeys()
                     );
-                } catch (Exception $ex) {
+                } catch (\Exception $ex) {
                     if ($ex->getMessage() == '_im_no_pusher_exception') {
                         $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
                     } else {
@@ -382,7 +382,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     }
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
             return false;
         }
@@ -417,7 +417,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         $this->dbClass->notifyHandler->queriedPrimaryKeys(),
                         $this->dbClass->updatedRecord()
                     );
-                } catch (Exception $ex) {
+                } catch (\Exception $ex) {
                     if ($ex->getMessage() == '_im_no_pusher_exception') {
                         $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
                     } else {
@@ -425,7 +425,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     }
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
             return false;
         }
@@ -1045,32 +1045,45 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     /* Authentication support */
     function decrypting($paramCryptResponse)
     {
+        $password = FALSE;
+        $challenge = FALSE;
+
         $generatedPrivateKey = '';
         $passPhrase = '';
 
-        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-        $currentDirParam = $currentDir . 'params.php';
-        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
+        $imRootDir = \INTERMediator\IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
+        $currentDirParam = $imRootDir . 'params.php';
+        $parentDirParam = dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php';
         if (file_exists($parentDirParam)) {
             include($parentDirParam);
         } else if (file_exists($currentDirParam)) {
             include($currentDirParam);
         }
 
-        $rsaClass = IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
-        $rsa = new $rsaClass;
+        /* cf.) encrypted in generate_authParams() of Adapter_DBServer.js */
+        $rsa = new \phpseclib\Crypt\RSA();
         $rsa->setPassword($passPhrase);
         $rsa->loadKey($generatedPrivateKey);
-        $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
-        $nlPos = strpos($paramCryptResponse, '|');
-        $encryptedPassword = substr($paramCryptResponse, 0, $nlPos);
-        $encryptedChallenge = substr($paramCryptResponse, $nlPos + 1);
-        if (strlen($encryptedPassword) > 0 && strlen($encryptedChallenge) > 0) {
-            $password = $rsa->decrypt(base64_decode($encryptedPassword));
-            $challenge = $rsa->decrypt(base64_decode($encryptedChallenge));
-        } else {
-            return array('', '');
+        $rsa->setEncryptionMode(\phpseclib\Crypt\RSA::ENCRYPTION_PKCS1);
+        $token = isset($_SESSION['FM-Data-token']) ? $_SESSION['FM-Data-token'] : '';
+        $array = explode("\n", $paramCryptResponse);
+        if (strlen($array[0]) > 0 && isset($array[1]) && strlen($array[1]) > 0) {
+            $encryptedArray = explode("\n", $rsa->decrypt(base64_decode($array[0])));
+            if (isset($encryptedArray[1])) {
+                $challenge = $encryptedArray[1];
+            }
+            $encryptedPassword = $encryptedArray[0] . $array[1];
+            if (strlen($encryptedPassword) > 0) {
+                if (strlen($token) > 0 && get_class($this->dbClass) === 'INTERMediator\DB\DB_FileMaker_DataAPI') {
+                    $password = '';
+                } else {
+                    $password = $rsa->decrypt(base64_decode($encryptedPassword));
+                }
+            } else {
+                return array(FALSE, FALSE);
+            }
         }
+
         return array($password, $challenge);
     }
 
