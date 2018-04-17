@@ -2,19 +2,6 @@
 /**
  * DB_FMS_Test_Common file
  */
-//require_once(dirname(__FILE__) . '/../DB_Interfaces.php');
-//require_once(dirname(__FILE__) . '/../DB_UseSharedObjects.php');
-//require_once(dirname(__FILE__) . '/../DB_Settings.php');
-//require_once(dirname(__FILE__) . '/../DB_Formatters.php');
-//require_once(dirname(__FILE__) . '/../DB_Proxy.php');
-//require_once(dirname(__FILE__) . '/../DB_Logger.php');
-//require_once(dirname(__FILE__) . '/../DB_FileMaker_FX.php');
-//require_once(dirname(__FILE__) . '/../DB_FileMaker_DataAPI.php');
-//require_once(dirname(__FILE__) . '/../IMUtil.php');
-//require_once(dirname(__FILE__) . '/../IMLocale.php');
-//require_once(dirname(__FILE__) . '/../LDAPAuth.php');
-//require_once(dirname(__FILE__) . '/../MessageStrings.php');
-
 use \PHPUnit\Framework\TestCase;
 
 class DB_FMS_Test_Common extends TestCase
@@ -43,7 +30,7 @@ class DB_FMS_Test_Common extends TestCase
         $layoutName = 'person_layout';
         $expected = '-db=TestDB&-lay=person_layout&-lay.response=person_layout&-max=1&-sortfield.1=id&-sortorder.1=ascend&-findall';
         $this->dbProxySetupForAccess($layoutName, 1);
-        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+        if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\DB_FileMaker_DataAPI') {
             $expected = '/fmi/rest/api/find/TestDB/person_layout';
         }
         $this->db_proxy->readFromDB($layoutName);
@@ -461,10 +448,10 @@ class DB_FMS_Test_Common extends TestCase
 
 
         $this->dbProxySetupForAccess('postalcode', 1000000);
-        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+        if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\DB_FileMaker_FX') {
             $recId = $result[0]['-recid'];
             $this->db_proxy->dbSettings->addExtraCriteria('-recid', 'eq', $recId);
-        } else if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+        } else if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\DB_FileMaker_DataAPI') {
             foreach ($result as $record) {
                 $recId = $record['recordId'];
                 $this->db_proxy->dbSettings->addExtraCriteria('recordId', 'eq', $recId);
@@ -664,7 +651,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertTrue(count($result) == $this->db_proxy->getDatabaseResultCount(), $testName);
 
         //based on INSERT person SET id=2,name='Someone',address='Tokyo, Japan',mail='msyk@msyk.net';
-        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+        if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\DB_FileMaker_FX') {
             foreach ($result as $index => $record) {
                 if ($record['id'] == 2) {
                     $this->assertTrue($result[1]['id'] == 2, $testName);
@@ -672,7 +659,7 @@ class DB_FMS_Test_Common extends TestCase
                     $this->assertTrue($result[1]['address'] == 'Tokyo, Japan', $testName);
                 }
             }
-        } else if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+        } else if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\DB_FileMaker_DataAPI') {
             // [WIP]
             if (!is_null($result)) {
                 foreach ($result as $record) {
@@ -785,9 +772,9 @@ class DB_FMS_Test_Common extends TestCase
         $this->dbProxySetupForAccess('person_layout', 1);
 
         $className = get_class($this->db_proxy->dbClass->specHandler);
-        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+        if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\DB_FileMaker_FX') {
             $this->assertEquals('-recid', call_user_func(array($className, 'defaultKey')));
-        } else if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+        } else if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\DB_FileMaker_DataAPI') {
             $this->assertEquals('recordId', call_user_func(array($className, 'defaultKey')));
         }
     }
@@ -797,9 +784,9 @@ class DB_FMS_Test_Common extends TestCase
         $this->dbProxySetupForAccess('person_layout', 1);
 
         $value = $this->db_proxy->dbClass->specHandler->getDefaultKey();
-        if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+        if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\DB_FileMaker_FX') {
             $this->assertEquals('-recid', $value);
-        } else if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+        } else if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\DB_FileMaker_DataAPI') {
             $this->assertEquals('recordId', $value);
         }
     }

@@ -12,12 +12,16 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'CWPKit' . DIRECTORY_SEPARATOR . 'CWPKit.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'DB_Support' . DIRECTORY_SEPARATOR . 'DB_Spec_Handler_FileMaker_FX.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'DB_Support' . DIRECTORY_SEPARATOR . 'DB_Auth_Common.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'DB_Support' . DIRECTORY_SEPARATOR . 'DB_Notification_Common.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'DB_Support' . DIRECTORY_SEPARATOR . 'DB_Auth_Handler_FileMaker_FX.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'DB_Support' . DIRECTORY_SEPARATOR . 'DB_Notification_Handler_FileMaker_FX.php');
+
+namespace INTERMediator\DB;
+use \Exception;
+
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'CWPKit' . DIRECTORY_SEPARATOR . 'CWPKit.php');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Support' . DIRECTORY_SEPARATOR . 'DB_Spec_Handler_FileMaker_FX.php');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Support' . DIRECTORY_SEPARATOR . 'DB_Auth_Common.php');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Support' . DIRECTORY_SEPARATOR . 'DB_Notification_Common.php');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Support' . DIRECTORY_SEPARATOR . 'DB_Auth_Handler_FileMaker_FX.php');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Support' . DIRECTORY_SEPARATOR . 'DB_Notification_Handler_FileMaker_FX.php');
 
 class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
 {
@@ -89,7 +93,8 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
 
     private function setupFX_Impl($layoutName, $recordCount, $user, $password)
     {
-        $fxPath = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'FX';
+        $fxPath = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .
+            '..' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'FX';
         $fxFiles = array(
             'FX.php',
             'lib/datasource_classes' . DIRECTORY_SEPARATOR . 'RetrieveFM7Data.class.php',
@@ -100,12 +105,12 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                 require_once($path);
             } else {
                 // If FX.php isn't installed in valid directories, it shows error message and finishes.
-                throw new Exception('Data Access Class "FileMaker_FX" of INTER-Mediator requires ' .
+                throw new \Exception('Data Access Class "FileMaker_FX" of INTER-Mediator requires ' .
                     basename($fxFile) . ' on any right directory.');
             }
         }
 
-        $fxObj = new FX(
+        $fxObj = new \FX(
             $this->dbSettings->getDbSpecServer(),
             $this->dbSettings->getDbSpecPort(),
             $this->dbSettings->getDbSpecDataType(),
@@ -331,7 +336,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                     if (isset($condition['operator'])) {
                         $condition = $this->normalizedCondition($condition);
                         if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                            throw new Exception("Invalid Operator.: {$condition['operator']}");
+                            throw new \Exception("Invalid Operator.: {$condition['operator']}");
                         }
                         $this->fx->AddDBParam($condition['field'], $condition['value'], $condition['operator']);
                         $searchConditions[] = $this->setSearchConditionsForCompoundFound(
@@ -364,7 +369,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                         if (isset($condition['operator'])) {
                             $condition = $this->normalizedCondition($condition);
                             if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                                throw new Exception("Invalid Operator.: {$condition['operator']}");
+                                throw new \Exception("Invalid Operator.: {$condition['operator']}");
                             }
                             $this->fx->AddDBParam($condition['field'], $condition['value'], $condition['operator']);
                             $searchConditions[] = $this->setSearchConditionsForCompoundFound(
@@ -402,7 +407,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                 } else {
                     $condition = $this->normalizedCondition($condition);
                     if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                        throw new Exception("Invalid Operator.: {$condition['field']}/{$condition['operator']}");
+                        throw new \Exception("Invalid Operator.: {$condition['field']}/{$condition['operator']}");
                     }
 
                     $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -448,10 +453,10 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                             "{$tableName}{$this->dbSettings->getSeparator()}{$foreignField}", $foreignValue);
                         if (!$usePortal) {
                             if (!$this->specHandler->isPossibleOperator($foreignOperator)) {
-                                throw new Exception("Invalid Operator.: {$condition['operator']}");
+                                throw new \Exception("Invalid Operator.: {$condition['operator']}");
                             }
                             if ($useOrOperation) {
-                                throw new Exception("Condition Incompatible.: The OR operation and foreign key can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
+                                throw new \Exception("Condition Incompatible.: The OR operation and foreign key can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
                             }
                             $this->fx->AddDBParam($foreignField, $formattedValue, $foreignOperator);
                             $searchConditions[] = $this->setSearchConditionsForCompoundFound(
@@ -485,7 +490,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                     $authFailure = true;
                 } else {
                     if ($useOrOperation) {
-                        throw new Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
+                        throw new \Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
                     }
                     $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
                     $this->fx->AddDBParam($authInfoField, $signedUser, 'eq');
@@ -503,7 +508,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                     $authFailure = true;
                 } else {
                     if ($useOrOperation) {
-                        throw new Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
+                        throw new \Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
                     }
                     $this->fx->AddDBParam($authInfoField, $belongGroups[0], 'eq');
                     $searchConditions[] = $this->setSearchConditionsForCompoundFound(
@@ -535,7 +540,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
 
         if (!is_null($this->softDeleteField) && !is_null($this->softDeleteValue)) {
             if ($useOrOperation) {
-                throw new Exception("Condition Incompatible.: The soft-delete record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
+                throw new \Exception("Condition Incompatible.: The soft-delete record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
             }
             $this->fx->AddDBParam($this->softDeleteField, $this->softDeleteValue, 'neq');
             $searchConditions[] = $this->setSearchConditionsForCompoundFound(
@@ -551,7 +556,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
             foreach ($context['sort'] as $condition) {
                 if (isset($condition['direction'])) {
                     if (!$this->specHandler->isPossibleOrderSpecifier($condition['direction'])) {
-                        throw new Exception("Invalid Sort Specifier.");
+                        throw new \Exception("Invalid Sort Specifier.");
                     }
                     $this->fx->AddSortParam($condition['field'], $this->_adjustSortDirection($condition['direction']));
                 } else {
@@ -565,7 +570,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                 foreach ($parentTable['sort'] as $condition) {
                     if (isset($condition['direction'])) {
                         if (!$this->specHandler->isPossibleOrderSpecifier($condition['direction'])) {
-                            throw new Exception("Invalid Sort Specifier.");
+                            throw new \Exception("Invalid Sort Specifier.");
                         }
                         $this->fx->AddSortParam(
                             $condition['field'], $this->_adjustSortDirection($condition['direction']));
@@ -580,7 +585,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
         if (count($this->dbSettings->getExtraSortKey()) > 0) {
             foreach ($this->dbSettings->getExtraSortKey() as $condition) {
                 if (!$this->specHandler->isPossibleOrderSpecifier($condition['direction'])) {
-                    throw new Exception("Invalid Sort Specifier.");
+                    throw new \Exception("Invalid Sort Specifier.");
                 }
                 $this->fx->AddSortParam($condition['field'], $this->_adjustSortDirection($condition['direction']));
             }
@@ -608,7 +613,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                 }
             }
         }
-        $fxUtility = new RetrieveFM7Data($this->fx);
+        $fxUtility = new \RetrieveFM7Data($this->fx);
         $currentSort = $fxUtility->CreateCurrentSort();
         $config = array(
             'urlScheme' => $this->fx->urlScheme,
@@ -617,7 +622,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
             'DBUser' => $this->dbSettings->getAccessUser(),
             'DBPassword' => $this->dbSettings->getAccessPassword(),
         );
-        $cwpkit = new CWPKit($config);
+        $cwpkit = new \CWPKit($config);
 
         $compoundFind = TRUE;
         if ($searchConditions === array() || (int)$cwpkit->getServerVersion() < 12) {
@@ -761,7 +766,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                             try {
                                 $fieldValue = $this->formatter->formatterFromDB(
                                     "{$tableName}{$this->dbSettings->getSeparator()}{$fieldName}", $field['data']);
-                            } catch (Exception $e) {
+                            } catch (\Exception $e) {
                                 $fieldValue = $field['data'];
                             }
                             if ($fieldName == $keyField && $keyField != $this->specHandler->getDefaultKey()) {
@@ -858,7 +863,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                     $i++;
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->setErrorMessage('INTER-Mediator reports error at find action: Exception error occurred.');
             return null;
         }
@@ -1002,7 +1007,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : $this->specHandler->getDefaultKey();
 
-        $fxUtility = new RetrieveFM7Data($this->fx);
+        $fxUtility = new \RetrieveFM7Data($this->fx);
         $config = array(
             'urlScheme' => $this->fx->urlScheme,
             'dataServer' => $this->fx->dataServer,
@@ -1010,14 +1015,14 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
             'DBUser' => $this->dbSettings->getAccessUser(),
             'DBPassword' => $this->dbSettings->getAccessPassword(),
         );
-        $cwpkit = new CWPKit($config);
+        $cwpkit = new \CWPKit($config);
 
         if (isset($tableInfo['query'])) {
             foreach ($tableInfo['query'] as $condition) {
                 if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
                     $condition = $this->normalizedCondition($condition);
                     if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                        throw new Exception("Invalid Operator.");
+                        throw new \Exception("Invalid Operator.");
                     }
                     $convertedValue = $this->formatter->formatterToDB(
                         "{$tableSourceName}{$this->dbSettings->getSeparator()}{$condition['field']}",
@@ -1031,7 +1036,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
             if (!$this->dbSettings->getPrimaryKeyOnly() || $value['field'] == $primaryKey) {
                 $value = $this->normalizedCondition($value);
                 if (!$this->specHandler->isPossibleOperator($value['operator'])) {
-                    throw new Exception("Invalid Operator.: {$condition['operator']}");
+                    throw new \Exception("Invalid Operator.: {$condition['operator']}");
                 }
                 $convertedValue = $this->formatter->formatterToDB(
                     "{$tableSourceName}{$this->dbSettings->getSeparator()}{$value['field']}", $value['value']);
@@ -1332,7 +1337,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
         foreach ($this->dbSettings->getExtraCriteria() as $value) {
             $value = $this->normalizedCondition($value);
             if (!$this->specHandler->isPossibleOperator($value['operator'])) {
-                throw new Exception("Invalid Operator.");
+                throw new \Exception("Invalid Operator.");
             }
             $this->fx->AddDBParam($value['field'], $value['value'], $value['operator']);
         }

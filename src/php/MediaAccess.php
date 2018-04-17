@@ -73,7 +73,7 @@ class MediaAccess
                 $this->outputImage($content);
             } else if (stripos($target, 'http://') === 0 || stripos($target, 'https://') === 0) { // http or https
                 $parsedUrl = parse_url($target);
-                if (get_class($dbProxyInstance->dbClass) === 'DB_FileMaker_DataAPI' &&
+                if (get_class($dbProxyInstance->dbClass) === 'INTERMediator\DB\DB_FileMaker_DataAPI' &&
                     isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver') {
                     // for FileMaker Data API
                     $target = 'http://' . $parsedUrl['user'] . ':' . $parsedUrl['pass'] . '@127.0.0.1' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
@@ -181,19 +181,19 @@ class MediaAccess
             ) {
                 $passPhrase = '';
                 $generatedPrivateKey = ''; // avoid errors for defined in params.php.
-                $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-                $currentDirParam = $currentDir . 'params.php';
-                $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
+
+                $imRootDir = \INTERMediator\IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
+                $currentDirParam = $imRootDir . 'params.php';
+                $parentDirParam = dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php';
                 if (file_exists($parentDirParam)) {
                     include($parentDirParam);
                 } else if (file_exists($currentDirParam)) {
                     include($currentDirParam);
                 }
-                $rsaClass = IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
-                $rsa = new $rsaClass;
+                $rsa = new \phpseclib\Crypt\RSA();
                 $rsa->setPassword($passPhrase);
                 $rsa->loadKey($generatedPrivateKey);
-                $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
+                $rsa->setEncryptionMode(\phpseclib\Crypt\RSA::ENCRYPTION_PKCS1);
                 $cookieNameUser = '_im_username';
                 $cookieNamePassword = '_im_crypted';
                 $credential = isset($_COOKIE[$cookieNameUser]) ? urlencode($_COOKIE[$cookieNameUser]) : '';

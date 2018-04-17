@@ -106,7 +106,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
         $conditions = array($conditions);
         try {
             $result = $this->dbClass->fmData->{$regTable}->query($conditions);
-            if ($result->count() > 0) {
+            if (!is_null($result) && $result->count() > 0) {
                 $this->dbClass->setupFMDataAPIforDB($regTable, '');
                 foreach ($result as $record) {
                     $recId = $record->getRecordId();
@@ -170,7 +170,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
             $conditions = array(array('context_id' => $context[0], 'pk' => $originPK));
             try {
                 $result = $this->dbClass->fmData->{$pksTable}->query($conditions, NULL, 1, 1);
-                if ($result->count() > 0) {
+                if (!is_null($result) && $result->count() > 0) {
                     $targetClients[] = $context[1];
                 }
             } catch (Exception $e) {
