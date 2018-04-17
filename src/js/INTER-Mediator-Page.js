@@ -315,7 +315,7 @@ const INTERMediatorOnPage = {
         var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox, msgNumber,
             passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton, panelTitle,
             newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox, keyCode,
-            messageNode, oAuthButton, addingButton, resetMessage;
+            messageNode, oAuthButton, addingButton;
         var encrypt = new JSEncrypt();
 
         this.checkPasswordPolicy = function (newPassword, userName, policyString) {
@@ -559,7 +559,7 @@ const INTERMediatorOnPage = {
                 frontPanel.appendChild(addingButton);
                 resetMessage = document.createElement('div');
                 resetMessage.appendChild(document.createTextNode(
-                    INTERMediatorLib.getInsertedStringFromErrorNumber(2024)));
+                INTERMediatorLib.getInsertedStringFromErrorNumber(2024)));
                 frontPanel.appendChild(resetMessage);
             }
         }
@@ -668,7 +668,13 @@ const INTERMediatorOnPage = {
             };
         }
 
-        if (INTERMediatorOnPage.authCount > 0) {
+        if (INTERMediatorOnPage.publickeysize < 2048) {
+            messageNode = document.getElementById('_im_login_message');
+            INTERMediatorLib.removeChildNodes(messageNode);
+            messageNode.appendChild(
+                document.createTextNode(
+                    INTERMediatorLib.getInsertedStringFromErrorNumber(2025)));
+        } else if (INTERMediatorOnPage.authCount > 0) {
             messageNode = document.getElementById('_im_login_message');
             INTERMediatorLib.removeChildNodes(messageNode);
             messageNode.appendChild(

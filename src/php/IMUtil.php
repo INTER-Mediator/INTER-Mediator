@@ -149,74 +149,15 @@ class IMUtil
         return $osName == "Windows NT";
     }
 
-    public static function includeLibClasses($classes)
-    {
-        $pathComp = array(self::pathToINTERMediator(), "lib");
-        foreach ($classes as $aClass) {
-            $classComp = array();
-            foreach (explode("\\", $aClass) as $cComp) {
-                if ($cComp == 'phpseclib') {
-                    $classComp[] = 'phpseclib_v' . (IMUtil::phpVersion() < 6 ? "1" : "2");
-                } else {
-                    $classComp[] = $cComp;
-                }
-            }
-
-            $fpath = IMUtil::combinePathComponents(array_merge($pathComp, $classComp)) . ".php";
-            if (file_exists($fpath)) {
-                require_once($fpath);
-            }
-        }
-    }
-
     public static function phpSecLibClass($aClass)
     {
         $comp = explode("\\", $aClass);
         if (count($comp) >= 2) {
-            if (IMUtil::phpVersion() < 6) {
-                return "\\" . $comp[count($comp) - 2] . "_" . $comp[count($comp) - 1];
-            } else {
-                return $aClass;
-            }
+            return $aClass;
         }
         return "Invalid_Class_Specification";
     }
-/*
-    public static function phpSecLibRequiredClasses()
-    {
-        if (IMUtil::phpVersion() < 6) {
-            return array(
-                'phpseclib\Crypt\Hash',
-                'phpseclib\Crypt\RSA',
-                'phpseclib\Crypt\Base',
-                'phpseclib\Crypt\Rijndael',
-                'phpseclib\Crypt\AES',
-                'phpseclib\Math\BigInteger',
-            );
-        } else {
-            return array(
-                'phpseclib\Crypt\RSA',
-                'phpseclib\Crypt\RSA\MSBLOB',
-                'phpseclib\Crypt\RSA\OpenSSH',
-                'phpseclib\Crypt\RSA\PKCS',
-                'phpseclib\Crypt\RSA\PKCS1',
-                'phpseclib\Crypt\RSA\PKCS8',
-                'phpseclib\Crypt\RSA\PuTTY',
-                'phpseclib\Crypt\RSA\Raw',
-                'phpseclib\Crypt\RSA\XML',
-                'phpseclib\Crypt\Hash',
-                'phpseclib\Crypt\Base',
-                'phpseclib\Crypt\Rijndael',
-                'phpseclib\Crypt\AES',
-                'phpseclib\Math\BigInteger',
-                'ParagonIE\ConstantTime\EncoderInterface',
-                'ParagonIE\ConstantTime\Base64',
-                'ParagonIE\ConstantTime\Binary',
-                'ParagonIE\ConstantTime\Hex',
-            );
-        }
-    }
-*/
+
     public static function removeNull($str)
     {
         return str_replace("\x00", '', $str);
