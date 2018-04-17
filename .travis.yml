@@ -38,7 +38,7 @@ before_script:
   - sleep 5
   - firefox http://localhost:1111/capture &
   - sleep 5
-  - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost:1111/capture
+  - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost:1111/capture &
   - sleep 5
   - mysql -u root < ./dist-docs/sample_schema_mysql.txt
   - sqlite3 /tmp/sample.sq3 < ./dist-docs/sample_schema_sqlite.txt
