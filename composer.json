@@ -8,6 +8,8 @@
       "url": "https://github.com/INTER-Mediator/INTER-Mediator.git"
     }
   ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "require": {
     "php": ">=5.4.0",
     "ext-intl": "*",
@@ -61,7 +63,7 @@
     "test": [
       "./vendor/bin/phpunit --bootstrap src/vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
     ],
-    "deploy":[
+    "deploy": [
       "cd ..",
       "mkdir -p lib/src",
       "cp -rf INTER-Mediator lib/src",
