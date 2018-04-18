@@ -25,7 +25,7 @@ fi
 
 IMROOT="${WEBROOT}/INTER-Mediator"
 IMSUPPORT="${IMROOT}/src/php/DB/Support"
-IMSAMPLE="${IMROOT}/Samples"
+IMSAMPLE="${IMROOT}/samples"
 IMUNITTEST="${IMROOT}/spec/INTER-Mediator-UnitTest"
 IMDISTDOC="${IMROOT}/dist-docs"
 IMVMROOT="${IMROOT}/dist-docs/vm-for-trial"

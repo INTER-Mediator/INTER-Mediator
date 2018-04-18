@@ -1,4 +1,4 @@
-# Recipe file of Itamae for Alpine Linux 3.5/3.6/3.7, Ubuntu Server 14.04/16.04, CentOS 6/7
+# Recipe file of Itamae for Alpine Linux 3.7, Ubuntu Server 16.04, CentOS 6/7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -17,7 +17,7 @@ end
 
 IMROOT = "#{WEBROOT}/INTER-Mediator"
 IMSUPPORT = "#{IMROOT}/src/php/DB/Support"
-IMSAMPLE = "#{IMROOT}/Samples"
+IMSAMPLE = "#{IMROOT}/samples"
 IMUNITTEST = "#{IMROOT}/spec/INTER-Mediator-UnitTest"
 IMDISTDOC = "#{IMROOT}/dist-docs"
 IMVMROOT = "#{IMROOT}/dist-docs/vm-for-trial"
