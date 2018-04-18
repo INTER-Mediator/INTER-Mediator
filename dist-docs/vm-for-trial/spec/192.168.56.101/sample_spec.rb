@@ -522,7 +522,7 @@ describe file(WEBROOT + '/index_original.html'), :if => os[:family] == 'ubuntu' 
   it { should_not be_file }
 end
 
-describe file(WEBROOT + '/INTER-Mediator/INTER-Mediator-Support') do
+describe file(WEBROOT + '/INTER-Mediator/src/php/DB/Support') do
   it { should be_directory }
 end
 
@@ -578,11 +578,11 @@ describe file(WEBROOT + '/params.php'), :if => os[:family] == 'redhat' && os[:re
   its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/var\/lib\/mysql\/mysql.sock;dbname=test_db;charset=utf8mb4';/ }
 end
 
-describe file(WEBROOT + '/INTER-Mediator/INTER-Mediator-Support/defedit.php') do
+describe file(WEBROOT + '/INTER-Mediator/editors/defedit.php') do
   it { should be_file }
 end
 
-describe file(WEBROOT + '/INTER-Mediator/INTER-Mediator-Support/pageedit.php') do
+describe file(WEBROOT + '/INTER-Mediator/editors/pageedit.php') do
   it { should be_file }
 end
 
