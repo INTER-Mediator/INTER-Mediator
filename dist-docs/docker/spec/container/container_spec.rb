@@ -300,7 +300,7 @@ describe file('/var/www/html/index_original.html'), :if => os[:family] == 'ubunt
   it { should_not be_file }
 end
 
-describe file('/var/www/html/INTER-Mediator/INTER-Mediator-Support') do
+describe file('/var/www/html/INTER-Mediator/src/php/DB/Support') do
   it { should be_directory }
 end
 
@@ -352,11 +352,11 @@ describe file('/var/www/html/params.php'), :if => os[:family] == 'redhat' && os[
   its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/var\/lib\/mysql\/mysql.sock;dbname=test_db;charset=utf8mb4';/ }
 end
 
-describe file('/var/www/html/INTER-Mediator/INTER-Mediator-Support/defedit.php') do
+describe file('/var/www/html/INTER-Mediator/editors/defedit.php') do
   it { should be_file }
 end
 
-describe file('/var/www/html/INTER-Mediator/INTER-Mediator-Support/pageedit.php') do
+describe file('/var/www/html/INTER-Mediator/editors/pageedit.php') do
   it { should be_file }
 end
 
