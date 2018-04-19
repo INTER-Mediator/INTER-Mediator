@@ -1,7 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
   "version": "6-dev",
-  "releasedate": "2018-04-16",
+  "time": "2018-04-19",
   "repositories": [
     {
       "type": "git",
@@ -12,12 +12,12 @@
   "prefer-stable": true,
   "require": {
     "php": ">=5.4.0",
-    "ext-intl": "*",
     "ext-mbstring": "*",
     "ext-PDO": "*",
     "ext-bcmath": "*"
   },
   "require-dev": {
+    "ext-intl": "*",
     "matthiasmullie/minify": "1.3.*",
     "phpunit/phpunit": "^5"
   },
