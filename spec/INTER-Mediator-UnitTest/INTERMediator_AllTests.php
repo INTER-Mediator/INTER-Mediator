@@ -20,7 +20,11 @@ class INTERMediator_AllTests extends TestCase
 {
     public static function suite()
     {
-        $suite = new TestSuite( 'all tests' );
+        if (class_exists('TestSuit')) {
+            $suite = new TestSuite( 'all tests' );
+        } else {
+            $suite = new PHPUnit_Framework_TestSuite( 'all tests' );
+        }
         $folder = dirname( __FILE__ ) . '/';
         $suite->addTestFile($folder . 'DataConverter_Currency_YenIM_Test.php');
         $suite->addTestFile($folder . 'DataConverter_Currency_YenIntl_Test.php');
