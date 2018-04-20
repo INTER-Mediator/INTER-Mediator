@@ -5,8 +5,8 @@
 use INTERMediator\GenerateJSCode;
 use PHPUnit\Framework\TestCase;
 
-//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-//spl_autoload_register('loadClass');
+$imRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
+require "{$imRoot}" . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR .'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
 class GenerateJSCode_Test extends TestCase
 {

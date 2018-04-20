@@ -2,8 +2,9 @@
 
 use \PHPUnit\Framework\TestCase;
 use \INTERMediator\DB\DB_Proxy;
-//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-//spl_autoload_register('loadClass');
+
+$imRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
+require "{$imRoot}" . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR .'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
 class DB_Proxy_Test extends TestCase
 {
