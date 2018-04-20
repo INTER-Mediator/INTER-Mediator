@@ -16,7 +16,10 @@
 use \PHPUnit\Framework\TestCase;
 use \PHPUnit\Framework\TestSuite;
 
-class INTERMediator_AllTests extends TestCase
+$imRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
+require "{$imRoot}" . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR .'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
+class INTERMediator_AllTests extends \PHPUnit\Framework\TestCase
 {
     public static function suite()
     {
