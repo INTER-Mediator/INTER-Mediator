@@ -12,7 +12,6 @@
   "prefer-stable": true,
   "require": {
     "php": ">=5.4.0",
-    "ext-intl": "*",
     "ext-mbstring": "*",
     "ext-PDO": "*",
     "ext-bcmath": "*"
@@ -63,8 +62,7 @@
     "test": [
       "./vendor/bin/phpunit --bootstrap src/vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
     ],
-    "deploy": [
-      "cd ..",
+    "post-create-project-cmd": [
       "mkdir -p lib/src",
       "cp -rf INTER-Mediator lib/src",
       "lib/src/INTER-Mediator/dist-docs/buildup.sh --deploy"
