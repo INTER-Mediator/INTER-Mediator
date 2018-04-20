@@ -109,8 +109,8 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache ca-certificates
     apk add --no-cache wget
     update-ca-certificates
-    wget https://phar.phpunit.de/phpunit-5.6.2.phar -P /tmp
-    mv /tmp/phpunit-5.6.2.phar /usr/local/bin/phpunit
+    wget https://phar.phpunit.de/phpunit-6.phar -P /tmp
+    mv /tmp/phpunit-6.phar /usr/local/bin/phpunit
     chmod +x /usr/local/bin/phpunit
 
     rc-service apache2 start
