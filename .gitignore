@@ -1,4 +1,5 @@
 .idea
+.rnd
 tinymce
 npm-debug.log
 .DS_Store
@@ -12,3 +13,5 @@ Samples-Test/target
 dist-docs/pg_upgrade_internal.log
 dist-docs/pg_upgrade_server.log
 dist-docs/pg_upgrade_utility.log
+vendor/
+node_modules/

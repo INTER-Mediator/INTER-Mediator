@@ -24,9 +24,9 @@ else
 fi
 
 IMROOT="${WEBROOT}/INTER-Mediator"
-IMSUPPORT="${IMROOT}/INTER-Mediator-Support"
-IMSAMPLE="${IMROOT}/Samples"
-IMUNITTEST="${IMROOT}/INTER-Mediator-UnitTest"
+IMSUPPORT="${IMROOT}/src/php/DB/Support"
+IMSAMPLE="${IMROOT}/samples"
+IMUNITTEST="${IMROOT}/spec/INTER-Mediator-UnitTest"
 IMDISTDOC="${IMROOT}/dist-docs"
 IMVMROOT="${IMROOT}/dist-docs/vm-for-trial"
 APACHEOPTCONF="/etc/apache2/sites-enabled/inter-mediator-server.conf"

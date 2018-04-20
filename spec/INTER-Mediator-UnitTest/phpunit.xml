@@ -2,7 +2,7 @@
     <filter>
         <blacklist>
             <directory suffix=".php">../INTER-Mediator-UnitTest/</directory>
-            <directory suffix=".php">../lib/</directory>
+            <directory suffix=".php">../../src/lib/</directory>
         </blacklist>
     </filter>
 </phpunit>

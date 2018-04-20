@@ -1,4 +1,4 @@
-# Recipe file of Itamae for Alpine Linux 3.5/3.6/3.7, Ubuntu Server 14.04/16.04, CentOS 6/7
+# Recipe file of Itamae for Alpine Linux 3.7, Ubuntu Server 16.04, CentOS 6/7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -16,9 +16,9 @@ else
 end
 
 IMROOT = "#{WEBROOT}/INTER-Mediator"
-IMSUPPORT = "#{IMROOT}/INTER-Mediator-Support"
-IMSAMPLE = "#{IMROOT}/Samples"
-IMUNITTEST = "#{IMROOT}/INTER-Mediator-UnitTest"
+IMSUPPORT = "#{IMROOT}/src/php/DB/Support"
+IMSAMPLE = "#{IMROOT}/samples"
+IMUNITTEST = "#{IMROOT}/spec/INTER-Mediator-UnitTest"
 IMDISTDOC = "#{IMROOT}/dist-docs"
 IMVMROOT = "#{IMROOT}/dist-docs/vm-for-trial"
 APACHEOPTCONF="/etc/apache2/sites-enabled/inter-mediator-server.conf"
@@ -853,8 +853,8 @@ if node[:platform] == 'ubuntu'
   end
 end
 
-execute "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout 5.x && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git" do
-  command "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout 5.x && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git"
+execute "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout master && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git" do
+  command "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout master && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git"
 end
 
 if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'

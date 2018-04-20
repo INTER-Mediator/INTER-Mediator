@@ -7,7 +7,6 @@ language:
 
 os:
   - linux
-  #- osx
 
 php:
   - nightly
@@ -19,16 +18,8 @@ php:
   - 5.4
 
 matrix:
-  include:
-    - php: 5.3
-      dist: precise
-    - php: 5.2
-      dist: precise
   allow_failures:
     - php: nightly
-    - os: osx
-    - php: 5.2
-    - php: 5.3
 
 ## for Headless Chrome and trusty
 addons:
@@ -47,9 +38,7 @@ before_script:
   - sleep 5
   - firefox http://localhost:1111/capture &
   - sleep 5
-  #- phantomjs node_modules/buster/script/phantom.js http://localhost:1111/capture &
-  # Headless Chrome is available on trusty
-  - if [[ $TRAVIS_PHP_VERSION != "5.2" && $TRAVIS_PHP_VERSION != "5.3" ]]; then google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost:1111/capture & fi
+  - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost:1111/capture &
   - sleep 5
   - mysql -u root < ./dist-docs/sample_schema_mysql.txt
   - sqlite3 /tmp/sample.sq3 < ./dist-docs/sample_schema_sqlite.txt
@@ -59,12 +48,11 @@ before_script:
   - cd ../..
   - psql -c 'create database test_db;' -U postgres
   - psql -U postgres -f ./dist-docs/sample_schema_pgsql.txt test_db
-  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" && $TRAVIS_PHP_VERSION != "5.2" ]]; then composer require 'phpunit/phpunit=4.8.x'; composer install; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" ]]; then composer require 'phpunit/phpunit=4.8.x'; composer install; fi
   - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" || $TRAVIS_PHP_VERSION == "nightly" ]]; then composer require 'phpunit/phpunit=5.7.x'; composer install; fi
 
 script:
-  - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.2' ]; then phpunit --bootstrap ./src/vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit.xml ./spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi"
-  - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.2' ]; then vendor/bin/phpunit --bootstrap ./src/vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit.xml ./spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi"
+  - ./vendor/bin/phpunit --bootstrap ./src/vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit.xml ./spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php
   - npm test
 
 notifications:

@@ -113,7 +113,7 @@ class GenerateJSCode
          * Generate the link to the definition file editor
          */
         $relativeToDefFile = '';
-        $editorPath = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator-Support';
+        $editorPath = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'editors';
         $defFilePath = $documentRoot . $serverName;
         while (strpos($defFilePath, $editorPath) !== 0 && strlen($editorPath) > 1) {
             $editorPath = dirname($editorPath);
@@ -121,7 +121,7 @@ class GenerateJSCode
         }
         $relativeToDefFile .= substr($defFilePath, strlen($editorPath) + 1);
         $editorPath = dirname(__FILE__) . DIRECTORY_SEPARATOR
-            . 'INTER-Mediator-Support' . DIRECTORY_SEPARATOR . 'defedit.html';
+            . 'editors' . DIRECTORY_SEPARATOR . 'defedit.html';
         if (file_exists($editorPath)) {
             $relativeToEditor = substr($editorPath, strlen($_SERVER['DOCUMENT_ROOT']));
             $this->generateAssignJS("INTERMediatorOnPage.getEditorPath",
