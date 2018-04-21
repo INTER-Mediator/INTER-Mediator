@@ -74,7 +74,7 @@
       "openssl genrsa -out gen.key 2048",
       "cp lib/src/INTER-Mediator/params.php lib/p.php",
       "grep -B 10000 -e '-----BEGIN RSA PRIVATE KEY-----' lib/p.php > lib/params.php",
-      "tail -n +2 gen.key | head -n 25 > lib/params.php",
+      "tail -n +2 gen.key | head -n 25 >> lib/params.php",
       "grep -A 10000 -e '-----END RSA PRIVATE KEY-----' lib/p.php >> lib/params.php",
       "cp lib/src/INTER-Mediator/dist-docs/sample_schema_mysql.txt lib/",
       "cp lib/src/INTER-Mediator/dist-docs/project-start.html index.html",
