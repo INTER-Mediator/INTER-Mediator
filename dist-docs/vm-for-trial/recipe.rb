@@ -491,6 +491,9 @@ elsif node[:platform] == 'ubuntu'
     package 'libapache2-mod-php7.0' do
       action :install
     end
+    package 'php7.0-dom' do
+      action :install
+    end
     package 'php7.0-mbstring' do
       action :install
     end
