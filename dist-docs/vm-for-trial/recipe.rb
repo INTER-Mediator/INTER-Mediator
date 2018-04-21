@@ -477,24 +477,6 @@ if node[:platform] == 'alpine'
     action :install
     version '0.8.6-r2'
   end
-  package 'ca-certificates' do
-    action :install
-  end
-  package 'wget' do
-    action :install
-  end
-  execute 'update-ca-certificates' do
-    command 'update-ca-certificates'
-  end
-  execute 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp' do
-    command 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp'
-  end
-  execute 'mv /tmp/phpunit-6.phar /usr/local/bin/phpunit' do
-    command 'mv /tmp/phpunit-6.phar /usr/local/bin/phpunit'
-  end
-  execute 'chmod +x /usr/local/bin/phpunit' do
-    command 'chmod +x /usr/local/bin/phpunit'
-  end
 elsif node[:platform] == 'ubuntu'
   package 'libmysqlclient-dev' do
     action :install
@@ -771,9 +753,26 @@ elsif node[:platform] == 'redhat'
   end
 end
 
-if node[:platform] == 'ubuntu'
-  package 'phpunit' do
+if node[:platform] == 'alpine'
+  package 'ca-certificates' do
     action :install
+  end
+  execute 'update-ca-certificates' do
+    command 'update-ca-certificates'
+  end
+end
+if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
+  package 'wget' do
+    action :install
+  end
+  execute 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp' do
+    command 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp'
+  end
+  execute 'mv /tmp/phpunit-6.phar /usr/local/bin/phpunit' do
+    command 'mv /tmp/phpunit-6.phar /usr/local/bin/phpunit'
+  end
+  execute 'chmod +x /usr/local/bin/phpunit' do
+    command 'chmod +x /usr/local/bin/phpunit'
   end
 elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 6
   package 'php-phpunit-PHPUnit' do
