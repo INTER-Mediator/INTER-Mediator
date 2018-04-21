@@ -63,8 +63,15 @@
       "./vendor/bin/phpunit --bootstrap src/vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
     ],
     "post-create-project-cmd": [
+      "mkdir -p ../398A6028-0181-4B75-BFD9-1C094B5ADD9F",
+      "mv -f * ../398A6028-0181-4B75-BFD9-1C094B5ADD9F",
       "mkdir -p lib/src",
-      "cp -rf INTER-Mediator lib/src",
+      "mv ../398A6028-0181-4B75-BFD9-1C094B5ADD9F lib/src/INTER-Mediator",
+      "cp lib/src/INTER-Mediator/pamams.php lib/",
+      "cp lib/src/INTER-Mediator/dist-docs/sample_schema_mysql.txt lib/",
+      "cp lib/src/INTER-Mediator/dist-docs/project-start.html index.html",
+      "cp lib/src/INTER-Mediator/samples/templates/page_file_simple.html template.html",
+      "cp lib/src/INTER-Mediator/samples/templates/definition_file_simple.php template.php",
       "lib/src/INTER-Mediator/dist-docs/buildup.sh --deploy"
     ]
   }
