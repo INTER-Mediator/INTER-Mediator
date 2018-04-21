@@ -80,7 +80,7 @@ if (file_exists('/etc/alpine-release')) {
 
 <h2>リンク</h2>
 
-<h3><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/../../Samples/" target="_blank">サンプルプログラム</a></h3>
+<h3><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/../../samples/" target="_blank">サンプルプログラム</a></h3>
 <ul data-im-control="ignore_enc_rep">
     <li>サンプルの中にある認証ユーザー用のデータベースには、user1〜user5の5つのユーザーが定義されており、パスワードはユーザー名と同一です。
         概ね、user1でログインができますが、アクセス権の設定のテストも行っており、すべてのユーザーでのログインができるとは限りません。

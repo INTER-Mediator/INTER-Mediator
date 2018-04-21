@@ -44,23 +44,23 @@ describe "INTER-Mediator-Server VM" do
     @wait = Selenium::WebDriver::Wait.new(:timeout => 15)
   end
 
-  it "The title of the first page should be 'INTER-Mediator 5.8-dev - VM for Trial'." do
-    expect(@driver.title).to eq("INTER-Mediator 5.8-dev - VM for Trial")
+  it "The title of the first page should be 'INTER-Mediator 6-dev - VM for Trial'." do
+    expect(@driver.title).to eq("INTER-Mediator 6-dev - VM for Trial")
   end
 
-  it "The path of 'Sample Program' should be '/INTER-Mediator/Samples/'." do
-    element = @driver.find_element(:xpath, "//a[contains(@href, 'Samples')]")
-    expect(element.attribute("href")).to eq("http://" + @addr + "/INTER-Mediator/Samples/")
+  it "The path of 'Sample Program' should be '/INTER-Mediator/samples/'." do
+    element = @driver.find_element(:xpath, "//a[contains(@href, 'samples')]")
+    expect(element.attribute("href")).to eq("http://" + @addr + "/INTER-Mediator/samples/")
     @driver.navigate.to element.attribute("href")
     expect(@driver.title).to eq("INTER-Mediator - Samples")
   end
 
   it "Practice 'search(no JavaScript)' for MySQL/MariaDB should be working" do
-    @driver.navigate.to "http://" + @addr + "/INTER-Mediator/Samples/"
+    @driver.navigate.to "http://" + @addr + "/INTER-Mediator/samples/"
     @wait.until {
       element = @driver.find_element(:xpath, "//a[contains(@href, 'Practices/search_page1.html')]")
       element.click
-      #@driver.navigate.to "http://" + @addr + "/INTER-Mediator/Samples/Practices/search_page1.html"
+      #@driver.navigate.to "http://" + @addr + "/INTER-Mediator/samples/Practices/search_page1.html"
       sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(10)
@@ -95,11 +95,11 @@ describe "INTER-Mediator-Server VM" do
   end
 
   it "Practice 'search(using JavaScript)' for MySQL/MariaDB should be working" do
-    @driver.navigate.to "http://" + @addr + "/INTER-Mediator/Samples/"
+    @driver.navigate.to "http://" + @addr + "/INTER-Mediator/samples/"
     @wait.until {
       element = @driver.find_element(:xpath, "//a[contains(@href, 'Practices/search_page2.html')]")
       element.click
-      #@driver.navigate.to "http://" + @addr + "/INTER-Mediator/Samples/Practices/search_page2.html"
+      #@driver.navigate.to "http://" + @addr + "/INTER-Mediator/samples/Practices/search_page2.html"
       sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(10)
@@ -134,7 +134,7 @@ describe "INTER-Mediator-Server VM" do
   end
 
   it "Sample 'file upload' for MySQL/MariaDB should be working" do
-    @driver.navigate.to "http://" + @addr + "/INTER-Mediator/Samples/"
+    @driver.navigate.to "http://" + @addr + "/INTER-Mediator/samples/"
     @wait.until {
       element = @driver.find_element(:xpath, "//a[contains(@href, 'Sample_webpage/fileupload_MySQL.html')]")
       element.click
