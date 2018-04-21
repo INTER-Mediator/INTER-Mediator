@@ -3,9 +3,7 @@
  * DataConverter_AppendPrefix_Test file
  */
 use \PHPUnit\Framework\TestCase;
-use \INTERMediator\Data_Converter\DataConverter_AppendPrefix;
-//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-//require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_AppendPrefix.php');
+use \INTERMediator\Data_Converter\AppendPrefix;
 
 class DataConverter_AppendPrefix_Test extends TestCase
 {
@@ -13,7 +11,7 @@ class DataConverter_AppendPrefix_Test extends TestCase
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
         
-        $this->dataconverter = new DataConverter_AppendPrefix('￥');
+        $this->dataconverter = new AppendPrefix('￥');
     }
     
     public function test_converterFromDBtoUser()

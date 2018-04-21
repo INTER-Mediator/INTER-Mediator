@@ -22,9 +22,9 @@
  * "Data Converter Classes" are usually simple ones and you don't have to inhrit this class,
  * however, of course this class has no function.
  *
- * A example of "Data Converter Class" is DataConverter_FMDateTime.php.
+ * A example of "Data Converter Class" is FMDateTime.php.
  * It converts the string containing date and/or time. FileMaker Server accepts just m/d/Y order,
- * however Japanese date time system is Y/m/d order. DataConverter_FMDateTime class can covert
+ * however Japanese date time system is Y/m/d order. FMDateTime class can covert
  * the date-time data to/from each other.
  */
 namespace INTERMediator\Data_Converter;

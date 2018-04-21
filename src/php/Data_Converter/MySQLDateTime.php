@@ -16,9 +16,8 @@
 namespace INTERMediator\Data_Converter;
 use \DateTime;
 use \DateTimeZone;
-//require_once('INTER-Mediator.php');
 
-class DataConverter_MySQLDateTime
+class MySQLDateTime
 {
 
     private $tz = 'Asia/Tokyo'; // Should be custimizable.

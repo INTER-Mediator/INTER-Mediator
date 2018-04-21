@@ -16,7 +16,7 @@
 
 namespace INTERMediator\DB;
 
-class DB_TextFile extends DB_UseSharedObjects implements DB_Interface
+class TextFile extends UseSharedObjects implements DBClass_Interface
 {
     private $recordCount;
 

@@ -15,7 +15,7 @@
 
 namespace INTERMediator\DB;
 
-class DB_Formatters
+class Formatters
 {
     private $formatter = null;
     /* Formatter processing */
@@ -25,8 +25,7 @@ class DB_Formatters
             $this->formatter = array();
             foreach ($fmt as $oneItem) {
                 if (!isset($this->formatter[$oneItem['field']])) {
-                    $cvClassName = "\INTERMediator\Data_Converter\DataConverter_{$oneItem['converter-class']}";
-                    //    require_once("{$cvClassName}.php");
+                    $cvClassName = "\\INTERMediator\\Data_Converter\\".$oneItem['converter-class'];
                     $this->formatter[$oneItem['field']]
                         = new $cvClassName(isset($oneItem['parameter']) ? $oneItem['parameter'] : '');
                 }

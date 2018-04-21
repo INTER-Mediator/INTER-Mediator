@@ -14,7 +14,7 @@
  */
 namespace INTERMediator\Data_Converter;
 
-class DataConverter_HTMLString
+class HTMLString
 {
     protected $autolink = false;
     protected $noescape = false;

@@ -1,10 +1,10 @@
 <?php
 
 use \PHPUnit\Framework\TestCase;
-use \INTERMediator\DB\DB_Proxy;
+use \INTERMediator\DB\Proxy;
 
-$imRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
-require "{$imRoot}" . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR .'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+//$imRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
+//require "{$imRoot}" . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR .'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
 class DB_Proxy_Test extends TestCase
 {
@@ -13,7 +13,7 @@ class DB_Proxy_Test extends TestCase
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
 
-        $this->db_proxy = new DB_Proxy(true);
+        $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize(array(
             array(
                 'records' => 1,
@@ -65,7 +65,7 @@ class DB_Proxy_Test extends TestCase
      */
     function test___construct()
     {
-        $testName = "Check __construct function in DB_Proxy.php.";
+        $testName = "Check __construct function in Proxyp.";
         if (function_exists('xdebug_get_headers')) {
             ob_start();
             $this->db_proxy->__construct();

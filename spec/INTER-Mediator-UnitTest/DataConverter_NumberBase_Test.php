@@ -4,9 +4,7 @@
  */
 use \PHPUnit\Framework\TestCase;
 use \INTERMediator\Locale\IMLocale;
-use \INTERMediator\Data_Converter\DataConverter_NumberBase;
-//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-//require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_NumberBase.php');
+use \INTERMediator\Data_Converter\NumberBase;
 
 class DataConverter_NumberBase_Test extends TestCase
 {
@@ -14,7 +12,7 @@ class DataConverter_NumberBase_Test extends TestCase
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
         setlocale (LC_ALL, 'ja_JP', 'ja');
-        $this->dataconverter = new DataConverter_NumberBase();
+        $this->dataconverter = new NumberBase();
         
 //        $locInfo = localeconv();
 //        $this->decimalMark = $locInfo['mon_decimal_point'];

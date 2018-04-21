@@ -3,7 +3,7 @@
  * INTERMediator_Test file
  */
 use \PHPUnit\Framework\TestCase;
-use \INTERMediator\DB\DB_Proxy;
+use \INTERMediator\DB\Proxy;
 use \INTERMediator\Locale\IMLocale;
 use \INTERMediator\IMUtil;
 //require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
@@ -16,7 +16,7 @@ class INTERMediator_Test extends TestCase
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
 
-        $this->db_proxy = new DB_Proxy(true);
+        $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize(array(),
             array(
                 'authentication' => array( // table only, for all operations

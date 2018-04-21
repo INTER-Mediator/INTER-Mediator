@@ -14,19 +14,33 @@
  */
 namespace INTERMediator\Data_Converter;
 
-class DataConverter_NullZeroString
+class Number extends NumberBase
 {
-    public function __construct()
+
+    private $d = null;
+    private $isZeroNoString = false;
+
+    /**
+     *
+     * @param
+     * @return
+     */
+    function __construct($digits = 0)
     {
+        parent::__construct();
+        if ($digits === true)    {
+            $this->isZeroNoString = true;
+            $this->d = 0;
+        } else {
+            $this->d = $digits;
+        }
     }
 
-    public function converterFromUserToDB($str)
+    function converterFromDBtoUser($str)
     {
-        return ($str == '') ? null : $str;
-    }
-
-    public function converterFromDBtoUser($str)
-    {
-        return is_null($str) ? '' : $str;
+        if ($this->isZeroNoString && (double)$str == 0)  {
+            return "";
+        }
+        return number_format((double)$str, (int)($this->d), $this->decimalMark, $this->thSepMark);
     }
 }

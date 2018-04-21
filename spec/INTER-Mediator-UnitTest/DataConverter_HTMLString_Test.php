@@ -2,10 +2,9 @@
 /**
  * DataConverter_HTMLString_Test file
  */
+
 use \PHPUnit\Framework\TestCase;
-use \INTERMediator\Data_Converter\DataConverter_HTMLString;
-//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-//require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_HTMLString.php');
+use \INTERMediator\Data_Converter\HTMLString;
 
 class DataConverter_HTMLString_Test extends TestCase
 {
@@ -13,13 +12,13 @@ class DataConverter_HTMLString_Test extends TestCase
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
         
-        $this->dataconverter = new DataConverter_HTMLString();
-        $this->dataconverter2 = new DataConverter_HTMLString(false);
-        $this->dataconverter3 = new DataConverter_HTMLString('false');
-        $this->dataconverterForLinking = new DataConverter_HTMLString(true);
-        $this->dataconverterForLinking2 = new DataConverter_HTMLString('true');
-        $this->dataconverterForLinking3 = new DataConverter_HTMLString('autolink');
-        $this->dataconverterWithoutEscaping = new DataConverter_HTMLString('noescape');
+        $this->dataconverter = new HTMLString();
+        $this->dataconverter2 = new HTMLString(false);
+        $this->dataconverter3 = new HTMLString('false');
+        $this->dataconverterForLinking = new HTMLString(true);
+        $this->dataconverterForLinking2 = new HTMLString('true');
+        $this->dataconverterForLinking3 = new HTMLString('autolink');
+        $this->dataconverterWithoutEscaping = new HTMLString('noescape');
     }
     
     public function test_converterFromUserToDB()

@@ -17,7 +17,7 @@ namespace INTERMediator\DB;
 
 use \DateTime;
 
-class DB_Extended_PDO extends DB_PDO
+class Extended_PDO extends PDO
 {
     function readFromDB()
     {

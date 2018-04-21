@@ -14,35 +14,26 @@
  */
 namespace INTERMediator\Data_Converter;
 
-//require_once('DataConverter_NumberBase.php');
-
-class DataConverter_Number extends DataConverter_NumberBase
+class AppendPrefix
 {
 
-    private $d = null;
-    private $isZeroNoString = false;
+    private $appendStr;
 
-    /**
-     *
-     * @param
-     * @return
-     */
-    function __construct($digits = 0)
+    function __construct($str = '')
     {
-        parent::__construct();
-        if ($digits === true)    {
-            $this->isZeroNoString = true;
-            $this->d = 0;
-        } else {
-            $this->d = $digits;
-        }
+        $this->appendStr = $str;
     }
 
     function converterFromDBtoUser($str)
     {
-        if ($this->isZeroNoString && (double)$str == 0)  {
-            return "";
+        return $this->appendStr . $str;
+    }
+
+    function converterFromUserToDB($str)
+    {
+        if (strpos($str, $this->appendStr) === 0) {
+            return substr($str, strlen($this->appendStr));
         }
-        return number_format((double)$str, (int)($this->d), $this->decimalMark, $this->thSepMark);
+        return $str;
     }
 }

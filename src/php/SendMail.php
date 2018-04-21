@@ -15,12 +15,8 @@
 
 namespace INTERMediator;
 
-require_once('lib/mailsend/OME.php');
-require_once('lib/mailsend/qdsmtp/qdsmtp.php');
-
 class SendMail
 {
-
     public function processing($sendMailParam, $result, $smtpConfig)
     {
         $isError = false;

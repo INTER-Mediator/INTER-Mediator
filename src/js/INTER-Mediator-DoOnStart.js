@@ -124,7 +124,7 @@ INTERMediatorLib.addEvent(window, 'load', function () {
     }
     errorNode = document.getElementById(INTERMediatorOnPage.nonSupportMessageId);
 
-    //if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX') {
+    //if (INTERMediatorOnPage.dbClassName === 'FileMaker_FX') {
     //    INTERMediator_DBAdapter.eliminateDuplicatedConditions = true;
     //}
 

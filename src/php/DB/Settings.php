@@ -16,7 +16,7 @@
 
 namespace INTERMediator\DB;
 
-class DB_Settings
+class Settings
 {
     private $dbSpecServer = null;
     private $dbSpecPort = null;

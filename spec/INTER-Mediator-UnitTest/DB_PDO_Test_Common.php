@@ -9,9 +9,7 @@
  */
 
 use \PHPUnit\Framework\TestCase;
-
-//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-//spl_autoload_register('loadClass');
+//use \DateTime;
 
 abstract class DB_PDO_Test_Common extends TestCase
 {

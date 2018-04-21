@@ -4,9 +4,6 @@
  */
 use \PHPUnit\Framework\TestCase;
 
-//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-//require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_Currency.php');
-
 abstract class DataConverter_Currency_Base_Test extends TestCase
 {
     protected $currencyMark;

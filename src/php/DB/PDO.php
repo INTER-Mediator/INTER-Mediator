@@ -15,13 +15,13 @@
 
 namespace INTERMediator\DB;
 
-use \PDO;
-use \PDOException;
+//use \PDO;
+//use \PDOException;
 
 /**
- * Class DB_PDO
+ * Class PDO
  */
-class DB_PDO extends DB_UseSharedObjects implements DB_Interface
+class PDO extends UseSharedObjects implements DBClass_Interface
 {
     public $link = null;       // Connection with PDO's link
     private $mainTableCount = 0;
@@ -76,11 +76,11 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
             return true;
         }
         try {
-            $this->link = new PDO($this->dbSettings->getDbSpecDSN(),
+            $this->link = new \PDO($this->dbSettings->getDbSpecDSN(),
                 $this->dbSettings->getDbSpecUser(),
                 $this->dbSettings->getDbSpecPassword(),
                 is_array($this->dbSettings->getDbSpecOption()) ? $this->dbSettings->getDbSpecOption() : array());
-        } catch (PDOException $ex) {
+        } catch (\PDOException $ex) {
             $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage() .
                 ", DSN=" . $this->dbSettings->getDbSpecDSN() .
                 ", User=" . $this->dbSettings->getDbSpecUser());
@@ -110,8 +110,8 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
             return true;
         }
         try {
-            $this->link = new PDO($dsnString);
-        } catch (PDOException $ex) {
+            $this->link = new \PDO($dsnString);
+        } catch (\PDOException $ex) {
             $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage() . ", DSN=" . $dsnString);
             return false;
         }
@@ -453,7 +453,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         $keyField = $this->getKeyFieldOfContext($tableInfo);
         $sqlResult = array();
         $isFirstRow = true;
-        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             $rowArray = array();
             foreach ($row as $field => $val) {
                 if ($isFirstRow) {
@@ -589,7 +589,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
                 $keyField = $this->getKeyFieldOfContext($tableInfo);
                 $sqlResult = array();
                 $isFirstRow = true;
-                foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
                     $rowArray = array();
                     foreach ($row as $field => $val) {
                         if ($isFirstRow) {
@@ -729,7 +729,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
             } else {
                 $sqlResult = array();
                 $isFirstRow = true;
-                foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
                     $rowArray = array();
                     foreach ($row as $field => $val) {
                         if ($isFirstRow) {
@@ -890,7 +890,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
             } else {
                 $sqlResult = array();
                 $isFirstRow = true;
-                foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
                     $rowArray = array();
                     foreach ($row as $field => $val) {
                         if ($isFirstRow) {
@@ -998,7 +998,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         }
         $this->logger->setDebugMessage("[queryForTest] {$sql}");
         $recordSet = array();
-        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             $oneRecord = array();
             foreach ($row as $field => $value) {
                 $oneRecord[$field] = $value;

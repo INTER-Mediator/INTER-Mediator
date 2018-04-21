@@ -4,20 +4,18 @@
  */
 
 use \PHPUnit\Framework\TestCase;
-use \INTERMediator\DB\DB_Settings;
-
-//require_once(dirname(__FILE__) . '/../DB_Settings.php');
+use \INTERMediator\DB\Settings;
 
 class DB_Settings_Test extends TestCase
 {
     public function setUp()
     {
-        $this->settings = new DB_Settings();
+        $this->settings = new Settings();
     }
     
     public function test_getStart()
     {
-        $testName = "Check setStart and getStart function in DB_Settings.php.";
+        $testName = "Check setStart and getStart function in Settingsp.";
         
         $startFrom = '10';
         $expected = 10;
@@ -32,7 +30,7 @@ class DB_Settings_Test extends TestCase
 
     public function test_getRecordCount()
     {
-        $testName = "Check setRecordCount and getRecordCount function in DB_Settings.php.";
+        $testName = "Check setRecordCount and getRecordCount function in Settings.php";
         
         $maxSize = '10';
         $expected = 10;

@@ -16,7 +16,7 @@
 
 namespace INTERMediator\DB;
 
-class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
+class Proxy extends UseSharedObjects implements Proxy_Interface
 {
     /**
      * @var null
@@ -62,7 +62,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
     public static function defaultKey()
     {
-        trigger_error("Don't call the static method defaultKey of DB_Proxy class.");
+        trigger_error("Don't call the static method defaultKey of Proxy class.");
         return null;
     }
 
@@ -503,7 +503,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->dbSettings->setDataSourceName(!is_null($target) ? $target : (isset($this->PostData['name']) ? $this->PostData['name'] : "_im_auth"));
         $context = $this->dbSettings->getDataSourceTargetArray();
 
-        $dbClassName = '\INTERMediator\DB\DB_' .
+        $dbClassName = '\\INTERMediator\\DB\\' .
             (isset($context['db-class']) ? $context['db-class'] :
                 (isset($dbspec['db-class']) ? $dbspec['db-class'] :
                     (isset ($params['dbClass']) ? $params['$dbClass'] : '')));
@@ -600,13 +600,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $challengeDSN = $params['issuedHashDSN'];
         }
         if (!is_null($challengeDSN)) {
-            //require_once("DB_PDO.php");
-            $this->authDbClass = new DB_PDO();
+            //require_once("PDO.php
+            $this->authDbClass = new PDO();
             $this->authDbClass->setUpSharedObjects($this);
             $this->authDbClass->setupWithDSN($challengeDSN);
             $this->authDbClass->setupHandlers($challengeDSN);
             $this->logger->setDebugMessage(
-                "The class 'DB_PDO' was instanciated for issuedhash with {$challengeDSN}.", 2);
+                "The class 'PDO' was instanciated for issuedhash with {$challengeDSN}.", 2);
         } else {
             $this->authDbClass = $this->dbClass;
         }
@@ -632,7 +632,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             } else {
                 $this->logger->setDebugMessage("The class '{$className}' was instanciated.", 2);
             }
-            if (is_subclass_of($this->userExpanded, '\INTERMediator\DB\DB_UseSharedObjects')) {
+            if (is_subclass_of($this->userExpanded, '\INTERMediator\DB\UseSharedObjects')) {
                 $this->userExpanded->setUpSharedObjects($this);
             }
         }
@@ -1074,7 +1074,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             }
             $encryptedPassword = $encryptedArray[0] . $array[1];
             if (strlen($encryptedPassword) > 0) {
-                if (strlen($token) > 0 && get_class($this->dbClass) === 'INTERMediator\DB\DB_FileMaker_DataAPI') {
+                if (strlen($token) > 0 && get_class($this->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
                     $password = '';
                 } else {
                     $password = $rsa->decrypt(base64_decode($encryptedPassword));

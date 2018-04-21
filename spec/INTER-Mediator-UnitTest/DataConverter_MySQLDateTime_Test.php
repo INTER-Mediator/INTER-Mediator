@@ -4,9 +4,7 @@
  */
 
 use \PHPUnit\Framework\TestCase;
-use \INTERMediator\Data_Converter\DataConverter_MySQLDateTime;
-//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-//require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_MySQLDateTime.php');
+use \INTERMediator\Data_Converter\MySQLDateTime;
 
 class DataConverter_MySQLDateTime_Test extends TestCase
 {
@@ -14,7 +12,7 @@ class DataConverter_MySQLDateTime_Test extends TestCase
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
         
-        $this->dataconverter = new DataConverter_MySQLDateTime();
+        $this->dataconverter = new MySQLDateTime();
     }
     
     public function test_converterFromDBtoUser()
