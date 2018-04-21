@@ -14,7 +14,8 @@
     "php": ">=5.4.0",
     "ext-mbstring": "*",
     "ext-PDO": "*",
-    "ext-bcmath": "*"
+    "ext-bcmath": "*",
+    "mouf/nodejs-installer" : "*"
   },
   "require-dev": {
     "matthiasmullie/minify": "1.3.*",
