@@ -133,7 +133,7 @@ class OAuthAuth
             "email" => $tokenID["email"]
         );
 
-        $dbProxy = new DB_Proxy();
+        $dbProxy = new Proxy();
         $dbProxy->initialize(null, null, null, false);
         $dbProxy->dbSettings->setLDAPExpiringSeconds(3600 * 24);
         $credential = $dbProxy->generateCredential(30);
