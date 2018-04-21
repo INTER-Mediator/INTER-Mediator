@@ -43,8 +43,6 @@ do
 	esac
 done
 
-echo $param
-
 /bin/echo "================================================="
 /bin/echo " Start to build the INTER-Mediator Ver.${version}"
 /bin/echo "-------------------------------------------------"
@@ -61,8 +59,8 @@ buildPath="${buildDir}/${imRootName}"
 /bin/echo " Original: ${originalPath}"
 /bin/echo " Build to: ${buildPath}"
 
-minifyjsDir="${originalPath}/vender/matthiasmullie/${MINIFYJS}"
-minifyjsBin="${originalPath}/vender/bin/${MINIFYJS}js"
+minifyjsDir="${originalPath}/vendor/matthiasmullie/${MINIFYJS}"
+minifyjsBin="${originalPath}/vendor/bin/${MINIFYJS}js"
 if [ -e "${minifyjsDir}" -a -e "${minifyjsBin}" ]; then
     /bin/echo " Path of minifyer (installed by composer): ${minifyjsDir}"
 else
@@ -88,7 +86,7 @@ fi
 /bin/echo ' (2) Core only (the least set to work web applications)'
 /bin/echo ' (3) Core only, and move it to 3-up directory (the ancestor of original INTER-Mediator)'
 #/bin/echo ' (4) Write just version and release date to metadata.json'
-choice=$param
+choice=${param}
 if [ ${#param} = 0 ]; then
     /bin/echo -n "Type 1, 2 or 3, and then type return----> "
     read choice
@@ -139,7 +137,6 @@ if [ ! -e "${minifyjsDir}" ]; then
     echo ';'                                                         >> "${buildPath}/src/js/temp.js"
     cat "${originalPath}/src/lib/js_lib/sha256.js"                   >> "${buildPath}/src/js/temp.js"
     echo ';'                                                         >> "${buildPath}/src/js/temp.js"
-    cat "${originalPath}/src/lib/bi2php/jsencrypt.min.js"            >> "${buildPath}/src/js/temp.js"
 fi
 cat "${originalPath}/src/js/INTER-Mediator-Queuing.js"               >> "${buildPath}/src/js/temp.js"
 cat "${originalPath}/src/js/INTER-Mediator-Events.js"                >> "${buildPath}/src/js/temp.js"
@@ -192,7 +189,6 @@ cp -prf "${originalPath}/src/lib/CWPKit"        "${buildPath}/src/lib"
 cp -p   "${originalPath}/src/lib/FMDataAPI.php" "${buildPath}/src/lib/"
 cp -prf "${originalPath}/src/lib/FX"            "${buildPath}/src/lib"
 cp -prf "${originalPath}/src/lib/ParagonIE"     "${buildPath}/src/lib"
-cp -prf "${originalPath}/src/lib/phpseclib_v1"  "${buildPath}/src/lib"
 cp -prf "${originalPath}/src/lib/phpseclib_v2"  "${buildPath}/src/lib"
 cp -prf "${originalPath}/src/lib/mailsend"      "${buildPath}/src/lib"
 

@@ -63,16 +63,25 @@
     "test": [
       "./vendor/bin/phpunit --bootstrap src/vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
     ],
+    "install-node": [
+      "./vendor/bin/npm install socket.io"
+    ],
     "post-create-project-cmd": [
       "mkdir -p ../398A6028-0181-4B75-BFD9-1C094B5ADD9F",
       "mv -f * ../398A6028-0181-4B75-BFD9-1C094B5ADD9F",
       "mkdir -p lib/src",
       "mv ../398A6028-0181-4B75-BFD9-1C094B5ADD9F lib/src/INTER-Mediator",
-      "cp lib/src/INTER-Mediator/params.php lib/",
+      "openssl genrsa -out gen.key 2048",
+      "cp lib/src/INTER-Mediator/params.php lib/p.php",
+      "grep -B 10000 -e '-----BEGIN RSA PRIVATE KEY-----' lib/p.php > lib/params.php",
+      "tail -n +2 gen.key | head -n 25 > lib/params.php",
+      "grep -A 10000 -e '-----END RSA PRIVATE KEY-----' lib/p.php >> lib/params.php",
       "cp lib/src/INTER-Mediator/dist-docs/sample_schema_mysql.txt lib/",
       "cp lib/src/INTER-Mediator/dist-docs/project-start.html index.html",
       "cp lib/src/INTER-Mediator/samples/templates/page_file_simple.html template.html",
-      "cp lib/src/INTER-Mediator/samples/templates/definition_file_simple.php template.php",
+      "cp lib/src/INTER-Mediator/samples/templates/definition_file_simple.php t.php",
+      "sed -E -e 's|INTER-Mediator.php|lib/INTER-Mediator/INTER-Mediator.php|g' t.php > template.php",
+      "rm t.php p.php gen.key",
       "lib/src/INTER-Mediator/dist-docs/buildup.sh --deploy"
     ]
   }
