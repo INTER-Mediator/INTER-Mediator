@@ -22,7 +22,7 @@ class DefinitionChecker
     public function checkDefinitions($datasource, $options, $dbspecification)
     {
         if ($dbspecification['db-class'] == 'FileMaker_FX') {
-            require_once('DB_FileMaker_FX.php');
+            require_once('FileMaker_FX.php
         }
         $allMessage = '';
         if ($datasource === NULL) {

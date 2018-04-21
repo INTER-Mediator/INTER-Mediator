@@ -109,7 +109,7 @@ const INTERMediator = {
      */
     pagedAllCount: 0,
     /**
-     * This property is for DB_FileMaker_FX.
+     * This property is for FileMaker_FX.
      * @public
      * @type {integer}
      */

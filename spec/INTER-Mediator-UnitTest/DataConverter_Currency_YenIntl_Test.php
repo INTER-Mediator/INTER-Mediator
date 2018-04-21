@@ -10,7 +10,7 @@ class DataConverter_Currency_YenIntl_Test extends DataConverter_Currency_Base_Te
     {
         \INTERMediator\Locale\IMLocale::$localForTest = 'ja';
         \INTERMediator\Locale\IMLocale::$alwaysIMClasses = false;
-        $this->dataconverter = new \INTERMediator\Data_Converter\DataConverter_Currency();
+        $this->dataconverter = new \INTERMediator\Data_Converter\Currency();
 
         $this->thSepMark = ',';
         $this->currencyMark = '￥';

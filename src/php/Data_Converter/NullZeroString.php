@@ -12,10 +12,21 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+namespace INTERMediator\Data_Converter;
 
-namespace INTERMediator\DB;
+class NullZeroString
+{
+    public function __construct()
+    {
+    }
 
-/**
- * Interface for DB_PDO, DB_FileMaker_FX
- */
-interface DB_Access_Interface extends DB_Interface, Auth_Interface_DB {}
+    public function converterFromUserToDB($str)
+    {
+        return ($str == '') ? null : $str;
+    }
+
+    public function converterFromDBtoUser($str)
+    {
+        return is_null($str) ? '' : $str;
+    }
+}

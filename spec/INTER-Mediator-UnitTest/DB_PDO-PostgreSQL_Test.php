@@ -9,6 +9,7 @@
  */
 
 require_once('DB_PDO_Test_Common.php');
+use \INTERMediator\DB\Proxy;
 
 class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
 {
@@ -61,13 +62,13 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
             'user' => 'web',
             'password' => 'password',
         );
-        $this->db_proxy = new \INTERMediator\DB\DB_Proxy(true);
+        $this->db_proxy = new \INTERMediator\DB\Proxy(true);
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
     }
 
     function dbProxySetupForAuth()
     {
-        $this->db_proxy = new \INTERMediator\DB\DB_Proxy(true);
+        $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize(
             array(
                 array(
@@ -105,7 +106,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
 
     function dbProxySetupForAggregation()
     {
-        $this->db_proxy = new DB_Proxy(true);
+        $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize(
             array(
                 array(

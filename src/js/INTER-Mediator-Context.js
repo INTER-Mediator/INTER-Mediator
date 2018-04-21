@@ -296,8 +296,8 @@ const IMLibContextPool = {
                 }
             }
 
-            if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX' ||
-                INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI') {
+            if (INTERMediatorOnPage.dbClassName === 'FileMaker_FX' ||
+                INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI') {
                 // for FileMaker portal access mode
                 parentKeying = Object.keys(contextAndKey.context.binding)[0];
                 relatedId = targetKeying.split('=')[1];
@@ -347,8 +347,8 @@ const IMLibContextPool = {
                                     }
                                 }
 
-                                if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX' ||
-                                    INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI') {
+                                if (INTERMediatorOnPage.dbClassName === 'FileMaker_FX' ||
+                                    INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI') {
                                     // for FileMaker portal access mode
                                     for (foreignKey in IMLibContextPool.poolingContexts[i].binding[keying][field]) {
                                         if (IMLibContextPool.poolingContexts[i].binding[keying][field].hasOwnProperty(foreignKey)) {
@@ -796,8 +796,8 @@ IMLibContext.prototype.updateFieldValue = async function (idValue, succeedProc, 
 IMLibContext.prototype.getKeyField = function () {
     'use strict';
     var keyField;
-    if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX' ||
-        INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI') {
+    if (INTERMediatorOnPage.dbClassName === 'FileMaker_FX' ||
+        INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI') {
         if (this.isPortal) {
             keyField = INTERMediatorOnPage.defaultKeyName;
         } else {

@@ -14,7 +14,7 @@
  */
 namespace INTERMediator\Data_Converter;
 
-class DataConverter_AppendPrefix
+class AppendSuffix
 {
 
     private $appendStr;
@@ -26,13 +26,13 @@ class DataConverter_AppendPrefix
 
     function converterFromDBtoUser($str)
     {
-        return $this->appendStr . $str;
+        return $str . $this->appendStr;
     }
 
     function converterFromUserToDB($str)
     {
-        if (strpos($str, $this->appendStr) === 0) {
-            return substr($str, strlen($this->appendStr));
+        if (strrpos($str, $this->appendStr) === (strlen($str) - strlen($this->appendStr))) {
+            return substr($str, 0, strlen($str) - strlen($this->appendStr));
         }
         return $str;
     }

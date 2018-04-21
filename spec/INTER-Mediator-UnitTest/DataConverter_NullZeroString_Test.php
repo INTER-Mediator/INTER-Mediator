@@ -3,9 +3,7 @@
  * DataConverter_NullZeroString_Test file
  */
 use \PHPUnit\Framework\TestCase;
-use \INTERMediator\Data_Converter\DataConverter_NullZeroString;
-//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-//require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_NullZeroString.php');
+use \INTERMediator\Data_Converter\NullZeroString;
 
 class DataConverter_NullZeroString_Test extends TestCase
 {
@@ -13,7 +11,7 @@ class DataConverter_NullZeroString_Test extends TestCase
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
         
-        $this->dataconverter = new DataConverter_NullZeroString();
+        $this->dataconverter = new NullZeroString();
     }
     
     public function test_converterFromUserToDB()

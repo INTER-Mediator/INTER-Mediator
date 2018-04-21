@@ -14,30 +14,32 @@
  */
 
 namespace INTERMediator;
-
+// Setup autoloader
 $imRoot = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR;
 require($imRoot . 'src/vendor/autoload.php');
-
+// Character set for mbstring
 if (function_exists('mb_internal_encoding')) {
     mb_internal_encoding('UTF-8');
 }
-
-$currentDirParam = $imRoot . 'params.php';
-$parentDirParam = dirname($imRoot) . DIRECTORY_SEPARATOR . 'params.php';
-if (file_exists($parentDirParam)) {
-    include($parentDirParam);
-} else if (file_exists($currentDirParam)) {
-    include($currentDirParam);
-}
-if (isset($defaultTimezone)) {
-    date_default_timezone_set($defaultTimezone);
+// Setup Timezone
+$params = IMUtil::getFromParamsPHPFile(array("defaultTimezone"), true);
+if (isset($params['defaultTimezone'])) {
+    date_default_timezone_set($params['defaultTimezone']);
 } else if (ini_get('date.timezone') == null) {
     date_default_timezone_set('UTC');
 }
+// Setup Locale
 Locale\IMLocale::setLocale(LC_ALL);
-
+// Define constant
 define("IM_TODAY", strftime('%Y-%m-%d'));
 
+/**
+ * INTER-Mediator entry point
+ * @param $datasource
+ * @param $options
+ * @param $dbspecification
+ * @param bool $debug
+ */
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
     // check required PHP extensions
@@ -104,7 +106,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
     } else {
-        $dbInstance = new DB\DB_Proxy();
+        $dbInstance = new DB\Proxy();
         if (!$dbInstance->initialize($datasource, $options, $dbspecification, $debug)) {
             $dbInstance->finishCommunication(true);
         } else {

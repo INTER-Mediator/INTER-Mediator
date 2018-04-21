@@ -27,7 +27,7 @@ $contextDef = array(
         'sort' => array(array('field' => 'name', 'direction' => 'ASC'),),
     ),
 );
-$dbInstance = new DB_Proxy();
+$dbInstance = new Proxy();
 $dbInstance->ignoringPost();
 $dbInstance->initialize($contextDef, array(), array("db-class" => "PDO"), 2, "product");
 $dbInstance->dbSettings->addExtraCriteria("name", $prodName);

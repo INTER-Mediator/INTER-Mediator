@@ -16,8 +16,6 @@
 
 namespace INTERMediator;
 
-require_once("IMUtil.php");
-
 class OAuthAuth
 {
     public $isActive;

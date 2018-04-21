@@ -16,7 +16,7 @@
 
 namespace INTERMediator\DB;
 
-class DB_Logger
+class Logger
 {
     /* Debug and Messages */
     private $debugLevel = false;
@@ -28,7 +28,7 @@ class DB_Logger
     public static function getInstance()
     {
         if (!self::$instance) {
-            self::$instance = new DB_Logger();
+            self::$instance = new Logger();
         }
         return self::$instance;
     }

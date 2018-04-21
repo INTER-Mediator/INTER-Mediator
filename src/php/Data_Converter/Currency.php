@@ -14,9 +14,7 @@
  */
 namespace INTERMediator\Data_Converter;
 
-//require_once('DataConverter_NumberBase.php');
-
-class DataConverter_Currency extends DataConverter_NumberBase
+class Currency extends NumberBase
 {
 
     private $d = null;

@@ -13,11 +13,11 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-namespace INTERMediator\DB\Support;
+namespace INTERMediator\DB;
 
 interface Auth_Interface_Communication
 {
-    // The followings are used in DB_Proxy::processingRequest.
+    // The followings are used in Proxy::processingRequest.
     public function generateClientId($prefix);
     public function generateChallenge();
     public function saveChallenge($username, $challenge, $clientId);

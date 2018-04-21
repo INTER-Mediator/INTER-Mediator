@@ -2,9 +2,9 @@
 /**
  * DataConverter_HTMLString_Test file
  */
-require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_HTMLString.php');
-require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_MarkdownString.php');
+
+use \PHPUnit\Framework\TestCase;
+use \INTERMediator\Data_Converter\MarkdownString;
 
 class DataConverter_MarkdownString_Test extends TestCase
 {
@@ -12,7 +12,7 @@ class DataConverter_MarkdownString_Test extends TestCase
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
 
-        $this->dataconverter = new DataConverter_MarkdownString();
+        $this->dataconverter = new MarkdownString();
     }
 
     public function test_converterFromDBtoUser()

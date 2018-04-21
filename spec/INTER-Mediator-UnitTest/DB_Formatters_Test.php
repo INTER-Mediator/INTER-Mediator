@@ -5,17 +5,13 @@
 
 use \PHPUnit\Framework\TestCase;
 
-//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-//require_once(dirname(__FILE__) . '/../DB_Formatters.php');
-//require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_HTMLString.php');
-
 class DB_Formatters_Test extends TestCase
 {
     public function setUp()
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
         
-        $this->dataconverter_htmlstring = new \INTERMediator\DB\DB_Formatters();
+        $this->dataconverter_htmlstring = new \INTERMediator\DB\Formatters();
         $this->dataconverter_htmlstring->setFormatter(array(
             array('field' => 'f1', 'converter-class' => 'HTMLString'),
             array('field' => 'f2', 'converter-class' => 'HTMLString', 'parameter' => false),

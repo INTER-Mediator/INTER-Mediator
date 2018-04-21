@@ -135,7 +135,7 @@ class GenerateJSCode
          * from db-class, determine the default key field string
          */
         $defaultKey = null;
-        $dbClassName = '\INTERMediator\DB\DB_' .
+        $dbClassName = '\\INTERMediator\\DB\\' .
             (isset($dbspecification['db-class']) ? $dbspecification['db-class'] :
                 (!is_null($dbClass) ? $dbClass : ''));
 //        if ($dbClassName !== 'DB_DefEditor' && $dbClassName !== 'DB_PageEditor') {

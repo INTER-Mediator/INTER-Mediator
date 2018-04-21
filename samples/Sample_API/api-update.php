@@ -29,7 +29,7 @@ $contextDef = array(
         'key' => 'id',
     ),
 );
-$dbInstance = new DB_Proxy();
+$dbInstance = DB_Proxy();
 $dbInstance->ignoringPost();
 $dbInstance->initialize($contextDef, array(), array("db-class" => "PDO"), 2, "product");
 $dbInstance->dbSettings->addExtraCriteria('id', '=', $pid);

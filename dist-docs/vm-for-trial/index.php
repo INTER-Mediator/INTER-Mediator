@@ -116,7 +116,7 @@ if (file_exists('/etc/alpine-release')) {
             }
             require "{$imRoot}" . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR .'vendor' .
                 DIRECTORY_SEPARATOR . 'autoload.php';
-            $converter = new \INTERMediator\Data_Converter\DataConverter_FMDateTime();
+            $converter = new \INTERMediator\Data_Converter\FMDateTime();
             error_reporting(0);
             foreach ($parsedData->resultset->record->field as $key => $field) {
                 if ((string)$field->attributes()->name === 'lastupdated') {

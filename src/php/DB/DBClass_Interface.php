@@ -15,7 +15,7 @@
 
 namespace INTERMediator\DB;
 
-interface DB_Interface
+interface DBClass_Interface
 {
     public function setupConnection();
     public function setupHandlers($dsn = false);

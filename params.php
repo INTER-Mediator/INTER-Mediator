@@ -19,12 +19,12 @@
 $dbClass = 'PDO';
 
 /*
- * common settings for DB_FileMaker_FX and DB_PDO:
+ * common settings for FileMaker_FX and PDO:
  */
 $dbUser = 'web';
 $dbPassword = 'password';
 
-/* DB_FileMaker_FX aware below:
+/* FileMaker_FX aware below:
  */
 $dbServer = '127.0.0.1';
 $dbPort = '80';
@@ -32,7 +32,7 @@ $dbPort = '80';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
 
-/* DB_PDO awares below:
+/* PDO awares below:
  */
 $dbDSN = 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;charset=utf8';
 //$dbDSN = 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;charset=utf8mb4';

@@ -14,9 +14,7 @@
  */
 namespace INTERMediator\Data_Converter;
 
-//require_once('INTER-Mediator.php');
-
-class DataConverter_NumberBase
+class NumberBase
 {
     protected $decimalMark = null;
     protected $thSepMark = null;

@@ -15,10 +15,8 @@
 namespace INTERMediator\Data_Converter;
 
 use \DateTime;
-//require_once('INTER-Mediator.php');
-//require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'IMLocale.php');
 
-class DataConverter_FMDateTime
+class FMDateTime
 {
 
     private $tz = 'Asia/Tokyo'; // Should be custimizable.

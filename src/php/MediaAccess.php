@@ -73,7 +73,7 @@ class MediaAccess
                 $this->outputImage($content);
             } else if (stripos($target, 'http://') === 0 || stripos($target, 'https://') === 0) { // http or https
                 $parsedUrl = parse_url($target);
-                if (get_class($dbProxyInstance->dbClass) === 'INTERMediator\DB\DB_FileMaker_DataAPI' &&
+                if (get_class($dbProxyInstance->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI' &&
                     isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver') {
                     // for FileMaker Data API
                     $target = 'http://' . $parsedUrl['user'] . ':' . $parsedUrl['pass'] . '@127.0.0.1' . $parsedUrl['path'] . '?' . $parsedUrl['query'];

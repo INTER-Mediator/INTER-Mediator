@@ -4,9 +4,7 @@
  */
 use \PHPUnit\Framework\TestCase;
 use \INTERMediator\Locale\IMLocale;
-use \INTERMediator\Data_Converter\DataConverter_Number;
-//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-//require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_Number.php');
+use \INTERMediator\Data_Converter\Number;
 
 class DataConverter_Number_Test extends TestCase
 {
@@ -14,8 +12,8 @@ class DataConverter_Number_Test extends TestCase
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
         setlocale(LC_ALL, 'ja_JP', 'ja');
-        $this->dataconverter = new DataConverter_Number();
-        $this->dataconverter2 = new DataConverter_Number(TRUE);
+        $this->dataconverter = new Number();
+        $this->dataconverter2 = new Number(TRUE);
 //
 //        $locInfo = localeconv();
 //        $this->thSepMark = $locInfo['mon_thousands_sep'];

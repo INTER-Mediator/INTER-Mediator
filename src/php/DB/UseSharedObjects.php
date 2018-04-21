@@ -16,7 +16,7 @@
 
 namespace INTERMediator\DB;
 
-abstract class DB_UseSharedObjects
+abstract class UseSharedObjects
 {
     public $dbSettings = null;
     public $logger = null;
@@ -31,9 +31,9 @@ abstract class DB_UseSharedObjects
     public function setUpSharedObjects($obj = null)
     {
         if ($obj === null) {
-            $this->setSettings(new DB_Settings());
-            $this->setLogger(DB_Logger::getInstance());
-            $this->setFormatter(new DB_Formatters());
+            $this->setSettings(new Settings());
+            $this->setLogger(Logger::getInstance());
+            $this->setFormatter(new Formatters());
         } else {
             $this->setSettings($obj->dbSettings);
             $this->setLogger($obj->logger);
