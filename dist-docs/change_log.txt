@@ -27,10 +27,12 @@ Ver.6-dev (in development)
       INTERMediator_DBAdapter.db_copy
       INTERMediator_DBAdapter.db_copyWithAuth
 - Deprecated global variables $g_dbInstance, $g_serverSideCall in INTER-Mediator.php are removed.
+- [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native 
+  Authentication or LDAP Authentication.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 
 Ver.5.8-dev (in development)
-- Improve speed performance of Native Authentication.
+- Improve speed performance of Native Authentication and LDAP Authentication.
 - [WIP] Support FileMaker Data API (Trial) of FileMaker Server 16.
 - Support retrieving image files in container fields in FileMaker Data API (Trial).
 - Add JSEncrypt <http://travistidwell.com/jsencrypt/> to "js_lib" directory in "lib" directory and
