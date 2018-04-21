@@ -65,14 +65,14 @@ if [ -e "${minifyjsDir}" -a -e "${minifyjsBin}" ]; then
     /bin/echo " Path of minifyer (installed by composer): ${minifyjsDir}"
 else
     minifyjsDir="${topOfDir}/${MINIFYJS}"
-    minifyjsBin="${topOfDir}/${MINIFYJS}/${MINIFYJS}js"
+    minifyjsBin="${topOfDir}/${MINIFYJS}/bin/${MINIFYJS}js"
     if [ -e "${minifyjsDir}" -a -e "${minifyjsBin}" ]; then
-       /bin/echo " Path of minifyer: ${minifyjsDir}"
+        /bin/echo " Path of minifyer: ${minifyjsDir}"
     else
         /bin/echo "*** Minifyer isn't exist. ***"
         /bin/echo -n "Y or y: clone the minify, others: nothing to do----> "
         read choice
-        if [ $choice = 'Y' -o $choice = 'y' ]; then
+        if [ "$choice" = "Y" -o "$choice" = "y" ]; then
             git clone https://github.com/matthiasmullie/minify "${minifyjsDir}"
         else
             /bin/echo "*** JaveScript code won't minify, i.e. stay as original. ***"
