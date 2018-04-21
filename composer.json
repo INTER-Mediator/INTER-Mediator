@@ -81,7 +81,7 @@
       "cp lib/src/INTER-Mediator/samples/templates/page_file_simple.html template.html",
       "cp lib/src/INTER-Mediator/samples/templates/definition_file_simple.php t.php",
       "sed -E -e 's|INTER-Mediator.php|lib/INTER-Mediator/INTER-Mediator.php|g' t.php > template.php",
-      "rm t.php p.php gen.key",
+      "rm t.php lib/p.php gen.key",
       "lib/src/INTER-Mediator/dist-docs/buildup.sh --deploy"
     ]
   }
