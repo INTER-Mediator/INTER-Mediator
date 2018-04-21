@@ -242,6 +242,9 @@ end
 describe package('php7-dom'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
+describe package('php7.0-dom'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_installed }
+end
 describe package('php7-json'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
