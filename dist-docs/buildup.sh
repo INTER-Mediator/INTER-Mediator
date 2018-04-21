@@ -56,21 +56,29 @@ originalPath=$(dirname "${distDocDir}")
 printf '{"version":"%s","releasedate":"%s"}' "${version}" "${dt}" > "${originalPath}/metadata.json"
 
 topOfDir=$(dirname "${originalPath}")
-minifyjsDir="${topOfDir}/${MINIFYJS}"
-minifyjsBin="${topOfDir}/${MINIFYJS}/bin/${MINIFYJS}js"
 buildDir="${topOfDir}/${buildRootName}"
 buildPath="${buildDir}/${imRootName}"
-
 /bin/echo " Original: ${originalPath}"
 /bin/echo " Build to: ${buildPath}"
+
+minifyjsDir="${originalPath}/vender/matthiasmullie/${MINIFYJS}"
+minifyjsBin="${originalPath}/vender/bin/${MINIFYJS}js"
 if [ -e "${minifyjsDir}" -a -e "${minifyjsBin}" ]; then
-    /bin/echo " Path of minifier: ${minifyjsDir}"
+    /bin/echo " Path of minifyer (installed by composer): ${minifyjsDir}"
 else
-    /bin/echo "*** Minifyer isn't exist. ***"
-    /bin/echo -n "Y or y: clone the minify, others: nothing to do----> "
-    read choice
-    if [ $choice = 'Y' -o $choice = 'y' ]; then
-        git clone https://github.com/matthiasmullie/minify "${minifyjsDir}"
+    minifyjsDir="${topOfDir}/${MINIFYJS}"
+    minifyjsBin="${topOfDir}/${MINIFYJS}/${MINIFYJS}js"
+    if [ -e "${minifyjsDir}" -a -e "${minifyjsBin}" ]; then
+       /bin/echo " Path of minifyer: ${minifyjsDir}"
+    else
+        /bin/echo "*** Minifyer isn't exist. ***"
+        /bin/echo -n "Y or y: clone the minify, others: nothing to do----> "
+        read choice
+        if [ $choice = 'Y' -o $choice = 'y' ]; then
+            git clone https://github.com/matthiasmullie/minify "${minifyjsDir}"
+        else
+            /bin/echo "*** JaveScript code won't minify, i.e. stay as original. ***"
+        fi
     fi
 fi
 
