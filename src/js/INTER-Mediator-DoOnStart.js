@@ -23,80 +23,80 @@ INTERMediator.propertyIETridentSetup();
 INTERMediator.propertyW3CUserAgentSetup();
 
 if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
-    INTERMediator.startFrom = 0;
-    INTERMediator.pagedSize = 0;
-    INTERMediator.pagination = false;
-    INTERMediator.additionalCondition = {};
-    INTERMediator.additionalSortKey = {};
-    IMLibCalc.regexpForSeparator = INTERMediator.separator;
+  INTERMediator.startFrom = 0;
+  INTERMediator.pagedSize = 0;
+  INTERMediator.pagination = false;
+  INTERMediator.additionalCondition = {};
+  INTERMediator.additionalSortKey = {};
+  IMLibCalc.regexpForSeparator = INTERMediator.separator;
 } else {
-    Object.defineProperty(INTERMediator, 'startFrom', {
-        get: function () {
-            'use strict';
-            return INTERMediator.getLocalProperty('_im_startFrom', 0);
-        },
-        set: function (value) {
-            'use strict';
-            INTERMediator.setLocalProperty('_im_startFrom', value);
-        }
-    });
-    Object.defineProperty(INTERMediator, 'pagedSize', {
-        get: function () {
-            'use strict';
-            return INTERMediator.getLocalProperty('_im_pagedSize', 0);
-        },
-        set: function (value) {
-            'use strict';
-            INTERMediator.setLocalProperty('_im_pagedSize', value);
-        }
-    });
-    Object.defineProperty(INTERMediator, 'pagination', {
-        get: function () {
-            'use strict';
-            return INTERMediator.getLocalProperty('_im_pagination', 0);
-        },
-        set: function (value) {
-            'use strict';
-            INTERMediator.setLocalProperty('_im_pagination', value);
-        }
-    });
-    Object.defineProperty(INTERMediator, 'additionalCondition', {
-        get: function () {
-            'use strict';
-            return INTERMediator.getLocalProperty('_im_additionalCondition', {});
-        },
-        set: function (value) {
-            'use strict';
-            INTERMediator.setLocalProperty('_im_additionalCondition', value);
-        }
-    });
-    Object.defineProperty(INTERMediator, 'additionalSortKey', {
-        get: function () {
-            'use strict';
-            return INTERMediator.getLocalProperty('_im_additionalSortKey', {});
-        },
-        set: function (value) {
-            'use strict';
-            INTERMediator.setLocalProperty('_im_additionalSortKey', value);
-        }
-    });
-    Object.defineProperty(IMLibCalc, 'regexpForSeparator', {
-        get: function () {
-            'use strict';
-            if (INTERMediator) {
-                return new RegExp(INTERMediator.separator);
-            }
-            return new RegExp('@');
-        }
-    });
+  Object.defineProperty(INTERMediator, 'startFrom', {
+    get: function () {
+      'use strict';
+      return INTERMediator.getLocalProperty('_im_startFrom', 0);
+    },
+    set: function (value) {
+      'use strict';
+      INTERMediator.setLocalProperty('_im_startFrom', value);
+    }
+  });
+  Object.defineProperty(INTERMediator, 'pagedSize', {
+    get: function () {
+      'use strict';
+      return INTERMediator.getLocalProperty('_im_pagedSize', 0);
+    },
+    set: function (value) {
+      'use strict';
+      INTERMediator.setLocalProperty('_im_pagedSize', value);
+    }
+  });
+  Object.defineProperty(INTERMediator, 'pagination', {
+    get: function () {
+      'use strict';
+      return INTERMediator.getLocalProperty('_im_pagination', 0);
+    },
+    set: function (value) {
+      'use strict';
+      INTERMediator.setLocalProperty('_im_pagination', value);
+    }
+  });
+  Object.defineProperty(INTERMediator, 'additionalCondition', {
+    get: function () {
+      'use strict';
+      return INTERMediator.getLocalProperty('_im_additionalCondition', {});
+    },
+    set: function (value) {
+      'use strict';
+      INTERMediator.setLocalProperty('_im_additionalCondition', value);
+    }
+  });
+  Object.defineProperty(INTERMediator, 'additionalSortKey', {
+    get: function () {
+      'use strict';
+      return INTERMediator.getLocalProperty('_im_additionalSortKey', {});
+    },
+    set: function (value) {
+      'use strict';
+      INTERMediator.setLocalProperty('_im_additionalSortKey', value);
+    }
+  });
+  Object.defineProperty(IMLibCalc, 'regexpForSeparator', {
+    get: function () {
+      'use strict';
+      if (INTERMediator) {
+        return new RegExp(INTERMediator.separator);
+      }
+      return new RegExp('@');
+    }
+  });
 }
 
 if (!INTERMediator.additionalCondition) {
-    INTERMediator.additionalCondition = {};
+  INTERMediator.additionalCondition = {};
 }
 
 if (!INTERMediator.additionalSortKey) {
-    INTERMediator.additionalSortKey = {};
+  INTERMediator.additionalSortKey = {};
 }
 
 INTERMediatorLib.addEvent(window, 'beforeunload', function () {
@@ -108,35 +108,35 @@ INTERMediatorLib.addEvent(window, 'beforeunload', function () {
 });
 
 INTERMediatorLib.addEvent(window, 'unload', function () {
-    'use strict';
-    INTERMediator_DBAdapter.unregister();
+  'use strict';
+  INTERMediator_DBAdapter.unregister();
 });
 
 INTERMediatorLib.addEvent(window, 'load', function () {
-    'use strict';
-    var key, errorNode;
-    if (INTERMediatorOnPage.initLocalContext)   {
-        for (key in INTERMediatorOnPage.initLocalContext) {
-            if (INTERMediatorOnPage.initLocalContext.hasOwnProperty(key)){
-                IMLibLocalContext.setValue(key, INTERMediatorOnPage.initLocalContext[key], true);
-            }
-        }
+  'use strict';
+  var key, errorNode;
+  if (INTERMediatorOnPage.initLocalContext) {
+    for (key in INTERMediatorOnPage.initLocalContext) {
+      if (INTERMediatorOnPage.initLocalContext.hasOwnProperty(key)) {
+        IMLibLocalContext.setValue(key, INTERMediatorOnPage.initLocalContext[key], true);
+      }
     }
-    errorNode = document.getElementById(INTERMediatorOnPage.nonSupportMessageId);
+  }
+  errorNode = document.getElementById(INTERMediatorOnPage.nonSupportMessageId);
 
-    //if (INTERMediatorOnPage.dbClassName === 'FileMaker_FX') {
-    //    INTERMediator_DBAdapter.eliminateDuplicatedConditions = true;
-    //}
+  //if (INTERMediatorOnPage.dbClassName === 'FileMaker_FX') {
+  //    INTERMediator_DBAdapter.eliminateDuplicatedConditions = true;
+  //}
 
-    if (INTERMediatorOnPage.isAutoConstruct) {
-        if (errorNode) {
-            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(errorNode)) {
-                INTERMediator.construct(true);
-            }
-        } else {
-            INTERMediator.construct(true);
-        }
+  if (INTERMediatorOnPage.isAutoConstruct) {
+    if (errorNode) {
+      if (INTERMediatorOnPage.INTERMediatorCheckBrowser(errorNode)) {
+        INTERMediator.construct(true);
+      }
+    } else {
+      INTERMediator.construct(true);
     }
+  }
 });
 
 // ****** This file should terminate on the new line. INTER-Mediator adds some codes before here. ****
