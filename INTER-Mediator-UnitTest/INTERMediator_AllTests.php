@@ -16,16 +16,15 @@
 if (!class_exists('PHPUnit_Framework_TestCase')) {
     class_alias('PHPUnit\Framework\TestCase', 'PHPUnit_Framework_TestCase');
 }
+if (!class_exists('PHPUnit_Framework_TestSuite')) {
+    class_alias('PHPUnit\Framework\TestSuite', 'PHPUnit_Framework_TestSuite');
+}
 
 class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
 {
     public static function suite()
     {
-        if (!class_exists('PHPUnit_Framework_TestSuite')) {
-            $suite = new \PHPUnit\Framework\TestSuite( 'all tests' );
-        } else {
-            $suite = new PHPUnit_Framework_TestSuite( 'all tests' );
-        }
+        $suite = new PHPUnit_Framework_TestSuite( 'all tests' );
         $folder = dirname( __FILE__ ) . '/';
         $suite->addTestFile($folder . 'DataConverter_Currency_YenIM_Test.php');
         $suite->addTestFile($folder . 'DataConverter_Currency_YenIntl_Test.php');
