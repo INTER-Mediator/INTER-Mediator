@@ -37,17 +37,21 @@ var INTERMediator_DBAdapter = {
 
     generate_authParams: function () {
         'use strict';
-        var authParams = '', shaObj, hmacValue;
+        var authParams = '', shaObj, hmacValue, encrypted;
         var encrypt = new JSEncrypt();
         if (INTERMediatorOnPage.authUser.length > 0) {
             authParams = '&clientid=' + encodeURIComponent(INTERMediatorOnPage.clientId);
             authParams += '&authuser=' + encodeURIComponent(INTERMediatorOnPage.authUser);
             if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
                 if (INTERMediatorOnPage.authCryptedPassword && INTERMediatorOnPage.authChallenge) {
+                    // require 2048-bit key length at least
                     encrypt.setPublicKey(INTERMediatorOnPage.publickey);
-                    authParams += '&cresponse=' + encodeURIComponent(
-                        INTERMediatorOnPage.authCryptedPassword + '|' +
-                        encrypt.encrypt(INTERMediatorOnPage.authChallenge));
+                    encrypted = encrypt.encrypt(
+                        INTERMediatorOnPage.authCryptedPassword.substr(0, 220) +
+                        IMLib.nl_char + INTERMediatorOnPage.authChallenge
+                    );
+                    authParams += '&cresponse=' + encodeURIComponent(encrypted +
+                        IMLib.nl_char + INTERMediatorOnPage.authCryptedPassword.substr(220));
                     if (INTERMediator_DBAdapter.debugMessage) {
                         INTERMediatorLog.setDebugMessage('generate_authParams/authCryptedPassword=' +
                             INTERMediatorOnPage.authCryptedPassword);

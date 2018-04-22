@@ -121,6 +121,7 @@ class MessageStrings
         2022 => 'Enrollment this site with email',
         2023 => 'Reset my password',
         2024 => 'You need to prepare your email address.',
+        2025 => 'Require a 2048-bit private key at least for authentication',
         3101 => 'Drag Here.',
         3102 => 'Dragged File: ',
         3201 => "Exceeded post size limit. Check the post_max_size in php.ini file.",
