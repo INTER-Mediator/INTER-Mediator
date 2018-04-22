@@ -13,6 +13,7 @@ class LDAPAuth_Test extends PHPUnit_Framework_TestCase {
     private $obj;
     public function setUp()
     {
+        $_SERVER['SCRIPT_NAME'] = __FILE__;
         $this->obj = new LDAPAuth();
     }
 

@@ -13,6 +13,13 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+if (!class_exists('PHPUnit_Framework_TestCase')) {
+    class_alias('PHPUnit\Framework\TestCase', 'PHPUnit_Framework_TestCase');
+}
+if (!class_exists('PHPUnit_Framework_TestSuite')) {
+    class_alias('PHPUnit\Framework\TestSuite', 'PHPUnit_Framework_TestSuite');
+}
+
 class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
 {
     public static function suite()
