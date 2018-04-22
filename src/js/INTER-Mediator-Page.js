@@ -315,7 +315,7 @@ const INTERMediatorOnPage = {
         var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox, msgNumber,
             passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton, panelTitle,
             newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox, keyCode,
-            messageNode, oAuthButton, addingButton;
+            messageNode, oAuthButton, addingButton, resetMessage;
         var encrypt = new JSEncrypt();
 
         this.checkPasswordPolicy = function (newPassword, userName, policyString) {
