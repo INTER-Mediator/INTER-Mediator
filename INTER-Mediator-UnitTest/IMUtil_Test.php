@@ -5,11 +5,16 @@
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
 spl_autoload_register('loadClass');
 
+if (!class_exists('PHPUnit_Framework_TestCase')) {
+    class_alias('PHPUnit\Framework\TestCase', 'PHPUnit_Framework_TestCase');
+}
+
 class IMUtil_Test extends PHPUnit_Framework_TestCase {
 
     private $util;
     public function setUp()
     {
+        $_SERVER['SCRIPT_NAME'] = __FILE__;
         $this->util = new IMUtil();
     }
 
