@@ -16,7 +16,9 @@ before_script:
 test:
   script:
     - docker run -e "container=docker" -d --name alpine alpine:latest /sbin/init
-    - docker exec -e BUNDLE_GEMFILE=/INTER-Mediator/dist-docs/docker/Gemfile -e DISPLAY=:99.0 -i alpine sh -c "apk add --no-cache sudo curl ruby ruby-json ruby-io-console git && git clone https://github.com/INTER-Mediator/INTER-Mediator && cd INTER-Mediator && git checkout master && gem install itamae --no-doc && itamae local dist-docs/vm-for-trial/recipe.rb; phpunit --bootstrap /INTER-Mediator/src/vendor/autoload.php --configuration /INTER-Mediator/spec/INTER-Mediator-UnitTest/phpunit.xml /INTER-Mediator/spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php; /usr/bin/buster-test -r specification -c /INTER-Mediator/spec/buster.js"
+    - docker exec -e DISPLAY=:99.0 -i alpine sh -c "apk add --no-cache sudo curl ruby ruby-json ruby-io-console git && git clone https://github.com/INTER-Mediator/INTER-Mediator && cd INTER-Mediator && git checkout master && gem install itamae --no-doc && itamae local dist-docs/vm-for-trial/recipe.rb"
+    - docker exec -e DISPLAY=:99.0 -i alpine sh -c "phpunit --bootstrap /INTER-Mediator/src/vendor/autoload.php --configuration /INTER-Mediator/spec/INTER-Mediator-UnitTest/phpunit.xml /INTER-Mediator/spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+    - docker exec -e DISPLAY=:99.0 -i alpine sh -c "/usr/bin/buster-test -r specification -c /INTER-Mediator/spec/buster.js"
     - docker stop alpine
     - docker rm alpine
 
@@ -31,7 +33,7 @@ pages:
   - apk add --no-cache zip
   - mkdir public
   - cd ..
-  - git clone https://github.com/matthiasmullie/minify
+  - ls minify || git clone https://github.com/matthiasmullie/minify
   - cd -
   - ./dist-docs/buildup.sh --core && cd ../im_build/ && zip -r INTER-Mediator-master.zip ./INTER-Mediator/ && mv INTER-Mediator-master.zip ../INTER-Mediator/public/
   artifacts:

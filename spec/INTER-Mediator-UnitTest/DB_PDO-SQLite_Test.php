@@ -10,9 +10,9 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
 {
     function setUp()
     {
+        $_SERVER['SCRIPT_NAME'] = __FILE__;
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
-
     }
 
     public function testAggregation()
