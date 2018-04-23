@@ -12,6 +12,7 @@ class GenerateJSCode_Test extends TestCase
 {
     protected function setUp()
     {
+        $_SERVER['SCRIPT_NAME'] = __FILE__;
         $this->generater = new GenerateJSCode();
     }
 
