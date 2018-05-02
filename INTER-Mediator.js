@@ -1200,8 +1200,7 @@ var INTERMediator = {
                     targetRecords = contextObj.getPortalRecords();
                     if (!targetRecords) {
                         useLimit = contextObj.isUseLimit();
-                        recordNumber = INTERMediator.pagedSize > 0 ? INTERMediator.pagedSize
-                            : contextObj.getRecordNumber();
+                        recordNumber = contextObj.getRecordNumber();
                         targetRecords = INTERMediator_DBAdapter.db_query({
                             'name': contextObj.contextDefinition.name,
                             'records': isNaN(recordNumber) ? 100000000 : recordNumber,
