@@ -19,6 +19,9 @@ Ver.5.8-dev (in development)
   remove "bi2php" from "lib" directory to improve speed performance of Native Authentication.
 - [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native 
   Authentication or LDAP Authentication.
+- [BUG FIX] If the server doesn't have valid locale (ex. Windows Server), the number format with thousand
+  separator wasn't seen as we wished.
+- [BUG FIX] In some case, the record number of related context was affected by pagination record limits.
 
 Ver.5.7 (March 29, 2018)
 - The "data-im-format" attribute is introduced.
