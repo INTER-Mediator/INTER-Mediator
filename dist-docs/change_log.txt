@@ -22,6 +22,7 @@ Ver.5.8-dev (in development)
 - [BUG FIX] If the server doesn't have valid locale (ex. Windows Server), the number format with thousand
   separator wasn't seen as we wished.
 - [BUG FIX] In some case, the record number of related context was affected by pagination record limits.
+- [BUG FIX] Fix buildup.sh to minify correctly on FreeBSD (Thanks to Tomomitsu Baba).
 
 Ver.5.7 (March 29, 2018)
 - The "data-im-format" attribute is introduced.
