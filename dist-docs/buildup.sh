@@ -114,11 +114,11 @@ if [ -e "${minifyjsDir}" ]; then
     sed '1s/*!/*/' "${temp3Path}" > "${buildPath}/INTER-Mediator.js"
     head -n 9 "${originalPath}/INTER-Mediator.js"        > "${buildPath}/temp.js"
 	cat "${temp3Path}"                                  >> "${buildPath}/temp.js"
-	echo ";\n"                                          >> "${buildPath}/temp.js"
+	printf ";\n\n"                                      >> "${buildPath}/temp.js"
 	tail -n 1 "${originalPath}/lib/js_lib/tinySHA1.js"  >> "${buildPath}/temp.js"
     echo ';'                                            >> "${buildPath}/temp.js"
     tail -n 1 "${originalPath}/lib/js_lib/sha256.js"    >> "${buildPath}/temp.js"
-	echo "\n"                                           >> "${buildPath}/temp.js"
+	printf "\n\n"                                       >> "${buildPath}/temp.js"
     mv  "${buildPath}/temp.js" "${buildPath}/INTER-Mediator.js"
     rm  "${temp2Path}" "${temp3Path}"
 else
