@@ -872,49 +872,44 @@ IMLibContext.prototype.getPortalRecordsetImpl = function (store, contextName) {
 
 IMLibContext.prototype.getRecordNumber = function () {
     'use strict';
-    var recordNumber;
+    var recordNumber, key, value, keyParams;
 
     if (this.contextDefinition['navi-control'] &&
         this.contextDefinition['navi-control'] === 'detail') {
         recordNumber = 1;
     } else {
-        if (this.contextDefinition.maxrecords) {
-            if (parseInt(INTERMediator.pagedSize, 10) === 0) {
-                if (this.contextDefinition.records) {
-                    recordNumber = parseInt(this.contextDefinition.records, 10);
-                } else {
-                    recordNumber = parseInt(this.contextDefinition.maxrecords, 10);
-                }
-            } else {
-                if (parseInt(this.contextDefinition.maxrecords, 10) < parseInt(INTERMediator.pagedSize, 10)) {
-                    if (parseInt(this.contextDefinition.maxrecords, 10) < parseInt(this.contextDefinition.records, 10)) {
-                        recordNumber = parseInt(this.contextDefinition.records, 10);
-                    } else {
-                        recordNumber = parseInt(this.contextDefinition.maxrecords, 10);
-                    }
-                } else {
-                    if (this.contextDefinition.relation || this.contextDefinition.paging !== true) {
-                        recordNumber = parseInt(this.contextDefinition.records, 10);
-                    } else {
-                        recordNumber = parseInt(INTERMediator.pagedSize, 10);
-                    }
-                }
-            }
-        } else {
-            if (parseInt(INTERMediator.pagedSize, 10) === 0 ||
-                (parseInt(this.contextDefinition.records, 10) < parseInt(INTERMediator.pagedSize, 10))) {
-                recordNumber = parseInt(this.contextDefinition.records, 10);
-            } else {
-                if (this.contextDefinition.relation || this.contextDefinition.paging !== true) {
-                    recordNumber = parseInt(this.contextDefinition.records, 10);
-                } else {
-                    recordNumber = parseInt(INTERMediator.pagedSize, 10);
+        // The number of records is the records keyed value.
+        recordNumber = parseInt(this.contextDefinition.records, 10);
+        // From INTERMediator.recordLimit property
+        for (key in INTERMediator.recordLimit) {
+            if (INTERMediator.recordLimit.hasOwnProperty(key)) {
+                value = String(INTERMediator.recordLimit[key]);
+                if (key === this.contextDefinition.name &&
+                    value.length > 0) {
+                    recordNumber = parseInt(value);
                 }
             }
         }
+        // From Local context's limitnumber directive
+        for (key in IMLibLocalContext.store) {
+            if (IMLibLocalContext.store.hasOwnProperty(key)) {
+                value = String(IMLibLocalContext.store[key]);
+                keyParams = key.split(':');
+                if (keyParams &&
+                    keyParams.length > 1 &&
+                    keyParams[1].trim() === this.contextDefinition.name &&
+                    value.length > 0 &&
+                    keyParams[0].trim() === 'limitnumber') {
+                    recordNumber = parseInt(value);
+                }
+            }
+        }
+        // In case of paginating context, set INTERMediator.pagedSize property.
         if (!this.contextDefinition.relation &&
-            this.contextDefinition.paging && Boolean(this.contextDefinition.paging) === true) {
+            this.contextDefinition.paging &&
+            Boolean(this.contextDefinition.paging) === true) {
             INTERMediator.setLocalProperty('_im_pagedSize', recordNumber);
+            INTERMediator.pagedSize = recordNumber;
         }
     }
     return recordNumber;
@@ -1772,6 +1767,9 @@ var IMLibLocalContext = {
                     }
                 }
 
+                value = this.store[nodeInfo.field];
+                IMLibElement.setValueToIMNode(node, nodeInfo.target, value, true);
+
                 params = nodeInfo.field.split(':');
                 switch (params[0]) {
                 case 'addorder':
@@ -1810,10 +1808,13 @@ var IMLibLocalContext = {
                     }
                     break;
                 case 'limitnumber':
+                    if (node.value) {
+                        this.store[nodeInfo.field] = node.value;
+                    }
                     IMLibChangeEventDispatch.setExecute(idValue, (function () {
                         var contextName = params[1], idValueCapt = idValue;
                         return function () {
-                            INTERMediator.pagedSize = document.getElementById(idValueCapt).value;
+                            //    INTERMediator.pagedSize = document.getElementById(idValueCapt).value;
                             IMLibUI.eventUpdateHandler(contextName);
                             IMLibPageNavigation.navigationSetup();
                         };
@@ -1824,9 +1825,9 @@ var IMLibLocalContext = {
                     IMLibChangeEventDispatch.setExecute(idValue, IMLibLocalContext.update);
                     break;
                 }
-
-                value = this.store[nodeInfo.field];
-                IMLibElement.setValueToIMNode(node, nodeInfo.target, value, true);
+                //
+                // value = this.store[nodeInfo.field];
+                // IMLibElement.setValueToIMNode(node, nodeInfo.target, value, true);
             }
         }
     },

@@ -51,7 +51,7 @@ var INTERMediator_DBAdapter = {
                         IMLib.nl_char + INTERMediatorOnPage.authChallenge
                     );
                     authParams += '&cresponse=' + encodeURIComponent(encrypted +
-                        IMLib.nl_char + INTERMediatorOnPage.authCryptedPassword.substr(220));
+                            IMLib.nl_char + INTERMediatorOnPage.authCryptedPassword.substr(220));
                     if (INTERMediator_DBAdapter.debugMessage) {
                         INTERMediatorLog.setDebugMessage('generate_authParams/authCryptedPassword=' +
                             INTERMediatorOnPage.authCryptedPassword);
@@ -830,8 +830,8 @@ var INTERMediator_DBAdapter = {
                         }
                     } else if (keyParams[0].trim() === 'valueofaddorder' && keyParams.length >= 4) {
                         orderFields[parseInt(value)] = [keyParams[2].trim(), keyParams[3].trim()];
-                    } else if (keyParams[0].trim() === 'limitnumber' && keyParams.length >= 4) {
-                        recordLimit = parseInt(value);
+                        // } else if (keyParams[0].trim() === 'limitnumber' && keyParams.length >= 4) {
+                        //     recordLimit = parseInt(value);
                     }
                 }
             }
