@@ -12,7 +12,7 @@ Also the Migration Guide (Japanese) might be informative:
 
 Ver.6-dev (in development)
 - All communications go async.
-- Version number of major build is assigned as interger number.
+- Version number of major build is assigned as integer number.
 - The script "dist-docs/build.sh" can call with parameter -a/-c/-d. Moreover it contains "deployment mode."
 - The following methods are removed.
       INTERMediator_DBAdapter.server_access
@@ -29,7 +29,12 @@ Ver.6-dev (in development)
 - Deprecated global variables $g_dbInstance, $g_serverSideCall in INTER-Mediator.php are removed.
 - [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native 
   Authentication or LDAP Authentication.
+- The INTERMediator.recordLimit property is introduced to store the number of records. Also added methods:
+  INTERMediator.setRecordLimit(cname, limit) and INTERMediator.clearRecordLimit(cname).
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
+- [BUG FIX] If the server doesn't have valid locale (ex. Windows Server), the number format with thousand
+  separator wasn't seen as we wished.
+- [BUG FIX] In some case, the record number of related context was affected by pagination record limits.
 
 Ver.5.8-dev (in development)
 - Improve speed performance of Native Authentication and LDAP Authentication.

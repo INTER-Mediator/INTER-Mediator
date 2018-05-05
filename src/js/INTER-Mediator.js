@@ -496,6 +496,8 @@ const INTERMediator = {
       INTERMediatorOnPage.setReferenceToTheme();
       IMLibPageNavigation.initializeStepInfo(false);
 
+      IMLibLocalContext.bindingDescendant(document.documentElement);
+
       try {
         await seekEnclosureNode(bodyNode, null, null, null);
       } catch (ex) {
@@ -520,7 +522,6 @@ const INTERMediator = {
         }
         document.getElementById(postSetFields[i].id).value = postSetFields[i].value;
       }
-      IMLibLocalContext.bindingDescendant(document.documentElement);
       IMLibCalc.updateCalculationFields();
       IMLibPageNavigation.navigationSetup();
 
@@ -1183,8 +1184,7 @@ const INTERMediator = {
           targetRecords = contextObj.getPortalRecords();
           if (!targetRecords) {
             useLimit = contextObj.isUseLimit();
-            recordNumber = INTERMediator.pagedSize > 0 ? INTERMediator.pagedSize
-              : contextObj.getRecordNumber();
+            recordNumber = contextObj.getRecordNumber();
             await INTERMediator_DBAdapter.db_query_async({
                 'name': contextObj.contextDefinition.name,
                 'records': isNaN(recordNumber) ? 100000000 : recordNumber,
@@ -1761,6 +1761,24 @@ const INTERMediator = {
     if (value[contextName]) {
       delete value[contextName];
       INTERMediator.additionalSortKey = value;
+      IMLibLocalContext.archive();
+    }
+  },
+
+  addRecordLimit: function (contextName, limit) {
+    'use strict';
+    var value = INTERMediator.recordLimit;
+    value[contextName] = limit;
+    INTERMediator.recordLimit = value;
+    IMLibLocalContext.archive();
+  },
+
+  clearRecordLimit: function (contextName) {
+    'use strict';
+    var value = INTERMediator.recordLimit;
+    if (value[contextName]) {
+      delete value[contextName];
+      INTERMediator.recordLimit = value;
       IMLibLocalContext.archive();
     }
   },

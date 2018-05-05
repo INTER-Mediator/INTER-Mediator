@@ -45,8 +45,9 @@ INTERMediatorOnPage.doAfterConstruct = function () {
 function doSearch() {
     IMLibLocalContext.update('condition');
     IMLibLocalContext.update("number");
-    var limit = IMLibLocalContext.getValue("pagedSize");
+    var limit = document.getElementById('number').value;
     if (parseInt(limit) > 0) {
+      INTERMediator.addRecordLimit('postalcode',limit);
         INTERMediator.pagedSize = limit;
     }
     var c1 = IMLibLocalContext.getValue("condition");
