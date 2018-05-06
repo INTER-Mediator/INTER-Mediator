@@ -15,6 +15,7 @@ class LDAPAuth_Test extends TestCase {
     private $obj;
     public function setUp()
     {
+        $_SERVER['SCRIPT_NAME'] = __FILE__;
         $this->obj = new LDAPAuth();
     }
 

@@ -3,14 +3,6 @@ module.exports = {
     'browser': true
   },
   'extends': 'standard',
-  'rules': {
-    'semi': ['error', 'always'],
-    'semi-spacing': ['error', {'after': true, 'before': false}],
-    'semi-style': ['error', 'last'],
-    'no-extra-semi': 'error',
-    'no-unexpected-multiline': 'error',
-    'no-unreachable': 'error'
-  },
   'globals': {
     'INTERMediator': false,
     'INTERMediatorLib': false,

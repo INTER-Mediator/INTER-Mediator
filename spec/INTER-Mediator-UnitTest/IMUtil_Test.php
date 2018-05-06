@@ -13,6 +13,7 @@ class IMUtil_Test extends TestCase {
     private $util;
     public function setUp()
     {
+        $_SERVER['SCRIPT_NAME'] = __FILE__;
         $this->util = new IMUtil();
     }
 
