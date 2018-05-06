@@ -28,6 +28,7 @@ if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
   INTERMediator.pagination = false;
   INTERMediator.additionalCondition = {};
   INTERMediator.additionalSortKey = {};
+  INTERMediator.recordLimit = {};
   IMLibCalc.regexpForSeparator = INTERMediator.separator;
 } else {
   Object.defineProperty(INTERMediator, 'startFrom', {
@@ -78,6 +79,16 @@ if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
     set: function (value) {
       'use strict';
       INTERMediator.setLocalProperty('_im_additionalSortKey', value);
+    }
+  });
+  Object.defineProperty(INTERMediator, 'recordLimit', {
+    get: function () {
+      'use strict';
+      return INTERMediator.getLocalProperty('_im_recordLimit', {});
+    },
+    set: function (value) {
+      'use strict';
+      INTERMediator.setLocalProperty('_im_recordLimit', value);
     }
   });
   Object.defineProperty(IMLibCalc, 'regexpForSeparator', {

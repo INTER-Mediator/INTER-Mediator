@@ -288,7 +288,7 @@ const IMLibFormat = {
     flags.usePercentNotation = true;
     return IMLibFormat.numberFormatImpl(str, digit,
       INTERMediatorOnPage.localeInfo.mon_decimal_point,
-      INTERMediatorOnPage.localeInfo.mon_thousands_sep,
+      INTERMediatorOnPage.localeInfo.mon_thousands_sep ? INTERMediatorOnPage.localeInfo.mon_thousands_sep : ',',
       false,
       flags
     );
@@ -298,7 +298,7 @@ const IMLibFormat = {
     'use strict';
     return IMLibFormat.numberFormatImpl(str, digit,
       INTERMediatorOnPage.localeInfo.mon_decimal_point,
-      INTERMediatorOnPage.localeInfo.mon_thousands_sep,
+      INTERMediatorOnPage.localeInfo.mon_thousands_sep ? INTERMediatorOnPage.localeInfo.mon_thousands_sep : ',',
       false,
       flags
     );
@@ -308,7 +308,7 @@ const IMLibFormat = {
     'use strict';
     return IMLibFormat.numberFormatImpl(str, digit,
       INTERMediatorOnPage.localeInfo.mon_decimal_point,
-      INTERMediatorOnPage.localeInfo.mon_thousands_sep,
+      INTERMediatorOnPage.localeInfo.mon_thousands_sep ? INTERMediatorOnPage.localeInfo.mon_thousands_sep : ',',
       INTERMediatorOnPage.localeInfo.currency_symbol,
       flags
     );

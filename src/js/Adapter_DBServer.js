@@ -653,8 +653,6 @@ const INTERMediator_DBAdapter = {
             }
           } else if (keyParams[0].trim() === 'valueofaddorder' && keyParams.length >= 4) {
             orderFields[parseInt(value)] = [keyParams[2].trim(), keyParams[3].trim()];
-          } else if (keyParams[0].trim() === 'limitnumber' && keyParams.length >= 4) {
-            recordLimit = parseInt(value);
           }
         }
       }
