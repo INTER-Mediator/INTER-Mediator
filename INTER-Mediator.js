@@ -507,6 +507,7 @@ var INTERMediator = {
             postSetFields = [];
             INTERMediatorOnPage.setReferenceToTheme();
             IMLibPageNavigation.initializeStepInfo(false);
+            IMLibLocalContext.bindingDescendant(document.documentElement);
 
             try {
                 seekEnclosureNode(bodyNode, null, null, null);
@@ -532,7 +533,7 @@ var INTERMediator = {
                 }
                 document.getElementById(postSetFields[i].id).value = postSetFields[i].value;
             }
-            IMLibLocalContext.bindingDescendant(document.documentElement);
+            //IMLibLocalContext.bindingDescendant(document.documentElement);
             IMLibCalc.updateCalculationFields();
             //IMLibPageNavigation.navigationSetup();
 
@@ -1773,6 +1774,24 @@ var INTERMediator = {
         if (value[contextName]) {
             delete value[contextName];
             INTERMediator.additionalSortKey = value;
+            IMLibLocalContext.archive();
+        }
+    },
+
+    addRecordLimit: function (contextName, limit) {
+        'use strict';
+        var value = INTERMediator.recordLimit;
+        value[contextName] = limit;
+        INTERMediator.recordLimit = value;
+        IMLibLocalContext.archive();
+    },
+
+    clearRecordLimit: function (contextName) {
+        'use strict';
+        var value = INTERMediator.recordLimit;
+        if (value[contextName]) {
+            delete value[contextName];
+            INTERMediator.recordLimit = value;
             IMLibLocalContext.archive();
         }
     },
