@@ -63,10 +63,10 @@ describe "INTER-Mediator-Server VM" do
       #@driver.navigate.to "http://" + @addr + "/INTER-Mediator/samples/Practices/search_page1.html"
       sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
-      expect(elements.size).to eq(10)
+      expect(elements.size).to eq(4)
       expect(elements[0].text).to eq("1000000")
       expect(elements[1].text).to eq("1020072")
-      expect(elements[9].text).to eq("1006802")
+      expect(elements[3].text).to eq("1010032")
 
       element = @driver.find_element(:id, "_im_progress")
       expect(element.attribute("style")).to eq("opacity: 0; display: flex; z-index: -9999; transition-duration: 0.3s;")
