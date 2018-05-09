@@ -25,6 +25,8 @@ Ver.5.8-dev (in development)
   separator wasn't seen as we wished.
 - [BUG FIX] In some case, the record number of related context was affected by pagination record limits.
 - [BUG FIX] Fix buildup.sh to minify correctly on FreeBSD (Thanks to Tomomitsu Baba).
+- Update FMDataAPI.php (Ver.7) for FileMaker Data API (Trial).
+- Remove search_page2.html ("search(using JavaScript)") in Practices directory.
 
 Ver.5.7 (March 29, 2018)
 - The "data-im-format" attribute is introduced.
