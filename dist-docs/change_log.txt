@@ -19,6 +19,7 @@ Ver.5.8-dev (in development)
   remove "bi2php" from "lib" directory to improve speed performance of Native Authentication.
 - The INTERMediator.recordLimit property is introduced to store the number of records. Also added methods:
   INTERMediator.setRecordLimit(cname, limit) and INTERMediator.clearRecordLimit(cname).
+- Remove search_page2.html ("search(using JavaScript)") in Practices directory.
 - [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native 
   Authentication or LDAP Authentication.
 - [BUG FIX] If the server doesn't have valid locale (ex. Windows Server), the number format with thousand
