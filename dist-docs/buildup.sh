@@ -86,10 +86,9 @@ if [ ! -e "${minifyjsDir}" ]; then
     cat "${originalPath}/lib/js_lib/tinySHA1.js"              >> "${buildPath}/temp.js"
     echo ';'                                                  >> "${buildPath}/temp.js"
     cat "${originalPath}/lib/js_lib/sha256.js"                >> "${buildPath}/temp.js"
+    echo ';'                                                  >> "${buildPath}/temp.js"
+    cat "${originalPath}/lib/js_lib/jsencrypt.min.js"         >> "${buildPath}/temp.js"
 fi
-cat "${originalPath}/lib/bi2php/biBigInt.js"                  >> "${buildPath}/temp.js"
-cat "${originalPath}/lib/bi2php/biMontgomery.js"              >> "${buildPath}/temp.js"
-cat "${originalPath}/lib/bi2php/biRSA.js"                     >> "${buildPath}/temp.js"
 cat "${originalPath}/Adapter_DBServer.js"                     >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Queuing.js"               >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Events.js"                >> "${buildPath}/temp.js"
@@ -119,6 +118,8 @@ if [ -e "${minifyjsDir}" ]; then
     echo ';'                                            >> "${buildPath}/temp.js"
     tail -n 1 "${originalPath}/lib/js_lib/sha256.js"    >> "${buildPath}/temp.js"
 	printf "\n\n"                                       >> "${buildPath}/temp.js"
+	cat "${originalPath}/lib/js_lib/jsencrypt.min.js"   >> "${buildPath}/temp.js"
+	echo ""                                             >> "${buildPath}/temp.js"
     mv  "${buildPath}/temp.js" "${buildPath}/INTER-Mediator.js"
     rm  "${temp2Path}" "${temp3Path}"
 else
