@@ -15,8 +15,8 @@ IMParts_Catalog.jquery_fileupload = {
   panelWidth: '200px',
 
   instanciate: function (targetNode) {
-    var container, node, pNode = targetNode;
-    var nodeId = targetNode.getAttribute('id');
+    let container, node, nodeId, pNode = targetNode;
+    nodeId = targetNode.getAttribute('id');
     this.ids.push(nodeId);
 
     container = document.createElement('DIV');
@@ -113,8 +113,8 @@ IMParts_Catalog.jquery_fileupload = {
   ids: [],
 
   finish: function () {
-    var shaObj, hmacValue, formData, targetId, targetNode, cInfo, keyValue;
-    for (var i = 0; i < this.ids.length; i++) {
+    let shaObj, hmacValue, targetId, targetNode, cInfo, keyValue, i;
+    for (i = 0; i < this.ids.length; i++) {
       targetId = this.ids[i];
       cInfo = IMLibContextPool.getContextInfoFromId(targetId, '');
       keyValue = cInfo.record.split('=');
@@ -126,7 +126,7 @@ IMParts_Catalog.jquery_fileupload = {
           limitConcurrentUploads: 1,
           //formData: formData,
           add: (function () {
-            var idValue = targetId;
+            let idValue = targetId;
             return function (e, data) {
               $('#' + idValue + '-filename').text(data.files[0].name);
               $('#' + idValue + '-filenamearea').css('display', 'inline');
@@ -137,12 +137,11 @@ IMParts_Catalog.jquery_fileupload = {
             };
           })(),
           submit: (function () {
-            var cName = cInfo.context.contextName, cField = cInfo.field,
-              keyField = keyValue[0], kv = keyValue[1];
-            var encrypt = new JSEncrypt();
+            let cName = cInfo.context.contextName, cField = cInfo.field,
+              keyField = keyValue[0], kv = keyValue[1],encrypt = new JSEncrypt();
             encrypt.setPublicKey(INTERMediatorOnPage.publickey);
             return function (e, data) {
-              var fdata = [];
+              let fdata = [];
               fdata.push({name: 'access', value: 'uploadfile'});
               fdata.push({name: '_im_contextnewrecord', value: 'uploadfile'});
               fdata.push({name: '_im_contextname', value: cName});
@@ -171,9 +170,9 @@ IMParts_Catalog.jquery_fileupload = {
             };
           })(),
           done: (function () {
-            var cName = cInfo.context.contextName;
+            let cName = cInfo.context.contextName;
             return function (e, data) {
-              var result = INTERMediator_DBAdapter.uploadFileAfterSucceed(
+              let result = INTERMediator_DBAdapter.uploadFileAfterSucceed(
                 data.jqXHR,
                 function () {},
                 function () {},
@@ -191,9 +190,9 @@ IMParts_Catalog.jquery_fileupload = {
             data.jqXHR.abort();
           },
           progressall: (function () {
-            var idValue = targetId;
+            let idValue = targetId;
             return function (e, data) {
-              var progress = parseInt(data.loaded / data.total * 100, 10);
+              let progress = parseInt(data.loaded / data.total * 100, 10);
               $('#' + idValue + '-progress').css('width', progress + '%');
             };
           })()
