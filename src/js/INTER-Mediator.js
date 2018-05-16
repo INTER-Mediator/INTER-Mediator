@@ -1166,7 +1166,7 @@ const INTERMediator = {
       let targetRecords, recordNumber, useLimit, key, recordset = [];
 
       if (Boolean(contextObj.contextDefinition.cache) === true) {
-        targetRecords = retrieveDataFromCache(contextObj.contextDefinition, relationValue);
+        targetRecords = await retrieveDataFromCache(contextObj.contextDefinition, relationValue);
       } else if (contextObj.contextDefinition.data) {
         for (key in contextObj.contextDefinition.data) {
           if (contextObj.contextDefinition.data.hasOwnProperty(key)) {
@@ -1221,13 +1221,12 @@ const INTERMediator = {
     /* --------------------------------------------------------------------
      This implementation for cache is quite limited.
      */
-    function retrieveDataFromCache (currentContextDef, relationValue) {
+    async function retrieveDataFromCache (currentContextDef, relationValue) {
       let targetRecords = null, pagingValue, counter, ix, oneRecord, isMatch, index, keyField, fieldName,
         recordsValue;
       try {
         if (!INTERMediatorOnPage.dbCache[currentContextDef.name]) {
-          INTERMediatorOnPage.dbCache[currentContextDef.name] =
-            INTERMediator_DBAdapter.db_query({
+          await INTERMediator_DBAdapter.db_query_async({
               name: currentContextDef.name,
               records: null,
               paging: null,
@@ -1235,7 +1234,9 @@ const INTERMediator = {
               parentkeyvalue: null,
               conditions: null,
               useoffset: false
-            });
+            },
+            (result) => {INTERMediatorOnPage.dbCache[currentContextDef.name] = result;},
+            () => {});
         }
         if (relationValue === null) {
           targetRecords = INTERMediatorOnPage.dbCache[currentContextDef.name];
