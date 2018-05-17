@@ -111,7 +111,7 @@ var INTERMediatorLib = {
     },
 
     getParentRepeater: function (node) {
-        console.error('INTERMediatorLib.getParentRepeater method in INTER-Mediator-Lib.js will be removed in Ver.6.0. '+
+        console.error('INTERMediatorLib.getParentRepeater method in INTER-Mediator-Lib.js will be removed in Ver.6.0. ' +
             'The alternative method is getParentRepeaters.');
         'use strict';
         var currentNode = node;
@@ -132,11 +132,11 @@ var INTERMediatorLib = {
         var result = [];
         var i, target = '';
         var linkInfo = INTERMediatorLib.getLinkedElementInfo(node);
-        if (!linkInfo){
+        if (!linkInfo) {
             return null;
         }
         var linkComp = linkInfo[0].split('@');
-        if (linkComp.length>2){
+        if (linkComp.length > 2) {
             target = linkComp[2];
         }
         var nInfos = IMLibContextPool.getContextInfoFromId(node.id, target);
@@ -602,7 +602,7 @@ var INTERMediatorLib = {
      */
     getCalcNodeInfoArray: function (idValue) {
         'use strict';
-        console.error('INTERMediatorLib.getCalcNodeInfoArray method in INTER-Mediator-Page.js will be removed in Ver.6.0. '+
+        console.error('INTERMediatorLib.getCalcNodeInfoArray method in INTER-Mediator-Page.js will be removed in Ver.6.0. ' +
             'Here is no alternative method.');
 
         var comps, tableName, fieldName, targetName, node, attribute;
@@ -735,8 +735,8 @@ var INTERMediatorLib = {
     normalizeNumerics: function (value) {
         'use strict';
         var i;
-        var punc = INTERMediatorOnPage.localeInfo.decimal_point;
-        var mpunc = INTERMediatorOnPage.localeInfo.mon_decimal_point;
+        var punc = INTERMediatorOnPage.localeInfo.decimal_point ? INTERMediatorOnPage.localeInfo.decimal_point : '.';
+        var mpunc = INTERMediatorOnPage.localeInfo.mon_decimal_point ? INTERMediatorOnPage.localeInfo.mon_decimal_point : '.';
         var rule = '0123456789';
         if (punc) {
             rule += '\\' + punc;

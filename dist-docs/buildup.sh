@@ -87,9 +87,7 @@ if [ ! -e "${minifyjsDir}" ]; then
     echo ';'                                                  >> "${buildPath}/temp.js"
     cat "${originalPath}/lib/js_lib/sha256.js"                >> "${buildPath}/temp.js"
 fi
-cat "${originalPath}/lib/bi2php/biBigInt.js"                  >> "${buildPath}/temp.js"
-cat "${originalPath}/lib/bi2php/biMontgomery.js"              >> "${buildPath}/temp.js"
-cat "${originalPath}/lib/bi2php/biRSA.js"                     >> "${buildPath}/temp.js"
+cat "${originalPath}/lib/js_lib/jsencrypt.min.js"             >> "${buildPath}/temp.js"
 cat "${originalPath}/Adapter_DBServer.js"                     >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Queuing.js"               >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Events.js"                >> "${buildPath}/temp.js"
