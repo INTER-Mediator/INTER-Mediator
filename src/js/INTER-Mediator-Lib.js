@@ -702,11 +702,12 @@ const INTERMediatorLib = {
     toNumber: function (str) {
         'use strict';
         var s = '', i, c;
+        var dp = INTERMediatorOnPage.localeInfo.mon_decimal_point?INTERMediatorOnPage.localeInfo.mon_decimal_point:'.';
         str = str.toString();
         for (i = 0; i < str.length; i+=1) {
             c = str.charAt(i);
             if ((c >= '0' && c <= '9') || c === '.' || c === '-' ||
-                c === INTERMediatorOnPage.localeInfo['mon_decimal_point']) {
+                c === dp) {
                 s += c;
             } else if (c >= '０' && c <= '９') {
                 s += String.fromCharCode(c.charCodeAt(0) - '０'.charCodeAt(0) + '0'.charCodeAt(0));
@@ -735,8 +736,8 @@ const INTERMediatorLib = {
     normalizeNumerics: function (value) {
         'use strict';
         var i;
-        var punc = INTERMediatorOnPage.localeInfo.decimal_point;
-        var mpunc = INTERMediatorOnPage.localeInfo.mon_decimal_point;
+        var punc = INTERMediatorOnPage.localeInfo.decimal_point?INTERMediatorOnPage.localeInfo.decimal_point:'.';
+        var mpunc = INTERMediatorOnPage.localeInfo.mon_decimal_point?INTERMediatorOnPage.localeInfo.mon_decimal_point:'.';
         var rule = '0123456789';
         if (punc) {
             rule += '\\' + punc;
