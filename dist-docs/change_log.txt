@@ -40,10 +40,21 @@ Ver.5.8-dev (in development)
 - Improve speed performance of Native Authentication and LDAP Authentication.
 - [WIP] Support FileMaker Data API (Trial) of FileMaker Server 16.
 - Support retrieving image files in container fields in FileMaker Data API (Trial).
+- Add DB_FileMaker_DataAPI class to support FileMaker Data API of FileMaker Server 17.
+- Support retrieving image files in container fields when using DB_FileMaker_DataAPI class.
+- Support uploading files to container fields when using DB_FileMaker_DataAPI class.
+- Update FMDataAPI.php (Ver.8) for FileMaker Data API.
 - Add JSEncrypt <http://travistidwell.com/jsencrypt/> to "js_lib" directory in "lib" directory and
   remove "bi2php" from "lib" directory to improve speed performance of Native Authentication.
 - Update FMDataAPI.php (Ver.7) for FileMaker Data API (Trial).
 - Remove search_page2.html ("search(using JavaScript)") in Practices directory.
+- [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native 
+  Authentication or LDAP Authentication.
+- [INFO] FileMaker Data API (Trial) of FileMaker Server 16 is no longer supported.
+- [BUG FIX] If the server doesn't have valid locale (ex. Windows Server), the number format with thousand
+  separator wasn't seen as we wished.
+- [BUG FIX] In some case, the record number of related context was affected by pagination record limits.
+- [BUG FIX] Fix buildup.sh to minify correctly on FreeBSD (Thanks to Tomomitsu Baba).
 
 Ver.5.7 (March 29, 2018)
 - The "data-im-format" attribute is introduced.

@@ -97,6 +97,9 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
     {
         $this->targetLayout = $layoutName;
         $this->recordCount = $recordCount;
+        if(!isset($_SESSION)){
+            session_start();
+        }
         $token = isset($_SESSION['FM-Data-token']) ? $_SESSION['FM-Data-token'] : '';
         try {
             if ($token === '') {
@@ -982,15 +985,48 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 */
 
                 $this->notifyHandler->setQueriedEntity($this->fmData->layout);
+                $this->fmData->{$layout}->keepAuth = true;
 
-                $originalfield = filter_input(INPUT_POST, 'field_0');
-                $value = filter_input(INPUT_POST, 'value_0');
-                $convVal = $this->formatter->formatterToDB(
-                    $this->getFieldForFormatter($tableSourceName, $originalfield), $value);
-                if ($originalfield !== FALSE && $originalfield !== NULL) {
-                    $data += array($originalfield => $convVal);
+                $fieldName = filter_input(INPUT_POST, '_im_field');
+                $useContainer = FALSE;
+                if (isset($context['file-upload'])) {
+                    foreach ($context['file-upload'] as $item) {
+                        if (isset($item['field']) &&
+                            $item['field'] === $fieldName &&
+                            isset($item['container']) &&
+                            (boolean)$item['container'] === TRUE) {
+                            $useContainer = TRUE;
+                        }
+                    }
                 }
-                $this->fmData->{$layout}->update($recId, $data);
+
+                if ($useContainer === TRUE) {
+                    $data[$fieldName] = str_replace(array("\r\n", "\r", "\n"), "\r", $data[$fieldName]);
+                    $meta = explode("\r", $data[$fieldName]);
+                    $fileName = $meta[0];
+                    $contaierData = $meta[1];
+
+                    $temp = tmpfile();
+                    if ($temp !== FALSE) {
+                        $tempMeta = stream_get_meta_data($temp);
+                        $handle = fopen($temp, 'w');
+                        fwrite($temp, base64_decode($contaierData));
+                        // [WIP] ToDo: Input file name
+                        $this->fmData->{$layout}->uploadFile($tempMeta['uri'], $recId, $fieldName);
+                        fclose($temp);
+                    } else {
+                        // [WIP]
+                    }
+                } else {
+                    $originalfield = filter_input(INPUT_POST, 'field_0');
+                    $value = filter_input(INPUT_POST, 'value_0');
+                    $convVal = $this->formatter->formatterToDB(
+                        $this->getFieldForFormatter($tableSourceName, $originalfield), $value);
+                    if ($originalfield !== FALSE && $originalfield !== NULL) {
+                        $data += array($originalfield => $convVal);
+                    }
+                    $this->fmData->{$layout}->update($recId, $data);
+                }
                 $result = $this->fmData->{$layout}->getRecord($recId);
                 /* [WIP]
                 if (!is_array($result)) {
