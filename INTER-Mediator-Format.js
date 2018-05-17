@@ -287,7 +287,11 @@ var IMLibFormat = {
         }
         flags.usePercentNotation = true;
         return IMLibFormat.numberFormatImpl(str, digit,
+<<<<<<< HEAD
             INTERMediatorOnPage.localeInfo.mon_decimal_point ? INTERMediatorOnPage.localeInfo.mon_decimal_point : '.',
+=======
+            INTERMediatorOnPage.localeInfo.mon_decimal_point,
+>>>>>>> cb472e6f629cfbb0a904a738626512cba497c8d4
             INTERMediatorOnPage.localeInfo.mon_thousands_sep ? INTERMediatorOnPage.localeInfo.mon_thousands_sep : ',',
             false,
             flags
@@ -297,7 +301,11 @@ var IMLibFormat = {
     decimalFormat: function (str, digit, flags) {
         'use strict';
         return IMLibFormat.numberFormatImpl(str, digit,
+<<<<<<< HEAD
             INTERMediatorOnPage.localeInfo.mon_decimal_point ? INTERMediatorOnPage.localeInfo.mon_decimal_point : '.',
+=======
+            INTERMediatorOnPage.localeInfo.mon_decimal_point,
+>>>>>>> cb472e6f629cfbb0a904a738626512cba497c8d4
             INTERMediatorOnPage.localeInfo.mon_thousands_sep ? INTERMediatorOnPage.localeInfo.mon_thousands_sep : ',',
             false,
             flags
@@ -307,9 +315,15 @@ var IMLibFormat = {
     currencyFormat: function (str, digit, flags) {
         'use strict';
         return IMLibFormat.numberFormatImpl(str, digit,
+<<<<<<< HEAD
             INTERMediatorOnPage.localeInfo.mon_decimal_point ? INTERMediatorOnPage.localeInfo.mon_decimal_point : '.',
             INTERMediatorOnPage.localeInfo.mon_thousands_sep ? INTERMediatorOnPage.localeInfo.mon_thousands_sep : ',',
             INTERMediatorOnPage.localeInfo.currency_symbol ? INTERMediatorOnPage.localeInfo.currency_symbol : '¥',
+=======
+            INTERMediatorOnPage.localeInfo.mon_decimal_point,
+            INTERMediatorOnPage.localeInfo.mon_thousands_sep ? INTERMediatorOnPage.localeInfo.mon_thousands_sep : ',',
+            INTERMediatorOnPage.localeInfo.currency_symbol,
+>>>>>>> cb472e6f629cfbb0a904a738626512cba497c8d4
             flags
         );
     },

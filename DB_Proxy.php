@@ -1037,6 +1037,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     /* Authentication support */
     function decrypting($paramCryptResponse)
     {
+        $password = FALSE;
+        $challenge = FALSE;
+
         $generatedPrivateKey = '';
         $passPhrase = '';
 
@@ -1049,21 +1052,29 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             include($currentDirParam);
         }
 
+        /* cf.) encrypted in generate_authParams() of Adapter_DBServer.js */
         $rsaClass = IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
         $rsa = new $rsaClass;
         $rsa->setPassword($passPhrase);
         $rsa->loadKey($generatedPrivateKey);
         $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
-
-        $nlPos = strpos($paramCryptResponse, '|');
-        $encryptedPassword = substr($paramCryptResponse, 0, $nlPos);
-        $encryptedChallenge = substr($paramCryptResponse, $nlPos + 1);
-
-        if (strlen($encryptedPassword) > 0 && strlen($encryptedChallenge) > 0) {
-            $password = $rsa->decrypt(base64_decode($encryptedPassword));
-            $challenge = $rsa->decrypt(base64_decode($encryptedChallenge));
-        } else {
-            return array('', '');
+        $token = isset($_SESSION['FM-Data-token']) ? $_SESSION['FM-Data-token'] : '';
+        $array = explode("\n", $paramCryptResponse);
+        if (strlen($array[0]) > 0 && isset($array[1]) && strlen($array[1]) > 0) {
+            $encryptedArray = explode("\n", $rsa->decrypt(base64_decode($array[0])));
+            if (isset($encryptedArray[1])) {
+                $challenge = $encryptedArray[1];
+            }
+            $encryptedPassword = $encryptedArray[0] . $array[1];
+            if (strlen($encryptedPassword) > 0) {
+                if (strlen($token) > 0 && get_class($this->dbClass) === 'DB_FileMaker_DataAPI') {
+                    $password = '';
+                } else {
+                    $password = $rsa->decrypt(base64_decode($encryptedPassword));
+                }
+            } else {
+                return array(FALSE, FALSE);
+            }
         }
 
         return array($password, $challenge);

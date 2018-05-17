@@ -30,7 +30,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $result = NULL;
         try {
             $result = $this->dbClass->fmDataAuth->{$hashTable}->query($conditions);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
         }
 
@@ -89,7 +89,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $conditions = array(array('user_id' => $uid, 'clienthost' => '_im_media'));
         try {
             $result = $this->dbClass->fmDataAuth->{$hashTable}->query($conditions);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->dbClass->getDebugInfo());
             return false;
         }
@@ -125,7 +125,23 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $conditions = array(array('user_id' => $uid, 'clienthost' => $clientId));
         try {
             $result = $this->dbClass->fmDataAuth->{$hashTable}->query($conditions);
-        } catch (Exception $e) {
+            if (!is_null($result)) {
+                foreach ($result as $record) {
+                    $recordId = $record->getRecordId();
+                    $hashValue = $record->hash;
+                    if ($isDelete) {
+                        $this->dbClass->setupFMDataAPIforAuth($hashTable, 1);
+                        try {
+                            $result = $this->dbClass->fmDataAuth->{$hashTable}->delete($recordId);
+                        } catch (\Exception $e) {
+                            // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
+                            return false;
+                        }
+                    }
+                    return $hashValue;
+                }
+            }
+        } catch (\Exception $e) {
             // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
@@ -135,20 +151,6 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             //return false;
         //}
         // [WIP] $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
-        foreach ($result as $record) {
-            $recordId = $record->getRecordId();
-            $hashValue = $record->hash;
-            if ($isDelete) {
-                $this->dbClass->setupFMDataAPIforAuth($hashTable, 1);
-                try {
-                    $result = $this->dbClass->fmDataAuth->{$hashTable}->delete($recordId);
-                } catch (Exception $e) {
-                    // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-                    return false;
-                }
-            }
-            return $hashValue;
-        }
         return false;
     }
 
@@ -166,26 +168,28 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $conditions = array(array('expired' => '...' . date('m/d/Y H:i:s', $timeValue - $this->dbSettings->getExpiringSeconds())));
         try {
             $result = $this->dbClass->fmDataAuth->{$hashTable}->query($conditions);
-        } catch (Exception $e) {
+            //if (!is_array($result)) {
+                // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
+                //return false;
+            //}
+            // [WIP] $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
+            if (!is_null($result)) {
+                foreach ($result as $record) {
+                    $recordId = $record->getRecordId();
+                    $this->dbClass->setupFMDataAPIforAuth($hashTable, 1);
+                    try {
+                        $result = $this->dbClass->fmDataAuth->{$hashTable}->delete($recordId);
+                    } catch (\Exception $e) {
+                        // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
+                        return false;
+                    }
+                }
+            }
+        } catch (\Exception $e) {
             // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
 
-        //if (!is_array($result)) {
-            // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            //return false;
-        //}
-        // [WIP] $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
-        foreach ($result as $record) {
-            $recordId = $record->getRecordId();
-            $this->dbClass->setupFMDataAPIforAuth($hashTable, 1);
-            try {
-                $result = $this->dbClass->fmDataAuth->{$hashTable}->delete($recordId);
-            } catch (Exception $e) {
-                // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-                return false;
-            }
-        }
         return true;
     }
 
@@ -200,7 +204,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $conditions = array(array('username' => str_replace('@', '\\@', $username)));
         try {
             $result = $this->dbClass->fmData->{$userTable}->query($conditions);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
@@ -212,16 +216,16 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $conditions = array(array('email' => str_replace('@', '\\@', $username)));
             try {
                 $result = $this->dbClass->fmData->{$userTable}->query($conditions);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 return false;
             }
             // [WIP] $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         }
-        //if (!is_array($result)) {
-            // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            //return false;
-        //}
 
+        if (is_null($result)) {
+            // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
+            return false;
+        }
         foreach ($result as $record) {
             return $record->hashedpasswd;
         }
@@ -262,7 +266,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $conditions = array(array('username' => str_replace('@', '\\@', $username)));
         try {
             $result = $this->dbClass->fmData->{$userTable}->query($conditions);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
         if ((!is_array($result) || count($result['data']) < 1) && $this->dbSettings->getEmailAsAccount()) {
@@ -270,7 +274,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $conditions = array(array('email' => str_replace('@', '\\@', $username)));
             try {
                 $result = $this->dbClass->fmData->{$userTable}->query($conditions);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
                 return false;
             }
@@ -308,7 +312,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $conditions = array(array('username' => str_replace('@', '\\@', $username)));
         try {
             $result = $this->dbClass->fmDataAlt->{$userTable}->query($conditions);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
@@ -340,7 +344,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $conditions = array(array('id' => $userid));
         try {
             $result = $this->dbClass->fmData->{$userTable}->query($conditions);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
@@ -370,7 +374,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $conditions = array(array('email' => str_replace('@', '\\@', $email)));
         try {
             $result = $this->dbClass->fmDataAlt->{$userTable}->query($conditions);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
             return false;
         }
@@ -411,7 +415,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
                     $usernameCandidate = $record->username;
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
             return false;
         }
@@ -429,7 +433,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $conditions = array(array('id' => $groupid));
         try {
             $result = $this->dbClass->fmDataAlt->{$groupTable}->query($conditions);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
             return false;
         }
@@ -478,14 +482,16 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         try {
             $result = $this->dbClass->fmDataAlt->{$this->dbSettings->getCorrTable()}->query($conditions);
             // [WIP] $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
-            foreach ($result as $record) {
-                if (!in_array($record->dest_group_id, $this->belongGroups)) {
-                    if (!$this->resolveGroup($record->dest_group_id)) {
-                        return false;
+            if (!is_null($result)) {
+                foreach ($result as $record) {
+                    if (!in_array($record->dest_group_id, $this->belongGroups)) {
+                        if (!$this->resolveGroup($record->dest_group_id)) {
+                            return false;
+                        }
                     }
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
@@ -525,7 +531,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $conditions = array(array('user_id' => $userid, 'clienthost' => $randdata));
         try {
             $result = $this->dbClass->fmDataAuth->{$hashTable}->query($conditions);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
@@ -558,7 +564,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $conditions = array(array($userField => $user), array($keyField => $keyValue));
         try {
             $result = $this->dbClass->fmDataAuth->{$tableName}->query($conditions);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
@@ -609,7 +615,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $conditions = array(array('hasu' => $hash, 'clienthost' => '=', 'expired' => IMUtil::currentDTStringFMS(3600) . '...'));
         try {
             $result = $this->dbClass->fmDataAuth->{$hashTable}->query($conditions);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // [WIP] $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
@@ -633,7 +639,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $conditions = array(array('id' => $userID));
         try {
             $result = $this->dbClass->fmDataAlt->{$userTable}->query($conditions);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // [WIP] $this->logger->setDebugMessage(get_class($resultUser) . ': ' . $resultUser->toString());
             return false;
         }

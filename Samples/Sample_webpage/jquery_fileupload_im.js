@@ -160,8 +160,8 @@ IMParts_Catalog.jquery_fileupload = {
                                 }
                                 fdata.push({
                                     name: 'cresponse',
-                                    value: INTERMediatorOnPage.publickey.biEncryptedString(
-                                        INTERMediatorOnPage.authCryptedPassword + '\n' +
+                                    value: encrypt.encrypt(
+                                        INTERMediatorOnPage.authCryptedPassword.substr(220) + "\n" +
                                         INTERMediatorOnPage.authChallenge)
                                 });
                             }
