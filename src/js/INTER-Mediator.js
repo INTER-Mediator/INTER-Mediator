@@ -1163,10 +1163,14 @@ const INTERMediator = {
 
      */
     async function retrieveDataForEnclosure (contextObj, fieldList, relationValue) {
-      let targetRecords, recordNumber, useLimit, key, recordset = [];
+      let targetRecords = {}, recordNumber, useLimit, key, recordset = [];
 
       if (Boolean(contextObj.contextDefinition.cache) === true) {
-        targetRecords = await retrieveDataFromCache(contextObj.contextDefinition, relationValue);
+        await retrieveDataFromCache(contextObj.contextDefinition, relationValue,
+          function (result) {
+            targetRecords.dbresult = result.recordset;
+            targetRecords.count = result.count;
+          });
       } else if (contextObj.contextDefinition.data) {
         for (key in contextObj.contextDefinition.data) {
           if (contextObj.contextDefinition.data.hasOwnProperty(key)) {
@@ -1221,7 +1225,7 @@ const INTERMediator = {
     /* --------------------------------------------------------------------
      This implementation for cache is quite limited.
      */
-    async function retrieveDataFromCache (currentContextDef, relationValue) {
+    async function retrieveDataFromCache (currentContextDef, relationValue, completion) {
       let targetRecords = null, pagingValue, counter, ix, oneRecord, isMatch, index, keyField, fieldName,
         recordsValue;
       try {
@@ -1235,8 +1239,12 @@ const INTERMediator = {
               conditions: null,
               useoffset: false
             },
-            (result) => {INTERMediatorOnPage.dbCache[currentContextDef.name] = result;},
-            () => {});
+            (result) => {
+              INTERMediatorOnPage.dbCache[currentContextDef.name] = result;
+              completion(result);
+            },
+            null
+          );
         }
         if (relationValue === null) {
           targetRecords = INTERMediatorOnPage.dbCache[currentContextDef.name];
@@ -1263,7 +1271,7 @@ const INTERMediator = {
                 recordsValue = currentContextDef.records ? currentContextDef.records : 10000000000;
 
                 if (!pagingValue || (pagingValue && ( counter >= INTERMediator.startFrom ))) {
-                  targetRecords.dbresult.push(oneRecord);
+                  targetRecords.recordset.push(oneRecord);
                   targetRecords.count++;
                   if (recordsValue <= targetRecords.count) {
                     break;
@@ -1273,7 +1281,7 @@ const INTERMediator = {
               }
             }
           }
-          return targetRecords;
+          completion(targetRecords);
         }
       } catch (ex) {
         if (ex.message === '_im_auth_required_') {

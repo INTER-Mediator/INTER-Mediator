@@ -15,50 +15,54 @@
     <title>INTER-Mediator - Account</title>
     <script src="MySQL_contexts.php"></script>
     <script type="text/javascript">
-        function setPassword(button){
-            var passwd, hashvalue, passwdField;
-            passwd = document.getElementById('inputpassword').value;
-            passwdField = INTERMediatorOnPage.getNodeIdsHavingTargetFromRepeater(button, "authuser@hashedpasswd");
-            document.getElementById(passwdField).value = INTERMediatorLib.generatePasswordHash(passwd);
-            IMLibUI.valueChange(passwdField);
-        }
+      function setPassword (id) {
+        var passwd, hashvalue, context;
+        passwd = document.getElementById('inputpassword').value;
+        hashvalue = INTERMediatorLib.generatePasswordHash(passwd);
+        context = IMLibContextPool.contextFromName('authuser');
+        context.setDataWithKey(id, 'hashedpasswd', hashvalue);
+      }
     </script>
 </head>
 <body onload="INTERMediator.construct(true);">
 <h1 style="font-weight:bold;color:blueviolet">Account Management System</h1>
-New Password: <input id="inputpassword" type="text" />
+New Password: <input id="inputpassword" type="text"/>
 Set the new password and click "Set" button on each user.
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
 <h2>User Accounts</h2>
 <table>
     <thead>
     <tr>
-        <th>User Name</th><th>Hashed Password</th><th>Email</th><th>Real Name</th>
-        <th>Groups</th><th></th>
+        <th>User Name</th>
+        <th>Hashed Password</th>
+        <th>Email</th>
+        <th>Real Name</th>
+        <th>Groups</th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
     <tr>
         <td>
-            <input data-im="authuser@username" type="text" />
+            <input data-im="authuser@username" type="text"/>
         </td>
         <td>
-            <input data-im="authuser@hashedpasswd" type="text" />
-            <button onclick="setPassword(this)">Set</button>
+            <input data-im="authuser@hashedpasswd" type="text"/>
+            <button onclick="setPassword($)" data-im="authuser@id@$onclick">Set</button>
         </td>
         <td>
-            <input data-im="authuser@email" type="text" />
+            <input data-im="authuser@email" type="text"/>
         </td>
         <td>
             <input data-im="authuser@realname" type="text" size="10"/>
         </td>
         <td>
             <span data-im-control="enclosure">
-                <span data-im-control="repeater">
+                <div data-im-control="repeater">
                 <select data-im="belonggroup@dest_group_id">
                     <option data-im="groupname@id@value|groupname@groupname"></option>
                 </select>
-                </span>
+                </div>
             </span>
         </td>
         <!--<td><span data-im="authuser@belonging"></span></td>-->
@@ -69,12 +73,16 @@ Set the new password and click "Set" button on each user.
 <h2>Group Accounts</h2>
 <table>
     <thead>
-    <tr><th>Group Name</th><th>Groups</th><th></th></tr>
+    <tr>
+        <th>Group Name</th>
+        <th>Groups</th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
     <tr>
         <td>
-            <input data-im="authgroup@groupname" type="text" />
+            <input data-im="authgroup@groupname" type="text"/>
         </td>
         <td>
             <span data-im-control="enclosure">
