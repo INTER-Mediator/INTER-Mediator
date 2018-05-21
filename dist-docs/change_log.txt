@@ -35,6 +35,7 @@ Ver.6-dev (in development)
 - [BUG FIX] If the server doesn't have valid locale (ex. Windows Server), the number format with thousand
   separator wasn't seen as we wished.
 - [BUG FIX] In some case, the record number of related context was affected by pagination record limits.
+- [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
 
 Ver.5.8-dev (in development)
 - Improve speed performance of Native Authentication and LDAP Authentication.

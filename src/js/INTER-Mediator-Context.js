@@ -1314,9 +1314,17 @@ IMLibContext.prototype.setDataWithKey = function (pkValue, key, value) {
         dataset: [{field: key, value: value}]
       };
       return function (completeTask) {
-        INTERMediator_DBAdapter.db_update(params);
-        INTERMediatorLog.flushMessage();
-        completeTask();
+        INTERMediator_DBAdapter.db_update_async(
+          params,
+          (result) => {
+            INTERMediatorLog.flushMessage();
+            completeTask();
+          },
+          () => {
+            INTERMediatorLog.flushMessage();
+            completeTask();
+          }
+        );
       };
     })());
   }
@@ -1807,7 +1815,7 @@ var IMLibLocalContext = {
           }
           break;
         case 'limitnumber':
-          if(node.value){
+          if (node.value) {
             this.store[nodeInfo.field] = node.value;
           }
           IMLibChangeEventDispatch.setExecute(idValue, (function () {

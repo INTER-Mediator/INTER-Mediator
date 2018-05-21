@@ -110,6 +110,7 @@ mkdir -p "${buildPath}/src/php/"
 cp -f "${originalPath}/INTER-Mediator.php" "${buildPath}/"
 cp -rf "${originalPath}/src/php" "${buildPath}/src"
 cp -rf "${originalPath}/src/vendor" "${buildPath}/src"
+cp -rf "${originalPath}/.git" "${buildPath}"
 
 cp  "${originalPath}/metadata.json" "${buildPath}/"
 cp  "${originalPath}/composer.json" "${buildPath}/"
