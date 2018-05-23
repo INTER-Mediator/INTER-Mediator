@@ -75,7 +75,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         $fileUploader = new FileUploader();
         $fileUploader->processInfo();
     } else if (!isset($_POST['access']) && isset($_GET['media'])) {
-        $dbProxyInstance = new DB_Proxy();
+        $dbProxyInstance = new DB\Proxy();
         $dbProxyInstance->initialize($datasource, $options, $dbspecification, $debug);
         $mediaHandler = new MediaAccess();
         if (isset($_GET['attach'])) {

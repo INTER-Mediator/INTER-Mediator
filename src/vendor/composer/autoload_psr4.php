@@ -17,6 +17,7 @@ return array(
     'INTERMediator\\FileMakerServer\\RESTAPI\\' => array($baseDir . '/lib'),
     'INTERMediator\\DataConverter\\' => array($baseDir . '/php/Data_Converter'),
     'INTERMediator\\DB\\Support\\' => array($baseDir . '/php/DB/Support'),
+    'INTERMediator\\DB\\Extending\\' => array($baseDir . '/php/DB/Extending'),
     'INTERMediator\\DB\\' => array(
         $baseDir . '/php/DB',
         dirname($_SERVER['SCRIPT_FILENAME'])

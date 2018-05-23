@@ -24,7 +24,7 @@ if (count($_GET) > 0) {
             $password .= substr($seed, $n, 1);
         }
 
-        require_once('../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
+        require_once('../../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
         $contextDef = array(
             "name" => "authuser",
             "view" => "authuser",
@@ -43,7 +43,7 @@ if (count($_GET) > 0) {
                 ),
             )
         );
-        $dbInstance = new DB_Proxy();
+        $dbInstance = new \INTERMediator\DB\Proxy();
         $dbInstance->initialize(
             array($contextDef),
             array(),
@@ -56,7 +56,7 @@ if (count($_GET) > 0) {
             $ermessage .= '確認しましたが、該当する申し込みがありません。';
         } else {
             $message .= 'アカウントを発行し、そのご案内をメールでお送りしました。';
-            $dbInstance = new DB_Proxy();
+            $dbInstance = new \INTERMediator\DB\Proxy();
             $dbInstance->initialize(
                 array($contextDef),
                 array(),
