@@ -9,10 +9,13 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-class EnrollStart extends DB_UseSharedObjects
-    implements Extending_Interface_BeforeCreate, Extending_Interface_AfterCreate
+use INTERMediator\DB\Extending\AfterCreate;
+use INTERMediator\DB\Extending\BeforeCreate;
+use INTERMediator\DB\UseSharedObjects;
+
+class EnrollStart extends UseSharedObjects implements BeforeCreate, AfterCreate
 {
-     public function doBeforeCreateToDB()
+    public function doBeforeCreateToDB()
     {
         $currentDT = time() + 3600;
         $currentDTFormat = date('YmdHis', $currentDT);

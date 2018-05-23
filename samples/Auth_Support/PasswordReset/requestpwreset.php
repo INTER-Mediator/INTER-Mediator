@@ -19,8 +19,8 @@ if (count($_POST) > 0) {
     } else if (preg_match($pattern, $_POST['ad1']) !== 1) {
         $message .= 'メールアドレスの形式が正しくありません。';
     } else {
-        require_once('../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
-        $dbInstance = new DB_Proxy();
+        require_once('../../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
+        $dbInstance = new \INTERMediator\DB\Proxy();
         $dbInstance->initialize(
             array(),
             array(
@@ -35,7 +35,7 @@ if (count($_POST) > 0) {
         if ($result === false) {
             $message .= 'パスワードのリセット処理に問題が発生しました。登録されたメールアドレスでない可能性があります。';
         } else {
-            $dbInstance = new DB_Proxy();
+            $dbInstance = new \INTERMediator\DB\Proxy();
             $dbInstance->initialize(
                 array(
                     array(

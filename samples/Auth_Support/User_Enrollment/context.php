@@ -9,7 +9,7 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-require_once('../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
+require_once('../../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
 
 IM_Entry(
     array(

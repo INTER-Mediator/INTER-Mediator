@@ -8,4 +8,6 @@ $baseDir = dirname($vendorDir);
 return array(
     "Crypt_RSA"=>$baseDir . '/lib/phpseclib_v2/Crypt/RSA.php',
     "Math_BigInteger"=>$baseDir . '/lib/phpseclib_v2/Math/BigInteger.php',
+    '\\INTERMediator\\OME' => $baseDir . '/lib/mailsend/OME.php',
+
 );

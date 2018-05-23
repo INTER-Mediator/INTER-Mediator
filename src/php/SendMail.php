@@ -22,7 +22,7 @@ class SendMail
         $isError = false;
         $errorMsg = "";
         for ($i = 0; $i < count($result); $i++) {
-            $ome = new OME();
+            $ome = new OME\OME();
 
             if (isset($sendMailParam['f-option']) && $sendMailParam['f-option'] === true) {
                 $ome->useSendMailParam();

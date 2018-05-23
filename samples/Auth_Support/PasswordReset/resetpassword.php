@@ -14,15 +14,15 @@ if (count($_GET) > 0) {
     if (!isset($_GET['c']) || strlen($_GET['c']) < 10) {
         $message .= '接続するときのURLが正しくありません。途中で欠けた文字で接続していないか確認してください。';
     } else {
-        $cred = preg_replace ('/[^0-9A-Fa-f]/' , '' , $_GET['c']);
+        $cred = preg_replace('/[^0-9A-Fa-f]/', '', $_GET['c']);
     }
 }
 if (count($_POST) > 0) {
-    $cred = preg_replace ('/[^0-9A-Fa-f]/' , '' , $_POST['cred']);
-    $hashedpw = preg_replace ('/[^0-9A-Fa-f]/' , '' , $_POST['hashedpw']);
+    $cred = preg_replace('/[^0-9A-Fa-f]/', '', $_POST['cred']);
+    $hashedpw = preg_replace('/[^0-9A-Fa-f]/', '', $_POST['hashedpw']);
 
-    require_once('../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
-    $dbInstance = new DB_Proxy();
+    require_once('../../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
+    $dbInstance = new \INTERMediator\DB\Proxy();
     $dbInstance->initialize(
         array(),
         array('authentication' => array('email-as-username' => true,),),
@@ -33,7 +33,7 @@ if (count($_POST) > 0) {
 //    $dbInstance->exportOutputDataAsJSON();
 
     if ($result) {
-        $dbInstance = new DB_Proxy();
+        $dbInstance = new \INTERMediator\DB\Proxy();
         $dbInstance->initialize(
             array(
                 array(
@@ -88,43 +88,43 @@ header('Content-Type: text/html;charset="UTF-8"');
     <script src="resetcontext.php"></script>
     <title></title>
     <script type="text/javascript">
-        var returnValue = true;
-        function leastChecking() {
-            returnValue = true;
-            alertEmptyField('mail');
-            alertEmptyField('pass1');
-            alertEmptyField('pass2');
-            if (document.getElementById('pass2').value != document.getElementById('pass1').value) {
-                document.getElementById('pass2err').innerHTML = '2つのパスワードが一致しません';
-                returnValue = false;
-            }
-            if (returnValue) {
-                document.getElementById('hashedpw').value
-                    = INTERMediatorLib.generatePasswordHash(document.getElementById('pass2').value);
-                document.getElementById('pass1').value = '';
-                document.getElementById('pass2').value = '';
-            }
-            return returnValue;
+      var returnValue = true;
+      function leastChecking() {
+        returnValue = true;
+        alertEmptyField('mail');
+        alertEmptyField('pass1');
+        alertEmptyField('pass2');
+        if (document.getElementById('pass2').value != document.getElementById('pass1').value) {
+          document.getElementById('pass2err').innerHTML = '2つのパスワードが一致しません';
+          returnValue = false;
         }
-        function alertEmptyField(fieldId) {
-            if (document.getElementById(fieldId).value == '') {
-                document.getElementById(fieldId + 'err').innerHTML = '未入力です';
-                returnValue = false;
-            }
+        if (returnValue) {
+          document.getElementById('hashedpw').value
+            = INTERMediatorLib.generatePasswordHash(document.getElementById('pass2').value);
+          document.getElementById('pass1').value = '';
+          document.getElementById('pass2').value = '';
         }
-        window.onload = function () {
-            document.getElementById("mail").value = getCookie("pwresetmail");
-        };
-        function getCookie(key) {
-            var s, i;
-            s = document.cookie.split('; ');
-            for (i = 0; i < s.length; i+=1) {
-                if (s[i].indexOf(key + '=') == 0) {
-                    return decodeURIComponent(s[i].substring(s[i].indexOf('=') + 1));
-                }
-            }
-            return '';
+        return returnValue;
+      }
+      function alertEmptyField(fieldId) {
+        if (document.getElementById(fieldId).value == '') {
+          document.getElementById(fieldId + 'err').innerHTML = '未入力です';
+          returnValue = false;
         }
+      }
+      window.onload = function () {
+        document.getElementById('mail').value = getCookie('pwresetmail');
+      };
+      function getCookie(key) {
+        var s, i;
+        s = document.cookie.split('; ');
+        for (i = 0; i < s.length; i += 1) {
+          if (s[i].indexOf(key + '=') == 0) {
+            return decodeURIComponent(s[i].substring(s[i].indexOf('=') + 1));
+          }
+        }
+        return '';
+      }
     </script>
     <style>
         .errormsg {

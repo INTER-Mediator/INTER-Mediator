@@ -10,7 +10,7 @@
  */
 $result = -3;
 if (isset($_GET['m']) && strlen($_GET['m']) > 0) {
-    require_once('../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
+    require_once('../../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
     $contextDef = array(
         'name' => 'authuser',
         'key' => 'id',
@@ -18,7 +18,7 @@ if (isset($_GET['m']) && strlen($_GET['m']) > 0) {
             array('field' => 'email', 'operator' => '=', 'value' => $_GET['m']),
         ),
     );
-    $dbInstance = new DB_Proxy();
+    $dbInstance = new \INTERMediator\DB\Proxy();
     $dbInstance->initialize(
         array($contextDef),
         array(),
