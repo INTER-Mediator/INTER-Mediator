@@ -53,7 +53,7 @@ class FileUploader
 
     public function processingAsError($datasource, $options, $dbspec, $debug)
     {
-        $dbProxyInstance = new DB_Proxy();
+        $dbProxyInstance = new DB\Proxy();
         $this->db = $dbProxyInstance;
         $dbProxyInstance->initialize($datasource, $options, $dbspec, $debug, $_POST["_im_contextname"]);
 
@@ -99,7 +99,7 @@ class FileUploader
 
     public function processing($datasource, $options, $dbspec, $debug)
     {
-        $dbProxyInstance = new DB_Proxy();
+        $dbProxyInstance = new DB\Proxy();
         $this->db = $dbProxyInstance;
         $dbProxyInstance->initialize($datasource, $options, $dbspec, $debug, $_POST["_im_contextname"]);
 
@@ -250,7 +250,7 @@ class FileUploader
             }
 
             $dbKeyValue = $_POST["_im_keyvalue"];
-            $dbProxyInstance = new DB_Proxy();
+            $dbProxyInstance = new DB\Proxy();
             $dbProxyInstance->initialize($datasource, $options, $dbspec, $debug, $_POST["_im_contextname"]);
             $dbProxyInstance->dbSettings->addExtraCriteria($_POST["_im_keyfield"], "=", $dbKeyValue);
             $dbProxyInstance->dbSettings->setFieldsRequired(array($targetFieldName));
@@ -289,7 +289,7 @@ class FileUploader
                 if (isset($dbProxyContext['file-upload'])) {
                     foreach ($dbProxyContext['file-upload'] as $item) {
                         if ($item['field'] == $_POST["_im_field"]) {
-                            $relatedContext = new DB_Proxy();
+                            $relatedContext = new DB\Proxy();
                             $relatedContext->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : null);
                             $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
                             $fields = array();
