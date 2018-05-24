@@ -525,6 +525,16 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             $conditions = NULL;
         }
 
+        if (isset($tableInfo['global'])) {
+            foreach ($tableInfo['global'] as $condition) {
+                if (isset($condition['db-operation']) && in_array($condition['db-operation'], array('load', 'read'))) {
+                    $this->fmData->{$layout}->setGlobalField(
+                        array($condition['field'] => $condition['value'])
+                    );
+                }
+            }
+        }
+
         $script = NULL;
         if (isset($context['script'])) {
             foreach ($context['script'] as $condition) {
@@ -964,7 +974,9 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 if (isset($tableInfo['global'])) {
                     foreach ($tableInfo['global'] as $condition) {
                         if ($condition['db-operation'] == 'update') {
-                            $this->fmData->SetFMGlobal($condition['field'], $condition['value']);
+                            $this->fmData->{$layout}->setGlobalField(
+                                array($condition['field'] => $condition['value'])
+                            );
                         }
                     }
                 }
@@ -1131,7 +1143,9 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         if (isset($context['global'])) {
             foreach ($context['global'] as $condition) {
                 if ($condition['db-operation'] == 'new' || $condition['db-operation'] == 'create') {
-                    $this->fmData->SetFMGlobal($condition['field'], $condition['value']);
+                    $this->fmData->{$layout}->setGlobalField(
+                        array($condition['field'] => $condition['value'])
+                    );
                 }
             }
         }
@@ -1280,7 +1294,9 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 if (isset($context['global'])) {
                     foreach ($context['global'] as $condition) {
                         if ($condition['db-operation'] == 'delete') {
-                            $this->fmData->SetFMGlobal($condition['field'], $condition['value']);
+                            $this->fmData->{$layout}->setGlobalField(
+                                array($condition['field'] => $condition['value'])
+                            );
                         }
                     }
                 }
