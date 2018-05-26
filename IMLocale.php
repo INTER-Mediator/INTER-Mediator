@@ -38,6 +38,7 @@ class IMLocale
     public static $useMbstring = false;
     public static $localForTest = '';
     public static $options = null;
+    private static $localeConvertTable = array("ja" => "ja_JP");
 
     /**
      * Set the locale with parameter, for UNIX and Windows OS.
@@ -74,7 +75,8 @@ class IMLocale
         }
 
         // Locale Convert Talble
-        IMLocale::$choosenLocale = array("ja"=>"ja_JP")[IMLocale::$choosenLocale];
+        IMLocale::$choosenLocale = array_key_exists(IMLocale::$choosenLocale,IMLocale::$localeConvertTable) ?
+            IMLocale::$localeConvertTable[IMLocale::$choosenLocale] : IMLocale::$choosenLocale;
 
         // Detect server platform, Windows or Unix
         $isWindows = false;
