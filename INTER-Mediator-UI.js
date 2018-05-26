@@ -408,7 +408,6 @@ var IMLibUI = {
                                 }
                                 IMLibCalc.recalculation();
                                 INTERMediatorOnPage.hideProgress();
-                                // IMLibUI.unlockUIElement(contextDefCapt.name);
                                 completeTaskCapt();
                                 INTERMediatorLog.flushMessage();
                             };
@@ -417,7 +416,6 @@ var IMLibUI = {
                     );
                 } catch (ex) {
                     INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-43');
-                    // IMLibUI.unlockUIElement(idValue);
                 }
             };
         })());
@@ -640,7 +638,6 @@ var IMLibUI = {
                     }
 
                     completeTask();
-                    //IMLibUI.unlockUIElement(idValue);
                     if (currentContext.relation && currentContext.relation[0] &&
                         currentContext.relation[0]['join-field']) {
                         INTERMediator_DBAdapter.db_update({

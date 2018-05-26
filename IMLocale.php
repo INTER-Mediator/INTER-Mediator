@@ -73,6 +73,9 @@ class IMLocale
             }
         }
 
+        // Locale Convert Talble
+        IMLocale::$choosenLocale = array("ja"=>"ja_JP")[IMLocale::$choosenLocale];
+
         // Detect server platform, Windows or Unix
         $isWindows = false;
         $uname = php_uname();
