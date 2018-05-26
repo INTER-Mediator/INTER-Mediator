@@ -96,7 +96,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         if(!isset($_SESSION)){
             session_start();
         }
-        $token = isset($_SESSION['FM-Data-token']) ? $_SESSION['FM-Data-token'] : '';
+        $token = isset($_SESSION['X-FM-Data-Access-Token']) ? $_SESSION['X-FM-Data-Access-Token'] : '';
         try {
             if ($token === '') {
                 throw new \Exception();
@@ -180,9 +180,9 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         }
     }
 
-    private function executeScriptsforLoading($scriptContext)
+    private function executeScripts($scriptContext)
     {
-        $queryString = '';
+        $script = array();
         if (is_array($scriptContext)) {
             foreach ($scriptContext as $condition) {
                 if (isset($condition['situation']) &&
@@ -195,21 +195,21 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     }
                     switch ($condition['situation']) {
                         case 'post':
-                            $queryString .= '&-script=' . $scriptName;
+                            $script = $script + array('script' => $scriptName);
                             if ($parameter !== '') {
-                                $queryString .= '&-script.param=' . $parameter;
+                                $script = $script + array('script.param' => $parameter);
                             }
                             break;
                         case 'pre':
-                            $queryString .= '&-script.prefind=' . $scriptName;
+                            $script = $script + array('script.prerequest' => $scriptName);
                             if ($parameter !== '') {
-                                $queryString .= '&-script.prefind.param=' . $parameter;
+                                $script = $script + array('script.prerequest.param' => $parameter);
                             }
                             break;
                         case 'presort':
-                            $queryString .= '&-script.presort=' . $scriptName;
+                            $script = $script + array('script.presort' => $scriptName);
                             if ($parameter !== '') {
-                                $queryString .= '&-script.presort.param=' . $parameter;
+                                $script = $script + array('script.presort.param' => $parameter);
                             }
                             break;
                     }
@@ -217,29 +217,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             }
         }
 
-        return $queryString;
-    }
-
-    private function executeScripts($fxphp, $condition)
-    {
-        if ($condition['situation'] == 'pre') {
-            $fxphp->PerformFMScriptPrefind($condition['definition']);
-            if (isset($condition['parameter']) && !empty($condition['parameter'])) {
-                $fxphp->AddDBParam('-script.prefind.param', $condition['parameter']);
-            }
-        } else if ($condition['situation'] == 'presort') {
-            $fxphp->PerformFMScriptPresort($condition['definition']);
-            if (isset($condition['parameter']) && !empty($condition['parameter'])) {
-                $fxphp->AddDBParam('-script.presort.param', $condition['parameter']);
-            }
-        } else if ($condition['situation'] == 'post') {
-            $fxphp->PerformFMScript($condition['definition']);
-            if (isset($condition['parameter']) && !empty($condition['parameter'])) {
-                $fxphp->AddDBParam('-script.param', $condition['parameter']);
-            }
-        }
-
-        return $fxphp;
+        return $script === array() ? NULL : $script;
     }
 
     public function getFieldInfo($dataSourceName)
@@ -547,6 +525,25 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             $conditions = NULL;
         }
 
+        if (isset($tableInfo['global'])) {
+            foreach ($tableInfo['global'] as $condition) {
+                if (isset($condition['db-operation']) && in_array($condition['db-operation'], array('load', 'read'))) {
+                    $this->fmData->{$layout}->setGlobalField(
+                        array($condition['field'] => $condition['value'])
+                    );
+                }
+            }
+        }
+
+        $script = NULL;
+        if (isset($context['script'])) {
+            foreach ($context['script'] as $condition) {
+                if (isset($condition['db-operation']) && in_array($condition['db-operation'], array('load', 'read'))) {
+                    $script = $this->executeScripts($context['script']);
+                }
+            }
+        }
+
         $request = filter_input_array(INPUT_POST);
         if (!is_null($request)) {
             foreach ($request as $key => $val) {
@@ -561,8 +558,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 }
             }
         }
-
-        //$this->fmData->{$layout}->startCommunication();
 
         $portal = array();
         $portalNames = array();
@@ -589,10 +584,24 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                         $portal = array_merge($portal, array($key => $portalName));
                     }
                     if (!is_numeric($recordId)) {
-                        $result = $this->fmData->{$layout}->query($conditions, $sort, $skip + 1, $limitParam, $portal);
+                        $result = $this->fmData->{$layout}->query(
+                            $conditions,
+                            $sort,
+                            $skip + 1,
+                            $limitParam,
+                            $portal,
+                            $script
+                        );
                     }
                 } else {
-                    $result = $this->fmData->{$layout}->query($conditions, $sort, $skip + 1, $limitParam);
+                    $result = $this->fmData->{$layout}->query(
+                        $conditions,
+                        $sort,
+                        $skip + 1,
+                        $limitParam,
+                        $portal,
+                        $script
+                    );
                 }
             }
         } catch (\Exception $e) {
@@ -665,16 +674,16 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             
 
             if ($recordId === NULL) {
-                $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 100000000);
+                $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 100000000, NULL, $script);
             }
             $this->mainTableCount = $result->count();
-            $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 100000000);
+            $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 100000000, NULL, $script);
             $this->mainTableTotalCount = $result->count();
         }
 
         $token = $this->fmData->getSessionToken();
-        if (!isset($_SESSION['FM-Data-token'])) {
-            $_SESSION['FM-Data-token'] = $token;
+        if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
+            $_SESSION['X-FM-Data-Access-Token'] = $token;
         }
 
         return $recordArray;
@@ -965,20 +974,20 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 if (isset($tableInfo['global'])) {
                     foreach ($tableInfo['global'] as $condition) {
                         if ($condition['db-operation'] == 'update') {
-                            $this->fmData->SetFMGlobal($condition['field'], $condition['value']);
+                            $this->fmData->{$layout}->setGlobalField(
+                                array($condition['field'] => $condition['value'])
+                            );
                         }
                     }
                 }
-                /*
-                // [WIP] FileMaker Data API (Trial) doesn't support executing FileMaker scripts
-                if (isset($tableInfo['script'])) {
-                    foreach ($tableInfo['script'] as $condition) {
+                $script = NULL;
+                if (isset($context['script'])) {
+                    foreach ($context['script'] as $condition) {
                         if ($condition['db-operation'] == 'update') {
-                            $this->fmData = $this->executeScripts($this->fmData, $condition);
+                            $script = $this->executeScripts($context['script']);
                         }
                     }
                 }
-                */
 
                 $this->notifyHandler->setQueriedEntity($this->fmData->layout);
                 $this->fmData->{$layout}->keepAuth = true;
@@ -1007,8 +1016,8 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                         $tempMeta = stream_get_meta_data($temp);
                         $handle = fopen($temp, 'w');
                         fwrite($temp, base64_decode($contaierData));
-                        // [WIP] ToDo: Input file name
-                        $this->fmData->{$layout}->uploadFile($tempMeta['uri'], $recId, $fieldName);
+                        // INTER-Mediator doesn't support repeating fields now.
+                        $this->fmData->{$layout}->uploadFile($tempMeta['uri'], $recId, $fieldName, NULL, $fileName);
                         fclose($temp);
                     } else {
                         // [WIP]
@@ -1021,7 +1030,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     if ($originalfield !== FALSE && $originalfield !== NULL) {
                         $data += array($originalfield => $convVal);
                     }
-                    $this->fmData->{$layout}->update($recId, $data);
+                    $this->fmData->{$layout}->update($recId, $data, -1, NULL, $script);
                 }
                 $result = $this->fmData->{$layout}->getRecord($recId);
                 /* [WIP]
@@ -1134,23 +1143,23 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         if (isset($context['global'])) {
             foreach ($context['global'] as $condition) {
                 if ($condition['db-operation'] == 'new' || $condition['db-operation'] == 'create') {
-                    $this->fmData->SetFMGlobal($condition['field'], $condition['value']);
+                    $this->fmData->{$layout}->setGlobalField(
+                        array($condition['field'] => $condition['value'])
+                    );
                 }
             }
         }
-        /*
-        // [WIP] FileMaker Data API (Trial) doesn't support executing FileMaker scripts
+        $script = NULL;
         if (isset($context['script'])) {
             foreach ($context['script'] as $condition) {
                 if ($condition['db-operation'] == 'new' || $condition['db-operation'] == 'create') {
-                    $this->fmData = $this->executeScripts($this->fmData, $condition);
+                    $script = $this->executeScripts($context['script']);
                 }
             }
         }
-        */
 
         $layout = $this->dbSettings->getEntityForUpdate();
-        $recId = $this->fmData->{$layout}->create($recordData);
+        $recId = $this->fmData->{$layout}->create($recordData, NULL, $script);
         $result = $this->fmData->{$layout}->getRecord($recId);
         if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             if ($this->dbSettings->isDBNative()) {
@@ -1285,25 +1294,25 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 if (isset($context['global'])) {
                     foreach ($context['global'] as $condition) {
                         if ($condition['db-operation'] == 'delete') {
-                            $this->fmData->SetFMGlobal($condition['field'], $condition['value']);
+                            $this->fmData->{$layout}->setGlobalField(
+                                array($condition['field'] => $condition['value'])
+                            );
                         }
                     }
                 }
-                /* 
-                // [WIP] FileMaker Data API (Trial) doesn't support executing FileMaker scripts
+                $script = NULL;
                 if (isset($context['script'])) {
                     foreach ($context['script'] as $condition) {
                         if ($condition['db-operation'] == 'delete') {
-                            $this->fmData = $this->executeScripts($this->fmData, $condition);
+                            $script = $this->executeScripts($context['script']);
                         }
                     }
                 }
-                */
 
                 $this->notifyHandler->setQueriedEntity($this->fmData->layout);
 
                 try {
-                    $result = $this->fmData->{$layout}->delete($recId);
+                    $result = $this->fmData->{$layout}->delete($recId, $script);
                 } catch (\Exception $e) {
                     if ($this->dbSettings->isDBNative()) {
                         $this->dbSettings->setRequireAuthentication(true);
