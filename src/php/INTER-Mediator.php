@@ -14,9 +14,23 @@
  */
 
 namespace INTERMediator;
+
 // Setup autoloader
 $imRoot = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR;
-require($imRoot . 'src/vendor/autoload.php');
+require($imRoot . '/vendor/autoload.php');
+
+// Load from the file located on the same directory as definition file.
+spl_autoload_register(function($className) {
+    $comps = explode('\\', $className);
+    $className = $comps[count($comps)-1];
+    $path = dirname($_SERVER['SCRIPT_FILENAME']) . "/{$className}.php";
+    if (file_exists($path)) {
+        require_once $path;
+        return true;
+    }
+    return false;
+});
+
 // Character set for mbstring
 if (function_exists('mb_internal_encoding')) {
     mb_internal_encoding('UTF-8');

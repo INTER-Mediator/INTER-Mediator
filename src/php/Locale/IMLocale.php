@@ -40,6 +40,7 @@ class IMLocale
     public static $useMbstring = false;
     public static $localForTest = '';
     public static $options = null;
+    private static $localeConvertTable = array("ja" => "ja_JP");
 
     /**
      * Set the locale with parameter, for UNIX and Windows OS.
@@ -75,6 +76,10 @@ class IMLocale
             }
         }
 
+        // Locale Convert Talble. Chrome requests "ja"
+        IMLocale::$choosenLocale = array_key_exists(IMLocale::$choosenLocale,IMLocale::$localeConvertTable) ?
+            IMLocale::$localeConvertTable[IMLocale::$choosenLocale] : IMLocale::$choosenLocale;
+
         // Detect server platform, Windows or Unix
         $isWindows = false;
         $uname = php_uname();
@@ -107,7 +112,7 @@ class IMLocale
         if ($localeString === '') {
             $lstr = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']) : 'en';
         }
-        
+
         // Extracting first item and cutting the priority infos.
         if (strpos($lstr, ',') !== false) $lstr = substr($lstr, 0, strpos($lstr, ','));
         if (strpos($lstr, ';') !== false) $lstr = substr($lstr, 0, strpos($lstr, ';'));
@@ -126,4 +131,5 @@ class IMLocale
             $lstr = strtolower($lstr[0]) . '_' . strtoupper($lstr[1]);
         return $lstr;
     }
+
 }

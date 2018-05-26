@@ -20,7 +20,7 @@ class GenerateJSCode
 {
     public function __construct()
     {
-        if(!isset($_SESSION)){
+        if (!isset($_SESSION)) {
             session_start();
         }
         header('Content-Type: text/javascript;charset="UTF-8"');
@@ -97,7 +97,7 @@ class GenerateJSCode
 
         $serverName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
         $documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : 'Not_on_web_server';
-        $scriptName = isset($_SERVER['SCRIPT_NAME'])?$_SERVER['SCRIPT_NAME']:'Not_on_web_server';
+        $scriptName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
         /*
          * Read the JS programs regarding by the developing or deployed.
          */
@@ -135,14 +135,9 @@ class GenerateJSCode
          * from db-class, determine the default key field string
          */
         $defaultKey = null;
-        $dbClassName = '\\INTERMediator\\DB\\' .
-            (isset($dbspecification['db-class']) ? $dbspecification['db-class'] :
-                (!is_null($dbClass) ? $dbClass : ''));
-//        if ($dbClassName !== 'DB_DefEditor' && $dbClassName !== 'DB_PageEditor') {
-//            require_once("{$dbClassName}.php");
-//        } else {
-//            require_once(dirname(__FILE__) . "/INTER-Mediator-Support/{$dbClassName}.php");
-//        }
+        $classBaseName = (isset($dbspecification['db-class']) ? $dbspecification['db-class'] :
+            (!is_null($dbClass) ? $dbClass : ''));
+        $dbClassName = '\\INTERMediator\\DB\\' . $classBaseName;
         $dbInstance = new $dbClassName();
         $dbInstance->setupHandlers($dbDSN);
         if ($dbInstance != null && $dbInstance->specHandler != null) {
