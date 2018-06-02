@@ -39,7 +39,7 @@
  * @since PHP 4.0
  * @version
  */
-namespace INTERMediator\OME;
+namespace INTERMediator;
 
 class OME
 {

@@ -15,7 +15,11 @@
     "ext-mbstring": "*",
     "ext-PDO": "*",
     "ext-bcmath": "*",
-    "mouf/nodejs-installer": "*"
+    "mouf/nodejs-installer": "*",
+    "phpseclib/phpseclib": "*",
+    "paragonie/constant_time_encoding": "*",
+    "yodarunamok/fxphp": "*",
+    "swiftmailer/swiftmailer": "*"
   },
   "require-dev": {
     "matthiasmullie/minify": "1.3.*",
@@ -23,22 +27,10 @@
   },
   "autoload": {
     "psr-4": {
-      "INTERMediator\\": "src/php",
-      "INTERMediator\\FileMakerServer\\RESTAPI\\": "src/lib",
-      "phpseclib\\Crypt\\": "src/lib/phpseclib_v2/Crypt",
-      "phpseclib\\Math\\": "src/lib/phpseclib_v2/Math",
-      "ParagonIE\\ConstantTime\\": "src/lib/ParagonIE/ConstantTime",
-      "QDSMTP\\": "src/lib/mailsend/qdsmtp",
-      "INTERMediator\\OME\\": "src/lib/mailsend",
-      "0": [
-        ".",
-        "lib/CWPKit",
-        "lib/FX"
-      ]
+      "INTERMediator\\": "src/php"
     },
     "classmap": [
-      "src/lib/phpseclib_v2/Crypt/RSA.php",
-      "src/lib/phpseclib_v2/Math/BigInteger.php"
+      "src/lib/CWPKit/CWPKit.php"
     ]
   },
   "description": "The INTER-Mediator is framework for database-driven web application.",
