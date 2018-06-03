@@ -16,13 +16,6 @@
 namespace INTERMediator\DB;
 use \Exception;
 
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'CWPKit' . DIRECTORY_SEPARATOR . 'CWPKit.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Support' . DIRECTORY_SEPARATOR . 'DB_Spec_Handler_FileMaker_FX.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Support' . DIRECTORY_SEPARATOR . 'DB_Auth_Common.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Support' . DIRECTORY_SEPARATOR . 'DB_Notification_Common.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Support' . DIRECTORY_SEPARATOR . 'DB_Auth_Handler_FileMaker_FX.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Support' . DIRECTORY_SEPARATOR . 'DB_Notification_Handler_FileMaker_FX.php');
-
 class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
 {
     public $fx = null;
@@ -93,22 +86,22 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
 
     private function setupFX_Impl($layoutName, $recordCount, $user, $password)
     {
-        $fxPath = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .
-            '..' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'FX';
-        $fxFiles = array(
-            'FX.php',
-            'lib/datasource_classes' . DIRECTORY_SEPARATOR . 'RetrieveFM7Data.class.php',
-        );
-        foreach ($fxFiles as $fxFile) {
-            $path = $fxPath . DIRECTORY_SEPARATOR . $fxFile;
-            if (is_file($path) && is_readable($path)) {
-                require_once($path);
-            } else {
-                // If FX.php isn't installed in valid directories, it shows error message and finishes.
-                throw new \Exception('Data Access Class "FileMaker_FX" of INTER-Mediator requires ' .
-                    basename($fxFile) . ' on any right directory.');
-            }
-        }
+//        $fxPath = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .
+//            '..' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'FX';
+//        $fxFiles = array(
+//            'FX.php',
+//            'lib/datasource_classes' . DIRECTORY_SEPARATOR . 'RetrieveFM7Data.class.php',
+//        );
+//        foreach ($fxFiles as $fxFile) {
+//            $path = $fxPath . DIRECTORY_SEPARATOR . $fxFile;
+//            if (is_file($path) && is_readable($path)) {
+//                require_once($path);
+//            } else {
+//                // If FX.php isn't installed in valid directories, it shows error message and finishes.
+//                throw new \Exception('Data Access Class "FileMaker_FX" of INTER-Mediator requires ' .
+//                    basename($fxFile) . ' on any right directory.');
+//            }
+//        }
 
         $fxObj = new \FX(
             $this->dbSettings->getDbSpecServer(),

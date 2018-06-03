@@ -699,7 +699,7 @@ const INTERMediator = {
         currentRecord = currentRecord[currentContextObj.contextName][recId];
       }
       if (imControl && imControl.match(/cross-table/)) {   // Cross Table
-        expandCrossTableEnclosure(node, currentRecord, parentObjectInfo, currentContextObj);
+        await expandCrossTableEnclosure(node, parentObjectInfo, currentContextObj);
       } else {    // Enclosure Processing as usual.
         repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(node.tagName);
         repeatersOriginal = collectRepeatersOriginal(node, repNodeTag); // Collecting repeaters to this array.
@@ -793,7 +793,7 @@ const INTERMediator = {
       /** --------------------------------------------------------------------
        * expanding enclosure for cross table
        */
-      function expandCrossTableEnclosure (node, currentRecord, parentObjectInfo, currentContextObj) {
+      async function expandCrossTableEnclosure (node, parentObjectInfo, currentContextObj) {
         let i, j, colArray, rowArray, nodeForKeyValues, record, targetRepeater, lineNode, colContext,
           rowContext, appendingNode, trNodes, repeaters, linkedNodes, linkDefs,
           crossCellContext, labelKeyColumn, labelKeyRow;
@@ -825,7 +825,7 @@ const INTERMediator = {
 
         // Append the column context in the first row
         targetRepeater = ctComponentNodes[1].cloneNode(true);
-        colContext = enclosureProcessing(
+        colContext = await enclosureProcessing(
           lineNode, [targetRepeater], null, parentObjectInfo, currentContextObj);
         colArray = colContext.indexingArray(labelKeyColumn);
 
@@ -834,7 +834,7 @@ const INTERMediator = {
         targetRepeater = ctComponentNodes[2].cloneNode(true);
         lineNode = document.createElement('TR');
         lineNode.appendChild(targetRepeater);
-        rowContext = enclosureProcessing(
+        rowContext = await enclosureProcessing(
           node, [lineNode], null, parentObjectInfo, currentContextObj);
         rowArray = rowContext.indexingArray(labelKeyRow);
 
@@ -855,7 +855,7 @@ const INTERMediator = {
           }
         }
         INTERMediator.setIdValue(node);
-        enclosureProcessing(
+        await enclosureProcessing(
           node, [targetRepeater], null, parentObjectInfo, currentContextObj,
           function (context) {
             let currentContextDef = context.getContextDef();

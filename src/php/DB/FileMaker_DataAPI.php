@@ -14,14 +14,6 @@
  */
 
 namespace INTERMediator\DB;
-use \Exception;
-
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'FMDataAPI.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Support' . DIRECTORY_SEPARATOR . 'DB_Spec_Handler_FileMaker_DataAPI.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Support' . DIRECTORY_SEPARATOR . 'DB_Auth_Common.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Support' . DIRECTORY_SEPARATOR . 'DB_Notification_Common.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Support' . DIRECTORY_SEPARATOR . 'DB_Auth_Handler_FileMaker_DataAPI.php');
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Support' . DIRECTORY_SEPARATOR . 'DB_Notification_Handler_FileMaker_DataAPI.php');
 
 class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
 {

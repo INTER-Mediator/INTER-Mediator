@@ -11,13 +11,13 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "php": "^7",
+    "php": "^5",
     "ext-mbstring": "*",
     "ext-PDO": "*",
     "ext-bcmath": "*",
     "mouf/nodejs-installer": "*",
     "phpseclib/phpseclib": "*",
-    "paragonie/constant_time_encoding": "*",
+    "paragonie/constant_time_encoding": "^1",
     "yodarunamok/fxphp": "*",
     "swiftmailer/swiftmailer": "*"
   },

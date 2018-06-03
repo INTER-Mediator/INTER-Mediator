@@ -19,12 +19,19 @@ namespace INTERMediator;
 $imRoot = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR;
 require($imRoot . '/vendor/autoload.php');
 
-// Load from the file located on the same directory as definition file.
 spl_autoload_register(function($className) {
     $comps = explode('\\', $className);
     $className = $comps[count($comps)-1];
+    // Load from the file located on the same directory as definition file.
     $path = dirname($_SERVER['SCRIPT_FILENAME']) . "/{$className}.php";
     if (file_exists($path)) {
+        require_once $path;
+        return true;
+    }
+    // Load from the file inside files of FX.php.
+    $imRoot = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR;
+    $path = "{$imRoot}/vendor/yodarunamok/fxphp/lib/datasource_classes/{$className}.class.php";
+    if (file_exists($path)){
         require_once $path;
         return true;
     }
