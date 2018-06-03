@@ -33,6 +33,8 @@ if [ ${#param} = 0 ]; then
     /bin/echo ' (3) spec/<files for PHP5> to root'
     /bin/echo ' (4) root/<files for PHP7> to spec/'
     /bin/echo ' (5) root/<files for PHP5> to spec/'
+    /bin/echo ' (6) PHP 5 activate (macOS/homebrew only)'
+    /bin/echo ' (7) PHP 7 activate (macOS/homebrew only)'
     /bin/echo -n "Type 1, 2, 3, 4 or 5, and then type return----> "
     read choice
     /bin/echo ""
@@ -72,5 +74,17 @@ case ${choice} in
     cp composer.lock spec/composer5.lock
     cp package.json spec/package5.json
     cp package-lock.json spec/package-lock5.json
+    ;;
+6 )
+    brew unlink php@7.2
+    brew link --force --overrite php@5.6
+    brew link --overwrite php
+    env PATH="/usr/local/opt/php@5.6/bin:/usr/local/opt/php@5.6/sbin:$PATH" composer update
+    ;;
+7 )
+    brew unlink php@5.6
+    brew link --force --overrite php@7.2
+    brew link --overwrite php
+    composer update
     ;;
 esac
