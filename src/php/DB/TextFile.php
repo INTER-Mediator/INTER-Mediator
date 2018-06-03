@@ -31,7 +31,7 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
 //        $this->logger->setErrorMessage($metaFilePath);
 //        $this->logger->setErrorMessage($dataFilePath);
 
-            if (substr_count($metaFilePath, '../') > 2 || substr_count($dataFilePath, '../') > 2) {
+            if (substr_count($metaFilePath, '../') > 3 || substr_count($dataFilePath, '../') > 3) {
                 $this->logger->setErrorMessage("You can't access files in inhibit area: {$metaFilePath} {$dataFilePath}.");
                 return null;
             }

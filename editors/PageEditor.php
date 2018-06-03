@@ -13,7 +13,10 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-class DB_PageEditor extends DB_UseSharedObjects implements DB_Interface
+
+namespace INTERMediator\DB;
+
+class PageEditor extends UseSharedObjects implements DBClass_Interface
 {
     private $recordCount;
     private $isRequiredUpdated = false;
@@ -23,7 +26,7 @@ class DB_PageEditor extends DB_UseSharedObjects implements DB_Interface
     {
         $dataSourceName = $this->dbSettings->getDataSourceName();
         $filePath = $this->dbSettings->getCriteriaValue('target');
-        if (substr_count($filePath, '../') > 2) {
+        if (substr_count($filePath, '../') > 3) {
             $this->logger->setErrorMessage("You can't access files in inhibit area: {$dataSourceName}.");
             return null;
         }
@@ -51,7 +54,7 @@ class DB_PageEditor extends DB_UseSharedObjects implements DB_Interface
     {
         $dataSourceName = $this->dbSettings->getDataSourceName();
         $filePath = $this->dbSettings->getValueOfField('target');
-        if (substr_count($filePath, '../') > 2) {
+        if (substr_count($filePath, '../') > 3) {
             $this->logger->setErrorMessage("You can't access files in inhibit area: {$dataSourceName}.");
             return null;
         }

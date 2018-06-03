@@ -13,6 +13,8 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+namespace INTERMediator\DB;
+
 function IM_Dummy_Entry($datasource, $options, $dbspecification, $debug = false)
 {
     global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
@@ -61,7 +63,7 @@ function changeIncludeIMPath($src, $validStatement)
     }
 }
 
-class DB_DefEditor extends DB_UseSharedObjects implements DB_Interface
+class DefEditor extends UseSharedObjects implements DBClass_Interface
 {
     private $recordCount;
     private $isRequiredUpdated = false;
@@ -77,7 +79,7 @@ class DB_DefEditor extends DB_UseSharedObjects implements DB_Interface
         $dataSourceName = $this->dbSettings->getDataSourceName();
 
         $filePath = $this->dbSettings->getCriteriaValue('target');
-        if (substr_count($filePath, '../') > 2) {
+        if (substr_count($filePath, '../') > 3) {
             $this->logger->setErrorMessage("You can't access files in inhibit area: {$dataSourceName}.");
             return null;
         }
@@ -90,7 +92,7 @@ class DB_DefEditor extends DB_UseSharedObjects implements DB_Interface
         }
         $convert = str_replace("<?php", "",
             str_replace("?>", "",
-                str_replace("IM_Entry", "IM_Dummy_Entry",
+                str_replace("IM_Entry", "\\INTERMediator\\DB\\IM_Dummy_Entry",
                     changeIncludeIMPath(
                         $fileContent,
                         "require_once('../INTER-Mediator.php');"
@@ -502,7 +504,7 @@ class DB_DefEditor extends DB_UseSharedObjects implements DB_Interface
         $funcStartPos = strpos($fileContent, "IM_Entry");
         $convert = str_replace("<?php", "",
             str_replace("?>", "",
-                str_replace("IM_Entry", "IM_Dummy_Entry",
+                str_replace("IM_Entry", "\\INTERMediator\\DB\\IM_Dummy_Entry",
                     changeIncludeIMPath(
                         $fileContent,
                         "require_once('../INTER-Mediator.php');"
@@ -916,7 +918,7 @@ class DB_DefEditor extends DB_UseSharedObjects implements DB_Interface
         $funcStartPos = strpos($fileContent, "IM_Entry");
         $convert = str_replace("<?php", "",
             str_replace("?>", "",
-                str_replace("IM_Entry", "IM_Dummy_Entry",
+                str_replace("IM_Entry", "\\INTERMediator\\DB\\IM_Dummy_Entry",
                     changeIncludeIMPath(
                         $fileContent,
                         "require_once('../INTER-Mediator.php');"
@@ -1101,7 +1103,7 @@ class DB_DefEditor extends DB_UseSharedObjects implements DB_Interface
         $funcStartPos = strpos($fileContent, "IM_Entry");
         $convert = str_replace("<?php", "",
             str_replace("?>", "",
-                str_replace("IM_Entry", "IM_Dummy_Entry",
+                str_replace("IM_Entry", "\\INTERMediator\\DB\\IM_Dummy_Entry",
                     changeIncludeIMPath(
                         $fileContent,
                         "require_once('../INTER-Mediator.php');"

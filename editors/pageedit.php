@@ -32,4 +32,4 @@ if (php_uname('n') === 'inter-mediator-server' && $_SERVER['SERVER_ADDR'] === '1
 /**
  * Don't remove comment slashes below on any 'release.'
  */
-//IM_Entry($defContexts, array('theme'=>'thosedays'), array('db-class' => 'PageEditor'), false);
+IM_Entry($defContexts, array('theme'=>'thosedays'), array('db-class' => 'PageEditor'), false);
