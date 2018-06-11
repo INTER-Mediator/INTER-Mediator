@@ -51,7 +51,7 @@ dt=$(date "+%Y-%m-%d")
 distDocDir=$(cd $(dirname "$0"); pwd)
 originalPath=$(dirname "${distDocDir}")
 
-printf '{"version":"%s","releasedate":"%s"}' "${version}" "${dt}" > "${originalPath}/metadata.json"
+# printf '{"version":"%s","releasedate":"%s"}' "${version}" "${dt}" > "${originalPath}/metadata.json"
 
 topOfDir=$(dirname "${originalPath}")
 buildDir="${topOfDir}/${buildRootName}"
@@ -109,10 +109,9 @@ mkdir -p "${buildPath}/src/php/"
 /bin/echo "PROCESSING: Copying php files"
 cp -f "${originalPath}/INTER-Mediator.php" "${buildPath}/"
 cp -rf "${originalPath}/src/php" "${buildPath}/src"
-cp -rf "${originalPath}/src/vendor" "${buildPath}/src"
+cp -rf "${originalPath}/vendor" "${buildPath}"
 cp -rf "${originalPath}/.git" "${buildPath}"
 
-cp  "${originalPath}/metadata.json" "${buildPath}/"
 cp  "${originalPath}/composer.json" "${buildPath}/"
 cp  "${originalPath}/params.php" "${buildPath}/"
 cp  "${originalPath}/index.html" "${buildPath}/"
@@ -135,9 +134,11 @@ cat "${originalPath}/src/js/INTER-Mediator-UI.js"                    >> "${build
 cat "${originalPath}/src/js/INTER-Mediator-Log.js"                   >> "${buildPath}/src/js/temp.js"
 if [ ! -e "${minifyjsDir}" ]; then
     cat "${originalPath}/src/lib/js_lib/tinySHA1.js"                 >> "${buildPath}/src/js/temp.js"
-    echo ';'                                                         >> "${buildPath}/src/js/temp.js"
+    /bin/echo ';'                                                         >> "${buildPath}/src/js/temp.js"
     cat "${originalPath}/src/lib/js_lib/sha256.js"                   >> "${buildPath}/src/js/temp.js"
-    echo ';'                                                         >> "${buildPath}/src/js/temp.js"
+    /bin/echo ';'                                                         >> "${buildPath}/src/js/temp.js"
+    cat "${originalPath}/src/lib/js_lib/jsencrypt.min.js"            >> "${buildPath}/src/js/temp.js"
+	/bin/echo ";"
 fi
 cat "${originalPath}/src/js/INTER-Mediator-Queuing.js"               >> "${buildPath}/src/js/temp.js"
 cat "${originalPath}/src/js/INTER-Mediator-Events.js"                >> "${buildPath}/src/js/temp.js"
@@ -161,15 +162,15 @@ if [ -e "${minifyjsDir}" ]; then
     /bin/echo "MINIFYING."
 	"${minifyjsBin}" "${temp2Path}" > "${temp3Path}"
     sed '1s/*!/*/' "${temp3Path}" > "${buildPath}/src/js/INTER-Mediator.js"
-    head -n 9 "${originalPath}/src/js/INTER-Mediator.js"                > "${buildPath}/src/js/temp.js"
-	cat "${temp3Path}"                                                 >> "${buildPath}/src/js/temp.js"
-	/bin/echo ";"                                                    >> "${buildPath}/src/js/temp.js"
-	tail -n 1 "${originalPath}/src/lib/js_lib/tinySHA1.js"             >> "${buildPath}/src/js/temp.js"
-    /bin/echo ";"                                                      >> "${buildPath}/src/js/temp.js"
-    tail -n 1 "${originalPath}/src/lib/js_lib/sha256.js"               >> "${buildPath}/src/js/temp.js"
-	/bin/echo ";"                                                     >> "${buildPath}/src/js/temp.js"
-    cat "${originalPath}/src/lib/js_lib/jsencrypt.min.js" >> "${buildPath}/src/js/temp.js"
-	/bin/echo ""                                                     >> "${buildPath}/src/js/temp.js"
+    head -n 9 "${originalPath}/src/js/INTER-Mediator.js"     > "${buildPath}/src/js/temp.js"
+	cat "${temp3Path}"                                      >> "${buildPath}/src/js/temp.js"
+	/bin/echo ";"                                           >> "${buildPath}/src/js/temp.js"
+	tail -n 1 "${originalPath}/src/lib/js_lib/tinySHA1.js"  >> "${buildPath}/src/js/temp.js"
+    /bin/echo ";"                                           >> "${buildPath}/src/js/temp.js"
+    tail -n 1 "${originalPath}/src/lib/js_lib/sha256.js"    >> "${buildPath}/src/js/temp.js"
+	/bin/echo ";"                                           >> "${buildPath}/src/js/temp.js"
+    cat "${originalPath}/src/lib/js_lib/jsencrypt.min.js"   >> "${buildPath}/src/js/temp.js"
+	/bin/echo ""                                            >> "${buildPath}/src/js/temp.js"
     mv  "${buildPath}/src/js/temp.js" "${buildPath}/src/js/INTER-Mediator.js"
     rm  "${temp2Path}" "${temp3Path}"
 else
@@ -187,10 +188,6 @@ fi
 # Copy "lib" path php contents.
 /bin/echo "PROCESSING: ${originalPath}/src/lib"
 cp -prf "${originalPath}/src/lib/CWPKit"        "${buildPath}/src/lib"
-cp -p   "${originalPath}/src/lib/FMDataAPI.php" "${buildPath}/src/lib/"
-cp -prf "${originalPath}/src/lib/FX"            "${buildPath}/src/lib"
-cp -prf "${originalPath}/src/lib/ParagonIE"     "${buildPath}/src/lib"
-cp -prf "${originalPath}/src/lib/phpseclib_v2"  "${buildPath}/src/lib"
 cp -prf "${originalPath}/src/lib/mailsend"      "${buildPath}/src/lib"
 
 if [ $choice = 1 ]; then

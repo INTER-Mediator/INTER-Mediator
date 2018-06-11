@@ -12,6 +12,7 @@ Also the Migration Guide (Japanese) might be informative:
 
 Ver.6-dev (in development)
 - All communications go async.
+- Composer/npm based library management.
 - Version number of major build is assigned as integer number.
 - The script "dist-docs/build.sh" can call with parameter -a/-c/-d. Moreover it contains "deployment mode."
 - The following methods are removed.
@@ -27,6 +28,7 @@ Ver.6-dev (in development)
       INTERMediator_DBAdapter.db_copy
       INTERMediator_DBAdapter.db_copyWithAuth
 - Deprecated global variables $g_dbInstance, $g_serverSideCall in INTER-Mediator.php are removed.
+- Metadata.json is removed, composer.json takes over.
 - [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native 
   Authentication or LDAP Authentication.
 - The INTERMediator.recordLimit property is introduced to store the number of records. Also added methods:

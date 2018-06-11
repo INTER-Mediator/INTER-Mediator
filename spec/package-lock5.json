@@ -2856,7 +2856,7 @@
             "requires": {
                 "assert-plus": "1.0.0",
                 "jsprim": "1.4.1",
-                "sshpk": "1.14.1"
+                "sshpk": "1.14.2"
             }
         },
         "indexof": {
@@ -4015,6 +4015,13 @@
             "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.2.tgz",
             "integrity": "sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g=="
         },
+        "safer-buffer": {
+            "version": "2.1.2",
+            "resolved": "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz",
+            "integrity": "sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==",
+            "dev": true,
+            "optional": true
+        },
         "samsam": {
             "version": "1.1.3",
             "resolved": "https://registry.npmjs.org/samsam/-/samsam-1.1.3.tgz",
@@ -4073,7 +4080,7 @@
             "dev": true,
             "requires": {
                 "formatio": "1.0.2",
-                "util": "0.10.3"
+                "util": "0.11.0"
             }
         },
         "slash": {
@@ -4156,9 +4163,9 @@
             }
         },
         "sshpk": {
-            "version": "1.14.1",
-            "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.14.1.tgz",
-            "integrity": "sha1-Ew9Zde3a2WPx1W+SuaxsUfqfg+s=",
+            "version": "1.14.2",
+            "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.14.2.tgz",
+            "integrity": "sha1-xvxhZIo9nE52T9P8306hBeSSupg=",
             "dev": true,
             "optional": true,
             "requires": {
@@ -4169,6 +4176,7 @@
                 "ecc-jsbn": "0.1.1",
                 "getpass": "0.1.7",
                 "jsbn": "0.1.1",
+                "safer-buffer": "2.1.2",
                 "tweetnacl": "0.14.5"
             }
         },
@@ -4315,20 +4323,12 @@
             "dev": true
         },
         "util": {
-            "version": "0.10.3",
-            "resolved": "https://registry.npmjs.org/util/-/util-0.10.3.tgz",
-            "integrity": "sha1-evsa/lCAUkZInj23/g7TeTNqwPk=",
+            "version": "0.11.0",
+            "resolved": "https://registry.npmjs.org/util/-/util-0.11.0.tgz",
+            "integrity": "sha512-5n12uMzKCjvB2HPFHnbQSjaqAa98L5iIXmHrZCLavuZVe0qe/SJGbDGWlpaHk5lnBkWRDO+dRu1/PgmUYKPPTw==",
             "dev": true,
             "requires": {
-                "inherits": "2.0.1"
-            },
-            "dependencies": {
-                "inherits": {
-                    "version": "2.0.1",
-                    "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz",
-                    "integrity": "sha1-sX0I0ya0Qj5Wjv9xn5GwscvfafE=",
-                    "dev": true
-                }
+                "inherits": "2.0.3"
             }
         },
         "util-deprecate": {

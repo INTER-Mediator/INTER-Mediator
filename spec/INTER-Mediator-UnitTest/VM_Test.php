@@ -16,13 +16,10 @@ class VM_Test extends TestCase
         }
 
         $version = '-';
-        $cmd = 'php -f "' . $imPath . DIRECTORY_SEPARATOR . 'metadata.json' . '"';
-        exec($cmd, $output);
-        if (isset($output[0])) {
-            $content = json_decode($output[0]);
-            if ($content) {
-                $version = $content->version;
-            }
+        $fPath = $imPath . DIRECTORY_SEPARATOR . 'composer.json';
+        $content = json_decode(file_get_contents($fPath));
+        if ($content) {
+            $version = $content->version;
         }
 
         $this->assertEquals($version, $expected);

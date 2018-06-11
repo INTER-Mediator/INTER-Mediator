@@ -28,7 +28,7 @@ if (isset($defaultTimezone)) {
 }
 
 $version = '';
-$content = json_decode(file_get_contents($imRoot . DIRECTORY_SEPARATOR . 'metadata.json'));
+$content = json_decode(file_get_contents($imRoot . DIRECTORY_SEPARATOR . 'composer.json'));
 if ($content) {
     $version = $content->version;
 }
