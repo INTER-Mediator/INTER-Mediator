@@ -37,7 +37,7 @@
         "test-local": "/usr/local/bin/buster-test -r specification"
     },
     "devDependencies": {
-        "buster": "~0.8",
+        "buster": "~0.7",
         "babel-cli": "*",
         "babel-preset-env": "*"
     },
