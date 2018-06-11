@@ -51,7 +51,7 @@ dt=$(date "+%Y-%m-%d")
 distDocDir=$(cd $(dirname "$0"); pwd)
 originalPath=$(dirname "${distDocDir}")
 
-printf '{"version":"%s","releasedate":"%s"}' "${version}" "${dt}" > "${originalPath}/metadata.json"
+# printf '{"version":"%s","releasedate":"%s"}' "${version}" "${dt}" > "${originalPath}/metadata.json"
 
 topOfDir=$(dirname "${originalPath}")
 buildDir="${topOfDir}/${buildRootName}"
@@ -112,7 +112,6 @@ cp -rf "${originalPath}/src/php" "${buildPath}/src"
 cp -rf "${originalPath}/vendor" "${buildPath}"
 cp -rf "${originalPath}/.git" "${buildPath}"
 
-cp  "${originalPath}/metadata.json" "${buildPath}/"
 cp  "${originalPath}/composer.json" "${buildPath}/"
 cp  "${originalPath}/params.php" "${buildPath}/"
 cp  "${originalPath}/index.html" "${buildPath}/"

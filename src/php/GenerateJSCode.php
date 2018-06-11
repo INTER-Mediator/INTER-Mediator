@@ -252,9 +252,9 @@ class GenerateJSCode
                 "INTERMediatorOnPage.clientNotificationChannel",
                 "function(){return ", IMUtil::arrayToJS($chName, ''), ";}");
         }
-        $metadata = json_decode(file_get_contents(IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR . "metadata.json"));
+        $metadata = json_decode(file_get_contents(IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR . "composer.json"));
         $this->generateAssignJS("INTERMediatorOnPage.metadata",
-            "{version:{$q}{$metadata->version}{$q},releasedate:{$q}{$metadata->releasedate}{$q}}");
+            "{version:{$q}{$metadata->version}{$q},releasedate:{$q}{$metadata->time}{$q}}");
 
         if (isset($prohibitDebugMode) && $prohibitDebugMode) {
             $this->generateAssignJS("INTERMediatorLog.debugMode", "false");

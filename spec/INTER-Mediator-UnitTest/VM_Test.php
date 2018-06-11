@@ -16,7 +16,7 @@ class VM_Test extends TestCase
         }
 
         $version = '-';
-        $cmd = 'php -f "' . $imPath . DIRECTORY_SEPARATOR . 'metadata.json' . '"';
+        $cmd = 'php -f "' . $imPath . DIRECTORY_SEPARATOR . 'composer.json' . '"';
         exec($cmd, $output);
         if (isset($output[0])) {
             $content = json_decode($output[0]);
