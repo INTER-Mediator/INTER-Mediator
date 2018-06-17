@@ -177,13 +177,18 @@ else
     rm  "${buildPath}/src/js/temp.js"
 fi
 
-# Copy "Support" directory.
-#cho "PROCESSING: ${originalPath}/Support"
-#cp -prf "${originalPath}/Support" "${buildPath}"
-
-# Copy "Data_Converter" directory.
-#echo "PROCESSING: ${originalPath}/Data_Converter"
-#cp -prf "${originalPath}/Data_Converter" "${buildPath}"
+/bin/echo "PROCESSING: ${originalPath}/src/js/INTER-Mediator-IE.js"
+targetJS="${buildPath}/src/js/INTER-Mediator.js"
+tempJS="${originalPath}/temp.js"
+temp2JS="${originalPath}/temp2.js"
+ieCode="${buildPath}/src/js/INTER-Mediator-IE.js"
+babelBin="${originalPath}/node_modules/.bin/babel"
+if [ -e "${babelBin}" ]; then
+    cp "${targetJS}" "${tempJS}"
+    ${babelBin} --out-file "${temp2JS}" --minified "${tempJS}"
+    cp "${temp2JS}" "${ieCode}"
+    rm "${tempJS}" "${temp2JS}"
+fi
 
 # Copy "lib" path php contents.
 /bin/echo "PROCESSING: ${originalPath}/src/lib"

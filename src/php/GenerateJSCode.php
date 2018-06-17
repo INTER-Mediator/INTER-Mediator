@@ -105,6 +105,8 @@ class GenerateJSCode
             DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
         if (file_exists($currentDir . 'INTER-Mediator-Lib.js')) {
             echo $this->combineScripts($currentDir);
+        } else if (file_exists($currentDir . 'INTER-Mediator-IE.js')) {
+            readfile($currentDir . 'INTER-Mediator-IE.js');
         } else {
             readfile($currentDir . 'INTER-Mediator.js');
         }
