@@ -43,14 +43,17 @@ if (function_exists('mb_internal_encoding')) {
     mb_internal_encoding('UTF-8');
 }
 // Setup Timezone
-$params = IMUtil::getFromParamsPHPFile(array("defaultTimezone"), true);
+$params = IMUtil::getFromParamsPHPFile(array("defaultTimezone", "stopSSEveryQuit"), true);
 if (isset($params['defaultTimezone'])) {
     date_default_timezone_set($params['defaultTimezone']);
 } else if (ini_get('date.timezone') == null) {
     date_default_timezone_set('UTC');
 }
+$stopSSEveryQuit = isset($params['stopSSEveryQuit'])?$params['stopSSEveryQuit']:false;
 // Setup Locale
 Locale\IMLocale::setLocale(LC_ALL);
+// Bootstrap of Service Server
+ServiceServerProxy::instance()->checkServiceServer();
 // Define constant
 define("IM_TODAY", strftime('%Y-%m-%d'));
 
@@ -63,6 +66,7 @@ define("IM_TODAY", strftime('%Y-%m-%d'));
  */
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
+    global $stopSSEveryQuit;
     // check required PHP extensions
     $requiredFunctions = array(
         'mbstring' => 'mb_internal_encoding',
@@ -142,4 +146,9 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         }
         $dbInstance->exportOutputDataAsJSON();
     }
+    if($stopSSEveryQuit){
+        ServiceServerProxy::instance()->stopServer();
+    }
 }
+
+

@@ -231,3 +231,7 @@ $uploadFilePathMode = "";
 $appLocale = "ja_JP";   // Locale for application has to be specified the langunage_country code.
 $appCurrency = "JP";    // Locale for currency has to be specified the country code.
 
+// Port number and host name for service server
+$serviceServerPort = "11478";
+$serviceServerHost = "localhost";
+$stopSSEveryQuit = false;

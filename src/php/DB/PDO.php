@@ -150,7 +150,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     }
                 } else if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
                     $escapedField = $this->handler->quotedEntityName($condition['field']);
-                    if (isset($condition['value']) && $condition['value'] != null) {
+                    if (isset($condition['value']) && !is_null($condition['value'] )) {
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
                             $condition = $this->normalizedCondition($condition);
@@ -197,7 +197,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     }
                 } else if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
                     $escapedField = $this->handler->quotedEntityName($condition['field']);
-                    if (isset($condition['value']) && $condition['value'] != null) {
+                    if (isset($condition['value']) && !is_null($condition['value'])) {
                         $condition = $this->normalizedCondition($condition);
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {

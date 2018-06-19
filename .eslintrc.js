@@ -1,4 +1,5 @@
 module.exports = {
+  'semi': ["error", "always"],
   'env': {
     'browser': true
   },

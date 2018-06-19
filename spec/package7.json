@@ -42,7 +42,8 @@
         "babel-preset-env": "*"
     },
     "dependencies": {
-        "socket.io": "*"
+        "socket.io": "*",
+        "forever": "*"
     },
     "engines": {
         "node": ">=6.11.0"

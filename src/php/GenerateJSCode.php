@@ -105,6 +105,8 @@ class GenerateJSCode
             DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
         if (file_exists($currentDir . 'INTER-Mediator-Lib.js')) {
             echo $this->combineScripts($currentDir);
+        } else if (file_exists($currentDir . 'INTER-Mediator-IE.js')) {
+            readfile($currentDir . 'INTER-Mediator-IE.js');
         } else {
             readfile($currentDir . 'INTER-Mediator.js');
         }
@@ -374,6 +376,8 @@ class GenerateJSCode
         if (isset($valuesForLocalContext) && is_array($valuesForLocalContext) && count($valuesForLocalContext) > 0) {
             $this->generateAssignJS("INTERMediatorOnPage.initLocalContext", IMUtil::arrayToJS($valuesForLocalContext));
         }
+        $sss = ServiceServerProxy::instance()->isActive();
+        $this->generateAssignJS("INTERMediatorOnPage.serviceServerStatus", $sss ? "true" : "false");
     }
 
     private function combineScripts($currentDir)
