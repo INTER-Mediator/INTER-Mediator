@@ -1,22 +1,22 @@
 <?php
 
 /**
- * Object-oriented class for the REST API in FileMaker Server 16/Cloud.
+ * Object-oriented class for the REST API in FileMaker Server 17/Cloud.
  *
- * @version 7.0
+ * @version 8.0
  * @author Masayuki Nii <nii@msyk.net>
  * @copyright 2017-2018 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
  */
 
 namespace INTERMediator\FileMakerServer\RESTAPI;
 /**
- * Class FMDataAPI is the wrapper of The REST API in FileMaker Server 16/Cloud.
+ * Class FMDataAPI is the wrapper of The REST API in FileMaker Server 17/Cloud.
  *
  * @package INTER-Mediator\FileMakerServer\RESTAPI
  * @link https://github.com/msyk/FMDataAPI GitHub Repository
  * @property-read FileMakerLayout $<<layout_name>> FileMakerLayout object named as the property name.
  *    If the layout doesn't exist, no error arises here. Any errors might arise on methods of FileMakerLayout class.
- * @version 7
+ * @version 8
  * @author Masayuki Nii <nii@msyk.net>
  * @copyright 2017-2018 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
  */
@@ -30,7 +30,7 @@ class FMDataAPI
      * Keeping the FileMakerLayout object for each layout
      * @ignore
      */
-    private $layoutTable = array();
+    private $layoutTable = [];
     /**
      * Keeping the CommunicationProvider object
      * @ignore
@@ -42,16 +42,21 @@ class FMDataAPI
      * oAuthRequestId and oAuthIdentifier. Moreover call useOAuth method before accessing layouts.
      * @param String $solution The database file name which is just hosting.
      * @param String $user The fmrest privilege accessible user to the database.
+     * If you are going to call useOAuth method, you have to specify the data for X-FM-Data-OAuth-Request-Id.
      * @param String $password The password of above user.
+     * If you are going to call useOAuth method, you have to specify the data for X-FM-Data-OAuth-Identifier.
      * @param String $host FileMaker Server's host name or IP address. If omitted, 'localhost' is chosen.
      * The value "localserver" tries to connect directory 127.0.0.1, and you don't have to set $port and $protocol.
      * @param int $port FileMaker Server's port number. If omitted, 443 is chosen.
      * @param String $protocol FileMaker Server's protocol name. If omitted, 'https' is chosen.
+     * @param array $fmDataSource Authentication information for external data sources.
+     * Ex.  [{"database"=>"<databaseName>", "username"=>"<username>", "password"=>"<password>"].
+     * If you use OAuth, "oAuthRequestId" and "oAuthIdentifier" keys have to be spedified.
      */
     public function __construct(
-        $solution, $user, $password, $host = NULL, $port = NULL, $protocol = NULL)
+        $solution, $user, $password, $host = NULL, $port = NULL, $protocol = NULL, $fmDataSource = null)
     {
-        $this->provider = new Supporting\CommunicationProvider($solution, $user, $password, $host, $port, $protocol);
+        $this->provider = new Supporting\CommunicationProvider($solution, $user, $password, $host, $port, $protocol, $fmDataSource);
     }
 
     /**
@@ -62,7 +67,7 @@ class FMDataAPI
      */
     public function __set($key, $value)
     {
-        throw new Exception("The {$key} property is read-only, and can't set any value.");
+        throw new \Exception("The {$key} property is read-only, and can't set any value.");
     }
 
     /**
@@ -108,12 +113,31 @@ class FMDataAPI
     }
 
     /**
+     * FileMaker Data API's version is going to be set. If you don't call, the "vLatest" is specified.
+     * As far as FileMaker 17 supports just "v1", no one has to call this method.
+     * @param integer $vNum FileMaker Data API's version number.
+     */
+    public function setAPIVersion($vNum)
+    {
+        $this->provider->vNum = intval($vNum);
+    }
+
+    /**
      * Set to verify the server certificate. The default is to handle as self-signed certificate and doesn't verify.
      * @param bool $value Turn on to verify the certificate if the value is true.
      */
     public function setCertValidating($value)
     {
         $this->provider->isCertVaridating = $value;
+    }
+
+    /**
+     * Set session token
+     * @param string $value The session token.
+     */
+    public function setSessionToken($value)
+    {
+        $this->provider->accessToken = $value;
     }
 
     /**
@@ -168,11 +192,10 @@ class FMDataAPI
     /**
      * Start a transaction which is a serial calling of any database operations,
      * and login with the layout in parameter.
-     * @param String $layout_name The layout name to use for authentication.
      */
-    public function startCommunication($layout_name)
+    public function startCommunication()
     {
-        $this->provider->login($layout_name);
+        $this->provider->login();
         $this->provider->keepAuth = true;
     }
 
@@ -194,7 +217,7 @@ namespace INTERMediator\FileMakerServer\RESTAPI\Supporting;
  *
  * @package INTER-Mediator\FileMakerServer\RESTAPI
  * @link https://github.com/msyk/FMDataAPI GitHub Repository
- * @version 7
+ * @version 8
  * @author Masayuki Nii <nii@msyk.net>
  * @copyright 2017-2018 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
  */
@@ -229,7 +252,7 @@ class FileMakerLayout
      */
     public function startCommunication()
     {
-        $this->restAPI->login($this->layout);
+        $this->restAPI->login();
         $this->restAPI->keepAuth = true;
     }
 
@@ -247,20 +270,61 @@ class FileMakerLayout
      * @return array
      * @ignore
      */
-    private function buildPortalParameters($param)
+    private function buildPortalParameters($param, $shortKey = false)
     {
-        $request = array();
+        $key = $shortKey ? "portal" : "portalData";
+        $request = [];
         if (array_values($param) === $param) {
-            $request["portal"] = $param;
+            $request[$key] = $param;
         } else {
-            $request["portal"] = array_keys($param);
+            $request[$key] = array_keys($param);
             foreach ($param as $portalName => $options) {
-                if (!is_null($options) && $options['range']) {
-                    $request["range.{$portalName}"] = $options['range'];
+                if (!is_null($options) && $options['limit']) {
+                    $request["_limit.{$portalName}"] = $options['limit'];
                 }
                 if (!is_null($options) && $options['offset']) {
-                    $request["offset.{$portalName}"] = $options['offset'];
+                    $request["_offset.{$portalName}"] = $options['offset'];
                 }
+            }
+        }
+        return $request;
+    }
+
+    /**
+     * @param $param
+     * @return array
+     * @ignore
+     */
+    private function buildScriptParameters($param)
+    {
+        $request = [];
+        $scriptKeys = ["script", "script.param", "script.prerequest", "script.prerequest.param",
+            "script.presort", "script.presort.param", "layout.response"];
+        foreach ($scriptKeys as $key) {
+            if (isset($param[$key])) {
+                $request[$key] = $param[$key];
+            }
+        }
+        if (count($request) === 0) {
+            switch (count($request)) {
+                case 1:
+                    $request["script"] = $param[0];
+                    break;
+                case 2:
+                    $request["script"] = $param[0];
+                    $request["layout.response"] = $param[1];
+                    break;
+                case 3:
+                    $request["script"] = $param[0];
+                    $request["script.param"] = $param[1];
+                    $request["layout.response"] = $param[2];
+                    break;
+                case 4:
+                    $request["script.prerequest"] = $param[0];
+                    $request["script.presort"] = $param[1];
+                    $request["script"] = $param[2];
+                    $request["layout.response"] = $param[3];
+                    break;
             }
         }
         return $request;
@@ -289,14 +353,24 @@ class FileMakerLayout
      * in the query result. If you set the range of records to a portal, you have to build associated array as like:
      * array('portal1' => array('offset'=>1,'range'=>5), 'portal2' => null). The record 1 to 5 of portal1 include
      * the query result, and also all records in portal2 do.
+     * @param array $script scripts that should execute right timings.
+     * The most understandable description is an associated array with API's keywords "script", "script.param",
+     * "script.prerequest", "script.prerequest.param", "script.presort", "script.presort.param", "layout.response."
+     * These keywords have to be a key, and the value is script name or script parameter,
+     * ex. {"script"=>"StartingOver", "script.param"=>"344|21|abcd"}.
+     * If $script is array with one element, it's handled as the value of "script."
+     * If $script is array with two elements, these are handled as values of "script" and "layout.response."
+     * If it it's three elements, these are  "script", "script.param" and "layout.response."
+     * If it it's four elements, these are  "script.prerequest", "script.presort", "script" and "layout.response."
      * @return FileMakerRelation|null Query result.
      * @throws Exception In case of any error, an exception arises.
      */
-    public function query($condition = NULL, $sort = NULL, $offset = -1, $range = -1, $portal = null)
+    public function query($condition = NULL, $sort = NULL, $offset = -1, $range = -1, $portal = null, $script = null)
     {
         try {
-            $this->restAPI->login($this->layout);
-            $request = array();
+            $this->restAPI->login();
+            $headers = ["Content-Type" => "application/json"];
+            $request = [];
             if (!is_null($sort)) {
                 $request["sort"] = $sort;
             }
@@ -304,30 +378,34 @@ class FileMakerLayout
                 $request["offset"] = (string)$offset;
             }
             if ($range > -1) {
-                $request["range"] = (string)$range;
+                $request["limit"] = (string)$range;
             }
             if (!is_null($portal)) {
-                $request = array_merge($request, $this->buildPortalParameters($portal));
+                $request = array_merge($request, $this->buildPortalParameters($portal, true));
+            }
+            if (!is_null($script)) {
+                $request = array_merge($request, $this->buildScriptParameters($script));
             }
             if (!is_null($condition)) {
                 $request["query"] = $condition;
-                $this->restAPI->callRestAPI("find", $this->layout, true, "POST", $request);
+                $params = ["layouts" => $this->layout, "_find" => null];
+                $this->restAPI->callRestAPI($params, true, "POST", $request, $headers);
             } else {
-                $this->restAPI->callRestAPI("record", $this->layout, true, "GET", $request);
+                $params = ["layouts" => $this->layout, "records" => null];
+                $this->restAPI->callRestAPI($params, true, "GET", $request, $headers);
             }
             $this->restAPI->storeToProperties();
             $result = $this->restAPI->responseBody;
             $fmrel = null;
-            if ($result &&
-                property_exists($result, 'data') &&
-                property_exists($result, 'result') &&
-                property_exists($result, 'errorCode')
+            if ($result && $result->response &&
+                property_exists($result->response, 'data') &&
+                property_exists($result, 'messages')
             ) {
-                $fmrel = new FileMakerRelation($result->data, $result->result, $result->errorCode);
+                $fmrel = new FileMakerRelation($result->response->data, "OK", $result->messages->code);
             }
             $this->restAPI->logout();
             return $fmrel;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -336,27 +414,33 @@ class FileMakerLayout
      * Query to the FileMaker Database with recordId special field and returns the result as FileMakerRelation object.
      * @param int $recordId The recordId.
      * @param array $portal See the query() method's same parameter.
+     * @param array $script scripts that should execute right timings. See FileMakerRelation::query().
      * @return FileMakerRelation|null Query result.
      * @throws Exception In case of any error, an exception arises.
      */
-    public function getRecord($recordId, $portal = null)
+    public function getRecord($recordId, $portal = null, $script = null)
     {
         try {
-            $request = array();
-            $this->restAPI->login($this->layout);
+            $request = [];
+            $this->restAPI->login();
             if (!is_null($portal)) {
-                $request = array_merge($request, $this->buildPortalParameters($portal));
+                $request = array_merge($request, $this->buildPortalParameters($portal, true));
             }
-            $this->restAPI->callRestAPI("record", $this->layout, true, "GET", $request, $recordId);
+            if (!is_null($script)) {
+                $request = array_merge($request, $this->buildScriptParameters($script));
+            }
+            $headers = ["Content-Type" => "application/json"];
+            $params = ["layouts" => $this->layout, "records" => $recordId];
+            $this->restAPI->callRestAPI($params, true, "GET", $request, $headers);
             $this->restAPI->storeToProperties();
             $result = $this->restAPI->responseBody;
             $fmrel = null;
             if ($result) {
-                $fmrel = new FileMakerRelation($result->data, "OK", $result->errorCode);
+                $fmrel = new FileMakerRelation($result->response->data, "OK", $result->messages[0]->code);
             }
             $this->restAPI->logout();
             return $fmrel;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -365,21 +449,32 @@ class FileMakerLayout
      * Create a record on the target layout of the FileMaker database.
      * @param array $data Associated array contains the initial values.
      * Keys are field names and values is these initial values.
+     * @param array $portal Associated array contains the modifying values in portal.
+     * Ex.: {"<PortalName>"=>{"<FieldName>"=>"<Value>"...}}. FieldName has to "<TOCName>::<FieldName>".
+     * @param array $script scripts that should execute right timings. See FileMakerRelation::query().
      * @return integer The recordId of created record. If the returned value is an integer larger than 0,
      * it shows one record was created.
      * @throws Exception In case of any error, an exception arises.
      */
-    public function create($data)
+    public function create($data = null, $portal = null, $script = null)
     {
         try {
-            $this->restAPI->login($this->layout);
-            $request = array("data" => $data);
-            $this->restAPI->callRestAPI("record", $this->layout, true, "POST", $request);
+            $this->restAPI->login();
+            $headers = ["Content-Type" => "application/json"];
+            $params = ["layouts" => $this->layout, "records" => null];
+            $request = ["fieldData" => is_null($data) ? [] : $data];
+            if (!is_null($portal)) {
+                $request = array_merge($request, ["portalData" => $portal]);
+            }
+            if (!is_null($script)) {
+                $request = array_merge($request, $this->buildScriptParameters($script));
+            }
+            $this->restAPI->callRestAPI($params, true, "POST", $request, $headers);
             $result = $this->restAPI->responseBody;
             $this->restAPI->storeToProperties();
             $this->restAPI->logout();
-            return $result->recordId;
-        } catch (Exception $e) {
+            return $result->response->recordId;
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -387,16 +482,23 @@ class FileMakerLayout
     /**
      * Delete on record.
      * @param int $recordId The valid recordId value to delete.
+     * @param array $script scripts that should execute right timings. See FileMakerRelation::query().
      * @throws Exception In case of any error, an exception arises.
      */
-    public function delete($recordId)
+    public function delete($recordId, $script = null)
     {
         try {
-            $this->restAPI->login($this->layout);
-            $this->restAPI->callRestAPI("record", $this->layout, true, "DELETE", null, $recordId);
+            $this->restAPI->login();
+            $request = [];
+            $headers = NULL;
+            $params = ['layouts' => $this->layout, 'records' => $recordId];
+            if (!is_null($script)) {
+                $request = $this->buildScriptParameters($script);
+            }
+            $this->restAPI->callRestAPI($params, true, 'DELETE', $request, $headers);
             $this->restAPI->storeToProperties();
             $this->restAPI->logout();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -408,21 +510,39 @@ class FileMakerLayout
      * Keys are field names and values is these initial values.
      * @param int $modId The modId to allow to update. This parameter is for detect to modifying other users.
      * If you omit this parameter, update operation does not care the value of modId special field.
+     * @param array $portal Associated array contains the modifying values in portal.
+     * Ex.: {"<PortalName>"=>{"<FieldName>"=>"<Value>", "recordId"=>"12"}}. FieldName has to "<TOCName>::<FieldName>".
+     * The recordId key specifiy the record to edit in portal.
+     * @param array $script scripts that should execute right timings. See FileMakerRelation::query().
      * @throws Exception In case of any error, an exception arises.
      */
-    public function update($recordId, $data, $modId = -1)
+    public function update($recordId, $data, $modId = -1, $portal = null, $script = null)
     {
         try {
-            $this->restAPI->login($this->layout);
-            $request = array("data" => $data);
+            $this->restAPI->login();
+            $headers = ["Content-Type" => "application/json"];
+            $params = ["layouts" => $this->layout, "records" => $recordId];
+            $request = [];
+            if (!is_null($data)) {
+                $request = array_merge($request, ["fieldData" => $data]);
+            }
+            if (!is_null($portal)) {
+                $request = array_merge($request, ["portalData" => $portal]);
+            }
+            if (!is_null($script)) {
+                $request = array_merge($request, $this->buildScriptParameters($script));
+            }
+            if ($modId > -1) {
+                $request = array_merge($request, ["modId" => (string)$modId]);
+            }
             try {
-                $this->restAPI->callRestAPI("record", $this->layout, true, "PUT", $request, $recordId);
-            } catch (Exception $e) {
+                $this->restAPI->callRestAPI($params, true, "PATCH", $request, $headers);
+            } catch (\Exception $e) {
                 throw $e;
             }
             $this->restAPI->storeToProperties();
             $this->restAPI->logout();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -436,16 +556,63 @@ class FileMakerLayout
     public function setGlobalField($fields)
     {
         try {
-            $this->restAPI->login($this->layout);
-            $request = array("globalFields" => $fields);
+            $this->restAPI->login();
+            $headers = ["Content-Type" => "application/json"];
+            $params = ["globals" => null];
+            $request = ["globalFields" => $fields];
             try {
-                $this->restAPI->callRestAPI("global", $this->layout, true, "PUT", $request);
-            } catch (Exception $e) {
+                $this->restAPI->callRestAPI($params, true, "PATCH", $request, $headers);
+            } catch (\Exception $e) {
                 throw $e;
             }
             $this->restAPI->storeToProperties();
             $this->restAPI->logout();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * Upload the file into container filed.
+     * @param string $filePath The file path to upload.
+     * @param integer $recordId The Record Id of the record.
+     * @param string $containerFieldName The field name of container field.
+     * @param integer $containerFieldRepetition In case of repetiton field, this has to be the number from 1.
+     * If omitted this, the number "1" is going to be specified.
+     * @param string $fileName Another file name for uploading file. If omitted, origina file name is choosen.
+     * @throws Exception In case of any error, an exception arises.
+     */
+    public function uploadFile($filePath, $recordId, $containerFieldName, $containerFieldRepetition = null, $fileName = null)
+    {
+        try {
+            if (!file_exists($filePath)) {
+                throw new \Exception("File doesn't exsist: {$filePath}.");
+            }
+            $CRLF = chr(13) . chr(10);
+            $DQ = '"';
+            $boundary = "FMDataAPI_UploadFile-" . uniqid();
+            $fileName = is_null($fileName) ? basename($filePath) : $fileName;
+            $this->restAPI->login();
+            $headers = ["Content-Type" => "multipart/form-data; boundary={$boundary}"];
+            $repNum = is_null($containerFieldRepetition) ? 1 : intval($containerFieldRepetition);
+            $params = [
+                "layouts" => $this->layout,
+                "records" => $recordId,
+                "containers" => "{$containerFieldName}/{$repNum}",
+            ];
+            $request = "--{$boundary}{$CRLF}";
+            $request .= "Content-Disposition: name={$DQ}upload{$DQ} filename={$DQ}{$fileName}{$DQ}{$CRLF}";
+            $request .= $CRLF;
+            $request .= file_get_contents($filePath);
+            $request .= "{$CRLF}{$CRLF}--{$boundary}--{$CRLF}";
+            try {
+                $this->restAPI->callRestAPI($params, true, "POST", $request, $headers);
+            } catch (\Exception $e) {
+                throw $e;
+            }
+            $this->restAPI->storeToProperties();
+            $this->restAPI->logout();
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -461,7 +628,7 @@ class FileMakerLayout
  * @property string $<<field_name>> The field value named as the property name.
  * @property FileMakerRelation $<<portal_name>> FileMakerRelation object associated with the property name.
  *    The table occurrence name of the portal can be the 'portal_name,' and also the object name of the portal.
- * @version 7
+ * @version 8
  * @author Masayuki Nii <nii@msyk.net>
  * @copyright 2017-2018 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
  */
@@ -576,7 +743,7 @@ class FileMakerRelation implements \Iterator
      */
     public function getFieldNames()
     {
-        $list = array();
+        $list = [];
         if (isset($this->data)) {
             switch ($this->result) {
                 case 'OK':
@@ -607,7 +774,7 @@ class FileMakerRelation implements \Iterator
      */
     public function getPortalNames()
     {
-        $list = array();
+        $list = [];
         if (isset($this->data)
             && isset($this->data[$this->pointer])
             && isset($this->data[$this->pointer]->portalData)
@@ -673,7 +840,7 @@ class FileMakerRelation implements \Iterator
             }
         }
         if (is_null($value)) {
-            throw new Exception("Field {$fieldName} doesn't exist.");
+            throw new \Exception("Field {$fieldName} doesn't exist.");
         }
         return $value;
     }
@@ -800,12 +967,17 @@ class FileMakerRelation implements \Iterator
  *
  * @package INTER-Mediator\FileMakerServer\RESTAPI
  * @link https://github.com/msyk/FMDataAPI GitHub Repository
- * @version 7
+ * @version 8
  * @author Masayuki Nii <nii@msyk.net>
  * @copyright 2017-2018 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
  */
 class CommunicationProvider
 {
+    /**
+     * @var integer
+     * @ignore
+     */
+    public $vNum = -1;
     /**
      * @var null|string
      * @ignore
@@ -841,7 +1013,7 @@ class CommunicationProvider
      * @var string
      * @ignore
      */
-    public $accessToken = '';
+    public $accessToken = NULL;
     /**
      * @var
      * @ignore
@@ -937,12 +1109,7 @@ class CommunicationProvider
      * @var
      * @ignore
      */
-    private $oAuthRequestId;
-    /**
-     * @var
-     * @ignore
-     */
-    private $oAuthIdentifier;
+    private $fmDataSource;
 
     /**
      * CommunicationProvider constructor.
@@ -954,7 +1121,7 @@ class CommunicationProvider
      * @param null $protocol
      * @ignore
      */
-    public function __construct($solution, $user, $password, $host = NULL, $port = NULL, $protocol = NULL)
+    public function __construct($solution, $user, $password, $host = NULL, $port = NULL, $protocol = NULL, $fmDataSource = NULL)
     {
         $this->solution = $solution;
         $this->user = $user;
@@ -975,6 +1142,7 @@ class CommunicationProvider
                 }
             }
         }
+        $this->fmDataSource = $fmDataSource;
     }
 
     /**
@@ -984,44 +1152,52 @@ class CommunicationProvider
      * @return string
      * @ignore
      */
-    public function getURL($action, $layout, $recordId = null)
+    public function getURL($params)
     {
-        return "{$this->protocol}://{$this->host}:{$this->port}" .
-            "/fmi/rest/api/{$action}/{$this->solution}/{$layout}" .
-            ($recordId ? "/{$recordId}" : "");
+        $vStr = $this->vNum < 1 ? 'Latest' : strval($this->vNum);
+        $url = "{$this->protocol}://{$this->host}:{$this->port}/fmi/data/v{$vStr}/databases/{$this->solution}";
+        foreach ($params as $key => $value) {
+            $url .= "/{$key}" . (is_null($value) ? "" : "/{$value}");
+        }
+        return $url;
     }
 
     /**
-     * @param $layout
      * @throws Exception In case of any error, an exception arises.
      * @ignore
      */
-    public function login($layout)
+    public function login()
     {
         if ($this->keepAuth) {
             return;
         }
-        $request = array(
-            "user" => $this->user,
-            "password" => $this->password,
-            "layout" => $layout,
-        );
         if ($this->useOAuth) {
-            $request["user"] = 'dummy';
-            $request["password"] = 'dummy';
-            $request["oAuthRequestId"] = $this->user;
-            $request["oAuthIdentifier"] = $this->password;
-        }
-        try {
-            $this->callRestAPI("auth", "", false, "POST", $request);
-        } catch (Exception $e) {
-            $this->accessToken = NULL;
-            throw $e;
-        }
-        if ($this->responseBody->errorCode != 0) {
-            $this->accessToken = NULL;
+            $headers = [
+                "Content-Type" => "application/json",
+                "X-FM-Data-OAuth-Request-Id" => "{$this->user}",
+                "X-FM-Data-OAuth-Identifier" => "{$this->password}",
+            ];
         } else {
-            $this->accessToken = $this->responseBody->token;
+            $value = "Basic " . base64_encode("{$this->user}:{$this->password}");
+            $headers = ["Content-Type" => "application/json", "Authorization" => $value,];
+        }
+        $params = ["sessions" => null];
+        $request = [];
+        if (!is_null($this->fmDataSource)) {
+            $request["fmDataSource"] = $this->fmDataSource;
+        }
+        if (is_null($this->accessToken)) {
+            try {
+                $this->callRestAPI($params, false, "POST", $request, $headers);
+            } catch (\Exception $e) {
+                $this->accessToken = NULL;
+                throw $e;
+            }
+            if (intval($this->responseBody->messages->code) != 0) {
+                $this->accessToken = NULL;
+            } else {
+                $this->accessToken = $this->responseBody->response->token;
+            }
         }
     }
 
@@ -1035,16 +1211,17 @@ class CommunicationProvider
         if ($this->keepAuth) {
             return;
         }
+        $params = ["sessions" => $this->accessToken];
         try {
-            $this->callRestAPI("auth", "", true, "DELETE");
-        } catch (Exception $e) {
+            $this->callRestAPI($params, true, "DELETE");
+        } catch (\Exception $e) {
             throw $e;
         }
         $this->accessToken = NULL;
     }
 
     /**
-     * @param $action
+     * @param $params
      * @param $layout
      * @param $isAddToken
      * @param string $method
@@ -1053,24 +1230,35 @@ class CommunicationProvider
      * @throws Exception In case of any error, an exception arises.
      * @ignore
      */
-    public function callRestAPI($action, $layout, $isAddToken, $method = 'GET', $request = NULL, $recordId = null)
+    public function callRestAPI($params, $isAddToken, $method = 'GET', $request = NULL, $addHeader = null)
     {
         $methodLower = strtolower($method);
-        $url = $this->getURL($action, $layout, $recordId);
-        $header = array();
+        $url = $this->getURL($params);
+        $header = [];
         if ($this->isLocalServer) {
-            $header[] = "X-Forwarded-For: 127.0.0.1";
+            $header[] = 'X-Forwarded-For: 127.0.0.1';
+            $host = filter_input(INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_URL);
+            if ($host === NULL || $host === FALSE) {
+                $host = 'localhost';
+            }
+            $header[] = 'X-Forwarded-Host: ' . $host;
         }
         if ($this->useOAuth) {
             $header[] = "X-FM-Data-Login-Type: oauth";
         }
-        if (!is_null($request) && $methodLower != 'get') {
-            $header[] = "Content-Type: application/json";
-        }
         if ($isAddToken) {
-            $header[] = "FM-Data-token: {$this->accessToken}";
+            $header[] = "Authorization: Bearer {$this->accessToken}";
         }
-        if ($methodLower === 'get' && !is_null($request)) {
+        if (!is_null($addHeader)) {
+            foreach ($addHeader as $key => $value) {
+                $header[] = "{$key}: {$value}";
+            }
+        }
+
+        $jsonEncoding = true;
+        if (is_string($request)) {
+            $jsonEncoding = false;
+        } else if (in_array($methodLower, array('get', 'delete')) && !is_null($request)) {
             $url .= '?';
             foreach ($request as $key => $value) {
                 if (key($request) !== $key) {
@@ -1079,22 +1267,42 @@ class CommunicationProvider
                 if ($key === 'sort' && is_array($value)) {
                     $sortParam = $this->_buildSortParameters($value);
                     if ($sortParam !== '[]') {
-                        $url .= $key . '=' . $sortParam;
+                        $url .= '_' . $key . '=' . $sortParam;
                     }
+                } else if ($key === 'limit' || $key === 'offset') {
+                    $url .= '_' . $key . '=' . (is_array($value) ? json_encode($value) : $value);
                 } else {
                     $url .= $key . '=' . (is_array($value) ? json_encode($value) : $value);
                 }
             }
         } else if ($methodLower !== 'get' && !is_null($request)) {
+            // cast a number
+            if (isset($request['fieldData'])) {
+                foreach ($request['fieldData'] as $fieldName => $fieldValue) {
+                    if (is_numeric($fieldValue)) {
+                        $request['fieldData'][$fieldName] = (string)$fieldValue;
+                    }
+                }
+            }
+            if (isset($request['query'])) {
+                foreach ($request['query'] as $key => $array) {
+                    foreach ($array as $fieldName => $fieldValue) {
+                        if (!is_array($fieldValue)) {
+                            $request['query'][$key][$fieldName] = (string)$fieldValue;
+                        }
+                    }
+                }
+            }
+
             if (isset($request['sort'])) {
-                $sort = array();
+                $sort = [];
                 foreach ($request['sort'] as $sortKey => $sortCondition) {
                     if (isset($sortCondition[0])) {
                         $sortOrder = 'ascend';
                         if (isset($sortCondition[1])) {
                             $sortOrder = $this->adjustSortDirection($sortCondition[1]);
                         }
-                        $sort[] = array('fieldName' => $sortCondition[0], 'sortOrder' => $sortOrder);
+                        $sort[] = ['fieldName' => $sortCondition[0], 'sortOrder' => $sortOrder];
                     }
                 }
                 $request['sort'] = $sort;
@@ -1109,11 +1317,13 @@ class CommunicationProvider
             curl_setopt($ch, CURLOPT_POST, 1);
         } else
             if ($methodLower == 'put') {
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+            } else if ($methodLower == 'patch') {
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
             } else if ($methodLower == 'delete') {
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
             } else {
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
             }
         if ($this->isCertVaridating) {
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
@@ -1125,13 +1335,16 @@ class CommunicationProvider
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         if ($methodLower != 'get') {
-            if ($methodLower === 'post' && isset($request['data']) &&
-                $request['data'] === array() && $recordId === NULL
-            ) {
-                // create an empty record
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request, JSON_FORCE_OBJECT));
+            if ($jsonEncoding) {
+                if ($methodLower === 'post' && isset($request['fieldData']) && $request['fieldData'] === []
+                ) {
+                    // create an empty record
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request, JSON_FORCE_OBJECT));
+                } else {
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request));
+                }
             } else {
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request));
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
             }
         }
         $response = curl_exec($ch);
@@ -1154,8 +1367,10 @@ class CommunicationProvider
         }
         if ($this->throwExceptionInError) {
             $httpStatus = $this->getCurlInfo("http_code");
-            $errorCode = property_exists($this->responseBody, 'errorCode') ? $this->responseBody->errorCode : -1;
-            $errorMessage = property_exists($this->responseBody, 'errorMessage') ? $this->responseBody->errorMessage : 'ERROR';
+            $errorCode = property_exists($this->responseBody->messages[0], 'code') ?
+                intval($this->responseBody->messages[0]->code) : -1;
+            $errorMessage = property_exists($this->responseBody->messages[0], 'message') ?
+                $this->responseBody->messages[0]->message : 'ERROR';
             $description = '';
             if ($this->curlErrorNumber > 0) {
                 $description .= "cURL in PHP / Error Code: {$this->curlErrorNumber}, Error Message: {$this->curlError}. ";
@@ -1170,7 +1385,9 @@ class CommunicationProvider
             if ($description !== '') {
                 $description = date('Y-m-d H:i:s ') . "{$description}";
                 $description .= "[URL({$this->method}): {$this->url}]";
-                throw new Exception($description);
+                if ($errorCode !== 401) {
+                    throw new \Exception($description);
+                }
             }
         }
     }
@@ -1180,10 +1397,10 @@ class CommunicationProvider
      */
     public function storeToProperties()
     {
-        $result = $this->responseBody;
+        $result = $this->responseBody->messages[0];
         $this->httpStatus = $this->getCurlInfo("http_code");
-        $this->errorCode = property_exists($result, 'errorCode') ? $result->errorCode : -1;
-        $this->errorMessage = property_exists($result, 'errorMessage') ? $result->errorMessage : null;
+        $this->errorCode = property_exists($result, 'code') ? $result->code : -1;
+        $this->errorMessage = property_exists($result, 'message') ? $result->message : null;
     }
 
     /**
@@ -1223,16 +1440,20 @@ class CommunicationProvider
         $str .= $this->method . ' ' . htmlspecialchars($this->url);
         $str .= "</div>Added Request Header:<br><pre>";
         $str .= htmlspecialchars(var_export($this->requestHeader, true));
-        $str .= "<hr>Request Body:<br><pre>";
-        $str .= htmlspecialchars(json_encode($this->requestBody, JSON_PRETTY_PRINT));
+        $str .= "</pre><hr>Request Body:<br><pre>";
+        if (is_string($this->requestBody)) {
+            $str .= htmlspecialchars(substr($this->requestBody, 0, 40));
+        } else {
+            $str .= htmlspecialchars(json_encode($this->requestBody, JSON_PRETTY_PRINT));
+        }
         $str .= "</pre><hr>Response Header:<br><pre>";
         $str .= htmlspecialchars($this->responseHeader);
         $str .= "</pre><hr>Response Body:<br><pre>";
         $str .= htmlspecialchars(json_encode($this->responseBody, JSON_PRETTY_PRINT));
-        $str .= "</pre><hr>Info:<br><pre>";
-        $str .= var_export($this->curlInfo, true);
-        $str .= "</pre><hr>ErrorNumber: {$this->curlErrorNumber}";
-        $str .= "</pre><hr>Error:<br>";
+        //$str .= "</pre><hr>Info:<br><pre>";
+        //$str .= var_export($this->curlInfo, true);
+        $str .= "</pre><hr>CURL ErrorNumber: {$this->curlErrorNumber}";
+        $str .= "</pre><hr>CURL Error: ";
         $str .= htmlspecialchars($this->curlError);
         $str .= "<hr>";
         if ($isReturnValue) {
@@ -1268,18 +1489,4 @@ class CommunicationProvider
 
         return $param;
     }
-}
-
-/**
- * Class CommunicationProvider is for internal use to communicate with FileMaker Server.
- *
- * @package INTER-Mediator\FileMakerServer\RESTAPI
- * @link https://github.com/msyk/FMDataAPI GitHub Repository
- * @version 7
- * @author Masayuki Nii <nii@msyk.net>
- * @copyright 2017-2018 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
- */
-class Exception extends \Exception
-{
-
 }

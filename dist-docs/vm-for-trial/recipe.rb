@@ -486,11 +486,11 @@ if node[:platform] == 'alpine'
   execute 'update-ca-certificates' do
     command 'update-ca-certificates'
   end
-  execute 'wget https://phar.phpunit.de/phpunit-5.6.2.phar -P /tmp' do
-    command 'wget https://phar.phpunit.de/phpunit-5.6.2.phar -P /tmp'
+  execute 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp' do
+    command 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp'
   end
-  execute 'mv /tmp/phpunit-5.6.2.phar /usr/local/bin/phpunit' do
-    command 'mv /tmp/phpunit-5.6.2.phar /usr/local/bin/phpunit'
+  execute 'mv /tmp/phpunit-6.phar /usr/local/bin/phpunit' do
+    command 'mv /tmp/phpunit-6.phar /usr/local/bin/phpunit'
   end
   execute 'chmod +x /usr/local/bin/phpunit' do
     command 'chmod +x /usr/local/bin/phpunit'
@@ -507,6 +507,9 @@ elsif node[:platform] == 'ubuntu'
       action :install
     end
     package 'libapache2-mod-php7.0' do
+      action :install
+    end
+    package 'php7.0-dom' do
       action :install
     end
     package 'php7.0-mbstring' do

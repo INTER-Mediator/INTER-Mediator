@@ -37,15 +37,21 @@ var INTERMediator_DBAdapter = {
 
     generate_authParams: function () {
         'use strict';
-        var authParams = '', shaObj, hmacValue;
+        var authParams = '', shaObj, hmacValue, encrypted;
+        var encrypt = new JSEncrypt();
         if (INTERMediatorOnPage.authUser.length > 0) {
             authParams = '&clientid=' + encodeURIComponent(INTERMediatorOnPage.clientId);
             authParams += '&authuser=' + encodeURIComponent(INTERMediatorOnPage.authUser);
             if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
                 if (INTERMediatorOnPage.authCryptedPassword && INTERMediatorOnPage.authChallenge) {
-                    authParams += '&cresponse=' + encodeURIComponent(
-                            INTERMediatorOnPage.publickey.biEncryptedString(INTERMediatorOnPage.authCryptedPassword +
-                                IMLib.nl_char + INTERMediatorOnPage.authChallenge));
+                    // require 2048-bit key length at least
+                    encrypt.setPublicKey(INTERMediatorOnPage.publickey);
+                    encrypted = encrypt.encrypt(
+                        INTERMediatorOnPage.authCryptedPassword.substr(0, 220) +
+                        IMLib.nl_char + INTERMediatorOnPage.authChallenge
+                    );
+                    authParams += '&cresponse=' + encodeURIComponent(encrypted +
+                            IMLib.nl_char + INTERMediatorOnPage.authCryptedPassword.substr(220));
                     if (INTERMediator_DBAdapter.debugMessage) {
                         INTERMediatorLog.setDebugMessage('generate_authParams/authCryptedPassword=' +
                             INTERMediatorOnPage.authCryptedPassword);
@@ -343,6 +349,7 @@ var INTERMediator_DBAdapter = {
     changePassword: function (username, oldpassword, newpassword) {
         'use strict';
         var challengeResult, params, result, messageNode;
+        var encrypt = new JSEncrypt();
 
         if (username && oldpassword) {
             INTERMediatorOnPage.authUser = username;
@@ -374,8 +381,8 @@ var INTERMediator_DBAdapter = {
         try {
             result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
             if (result) {
-                INTERMediatorOnPage.authCryptedPassword =
-                    INTERMediatorOnPage.publickey.biEncryptedString(newpassword);
+                encrypt.setPublicKey(INTERMediatorOnPage.publickey);
+                INTERMediatorOnPage.authCryptedPassword = encrypt.encrypt(newpassword);
                 INTERMediatorOnPage.authHashedPassword =
                     SHA1(newpassword + INTERMediatorOnPage.authUserSalt) + INTERMediatorOnPage.authUserHexSalt;
                 INTERMediatorOnPage.storeCredentialsToCookieOrStorage();
@@ -823,8 +830,8 @@ var INTERMediator_DBAdapter = {
                         }
                     } else if (keyParams[0].trim() === 'valueofaddorder' && keyParams.length >= 4) {
                         orderFields[parseInt(value)] = [keyParams[2].trim(), keyParams[3].trim()];
-                    } else if (keyParams[0].trim() === 'limitnumber' && keyParams.length >= 4) {
-                        recordLimit = parseInt(value);
+                        // } else if (keyParams[0].trim() === 'limitnumber' && keyParams.length >= 4) {
+                        //     recordLimit = parseInt(value);
                     }
                 }
             }

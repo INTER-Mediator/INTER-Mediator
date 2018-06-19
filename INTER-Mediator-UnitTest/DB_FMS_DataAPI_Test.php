@@ -4,6 +4,8 @@
  */
 require_once('DB_FMS_Test_Common.php');
 
+use \INTERMediator\DB\DB_Proxy;
+
 class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
 {
     function setUp()

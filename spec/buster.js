@@ -19,9 +19,7 @@ config['My tests'] = {
         'INTER-Mediator-Log.js',
         'lib/js_lib/tinySHA1.js',
         'lib/js_lib/sha256.js',
-        'lib/bi2php/biBigInt.js',
-        'lib/bi2php/biMontgomery.js',
-        'lib/bi2php/biRSA.js',
+        'lib/js_lib/jsencrypt.min.js',
         'Adapter_DBServer.js',
         'INTER-Mediator-Queuing.js',
         'INTER-Mediator-Events.js',
@@ -34,7 +32,7 @@ config['My tests'] = {
         'INTER-Mediator-UnitTest/INTER-Mediator-Context-test.js',
         'INTER-Mediator-UnitTest/INTER-Mediator-Lib-test.js',
         'INTER-Mediator-UnitTest/sha1-test.js',
-        'INTER-Mediator-UnitTest/RSA_JavaScript-test.js',
+        'INTER-Mediator-UnitTest/JSEncrypt-test.js',
         'INTER-Mediator-UnitTest/js-expression-eval-test.js',
         'spec/run.js'
     ]

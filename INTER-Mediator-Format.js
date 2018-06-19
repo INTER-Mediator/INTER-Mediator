@@ -287,8 +287,8 @@ var IMLibFormat = {
         }
         flags.usePercentNotation = true;
         return IMLibFormat.numberFormatImpl(str, digit,
-            INTERMediatorOnPage.localeInfo.mon_decimal_point,
-            INTERMediatorOnPage.localeInfo.mon_thousands_sep,
+            INTERMediatorOnPage.localeInfo.mon_decimal_point ? INTERMediatorOnPage.localeInfo.mon_decimal_point : '.',
+            INTERMediatorOnPage.localeInfo.mon_thousands_sep ? INTERMediatorOnPage.localeInfo.mon_thousands_sep : ',',
             false,
             flags
         );
@@ -297,8 +297,8 @@ var IMLibFormat = {
     decimalFormat: function (str, digit, flags) {
         'use strict';
         return IMLibFormat.numberFormatImpl(str, digit,
-            INTERMediatorOnPage.localeInfo.mon_decimal_point,
-            INTERMediatorOnPage.localeInfo.mon_thousands_sep,
+            INTERMediatorOnPage.localeInfo.mon_decimal_point ? INTERMediatorOnPage.localeInfo.mon_decimal_point : '.',
+            INTERMediatorOnPage.localeInfo.mon_thousands_sep ? INTERMediatorOnPage.localeInfo.mon_thousands_sep : ',',
             false,
             flags
         );
@@ -307,9 +307,9 @@ var IMLibFormat = {
     currencyFormat: function (str, digit, flags) {
         'use strict';
         return IMLibFormat.numberFormatImpl(str, digit,
-            INTERMediatorOnPage.localeInfo.mon_decimal_point,
-            INTERMediatorOnPage.localeInfo.mon_thousands_sep,
-            INTERMediatorOnPage.localeInfo.currency_symbol,
+            INTERMediatorOnPage.localeInfo.mon_decimal_point ? INTERMediatorOnPage.localeInfo.mon_decimal_point : '.',
+            INTERMediatorOnPage.localeInfo.mon_thousands_sep ? INTERMediatorOnPage.localeInfo.mon_thousands_sep : ',',
+            INTERMediatorOnPage.localeInfo.currency_symbol ? INTERMediatorOnPage.localeInfo.currency_symbol : '¥',
             flags
         );
     },
@@ -510,7 +510,7 @@ var IMLibFormat = {
     datetimeFormatImpl: function (str, params, flags) {
         'use strict';
         var dt, c, result = '', replaced, hasColon, hasSlash, hasDash;
-        str = (Object.prototype.toString.call(str) === '[object Array]')?str.join():str;
+        str = (Object.prototype.toString.call(str) === '[object Array]') ? str.join() : str;
         var paramStr = params.trim().toUpperCase();
         var kind = flags.trim().toUpperCase();
         var key = kind.substr(0, 1) + '_FMT_' + paramStr;

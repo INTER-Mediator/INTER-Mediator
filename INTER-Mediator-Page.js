@@ -316,7 +316,8 @@ var INTERMediatorOnPage = {
         var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox, msgNumber,
             passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton, panelTitle,
             newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox, keyCode,
-            messageNode, oAuthButton, addingButton;
+            messageNode, oAuthButton, addingButton, resetMessage;
+        var encrypt = new JSEncrypt();
 
         this.checkPasswordPolicy = function (newPassword, userName, policyString) {
             var terms, i, message = [], minLen;
@@ -557,6 +558,10 @@ var INTERMediatorOnPage = {
                     INTERMediatorLib.getInsertedStringFromErrorNumber(2023)));
                 addingButton.onclick=function(){location.href=INTERMediatorOnPage.resetPageURL;};
                 frontPanel.appendChild(addingButton);
+                resetMessage = document.createElement('div');
+                resetMessage.appendChild(document.createTextNode(
+                INTERMediatorLib.getInsertedStringFromErrorNumber(2024)));
+                frontPanel.appendChild(resetMessage);
             }
         }
         passwordBox.onkeydown = function (event) {
@@ -602,8 +607,8 @@ var INTERMediatorOnPage = {
                     return; // If it's failed to get a challenge, finish everything.
                 }
             }
-            INTERMediatorOnPage.authCryptedPassword =
-                INTERMediatorOnPage.publickey.biEncryptedString(inputPassword);
+            encrypt.setPublicKey(INTERMediatorOnPage.publickey);
+            INTERMediatorOnPage.authCryptedPassword = encrypt.encrypt(inputPassword);
             INTERMediatorOnPage.authHashedPassword =
                 SHA1(inputPassword + INTERMediatorOnPage.authUserSalt) +
                 INTERMediatorOnPage.authUserHexSalt;
@@ -667,7 +672,13 @@ var INTERMediatorOnPage = {
             };
         }
 
-        if (INTERMediatorOnPage.authCount > 0) {
+        if (INTERMediatorOnPage.publickeysize < 2048) {
+            messageNode = document.getElementById('_im_login_message');
+            INTERMediatorLib.removeChildNodes(messageNode);
+            messageNode.appendChild(
+                document.createTextNode(
+                    INTERMediatorLib.getInsertedStringFromErrorNumber(2025)));
+        } else if (INTERMediatorOnPage.authCount > 0) {
             messageNode = document.getElementById('_im_login_message');
             INTERMediatorLib.removeChildNodes(messageNode);
             messageNode.appendChild(

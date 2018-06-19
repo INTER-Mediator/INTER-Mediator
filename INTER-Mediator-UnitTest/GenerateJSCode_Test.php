@@ -5,10 +5,15 @@
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
 spl_autoload_register('loadClass');
 
+if (!class_exists('PHPUnit_Framework_TestCase')) {
+    class_alias('PHPUnit\Framework\TestCase', 'PHPUnit_Framework_TestCase');
+}
+
 class GenerateJSCode_Test extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
+        $_SERVER['SCRIPT_NAME'] = __FILE__;
         $this->generater = new GenerateJSCode();
     }
 

@@ -1037,6 +1037,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     /* Authentication support */
     function decrypting($paramCryptResponse)
     {
+        $password = FALSE;
+        $challenge = FALSE;
+
         $generatedPrivateKey = '';
         $passPhrase = '';
 
@@ -1049,29 +1052,31 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             include($currentDirParam);
         }
 
+        /* cf.) encrypted in generate_authParams() of Adapter_DBServer.js */
         $rsaClass = IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
         $rsa = new $rsaClass;
         $rsa->setPassword($passPhrase);
         $rsa->loadKey($generatedPrivateKey);
-        $rsa->setPassword();
-        $privatekey = $rsa->getPrivateKey();
-        if (IMUtil::phpVersion() < 6) {
-            $priv = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
-        } else {
-            $priv = $rsa->_parseKey($privatekey, constant('phpseclib\Crypt\RSA::PRIVATE_FORMAT_PKCS1'));
-        }
-        require_once('lib/bi2php/biRSA.php');
-        $keyDecrypt = new biRSAKeyPair('0', $priv['privateExponent']->toHex(), $priv['modulus']->toHex());
-        $decrypted = $keyDecrypt->biDecryptedString($paramCryptResponse);
-        if ($decrypted === false) {
-            return array(false, false);
+        $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
+        $token = isset($_SESSION['FM-Data-token']) ? $_SESSION['FM-Data-token'] : '';
+        $array = explode("\n", $paramCryptResponse);
+        if (strlen($array[0]) > 0 && isset($array[1]) && strlen($array[1]) > 0) {
+            $encryptedArray = explode("\n", $rsa->decrypt(base64_decode($array[0])));
+            if (isset($encryptedArray[1])) {
+                $challenge = $encryptedArray[1];
+            }
+            $encryptedPassword = $encryptedArray[0] . $array[1];
+            if (strlen($encryptedPassword) > 0) {
+                if (strlen($token) > 0 && get_class($this->dbClass) === 'DB_FileMaker_DataAPI') {
+                    $password = '';
+                } else {
+                    $password = $rsa->decrypt(base64_decode($encryptedPassword));
+                }
+            } else {
+                return array(FALSE, FALSE);
+            }
         }
 
-        $nlPos = strpos($decrypted, "\n");
-        $nlPos = ($nlPos === false) ? strlen($decrypted) : $nlPos;
-        $password = $keyDecrypt->biDecryptedString(substr($decrypted, 0, $nlPos));
-        $password = (strlen($password) == 0) ? "f32b309d4759446fc81de858322ed391a0c167a0" : $password;
-        $challenge = substr($decrypted, $nlPos + 1);
         return array($password, $challenge);
     }
 
