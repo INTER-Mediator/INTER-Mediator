@@ -376,6 +376,8 @@ class GenerateJSCode
         if (isset($valuesForLocalContext) && is_array($valuesForLocalContext) && count($valuesForLocalContext) > 0) {
             $this->generateAssignJS("INTERMediatorOnPage.initLocalContext", IMUtil::arrayToJS($valuesForLocalContext));
         }
+        $sss = ServiceServerProxy::instance()->isActive();
+        $this->generateAssignJS("INTERMediatorOnPage.serviceServerStatus", $sss ? "true" : "false");
     }
 
     private function combineScripts($currentDir)

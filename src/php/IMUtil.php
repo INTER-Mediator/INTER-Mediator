@@ -137,6 +137,12 @@ class IMUtil
         return $osName == "Windows NT";
     }
 
+    public static function isPHPExecutingUNIX()
+    {
+        $osName = php_uname("s");
+        return $osName == "Linux"|| $osName == "FreeBSD";
+    }
+
     public static function phpSecLibClass($aClass)
     {
         $comp = explode("\\", $aClass);
