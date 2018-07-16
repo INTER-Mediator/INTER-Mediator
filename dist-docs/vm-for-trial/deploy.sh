@@ -58,11 +58,11 @@ if [ $OS = 'alpine' ] ; then
     echo "	netmask 255.255.255.0" >> /etc/network/interfaces
 
     echo "#/media/cdrom/apks" > /etc/apk/repositories
-    echo "http://dl-5.alpinelinux.org/alpine/v3.7/main" >> /etc/apk/repositories
-    echo "http://dl-5.alpinelinux.org/alpine/v3.7/community" >> /etc/apk/repositories
-    echo "#http://dl-5.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
-    echo "#http://dl-5.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
-    echo "#http://dl-5.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.8/main" >> /etc/apk/repositories
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.8/community" >> /etc/apk/repositories
+    echo "#http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
+    echo "#http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+    echo "#http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
 
     apk update
     apk upgrade
