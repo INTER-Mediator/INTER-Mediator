@@ -46,23 +46,23 @@ iface eth1 inet static
 EOF
     end
   end
-  if node[:platform_version].to_f >= 3.7
+  if node[:platform_version].to_f >= 3.8
     file '/etc/apk/repositories' do
       content <<-EOF
 #/media/cdrom/apks
-http://dl-5.alpinelinux.org/alpine/v3.7/main
-http://dl-5.alpinelinux.org/alpine/v3.7/community
-http://dl-5.alpinelinux.org/alpine/edge/main
-http://dl-5.alpinelinux.org/alpine/edge/community
-http://dl-5.alpinelinux.org/alpine/edge/testing
+http://dl-cdn.alpinelinux.org/alpine/v3.8/main
+http://dl-cdn.alpinelinux.org/alpine/v3.8/community
+http://dl-cdn.alpinelinux.org/alpine/edge/main
+http://dl-cdn.alpinelinux.org/alpine/edge/community
+http://dl-cdn.alpinelinux.org/alpine/edge/testing
 EOF
     end
   else
     file '/etc/apk/repositories' do
       content <<-EOF
 #/media/cdrom/apks
-http://dl-5.alpinelinux.org/alpine/v3.5/main
-http://dl-5.alpinelinux.org/alpine/v3.5/community
+http://dl-5.alpinelinux.org/alpine/v3.7/main
+http://dl-5.alpinelinux.org/alpine/v3.7/community
 http://dl-5.alpinelinux.org/alpine/edge/main
 http://dl-5.alpinelinux.org/alpine/edge/community
 http://dl-5.alpinelinux.org/alpine/edge/testing
