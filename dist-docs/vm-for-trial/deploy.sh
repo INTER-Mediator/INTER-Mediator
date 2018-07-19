@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# setup shell script for Alpine Linux 3.8 and Ubuntu Server 14.04
+# setup shell script for Alpine Linux 3.8 and Ubuntu Server 18.04
 #
 # This file can get from the URL below.
 # https://raw.githubusercontent.com/INTER-Mediator/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh
@@ -137,13 +137,17 @@ else
     apt-get install sqlite --assume-yes
     apt-get install acl --assume-yes
     apt-get install libmysqlclient-dev --assume-yes
-    apt-get install php5-mysql --assume-yes
-    apt-get install php5-pgsql --assume-yes
-    apt-get install php5-sqlite --assume-yes
-    apt-get install php5-curl --assume-yes
-    apt-get install php5-gd --assume-yes
-    apt-get install php5-xmlrpc --assume-yes
-    apt-get install php5-intl --assume-yes
+    apt-get install php --assume-yes
+    apt-get install php-cli --assume-yes
+    apt-get install php-mysql --assume-yes
+    apt-get install php-pgsql --assume-yes
+    apt-get install php7.2-sqlite --assume-yes
+    apt-get install php7.2-xml --assume-yes
+    apt-get install php-bcmath --assume-yes
+    apt-get install php-curl --assume-yes
+    apt-get install php-gd --assume-yes
+    apt-get install php-xmlrpc --assume-yes
+    apt-get install php-intl --assume-yes
     apt-get install git --assume-yes
     apt-get install nodejs --assume-yes && update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10
     apt-get install nodejs-legacy --assume-yes
@@ -151,6 +155,8 @@ else
     apt-get install libfontconfig1 --assume-yes
     apt-get install samba --assume-yes
     apt-get install phpunit --assume-yes
+    #apt-get install firefox --assume-yes
+    apt-get install chromium-browser --assume-yes
     apt-get install xvfb --assume-yes
 
     # for Japanese
@@ -322,8 +328,8 @@ if [ $OS = 'alpine' ] ; then
     cat /etc/php7/php.ini | sed -e 's/max_execution_time = 30/max_execution_time = 120/g' | sed -e 's/max_input_time = 60/max_input_time = 120/g' | sed -e 's/memory_limit = 128M/memory_limit = 256M/g' | sed -e 's/post_max_size = 8M/post_max_size = 100M/g' | sed -e 's/upload_max_filesize = 2M/upload_max_filesize = 100M/g' > /etc/php7/php.ini.tmp
     mv /etc/php7/php.ini.tmp /etc/php7/php.ini
 else
-    cat /etc/php5/apache2/php.ini | sed -e 's/max_execution_time = 30/max_execution_time = 120/g' | sed -e 's/max_input_time = 60/max_input_time = 120/g' | sed -e 's/memory_limit = 128M/memory_limit = 256M/g' | sed -e 's/post_max_size = 8M/post_max_size = 100M/g' | sed -e 's/upload_max_filesize = 2M/upload_max_filesize = 100M/g' > /etc/php5/apache2/php.ini.tmp
-    mv /etc/php5/apache2/php.ini.tmp /etc/php5/apache2/php.ini
+    cat /etc/php/7.2/apache2/php.ini | sed -e 's/max_execution_time = 30/max_execution_time = 120/g' | sed -e 's/max_input_time = 60/max_input_time = 120/g' | sed -e 's/memory_limit = 128M/memory_limit = 256M/g' | sed -e 's/post_max_size = 8M/post_max_size = 100M/g' | sed -e 's/upload_max_filesize = 2M/upload_max_filesize = 100M/g' > /etc/php/7.2/apache2/php.ini.tmp
+    mv /etc/php/7.2/apache2/php.ini.tmp /etc/php/7.2/apache2/php.ini
 fi
 
 # Share the Web Root Directory with SMB.
@@ -340,6 +346,9 @@ if [ $OS = 'alpine' ] ; then
 else
     sed ':loop; N; $!b loop; ;s/#### Networking ####\n/#### Networking ####\n   hosts allow = 192.168.56. 127./g' "${SMBCONF}" > "${SMBCONF}".tmp
     mv "${SMBCONF}".tmp "${SMBCONF}"
+    echo "" >> "${SMBCONF}"
+    echo "[global]" >> "${SMBCONF}"
+    echo "   browseable = no" >> "${SMBCONF}"
     echo "" >> "${SMBCONF}"
     echo "[webroot]" >> "${SMBCONF}"
     echo "   comment = Apache Root Directory" >> "${SMBCONF}"
@@ -362,6 +371,11 @@ if [ $OS != 'alpine' ] ; then
     mv /etc/default/locale.tmp /etc/default/locale
     chmod u+s /usr/bin/fbterm
     dpkg-reconfigure -f noninteractive keyboard-configuration
+else
+	cat /etc/default/keyboard | sed -e 's/XKBLAYOUT="us"/XKBLAYOUT="jp"/g' > /etc/default/keyboard.tmp
+    mv /etc/default/keyboard.tmp /etc/default/keyboard
+    cat /etc/default/locale | sed -e 's/LANG="en_US.UTF-8"/LANG="ja_JP.UTF-8"/g' > /etc/default/locale.tmp
+    mv /etc/default/locale.tmp /etc/default/locale
 fi
 
 # Launch buster-server for unit testing
@@ -371,7 +385,8 @@ if [ $OS = 'alpine' ] ; then
     chmod 755 /etc/local.d/buster-server.start
     rc-update add local default
 else
-    echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\n/usr/local/bin/buster-server &\n/bin/sleep 5\n/usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &\nexit 0' > /etc/rc.local
+    echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\n/usr/local/bin/buster-server &\n/bin/sleep 5\n#firefox http://localhost:1111/capture > /dev/null &\nchromium-browser --no-sandbox --headless --remote-debugging-port=9222 http://localhost:1111/capture > /dev/null &\n/bin/sleep 5\nexit 0' > /etc/rc.local
+    chmod 755 /etc/rc.local
 fi
 
 # The end of task.
