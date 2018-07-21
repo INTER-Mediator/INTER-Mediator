@@ -1765,6 +1765,15 @@ EOF
     mode '644'
     content 'LANG="ja_JP.UTF-8"'
   end
+  execute 'locale-gen en_US.UTF-8' do
+    command 'locale-gen en_US.UTF-8'
+  end
+  execute 'locale-gen en_GB.UTF-8' do
+    command 'locale-gen en_GB.UTF-8'
+  end
+  execute '/usr/sbin/update-locale LANG=ja_JP.UTF-8' do
+    command '/usr/sbin/update-locale LANG=ja_JP.UTF-8'
+  end
 
   file '/etc/rc.local' do
     owner 'root'
@@ -1787,8 +1796,8 @@ EOF
 /usr/local/bin/buster-server &
 /bin/sleep 5
 #/usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &
-#/usr/bin/Xvfb :99 -screen 0 1024x768x24 -extension RANDR > /dev/null 2>&1 &
-#firefox http://localhost:1111/capture > /dev/null &
+/usr/bin/Xvfb :99 -screen 0 1024x768x24 -extension RANDR > /dev/null 2>&1 &
+firefox http://localhost:1111/capture > /dev/null &
 chromium-browser --no-sandbox --headless --remote-debugging-port=9222 http://localhost:1111/capture > /dev/null &
 exit 0
 EOF
