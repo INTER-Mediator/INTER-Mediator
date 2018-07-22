@@ -16,84 +16,55 @@
 require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 
 IM_Entry(
-    array(
-        array(
+    [
+        [
             'name' => 'invoice',
             'records' => 1,
             'paging' => true,
             'key' => 'id',
-            'query' =>
-                array(),
-            'sort' =>
-                array(
-                    array(
-                        'field' => 'id',
-                        'direction' => 'ASC',
-                    ),
-                ),
+            'query' => [],
+            'sort' => [['field' => 'id', 'direction' => 'ASC',],],
             'repeat-control' => 'insert delete',
-            'calculation' =>
-                array(
-                    array(
-                        'field' => 'total_calc',
-                        'expression' => 'sum(item@amount_calc) * (1 + _@taxRate )',
-                    ),
-                ),
-        ),
-        array(
+            'calculation' => [[
+                'field' => 'total_calc',
+                'expression' => 'sum(item@amount_calc) * (1 + _@taxRate )',
+            ],],
+        ],
+        [
             'name' => 'item',
             'key' => 'id',
-            'relation' =>
-                array(
-                    array(
-                        'foreign-key' => 'invoice_id',
-                        'join-field' => 'id',
-                        'operator' => '=',
-                    ),
-                ),
+            'relation' => [['foreign-key' => 'invoice_id', 'join-field' => 'id', 'operator' => '=',]],
             'repeat-control' => 'insert delete',
-            'default-values' =>
-                array(
-                    array(
-                        'field' => 'product_id',
-                        'value' => 1,
-                    ),
-                ),
-            'validation' =>
-                array(
-                    array(
-                        'field' => 'qty',
-                        'rule' => 'value>=0 && value < 100',
-                        'message' => 'Quantity should be between 1..99.',
-                        'notify' => 'inline',
-                    ),
-                    array(
-                        'field' => 'unitprice',
-                        'rule' => 'value>=0 && value<10000',
-                        'message' => 'Unit price should be between 1.. 9999.',
-                        'notify' => 'end-of-sibling',
-                    ),
-                ),
-            'calculation' =>
-                array(
-                    array(
-                        'field' => 'amount_calc',
-                        'expression' => 'qty * if(unitprice = \'\', product@unitprice, unitprice)',
-                    ),
-                    array(
-                        'field' => 'qty_color',
-                        'expression' => 'if (qty >= 10, \'red\', \'black\')',
-                    ),
-                    array(
-                        'field' => 'popup_style',
-                        'expression' => "if (length(product_id) = 0, 'block', 'none')",
-                    ),
-                    array(
-                        'field' => 'pinfo_style',
-                        'expression' => "if (length(product_id) > 0, 'block', 'none')",
-                    ),
-                ),
-        ),
+            'default-values' => [['field' => 'product_id', 'value' => 1,]],
+            'validation' => [
+                [
+                    'field' => 'qty',
+                    'rule' => 'value>=0 && value < 100',
+                    'message' => 'Quantity should be between 1..99.',
+                    'notify' => 'inline',
+                ], [
+                    'field' => 'unitprice',
+                    'rule' => 'value>=0 && value<10000',
+                    'message' => 'Unit price should be between 1.. 9999.',
+                    'notify' => 'end-of-sibling',
+                ],
+            ],
+            'calculation' => [
+                [
+                    'field' => 'amount_calc',
+                    'expression' => 'qty * if(unitprice = \'\', product@unitprice, unitprice)',
+                ], [
+                    'field' => 'qty_color',
+                    'expression' => 'if (qty >= 10, \'red\', \'black\')',
+                ], [
+                    'field' => 'popup_style',
+                    'expression' => "if (length(product_id) = 0, 'block', 'none')",
+                ], [
+                    'field' => 'pinfo_style',
+                    'expression' => "if (length(product_id) > 0, 'block', 'none')",
+                ],
+            ],
+        ],
         array(
             'name' => 'product',
             'key' => 'id',
@@ -112,7 +83,7 @@ IM_Entry(
             'table' => 'dummy',
             'key' => 'id',
         ),
-    ),
+    ],
     array(),
     array(
         'db-class' => 'PDO',
