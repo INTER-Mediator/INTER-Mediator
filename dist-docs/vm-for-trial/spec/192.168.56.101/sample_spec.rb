@@ -191,13 +191,13 @@ end
 describe package('software-properties-common'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
   it { should be_installed }
 end
-describe package('apt-transport-https'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe package('apt-transport-https'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
   it { should be_installed }
 end
-describe package('mssql-server'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe package('mssql-server'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
   it { should be_installed }
 end
-describe service('mssql-server'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe service('mssql-server'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
   it { should be_enabled }
   it { should be_running }
 end
@@ -209,16 +209,25 @@ end
 describe package('php7'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php7.0'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe package('php7.0'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
   it { should be_installed }
 end
-describe package('php7.0-cli'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe package('php'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
+  it { should be_installed }
+end
+describe package('php7.0-cli'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
+  it { should be_installed }
+end
+describe package('php-cli'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
 describe package('php7-apache2'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('libapache2-mod-php7.0'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe package('libapache2-mod-php7.0'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
+  it { should be_installed }
+end
+describe package('libapache2-mod-php7.2'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
 describe package('php7-curl'), :if => os[:family] == 'alpine' do
@@ -242,7 +251,10 @@ end
 describe package('php7-dom'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php7.0-dom'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe package('php7.0-dom'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
+  it { should be_installed }
+end
+describe package('php7.2-xml'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
 describe package('php7-json'), :if => os[:family] == 'alpine' do
@@ -251,7 +263,10 @@ end
 describe package('php7-bcmath'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php7.0-bcmath'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe package('php7.0-bcmath'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
+  it { should be_installed }
+end
+describe package('php-bcmath'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
 describe package('php7-phar'), :if => os[:family] == 'alpine' do
@@ -269,7 +284,10 @@ end
 describe package('php7-mbstring'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php7.0-mbstring'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe package('php7.0-mbstring'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
+  it { should be_installed }
+end
+describe package('php-mbstring'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
 describe package('php-mbstring'), :if => os[:family] == 'redhat' do
@@ -315,7 +333,10 @@ end
 describe package('php5-mysql'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
   it { should be_installed }
 end
-describe package('php7.0-mysql'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe package('php7.0-mysql'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
+  it { should be_installed }
+end
+describe package('php-mysql'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
 describe package('php-mysql'), :if => os[:family] == 'readhat' do
@@ -325,7 +346,10 @@ end
 describe package('php5-pgsql'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
   it { should be_installed }
 end
-describe package('php7.0-pgsql'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe package('php7.0-pgsql'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
+  it { should be_installed }
+end
+describe package('php-pgsql'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
 describe package('php-pgsql'), :if => os[:family] == 'readhat' do
@@ -335,7 +359,10 @@ end
 describe package('php5-sqlite'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
   it { should be_installed }
 end
-describe package('php7.0-sqlite3'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe package('php7.0-sqlite3'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
+  it { should be_installed }
+end
+describe package('php7.2-sqlite3'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
 describe package('php-pdo'), :if => os[:family] == 'redhat' do
@@ -349,28 +376,40 @@ end
 describe package('php5-curl'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
   it { should be_installed }
 end
-describe package('php7.0-curl'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe package('php7.0-curl'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
+  it { should be_installed }
+end
+describe package('php-curl'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
 
 describe package('php5-gd'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
   it { should be_installed }
 end
-describe package('php7.0-gd'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe package('php7.0-gd'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
+  it { should be_installed }
+end
+describe package('php-gd'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
 
 describe package('php5-xmlrpc'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
   it { should be_installed }
 end
-describe package('php7.0-xmlrpc'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe package('php7.0-xmlrpc'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
+  it { should be_installed }
+end
+describe package('php-xmlrpc'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
 
 describe package('php5-intl'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
   it { should be_installed }
 end
-describe package('php7.0-intl'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe package('php7.0-intl'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
+  it { should be_installed }
+end
+describe package('php-intl'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
 
@@ -396,7 +435,7 @@ describe file('/usr/bin/node'), :if => os[:family] == 'ubuntu' || (os[:family] =
   it { should be_file }
 end
 
-describe package('nodejs-legacy'), :if => os[:family] == 'ubuntu' do
+describe package('nodejs-legacy'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 18 do
   it { should be_installed }
 end
 
@@ -432,7 +471,7 @@ describe package('libgudev'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 
-describe package('phantomjs-prebuilt'), :if => (os[:family] == 'ubuntu' && os[:release].to_f >= 14) || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+describe package('phantomjs-prebuilt'), :if => (os[:family] == 'ubuntu' && os[:release].to_f >= 14 && os[:release].to_f < 18) || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
   it { should be_installed.by('npm').with_version('2.1.16') }
 end
 
@@ -699,7 +738,15 @@ describe file('/etc/php5/apache2/php.ini'), :if => os[:family] == 'ubuntu' && os
   its(:content) { should match /post_max_size = 100M/ }
   its(:content) { should match /upload_max_filesize = 100M/ }
 end
-describe file('/etc/php/7.0/apache2/php.ini'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe file('/etc/php/7.0/apache2/php.ini'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
+  it { should be_file }
+  its(:content) { should match /max_execution_time = 120/ }
+  its(:content) { should match /max_input_time = 120/ }
+  its(:content) { should match /memory_limit = 256M/ }
+  its(:content) { should match /post_max_size = 100M/ }
+  its(:content) { should match /upload_max_filesize = 100M/ }
+end
+describe file('/etc/php/7.2/apache2/php.ini'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_file }
   its(:content) { should match /max_execution_time = 120/ }
   its(:content) { should match /max_input_time = 120/ }
@@ -752,6 +799,9 @@ describe file('/etc/default/keyboard'), :if => os[:family] == 'ubuntu' do
   its(:content) { should match /XKBLAYOUT="jp"/ }
 end
 
+describe package('locales'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
 describe file('/etc/default/locale'), :if => os[:family] == 'ubuntu' do
   its(:content) { should match /LANG="ja_JP.UTF-8"/ }
 end
@@ -771,10 +821,16 @@ describe file('/etc/local.d/buster-server.start'), :if => os[:family] == 'alpine
   its(:content) { should match /\/usr\/bin\/buster-server &/ }
   its(:content) { should match /firefox http:\/\/localhost:1111\/capture > \/dev\/null &/ }
 end
-describe file('/etc/rc.local'), :if => os[:family] == 'ubuntu' do
+describe file('/etc/rc.local'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 14 && os[:release].to_f < 18 do
   it { should be_file }
   its(:content) { should match /\/usr\/local\/bin\/buster-server &/ }
   its(:content) { should match /\/usr\/local\/bin\/phantomjs \/usr\/local\/lib\/node_modules\/buster\/script\/phantom.js http:\/\/localhost:1111\/capture > \/dev\/null &/ }
+end
+describe file('/etc/rc.local'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18  do
+  it { should be_file }
+  it { should be_mode 755 }
+  its(:content) { should match /\/usr\/local\/bin\/buster-server &/ }
+  its(:content) { should match /chromium-browser --no-sandbox --headless --remote-debugging-port=9222 http:\/\/localhost:1111\/capture > \/dev\/null &/ }
 end
 
 describe file('/etc/motd'), :if => os[:family] == 'alpine' do

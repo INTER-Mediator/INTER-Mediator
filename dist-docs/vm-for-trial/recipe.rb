@@ -1,4 +1,4 @@
-# Recipe file of Itamae for Alpine Linux 3.7, Ubuntu Server 16.04, CentOS 6/7
+# Recipe file of Itamae for Alpine Linux 3.5/3.6/3.7/3.8, Ubuntu Server 16.04/18.04, CentOS 6/7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -46,23 +46,23 @@ iface eth1 inet static
 EOF
     end
   end
-  if node[:platform_version].to_f >= 3.7
+  if node[:platform_version].to_f >= 3.8
     file '/etc/apk/repositories' do
       content <<-EOF
 #/media/cdrom/apks
-http://dl-5.alpinelinux.org/alpine/v3.7/main
-http://dl-5.alpinelinux.org/alpine/v3.7/community
-http://dl-5.alpinelinux.org/alpine/edge/main
-http://dl-5.alpinelinux.org/alpine/edge/community
-http://dl-5.alpinelinux.org/alpine/edge/testing
+http://dl-cdn.alpinelinux.org/alpine/v3.8/main
+http://dl-cdn.alpinelinux.org/alpine/v3.8/community
+http://dl-cdn.alpinelinux.org/alpine/edge/main
+http://dl-cdn.alpinelinux.org/alpine/edge/community
+http://dl-cdn.alpinelinux.org/alpine/edge/testing
 EOF
     end
   else
     file '/etc/apk/repositories' do
       content <<-EOF
 #/media/cdrom/apks
-http://dl-5.alpinelinux.org/alpine/v3.5/main
-http://dl-5.alpinelinux.org/alpine/v3.5/community
+http://dl-5.alpinelinux.org/alpine/v3.7/main
+http://dl-5.alpinelinux.org/alpine/v3.7/community
 http://dl-5.alpinelinux.org/alpine/edge/main
 http://dl-5.alpinelinux.org/alpine/edge/community
 http://dl-5.alpinelinux.org/alpine/edge/testing
@@ -387,7 +387,7 @@ else
   end
 end
 
-if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
+if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16 && node[:platform_version].to_f < 18
   execute 'curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -' do
     command 'curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -'
   end
@@ -414,6 +414,10 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
   end
   service 'mssql-server' do
     action [ :enable, :start ]
+  end
+elsif node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 18
+  execute 'sudo apt-get update' do
+    command 'sudo apt-get update'
   end
 end
 
@@ -481,7 +485,26 @@ elsif node[:platform] == 'ubuntu'
   package 'libmysqlclient-dev' do
     action :install
   end
-  if node[:platform_version].to_f >= 16
+  if node[:platform_version].to_f >= 18
+    package 'php' do
+      action :install
+    end
+    package 'php-cli' do
+      action :install
+    end
+    package 'libapache2-mod-php7.2' do
+      action :install
+    end
+    package 'php7.2-xml' do
+      action :install
+    end
+    package 'php-mbstring' do
+      action :install
+    end
+    package 'php-bcmath' do
+      action :install
+    end
+  elsif node[:platform_version].to_f >= 16
     package 'php7.0' do
       action :install
     end
@@ -553,8 +576,12 @@ if node[:platform] == 'ubuntu'
     package 'php5-mysql' do
       action :install
     end
-  else
+  elsif node[:platform_version].to_f < 18
     package 'php7.0-mysql' do
+      action :install
+    end
+  else
+    package 'php-mysql' do
       action :install
     end
   end
@@ -581,8 +608,12 @@ if node[:platform] == 'ubuntu'
     package 'php5-pgsql' do
       action :install
     end
-  else
+  elsif node[:platform_version].to_f < 18
     package 'php7.0-pgsql' do
+      action :install
+    end
+  else
+    package 'php-pgsql' do
       action :install
     end
   end
@@ -597,8 +628,12 @@ if node[:platform] == 'ubuntu'
     package 'php5-sqlite' do
       action :install
     end
-  else
+  elsif node[:platform_version].to_f < 18
     package 'php7.0-sqlite3' do
+      action :install
+    end
+  else
+    package 'php7.2-sqlite3' do
       action :install
     end
   end
@@ -622,7 +657,7 @@ if node[:platform] == 'ubuntu'
     package 'php5-intl' do
       action :install
     end
-  else
+  elsif node[:platform_version].to_f < 18
     package 'php7.0-curl' do
       action :install
     end
@@ -633,6 +668,19 @@ if node[:platform] == 'ubuntu'
       action :install
     end
     package 'php7.0-intl' do
+      action :install
+    end
+  else
+    package 'php-curl' do
+      action :install
+    end
+    package 'php-gd' do
+      action :install
+    end
+    package 'php-xmlrpc' do
+      action :install
+    end
+    package 'php-intl' do
       action :install
     end
   end
@@ -696,18 +744,18 @@ if node[:platform] == 'redhat'
     action :install
   end
 end
-if node[:platform] == 'alpine' || node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
+if node[:platform] == 'alpine' || (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14 && node[:platform_version].to_f < 18) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   package 'nodejs' do
     action :install
   end
 end
 
-if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || node[:platform] == 'redhat'
+if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14 && node[:platform_version].to_f < 18) || node[:platform] == 'redhat'
   execute 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10' do
     command 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10'
   end
 end
-if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14
+if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 18
   package 'nodejs' do
     action :install
   end
@@ -722,7 +770,7 @@ if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform
     action :install
   end
 end
-if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
+if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 18) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   execute 'npm install -g n' do
     command 'npm install -g n'
   end
@@ -1388,9 +1436,13 @@ if node[:platform] == 'ubuntu'
     execute 'cat /etc/php5/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php5/apache2/php.ini.tmp && mv /etc/php5/apache2/php.ini.tmp /etc/php5/apache2/php.ini' do
       command 'cat /etc/php5/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php5/apache2/php.ini.tmp && mv /etc/php5/apache2/php.ini.tmp /etc/php5/apache2/php.ini'
     end
-  else
+  elsif node[:platform_version].to_f < 18
     execute 'cat /etc/php/7.0/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/7.0/apache2/php.ini.tmp && mv /etc/php/7.0/apache2/php.ini.tmp /etc/php/7.0/apache2/php.ini' do
       command 'cat /etc/php/7.0/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/7.0/apache2/php.ini.tmp && mv /etc/php/7.0/apache2/php.ini.tmp /etc/php/7.0/apache2/php.ini'
+    end
+  else
+    execute 'cat /etc/php/7.2/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/7.2/apache2/php.ini.tmp && mv /etc/php/7.2/apache2/php.ini.tmp /etc/php/7.2/apache2/php.ini' do
+      command 'cat /etc/php/7.2/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/7.2/apache2/php.ini.tmp && mv /etc/php/7.2/apache2/php.ini.tmp /etc/php/7.2/apache2/php.ini'
     end
   end
 end
@@ -1704,11 +1756,23 @@ XKBOPTIONS=""
 # KMAP=/etc/console-setup/defkeymap.kmap.gz
 EOF
   end
+  package 'locales' do
+    action :install
+  end
   file '/etc/default/locale' do
     owner 'root'
     group 'root'
     mode '644'
     content 'LANG="ja_JP.UTF-8"'
+  end
+  execute 'locale-gen en_US.UTF-8' do
+    command 'locale-gen en_US.UTF-8'
+  end
+  execute 'locale-gen en_GB.UTF-8' do
+    command 'locale-gen en_GB.UTF-8'
+  end
+  execute '/usr/sbin/update-locale LANG=ja_JP.UTF-8' do
+    command '/usr/sbin/update-locale LANG=ja_JP.UTF-8'
   end
 
   file '/etc/rc.local' do
@@ -1734,7 +1798,7 @@ EOF
 #/usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &
 /usr/bin/Xvfb :99 -screen 0 1024x768x24 -extension RANDR > /dev/null 2>&1 &
 firefox http://localhost:1111/capture > /dev/null &
-chromium-browser --no-sandbox http://localhost:1111/capture > /dev/null &
+chromium-browser --no-sandbox --headless --remote-debugging-port=9222 http://localhost:1111/capture > /dev/null &
 exit 0
 EOF
   end
@@ -1818,7 +1882,7 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem2.0 install selenium-webdriver --no-ri --no-rdoc' do
       command 'gem2.0 install selenium-webdriver --no-ri --no-rdoc'
     end
-  else
+  elsif node[:platform_version].to_f < 18
     package 'ruby2.3' do
       action :install
     end
@@ -1836,6 +1900,25 @@ elsif node[:platform] == 'ubuntu'
     end
     execute 'gem2.3 install selenium-webdriver --no-ri --no-rdoc' do
       command 'gem2.3 install selenium-webdriver --no-ri --no-rdoc'
+    end
+  else
+    package 'ruby' do
+      action :install
+    end
+    package 'ruby-dev' do
+      action :install
+    end
+    execute 'gem install rspec --no-ri --no-rdoc' do
+      command 'gem install rspec --no-ri --no-rdoc'
+    end
+    execute 'gem install bundler --no-ri --no-rdoc' do
+      command 'gem install bundler --no-ri --no-rdoc'
+    end
+    execute 'gem install ffi --no-ri --no-rdoc' do
+      command 'gem install ffi --no-ri --no-rdoc'
+    end
+    execute 'gem install selenium-webdriver --no-ri --no-rdoc' do
+      command 'gem install selenium-webdriver --no-ri --no-rdoc'
     end
   end
   package 'firefox' do
