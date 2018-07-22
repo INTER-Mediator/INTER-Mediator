@@ -105,17 +105,22 @@ if [ -d "${buildDir}" ]; then
 fi
 mkdir -p "${buildPath}/src/js/"
 mkdir -p "${buildPath}/src/php/"
+mkdir -p "${buildPath}/src/lib/"
 
 /bin/echo "PROCESSING: Copying php files"
 cp -f "${originalPath}/INTER-Mediator.php" "${buildPath}/"
 cp -rf "${originalPath}/src/php" "${buildPath}/src"
-cp -rf "${originalPath}/vendor" "${buildPath}"
+# cp -rf "${originalPath}/vendor" "${buildPath}"
 cp -rf "${originalPath}/.git" "${buildPath}"
 
 cp  "${originalPath}/composer.json" "${buildPath}/"
 cp  "${originalPath}/params.php" "${buildPath}/"
 cp  "${originalPath}/index.html" "${buildPath}/"
 cp  "${originalPath}/LICENSE.md" "${buildPath}/"
+sed -E -e 's|"./vendor/bin/npm install"|"./vendor/bin/npm install --only=production"|' "${originalPath}/composer.json" > "${buildPath}/composer.json"
+cp  "${originalPath}/composer.lock" "${buildPath}/"
+cp  "${originalPath}/package.json" "${buildPath}/"
+cp  "${originalPath}/package-lock.json" "${buildPath}/"
 
 #### Merge js files
 /bin/echo "PROCESSING: Merging JS files"
@@ -227,6 +232,10 @@ fi
 
 /bin/echo "PROCESSING: ${originalPath}/themes"
 cp -prf "${originalPath}/themes" "${buildPath}"
+
+/bin/echo "PROCESSING: PHP/JavaScript Libraries"
+cd "${buildPath}"
+composer update --no-dev
 
 /bin/echo "Clean up dot files."
 find "${buildPath}" -name "\.*" -exec rm -rf {} \; -prune

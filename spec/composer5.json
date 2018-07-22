@@ -19,6 +19,7 @@
     "phpseclib/phpseclib": "*",
     "paragonie/constant_time_encoding": "^1",
     "yodarunamok/fxphp": "*",
+    "inter-mediator/fmdataapi": "*",
     "swiftmailer/swiftmailer": "*"
   },
   "require-dev": {
