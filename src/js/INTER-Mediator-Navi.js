@@ -1076,7 +1076,9 @@ const IMLibPageNavigation = {
     'use strict';
     var context = contextObj, keying = keyField + '=' + keyValue;
     return function () {
-      return IMLibPageNavigation.moveToNextSteplImpl(context, keying);
+      IMLibQueue.setTask(function() {
+        IMLibPageNavigation.moveToNextStepImpl(context, keying);
+      });
     };
   },
 
