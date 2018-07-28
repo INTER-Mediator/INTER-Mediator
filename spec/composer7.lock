@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "405bb9d66bc0fb8a7caa08dee295660f",
+    "content-hash": "a632d8afbd75536aa83eece04d43d8fb",
     "packages": [
         {
             "name": "doctrine/lexer",
@@ -116,6 +116,44 @@
                 "validator"
             ],
             "time": "2018-04-10T10:11:19+00:00"
+        },
+        {
+            "name": "inter-mediator/fmdataapi",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/msyk/FMDataAPI.git",
+                "reference": "96100d3e34e25790e6249ed62cb65ac682cb4563"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/msyk/FMDataAPI/zipball/96100d3e34e25790e6249ed62cb65ac682cb4563",
+                "reference": "96100d3e34e25790e6249ed62cb65ac682cb4563",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Masayuki Nii",
+                    "homepage": "http://msyk.net/"
+                }
+            ],
+            "description": "FMDataAPI is a class developed by PHP to access FileMaker database with FileMaker Data API.",
+            "homepage": "https://github.com/msyk/FMDataAPI",
+            "keywords": [
+                "FileMaker",
+                "INTER-Mediator",
+                "api",
+                "rest"
+            ],
+            "time": "2018-07-16T00:14:31+00:00"
         },
         {
             "name": "mouf/nodejs-installer",
@@ -329,16 +367,16 @@
         },
         {
             "name": "swiftmailer/swiftmailer",
-            "version": "v6.0.2",
+            "version": "v6.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swiftmailer/swiftmailer.git",
-                "reference": "412333372fb6c8ffb65496a2bbd7321af75733fc"
+                "reference": "7d760881d266d63c5e7a1155cbcf2ac656a31ca8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/412333372fb6c8ffb65496a2bbd7321af75733fc",
-                "reference": "412333372fb6c8ffb65496a2bbd7321af75733fc",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/7d760881d266d63c5e7a1155cbcf2ac656a31ca8",
+                "reference": "7d760881d266d63c5e7a1155cbcf2ac656a31ca8",
                 "shasum": ""
             },
             "require": {
@@ -349,10 +387,14 @@
                 "mockery/mockery": "~0.9.1",
                 "symfony/phpunit-bridge": "~3.3@dev"
             },
+            "suggest": {
+                "ext-intl": "Needed to support internationalized email addresses",
+                "true/punycode": "Needed to support internationalized email addresses, if ext-intl is not installed"
+            },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "6.0-dev"
+                    "dev-master": "6.1-dev"
                 }
             },
             "autoload": {
@@ -374,32 +416,35 @@
                 }
             ],
             "description": "Swiftmailer, free feature-rich PHP mailer",
-            "homepage": "http://swiftmailer.symfony.com",
+            "homepage": "https://swiftmailer.symfony.com",
             "keywords": [
                 "email",
                 "mail",
                 "mailer"
             ],
-            "time": "2017-09-30T22:39:41+00:00"
+            "time": "2018-07-13T07:04:35+00:00"
         },
         {
             "name": "yodarunamok/fxphp",
-            "version": "v6.10",
+            "version": "v6.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ejsexton82/fxphp.git",
-                "reference": "308d1513787592ffc21798e9622253091ce88e03"
+                "reference": "7ac25b5ab36daba64fca6b655b0c763d39e5b2a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ejsexton82/fxphp/zipball/308d1513787592ffc21798e9622253091ce88e03",
-                "reference": "308d1513787592ffc21798e9622253091ce88e03",
+                "url": "https://api.github.com/repos/ejsexton82/fxphp/zipball/7ac25b5ab36daba64fca6b655b0c763d39e5b2a9",
+                "reference": "7ac25b5ab36daba64fca6b655b0c763d39e5b2a9",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3"
+                "php": "^5.3.2 || ^7.0"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": []
+            },
             "autoload": {
                 "classmap": [
                     "FX.php"
@@ -407,31 +452,38 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "Artistic License"
+                "Artistic-2.0"
             ],
             "authors": [
-                {
-                    "name": "Chris Hansen"
-                },
                 {
                     "name": "Chris Adams"
                 },
                 {
-                    "name": "G G Thorsen"
+                    "name": "Masayuki Nii"
                 },
                 {
-                    "name": "Masayuki Nii"
+                    "name": "Chris Hansen",
+                    "email": "chris@iviking.org",
+                    "homepage": "http://www.iviking.org"
+                },
+                {
+                    "name": "Gjermund Gusland Thorsen",
+                    "email": "gjermundprivat@gmail.com",
+                    "homepage": "https://github.com/TyrfingMjolnir/"
                 }
             ],
             "description": "A Free, Open Source PHP database abstraction class for accessing FileMaker Pro and other data sources.",
+            "homepage": "https://github.com/yodarunamok/fxphp",
             "keywords": [
+                "FMPXMLRESULT",
+                "FX.php",
                 "FileMaker",
+                "FileMaker CWP",
                 "cwp",
                 "mysql",
-                "php",
                 "xml"
             ],
-            "time": "2017-10-27T05:33:48+00:00"
+            "time": "2018-07-09T14:48:10+00:00"
         }
     ],
     "packages-dev": [
