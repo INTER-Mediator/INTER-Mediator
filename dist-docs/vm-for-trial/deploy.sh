@@ -18,7 +18,7 @@ OS=`cat /etc/os-release | grep ^ID | cut -d'=' -f2`
 
 if [ $OS = 'alpine' ] ; then
     WEBROOT="/var/www/localhost/htdocs"
-	OLDWEBROOT="/var/www/html"
+    OLDWEBROOT="/var/www/html"
 else
     WEBROOT="/var/www/html"
 fi
@@ -269,7 +269,7 @@ echo "EOL;" >> "${WEBROOT}/params.php"
 echo "\$webServerName = array('');" >> "${WEBROOT}/params.php"
 
 if [ $OS = 'alpine' ] ; then
-	ln -s ${WEBROOT} ${OLDWEBROOT}
+    ln -s ${WEBROOT} ${OLDWEBROOT}
 fi
 
 # Install npm packages
@@ -365,17 +365,12 @@ echo "   force group = im-developer" >> "${SMBCONF}"
 # Modify /etc/default/keyboard, /etc/default/locale for Japanese
 
 if [ $OS != 'alpine' ] ; then
-	cat /etc/default/keyboard | sed -e 's/XKBLAYOUT="us"/XKBLAYOUT="jp"/g' > /etc/default/keyboard.tmp
+    cat /etc/default/keyboard | sed -e 's/XKBLAYOUT="us"/XKBLAYOUT="jp"/g' > /etc/default/keyboard.tmp
     mv /etc/default/keyboard.tmp /etc/default/keyboard
     cat /etc/default/locale | sed -e 's/LANG="en_US.UTF-8"/LANG="ja_JP.UTF-8"/g' > /etc/default/locale.tmp
     mv /etc/default/locale.tmp /etc/default/locale
     chmod u+s /usr/bin/fbterm
     dpkg-reconfigure -f noninteractive keyboard-configuration
-else
-	cat /etc/default/keyboard | sed -e 's/XKBLAYOUT="us"/XKBLAYOUT="jp"/g' > /etc/default/keyboard.tmp
-    mv /etc/default/keyboard.tmp /etc/default/keyboard
-    cat /etc/default/locale | sed -e 's/LANG="en_US.UTF-8"/LANG="ja_JP.UTF-8"/g' > /etc/default/locale.tmp
-    mv /etc/default/locale.tmp /etc/default/locale
 fi
 
 # Launch buster-server for unit testing
@@ -393,7 +388,7 @@ fi
 
 if [ $OS = 'alpine' ] ; then
     echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd
-	poweroff
+    poweroff
 else
     /sbin/shutdown -h now
 fi

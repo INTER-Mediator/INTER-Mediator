@@ -21,6 +21,7 @@ Ver.5.8-dev (in development)
 - The INTERMediator.recordLimit property is introduced to store the number of records. Also added methods:
   INTERMediator.setRecordLimit(cname, limit) and INTERMediator.clearRecordLimit(cname).
 - Remove search_page2.html ("search(using JavaScript)") in Practices directory.
+- Update deploy.sh and recipe.rb etc. for the INTER-Mediator-Server virtual machine and CI.
 - [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native 
   Authentication or LDAP Authentication.
 - [INFO] FileMaker Data API (Trial) of FileMaker Server 16 is no longer supported.
