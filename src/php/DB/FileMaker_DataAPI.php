@@ -559,6 +559,9 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         $portalNames = array();
         $recordId = NULL;
         $result = NULL;
+        $scriptResultPrerequest = NULL;
+        $scriptResultPresort = NULL;
+        $scriptResult = NULL;
         try {
             if (count($conditions) === 1 && isset($conditions[0]['recordId'])) {
                 $recordId = str_replace('=', '', $conditions[0]['recordId']);
@@ -588,6 +591,9 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                             $portal,
                             $script
                         );
+                        $scriptResultPrerequest = $this->fmData->{$layout}->getScriptResultPrerequest();
+                        $scriptResultPresort = $this->fmData->{$layout}->getScriptResultPresort();
+                        $scriptResult = $this->fmData->{$layout}->getScriptResult();
                     }
                 } else {
                     $result = $this->fmData->{$layout}->query(
@@ -598,6 +604,9 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                         $portal,
                         $script
                     );
+                    $scriptResultPrerequest = $this->fmData->{$layout}->getScriptResultPrerequest();
+                    $scriptResultPresort = $this->fmData->{$layout}->getScriptResultPresort();
+                    $scriptResult = $this->fmData->{$layout}->getScriptResult();
                 }
             }
         } catch (\Exception $e) {
@@ -619,7 +628,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 foreach ($result->getFieldNames() as $key => $fieldName) {
                     $dataArray = $dataArray + array(
                         $fieldName => $this->formatter->formatterFromDB(
-                            $this->getFieldForFormatter($tableName, $fieldName), $record->{$fieldName}
+                            $this->getFieldForFormatter($tableName, $fieldName), strval($record->{$fieldName})
                         )
                     );
                 }
@@ -669,12 +678,30 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             }
             
 
-            if ($recordId === NULL) {
-                $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 100000000, NULL, $script);
+            if ($scriptResultPrerequest !== NULL || $scriptResultPresort !== NULL || $scriptResult !== NULL) {
+                // Avoid multiple executing FileMaker script
+                if ($scriptResultPresort === NULL && $scriptResult === NULL) {
+                    $scriptResult = $scriptResultPrerequest;
+                } else if ($scriptResult === NULL) {
+                    $scriptResult = $scriptResultPresort;
+                }
+                if (strpos($scriptResult, '/') !== false) {
+                    $mainTableCount = substr($scriptResult, 0, strpos($scriptResult, '/'));
+                    $mainTableTotalCount = substr($scriptResult, strpos($scriptResult, '/') + 1, strlen($scriptResult));
+                    $this->mainTableCount = intval($mainTableCount);
+                    $this->mainTableTotalCount = intval($mainTableTotalCount);
+                } else {
+                    $this->mainTableCount = intval($scriptResult);
+                    $this->mainTableTotalCount = intval($scriptResult);
+                }
+            } else {
+                if ($recordId === NULL) {
+                    $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 100000000, NULL, $script);
+                }
+                $this->mainTableCount = $result->count();
+                $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 100000000, NULL, $script);
+                $this->mainTableTotalCount = $result->count();
             }
-            $this->mainTableCount = $result->count();
-            $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 100000000, NULL, $script);
-            $this->mainTableTotalCount = $result->count();
         }
 
         $token = $this->fmData->getSessionToken();
