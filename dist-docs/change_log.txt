@@ -45,12 +45,13 @@ Ver.5.8-dev (in development)
 - Add DB_FileMaker_DataAPI class to support FileMaker Data API of FileMaker Server 17.
 - Support retrieving image files in container fields when using DB_FileMaker_DataAPI class.
 - Support uploading files to container fields when using DB_FileMaker_DataAPI class.
-- Update FMDataAPI.php (Ver.10) for FileMaker Data API.
+- Update FMDataAPI.php (Ver.11) for FileMaker Data API.
 - Add JSEncrypt <http://travistidwell.com/jsencrypt/> to "js_lib" directory in "lib" directory and
   remove "bi2php" from "lib" directory to improve speed performance of Native Authentication.
 - The INTERMediator.recordLimit property is introduced to store the number of records. Also added methods:
   INTERMediator.setRecordLimit(cname, limit) and INTERMediator.clearRecordLimit(cname).
 - Remove search_page2.html ("search(using JavaScript)") in Practices directory.
+- Update deploy.sh and recipe.rb etc. for the INTER-Mediator-Server virtual machine and CI.
 - [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native 
   Authentication or LDAP Authentication.
 - [INFO] FileMaker Data API (Trial) of FileMaker Server 16 is no longer supported.
