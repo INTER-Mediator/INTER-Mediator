@@ -1135,15 +1135,15 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
 end
 
 if node[:platform] == 'alpine' && node[:virtualization][:system] != 'docker'
-  package 'virtualbox-additions-grsec' do
-    action :install
-  end
-  #package 'virtualbox-guest-additions' do
+  #package 'virtualbox-additions-grsec' do
   #  action :install
   #end
-  package 'virtualbox-guest-modules-grsec' do
+  package 'virtualbox-guest-additions' do
     action :install
   end
+  #package 'virtualbox-guest-modules-grsec' do
+  #  action :install
+  #end
 end
 
 

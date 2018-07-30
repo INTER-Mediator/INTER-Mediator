@@ -3,6 +3,10 @@
  * defedit_Test file
  */
 
+if (!class_exists('PHPUnit_Framework_TestCase')) {
+    class_alias('PHPUnit\Framework\TestCase', 'PHPUnit_Framework_TestCase');
+}
+
 class defedit_Test extends PHPUnit_Framework_TestCase
 {
     public function setUp()
