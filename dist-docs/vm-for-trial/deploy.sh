@@ -223,6 +223,7 @@ cd "${WEBROOT}"
 git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git && git checkout stable
 result=`git diff master..release 2> /dev/null`
 if [ "$result" = '' ]; then
+    #git checkout stable
     git checkout master
 fi
 
