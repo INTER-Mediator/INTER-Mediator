@@ -816,11 +816,11 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   package 'wget' do
     action :install
   end
-  execute 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp' do
-    command 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp'
+  execute 'wget https://phar.phpunit.de/phpunit-7.phar -P /tmp' do
+    command 'wget https://phar.phpunit.de/phpunit-7.phar -P /tmp'
   end
-  execute 'mv /tmp/phpunit-6.phar /usr/local/bin/phpunit' do
-    command 'mv /tmp/phpunit-6.phar /usr/local/bin/phpunit'
+  execute 'mv /tmp/phpunit-7.phar /usr/local/bin/phpunit' do
+    command 'mv /tmp/phpunit-7.phar /usr/local/bin/phpunit'
   end
   execute 'chmod +x /usr/local/bin/phpunit' do
     command 'chmod +x /usr/local/bin/phpunit'
