@@ -17,7 +17,7 @@ test:
   script:
     - docker run -e "container=docker" -d --name alpine alpine:latest /sbin/init
     - docker exec -e DISPLAY=:99.0 -i alpine sh -c "apk add --no-cache sudo curl php7 php7-xmlwriter ruby ruby-json ruby-io-console ruby-etc git && git clone https://github.com/INTER-Mediator/INTER-Mediator && cd INTER-Mediator && git checkout master && gem install itamae --no-doc && itamae local dist-docs/vm-for-trial/recipe.rb; dist-docs/installfiles.sh -2"
-    - docker exec -e DISPLAY=:99.0 -i alpine sh -c "php -v; curl -sS https://getcomposer.org/installer | php; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer; cd /INTER-Mediator/; composer require 'phpunit/phpunit=7.2.x'; composer install; /INTER-Mediator/vendor/phpunit --bootstrap /INTER-Mediator/vendor/autoload.php --configuration /INTER-Mediator/spec/INTER-Mediator-UnitTest/phpunit.xml /INTER-Mediator/spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+    - docker exec -e DISPLAY=:99.0 -i alpine sh -c "php -v; curl -sS https://getcomposer.org/installer | php; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer; cd /INTER-Mediator/; composer install; phpunit --bootstrap /INTER-Mediator/vendor/autoload.php --configuration /INTER-Mediator/spec/INTER-Mediator-UnitTest/phpunit.xml /INTER-Mediator/spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
     - docker exec -e DISPLAY=:99.0 -i alpine sh -c "/usr/bin/buster-test -r specification -c /INTER-Mediator/spec/buster.js"
     - docker stop alpine
     - docker rm alpine
