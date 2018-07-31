@@ -13,6 +13,7 @@ class defedit_Test extends TestCase
     }
 
     /**
+     * @backupGlobals enabled
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
