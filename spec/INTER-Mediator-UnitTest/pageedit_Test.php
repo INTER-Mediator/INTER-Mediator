@@ -13,6 +13,7 @@ class pageedit_Test extends TestCase
     }
 
     /**
+     * @backupGlobals enabled
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
