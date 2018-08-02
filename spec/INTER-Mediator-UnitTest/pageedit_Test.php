@@ -10,6 +10,7 @@ class pageedit_Test extends TestCase
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+        $_SERVER['REQUEST_TIME_FLOAT'] = microtime(true);
     }
 
     /**
@@ -24,6 +25,6 @@ class pageedit_Test extends TestCase
         require_once($imPath . '/editors/pageedit.php');
         $output = ob_get_contents();
         $this->assertNotContains('INTERMediatorLog.debugMode=', $output);
-        ob_clean();
+        ob_end_clean();
     }
 }
