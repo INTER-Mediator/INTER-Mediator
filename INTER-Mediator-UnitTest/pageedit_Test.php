@@ -11,7 +11,9 @@ class pageedit_Test extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
+        $_SERVER['SCRIPT_NAME'] = __FILE__;
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+        $_SERVER['REQUEST_TIME_FLOAT'] = microtime(true);
     }
 
     /**
@@ -24,6 +26,6 @@ class pageedit_Test extends PHPUnit_Framework_TestCase
         require_once(dirname(__FILE__) . '/../INTER-Mediator-Support/pageedit.php');
         $output = ob_get_contents();
         $this->assertNotContains('INTERMediatorLog.debugMode=', $output);
-        ob_clean();
+        ob_end_clean();
     }
 }
