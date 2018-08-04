@@ -114,8 +114,7 @@ if (file_exists('/etc/alpine-release')) {
             if ($parsedData !== false) {
                 $output = '、FileMaker=2015年7月11日以前';
             }
-            require "{$imRoot}" . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR .'vendor' .
-                DIRECTORY_SEPARATOR . 'autoload.php';
+            require "{$imRoot}" . DIRECTORY_SEPARATOR .'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
             $converter = new \INTERMediator\Data_Converter\FMDateTime();
             error_reporting(0);
             foreach ($parsedData->resultset->record->field as $key => $field) {
