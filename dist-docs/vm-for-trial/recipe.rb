@@ -1981,13 +1981,13 @@ end
 
 
 if node[:platform] == 'alpine'
-  execute "\"#{IMROOT}\"/dist-docs/installfiles.sh -2 do"
-    command "\"#{IMROOT}\"/dist-docs/installfiles.sh -2 do"
+  execute "\"#{IMROOT}\"/dist-docs/installfiles.sh -2" do
+    command "\"#{IMROOT}\"/dist-docs/installfiles.sh -2"
   end
-  execute "composer install"
+  execute "composer install" do
     command "composer install"
   end
-  execute "npm install"
+  execute "npm install" do
     command "npm install"
   end
 end
