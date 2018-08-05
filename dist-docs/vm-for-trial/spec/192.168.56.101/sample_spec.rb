@@ -305,6 +305,9 @@ end
 describe package('php7-mysqli'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
+describe package('composer'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
 describe package('libbsd'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end

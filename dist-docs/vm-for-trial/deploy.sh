@@ -91,6 +91,7 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache php7-simplexml
     apk add --no-cache php7-session
     apk add --no-cache php7-mysqli
+    apk add --no-cache composer
     apk add --no-cache libbsd=0.8.6-r2
     apk add --no-cache git
     apk add --no-cache nodejs
@@ -372,6 +373,14 @@ if [ $OS != 'alpine' ] ; then
     mv /etc/default/locale.tmp /etc/default/locale
     chmod u+s /usr/bin/fbterm
     dpkg-reconfigure -f noninteractive keyboard-configuration
+fi
+
+# composer install
+
+if [ $OS = 'alpine' ] ; then
+    "${IMROOT}"/dist-docs/installfiles.sh -2
+    composer install
+    npm install
 fi
 
 # Launch buster-server for unit testing

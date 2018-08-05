@@ -477,6 +477,9 @@ if node[:platform] == 'alpine'
   package 'php7-mysqli' do
     action :install
   end
+  package 'composer' do
+    action :install
+  end
   package 'libbsd' do
     action :install
     version '0.8.6-r2'
@@ -1973,6 +1976,19 @@ EOF
     execute '/etc/local.d/buster-server.start' do
       command '/etc/local.d/buster-server.start'
     end
+  end
+end
+
+
+if node[:platform] == 'alpine'
+  execute "\"#{IMROOT}\"/dist-docs/installfiles.sh -2" do
+    command "\"#{IMROOT}\"/dist-docs/installfiles.sh -2"
+  end
+  execute "composer install" do
+    command "composer install"
+  end
+  execute "npm install" do
+    command "npm install"
   end
 end
 
