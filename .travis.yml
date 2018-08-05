@@ -10,6 +10,7 @@ os:
 
 php:
   - nightly
+  - 7.3
   - 7.2
   - 7.1
   - 7.0
@@ -20,6 +21,7 @@ php:
 matrix:
   allow_failures:
     - php: nightly
+    - php: 7.3
 
 ## for Headless Chrome and trusty
 addons:
@@ -48,12 +50,12 @@ before_script:
   - cd ../..
   - psql -c 'create database test_db;' -U postgres
   - psql -U postgres -f ./dist-docs/sample_schema_pgsql.txt test_db
-  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" ]]; then dist-docs/installfiles.sh -2; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" || $TRAVIS_PHP_VERSION == "nightly" ]]; then dist-docs/installfiles.sh -2; fi
   - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" ]]; then dist-docs/installfiles.sh -3; fi
   - if [[ $TRAVIS_PHP_VERSION == "5.4" || $TRAVIS_PHP_VERSION == "5.5" ]]; then composer require 'phpunit/phpunit=4.8.x'; composer install; fi
   - if [[ $TRAVIS_PHP_VERSION == "5.6" ]]; then composer require 'phpunit/phpunit=5.7.x'; composer install; fi
   - if [[ $TRAVIS_PHP_VERSION == "7.0" || $TRAVIS_PHP_VERSION == "7.1" || $TRAVIS_PHP_VERSION == "7.2" ]]; then composer require 'phpunit/phpunit=6.5.x'; composer install; fi
-  - if [[ $TRAVIS_PHP_VERSION == "7.3" || $TRAVIS_PHP_VERSION == "nightly" ]]; then composer require 'phpunit/phpunit=7.2.x'; composer install; fi
+  - if [[ $TRAVIS_PHP_VERSION == "7.3" || $TRAVIS_PHP_VERSION == "nightly" ]]; then composer require 'phpunit/phpunit=7.3.x'; composer install; fi
 
 script:
   - ./vendor/bin/phpunit --bootstrap ./vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit.xml ./spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php
