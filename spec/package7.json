@@ -39,7 +39,10 @@
     "devDependencies": {
         "buster": "~0.7",
         "babel-cli": "*",
-        "babel-preset-env": "*"
+        "babel-preset-env": "*",
+        "babel-preset-power-assert": "*",
+        "jest": "*",
+        "power-assert": "*"
     },
     "dependencies": {
         "socket.io": "*",
