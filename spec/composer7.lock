@@ -123,12 +123,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/msyk/FMDataAPI.git",
-                "reference": "03f7734055d49185f8a40d455782b194a5b88178"
+                "reference": "0f2298bd9df8ce35d2f5a330d4d7dcf5472b5fac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/msyk/FMDataAPI/zipball/03f7734055d49185f8a40d455782b194a5b88178",
-                "reference": "03f7734055d49185f8a40d455782b194a5b88178",
+                "url": "https://api.github.com/repos/msyk/FMDataAPI/zipball/0f2298bd9df8ce35d2f5a330d4d7dcf5472b5fac",
+                "reference": "0f2298bd9df8ce35d2f5a330d4d7dcf5472b5fac",
                 "shasum": ""
             },
             "require": {
@@ -138,7 +138,8 @@
             "autoload": {
                 "classmap": [
                     "FMDataAPI.php",
-                    "test/FMDataAPIUnitTest.php"
+                    "test/FMDataAPIUnitTest.php",
+                    "test/TestProvider.php"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -159,7 +160,7 @@
                 "api",
                 "rest"
             ],
-            "time": "2018-07-29T02:10:23+00:00"
+            "time": "2018-08-07T03:43:06+00:00"
         },
         {
             "name": "mouf/nodejs-installer",
