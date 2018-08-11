@@ -42,7 +42,8 @@
         "babel-preset-env": "*",
         "babel-preset-power-assert": "*",
         "jest": "*",
-        "power-assert": "*"
+        "power-assert": "*",
+        "fresh": "~> 0.5.2"
     },
     "dependencies": {
         "socket.io": "*",
