@@ -37,19 +37,17 @@
         "test-local": "/usr/local/bin/buster-test -r specification"
     },
     "devDependencies": {
-        "buster": "~0.7",
         "babel-cli": "*",
         "babel-preset-env": "*",
         "babel-preset-power-assert": "*",
         "jest": "*",
-        "power-assert": "*",
-        "fresh": "~> 0.5.2"
+        "power-assert": "*"
     },
     "dependencies": {
         "socket.io": "*",
         "forever": "*"
     },
     "engines": {
-        "node": ">=6.11.0"
+        "node": "*"
     }
 }
