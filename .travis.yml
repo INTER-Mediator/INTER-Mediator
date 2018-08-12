@@ -36,7 +36,7 @@ before_script:
   - sh -e /etc/init.d/xvfb start
   - sleep 5
   - npm install
-  - node_modules/.bin/buster-server &
+  #- node_modules/.bin/buster-server &
   - sleep 5
   - firefox http://localhost:1111/capture &
   - sleep 5
@@ -59,7 +59,8 @@ before_script:
 
 script:
   - ./vendor/bin/phpunit --bootstrap ./vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit.xml ./spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php
-  - npm test
+  #- npm test
+  - cd spec && ../node_modules/.bin/jest
 
 notifications:
   slack:

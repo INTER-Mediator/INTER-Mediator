@@ -37,7 +37,6 @@
         "test-local": "/usr/local/bin/buster-test -r specification"
     },
     "devDependencies": {
-        "buster": "~0.7",
         "babel-cli": "*",
         "babel-preset-env": "*",
         "babel-preset-power-assert": "*",
@@ -49,6 +48,6 @@
         "forever": "*"
     },
     "engines": {
-        "node": ">=6.11.0"
+        "node": "*"
     }
 }
