@@ -107,7 +107,7 @@ var IMLibCalc = {
   updateCalculationFields: function () {
     'use strict';
     var nodeId, exp, nInfo, valuesArray, leafNodes, calcObject, ix, refersArray, key, fName, vArray;
-    var targetNode, field, valueSeries, targetElement, i, hasReferes, contextInfo, idValue, record;
+    var targetNode, field, valueSeries, targetElement, i, hasReferes, contextInfo, idValue, record, val;
 
     IMLibCalc.setUndefinedToAllValues();
     IMLibNodeGraph.clear();
@@ -182,7 +182,10 @@ var IMLibCalc = {
               calcObject.values[field] = valueSeries;
             }
           }
-          IMLibElement.setValueToIMNode(targetNode, nInfo.target, Parser.evaluate(exp, valuesArray), true);
+          val = Parser.evaluate(exp, valuesArray);
+          IMLibElement.setValueToIMNode(targetNode, nInfo.target, val, true);
+          contextInfo.context.setValue(
+            contextInfo.record, contextInfo.field, val, nodeId, targetNode, false);
         }
       }
     } while (leafNodes.length > 0);
@@ -199,7 +202,7 @@ var IMLibCalc = {
    */
   recalculation: function (updatedNodeId) {
     'use strict';
-    var nodeId, newValueAdded, leafNodes, calcObject, ix, updatedValue, isRecalcAll = false;
+    var nodeId, newValueAdded, leafNodes, calcObject, ix, updatedValue, isRecalcAll = false, targetNode;
     var newValue, field, i, updatedNodeIds, updateNodeValues, cachedIndex, nInfo, valuesArray;
     var refersArray, valueSeries, targetElement, contextInfo, record, idValue, key, fName, vArray;
 
@@ -237,7 +240,7 @@ var IMLibCalc = {
         if (calcObject) {
           idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator) ?
             leafNodes[i].split(IMLibCalc.regexpForSeparator)[0] : leafNodes[i];
-          //exp = calcObject.expression;
+          targetNode = document.getElementById(idValue);
           nInfo = calcObject.nodeInfo;
           valuesArray = calcObject.values;
           refersArray = calcObject.referes;
@@ -304,6 +307,8 @@ var IMLibCalc = {
               document.getElementById(idValue), nInfo.target, updatedValue, true);
             updatedNodeIds.push(idValue);
             updateNodeValues.push(updatedValue);
+            contextInfo.context.setValue(
+              contextInfo.record, contextInfo.field, updatedValue, nodeId, targetNode, false);
           }
         }
       }

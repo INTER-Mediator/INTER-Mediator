@@ -818,7 +818,9 @@ var INTERMediator = {
                   INTERMediator.setIdValue(linkedNodes[i]);
                   nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0]);
                   IMLibCalc.updateCalculationInfo(contextObj, keyingValue, linkedNodes[i].id, nInfo, targetRecordset);
-                  contextObj.binding._im_footer._im_repeater = footerNodes;
+                  if(contextObj.binding._im_footer) {
+                    contextObj.binding._im_footer._im_repeater = footerNodes;
+                  }
                 }
               }
               headerNodes = enclosureNode.parentNode.getElementsByTagName('THEAD');
@@ -833,7 +835,9 @@ var INTERMediator = {
                   nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0]);
                   IMLibCalc.updateCalculationInfo(
                     contextObj, keyingValue, linkedNodes[i].id, nInfo, targetRecordset);
-                  contextObj.binding._im_header._im_repeater = headerNodes;
+                  if(contextObj.binding._im_header) {
+                    contextObj.binding._im_header._im_repeater = headerNodes;
+                  }
                 }
               }
             }
@@ -1084,8 +1088,7 @@ var INTERMediator = {
               nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j]);
               curVal = targetRecordset[ix][nInfo.field];
               if (!INTERMediator.isDBDataPreferable || curVal) {
-                IMLibCalc.updateCalculationInfo(
-                  contextObj, keyingValue, currentContextDef, nodeId, nInfo, targetRecordset[ix]);
+                IMLibCalc.updateCalculationInfo(contextObj, keyingValue, nodeId, nInfo, targetRecordset[ix]);
               }
               if (nInfo.table === currentContextDef.name) {
                 curTarget = nInfo.target;
