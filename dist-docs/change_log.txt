@@ -56,6 +56,8 @@ Ver.5.8-dev (in development)
 - Update title of defedit.html and pageedit.html in "INTER-Mediator-Support" directory.
 - Remove search_page2.html ("search(using JavaScript)") in Practices directory.
 - Update deploy.sh and recipe.rb etc. for the INTER-Mediator-Server virtual machine and CI.
+- THEAD/TFOOT of table can be set the linked node with caluculation.
+- Calculation to aggregate of same context as like "sum(mycontext@price)".
 - [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native
   Authentication or LDAP Authentication.
 - [INFO] FileMaker Data API (Trial) of FileMaker Server 16 is no longer supported.
