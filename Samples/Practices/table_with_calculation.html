@@ -31,22 +31,24 @@
             <th>qty</th>
             <th>unitprice</th>
             <th>master unit price</th>
-            <th>amount></th>
+            <th>amount</th>
             <th></th>
         </tr>
         </thead>
         <tfoot>
         <tr>
-            <td></td>
-            <td></td>
-            <td><span data-im="item@total_qty"></span></td>
-            <td></td>
-            <td></td>
-            <td align="right"><span style="text-align: right"
-                                    data-im="item@total_amount"
-                                    data-im-format="number()"
-                                    data-im-format-options="useseparator"></span></td>
-            <td></td>
+            <th></th>
+            <th style="text-align:right">total:</th>
+            <th style="text-align:right"><span data-im="item@total_qty"></span></th>
+            <th></th>
+            <th style="text-align:right">total:</th>
+            <th style="text-align:right">
+                <span style="text-align: right"
+                      data-im="item@total_amount"
+                      data-im-format="number()"
+                      data-im-format-options="useseparator"></span>
+            </th>
+            <th></th>
         </tr>
         </tfoot>
         <tbody>
@@ -61,24 +63,26 @@
                     </span>
                 </span>
             </td>
-            <td><span data-im="item@qty item@qty_color@style.color"></span>
+            <td style="text-align:right">
+                <span data-im="item@qty item@qty_color@style.color"></span>
             </td>
-            <td>
+            <td style="text-align:right">
                 <span data-im="item@unitprice" data-im-format="number()"
                       data-im-format-options="useseparator"></span>
             </td>
-            <td>
+            <td style="text-align:right">
                 <span class="inline" data-im-control="enclosure">
                     <span class="inline price" data-im-control="repeater">
-                        (<span data-im="product@unitprice" data-im-format="number(2)"
-                               data-im-format-options="useseparator"></span>)
+                        <span data-im="product@unitprice" data-im-format="number(2)"
+                              data-im-format-options="useseparator"></span>
                     </span>
                 </span>
             </td>
-            <td align="right"><span style="text-align: right"
-                                    data-im="item@amount_calc"
-                                    data-im-format="number()"
-                                    data-im-format-options="useseparator"></span></td>
+            <td style="text-align:right">
+                <span style="text-align: right"
+                      data-im="item@amount_calc"
+                      data-im-format="number()"
+                      data-im-format-options="useseparator"></span></td>
             <td></td>
         </tr>
         </tbody>

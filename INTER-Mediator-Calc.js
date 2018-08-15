@@ -221,8 +221,8 @@ var IMLibCalc = {
     for (nodeId in IMLibCalc.calculateRequiredObject) {
       if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
         calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-        idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
-          nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
+        // idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
+        //   nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
         for (field in calcObject.referes) {
           if (calcObject.referes.hasOwnProperty(field)) {
             for (ix = 0; ix < calcObject.referes[field].length; ix++) {
@@ -308,7 +308,7 @@ var IMLibCalc = {
             updatedNodeIds.push(idValue);
             updateNodeValues.push(updatedValue);
             contextInfo.context.setValue(
-              contextInfo.record, contextInfo.field, updatedValue, nodeId, targetNode, false);
+              contextInfo.record, contextInfo.field, updatedValue, idValue, targetNode, false);
           }
         }
       }
