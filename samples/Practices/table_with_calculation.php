@@ -20,7 +20,7 @@ IM_Entry(
         array(
             'name' => 'item',
             'key' => 'id',
-            'records'=>1000,
+            'records' => 1000,
             'calculation' =>
                 array(
                     array(
