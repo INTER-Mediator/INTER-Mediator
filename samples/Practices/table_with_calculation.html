@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ */
+-->
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>INTER-Mediator - Sample - Client-Side Calculation/MySQL</title>
+    <link rel="stylesheet" type="text/css" href="invoice.css">
+    <script type="text/javascript" src="table_with_calculation.php"></script>
+</head>
+<body>
+<header>
+    <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+</header>
+<div id="wrapper">
+    <h1>Invoice (Sample for Calculation)</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>product</th>
+            <th>qty</th>
+            <th>unitprice (master)</th>
+            <th>amount: <span data-im="item@total"></span></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <div data-im="item@pinfo_style@style.display">
+                    <input type="text" data-im="item@product_id" size="2">
+                    <div class="inline" data-im-control="enclosure">
+                        <div class="inline" data-im-control="repeater">
+                            <span data-im="product@name"></span>
+                        </div>
+                    </div>
+                </div>
+                <select data-im="item@product_id item@popup_style@style.display">
+                    <option data-im="productlist@id@value productlist@name"></option>
+                </select>
+            </td>
+            <td><input class="price" type="text" size="5"
+                       data-im="item@qty item@qty_color@style.color">
+            </td>
+            <td>
+                <input class="price" type="text" size="8"
+                       data-im="item@unitprice" data-im-format="number()"
+                       data-im-format-options="useseparator">
+
+                <div class="inline" data-im-control="enclosure">
+                    <div class="inline price" data-im-control="repeater">
+                        (<span data-im="product@unitprice" data-im-format="number(2)"
+                               data-im-format-options="useseparator"></span>)
+                    </div>
+                </div>
+            </td>
+            <td align="right"><span style="text-align: right"
+                                    data-im="item@amount_calc"
+                                    data-im-format="number()"
+                                    data-im-format-options="useseparator"></span></td>
+            <td></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<footer>
+    <small>INTER-Mediator ©2018</small>
+</footer>
+</body>
+</html>
