@@ -17,46 +17,20 @@ require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 
 IM_Entry(
     array(
-         array(
+        array(
             'name' => 'item',
             'key' => 'id',
-            'relation' =>
-                array(
-                    array(
-                        'foreign-key' => 'invoice_id',
-                        'join-field' => 'id',
-                        'operator' => '=',
-                    ),
-                ),
-            'repeat-control' => 'insert delete',
-            'default-values' =>
-                array(
-                    array(
-                        'field' => 'product_id',
-                        'value' => 1,
-                    ),
-                ),
-            'validation' =>
-                array(
-                    array(
-                        'field' => 'qty',
-                        'rule' => 'value>=0 && value < 100',
-                        'message' => 'Quantity should be between 1..99.',
-                        'notify' => 'inline',
-                    ),
-                    array(
-                        'field' => 'unitprice',
-                        'rule' => 'value>=0 && value<10000',
-                        'message' => 'Unit price should be between 1.. 9999.',
-                        'notify' => 'end-of-sibling',
-                    ),
-                ),
+            'records'=>1000,
             'calculation' =>
                 array(
-                        array(
-                            'field' => 'total',
-                            'expression' => 'sum(item@qty)',
-                        ),
+                    array(
+                        'field' => 'total_qty',
+                        'expression' => 'sum(item@qty)',
+                    ),
+                    array(
+                        'field' => 'total_amount',
+                        'expression' => 'sum(item@amount_calc)',
+                    ),
                     array(
                         'field' => 'amount_calc',
                         'expression' => 'qty * if(unitprice = \'\', product@unitprice, unitprice)',
@@ -64,14 +38,6 @@ IM_Entry(
                     array(
                         'field' => 'qty_color',
                         'expression' => 'if (qty >= 10, \'red\', \'black\')',
-                    ),
-                    array(
-                        'field' => 'popup_style',
-                        'expression' => "if (length(product_id) = 0, 'block', 'none')",
-                    ),
-                    array(
-                        'field' => 'pinfo_style',
-                        'expression' => "if (length(product_id) > 0, 'block', 'none')",
                     ),
                 ),
         ),
@@ -86,12 +52,6 @@ IM_Entry(
                         'operator' => '=',
                     ),
                 ),
-        ),
-        array(
-            'name' => 'productlist',
-            'view' => 'product',
-            'table' => 'dummy',
-            'key' => 'id',
         ),
     ),
     array(),
