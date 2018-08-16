@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ */
+-->
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>INTER-Mediator - Sample - Client-Side Calculation/MySQL</title>
+    <script type="text/javascript" src="table_with_calculation.php"></script>
+</head>
+<body>
+<header>
+    <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+</header>
+<div id="wrapper">
+    <h1>Invoice (Sample for Calculation)</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>product id</th>
+            <th>product</th>
+            <th>qty</th>
+            <th>unitprice</th>
+            <th>master unit price</th>
+            <th>amount</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tfoot>
+        <tr>
+            <th></th>
+            <th style="text-align:right">total:</th>
+            <th style="text-align:right"><span data-im="item@total_qty"></span></th>
+            <th></th>
+            <th style="text-align:right">total:</th>
+            <th style="text-align:right">
+                <span style="text-align: right"
+                      data-im="item@total_amount"
+                      data-im-format="number()"
+                      data-im-format-options="useseparator"></span>
+            </th>
+            <th></th>
+        </tr>
+        </tfoot>
+        <tbody>
+        <tr>
+            <td>
+                <span data-im="item@product_id"></span>
+            </td>
+            <td>
+                <span class="inline" data-im-control="enclosure">
+                    <span class="inline" data-im-control="repeater">
+                        <span data-im="product@name"></span>
+                    </span>
+                </span>
+            </td>
+            <td style="text-align:right">
+                <span data-im="item@qty item@qty_color@style.color"></span>
+            </td>
+            <td style="text-align:right">
+                <span data-im="item@unitprice" data-im-format="number()"
+                      data-im-format-options="useseparator"></span>
+            </td>
+            <td style="text-align:right">
+                <span class="inline" data-im-control="enclosure">
+                    <span class="inline price" data-im-control="repeater">
+                        <span data-im="product@unitprice" data-im-format="number(2)"
+                              data-im-format-options="useseparator"></span>
+                    </span>
+                </span>
+            </td>
+            <td style="text-align:right">
+                <span style="text-align: right"
+                      data-im="item@amount_calc"
+                      data-im-format="number()"
+                      data-im-format-options="useseparator"></span></td>
+            <td></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<footer>
+    <small>INTER-Mediator ©2018</small>
+</footer>
+</body>
+</html>
