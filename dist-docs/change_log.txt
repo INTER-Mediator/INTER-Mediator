@@ -10,7 +10,7 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.5.8-RC2-dev (in development)
+Ver.5.8-RC2 (in development)
 - Improve speed performance of Native Authentication and LDAP Authentication.
 - Add DB_FileMaker_DataAPI class to support FileMaker Data API of FileMaker Server 17.
 - Support retrieving image files in container fields when using DB_FileMaker_DataAPI class.
