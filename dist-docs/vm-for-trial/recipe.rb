@@ -819,7 +819,7 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   package 'wget' do
     action :install
   end
-  if node[:platform] == 'ubuntu' && node[:platform_version].to_f <= 16
+  if node[:platform] == 'ubuntu' && node[:platform_version].to_f < 18
     execute 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp' do
       command 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp'
     end
