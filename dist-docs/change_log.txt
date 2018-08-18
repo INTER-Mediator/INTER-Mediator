@@ -24,6 +24,7 @@ Ver.5.8-RC2 (in development)
 - Update deploy.sh and recipe.rb etc. for the INTER-Mediator-Server virtual machine and CI.
 - THEAD/TFOOT of table can be set the linked node with caluculation.
 - Calculation to aggregate of same context as like "sum(mycontext@price)".
+- Generate VM environment on a user of Linux by dist-docs/server-deploy.h
 - [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native
   Authentication or LDAP Authentication.
 - [INFO] FileMaker Data API (Trial) of FileMaker Server 16 is no longer supported.
