@@ -10,7 +10,7 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.5.8-RC2 (in development)
+Ver.5.8-RC3-dev (in development)
 - Improve speed performance of Native Authentication and LDAP Authentication.
 - Add DB_FileMaker_DataAPI class to support FileMaker Data API of FileMaker Server 17.
 - Support retrieving image files in container fields when using DB_FileMaker_DataAPI class.
@@ -20,10 +20,11 @@ Ver.5.8-RC2 (in development)
   remove "bi2php" from "lib" directory to improve speed performance of Native Authentication.
 - The INTERMediator.recordLimit property is introduced to store the number of records. Also added methods:
   INTERMediator.setRecordLimit(cname, limit) and INTERMediator.clearRecordLimit(cname).
-- Remove search_page2.html ("search(using JavaScript)") in Practices directory.
-- Update deploy.sh and recipe.rb etc. for the INTER-Mediator-Server virtual machine and CI.
 - THEAD/TFOOT of table can be set the linked node with caluculation.
 - Calculation to aggregate of same context as like "sum(mycontext@price)".
+- Update title of defedit.html and pageedit.html in "INTER-Mediator-Support" directory.
+- Remove search_page2.html ("search(using JavaScript)") in Practices directory.
+- Update deploy.sh and recipe.rb etc. for the INTER-Mediator-Server virtual machine and CI.
 - [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native
   Authentication or LDAP Authentication.
 - [INFO] FileMaker Data API (Trial) of FileMaker Server 16 is no longer supported.

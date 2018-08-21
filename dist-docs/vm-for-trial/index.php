@@ -483,14 +483,14 @@ if (file_exists('/etc/alpine-release')) {
         </td>
     </tr>
     <tr>
-        <td><a href="/page33.html" target="_blank">page33.htmlを表示する</a></td>
+        <td><a href="/page31.html" target="_blank">page31.htmlを表示する</a></td>
         <td>
-            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page33.html" target="_blank">
-                page33.htmlを編集する</a>
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page31.html" target="_blank">
+                page31.htmlを編集する</a>
         </td>
         <td>
-            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def33.php" target="_blank">
-                def33.phpを編集する</a>
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def31.php" target="_blank">
+                def31.phpを編集する</a>
         </td>
     </tr>
     <tr>

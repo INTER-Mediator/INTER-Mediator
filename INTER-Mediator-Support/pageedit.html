@@ -45,6 +45,7 @@
 
         INTERMediatorOnPage.doAfterConstruct = function () {
             document.getElementById('container').style.display = "block";
+            document.title = "Page File Editor: " + document.getElementById('deffile').textContent;
         };
 
         //        INTERMediatorOnPage.doAfterConstruct = function () {
