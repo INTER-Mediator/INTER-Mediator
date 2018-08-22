@@ -917,9 +917,9 @@ end
 execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
   command "chown -R developer:im-developer \"#{WEBROOT}\""
 end
-execute "cd \"#{IMSUPPORT}\" && git clone https://github.com/codemirror/CodeMirror.git" do
-  command "cd \"#{IMSUPPORT}\" && git clone https://github.com/codemirror/CodeMirror.git"
-end
+#execute "cd \"#{IMSUPPORT}\" && git clone https://github.com/codemirror/CodeMirror.git" do
+#  command "cd \"#{IMSUPPORT}\" && git clone https://github.com/codemirror/CodeMirror.git"
+#end
 
 execute "cd \"#{WEBROOT}\" && ln -s \"#{IMVMROOT}/index.php\" index.php" do
   command "cd \"#{WEBROOT}\" && ln -s \"#{IMVMROOT}/index.php\" index.php"
