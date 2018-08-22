@@ -229,8 +229,8 @@ fi
 
 rm -f "${WEBROOT}/index.html"
 
-cd "${IMSUPPORT}"
-git clone https://github.com/codemirror/CodeMirror.git
+#cd "${IMSUPPORT}"
+#git clone https://github.com/codemirror/CodeMirror.git
 
 cd "${WEBROOT}"
 ln -s "${IMVMROOT}/index.php" index.php
