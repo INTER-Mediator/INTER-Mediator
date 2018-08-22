@@ -156,141 +156,141 @@ if (file_exists('/etc/alpine-release')) {
     <tr>
         <td><a href="/page01.html" target="_blank">page01.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page01.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page01.html" target="_blank">
                 page01.htmlを編集する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def01.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def01.php" target="_blank">
                 def01.phpを編集する</a></td>
     </tr>
     <tr>
         <td><a href="/page02.html" target="_blank">page02.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page02.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page02.html" target="_blank">
                 page02.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def02.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def02.php" target="_blank">
                 def02.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page03.html" target="_blank">page03.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page03.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page03.html" target="_blank">
                 page03.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def03.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def03.php" target="_blank">
                 def03.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page04.html" target="_blank">page04.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page04.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page04.html" target="_blank">
                 page04.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def04.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def04.php" target="_blank">
                 def04.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page05.html" target="_blank">page05.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page05.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page05.html" target="_blank">
                 page05.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def05.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def05.php" target="_blank">
                 def05.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page06.html" target="_blank">page06.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page06.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page06.html" target="_blank">
                 page06.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def06.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def06.php" target="_blank">
                 def06.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page07.html" target="_blank">page07.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page07.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page07.html" target="_blank">
                 page07.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def07.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def07.php" target="_blank">
                 def07.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page08.html" target="_blank">page08.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page08.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page08.html" target="_blank">
                 page08.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def08.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def08.php" target="_blank">
                 def08.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page09.html" target="_blank">page09.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page09.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page09.html" target="_blank">
                 page09.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def09.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def09.php" target="_blank">
                 def09.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page10.html" target="_blank">page10.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page10.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page10.html" target="_blank">
                 page10.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def10.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def10.php" target="_blank">
                 def10.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page11.html" target="_blank">page11.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page11.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page11.html" target="_blank">
                 page11.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def11.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def11.php" target="_blank">
                 def11.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page12.html" target="_blank">page12.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page12.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page12.html" target="_blank">
                 page12.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def12.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def12.php" target="_blank">
                 def12.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page13.html" target="_blank">page13.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page13.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page13.html" target="_blank">
                 page13.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def13.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def13.php" target="_blank">
                 def13.phpを編集する</a>
         </td>
     </tr>
@@ -298,77 +298,77 @@ if (file_exists('/etc/alpine-release')) {
         <td><a href="/page14.html" target="_blank">
                 page14.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page14.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page14.html" target="_blank">
                 page14.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def14.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def14.php" target="_blank">
                 def14.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page15.html" target="_blank">page15.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page15.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page15.html" target="_blank">
                 page15.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def15.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def15.php" target="_blank">
                 def15.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page16.html" target="_blank">page16.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page16.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page16.html" target="_blank">
                 page16.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def16.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def16.php" target="_blank">
                 def16.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page17.html" target="_blank">page17.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page17.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page17.html" target="_blank">
                 page17.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def17.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def17.php" target="_blank">
                 def17.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page18.html" target="_blank">page18.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page18.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page18.html" target="_blank">
                 page18.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def18.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def18.php" target="_blank">
                 def18.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page19.html" target="_blank">page19.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page19.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page19.html" target="_blank">
                 page19.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def19.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def19.php" target="_blank">
                 def19.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page20.html" target="_blank">page20.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page20.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page20.html" target="_blank">
                 page20.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def20.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def20.php" target="_blank">
                 def20.phpを編集する</a>
         </td>
     </tr>
@@ -377,108 +377,108 @@ if (file_exists('/etc/alpine-release')) {
     <tr>
         <td><a href="/page21.html" target="_blank">page21.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page21.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page21.html" target="_blank">
                 page21.htmlを編集する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def21.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def21.php" target="_blank">
                 def21.phpを編集する</a></td>
     </tr>
     <tr>
         <td><a href="/page22.html" target="_blank">page22.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page22.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page22.html" target="_blank">
                 page22.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def22.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def22.php" target="_blank">
                 def22.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page23.html" target="_blank">page23.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page23.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page23.html" target="_blank">
                 page23.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def23.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def23.php" target="_blank">
                 def23.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page24.html" target="_blank">page24.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page24.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page24.html" target="_blank">
                 page24.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def24.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def24.php" target="_blank">
                 def24.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page25.html" target="_blank">page25.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page25.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page25.html" target="_blank">
                 page25.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def25.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def25.php" target="_blank">
                 def25.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page26.html" target="_blank">page26.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page26.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page26.html" target="_blank">
                 page26.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def26.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def26.php" target="_blank">
                 def26.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page27.html" target="_blank">page27.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page27.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page27.html" target="_blank">
                 page27.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def27.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def27.php" target="_blank">
                 def21.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page28.html" target="_blank">page28.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page28.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page28.html" target="_blank">
                 page28.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def28.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def28.php" target="_blank">
                 def28.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page29.html" target="_blank">page29.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page29.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page29.html" target="_blank">
                 page29.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def29.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def29.php" target="_blank">
                 def29.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page30.html" target="_blank">page30.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page30.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page30.html" target="_blank">
                 page30.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def30.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def30.php" target="_blank">
                 def30.phpを編集する</a>
         </td>
     </tr>
@@ -496,22 +496,22 @@ if (file_exists('/etc/alpine-release')) {
     <tr>
         <td><a href="/page32.html" target="_blank">page32.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page32.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page32.html" target="_blank">
                 page32.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def32.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def32.php" target="_blank">
                 def32.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page33.html" target="_blank">page33.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page33.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page33.html" target="_blank">
                 page33.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def33.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def33.php" target="_blank">
                 def33.phpを編集する</a>
         </td>
     </tr>
@@ -519,77 +519,77 @@ if (file_exists('/etc/alpine-release')) {
         <td><a href="/page34.html" target="_blank">
                 page34.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page34.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page34.html" target="_blank">
                 page34.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def34.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def34.php" target="_blank">
                 def34.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page35.html" target="_blank">page35.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page35.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page35.html" target="_blank">
                 page35.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def35.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def35.php" target="_blank">
                 def35.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page36.html" target="_blank">page36.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page36.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page36.html" target="_blank">
                 page36.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def36.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def36.php" target="_blank">
                 def36.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page37.html" target="_blank">page37.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page37.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page37.html" target="_blank">
                 page37.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def37.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def37.php" target="_blank">
                 def37.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page38.html" target="_blank">page38.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page38.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page38.html" target="_blank">
                 page38.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def38.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def38.php" target="_blank">
                 def38.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page39.html" target="_blank">page39.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page39.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page39.html" target="_blank">
                 page39.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def39.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def39.php" target="_blank">
                 def39.phpを編集する</a>
         </td>
     </tr>
     <tr>
         <td><a href="/page40.html" target="_blank">page40.htmlを表示する</a></td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page40.html" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page40.html" target="_blank">
                 page40.htmlを編集する</a>
         </td>
         <td>
-            <a href="/lib/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def40.php" target="_blank">
+            <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def40.php" target="_blank">
                 def40.phpを編集する</a>
         </td>
     </tr>
