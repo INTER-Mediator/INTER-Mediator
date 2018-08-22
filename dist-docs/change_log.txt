@@ -22,6 +22,7 @@ Ver.5.8-RC3-dev (in development)
   INTERMediator.setRecordLimit(cname, limit) and INTERMediator.clearRecordLimit(cname).
 - THEAD/TFOOT of table can be set the linked node with caluculation.
 - Calculation to aggregate of same context as like "sum(mycontext@price)".
+- Generate VM environment on a user of Linux by dist-docs/server-deploy.sh
 - Update title of defedit.html and pageedit.html in "INTER-Mediator-Support" directory.
 - Remove search_page2.html ("search(using JavaScript)") in Practices directory.
 - Update deploy.sh and recipe.rb etc. for the INTER-Mediator-Server virtual machine and CI.
