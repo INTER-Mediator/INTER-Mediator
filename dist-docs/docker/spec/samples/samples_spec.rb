@@ -42,10 +42,41 @@ describe "INTER-Mediator-Server VM" do
     end
     @driver.navigate.to "http://" + @addr + "/"
     @wait = Selenium::WebDriver::Wait.new(:timeout => 15)
+    @driver.manage.timeouts.page_load = 10
   end
 
-  it "The title of the first page should be 'INTER-Mediator 5.8-RC2 - VM for Trial'." do
-    expect(@driver.title).to eq("INTER-Mediator 5.8-RC2 - VM for Trial")
+  it "The title of the first page should be 'INTER-Mediator 5.8-RC3-dev - VM for Trial'." do
+    expect(@driver.title).to eq("INTER-Mediator 5.8-RC3-dev - VM for Trial")
+  end
+
+  it "Page File Editor should be working" do
+    range = 1..40
+    range.each{|num|
+      @driver.navigate.to "http://" + @addr + "/"
+      @wait.until {
+        element = @driver.find_element(:xpath, "//a[contains(@href, 'pageedit.html?target=../../page" + "%02d" % num + ".html')]")
+        script = "return arguments[0].removeAttribute('target')"
+        @driver.execute_script(script, element) 
+        element.click
+        sleep 2
+        expect(@driver.title).to eq("Page File Editor: ../../page" + "%02d" % num + ".html")
+      }
+    }
+  end
+
+  it "Definition File Editor should be working" do
+    range = 1..40
+    range.each{|num|
+      @driver.navigate.to "http://" + @addr + "/"
+      @wait.until {
+        element = @driver.find_element(:xpath, "//a[contains(@href, 'defedit.html?target=../../def" + "%02d" % num + ".php')]")
+        script = "return arguments[0].target = ''"
+        @driver.execute_script(script, element)
+        element.click
+        sleep 2
+        expect(@driver.title).to eq("Definition File Editor: ../../def" + "%02d" % num + ".php")
+      }
+    }
   end
 
   it "The path of 'Sample Program' should be '/INTER-Mediator/Samples/'." do

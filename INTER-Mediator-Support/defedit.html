@@ -38,7 +38,8 @@
         };
         INTERMediatorOnPage.doAfterConstruct = function () {
             var node = document.getElementById('container');
-            node.style.display = "block"
+            node.style.display = "block";
+            document.title = "Definition File Editor: " + document.getElementById('deffile').textContent;
         };
         function setDisplayLevel(level) {
             var i, value, nodes, rootNode;
