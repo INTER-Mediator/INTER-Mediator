@@ -610,8 +610,9 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 }
             }
         } catch (\Exception $e) {
-            // Don't output error messages if no related records
-            if (strpos($e->getMessage(), 'Error Code: 401, Error Message: No records match the request') === false) {
+            // Don't output error messages if no (related) records
+            if (strpos($e->getMessage(), 'Error Code: 101, Error Message: Record is missing') === false &&
+                strpos($e->getMessage(), 'Error Code: 401, Error Message: No records match the request') === false) {
                 $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
             }
         }
