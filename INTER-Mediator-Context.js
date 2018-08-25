@@ -721,6 +721,11 @@ IMLibContext.prototype.updateFieldValue = function (idValue, succeedProc, errorP
                         currentFieldVal = recordset[0][targetFieldCapt];
                         initialvalue = targetContextCapt.getValue(contextInfoCapt.record, targetFieldCapt);
                     }
+                    if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI') {
+                        if (typeof(initialvalue) === 'number' && typeof(currentFieldVal) === 'string') {
+                            initialvalue = initialvalue.toString();
+                        }
+                    }
                     isOthersModified = checkSameValue(initialvalue, currentFieldVal);
                     if (changedObjectCapt.tagName === 'INPUT' &&
                         changedObjectCapt.getAttribute('type') === 'checkbox') {
@@ -1461,7 +1466,7 @@ IMLibContext.prototype.getContextRecord = function (nodeId) {
 
 IMLibContext.prototype.removeEntry = function (pkvalue) {
     'use strict';
-    var keyField, keying, bindingInfo, contextDef, targetNode, repeaterNodes, i, j, parentNode,
+    var keyField, keying, bindingInfo, contextDef, targetNode, repeaterNodes, i,
         removingNodeIds = [];
     contextDef = this.getContextDef();
     keyField = contextDef.key;
@@ -1812,7 +1817,7 @@ var IMLibLocalContext = {
                         this.store[nodeInfo.field] = node.value;
                     }
                     IMLibChangeEventDispatch.setExecute(idValue, (function () {
-                        var contextName = params[1], idValueCapt = idValue;
+                        var contextName = params[1];  //, idValueCapt = idValue;
                         return function () {
                             //    INTERMediator.pagedSize = document.getElementById(idValueCapt).value;
                             IMLibUI.eventUpdateHandler(contextName);

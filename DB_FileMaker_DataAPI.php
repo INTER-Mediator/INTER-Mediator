@@ -1058,6 +1058,9 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     if ($originalfield !== FALSE && $originalfield !== NULL) {
                         $data += array($originalfield => $convVal);
                     }
+                    if (isset($data['recordId']) && !empty($recId)) {
+                        unset($data['recordId']);
+                    }
                     $this->fmData->{$layout}->update($recId, $data, -1, NULL, $script);
                 }
                 $result = $this->fmData->{$layout}->getRecord($recId);
