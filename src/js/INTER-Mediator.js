@@ -36,7 +36,7 @@ let module = {}
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-export const INTERMediator = {
+const INTERMediator = {
   /**
    * The separator for target specification.
    * This must be referred as 'INTERMediator.separator'. Don't use 'this.separator'
@@ -809,7 +809,7 @@ export const INTERMediator = {
         // Collecting 4 parts of cross table.
         let ctComponentNodes = crossTableComponents(node)
         if (ctComponentNodes.length !== 4) {
-          throw 'Exception-xx: Cross Table Components aren\'t prepared.'
+          throw new Error('Exception-xx: Cross Table Components aren\'t prepared.')
         }
         // Remove all nodes under the TBODY tagged node.
         while (node.childNodes.length > 0) {
@@ -1835,48 +1835,5 @@ export const INTERMediator = {
   setDebugMessage: function (message, level) {
     'use strict'
     INTERMediatorLog.setDebugMessage(message, level)
-  }
-}
-
-/**
- * Compatibility for IE8
- */
-if (!Object.keys) {
-  Object.keys = function (obj) {
-    'use strict'
-    let results = []
-    let prop
-    if (obj !== Object(obj)) {
-      throw new TypeError('Object.keys called on a non-object')
-    }
-    for (prop in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, prop)) {
-        results.push(prop)
-      }
-    }
-    return results
-  }
-}
-
-if (!Array.indexOf) {
-  let isWebkit = 'WebkitAppearance' in document.documentElement.style
-  if (!isWebkit) {
-    Array.prototype.indexOf = function (target) {
-      'use strict'
-      let i
-      for (i = 0; i < this.length; i++) {
-        if (this[i] === target) {
-          return i
-        }
-      }
-      return -1
-    }
-  }
-}
-
-if (typeof String.prototype.trim !== 'function') {
-  String.prototype.trim = function () {
-    'use strict'
-    return this.replace(/^\s+|\s+$/g, '')
   }
 }
