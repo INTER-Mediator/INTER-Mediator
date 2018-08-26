@@ -2,6 +2,7 @@
     "name": "INTER-Mediator",
     "description": "Web Development Framework",
     "author": "INTER-Mediator Directive Committee",
+    "license": "MIT",
     "contributors": [
         {
             "name": "Masayuki Nii"
