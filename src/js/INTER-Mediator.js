@@ -36,7 +36,7 @@ let module = {};
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-export const INTERMediator = {
+/*export*/ const INTERMediator = {
   /**
    * The separator for target specification.
    * This must be referred as 'INTERMediator.separator'. Don't use 'this.separator'
@@ -716,7 +716,8 @@ export const INTERMediator = {
       async function enclosureProcessing (enclosureNode, repeatersOriginal, currentRecord, parentObjectInfo,
                                           currentContextObj, procBeforeRetrieve, customExpandRepeater) {
         let linkedNodes, repeaters, linkDefs, voteResult, currentContextDef, fieldList, i, targetRecords,
-          newNode, keyValue, selectedNode, isExpanding, calcFields, contextObj = null;
+          newNode, keyValue, selectedNode, isExpanding, calcFields, contextObj = null,
+          targetRecordset, ix, keyingValue, footerNodes, headerNodes, nInfo;
 
         try {
           repeaters = collectRepeaters(repeatersOriginal);  // Collecting repeaters to this array.
@@ -787,6 +788,40 @@ export const INTERMediator = {
               customExpandRepeater(contextObj, targetRecords);
             }
             contextObj.sequencing = false;
+            if (enclosureNode.tagName === 'TBODY') {
+              footerNodes = enclosureNode.parentNode.getElementsByTagName('TFOOT');
+              linkedNodes = seekWithAttribute(footerNodes[0], 'data-im');
+              if (linkedNodes) {
+                INTERMediator.setIdValue(footerNodes[0]);
+                targetRecordset = {};
+                ix = null;
+                keyingValue = '_im_footer';
+                for (i = 0; i < linkedNodes.length; i++) {
+                  INTERMediator.setIdValue(linkedNodes[i]);
+                  nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0]);
+                  IMLibCalc.updateCalculationInfo(contextObj, keyingValue, linkedNodes[i].id, nInfo, targetRecordset);
+                  if(contextObj.binding._im_footer) {
+                    contextObj.binding._im_footer._im_repeater = footerNodes;
+                  }
+                }
+              }
+              headerNodes = enclosureNode.parentNode.getElementsByTagName('THEAD');
+              linkedNodes = seekWithAttribute(headerNodes[0], 'data-im');
+              if (linkedNodes) {
+                INTERMediator.setIdValue(headerNodes[0]);
+                targetRecordset = {};
+                ix = null;
+                keyingValue = '_im_header';
+                for (i = 0; i < linkedNodes.length; i++) {
+                  INTERMediator.setIdValue(linkedNodes[i]);
+                  nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0]);
+                  IMLibCalc.updateCalculationInfo(contextObj, keyingValue, linkedNodes[i].id, nInfo, targetRecordset);
+                  if(contextObj.binding._im_header) {
+                    contextObj.binding._im_header._im_repeater = headerNodes;
+                  }
+                }
+              }
+            }
           }
           return contextObj;
         } catch (ex) {
@@ -794,6 +829,31 @@ export const INTERMediator = {
         }
       }
 
+      function seekWithAttribute(node, attrName) {
+        if (!node || node.nodeType !== 1) {
+          return null;
+        }
+        var result = seekWithAttributeImpl(node, attrName);
+        return result;
+      }
+
+      function seekWithAttributeImpl(node, attrName) {
+        var ix, adding, result = [];
+        if (node && node.nodeType === 1) {
+          if (node.getAttribute(attrName)) {
+            result.push(node);
+          }
+          if (node.childNodes) {
+            for (ix = 0; ix < node.childNodes.length; ix++) {
+              adding = seekWithAttributeImpl(node.childNodes[ix], attrName);
+              if (adding.length > 0) {
+                [].push.apply(result, adding);
+              }
+            }
+          }
+        }
+        return result;
+      }
       /** --------------------------------------------------------------------
        * expanding enclosure for cross table
        */
@@ -1011,8 +1071,7 @@ export const INTERMediator = {
             nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j]);
             curVal = targetRecordset[ix][nInfo.field];
             if (!INTERMediator.isDBDataPreferable || curVal) {
-              IMLibCalc.updateCalculationInfo(
-                contextObj, keyingValue, currentContextDef, nodeId, nInfo, targetRecordset[ix]);
+              IMLibCalc.updateCalculationInfo(contextObj, keyingValue, nodeId, nInfo, targetRecordset[ix]);
             }
             if (nInfo.table === currentContextDef.name) {
               curTarget = nInfo.target;

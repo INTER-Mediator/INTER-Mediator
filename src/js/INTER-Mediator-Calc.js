@@ -52,12 +52,12 @@ const IMLibCalc = {
    * @param nInfo
    * @param currentRecord
    */
-  updateCalculationInfo: function (contextObj, keyingValue, currentContext, nodeId, nInfo, currentRecord) {
+  updateCalculationInfo: function (contextObj, keyingValue, nodeId, nInfo, currentRecord) {
     'use strict';
     let calcDef, exp, field, elements, i, index, objectKey, itemIndex, values, referes,
       calcDefField, atPos, fieldLength;
 
-    calcDef = currentContext.calculation;
+    calcDef = contextObj.getContextDef().calculation;
     for (index in calcDef) {
       if (calcDef.hasOwnProperty(index)) {
         atPos = calcDef[index].field.indexOf(INTERMediator.separator);
@@ -105,7 +105,7 @@ const IMLibCalc = {
    */
   updateCalculationFields: function () {
     'use strict';
-    let nodeId, exp, nInfo, valuesArray, leafNodes, calcObject, ix, refersArray;
+    let nodeId, exp, nInfo, valuesArray, leafNodes, calcObject, ix, refersArray, fName, vArray, val, key;
     let targetNode, field, valueSeries, targetElement, i, hasReferes, contextInfo, idValue, record;
 
     IMLibCalc.setUndefinedToAllValues();
@@ -150,6 +150,20 @@ const IMLibCalc = {
           }
           for (field in valuesArray) {
             if (valuesArray.hasOwnProperty(field)) {
+              if (field.indexOf(nInfo.table + '@') === 0) {
+                fName = field.substr(field.indexOf('@') + 1);
+                vArray = [];
+                for (key in contextInfo.context.store) {
+                  if (contextInfo.context.store.hasOwnProperty(key) && contextInfo.context.store[key][fName]) {
+                    vArray.push(contextInfo.context.store[key][fName]);
+                  }
+                }
+                valuesArray[field] = vArray;
+              }
+            }
+          }
+          for (field in valuesArray) {
+            if (valuesArray.hasOwnProperty(field)) {
               valueSeries = [];
               for (ix = 0; ix < valuesArray[field].length; ix++) {
                 if (valuesArray[field][ix] === undefined) {
@@ -166,7 +180,10 @@ const IMLibCalc = {
               calcObject.values[field] = valueSeries;
             }
           }
-          IMLibElement.setValueToIMNode(targetNode, nInfo.target, Parser.evaluate(exp, valuesArray), true);
+          val = Parser.evaluate(exp, valuesArray);
+          IMLibElement.setValueToIMNode(targetNode, nInfo.target, val, true);
+          contextInfo.context.setValue(
+            contextInfo.record, contextInfo.field, val, nodeId, targetNode, false);
         }
       }
     } while (leafNodes.length > 0);
@@ -211,13 +228,14 @@ const IMLibCalc = {
       }
     }
 
-    let leafNodes, newValueAdded;
+    let leafNodes, newValueAdded, fName, vArray, field;
     do {
       leafNodes = IMLibNodeGraph.getLeafNodesWithRemoving();
       for (let i = 0; i < leafNodes.length; i++) {
         calcObject = IMLibCalc.calculateRequiredObject[leafNodes[i]];
         if (calcObject) {
           const idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator) ? leafNodes[i].split(IMLibCalc.regexpForSeparator)[0] : leafNodes[i];
+          const targetNode = document.getElementById(idValue);
           const nInfo = calcObject.nodeInfo;
           const valuesArray = calcObject.values;
           const refersArray = calcObject.referes;
@@ -225,6 +243,20 @@ const IMLibCalc = {
           let record = null;
           if (contextInfo && contextInfo.context) {
             record = contextInfo.context.getContextRecord(idValue);
+          }
+          for (field in valuesArray) {
+            if (valuesArray.hasOwnProperty(field)) {
+              if (field.indexOf(nInfo.table + '@') === 0) {
+                fName = field.substr(field.indexOf('@') + 1);
+                vArray = [];
+                for (let key in contextInfo.context.store) {
+                  if (contextInfo.context.store.hasOwnProperty(key) && contextInfo.context.store[key][fName]) {
+                    vArray.push(contextInfo.context.store[key][fName]);
+                  }
+                }
+                valuesArray[field] = vArray;
+              }
+            }
           }
           for (let field in valuesArray) {
             if (valuesArray.hasOwnProperty(field)) {
@@ -261,14 +293,13 @@ const IMLibCalc = {
             }
           }
           if (newValueAdded) {
-            const updatedValue = Parser.evaluate(
-              calcObject.expression,
-              calcObject.values
-            );
+            const updatedValue = Parser.evaluate(calcObject.expression, calcObject.values);
             IMLibElement.setValueToIMNode(
               document.getElementById(idValue), nInfo.target, updatedValue, true);
             updatedNodeIds.push(idValue);
             updateNodeValues.push(updatedValue);
+            contextInfo.context.setValue(
+              contextInfo.record, contextInfo.field, updatedValue, idValue, targetNode, false);
           }
         }
       }
