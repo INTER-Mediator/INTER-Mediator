@@ -162,68 +162,94 @@ const INTERMediator_DBAdapter = {
         myRequest.setRequestHeader('X-From', location.href)
         myRequest.onreadystatechange = () => {
           switch (myRequest.readyState) {
-          case 0: // Unsent
-            break
-          case 1: // Opened
-            break
-          case 2: // Headers Received
-            break
-          case 3: // Loading
-            break
-          case 4:
-            try {
-              jsonObject = JSON.parse(myRequest.responseText)
-            } catch (ex) {
-              INTERMediatorLog.setErrorMessage('Communication Error: ' + myRequest.responseText)
-              if (failedProc) {
-                failedProc(new Error('_im_communication_error_'))
+            case 0: // Unsent
+              break
+            case 1: // Opened
+              break
+            case 2: // Headers Received
+              break
+            case 3: // Loading
+              break
+            case 4:
+              try {
+                jsonObject = JSON.parse(myRequest.responseText)
+              } catch (ex) {
+                INTERMediatorLog.setErrorMessage('Communication Error: ' + myRequest.responseText)
+                if (failedProc) {
+                  failedProc(new Error('_im_communication_error_'))
+                }
+                return
               }
-              return
-            }
-            resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0
-            totalCount = jsonObject.totalCount ? jsonObject.totalCount : null
-            dbresult = jsonObject.dbresult ? jsonObject.dbresult : null
-            requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false
-            challenge = jsonObject.challenge ? jsonObject.challenge : null
-            clientid = jsonObject.clientid ? jsonObject.clientid : null
-            newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : ''
-            changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null
-            mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null
-            notifySupport = jsonObject.notifySupport
-            for (i = 0; i < jsonObject.errorMessages.length; i++) {
-              INTERMediatorLog.setErrorMessage(jsonObject.errorMessages[i])
-            }
-            for (i = 0; i < jsonObject.debugMessages.length; i++) {
-              INTERMediatorLog.setDebugMessage(jsonObject.debugMessages[i])
-            }
-            useNull = jsonObject.usenull
-            registeredID = jsonObject.hasOwnProperty('registeredid') ? jsonObject.registeredid : ''
+              resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0
+              totalCount = jsonObject.totalCount ? jsonObject.totalCount : null
+              dbresult = jsonObject.dbresult ? jsonObject.dbresult : null
+              requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false
+              challenge = jsonObject.challenge ? jsonObject.challenge : null
+              clientid = jsonObject.clientid ? jsonObject.clientid : null
+              newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : ''
+              changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null
+              mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null
+              notifySupport = jsonObject.notifySupport
+              for (i = 0; i < jsonObject.errorMessages.length; i++) {
+                INTERMediatorLog.setErrorMessage(jsonObject.errorMessages[i])
+              }
+              for (i = 0; i < jsonObject.debugMessages.length; i++) {
+                INTERMediatorLog.setDebugMessage(jsonObject.debugMessages[i])
+              }
+              useNull = jsonObject.usenull
+              registeredID = jsonObject.hasOwnProperty('registeredid') ? jsonObject.registeredid : ''
 
-            if (jsonObject.errorMessages.length > 0) {
-              INTERMediatorLog.setErrorMessage('Communication Error: ' + jsonObject.errorMessages)
-              if (failedProc) {
-                failedProc()
+              if (jsonObject.errorMessages.length > 0) {
+                INTERMediatorLog.setErrorMessage('Communication Error: ' + jsonObject.errorMessages)
+                if (failedProc) {
+                  failedProc()
+                }
+                throw 'Communication Error'
               }
-              throw 'Communication Error'
-            }
 
-            INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
-              challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken)
-            INTERMediator_DBAdapter.store_challenge(challenge)
-            if (clientid !== null) {
-              INTERMediatorOnPage.clientId = clientid
-            }
-            if (mediatoken !== null) {
-              INTERMediatorOnPage.mediaToken = mediatoken
-            }
-            // This is forced fail-over for the password was changed in LDAP auth.
-            if (INTERMediatorOnPage.isLDAP === true &&
-              INTERMediatorOnPage.authUserHexSalt !== INTERMediatorOnPage.authHashedPassword.substr(-8, 8)) {
-              if (accessURL !== 'access=challenge') {
-                requireAuth = true
+              INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
+                challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken)
+              INTERMediator_DBAdapter.store_challenge(challenge)
+              if (clientid !== null) {
+                INTERMediatorOnPage.clientId = clientid
               }
-            }
-            if (accessURL.indexOf('access=changepassword&newpass=') === 0) {
+              if (mediatoken !== null) {
+                INTERMediatorOnPage.mediaToken = mediatoken
+              }
+              // This is forced fail-over for the password was changed in LDAP auth.
+              if (INTERMediatorOnPage.isLDAP === true &&
+                INTERMediatorOnPage.authUserHexSalt !== INTERMediatorOnPage.authHashedPassword.substr(-8, 8)) {
+                if (accessURL !== 'access=challenge') {
+                  requireAuth = true
+                }
+              }
+              if (accessURL.indexOf('access=changepassword&newpass=') === 0) {
+                if (successProc) {
+                  successProc({
+                    dbresult: dbresult,
+                    resultCount: resultCount,
+                    totalCount: totalCount,
+                    newRecordKeyValue: newRecordKeyValue,
+                    newPasswordResult: changePasswordResult,
+                    registeredId: registeredID,
+                    nullAcceptable: useNull
+                  })
+                }
+                return
+              }
+              if (requireAuth) {
+                INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
+                INTERMediatorOnPage.clearCredentials()
+                if (authAgainProc) {
+                  authAgainProc(myRequest)
+                }
+                return
+              }
+              if (!accessURL.match(/access=challenge/)) {
+                INTERMediatorOnPage.authCount = 0
+              }
+              INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
+              INTERMediatorOnPage.notifySupport = notifySupport
               if (successProc) {
                 successProc({
                   dbresult: dbresult,
@@ -235,34 +261,8 @@ const INTERMediator_DBAdapter = {
                   nullAcceptable: useNull
                 })
               }
-              return
-            }
-            if (requireAuth) {
-              INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
-              INTERMediatorOnPage.clearCredentials()
-              if (authAgainProc) {
-                authAgainProc(myRequest)
-              }
-              return
-            }
-            if (!accessURL.match(/access=challenge/)) {
-              INTERMediatorOnPage.authCount = 0
-            }
-            INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
-            INTERMediatorOnPage.notifySupport = notifySupport
-            if (successProc) {
-              successProc({
-                dbresult: dbresult,
-                resultCount: resultCount,
-                totalCount: totalCount,
-                newRecordKeyValue: newRecordKeyValue,
-                newPasswordResult: changePasswordResult,
-                registeredId: registeredID,
-                nullAcceptable: useNull
-              })
-            }
-            resolve()
-            break
+              resolve()
+              break
           }
         }
         myRequest.send(accessURL + authParams)
@@ -354,11 +354,11 @@ const INTERMediator_DBAdapter = {
       fd.append('_im_uploadfile', uploadingFile.content)
       myRequest.onreadystatechange = function () {
         switch (myRequest.readyState) {
-        case 3:
-          break
-        case 4:
-          INTERMediator_DBAdapter.uploadFileAfterSucceed(myRequest, doItOnFinish, exceptionProc, false)
-          break
+          case 3:
+            break
+          case 4:
+            INTERMediator_DBAdapter.uploadFileAfterSucceed(myRequest, doItOnFinish, exceptionProc, false)
+            break
         }
       }
       myRequest.send(fd)
@@ -456,47 +456,47 @@ const INTERMediator_DBAdapter = {
     }
     params = INTERMediator_DBAdapter.db_queryParameters(args)
     return new Promise((resolve, reject) => {
-        this.server_access_async(params, 1012, 1004,
-          (() => {
-            let contextDef
-            let contextName = args.name
-            let recordsNumber = Number(args.records)
-            let resolveCapt = resolve
-            return (result) => {
-              result.count = result.dbresult ? Object.keys(result.dbresult).length : 0
-              contextDef = IMLibContextPool.getContextDef(contextName)
-              if (!contextDef.relation &&
-                args.paging && Boolean(args.paging) === true) {
-                INTERMediator.pagedAllCount = parseInt(result.resultCount, 10)
-                if (result.totalCount) {
-                  INTERMediator.totalRecordCount = parseInt(result.totalCount, 10)
-                }
+      this.server_access_async(params, 1012, 1004,
+        (() => {
+          let contextDef
+          let contextName = args.name
+          let recordsNumber = Number(args.records)
+          let resolveCapt = resolve
+          return (result) => {
+            result.count = result.dbresult ? Object.keys(result.dbresult).length : 0
+            contextDef = IMLibContextPool.getContextDef(contextName)
+            if (!contextDef.relation &&
+              args.paging && Boolean(args.paging) === true) {
+              INTERMediator.pagedAllCount = parseInt(result.resultCount, 10)
+              if (result.totalCount) {
+                INTERMediator.totalRecordCount = parseInt(result.totalCount, 10)
               }
-              if ((args.paging !== null) && (Boolean(args.paging) === true)) {
-                INTERMediator.pagination = true
-                if (!(recordsNumber >= Number(INTERMediator.pagedSize) &&
-                  Number(INTERMediator.pagedSize) > 0)) {
-                  INTERMediator.pagedSize = parseInt(recordsNumber, 10)
-                }
-              }
-              successProc ? successProc(result) : false
-              resolveCapt(result)
             }
-          })(),
-          failedProc,
-          INTERMediator_DBAdapter.createExceptionFunc(
-            1016,
-            (function () {
-              var argsCapt = args
-              var succesProcCapt = successProc
-              var failedProcCapt = failedProc
-              return function () {
-                INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+            if ((args.paging !== null) && (Boolean(args.paging) === true)) {
+              INTERMediator.pagination = true
+              if (!(recordsNumber >= Number(INTERMediator.pagedSize) &&
+                Number(INTERMediator.pagedSize) > 0)) {
+                INTERMediator.pagedSize = parseInt(recordsNumber, 10)
               }
-            })()
-          )
+            }
+            successProc ? successProc(result) : false
+            resolveCapt(result)
+          }
+        })(),
+        failedProc,
+        INTERMediator_DBAdapter.createExceptionFunc(
+          1016,
+          (function () {
+            var argsCapt = args
+            var succesProcCapt = successProc
+            var failedProcCapt = failedProc
+            return function () {
+              INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+            }
+          })()
         )
-      }
+      )
+    }
     ).catch((err) => {
       throw err
     })
