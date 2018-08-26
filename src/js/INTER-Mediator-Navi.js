@@ -1084,7 +1084,7 @@ const IMLibPageNavigation = {
     }
   },
 
-  moveToNextSteplImpl: async function (contextObj, keying) {
+  moveToNextStepImpl: async function (contextObj, keying) {
     'use strict'
     var key, cDef, dataSrcs, contextDef
     let isAfterCurrent = false
