@@ -1,12 +1,13 @@
-module.exports = {
+{
+  'semi': ['error', 'always'],
+  'semi-spacing': ['error', {'after': true, 'before': false}],
+  'semi-style': ['error', 'last'],
+  'no-extra-semi': 'error',
+  'no-unexpected-multiline': 'error',
+  'no-unreachable': 'error',
+
   'env': {
-    'browser': true,
-    'semi': ['error', 'always'],
-    'semi-spacing': ['error', {'after': true, 'before': false}],
-    'semi-style': ['error', 'last'],
-    'no-extra-semi': 'error',
-    'no-unexpected-multiline': 'error',
-    'no-unreachable': 'error'
+    'browser': true
   },
   'extends': 'standard',
   'globals': {
@@ -41,4 +42,4 @@ module.exports = {
     'console': false,
     'Exception': false
   }
-};
+}
