@@ -423,7 +423,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                     }
 
                     $hasFindParams = true;
-                    if ($condition['field'] == $this->specHandler->getDefaultKey()) {
+                    if ($condition['field'] === $primaryKey) {
                         $this->fx->FMSkipRecords(0);
                     }
                     if ($usePortal) {
@@ -539,12 +539,12 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
             }
             $this->fx->AddDBParam($this->softDeleteField, $this->softDeleteValue, 'neq');
             $searchConditions[] = $this->setSearchConditionsForCompoundFound(
-                $this->softDeleteField, $this->softDeleteValue, 'eq');
+                $this->softDeleteField, $this->softDeleteValue, 'neq');
             $hasFindParams = true;
 
             $queryValues[] = 'q' . $qNum;
             $qNum++;
-            $neqConditions[] = FALSE;
+            $neqConditions[] = TRUE;
         }
 
         if (isset($context['sort'])) {
