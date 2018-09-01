@@ -129,7 +129,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $tableInfo = $this->dbSettings->getDataSourceTargetArray();
                 if (isset($tableInfo['soft-delete'])) {
                     $delFlagField = 'delete';
-                    if (!$tableInfo['soft-delete']) {
+                    if (is_string($tableInfo['soft-delete'])) {
                         $delFlagField = $tableInfo['soft-delete'];
                     }
                     $this->dbClass->softDeleteActivate($delFlagField, 1);
@@ -352,7 +352,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $tableInfo = $this->dbSettings->getDataSourceTargetArray();
                 if (isset($tableInfo['soft-delete'])) {
                     $delFlagField = 'delete';
-                    if (!$tableInfo['soft-delete']) {
+                    if (is_string($tableInfo['soft-delete'])) {
                         $delFlagField = $tableInfo['soft-delete'];
                     }
                     $this->logger->setDebugMessage(

@@ -63,6 +63,7 @@ Ver.5.8-dev (in development)
 - [BUG FIX] In some case, the record number of related context was affected by pagination record limits.
 - [BUG FIX] Fix buildup.sh to minify correctly on FreeBSD (Thanks to Tomomitsu Baba).
 - [BUG FIX] In step navigation page, sometimes tap affected to clicking any elements on moved page.
+- [BUG FIX] Fix Soft Delete function when the value of 'soft-delete' key is not true.
 
 Ver.5.7 (March 29, 2018)
 - The "data-im-format" attribute is introduced.
