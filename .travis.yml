@@ -60,7 +60,7 @@ before_script:
 script:
   - ./vendor/bin/phpunit --bootstrap ./vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit.xml ./spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php
   #- npm test
-  - cd spec && ../node_modules/.bin/jest
+  #- cd spec && ../node_modules/.bin/jest
 
 notifications:
   slack:
