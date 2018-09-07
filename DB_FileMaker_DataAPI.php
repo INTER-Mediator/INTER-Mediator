@@ -370,8 +370,8 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     }
 
                     $hasFindParams = true;
-                    if ($condition['field'] == $this->specHandler->getDefaultKey()) {
-                        // [WIP] $this->fmData->FMSkipRecords(0);
+                    if ($condition['field'] === $primaryKey) {
+                        $skip = 0;
                     }
                 }
             }
@@ -459,13 +459,11 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             if ($useOrOperation) {
                 throw new \Exception("Condition Incompatible.: The soft-delete record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
             }
-            // [WIP]
-            $this->fmData->AddDBParam($this->softDeleteField, $this->softDeleteValue, 'neq');
             $searchConditions[] = $this->setSearchConditionsForCompoundFound(
-                $this->softDeleteField, $this->softDeleteValue, 'eq');
+                $this->softDeleteField, $this->softDeleteValue, 'neq');
             $hasFindParams = true;
 
-            $neqConditions[] = FALSE;
+            $neqConditions[] = TRUE;
         }
 
         $sort = array();
@@ -505,7 +503,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 $i = 0;
                 foreach ($searchConditions as $searchCondition) {
                     if ($neqConditions[$i] === TRUE) {
-                        $conditions[] = $tmpCondition;
                         $tmpCondition = array();
                         $conditions[] = array(
                             $searchCondition[0] => $searchCondition[1],
@@ -700,8 +697,10 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     $this->mainTableTotalCount = intval($scriptResult);
                 }
             } else {
-                if ($recordId === NULL) {
+                if ($primaryKey === NULL) {
                     $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 100000000, NULL, $script);
+                } else {
+                    $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 1, NULL, $script);
                 }
                 $this->mainTableCount = $result->count();    
                 $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 100000000, NULL, $script);
