@@ -496,7 +496,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                     $neqConditions[] = FALSE;
                 }
             } else if ($authInfoTarget == 'field-group') {
-                $belongGroups = $this->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
+                $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
                 if (strlen($this->dbSettings->getCurrentUser()) == 0 || count($belongGroups) == 0) {
                     $authFailure = true;
                 } else {
@@ -517,7 +517,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
 //                } else {
 //                    $authorizedUsers = $this->getAuthorizedUsers("load");
 //                    $authorizedGroups = $this->getAuthorizedGroups("load");
-//                    $belongGroups = $this->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
+//                    $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
 //                    if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
 //                        && count(array_intersect($belongGroups, $authorizedGroups)) == 0
 //                    ) {
