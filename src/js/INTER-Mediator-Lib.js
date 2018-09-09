@@ -126,27 +126,55 @@ const INTERMediatorLib = {
 
   getParentRepeaters: function (node) {
     'use strict'
+    let i, target = '', linkInfo, result = [], linkComp, nInfos, repeaters = null
+
     if (!node) {
       return null
     }
-    var result = []
-    var i
-    let target = ''
-    var linkInfo = INTERMediatorLib.getLinkedElementInfo(node)
-    if (!linkInfo) {
-      return null
+    linkInfo = INTERMediatorLib.getLinkedElementInfo(node)
+    if (linkInfo) {
+      linkComp = linkInfo[0].split('@')
+      if (linkComp.length > 2) {
+        target = linkComp[2]
+      }
+      nInfos = IMLibContextPool.getContextInfoFromId(node.id, target)
+      if (nInfos) {
+        repeaters = nInfos.context.binding[nInfos.record]._im_repeater
+      }
     }
-    var linkComp = linkInfo[0].split('@')
-    if (linkComp.length > 2) {
-      target = linkComp[2]
+    if (!repeaters) {
+      repeaters = seekFromContextPool(node)
     }
-    var nInfos = IMLibContextPool.getContextInfoFromId(node.id, target)
-    var repeaters = nInfos.context.binding[nInfos.record]._im_repeater
     for (i = 0; i < repeaters.length; i += 1) {
       result.push(document.getElementById(repeaters[i].id))
     }
     return result
-  },
+
+    function seekFromContextPool(node) {
+      let i, j, k, currentNode;
+      if (!node) {
+        return null
+      }
+      currentNode = node
+      while (currentNode !== null) {
+        if (INTERMediatorLib.isRepeater(currentNode, true)) {
+          for (i = 0; i < IMLibContextPool.poolingContexts.length; i++) {
+            for (j in IMLibContextPool.poolingContexts[i].binding) {
+              if (IMLibContextPool.poolingContexts[i].binding.hasOwnProperty(j)) {
+                for (k = 0; k < IMLibContextPool.poolingContexts[i].binding[j]._im_repeater.length; k++) {
+                  if (IMLibContextPool.poolingContexts[i].binding[j]._im_repeater[k].id === currentNode.id) {
+                    return IMLibContextPool.poolingContexts[i].binding[j]._im_repeater
+                  }
+                }
+              }
+            }
+          }
+        }
+        currentNode = currentNode.parentNode
+      }
+      return null
+    }
+    },
 
   getParentEnclosure: function (node) {
     'use strict'

@@ -36,7 +36,7 @@ let module = {}
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-const INTERMediator = {
+export const INTERMediator = {
   /**
    * The separator for target specification.
    * This must be referred as 'INTERMediator.separator'. Don't use 'this.separator'
