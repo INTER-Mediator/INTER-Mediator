@@ -421,7 +421,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                     }
 
                     $hasFindParams = true;
-                    if ($condition['field'] == $this->specHandler->getDefaultKey()) {
+                    if ($condition['field'] === $primaryKey) {
                         $this->fx->FMSkipRecords(0);
                     }
                     if ($usePortal) {
@@ -496,7 +496,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                     $neqConditions[] = FALSE;
                 }
             } else if ($authInfoTarget == 'field-group') {
-                $belongGroups = $this->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
+                $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
                 if (strlen($this->dbSettings->getCurrentUser()) == 0 || count($belongGroups) == 0) {
                     $authFailure = true;
                 } else {
@@ -517,7 +517,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
 //                } else {
 //                    $authorizedUsers = $this->getAuthorizedUsers("load");
 //                    $authorizedGroups = $this->getAuthorizedGroups("load");
-//                    $belongGroups = $this->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
+//                    $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
 //                    if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
 //                        && count(array_intersect($belongGroups, $authorizedGroups)) == 0
 //                    ) {
@@ -537,12 +537,12 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
             }
             $this->fx->AddDBParam($this->softDeleteField, $this->softDeleteValue, 'neq');
             $searchConditions[] = $this->setSearchConditionsForCompoundFound(
-                $this->softDeleteField, $this->softDeleteValue, 'eq');
+                $this->softDeleteField, $this->softDeleteValue, 'neq');
             $hasFindParams = true;
 
             $queryValues[] = 'q' . $qNum;
             $qNum++;
-            $neqConditions[] = FALSE;
+            $neqConditions[] = TRUE;
         }
 
         if (isset($context['sort'])) {
@@ -1299,6 +1299,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
         $this->notifyHandler->setQueriedEntity($this->fx->layout);
 
         $this->updatedRecord = $this->createRecordset($result['data'], $dataSourceName, null, null, null);
+
         return $keyValue;
     }
 
