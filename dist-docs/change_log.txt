@@ -29,7 +29,7 @@ Ver.6-dev (in development)
       INTERMediator_DBAdapter.db_copyWithAuth
 - Deprecated global variables $g_dbInstance, $g_serverSideCall in INTER-Mediator.php are removed.
 - Metadata.json is removed, composer.json takes over.
-- [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native 
+- [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native
   Authentication or LDAP Authentication.
 - The INTERMediator.recordLimit property is introduced to store the number of records. Also added methods:
   INTERMediator.setRecordLimit(cname, limit) and INTERMediator.clearRecordLimit(cname).
@@ -39,6 +39,7 @@ Ver.6-dev (in development)
 - [BUG FIX] In some case, the record number of related context was affected by pagination record limits.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
 - [BUG FIX] In step navigation page, sometimes tap affected to clicking any elements on moved page.
+- [BUG FIX] INTERMediatorLib.getParentRepeaters works in case of parameter node isn't target node.
 
 Ver.5.8-dev (in development)
 - Improve speed performance of Native Authentication and LDAP Authentication.
@@ -63,6 +64,10 @@ Ver.5.8-dev (in development)
 - [BUG FIX] In some case, the record number of related context was affected by pagination record limits.
 - [BUG FIX] Fix buildup.sh to minify correctly on FreeBSD (Thanks to Tomomitsu Baba).
 - [BUG FIX] In step navigation page, sometimes tap affected to clicking any elements on moved page.
+- [BUG FIX] Fix Soft Delete function when the value of 'soft-delete' key is not true.
+- [BUG FIX] Fix Soft Delete function when using FileMaker Server. The affected versions are 5.5, 5.6 and 5.7.
+- [BUG FIX] Fix an error when using the 'field-group' key and FileMaker Server. The affected version is 5.7.
+- [BUG FIX] INTERMediatorLib.getParentRepeaters works in case of parameter node isn't target node.
 
 Ver.5.7 (March 29, 2018)
 - The "data-im-format" attribute is introduced.
