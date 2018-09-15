@@ -384,7 +384,7 @@ class GenerateJSCode
     {
         $jsLibDir = dirname($currentDir) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
         $content = '';
-        $content .= file_get_contents($currentDir . 'INTER-Mediator.js');
+        $content .= $this->eliminateForwardingExport(file_get_contents($currentDir . 'INTER-Mediator.js'));
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Page.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Context.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
@@ -405,5 +405,10 @@ class GenerateJSCode
         $content .= file_get_contents($currentDir . 'INTER-Mediator-DoOnStart.js');
 
         return $content;
+    }
+
+    private function eliminateForwardingExport($str)
+    {
+        return preg_replace("/export const/", "const", $str);
     }
 }
