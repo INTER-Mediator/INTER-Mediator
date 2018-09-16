@@ -943,6 +943,11 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
                 'operator' => 'LIKE',
                 'value' => "%{$condition['value']}%",
             );
+        } else if ($this->handler->isOperatorWithoutValue($condition['operator'])) {
+            return array(
+                'field' => $condition['field'],
+                'operator' => $condition['operator'],
+            );
         }
         return $condition;
     }

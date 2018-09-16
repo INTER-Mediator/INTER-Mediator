@@ -67,6 +67,14 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
         return true;
     }
 
+    public function isOperatorWithoutValue($operator)
+    {
+        return !(FALSE === array_search(strtoupper($operator), array(
+                'IS NOT NULL', //	NOT NULL value test
+                'IS NULL', //NULL value test
+            )));
+    }
+
     public function isPossibleOperator($operator)
     {
         return !(FALSE === array_search(strtoupper($operator), array(
