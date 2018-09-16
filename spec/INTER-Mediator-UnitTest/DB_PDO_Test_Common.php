@@ -650,12 +650,15 @@ abstract class DB_PDO_Test_Common extends TestCase
     public function testIgnoreValuesForSpecificOperators()
     {
         $this->dbProxySetupForAccess("person", 1);
+        $result = $this->db_proxy->readFromDB("person");
+        var_export($result);
+        $recordCount = $this->db_proxy->countQueryResult("person");
+        $this->assertEquals($recordCount, 1, "Just 1 records should be retrieved.");
+
+        $this->dbProxySetupForAccess("person", 1);
         $this->db_proxy->dbSettings->addExtraCriteria("name","IS NOT NULL","");
         $result = $this->db_proxy->readFromDB("person");
-
-              var_export($this->db_proxy->logger->getErrorMessages());
-       var_export($this->db_proxy->logger->getDebugMessages());
-
+        var_export($result);
         $recordCount = $this->db_proxy->countQueryResult("person");
         $this->assertEquals($recordCount, 1, "Just 1 records should be retrieved.");
     }
