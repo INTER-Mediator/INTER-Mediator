@@ -619,8 +619,8 @@ export const INTERMediator = {
       for (i = 0; i < postNodes.length; i++) {
         if (postNodes[i].tagName === 'BUTTON' ||
           (postNodes[i].tagName === 'INPUT' &&
-          (postNodes[i].getAttribute('type').toLowerCase() === 'button' ||
-          postNodes[i].getAttribute('type').toLowerCase() === 'submit'))) {
+            (postNodes[i].getAttribute('type').toLowerCase() === 'button' ||
+              postNodes[i].getAttribute('type').toLowerCase() === 'submit'))) {
           if (!postNodes[i].id) {
             postNodes[i].id = INTERMediator.nextIdValue()
           }
@@ -638,6 +638,7 @@ export const INTERMediator = {
       for (i = 0; i < nodes.length; i++) {
         seekEnclosureInPostOnly(nodes[i])
       }
+
       // -------------------------------------------
       async function seekEnclosureInPostOnly (node) {
         let children, wInfo, i, target
@@ -713,14 +714,17 @@ export const INTERMediator = {
         await enclosureProcessing(node, repeatersOriginal, currentRecord, parentObjectInfo, currentContextObj)
       }
       IMLibLocalContext.bindingDescendant(node)
+
       /** --------------------------------------------------------------------
        * Expanding enclosure as usual (means not 'cross tabole').
        */
-      async function enclosureProcessing (enclosureNode, repeatersOriginal, currentRecord, parentObjectInfo,
+      async function enclosureProcessing (
+        enclosureNode, repeatersOriginal, currentRecord, parentObjectInfo,
         currentContextObj, procBeforeRetrieve, customExpandRepeater) {
+
         let linkedNodes, repeaters, linkDefs, voteResult, currentContextDef, fieldList, i, targetRecords,
-          newNode, keyValue, selectedNode, isExpanding, calcFields
-        let contextObj = null
+          newNode, keyValue, selectedNode, isExpanding, calcFields, contextObj = null,
+          targetRecordset, keyingValue, footerNodes, headerNodes, nInfo
 
         try {
           repeaters = collectRepeaters(repeatersOriginal) // Collecting repeaters to this array.
@@ -791,10 +795,69 @@ export const INTERMediator = {
               customExpandRepeater(contextObj, targetRecords)
             }
             contextObj.sequencing = false
+
+            if (enclosureNode.tagName === 'TBODY') {
+              footerNodes = enclosureNode.parentNode.getElementsByTagName('TFOOT')
+              linkedNodes = seekWithAttribute(footerNodes[0], 'data-im')
+              if (linkedNodes) {
+                INTERMediator.setIdValue(footerNodes[0])
+                targetRecordset = {}
+                keyingValue = '_im_footer'
+                for (i = 0; i < linkedNodes.length; i++) {
+                  INTERMediator.setIdValue(linkedNodes[i])
+                  nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0])
+                  IMLibCalc.updateCalculationInfo(contextObj, keyingValue, linkedNodes[i].id, nInfo, targetRecordset)
+                  if (contextObj.binding._im_footer) {
+                    contextObj.binding._im_footer._im_repeater = footerNodes
+                  }
+                }
+              }
+              headerNodes = enclosureNode.parentNode.getElementsByTagName('THEAD')
+              linkedNodes = seekWithAttribute(headerNodes[0], 'data-im')
+              if (linkedNodes) {
+                INTERMediator.setIdValue(headerNodes[0])
+                targetRecordset = {}
+                keyingValue = '_im_header'
+                for (i = 0; i < linkedNodes.length; i++) {
+                  INTERMediator.setIdValue(linkedNodes[i])
+                  nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0])
+                  IMLibCalc.updateCalculationInfo(contextObj, keyingValue, linkedNodes[i].id, nInfo, targetRecordset)
+                  if (contextObj.binding._im_header) {
+                    contextObj.binding._im_header._im_repeater = headerNodes
+                  }
+                }
+              }
+            }
           }
           return contextObj
         } catch (ex) {
           throw ex
+        }
+
+        function seekWithAttribute (node, attrName) {
+          if (!node || node.nodeType !== 1) {
+            return null
+          }
+          let result = seekWithAttributeImpl(node, attrName)
+          return result
+        }
+
+        function seekWithAttributeImpl (node, attrName) {
+          let ix, adding, result = []
+          if (node && node.nodeType === 1) {
+            if (node.getAttribute(attrName)) {
+              result.push(node)
+            }
+            if (node.childNodes) {
+              for (ix = 0; ix < node.childNodes.length; ix++) {
+                adding = seekWithAttributeImpl(node.childNodes[ix], attrName)
+                if (adding.length > 0) {
+                  [].push.apply(result, adding)
+                }
+              }
+            }
+          }
+          return result
         }
       }
 
@@ -1017,8 +1080,7 @@ export const INTERMediator = {
             nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j])
             curVal = targetRecordset[ix][nInfo.field]
             if (!INTERMediator.isDBDataPreferable || curVal) {
-              IMLibCalc.updateCalculationInfo(
-                contextObj, keyingValue, currentContextDef, nodeId, nInfo, targetRecordset[ix])
+              IMLibCalc.updateCalculationInfo(contextObj, keyingValue, nodeId, nInfo, targetRecordset[ix])
             }
             if (nInfo.table === currentContextDef.name) {
               curTarget = nInfo.target
@@ -1201,20 +1263,21 @@ export const INTERMediator = {
           if (!targetRecords) {
             useLimit = contextObj.isUseLimit()
             recordNumber = contextObj.getRecordNumber()
-            await INTERMediator_DBAdapter.db_query_async({
-              'name': contextObj.contextDefinition.name,
-              'records': isNaN(recordNumber) ? 100000000 : recordNumber,
-              'paging': contextObj.contextDefinition.paging,
-              'fields': fieldList,
-              'parentkeyvalue': relationValue,
-              'conditions': null,
-              'useoffset': true,
-              'uselimit': useLimit
-            },
-            function (result) {
-              targetRecords = result
-            },
-            null)
+            await INTERMediator_DBAdapter.db_query_async(
+              {
+                'name': contextObj.contextDefinition.name,
+                'records': isNaN(recordNumber) ? 100000000 : recordNumber,
+                'paging': contextObj.contextDefinition.paging,
+                'fields': fieldList,
+                'parentkeyvalue': relationValue,
+                'conditions': null,
+                'useoffset': true,
+                'uselimit': useLimit
+              },
+              function (result) {
+                targetRecords = result
+              },
+              null)
           }
         } catch (ex) {
           if (ex.message === '_im_auth_required_') {
@@ -1242,20 +1305,21 @@ export const INTERMediator = {
       let pagingValue, counter, ix, oneRecord, isMatch, index, keyField, fieldName, recordsValue
       try {
         if (!INTERMediatorOnPage.dbCache[currentContextDef.name]) {
-          await INTERMediator_DBAdapter.db_query_async({
-            name: currentContextDef.name,
-            records: null,
-            paging: null,
-            fields: null,
-            parentkeyvalue: null,
-            conditions: null,
-            useoffset: false
-          },
-          (result) => {
-            INTERMediatorOnPage.dbCache[currentContextDef.name] = result
-            completion(result)
-          },
-          null
+          await INTERMediator_DBAdapter.db_query_async(
+            {
+              name: currentContextDef.name,
+              records: null,
+              paging: null,
+              fields: null,
+              parentkeyvalue: null,
+              conditions: null,
+              useoffset: false
+            },
+            (result) => {
+              INTERMediatorOnPage.dbCache[currentContextDef.name] = result
+              completion(result)
+            },
+            null
           )
         }
         if (relationValue === null) {
@@ -1837,4 +1901,3 @@ export const INTERMediator = {
     INTERMediatorLog.setDebugMessage(message, level)
   }
 }
-

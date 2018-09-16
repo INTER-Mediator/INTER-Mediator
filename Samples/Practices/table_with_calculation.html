@@ -31,7 +31,7 @@
             <th>qty</th>
             <th>unitprice</th>
             <th>master unit price</th>
-            <th>amount</th>
+            <th>amount></th>
             <th></th>
         </tr>
         </thead>
@@ -39,7 +39,7 @@
         <tr>
             <td></td>
             <td></td>
-            <td align="right"><span data-im="item@total_qty"></span></td>
+            <td><span data-im="item@total_qty"></span></td>
             <td></td>
             <td></td>
             <td align="right"><span style="text-align: right"
@@ -51,7 +51,7 @@
         </tfoot>
         <tbody>
         <tr>
-            <td align="right">
+            <td>
                 <span data-im="item@product_id"></span>
             </td>
             <td>
@@ -61,13 +61,13 @@
                     </span>
                 </span>
             </td>
-            <td align="right"><span data-im="item@qty item@qty_color@style.color"></span>
+            <td><span data-im="item@qty item@qty_color@style.color"></span>
             </td>
-            <td align="right">
+            <td>
                 <span data-im="item@unitprice" data-im-format="number()"
                       data-im-format-options="useseparator"></span>
             </td>
-            <td align="right">
+            <td>
                 <span class="inline" data-im-control="enclosure">
                     <span class="inline price" data-im-control="repeater">
                         (<span data-im="product@unitprice" data-im-format="number(2)"
