@@ -150,23 +150,17 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     }
                 } else if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
                     $escapedField = $this->handler->quotedEntityName($condition['field']);
-                    if (isset($condition['value']) && !is_null($condition['value'] )) {
+                    $condition = $this->normalizedCondition($condition);
+                    if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
+                        throw new Exception("Invalid Operator.: {$condition['operator']}");
+                    }
+                    if (isset($condition['value']) && !is_null($condition['value'])) {
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
-                            $condition = $this->normalizedCondition($condition);
-                            if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                                throw new Exception("Invalid Operator.: {$condition['operator']}");
-                            }
                             $queryClauseArray[$chunkCount][]
                                 = "{$escapedField} {$condition['operator']} {$escapedValue}";
-                        } else {
-                            $queryClauseArray[$chunkCount][]
-                                = "{$escapedField} = {$escapedValue}";
                         }
                     } else {
-                        if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                            throw new Exception("Invalid Operator.: {$condition['operator']}");
-                        }
                         $queryClauseArray[$chunkCount][]
                             = "{$escapedField} {$condition['operator']}";
                     }
@@ -197,32 +191,24 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     }
                 } else if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
                     $escapedField = $this->handler->quotedEntityName($condition['field']);
+                    $condition = $this->normalizedCondition($condition);
+                    if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
+                        throw new Exception("Invalid Operator.");
+                    }
                     if (isset($condition['value']) && !is_null($condition['value'])) {
-                        $condition = $this->normalizedCondition($condition);
                         $escapedValue = $this->link->quote($condition['value']);
-                        if (isset($condition['operator'])) {
-                            if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                                throw new Exception("Invalid Operator.");
+                        if (strtoupper(trim($condition['operator'])) == "IN") {
+                            $escapedValue = "(";
+                            $isFirst = true;
+                            foreach (json_decode($condition['value']) as $item) {
+                                $escapedValue .= (!$isFirst ? "," : "") . $this->link->quote($item);
+                                $isFirst = false;
                             }
-                            if (strtoupper(trim($condition['operator'])) == "IN") {
-                                $escapedValue = "(";
-                                $isFirst = true;
-                                foreach (json_decode($condition['value']) as $item) {
-                                    $escapedValue .= (!$isFirst ? "," : "") . $this->link->quote($item);
-                                    $isFirst = false;
-                                }
-                                $escapedValue .= ")";
-                            }
-                            $queryClauseArray[$chunkCount][]
-                                = "{$escapedField} {$condition['operator']} {$escapedValue}";
-                        } else {
-                            $queryClauseArray[$chunkCount][]
-                                = "{$escapedField} = {$escapedValue}";
+                            $escapedValue .= ")";
                         }
+                        $queryClauseArray[$chunkCount][]
+                            = "{$escapedField} {$condition['operator']} {$escapedValue}";
                     } else {
-                        if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                            throw new Exception("Invalid Operator.: {$condition['operator']}");
-                        }
                         $queryClauseArray[$chunkCount][]
                             = "{$escapedField} {$condition['operator']}";
                     }
@@ -302,7 +288,6 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
         return $queryClause;
     }
-
 
     /* Genrate SQL Sort and Where clause */
     /**
@@ -928,6 +913,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
         if (!isset($condition['value'])) {
             $condition['value'] = '';
+        }
+        if (!isset($condition['operator'])) {
+            $condition['operator'] = '=';
         }
 
         if ($condition['operator'] == 'match*') {
