@@ -152,7 +152,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $escapedField = $this->handler->quotedEntityName($condition['field']);
                     $condition = $this->normalizedCondition($condition);
                     if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                        throw new Exception("Invalid Operator.: {$condition['operator']}");
+                        throw new \Exception("Invalid Operator.: {$condition['operator']}");
                     }
                     if (isset($condition['value']) && !is_null($condition['value'])) {
                         $escapedValue = $this->link->quote($condition['value']);
@@ -193,7 +193,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $escapedField = $this->handler->quotedEntityName($condition['field']);
                     $condition = $this->normalizedCondition($condition);
                     if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                        throw new Exception("Invalid Operator.");
+                        throw new \Exception("Invalid Operator.");
                     }
                     if (isset($condition['value']) && !is_null($condition['value'])) {
                         $escapedValue = $this->link->quote($condition['value']);
@@ -229,7 +229,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                         $escapedValue = $this->link->quote($foreignDef['value']);
                         $op = isset($relDef['operator']) ? $relDef['operator'] : '=';
                         if (!$this->specHandler->isPossibleOperator($op)) {
-                            throw new Exception("Invalid Operator.");
+                            throw new \Exception("Invalid Operator.");
                         }
                         $queryClause = (($queryClause != '') ? "({$queryClause}) AND " : '')
                             . "({$escapedField}{$op}{$escapedValue})";
@@ -302,7 +302,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 $escapedField = $this->handler->quotedEntityName($condition['field']);
                 if (isset($condition['direction'])) {
                     if (!$this->specHandler->isPossibleOrderSpecifier($condition['direction'])) {
-                        throw new Exception("Invalid Sort Specifier.");
+                        throw new \Exception("Invalid Sort Specifier.");
                     }
                     $sortClause[] = "{$escapedField} {$condition['direction']}";
                 } else {
@@ -313,7 +313,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         if (isset($tableInfo['sort'])) {
             foreach ($tableInfo['sort'] as $condition) {
                 if (isset($condition['direction']) && !$this->specHandler->isPossibleOrderSpecifier($condition['direction'])) {
-                    throw new Exception("Invalid Sort Specifier.");
+                    throw new \Exception("Invalid Sort Specifier.");
                 }
                 $escapedField = $this->handler->quotedEntityName($condition['field']);
                 $direction = isset($condition['direction']) ? $condition['direction'] : "";
