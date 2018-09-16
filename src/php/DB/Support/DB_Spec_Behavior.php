@@ -18,10 +18,18 @@ namespace INTERMediator\DB\Support;
 interface DB_Spec_Behavior
 {
     public static function defaultKey();   // For PHP 5.3 or above
+
     public function getDefaultKey();   // For PHP 5.2
+
     public function isContainingFieldName($fname, $fieldnames);
+
     public function isNullAcceptable();
+
     public function isSupportAggregation();
+
+    public function isOperatorWithoutValue($operator);
+
     public function isPossibleOperator($operator);
+
     public function isPossibleOrderSpecifier($specifier);
 }
