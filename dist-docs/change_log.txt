@@ -33,6 +33,8 @@ Ver.6-dev (in development)
   Authentication or LDAP Authentication.
 - The INTERMediator.recordLimit property is introduced to store the number of records. Also added methods:
   INTERMediator.setRecordLimit(cname, limit) and INTERMediator.clearRecordLimit(cname).
+- The method isOperatorWithoutValue() is introduced into PDO Spec Handler classes. It's for IS NULL
+  with Definition File Editor.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 - [BUG FIX] If the server doesn't have valid locale (ex. Windows Server), the number format with thousand
   separator wasn't seen as we wished.
@@ -58,6 +60,8 @@ Ver.5.8-dev (in development)
 - Update deploy.sh and recipe.rb etc. for the INTER-Mediator-Server virtual machine and CI.
 - THEAD/TFOOT of table can be set the linked node with caluculation.
 - Calculation to aggregate of same context as like "sum(mycontext@price)".
+- The method isOperatorWithoutValue() is introduced into PDO Spec Handler classes. It's for IS NULL
+  with Definition File Editor.
 - [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native
   Authentication or LDAP Authentication.
 - [INFO] FileMaker Data API (Trial) of FileMaker Server 16 is no longer supported.
