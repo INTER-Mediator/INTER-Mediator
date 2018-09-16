@@ -33,7 +33,7 @@
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-const IMLibCalc = {
+var IMLibCalc = {
   /**
    * This property stores IMType_CalculateFieldDefinition objects for each calculation required nodes.
    * The property name is the id attribute of the node which bond to the calculated property
@@ -52,12 +52,13 @@ const IMLibCalc = {
    * @param nInfo
    * @param currentRecord
    */
-  updateCalculationInfo: function (contextObj, keyingValue, currentContext, nodeId, nInfo, currentRecord) {
+  updateCalculationInfo: function (contextObj, keyingValue, nodeId, nInfo, currentRecord) {
     'use strict'
-    let calcDef, exp, field, elements, i, index, objectKey, itemIndex, values, referes,
-      calcDefField, atPos, fieldLength
+    var calcDef, exp, field, elements, i, index, objectKey, itemIndex, values, referes,
+      calcDefField, atPos, fieldLength;
 
-    calcDef = currentContext.calculation
+
+    calcDef = contextObj.getContextDef().calculation
     for (index in calcDef) {
       if (calcDef.hasOwnProperty(index)) {
         atPos = calcDef[index].field.indexOf(INTERMediator.separator)
@@ -105,8 +106,8 @@ const IMLibCalc = {
    */
   updateCalculationFields: function () {
     'use strict'
-    let nodeId, exp, nInfo, valuesArray, leafNodes, calcObject, ix, refersArray
-    let targetNode, field, valueSeries, targetElement, i, hasReferes, contextInfo, idValue, record
+    var nodeId, exp, nInfo, valuesArray, leafNodes, calcObject, ix, refersArray, key, fName, vArray
+    var targetNode, field, valueSeries, targetElement, i, hasReferes, contextInfo, idValue, record
 
     IMLibCalc.setUndefinedToAllValues()
     IMLibNodeGraph.clear()
@@ -150,6 +151,20 @@ const IMLibCalc = {
           }
           for (field in valuesArray) {
             if (valuesArray.hasOwnProperty(field)) {
+              if (field.indexOf(nInfo.table + '@') === 0) {
+                fName = field.substr(field.indexOf('@') + 1)
+                vArray = []
+                for (key in contextInfo.context.store) {
+                  if (contextInfo.context.store.hasOwnProperty(key) && contextInfo.context.store[key][fName]) {
+                    vArray.push(contextInfo.context.store[key][fName])
+                  }
+                }
+                valuesArray[field] = vArray
+              }
+            }
+          }
+          for (field in valuesArray) {
+            if (valuesArray.hasOwnProperty(field)) {
               valueSeries = []
               for (ix = 0; ix < valuesArray[field].length; ix++) {
                 if (valuesArray[field][ix] === undefined) {
@@ -183,28 +198,29 @@ const IMLibCalc = {
    */
   recalculation: function (updatedNodeId) {
     'use strict'
+    var nodeId, newValueAdded, leafNodes, calcObject, ix, updatedValue, isRecalcAll = false
+    var newValue, field, i, updatedNodeIds, updateNodeValues, cachedIndex, nInfo, valuesArray
+    var refersArray, valueSeries, targetElement, contextInfo, record, idValue, key, fName, vArray
 
-    let updatedNodeIds = []
-    let updateNodeValues = []
-    let isRecalcAll = false
     if (updatedNodeId === undefined) {
       isRecalcAll = true
+      updatedNodeIds = []
+      updateNodeValues = []
     } else {
-      const newValue = IMLibElement.getValueFromIMNode(document.getElementById(updatedNodeId))
-      updatedNodeIds.push(updatedNodeId)
-      updateNodeValues.push(newValue)
+      newValue = IMLibElement.getValueFromIMNode(document.getElementById(updatedNodeId))
+      updatedNodeIds = [updatedNodeId]
+      updateNodeValues = [newValue]
     }
 
-    let calcObject
     IMLibCalc.setUndefinedToAllValues()
     IMLibNodeGraph.clear()
-    for (let nodeId in IMLibCalc.calculateRequiredObject) {
+    for (nodeId in IMLibCalc.calculateRequiredObject) {
       if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
         calcObject = IMLibCalc.calculateRequiredObject[nodeId]
-        // idValue = nodeId.match(IMLibCalc.regexpForSeparator) ? nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId
-        for (let field in calcObject.referes) {
+        idValue = nodeId.match(IMLibCalc.regexpForSeparator) ? nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId
+        for (field in calcObject.referes) {
           if (calcObject.referes.hasOwnProperty(field)) {
-            for (let ix = 0; ix < calcObject.referes[field].length; ix++) {
+            for (ix = 0; ix < calcObject.referes[field].length; ix++) {
               IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix])
             }
           }
@@ -212,30 +228,45 @@ const IMLibCalc = {
       }
     }
 
-    let leafNodes, newValueAdded
     do {
       leafNodes = IMLibNodeGraph.getLeafNodesWithRemoving()
-      for (let i = 0; i < leafNodes.length; i++) {
+      for (i = 0; i < leafNodes.length; i++) {
         calcObject = IMLibCalc.calculateRequiredObject[leafNodes[i]]
         if (calcObject) {
-          const idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator) ? leafNodes[i].split(IMLibCalc.regexpForSeparator)[0] : leafNodes[i]
-          const nInfo = calcObject.nodeInfo
-          const valuesArray = calcObject.values
-          const refersArray = calcObject.referes
-          const contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nInfo.target)
-          let record = null
+          idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator) ? leafNodes[i].split(IMLibCalc.regexpForSeparator)[0] : leafNodes[i]
+          //exp = calcObject.expression
+          nInfo = calcObject.nodeInfo
+          valuesArray = calcObject.values
+          refersArray = calcObject.referes
+          contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nInfo.target)
           if (contextInfo && contextInfo.context) {
             record = contextInfo.context.getContextRecord(idValue)
+          } else {
+            record = null
           }
-          for (let field in valuesArray) {
+          for (field in valuesArray) {
             if (valuesArray.hasOwnProperty(field)) {
-              const valueSeries = []
-              for (let ix = 0; ix < valuesArray[field].length; ix++) {
+              if (field.indexOf(nInfo.table + '@') === 0) {
+                fName = field.substr(field.indexOf('@') + 1)
+                vArray = []
+                for (key in contextInfo.context.store) {
+                  if (contextInfo.context.store.hasOwnProperty(key) && contextInfo.context.store[key][fName]) {
+                    vArray.push(contextInfo.context.store[key][fName])
+                  }
+                }
+                valuesArray[field] = vArray
+              }
+            }
+          }
+          for (field in valuesArray) {
+            if (valuesArray.hasOwnProperty(field)) {
+              valueSeries = []
+              for (ix = 0; ix < valuesArray[field].length; ix++) {
                 if (valuesArray[field][ix] === undefined) {
                   if (record[field]) {
                     valueSeries.push(record[field])
                   } else if (refersArray[field][ix]) {
-                    const targetElement = document.getElementById(refersArray[field][ix])
+                    targetElement = document.getElementById(refersArray[field][ix])
                     valueSeries.push(IMLibElement.getValueFromIMNode(targetElement))
                   }
                 } else {
@@ -249,10 +280,10 @@ const IMLibCalc = {
             newValueAdded = true
           } else {
             newValueAdded = false
-            for (let field in calcObject.referes) {
+            for (field in calcObject.referes) {
               if (calcObject.referes.hasOwnProperty(field)) {
-                for (let ix = 0; ix < calcObject.referes[field].length; ix++) {
-                  const cachedIndex = updatedNodeIds.indexOf(calcObject.referes[field][ix])
+                for (ix = 0; ix < calcObject.referes[field].length; ix++) {
+                  cachedIndex = updatedNodeIds.indexOf(calcObject.referes[field][ix])
                   if (cachedIndex >= 0) {
                     calcObject.values[field][ix] = updateNodeValues[cachedIndex]
                     newValueAdded = true
@@ -262,7 +293,7 @@ const IMLibCalc = {
             }
           }
           if (newValueAdded) {
-            const updatedValue = Parser.evaluate(
+            updatedValue = Parser.evaluate(
               calcObject.expression,
               calcObject.values
             )
@@ -279,6 +310,7 @@ const IMLibCalc = {
         INTERMediatorLib.getInsertedString(
           INTERMediatorOnPage.getMessages()[1037], []))
     }
+
   },
 
   /**
@@ -286,7 +318,7 @@ const IMLibCalc = {
    */
   setUndefinedToAllValues: function () {
     'use strict'
-    let nodeId, calcObject, targetNode, targetExp, targetIds, isContextName,
+    var nodeId, calcObject, ix, targetNode, field, targetExp, targetIds, isContextName,
       isRemoved, idValue, repeaterTop, checkRepeater, nodeInfo, linkInfos
 
     do {
@@ -310,7 +342,7 @@ const IMLibCalc = {
         linkInfos = linkInfos[0]
       }
       nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos)
-      for (let field in calcObject.values) {
+      for (field in calcObject.values) {
         if (field.indexOf(INTERMediator.separator) > -1) {
           targetExp = field
           isContextName = true
@@ -349,7 +381,7 @@ const IMLibCalc = {
         if (INTERMediatorLib.is_array(targetIds) && targetIds.length > 0) {
           calcObject.referes[field] = []
           calcObject.values[field] = []
-          for (let ix = 0; ix < targetIds.length; ix++) {
+          for (ix = 0; ix < targetIds.length; ix++) {
             calcObject.referes[field].push(targetIds[ix])
             calcObject.values[field].push(undefined)
           }
@@ -360,8 +392,8 @@ const IMLibCalc = {
       }
     }
 
-    function getParentRepeater (node) {
-      let currentNode = node
+    function getParentRepeater(node) {
+      var currentNode = node
       while (currentNode !== null) {
         if (INTERMediatorLib.isRepeater(currentNode, true)) {
           return currentNode
