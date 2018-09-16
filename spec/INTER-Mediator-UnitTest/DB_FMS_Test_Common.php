@@ -47,7 +47,7 @@ class DB_FMS_Test_Common extends TestCase
             $method = $this->reflectionClass->getMethod('executeScriptsforLoading');
             $method->setAccessible(true);
 
-            $scriptContext = array('script' => 
+            $scriptContext = array('script' =>
                 array(
                     'db-operation' => 'load',
                     'situation' => 'post',
@@ -56,7 +56,7 @@ class DB_FMS_Test_Common extends TestCase
             $expected = '';
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
-            $scriptContext = array('script' => 
+            $scriptContext = array('script' =>
                 array(
                     'db-operation' => 'load',
                     'definition' => 'testscript',
@@ -65,7 +65,7 @@ class DB_FMS_Test_Common extends TestCase
             $expected = '';
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
-            $scriptContext = array('script' => 
+            $scriptContext = array('script' =>
                 array(
                     'db-operation' => 'load',
                     'situation' => 'post',
@@ -75,7 +75,7 @@ class DB_FMS_Test_Common extends TestCase
             $expected = '&-script=testscript';
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
-            $scriptContext = array('script' => 
+            $scriptContext = array('script' =>
                 array(
                     'db-operation' => 'read',
                     'situation' => 'post',
@@ -86,7 +86,7 @@ class DB_FMS_Test_Common extends TestCase
             $expected = '&-script=testscript';
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
-            $scriptContext = array('script' => 
+            $scriptContext = array('script' =>
                 array(
                     'db-operation' => 'load',
                     'situation' => 'post',
@@ -97,7 +97,7 @@ class DB_FMS_Test_Common extends TestCase
             $expected = '&-script=testscript&-script.param=1';
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
-            $scriptContext = array('script' => 
+            $scriptContext = array('script' =>
                 array(
                     'db-operation' => 'load',
                     'situation' => 'pre',
@@ -107,7 +107,7 @@ class DB_FMS_Test_Common extends TestCase
             $expected = '&-script.prefind=testscript';
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
-            $scriptContext = array('script' => 
+            $scriptContext = array('script' =>
                 array(
                     'db-operation' => 'read',
                     'situation' => 'pre',
@@ -118,7 +118,7 @@ class DB_FMS_Test_Common extends TestCase
             $expected = '&-script.prefind=testscript';
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
-            $scriptContext = array('script' => 
+            $scriptContext = array('script' =>
                 array(
                     'db-operation' => 'load',
                     'situation' => 'pre',
@@ -129,7 +129,7 @@ class DB_FMS_Test_Common extends TestCase
             $expected = '&-script.prefind=testscript&-script.prefind.param=1';
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
-            $scriptContext = array('script' => 
+            $scriptContext = array('script' =>
                 array(
                     'db-operation' => 'load',
                     'situation' => 'presort',
@@ -139,7 +139,7 @@ class DB_FMS_Test_Common extends TestCase
             $expected = '&-script.presort=testscript';
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
-            $scriptContext = array('script' => 
+            $scriptContext = array('script' =>
                 array(
                     'db-operation' => 'read',
                     'situation' => 'presort',
@@ -150,7 +150,7 @@ class DB_FMS_Test_Common extends TestCase
             $expected = '&-script.presort=testscript';
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
-            $scriptContext = array('script' => 
+            $scriptContext = array('script' =>
                 array(
                     'db-operation' => 'load',
                     'situation' => 'presort',
@@ -309,8 +309,8 @@ class DB_FMS_Test_Common extends TestCase
     public function testQuery1_singleRecord()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
-        $result = $this->db_proxy->readFromDB("person_layout");
-        $recordCount = $this->db_proxy->countQueryResult("person_layout");
+        $result = $this->db_proxy->readFromDB();
+        $recordCount = $this->db_proxy->countQueryResult();
         $this->assertTrue(count($result) == 1, "After the query, just one should be retrieved.");
         $this->assertEquals(3, $recordCount, "This table contanins 3 records");
         $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
@@ -321,8 +321,8 @@ class DB_FMS_Test_Common extends TestCase
     public function testQuery2_multipleRecord()
     {
         $this->dbProxySetupForAccess("person_layout", 1000000);
-        $result = $this->db_proxy->readFromDB("person_layout");
-        $recordCount = $this->db_proxy->countQueryResult("person_layout");
+        $result = $this->db_proxy->readFromDB();
+        $recordCount = $this->db_proxy->countQueryResult();
         $this->assertTrue(count($result) == 3, "After the query, some records should be retrieved.");
         $this->assertEquals(3, $recordCount, "This table contanins 3 records");
         $this->assertTrue($result[2]["name"] === 'Anyone', "Field value is not same as the definition.");
@@ -336,8 +336,8 @@ class DB_FMS_Test_Common extends TestCase
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
         $this->db_proxy->dbSettings->addExtraCriteria('f3', 'cn', '167');
-        $result = $this->db_proxy->readFromDB('postalcode');
-        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $result = $this->db_proxy->readFromDB();
+        $totalCount = $this->db_proxy-> getTotalCount();
         $this->assertEquals(15, count($result));
         $this->assertEquals(3654, $totalCount);
     }
@@ -348,8 +348,8 @@ class DB_FMS_Test_Common extends TestCase
         $this->dbProxySetupForAccess('postalcode', 1000000);
         $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'records' => $limit)));
         $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
-        $result = $this->db_proxy->readFromDB('postalcode');
-        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $result = $this->db_proxy->readFromDB();
+        $totalCount = $this->db_proxy-> getTotalCount();
         $this->assertEquals($limit, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1000000', $result[0]['f3']);
@@ -360,8 +360,8 @@ class DB_FMS_Test_Common extends TestCase
         $this->dbProxySetupForAccess('postalcode', 1000000);
         $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'query' => array(array('field' => 'f3', 'value' => '167', 'operator' => 'bw')))));
         $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
-        $result = $this->db_proxy->readFromDB('postalcode');
-        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $result = $this->db_proxy->readFromDB();
+        $totalCount = $this->db_proxy-> getTotalCount();
         $this->assertEquals(15, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1670032', $result[0]['f3']);
@@ -369,8 +369,8 @@ class DB_FMS_Test_Common extends TestCase
         $this->dbProxySetupForAccess('postalcode', 1000000);
         $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'query' => array(array('field' => 'f3', 'value' => '167', 'operator' => 'bw'), array('field' => 'f9', 'value' => '天沼', 'operator' => 'neq')))));
         $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
-        $result = $this->db_proxy->readFromDB('postalcode');
-        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $result = $this->db_proxy->readFromDB();
+        $totalCount = $this->db_proxy-> getTotalCount();
         $this->assertEquals(14, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1670021', $result[0]['f3']);
@@ -382,8 +382,8 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'query' => array(array('field' => 'f3', 'value' => '022', 'operator' => 'ew')))));
         $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
         $this->db_proxy->dbSettings->addExtraCriteria('f9', 'cn', '井草');
-        $result = $this->db_proxy->readFromDB('postalcode');
-        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $result = $this->db_proxy->readFromDB();
+        $totalCount = $this->db_proxy-> getTotalCount();
         $this->assertEquals(1, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1670022', $result[0]['f3']);
@@ -396,8 +396,8 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'records' => $limit)));
         $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
         $this->db_proxy->dbSettings->addExtraCriteria('f3', 'cn', '167');
-        $result = $this->db_proxy->readFromDB('postalcode');
-        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $result = $this->db_proxy->readFromDB();
+        $totalCount = $this->db_proxy-> getTotalCount();
         $this->assertEquals($limit, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1670032', $result[0]['f3']);
@@ -408,8 +408,8 @@ class DB_FMS_Test_Common extends TestCase
         $this->dbProxySetupForAccess('postalcode', 1000000);
         $this->db_proxy->dbSettings->addExtraCriteria('f3', 'cn', '167');
         $this->db_proxy->dbSettings->addExtraSortKey('f3', 'desc');
-        $result = $this->db_proxy->readFromDB('postalcode');
-        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $result = $this->db_proxy->readFromDB();
+        $totalCount = $this->db_proxy-> getTotalCount();
         $this->assertEquals(15, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1670032', $result[0]['f3']);
@@ -420,8 +420,8 @@ class DB_FMS_Test_Common extends TestCase
         $this->dbProxySetupForAccess('postalcode', 1000000);
         $this->db_proxy->dbSettings->addExtraCriteria('f3', 'bw', '167');
         $this->db_proxy->dbSettings->addExtraCriteria('f9', 'cn', '荻窪');
-        $result = $this->db_proxy->readFromDB('postalcode');
-        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $result = $this->db_proxy->readFromDB();
+        $totalCount = $this->db_proxy-> getTotalCount();
         $this->assertEquals(2, count($result));
         $this->assertEquals(3654, $totalCount);
     }
@@ -432,8 +432,8 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->addExtraCriteria('f3', 'bw', '167');
         $this->db_proxy->dbSettings->addExtraCriteria('f9', 'ew', '荻窪');
         $this->db_proxy->dbSettings->addExtraCriteria('__operation__', 'ex', '');
-        $result = $this->db_proxy->readFromDB('postalcode');
-        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $result = $this->db_proxy->readFromDB();
+        $totalCount = $this->db_proxy-> getTotalCount();
         $this->assertEquals(15, count($result));
         $this->assertEquals(3654, $totalCount);
     }
@@ -441,8 +441,8 @@ class DB_FMS_Test_Common extends TestCase
     public function testQuery_findPostalCodeWithSearchCriteriaByRecId()
     {
         $this->dbProxySetupForAccess('postalcode', 1);
-        $result = $this->db_proxy->readFromDB('postalcode');
-        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $result = $this->db_proxy->readFromDB();
+        $totalCount = $this->db_proxy-> getTotalCount();
         $this->assertEquals(1, count($result));
         $this->assertEquals(3654, $totalCount);
 
@@ -457,8 +457,8 @@ class DB_FMS_Test_Common extends TestCase
                 $this->db_proxy->dbSettings->addExtraCriteria('recordId', 'eq', $recId);
             }
         }
-        $result = $this->db_proxy->readFromDB('postalcode');
-        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $result = $this->db_proxy->readFromDB();
+        $totalCount = $this->db_proxy-> getTotalCount();
         $this->assertEquals(1, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1000000', $result[0]['f3']);
@@ -470,8 +470,8 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->addExtraCriteria('f3', 'bw', '167');
         $this->db_proxy->dbSettings->addExtraCriteria('f3', 'ew', '32');
         $this->db_proxy->dbSettings->addExtraCriteria('__operation__', 'ex', '');
-        $result = $this->db_proxy->readFromDB('postalcode');
-        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $result = $this->db_proxy->readFromDB();
+        $totalCount = $this->db_proxy-> getTotalCount();
         $this->assertEquals(93, count($result));
         $this->assertEquals(3654, $totalCount);
     }
@@ -512,9 +512,9 @@ class DB_FMS_Test_Common extends TestCase
 
         $this->dbProxySetupForAccess("person_layout", 1000000);
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $newKeyValue);
-        $result = $this->db_proxy->readFromDB("person_layout");
+        $result = $this->db_proxy->readFromDB();
         $this->assertTrue($result !== FALSE, "Found record should be exists.");
-        $recordCount = $this->db_proxy->countQueryResult("person_layout");
+        $recordCount = $this->db_proxy->countQueryResult();
         $this->assertTrue(count($result) == 1, "It should be just one record.");
         $this->assertTrue($result[0]["name"] === $nameValue, "Field value is not same as the definition.");
         $this->assertTrue($result[0]["address"] === $addressValue, "Field value is not same as the definition.");
