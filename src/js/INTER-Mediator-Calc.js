@@ -54,7 +54,7 @@ var IMLibCalc = {
    */
   updateCalculationInfo: function (contextObj, keyingValue, nodeId, nInfo, currentRecord) {
     'use strict'
-    var calcDef, exp, field, elements, i, index, objectKey, itemIndex, values, referes,
+    let calcDef, exp, field, elements, i, index, objectKey, itemIndex, values, referes,
       calcDefField, atPos, fieldLength
 
     calcDef = contextObj.getContextDef().calculation

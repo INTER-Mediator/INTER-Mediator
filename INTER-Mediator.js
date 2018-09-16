@@ -833,8 +833,7 @@ var INTERMediator = {
                 for (i = 0; i < linkedNodes.length; i++) {
                   INTERMediator.setIdValue(linkedNodes[i]);
                   nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0]);
-                  IMLibCalc.updateCalculationInfo(
-                    contextObj, keyingValue, linkedNodes[i].id, nInfo, targetRecordset);
+                  IMLibCalc.updateCalculationInfo(contextObj, keyingValue, linkedNodes[i].id, nInfo, targetRecordset);
                   if(contextObj.binding._im_header) {
                     contextObj.binding._im_header._im_repeater = headerNodes;
                   }
