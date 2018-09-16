@@ -652,13 +652,13 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->dbProxySetupForAccess("person", 1);
         $result = $this->db_proxy->readFromDB("person");
         $aName = $result[0]['name'];
-        var_export($result);
+        var_dump($result);
         $this->assertEquals(count($result), 1, "Just 1 records should be retrieved.");
 
         $this->dbProxySetupForAccess("person", 1);
         $this->db_proxy->dbSettings->addExtraCriteria("name","IS NOT NULL","");
         $result = $this->db_proxy->readFromDB("person");
-        //var_export($result);
+        var_export($result);
         $this->assertEquals(count($result), 1, "Just 1 records should be retrieved.");
         $this->assertEquals($result[0]['name'], $aName, "Same record should be retrieved.");
     }
