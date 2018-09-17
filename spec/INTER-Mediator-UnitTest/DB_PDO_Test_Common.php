@@ -8,7 +8,8 @@
  *
  */
 
-use \PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\TestCase;
+
 //use \DateTime;
 
 abstract class DB_PDO_Test_Common extends TestCase
@@ -34,8 +35,8 @@ abstract class DB_PDO_Test_Common extends TestCase
 
 //        $this->db_proxy->logger->clearLogs();
 
-        $result = $this->db_proxy->readFromDB("summary");
-        $recordCount = $this->db_proxy->countQueryResult("summary");
+        $result = $this->db_proxy->readFromDB();
+        $recordCount = $this->db_proxy->countQueryResult();
 
 //        var_export($this->db_proxy->logger->getErrorMessages());
 //        var_export($this->db_proxy->logger->getDebugMessages());
@@ -54,8 +55,8 @@ abstract class DB_PDO_Test_Common extends TestCase
     public function testQuery1_singleRecord()
     {
         $this->dbProxySetupForAccess("person", 1);
-        $result = $this->db_proxy->readFromDB("person");
-        $recordCount = $this->db_proxy->countQueryResult("person");
+        $result = $this->db_proxy->readFromDB();
+        $recordCount = $this->db_proxy->countQueryResult();
         $this->assertTrue((is_array($result) ? count($result) : -1) == 1, "After the query, just one should be retrieved.");
         $this->assertTrue($recordCount == 3, "This table contanins 3 records");
         $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
@@ -64,8 +65,8 @@ abstract class DB_PDO_Test_Common extends TestCase
     public function testQuery2_multipleRecord()
     {
         $this->dbProxySetupForAccess("person", 1000000);
-        $result = $this->db_proxy->readFromDB("person");
-        $recordCount = $this->db_proxy->countQueryResult("person");
+        $result = $this->db_proxy->readFromDB();
+        $recordCount = $this->db_proxy->countQueryResult();
         $this->assertTrue((is_array($result) ? count($result) : -1) == 3, "After the query, some records should be retrieved.");
         $this->assertTrue($recordCount == 3, "This table contanins 3 records");
         $this->assertTrue($result[2]["name"] === 'Anyone', "Field value is not same as the definition.");
@@ -112,8 +113,8 @@ abstract class DB_PDO_Test_Common extends TestCase
 
         $this->dbProxySetupForAccess("person", 1000000);
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $newKeyValue);
-        $result = $this->db_proxy->readFromDB("person");
-        $recordCount = $this->db_proxy->countQueryResult("person");
+        $result = $this->db_proxy->readFromDB();
+        $recordCount = $this->db_proxy->countQueryResult();
         $this->assertTrue(count($result) == 1, "It should be just one record.");
         $this->assertTrue($result[0]["name"] === $nameValue, "Field value is not same as the definition.");
         $this->assertTrue($result[0]["address"] === $addressValue, "Field value is not same as the definition.");
@@ -123,8 +124,8 @@ abstract class DB_PDO_Test_Common extends TestCase
     {
         $this->dbProxySetupForAccess("person", 1000000);
 //        $this->db_proxy->logger->clearLogs();
-        $result = $this->db_proxy->readFromDB("person");
-        $recordCount = $this->db_proxy->countQueryResult("person");
+        $result = $this->db_proxy->readFromDB();
+        $recordCount = $this->db_proxy->countQueryResult();
 
 //        echo "===ckeckpoint1===";
 //        var_export($this->db_proxy->logger->getErrorMessages());
@@ -139,8 +140,8 @@ abstract class DB_PDO_Test_Common extends TestCase
 //        var_export($this->db_proxy->logger->getDebugMessages());
 
         $this->dbProxySetupForAccess("person", 1000000, "contact");
-        $result = $this->db_proxy->readFromDB("person");
-        $recordCountAfter = $this->db_proxy->countQueryResult("person");
+        $result = $this->db_proxy->readFromDB();
+        $recordCountAfter = $this->db_proxy->countQueryResult();
         $this->assertTrue($recordCount + 1 == $recordCountAfter,
             "After copy a record, the count of records should increase one.");
     }
@@ -148,19 +149,19 @@ abstract class DB_PDO_Test_Common extends TestCase
     public function testCopyAssociatedRecords()
     {
         $this->dbProxySetupForAccess("person", 1000000);
-        $result = $this->db_proxy->readFromDB("person");
-        $recordCountPerson = $this->db_proxy->countQueryResult("person");
+        $result = $this->db_proxy->readFromDB();
+        $recordCountPerson = $this->db_proxy->countQueryResult();
 
         $parentId = $result[rand(0, $recordCountPerson - 1)]["id"];
 
         $this->dbProxySetupForAccess("contact", 1000000);
-        $result = $this->db_proxy->readFromDB("contact");
-        $recordCountContact = $this->db_proxy->countQueryResult("contact");
+        $result = $this->db_proxy->readFromDB();
+        $recordCountContact = $this->db_proxy->countQueryResult();
 
         $this->dbProxySetupForAccess("contact", 1000000);
         $this->db_proxy->dbSettings->addExtraCriteria("person_id", "=", $parentId);
-        $result = $this->db_proxy->readFromDB("contact");
-        $recordCountIncrease = $this->db_proxy->countQueryResult("contact");
+        $result = $this->db_proxy->readFromDB();
+        $recordCountIncrease = $this->db_proxy->countQueryResult();
 
         $this->dbProxySetupForAccess("person", 1000000, "contact");
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $parentId);
@@ -171,14 +172,14 @@ abstract class DB_PDO_Test_Common extends TestCase
 //        var_export($this->db_proxy->logger->getDebugMessages());
 
         $this->dbProxySetupForAccess("person", 1000000);
-        $result = $this->db_proxy->readFromDB("person");
-        $recordCountPersonAfter = $this->db_proxy->countQueryResult("person");
+        $result = $this->db_proxy->readFromDB();
+        $recordCountPersonAfter = $this->db_proxy->countQueryResult();
         $this->assertTrue($recordCountPerson + 1 == $recordCountPersonAfter,
             "After copy a record, the count of records should increase one.");
 
         $this->dbProxySetupForAccess("contact", 1000000);
-        $result = $this->db_proxy->readFromDB("contact");
-        $recordCountContactAfter = $this->db_proxy->countQueryResult("contact");
+        $result = $this->db_proxy->readFromDB();
+        $recordCountContactAfter = $this->db_proxy->countQueryResult();
         $this->assertTrue($recordCountContact + $recordCountIncrease == $recordCountContactAfter,
             "After copy a record, the count of associated records should increase one or more."
             . "[$recordCountContact, $recordCountIncrease, $recordCountContactAfter]");
@@ -647,4 +648,18 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertTrue(count($recSet) == 0, "Count pk values");
     }
 
+    public function testIgnoreValuesForSpecificOperators()
+    {
+        $this->dbProxySetupForAccess("person", 1);
+        $result = $this->db_proxy->readFromDB();
+        $aName = $result[0]['name'];
+        $this->assertEquals(count($result), 1, "Just 1 records should be retrieved.");
+
+        $this->dbProxySetupForAccess("person", 1);
+        $this->db_proxy->dbSettings->addExtraCriteria("id", "IS NOT NULL", "3");
+        $result = $this->db_proxy->readFromDB();
+        $this->assertEquals(is_array($result), true, "The retrieved data has to be array.");
+        $this->assertEquals(count($result), 1, "Just 1 records should be retrieved.");
+        $this->assertEquals($result[0]['name'], $aName, "Same record should be retrieved.");
+    }
 }

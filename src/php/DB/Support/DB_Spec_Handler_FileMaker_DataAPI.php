@@ -13,6 +13,7 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\DB\Support;
 
 class DB_Spec_Handler_FileMaker_DataAPI implements DB_Spec_Behavior
@@ -53,6 +54,11 @@ class DB_Spec_Handler_FileMaker_DataAPI implements DB_Spec_Behavior
     }
 
     public function isNullAcceptable()
+    {
+        return false;
+    }
+
+    public function isOperatorWithoutValue($operator)
     {
         return false;
     }
