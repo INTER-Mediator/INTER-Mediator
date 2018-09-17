@@ -647,4 +647,18 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($recSet) == 0, "Count pk values");
     }
 
+    public function testIgnoreValuesForSpecificOperators()
+    {
+        $this->dbProxySetupForAccess("person", 1);
+        $result = $this->db_proxy->readFromDB();
+        $aName = $result[0]['name'];
+        $this->assertEquals(count($result), 1, "Just 1 records should be retrieved.");
+
+        $this->dbProxySetupForAccess("person", 1);
+        $this->db_proxy->dbSettings->addExtraCriteria("id", "IS NOT NULL", "3");
+        $result = $this->db_proxy->readFromDB();
+        $this->assertEquals(is_array($result), true, "The retrieved data has to be array.");
+        $this->assertEquals(count($result), 1, "Just 1 records should be retrieved.");
+        $this->assertEquals($result[0]['name'], $aName, "Same record should be retrieved.");
+    }
 }
