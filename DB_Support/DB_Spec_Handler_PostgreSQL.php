@@ -40,6 +40,22 @@ class DB_Spec_Handler_PostgreSQL extends DB_Spec_Handler_PDO
         return true;
     }
 
+    public function isOperatorWithoutValue($operator)
+    {
+        return !(FALSE === array_search(strtoupper($operator), array(
+                'IS NOT NULL', //	NOT NULL value test
+                'IS NULL', //NULL value test
+                'NOTNULL', //	NOT NULL value test
+                'ISNULL', //NULL value test
+                'IS TRUE',
+                'IS NOT TRUE',
+                'IS FALSE',
+                'IS NOT FALSE',
+                'IS UNKNOWN',
+                'IS NOT UNKNOWN',
+            )));
+    }
+
     public function isPossibleOperator($operator)
     {
         return !(FALSE === array_search(strtoupper($operator), array(
@@ -82,9 +98,19 @@ class DB_Spec_Handler_PostgreSQL extends DB_Spec_Handler_PDO
                 '~', //	ビットのNOT	~ B'10001'	01110
                 '<<', //ビットの左シフト	B'10001' << 3	01000
                 '>>', //ビットの右シフト	B'10001' >> 2	00100
-                'IN'
+                'IN',
                 //[上記に含まれないもの]
                 //幾何データ型、ネットワークアドレス型、JSON演算子、配列演算子、範囲演算子
+                'IS NOT NULL', //	NOT NULL value test
+                'IS NULL', //NULL value test
+                'NOTNULL', //	NOT NULL value test
+                'ISNULL', //NULL value test
+                'IS TRUE',
+                'IS NOT TRUE',
+                'IS FALSE',
+                'IS NOT FALSE',
+                'IS UNKNOWN',
+                'IS NOT UNKNOWN',
             )));
     }
 

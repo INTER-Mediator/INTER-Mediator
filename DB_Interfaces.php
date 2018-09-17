@@ -41,6 +41,7 @@ interface DB_Spec_Behavior
     public function isContainingFieldName($fname, $fieldnames);
     public function isNullAcceptable();
     public function isSupportAggregation();
+    public function isOperatorWithoutValue($operator);
     public function isPossibleOperator($operator);
     public function isPossibleOrderSpecifier($specifier);
 }
