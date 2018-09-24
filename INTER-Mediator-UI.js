@@ -123,6 +123,9 @@ var IMLibUI = {
                     contextInfo.context.setModified(contextInfo.record, contextInfo.field, newValue);
                     throw 'unfinished';
                 }
+                if(INTERMediatorOnPage.doBeforeValueChange){
+                    INTERMediatorOnPage.doBeforeValueChange(idValue);
+                }
                 INTERMediatorOnPage.showProgress();
                 contextInfo.context.updateFieldValue(
                     idValue,
@@ -175,6 +178,9 @@ var IMLibUI = {
                                 }
                             }
                             IMLibCalc.recalculation();//IMLibCalc.recalculation(idValueCapt2); // Optimization Required
+                            if(INTERMediatorOnPage.doAfterValueChange){
+                              INTERMediatorOnPage.doAfterValueChange(idValueCapt2);
+                            }
                             INTERMediatorOnPage.hideProgress();
                             INTERMediatorLog.flushMessage();
                             if (completeTaskCapt) {
