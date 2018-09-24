@@ -53,15 +53,16 @@ Ver.5.8-dev (in development)
   remove "bi2php" from "lib" directory to improve speed performance of Native Authentication.
 - The INTERMediator.recordLimit property is introduced to store the number of records. Also added methods:
   INTERMediator.setRecordLimit(cname, limit) and INTERMediator.clearRecordLimit(cname).
-- THEAD/TFOOT of table can be set the linked node with caluculation.
 - Calculation to aggregate of same context as like "sum(mycontext@price)".
 - Update title of defedit.html and pageedit.html in "INTER-Mediator-Support" directory.
 - Remove search_page2.html ("search(using JavaScript)") in Practices directory.
 - Update deploy.sh and recipe.rb etc. for the INTER-Mediator-Server virtual machine and CI.
-- THEAD/TFOOT of table can be set the linked node with caluculation.
+- THEAD/TFOOT of table can be set the linked node with calculation.
 - Calculation to aggregate of same context as like "sum(mycontext@price)".
 - The method isOperatorWithoutValue() is introduced into PDO Spec Handler classes. It's for IS NULL
   with Definition File Editor.
+- INTERMediatorOnPage.doBeforeValueChange(id) and INTERMediatorOnPage.doAfterValueChange(id) are going to be
+  called before/after database access to update field data.
 - [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native
   Authentication or LDAP Authentication.
 - [INFO] FileMaker Data API (Trial) of FileMaker Server 16 is no longer supported.
