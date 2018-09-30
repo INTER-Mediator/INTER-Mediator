@@ -335,8 +335,6 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             }
         }
 
-        $childRecordId = null;
-        $childRecordIdValue = null;
         if ($this->dbSettings->getExtraCriteria()) {
             foreach ($this->dbSettings->getExtraCriteria() as $condition) {
                 if ($condition['field'] == '__operation__' && strtolower($condition['operator']) == 'or') {
@@ -690,14 +688,19 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                     $this->mainTableTotalCount = intval($scriptResult);
                 }
             } else {
-                if ($primaryKey === NULL) {
-                    $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 100000000, NULL, $script);
+                if (count($conditions) === 1 && isset($conditions[0]['recordId']) && is_numeric($recordId)) {
+                    $this->mainTableCount = 1;
+                    $this->mainTableTotalCount = 1;
                 } else {
-                    $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 1, NULL, $script);
+                    if ($primaryKey === NULL) {
+                        $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 100000000, NULL, $script);
+                    } else {
+                        $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 1, NULL, $script);
+                    }
+                    $this->mainTableCount = $result->count();
+                    $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 100000000, NULL, $script);
+                    $this->mainTableTotalCount = $result->count();
                 }
-                $this->mainTableCount = $result->count();
-                $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 100000000, NULL, $script);
-                $this->mainTableTotalCount = $result->count();
             }
         }
 
@@ -711,9 +714,8 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         return $recordArray;
     }
 
-    private function createRecordset($resultData, $dataSourceName, $usePortal, $childRecordId, $childRecordIdValue)
+    private function createRecordset($resultData)
     {
-        $isFirstRecord = true;
         $returnArray = array();
         $tableName = $this->dbSettings->getEntityForRetrieve();
         
@@ -725,78 +727,23 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
 
             $existsRelated = false;
             foreach ($resultData->getFieldNames() as $key => $field) {
-                if ($isFirstRecord) {
-                    $this->fieldInfo[] = $field;
-                }
-                // [WIP]
-                //if (count($dataArray) == 1) {
-                    if ($usePortal) {
-                        if (strpos($field, '::') !== false) {
-                            $existsRelated = true;
-                        }
-                        foreach ($dataArray as $portalKey => $portalValue) {
-                            $oneRecordArray[$portalKey][$this->specHandler->getDefaultKey()] = $recId; // parent record id
-                            $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
-                                "{$tableName}{$this->dbSettings->getSeparator()}$field", $portalValue);
-                        }
-                        if ($existsRelated === false) {
-                            $oneRecordArray = array();
-                            $oneRecordArray[0][$this->specHandler->getDefaultKey()] = $recId; // parent record id
-                        }
-                    } else {
-                        $oneRecordArray[$field] = $this->formatter->formatterFromDB(
-                            "{$tableName}{$this->dbSettings->getSeparator()}$field", $oneRecord->$field);
-                    }
-                /*
-                } else {
-                    foreach ($dataArray as $portalKey => $portalValue) {
-                        if (strpos($field, '::') !== false) {
-                            $existsRelated = true;
-                            $oneRecordArray[$portalKey][$this->specHandler->getDefaultKey()] = $recId; // parent record id
-                            $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
-                                "{$tableName}{$this->dbSettings->getSeparator()}$field", $portalValue);
-                        } else {
-                            $oneRecordArray[$field][] = $this->formatter->formatterFromDB(
-                                "{$tableName}{$this->dbSettings->getSeparator()}$field", $portalValue);
-                        }
-                    }
-                }
-                */
-            }
-            if ($usePortal) {
-                foreach ($oneRecordArray as $portalArrayField => $portalArray) {
-                    if ($portalArrayField !== $this->specHandler->getDefaultKey()) {
-                        $returnArray[] = $portalArray;
-                    }
-                }
-                if ($existsRelated === false) {
-                    $this->mainTableCount = 0;
-                } else {
-                    $this->mainTableCount = count($returnArray);
-                }
-            } else {
-                if ($childRecordId == null) {
-                    $returnArray[] = $oneRecordArray;
-                } else {
-                    foreach ($oneRecordArray as $portalArrayField => $portalArray) {
-                        if (isset($oneRecordArray[$childRecordId])
-                            && $childRecordIdValue == $oneRecordArray[$childRecordId]
-                        ) {
-                            $returnArray = array();
-                            $returnArray[] = $oneRecordArray;
-                            return $returnArray;
-                        }
-                        if (isset($oneRecordArray[$portalArrayField][$childRecordId])
-                            && $childRecordIdValue == $oneRecordArray[$portalArrayField][$childRecordId]
-                        ) {
-                            $returnArray = array();
-                            $returnArray[] = $oneRecordArray[$portalArrayField];
-                            return $returnArray;
+                $oneRecordArray[$field] = $this->formatter->formatterFromDB(
+                    "{$tableName}{$this->dbSettings->getSeparator()}$field", $oneRecord->$field);
+                foreach ($resultData->getPortalNames() as $portalName) {
+                    foreach ($resultData->{$portalName} as $relatedRecord) {
+                        $oneRecordArray[$portalName][$relatedRecord->getRecordId()] = array();
+                        foreach ($resultData->{$portalName}->getFieldNames() as $relatedKey => $relatedField) {
+                            if (strpos($relatedField, '::') !== false &&
+                                !in_array($relatedField, array('recordId', 'modId'))) {
+                                $oneRecordArray[$portalName][$relatedRecord->getRecordId()][$this->specHandler->getDefaultKey()] = $relatedRecord->getRecordId();
+                                $oneRecordArray[$portalName][$relatedRecord->getRecordId()][$relatedField] = $this->formatter->formatterFromDB(
+                                    "{$tableName}{$this->dbSettings->getSeparator()}$relatedField", $relatedRecord->$relatedField);
+                            }
                         }
                     }
                 }
             }
-            $isFirstRecord = false;
+            $returnArray[] = $oneRecordArray;
         }
         
         return $returnArray;
@@ -1062,7 +1009,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                         . "code={$this->fmData->errorCode()}, url={$this->fmData->{$layout}->getDebugInfo()}<hr>"));
                     return false;
                 }
-                $this->updatedRecord = $this->createRecordset($result, $dataSourceName, null, null, null);
+                $this->updatedRecord = $this->createRecordset($result);
                 $this->logger->setDebugMessage($this->stringWithoutCredential($this->fmData->{$layout}->getDebugInfo()));
                 break;
             }
@@ -1192,7 +1139,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         $this->notifyHandler->setQueriedPrimaryKeys(array($recId));
         $this->notifyHandler->setQueriedEntity($this->fmData->layout);
 
-        $this->updatedRecord = $this->createRecordset($result, $dataSourceName, null, null, null);
+        $this->updatedRecord = $this->createRecordset($result);
 
         return $recId;
     }
