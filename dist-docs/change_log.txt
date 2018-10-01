@@ -63,6 +63,7 @@ Ver.5.8-dev (in development)
   with Definition File Editor.
 - INTERMediatorOnPage.doBeforeValueChange(id) and INTERMediatorOnPage.doAfterValueChange(id) are going to be
   called before/after database access to update field data.
+- Add Sample_Extensible for FileMaker Server in the "Samples" directory.
 - [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native
   Authentication or LDAP Authentication.
 - [INFO] FileMaker Data API (Trial) of FileMaker Server 16 is no longer supported.
