@@ -322,6 +322,7 @@ if [ $OS = 'alpine' ] ; then
     echo "RewriteEngine on" >> /etc/apache2/conf.d/im.conf
     echo "RewriteRule ^/fmi/rest/(.*) http://192.168.56.1/fmi/rest/\$1 [P,L]" >> /etc/apache2/conf.d/im.conf
     echo "RewriteRule ^/fmi/xml/(.*)  http://192.168.56.1/fmi/xml/\$1 [P,L]" >> /etc/apache2/conf.d/im.conf
+    sed -i 's/^LoadModule lbmethod_/#LoadModule lbmethod_/' /etc/apache2/conf.d/proxy.conf
 fi
 
 # Modify php.ini
