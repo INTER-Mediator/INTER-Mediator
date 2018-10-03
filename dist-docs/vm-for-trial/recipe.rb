@@ -1425,6 +1425,9 @@ RewriteRule ^/fmi/rest/(.*) http://192.168.56.1/fmi/rest/$1 [P,L]
 RewriteRule ^/fmi/xml/(.*)  http://192.168.56.1/fmi/xml/$1 [P,L]
 EOF
   end
+  execute 'sed -i "s/^LoadModule lbmethod_/#LoadModule lbmethod_/" /etc/apache2/conf.d/proxy.conf' do
+    command 'sed -i "s/^LoadModule lbmethod_/#LoadModule lbmethod_/" /etc/apache2/conf.d/proxy.conf'
+  end
 end
   
 if node[:platform] == 'alpine'

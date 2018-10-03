@@ -719,6 +719,14 @@ describe file('/etc/apache2/conf.d/im.conf'), :if => os[:family] == 'alpine' do
   its(:content) { should match /RewriteRule \^\/fmi\/xml\/\(\.\*\)  http:\/\/192.168.56.1\/fmi\/xml\/\$1/ }
 end
 
+describe file('/etc/apache2/conf.d/proxy.conf'), :if => os[:family] == 'alpine' do
+  it { should be_file }
+  its(:content) { should match /^#LoadModule lbmethod_bybusyness_module modules\/mod_lbmethod_bybusyness.so/ }
+  its(:content) { should match /^#LoadModule lbmethod_byrequests_module modules\/mod_lbmethod_byrequests.so/ }
+  its(:content) { should match /^#LoadModule lbmethod_bytraffic_module modules\/mod_lbmethod_bytraffic.so/ }
+  its(:content) { should match /^#LoadModule lbmethod_heartbeat_module modules\/mod_lbmethod_heartbeat.so/ }
+end
+
 describe file('/etc/php7/php.ini'), :if => os[:family] == 'alpine' do
   it { should be_file }
   its(:content) { should match /max_execution_time = 120/ }
