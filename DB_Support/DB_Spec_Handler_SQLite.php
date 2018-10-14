@@ -54,6 +54,7 @@ class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
                 'OR',
                 'IN',
                 '-', '+', '~', 'NOT',
+                'IS NOT NULL', //	NOT NULL value test
             )));
     }
 

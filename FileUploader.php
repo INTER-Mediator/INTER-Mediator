@@ -333,7 +333,6 @@ class FileUploader
                     '&-recid=' . intval($_POST['_im_keyvalue']) .
                     '&-field=' . urlencode($targetFieldName));
             } else if ($dbspec['db-class'] === 'FileMaker_DataAPI') {
-                // [WIP] FileMaker Data API (Trial) doesn't support uploading to container fields
                 $layout = $datasource[0]['name'];
                 $dbProxyInstance->dbClass->setupFMDataAPIforDB($layout, urlencode($targetFieldName));
                 $result = $dbProxyInstance->dbClass->fmData->{$layout}->query(NULL, NULL, 1, 1);

@@ -55,6 +55,11 @@ class DB_Spec_Handler_FileMaker_DataAPI implements DB_Spec_Behavior
         return false;
     }
 
+    public function isOperatorWithoutValue($operator)
+    {
+        return false;
+    }
+
     public function isPossibleOperator($operator)
     {
         return !(FALSE === array_search(strtoupper($operator), array(
