@@ -52,9 +52,9 @@ EOF
 #/media/cdrom/apks
 http://dl-cdn.alpinelinux.org/alpine/v3.8/main
 http://dl-cdn.alpinelinux.org/alpine/v3.8/community
-http://dl-cdn.alpinelinux.org/alpine/edge/main
-http://dl-cdn.alpinelinux.org/alpine/edge/community
-http://dl-cdn.alpinelinux.org/alpine/edge/testing
+#http://dl-cdn.alpinelinux.org/alpine/edge/main
+#http://dl-cdn.alpinelinux.org/alpine/edge/community
+#http://dl-cdn.alpinelinux.org/alpine/edge/testing
 EOF
     end
   else
@@ -63,9 +63,9 @@ EOF
 #/media/cdrom/apks
 http://dl-5.alpinelinux.org/alpine/v3.7/main
 http://dl-5.alpinelinux.org/alpine/v3.7/community
-http://dl-5.alpinelinux.org/alpine/edge/main
-http://dl-5.alpinelinux.org/alpine/edge/community
-http://dl-5.alpinelinux.org/alpine/edge/testing
+#http://dl-5.alpinelinux.org/alpine/edge/main
+#http://dl-5.alpinelinux.org/alpine/edge/community
+#http://dl-5.alpinelinux.org/alpine/edge/testing
 EOF
     end
   end
@@ -712,6 +712,9 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
     package 'apache2-proxy' do
       action :install
     end
+    execute 'sed -i "s/^LoadModule lbmethod_/#LoadModule lbmethod_/" /etc/apache2/conf.d/proxy.conf' do
+      command 'sed -i "s/^LoadModule lbmethod_/#LoadModule lbmethod_/" /etc/apache2/conf.d/proxy.conf'
+    end  
   end
   if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
     directory '/run/apache2/' do

@@ -205,7 +205,7 @@ class MediaAccess
                 $cookieNamePassword = '_im_crypted';
                 $credential = isset($_COOKIE[$cookieNameUser]) ? urlencode($_COOKIE[$cookieNameUser]) : '';
                 if (isset($_COOKIE[$cookieNamePassword]) && strlen($_COOKIE[$cookieNamePassword]) > 0) {
-                    $credential .= ':' . urnencode($rsa->decrypt(base64_decode($_COOKIE[$cookieNamePassword])));
+                    $credential .= ':' . urlencode($rsa->decrypt(base64_decode($_COOKIE[$cookieNamePassword])));
                 }
                 $urlHost = $dbProxyInstance->dbSettings->getDbSpecProtocol() . '://' . $credential . '@'
                     . $dbProxyInstance->dbSettings->getDbSpecServer() . ':'
