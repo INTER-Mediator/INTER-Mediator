@@ -16,7 +16,11 @@ All information can be available at:
 Sample pages within this repository are published at below,
 and anyone can see sample pages working with database.
 You don't have to deploy the samples if you just want to see this at a glance.
-- http://msyk.dyndns.org/INTER-Mediator/Samples/
+This demo page works on INTER-Mediator Ver.5.x.
+- http://demo.inter-mediator.com/INTER-Mediator_v5/Samples/
+
+The demo with INTER-Mediator Ver.6 is as below, but it's experimental. Ver.6 is still under constraction.
+- http://demo.inter-mediator.com/INTER-Mediator/samples/
 
 ## Documentation
 
