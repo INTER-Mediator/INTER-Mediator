@@ -1868,7 +1868,7 @@ export const INTERMediator = {
     }
   },
 
-  addRecordLimit: function (contextName, limit) {
+  setRecordLimit: function (contextName, limit) {
     'use strict'
     var value = INTERMediator.recordLimit
     value[contextName] = limit
