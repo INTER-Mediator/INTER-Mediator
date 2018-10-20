@@ -909,6 +909,10 @@ IMLibContext.prototype.getRecordNumber = function () {
                 }
             }
         }
+        // From INTERMediator.pagedSize
+        if (parseInt(INTERMediator.pagedSize, 10) > 0) {
+            recordNumber = INTERMediator.pagedSize;
+        }
         // In case of paginating context, set INTERMediator.pagedSize property.
         if (!this.contextDefinition.relation &&
             this.contextDefinition.paging &&
