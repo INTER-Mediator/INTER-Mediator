@@ -999,7 +999,11 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     if (isset($data['recordId']) && !empty($recId)) {
                         unset($data['recordId']);
                     }
-                    $this->fmData->{$layout}->update($recId, $data, -1, NULL, $script);
+
+                    // for updating portal data
+                    list($data, $portal) = $this->_getPortalDataForUpdating($data, $result);
+
+                    $this->fmData->{$layout}->update($recId, $data, -1, $portal, $script);
                 }
                 $result = $this->fmData->{$layout}->getRecord($recId);
                 if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
@@ -1423,6 +1427,41 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         return $direction;
     }
 
+    protected function _getPortalDataForUpdating($data, $result)
+    {
+        // for FileMaker Server 17
+        $portal = NULL;
+        $portalNames = $result->getPortalNames();
+        if (count($portalNames) >= 1) {
+            $portal = array();
+            $portalRecord = array();
+            foreach ($data as $fieldName => $value) {
+                if (mb_strpos($fieldName, '::') !== false && mb_strpos($fieldName, '.') !== false) {
+                    error_log(var_export($fieldName, true));
+                    unset($data[$fieldName]);
+                    $dotPos = mb_strpos($fieldName, '::');
+                    $tableOccurrence = mb_substr($fieldName, 0, $dotPos);
+                    $dotPos = mb_strpos($fieldName, '.');
+                    $fullyQualifiedFieldName = mb_substr($fieldName, 0, $dotPos);
+                    $relatedRecId = mb_substr($fieldName, $dotPos + 1, mb_strlen($fieldName));
+                    $portalRecord[$fullyQualifiedFieldName] = $value;
+                    if (!isset($portalRecord['recordId'])) {
+                        $portalRecord['recordId'] = $relatedRecId;
+                    }
+                }
+            }
+            if (count($portalRecord) > 0) {
+                $portal[$tableOccurrence] = array($portalRecord);
+            } else {
+                $portal = NULL;
+            }
+        }
+        if ($data === array()) {
+            $data = NULL;
+        }
+
+        return array($data, $portal);
+    }
 
     public function deleteForTest($table, $conditions = null)
     {
