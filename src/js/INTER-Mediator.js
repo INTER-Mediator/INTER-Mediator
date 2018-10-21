@@ -721,10 +721,10 @@ export const INTERMediator = {
       async function enclosureProcessing (
         enclosureNode, repeatersOriginal, currentRecord, parentObjectInfo,
         currentContextObj, procBeforeRetrieve, customExpandRepeater) {
-
         let linkedNodes, repeaters, linkDefs, voteResult, currentContextDef, fieldList, i, targetRecords,
-          newNode, keyValue, selectedNode, isExpanding, calcFields, contextObj = null,
+          newNode, keyValue, selectedNode, isExpanding, calcFields,
           targetRecordset, keyingValue, footerNodes, headerNodes, nInfo
+        let contextObj = null
 
         try {
           repeaters = collectRepeaters(repeatersOriginal) // Collecting repeaters to this array.
@@ -765,8 +765,10 @@ export const INTERMediator = {
             contextObj.setRelationWithParent(currentRecord, parentObjectInfo, currentContextObj)
             if (currentContextDef.relation && currentContextDef.relation[0] &&
               Boolean(currentContextDef.relation[0].portal) === true) {
-              currentContextDef.currentrecord = currentRecord
-              keyValue = currentRecord[INTERMediatorOnPage.defaultKeyName]
+              if (currentRecord) {
+                currentContextDef.currentrecord = currentRecord
+                keyValue = currentRecord[INTERMediatorOnPage.defaultKeyName]
+              }
             }
             if (procBeforeRetrieve) {
               procBeforeRetrieve(contextObj)
@@ -782,6 +784,12 @@ export const INTERMediator = {
               }
             }
             contextObj.storeRecords(targetRecords)
+
+            if (currentContextDef.relation && currentContextDef.relation[0] &&
+              Boolean(currentContextDef.relation[0].portal) === true) {
+              contextObj.isPortal = true
+            }
+
             callbackForAfterQueryStored(currentContextDef, contextObj)
             if (customExpandRepeater === undefined) {
               contextObj.registeredId = targetRecords.registeredId
@@ -843,7 +851,8 @@ export const INTERMediator = {
         }
 
         function seekWithAttributeImpl (node, attrName) {
-          let ix, adding, result = []
+          let ix, adding
+          let result = []
           if (node && node.nodeType === 1) {
             if (node.getAttribute(attrName)) {
               result.push(node)
@@ -1113,6 +1122,7 @@ export const INTERMediator = {
         repeatersOriginal, targetRecordset, targetTotalCount, i, currentContextDef, indexContext,
         insertNode, countRecord, linkedElements, keyingValue, keyField, keyValue,
         idValuesForFieldName
+      let portalRecords = []
 
       encNodeTag = node.tagName
       repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag)
@@ -1147,6 +1157,18 @@ export const INTERMediator = {
       }
 
       countRecord = targetRecordset ? targetRecordset.length : 0
+      if (contextObj.isPortal === true) {
+        if (targetRecordset[0] && targetRecordset[0][0] &&
+          targetRecordset[0][0][contextObj.contextName]) {
+          // for FileMaker Portal Access Mode
+          targetRecordset = targetRecordset[0][0][contextObj.contextName]
+          for (i = 0; i < Object.keys(targetRecordset).length; i++) {
+            portalRecords.push(targetRecordset[Object.keys(targetRecordset)[i]])
+          }
+          targetRecordset = portalRecords
+          countRecord = targetRecordset ? Object.keys(targetRecordset).length : 0
+        }
+      }
       for (ix = 0; ix < countRecord; ix++) { // for each record
         repeatersOneRec = cloneEveryNodes(repeatersOriginal)
         linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(repeatersOneRec, true)

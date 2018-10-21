@@ -76,6 +76,7 @@ Ver.5.8-dev (in development)
 - [BUG FIX] Fix Soft Delete function when using FileMaker Server. The affected versions are 5.5, 5.6 and 5.7.
 - [BUG FIX] Fix an error when using the 'field-group' key and FileMaker Server. The affected version is 5.7.
 - [BUG FIX] INTERMediatorLib.getParentRepeaters works in case of parameter node isn't target node.
+- [BUG FIX] Fix showing a portal record when using portal access mode for FileMaker Server in some cases.
 
 Ver.5.7 (March 29, 2018)
 - The "data-im-format" attribute is introduced.
