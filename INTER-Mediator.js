@@ -776,8 +776,10 @@ var INTERMediator = {
             contextObj.setRelationWithParent(currentRecord, parentObjectInfo, currentContextObj);
             if (currentContextDef.relation && currentContextDef.relation[0] &&
               Boolean(currentContextDef.relation[0].portal) === true) {
-              currentContextDef.currentrecord = currentRecord;
-              keyValue = currentRecord[INTERMediatorOnPage.defaultKeyName];
+              if (currentRecord) {
+                currentContextDef.currentrecord = currentRecord;
+                keyValue = currentRecord[INTERMediatorOnPage.defaultKeyName];
+              }
             }
             if (procBeforeRetrieve) {
               procBeforeRetrieve(contextObj);
@@ -793,6 +795,12 @@ var INTERMediator = {
               }
             }
             contextObj.storeRecords(targetRecords);
+
+            if (currentContextDef.relation && currentContextDef.relation[0] &&
+              Boolean(currentContextDef.relation[0].portal) === true) {
+              contextObj.isPortal = true;
+            }
+
             callbackForAfterQueryStored(currentContextDef, contextObj);
             if (customExpandRepeater === undefined) {
               contextObj.registeredId = targetRecords.registeredId;
@@ -1118,8 +1126,8 @@ var INTERMediator = {
        */
       function expandRepeaters(contextObj, node, targetRecords) {
         var newNode, nodeClass, dataAttr, repeatersOneRec, newlyAddedNodes, encNodeTag, repNodeTag, ix,
-          repeatersOriginal, targetRecordset, targetTotalCount, i, currentContextDef, indexContext,
-          insertNode, countRecord, linkedElements, keyingValue, keyField, keyValue,
+          repeatersOriginal, targetRecordset, portalRecords = [], targetTotalCount, i, currentContextDef,
+          indexContext, insertNode, countRecord, linkedElements, keyingValue, keyField, keyValue,
           idValuesForFieldName;
 
         encNodeTag = node.tagName;
@@ -1156,6 +1164,18 @@ var INTERMediator = {
         }
 
         countRecord = targetRecordset ? targetRecordset.length : 0;
+        if (contextObj.isPortal === true) {
+          if (targetRecordset[0] && targetRecordset[0][0] &&
+            targetRecordset[0][0][contextObj.contextName]) {
+            // for FileMaker Portal Access Mode
+            targetRecordset = targetRecordset[0][0][contextObj.contextName];
+            for (i = 0; i < Object.keys(targetRecordset).length; i++) {
+              portalRecords.push(targetRecordset[Object.keys(targetRecordset)[i]]);
+            }
+            targetRecordset = portalRecords;
+            countRecord = targetRecordset ? Object.keys(targetRecordset).length : 0;
+          }
+        }
         for (ix = 0; ix < countRecord; ix++) { // for each record
           repeatersOneRec = cloneEveryNodes(repeatersOriginal);
           linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(repeatersOneRec, true);
