@@ -905,8 +905,14 @@ IMLibContext.prototype.getRecordNumber = function () {
         if (key === this.contextDefinition.name &&
           value.length > 0) {
           recordNumber = parseInt(value)
+          INTERMediator.setLocalProperty('_im_pagedSize', recordNumber)
         }
       }
+    }
+    // From INTERMediator.pagedSize
+    if (parseInt(INTERMediator.pagedSize, 10) > 0) {
+      recordNumber = INTERMediator.pagedSize
+      INTERMediator.setLocalProperty('_im_pagedSize', recordNumber)
     }
     // From Local context's limitnumber directive
     for (key in IMLibLocalContext.store) {
@@ -919,12 +925,9 @@ IMLibContext.prototype.getRecordNumber = function () {
           value.length > 0 &&
           keyParams[0].trim() === 'limitnumber') {
           recordNumber = parseInt(value)
+          INTERMediator.setLocalProperty('_im_pagedSize', recordNumber)
         }
       }
-    }
-    // From INTERMediator.pagedSize
-    if (parseInt(INTERMediator.pagedSize, 10) > 0) {
-      recordNumber = INTERMediator.pagedSize
     }
     // In case of paginating context, set INTERMediator.pagedSize property.
     if (!this.contextDefinition.relation &&
