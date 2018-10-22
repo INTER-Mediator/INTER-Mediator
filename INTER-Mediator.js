@@ -1165,10 +1165,9 @@ var INTERMediator = {
 
         countRecord = targetRecordset ? targetRecordset.length : 0;
         if (contextObj.isPortal === true) {
-          if (targetRecordset[0] && targetRecordset[0][0] &&
-            targetRecordset[0][0][contextObj.contextName]) {
+          if (targetRecordset[0] && targetRecordset[0][contextObj.contextName]) {
             // for FileMaker Portal Access Mode
-            targetRecordset = targetRecordset[0][0][contextObj.contextName];
+            targetRecordset = targetRecordset[0][contextObj.contextName];
             for (i = 0; i < Object.keys(targetRecordset).length; i++) {
               portalRecords.push(targetRecordset[Object.keys(targetRecordset)[i]]);
             }
