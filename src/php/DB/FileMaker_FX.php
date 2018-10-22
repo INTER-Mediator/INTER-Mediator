@@ -274,7 +274,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
         $dataSourceName = $this->dbSettings->getDataSourceName();
 
         $usePortal = false;
-        if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
+        if (count($this->dbSettings->getForeignFieldAndValue()) > 0 || isset($context['relation'])) {
             foreach ($context['relation'] as $relDef) {
                 if (isset($relDef['portal']) && $relDef['portal']) {
                     $usePortal = true;
