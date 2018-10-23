@@ -105,7 +105,12 @@ const IMLibUI = {
           throw 'unfinished'
         }
         newValue = IMLibElement.getValueFromIMNode(changedObj)
-        parentContext = contextInfo.context.parentContext
+        if (contextInfo.context.parentContext) {
+          parentContext = contextInfo.context.parentContext
+        } else {
+          // for FileMaker Portal Access Mode
+          parentContext = IMLibContextPool.getContextFromName(contextInfo.context.sourceName)[0]
+        }
         if (parentContext) {
           result = parentContext.isValueUndefined(
             Object.keys(parentContext.store)[0], contextInfo.field, contextInfo.record)
