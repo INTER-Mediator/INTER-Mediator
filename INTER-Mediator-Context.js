@@ -650,10 +650,19 @@ IMLibContext.prototype.updateFieldValue = function (idValue, succeedProc, errorP
         }
     } else {
         var targetContext = contextInfo.context;
-        var parentContext = targetContext.parentContext;
+        var parentContext, keyingComp;
+        if (targetContext.isPortal === true) {
+            parentContext = IMLibContextPool.getContextFromName(targetContext.sourceName)[0];
+        } else {
+            parentContext = targetContext.parentContext;
+        }
         var targetField = contextInfo.field;
-        var keyingComp
+        if (targetContext.isPortal === true) {
+            keyingComp = Object.keys(parentContext.store)[0].split('=');
+        } else {
+            keyingComp
             = (targetContext.isPortal ? targetContext.potalContainingRecordKV : contextInfo.record).split('=');
+        }
         var keyingField = keyingComp[0];
         keyingComp.shift();
         var keyingValue = keyingComp.join('=');
@@ -749,10 +758,15 @@ IMLibContext.prototype.updateFieldValue = function (idValue, succeedProc, errorP
                     newValue = IMLibElement.getValueFromIMNode(changedObjectCapt);
                     if (newValue !== null) {
                         if (targetContextCapt.isPortal) {
-                            criteria = targetContextCapt.potalContainingRecordKV.split('=');
+                            if (targetContextCapt.potalContainingRecordKV == null) {
+                                criteria = Object.keys(targetContextCapt.foreignValue);
+                                criteria[1] = targetContextCapt.foreignValue[criteria[0]];
+                            } else {
+                                criteria = targetContextCapt.potalContainingRecordKV.split('=');
+                            }
                             INTERMediator_DBAdapter.db_update_async(
                                 {
-                                    name: targetContextCapt.parentContext.contextName,
+                                    name: targetContextCapt.isPortal ? targetContextCapt.sourceName : targetContextCapt.parentContext.contextName,
                                     conditions: [{field: criteria[0], operator: '=', value: criteria[1]}],
                                     dataset: [
                                         {
