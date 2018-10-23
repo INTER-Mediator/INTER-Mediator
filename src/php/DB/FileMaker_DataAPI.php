@@ -272,6 +272,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         $dataSourceName = $this->dbSettings->getDataSourceName();
 
         $usePortal = FALSE;
+        $portalParentKeyField = NULL;
         if (count($this->dbSettings->getForeignFieldAndValue()) > 0 || isset($context['relation'])) {
             foreach ($context['relation'] as $relDef) {
                 if (isset($relDef['portal']) && $relDef['portal']) {
@@ -279,6 +280,11 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                     $context['records'] = 1;
                     $context['paging'] = TRUE;
                 }
+            }
+            if ($usePortal === TRUE) {
+                $this->dbSettings->setDataSourceName($context['view']);
+                $parentTable = $this->dbSettings->getDataSourceTargetArray();
+                $portalParentKeyField = $parentTable['key'];
             }
         }
 
@@ -370,7 +376,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             }
         }
 
-        if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
+        if (count($this->dbSettings->getForeignFieldAndValue()) > 0 || isset($context['relation'])) {
             foreach ($context['relation'] as $relDef) {
                 foreach ($this->dbSettings->getForeignFieldAndValue() as $foreignDef) {
                     if (isset($relDef['join-field']) && $relDef['join-field'] == $foreignDef['field']) {
@@ -1433,7 +1439,6 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             $portalRecord = array();
             foreach ($data as $fieldName => $value) {
                 if (mb_strpos($fieldName, '::') !== false && mb_strpos($fieldName, '.') !== false) {
-                    error_log(var_export($fieldName, true));
                     unset($data[$fieldName]);
                     $dotPos = mb_strpos($fieldName, '::');
                     $tableOccurrence = mb_substr($fieldName, 0, $dotPos);

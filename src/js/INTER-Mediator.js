@@ -725,6 +725,7 @@ export const INTERMediator = {
           newNode, keyValue, selectedNode, isExpanding, calcFields,
           targetRecordset, keyingValue, footerNodes, headerNodes, nInfo
         let contextObj = null
+        let tempObj = {}
 
         try {
           repeaters = collectRepeaters(repeatersOriginal) // Collecting repeaters to this array.
@@ -788,6 +789,12 @@ export const INTERMediator = {
             if (currentContextDef.relation && currentContextDef.relation[0] &&
               Boolean(currentContextDef.relation[0].portal) === true) {
               contextObj.isPortal = true
+              keyValue = targetRecords.recordset[currentContextDef.relation[0]['join-field']]
+              if (Object.keys(contextObj.foreignValue).length === 0) {
+                tempObj.foreignValue = {}
+                tempObj.foreignValue[currentContextDef.relation[0]['join-field']] = keyValue
+                contextObj.foreignValue = tempObj.foreignValue
+              }
             }
 
             callbackForAfterQueryStored(currentContextDef, contextObj)
