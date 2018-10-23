@@ -737,6 +737,7 @@ var INTERMediator = {
           var linkedNodes, repeaters, linkDefs, voteResult, currentContextDef, fieldList, i, targetRecords,
             newNode, keyValue, selectedNode, isExpanding, calcFields, contextObj = null,
             targetRecordset, ix, keyingValue, footerNodes, headerNodes, nInfo;
+          var tempObj = {};
 
           repeaters = collectRepeaters(repeatersOriginal);  // Collecting repeaters to this array.
           linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode;
@@ -799,6 +800,12 @@ var INTERMediator = {
             if (currentContextDef.relation && currentContextDef.relation[0] &&
               Boolean(currentContextDef.relation[0].portal) === true) {
               contextObj.isPortal = true;
+              keyValue = targetRecords.recordset[currentContextDef.relation[0]['join-field']];
+              if (Object.keys(contextObj.foreignValue).length === 0) {
+                tempObj.foreignValue = {};
+                tempObj.foreignValue[currentContextDef.relation[0]['join-field']] = keyValue;
+                contextObj.foreignValue = tempObj.foreignValue;
+              }
             }
 
             callbackForAfterQueryStored(currentContextDef, contextObj);
@@ -1165,10 +1172,9 @@ var INTERMediator = {
 
         countRecord = targetRecordset ? targetRecordset.length : 0;
         if (contextObj.isPortal === true) {
-          if (targetRecordset[0] && targetRecordset[0][0] &&
-            targetRecordset[0][0][contextObj.contextName]) {
+          if (targetRecordset[0] && targetRecordset[0][contextObj.contextName]) {
             // for FileMaker Portal Access Mode
-            targetRecordset = targetRecordset[0][0][contextObj.contextName];
+            targetRecordset = targetRecordset[0][contextObj.contextName];
             for (i = 0; i < Object.keys(targetRecordset).length; i++) {
               portalRecords.push(targetRecordset[Object.keys(targetRecordset)[i]]);
             }
