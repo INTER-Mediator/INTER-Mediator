@@ -125,7 +125,7 @@ const IMLibUI = {
           contextInfo.context.setModified(contextInfo.record, contextInfo.field, newValue)
           throw 'unfinished'
         }
-        if(INTERMediatorOnPage.doBeforeValueChange){
+        if (INTERMediatorOnPage.doBeforeValueChange) {
           INTERMediatorOnPage.doBeforeValueChange(idValue)
         }
         INTERMediatorOnPage.showProgress()
@@ -180,7 +180,7 @@ const IMLibUI = {
                 }
               }
               IMLibCalc.recalculation()
-              if(INTERMediatorOnPage.doAfterValueChange){
+              if (INTERMediatorOnPage.doAfterValueChange) {
                 INTERMediatorOnPage.doAfterValueChange(idValueCapt2)
               }
               INTERMediatorOnPage.hideProgress()
@@ -480,10 +480,15 @@ const IMLibUI = {
           })()
 
           if (currentContextCapt.isPortal) {
-            parentKeyValue = currentContextCapt.potalContainingRecordKV.split('=')
+            if (currentContextCapt.potalContainingRecordKV === null) {
+              parentKeyValue = Object.keys(currentContextCapt.foreignValue)
+              parentKeyValue[1] = currentContextCapt.foreignValue[parentKeyValue[0]]
+            } else {
+              parentKeyValue = currentContextCapt.potalContainingRecordKV.split('=')
+            }
             INTERMediator_DBAdapter.db_update_async(
               {
-                name: currentContextCapt.parentContext.contextName,
+                name: currentContextCapt.parentContext && currentContextCapt.parentContext.contextName ? currentContextCapt.parentContext.contextName : currentContextCapt.sourceName,
                 conditions: [
                   {field: parentKeyValue[0], operator: '=', value: parentKeyValue[1]}
                 ],
@@ -547,7 +552,11 @@ const IMLibUI = {
       targetName = currentObj.contextName
       currentContext = currentObj.getContextDef()
       isPortal = currentObj.isPortal
-      parentContextName = currentObj.parentContext ? currentObj.parentContext.contextName : null
+      if (isPortal) {
+        parentContextName = currentObj.sourceName ? currentObj.sourceName : null
+      } else {
+        parentContextName = currentObj.parentContext ? currentObj.parentContext.contextName : null
+      }
       return async function (completeTask) {
         let portalField, recordSet, index, targetPortalField, targetPortalValue
         let existRelated = false
@@ -592,17 +601,19 @@ const IMLibUI = {
               ]
             },
             async function (targetRecord) {
-              for (portalField in targetRecord.dbresult[0][0]) {
-                if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::' + INTERMediatorOnPage.defaultKeyName) {
-                  existRelated = true
-                  targetPortalField = portalField
-                  if (portalField === targetName + '::' + recordSet[0].field) {
-                    targetPortalValue = recordSet[0].value
-                    break
-                  }
-                  if (portalField !== targetName + '::id' &&
-                    portalField !== targetName + '::' + recordSet[0].field) {
-                    break
+              if (targetRecord.dbresult && targetRecord.dbresult[0] && targetRecord.dbresult[0][0]) {
+                for (portalField in targetRecord.dbresult[0][0]) {
+                  if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::' + INTERMediatorOnPage.defaultKeyName) {
+                    existRelated = true
+                    targetPortalField = portalField
+                    if (portalField === targetName + '::' + recordSet[0].field) {
+                      targetPortalValue = recordSet[0].value
+                      break
+                    }
+                    if (portalField !== targetName + '::id' &&
+                      portalField !== targetName + '::' + recordSet[0].field) {
+                      break
+                    }
                   }
                 }
               }
@@ -654,7 +665,7 @@ const IMLibUI = {
               conditions: [{
                 field: currentContext.relation[0]['join-field'],
                 operator: '=',
-                value: foreignValuesCapt.id
+                value: foreignValuesCapt && foreignValuesCapt.id ? foreignValuesCapt.id : keyValueCapt
               }],
               dataset: relatedRecordSet
             },
