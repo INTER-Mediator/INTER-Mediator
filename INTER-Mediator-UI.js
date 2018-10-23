@@ -475,10 +475,15 @@ var IMLibUI = {
                     })();
 
                     if (currentContextCapt.isPortal) {
-                        parentKeyValue = currentContextCapt.potalContainingRecordKV.split('=');
+                        if (currentContextCapt.potalContainingRecordKV === null) {
+                            parentKeyValue = Object.keys(currentContextCapt.foreignValue);
+                            parentKeyValue[1] = currentContextCapt.foreignValue[parentKeyValue[0]];
+                        } else {
+                            parentKeyValue = currentContextCapt.potalContainingRecordKV.split('=');
+                        }
                         INTERMediator_DBAdapter.db_update_async(
                             {
-                                name: currentContextCapt.parentContext.contextName,
+                                name: currentContextCapt.parentContext && currentContextCapt.parentContext.contextName ? currentContextCapt.parentContext.contextName : currentContextCapt.sourceName,
                                 conditions: [
                                     {field: parentKeyValue[0], operator: '=', value: parentKeyValue[1]}
                                 ],
@@ -545,7 +550,11 @@ var IMLibUI = {
             targetName = currentObj.contextName;
             currentContext = currentObj.getContextDef();
             isPortal = currentObj.isPortal;
-            parentContextName = currentObj.parentContext ? currentObj.parentContext.contextName : null;
+            if (isPortal) {
+                parentContextName = currentObj.sourceName ? currentObj.sourceName : null;
+            } else {
+                parentContextName = currentObj.parentContext ? currentObj.parentContext.contextName : null;
+            }
             return function (completeTask) {
                 var targetRecord, portalField, recordSet, index, targetPortalField, targetPortalValue,
                     existRelated = false,
@@ -591,17 +600,19 @@ var IMLibUI = {
                                 ]
                             }
                         );
-                        for (portalField in targetRecord.recordset[0][0]) {
-                            if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::' + INTERMediatorOnPage.defaultKeyName) {
-                                existRelated = true;
-                                targetPortalField = portalField;
-                                if (portalField === targetName + '::' + recordSet[0].field) {
-                                    targetPortalValue = recordSet[0].value;
-                                    break;
-                                }
-                                if (portalField !== targetName + '::id' &&
-                                    portalField !== targetName + '::' + recordSet[0].field) {
-                                    break;
+                        if (targetRecord.recordset && targetRecord.recordset[0] && targetRecord.recordset[0][0]) {
+                            for (portalField in targetRecord.recordset[0][0]) {
+                                if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::' + INTERMediatorOnPage.defaultKeyName) {
+                                    existRelated = true;
+                                    targetPortalField = portalField;
+                                    if (portalField === targetName + '::' + recordSet[0].field) {
+                                        targetPortalValue = recordSet[0].value;
+                                        break;
+                                    }
+                                    if (portalField !== targetName + '::id' &&
+                                        portalField !== targetName + '::' + recordSet[0].field) {
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -651,7 +662,7 @@ var IMLibUI = {
                             conditions: [{
                                 field: currentContext.relation[0]['join-field'],
                                 operator: '=',
-                                value: foreignValuesCapt.id
+                                value: foreignValuesCapt && foreignValuesCapt.id ? foreignValuesCapt.id : keyValueCapt
                             }],
                             dataset: relatedRecordSet
                         });

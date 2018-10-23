@@ -320,6 +320,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
         $neqConditions = array();
         $queryValues = array();
         $qNum = 1;
+        $portalParentKeyField = NULL;
 
         $hasFindParams = false;
         if (isset($context['query'])) {
@@ -355,6 +356,10 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
         } elseif ($usePortal && isset($context['view'])) {
             $this->dbSettings->setDataSourceName($context['view']);
             $parentTable = $this->dbSettings->getDataSourceTargetArray();
+            if (isset($parentTable['paging']) && $parentTable['paging'] === true) {
+                $this->fx->FMSkipRecords($this->dbSettings->getStart());
+                $portalParentKeyField = $parentTable['key'];
+            }
             if (isset($parentTable['query'])) {
                 foreach ($parentTable['query'] as $condition) {
                     if ($condition['field'] == '__operation__' && $condition['operator'] == 'or') {
@@ -436,7 +441,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
             }
         }
 
-        if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
+        if (count($this->dbSettings->getForeignFieldAndValue()) > 0 || isset($context['relation'])) {
             foreach ($context['relation'] as $relDef) {
                 foreach ($this->dbSettings->getForeignFieldAndValue() as $foreignDef) {
                     if (isset($relDef['join-field']) && $relDef['join-field'] == $foreignDef['field']) {
@@ -768,7 +773,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                                 $this->notifyHandler->addQueriedPrimaryKeys($field['data']);
                             }
                         }
-                        if (!$usePortal) {
+                        if (!$usePortal || ($usePortal === true && $fieldName === $portalParentKeyField && !empty($portalParentKeyField))) {
                             if (is_array($fieldValue) && count($fieldValue)===0){
                                 $dataArray += array($fieldName => '');
                             } else {

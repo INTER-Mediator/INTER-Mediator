@@ -737,6 +737,7 @@ var INTERMediator = {
           var linkedNodes, repeaters, linkDefs, voteResult, currentContextDef, fieldList, i, targetRecords,
             newNode, keyValue, selectedNode, isExpanding, calcFields, contextObj = null,
             targetRecordset, ix, keyingValue, footerNodes, headerNodes, nInfo;
+          var tempObj = {};
 
           repeaters = collectRepeaters(repeatersOriginal);  // Collecting repeaters to this array.
           linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode;
@@ -799,6 +800,12 @@ var INTERMediator = {
             if (currentContextDef.relation && currentContextDef.relation[0] &&
               Boolean(currentContextDef.relation[0].portal) === true) {
               contextObj.isPortal = true;
+              keyValue = targetRecords.recordset[currentContextDef.relation[0]['join-field']];
+              if (Object.keys(contextObj.foreignValue).length === 0) {
+                tempObj.foreignValue = {};
+                tempObj.foreignValue[currentContextDef.relation[0]['join-field']] = keyValue;
+                contextObj.foreignValue = tempObj.foreignValue;
+              }
             }
 
             callbackForAfterQueryStored(currentContextDef, contextObj);
