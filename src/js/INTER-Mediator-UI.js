@@ -105,7 +105,12 @@ const IMLibUI = {
           throw 'unfinished'
         }
         newValue = IMLibElement.getValueFromIMNode(changedObj)
-        parentContext = contextInfo.context.parentContext
+        if (contextInfo.context.parentContext) {
+          parentContext = contextInfo.context.parentContext
+        } else {
+          // for FileMaker Portal Access Mode
+          parentContext = IMLibContextPool.getContextFromName(contextInfo.context.sourceName)[0]
+        }
         if (parentContext) {
           result = parentContext.isValueUndefined(
             Object.keys(parentContext.store)[0], contextInfo.field, contextInfo.record)
@@ -650,7 +655,11 @@ const IMLibUI = {
             },
             null
             )
-            if (targetPortalField === undefined && currentContext.relation &&
+
+            if (foreignValuesCapt && recordSet[0]) {
+              targetPortalField = targetName + '::' + recordSet[0].field
+              targetPortalValue = recordSet[0].value
+            } else if (targetPortalField === undefined && currentContext.relation &&
               currentContext.relation[0] && currentContext.relation[0]['join-field']) {
               targetPortalField = targetName + '::' + currentContext.relation[0]['join-field']
             }
