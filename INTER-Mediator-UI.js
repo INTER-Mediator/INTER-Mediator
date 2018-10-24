@@ -651,7 +651,10 @@ var IMLibUI = {
                             }
                         }
 
-                        if (targetPortalField === undefined && currentContext.relation &&
+                        if (foreignValuesCapt && recordSet[0]) {
+                            targetPortalField = targetName + '::' + recordSet[0].field;
+                            targetPortalValue = recordSet[0].value;
+                        } else if (targetPortalField === undefined && currentContext.relation &&
                             currentContext.relation[0] && currentContext.relation[0]['join-field']) {
                             targetPortalField = targetName + '::' + currentContext.relation[0]['join-field'];
                         }
