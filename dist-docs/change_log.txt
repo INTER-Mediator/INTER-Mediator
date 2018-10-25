@@ -42,6 +42,8 @@ Ver.6-dev (in development)
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
 - [BUG FIX] In step navigation page, sometimes tap affected to clicking any elements on moved page.
 - [BUG FIX] INTERMediatorLib.getParentRepeaters works in case of parameter node isn't target node.
+- [BUG FIX] Fix INTERMediator.isIE property to detect Internet Explorer 11 (Change false to true if using 
+  Internet Explorer 11).
 
 Ver.5.8-dev (in development)
 - Improve speed performance of Native Authentication and LDAP Authentication.
