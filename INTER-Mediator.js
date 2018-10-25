@@ -774,14 +774,30 @@ var INTERMediator = {
               }
               return elm;
             });
-            contextObj.setRelationWithParent(currentRecord, parentObjectInfo, currentContextObj);
+
             if (currentContextDef.relation && currentContextDef.relation[0] &&
               Boolean(currentContextDef.relation[0].portal) === true) {
-              if (currentRecord) {
-                currentContextDef.currentrecord = currentRecord;
-                keyValue = currentRecord[INTERMediatorOnPage.defaultKeyName];
+              // for FileMaker portal access mode
+              contextObj.isPortal = true;
+              if (!currentRecord) {
+                tempObj = IMLibContextPool.generateContextObject(
+                  {'name': contextObj.sourceName}, enclosureNode, repeaters, repeatersOriginal);
+                if (targetRecords === undefined) {
+                  targetRecords = retrieveDataForEnclosure(tempObj, fieldList, contextObj.foreignValue);
+                }
+                recId = targetRecords.recordset[0][INTERMediatorOnPage.defaultKeyName];
+                currentRecord = targetRecords.recordset[0];
               }
             }
+
+            contextObj.setRelationWithParent(currentRecord, parentObjectInfo, currentContextObj);
+            if (contextObj.isPortal === true) {
+              if (currentRecord) {
+                currentContextDef.currentrecord = currentRecord;
+                keyValue = currentRecord[currentContextDef.relation[0]['join-field']];
+              }
+            }
+
             if (procBeforeRetrieve) {
               procBeforeRetrieve(contextObj);
             }
@@ -796,17 +812,6 @@ var INTERMediator = {
               }
             }
             contextObj.storeRecords(targetRecords);
-
-            if (currentContextDef.relation && currentContextDef.relation[0] &&
-              Boolean(currentContextDef.relation[0].portal) === true) {
-              contextObj.isPortal = true;
-              keyValue = targetRecords.recordset[currentContextDef.relation[0]['join-field']];
-              if (Object.keys(contextObj.foreignValue).length === 0) {
-                tempObj.foreignValue = {};
-                tempObj.foreignValue[currentContextDef.relation[0]['join-field']] = keyValue;
-                contextObj.foreignValue = tempObj.foreignValue;
-              }
-            }
 
             callbackForAfterQueryStored(currentContextDef, contextObj);
             if (customExpandRepeater === undefined) {
@@ -1171,17 +1176,6 @@ var INTERMediator = {
         }
 
         countRecord = targetRecordset ? targetRecordset.length : 0;
-        if (contextObj.isPortal === true) {
-          if (targetRecordset[0] && targetRecordset[0][contextObj.contextName]) {
-            // for FileMaker Portal Access Mode
-            targetRecordset = targetRecordset[0][contextObj.contextName];
-            for (i = 0; i < Object.keys(targetRecordset).length; i++) {
-              portalRecords.push(targetRecordset[Object.keys(targetRecordset)[i]]);
-            }
-            targetRecordset = portalRecords;
-            countRecord = targetRecordset ? Object.keys(targetRecordset).length : 0;
-          }
-        }
         for (ix = 0; ix < countRecord; ix++) { // for each record
           repeatersOneRec = cloneEveryNodes(repeatersOriginal);
           linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(repeatersOneRec, true);

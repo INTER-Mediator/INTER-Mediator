@@ -856,8 +856,13 @@ IMLibContext.prototype.getPortalRecords = function () {
     if (!this.isPortal) {
         return null;
     }
-    targetRecords.recordset = this.getPortalRecordsetImpl(
-        this.parentContext.store[this.potalContainingRecordKV], this.contextName);
+    if (this.contextDefinition && this.contextDefinition.currentrecord) {
+        targetRecords.recordset = this.getPortalRecordsetImpl(
+            this.contextDefinition.currentrecord, this.contextName);
+    } else {
+        targetRecords.recordset = this.getPortalRecordsetImpl(
+            this.parentContext.store[this.potalContainingRecordKV], this.contextName);
+    }
     return targetRecords;
 };
 
