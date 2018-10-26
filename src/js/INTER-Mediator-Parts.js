@@ -405,8 +405,9 @@ IMParts_Catalog.fileupload = {
             inputNode.setAttribute('name', 'cresponse')
             inputNode.setAttribute('value',
               encrypt.encrypt(
-                INTERMediatorOnPage.authCryptedPassword + IMLib.nl_char +
-                INTERMediatorOnPage.authChallenge))
+                INTERMediatorOnPage.authCryptedPassword.substr(0, 220) +
+                IMLib.nl_char + INTERMediatorOnPage.authChallenge) +
+                IMLib.nl_char + INTERMediatorOnPage.authCryptedPassword.substr(220))
             formNode.appendChild(inputNode)
           }
 
