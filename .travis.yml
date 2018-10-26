@@ -58,8 +58,8 @@ before_script:
   - if [[ $TRAVIS_PHP_VERSION == "7.3" || $TRAVIS_PHP_VERSION == "nightly" ]]; then composer require 'phpunit/phpunit=7.3.x'; composer install; fi
 
 script:
-  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" ]]; then vendor/bin/phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi
-  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" || $TRAVIS_PHP_VERSION == "nightly" ]]; then vendor/bin/phpunit --globals-backup --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi  
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" ]]; then ./vendor/bin/phpunit --bootstrap ./vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit.xml ./spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" || $TRAVIS_PHP_VERSION == "nightly" ]]; then ./vendor/bin/phpunit --globals-backup --bootstrap ./vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit.xml ./spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi  
   #- npm test
   - cd spec && ../node_modules/.bin/jest
 
