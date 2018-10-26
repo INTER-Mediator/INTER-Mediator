@@ -702,11 +702,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     $this->mainTableCount = 1;
                     $this->mainTableTotalCount = 1;
                 } else {
-                    if ($primaryKey === NULL) {
-                        $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 100000000, NULL, $script);
-                    } else {
-                        $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 1, NULL, $script);
-                    }
+                    $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 100000000, NULL, $script);
                     $this->mainTableCount = $result->count();
                     $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 100000000, NULL, $script);
                     $this->mainTableTotalCount = $result->count();
