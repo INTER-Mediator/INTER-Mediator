@@ -1939,8 +1939,8 @@ elsif node[:platform] == 'ubuntu'
   package 'firefox' do
     action :install
   end
-  execute 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.18.0/geckodriver-v0.18.0-linux64.tar.gz > /tmp/geckodriver-v0.18.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.18.0-linux64.tar.gz' do
-    command 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.18.0/geckodriver-v0.18.0-linux64.tar.gz > /tmp/geckodriver-v0.18.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.18.0-linux64.tar.gz'
+  execute 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux64.tar.gz > /tmp/geckodriver-v0.23.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.23.0-linux64.tar.gz' do
+    command 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux64.tar.gz > /tmp/geckodriver-v0.23.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.23.0-linux64.tar.gz'
   end
   package 'chromium-browser' do
     action :install
