@@ -959,7 +959,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     }
                 }
 
-                $this->notifyHandler->setQueriedEntity($this->fmData->layout);
+                $this->notifyHandler->setQueriedEntity($layout);
                 $this->fmData->{$layout}->keepAuth = true;
 
                 $fieldName = filter_input(INPUT_POST, '_im_field');
@@ -1147,7 +1147,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         }
 
         $this->notifyHandler->setQueriedPrimaryKeys(array($recId));
-        $this->notifyHandler->setQueriedEntity($this->fmData->layout);
+        $this->notifyHandler->setQueriedEntity($layout);
 
         $this->updatedRecord = $this->createRecordset($result);
 
@@ -1273,7 +1273,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     }
                 }
 
-                $this->notifyHandler->setQueriedEntity($this->fmData->layout);
+                $this->notifyHandler->setQueriedEntity($layout);
 
                 try {
                     $result = $this->fmData->{$layout}->delete($recId, $script);

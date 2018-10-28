@@ -26,6 +26,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         date_default_timezone_set('Asia/Tokyo');
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQueriedEntity()
     {
         $layoutName = 'person_layout';
@@ -36,6 +39,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $this->db_proxy->dbClass->notifyHandler->queriedEntity());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQueriedCondition()
     {
         $layoutName = 'person_layout';
@@ -48,6 +54,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $this->db_proxy->dbClass->notifyHandler->queriedCondition());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testExecuteScriptsforLoading()
     {
         if ((float)phpversion() >= 5.3) {
@@ -178,6 +187,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testIsPossibleOperator()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
@@ -198,6 +210,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->db_proxy->dbClass->specHandler->isPossibleOperator('='));
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testIsPossibleOrderSpecifier()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
@@ -211,6 +226,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOrderSpecifier('DESC'));
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testNormalizedCondition()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
@@ -292,6 +310,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $this->db_proxy->dbClass->normalizedCondition($condition));
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testAdjustSortDirection()
     {
         if ((float)phpversion() >= 5.3) {
@@ -312,6 +333,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testIsNullAcceptable()
     {
         $layoutName = 'person_layout';
@@ -321,6 +345,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->db_proxy->dbClass->specHandler->isNullAcceptable());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery1_singleRecord()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
@@ -333,6 +360,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         //        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery2_multipleRecord()
     {
         $this->dbProxySetupForAccess("person_layout", 1000000);
@@ -347,6 +377,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         //        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithSimpleSearchCriteria()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -357,6 +390,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals(3654, $totalCount);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithLimit()
     {
         $limit = 5;
@@ -370,6 +406,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals('1000000', $result[0]['f3']);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithQueryKey()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -391,6 +430,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals('1670021', $result[0]['f3']);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithQueryKeyAndSearchCriteria()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -404,6 +446,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals('1670022', $result[0]['f3']);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithSimpleSearchCriteriaAndLimit()
     {
         $limit = 5;
@@ -418,6 +463,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals('1670032', $result[0]['f3']);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithSimpleSearchCriteriaAndSorting()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -430,6 +478,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals('1670032', $result[0]['f3']);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithAndSearchCriteria()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -441,6 +492,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals(3654, $totalCount);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithOrSearchCriteria()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -453,6 +507,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals(3654, $totalCount);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithSearchCriteriaByRecId()
     {
         $this->dbProxySetupForAccess('postalcode', 1);
@@ -479,6 +536,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals('1000000', $result[0]['f3']);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithOrSearchCriteriaWithSameField()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -491,6 +551,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals(3654, $totalCount);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testInsertAndUpdateRecord()
     {
         $this->dbProxySetupForAccess("contact_to", 1000000);
@@ -788,6 +851,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
             $this->db_proxy->checkChallenge($challenge, $cliendId), $testName);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testDefaultKey()
     {
         $this->dbProxySetupForAccess('person_layout', 1);
@@ -800,6 +866,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testGetDefaultKey()
     {
         $this->dbProxySetupForAccess('person_layout', 1);
@@ -812,6 +881,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testMultiClientSyncTableExsistence()
     {
         $testName = "Tables for storing the context and ids should be existing.";
@@ -1064,12 +1136,18 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($recSet) == 0, "Count pk values");
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testIsSupportAggregation()
     {
         $this->dbProxySetupForAccess('person_layout', 1);
         $this->assertFalse($this->db_proxy->dbClass->specHandler->isSupportAggregation());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testGetAuthorizedUsers()
     {
         $this->dbProxySetupForAuth();
@@ -1077,6 +1155,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue($authorizedUsers == array('user1'));
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testGetAuthorizedGroups()
     {
         $this->dbProxySetupForAuth();
