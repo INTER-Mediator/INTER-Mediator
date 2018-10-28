@@ -96,7 +96,11 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         if(!isset($_SESSION)){
             session_start();
         }
-        $token = isset($_SESSION['X-FM-Data-Access-Token']) ? $_SESSION['X-FM-Data-Access-Token'] : '';
+        if (in_array($layoutName, array($this->dbSettings->getUserTable(), $this->dbSettings->getHashTable()))) {
+            $token = isset($_SESSION['X-FM-Data-Access-Token-Auth']) ? $_SESSION['X-FM-Data-Access-Token-Auth'] : '';
+        } else {
+            $token = isset($_SESSION['X-FM-Data-Access-Token']) ? $_SESSION['X-FM-Data-Access-Token'] : '';
+        }
         try {
             if ($token === '') {
                 throw new \Exception();
@@ -700,21 +704,26 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             } else {
                 if (count($conditions) === 1 && isset($conditions[0]['recordId']) && is_numeric($recordId)) {
                     $this->mainTableCount = 1;
-                    $this->mainTableTotalCount = 1;
                 } else {
                     $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 100000000, NULL, $script);
                     $this->mainTableCount = $result->count();
-                    $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 100000000, NULL, $script);
-                    $this->mainTableTotalCount = $result->count();
                 }
+                $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 100000000, NULL, $script);
+                $this->mainTableTotalCount = $result->count();
             }
         }
 
         $this->logger->setDebugMessage($this->stringWithoutCredential($this->fmData->{$layout}->getDebugInfo()));
 
         $token = $this->fmData->getSessionToken();
-        if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
-            $_SESSION['X-FM-Data-Access-Token'] = $token;
+        if (in_array($layout, array($this->dbSettings->getUserTable(), $this->dbSettings->getHashTable()))) {
+            if (!isset($_SESSION['X-FM-Data-Access-Token-Auth'])) {
+                $_SESSION['X-FM-Data-Access-Token-Auth'] = $token;
+            }
+        } else {
+            if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
+                $_SESSION['X-FM-Data-Access-Token'] = $token;
+            }
         }
 
         return $recordArray;
@@ -959,7 +968,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     }
                 }
 
-                $this->notifyHandler->setQueriedEntity($this->fmData->layout);
+                $this->notifyHandler->setQueriedEntity($layout);
                 $this->fmData->{$layout}->keepAuth = true;
 
                 $fieldName = filter_input(INPUT_POST, '_im_field');
@@ -1147,7 +1156,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         }
 
         $this->notifyHandler->setQueriedPrimaryKeys(array($recId));
-        $this->notifyHandler->setQueriedEntity($this->fmData->layout);
+        $this->notifyHandler->setQueriedEntity($layout);
 
         $this->updatedRecord = $this->createRecordset($result);
 
@@ -1273,7 +1282,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     }
                 }
 
-                $this->notifyHandler->setQueriedEntity($this->fmData->layout);
+                $this->notifyHandler->setQueriedEntity($layout);
 
                 try {
                     $result = $this->fmData->{$layout}->delete($recId, $script);
