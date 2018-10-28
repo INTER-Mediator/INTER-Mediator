@@ -696,13 +696,12 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             } else {
                 if (count($conditions) === 1 && isset($conditions[0]['recordId']) && is_numeric($recordId)) {
                     $this->mainTableCount = 1;
-                    $this->mainTableTotalCount = 1;
                 } else {
                     $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 100000000, NULL, $script);
                     $this->mainTableCount = $result->count();
-                    $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 100000000, NULL, $script);
-                    $this->mainTableTotalCount = $result->count();
                 }
+                $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 100000000, NULL, $script);
+                $this->mainTableTotalCount = $result->count();
             }
         }
 
