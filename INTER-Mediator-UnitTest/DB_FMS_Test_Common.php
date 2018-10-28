@@ -55,7 +55,11 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
             $this->dbProxySetupForAccess($layoutName, 1);
             $this->db_proxy->readFromDB($layoutName);
             $this->reflectionClass = new ReflectionClass(get_class($this->db_proxy->dbClass));
-            $method = $this->reflectionClass->getMethod('executeScriptsforLoading');
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+                $method = $this->reflectionClass->getMethod('executeScriptsforLoading');
+            } else {
+                $method = $this->reflectionClass->getMethod('executeScripts');
+            }
             $method->setAccessible(true);
 
             $scriptContext = array('script' => 
@@ -635,6 +639,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
             $this->db_proxy->checkAuthorization($username, $calcuratedHash, "TEST"), $testName);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testAuthByValidUser()
     {
         $this->dbProxySetupForAuth();
@@ -684,6 +691,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testAuthByInvalidUser()
     {
         $this->dbProxySetupForAuth();
@@ -809,6 +819,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->isExistRequiredTable(), $testName);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testMultiClientSyncRegisterAndUnregister()
     {
         $testName = "Register and Unregister.";
@@ -881,6 +894,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($recSet) == 0, "Count pk values");
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testMultiClientSyncRegisterAndUnregisterPartial()
     {
         $testName = "Register and Unregister partically.";
@@ -926,6 +942,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($recSet) == 0, "Count pk values");
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testMultiClientSyncMatching()
     {
         $testName = "Match the sync info.";
@@ -964,6 +983,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($recSet) == 0, "Count pk values");
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testMultiClientSyncAppend()
     {
         $testName = "Append Sync Info.";
@@ -1008,6 +1030,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         //$result = $this->db_proxy->dbClass->notifyHandler->removeFromRegisterd($clientId, $entity, $pkArray);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testMultiClientSyncRemove()    {
         $testName = "Remove Sync Info.";
         $this->dbProxySetupForAuth();
