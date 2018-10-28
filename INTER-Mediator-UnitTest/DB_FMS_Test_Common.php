@@ -97,6 +97,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script=testscript';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script' => 'testscript');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
             $scriptContext = array('script' => 
@@ -108,6 +111,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script=testscript';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script' => 'testscript');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
             $scriptContext = array('script' => 
@@ -119,6 +125,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script=testscript&-script.param=1';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script' => 'testscript', 'script.param' => '1');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
             $scriptContext = array('script' => 
@@ -129,6 +138,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script.prefind=testscript';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script.prerequest' => 'testscript');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
             $scriptContext = array('script' => 
@@ -140,6 +152,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script.prefind=testscript';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script.prerequest' => 'testscript');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
             $scriptContext = array('script' => 
@@ -151,6 +166,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script.prefind=testscript&-script.prefind.param=1';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script.prerequest' => 'testscript', 'script.prerequest.param' => '1');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
             $scriptContext = array('script' => 
@@ -161,6 +179,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script.presort=testscript';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script.presort' => 'testscript');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
             $scriptContext = array('script' => 
@@ -172,6 +193,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script.presort=testscript';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script.presort' => 'testscript');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
             $scriptContext = array('script' => 
@@ -183,6 +207,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script.presort=testscript&-script.presort.param=1';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script.presort' => 'testscript', 'script.presort.param' => '1');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
         }
     }

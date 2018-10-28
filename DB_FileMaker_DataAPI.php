@@ -96,7 +96,11 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         if(!isset($_SESSION)){
             session_start();
         }
-        $token = isset($_SESSION['X-FM-Data-Access-Token']) ? $_SESSION['X-FM-Data-Access-Token'] : '';
+        if (in_array($layoutName, array($this->dbSettings->getUserTable(), $this->dbSettings->getHashTable()))) {
+            $token = isset($_SESSION['X-FM-Data-Access-Token-Auth']) ? $_SESSION['X-FM-Data-Access-Token-Auth'] : '';
+        } else {
+            $token = isset($_SESSION['X-FM-Data-Access-Token']) ? $_SESSION['X-FM-Data-Access-Token'] : '';
+        }
         try {
             if ($token === '') {
                 throw new \Exception();
@@ -712,8 +716,14 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         $this->logger->setDebugMessage($this->stringWithoutCredential($this->fmData->{$layout}->getDebugInfo()));
 
         $token = $this->fmData->getSessionToken();
-        if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
-            $_SESSION['X-FM-Data-Access-Token'] = $token;
+        if (in_array($layout, array($this->dbSettings->getUserTable(), $this->dbSettings->getHashTable()))) {
+            if (!isset($_SESSION['X-FM-Data-Access-Token-Auth'])) {
+                $_SESSION['X-FM-Data-Access-Token-Auth'] = $token;
+            }
+        } else {
+            if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
+                $_SESSION['X-FM-Data-Access-Token'] = $token;
+            }
         }
 
         return $recordArray;

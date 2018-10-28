@@ -30,14 +30,11 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $result = NULL;
         try {
             $result = $this->dbClass->fmDataAuth->{$hashTable}->query($conditions);
-            if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
-                $_SESSION['X-FM-Data-Access-Token'] = $this->dbClass->fmDataAuth->getSessionToken();
-            }
         } catch (\Exception $e) {
             $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential(get_class($result) . ': ' . $this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
         }
 
-        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+        if ($result !== NULL) {
             $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential(get_class($result) . ': ' . $this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
             return false;
         }
