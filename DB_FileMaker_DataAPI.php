@@ -498,7 +498,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                             'omit' => 'true'
                         );
                     } else {
-                        $conditions[] = array($searchCondition[0] => $searchCondition[1]);
+                        array_unshift($conditions, array($searchCondition[0] => $searchCondition[1]));
                     }
                     $i++;
                 }
@@ -507,7 +507,6 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 $i = 0;
                 foreach ($searchConditions as $searchCondition) {
                     if ($neqConditions[$i] === TRUE) {
-                        $tmpCondition = array();
                         $conditions[] = array(
                             $searchCondition[0] => $searchCondition[1],
                             'omit' => 'true'
@@ -518,7 +517,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     $i++;
                 }
                 if ($tmpCondition !== array()) {
-                    $conditions[] = $tmpCondition;
+                    array_unshift($conditions, $tmpCondition);
                 }
             }
         }
