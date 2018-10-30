@@ -86,7 +86,7 @@ done
 
 if [ ${#csvFile} -gt 0 ]
 then
-    if [ -e "${csvFile}" ]
+    if [ ! -e "${csvFile}" ]
     then
 		echo "'${csvFile}' doesn't exist."
 		exit 1
