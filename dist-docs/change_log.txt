@@ -50,6 +50,7 @@ Ver.5.8-RC4-dev (in development)
   and repeaters).
 - [BUG FIX] Fix INTERMediator.isIE property to detect Internet Explorer 11 (Change false to true if using 
   Internet Explorer 11).
+- [BUG FIX] Fix making a temporary file internally in MediaAccess.php for outputting multiple images.
 
 Ver.5.7 (March 29, 2018)
 - The "data-im-format" attribute is introduced.
