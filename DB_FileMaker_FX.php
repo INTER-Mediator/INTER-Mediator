@@ -485,7 +485,10 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
             $authFailure = FALSE;
             $authInfoField = $this->authHandler->getFieldForAuthorization("read");
             $authInfoTarget = $this->authHandler->getTargetForAuthorization("read");
-            if ($authInfoTarget == 'field-user') {
+            if (strlen($authInfoField) > 0 && $this->_field_exists($authInfoField) === FALSE) {
+                $authFailure = TRUE;
+            }
+            if ($authInfoTarget == 'field-user' && $authFailure === FALSE) {
                 if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;
                 } else {
@@ -495,7 +498,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                     $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
                     $this->fx->AddDBParam($authInfoField, $signedUser, 'eq');
                     $searchConditions[] = $this->setSearchConditionsForCompoundFound(
-                        $authInfoField, $signedUser, 'eq');
+                        $authInfoField, '=' . $signedUser, 'eq');
                     $hasFindParams = true;
 
                     $queryValues[] = 'q' . $qNum;
@@ -512,7 +515,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                     }
                     $this->fx->AddDBParam($authInfoField, $belongGroups[0], 'eq');
                     $searchConditions[] = $this->setSearchConditionsForCompoundFound(
-                        $authInfoField, $belongGroups[0], 'eq');
+                        $authInfoField, '=' . $belongGroups[0], 'eq');
                     $hasFindParams = true;
 
                     $queryValues[] = 'q' . $qNum;
@@ -693,8 +696,8 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
 
                 $queryValues = array();
                 foreach ($newConditions as $fieldName => $fieldValue) {
-                    $currentSearch .= '&-q' . $qNum . '=' . $fieldName
-                        . '&-q' . $qNum . '.value=' . $fieldValue;
+                    $currentSearch .= '&-q' . $qNum . '=' . urlencode($fieldName)
+                        . '&-q' . $qNum . '.value=' . urlencode($fieldValue);
                     $queryValues[] = 'q' . $qNum;
                     $qNum++;
                 }
@@ -774,7 +777,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                             }
                         }
                         if (!$usePortal || ($usePortal === true && $fieldName === $portalParentKeyField && !empty($portalParentKeyField))) {
-                            if (is_array($fieldValue) && count($fieldValue)===0){
+                            if (is_array($fieldValue) && count($fieldValue) === 0){
                                 $dataArray += array($fieldName => '');
                             } else {
                                 $dataArray += array($fieldName => $fieldValue);
@@ -1052,13 +1055,16 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
             $authFailure = FALSE;
             $authInfoField = $this->authHandler->getFieldForAuthorization("update");
             $authInfoTarget = $this->authHandler->getTargetForAuthorization("update");
-            if ($authInfoTarget == 'field-user') {
+            if (strlen($authInfoField) > 0 && $this->_field_exists($authInfoField) === FALSE) {
+                $authFailure = TRUE;
+            }
+            if ($authInfoTarget == 'field-user' && $authFailure === FALSE) {
                 if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;
                 } else {
                     $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
                     if ($cwpkit->_checkDuplicatedFXCondition($fxUtility->CreateCurrentSearch(), $authInfoField, $signedUser) === TRUE) {
-                        $this->fx->AddDBParam($authInfoField, $signedUser, "eq");
+                        $this->fx->AddDBParam($authInfoField, '=' . $signedUser, 'eq');
                     }
                 }
             } else if ($authInfoTarget == 'field-group') {
@@ -1067,7 +1073,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                     $authFailure = true;
                 } else {
                     if ($cwpkit->_checkDuplicatedFXCondition($fxUtility->CreateCurrentSearch(), $authInfoField, $belongGroups[0]) === TRUE) {
-                        $this->fx->AddDBParam($authInfoField, $belongGroups[0], "eq");
+                        $this->fx->AddDBParam($authInfoField, '=' . $belongGroups[0], 'eq');
                     }
                 }
             } else {
@@ -1238,9 +1244,13 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                 || isset($context['authentication']['new'])
                 || isset($context['authentication']['create']))
         ) {
+            $authFailure = FALSE;
             $authInfoField = $this->authHandler->getFieldForAuthorization("create");
             $authInfoTarget = $this->authHandler->getTargetForAuthorization("create");
-            if ($authInfoTarget == 'field-user') {
+            if (strlen($authInfoField) > 0 && $this->_field_exists($authInfoField) === FALSE) {
+                $authFailure = TRUE;
+            }
+            if ($authInfoTarget == 'field-user' && $authFailure === FALSE) {
                 $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
                 $this->fx->AddDBParam($authInfoField,
                     strlen($this->dbSettings->getCurrentUser()) == 0 ? randomString(10) : $signedUser);
@@ -1348,21 +1358,23 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
             $authFailure = FALSE;
             $authInfoField = $this->authHandler->getFieldForAuthorization("delete");
             $authInfoTarget = $this->authHandler->getTargetForAuthorization("delete");
-            if ($authInfoTarget == 'field-user') {
+            if (strlen($authInfoField) > 0 && $this->_field_exists($authInfoField) === FALSE) {
+                $authFailure = TRUE;
+            }
+            if ($authInfoTarget == 'field-user' && $authFailure === FALSE) {
                 if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;
                 } else {
                     $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
-                    $this->fx->AddDBParam($authInfoField, $signedUser, "eq");
+                    $this->fx->AddDBParam($authInfoField, '=' . $signedUser, 'eq');
                     $hasFindParams = true;
                 }
             } else if ($authInfoTarget == 'field-group') {
                 $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
-                $groupCriteria = array();
-                if (strlen($this->dbSettings->getCurrentUser()) == 0 || count($groupCriteria) == 0) {
+                if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;
                 } else {
-                    $this->fx->AddDBParam($authInfoField, $belongGroups[0], "eq");
+                    $this->fx->AddDBParam($authInfoField, '=' . $belongGroups[0], 'eq');
                     $hasFindParams = true;
                 }
             } else {
@@ -1587,6 +1599,31 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
         return $direction;
     }
 
+    protected function _field_exists($fieldName) {
+        $config = array(
+            'urlScheme' => $this->fx->urlScheme,
+            'dataServer' => $this->fx->dataServer,
+            'dataPort' => $this->fx->dataPort,
+            'DBUser' => $this->dbSettings->getAccessUser(),
+            'DBPassword' => $this->dbSettings->getAccessPassword(),
+        );
+        $cwpkit = new CWPKit($config);
+
+        $queryString = '-db=' . urlencode($this->fx->database);
+        $queryString .= '&-lay=' . urlencode($this->fx->layout);
+        $queryString .= '&-view';
+
+        $parsedData = $cwpkit->query($queryString);
+        $data = json_decode(json_encode($parsedData), true);
+
+        foreach($data['metadata']['field-definition'] as $field) {
+            if ($field['@attributes']['name'] === $fieldName) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public function deleteForTest($table, $conditions = null)
     {

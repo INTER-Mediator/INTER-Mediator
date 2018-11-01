@@ -34,6 +34,8 @@ Ver.5.8-RC4-dev (in development)
 - [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native
   Authentication or LDAP Authentication.
 - [INFO] FileMaker Data API (Trial) of FileMaker Server 16 is no longer supported.
+- [SECURITY FIX] Fix record access privileges in some cases when using FileMaker Server and the value of
+  'target' key in 'authentication' key is 'field-user' or 'field-group'.
 - [BUG FIX] If the server doesn't have valid locale (ex. Windows Server), the number format with thousand
   separator wasn't seen as we wished.
 - [BUG FIX] In some case, the record number of related context was affected by pagination record limits.
@@ -41,7 +43,8 @@ Ver.5.8-RC4-dev (in development)
 - [BUG FIX] In step navigation page, sometimes tap affected to clicking any elements on moved page.
 - [BUG FIX] Fix Soft Delete function when the value of 'soft-delete' key is not true.
 - [BUG FIX] Fix Soft Delete function when using FileMaker Server. The affected versions are 5.5, 5.6 and 5.7.
-- [BUG FIX] Fix an error when using the 'field-group' key and FileMaker Server. The affected version is 5.7.
+- [BUG FIX] Fix an error when using FileMaker Server and the value of 'target' key in 'authentication' key
+  is 'field-group'. The affected version is 5.7.
 - [BUG FIX] INTERMediatorLib.getParentRepeaters works in case of parameter node isn't target node.
 - [BUG FIX] Fix portal access mode for FileMaker Server in some cases (depending on the status of enclosures
   and repeaters).
