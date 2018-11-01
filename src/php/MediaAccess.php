@@ -76,7 +76,7 @@ class MediaAccess
                 if (get_class($dbProxyInstance->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI' &&
                     isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver') {
                     // for FileMaker Data API
-                    $target = 'http://' . $parsedUrl['user'] . ':' . $parsedUrl['pass'] . '@127.0.0.1' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
+                    $target = 'http://' . $parsedUrl['user'] . ':' . $parsedUrl['pass'] . '@127.0.0.1:1895' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
                     if (function_exists('curl_init')) {
                         $session = curl_init($target);
                         curl_setopt($session, CURLOPT_HEADER, true);
@@ -98,7 +98,7 @@ class MediaAccess
                                 }
                             }
                         }
-                        $target = 'http://127.0.0.1' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
+                        $target = 'http://127.0.0.1:1895' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
                         $headers = array('X-FMS-Session-Key: ' . $sessionKey);
                         $session = curl_init($target);
                         curl_setopt($session, CURLOPT_HEADER, false);
@@ -406,7 +406,7 @@ class MediaAccess
                 $tmpDir = sys_get_temp_dir();
             }
             $temp = 'IM_TEMP_' .
-                str_replace(base64_encode(randomString(12)), DIRECTORY_SEPARATOR, '-') .
+                str_replace(DIRECTORY_SEPARATOR, '-', base64_encode(randomString(12))) .
                 '.jpg';
             if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
                 $tempPath = $tmpDir . $temp;
@@ -417,45 +417,48 @@ class MediaAccess
             if ($fp !== false) {
                 fwrite($fp, $content);
                 fclose($fp);
-                $imageType = image_type_to_mime_type(exif_imagetype($tempPath));
-                if ($imageType === 'image/jpeg') {
-                    $image = imagecreatefromstring($content);
-                    if ($image !== false) {
-                        try {
-                            $exif = @exif_read_data($tempPath);
-                        } catch (Exception $ex) {
-                            $exif = false;
-                        }
-                        if ($exif !== false && !empty($exif['Orientation'])) {
-                            switch ($exif['Orientation']) {
-                                case 3:
-                                    $content = imagerotate($image, 180, 0);
-                                    $rotate = true;
-                                    break;
-                                case 6:
-                                    $content = imagerotate($image, -90, 0);
-                                    $rotate = true;
-                                    break;
-                                case 8:
-                                    $content = imagerotate($image, 90, 0);
-                                    $rotate = true;
-                                    break;
+
+                if (file_exists($tempPath)) {
+                    $imageType = image_type_to_mime_type(exif_imagetype($tempPath));
+                    if ($imageType === 'image/jpeg') {
+                        $image = imagecreatefromstring($content);
+                        if ($image !== false) {
+                            try {
+                                $exif = @exif_read_data($tempPath);
+                            } catch (Exception $ex) {
+                                $exif = false;
+                            }
+                            if ($exif !== false && !empty($exif['Orientation'])) {
+                                switch ($exif['Orientation']) {
+                                    case 3:
+                                        $content = imagerotate($image, 180, 0);
+                                        $rotate = true;
+                                        break;
+                                    case 6:
+                                        $content = imagerotate($image, -90, 0);
+                                        $rotate = true;
+                                        break;
+                                    case 8:
+                                        $content = imagerotate($image, 90, 0);
+                                        $rotate = true;
+                                        break;
+                                }
                             }
                         }
+                        if ($rotate === true) {
+                            header('Content-Type: image/jpeg');
+                            ob_start();
+                            imagejpeg($content);
+                            $size = ob_get_length();
+                            header('Content-Length: ' . $size);
+                            $util = new IMUtil();
+                            $util->outputSecurityHeaders();
+                            ob_end_flush();
+                        }
+                        imagedestroy($image);
                     }
-                    if ($rotate === true) {
-                        header('Content-Type: image/jpeg');
-                        ob_start();
-                        imagejpeg($content);
-                        $size = ob_get_length();
-                        header('Content-Length: ' . $size);
-                        $util = new IMUtil();
-                        $util->outputSecurityHeaders();
-                        ob_end_flush();
-                    }
-                    imagedestroy($image);
+                    unlink($tempPath);
                 }
-                unlink($tempPath);
             }
         }
         if ($rotate === false) {

@@ -80,6 +80,7 @@ Ver.5.8-dev (in development)
 - [BUG FIX] INTERMediatorLib.getParentRepeaters works in case of parameter node isn't target node.
 - [BUG FIX] Fix portal access mode for FileMaker Server in some cases (depending on the status of enclosures
   and repeaters).
+- [BUG FIX] Fix making a temporary file internally in MediaAccess.php for outputting multiple images.
 
 Ver.5.7 (March 29, 2018)
 - The "data-im-format" attribute is introduced.
