@@ -989,14 +989,25 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     $fileName = $meta[0];
                     $contaierData = $meta[1];
 
-                    $temp = tmpfile();
-                    if ($temp !== FALSE) {
-                        $tempMeta = stream_get_meta_data($temp);
-                        $handle = fopen($temp, 'w');
-                        fwrite($temp, base64_decode($contaierData));
+                    $tmpDir = ini_get('upload_tmp_dir');
+                    if ($tmpDir === '') {
+                        $tmpDir = sys_get_temp_dir();
+                    }
+                    $temp = 'IM_TEMP_' .
+                        str_replace(DIRECTORY_SEPARATOR, '-', base64_encode(randomString(12))) .
+                        '.jpg';
+                    if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
+                        $tempPath = $tmpDir . $temp;
+                    } else {
+                        $tempPath = $tmpDir . DIRECTORY_SEPARATOR . $temp;
+                    }
+                    $fp = fopen($tempPath, 'w');
+                    if ($fp !== false) {
+                        $tempMeta = stream_get_meta_data($fp);
+                        fwrite($fp, base64_decode($contaierData));
                         // INTER-Mediator doesn't support repeating fields now.
                         $this->fmData->{$layout}->uploadFile($tempMeta['uri'], $recId, $fieldName, NULL, $fileName);
-                        fclose($temp);
+                        fclose($fp);
                     }
                 } else {
                     $originalfield = filter_input(INPUT_POST, 'field_0');
