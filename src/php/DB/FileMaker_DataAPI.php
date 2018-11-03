@@ -365,7 +365,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
 
                     $searchConditions[] = $this->setSearchConditionsForCompoundFound(
                         $condition['field'], $condition['value'], $condition['operator']);
-                    
+
                     if (isset($condition['operator']) && $condition['operator'] === 'neq') {
                         $neqConditions[] = TRUE;
                     } else {
@@ -563,7 +563,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         $scriptResultPresort = NULL;
         $scriptResult = NULL;
         try {
-            if (count($conditions) === 1 && isset($conditions[0]['recordId'])) {
+            if ($conditions && count($conditions) === 1 && isset($conditions[0]['recordId'])) {
                 $recordId = str_replace('=', '', $conditions[0]['recordId']);
                 if (is_numeric($recordId)) {
                     $conditions[0]['recordId'] = $recordId;
@@ -574,7 +574,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             }
 
             $this->notifyHandler->setQueriedEntity($layout);
-            $this->notifyHandler->setQueriedCondition("/fmi/rest/api/find/{$this->dbSettings->getDbSpecDatabase()}/{$layout}" . ($recordId ? "/{$recordId}" : ""));            
+            $this->notifyHandler->setQueriedCondition("/fmi/rest/api/find/{$this->dbSettings->getDbSpecDatabase()}/{$layout}" . ($recordId ? "/{$recordId}" : ""));
 
             if (!is_null($result)) {
                 $portalNames = $result->getPortalNames();
@@ -634,7 +634,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                         )
                     );
                 }
-                
+
                 $relatedsetArray = array();
                 if (count($portalNames) >= 1) {
                     $relatedArray = array();
@@ -650,7 +650,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                                     }
                                     if ($relatedFieldName !== 'recordId') {
                                         $relatedArray[$tableOccurrence][$recId] += array(
-                                            $relatedFieldName =>                                     
+                                            $relatedFieldName =>
                                                 $this->formatter->formatterFromDB(
                                                     "{$tableOccurrence}{$this->dbSettings->getSeparator()}{$relatedFieldName}",
                                                     $portalRecord->{$relatedFieldName}
@@ -678,7 +678,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                     break;
                 }
             }
-            
+
 
             if ($scriptResultPrerequest !== NULL || $scriptResultPresort !== NULL || $scriptResult !== NULL) {
                 // Avoid multiple executing FileMaker script
@@ -697,7 +697,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                     $this->mainTableTotalCount = intval($scriptResult);
                 }
             } else {
-                if (count($conditions) === 1 && isset($conditions[0]['recordId']) && is_numeric($recordId)) {
+                if ($conditions && count($conditions) === 1 && isset($conditions[0]['recordId']) && is_numeric($recordId)) {
                     $this->mainTableCount = 1;
                 } else {
                     $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 100000000, NULL, $script);
@@ -728,7 +728,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
     {
         $returnArray = array();
         $tableName = $this->dbSettings->getEntityForRetrieve();
-        
+
         foreach ($resultData as $oneRecord) {
             $oneRecordArray = array();
 
@@ -755,7 +755,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             }
             $returnArray[] = $oneRecordArray;
         }
-        
+
         return $returnArray;
     }
 

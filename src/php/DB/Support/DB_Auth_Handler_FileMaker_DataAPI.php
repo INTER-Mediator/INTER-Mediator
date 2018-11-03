@@ -12,8 +12,10 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\DB\Support;
-use \Datetime;
+
+use Datetime;
 
 class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_Interface_DB
 {
@@ -43,7 +45,8 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
         $currentDT = new DateTime();
         $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
-        if (get_class($result) === 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+        $className = is_object($result) ? get_class($result) : "NULL";
+        if ($className === 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             foreach ($result as $record) {
                 $recordId = $record->getRecordId();
                 $this->dbClass->$forAuth($hashTable, 1);
@@ -132,6 +135,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         }
         $this->dbClass->setupFMDataAPIforAuth($hashTable, 1);
         $conditions = array(array('user_id' => $uid, 'clienthost' => $clientId));
+        $result = NULL;
         try {
             $result = $this->dbClass->fmDataAuth->{$hashTable}->query($conditions);
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
@@ -158,8 +162,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             return false;
         }
 
-        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
-            $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential(get_class($result) . ': ' . $this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
+        $className = is_object($result) ? get_class($result) : "NULL";
+        if ($className !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+            $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($className . ': ' . $this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
             return false;
         }
         $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
@@ -184,8 +189,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
                 $_SESSION['X-FM-Data-Access-Token'] = $this->dbClass->fmDataAuth->getSessionToken();
             }
-            if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
-                $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential(get_class($result) . ': ' . $this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
+            $className = is_object($result) ? get_class($result) : "NULL";
+            if ($className !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+                $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($className . ': ' . $this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
                 return false;
             }
             $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
@@ -218,19 +224,21 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
 
         $this->dbClass->setupFMDataAPIforDB($userTable, 1);
         $conditions = array(array('username' => str_replace('@', '\\@', $username)));
+        $result = NULL;
         try {
             $result = $this->dbClass->fmData->{$userTable}->query($conditions);
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
                 $_SESSION['X-FM-Data-Access-Token'] = $this->dbClass->fmData->getSessionToken();
             }
         } catch (\Exception $e) {
-            $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential(get_class($result) . ': ' . $this->dbClass->fmData->{$userTable}->getDebugInfo()));
+            $className = is_object($result) ? get_class($result) : "NULL";
+            $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($className . ': ' . $this->dbClass->fmData->{$userTable}->getDebugInfo()));
             return false;
         }
 
         $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($this->dbClass->fmData->{$userTable}->getDebugInfo()));
         if ((get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation' ||
-            $result->count() < 1) && $this->dbSettings->getEmailAsAccount()) {
+                $result->count() < 1) && $this->dbSettings->getEmailAsAccount()) {
             $this->dbClass->setupFMDataAPIforDB($userTable, 1);
             $conditions = array(array('email' => str_replace('@', '\\@', $username)));
             try {
@@ -332,13 +340,15 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
 
         $this->dbClass->setupFMDataAPIforDB_Alt($userTable, 1);
         $conditions = array(array('username' => str_replace('@', '\\@', $username)));
+        $result = NULL;
         try {
             $result = $this->dbClass->fmDataAlt->{$userTable}->query($conditions);
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
                 $_SESSION['X-FM-Data-Access-Token'] = $this->dbClass->fmDataAlt->getSessionToken();
             }
         } catch (\Exception $e) {
-            $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential(get_class($result) . ': ' . $this->dbClass->fmDataAlt->{$userTable}->getDebugInfo()));
+            $className = is_object($result) ? get_class($result) : "NULL";
+            $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($className . ': ' . $this->dbClass->fmDataAlt->{$userTable}->getDebugInfo()));
             return false;
         }
 
@@ -434,6 +444,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
 
         $this->dbClass->setupFMDataAPIforDB_Alt($userTable, 55555);
         $conditions = array(array('username' => str_replace("@", "\\@", $username)), array('email' => str_replace("@", "\\@", $username)));
+        $result = NULL;
         try {
             $result = $this->dbClass->fmDataAlt->{$userTable}->query($conditions);
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
@@ -450,7 +461,8 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential(get_class($result) . ': ' . $this->dbClass->fmDataAlt->{$userTable}->getDebugInfo()));
+            $className = is_object($result) ? get_class($result) : "NULL";
+            $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($className . ': ' . $this->dbClass->fmDataAlt->{$userTable}->getDebugInfo()));
             return false;
         }
         return $usernameCandidate;
