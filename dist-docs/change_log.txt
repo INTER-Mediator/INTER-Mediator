@@ -11,7 +11,7 @@ Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.5.9-dev (in development)
-- 
+- Reduce error messages when using PHP 7.2 and DB_FileMaker_DataAPI class.
 
 Ver.5.8 (November 3, 2018)
 - Improve speed performance of Native Authentication and LDAP Authentication.
