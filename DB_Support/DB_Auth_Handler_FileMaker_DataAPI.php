@@ -45,7 +45,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         if ($className === 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             foreach ($result as $record) {
                 $recordId = $record->getRecordId();
-                $this->dbClass->$forAuth($hashTable, 1);
+                $this->dbClass->setupFMDataAPIforAuth($hashTable, 1);
                 $this->dbClass->fmDataAuth->{$hashTable}->update($recordId, array(
                     'hash' => $challenge,
                     'expired' => $currentDTFormat,
