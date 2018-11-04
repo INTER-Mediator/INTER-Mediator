@@ -15,6 +15,8 @@
     "ext-mbstring": "*",
     "ext-PDO": "*",
     "ext-bcmath": "*",
+    "ext-curl": "*",
+    "ext-xml": "*",
     "mouf/nodejs-installer": "*",
     "phpseclib/phpseclib": "*",
     "paragonie/constant_time_encoding": "*",

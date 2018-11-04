@@ -244,6 +244,9 @@ export const INTERMediator = {
         c = ua.charAt(i)
         if (!(c === ' ' || c === '.' || (c >= '0' && c <= '9'))) {
           INTERMediator.ieVersion = INTERMediatorLib.toNumber(ua.substring(position + 10, i)) + 4
+          if (INTERMediator.ieVersion === 11) {
+            INTERMediator.isIE = true
+          }
           break
         }
       }
