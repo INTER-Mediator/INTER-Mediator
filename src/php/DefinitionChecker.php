@@ -21,9 +21,9 @@ class DefinitionChecker
 
     public function checkDefinitions($datasource, $options, $dbspecification)
     {
-        if ($dbspecification['db-class'] == 'FileMaker_FX') {
-            require_once('FileMaker_FX.php');
-        }
+//        if ($dbspecification['db-class'] == 'FileMaker_FX') {
+//            require_once('FileMaker_FX.php');
+//        }
         $allMessage = '';
         if ($datasource === NULL) {
             $allMessage .= "*** The Data Sources of the Definition must be specified. ***";

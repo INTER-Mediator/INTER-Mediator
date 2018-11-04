@@ -62,16 +62,16 @@
         },
         {
             "name": "egulias/email-validator",
-            "version": "2.1.5",
+            "version": "2.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/egulias/EmailValidator.git",
-                "reference": "54859fabea8b3beecbb1a282888d5c990036b9e3"
+                "reference": "0578b32b30b22de3e8664f797cf846fc9246f786"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/54859fabea8b3beecbb1a282888d5c990036b9e3",
-                "reference": "54859fabea8b3beecbb1a282888d5c990036b9e3",
+                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/0578b32b30b22de3e8664f797cf846fc9246f786",
+                "reference": "0578b32b30b22de3e8664f797cf846fc9246f786",
                 "shasum": ""
             },
             "require": {
@@ -115,7 +115,7 @@
                 "validation",
                 "validator"
             ],
-            "time": "2018-08-16T20:49:45+00:00"
+            "time": "2018-09-25T20:47:26+00:00"
         },
         {
             "name": "inter-mediator/fmdataapi",
@@ -123,12 +123,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/msyk/FMDataAPI.git",
-                "reference": "bbde8d5dec8675edf969e33a54dd62e7358ae808"
+                "reference": "ed24fd90701fb1fdd2f684a7fb54dcea5fa99276"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/msyk/FMDataAPI/zipball/bbde8d5dec8675edf969e33a54dd62e7358ae808",
-                "reference": "bbde8d5dec8675edf969e33a54dd62e7358ae808",
+                "url": "https://api.github.com/repos/msyk/FMDataAPI/zipball/ed24fd90701fb1fdd2f684a7fb54dcea5fa99276",
+                "reference": "ed24fd90701fb1fdd2f684a7fb54dcea5fa99276",
                 "shasum": ""
             },
             "require": {
@@ -160,7 +160,7 @@
                 "api",
                 "rest"
             ],
-            "time": "2018-09-09T05:40:09+00:00"
+            "time": "2018-10-30T01:16:24+00:00"
         },
         {
             "name": "mouf/nodejs-installer",
@@ -556,16 +556,16 @@
         },
         {
             "name": "matthiasmullie/path-converter",
-            "version": "1.1.1",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/matthiasmullie/path-converter.git",
-                "reference": "3082a6838be02b930239a97d38b5c9da4d693aca"
+                "reference": "5e4b121c8b9f97c80835c1d878b0812ba1d607c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/matthiasmullie/path-converter/zipball/3082a6838be02b930239a97d38b5c9da4d693aca",
-                "reference": "3082a6838be02b930239a97d38b5c9da4d693aca",
+                "url": "https://api.github.com/repos/matthiasmullie/path-converter/zipball/5e4b121c8b9f97c80835c1d878b0812ba1d607c9",
+                "reference": "5e4b121c8b9f97c80835c1d878b0812ba1d607c9",
                 "shasum": ""
             },
             "require": {
@@ -601,7 +601,7 @@
                 "paths",
                 "relative"
             ],
-            "time": "2018-02-02T11:30:10+00:00"
+            "time": "2018-10-25T15:19:41+00:00"
         }
     ],
     "aliases": [],
