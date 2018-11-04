@@ -26,6 +26,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         date_default_timezone_set('Asia/Tokyo');
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQueriedEntity()
     {
         $layoutName = 'person_layout';
@@ -36,6 +39,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $this->db_proxy->dbClass->notifyHandler->queriedEntity());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQueriedCondition()
     {
         $layoutName = 'person_layout';
@@ -48,6 +54,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $this->db_proxy->dbClass->notifyHandler->queriedCondition());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testExecuteScriptsforLoading()
     {
         if ((float)phpversion() >= 5.3) {
@@ -55,7 +64,11 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
             $this->dbProxySetupForAccess($layoutName, 1);
             $this->db_proxy->readFromDB($layoutName);
             $this->reflectionClass = new ReflectionClass(get_class($this->db_proxy->dbClass));
-            $method = $this->reflectionClass->getMethod('executeScriptsforLoading');
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_FX') {
+                $method = $this->reflectionClass->getMethod('executeScriptsforLoading');
+            } else {
+                $method = $this->reflectionClass->getMethod('executeScripts');
+            }
             $method->setAccessible(true);
 
             $scriptContext = array('script' => 
@@ -84,6 +97,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script=testscript';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script' => 'testscript');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
             $scriptContext = array('script' => 
@@ -95,6 +111,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script=testscript';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script' => 'testscript');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
             $scriptContext = array('script' => 
@@ -106,6 +125,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script=testscript&-script.param=1';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script' => 'testscript', 'script.param' => '1');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
             $scriptContext = array('script' => 
@@ -116,6 +138,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script.prefind=testscript';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script.prerequest' => 'testscript');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
             $scriptContext = array('script' => 
@@ -127,6 +152,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script.prefind=testscript';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script.prerequest' => 'testscript');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
             $scriptContext = array('script' => 
@@ -138,6 +166,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script.prefind=testscript&-script.prefind.param=1';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script.prerequest' => 'testscript', 'script.prerequest.param' => '1');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
             $scriptContext = array('script' => 
@@ -148,6 +179,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script.presort=testscript';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script.presort' => 'testscript');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
             $scriptContext = array('script' => 
@@ -159,6 +193,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script.presort=testscript';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script.presort' => 'testscript');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
 
             $scriptContext = array('script' => 
@@ -170,10 +207,16 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
                 )
             );
             $expected = '&-script.presort=testscript&-script.presort.param=1';
+            if (get_class($this->db_proxy->dbClass) === 'DB_FileMaker_DataAPI') {
+                $expected = array('script.presort' => 'testscript', 'script.presort.param' => '1');
+            }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
         }
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testIsPossibleOperator()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
@@ -194,6 +237,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->db_proxy->dbClass->specHandler->isPossibleOperator('='));
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testIsPossibleOrderSpecifier()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
@@ -207,6 +253,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOrderSpecifier('DESC'));
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testNormalizedCondition()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
@@ -288,6 +337,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $this->db_proxy->dbClass->normalizedCondition($condition));
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testAdjustSortDirection()
     {
         if ((float)phpversion() >= 5.3) {
@@ -308,6 +360,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testIsNullAcceptable()
     {
         $layoutName = 'person_layout';
@@ -317,6 +372,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->db_proxy->dbClass->specHandler->isNullAcceptable());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery1_singleRecord()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
@@ -329,6 +387,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         //        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery2_multipleRecord()
     {
         $this->dbProxySetupForAccess("person_layout", 1000000);
@@ -343,6 +404,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         //        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithSimpleSearchCriteria()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -353,6 +417,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals(3654, $totalCount);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithLimit()
     {
         $limit = 5;
@@ -366,6 +433,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals('1000000', $result[0]['f3']);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithQueryKey()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -387,6 +457,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals('1670021', $result[0]['f3']);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithQueryKeyAndSearchCriteria()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -400,6 +473,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals('1670022', $result[0]['f3']);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithSimpleSearchCriteriaAndLimit()
     {
         $limit = 5;
@@ -414,6 +490,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals('1670032', $result[0]['f3']);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithSimpleSearchCriteriaAndSorting()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -426,6 +505,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals('1670032', $result[0]['f3']);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithAndSearchCriteria()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -437,6 +519,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals(3654, $totalCount);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithOrSearchCriteria()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -449,6 +534,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals(3654, $totalCount);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithSearchCriteriaByRecId()
     {
         $this->dbProxySetupForAccess('postalcode', 1);
@@ -475,6 +563,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals('1000000', $result[0]['f3']);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testQuery_findPostalCodeWithOrSearchCriteriaWithSameField()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -487,6 +578,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals(3654, $totalCount);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testInsertAndUpdateRecord()
     {
         $this->dbProxySetupForAccess("contact_to", 1000000);
@@ -635,6 +729,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
             $this->db_proxy->checkAuthorization($username, $calcuratedHash, "TEST"), $testName);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testAuthByValidUser()
     {
         $this->dbProxySetupForAuth();
@@ -684,6 +781,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testAuthByInvalidUser()
     {
         $this->dbProxySetupForAuth();
@@ -778,6 +878,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
             $this->db_proxy->checkChallenge($challenge, $cliendId), $testName);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testDefaultKey()
     {
         $this->dbProxySetupForAccess('person_layout', 1);
@@ -790,6 +893,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testGetDefaultKey()
     {
         $this->dbProxySetupForAccess('person_layout', 1);
@@ -802,6 +908,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testMultiClientSyncTableExsistence()
     {
         $testName = "Tables for storing the context and ids should be existing.";
@@ -809,6 +918,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->isExistRequiredTable(), $testName);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testMultiClientSyncRegisterAndUnregister()
     {
         $testName = "Register and Unregister.";
@@ -881,6 +993,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($recSet) == 0, "Count pk values");
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testMultiClientSyncRegisterAndUnregisterPartial()
     {
         $testName = "Register and Unregister partically.";
@@ -926,6 +1041,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($recSet) == 0, "Count pk values");
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testMultiClientSyncMatching()
     {
         $testName = "Match the sync info.";
@@ -964,6 +1082,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($recSet) == 0, "Count pk values");
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testMultiClientSyncAppend()
     {
         $testName = "Append Sync Info.";
@@ -1008,6 +1129,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         //$result = $this->db_proxy->dbClass->notifyHandler->removeFromRegisterd($clientId, $entity, $pkArray);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testMultiClientSyncRemove()    {
         $testName = "Remove Sync Info.";
         $this->dbProxySetupForAuth();
@@ -1039,12 +1163,18 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($recSet) == 0, "Count pk values");
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testIsSupportAggregation()
     {
         $this->dbProxySetupForAccess('person_layout', 1);
         $this->assertFalse($this->db_proxy->dbClass->specHandler->isSupportAggregation());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testGetAuthorizedUsers()
     {
         $this->dbProxySetupForAuth();
@@ -1052,6 +1182,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue($authorizedUsers == array('user1'));
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testGetAuthorizedGroups()
     {
         $this->dbProxySetupForAuth();

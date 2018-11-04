@@ -238,6 +238,9 @@ var INTERMediator = {
           c = ua.charAt(i);
           if (!(c === ' ' || c === '.' || (c >= '0' && c <= '9'))) {
             INTERMediator.ieVersion = INTERMediatorLib.toNumber(ua.substring(position + 10, i)) + 4;
+            if (INTERMediator.ieVersion === 11) {
+              INTERMediator.isIE = true;
+            }
             break;
           }
         }
@@ -737,6 +740,7 @@ var INTERMediator = {
           var linkedNodes, repeaters, linkDefs, voteResult, currentContextDef, fieldList, i, targetRecords,
             newNode, keyValue, selectedNode, isExpanding, calcFields, contextObj = null,
             targetRecordset, ix, keyingValue, footerNodes, headerNodes, nInfo;
+          var tempObj = {};
 
           repeaters = collectRepeaters(repeatersOriginal);  // Collecting repeaters to this array.
           linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode;
@@ -773,12 +777,30 @@ var INTERMediator = {
               }
               return elm;
             });
-            contextObj.setRelationWithParent(currentRecord, parentObjectInfo, currentContextObj);
+
             if (currentContextDef.relation && currentContextDef.relation[0] &&
               Boolean(currentContextDef.relation[0].portal) === true) {
-              currentContextDef.currentrecord = currentRecord;
-              keyValue = currentRecord[INTERMediatorOnPage.defaultKeyName];
+              // for FileMaker portal access mode
+              contextObj.isPortal = true;
+              if (!currentRecord) {
+                tempObj = IMLibContextPool.generateContextObject(
+                  {'name': contextObj.sourceName}, enclosureNode, repeaters, repeatersOriginal);
+                if (targetRecords === undefined) {
+                  targetRecords = retrieveDataForEnclosure(tempObj, fieldList, contextObj.foreignValue);
+                }
+                recId = targetRecords.recordset[0][INTERMediatorOnPage.defaultKeyName];
+                currentRecord = targetRecords.recordset[0];
+              }
             }
+
+            contextObj.setRelationWithParent(currentRecord, parentObjectInfo, currentContextObj);
+            if (contextObj.isPortal === true) {
+              if (currentRecord) {
+                currentContextDef.currentrecord = currentRecord;
+                keyValue = currentRecord[currentContextDef.relation[0]['join-field']];
+              }
+            }
+
             if (procBeforeRetrieve) {
               procBeforeRetrieve(contextObj);
             }
@@ -793,6 +815,7 @@ var INTERMediator = {
               }
             }
             contextObj.storeRecords(targetRecords);
+
             callbackForAfterQueryStored(currentContextDef, contextObj);
             if (customExpandRepeater === undefined) {
               contextObj.registeredId = targetRecords.registeredId;
@@ -1118,8 +1141,8 @@ var INTERMediator = {
        */
       function expandRepeaters(contextObj, node, targetRecords) {
         var newNode, nodeClass, dataAttr, repeatersOneRec, newlyAddedNodes, encNodeTag, repNodeTag, ix,
-          repeatersOriginal, targetRecordset, targetTotalCount, i, currentContextDef, indexContext,
-          insertNode, countRecord, linkedElements, keyingValue, keyField, keyValue,
+          repeatersOriginal, targetRecordset, portalRecords = [], targetTotalCount, i, currentContextDef,
+          indexContext, insertNode, countRecord, linkedElements, keyingValue, keyField, keyValue,
           idValuesForFieldName;
 
         encNodeTag = node.tagName;
@@ -1851,7 +1874,7 @@ var INTERMediator = {
     }
     ,
 
-    addRecordLimit: function (contextName, limit) {
+    setRecordLimit: function (contextName, limit) {
       'use strict';
       var value = INTERMediator.recordLimit;
       value[contextName] = limit;
