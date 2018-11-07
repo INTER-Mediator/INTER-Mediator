@@ -73,7 +73,19 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     public function addOutputData($key, $value)
     {
-        return $this->outputOfProcessing[$key] = $value;
+        if (!isset($this->outputOfProcessing[$key])) {
+            $this->outputOfProcessing[$key] = $value;
+        } else if (is_array($this->outputOfProcessing[$key])) {
+            if (is_array($value)) {
+                $this->outputOfProcessing[$key] = array_merge($this->outputOfProcessing[$key], $value);
+            } else {
+                $this->outputOfProcessing[$key][] = $value;
+            }
+        } else if (is_string($this->outputOfProcessing[$key])) {
+            $this->outputOfProcessing[$key] .= $value;
+        } else {
+            $this->outputOfProcessing[$key] = (string)$this->outputOfProcessing[$key] . (string)$value;
+        }
     }
 
     public function exportOutputDataAsJSON()
@@ -101,6 +113,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     function __construct($testmode = false)
     {
         $this->PostData = $_POST;
+        $this->outputOfProcessing = [];
         if (!$testmode) {
             header('Content-Type: text/javascript;charset="UTF-8"');
             header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
@@ -734,7 +747,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->logger->setDebugMessage("[processingRequest]", 2);
         $options = $this->dbSettings->getAuthentication();
 
-        $this->outputOfProcessing = array();
+        //$this->outputOfProcessing = array();
         $messageClass = \INTERMediator\IMUtil::getMessageClassInstance();
 
         /* Aggregation Judgement */
@@ -1006,8 +1019,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->outputOfProcessing['mediatoken'] = $generatedChallenge;
             }
         }
-        $this->outputOfProcessing['errorMessages'] = $this->logger->getErrorMessages();
-        $this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
+        $this->addOutputData('errorMessages', $this->logger->getErrorMessages());
+        $this->addOutputData('debugMessages', $this->logger->getDebugMessages());
+        //$this->outputOfProcessing['errorMessages'] = $this->logger->getErrorMessages();
+        //$this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
     }
 
     public function getDatabaseResult()

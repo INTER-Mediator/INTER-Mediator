@@ -127,7 +127,6 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
                 return;
             }
         }
-
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
     } else {
@@ -135,6 +134,11 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         if (!$dbInstance->initialize($datasource, $options, $dbspecification, $debug)) {
             $dbInstance->finishCommunication(true);
         } else {
+            $dbInstance->addOutputData('debugMessages',ServiceServerProxy::instance()->getMessages());
+            $errors = ServiceServerProxy::instance()->getErrors();
+            if (count($errors)>0) {
+                $dbInstance->addOutputData('errorMessages', $errors);
+            }
             $util = new IMUtil();
             if ($util->protectCSRF() === TRUE) {
                 $dbInstance->processingRequest();
