@@ -217,14 +217,26 @@ class MediaAccess
                     . $dbProxyInstance->dbSettings->getDbSpecServer() . ":"
                     . $dbProxyInstance->dbSettings->getDbSpecPort();
             }
-            $file = $urlHost . str_replace(" ", "%20", $file);
-            foreach ($_GET as $key => $value) {
+            $file = $urlHost . $file;
+            $oldLocale = setlocale(LC_CTYPE, 0);
+            setlocale(LC_CTYPE, 'C');
+            $path = parse_url($file, PHP_URL_PATH);
+            $query = parse_url($file, PHP_URL_QUERY);
+            setlocale(LC_CTYPE, $oldLocale);
+            parse_str($query, $get_array);
+            $get_array = $get_array + $_GET;
+            foreach ($get_array as $key => $value) {
                 if ($key !== 'media' && $key !== 'attach') {
-                    $file .= "&" . urlencode($key) . "=" . urlencode($value);
+                    if (strpos($path, '?') !== false) {
+                        $path .= '&';
+                    } else {
+                        $path .= '?';
+                    }
+                    $path .= urlencode($key) . '=' . urlencode($value);
                 }
             }
             $isURL = true;
-            return array($file, $isURL);
+            return array($urlHost . $path, $isURL);
         }
         return array($file, $isURL);
     }
