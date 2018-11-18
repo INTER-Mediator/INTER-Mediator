@@ -18,6 +18,8 @@ class ServiceServerProxy
     private $errors = [];
     private $messages = [];
     private $messageHead = "[ServiceServerProxy] ";
+    private $nodePath;
+    private $foreverPath;
 
     static public function instance()
     {
@@ -35,7 +37,8 @@ class ServiceServerProxy
         $this->paramsPort = $params["serviceServerPort"] ? intval($params["serviceServerPort"]) : 11478;
         $imPath = IMUtil::pathToINTERMediator();
         $this->foreverPath = "{$imPath}/node_modules/forever/bin/forever";
-        $this->messages[] = $this->messageHead . 'Instanciated of the ServiceServerProxy class';
+        $this->nodePath = "{$imPath}/vendor/bin/node";
+        $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
 
     }
 
@@ -61,8 +64,25 @@ class ServiceServerProxy
 
     public function checkServiceServer()
     {
-        if (!$this->isActive()) {
+        $waitSec = 5;
+        $startDT = new \DateTime();
+        $counterInit = $counter = 10;
+        while (!$this->isActive()) {
             $this->startServer();
+            $counter -= 1;
+
+            if ($counter < 1) {
+                $this->errors[] = $this->messageHead . "Service Server couldn't boot in spite of {$counterInit} times trial.";
+                return;
+            }
+
+            $intObj = (new \DateTime())->diff($startDT, true);
+            $intSecs = ((((($intObj->y * 30) + $intObj->m) * 12 + $intObj->d) * 24 + $intObj->h) * 60 + $intObj->i) * 60 + $intObj->s;
+            if ($intSecs > $waitSec) {
+                $this->errors[] = $this->messageHead . 'Service Server could not be available for timeout.';
+                return;
+            }
+            sleep(2.0);
         }
     }
 
@@ -72,6 +92,7 @@ class ServiceServerProxy
         $ch = curl_init($url);
         curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 1,]);
         $result = curl_exec($ch);
+        $this->messages[] = $this->messageHead . "URL:$url, Result:$result";
         $info = curl_getinfo($ch);
         if (curl_errno($ch) !== CURLE_OK || $info['http_code'] !== 200) {
             $this->errors[] = $this->messageHead . 'Absent Service Server or Communication Probrems.';
@@ -83,29 +104,23 @@ class ServiceServerProxy
             $this->errors[] = $this->messageHead . 'Server respond an irregular message.';
             return false;
         }
-        $this->messages[] = $this->messageHead . "URL:$url, Result:$result";
         return true;
     }
 
     private function startServer()
     {
-        $waitSec = 5;
-        $startDT = new \DateTime();
         $imPath = IMUtil::pathToINTERMediator();
+
+        $script = file_get_contents($this->foreverPath);
+        $script = str_replace(" node", " " . $this->nodePath, $script);
+        file_put_contents($this->foreverPath, $script);
+
         $cmd = "{$this->foreverPath} start {$imPath}/src/js/Service_Server.js {$this->paramsPort}";
         $this->messages[] = $this->messageHead . "Command:$cmd";
         $result = [];
         $returnValue = 0;
-        exec(escapeshellcmd("$cmd"), $result, $returnValue);
+        exec($cmd, $result, $returnValue);
         $this->messages[] = $this->messageHead . "Returns:$returnValue, Output:" . implode("/", $result);
-        while (!$this->isActive()) {
-            $intObj = (new \DateTime())->diff($startDT, true);
-            $intSecs = ((((($intObj->y * 30) + $intObj->m) * 12 + $intObj->d) * 24 + $intObj->h) * 60 + $intObj->i) * 60 + $intObj->s;
-            if ($intSecs > $waitSec) {
-                return false;
-            }
-            sleep(1.0);
-        }
         return true;
     }
 

@@ -21,6 +21,10 @@ let requestBroker = {}
 
 app.listen(port)
 
+if (!app.listening) {
+  process.exit(1)
+}
+
 requestBroker['/info'] = function (params, res) {
   res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
   res.write('Service Server is active.')
