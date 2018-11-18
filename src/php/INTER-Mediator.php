@@ -19,9 +19,9 @@ namespace INTERMediator;
 $imRoot = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR;
 require($imRoot . '/vendor/autoload.php');
 
-spl_autoload_register(function($className) {
+spl_autoload_register(function ($className) {
     $comps = explode('\\', $className);
-    $className = $comps[count($comps)-1];
+    $className = $comps[count($comps) - 1];
     // Load from the file located on the same directory as definition file.
     $path = dirname($_SERVER['SCRIPT_FILENAME']) . "/{$className}.php";
     if (file_exists($path)) {
@@ -31,7 +31,7 @@ spl_autoload_register(function($className) {
     // Load from the file inside files of FX.php.
     $imRoot = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR;
     $path = "{$imRoot}/vendor/yodarunamok/fxphp/lib/datasource_classes/{$className}.class.php";
-    if (file_exists($path)){
+    if (file_exists($path)) {
         require_once $path;
         return true;
     }
@@ -49,11 +49,9 @@ if (isset($params['defaultTimezone'])) {
 } else if (ini_get('date.timezone') == null) {
     date_default_timezone_set('UTC');
 }
-$stopSSEveryQuit = isset($params['stopSSEveryQuit'])?$params['stopSSEveryQuit']:false;
+$stopSSEveryQuit = isset($params['stopSSEveryQuit']) ? $params['stopSSEveryQuit'] : false;
 // Setup Locale
 Locale\IMLocale::setLocale(LC_ALL);
-// Bootstrap of Service Server
-ServiceServerProxy::instance()->checkServiceServer();
 // Define constant
 define("IM_TODAY", strftime('%Y-%m-%d'));
 
@@ -66,6 +64,7 @@ define("IM_TODAY", strftime('%Y-%m-%d'));
  */
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
+    file_put_contents("/tmp/2", "# IM_Entry start");
     global $stopSSEveryQuit;
     // check required PHP extensions
     $requiredFunctions = array(
@@ -93,13 +92,13 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         }
     }
 
-    if (isset($_GET['theme'])) {
+    if (isset($_GET['theme'])) {    // Get theme data
         $themeManager = new Theme();
         $themeManager->processing();
-    } else if (!isset($_POST['access']) && isset($_GET['uploadprocess'])) {
+    } else if (!isset($_POST['access']) && isset($_GET['uploadprocess'])) { // Upload progress
         $fileUploader = new FileUploader();
         $fileUploader->processInfo();
-    } else if (!isset($_POST['access']) && isset($_GET['media'])) {
+    } else if (!isset($_POST['access']) && isset($_GET['media'])) { // Media accessing
         $dbProxyInstance = new DB\Proxy();
         $dbProxyInstance->initialize($datasource, $options, $dbspecification, $debug);
         $mediaHandler = new MediaAccess();
@@ -109,14 +108,14 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         $mediaHandler->processing($dbProxyInstance, $options, $_GET['media']);
     } else if ((isset($_POST['access']) && $_POST['access'] == 'uploadfile')
         || (isset($_GET['access']) && $_GET['access'] == 'uploadfile')
-    ) {
+    ) {     // File uploading
         $fileUploader = new FileUploader();
         if (IMUtil::guessFileUploadError()) {
             $fileUploader->processingAsError($datasource, $options, $dbspecification, $debug);
         } else {
             $fileUploader->processing($datasource, $options, $dbspecification, $debug);
         }
-    } else if (!isset($_POST['access']) && !isset($_GET['media'])) {
+    } else if (!isset($_POST['access']) && !isset($_GET['media'])) {    // Download JS module to client
         if ($debug) {
             $dc = new DefinitionChecker();
             $defErrorMessage = $dc->checkDefinitions($datasource, $options, $dbspecification);
@@ -127,16 +126,18 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
                 return;
             }
         }
+        // Bootstrap of Service Server
+        ServiceServerProxy::instance()->checkServiceServer();
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
-    } else {
+    } else {    // Database accessing
         $dbInstance = new DB\Proxy();
         if (!$dbInstance->initialize($datasource, $options, $dbspecification, $debug)) {
             $dbInstance->finishCommunication(true);
         } else {
-            $dbInstance->addOutputData('debugMessages',ServiceServerProxy::instance()->getMessages());
+            $dbInstance->addOutputData('debugMessages', ServiceServerProxy::instance()->getMessages());
             $errors = ServiceServerProxy::instance()->getErrors();
-            if (count($errors)>0) {
+            if (count($errors) > 0) {
                 $dbInstance->addOutputData('errorMessages', $errors);
             }
             $util = new IMUtil();
@@ -150,9 +151,11 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         }
         $dbInstance->exportOutputDataAsJSON();
     }
-    if($stopSSEveryQuit){
+    if ($stopSSEveryQuit) {
         ServiceServerProxy::instance()->stopServer();
     }
+    file_put_contents("/tmp/2", "# IM_Entry exit");
+
 }
 
 
