@@ -140,6 +140,10 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
             if (count($errors) > 0) {
                 $dbInstance->addOutputData('errorMessages', $errors);
             }
+            $messages = ServiceServerProxy::instance()->getMessages();
+            if (count($messages) > 0) {
+                $dbInstance->addOutputData('debugMessages', $messages);
+            }
             $util = new IMUtil();
             if ($util->protectCSRF() === TRUE) {
                 $dbInstance->processingRequest();

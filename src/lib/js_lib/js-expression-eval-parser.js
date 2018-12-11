@@ -22,7 +22,7 @@ module.exports = {
   evaluate: function (exp, values) {
     return Parser.evaluate(exp, values);
   }
-};
+}
 
 /**
  *

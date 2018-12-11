@@ -1137,7 +1137,6 @@ export const INTERMediator = {
         repeatersOriginal, targetRecordset, targetTotalCount, i, currentContextDef, indexContext,
         insertNode, countRecord, linkedElements, keyingValue, keyField, keyValue,
         idValuesForFieldName
-      let portalRecords = []
 
       encNodeTag = node.tagName
       repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag)
