@@ -179,7 +179,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $timeValue = $currentDT->format("U");
 
         $this->dbClass->setupFMDataAPIforAuth($hashTable, 100000000);
-        $conditions = array(array('expired' => '...' . date('m/d/Y H:i:s', $timeValue - $this->dbSettings->getExpiringSeconds())));
+        $conditions = array(array(
+            'expired' => '...' . date('m/d/Y H:i:s', $timeValue - $this->dbSettings->getExpiringSeconds()),
+            'clienthost' => '!""',
+        ));
         try {
             $result = $this->dbClass->fmDataAuth->{$hashTable}->query($conditions);
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {

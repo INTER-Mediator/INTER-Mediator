@@ -143,6 +143,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
 
         $this->dbClass->setupFXforAuth($hashTable, 100000000);
         $this->dbClass->fxAuth->AddDBParam('expired', date('m/d/Y H:i:s', $timeValue - $this->dbSettings->getExpiringSeconds()), 'lt');
+        $this->dbClass->fxAuth->AddDBParam('clienthost', '', 'neq');
         $result = $this->dbClass->fxAuth->DoFxAction('perform_find', TRUE, TRUE, 'full');
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
