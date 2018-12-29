@@ -161,7 +161,8 @@ var INTERMediatorLib = {
           if (INTERMediatorLib.isRepeater(currentNode, true)) {
             for (i = 0; i < IMLibContextPool.poolingContexts.length; i++) {
               for (j in IMLibContextPool.poolingContexts[i].binding) {
-                if (IMLibContextPool.poolingContexts[i].binding.hasOwnProperty(j)) {
+                if (IMLibContextPool.poolingContexts[i].binding.hasOwnProperty(j) &&
+                    IMLibContextPool.poolingContexts[i].binding[j].hasOwnProperty('_im_repeater')) {
                   for (k = 0; k < IMLibContextPool.poolingContexts[i].binding[j]._im_repeater.length; k++) {
                     if (IMLibContextPool.poolingContexts[i].binding[j]._im_repeater[k].id === currentNode.id) {
                       repeaters = IMLibContextPool.poolingContexts[i].binding[j]._im_repeater;
