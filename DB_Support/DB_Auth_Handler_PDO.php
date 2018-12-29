@@ -175,7 +175,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $currentDTStr = $this->dbClass->link->quote(IMUtil::currentDTString($this->dbSettings->getExpiringSeconds()));
-        $sql = "delete from {$hashTable} where expired < {$currentDTStr}";
+        $sql = "delete from {$hashTable} where clienthost IS NOT NULL AND expired < {$currentDTStr}";
         $this->logger->setDebugMessage("[authSupportRemoveOutdatedChallenges] {$sql}");
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
