@@ -176,7 +176,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $expireSeconds = $this->dbSettings->getExpiringSeconds();
         $currentDTStr = $this->dbClass->link->quote(IMUtil::currentDTString($expireSeconds));
         $longBeforeDTStr = $this->dbClass->link->quote(IMUtil::currentDTString(3600 * 24 * 3));
-        $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$hashTable} WHERE".
+        $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$hashTable} WHERE" .
             " (clienthost IS NOT NULL AND expired < {$currentDTStr}) OR (expired < {$longBeforeDTStr})";
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
@@ -819,7 +819,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if ($userTable == null) {
             return false;
         }
-        $hashTable = $this->dbSettings->getgetHashTable();
+        $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
             return false;
         }
@@ -827,9 +827,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "{$this->dbClass->handler->sqlUPDATECommand()}{$userTable} SET hashedpasswd=" . $this->dbClass->link->quote($password)
-            . (($rawPWField !== false) ? "," . $rawPWField . "=" . $this->dbClass->link->quote($rawPW) : "")
-            . " WHERE id=" . $this->dbClass->link->quote($userID);
+        $sql = "{$this->dbClass->handler->sqlUPDATECommand()}{$userTable}" .
+            " SET hashedpasswd=" . $this->dbClass->link->quote($password) .
+            (($rawPWField !== false) ? "," . $rawPWField . "=" . $this->dbClass->link->quote($rawPW) : "") .
+            " WHERE id=" . $this->dbClass->link->quote($userID);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Update:' . $sql);
