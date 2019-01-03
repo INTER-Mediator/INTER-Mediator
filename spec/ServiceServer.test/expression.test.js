@@ -1,5 +1,5 @@
-const IMLibFormat = require('../../src/js/INTER-Mediator-Format.js')
-const INTERMediatorLib = require('../../src/js/INTER-Mediator-Lib.js')
+// const IMLibFormat = require('../../src/js/INTER-Mediator-Format.js')
+// const INTERMediatorLib = require('../../src/js/INTER-Mediator-Lib.js')
 const parser = require('../../src/lib/js_lib/js-expression-eval-parser.js')
 
 test('should be equal to', () => {
@@ -75,10 +75,10 @@ test('should be equal to', () => {
 )
 
 test('should be equal to', () => {
-    expect(0 + 0, 0)
-    expect('' + 0, '0')
-    expect(0 + '', '0')
-    expect('' + '', '')
+    expect(0 + 0).toBe(0)
+    expect('' + 0).toBe('0')
+    expect(0 + '').toBe('0')
+    expect('' + '').toBe('')
     expect(parser.evaluate('x + y', {x: 0, y: 0})).toBe(0)
     expect(parser.evaluate('x + y', {x: '', y: 0})).toBe('0')
     expect(parser.evaluate('x + y', {x: 0, y: ''})).toBe('0')
@@ -270,10 +270,10 @@ test('Calculate integer values.', () => {
 test('Calculate integer and float values.', () => {
     let exp, vals, result
 
-    exp = 'dog * cat'
+    exp = 'round(dog * cat, 1)'
     vals = {dog: [29], cat: [4.1]}
     result = parser.evaluate(exp, vals)
-    expect(INTERMediatorLib.Round(result, 1)).toBe(118.9)
+    expect(result).toBe(118.9)
   }
 )
 test('Sum function and array letiable.1', () => {
@@ -365,13 +365,19 @@ test('Japanese characters letiables.', () => {
   }
 )
 test('Wrong expression.1', () => {
-    expect(parser.evaluate('(a + b', {'a': [20], 'b': [2]})).toThrow()
-  }
-)
+    try {
+        parser.evaluate('(a + b', {'a': [20], 'b': [2]})
+    } catch(e) {
+        expect(e.message).toBe('parse error [column 6]: unmatched "()"')
+    }
+})
 test('Wrong expression.2', () => {
-    expect(parser.evaluate('a + b + malfunction(a)', {'a': [20], 'b': [2]})).toThrow()
-  }
-)
+    try {
+        parser.evaluate('a + b + malfunction(a)', {'a': [20], 'b': [2]})
+    } catch(e) {
+        expect(e.message).toBe('undefined variable: malfunction')
+    }
+})
 /*
 test('each 3-digits should be devided.', () => {
     INTERMediatorOnPage.localeInfo = {

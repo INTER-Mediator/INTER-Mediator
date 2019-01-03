@@ -491,8 +491,20 @@ var Parser = (function (scope) {
     } else {
       a = (a instanceof Array) ? a.join() : a;
       b = (b instanceof Array) ? b.join() : b;
-      return INTERMediatorLib.Round(a, b);
+      return round(a, b);
     }
+  }
+
+  /**
+   * This method returns the rounded value of the 1st parameter to the 2nd parameter from decimal point.
+   * @param {number} value The source value.
+   * @param {integer} digit Positive number means after the decimal point, and negative menas before it.
+   * @returns {number}
+   */
+  function round(value, digit) {
+    'use strict'
+    var powers = Math.pow(10, digit)
+    return Math.round(value * powers) / powers
   }
 
   function length (a) {
@@ -1489,7 +1501,7 @@ var Parser = (function (scope) {
     error_parsing: function (column, msg) {
       this.success = false;
       this.errormsg = 'parse error [column ' + (column) + ']: ' + msg;
-      throw new Error(this.errormsg);
+      throw (new Error(this.errormsg));
     },
 
 //\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
