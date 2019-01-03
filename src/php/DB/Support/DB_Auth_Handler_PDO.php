@@ -178,8 +178,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $expireSeconds = $this->dbSettings->getExpiringSeconds();
-        $currentDTStr = $this->dbClass->link->quote(IMUtil::currentDTString($expireSeconds));
-        $longBeforeDTStr = $this->dbClass->link->quote(IMUtil::currentDTString(3600 * 24 * 3));
+        $currentDTStr = $this->dbClass->link->quote(\INTERMediator\IMUtil::currentDTString($expireSeconds));
+        $longBeforeDTStr = $this->dbClass->link->quote(\INTERMediator\IMUtil::currentDTString(3600 * 24 * 3));
         $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$hashTable} WHERE".
             " (clienthost IS NOT NULL AND expired < {$currentDTStr}) OR (expired < {$longBeforeDTStr})";
         $result = $this->dbClass->link->query($sql);
