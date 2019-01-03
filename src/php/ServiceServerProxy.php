@@ -109,6 +109,8 @@ class ServiceServerProxy
 
     private function startServer()
     {
+        openlog("INTER-Mediator_ServiceServer", LOG_PID | LOG_PERROR, LOG_USER);
+
         $imPath = IMUtil::pathToINTERMediator();
 
         $script = file_get_contents($this->foreverPath);
@@ -117,11 +119,13 @@ class ServiceServerProxy
         $logFile = tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
         $cmd = "{$this->foreverPath} start -w -a -l {$logFile} " .
             "{$imPath}/src/js/Service_Server.js {$this->paramsPort}";
-        $this->messages[] = $this->messageHead . "Command:$cmd";
+        syslog(LOG_INFO, "Command:$cmd");
         $result = [];
         $returnValue = 0;
         exec($cmd, $result, $returnValue);
-        $this->messages[] = $this->messageHead . "Returns:$returnValue, Output:" . implode("/", $result);
+
+        syslog(LOG_INFO, "Returns:$returnValue, Output:" . implode("/", $result));
+        closelog();
         return true;
     }
 
