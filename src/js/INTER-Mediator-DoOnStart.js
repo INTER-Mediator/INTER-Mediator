@@ -22,85 +22,75 @@
 INTERMediator.propertyIETridentSetup()
 INTERMediator.propertyW3CUserAgentSetup()
 
-if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
-  INTERMediator.startFrom = 0
-  INTERMediator.pagedSize = 0
-  INTERMediator.pagination = false
-  INTERMediator.additionalCondition = {}
-  INTERMediator.additionalSortKey = {}
-  INTERMediator.recordLimit = {}
-  IMLibCalc.regexpForSeparator = INTERMediator.separator
-} else {
-  Object.defineProperty(INTERMediator, 'startFrom', {
-    get: function () {
-      'use strict'
-      return INTERMediator.getLocalProperty('_im_startFrom', 0)
-    },
-    set: function (value) {
-      'use strict'
-      INTERMediator.setLocalProperty('_im_startFrom', value)
+Object.defineProperty(INTERMediator, 'startFrom', {
+  get: function () {
+    'use strict'
+    return INTERMediator.getLocalProperty('_im_startFrom', 0)
+  },
+  set: function (value) {
+    'use strict'
+    INTERMediator.setLocalProperty('_im_startFrom', value)
+  }
+})
+Object.defineProperty(INTERMediator, 'pagedSize', {
+  get: function () {
+    'use strict'
+    return INTERMediator.getLocalProperty('_im_pagedSize', 0)
+  },
+  set: function (value) {
+    'use strict'
+    INTERMediator.setLocalProperty('_im_pagedSize', value)
+  }
+})
+Object.defineProperty(INTERMediator, 'pagination', {
+  get: function () {
+    'use strict'
+    return INTERMediator.getLocalProperty('_im_pagination', 0)
+  },
+  set: function (value) {
+    'use strict'
+    INTERMediator.setLocalProperty('_im_pagination', value)
+  }
+})
+Object.defineProperty(INTERMediator, 'additionalCondition', {
+  get: function () {
+    'use strict'
+    return INTERMediator.getLocalProperty('_im_additionalCondition', {})
+  },
+  set: function (value) {
+    'use strict'
+    INTERMediator.setLocalProperty('_im_additionalCondition', value)
+  }
+})
+Object.defineProperty(INTERMediator, 'additionalSortKey', {
+  get: function () {
+    'use strict'
+    return INTERMediator.getLocalProperty('_im_additionalSortKey', {})
+  },
+  set: function (value) {
+    'use strict'
+    INTERMediator.setLocalProperty('_im_additionalSortKey', value)
+  }
+})
+Object.defineProperty(INTERMediator, 'recordLimit', {
+  get: function () {
+    'use strict'
+    return INTERMediator.getLocalProperty('_im_recordLimit', {})
+  },
+  set: function (value) {
+    'use strict'
+    INTERMediator.setLocalProperty('_im_recordLimit', value)
+  }
+})
+Object.defineProperty(IMLibCalc, 'regexpForSeparator', {
+  get: function () {
+    'use strict'
+    if (INTERMediator) {
+      return new RegExp(INTERMediator.separator)
     }
-  })
-  Object.defineProperty(INTERMediator, 'pagedSize', {
-    get: function () {
-      'use strict'
-      return INTERMediator.getLocalProperty('_im_pagedSize', 0)
-    },
-    set: function (value) {
-      'use strict'
-      INTERMediator.setLocalProperty('_im_pagedSize', value)
-    }
-  })
-  Object.defineProperty(INTERMediator, 'pagination', {
-    get: function () {
-      'use strict'
-      return INTERMediator.getLocalProperty('_im_pagination', 0)
-    },
-    set: function (value) {
-      'use strict'
-      INTERMediator.setLocalProperty('_im_pagination', value)
-    }
-  })
-  Object.defineProperty(INTERMediator, 'additionalCondition', {
-    get: function () {
-      'use strict'
-      return INTERMediator.getLocalProperty('_im_additionalCondition', {})
-    },
-    set: function (value) {
-      'use strict'
-      INTERMediator.setLocalProperty('_im_additionalCondition', value)
-    }
-  })
-  Object.defineProperty(INTERMediator, 'additionalSortKey', {
-    get: function () {
-      'use strict'
-      return INTERMediator.getLocalProperty('_im_additionalSortKey', {})
-    },
-    set: function (value) {
-      'use strict'
-      INTERMediator.setLocalProperty('_im_additionalSortKey', value)
-    }
-  })
-  Object.defineProperty(INTERMediator, 'recordLimit', {
-    get: function () {
-      'use strict'
-      return INTERMediator.getLocalProperty('_im_recordLimit', {})
-    },
-    set: function (value) {
-      'use strict'
-      INTERMediator.setLocalProperty('_im_recordLimit', value)
-    }
-  })
-  Object.defineProperty(IMLibCalc, 'regexpForSeparator', {
-    get: function () {
-      'use strict'
-      if (INTERMediator) {
-        return new RegExp(INTERMediator.separator)
-      }
-      return new RegExp('@')
-    }
-  })
-}
+    return new RegExp('@')
+  }
+})
 
 if (!INTERMediator.additionalCondition) {
   INTERMediator.additionalCondition = {}
@@ -110,12 +100,15 @@ if (!INTERMediator.additionalSortKey) {
   INTERMediator.additionalSortKey = {}
 }
 
-INTERMediatorLib.addEvent(window, 'beforeunload', function () {
-//    var confirmationMessage = ''
-
-//    (e || window.event).returnValue = confirmationMessage     //Gecko + IE
-//    return confirmationMessage                                //Webkit, Safari, Chrome etc.
-
+INTERMediatorLib.addEvent(window, 'beforeunload', function (e) {
+  if (IMLibQueue.tasks.length > 0) {
+    const confirmationMessage = 'Test'
+    const ev = (e || window.event)
+    ev.returnValue = confirmationMessage //Gecko + IE
+    return confirmationMessage //Webkit, Safari, Chrome etc.
+  } else {
+    return undefined
+  }
 })
 
 INTERMediatorLib.addEvent(window, 'unload', function () {

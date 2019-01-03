@@ -14,6 +14,12 @@
  IMLibEventResponder, Parser, IMLibLocalContext, IMLibFormat, IMLibInputEventDispatch */
 /* jshint -W083 */ // Function within a loop
 
+module.exports = {
+  round: function (value, digit) {
+    return INTERMediatorLib.round(value, digit)
+  }
+}
+
 /**
  * @fileoverview IMLib and INTERMediatorLib classes are defined here.
  */

@@ -244,6 +244,9 @@ export const INTERMediator = {
         c = ua.charAt(i)
         if (!(c === ' ' || c === '.' || (c >= '0' && c <= '9'))) {
           INTERMediator.ieVersion = INTERMediatorLib.toNumber(ua.substring(position + 10, i)) + 4
+          if (INTERMediator.ieVersion === 11) {
+            INTERMediator.isIE = true
+          }
           break
         }
       }
@@ -1134,7 +1137,6 @@ export const INTERMediator = {
         repeatersOriginal, targetRecordset, targetTotalCount, i, currentContextDef, indexContext,
         insertNode, countRecord, linkedElements, keyingValue, keyField, keyValue,
         idValuesForFieldName
-      let portalRecords = []
 
       encNodeTag = node.tagName
       repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag)

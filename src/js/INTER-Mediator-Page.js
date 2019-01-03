@@ -14,6 +14,10 @@
  IMLibEventResponder, INTERMediatorLog, SHA1, IMLib, JSEncrypt */
 /* jshint -W083 */ // Function within a loop
 
+let INTERMediatorOnPage = {}
+
+module.exports = INTERMediatorOnPage
+
 /**
  * @fileoverview INTERMediatorOnPage class is defined here.
  */
@@ -22,7 +26,7 @@
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-const INTERMediatorOnPage = {
+INTERMediatorOnPage = {
   authCountLimit: 4,
   authCount: 0,
   authUser: '',

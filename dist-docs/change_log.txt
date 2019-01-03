@@ -46,7 +46,11 @@ Ver.6-dev (in development)
   Internet Explorer 11).
 - [BUG FIX] If someone loges in after self-service enrollment, enrollment info in issued hash table was eliminated.
 
-Ver.5.8-dev (in development)
+Ver.5.9-dev (in development)
+- Reduce error messages when using PHP 7.2 and DB_FileMaker_DataAPI class.
+- [BUG FIX] Fix showing images in FileMaker container fields with multibyte database name.
+
+Ver.5.8 (November 3, 2018)
 - Improve speed performance of Native Authentication and LDAP Authentication.
 - Add DB_FileMaker_DataAPI class to support FileMaker Data API of FileMaker Server 17.
 - Support retrieving image files in container fields when using DB_FileMaker_DataAPI class.

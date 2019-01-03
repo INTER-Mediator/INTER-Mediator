@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c1b238e44e120503f4a341e8a7b6c6fb",
+    "content-hash": "0f202c0b467d22f75b19aee777ff6e08",
     "packages": [
         {
             "name": "inter-mediator/fmdataapi",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/msyk/FMDataAPI.git",
-                "reference": "bbde8d5dec8675edf969e33a54dd62e7358ae808"
+                "reference": "fc9782668b21356d09827707aed320e56d7861cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/msyk/FMDataAPI/zipball/bbde8d5dec8675edf969e33a54dd62e7358ae808",
-                "reference": "bbde8d5dec8675edf969e33a54dd62e7358ae808",
+                "url": "https://api.github.com/repos/msyk/FMDataAPI/zipball/fc9782668b21356d09827707aed320e56d7861cb",
+                "reference": "fc9782668b21356d09827707aed320e56d7861cb",
                 "shasum": ""
             },
             "require": {
@@ -49,7 +49,7 @@
                 "api",
                 "rest"
             ],
-            "time": "2018-09-09T05:40:09+00:00"
+            "time": "2018-11-17T14:29:46+00:00"
         },
         {
             "name": "mouf/nodejs-installer",
@@ -172,16 +172,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "2.0.11",
+            "version": "2.0.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "7053f06f91b3de78e143d430e55a8f7889efc08b"
+                "reference": "8814dc7841db159daed0b32c2b08fb7e03c6afe7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/7053f06f91b3de78e143d430e55a8f7889efc08b",
-                "reference": "7053f06f91b3de78e143d430e55a8f7889efc08b",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/8814dc7841db159daed0b32c2b08fb7e03c6afe7",
+                "reference": "8814dc7841db159daed0b32c2b08fb7e03c6afe7",
                 "shasum": ""
             },
             "require": {
@@ -260,7 +260,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2018-04-15T16:55:05+00:00"
+            "time": "2018-11-04T05:45:48+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -441,16 +441,16 @@
         },
         {
             "name": "matthiasmullie/path-converter",
-            "version": "1.1.1",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/matthiasmullie/path-converter.git",
-                "reference": "3082a6838be02b930239a97d38b5c9da4d693aca"
+                "reference": "5e4b121c8b9f97c80835c1d878b0812ba1d607c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/matthiasmullie/path-converter/zipball/3082a6838be02b930239a97d38b5c9da4d693aca",
-                "reference": "3082a6838be02b930239a97d38b5c9da4d693aca",
+                "url": "https://api.github.com/repos/matthiasmullie/path-converter/zipball/5e4b121c8b9f97c80835c1d878b0812ba1d607c9",
+                "reference": "5e4b121c8b9f97c80835c1d878b0812ba1d607c9",
                 "shasum": ""
             },
             "require": {
@@ -486,7 +486,7 @@
                 "paths",
                 "relative"
             ],
-            "time": "2018-02-02T11:30:10+00:00"
+            "time": "2018-10-25T15:19:41+00:00"
         }
     ],
     "aliases": [],
@@ -498,7 +498,9 @@
         "php": "^5",
         "ext-mbstring": "*",
         "ext-pdo": "*",
-        "ext-bcmath": "*"
+        "ext-bcmath": "*",
+        "ext-curl": "*",
+        "ext-xml": "*"
     },
     "platform-dev": []
 }

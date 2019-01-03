@@ -45,7 +45,8 @@
     },
     "dependencies": {
         "socket.io": "*",
-        "forever": "*"
+        "forever": "*",
+        "forever-win": "*"
     },
     "engines": {
         "node": "*"
