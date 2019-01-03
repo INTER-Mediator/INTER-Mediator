@@ -115,7 +115,7 @@ class ServiceServerProxy
         $script = str_replace(" node", " " . $this->nodePath, $script);
         file_put_contents($this->foreverPath, $script);
 
-        $cmd = "{$this->foreverPath} start {$imPath}/src/js/Service_Server.js {$this->paramsPort}";
+        $cmd = "{$this->foreverPath} start -w -l /tmp/forever.log {$imPath}/src/js/Service_Server.js {$this->paramsPort}";
         $this->messages[] = $this->messageHead . "Command:$cmd";
         $result = [];
         $returnValue = 0;
