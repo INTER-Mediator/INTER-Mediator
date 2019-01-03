@@ -44,6 +44,7 @@ Ver.6-dev (in development)
 - [BUG FIX] INTERMediatorLib.getParentRepeaters works in case of parameter node isn't target node.
 - [BUG FIX] Fix INTERMediator.isIE property to detect Internet Explorer 11 (Change false to true if using 
   Internet Explorer 11).
+- [BUG FIX] If someone loges in after self-service enrollment, enrollment info in issued hash table was eliminated.
 
 Ver.5.8-dev (in development)
 - Improve speed performance of Native Authentication and LDAP Authentication.

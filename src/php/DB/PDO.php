@@ -781,7 +781,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $this->errorMessageStore('Don\'t delete with no ciriteria.');
             return false;
         }
-        $sql = "{$this->handler->sqlDELETECommand()}FROM {$tableName} WHERE {$queryClause}";
+        $sql = "{$this->handler->sqlDELETECommand()}{$tableName} WHERE {$queryClause}";
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if (!$result) {
@@ -1011,7 +1011,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $this->errorMessageStore("Can't open db connection.");
             return false;
         }
-        $sql = "{$this->handler->sqlDELETECommand()}FROM " . $this->handler->quotedEntityName($table);
+        $sql = "{$this->handler->sqlDELETECommand()}" . $this->handler->quotedEntityName($table);
         if (is_array($conditions) && count($conditions) > 0) {
             $sql .= " WHERE ";
             $first = true;
