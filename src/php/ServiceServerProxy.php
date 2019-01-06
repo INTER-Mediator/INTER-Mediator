@@ -37,6 +37,9 @@ class ServiceServerProxy
         $this->paramsPort = $params["serviceServerPort"] ? intval($params["serviceServerPort"]) : 11478;
         $imPath = IMUtil::pathToINTERMediator();
         $this->foreverPath = "{$imPath}/node_modules/forever/bin/forever";
+        if(IMUtil::isPHPExecutingWindows()){
+            $this->foreverPath .=  "-win";
+        }
         $this->nodePath = "{$imPath}/vendor/bin/node";
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
 

@@ -33,7 +33,11 @@ requestBroker['/info'] = function (params, res) {
 
 requestBroker['/eval'] = function (params, res) {
   res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
-  res.write('Service Server is active.')
+
+  let rule = '';
+  let variables = {};
+  let result = parser.evaluate(rule, variables)
+  res.write(result ? 'true' : 'false')
   res.end('\n')
 }
 

@@ -1,5 +1,9 @@
 // const IMLibFormat = require('../../src/js/INTER-Mediator-Format.js')
 // const INTERMediatorLib = require('../../src/js/INTER-Mediator-Lib.js')
+/*
+ cd spec
+ ../vendor/bin/node ../node_modules/.bin/jest
+ */
 const parser = require('../../src/lib/js_lib/js-expression-eval-parser.js')
 
 test('should be equal to', () => {
@@ -365,18 +369,18 @@ test('Japanese characters letiables.', () => {
   }
 )
 test('Wrong expression.1', () => {
-    try {
-        parser.evaluate('(a + b', {'a': [20], 'b': [2]})
-    } catch(e) {
-        expect(e.message).toBe('parse error [column 6]: unmatched "()"')
-    }
+  try {
+    parser.evaluate('(a + b', {'a': [20], 'b': [2]})
+  } catch (e) {
+    expect(e.message).toBe('parse error [column 6]: unmatched "()"')
+  }
 })
 test('Wrong expression.2', () => {
-    try {
-        parser.evaluate('a + b + malfunction(a)', {'a': [20], 'b': [2]})
-    } catch(e) {
-        expect(e.message).toBe('undefined variable: malfunction')
-    }
+  try {
+    parser.evaluate('a + b + malfunction(a)', {'a': [20], 'b': [2]})
+  } catch (e) {
+    expect(e.message).toBe('undefined variable: malfunction')
+  }
 })
 /*
 test('each 3-digits should be devided.', () => {
@@ -575,6 +579,15 @@ test('String Items search.', () => {
 )
 test('FileMaker field name can be letiable.', () => {
     expect(parser.evaluate('テスト::フィールド + 変数', {'テスト::フィールド': 3, 変数: 4})).toBe(7)
+  }
+)
+test('Constants for boolean.', () => {
+    expect(parser.evaluate('true', {})).toBe(true)
+    expect(parser.evaluate('TRUE', {})).toBe(true)
+    expect(parser.evaluate('false', {})).toBe(false)
+    expect(parser.evaluate('FALSE', {})).toBe(false)
+    expect(parser.evaluate('if(true,a+b,a-b)', {a: 5, b: 2})).toBe(7)
+    expect(parser.evaluate('if(false,a+b,a-b)', {a: 5, b: 2})).toBe(3)
   }
 )
 
