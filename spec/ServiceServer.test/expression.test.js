@@ -5,6 +5,7 @@
  ../vendor/bin/node ../node_modules/.bin/jest
  */
 const parser = require('../../src/lib/js_lib/js-expression-eval-parser.js')
+const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
 
 test('should be equal to', () => {
     expect(parser.evaluate('2 ^ x', {x: 3})).toBe(8)
@@ -126,7 +127,6 @@ test('should be equal to', () => {
   }
 )
 
-/*
 test('should be equal to', () => {
     INTERMediatorOnPage.localeInfo = {
       'decimal_point': '.',
@@ -192,9 +192,9 @@ test('should be equal to', () => {
     expect(Math.round(parser.evaluate('exp(0.5)') * 100)).toBe(165)
     expect(Math.round(parser.evaluate('log(0.5)') * 100)).toBe(-69)
     x = parser.evaluate('random()')
-    expect(x > 0 && x < 1, true)
+    expect(x > 0 && x < 1).toBe(true)
     x = parser.evaluate('random()+1')
-    expect(x > 1 && x < 2, true)
+    expect(x > 1 && x < 2).toBe(true)
     expect(parser.evaluate('pow(2,3)')).toBe(8)
     expect(parser.evaluate('min(3,1,2,1,5,1)')).toBe(1)
     expect(parser.evaluate('max(3,1,2,1,5,1)')).toBe(5)
@@ -215,7 +215,7 @@ test('should be equal to', () => {
     expect(parser.evaluate('length(f)', {f: '&lt;&amp;&gt;'})).toBe(13) // not 3
   }
 )
-*/
+
 test('Equal with zero-len str vs null.', () => {
     let exp, vals, result
 
@@ -382,7 +382,7 @@ test('Wrong expression.2', () => {
     expect(e.message).toBe('undefined variable: malfunction')
   }
 })
-/*
+
 test('each 3-digits should be devided.', () => {
     INTERMediatorOnPage.localeInfo = {
       'decimal_point': '.',
@@ -471,7 +471,7 @@ test('each 3-digits should be devided with currency.', () => {
     // A negative second parameter doesn't support so far.
   }
 )
-*/
+
 test('String functions.', () => {
     expect(parser.evaluate('substr(\'abcdefg\', 3, 2)')).toBe('de')
     expect(parser.evaluate('substring(\'abcdefg\', 3, 5)')).toBe('de')

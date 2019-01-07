@@ -20,6 +20,24 @@ receipt="receipt.txt"
 
 param=""
 
+# $1: file path, $2: appending file
+function readFileUntilMark () {
+    isStop=0
+    cat $1 | while read -r line
+        do
+            case "$line" in
+                *@@IM@@IgnoringRestOfFile*)
+                isStop=1
+                ;;
+            *)
+                ;;
+        esac
+        if [ $isStop = 0 ]; then
+            echo "$line" >> $2
+        fi
+    done
+}
+
 if [ $# -gt 1 ]; then
     echo "*** No parameter of just 1 parameter is allowed. ***" 1>&2
     exit 1
@@ -124,30 +142,34 @@ cp  "${originalPath}/package-lock.json" "${buildPath}/"
 
 #### Merge js files
 /bin/echo "PROCESSING: Merging JS files"
-cp  "${originalPath}/src/js/INTER-Mediator.js"                          "${buildPath}/src/js/temp.js"
-cat "${originalPath}/src/js/INTER-Mediator-Page.js"                  >> "${buildPath}/src/js/temp.js"
-cat "${originalPath}/src/js/INTER-Mediator-Context.js"               >> "${buildPath}/src/js/temp.js"
-cat "${originalPath}/src/js/INTER-Mediator-Lib.js"                   >> "${buildPath}/src/js/temp.js"
-cat "${originalPath}/src/js/INTER-Mediator-Format.js"                >> "${buildPath}/src/js/temp.js"
-cat "${originalPath}/src/js/INTER-Mediator-Element.js"               >> "${buildPath}/src/js/temp.js"
-cat "${originalPath}/src/lib/js_lib/js-expression-eval-parser.js"    >> "${buildPath}/src/js/temp.js"
-cat "${originalPath}/src/js/INTER-Mediator-Calc.js"                  >> "${buildPath}/src/js/temp.js"
-cat "${originalPath}/src/js/Adapter_DBServer.js"                     >> "${buildPath}/src/js/temp.js"
-cat "${originalPath}/src/js/INTER-Mediator-Parts.js"                 >> "${buildPath}/src/js/temp.js"
-cat "${originalPath}/src/js/INTER-Mediator-Navi.js"                  >> "${buildPath}/src/js/temp.js"
-cat "${originalPath}/src/js/INTER-Mediator-UI.js"                    >> "${buildPath}/src/js/temp.js"
-cat "${originalPath}/src/js/INTER-Mediator-Log.js"                   >> "${buildPath}/src/js/temp.js"
+touch "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator.js" "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Page.js" "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-ContextPool.js" "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Context.js"                "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-LocalContext.js"           "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Lib.js"                    "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Graph.js"                    "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Format.js"                 "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Element.js"                "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/lib/js_lib/js-expression-eval-parser.js"     "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Calc.js"                   "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/Adapter_DBServer.js"                      "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Parts.js"                  "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Navi.js"                   "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-UI.js"                     "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Log.js"                    "${buildPath}/src/js/temp.js"
 if [ ! -e "${minifyjsDir}" ]; then
-    cat "${originalPath}/src/lib/js_lib/tinySHA1.js"                 >> "${buildPath}/src/js/temp.js"
-    /bin/echo ';'                                                         >> "${buildPath}/src/js/temp.js"
-    cat "${originalPath}/src/lib/js_lib/sha256.js"                   >> "${buildPath}/src/js/temp.js"
-    /bin/echo ';'                                                         >> "${buildPath}/src/js/temp.js"
-    cat "${originalPath}/src/lib/js_lib/jsencrypt.min.js"            >> "${buildPath}/src/js/temp.js"
+    readFileUntilMark "${originalPath}/src/lib/js_lib/tinySHA1.js"                  "${buildPath}/src/js/temp.js"
+    /bin/echo ';'                                                          "${buildPath}/src/js/temp.js"
+    readFileUntilMark "${originalPath}/src/lib/js_lib/sha256.js"                    "${buildPath}/src/js/temp.js"
+    /bin/echo ';'                                                          "${buildPath}/src/js/temp.js"
+    readFileUntilMark "${originalPath}/src/lib/js_lib/jsencrypt.min.js"             "${buildPath}/src/js/temp.js"
 	/bin/echo ";"
 fi
-cat "${originalPath}/src/js/INTER-Mediator-Queuing.js"               >> "${buildPath}/src/js/temp.js"
-cat "${originalPath}/src/js/INTER-Mediator-Events.js"                >> "${buildPath}/src/js/temp.js"
-cat "${originalPath}/src/js/INTER-Mediator-DoOnStart.js"             >> "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Queuing.js"                "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Events.js"                 "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-DoOnStart.js"              "${buildPath}/src/js/temp.js"
 
 cp "${buildPath}/src/js/temp.js" "${buildPath}/src/js/INTER-Mediator.js"
 

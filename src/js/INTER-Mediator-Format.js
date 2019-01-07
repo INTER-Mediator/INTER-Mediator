@@ -13,11 +13,7 @@
  IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibPageNavigation,
  IMLibEventResponder, IMLibElement, Parser, IMLib */
 
-let IMLibFormat = {}
-
-module.exports = IMLibFormat
-
-IMLibFormat = {
+let IMLibFormat = {
   /**
    * This method returns the rounded value of the 1st parameter to the 2nd parameter from decimal point
    * with a thousands separator.
@@ -743,3 +739,8 @@ IMLibFormat = {
     '%%': '[\%]' // パーセント %
   }
 }
+
+// @@IM@@IgnoringRestOfFile
+module.exports = IMLibFormat
+const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
+const INTERMediatorLib = require('../../src/js/INTER-Mediator-Lib')

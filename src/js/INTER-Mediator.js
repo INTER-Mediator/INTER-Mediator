@@ -17,7 +17,7 @@
 /**
  * Preventing error on module.export in merged js file.
  */
-let module = {}
+//let module = {}
 /**
  * @fileoverview INTERMediator class is defined here.
  */
@@ -36,7 +36,7 @@ let module = {}
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-export const INTERMediator = {
+const INTERMediator = {
   /**
    * The separator for target specification.
    * This must be referred as 'INTERMediator.separator'. Don't use 'this.separator'
@@ -1925,3 +1925,6 @@ export const INTERMediator = {
     INTERMediatorLog.setDebugMessage(message, level)
   }
 }
+
+// @@IM@@IgnoringRestOfFile
+module.exports = INTERMediator

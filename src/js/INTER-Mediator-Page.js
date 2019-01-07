@@ -13,11 +13,6 @@
  IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibUI,
  IMLibEventResponder, INTERMediatorLog, SHA1, IMLib, JSEncrypt */
 /* jshint -W083 */ // Function within a loop
-
-let INTERMediatorOnPage = {}
-
-module.exports = INTERMediatorOnPage
-
 /**
  * @fileoverview INTERMediatorOnPage class is defined here.
  */
@@ -26,7 +21,7 @@ module.exports = INTERMediatorOnPage
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-INTERMediatorOnPage = {
+let INTERMediatorOnPage = {
   authCountLimit: 4,
   authCount: 0,
   authUser: '',
@@ -980,7 +975,7 @@ INTERMediatorOnPage = {
     return nodeIds
 
     function seekNode (node, imDefinition) {
-      var children, i, nodeDefs
+      let children, i, nodeDefs
       if (node.nodeType !== 1) {
         return
       }
@@ -1179,3 +1174,6 @@ INTERMediatorOnPage = {
     }
   }
 }
+
+// @@IM@@IgnoringRestOfFile
+module.exports = INTERMediatorOnPage

@@ -400,3 +400,6 @@ var IMLibCalc = {
     }
   }
 }
+
+// @@IM@@IgnoringRestOfFile
+module.exports = IMLibCalc

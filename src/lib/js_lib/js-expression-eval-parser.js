@@ -17,7 +17,6 @@
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
-
 /**
  *
  * Usually you don't have to instanciate this class with new operator.
@@ -1727,4 +1726,6 @@ let Parser = (function (scope) {
   return Parser
 })(typeof exports === 'undefined' ? {} : exports)
 
+// @@IM@@IgnoringRestOfFile
 module.exports = Parser
+const IMLibFormat = require('../../js/INTER-Mediator-Format')

@@ -22,6 +22,8 @@
 INTERMediator.propertyIETridentSetup()
 INTERMediator.propertyW3CUserAgentSetup()
 
+INTERMediatorLib.initialize()
+
 Object.defineProperty(INTERMediator, 'startFrom', {
   get: function () {
     'use strict'

@@ -1,6 +1,6 @@
-const assert = require('power-assert');
-import * as IM from '../../src/js/INTER-Mediator'
+//const assert = require('power-assert');
+const INTERMediator = require('../../src/js/INTER-Mediator')
 
 test('INTERMediator.separator', () => {
-  assert(IM.INTERMediator.separator === '@');
+  expect(INTERMediator.separator).toBe('@');
 });

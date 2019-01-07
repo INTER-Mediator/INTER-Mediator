@@ -1020,3 +1020,6 @@ const IMLibUI = {
     IMLibUI.eventUpdateHandler(targetSplit[1])
   }
 }
+
+// @@IM@@IgnoringRestOfFile
+module.exports = IMLibUI

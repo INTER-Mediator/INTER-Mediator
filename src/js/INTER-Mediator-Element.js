@@ -577,3 +577,6 @@ const IMLibElement = {
     }
   }
 }
+
+// @@IM@@IgnoringRestOfFile
+module.exports = IMLibElement
