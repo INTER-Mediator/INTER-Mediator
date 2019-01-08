@@ -22,20 +22,7 @@ param=""
 
 # $1: file path, $2: appending file
 function readFileUntilMark () {
-    isStop=0
-    cat $1 | while read -r line
-        do
-            case "$line" in
-                *@@IM@@IgnoringRestOfFile*)
-                isStop=1
-                ;;
-            *)
-                ;;
-        esac
-        if [ $isStop = 0 ]; then
-            echo "$line" >> $2
-        fi
-    done
+    cat "$1" | sed -ne '/@@IM@@IgnoringRestOfFile/q;P' >> "$2"
 }
 
 if [ $# -gt 1 ]; then
@@ -124,6 +111,7 @@ fi
 mkdir -p "${buildPath}/src/js/"
 mkdir -p "${buildPath}/src/php/"
 mkdir -p "${buildPath}/src/lib/"
+mkdir -p "${buildPath}/src/lib/js_lib"
 
 /bin/echo "PROCESSING: Copying php files"
 cp -f "${originalPath}/INTER-Mediator.php" "${buildPath}/"
@@ -146,9 +134,9 @@ touch "${buildPath}/src/js/temp.js"
 readFileUntilMark "${originalPath}/src/js/INTER-Mediator.js" "${buildPath}/src/js/temp.js"
 readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Page.js" "${buildPath}/src/js/temp.js"
 readFileUntilMark "${originalPath}/src/js/INTER-Mediator-ContextPool.js" "${buildPath}/src/js/temp.js"
-readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Context.js"                "${buildPath}/src/js/temp.js"
-readFileUntilMark "${originalPath}/src/js/INTER-Mediator-LocalContext.js"           "${buildPath}/src/js/temp.js"
-readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Lib.js"                    "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Context.js" "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-LocalContext.js" "${buildPath}/src/js/temp.js"
+readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Lib.js" "${buildPath}/src/js/temp.js"
 readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Graph.js"                    "${buildPath}/src/js/temp.js"
 readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Format.js"                 "${buildPath}/src/js/temp.js"
 readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Element.js"                "${buildPath}/src/js/temp.js"
@@ -171,7 +159,8 @@ readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Queuing.js"            
 readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Events.js"                 "${buildPath}/src/js/temp.js"
 readFileUntilMark "${originalPath}/src/js/INTER-Mediator-DoOnStart.js"              "${buildPath}/src/js/temp.js"
 
-cp "${buildPath}/src/js/temp.js" "${buildPath}/src/js/INTER-Mediator.js"
+#cp "${buildPath}/src/js/temp.js" "${buildPath}/src/js/INTER-Mediator.js"
+cp -prf "${originalPath}"/src/js/*.js "${buildPath}/src/js/"
 
 #### Compress INTER-Mediator.js
 if [ -e "${minifyjsDir}" ]; then
@@ -182,9 +171,11 @@ if [ -e "${minifyjsDir}" ]; then
     if [[ "${osName}" == CYGWIN* ]];  then
         temp2Path=$(cygpath -w "${buildPath}/src/js/temp2.js")
         temp3Path=$(cygpath -w "${buildPath}/src/js/temp3.js")
+        temp4Path=$(cygpath -w "${buildPath}/src/js/temp4.js")
     else
         temp2Path="${buildPath}/src/js/temp2.js"
         temp3Path="${buildPath}/src/js/temp3.js"
+        temp4Path="${buildPath}/src/js/temp4.js"
     fi
     /bin/echo "MINIFYING."
 	"${minifyjsBin}" "${temp2Path}" > "${temp3Path}"
@@ -192,35 +183,38 @@ if [ -e "${minifyjsDir}" ]; then
     head -n 9 "${originalPath}/src/js/INTER-Mediator.js"     > "${buildPath}/src/js/temp.js"
 	cat "${temp3Path}"                                      >> "${buildPath}/src/js/temp.js"
 	/bin/echo ";"                                           >> "${buildPath}/src/js/temp.js"
-	tail -n 1 "${originalPath}/src/lib/js_lib/tinySHA1.js"  >> "${buildPath}/src/js/temp.js"
+	touch "${temp4Path}"
+	readFileUntilMark "${originalPath}/src/lib/js_lib/tinySHA1.js" "${temp4Path}"
+	tail -n 1 "${temp4Path}"                                >> "${buildPath}/src/js/temp.js"
     /bin/echo ";"                                           >> "${buildPath}/src/js/temp.js"
     tail -n 1 "${originalPath}/src/lib/js_lib/sha256.js"    >> "${buildPath}/src/js/temp.js"
 	/bin/echo ";"                                           >> "${buildPath}/src/js/temp.js"
     cat "${originalPath}/src/lib/js_lib/jsencrypt.min.js"   >> "${buildPath}/src/js/temp.js"
 	/bin/echo ""                                            >> "${buildPath}/src/js/temp.js"
-    mv  "${buildPath}/src/js/temp.js" "${buildPath}/src/js/INTER-Mediator.js"
-    rm  "${temp2Path}" "${temp3Path}"
+    mv  "${buildPath}/src/js/temp.js" "${buildPath}/src/js/INTER-Mediator.min.js"
+    rm  "${temp2Path}" "${temp3Path}" "${temp4Path}"
 else
     rm  "${buildPath}/src/js/temp.js"
 fi
 
-/bin/echo "PROCESSING: ${originalPath}/src/js/INTER-Mediator-IE.js"
-targetJS="${buildPath}/src/js/INTER-Mediator.js"
-tempJS="${originalPath}/temp.js"
-temp2JS="${originalPath}/temp2.js"
-ieCode="${buildPath}/src/js/INTER-Mediator-IE.js"
-babelBin="${originalPath}/node_modules/.bin/babel"
-if [ -e "${babelBin}" ]; then
-    cp "${targetJS}" "${tempJS}"
-    ${babelBin} --out-file "${temp2JS}" --minified "${tempJS}"
-    cp "${temp2JS}" "${ieCode}"
-    rm "${tempJS}" "${temp2JS}"
-fi
+#/bin/echo "PROCESSING: ${originalPath}/src/js/INTER-Mediator-IE.js"
+#targetJS="${buildPath}/src/js/INTER-Mediator.js"
+#tempJS="${originalPath}/temp.js"
+#temp2JS="${originalPath}/temp2.js"
+#ieCode="${buildPath}/src/js/INTER-Mediator-IE.js"
+#babelBin="${originalPath}/node_modules/.bin/babel"
+#if [ -e "${babelBin}" ]; then
+#    cp "${targetJS}" "${tempJS}"
+#    ${babelBin} --out-file "${temp2JS}" --minified "${tempJS}"
+#    cp "${temp2JS}" "${ieCode}"
+#    rm "${tempJS}" "${temp2JS}"
+#fi
 
 # Copy "lib" path php contents.
 /bin/echo "PROCESSING: ${originalPath}/src/lib"
 cp -prf "${originalPath}/src/lib/CWPKit"        "${buildPath}/src/lib"
 cp -prf "${originalPath}/src/lib/mailsend"      "${buildPath}/src/lib"
+cp -prf "${originalPath}/src/lib/js_lib/js-expression-eval-parser.js"      "${buildPath}/src/lib/js_lib"
 
 if [ $choice = 1 ]; then
     /bin/echo "PROCESSING: ${originalPath}/README.md"

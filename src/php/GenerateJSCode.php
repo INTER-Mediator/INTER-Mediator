@@ -103,12 +103,12 @@ class GenerateJSCode
          */
         $currentDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR . 'src' .
             DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
-        if (file_exists($currentDir . 'INTER-Mediator-Lib.js')) {
+        if (!file_exists($currentDir . 'INTER-Mediator.min.js')) {
             echo $this->combineScripts($currentDir);
-        } else if (file_exists($currentDir . 'INTER-Mediator-IE.js')) {
-            readfile($currentDir . 'INTER-Mediator-IE.js');
+//        } else if (file_exists($currentDir . 'INTER-Mediator-IE.js')) {
+//            readfile($currentDir . 'INTER-Mediator-IE.js');
         } else {
-            readfile($currentDir . 'INTER-Mediator.js');
+            readfile($currentDir . 'INTER-Mediator.min.js');
         }
 
         /*

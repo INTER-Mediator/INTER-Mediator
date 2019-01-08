@@ -120,7 +120,7 @@ class ServiceServerProxy
         $script = str_replace(" node", " " . $this->nodePath, $script);
         file_put_contents($this->foreverPath, $script);
         $logFile = tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
-        $cmd = "{$this->foreverPath} start -w -a -l {$logFile} " .
+        $cmd = "{$this->foreverPath} start -w -a -l {$logFile} --minUptime 5000 --spinSleepTime 5000 " .
             "{$imPath}/src/js/Service_Server.js {$this->paramsPort}";
         syslog(LOG_INFO, "Command:$cmd");
         $result = [];
