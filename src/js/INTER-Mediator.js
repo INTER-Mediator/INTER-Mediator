@@ -224,8 +224,12 @@ const INTERMediator = {
   // Detect Internet Explorer and its version.
   propertyIETridentSetup: () => {
     'use strict'
-    let ua, position, c, i
-    ua = navigator.userAgent
+    let ua = '', position, c, i
+    try {
+      ua = navigator.userAgent
+    } catch(e)  {
+      //
+    }
     position = ua.toLocaleUpperCase().indexOf('MSIE')
     if (position >= 0) {
       INTERMediator.isIE = true
@@ -267,7 +271,12 @@ const INTERMediator = {
   // Referred from https://w3g.jp/blog/js_browser_sniffing2015
   propertyW3CUserAgentSetup: () => {
     'use strict'
-    let u = window.navigator.userAgent.toLowerCase()
+    let u = '';
+    try {
+      u = window.navigator.userAgent.toLowerCase()
+    } catch(e)  {
+      //
+    }
     INTERMediator.isTablet =
       (u.indexOf('windows') > -1 && u.indexOf('touch') > -1 && u.indexOf('tablet pc') === -1) ||
       u.indexOf('ipad') > -1 ||

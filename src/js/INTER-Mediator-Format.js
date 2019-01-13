@@ -636,6 +636,10 @@ let IMLibFormat = {
     let replacement = []
     let regexp = ''
     var r, matched, y, m, d, h, i, s, paramStr, kind, key, mon
+    IMLibFormat.reverseRegExp['%N'] =
+      '(' + (typeof (INTERMediatorOnPage) == 'undefined' ? 'AM' : INTERMediatorOnPage.localeInfo.AM_STR)
+      + '|' + (typeof (INTERMediatorOnPage) == 'undefined' ? 'PM' : INTERMediatorOnPage.localeInfo.PM_STR) + ')'
+
 
     paramStr = params.trim().toUpperCase()
     kind = flags.trim().toUpperCase()
@@ -662,36 +666,36 @@ let IMLibFormat = {
     if (matched) {
       for (c = 0; c < replacement.length; c++) {
         switch (replacement[c]) {
-        case '%Y':
-        case '%y':
-          y = matched[c + 1]
-          break
-        case '%M':
-        case '%m':
-          m = matched[c + 1]
-          break
-        case '%T':
-        case '%t':
-          mon = matched[c + 1]
-          m = IMLibFormat.eMonAbbr.indexOf(mon.substr(0, 1).toUpperCase() + mon.substr(1, 2).toLowerCase())
-          m++
-          break
-        case '%D':
-        case '%d':
-          d = matched[c + 1]
-          break
-        case '%H':
-        case '%h':
-          h = matched[c + 1]
-          break
-        case '%I':
-        case '%i':
-          i = matched[c + 1]
-          break
-        case '%S':
-        case '%s':
-          s = matched[c + 1]
-          break
+          case '%Y':
+          case '%y':
+            y = matched[c + 1]
+            break
+          case '%M':
+          case '%m':
+            m = matched[c + 1]
+            break
+          case '%T':
+          case '%t':
+            mon = matched[c + 1]
+            m = IMLibFormat.eMonAbbr.indexOf(mon.substr(0, 1).toUpperCase() + mon.substr(1, 2).toLowerCase())
+            m++
+            break
+          case '%D':
+          case '%d':
+            d = matched[c + 1]
+            break
+          case '%H':
+          case '%h':
+            h = matched[c + 1]
+            break
+          case '%I':
+          case '%i':
+            i = matched[c + 1]
+            break
+          case '%S':
+          case '%s':
+            s = matched[c + 1]
+            break
         }
       }
       if (y && m && d && h && i && s) {
@@ -734,8 +738,7 @@ let IMLibFormat = {
     '%s': '([\\d]{1,2})', // 秒数値 0
     '%P': '(AM|PM)', // AM/PM AM
     '%p': '(am|pm)', // am/pm am
-    '%N': '(' + (typeof(INTERMediatorOnPage) == 'undefined' ? 'AM' : INTERMediatorOnPage.localeInfo.AM_STR)
-      + '|' + (typeof(INTERMediatorOnPage) == 'undefined' ? 'PM' : INTERMediatorOnPage.localeInfo.PM_STR) + ')', // am/pm am
+    '%N': '(AM|PM)', // am/pm am
     '%%': '[\%]' // パーセント %
   }
 }

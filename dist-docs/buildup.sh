@@ -179,7 +179,7 @@ if [ -e "${minifyjsDir}" ]; then
     fi
     /bin/echo "MINIFYING."
 	"${minifyjsBin}" "${temp2Path}" > "${temp3Path}"
-    sed '1s/*!/*/' "${temp3Path}" > "${buildPath}/src/js/INTER-Mediator.js"
+    #sed '1s/*!/*/' "${temp3Path}" > "${buildPath}/src/js/INTER-Mediator.js"
     head -n 9 "${originalPath}/src/js/INTER-Mediator.js"     > "${buildPath}/src/js/temp.js"
 	cat "${temp3Path}"                                      >> "${buildPath}/src/js/temp.js"
 	/bin/echo ";"                                           >> "${buildPath}/src/js/temp.js"
