@@ -1075,3 +1075,6 @@ const INTERMediator_DBAdapter = {
     }
   }
 }
+
+// @@IM@@IgnoringRestOfFile
+module.exports = INTERMediator_DBAdapter

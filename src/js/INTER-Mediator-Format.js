@@ -13,7 +13,7 @@
  IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibPageNavigation,
  IMLibEventResponder, IMLibElement, Parser, IMLib */
 
-const IMLibFormat = {
+let IMLibFormat = {
   /**
    * This method returns the rounded value of the 1st parameter to the 2nd parameter from decimal point
    * with a thousands separator.
@@ -636,6 +636,10 @@ const IMLibFormat = {
     let replacement = []
     let regexp = ''
     var r, matched, y, m, d, h, i, s, paramStr, kind, key, mon
+    IMLibFormat.reverseRegExp['%N'] =
+      '(' + (typeof (INTERMediatorOnPage) == 'undefined' ? 'AM' : INTERMediatorOnPage.localeInfo.AM_STR)
+      + '|' + (typeof (INTERMediatorOnPage) == 'undefined' ? 'PM' : INTERMediatorOnPage.localeInfo.PM_STR) + ')'
+
 
     paramStr = params.trim().toUpperCase()
     kind = flags.trim().toUpperCase()
@@ -734,7 +738,12 @@ const IMLibFormat = {
     '%s': '([\\d]{1,2})', // 秒数値 0
     '%P': '(AM|PM)', // AM/PM AM
     '%p': '(am|pm)', // am/pm am
-    '%N': '(' + INTERMediatorOnPage.localeInfo.AM_STR + '|' + INTERMediatorOnPage.localeInfo.PM_STR + ')', // am/pm am
+    '%N': '(AM|PM)', // am/pm am
     '%%': '[\%]' // パーセント %
   }
 }
+
+// @@IM@@IgnoringRestOfFile
+module.exports = IMLibFormat
+const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
+const INTERMediatorLib = require('../../src/js/INTER-Mediator-Lib')

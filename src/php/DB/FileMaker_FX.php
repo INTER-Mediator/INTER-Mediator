@@ -15,6 +15,7 @@
 
 namespace INTERMediator\DB;
 use \Exception;
+use INTERMediator\IMUtil;
 
 class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
 {

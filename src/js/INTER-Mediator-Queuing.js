@@ -113,3 +113,6 @@ const IMLibQueue = {
     }
   }
 }
+
+// @@IM@@IgnoringRestOfFile
+module.exports = IMLibQueue

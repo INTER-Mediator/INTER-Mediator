@@ -15,6 +15,7 @@ class ServiceServerProxy
 {
     private $paramsHost;
     private $paramsPort;
+    private $paramsQuit;
     private $errors = [];
     private $messages = [];
     private $messageHead = "[ServiceServerProxy] ";
@@ -32,11 +33,16 @@ class ServiceServerProxy
 
     private function __construct()
     {
-        $params = IMUtil::getFromParamsPHPFile(array("serviceServerPort", "serviceServerHost"), true);
+        $params = IMUtil::getFromParamsPHPFile(
+            array("serviceServerPort", "serviceServerHost", "stopSSEveryQuit"), true);
         $this->paramsHost = $params["serviceServerHost"] ? $params["serviceServerHost"] : "localhost";
         $this->paramsPort = $params["serviceServerPort"] ? intval($params["serviceServerPort"]) : 11478;
+        $this->paramsQuit = $params["stopSSEveryQuit"] == NULL ? false : boolval($params["stopSSEveryQuit"]);
         $imPath = IMUtil::pathToINTERMediator();
         $this->foreverPath = "{$imPath}/node_modules/forever/bin/forever";
+        if (IMUtil::isPHPExecutingWindows()) {
+            $this->foreverPath .= "-win";
+        }
         $this->nodePath = "{$imPath}/vendor/bin/node";
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
 
@@ -109,24 +115,35 @@ class ServiceServerProxy
 
     private function startServer()
     {
+        openlog("INTER-Mediator_ServiceServer", LOG_PID | LOG_PERROR, LOG_USER);
+
         $imPath = IMUtil::pathToINTERMediator();
 
         $script = file_get_contents($this->foreverPath);
         $script = str_replace(" node", " " . $this->nodePath, $script);
         file_put_contents($this->foreverPath, $script);
-
-        $cmd = "{$this->foreverPath} start {$imPath}/src/js/Service_Server.js {$this->paramsPort}";
-        $this->messages[] = $this->messageHead . "Command:$cmd";
+        $logFile = tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
+        $cmd = "{$this->foreverPath} start -a -l {$logFile} --minUptime 5000 --spinSleepTime 5000 " .
+            "{$imPath}/src/js/Service_Server.js {$this->paramsPort}";
+        syslog(LOG_INFO, "Command:$cmd");
         $result = [];
         $returnValue = 0;
         exec($cmd, $result, $returnValue);
-        $this->messages[] = $this->messageHead . "Returns:$returnValue, Output:" . implode("/", $result);
+
+        syslog(LOG_INFO, "Returns:$returnValue, Output:" . implode("/", $result));
+        //closelog();
         return true;
     }
 
     public function stopServer()
     {
-        $cmd = "{$this->foreverPath} stopall";
-        exec(escapeshellcmd("$cmd"));
+        if ($this->paramsQuit) {
+            $imPath = IMUtil::pathToINTERMediator();
+            $cmd = "{$this->foreverPath} stopall";
+            syslog(LOG_INFO, "Command:$cmd");
+            exec($cmd, $result, $returnValue);
+            syslog(LOG_INFO, "Returns:$returnValue, Output:" . implode("/", $result));
+        }
+        closelog();
     }
 }

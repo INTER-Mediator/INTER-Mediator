@@ -7,8 +7,11 @@ config['My tests'] = {
     sources: [
         'src/js/INTER-Mediator.js',
         'src/js/INTER-Mediator-Page.js',
+        'src/js/INTER-Mediator-ContextPool.js',
         'src/js/INTER-Mediator-Context.js',
+        'src/js/INTER-Mediator-LocalContext.js',
         'src/js/INTER-Mediator-Lib.js',
+        'src/js/INTER-Mediator-Graph.js',
         'src/js/INTER-Mediator-Format.js',
         'src/js/INTER-Mediator-Element.js',
         'src/lib/js_lib/js-expression-eval-parser.js',

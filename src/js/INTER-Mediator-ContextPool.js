@@ -19,6 +19,567 @@
  */
 /**
  *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
+const IMLibContextPool = {
+  poolingContexts: null,
+
+  clearAll: function () {
+    'use strict'
+    this.poolingContexts = null
+  },
+
+  registerContext: function (context) {
+    'use strict'
+    if (this.poolingContexts === null) {
+      this.poolingContexts = [context]
+    } else {
+      this.poolingContexts.push(context)
+    }
+  },
+
+  excludingNode: null,
+
+  synchronize: function (context, recKey, key, value, target, portal) {
+    'use strict'
+    var i, j, viewName, refNode, targetNodes
+    let result = []
+    let calcKey
+    viewName = context.viewName
+    if (this.poolingContexts === null) {
+      return null
+    }
+    if (portal) {
+      for (i = 0; i < this.poolingContexts.length; i += 1) {
+        if (this.poolingContexts[i].viewName === viewName &&
+          this.poolingContexts[i].binding[recKey] !== undefined &&
+          this.poolingContexts[i].binding[recKey][key] !== undefined &&
+          this.poolingContexts[i].binding[recKey][key][portal] !== undefined &&
+          this.poolingContexts[i].store[recKey] !== undefined &&
+          this.poolingContexts[i].store[recKey][key] !== undefined &&
+          this.poolingContexts[i].store[recKey][key][portal] !== undefined) {
+          this.poolingContexts[i].store[recKey][key][portal] = value
+          targetNodes = this.poolingContexts[i].binding[recKey][key][portal]
+          for (j = 0; j < targetNodes.length; j++) {
+            refNode = document.getElementById(targetNodes[j].id)
+            if (refNode) {
+              IMLibElement.setValueToIMNode(refNode, targetNodes[j].target, value, true)
+              result.push(targetNodes[j].id)
+            }
+          }
+        }
+      }
+    } else {
+      for (i = 0; i < this.poolingContexts.length; i += 1) {
+        if (this.poolingContexts[i].viewName === viewName &&
+          this.poolingContexts[i].binding[recKey] !== undefined &&
+          this.poolingContexts[i].binding[recKey][key] !== undefined &&
+          this.poolingContexts[i].store[recKey] !== undefined &&
+          this.poolingContexts[i].store[recKey][key] !== undefined) {
+          this.poolingContexts[i].store[recKey][key] = value
+          targetNodes = this.poolingContexts[i].binding[recKey][key]
+          for (j = 0; j < targetNodes.length; j++) {
+            refNode = document.getElementById(targetNodes[j].id)
+            calcKey = targetNodes[j].id
+            if (targetNodes[j].target && targetNodes[j].target.length > 0) {
+              calcKey += INTERMediator.separator + targetNodes[j].target
+            }
+            if (refNode && !(calcKey in IMLibCalc.calculateRequiredObject)) {
+              IMLibElement.setValueToIMNode(refNode, targetNodes[j].target, value, true)
+              result.push(targetNodes[j].id)
+            }
+          }
+        }
+      }
+    }
+    return result
+  },
+
+  getContextInfoFromId: function (idValue, target) {
+    'use strict'
+    var i, targetContext, element, linkInfo, nodeInfo, targetName
+    let result = null
+    if (!idValue) {
+      return result
+    }
+
+    element = document.getElementById(idValue)
+    if (!element) {
+      return result
+    }
+
+    linkInfo = INTERMediatorLib.getLinkedElementInfo(element)
+    if (!linkInfo && INTERMediatorLib.isWidgetElement(element.parentNode)) {
+      linkInfo = INTERMediatorLib.getLinkedElementInfo(element.parentNode)
+    }
+    nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0])
+
+    targetName = target ? target : '_im_no_target'
+    if (this.poolingContexts === null) {
+      return null
+    }
+    for (i = 0; i < this.poolingContexts.length; i += 1) {
+      targetContext = this.poolingContexts[i]
+      if (targetContext.contextInfo[idValue] &&
+        targetContext.contextInfo[idValue][targetName] &&
+        targetContext.contextInfo[idValue][targetName].context.contextName === nodeInfo.table) {
+        result = targetContext.contextInfo[idValue][targetName]
+        return result
+      }
+    }
+    return null
+  },
+
+  getKeyFieldValueFromId: function (idValue, target) {
+    'use strict'
+    var contextInfo = this.getContextInfoFromId(idValue, target)
+    if (!contextInfo) {
+      return null
+    }
+    var contextName = contextInfo.context.contextName
+    var contextDef = IMLibContextPool.getContextDef(contextName)
+    if (!contextDef) {
+      return null
+    }
+    var keyField = contextDef.key ? contextDef.key : 'id'
+    return contextInfo.record.substr(keyField.length + 1)
+  },
+
+  updateContext: function (idValue, target) {
+    'use strict'
+    var contextInfo, value
+    contextInfo = IMLibContextPool.getContextInfoFromId(idValue, target)
+    value = IMLibElement.getValueFromIMNode(document.getElementById(idValue))
+    if (contextInfo) {
+      contextInfo.context.setValue(
+        contextInfo.record, contextInfo.field, value, false, target, contextInfo.portal)
+    }
+  },
+
+  getContextFromEnclosure: function (enclosureNode) {
+    'use strict'
+    var i
+
+    for (i = 0; i < this.poolingContexts.length; i += 1) {
+      if (this.poolingContexts[i].enclosureNode === enclosureNode) {
+        return this.poolingContexts[i]
+      }
+    }
+  },
+
+  contextFromEnclosureId: function (idValue) {
+    'use strict'
+    var i, enclosure
+    if (!idValue) {
+      return false
+    }
+    for (i = 0; i < this.poolingContexts.length; i += 1) {
+      enclosure = this.poolingContexts[i].enclosureNode
+      if (enclosure.getAttribute('id') === idValue) {
+        return this.poolingContexts[i]
+      }
+    }
+    return null
+  },
+
+  contextFromName: function (cName) {
+    'use strict'
+    var i
+    if (!cName) {
+      return false
+    }
+    for (i = 0; i < this.poolingContexts.length; i += 1) {
+      if (this.poolingContexts[i].contextName === cName) {
+        return this.poolingContexts[i]
+      }
+    }
+    return null
+  },
+
+  getContextFromName: function (cName) {
+    'use strict'
+    var i
+    let result = []
+    if (!cName) {
+      return false
+    }
+    for (i = 0; i < this.poolingContexts.length; i += 1) {
+      if (this.poolingContexts[i].contextName === cName) {
+        result.push(this.poolingContexts[i])
+      }
+    }
+    return result
+  },
+
+  getContextsFromNameAndForeignValue: function (cName, fValue, parentKeyField) {
+    'use strict'
+    var i
+    let result = []
+    if (!cName) {
+      return false
+    }
+    // parentKeyField = 'id'
+    for (i = 0; i < this.poolingContexts.length; i += 1) {
+      if (this.poolingContexts[i].contextName === cName &&
+        this.poolingContexts[i].foreignValue[parentKeyField] === fValue) {
+        result.push(this.poolingContexts[i])
+      }
+    }
+    return result
+  },
+
+  dependingObjects: function (idValue) {
+    'use strict'
+    var i, j
+    let result = []
+    if (!idValue) {
+      return false
+    }
+    for (i = 0; i < this.poolingContexts.length; i += 1) {
+      for (j = 0; j < this.poolingContexts[i].dependingObject.length; j++) {
+        if (this.poolingContexts[i].dependingObject[j] === idValue) {
+          result.push(this.poolingContexts[i])
+        }
+      }
+    }
+    return result.length === 0 ? false : result
+  },
+
+  getChildContexts: function (parentContext) {
+    'use strict'
+    var i
+    let childContexts = []
+    for (i = 0; i < this.poolingContexts.length; i += 1) {
+      if (this.poolingContexts[i].parentContext === parentContext) {
+        childContexts.push(this.poolingContexts[i])
+      }
+    }
+    return childContexts
+  },
+
+  childContexts: null,
+
+  removeContextsFromPool: function (contexts) {
+    'use strict'
+    var i
+    let regIds = []
+    let delIds = []
+    for (i = 0; i < this.poolingContexts.length; i += 1) {
+      if (contexts.indexOf(this.poolingContexts[i]) > -1) {
+        regIds.push(this.poolingContexts[i].registeredId)
+        delIds.push(i)
+      }
+    }
+    for (i = delIds.length - 1; i > -1; i--) {
+      this.poolingContexts.splice(delIds[i], 1)
+    }
+    return regIds
+  },
+
+  removeRecordFromPool: function (repeaterIdValue) {
+    'use strict'
+    var i, j, field
+    let nodeIds = []
+    let targetKeying, targetKeyingObj, parentKeying, relatedId, idValue, delNodes,
+      contextAndKey, sameOriginContexts, countDeleteNodes
+
+    contextAndKey = getContextAndKeyFromId(repeaterIdValue)
+    if (contextAndKey === null) {
+      return
+    }
+    sameOriginContexts = this.getContextsWithSameOrigin(contextAndKey.context)
+    // sameOriginContexts.push(contextAndKey.context)
+    targetKeying = contextAndKey.key
+    // targetKeyingObj = contextAndKey.context.binding[targetKeying]
+
+    for (i = 0; i < sameOriginContexts.length; i += 1) {
+      targetKeyingObj = sameOriginContexts[i].binding[targetKeying]
+      for (field in targetKeyingObj) {
+        if (targetKeyingObj.hasOwnProperty(field)) {
+          for (j = 0; j < targetKeyingObj[field].length; j++) {
+            if (nodeIds.indexOf(targetKeyingObj[field][j].id) < 0) {
+              nodeIds.push(targetKeyingObj[field][j].id)
+            }
+          }
+        }
+      }
+
+      if (INTERMediatorOnPage.dbClassName === 'FileMaker_FX' ||
+        INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI') {
+        // for FileMaker portal access mode
+        parentKeying = Object.keys(contextAndKey.context.binding)[0]
+        relatedId = targetKeying.split('=')[1]
+        if (sameOriginContexts[i].binding[parentKeying] &&
+          sameOriginContexts[i].binding[parentKeying]._im_repeater &&
+          sameOriginContexts[i].binding[parentKeying]._im_repeater[relatedId] &&
+          sameOriginContexts[i].binding[parentKeying]._im_repeater[relatedId][0]) {
+          nodeIds.push(sameOriginContexts[i].binding[parentKeying]._im_repeater[relatedId][0].id)
+        }
+      }
+    }
+    delNodes = []
+    for (i = 0; i < sameOriginContexts.length; i += 1) {
+      for (idValue in sameOriginContexts[i].contextInfo) {
+        if (sameOriginContexts[i].contextInfo.hasOwnProperty(idValue)) {
+          if (nodeIds.indexOf(idValue) >= 0) {
+            delete contextAndKey.context.contextInfo[idValue]
+            delNodes.push(idValue)
+          }
+        }
+      }
+      delete sameOriginContexts[i].binding[targetKeying]
+      delete sameOriginContexts[i].store[targetKeying]
+    }
+    countDeleteNodes = delNodes.length
+    IMLibElement.deleteNodes(delNodes)
+
+    this.poolingContexts = this.poolingContexts.filter(function (context) {
+      return nodeIds.indexOf(context.enclosureNode.id) < 0
+    })
+
+    return countDeleteNodes
+
+    // Private functions
+    function getContextAndKeyFromId (repeaterIdValue) {
+      var i, field, j, keying, foreignKey
+
+      for (i = 0; i < IMLibContextPool.poolingContexts.length; i += 1) {
+        for (keying in IMLibContextPool.poolingContexts[i].binding) {
+          if (IMLibContextPool.poolingContexts[i].binding.hasOwnProperty(keying)) {
+            for (field in IMLibContextPool.poolingContexts[i].binding[keying]) {
+              if (IMLibContextPool.poolingContexts[i].binding[keying].hasOwnProperty(field) &&
+                field === '_im_repeater') {
+                for (j = 0; j < IMLibContextPool.poolingContexts[i].binding[keying][field].length; j++) {
+                  if (repeaterIdValue === IMLibContextPool.poolingContexts[i].binding[keying][field][j].id) {
+                    return ({context: IMLibContextPool.poolingContexts[i], key: keying})
+                  }
+                }
+
+                if (INTERMediatorOnPage.dbClassName === 'FileMaker_FX' ||
+                  INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI') {
+                  // for FileMaker portal access mode
+                  for (foreignKey in IMLibContextPool.poolingContexts[i].binding[keying][field]) {
+                    if (IMLibContextPool.poolingContexts[i].binding[keying][field].hasOwnProperty(foreignKey)) {
+                      for (j = 0; j < IMLibContextPool.poolingContexts[i].binding[keying][field][foreignKey].length; j++) {
+                        if (repeaterIdValue === IMLibContextPool.poolingContexts[i].binding[keying][field][foreignKey][j].id) {
+                          return ({
+                            context: IMLibContextPool.poolingContexts[i],
+                            key: INTERMediatorOnPage.defaultKeyName + '=' + foreignKey
+                          })
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      return null
+    }
+  },
+
+  getContextsWithSameOrigin: function (originalContext) {
+    'use strict'
+    var i
+    let contexts = []
+    let contextDef
+    let isPortal = false
+
+    contextDef = IMLibContextPool.getContextDef(originalContext.contextName)
+    if (contextDef && contextDef.relation) {
+      for (i in contextDef.relation) {
+        if (contextDef.relation.hasOwnProperty(i) && contextDef.relation[i].portal) {
+          isPortal = true
+          break
+        }
+      }
+    }
+    for (i = 0; i < IMLibContextPool.poolingContexts.length; i += 1) {
+      if (IMLibContextPool.poolingContexts[i].sourceName === originalContext.sourceName) {
+        if (!isPortal || originalContext.parentContext !== IMLibContextPool.poolingContexts[i]) {
+          contexts.push(IMLibContextPool.poolingContexts[i])
+        }
+      }
+    }
+    return contexts
+  },
+
+  updateOnAnotherClient: async function (eventName, info) {
+    'use strict'
+    var i, j, k
+    let entityName = info.entity
+    let contextDef, contextView, keyField, recKey
+
+    if (eventName === 'update') {
+      for (i = 0; i < this.poolingContexts.length; i += 1) {
+        contextDef = this.getContextDef(this.poolingContexts[i].contextName)
+        contextView = contextDef.view ? contextDef.view : contextDef.name
+        if (contextView === entityName) {
+          keyField = contextDef.key
+          recKey = keyField + '=' + info.pkvalue
+          this.poolingContexts[i].setValue(recKey, info.field[0], info.value[0])
+
+          var bindingInfo = this.poolingContexts[i].binding[recKey][info.field[0]]
+          for (j = 0; j < bindingInfo.length; j++) {
+            var updateRequiredContext = IMLibContextPool.dependingObjects(bindingInfo[j].id)
+            for (k = 0; k < updateRequiredContext.length; k++) {
+              updateRequiredContext[k].foreignValue = {}
+              updateRequiredContext[k].foreignValue[info.field[0]] = info.value[0]
+              if (updateRequiredContext[k]) {
+                await INTERMediator.constructMain(updateRequiredContext[k])
+              }
+            }
+          }
+        }
+      }
+      IMLibCalc.recalculation()
+    } else if (eventName === 'create') {
+      for (i = 0; i < this.poolingContexts.length; i += 1) {
+        contextDef = this.getContextDef(this.poolingContexts[i].contextName)
+        contextView = contextDef.view ? contextDef.view : contextDef.name
+        if (contextView === entityName) {
+          if (this.poolingContexts[i].isContaining(info.value[0])) {
+            await INTERMediator.constructMain(this.poolingContexts[i], info.value)
+          }
+        }
+      }
+      IMLibCalc.recalculation()
+    } else if (eventName === 'delete') {
+      for (i = 0; i < this.poolingContexts.length; i += 1) {
+        contextDef = this.getContextDef(this.poolingContexts[i].contextName)
+        contextView = contextDef.view ? contextDef.view : contextDef.name
+        if (contextView === entityName) {
+          this.poolingContexts[i].removeEntry(info.pkvalue)
+        }
+      }
+      IMLibCalc.recalculation()
+    }
+  },
+
+  getMasterContext: function () {
+    'use strict'
+    var i, contextDef
+    if (!this.poolingContexts) {
+      return null
+    }
+    for (i = 0; i < this.poolingContexts.length; i += 1) {
+      contextDef = this.poolingContexts[i].getContextDef()
+      if (contextDef['navi-control'] && contextDef['navi-control'].match(/master/)) {
+        return this.poolingContexts[i]
+      }
+    }
+    return null
+  },
+
+  getDetailContext: function () {
+    'use strict'
+    var i, contextDef
+    if (!this.poolingContexts) {
+      return null
+    }
+    for (i = 0; i < this.poolingContexts.length; i += 1) {
+      contextDef = this.poolingContexts[i].getContextDef()
+      if (contextDef['navi-control'] && contextDef['navi-control'].match(/detail/)) {
+        return this.poolingContexts[i]
+      }
+    }
+    return null
+  },
+
+  getContextDef: function (contextName) {
+    'use strict'
+    return INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', contextName)
+  },
+
+  getContextFromNodeId: function (nodeId) {
+    'use strict'
+    var i, context, contextDef, rKey, fKey, pKey, isPortal, bindInfo
+    if (!this.poolingContexts) {
+      return null
+    }
+    for (i = 0; i < this.poolingContexts.length; i += 1) {
+      context = this.poolingContexts[i]
+      contextDef = context.getContextDef()
+      isPortal = false
+      if (contextDef.relation) {
+        for (rKey in contextDef.relation) {
+          if (contextDef.relation[rKey].portal) {
+            isPortal = true
+          }
+        }
+      }
+      for (rKey in context.binding) {
+        if (context.binding.hasOwnProperty(rKey)) {
+          for (fKey in context.binding[rKey]) {
+            if (isPortal) {
+              for (pKey in context.binding[rKey][fKey]) {
+                if (context.binding[rKey][fKey].hasOwnProperty(pKey)) {
+                  bindInfo = context.binding[rKey][fKey][pKey]
+                  if (bindInfo.nodeId === nodeId) {
+                    return context
+                  }
+                }
+              }
+            } else {
+              bindInfo = context.binding[rKey][fKey]
+              if (bindInfo.nodeId === nodeId) {
+                return context
+              }
+            }
+          }
+        }
+      }
+    }
+    return null
+  },
+
+  getContextFromEnclosureNode: function (enclosureNode) {
+    'use strict'
+    var i, context
+    if (!this.poolingContexts) {
+      return null
+    }
+    for (i = 0; i < this.poolingContexts.length; i += 1) {
+      context = this.poolingContexts[i]
+      if (context.enclosureNode === enclosureNode) {
+        return context
+      }
+    }
+    return null
+  },
+
+  generateContextObject: function (contextDef, enclosure, repeaters, repeatersOriginal) {
+    'use strict'
+    var contextObj = new IMLibContext(contextDef.name)
+    contextObj.contextDefinition = contextDef
+    contextObj.enclosureNode = enclosure
+    contextObj.repeaterNodes = repeaters
+    contextObj.original = repeatersOriginal
+    contextObj.sequencing = true
+    return contextObj
+  },
+
+  getPagingContext: function () {
+    'use strict'
+    var i, context, contextDef
+    if (this.poolingContexts) {
+      for (i = 0; i < this.poolingContexts.length; i += 1) {
+        context = this.poolingContexts[i]
+        contextDef = context.getContextDef()
+        if (contextDef.paging) {
+          return context
+        }
+      }
+    }
+    return null
+  }
+}
+
+/**
+ *
  * @constructor
  */
 var IMLibContext = function (contextName) {
@@ -589,527 +1150,5 @@ IMLibContext.prototype.getContextDef = function () {
   return contextDef
 }
 
-/*
- * The isDebug parameter is for debugging and testing. Usually you should not specify it.
- */
-IMLibContext.prototype.checkOrder = function (oneRecord, isDebug) {
-  'use strict'
-  var i
-  let fields = []
-  let directions = []
-  let oneSortKey, condtextDef, lower, upper, index, targetRecord, contextValue, checkingValue, stop
-  if (isDebug !== true) {
-    if (INTERMediator && INTERMediator.additionalSortKey[this.contextName]) {
-      for (i = 0; i < INTERMediator.additionalSortKey[this.contextName].length; i += 1) {
-        oneSortKey = INTERMediator.additionalSortKey[this.contextName][i]
-        if (!(oneSortKey.field in fields)) {
-          fields.push(oneSortKey.field)
-          directions.push(oneSortKey.direction)
-        }
-      }
-    }
-    condtextDef = this.getContextDef()
-    if (condtextDef && condtextDef.sort) {
-      for (i = 0; i < condtextDef.sort.length; i += 1) {
-        oneSortKey = condtextDef.sort[i]
-        if (!(oneSortKey.field in fields)) {
-          fields.push(oneSortKey.field)
-          directions.push(oneSortKey.direction)
-        }
-      }
-    }
-  } else {
-    fields = ['field1', 'field2']
-  }
-  lower = 0
-  upper = this.recordOrder.length
-  for (i = 0; i < fields.length; i += 1) {
-    if (oneRecord[fields[i]]) {
-      index = parseInt((upper + lower) / 2)
-      do {
-        targetRecord = this.store[this.recordOrder[index]]
-        contextValue = targetRecord[fields[i]]
-        checkingValue = oneRecord[fields[i]]
-        if (contextValue < checkingValue) {
-          lower = index
-        } else if (contextValue > checkingValue) {
-          upper = index
-        } else {
-          lower = upper = index
-        }
-        index = parseInt((upper + lower) / 2)
-      } while (upper - lower > 1)
-      targetRecord = this.store[this.recordOrder[index]]
-      contextValue = targetRecord[fields[i]]
-      if (contextValue === checkingValue) {
-        lower = upper = index
-        stop = false
-        do {
-          targetRecord = this.store[this.recordOrder[lower - 1]]
-          if (targetRecord && targetRecord[fields[i]] && targetRecord[fields[i]] === checkingValue) {
-            lower--
-          } else {
-            stop = true
-          }
-        } while (!stop)
-        stop = false
-        do {
-          targetRecord = this.store[this.recordOrder[upper + 1]]
-          if (targetRecord && targetRecord[fields[i]] && targetRecord[fields[i]] === checkingValue) {
-            upper++
-          } else {
-            stop = true
-          }
-        } while (!stop)
-        if (lower === upper) {
-          // index is the valid order number.
-          break
-        }
-        upper++
-      } else if (contextValue < checkingValue) {
-        // index is the valid order number.
-        break
-      } else if (contextValue > checkingValue) {
-        index--
-        break
-      }
-    }
-  }
-  // if (isDebug === true) {
-  //     console.log('#lower=' + lower + ',upper=' + upper + ',index=' + index +
-  //         ',contextValue=' + contextValue + ',checkingValue=' + checkingValue)
-  // }
-  return index
-}
-
-/*
- * The isDebug parameter is for debugging and testing. Usually you should not specify it.
- */
-IMLibContext.prototype.rearrangePendingOrder = function (isDebug) {
-  'use strict'
-  var i, index, targetRecord
-  for (i = 0; i < this.pendingOrder.length; i += 1) {
-    targetRecord = this.store[this.pendingOrder[i]]
-    index = this.checkOrder(targetRecord, isDebug)
-    if (index >= -1) {
-      this.recordOrder.splice(index + 1, 0, this.pendingOrder[i])
-    }
-  }
-  this.pendingOrder = []
-}
-
-IMLibContext.prototype.getRepeaterEndNode = function (index) {
-  'use strict'
-  var nodeId, field
-  let repeaters = []
-  let repeater, node, i, enclosure, children
-
-  var recKey = this.recordOrder[index]
-  for (field in this.binding[recKey]) {
-    if (this.binding[recKey].hasOwnProperty(field)) {
-      nodeId = this.binding[recKey][field].nodeId
-      repeater = INTERMediatorLib.getParentRepeaters(document.getElementById(nodeId))
-      for (i = 0; i < repeater.length; i += 1) {
-        if (!(repeater[i] in repeaters)) {
-          repeaters.push(repeater[i])
-        }
-      }
-    }
-  }
-  if (repeaters.length < 1) {
-    return null
-  }
-  node = repeaters[0]
-  enclosure = INTERMediatorLib.getParentEnclosure(node)
-  children = enclosure.childNodes
-  for (i = 0; i < children.length; i += 1) {
-    if (children[i] in repeaters) {
-      node = repeaters[i]
-      break
-    }
-  }
-  return node
-}
-
-IMLibContext.prototype.storeRecords = function (records) {
-  'use strict'
-  var ix, record, field, keyField, keyValue
-  var contextDef = INTERMediatorLib.getNamedObject(
-    INTERMediatorOnPage.getDataSources(), 'name', this.contextName)
-  keyField = contextDef.key ? contextDef.key : 'id'
-  if (records.dbresult) {
-    for (ix = 0; ix < records.dbresult.length; ix++) {
-      record = records.dbresult[ix]
-      for (field in record) {
-        if (record.hasOwnProperty(field)) {
-          keyValue = record[keyField] ? record[keyField] : ix
-          this.setValue(keyField + '=' + keyValue, field, record[field])
-        }
-      }
-    }
-  }
-}
-
-IMLibContext.prototype.getDataAtLastRecord = function (key) {
-  'use strict'
-  var lastKey
-  var storekeys = Object.keys(this.store)
-  if (storekeys.length > 0) {
-    lastKey = storekeys[storekeys.length - 1]
-    return this.getValue(lastKey, key)
-  }
-  return undefined
-}
-
-// setData____ methods are for storing data both the model and the database.
-//
-IMLibContext.prototype.setDataAtLastRecord = function (key, value) {
-  'use strict'
-  var lastKey, keyAndValue, contextName
-  var storekeys = Object.keys(this.store)
-  if (storekeys.length > 0) {
-    lastKey = storekeys[storekeys.length - 1]
-    this.setValue(lastKey, key, value)
-    contextName = this.contextName
-    keyAndValue = lastKey.split('=')
-    IMLibQueue.setTask((function () {
-      var params = {
-        name: contextName,
-        conditions: [{field: keyAndValue[0], operator: '=', value: keyAndValue[1]}],
-        dataset: [{field: key, value: value}]
-      }
-      return function (completeTask) {
-        INTERMediator_DBAdapter.db_update(params)
-        IMLibCalc.recalculation()
-        INTERMediatorLog.flushMessage()
-        completeTask()
-      }
-    })())
-  }
-}
-
-IMLibContext.prototype.setDataWithKey = function (pkValue, key, value) {
-  'use strict'
-  var targetKey, contextDef, storeElements, contextName
-  contextDef = this.getContextDef()
-  if (!contextDef) {
-    return
-  }
-  targetKey = contextDef.key + '=' + pkValue
-  storeElements = this.store[targetKey]
-  if (storeElements) {
-    this.setValue(targetKey, key, value)
-    contextName = this.contextName
-    IMLibQueue.setTask((function () {
-      var params = {
-        name: contextName,
-        conditions: [{field: contextDef.key, operator: '=', value: pkValue}],
-        dataset: [{field: key, value: value}]
-      }
-      return function (completeTask) {
-        INTERMediator_DBAdapter.db_update_async(
-          params,
-          (result) => {
-            INTERMediatorLog.flushMessage()
-            completeTask()
-          },
-          () => {
-            INTERMediatorLog.flushMessage()
-            completeTask()
-          }
-        )
-      }
-    })())
-  }
-}
-
-IMLibContext.prototype.setValue = function (recKey, key, value, nodeId, target, portal) {
-  'use strict'
-  var updatedNodeIds = null
-  if (portal) {
-    /* eslint no-console: ["error", {allow: ["error"]}] */
-    console.error('Using the portal parameter in IMLibContext.setValue')
-  }
-  if (recKey) {
-    if (this.store[recKey] === undefined) {
-      this.store[recKey] = {}
-    }
-    if (portal && this.store[recKey][key] === undefined) {
-      this.store[recKey][key] = {}
-    }
-    if (this.binding[recKey] === undefined) {
-      this.binding[recKey] = {}
-      if (this.sequencing) {
-        this.recordOrder.push(recKey)
-      } else {
-        this.pendingOrder.push(recKey)
-      }
-    }
-    if (this.binding[recKey][key] === undefined) {
-      this.binding[recKey][key] = []
-    }
-    if (portal && this.binding[recKey][key][portal] === undefined) {
-      if (this.binding[recKey][key].length < 1) {
-        this.binding[recKey][key] = {}
-      }
-      this.binding[recKey][key][portal] = []
-    }
-    if (key) {
-      if (portal) {
-        // this.store[recKey][key][portal] = value
-        this.store[recKey][key] = value
-      } else {
-        this.store[recKey][key] = value
-      }
-      if (nodeId) {
-        if (portal) {
-          // this.binding[recKey][key][portal].push({id: nodeId, target: target})
-          this.binding[recKey][key].push({id: nodeId, target: target})
-        } else {
-          this.binding[recKey][key].push({id: nodeId, target: target})
-        }
-        if (this.contextInfo[nodeId] === undefined) {
-          this.contextInfo[nodeId] = {}
-        }
-        this.contextInfo[nodeId][target ? target : '_im_no_target'] =
-          {context: this, record: recKey, field: key}
-        if (portal) {
-          this.contextInfo[nodeId][target ? target : '_im_no_target'].portal = portal
-        }
-      } else {
-        if (INTERMediator.partialConstructing) {
-          updatedNodeIds = IMLibContextPool.synchronize(this, recKey, key, value, target, portal)
-        }
-      }
-    }
-  }
-  return updatedNodeIds
-}
-
-IMLibContext.prototype.getValue = function (recKey, key, portal) {
-  'use strict'
-  var value
-  try {
-    if (portal) {
-      value = this.store[portal][key]
-    } else {
-      value = this.store[recKey][key]
-    }
-    if (Array.isArray(value)) {
-      value = value.join()
-    }
-    return value === undefined ? null : value
-  } catch (ex) {
-    return null
-  }
-}
-
-IMLibContext.prototype.isValueUndefined = function (recKey, key, portal) {
-  'use strict'
-  var value, tableOccurence, relatedRecId
-  try {
-    if (portal) {
-      tableOccurence = key.split('::')[0]
-      relatedRecId = portal.split('=')[1]
-      value = this.store[recKey][0][tableOccurence][relatedRecId][key]
-    } else {
-      value = this.store[recKey][key]
-    }
-    return value === undefined ? true : false
-  } catch (ex) {
-    return null
-  }
-}
-
-IMLibContext.prototype.getContextInfo = function (nodeId, target) {
-  'use strict'
-  try {
-    var info = this.contextInfo[nodeId][target ? target : '_im_no_target']
-    return info === undefined ? null : info
-  } catch (ex) {
-    return null
-  }
-}
-
-IMLibContext.prototype.getContextValue = function (nodeId, target) {
-  'use strict'
-  try {
-    var info = this.contextInfo[nodeId][target ? target : '_im_no_target']
-    var value = info.context.getValue(info.record, info.field)
-    return value === undefined ? null : value
-  } catch (ex) {
-    return null
-  }
-}
-
-IMLibContext.prototype.getContextRecord = function (nodeId) {
-  'use strict'
-  var infos, keys, i
-  try {
-    infos = this.contextInfo[nodeId]
-    keys = Object.keys(infos)
-    for (i = 0; i < keys.length; i += 1) {
-      if (infos[keys[i]]) {
-        return this.store[infos[keys[i]].record]
-      }
-    }
-    return null
-  } catch (ex) {
-    return null
-  }
-}
-
-IMLibContext.prototype.removeEntry = function (pkvalue) {
-  'use strict'
-  var keyField, keying, bindingInfo, contextDef, targetNode, repeaterNodes, i
-  let removingNodeIds = []
-  contextDef = this.getContextDef()
-  keyField = contextDef.key
-  keying = keyField + '=' + pkvalue
-  bindingInfo = this.binding[keying]
-  if (bindingInfo) {
-    repeaterNodes = bindingInfo._im_repeater
-    if (repeaterNodes) {
-      for (i = 0; i < repeaterNodes.length; i += 1) {
-        removingNodeIds.push(repeaterNodes[i].id)
-      }
-    }
-  }
-  if (removingNodeIds.length > 0) {
-    for (i = 0; i < removingNodeIds.length; i += 1) {
-      IMLibContextPool.removeRecordFromPool(removingNodeIds[i])
-    }
-    for (i = 0; i < removingNodeIds.length; i += 1) {
-      targetNode = document.getElementById(removingNodeIds[i])
-      if (targetNode) {
-        targetNode.parentNode.removeChild(targetNode)
-      }
-    }
-  }
-}
-
-IMLibContext.prototype.isContaining = function (value) {
-  'use strict'
-  var contextDef, contextName
-  let checkResult = []
-  let i, fieldName, result, opePosition, leftHand, rightHand, leftResult, rightResult
-
-  contextDef = this.getContextDef()
-  contextName = contextDef.name
-  if (contextDef.query) {
-    for (i in contextDef.query) {
-      if (contextDef.query.hasOwnProperty(i)) {
-        checkResult.push(checkCondition(contextDef.query[i], value))
-      }
-    }
-  }
-  if (INTERMediator.additionalCondition[contextName]) {
-    for (i = 0; i < INTERMediator.additionalCondition[contextName].length; i += 1) {
-      checkResult.push(checkCondition(INTERMediator.additionalCondition[contextName][i], value))
-    }
-  }
-
-  result = true
-  if (checkResult.length !== 0) {
-    opePosition = checkResult.indexOf('D')
-    if (opePosition > -1) {
-      leftHand = checkResult.slice(0, opePosition)
-      rightHand = opePosition.slice(opePosition + 1)
-      if (rightHand.length === 0) {
-        result = (leftHand.indexOf(false) < 0)
-      } else {
-        leftResult = (leftHand.indexOf(false) < 0)
-        rightResult = (rightHand.indexOf(false) < 0)
-        result = leftResult || rightResult
-      }
-    } else {
-      opePosition = checkResult.indexOf('EX')
-      if (opePosition > -1) {
-        leftHand = checkResult.slice(0, opePosition)
-        rightHand = opePosition.slice(opePosition + 1)
-        if (rightHand.length === 0) {
-          result = (leftHand.indexOf(true) > -1)
-        } else {
-          leftResult = (leftHand.indexOf(true) > -1)
-          rightResult = (rightHand.indexOf(true) > -1)
-          result = leftResult && rightResult
-        }
-      } else {
-        opePosition = checkResult.indexOf(false)
-        if (opePosition > -1) {
-          result = (checkResult.indexOf(false) < 0)
-        }
-      }
-    }
-
-    if (result === false) {
-      return false
-    }
-  }
-
-  if (this.foreignValue) {
-    for (fieldName in this.foreignValue) {
-      if (contextDef.relation) {
-        for (i in contextDef.relation) {
-          if (contextDef.relation[i]['join-field'] === fieldName) {
-            result &= (checkCondition({
-              field: contextDef.relation[i]['foreign-key'],
-              operator: '=',
-              value: this.foreignValue[fieldName]
-            }, value))
-          }
-        }
-      }
-    }
-  }
-
-  return result
-
-  function checkCondition (conditionDef, oneRecord) {
-    var realValue
-
-    if (conditionDef.field === '__operation__') {
-      return conditionDef.operator === 'ex' ? 'EX' : 'D'
-    }
-
-    realValue = oneRecord[conditionDef.field]
-    if (!realValue) {
-      return false
-    }
-    switch (conditionDef.operator) {
-      case '=':
-      case 'eq':
-        return String(realValue) === String(conditionDef.value)
-      case '>':
-      case 'gt':
-        return realValue > conditionDef.value
-      case '<':
-      case 'lt':
-        return realValue < conditionDef.value
-      case '>=':
-      case 'gte':
-        return realValue >= conditionDef.value
-      case '<=':
-      case 'lte':
-        return realValue <= conditionDef.value
-      case '!=':
-      case 'neq':
-        return String(realValue) !== String(conditionDef.value)
-      default:
-        return false
-    }
-  }
-}
-
-IMLibContext.prototype.insertEntry = function (pkvalue, fields, values) {
-  'use strict'
-  var i, field, value
-  for (i = 0; i < fields.length; i += 1) {
-    field = fields[i]
-    value = values[i]
-    this.setValue(pkvalue, field, value)
-  }
-}
-
 // @@IM@@IgnoringRestOfFile
-module.exports = IMLibContext
+module.exports = IMLibContextPool

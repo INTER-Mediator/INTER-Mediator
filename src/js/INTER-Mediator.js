@@ -17,7 +17,7 @@
 /**
  * Preventing error on module.export in merged js file.
  */
-let module = {}
+//let module = {}
 /**
  * @fileoverview INTERMediator class is defined here.
  */
@@ -36,7 +36,7 @@ let module = {}
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-export const INTERMediator = {
+const INTERMediator = {
   /**
    * The separator for target specification.
    * This must be referred as 'INTERMediator.separator'. Don't use 'this.separator'
@@ -224,8 +224,12 @@ export const INTERMediator = {
   // Detect Internet Explorer and its version.
   propertyIETridentSetup: () => {
     'use strict'
-    let ua, position, c, i
-    ua = navigator.userAgent
+    let ua = '', position, c, i
+    try {
+      ua = navigator.userAgent
+    } catch(e)  {
+      //
+    }
     position = ua.toLocaleUpperCase().indexOf('MSIE')
     if (position >= 0) {
       INTERMediator.isIE = true
@@ -267,7 +271,12 @@ export const INTERMediator = {
   // Referred from https://w3g.jp/blog/js_browser_sniffing2015
   propertyW3CUserAgentSetup: () => {
     'use strict'
-    let u = window.navigator.userAgent.toLowerCase()
+    let u = '';
+    try {
+      u = window.navigator.userAgent.toLowerCase()
+    } catch(e)  {
+      //
+    }
     INTERMediator.isTablet =
       (u.indexOf('windows') > -1 && u.indexOf('touch') > -1 && u.indexOf('tablet pc') === -1) ||
       u.indexOf('ipad') > -1 ||
@@ -1137,7 +1146,6 @@ export const INTERMediator = {
         repeatersOriginal, targetRecordset, targetTotalCount, i, currentContextDef, indexContext,
         insertNode, countRecord, linkedElements, keyingValue, keyField, keyValue,
         idValuesForFieldName
-      let portalRecords = []
 
       encNodeTag = node.tagName
       repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag)
@@ -1926,3 +1934,6 @@ export const INTERMediator = {
     INTERMediatorLog.setDebugMessage(message, level)
   }
 }
+
+// @@IM@@IgnoringRestOfFile
+module.exports = INTERMediator

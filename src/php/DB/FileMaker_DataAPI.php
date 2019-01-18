@@ -14,6 +14,7 @@
  */
 
 namespace INTERMediator\DB;
+use INTERMediator\IMUtil;
 
 class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
 {

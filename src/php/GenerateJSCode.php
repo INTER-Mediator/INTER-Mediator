@@ -103,12 +103,12 @@ class GenerateJSCode
          */
         $currentDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR . 'src' .
             DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
-        if (file_exists($currentDir . 'INTER-Mediator-Lib.js')) {
+        if (!file_exists($currentDir . 'INTER-Mediator.min.js')) {
             echo $this->combineScripts($currentDir);
-        } else if (file_exists($currentDir . 'INTER-Mediator-IE.js')) {
-            readfile($currentDir . 'INTER-Mediator-IE.js');
+//        } else if (file_exists($currentDir . 'INTER-Mediator-IE.js')) {
+//            readfile($currentDir . 'INTER-Mediator-IE.js');
         } else {
-            readfile($currentDir . 'INTER-Mediator.js');
+            readfile($currentDir . 'INTER-Mediator.min.js');
         }
 
         /*
@@ -384,31 +384,39 @@ class GenerateJSCode
     {
         $jsLibDir = dirname($currentDir) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
         $content = '';
-        $content .= $this->eliminateForwardingExport(file_get_contents($currentDir . 'INTER-Mediator.js'));
-        $content .= file_get_contents($currentDir . 'INTER-Mediator-Page.js');
-        $content .= file_get_contents($currentDir . 'INTER-Mediator-Context.js');
-        $content .= file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
-        $content .= file_get_contents($currentDir . 'INTER-Mediator-Format.js');
-        $content .= file_get_contents($currentDir . 'INTER-Mediator-Element.js');
-        $content .= file_get_contents($jsLibDir . 'js-expression-eval-parser.js');
-        $content .= file_get_contents($currentDir . 'INTER-Mediator-Calc.js');
-        $content .= file_get_contents($currentDir . 'Adapter_DBServer.js');
-        $content .= file_get_contents($currentDir . 'INTER-Mediator-Parts.js');
-        $content .= file_get_contents($currentDir . 'INTER-Mediator-Navi.js');
-        $content .= file_get_contents($currentDir . 'INTER-Mediator-UI.js');
-        $content .= file_get_contents($currentDir . 'INTER-Mediator-Log.js');
-        $content .= ';' . file_get_contents($jsLibDir . 'tinySHA1.js');
-        $content .= file_get_contents($jsLibDir . 'sha256.js');
-        $content .= file_get_contents($jsLibDir . 'jsencrypt.min.js');
-        $content .= file_get_contents($currentDir . 'INTER-Mediator-Events.js');
-        $content .= file_get_contents($currentDir . 'INTER-Mediator-Queuing.js');
-        $content .= file_get_contents($currentDir . 'INTER-Mediator-DoOnStart.js');
+        $content .= $this->readJSSource($currentDir . 'INTER-Mediator.js');
+        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Page.js');
+        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-ContextPool.js');
+        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Context.js');
+        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-LocalContext.js');
+        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Lib.js');
+        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Graph.js');
+        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Format.js');
+        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Element.js');
+        $content .= $this->readJSSource($jsLibDir . 'js-expression-eval-parser.js');
+        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Calc.js');
+        $content .= $this->readJSSource($currentDir . 'Adapter_DBServer.js');
+        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Parts.js');
+        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Navi.js');
+        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-UI.js');
+        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Log.js');
+        $content .= ';' . $this->readJSSource($jsLibDir . 'tinySHA1.js');
+        $content .= $this->readJSSource($jsLibDir . 'sha256.js');
+        $content .= $this->readJSSource($jsLibDir . 'jsencrypt.min.js');
+        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Events.js');
+        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Queuing.js');
+        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-DoOnStart.js');
 
         return $content;
     }
 
-    private function eliminateForwardingExport($str)
+    private function readJSSource($filename)
     {
-        return preg_replace("/export const/", "const", $str);
+        $content = file_get_contents($filename);
+        $pos = strpos($content, "@@IM@@IgnoringRestOfFile");
+        if ($pos !== false) {
+            return substr($content, 0, $pos)."\n";
+        }
+        return $content;
     }
 }

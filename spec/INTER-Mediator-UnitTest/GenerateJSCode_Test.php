@@ -69,7 +69,10 @@ class GenerateJSCode_Test extends TestCase
             $content = $this->reflectionMethod->invokeArgs($this->generater, array($currentDir));
             $jsLibDir = dirname($currentDir) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR .
                 'js_lib' . DIRECTORY_SEPARATOR;
-            $this->assertContains(';' . file_get_contents($jsLibDir . 'tinySHA1.js'), $content);
+            $method = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'readJSSource');
+            $method->setAccessible(true);
+            $partOfCode = $method->invokeArgs($this->generater, array($jsLibDir . 'tinySHA1.js'));
+            $this->assertContains($partOfCode, $content);
         }
     }
 

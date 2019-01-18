@@ -43,13 +43,12 @@ if (function_exists('mb_internal_encoding')) {
     mb_internal_encoding('UTF-8');
 }
 // Setup Timezone
-$params = IMUtil::getFromParamsPHPFile(array("defaultTimezone", "stopSSEveryQuit"), true);
+$params = IMUtil::getFromParamsPHPFile(array("defaultTimezone"), true);
 if (isset($params['defaultTimezone'])) {
     date_default_timezone_set($params['defaultTimezone']);
 } else if (ini_get('date.timezone') == null) {
     date_default_timezone_set('UTC');
 }
-$stopSSEveryQuit = isset($params['stopSSEveryQuit']) ? $params['stopSSEveryQuit'] : false;
 // Setup Locale
 Locale\IMLocale::setLocale(LC_ALL);
 // Define constant
@@ -64,8 +63,6 @@ define("IM_TODAY", strftime('%Y-%m-%d'));
  */
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
-    file_put_contents("/tmp/2", "# IM_Entry start");
-    global $stopSSEveryQuit;
     // check required PHP extensions
     $requiredFunctions = array(
         'mbstring' => 'mb_internal_encoding',
@@ -130,16 +127,13 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         ServiceServerProxy::instance()->checkServiceServer();
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
+        ServiceServerProxy::instance()->stopServer();
     } else {    // Database accessing
+        ServiceServerProxy::instance()->checkServiceServer();
         $dbInstance = new DB\Proxy();
         if (!$dbInstance->initialize($datasource, $options, $dbspecification, $debug)) {
             $dbInstance->finishCommunication(true);
         } else {
-            $dbInstance->addOutputData('debugMessages', ServiceServerProxy::instance()->getMessages());
-            $errors = ServiceServerProxy::instance()->getErrors();
-            if (count($errors) > 0) {
-                $dbInstance->addOutputData('errorMessages', $errors);
-            }
             $util = new IMUtil();
             if ($util->protectCSRF() === TRUE) {
                 $dbInstance->processingRequest();
@@ -150,12 +144,8 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
             }
         }
         $dbInstance->exportOutputDataAsJSON();
-    }
-    if ($stopSSEveryQuit) {
         ServiceServerProxy::instance()->stopServer();
     }
-    file_put_contents("/tmp/2", "# IM_Entry exit");
-
 }
 
 

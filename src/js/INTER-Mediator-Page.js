@@ -13,7 +13,6 @@
  IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibUI,
  IMLibEventResponder, INTERMediatorLog, SHA1, IMLib, JSEncrypt */
 /* jshint -W083 */ // Function within a loop
-
 /**
  * @fileoverview INTERMediatorOnPage class is defined here.
  */
@@ -22,7 +21,7 @@
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-const INTERMediatorOnPage = {
+let INTERMediatorOnPage = {
   authCountLimit: 4,
   authCount: 0,
   authUser: '',
@@ -547,7 +546,9 @@ const INTERMediatorOnPage = {
         addingButton.id = '_im_enrollbutton'
         addingButton.appendChild(document.createTextNode(
           INTERMediatorLib.getInsertedStringFromErrorNumber(2022)))
-        addingButton.onclick = function () { location.href = INTERMediatorOnPage.enrollPageURL }
+        addingButton.onclick = function () {
+          location.href = INTERMediatorOnPage.enrollPageURL
+        }
         frontPanel.appendChild(addingButton)
       }
       if (INTERMediatorOnPage.resetPageURL) {
@@ -557,7 +558,9 @@ const INTERMediatorOnPage = {
         addingButton.id = '_im_resetbutton'
         addingButton.appendChild(document.createTextNode(
           INTERMediatorLib.getInsertedStringFromErrorNumber(2023)))
-        addingButton.onclick = function () { location.href = INTERMediatorOnPage.resetPageURL }
+        addingButton.onclick = function () {
+          location.href = INTERMediatorOnPage.resetPageURL
+        }
         frontPanel.appendChild(addingButton)
         resetMessage = document.createElement('div')
         resetMessage.appendChild(document.createTextNode(
@@ -884,7 +887,7 @@ const INTERMediatorOnPage = {
     }
     return seekNode(repeaterNode, imDefinition)
 
-    function seekNode (node, imDefinition) {
+    function seekNode(node, imDefinition) {
       var children, i, nodeDefs, returnValue
       if (node.nodeType !== 1) {
         return null
@@ -919,7 +922,7 @@ const INTERMediatorOnPage = {
     repeaterNode = INTERMediatorLib.getParentEnclosure(fromNode)
     return seekNode(repeaterNode, imDefinition)
 
-    function seekNode (node, imDefinition) {
+    function seekNode(node, imDefinition) {
       var children, i, nodeDefs, returnValue
       if (node.nodeType !== 1) {
         return null
@@ -975,8 +978,8 @@ const INTERMediatorOnPage = {
     }
     return nodeIds
 
-    function seekNode (node, imDefinition) {
-      var children, i, nodeDefs
+    function seekNode(node, imDefinition) {
+      let children, i, nodeDefs
       if (node.nodeType !== 1) {
         return
       }
@@ -1025,8 +1028,10 @@ const INTERMediatorOnPage = {
 
   getCookie: function (key) {
     'use strict'
-    var s, i, targetKey
-    s = document.cookie.split('; ')
+    let s = '', i, targetKey
+    try {
+      s = document.cookie.split('; ')
+    } catch (e) { }
     targetKey = this.getKeyWithRealm(key)
     for (i = 0; i < s.length; i++) {
       if (s[i].indexOf(targetKey + '=') === 0) {
@@ -1037,8 +1042,10 @@ const INTERMediatorOnPage = {
   },
   removeCookie: function (key) {
     'use strict'
-    document.cookie = this.getKeyWithRealm(key) + '=; path=/; max-age=0; expires=Thu, 1-Jan-1900 00:00:00 GMT;'
-    document.cookie = this.getKeyWithRealm(key) + '=; max-age=0;  expires=Thu, 1-Jan-1900 00:00:00 GMT;'
+    if (document && document.cookie) {
+      document.cookie = this.getKeyWithRealm(key) + '=; path=/; max-age=0; expires=Thu, 1-Jan-1900 00:00:00 GMT;'
+      document.cookie = this.getKeyWithRealm(key) + '=; max-age=0;  expires=Thu, 1-Jan-1900 00:00:00 GMT;'
+    }
   },
 
   setCookie: function (key, val) {
@@ -1175,3 +1182,6 @@ const INTERMediatorOnPage = {
     }
   }
 }
+
+// @@IM@@IgnoringRestOfFile
+module.exports = INTERMediatorOnPage

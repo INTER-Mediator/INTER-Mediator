@@ -195,3 +195,6 @@ const INTERMediatorLog = {
     INTERMediatorLog.debugMessages = []
   }
 }
+
+// @@IM@@IgnoringRestOfFile
+module.exports = INTERMediatorLog
