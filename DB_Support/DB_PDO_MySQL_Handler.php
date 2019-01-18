@@ -32,7 +32,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 
     public function sqlDELETECommand()
     {
-        return "DELETE ";
+        return "DELETE FROM ";
     }
 
     public function sqlUPDATECommand()

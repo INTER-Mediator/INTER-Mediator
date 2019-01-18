@@ -147,7 +147,7 @@ class DB_Notification_Handler_PDO
                 }
             }
         }
-        $sql = "{$this->dbClass->handler->sqlDELETECommand()}FROM {$regTable} WHERE {$criteriaString}";
+        $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$regTable} WHERE {$criteriaString}";
         $this->logger->setDebugMessage($sql);
         $result = $this->dbClass->link->exec($sql);
         if ($result === false) {
@@ -156,7 +156,7 @@ class DB_Notification_Handler_PDO
         }
         if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0 && count($contextIds) > 0) {
             foreach ($contextIds as $cId) {
-                $sql = "{$this->dbClass->handler->sqlDELETECommand()}FROM {$pksTable} WHERE context_id=" . $this->dbClass->link->quote($cId);
+                $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$pksTable} WHERE context_id=" . $this->dbClass->link->quote($cId);
                 $this->logger->setDebugMessage($sql);
                 $result = $this->dbClass->link->exec($sql);
                 if ($result === false) {
@@ -242,7 +242,7 @@ class DB_Notification_Handler_PDO
         $targetClients = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $targetClients[] = $row['clientid'];
-            $sql = "{$this->dbClass->handler->sqlDELETECommand()}FROM {$pksTable} WHERE context_id = " . $this->dbClass->link->quote($row['id']) .
+            $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$pksTable} WHERE context_id = " . $this->dbClass->link->quote($row['id']) .
                 " AND pk = " . $this->dbClass->link->quote($pkArray[0]);
             $this->logger->setDebugMessage($sql);
             $resultDelete = $this->dbClass->link->query($sql);
