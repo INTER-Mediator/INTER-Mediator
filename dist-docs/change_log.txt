@@ -14,6 +14,7 @@ Ver.5.9-dev (in development)
 - Reduce error messages when using PHP 7.2 and DB_FileMaker_DataAPI class.
 - [BUG FIX] Fix showing images in FileMaker container fields with multibyte database name.
 - [BUG FIX] If someone loges in after self-service enrollment, enrollment info in issued hash table was eliminated.
+- [BUG FIX] Modify GenerateJSCode.php to fix compatibility with XAMPP for Windows.
 
 Ver.5.8 (November 3, 2018)
 - Improve speed performance of Native Authentication and LDAP Authentication.

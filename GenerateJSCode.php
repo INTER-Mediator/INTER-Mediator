@@ -105,8 +105,8 @@ class GenerateJSCode
          * Generate the link to the definition file editor
          */
         $relativeToDefFile = '';
-        $editorPath = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator-Support';
-        $defFilePath = $_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME'];
+        $editorPath = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator-Support');
+        $defFilePath = realpath($_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME']);
         while (strpos($defFilePath, $editorPath) !== 0 && strlen($editorPath) > 1) {
             $editorPath = dirname($editorPath);
             $relativeToDefFile .= '..' . DIRECTORY_SEPARATOR;
