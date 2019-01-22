@@ -12,6 +12,7 @@ Also the Migration Guide (Japanese) might be informative:
 
 Ver.5.9-dev (in development)
 - Reduce error messages when using PHP 7.2 and DB_FileMaker_DataAPI class.
+- [BUG FIX] Fix compatibility with PHP 5.6.40.
 - [BUG FIX] Fix showing images in FileMaker container fields with multibyte database name.
 - [BUG FIX] If someone loges in after self-service enrollment, enrollment info in issued hash table was eliminated.
 - [BUG FIX] Modify GenerateJSCode.php to fix compatibility with XAMPP for Windows.
