@@ -141,6 +141,9 @@ IMParts_Catalog.jquery_fileupload = {
                             keyField = keyValue[0], kv = keyValue[1];
                         return function (e, data) {
                             var fdata = [];
+                            var encrypt = new JSEncrypt();
+                            encrypt.setKey(INTERMediatorOnPage.publickey)
+
                             fdata.push({name: 'access', value: 'uploadfile'});
                             fdata.push({name: '_im_contextnewrecord', value: 'uploadfile'});
                             fdata.push({name: '_im_contextname', value: cName});
@@ -161,8 +164,8 @@ IMParts_Catalog.jquery_fileupload = {
                                 fdata.push({
                                     name: 'cresponse',
                                     value: encrypt.encrypt(
-                                        INTERMediatorOnPage.authCryptedPassword.substr(220) + "\n" +
-                                        INTERMediatorOnPage.authChallenge)
+                                        INTERMediatorOnPage.authCryptedPassword.substr(0,220) +
+                                        IMLib.nl_char + INTERMediatorOnPage.authChallenge)
                                 });
                             }
                             data.formData = fdata;
@@ -180,7 +183,7 @@ IMParts_Catalog.jquery_fileupload = {
                             data.jqXHR.abort();
                             if (result) {
                                 INTERMediatorLog.flushMessage();
-                                INTERMediator.construct(IMLibContextPool.contextFromName(cName));
+                                INTERMediator.construct(/*IMLibContextPool.contextFromName(cName)*/);
                             }
                         };
                     })(),

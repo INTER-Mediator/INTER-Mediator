@@ -111,11 +111,14 @@ if (!INTERMediator.additionalSortKey) {
 }
 
 INTERMediatorLib.addEvent(window, 'beforeunload', function () {
-//    var confirmationMessage = '';
-
-//    (e || window.event).returnValue = confirmationMessage;     //Gecko + IE
-//    return confirmationMessage;                                //Webkit, Safari, Chrome etc.
-
+    if (IMLibQueue.tasks.length > 0) {
+        var confirmationMessage = 'Some tasks are unfinished.';
+        var ev = (e || window.event);
+        ev.returnValue = confirmationMessage; //Gecko + IE
+        return confirmationMessage; //Webkit, Safari, Chrome etc.
+    } else {
+        return undefined;
+    }
 });
 
 INTERMediatorLib.addEvent(window, 'unload', function () {
@@ -126,9 +129,9 @@ INTERMediatorLib.addEvent(window, 'unload', function () {
 INTERMediatorLib.addEvent(window, 'load', function () {
     'use strict';
     var key, errorNode;
-    if (INTERMediatorOnPage.initLocalContext)   {
+    if (INTERMediatorOnPage.initLocalContext) {
         for (key in INTERMediatorOnPage.initLocalContext) {
-            if (INTERMediatorOnPage.initLocalContext.hasOwnProperty(key)){
+            if (INTERMediatorOnPage.initLocalContext.hasOwnProperty(key)) {
                 IMLibLocalContext.setValue(key, INTERMediatorOnPage.initLocalContext[key], true);
             }
         }
