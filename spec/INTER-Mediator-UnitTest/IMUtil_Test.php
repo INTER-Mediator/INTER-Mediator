@@ -17,6 +17,30 @@ class IMUtil_Test extends TestCase {
         $this->util = new IMUtil();
     }
 
+    public function test_phpVersion()
+    {
+        $version = IMUtil::phpVersion("5.4.45");
+        $this->assertLessThan(6, $version);
+
+        $version = IMUtil::phpVersion("5.5.38");
+        $this->assertLessThan(6, $version);
+
+        $version = IMUtil::phpVersion("5.6.39");
+        $this->assertLessThan(6, $version);
+
+        $version = IMUtil::phpVersion("5.6.40");
+        $this->assertLessThan(6, $version);
+
+        $version = IMUtil::phpVersion("7.0.0");
+        $this->assertGreaterThanOrEqual(7, $version);
+
+        $version = IMUtil::phpVersion("7.0.1");
+        $this->assertGreaterThan(7, $version);
+
+        $version = IMUtil::phpVersion("7.1.0");
+        $this->assertGreaterThan(7, $version);
+    }
+
     public function test_removeNull()
     {
         $str = IMUtil::removeNull("INTER\x00-Mediator");
