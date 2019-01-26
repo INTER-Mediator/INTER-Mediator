@@ -29,26 +29,15 @@ Ver.6-dev (in development)
       INTERMediator_DBAdapter.db_copyWithAuth
 - Deprecated global variables $g_dbInstance, $g_serverSideCall in INTER-Mediator.php are removed.
 - Metadata.json is removed, composer.json takes over.
-- [INFO] Require a 2048-bit private key at least for authentication. Please update in case of using Native
-  Authentication or LDAP Authentication.
-- The INTERMediator.recordLimit property is introduced to store the number of records. Also added methods:
-  INTERMediator.setRecordLimit(cname, limit) and INTERMediator.clearRecordLimit(cname).
-- The method isOperatorWithoutValue() is introduced into PDO Spec Handler classes. It's for IS NULL
-  with Definition File Editor.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
-- [BUG FIX] If the server doesn't have valid locale (ex. Windows Server), the number format with thousand
-  separator wasn't seen as we wished.
-- [BUG FIX] In some case, the record number of related context was affected by pagination record limits.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
-- [BUG FIX] In step navigation page, sometimes tap affected to clicking any elements on moved page.
-- [BUG FIX] INTERMediatorLib.getParentRepeaters works in case of parameter node isn't target node.
-- [BUG FIX] Fix INTERMediator.isIE property to detect Internet Explorer 11 (Change false to true if using 
-  Internet Explorer 11).
-- [BUG FIX] If someone loges in after self-service enrollment, enrollment info in issued hash table was eliminated.
 
 Ver.5.9-dev (in development)
 - Reduce error messages when using PHP 7.2 and DB_FileMaker_DataAPI class.
+- [BUG FIX] Fix compatibility with PHP 5.6.40 (Thanks to Kenzo Nakata).
 - [BUG FIX] Fix showing images in FileMaker container fields with multibyte database name.
+- [BUG FIX] If someone loges in after self-service enrollment, enrollment info in issued hash table was eliminated.
+- [BUG FIX] Modify GenerateJSCode.php to fix compatibility with XAMPP for Windows.
 
 Ver.5.8 (November 3, 2018)
 - Improve speed performance of Native Authentication and LDAP Authentication.
