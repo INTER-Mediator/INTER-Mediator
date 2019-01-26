@@ -123,8 +123,8 @@ class ServiceServerProxy
         $script = str_replace(" node", " " . $this->nodePath, $script);
         file_put_contents($this->foreverPath, $script);
         $logFile = tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
-        $cmd = "{$this->foreverPath} start -a -l {$logFile} --minUptime 5000 --spinSleepTime 5000 " .
-            "{$imPath}/src/js/Service_Server.js {$this->paramsPort}";
+        $cmd = "'{$this->foreverPath}' start -a -l {$logFile} --minUptime 5000 --spinSleepTime 5000 " .
+            "'{$imPath}/src/js/Service_Server.js' {$this->paramsPort}";
         syslog(LOG_INFO, "Command:$cmd");
         $result = [];
         $returnValue = 0;
@@ -139,7 +139,7 @@ class ServiceServerProxy
     {
         if ($this->paramsQuit) {
             $imPath = IMUtil::pathToINTERMediator();
-            $cmd = "{$this->foreverPath} stopall";
+            $cmd = "'{$this->foreverPath}' stopall";
             syslog(LOG_INFO, "Command:$cmd");
             exec($cmd, $result, $returnValue);
             syslog(LOG_INFO, "Returns:$returnValue, Output:" . implode("/", $result));

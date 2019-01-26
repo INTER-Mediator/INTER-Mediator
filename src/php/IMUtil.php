@@ -44,9 +44,9 @@ class IMUtil
         return $timeValue;
     }
 
-    public static function phpVersion($verStr='')
+    public static function phpVersion()
     {
-        $vString = explode('.', $verStr == '' ? phpversion() : $verStr);
+        $vString = explode('.', phpversion());
         $vNum = 0;
         if (isset($vString[0])) {
             $vNum += intval($vString[0]);
@@ -55,7 +55,7 @@ class IMUtil
             $vNum += intval($vString[1]) / 10;
         }
         if (isset($vString[2])) {
-            $vNum += intval(substr($vString[2], 0, 1)) / 100;
+            $vNum += intval($vString[2]) / 100;
         }
         return $vNum;
     }

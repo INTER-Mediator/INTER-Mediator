@@ -115,8 +115,8 @@ class GenerateJSCode
          * Generate the link to the definition file editor
          */
         $relativeToDefFile = '';
-        $editorPath = realpath(IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR . 'editors');
-        $defFilePath = realpath($documentRoot . $serverName);
+        $editorPath = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR . 'editors';
+        $defFilePath = $documentRoot . $serverName;
         while (strpos($defFilePath, $editorPath) !== 0 && strlen($editorPath) > 1) {
             $editorPath = dirname($editorPath);
             $relativeToDefFile .= '..' . DIRECTORY_SEPARATOR;

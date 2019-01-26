@@ -37,9 +37,6 @@
         "test-local": "/usr/local/bin/buster-test -r specification"
     },
     "devDependencies": {
-        "babel-cli": "*",
-        "babel-preset-env": "*",
-        "babel-preset-power-assert": "*",
         "jest": "*",
         "power-assert": "*"
     },
