@@ -38,6 +38,7 @@ Ver.5.9-dev (in development)
 - [BUG FIX] Fix showing images in FileMaker container fields with multibyte database name.
 - [BUG FIX] If someone loges in after self-service enrollment, enrollment info in issued hash table was eliminated.
 - [BUG FIX] Modify GenerateJSCode.php to fix compatibility with XAMPP for Windows.
+- [BUG FIX] Preserve the id attribute value of target nodes inside of THEAD or TFOOT elements in case of using Post Only mode.
 
 Ver.5.8 (November 3, 2018)
 - Improve speed performance of Native Authentication and LDAP Authentication.
