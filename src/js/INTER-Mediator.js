@@ -836,8 +836,10 @@ const INTERMediator = {
                 targetRecordset = {}
                 keyingValue = '_im_footer'
                 for (i = 0; i < linkedNodes.length; i++) {
-                  INTERMediator.setIdValue(linkedNodes[i])
-                  nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0])
+                  nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0]);
+                  if(linkedNodes[i] && currentContextDef.name ===nInfo.table) {
+                    INTERMediator.setIdValue(linkedNodes[i]);
+                  }
                   IMLibCalc.updateCalculationInfo(contextObj, keyingValue, linkedNodes[i].id, nInfo, targetRecordset)
                   if (contextObj.binding._im_footer) {
                     contextObj.binding._im_footer._im_repeater = footerNodes
@@ -851,8 +853,10 @@ const INTERMediator = {
                 targetRecordset = {}
                 keyingValue = '_im_header'
                 for (i = 0; i < linkedNodes.length; i++) {
-                  INTERMediator.setIdValue(linkedNodes[i])
-                  nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0])
+                  nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0]);
+                  if(linkedNodes[i] && currentContextDef.name ===nInfo.table) {
+                    INTERMediator.setIdValue(linkedNodes[i]);
+                  }
                   IMLibCalc.updateCalculationInfo(contextObj, keyingValue, linkedNodes[i].id, nInfo, targetRecordset)
                   if (contextObj.binding._im_header) {
                     contextObj.binding._im_header._im_repeater = headerNodes
