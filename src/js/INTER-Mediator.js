@@ -17,7 +17,7 @@
 /**
  * Preventing error on module.export in merged js file.
  */
-//let module = {}
+// let module = {}
 /**
  * @fileoverview INTERMediator class is defined here.
  */
@@ -224,10 +224,11 @@ const INTERMediator = {
   // Detect Internet Explorer and its version.
   propertyIETridentSetup: () => {
     'use strict'
-    let ua = '', position, c, i
+    let ua = ''
+    let position, c, i
     try {
       ua = navigator.userAgent
-    } catch(e)  {
+    } catch (e) {
       //
     }
     position = ua.toLocaleUpperCase().indexOf('MSIE')
@@ -271,10 +272,10 @@ const INTERMediator = {
   // Referred from https://w3g.jp/blog/js_browser_sniffing2015
   propertyW3CUserAgentSetup: () => {
     'use strict'
-    let u = '';
+    let u = ''
     try {
       u = window.navigator.userAgent.toLowerCase()
-    } catch(e)  {
+    } catch (e) {
       //
     }
     INTERMediator.isTablet =
@@ -836,9 +837,9 @@ const INTERMediator = {
                 targetRecordset = {}
                 keyingValue = '_im_footer'
                 for (i = 0; i < linkedNodes.length; i++) {
-                  nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0]);
-                  if(linkedNodes[i] && currentContextDef.name ===nInfo.table) {
-                    INTERMediator.setIdValue(linkedNodes[i]);
+                  nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0])
+                  if (linkedNodes[i] && currentContextDef.name === nInfo.table) {
+                    INTERMediator.setIdValue(linkedNodes[i])
                   }
                   IMLibCalc.updateCalculationInfo(contextObj, keyingValue, linkedNodes[i].id, nInfo, targetRecordset)
                   if (contextObj.binding._im_footer) {
@@ -853,9 +854,9 @@ const INTERMediator = {
                 targetRecordset = {}
                 keyingValue = '_im_header'
                 for (i = 0; i < linkedNodes.length; i++) {
-                  nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0]);
-                  if(linkedNodes[i] && currentContextDef.name ===nInfo.table) {
-                    INTERMediator.setIdValue(linkedNodes[i]);
+                  nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0])
+                  if (linkedNodes[i] && currentContextDef.name === nInfo.table) {
+                    INTERMediator.setIdValue(linkedNodes[i])
                   }
                   IMLibCalc.updateCalculationInfo(contextObj, keyingValue, linkedNodes[i].id, nInfo, targetRecordset)
                   if (contextObj.binding._im_header) {
