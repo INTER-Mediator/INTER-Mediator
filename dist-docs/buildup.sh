@@ -22,7 +22,10 @@ param=""
 
 # $1: file path, $2: appending file
 function readFileUntilMark () {
-    cat "$1" | sed -ne '/@@IM@@IgnoringRestOfFile/q;P' >> "$2"
+    sed -ne '/@@IM@@IgnoringRestOfFile/q;P' < "$1" > "__temp1"
+    sed -ne '/@@IM@@IgnoringNextLine/{n;d;};P' < "__temp1" > "__temp2"
+    sed -ne '/@@IM@@IgnoringNextLine/d;P' < "__temp2" >> "$2"
+    rm "__temp1" "__temp2"
 }
 
 if [ $# -gt 1 ]; then
