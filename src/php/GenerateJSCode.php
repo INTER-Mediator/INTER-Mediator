@@ -415,7 +415,21 @@ class GenerateJSCode
         $content = file_get_contents($filename);
         $pos = strpos($content, "@@IM@@IgnoringRestOfFile");
         if ($pos !== false) {
-            return substr($content, 0, $pos)."\n";
+            $content = substr($content, 0, $pos) . "\n";
+        }
+        while (($pos = strpos($content, "@@IM@@IgnoringNextLine")) !== false) {
+            $prePos = $pos;
+            for ($i = $pos; $i > 0; $i--) {
+                if (substr($content, $i, 1) === "\n") {
+                    $prePos = $i;
+                    break;
+                }
+            }
+            $postPos = strpos($content, "\n", $pos);
+            $postPos = strpos($content, "\n", $postPos + 1);
+            if ($i >= 0) {
+                $content = substr($content, 0, $prePos + 1) . substr($content, $postPos + 1);
+            }
         }
         return $content;
     }
