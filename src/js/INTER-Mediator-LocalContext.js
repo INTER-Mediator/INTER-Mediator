@@ -337,3 +337,4 @@ const IMLibLocalContext = {
 // @@IM@@IgnoringRestOfFile
 module.exports = IMLibLocalContext
 const INTERMediator = require('../../src/js/INTER-Mediator')
+const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')

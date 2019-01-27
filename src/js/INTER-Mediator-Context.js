@@ -17,6 +17,7 @@
 /**
  * @fileoverview IMLibContextPool, IMLibContext and IMLibLocalContext classes are defined here.
  */
+
 /**
  *
  * @constructor
@@ -251,7 +252,7 @@ IMLibContext.prototype.updateFieldValue = async function (idValue, succeedProc, 
     )
   }
 
-  function checkSameValue (initialValue, currentFieldVal) {
+  function checkSameValue(initialValue, currentFieldVal) {
     var handleAsNullValue = ['0000-00-00', '0000-00-00 00:00:00']
     if (handleAsNullValue.indexOf(initialValue) >= 0) {
       initialValue = ''
@@ -552,7 +553,7 @@ IMLibContext.prototype.removeContext = function () {
   }
   INTERMediator_DBAdapter.unregister(regIds)
 
-  function seekRemovingContext (context) {
+  function seekRemovingContext(context) {
     var i, myChildren
     childContexts.push(context)
     regIds.push(context.registeredId)
@@ -1065,7 +1066,7 @@ IMLibContext.prototype.isContaining = function (value) {
 
   return result
 
-  function checkCondition (conditionDef, oneRecord) {
+  function checkCondition(conditionDef, oneRecord) {
     var realValue
 
     if (conditionDef.field === '__operation__') {
@@ -1113,3 +1114,6 @@ IMLibContext.prototype.insertEntry = function (pkvalue, fields, values) {
 
 // @@IM@@IgnoringRestOfFile
 module.exports = IMLibContext
+const IMLibContextPool = require('../../src/js/INTER-Mediator-ContextPool')
+const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
+const INTERMediator = require('../../src/js/INTER-Mediator')

@@ -26,7 +26,8 @@ $dbPassword = 'password';
 
 /* FileMaker_FX aware below:
  */
-$dbServer = '127.0.0.1';
+//$dbServer = '127.0.0.1';
+$dbServer = '10.0.1.21';
 $dbPort = '80';
 //$dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';

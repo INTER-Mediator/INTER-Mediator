@@ -17,6 +17,8 @@
 /**
  * @fileoverview IMLibElement class is defined here.
  */
+// @@IM@@IgnoringNextLine
+const IMLibFormat =  require('../../src/js/INTER-Mediator-Format')
 /**
  *
  * Usually you don't have to instanciate this class with new operator.
@@ -183,25 +185,25 @@ const IMLibElement = {
 
     if (clearField && curTarget === '') {
       switch (element.tagName) {
-        case 'INPUT':
-          switch (element.getAttribute('type')) {
-            case 'text':
-              element.value = ''
-              break
+      case 'INPUT':
+        switch (element.getAttribute('type')) {
+        case 'text':
+          element.value = ''
+          break
+        }
+        break
+      case 'SELECT':
+        break
+      default:
+        while (element.childNodes.length > 0) {
+          if (element.parentNode.getAttribute('data-im-element') === 'processed' ||
+            INTERMediatorLib.isWidgetElement(element.parentNode)) {
+            // for data-im-widget
+            return false
           }
-          break
-        case 'SELECT':
-          break
-        default:
-          while (element.childNodes.length > 0) {
-            if (element.parentNode.getAttribute('data-im-element') === 'processed' ||
-              INTERMediatorLib.isWidgetElement(element.parentNode)) {
-              // for data-im-widget
-              return false
-            }
-            element.removeChild(element.childNodes[0])
-          }
-          break
+          element.removeChild(element.childNodes[0])
+        }
+        break
       }
     }
     formattedValue = IMLibElement.getFormattedValue(element, curVal)
@@ -352,6 +354,12 @@ const IMLibElement = {
               element.checked = false
             }
           }
+        } else if (typeAttr === 'date') {
+          element.value = IMLibFormat.dateFormat(curVal, '%Y-%M-%D')
+        } else if (typeAttr === 'time') {
+          element.value = IMLibFormat.timeFormat(curVal, '%H:%I:%S')
+        } else if (typeAttr === 'datetime-local') {
+          element.value = IMLibFormat.datetimeFormat(curVal, '%Y-%M-%DT%H:%I:%S')
         } else { // this node must be text field
           element.value = curVal
         }
@@ -580,3 +588,7 @@ const IMLibElement = {
 
 // @@IM@@IgnoringRestOfFile
 module.exports = IMLibElement
+const IMLib = {nl_char: '\n'}
+const INTERMediatorLib = require('../../src/js/INTER-Mediator-Lib')
+const INTERMediator = require('../../src/js/INTER-Mediator')
+const IMLibChangeEventDispatch = require('../../src/js/INTER-Mediator-Events')
