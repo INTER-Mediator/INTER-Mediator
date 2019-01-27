@@ -251,3 +251,7 @@ var IMLibEventResponder = {
     })
   }
 }
+// @@IM@@IgnoringRestOfFile
+const INTERMediatorLib = require('../../src/js/INTER-Mediator-Lib')
+IMLibEventResponder.setup()
+module.exports = IMLibChangeEventDispatch

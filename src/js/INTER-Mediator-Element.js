@@ -17,6 +17,8 @@
 /**
  * @fileoverview IMLibElement class is defined here.
  */
+// @@IM@@IgnoringNextLine
+const IMLibFormat =  require('../../src/js/INTER-Mediator-Format')
 /**
  *
  * Usually you don't have to instanciate this class with new operator.
@@ -586,3 +588,7 @@ const IMLibElement = {
 
 // @@IM@@IgnoringRestOfFile
 module.exports = IMLibElement
+const IMLib = {nl_char: '\n'}
+const INTERMediatorLib = require('../../src/js/INTER-Mediator-Lib')
+const INTERMediator = require('../../src/js/INTER-Mediator')
+const IMLibChangeEventDispatch = require('../../src/js/INTER-Mediator-Events')
