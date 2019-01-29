@@ -1,4 +1,4 @@
-# Recipe file of Itamae for Alpine Linux 3.5/3.6/3.7/3.8, Ubuntu Server 16.04/18.04, CentOS 6/7
+# Recipe file of Itamae for Alpine Linux 3.8, Ubuntu Server 16.04/18.04, CentOS 6/7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -1835,7 +1835,7 @@ if node[:platform] == 'alpine'
   package 'dbus' do
     action :install
   end
-  package 'firefox' do
+  package 'firefox-esr' do
     action :install
   end
   package 'chromium' do
