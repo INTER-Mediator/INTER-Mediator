@@ -32,12 +32,15 @@ Ver.6-dev (in development)
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
 
-Ver.5.9-dev (in development)
+Ver.5.10-dev (in development)
+- 
+
+Ver.5.9 (January 29, 2019)
 - Reduce error messages when using PHP 7.2 and DB_FileMaker_DataAPI class.
 - [BUG FIX] Fix compatibility with PHP 5.6.40 (Thanks to Kenzo Nakata).
+- [BUG FIX] Modify GenerateJSCode.php to fix compatibility with XAMPP for Windows.
 - [BUG FIX] Fix showing images in FileMaker container fields with multibyte database name.
 - [BUG FIX] If someone loges in after self-service enrollment, enrollment info in issued hash table was eliminated.
-- [BUG FIX] Modify GenerateJSCode.php to fix compatibility with XAMPP for Windows.
 - [BUG FIX] Preserve the id attribute value of target nodes inside of THEAD or TFOOT elements in case of using Post Only mode.
 
 Ver.5.8 (November 3, 2018)
