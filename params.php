@@ -235,4 +235,4 @@ $appCurrency = "JP";    // Locale for currency has to be specified the country c
 // Port number and host name for service server
 $serviceServerPort = "11478";
 $serviceServerHost = "localhost";
-$stopSSEveryQuit = false;
+$stopSSEveryQuit = true;

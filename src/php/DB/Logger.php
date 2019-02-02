@@ -50,9 +50,25 @@ class Logger
         }
     }
 
+    public function setDebugMessages($msgs, $level = 1)
+    {
+        if ($this->debugLevel !== false && $this->debugLevel >= $level) {
+            foreach($msgs as $msg) {
+                $this->debugMessage[] = $msg;
+            }
+        }
+    }
+
     public function setErrorMessage($str)
     {
         $this->errorMessage[] = $str;
+    }
+
+    public function setErrorMessages($msgs)
+    {
+        foreach($msgs as $msg) {
+            $this->errorMessage[] = $msg;
+        }
     }
 
     function getMessagesForJS()

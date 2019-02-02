@@ -495,16 +495,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             "dbOption", "dbDSN", "pusherParameters", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
         ), true);
 
-//        $currentDir = \INTERMediator\IMUtil::pathToINTERMediator();
-//        $currentDirParam = $currentDir . 'params.php';
-//        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
-//
-//        if (file_exists($parentDirParam)) {
-//            include($parentDirParam);
-//        } else if (file_exists($currentDirParam)) {
-//            include($currentDirParam);
-//        }
-
         $this->clientPusherAvailable = (isset($this->PostData["pusher"]) && $this->PostData["pusher"] == "yes");
         $this->dbSettings->setDataSource($datasource);
         $this->dbSettings->setOptions($options);
@@ -905,6 +895,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 break;
             case 'update':
                 $this->logger->setDebugMessage("[processingRequest] start update processing", 2);
+                $this->checkValidation();
                 if (isset($tableInfo['protect-writing']) && is_array($tableInfo['protect-writing'])) {
                     $fieldArray = array();
                     $valueArray = array();
@@ -927,6 +918,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             case 'new':
             case 'create':
                 $this->logger->setDebugMessage("[processingRequest] start create processing", 2);
+                $this->checkValidation();
                 $result = $this->createInDB($bypassAuth);
                 $this->outputOfProcessing['newRecordKeyValue'] = $result;
                 $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
@@ -937,6 +929,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 break;
             case 'copy':
                 $this->logger->setDebugMessage("[processingRequest] start copy processing", 2);
+                $this->checkValidation();
                 $result = $this->copyInDB($this->dbSettings->getDataSourceName());
                 $this->outputOfProcessing['newRecordKeyValue'] = $result;
                 $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
@@ -1354,6 +1347,37 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 //        }
         return $result;
     }
+
+    private function checkValidation()
+    {
+        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
+        if (isset($tableInfo['validation'])) {
+
+            $reqestedFieldValue = [];
+            $counter = 0;
+            $fieldValues = $this->dbSettings->getValue();
+            foreach ($this->dbSettings->getFieldsRequired() as $field) {
+                $value = $fieldValues[$counter];
+                $reqestedFieldValue[$field] = (is_array($value)) ? implode("\n", $value) : $value;
+                $counter++;
+            }
+
+            $serviceServer = \INTERMediator\ServiceServerProxy::instance();
+            foreach ($tableInfo['validation'] as $entry) {
+                if (array_key_exists($entry['field'], $reqestedFieldValue)) {
+                    $this->logger->setDebugMessage("Validation: field={$entry['field']}, rule={$entry['rule']}:", 2);
+                    if($serviceServer->validate($entry['rule'],["value"=>$reqestedFieldValue[$entry['field']]])){
+
+                    }
+                }
+            }
+            $this->logger->setDebugMessages($serviceServer->getMessages(),2);
+            $this->logger->setErrorMessages($serviceServer->getErrors());
+            $serviceServer->clearMessages();
+            $serviceServer->clearErrors();
+        }
+    }
+
 
     public function setupConnection()
     {
