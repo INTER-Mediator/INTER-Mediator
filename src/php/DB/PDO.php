@@ -430,6 +430,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
 
         // Query
         $result = $this->link->query($sql);
+
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
             return array();
@@ -457,7 +458,6 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $this->mainTableCount = count($sqlResult);
             $this->mainTableTotalCount = count($sqlResult);
         }
-
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] == 'load' || $condition['db-operation'] == 'read') {

@@ -178,6 +178,7 @@ const INTERMediator_DBAdapter = {
                 if (failedProc) {
                   failedProc(new Error('_im_communication_error_'))
                 }
+                INTERMediatorLog.flushMessage()
                 return
               }
               resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0

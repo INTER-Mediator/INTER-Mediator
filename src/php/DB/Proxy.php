@@ -90,15 +90,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     public function exportOutputDataAsJSON()
     {
-        if (((float)phpversion()) >= 5.3) {
-            echo json_encode($this->outputOfProcessing, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+        $jsonString = json_encode($this->outputOfProcessing,
+            JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+        if ($jsonString === false) {
+            echo json_encode(['errorMessages' => ['json_encode function failed by: ' .
+                json_last_error_msg()]]);
         } else {
-            $this->outputOfProcessing = str_replace(
-                array('\"', '&', '\'', '<', '>'),
-                array('\u0022', '\u0026', '\u0027', '\u003C', '\u003E'),
-                json_encode($this->outputOfProcessing)
-            );
-            echo $this->outputOfProcessing;
+            echo $jsonString;
         }
     }
 
@@ -577,7 +575,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
 
         /* Setup Database Class's Object */
-//        require_once("{$dbClassName}.php");
         $isDBClassNull = is_null($this->dbClass);
         if ($isDBClassNull) {
             $this->dbClass = new $dbClassName();
@@ -613,7 +610,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $challengeDSN = $params['issuedHashDSN'];
         }
         if (!is_null($challengeDSN)) {
-            //require_once("PDO.php
             $this->authDbClass = new PDO();
             $this->authDbClass->setUpSharedObjects($this);
             $this->authDbClass->setupWithDSN($challengeDSN);
@@ -626,7 +622,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
         $this->dbSettings->notifyServer = null;
         if ($this->clientPusherAvailable) {
-            //require_once("NotifyServer.php");
             $this->dbSettings->notifyServer = new NotifyServer();
             if (isset($this->PostData['notifyid'])
                 && $this->dbSettings->notifyServer->initialize($this->authDbClass, $this->dbSettings, $this->PostData['notifyid'])
