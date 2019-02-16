@@ -47,11 +47,11 @@ var INTERMediator_DBAdapter = {
                     // require 2048-bit key length at least
                     encrypt.setPublicKey(INTERMediatorOnPage.publickey);
                     encrypted = encrypt.encrypt(
-                        INTERMediatorOnPage.authCryptedPassword.substr(0, 220) +
+                        INTERMediatorOnPage.authCryptedPassword /*.substr(0, 220) */ +
                         IMLib.nl_char + INTERMediatorOnPage.authChallenge
                     );
                     authParams += '&cresponse=' + encodeURIComponent(encrypted +
-                            IMLib.nl_char + INTERMediatorOnPage.authCryptedPassword.substr(220));
+                            IMLib.nl_char + INTERMediatorOnPage.authCryptedPassword /* .substr(220)*/ );
                     if (INTERMediator_DBAdapter.debugMessage) {
                         INTERMediatorLog.setDebugMessage('generate_authParams/authCryptedPassword=' +
                             INTERMediatorOnPage.authCryptedPassword);

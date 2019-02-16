@@ -11,7 +11,10 @@ Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.5.10-dev (in development)
-
+- In the PDO connection string for MySQL uses host=localhost instead of unix_socket=.
+- [BUG FIX] RSA parameters for phpseclib v2 are set as the correct description with const parameters.
+- [BUG FIX] New LDAP user couldn't log in after Ver.5.8.
+- [BUG FIX] New LDAP user required 2 log-in trial after Ver.5.2.
 
 Ver.5.9 (January 29, 2019)
 - Reduce error messages when using PHP 7.2 and DB_FileMaker_DataAPI class.
@@ -59,7 +62,7 @@ Ver.5.8 (November 3, 2018)
 - [BUG FIX] INTERMediatorLib.getParentRepeaters works in case of parameter node isn't target node.
 - [BUG FIX] Fix portal access mode for FileMaker Server in some cases (depending on the status of enclosures
   and repeaters).
-- [BUG FIX] Fix INTERMediator.isIE property to detect Internet Explorer 11 (Change false to true if using 
+- [BUG FIX] Fix INTERMediator.isIE property to detect Internet Explorer 11 (Change false to true if using
   Internet Explorer 11).
 - [BUG FIX] Fix making a temporary file internally in MediaAccess.php for outputting multiple images.
 

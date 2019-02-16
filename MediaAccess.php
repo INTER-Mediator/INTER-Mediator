@@ -199,7 +199,7 @@ class MediaAccess
                 $rsa = new $rsaClass;
                 $rsa->setPassword($passPhrase);
                 $rsa->loadKey($generatedPrivateKey);
-                $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
+                $rsa->setEncryptionMode((IMUtil::phpVersion() < 6) ? CRYPT_RSA_ENCRYPTION_PKCS1 : $rsaClass::ENCRYPTION_PKCS1);
 
                 $cookieNameUser = '_im_username';
                 $cookieNamePassword = '_im_crypted';
@@ -481,7 +481,7 @@ class MediaAccess
                         }
                         imagedestroy($image);
                     }
-                    
+
                     unlink($tempPath);
                 }
             }

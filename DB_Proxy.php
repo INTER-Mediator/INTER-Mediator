@@ -841,6 +841,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                                 $this->logger->setDebugMessage("LDAP Authentication succeed.");
                                 $authSucceed = true;
                                 $this->addUser($signedUser, $password, true);
+                                if ($this->checkAuthorization($signedUser, $this->paramResponse, $this->clientId)) {
+                                    $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+                                    $authSucceed = true;
+                                }
                             }
                         }
                     }
@@ -1057,7 +1061,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $rsa = new $rsaClass;
         $rsa->setPassword($passPhrase);
         $rsa->loadKey($generatedPrivateKey);
-        $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
+        $rsa->setEncryptionMode((IMUtil::phpVersion() < 6) ? CRYPT_RSA_ENCRYPTION_PKCS1 : $rsaClass::ENCRYPTION_PKCS1);
         $token = isset($_SESSION['FM-Data-token']) ? $_SESSION['FM-Data-token'] : '';
         $array = explode("\n", $paramCryptResponse);
         if (strlen($array[0]) > 0 && isset($array[1]) && strlen($array[1]) > 0) {
