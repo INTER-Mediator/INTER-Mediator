@@ -199,7 +199,8 @@ class MediaAccess
                 $rsa = new $rsaClass;
                 $rsa->setPassword($passPhrase);
                 $rsa->loadKey($generatedPrivateKey);
-                $rsa->setEncryptionMode((IMUtil::phpVersion() < 6) ? CRYPT_RSA_ENCRYPTION_PKCS1 : $rsaClass::ENCRYPTION_PKCS1);
+                $rsa->setEncryptionMode((IMUtil::phpVersion() < 6) ? CRYPT_RSA_ENCRYPTION_PKCS1 :
+                    2 /* This should be '$rsaClass::ENCRYPTION_PKCS1', but PHP 5.2 reports error. */);
 
                 $cookieNameUser = '_im_username';
                 $cookieNamePassword = '_im_crypted';

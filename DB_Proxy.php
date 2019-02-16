@@ -1061,7 +1061,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $rsa = new $rsaClass;
         $rsa->setPassword($passPhrase);
         $rsa->loadKey($generatedPrivateKey);
-        $rsa->setEncryptionMode((IMUtil::phpVersion() < 6) ? CRYPT_RSA_ENCRYPTION_PKCS1 : $rsaClass::ENCRYPTION_PKCS1);
+        $rsa->setEncryptionMode((IMUtil::phpVersion() < 6) ? CRYPT_RSA_ENCRYPTION_PKCS1 :
+            2 /* This should be '$rsaClass::ENCRYPTION_PKCS1', but PHP 5.2 reports error. */);
         $token = isset($_SESSION['FM-Data-token']) ? $_SESSION['FM-Data-token'] : '';
         $array = explode("\n", $paramCryptResponse);
         if (strlen($array[0]) > 0 && isset($array[1]) && strlen($array[1]) > 0) {
