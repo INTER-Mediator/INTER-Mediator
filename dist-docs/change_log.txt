@@ -15,6 +15,7 @@ Ver.5.10-dev (in development)
 - [BUG FIX] RSA parameters for phpseclib v2 are set as the correct description with const parameters.
 - [BUG FIX] New LDAP user couldn't log in after Ver.5.8.
 - [BUG FIX] New LDAP user required 2 log-in trial after Ver.5.2.
+- [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
 
 Ver.5.9 (January 29, 2019)
 - Reduce error messages when using PHP 7.2 and DB_FileMaker_DataAPI class.
