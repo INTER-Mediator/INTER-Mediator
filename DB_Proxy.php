@@ -829,18 +829,22 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($this->paramAuthUser);
 
                     $authSucceed = false;
-                    if ($this->checkAuthorization($signedUser, $this->paramResponse, $this->clientId)) {
+                    $ldap = new LDAPAuth();
+                    $ldap->setLogger($this->logger);
+                    if ($this->checkAuthorization($signedUser, $this->paramResponse, $this->clientId, $ldap->isActive)) {
                         $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
                         $authSucceed = true;
                     } else {
-                        $ldap = new LDAPAuth();
-                        $ldap->setLogger($this->logger);
                         if ($ldap->isActive) {
                             list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
                             if ($ldap->bindCheck($signedUser, $password)) {
                                 $this->logger->setDebugMessage("LDAP Authentication succeed.");
                                 $authSucceed = true;
                                 $this->addUser($signedUser, $password, true);
+                                if ($this->checkAuthorization($signedUser, $this->paramResponse, $this->clientId, $ldap->isActive)) {
+                                    $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+                                    $authSucceed = true;
+                                }
                             }
                         }
                     }
@@ -1057,7 +1061,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $rsa = new $rsaClass;
         $rsa->setPassword($passPhrase);
         $rsa->loadKey($generatedPrivateKey);
-        $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
+        $rsa->setEncryptionMode((IMUtil::phpVersion() < 6) ? CRYPT_RSA_ENCRYPTION_PKCS1 :
+            2 /* This should be '$rsaClass::ENCRYPTION_PKCS1', but PHP 5.2 reports error. */);
         $token = isset($_SESSION['FM-Data-token']) ? $_SESSION['FM-Data-token'] : '';
         $array = explode("\n", $paramCryptResponse);
         if (strlen($array[0]) > 0 && isset($array[1]) && strlen($array[1]) > 0) {
@@ -1164,10 +1169,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      * @param $clientId
      * @return bool
      */
-    function checkAuthorization($username, $hashedvalue, $clientId)
+    function checkAuthorization($username, $hashedvalue, $clientId, $isLDAP = false)
     {
         $this->logger->setDebugMessage(
-            "[checkAuthorization]user=${username}, paramResponse={$hashedvalue}, clientid={$clientId}", 2);
+            "[checkAuthorization]user=${username}, paramResponse={$hashedvalue}, clientid={$clientId}, isLDAP={$isLDAP}", 2);
         $returnValue = false;
 
         $this->authDbClass->authHandler->authSupportRemoveOutdatedChallenges();
@@ -1175,7 +1180,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($username);
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($signedUser);
         $this->logger->setDebugMessage("[checkAuthorization]uid={$uid}", 2);
-        if ($uid < 0) {
+        if ($uid <= 0) {
+            return $returnValue;
+        }
+        if ($isLDAP && !$this->dbClass->authHandler->authSupportIsWithinLDAPLimit($uid)) {
             return $returnValue;
         }
         $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge($uid, $clientId);
@@ -1223,6 +1231,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function checkMediaToken($user, $token)
     {
+        $this->logger->setDebugMessage("[checkMediaToken] user={$user}, token={$toke}", 2);
         $returnValue = false;
         $this->authDbClass->authHandler->authSupportRemoveOutdatedChallenges();
         // Database user mode is user_id=0
@@ -1242,10 +1251,12 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function addUser($username, $password, $isLDAP = false)
     {
+        $this->logger->setDebugMessage("[addUser] username={$username}, isLDAP={$isLDAP}", 2);
         $salt = $this->generateSalt();
         $hexSalt = bin2hex($salt);
         $returnValue = $this->dbClass->authHandler->authSupportCreateUser(
             $username, sha1($password . $salt) . $hexSalt, $isLDAP, $password);
+        $this->logger->setDebugMessage("[addUser] authSupportCreateUser returns: {$returnValue}", 2);
         return $returnValue;
     }
 

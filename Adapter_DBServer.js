@@ -51,7 +51,7 @@ var INTERMediator_DBAdapter = {
                         IMLib.nl_char + INTERMediatorOnPage.authChallenge
                     );
                     authParams += '&cresponse=' + encodeURIComponent(encrypted +
-                            IMLib.nl_char + INTERMediatorOnPage.authCryptedPassword.substr(220));
+                        IMLib.nl_char + INTERMediatorOnPage.authCryptedPassword.substr(220));
                     if (INTERMediator_DBAdapter.debugMessage) {
                         INTERMediatorLog.setDebugMessage('generate_authParams/authCryptedPassword=' +
                             INTERMediatorOnPage.authCryptedPassword);
@@ -233,68 +233,94 @@ var INTERMediator_DBAdapter = {
             myRequest.setRequestHeader('X-From', location.href);
             myRequest.onreadystatechange = function () {
                 switch (myRequest.readyState) {
-                case 0: // Unsent
-                    break;
-                case 1: // Opened
-                    break;
-                case 2: // Headers Received
-                    break;
-                case 3: // Loading
-                    break;
-                case 4:
-                    try {
-                        jsonObject = JSON.parse(myRequest.responseText);
-                    } catch (ex) {
-                        INTERMediatorLog.setErrorMessage('Communication Error: ' + myRequest.responseText);
-                        if (failedProc) {
-                            failedProc(new Error('_im_communication_error_'));
+                    case 0: // Unsent
+                        break;
+                    case 1: // Opened
+                        break;
+                    case 2: // Headers Received
+                        break;
+                    case 3: // Loading
+                        break;
+                    case 4:
+                        try {
+                            jsonObject = JSON.parse(myRequest.responseText);
+                        } catch (ex) {
+                            INTERMediatorLog.setErrorMessage('Communication Error: ' + myRequest.responseText);
+                            if (failedProc) {
+                                failedProc(new Error('_im_communication_error_'));
+                            }
+                            return;
                         }
-                        return;
-                    }
-                    resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
-                    totalCount = jsonObject.totalCount ? jsonObject.totalCount : null;
-                    dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
-                    requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false;
-                    challenge = jsonObject.challenge ? jsonObject.challenge : null;
-                    clientid = jsonObject.clientid ? jsonObject.clientid : null;
-                    newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : '';
-                    changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null;
-                    mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
-                    notifySupport = jsonObject.notifySupport;
-                    for (i = 0; i < jsonObject.errorMessages.length; i++) {
-                        INTERMediatorLog.setErrorMessage(jsonObject.errorMessages[i]);
-                    }
-                    for (i = 0; i < jsonObject.debugMessages.length; i++) {
-                        INTERMediatorLog.setDebugMessage(jsonObject.debugMessages[i]);
-                    }
-                    useNull = jsonObject.usenull;
-                    registeredID = jsonObject.hasOwnProperty('registeredid') ? jsonObject.registeredid : '';
+                        resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
+                        totalCount = jsonObject.totalCount ? jsonObject.totalCount : null;
+                        dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
+                        requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false;
+                        challenge = jsonObject.challenge ? jsonObject.challenge : null;
+                        clientid = jsonObject.clientid ? jsonObject.clientid : null;
+                        newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : '';
+                        changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null;
+                        mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
+                        notifySupport = jsonObject.notifySupport;
+                        for (i = 0; i < jsonObject.errorMessages.length; i++) {
+                            INTERMediatorLog.setErrorMessage(jsonObject.errorMessages[i]);
+                        }
+                        for (i = 0; i < jsonObject.debugMessages.length; i++) {
+                            INTERMediatorLog.setDebugMessage(jsonObject.debugMessages[i]);
+                        }
+                        useNull = jsonObject.usenull;
+                        registeredID = jsonObject.hasOwnProperty('registeredid') ? jsonObject.registeredid : '';
 
-                    if (jsonObject.errorMessages.length > 0) {
-                        INTERMediatorLog.setErrorMessage('Communication Error: ' + jsonObject.errorMessages);
-                        if (failedProc) {
-                            failedProc();
+                        if (jsonObject.errorMessages.length > 0) {
+                            INTERMediatorLog.setErrorMessage('Communication Error: ' + jsonObject.errorMessages);
+                            if (failedProc) {
+                                failedProc();
+                            }
+                            throw 'Communication Error';
                         }
-                        throw 'Communication Error';
-                    }
 
-                    INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
-                        challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);
-                    INTERMediator_DBAdapter.store_challenge(challenge);
-                    if (clientid !== null) {
-                        INTERMediatorOnPage.clientId = clientid;
-                    }
-                    if (mediatoken !== null) {
-                        INTERMediatorOnPage.mediaToken = mediatoken;
-                    }
-                    // This is forced fail-over for the password was changed in LDAP auth.
-                    if (INTERMediatorOnPage.isLDAP === true &&
-                        INTERMediatorOnPage.authUserHexSalt !== INTERMediatorOnPage.authHashedPassword.substr(-8, 8)) {
-                        if (accessURL !== 'access=challenge') {
-                            requireAuth = true;
+                        INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
+                            challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);
+                        INTERMediator_DBAdapter.store_challenge(challenge);
+                        if (clientid !== null) {
+                            INTERMediatorOnPage.clientId = clientid;
                         }
-                    }
-                    if (accessURL.indexOf('access=changepassword&newpass=') === 0) {
+                        if (mediatoken !== null) {
+                            INTERMediatorOnPage.mediaToken = mediatoken;
+                        }
+                        // This is forced fail-over for the password was changed in LDAP auth.
+                        if (INTERMediatorOnPage.isLDAP === true &&
+                            INTERMediatorOnPage.authUserHexSalt !== INTERMediatorOnPage.authHashedPassword.substr(-8, 8)) {
+                            if (accessURL !== 'access=challenge') {
+                                requireAuth = true;
+                            }
+                        }
+                        if (accessURL.indexOf('access=changepassword&newpass=') === 0) {
+                            if (successProc) {
+                                successProc({
+                                    dbresult: dbresult,
+                                    resultCount: resultCount,
+                                    totalCount: totalCount,
+                                    newRecordKeyValue: newRecordKeyValue,
+                                    newPasswordResult: changePasswordResult,
+                                    registeredId: registeredID,
+                                    nullAcceptable: useNull
+                                });
+                            }
+                            return;
+                        }
+                        if (requireAuth) {
+                            INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.');
+                            INTERMediatorOnPage.clearCredentials();
+                            if (authAgainProc) {
+                                authAgainProc(myRequest);
+                            }
+                            return;
+                        }
+                        if (!accessURL.match(/access=challenge/)) {
+                            INTERMediatorOnPage.authCount = 0;
+                        }
+                        INTERMediatorOnPage.storeCredentialsToCookieOrStorage();
+                        INTERMediatorOnPage.notifySupport = notifySupport;
                         if (successProc) {
                             successProc({
                                 dbresult: dbresult,
@@ -306,33 +332,7 @@ var INTERMediator_DBAdapter = {
                                 nullAcceptable: useNull
                             });
                         }
-                        return;
-                    }
-                    if (requireAuth) {
-                        INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.');
-                        INTERMediatorOnPage.clearCredentials();
-                        if (authAgainProc) {
-                            authAgainProc(myRequest);
-                        }
-                        return;
-                    }
-                    if (!accessURL.match(/access=challenge/)) {
-                        INTERMediatorOnPage.authCount = 0;
-                    }
-                    INTERMediatorOnPage.storeCredentialsToCookieOrStorage();
-                    INTERMediatorOnPage.notifySupport = notifySupport;
-                    if (successProc) {
-                        successProc({
-                            dbresult: dbresult,
-                            resultCount: resultCount,
-                            totalCount: totalCount,
-                            newRecordKeyValue: newRecordKeyValue,
-                            newPasswordResult: changePasswordResult,
-                            registeredId: registeredID,
-                            nullAcceptable: useNull
-                        });
-                    }
-                    break;
+                        break;
                 }
             };
             myRequest.send(accessURL + authParams);
@@ -431,11 +431,11 @@ var INTERMediator_DBAdapter = {
             fd.append('_im_uploadfile', uploadingFile.content);
             myRequest.onreadystatechange = function () {
                 switch (myRequest.readyState) {
-                case 3:
-                    break;
-                case 4:
-                    INTERMediator_DBAdapter.uploadFileAfterSucceed(myRequest, doItOnFinish, exceptionProc, false);
-                    break;
+                    case 3:
+                        break;
+                    case 4:
+                        INTERMediator_DBAdapter.uploadFileAfterSucceed(myRequest, doItOnFinish, exceptionProc, false);
+                        break;
                 }
             };
             myRequest.send(fd);
@@ -506,7 +506,6 @@ var INTERMediator_DBAdapter = {
     /*
      db_query
      Querying from database. The parameter of this function should be the object as below:
-
      {
      name:<name of the context>
      records:<the number of retrieving records, could be null>
@@ -517,7 +516,6 @@ var INTERMediator_DBAdapter = {
      uselimit:<true/false whether the limit parameter is set on the query.>
      primaryKeyOnly: true/false
      }
-
      This function returns recordset of retrieved.
      */
     db_query: function (args) {
@@ -681,7 +679,7 @@ var INTERMediator_DBAdapter = {
         } else {
             if (parseInt(args.records, 10) === 0 &&
                 (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX' ||
-                INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI')) {
+                    INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI')) {
                 params = 'access=describe&name=' + encodeURIComponent(args.name);
             } else {
                 params = 'access=read&name=' + encodeURIComponent(args.name);
@@ -849,7 +847,6 @@ var INTERMediator_DBAdapter = {
     /*
      db_update
      Update the database. The parameter of this function should be the object as below:
-
      {   name:<Name of the Context>
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records>
      dataset:<the array of the object {field:xx,value:xx}. each value will be set to the field.> }
@@ -989,7 +986,6 @@ var INTERMediator_DBAdapter = {
     /*
      db_delete
      Delete the record. The parameter of this function should be the object as below:
-
      {   name:<Name of the Context>
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
      */
@@ -1114,10 +1110,8 @@ var INTERMediator_DBAdapter = {
     /*
      db_createRecord
      Create a record. The parameter of this function should be the object as below:
-
      {   name:<Name of the Context>
      dataset:<the array of the object {field:xx,value:xx}. Initial value for each field> }
-
      This function returns the value of the key field of the new record.
      */
     db_createRecord: function (args) {
