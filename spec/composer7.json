@@ -25,7 +25,8 @@
     "swiftmailer/swiftmailer": "*"
   },
   "require-dev": {
-    "matthiasmullie/minify": "1.3.*"
+    "matthiasmullie/minify": "1.3.*",
+    "phpunit/phpunit": "*"
   },
   "autoload": {
     "psr-4": {
@@ -62,7 +63,7 @@
       "./vendor/bin/phpunit --bootstrap src/vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
     ],
     "post-update-cmd": [
-      "./vendor/bin/npm install"
+      "./vendor/bin/npm --save-dev install"
     ],
     "post-create-project-cmd": [
       "mkdir -p ../398A6028-0181-4B75-BFD9-1C094B5ADD9F",
