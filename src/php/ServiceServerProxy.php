@@ -94,7 +94,11 @@ class ServiceServerProxy
 
     public function isActive()
     {
+        $this->messages[] = $this->messageHead . 'Check server working:';
+
         $result = $this->callServer("info");
+        $this->messages[] = $this->messageHead . 'Server returns:' . $result;
+
         if (!$result) {
             return false;
         }
@@ -127,8 +131,6 @@ class ServiceServerProxy
 
     private function startServer()
     {
-        openlog("INTER-Mediator_ServiceServer", LOG_PID | LOG_PERROR, LOG_USER);
-
         $imPath = IMUtil::pathToINTERMediator();
 
         $script = file_get_contents($this->foreverPath);
@@ -137,12 +139,12 @@ class ServiceServerProxy
         $logFile = tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
         $cmd = "'{$this->foreverPath}' start -a -l {$logFile} --minUptime 5000 --spinSleepTime 5000 " .
             "'{$imPath}/src/js/Service_Server.js' {$this->paramsPort}";
-        syslog(LOG_INFO, "Command:$cmd");
+        $this->messages[] = $this->messageHead . "Command: {$cmd}";
         $result = [];
         $returnValue = 0;
         exec($cmd, $result, $returnValue);
 
-        syslog(LOG_INFO, "Returns:$returnValue, Output:" . implode("/", $result));
+        $this->messages[] = $this->messageHead . "Returns: {$returnValue}, Output:" . implode("/", $result);
         //closelog();
         return true;
     }
@@ -152,15 +154,16 @@ class ServiceServerProxy
         if ($this->paramsQuit) {
             $imPath = IMUtil::pathToINTERMediator();
             $cmd = "'{$this->foreverPath}' stopall";
-            syslog(LOG_INFO, "Command:$cmd");
+            $this->messages[] = $this->messageHead . "Command: {$cmd}";
             exec($cmd, $result, $returnValue);
-            syslog(LOG_INFO, "Returns:$returnValue, Output:" . implode("/", $result));
+            $this->messages[] = $this->messageHead . "Returns: {$returnValue}, Output:" . implode("/", $result);
         }
-        closelog();
     }
 
     public function validate($expression, $values)
     {
+        $this->messages[] = $this->messageHead . 'Validation start:' . $expression . ' with ' . var_export($values, true);
+
         $result = $this->callServer("eval", ["expression" => $expression, "values" => $values]);
         if (!$result) {
             return false;
