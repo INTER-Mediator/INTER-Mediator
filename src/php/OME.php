@@ -522,15 +522,15 @@ class OME
             if ($this->senderAddress != null) {
                 $message->setFrom([$this->senderAddress]);
             }
-            $addArray = explode(',', $this->toField);
+            $addArray = $this->recepientsArray(explode(',', $this->toField));
             if (count($addArray) > 0) {
                 $message->setTo($addArray);
             }
-            $addArray = explode(',', $this->ccField);
+            $addArray = $this->recepientsArray(explode(',', $this->ccField));
             if (count($addArray) > 0) {
                 $message->setCc($addArray);
             }
-            $addArray = explode(',', $this->bccField);
+            $addArray = $this->recepientsArray(explode(',', $this->bccField));
             if (count($addArray) > 0) {
                 $message->setBcc($addArray);
             }
@@ -572,6 +572,25 @@ class OME
 //            $this->errorMessage = var_export($smtp->smtp_log, true) . '\n' . var_export($smtp->error_stack, true);
         }
         return $resultMail;
+    }
+
+    private function recepientsArray($ar)
+    {
+        $result = [];
+        foreach ($ar as $item) {
+            if (preg_match('([^<]*)<([^>])+>', $item, $matched) === 1) {
+                $name = trim($matched[1]);
+                $addr = $matched[2];
+                if (strlen($name) > 0) {
+                    $result[$name] = $addr;
+                } else {
+                    $result[] = $addr;
+                }
+            } else {
+                $result[] = $item;
+            }
+        }
+        return $result;
     }
 
     /**    文字列を別メソッドで決められたバイト数ごとに分割する。ワードラップ、禁則を考慮する。（内部利用メソッド）
