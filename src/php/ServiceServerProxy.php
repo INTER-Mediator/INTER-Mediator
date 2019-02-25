@@ -70,7 +70,7 @@ class ServiceServerProxy
 
     public function checkServiceServer()
     {
-        $waitSec = 5;
+        $waitSec = 2;
         $startDT = new \DateTime();
         $counterInit = $counter = 10;
         while (!$this->isActive()) {

@@ -894,33 +894,39 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 break;
             case 'update':
                 $this->logger->setDebugMessage("[processingRequest] start update processing", 2);
-                $this->checkValidation();
-                if (isset($tableInfo['protect-writing']) && is_array($tableInfo['protect-writing'])) {
-                    $fieldArray = array();
-                    $valueArray = array();
-                    $counter = 0;
-                    $fieldValues = $this->dbSettings->getValue();
-                    foreach ($this->dbSettings->getFieldsRequired() as $field) {
-                        if (!in_array($field, $tableInfo['protect-writing'])) {
-                            $fieldArray[] = $field;
-                            $valueArray[] = $fieldValues[$counter];
+                if ($this->checkValidation()) {
+                    if (isset($tableInfo['protect-writing']) && is_array($tableInfo['protect-writing'])) {
+                        $fieldArray = array();
+                        $valueArray = array();
+                        $counter = 0;
+                        $fieldValues = $this->dbSettings->getValue();
+                        foreach ($this->dbSettings->getFieldsRequired() as $field) {
+                            if (!in_array($field, $tableInfo['protect-writing'])) {
+                                $fieldArray[] = $field;
+                                $valueArray[] = $fieldValues[$counter];
+                            }
+                            $counter++;
                         }
-                        $counter++;
+                        $this->dbSettings->setFieldsRequired($fieldArray);
+                        $this->dbSettings->setValue($valueArray);
                     }
-                    $this->dbSettings->setFieldsRequired($fieldArray);
-                    $this->dbSettings->setValue($valueArray);
+                    $this->dbClass->requireUpdatedRecord(true);
+                    $this->updateDB();
+                    $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
+                } else {
+                    $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
                 }
-                $this->dbClass->requireUpdatedRecord(true);
-                $this->updateDB();
-                $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
                 break;
             case 'new':
             case 'create':
                 $this->logger->setDebugMessage("[processingRequest] start create processing", 2);
-                $this->checkValidation();
-                $result = $this->createInDB($bypassAuth);
-                $this->outputOfProcessing['newRecordKeyValue'] = $result;
-                $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
+                if ($this->checkValidation()) {
+                    $result = $this->createInDB($bypassAuth);
+                    $this->outputOfProcessing['newRecordKeyValue'] = $result;
+                    $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
+                } else {
+                    $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
+                }
                 break;
             case 'delete':
                 $this->logger->setDebugMessage("[processingRequest] start delete processing", 2);
@@ -928,10 +934,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 break;
             case 'copy':
                 $this->logger->setDebugMessage("[processingRequest] start copy processing", 2);
-                $this->checkValidation();
-                $result = $this->copyInDB($this->dbSettings->getDataSourceName());
-                $this->outputOfProcessing['newRecordKeyValue'] = $result;
-                $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
+                if ($this->checkValidation()) {
+                    $result = $this->copyInDB($this->dbSettings->getDataSourceName());
+                    $this->outputOfProcessing['newRecordKeyValue'] = $result;
+                    $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
+                } else {
+                    $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
+                }
                 break;
             case 'challenge':
                 break;
@@ -1369,11 +1378,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
 
             $serviceServer = \INTERMediator\ServiceServerProxy::instance();
+            $inValid = false;
             foreach ($tableInfo['validation'] as $entry) {
                 if (array_key_exists($entry['field'], $reqestedFieldValue)) {
                     $this->logger->setDebugMessage("Validation: field={$entry['field']}, rule={$entry['rule']}:", 2);
-                    if ($serviceServer->validate($entry['rule'], ["value" => $reqestedFieldValue[$entry['field']]])) {
-
+                    if (!$serviceServer->validate($entry['rule'], ["value" => $reqestedFieldValue[$entry['field']]])) {
+                        $inValid = true;
                     }
                 }
             }
@@ -1381,6 +1391,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->logger->setErrorMessages($serviceServer->getErrors());
             $serviceServer->clearMessages();
             $serviceServer->clearErrors();
+            return !$inValid;
         }
     }
 
