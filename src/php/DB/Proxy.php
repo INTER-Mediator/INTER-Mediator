@@ -835,7 +835,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($this->paramAuthUser);
 
                     $authSucceed = false;
-                    $ldap = new LDAPAuth();
+                    $ldap = new \INTERMediator\LDAPAuth();
                     $ldap->setLogger($this->logger);
                     if ($this->checkAuthorization($signedUser, $this->paramResponse, $this->clientId, $ldap->isActive)) {
                         $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
