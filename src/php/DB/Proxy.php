@@ -181,7 +181,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
 
         } catch (\Exception $e) {
-            $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
+            $this->logger->setErrorMessage("Exception:[1] {$e->getMessage()}");
             return false;
         }
         return $result;
@@ -276,7 +276,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
+            $this->logger->setErrorMessage("Exception:[2] {$e->getMessage()}");
             return false;
         }
         return $result;
@@ -340,7 +340,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
+            $this->logger->setErrorMessage("Exception:[3] {$e->getMessage()}");
             return false;
         }
         return $resultOfCreate;
@@ -394,7 +394,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
+            $this->logger->setErrorMessage("Exception:[4] {$e->getMessage()}");
             return false;
         }
         return $result;
@@ -437,7 +437,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
+            $this->logger->setErrorMessage("Exception:[5] {$e->getMessage()}");
             return false;
         }
         return $result;

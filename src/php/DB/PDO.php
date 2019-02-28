@@ -193,7 +193,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $escapedField = $this->handler->quotedEntityName($condition['field']);
                     $condition = $this->normalizedCondition($condition);
                     if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                        throw new \Exception("Invalid Operator.");
+                        throw new \Exception("Invalid Operator: {$condition['operator']}");
                     }
                     if (isset($condition['value']) && !is_null($condition['value'])) {
                         $escapedValue = $this->link->quote($condition['value']);
@@ -778,7 +778,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
         $queryClause = $this->getWhereClause('delete', false, true, $signedUser);
         if ($queryClause == '') {
-            $this->errorMessageStore('Don\'t delete with no ciriteria.');
+            $this->errorMessageStore('Don\'t delete with no ciriteria. queryClause='.$queryClause);
             return false;
         }
         $sql = "{$this->handler->sqlDELETECommand()}{$tableName} WHERE {$queryClause}";
