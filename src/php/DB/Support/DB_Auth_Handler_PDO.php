@@ -13,7 +13,9 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\DB\Support;
+
 use \PDO;
 
 class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
@@ -180,7 +182,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $expireSeconds = $this->dbSettings->getExpiringSeconds();
         $currentDTStr = $this->dbClass->link->quote(\INTERMediator\IMUtil::currentDTString($expireSeconds));
         $longBeforeDTStr = $this->dbClass->link->quote(\INTERMediator\IMUtil::currentDTString(3600 * 24 * 3));
-        $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$hashTable} WHERE".
+        $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$hashTable} WHERE" .
             " (clienthost IS NOT NULL AND expired < {$currentDTStr}) OR (expired < {$longBeforeDTStr})";
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
@@ -284,6 +286,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      */
     public function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null)
     {
+        $this->logger->setDebugMessage("[authSupportCreateUser] username={$username}, isLDAP={$isLDAP}", 2);
         $userTable = $this->dbSettings->getUserTable();
         if ($isLDAP !== true) {
             if ($this->authSupportRetrieveHashedPassword($username) !== false) {
@@ -315,15 +318,18 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
                 $this->dbClass->errorMessageStore('Select:' . $sql);
                 return false;
             }
-            $this->logger->setDebugMessage("[authSupportCreateUser] {$sql}");
+            $this->logger->setDebugMessage("[authSupportCreateUser-LDAP] {$sql}, LDAP expiring={$this->dbSettings->getLDAPExpiringSeconds()}");
             foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
                 if (isset($row['limitdt']) && !is_null($row['limitdt'])) {
-                    if (time() - strtotime($row['limitdt']) > $this->dbSettings->getLDAPExpiringSeconds()) {
+                    if (IMUtil::secondsFromNow($row['limitdt']) > $this->dbSettings->getLDAPExpiringSeconds()) {
+                        $this->logger->setDebugMessage("[authSupportCreateUser-LDAP] Over Limit Datetime.");
                         $timeUp = true;
                         $hpw = $row['hashedpasswd'];
+                        $this->logger->setDebugMessage("[authSupportCreateUser-LDAP] Detect hashedpasswd={$hpw}");
                     }
                 }
                 $user_id = $row['id'];
+                $this->logger->setDebugMessage("[authSupportCreateUser-LDAP] Detect user id={$user_id}");
             }
             $currentDTFormat = \INTERMediator\IMUtil::currentDTString();
             if ($user_id > 0) {
@@ -337,7 +343,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
                 }
                 $sql = "{$this->dbClass->handler->sqlUPDATECommand()}{$userTable} SET {$setClause} WHERE id=" . $user_id;
                 $result = $this->dbClass->link->query($sql);
-                $this->logger->setDebugMessage("[authSupportCreateUser] {$sql}");
+                $this->logger->setDebugMessage("[authSupportCreateUser-LDAP] {$sql}");
                 if ($result === false) {
                     $this->dbClass->errorMessageStore('Update:' . $sql);
                     return false;
@@ -356,7 +362,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
                     $this->dbClass->errorMessageStore('Insert:' . $sql);
                     return false;
                 }
-                $this->logger->setDebugMessage("[authSupportCreateUser] {$sql}");
+                $this->logger->setDebugMessage("[authSupportCreateUser-LDAP] {$sql}");
             }
         }
         return true;
@@ -854,4 +860,35 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return $userID;
     }
 
+    public function authSupportIsWithinLDAPLimit($userID)
+    {
+        $userTable = $this->dbSettings->getUserTable();
+        if ($userTable == null) {
+            return false;
+        }
+        if (!$this->dbClass->setupConnection()) { //Establish the connection
+            return false;
+        }
+        $sql = "{$this->dbClass->handler->sqlSELECTCommand()}* FROM {$userTable} WHERE id=" . $userID;
+        $result = $this->dbClass->link->query($sql);
+        if ($result === false) {
+            $this->dbClass->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] {$sql}");
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] " . var_export($row, true));
+            $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] ldapLimit={$this->dbSettings->getLDAPExpiringSeconds()}");
+            if (isset($row['limitdt']) && !is_null($row['limitdt'])) {
+                if (time() - strtotime($row['limitdt']) > $this->dbSettings->getLDAPExpiringSeconds()) {
+                    $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] returns false ");
+                    return false;
+                } else {
+                    $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] returns true ");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

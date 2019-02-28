@@ -11,7 +11,7 @@ let port = process.argv[2] ? process.argv[2] : 21000
 let acceptClient = '0.0.0.0/0'
 
 let parser = require('../lib/js_lib/js-expression-eval-parser')
-const querystring = require('querystring')
+// const querystring = require('querystring')
 // console.log(parser.evaluate('a+b',{a:3,b:4}))
 let url = require('url')
 let http = require('http')
@@ -25,23 +25,9 @@ if (!app.listening) {
   process.exit(1)
 }
 
-requestBroker['/info'] = function (params, res, postData) {
-  res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
-  res.write('Service Server is active.')
-  res.end('\n')
-}
-
-requestBroker['/eval'] = function (params, res, postData) {
-  res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
-
-  let jsonData = JSON.parse(postData)
-  let rule = jsonData.expression;
-  let variables = postData.variables;
-  let result = parser.evaluate(rule, variables)
-  res.write(result ? 'true' : 'false')
-  res.end('\n')
-}
-
+/*
+   Server core
+ */
 function handler (req, res) {
   var reqParams = url.parse(req.url, true)
   var ipaddr = cleanUpIPAddress(req.socket.remoteAddress)
@@ -50,17 +36,23 @@ function handler (req, res) {
     res.end('ERROR')
     return
   }
-
   var postData = '';
   if (req.method == 'POST') {
     req.on('data', function (data) {
       postData += data;
     });
-
     req.on('end', function () {
-      postData = querystring.parse(postData);
+      requestProcessing(reqParams, res, postData)
     });
+  } else if (req.method == 'GET'){
+    requestProcessing(reqParams, res, postData)
+  } else {
+    res.writeHead(405, {'Content-Type': 'text/html; charset=utf-8'})
+    res.end('Not Supporting Method\n')
   }
+}
+
+function requestProcessing(reqParams, res, postData) {
   if (reqParams.pathname in requestBroker) {
     requestBroker[reqParams.pathname](reqParams.query, res, postData)
   } else {
@@ -69,10 +61,33 @@ function handler (req, res) {
   }
 }
 
+requestBroker['/info'] = function (params, res, postData) {
+  res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
+  res.write('Service Server is active.')
+  res.end('\n')
+}
+
+requestBroker['/eval'] = function (params, res, postData) {
+  res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
+  let jsonData = JSON.parse(postData)
+  let rule = jsonData.expression;
+  let values = jsonData.values;
+  let result = parser.evaluate(rule, values)
+
+  res.write(result ? 'true' : 'false')
+  res.end('\n')
+}
+
+/*
+  Automatic processing
+ */
 setInterval(function () {
 
 }, 3000)
 
+/*
+  Socket processing
+ */
 io.on('connection', function (socket) {
   console.log(socket.id + '/connected')
   socket.emit('connected')
@@ -86,6 +101,9 @@ io.on('connection', function (socket) {
   })
 })
 
+/*
+  Network Utility
+ */
 function cleanUpIPAddress (str) {
   if (str.match(/::ffff:/)) {
     return str.substr(7)
