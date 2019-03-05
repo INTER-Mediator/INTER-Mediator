@@ -1391,8 +1391,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->logger->setErrorMessages($serviceServer->getErrors());
             $serviceServer->clearMessages();
             $serviceServer->clearErrors();
-            return !$inValid;
         }
+        return !$inValid;
     }
 
 
