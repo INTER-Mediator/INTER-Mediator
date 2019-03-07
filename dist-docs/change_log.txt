@@ -34,6 +34,7 @@ Ver.6-dev (in development)
 - [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
+- [BUG FIX] Calculation from other contexts didn't work, and fix it.
 
 Ver.5.10-dev (in development)
 -
