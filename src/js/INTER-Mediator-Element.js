@@ -114,7 +114,7 @@ const IMLibElement = {
     let params, formatFunc, firstParen, lastParen
 
     formatSpec = element.getAttribute('data-im-format')
-    if (!formatSpec) {
+   if (!formatSpec) {
       return null
     }
     flags = IMLibElement.initilaizeFlags(element)

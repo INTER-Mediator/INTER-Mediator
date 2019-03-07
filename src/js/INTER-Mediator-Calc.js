@@ -356,8 +356,6 @@ var IMLibCalc = {
             }
             nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos);
 
-            console.log(nodeInfo);
-
             for (field in calcObject.values) {
                 if (field.indexOf(INTERMediator.separator) > -1) {
                     targetExp = field;
@@ -393,8 +391,6 @@ var IMLibCalc = {
                         }
                         checkRepeater = getParentRepeater(INTERMediatorLib.getParentEnclosure(checkRepeater))
                     } while (checkRepeater);
-
-                    console.log(targetIds)
                 }
                 if (INTERMediatorLib.is_array(targetIds) && targetIds.length > 0) {
                     calcObject.referes[field] = [];
