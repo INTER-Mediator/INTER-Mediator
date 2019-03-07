@@ -51,7 +51,7 @@ IM_Entry(
             ),
         ),
         'authentication' => array(
-            'storing' => 'cookie',
+            'storing' => 'session-storage',
             'realm' => 'Sample_products_auth',
         ),
         'media-root-dir' => $_SERVER['DOCUMENT_ROOT'] . '/INTER-Mediator/samples/Sample_products/images',
