@@ -154,19 +154,15 @@ var IMLibCalc = {
                         if (valuesArray.hasOwnProperty(field)) {
                             vArray = [];
                             if (field.indexOf('@') < 0) { // In same context
-                                expCName = nInfo.target
-                                contextInfo = IMLibContextPool.getContextInfoFromId(idValue, expCName);
-                                for (key in contextInfo.context.store) {
-                                    if (contextInfo.context.store.hasOwnProperty(key) && contextInfo.context.store[key][fName]) {
-                                        vArray.push(contextInfo.context.store[key][fName])
-                                    }
-                                }
+                                vArray.push(record[fName]);
                             } else {  // Other context
                                 expCName = field.substr(0, field.indexOf('@'))
                                 context = IMLibContextPool.contextFromName(expCName);
-                                for (key in context.store) {    // Collect field data from all records
-                                    if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
-                                        vArray.push(context.store[key][fName])
+                                if (context) {
+                                    for (key in context.store) {    // Collect field data from all records
+                                        if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
+                                            vArray.push(context.store[key][fName])
+                                        }
                                     }
                                 }
                             }
@@ -246,28 +242,29 @@ var IMLibCalc = {
                 calcObject = IMLibCalc.calculateRequiredObject[leafNodes[i]];
                 if (calcObject) {
                     idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator) ? leafNodes[i].split(IMLibCalc.regexpForSeparator)[0] : leafNodes[i];
-                    //exp = calcObject.expression
                     nInfo = calcObject.nodeInfo;
                     valuesArray = calcObject.values;
                     refersArray = calcObject.referes;
+                    contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nInfo.target);
+                    if (contextInfo && contextInfo.context) {
+                        record = contextInfo.context.getContextRecord(idValue)
+                    } else {
+                        record = null
+                    }
                     for (field in valuesArray) {
                         fName = field.substr(field.indexOf('@') + 1);
                         if (valuesArray.hasOwnProperty(field)) {
                             vArray = [];
                             if (field.indexOf('@') < 0) { // In same context
-                                expCName = nInfo.target
-                                contextInfo = IMLibContextPool.getContextInfoFromId(idValue, expCName);
-                                for (key in contextInfo.context.store) {
-                                    if (contextInfo.context.store.hasOwnProperty(key) && contextInfo.context.store[key][fName]) {
-                                        vArray.push(contextInfo.context.store[key][fName])
-                                    }
-                                }
+                                vArray.push(record[fName]);
                             } else {  // Other context
                                 expCName = field.substr(0, field.indexOf('@'))
                                 context = IMLibContextPool.contextFromName(expCName);
-                                for (key in context.store) {
-                                    if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
-                                        vArray.push(context.store[key][fName])
+                                if (context) {
+                                    for (key in context.store) {
+                                        if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
+                                            vArray.push(context.store[key][fName])
+                                        }
                                     }
                                 }
                             }
