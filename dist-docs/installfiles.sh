@@ -31,7 +31,7 @@ if [ ${#param} = 0 ]; then
     /bin/echo ' (1) Clear lock files on root'
     /bin/echo ' (2) spec/<files for PHP7> to root'
     /bin/echo ' (3) root/<files for PHP7> to spec/'
-    /bin/echo ' (4) Update lock files (require homebrew and PHP5/7)'
+    /bin/echo ' (4) Update lock files'
     /bin/echo -n "Type 1, 2, 3 or 4, and then type return----> "
     read choice
     /bin/echo ""
