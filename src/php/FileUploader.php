@@ -307,6 +307,7 @@ class FileUploader
                                     if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
                                         $fields[] = $cItem['foreign-key'];
                                         $values[] = $dbKeyValue;
+                                        break;
                                     }
                                 }
                             }
@@ -315,6 +316,10 @@ class FileUploader
                             $relatedContext->dbSettings->setFieldsRequired($fields);
                             $relatedContext->dbSettings->setValue($values);
                             $relatedContext->processingRequest("create", true);
+                            /* 2019-03-13 msyk
+                            Why can the authentication bypass here? This db access is followed by another db processing,
+                            and if the auchentication is not valid, previous processing is going to arise any errors.
+                            */
                             //    $relatedContext->finishCommunication(true);
                             //    $relatedContext->exportOutputDataAsJSON();
                         }
