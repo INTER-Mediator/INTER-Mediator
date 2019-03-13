@@ -40,12 +40,12 @@ class ServiceServerProxy
         $this->paramsQuit = $params["stopSSEveryQuit"] == NULL ? false : boolval($params["stopSSEveryQuit"]);
         $imPath = IMUtil::pathToINTERMediator();
         $this->foreverPath = "{$imPath}/node_modules/forever/bin/forever";
-        if (IMUtil::isPHPExecutingWindows()) {
-            $this->foreverPath .= "-win";
-        }
         $this->nodePath = "{$imPath}/vendor/bin/node";
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
-
+        if (IMUtil::isPHPExecutingWindows()) {
+            $this->foreverPath = str_replace("/", DIRECTORY_SEPARATOR, $this->foreverPath) . "-win";
+            $this->nodePath = str_replace("/", DIRECTORY_SEPARATOR, "{$imPath}/vendor/bin/node");
+        }
     }
 
     public function clearMessages()
