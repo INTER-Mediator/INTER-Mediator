@@ -216,7 +216,7 @@ fi
 # Copy "lib" path php contents.
 /bin/echo "PROCESSING: ${originalPath}/src/lib"
 cp -prf "${originalPath}/src/lib/CWPKit"        "${buildPath}/src/lib"
-cp -prf "${originalPath}/src/lib/mailsend"      "${buildPath}/src/lib"
+# cp -prf "${originalPath}/src/lib/mailsend"      "${buildPath}/src/lib"
 cp -prf "${originalPath}/src/lib/js_lib/js-expression-eval-parser.js"      "${buildPath}/src/lib/js_lib"
 
 if [ $choice = 1 ]; then

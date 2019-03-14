@@ -40,12 +40,12 @@ class ServiceServerProxy
         $this->paramsQuit = $params["stopSSEveryQuit"] == NULL ? false : boolval($params["stopSSEveryQuit"]);
         $imPath = IMUtil::pathToINTERMediator();
         $this->foreverPath = "{$imPath}/node_modules/forever/bin/forever";
-        if (IMUtil::isPHPExecutingWindows()) {
-            $this->foreverPath .= "-win";
-        }
         $this->nodePath = "{$imPath}/vendor/bin/node";
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
-
+        if (IMUtil::isPHPExecutingWindows()) {
+            $this->foreverPath = str_replace("/", DIRECTORY_SEPARATOR, $this->foreverPath) . "-win";
+            $this->nodePath = str_replace("/", DIRECTORY_SEPARATOR, "{$imPath}/vendor/bin/node");
+        }
     }
 
     public function clearMessages()
@@ -70,7 +70,7 @@ class ServiceServerProxy
 
     public function checkServiceServer()
     {
-        $waitSec = 5;
+        $waitSec = 2;
         $startDT = new \DateTime();
         $counterInit = $counter = 10;
         while (!$this->isActive()) {
@@ -94,9 +94,30 @@ class ServiceServerProxy
 
     public function isActive()
     {
-        $url = "http://{$this->paramsHost}:{$this->paramsPort}/info";
+        $this->messages[] = $this->messageHead . 'Check server working:';
+
+        $result = $this->callServer("info");
+        $this->messages[] = $this->messageHead . 'Server returns:' . $result;
+
+        if (!$result) {
+            return false;
+        }
+        if (strpos($result, 'Service Server is active.') === false) {
+            $this->errors[] = $this->messageHead . 'Server respond an irregular message.';
+            return false;
+        }
+        return true;
+    }
+
+    private function callServer($path, $postData = false)
+    {
+        $url = "http://{$this->paramsHost}:{$this->paramsPort}/{$path}";
         $ch = curl_init($url);
         curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 1,]);
+        if ($postData) {
+            curl_setopt($ch, CURLOPT_POST, TRUE);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
+        }
         $result = curl_exec($ch);
         $this->messages[] = $this->messageHead . "URL:$url, Result:$result";
         $info = curl_getinfo($ch);
@@ -105,18 +126,11 @@ class ServiceServerProxy
             $this->errors[] = $this->messageHead . curl_error($ch);
             return false;
         }
-
-        if (strpos($result, 'Service Server is active.') === false) {
-            $this->errors[] = $this->messageHead . 'Server respond an irregular message.';
-            return false;
-        }
-        return true;
+        return $result;
     }
 
     private function startServer()
     {
-        openlog("INTER-Mediator_ServiceServer", LOG_PID | LOG_PERROR, LOG_USER);
-
         $imPath = IMUtil::pathToINTERMediator();
 
         $script = file_get_contents($this->foreverPath);
@@ -125,12 +139,12 @@ class ServiceServerProxy
         $logFile = tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
         $cmd = "'{$this->foreverPath}' start -a -l {$logFile} --minUptime 5000 --spinSleepTime 5000 " .
             "'{$imPath}/src/js/Service_Server.js' {$this->paramsPort}";
-        syslog(LOG_INFO, "Command:$cmd");
+        $this->messages[] = $this->messageHead . "Command: {$cmd}";
         $result = [];
         $returnValue = 0;
         exec($cmd, $result, $returnValue);
 
-        syslog(LOG_INFO, "Returns:$returnValue, Output:" . implode("/", $result));
+        $this->messages[] = $this->messageHead . "Returns: {$returnValue}, Output:" . implode("/", $result);
         //closelog();
         return true;
     }
@@ -140,10 +154,24 @@ class ServiceServerProxy
         if ($this->paramsQuit) {
             $imPath = IMUtil::pathToINTERMediator();
             $cmd = "'{$this->foreverPath}' stopall";
-            syslog(LOG_INFO, "Command:$cmd");
+            $this->messages[] = $this->messageHead . "Command: {$cmd}";
             exec($cmd, $result, $returnValue);
-            syslog(LOG_INFO, "Returns:$returnValue, Output:" . implode("/", $result));
+            $this->messages[] = $this->messageHead . "Returns: {$returnValue}, Output:" . implode("/", $result);
         }
-        closelog();
+    }
+
+    public function validate($expression, $values)
+    {
+        $this->messages[] = $this->messageHead . 'Validation start:' . $expression . ' with ' . var_export($values, true);
+
+        $result = $this->callServer("eval", ["expression" => $expression, "values" => $values]);
+        if (!$result) {
+            return false;
+        }
+        if (strpos($result, 'true') === false && strpos($result, 'false') === false) {
+            $this->errors[] = $this->messageHead . 'Server respond an irregular message.';
+            return false;
+        }
+        return true;
     }
 }

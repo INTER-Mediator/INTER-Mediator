@@ -152,7 +152,7 @@ class Settings
     }
 
     /**
-     * @param string $dataSourceName
+     * @param string $config
      */
     public function setSmtpConfiguration($config)
     {
@@ -292,23 +292,6 @@ class Settings
     }
 
     /**
-     * @param null $targetDataSource
-     */
-//    public function setTargetDataSource($targetDataSource)
-//    {
-//        $this->targetDataSource = $targetDataSource;
-//    }
-
-    /**
-     * @return null
-     */
-//    public function getTargetDataSource()
-//    {
-//        return $this->targetDataSource;
-//    }
-
-
-    /**
      * @param boolean $primaryKeyOnly
      */
     public function setPrimaryKeyOnly($primaryKeyOnly)
@@ -342,19 +325,16 @@ class Settings
         return $this->emailAsAccount;
     }
 
-    // This is private (closed) API
     public function getCurrentDataAccess()
     {
         return $this->currentDataAccess;
     }
 
-    // This is private (closed) API
     public function setCurrentDataAccess($dbaccess)
     {
         $this->currentDataAccess = $dbaccess;
     }
 
-    /* Database connection paramters */
     public function setDbSpecServer($str)
     {
         $this->dbSpecServer = $str;
@@ -592,17 +572,6 @@ class Settings
         return $this->dbSpec;
     }
 
-
-//    function getIndexOfDataSource($dataSourceName)
-//    {
-//        foreach ($this->dataSource as $index => $value) {
-//            if ($value['name'] == $dataSourceName) {
-//                return $index;
-//            }
-//        }
-//        return null;
-//    }
-
     public function setSeparator($sep)
     {
         $this->separator = $sep;
@@ -613,25 +582,10 @@ class Settings
         return $this->separator;
     }
 
-//    function setTargetName($val)
-//    {
-//        $this->dataSourceName = $val;
-//    }
-//
-//    function getTargetName()
-//    {
-//        return $this->dataSourceName;
-//    }
-
     public function addTargetField($field)
     {
         $this->fieldsRequired[] = $field;
     }
-
-//    function setTargetFields($fields)
-//    {
-//        $this->fieldsRequired = $fields;
-//    }
 
     public function getFieldOfIndex($ix)
     {

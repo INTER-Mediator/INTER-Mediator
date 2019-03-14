@@ -42,7 +42,7 @@ IM_Entry(
         ),
         //'authentication' => array(
         //    'user' => array('database_native'),
-        //    'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
+        //    'storing' => 'session-storage',
         //),
     ),
     array(

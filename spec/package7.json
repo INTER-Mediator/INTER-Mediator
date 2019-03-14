@@ -37,13 +37,15 @@
     "test-local": "/usr/local/bin/buster-test -r specification"
   },
   "devDependencies": {
+    "request": "*",
     "jest": "*",
     "power-assert": "*"
   },
   "dependencies": {
-    "socket.io": "*",
     "forever": "*",
-    "forever-win": "*"
+    "forever-win": "*",
+    "request": "^2.88.0",
+    "socket.io": "*"
   },
   "engines": {
     "node": "*"

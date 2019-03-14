@@ -261,7 +261,7 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
         // TODO: Implement updatedRecord() method.
     }
 
-    public function createInDB($bypassAuth)
+    public function createInDB()
     {
         // TODO: Implement newToDB() method.
     }

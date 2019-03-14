@@ -40,7 +40,7 @@ class Null extends UseSharedObjects implements DBClass_Interface
         return null;
     }
 
-    public function createInDB($bypassAuth)
+    public function createInDB()
     {
         return null;
     }

@@ -17,7 +17,7 @@ namespace INTERMediator;
 
 class SendMail
 {
-    public function processing($sendMailParam, $result, $smtpConfig)
+    public function processing($dbProxy, $sendMailParam, $result, $smtpConfig)
     {
         $isError = false;
         $errorMsg = "";
@@ -136,7 +136,45 @@ class SendMail
             } else if (isset($result[$i]) && $sendMailParam['body'] && isset($result[$i][$sendMailParam['body']])) {
                 $ome->setBody($result[$i][$sendMailParam['body']]);
             }
-            if (!$ome->send()) {
+            if ($ome->send()) {
+                if ($sendMailParam['store']) {
+                    $storeContext = new DB\Proxy();
+                    $storeContext->ignoringPost();
+                    $storeContext->initialize(
+                        $dbProxy->dbSettings->getDataSource(),
+                        $dbProxy->dbSettings->getOptions(),
+                        $dbProxy->dbSettings->getDbSpec(),
+                        2, $sendMailParam['store'], null);
+                    $storeContext->dbSettings->setCurrentUser($dbProxy->dbSettings->getCurrentUser());
+                    $storeContextInfo = $storeContext->dbSettings->getDataSourceTargetArray();
+                    $storeContext->dbSettings->addValueWithField("errors", $ome->getErrorMessage());
+                    $storeContext->dbSettings->addValueWithField("to_field", $ome->getToField());
+                    $storeContext->dbSettings->addValueWithField("bcc_field", $ome->getBccField());
+                    $storeContext->dbSettings->addValueWithField("cc_field", $ome->getCcField());
+                    $storeContext->dbSettings->addValueWithField("from_field", $ome->getFromField());
+                    $storeContext->dbSettings->addValueWithField("subject", $ome->getSubject());
+                    $storeContext->dbSettings->addValueWithField("body", $ome->getBody());
+                    if (isset($storeContextInfo["query"])) {
+                        foreach ($storeContextInfo["query"] as $cItem) {
+                            if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
+                                $storeContext->dbSettings->addValueWithField($cItem['field'], $cItem['value']);
+                            }
+                        }
+                    }
+                    if (isset($storeContextInfo["relation"])) {
+                        foreach ($storeContextInfo["relation"] as $cItem) {
+                            if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
+                                $storeContext->dbSettings->addValueWithField(
+                                    $cItem['foreign-key'], $result[0][$cItem['join-field']]);
+                                break;
+                            }
+                        }
+                    }
+                    $storeContext->processingRequest("create", true);
+                    //    $storeContext->finishCommunication(true);
+                    //    $storeContext->exportOutputDataAsJSON();
+                }
+            } else {
                 $isError = true;
                 $errorMsg .= (strlen($errorMsg) > 0) ? " / {$ome->getErrorMessage()}" : '';
             }

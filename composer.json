@@ -1,7 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
   "version": "6-dev",
-  "time": "2018-07-22",
+  "time": "2019-03-07",
   "repositories": [
     {
       "type": "git",
@@ -59,10 +59,10 @@
   },
   "scripts": {
     "test": [
-      "./vendor/bin/phpunit --bootstrap src/vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+      "phpunit --bootstrap src/vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
     ],
     "post-update-cmd": [
-      "./vendor/bin/npm install"
+      "npm --save-dev install"
     ],
     "post-create-project-cmd": [
       "mkdir -p ../398A6028-0181-4B75-BFD9-1C094B5ADD9F",

@@ -90,15 +90,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     public function exportOutputDataAsJSON()
     {
-        if (((float)phpversion()) >= 5.3) {
-            echo json_encode($this->outputOfProcessing, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+        $jsonString = json_encode($this->outputOfProcessing,
+            JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+        if ($jsonString === false) {
+            echo json_encode(['errorMessages' => ['json_encode function failed by: ' .
+                json_last_error_msg()]]);
         } else {
-            $this->outputOfProcessing = str_replace(
-                array('\"', '&', '\'', '<', '>'),
-                array('\u0022', '\u0026', '\u0027', '\u003C', '\u003E'),
-                json_encode($this->outputOfProcessing)
-            );
-            echo $this->outputOfProcessing;
+            echo $jsonString;
         }
     }
 
@@ -174,6 +172,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $dataSource = $currentDataSource['send-mail']['read'];
                 }
                 $mailResult = $mailSender->processing(
+                    $this,
                     $dataSource,
                     $result,
                     $this->dbSettings->getSmtpConfiguration());
@@ -183,7 +182,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
 
         } catch (\Exception $e) {
-            $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
+            $this->logger->setErrorMessage("Exception:[1] {$e->getMessage()}");
             return false;
         }
         return $result;
@@ -270,6 +269,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $dataSource = $currentDataSource['send-mail']['update'];
                 }
                 $mailResult = $mailSender->processing(
+                    $this,
                     $dataSource,
                     $this->dbClass->updatedRecord(),
                     $this->dbSettings->getSmtpConfiguration());
@@ -278,7 +278,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
+            $this->logger->setErrorMessage("Exception:[2] {$e->getMessage()}");
             return false;
         }
         return $result;
@@ -289,7 +289,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $bypassAuth
      * @return mixed
      */
-    public function createInDB($bypassAuth)
+    public function createInDB()
     {
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
@@ -300,7 +300,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
             if ($this->dbClass) {
                 $this->dbClass->requireUpdatedRecord(true); // Always Requred Created Record
-                $resultOfCreate = $this->dbClass->createInDB($bypassAuth);
+                $resultOfCreate = $this->dbClass->createInDB();
                 $result = $this->dbClass->updatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterCreateToDB")) {
@@ -334,6 +334,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $dataSource = $currentDataSource['send-mail']['create'];
                 }
                 $mailResult = $mailSender->processing(
+                    $this,
                     $dataSource,
                     $this->dbClass->updatedRecord(),
                     $this->dbSettings->getSmtpConfiguration());
@@ -342,7 +343,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
+            $this->logger->setErrorMessage("Exception:[3] {$e->getMessage()}");
             return false;
         }
         return $resultOfCreate;
@@ -396,7 +397,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
+            $this->logger->setErrorMessage("Exception:[4] {$e->getMessage()}");
             return false;
         }
         return $result;
@@ -439,7 +440,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
+            $this->logger->setErrorMessage("Exception:[5] {$e->getMessage()}");
             return false;
         }
         return $result;
@@ -494,16 +495,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
             "dbOption", "dbDSN", "pusherParameters", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
         ), true);
-
-//        $currentDir = \INTERMediator\IMUtil::pathToINTERMediator();
-//        $currentDirParam = $currentDir . 'params.php';
-//        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
-//
-//        if (file_exists($parentDirParam)) {
-//            include($parentDirParam);
-//        } else if (file_exists($currentDirParam)) {
-//            include($currentDirParam);
-//        }
 
         $this->clientPusherAvailable = (isset($this->PostData["pusher"]) && $this->PostData["pusher"] == "yes");
         $this->dbSettings->setDataSource($datasource);
@@ -577,7 +568,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
 
         /* Setup Database Class's Object */
-//        require_once("{$dbClassName}.php");
         $isDBClassNull = is_null($this->dbClass);
         if ($isDBClassNull) {
             $this->dbClass = new $dbClassName();
@@ -613,7 +603,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $challengeDSN = $params['issuedHashDSN'];
         }
         if (!is_null($challengeDSN)) {
-            //require_once("PDO.php
             $this->authDbClass = new PDO();
             $this->authDbClass->setUpSharedObjects($this);
             $this->authDbClass->setupWithDSN($challengeDSN);
@@ -626,7 +615,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
         $this->dbSettings->notifyServer = null;
         if ($this->clientPusherAvailable) {
-            //require_once("NotifyServer.php");
             $this->dbSettings->notifyServer = new NotifyServer();
             if (isset($this->PostData['notifyid'])
                 && $this->dbSettings->notifyServer->initialize($this->authDbClass, $this->dbSettings, $this->PostData['notifyid'])
@@ -850,18 +838,22 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($this->paramAuthUser);
 
                     $authSucceed = false;
-                    if ($this->checkAuthorization($signedUser, $this->paramResponse, $this->clientId)) {
+                    $ldap = new \INTERMediator\LDAPAuth();
+                    $ldap->setLogger($this->logger);
+                    if ($this->checkAuthorization($signedUser, $this->paramResponse, $this->clientId, $ldap->isActive)) {
                         $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
                         $authSucceed = true;
                     } else {
-                        $ldap = new \INTERMediator\LDAPAuth();
-                        $ldap->setLogger($this->logger);
                         if ($ldap->isActive) {
                             list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
                             if ($ldap->bindCheck($signedUser, $password)) {
                                 $this->logger->setDebugMessage("LDAP Authentication succeed.");
                                 $authSucceed = true;
                                 $this->addUser($signedUser, $password, true);
+                                if ($this->checkAuthorization($signedUser, $this->paramResponse, $this->clientId, $ldap->isActive)) {
+                                    $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+                                    $authSucceed = true;
+                                }
                             }
                         }
                     }
@@ -905,31 +897,39 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 break;
             case 'update':
                 $this->logger->setDebugMessage("[processingRequest] start update processing", 2);
-                if (isset($tableInfo['protect-writing']) && is_array($tableInfo['protect-writing'])) {
-                    $fieldArray = array();
-                    $valueArray = array();
-                    $counter = 0;
-                    $fieldValues = $this->dbSettings->getValue();
-                    foreach ($this->dbSettings->getFieldsRequired() as $field) {
-                        if (!in_array($field, $tableInfo['protect-writing'])) {
-                            $fieldArray[] = $field;
-                            $valueArray[] = $fieldValues[$counter];
+                if ($this->checkValidation()) {
+                    if (isset($tableInfo['protect-writing']) && is_array($tableInfo['protect-writing'])) {
+                        $fieldArray = array();
+                        $valueArray = array();
+                        $counter = 0;
+                        $fieldValues = $this->dbSettings->getValue();
+                        foreach ($this->dbSettings->getFieldsRequired() as $field) {
+                            if (!in_array($field, $tableInfo['protect-writing'])) {
+                                $fieldArray[] = $field;
+                                $valueArray[] = $fieldValues[$counter];
+                            }
+                            $counter++;
                         }
-                        $counter++;
+                        $this->dbSettings->setFieldsRequired($fieldArray);
+                        $this->dbSettings->setValue($valueArray);
                     }
-                    $this->dbSettings->setFieldsRequired($fieldArray);
-                    $this->dbSettings->setValue($valueArray);
+                    $this->dbClass->requireUpdatedRecord(true);
+                    $this->updateDB();
+                    $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
+                } else {
+                    $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
                 }
-                $this->dbClass->requireUpdatedRecord(true);
-                $this->updateDB();
-                $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
                 break;
             case 'new':
             case 'create':
                 $this->logger->setDebugMessage("[processingRequest] start create processing", 2);
-                $result = $this->createInDB($bypassAuth);
-                $this->outputOfProcessing['newRecordKeyValue'] = $result;
-                $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
+                if ($this->checkValidation()) {
+                    $result = $this->createInDB($bypassAuth);
+                    $this->outputOfProcessing['newRecordKeyValue'] = $result;
+                    $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
+                } else {
+                    $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
+                }
                 break;
             case 'delete':
                 $this->logger->setDebugMessage("[processingRequest] start delete processing", 2);
@@ -937,9 +937,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 break;
             case 'copy':
                 $this->logger->setDebugMessage("[processingRequest] start copy processing", 2);
-                $result = $this->copyInDB($this->dbSettings->getDataSourceName());
-                $this->outputOfProcessing['newRecordKeyValue'] = $result;
-                $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
+                if ($this->checkValidation()) {
+                    $result = $this->copyInDB($this->dbSettings->getDataSourceName());
+                    $this->outputOfProcessing['newRecordKeyValue'] = $result;
+                    $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
+                } else {
+                    $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
+                }
                 break;
             case 'challenge':
                 break;
@@ -1171,9 +1175,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $clientId
      * @return string
      */
-    function saveChallenge($username, $challenge, $clientId)
+    function saveChallenge($username, $challenge, $clientId, $isLDAP = false)
     {
-        $this->logger->setDebugMessage("[saveChallenge]user=${username}, challenge={$challenge}, clientid={$clientId}", 2);
+        $this->logger->setDebugMessage(
+            "[saveChallenge]user=${username}, challenge={$challenge}, clientid={$clientId}, isLDAP={$isLDAP}", 2);
         $username = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($username);
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
         $this->authDbClass->authHandler->authSupportStoreChallenge($uid, $challenge, $clientId);
@@ -1186,7 +1191,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $clientId
      * @return bool
      */
-    function checkAuthorization($username, $hashedvalue, $clientId)
+    function checkAuthorization($username, $hashedvalue, $clientId, $isLDAP = false)
     {
         $this->logger->setDebugMessage(
             "[checkAuthorization]user=${username}, paramResponse={$hashedvalue}, clientid={$clientId}", 2);
@@ -1197,7 +1202,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($username);
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($signedUser);
         $this->logger->setDebugMessage("[checkAuthorization]uid={$uid}", 2);
-        if ($uid < 0) {
+        if ($uid <= 0) {
+            return $returnValue;
+        }
+        if ($isLDAP && !$this->dbClass->authHandler->authSupportIsWithinLDAPLimit($uid)) {
             return $returnValue;
         }
         $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge($uid, $clientId);
@@ -1245,6 +1253,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     function checkMediaToken($user, $token)
     {
+        $this->logger->setDebugMessage("[checkMediaToken] user={$user}, token={$token}", 2);
         $returnValue = false;
         $this->authDbClass->authHandler->authSupportRemoveOutdatedChallenges();
         // Database user mode is user_id=0
@@ -1264,10 +1273,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     function addUser($username, $password, $isLDAP = false)
     {
+        $this->logger->setDebugMessage("[addUser] username={$username}, isLDAP={$isLDAP}", 2);
         $salt = $this->generateSalt();
         $hexSalt = bin2hex($salt);
         $returnValue = $this->dbClass->authHandler->authSupportCreateUser(
             $username, sha1($password . $salt) . $hexSalt, $isLDAP, $password);
+        $this->logger->setDebugMessage("[addUser] authSupportCreateUser returns: {$returnValue}", 2);
         return $returnValue;
     }
 
@@ -1354,6 +1365,39 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 //        }
         return $result;
     }
+
+    private function checkValidation()
+    {
+        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
+        if (isset($tableInfo['validation'])) {
+
+            $reqestedFieldValue = [];
+            $counter = 0;
+            $fieldValues = $this->dbSettings->getValue();
+            foreach ($this->dbSettings->getFieldsRequired() as $field) {
+                $value = $fieldValues[$counter];
+                $reqestedFieldValue[$field] = (is_array($value)) ? implode("\n", $value) : $value;
+                $counter++;
+            }
+
+            $serviceServer = \INTERMediator\ServiceServerProxy::instance();
+            $inValid = false;
+            foreach ($tableInfo['validation'] as $entry) {
+                if (array_key_exists($entry['field'], $reqestedFieldValue)) {
+                    $this->logger->setDebugMessage("Validation: field={$entry['field']}, rule={$entry['rule']}:", 2);
+                    if (!$serviceServer->validate($entry['rule'], ["value" => $reqestedFieldValue[$entry['field']]])) {
+                        $inValid = true;
+                    }
+                }
+            }
+            $this->logger->setDebugMessages($serviceServer->getMessages(), 2);
+            $this->logger->setErrorMessages($serviceServer->getErrors());
+            $serviceServer->clearMessages();
+            $serviceServer->clearErrors();
+        }
+        return !$inValid;
+    }
+
 
     public function setupConnection()
     {

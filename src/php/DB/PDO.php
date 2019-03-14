@@ -193,7 +193,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $escapedField = $this->handler->quotedEntityName($condition['field']);
                     $condition = $this->normalizedCondition($condition);
                     if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                        throw new \Exception("Invalid Operator.");
+                        throw new \Exception("Invalid Operator: {$condition['operator']}");
                     }
                     if (isset($condition['value']) && !is_null($condition['value'])) {
                         $escapedValue = $this->link->quote($condition['value']);
@@ -430,6 +430,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
 
         // Query
         $result = $this->link->query($sql);
+
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
             return array();
@@ -457,7 +458,6 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $this->mainTableCount = count($sqlResult);
             $this->mainTableTotalCount = count($sqlResult);
         }
-
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] == 'load' || $condition['db-operation'] == 'read') {
@@ -612,7 +612,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
      * @param $bypassAuth
      * @return bool
      */
-    public function createInDB($bypassAuth)
+    public function createInDB()
     {
         $this->fieldInfo = null;
         $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
@@ -620,7 +620,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $viewName = $this->handler->quotedEntityName($this->dbSettings->getEntityForRetrieve());
 
-        if (!$bypassAuth && isset($tableInfo['authentication'])) {
+        if (isset($tableInfo['authentication'])) {
             $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
         }
 
@@ -674,18 +674,18 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 }
             }
         }
-        if (!$bypassAuth && isset($tableInfo['authentication'])) {
+        if (isset($tableInfo['authentication'])) {
             $authInfoField = $this->authHandler->getFieldForAuthorization("create");
             $authInfoTarget = $this->authHandler->getTargetForAuthorization("create");
             if ($authInfoTarget == 'field-user') {
                 $setColumnNames[] = $authInfoField;
                 $setValues[] = $this->link->quote(
-                    strlen($signedUser) == 0 ? IMUtil::randomString(10) : $signedUser);
+                    strlen($signedUser) == 0 ? \INTERMediator\IMUtil::randomString(10) : $signedUser);
             } else if ($authInfoTarget == 'field-group') {
                 $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($signedUser);
                 $setColumnNames[] = $authInfoField;
                 $setValues[] = $this->link->quote(
-                    strlen($belongGroups[0]) == 0 ? IMUtil::randomString(10) : $belongGroups[0]);
+                    strlen($belongGroups[0]) == 0 ? \INTERMediator\IMUtil::randomString(10) : $belongGroups[0]);
             }
         }
 
@@ -778,7 +778,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
         $queryClause = $this->getWhereClause('delete', false, true, $signedUser);
         if ($queryClause == '') {
-            $this->errorMessageStore('Don\'t delete with no ciriteria.');
+            $this->errorMessageStore('Don\'t delete with no ciriteria. queryClause=' . $queryClause);
             return false;
         }
         $sql = "{$this->handler->sqlDELETECommand()}{$tableName} WHERE {$queryClause}";

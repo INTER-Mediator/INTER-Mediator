@@ -29,11 +29,21 @@ Ver.6-dev (in development)
       INTERMediator_DBAdapter.db_copyWithAuth
 - Deprecated global variables $g_dbInstance, $g_serverSideCall in INTER-Mediator.php are removed.
 - Metadata.json is removed, composer.json takes over.
+- Mail is going to send with swiftmailer.
+- In the PDO connection string for MySQL uses host=localhost instead of unix_socket=.
+- The method template "public function createInDB($bypassAuth)" is changed to "public function createInDB()" in
+  DBClass_Interface. Some processes relevant to apply the privilege of record to an user was bypassed, but it requires
+  to process them.
+- After mailing with setting the 'send-mail' keyed value, if the 'store' keyed value has the context name,
+  the mail content is going to store the context with fields named "errors", "to_field", "bcc_field",
+  "cc_field", "from_field", "subject", "body". So far the field names is fixed.
+- [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
+- [BUG FIX] Calculation from other contexts didn't work, and fix it.
 
 Ver.5.10-dev (in development)
-- 
+-
 
 Ver.5.9 (January 29, 2019)
 - Reduce error messages when using PHP 7.2 and DB_FileMaker_DataAPI class.
