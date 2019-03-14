@@ -1368,9 +1368,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     private function checkValidation()
     {
+        $inValid = false;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         if (isset($tableInfo['validation'])) {
-
             $reqestedFieldValue = [];
             $counter = 0;
             $fieldValues = $this->dbSettings->getValue();
