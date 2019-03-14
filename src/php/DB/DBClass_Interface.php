@@ -23,7 +23,7 @@ interface DBClass_Interface
     public function countQueryResult();
     public function getTotalCount();
     public function updateDB();           // former setToDB
-    public function createInDB($bypassAuth);  // former newToDB
+    public function createInDB();  // former newToDB
     public function deleteFromDB();
     public function copyInDB();
     public function normalizedCondition($condition);

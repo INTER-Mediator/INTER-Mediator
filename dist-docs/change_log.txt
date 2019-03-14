@@ -31,6 +31,9 @@ Ver.6-dev (in development)
 - Metadata.json is removed, composer.json takes over.
 - Mail is going to send with swiftmailer.
 - In the PDO connection string for MySQL uses host=localhost instead of unix_socket=.
+- The method template "public function createInDB($bypassAuth)" is changed to "public function createInDB()" in
+  DBClass_Interface. Some processes relevant to apply the privilege of record to an user was bypassed, but it requires
+  to process them.
 - [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.

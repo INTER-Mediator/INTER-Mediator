@@ -900,7 +900,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
         return $result;
     }
 
-    function createInDB($bypassAuth)
+    function createInDB()
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
         $dataSourceName = $this->dbSettings->getDataSourceName();

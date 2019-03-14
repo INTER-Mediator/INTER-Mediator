@@ -612,7 +612,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
      * @param $bypassAuth
      * @return bool
      */
-    public function createInDB($bypassAuth)
+    public function createInDB()
     {
         $this->fieldInfo = null;
         $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
@@ -620,7 +620,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $viewName = $this->handler->quotedEntityName($this->dbSettings->getEntityForRetrieve());
 
-        if (!$bypassAuth && isset($tableInfo['authentication'])) {
+        if (isset($tableInfo['authentication'])) {
             $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
         }
 
@@ -674,7 +674,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 }
             }
         }
-        if (!$bypassAuth && isset($tableInfo['authentication'])) {
+        if (isset($tableInfo['authentication'])) {
             $authInfoField = $this->authHandler->getFieldForAuthorization("create");
             $authInfoTarget = $this->authHandler->getTargetForAuthorization("create");
             if ($authInfoTarget == 'field-user') {

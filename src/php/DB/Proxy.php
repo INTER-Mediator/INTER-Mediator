@@ -287,7 +287,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $bypassAuth
      * @return mixed
      */
-    public function createInDB($bypassAuth)
+    public function createInDB()
     {
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
@@ -298,7 +298,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
             if ($this->dbClass) {
                 $this->dbClass->requireUpdatedRecord(true); // Always Requred Created Record
-                $resultOfCreate = $this->dbClass->createInDB($bypassAuth);
+                $resultOfCreate = $this->dbClass->createInDB();
                 $result = $this->dbClass->updatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterCreateToDB")) {

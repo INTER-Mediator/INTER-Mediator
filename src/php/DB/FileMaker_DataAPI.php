@@ -1044,7 +1044,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         return true;
     }
 
-    public function createInDB($bypassAuth)
+    public function createInDB()
     {
         $this->fieldInfo = null;
 
@@ -1092,7 +1092,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 }
             }
         }
-        if (!$bypassAuth && isset($context['authentication'])
+        if (isset($context['authentication'])
             && (isset($context['authentication']['all'])
                 || isset($context['authentication']['new'])
                 || isset($context['authentication']['create']))
@@ -1125,6 +1125,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 }
             }
         }
+        $layout = $this->dbSettings->getEntityForUpdate();
         if (isset($context['global'])) {
             foreach ($context['global'] as $condition) {
                 if ($condition['db-operation'] == 'new' || $condition['db-operation'] == 'create') {
@@ -1143,7 +1144,6 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             }
         }
 
-        $layout = $this->dbSettings->getEntityForUpdate();
         $recId = $this->fmData->{$layout}->create($recordData, NULL, $script);
         $result = $this->fmData->{$layout}->getRecord($recId);
         if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
