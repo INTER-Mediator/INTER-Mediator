@@ -172,6 +172,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $dataSource = $currentDataSource['send-mail']['read'];
                 }
                 $mailResult = $mailSender->processing(
+                    $this,
                     $dataSource,
                     $result,
                     $this->dbSettings->getSmtpConfiguration());
@@ -268,6 +269,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $dataSource = $currentDataSource['send-mail']['update'];
                 }
                 $mailResult = $mailSender->processing(
+                    $this,
                     $dataSource,
                     $this->dbClass->updatedRecord(),
                     $this->dbSettings->getSmtpConfiguration());
@@ -332,6 +334,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $dataSource = $currentDataSource['send-mail']['create'];
                 }
                 $mailResult = $mailSender->processing(
+                    $this,
                     $dataSource,
                     $this->dbClass->updatedRecord(),
                     $this->dbSettings->getSmtpConfiguration());

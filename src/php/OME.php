@@ -109,6 +109,11 @@ class OME
         $this->body = $str;
     }
 
+    public function getBody()
+    {
+        return $this->body;
+    }
+
     /**    メールの本文を追加する。既存の本文の後に追加する。
      *
      * @param string メールの本文に追加する文字列
@@ -125,6 +130,15 @@ class OME
     public function setSubject($str)
     {
         $this->subject = $str;
+    }
+
+    /**    メールの件名を取得するする。
+     *
+     * @return string メールの件名に設定する文字列
+     */
+    public function getSubject()
+    {
+        return $this->subject;
     }
 
     /**    追加のヘッダを1つ設定する。ただし、Subject、To、From、Cc、Bccは該当するメソッドを使う
@@ -206,6 +220,11 @@ class OME
         return false;
     }
 
+    public function getFromField()
+    {
+        return $this->fromField;
+    }
+
     /**    Toフィールドを設定する。すでに設定されていれば上書きされ、この引数の定義だけが残る
      *
      * @return    boolean    与えたメールアドレスが正しく、引数が適切に利用されればTRUEを返す。メールアドレスが正しくないとFALSEを戻し、内部変数等には与えた引数のデータは記録されない
@@ -230,7 +249,7 @@ class OME
         return false;
     }
 
-    // This method for unit testing.
+    // Getter of the To field.
     public function getToField()
     {
         return $this->toField;
@@ -261,6 +280,12 @@ class OME
             return true;
         }
         return false;
+    }
+
+    // Getter of the Cc field.
+    public function getCcField()
+    {
+        return $this->ccField;
     }
 
     /**    Ccフィールドを設定する。すでに設定されていれば上書きされ、この引数の定義だけが残る
@@ -311,6 +336,12 @@ class OME
             return true;
         }
         return false;
+    }
+
+    // Getter of the Bcc field.
+    public function getBccField()
+    {
+        return $this->bccField;
     }
 
     /**    Bccフィールドを設定する。すでに設定されていれば上書きされ、この引数の定義だけが残る

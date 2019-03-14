@@ -680,12 +680,12 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             if ($authInfoTarget == 'field-user') {
                 $setColumnNames[] = $authInfoField;
                 $setValues[] = $this->link->quote(
-                    strlen($signedUser) == 0 ? IMUtil::randomString(10) : $signedUser);
+                    strlen($signedUser) == 0 ? \INTERMediator\IMUtil::randomString(10) : $signedUser);
             } else if ($authInfoTarget == 'field-group') {
                 $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($signedUser);
                 $setColumnNames[] = $authInfoField;
                 $setValues[] = $this->link->quote(
-                    strlen($belongGroups[0]) == 0 ? IMUtil::randomString(10) : $belongGroups[0]);
+                    strlen($belongGroups[0]) == 0 ? \INTERMediator\IMUtil::randomString(10) : $belongGroups[0]);
             }
         }
 
@@ -778,7 +778,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
         $queryClause = $this->getWhereClause('delete', false, true, $signedUser);
         if ($queryClause == '') {
-            $this->errorMessageStore('Don\'t delete with no ciriteria. queryClause='.$queryClause);
+            $this->errorMessageStore('Don\'t delete with no ciriteria. queryClause=' . $queryClause);
             return false;
         }
         $sql = "{$this->handler->sqlDELETECommand()}{$tableName} WHERE {$queryClause}";
