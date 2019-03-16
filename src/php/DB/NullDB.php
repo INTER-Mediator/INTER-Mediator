@@ -15,9 +15,7 @@
 
 namespace INTERMediator\DB;
 
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.php');
-
-class Null extends UseSharedObjects implements DBClass_Interface
+class NullDB extends UseSharedObjects implements DBClass_Interface
 {
 
     public function readFromDB()
