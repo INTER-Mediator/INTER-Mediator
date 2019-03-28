@@ -832,4 +832,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             return $userID;
         }
     }
+
+    public function authSupportIsWithinLDAPLimit($userID)
+    {
+        // TODO: Implement authSupportIsWithinLDAPLimit() method.
+    }
 }

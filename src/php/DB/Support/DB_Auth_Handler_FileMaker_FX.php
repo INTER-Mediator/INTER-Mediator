@@ -588,4 +588,9 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
             return $userID;
         }
     }
+
+    public function authSupportIsWithinLDAPLimit($userID)
+    {
+        // TODO: Implement authSupportIsWithinLDAPLimit() method.
+    }
 }
