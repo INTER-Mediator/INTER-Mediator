@@ -497,6 +497,8 @@ class OME
             $headerField .= "From: {$this->fromField}\n";
         if ($this->ccField != '')
             $headerField .= "Cc: {$this->ccField}\n";
+        if ($this->toField != '')
+            $headerField .= "To: {$this->toField}\n";
         if ($this->smtpInfo === null) {
             if ($this->bccField != '')
                 $headerField .= "Bcc: {$this->bccField}\n";
@@ -515,14 +517,6 @@ class OME
         }
 
         if ($this->smtpInfo === null) {
-
-            file_put_contents("/var/www/d2.txt", [
-                rtrim($this->header_base64_encode($this->toField, False)),
-                rtrim($this->header_base64_encode($this->subject, true)),
-                $bodyString,
-                $this->header_base64_encode($headerField, True),
-                $this->sendmailParam]);
-
             if ($this->isUseSendmailParam) {
                 $resultMail = mail(
                     rtrim($this->header_base64_encode($this->toField, False)),
@@ -544,10 +538,12 @@ class OME
             } else {
                 $transport = new \Swift_SmtpTransport($this->smtpInfo['host'], $port);
             }
-            (isset($this->smtpInfo['username']) && strlen($this->smtpInfo['username']) > 0) ?
-                $transport->setUsername($this->smtpInfo['username']) : false;
-            (isset($this->smtpInfo['password']) && strlen($this->smtpInfo['password']) > 0) ?
-                $transport->setPassword($this->smtpInfo['password']) : false;
+            if (isset($this->smtpInfo['user']) && strlen($this->smtpInfo['user']) > 0) {
+                $transport->setUsername($this->smtpInfo['user']);
+            }
+            if (isset($this->smtpInfo['pass']) && strlen($this->smtpInfo['pass']) > 0) {
+                $transport->setPassword($this->smtpInfo['password']);
+            }
             $mailer = new \Swift_Mailer($transport);
             $message = new \Swift_Message($headerField);
             if ($this->senderAddress != null) {
@@ -571,36 +567,6 @@ class OME
             if (!$resultMail) {
                 $this->errorMessage = 'Unsent recipients: ' . var_export($failures, true) . '\n';
             }
-//
-//            if ($this->toField != '')
-//                $headerField .= $this->unifyCRLF("To: {$this->toField}\n");
-//            $headerField .= 'Subject: '
-//                . $this->unifyCRLF(rtrim($this->header_base64_encode($this->subject, true)))
-//                . "\n";
-//            if ($this->senderAddress != null) {
-//                $this->smtpInfo['from'] = $this->senderAddress;
-//            }
-//            $smtp = new QdSmtp($this->smtpInfo['server']);
-//            $recipients = array();
-//            $headerValues = array($this->toField, $this->ccField, $this->bccField);
-//            foreach ($headerValues as $headerValue) {
-//                $temp = array();
-//                $value = explode(',', $this->unifyCRLF(rtrim($headerValue, False)));
-//                foreach ($value as $valueItem) {
-//                    $divided = $this->divideMailAddress($valueItem);
-//                    $array = array($divided['address']);
-//                    $temp = array_merge($temp, $array);
-//                }
-//                if ($temp !== array() && $temp !== array('')) {
-//                    $recipients = array_merge($recipients, $temp);
-//                }
-//            }
-//            $recipients = array_unique($recipients);
-//            $smtp->to($recipients);
-//            $smtp->data($this->unifyCRLF($this->header_base64_encode($headerField, True))
-//                . $this->unifyCRLF($bodyString));
-//            $resultMail = $smtp->send();
-//            $this->errorMessage = var_export($smtp->smtp_log, true) . '\n' . var_export($smtp->error_stack, true);
         }
         return $resultMail;
     }

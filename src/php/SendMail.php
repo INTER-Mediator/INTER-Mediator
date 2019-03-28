@@ -39,6 +39,7 @@ class SendMail
                         'protocol' => 'SMTP_AUTH',
                         'user' => $smtpConfig['username'],
                         'pass' => $smtpConfig['password'],
+                        'encryption' => $smtpConfig['encryption'],
                     ));
                 } else {
                     $ome->setSmtpInfo(array(
@@ -136,6 +137,7 @@ class SendMail
             } else if (isset($result[$i]) && $sendMailParam['body'] && isset($result[$i][$sendMailParam['body']])) {
                 $ome->setBody($result[$i][$sendMailParam['body']]);
             }
+
             if ($ome->send()) {
                 if ($sendMailParam['store']) {
                     $storeContext = new DB\Proxy();
