@@ -140,6 +140,9 @@ class SendMail
 
             if ($ome->send()) {
                 if ($sendMailParam['store']) {
+
+                    file_put_contents('/var/www/d9.txt',var_export($dbProxy->dbSettings, true));
+
                     $storeContext = new DB\Proxy();
                     $storeContext->ignoringPost();
                     $storeContext->initialize(
