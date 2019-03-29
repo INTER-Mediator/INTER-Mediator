@@ -542,7 +542,7 @@ class OME
                 $transport->setUsername($this->smtpInfo['user']);
             }
             if (isset($this->smtpInfo['pass']) && strlen($this->smtpInfo['pass']) > 0) {
-                $transport->setPassword($this->smtpInfo['password']);
+                $transport->setPassword($this->smtpInfo['pass']);
             }
             $mailer = new \Swift_Mailer($transport);
             $message = new \Swift_Message($headerField);
