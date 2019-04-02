@@ -37,6 +37,7 @@ Ver.6-dev (in development)
 - After mailing with setting the 'send-mail' keyed value, if the 'store' keyed value has the context name,
   the mail content is going to store the context with fields named "errors", "to_field", "bcc_field",
   "cc_field", "from_field", "subject", "body". So far the field names is fixed.
+- The date formatter started to support the Japanese new gengo Reiwa.
 - [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
