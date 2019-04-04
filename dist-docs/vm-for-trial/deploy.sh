@@ -115,9 +115,6 @@ if [ $OS = 'alpine' ] ; then
 
     rc-service apache2 start
     rc-update add apache2
-    /etc/init.d/mariadb setup
-    rc-service mariadb start
-    rc-update add mariadb
     /etc/init.d/postgresql setup
     rc-service postgresql start
     rc-update add postgresql
@@ -204,6 +201,10 @@ if [ $OS = 'alpine' ] ; then
     echo "" >> /etc/mysql/my.cnf
     echo "[mysql]" >> /etc/mysql/my.cnf
     echo "default-character-set=utf8mb4" >> /etc/mysql/my.cnf
+
+    /etc/init.d/mariadb setup
+    rc-service mariadb start
+    rc-update add mariadb
 else
     echo "[mysqld]" > /etc/mysql/conf.d/im.cnf
     echo "character-set-server=utf8mb4" >> /etc/mysql/conf.d/im.cnf
@@ -223,8 +224,8 @@ cd "${WEBROOT}"
 git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git && git checkout 5.x
 result=`git diff 5.x..release 2> /dev/null`
 if [ "$result" = '' ]; then
-    git checkout stable
-    #git checkout 5.x
+    #git checkout stable
+    git checkout 5.x
 fi
 
 rm -f "${WEBROOT}/index.html"
