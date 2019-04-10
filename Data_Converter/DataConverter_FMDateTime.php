@@ -91,7 +91,7 @@ class DataConverter_FMDateTime
             return '';
         }
         $jYearStartDate = array(
-            '2019/4/30'=> '令和', '1989-1-8' => '平成', '1926-12-25' => '昭和', '1912-7-30' => '大正', '1868-1-25' => '明治');
+            '2019-5-1'=> '令和', '1989-1-8' => '平成', '1926-12-25' => '昭和', '1912-7-30' => '大正', '1868-1-25' => '明治');
         $wStrArray = array('日', '月', '火', '水', '木', '金', '土');
 
         // @codeCoverageIgnoreStart
@@ -109,7 +109,7 @@ class DataConverter_FMDateTime
         $gengoYear = 0;
         foreach ($jYearStartDate as $startDate => $gengo) {
             $dtStart = new DateTime($startDate);
-            if ($dt->format('U') > $dtStart->format('U')) {
+            if ($dt->format('U') >= $dtStart->format('U')) {
                 $gengoName = $gengo;
                 $gengoYear = $dt->format('Y') - $dtStart->format('Y') + 1;
                 $gengoYear = ($gengoYear == 1) ? '元' : $gengoYear;
