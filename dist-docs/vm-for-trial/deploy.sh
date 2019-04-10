@@ -116,9 +116,6 @@ if [ $OS = 'alpine' ] ; then
 
     rc-service apache2 start
     rc-update add apache2
-    /etc/init.d/mariadb setup
-    rc-service mariadb start
-    rc-update add mariadb
     /etc/init.d/postgresql setup
     rc-service postgresql start
     rc-update add postgresql
@@ -205,6 +202,10 @@ if [ $OS = 'alpine' ] ; then
     echo "" >> /etc/mysql/my.cnf
     echo "[mysql]" >> /etc/mysql/my.cnf
     echo "default-character-set=utf8mb4" >> /etc/mysql/my.cnf
+
+    /etc/init.d/mariadb setup
+    rc-service mariadb start
+    rc-update add mariadb
 else
     echo "[mysqld]" > /etc/mysql/conf.d/im.cnf
     echo "character-set-server=utf8mb4" >> /etc/mysql/conf.d/im.cnf
