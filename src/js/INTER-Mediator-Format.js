@@ -495,7 +495,7 @@ let IMLibFormat = {
   },
 
   jYearStartDate: {
-    '2019/4/30': '令和', '1989/1/8': '平成', '1926/12/25': '昭和', '1912/7/30': '大正', '1868/1/25': '明治'
+    '2019/5/1': '令和', '1989/1/8': '平成', '1926/12/25': '昭和', '1912/7/30': '大正', '1868/1/25': '明治'
   },
   eDayName: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
   eDayAbbr: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
@@ -515,7 +515,7 @@ let IMLibFormat = {
     for (startDateStr in IMLibFormat.jYearStartDate) {
       if (IMLibFormat.jYearStartDate.hasOwnProperty(startDateStr)) {
         dtStart = new Date(startDateStr)
-        if (dt > dtStart) {
+        if (dt >= dtStart) {
           gengoName = IMLibFormat.jYearStartDate[startDateStr]
           gengoYear = dt.getFullYear() - dtStart.getFullYear() + 1
           gengoYear = ((gengoYear === 1) ? '元' : (fmt === 2 ? IMLibFormat.getKanjiNumber(gengoYear) : gengoYear))
