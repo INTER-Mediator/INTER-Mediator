@@ -1,7 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
   "version": "6-dev",
-  "time": "2019-03-07",
+  "time": "2019-04-14",
   "repositories": [
     {
       "type": "git",
@@ -23,6 +23,13 @@
     "yodarunamok/fxphp": "*",
     "inter-mediator/fmdataapi": "*",
     "swiftmailer/swiftmailer": "*"
+  },
+  "extra": {
+    "mouf": {
+      "nodejs": {
+        "version": "^11"
+      }
+    }
   },
   "require-dev": {
     "matthiasmullie/minify": "1.3.*"
