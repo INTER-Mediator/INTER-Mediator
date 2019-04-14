@@ -204,6 +204,7 @@ if [ $OS = 'alpine' ] ; then
 
     /etc/init.d/mariadb setup
     rc-service mariadb start
+    /usr/bin/mysqladmin -u root password 'im4135dev'
     rc-update add mariadb
 else
     echo "[mysqld]" > /etc/mysql/conf.d/im.cnf

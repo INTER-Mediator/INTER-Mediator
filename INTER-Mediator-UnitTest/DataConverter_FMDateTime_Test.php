@@ -188,5 +188,39 @@ class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
         );
         $string = '01/05/2000 12:34:56';
         $this->assertSame($expected, $this->dataconverter->dateArrayFromFMDate($string));
+
+        $expected = array(
+            'unixtime' => '1556636399',
+            'year' => '2019',
+            'jyear' => '平成31年',
+            'month' => '04',
+            'day' => '30',
+            'hour' => '23',
+            'minute' => '59',
+            'second' => '59',
+            'weekdayName' => '火',
+            'weekday' => '2',
+            'longdate' => '2019/04/30',
+            'jlongdate' => '平成 31 年 4 月 30 日 火曜日'
+        );
+        $string = '04/30/2019 23:59:59';
+        $this->assertSame($expected, $this->dataconverter->dateArrayFromFMDate($string));
+
+        $expected = array(
+            'unixtime' => '1556636400',
+            'year' => '2019',
+            'jyear' => '令和元年',
+            'month' => '05',
+            'day' => '01',
+            'hour' => '00',
+            'minute' => '00',
+            'second' => '00',
+            'weekdayName' => '水',
+            'weekday' => '3',
+            'longdate' => '2019/05/01',
+            'jlongdate' => '令和 元 年 5 月 1 日 水曜日'
+        );
+        $string = '05/01/2019 00:00:00';
+        $this->assertSame($expected, $this->dataconverter->dateArrayFromFMDate($string));
     }
 }

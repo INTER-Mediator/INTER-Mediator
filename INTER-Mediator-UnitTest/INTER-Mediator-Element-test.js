@@ -242,6 +242,20 @@ buster.testCase('INTER-Mediator Element Test', {
         IMLibElement.setValueToIMNode(tempElement, '', '2017-07-23 14:39:06', true);
         assert.equals(tempElement.value, '平成二十九年');
 
+        tempElement.setAttribute('data-im-format', 'date(%g)');
+        IMLibElement.setValueToIMNode(tempElement, '', '2019-04-30 23:59:59', true);
+        assert.equals(tempElement.value, '平成31年');
+        tempElement.setAttribute('data-im-format', 'date(%G)');
+        IMLibElement.setValueToIMNode(tempElement, '', '2019-04-30 23:59:59', true);
+        assert.equals(tempElement.value, '平成三十一年');
+
+        tempElement.setAttribute('data-im-format', 'date(%g)');
+        IMLibElement.setValueToIMNode(tempElement, '', '2019-05-01 00:00:00', true);
+        assert.equals(tempElement.value, '令和元年');
+        tempElement.setAttribute('data-im-format', 'date(%G)');
+        IMLibElement.setValueToIMNode(tempElement, '', '2019-05-01 00:00:00', true);
+        assert.equals(tempElement.value, '令和元年');
+
         tempElement.setAttribute('data-im-format', 'date(%M)');
         IMLibElement.setValueToIMNode(tempElement, '', '2017-07-23 14:39:06', true);
         assert.equals(tempElement.value, '07');
