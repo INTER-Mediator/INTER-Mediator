@@ -33,8 +33,7 @@
     "url": "https://github.com/INTER-Mediator/INTER-Mediator.git"
   },
   "scripts": {
-    "test": "node_modules/.bin/buster-test -r specification -c ./spec/buster.js",
-    "test-local": "/usr/local/bin/buster-test -r specification"
+    "test": "cd spec;env PATH=\"../vendor/bin:$PATH\" ../node_modules/.bin/jest"
   },
   "devDependencies": {
     "request": "*",
@@ -45,7 +44,9 @@
     "forever": "*",
     "forever-win": "*",
     "request": "^2.88.0",
-    "socket.io": "*"
+    "socket.io": "*",
+    "codemirror": "*",
+    "inter-mediator-plugin-codemirror": "*"
   },
   "engines": {
     "node": "*"
