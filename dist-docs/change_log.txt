@@ -10,9 +10,9 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.5.10-dev (in development)
-- In the PDO connection string for MySQL uses host=localhost instead of unix_socket=.
+Ver.5.10 (April 17, 2019)
 - The Japanese new gengo REIWA is supported in the date formatter.
+- In the PDO connection string for MySQL uses host=localhost instead of unix_socket=.
 - [BUG FIX] RSA parameters for phpseclib v2 are set as the correct description with const parameters.
 - [BUG FIX] New LDAP user couldn't log in after Ver.5.8.
 - [BUG FIX] New LDAP user required 2 log-in trial after Ver.5.2.
