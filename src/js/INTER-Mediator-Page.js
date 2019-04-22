@@ -320,6 +320,7 @@ let INTERMediatorOnPage = {
       INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_crypted', INTERMediatorOnPage.authCryptedPassword)
     }
   },
+
   // defaultBackgroundImage: null, // Removed on Ver.5.6
   // defaultBackgroundColor: null, // Removed on Ver.5.6
   loginPanelHTML: null,
