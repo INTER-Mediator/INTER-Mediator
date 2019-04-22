@@ -1014,13 +1014,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->outputOfProcessing['requireAuth'] = true;
             }
             $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-            if (isset($tableInfo['authentication'])
-                && isset($tableInfo['authentication']['media-handling'])
-                && $tableInfo['authentication']['media-handling'] === true
+            if (isset($tableInfo['authentication']) &&
+                isset($tableInfo['authentication']['media-handling']) &&
+                $tableInfo['authentication']['media-handling'] === true
             ) {
                 $generatedChallenge = $this->generateChallenge();
                 $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
                 $this->outputOfProcessing['mediatoken'] = $generatedChallenge;
+                $this->logger->setDebugMessage("mediatoken stored", 2);
             }
         }
         $this->addOutputData('errorMessages', $this->logger->getErrorMessages());

@@ -291,12 +291,14 @@ let INTERMediatorOnPage = {
       case 'session-storage':
         if (INTERMediatorOnPage.authUser) {
           INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_username', INTERMediatorOnPage.authUser)
+          INTERMediatorOnPage.setCookieDomainWide('_im_username', INTERMediatorOnPage.authUser)
         }
         if (INTERMediatorOnPage.authHashedPassword) {
           INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_credential', INTERMediatorOnPage.authHashedPassword)
         }
         if (INTERMediatorOnPage.mediaToken) {
           INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_mediatoken', INTERMediatorOnPage.mediaToken)
+          INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken)
         }
         if (INTERMediatorOnPage.authCryptedPassword) {
           INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_crypted', INTERMediatorOnPage.authCryptedPassword)
@@ -304,7 +306,20 @@ let INTERMediatorOnPage = {
         break
     }
   },
-
+  storeCredentialsToCookieOrStorage: function () {
+    'use strict'
+    if (INTERMediatorOnPage.authUser) {
+      INTERMediatorOnPage.setCookieDomainWide('_im_username', INTERMediatorOnPage.authUser)
+    }
+    if (INTERMediatorOnPage.authHashedPassword) {
+    }
+    if (INTERMediatorOnPage.mediaToken) {
+      INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken)
+    }
+    if (INTERMediatorOnPage.authCryptedPassword) {
+      INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_crypted', INTERMediatorOnPage.authCryptedPassword)
+    }
+  },
   // defaultBackgroundImage: null, // Removed on Ver.5.6
   // defaultBackgroundColor: null, // Removed on Ver.5.6
   loginPanelHTML: null,
