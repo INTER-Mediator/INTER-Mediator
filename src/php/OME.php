@@ -176,8 +176,8 @@ class OME
      *
      *    判断に使う正規表現は「^([a-z0-9_]|\-|\.)+@(([a-z0-9_]|\-)+\.)+[a-z]+$」なので、完全ではないが概ねOKかと。
      *
+     * @param string    チェックするメールアドレス。
      * @return    boolean    正しい形式ならTRUE、そうではないときはFALSE
-     * @param    string    チェックするメールアドレス。
      */
     public function checkEmail($address)
     {
@@ -192,10 +192,10 @@ class OME
     }
 
     /**    Fromフィールドを設定する。
+     * @param string    送信者のアドレスで、アドレスとして正しいかどうかがチェックされる
+     * @param string    送信者名（日本語の文字列はそのまま指定可能）で、省略しても良い
+     * @param boolean    送信者アドレスを自動的にsendmailの-fパラメータとして与えて、Return-Pathのアドレスとして使用する場合はTRUE。既定値はFALSE
      * @return    boolean    与えたメールアドレスが正しく、引数が適切に利用されればTRUEを返す。メールアドレスが正しくないとFALSEを戻し、内部変数等には与えた引数のデータは記録されない
-     * @param    string    送信者のアドレスで、アドレスとして正しいかどうかがチェックされる
-     * @param    string    送信者名（日本語の文字列はそのまま指定可能）で、省略しても良い
-     * @param    boolean    送信者アドレスを自動的にsendmailの-fパラメータとして与えて、Return-Pathのアドレスとして使用する場合はTRUE。既定値はFALSE
      */
     public function setFromField($address, $name = false, $isSetToParam = FALSE)
     {
@@ -227,10 +227,10 @@ class OME
 
     /**    Toフィールドを設定する。すでに設定されていれば上書きされ、この引数の定義だけが残る
      *
-     * @return    boolean    与えたメールアドレスが正しく、引数が適切に利用されればTRUEを返す。メールアドレスが正しくないとFALSEを戻し、内部変数等には与えた引数のデータは記録されない
-     *
      * @param string 送信者のアドレス
      * @param string 送信者名
+     * @return    boolean    与えたメールアドレスが正しく、引数が適切に利用されればTRUEを返す。メールアドレスが正しくないとFALSEを戻し、内部変数等には与えた引数のデータは記録されない
+     *
      */
     public function setToField($address, $name = false)
     {
@@ -257,9 +257,9 @@ class OME
 
     /**    Toフィールドに追加する。
      *
-     * @return boolean メールアドレスを調べて不正ならfalse（アドレスは追加されない）、そうでなければtrue
      * @param string    送信者のアドレス
      * @param string    送信者名。日本語の指定も可能
+     * @return boolean メールアドレスを調べて不正ならfalse（アドレスは追加されない）、そうでなければtrue
      */
     public function appendToField($address, $name = false)
     {
@@ -575,16 +575,18 @@ class OME
     {
         $result = [];
         foreach ($ar as $item) {
-            if (preg_match('([^<]*)<([^>])+>', $item, $matched) === 1) {
-                $name = trim($matched[1]);
-                $addr = $matched[2];
-                if (strlen($name) > 0) {
-                    $result[$name] = $addr;
+            if (strlen(trim($item)) > 1) {
+                if (preg_match('([^<]*)<([^>])+>', trim($item), $matched) === 1) {
+                    $name = trim($matched[1]);
+                    $addr = $matched[2];
+                    if (strlen($name) > 0) {
+                        $result[$name] = $addr;
+                    } else {
+                        $result[] = $addr;
+                    }
                 } else {
-                    $result[] = $addr;
+                    $result[] = trim($item);
                 }
-            } else {
-                $result[] = $item;
             }
         }
         return $result;
