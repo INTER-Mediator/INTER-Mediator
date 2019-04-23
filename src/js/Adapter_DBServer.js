@@ -216,7 +216,7 @@ const INTERMediator_DBAdapter = {
               }
               if (mediatoken !== null) {
                 INTERMediatorOnPage.mediaToken = mediatoken
-                INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
+                INTERMediatorOnPage.storeMediaCredentialsToCookie()
               }
               // This is forced fail-over for the password was changed in LDAP auth.
               if (INTERMediatorOnPage.isLDAP === true &&
