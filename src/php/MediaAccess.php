@@ -42,9 +42,9 @@ class MediaAccess
             }
             list($file, $isURL) = $this->checkForFileMakerMedia($dbProxyInstance, $options, $file, $isURL);
             /*
-             * If the FileMaker's object field is storing a PDF, the $file could be "http://server:16000/...
-             * style URL. In case of an image, $file is just the path info as like above.
-             */
+                         * If the FileMaker's object field is storing a PDF, the $file could be "http://server:16000/...
+                         * style URL. In case of an image, $file is just the path info as like above.
+                         */
             $file = IMUtil::removeNull($file);
             if (strpos($file, '../') !== false) {
                 return;

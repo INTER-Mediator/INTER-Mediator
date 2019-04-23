@@ -304,6 +304,20 @@ let INTERMediatorOnPage = {
         break
     }
   },
+  storeMediaCredentialsToCookie: function () {
+    'use strict'
+    if (INTERMediatorOnPage.authUser) {
+      INTERMediatorOnPage.setCookieDomainWide('_im_username', INTERMediatorOnPage.authUser)
+    }
+    if (INTERMediatorOnPage.authHashedPassword) {
+    }
+    if (INTERMediatorOnPage.mediaToken) {
+      INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken)
+    }
+    if (INTERMediatorOnPage.authCryptedPassword) {
+      INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_crypted', INTERMediatorOnPage.authCryptedPassword)
+    }
+  },
 
   // defaultBackgroundImage: null, // Removed on Ver.5.6
   // defaultBackgroundColor: null, // Removed on Ver.5.6

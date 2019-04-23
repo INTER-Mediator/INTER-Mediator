@@ -283,6 +283,7 @@ class FileUploader
             }
 
             $dbProxyInstance->processingRequest("update");
+            $dbProxyRecord = $dbProxyInstance->getDatabaseResult();
 
             $relatedContext = null;
             if ($useContainer === FALSE) {
@@ -306,8 +307,7 @@ class FileUploader
                                 foreach ($relatedContextInfo["relation"] as $cItem) {
                                     if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
                                         $fields[] = $cItem['foreign-key'];
-                                        $values[] = $dbKeyValue;
-                                        break;
+                                        $values[] = $dbProxyRecord[0][$cItem['join-field']];
                                     }
                                 }
                             }

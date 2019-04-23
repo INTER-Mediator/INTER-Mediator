@@ -147,6 +147,7 @@ class SendMail
                         $dbProxy->dbSettings->getOptions(),
                         $dbProxy->dbSettings->getDbSpec(),
                         2, $sendMailParam['store'], null);
+                    $storeContext->logger->setDebugMessage("Proxy with the {$sendMailParam['store']} context.", 2);
                     $storeContext->dbSettings->setCurrentUser($dbProxy->dbSettings->getCurrentUser());
                     $storeContextInfo = $storeContext->dbSettings->getDataSourceTargetArray();
                     $storeContext->dbSettings->addValueWithField("errors", $ome->getErrorMessage());
@@ -168,11 +169,11 @@ class SendMail
                             if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
                                 $storeContext->dbSettings->addValueWithField(
                                     $cItem['foreign-key'], $result[0][$cItem['join-field']]);
-                                break;
                             }
                         }
                     }
                     $storeContext->processingRequest("create", true);
+//                    $this->logger->setErrorMessage("Exception:[1] {$e->getMessage()}");
                     //    $storeContext->finishCommunication(true);
                     //    $storeContext->exportOutputDataAsJSON();
                 }
