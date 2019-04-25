@@ -256,7 +256,9 @@ class MediaAccess
                 $cookieNameUser .= ('_' . $realm);
                 $cookieNameToken .= ('_' . $realm);
             }
-            if (!$dbProxyInstance->checkMediaToken($_COOKIE[$cookieNameUser], $_COOKIE[$cookieNameToken])) {
+            $cValueUser = isset($_COOKIE[$cookieNameUser])?$_COOKIE[$cookieNameUser]:'';
+            $cValueToken = isset($_COOKIE[$cookieNameToken])?$_COOKIE[$cookieNameToken]:'';
+            if (!$dbProxyInstance->checkMediaToken($cValueUser, $cValueToken)) {
                 $this->exitAsError(401);
             }
             if (isset($context['authentication']['load'])) {
