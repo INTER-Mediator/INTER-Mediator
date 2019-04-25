@@ -400,6 +400,7 @@ class DefinitionChecker
                     'f-option' => 'boolean',
                     'body-wrap' => 'integer',
                     'store' => 'string',
+                    'attachment' => 'string',
                 ),
                 'read' => array(
                     'from' => 'string',
@@ -419,6 +420,7 @@ class DefinitionChecker
                     'f-option' => 'boolean',
                     'body-wrap' => 'integer',
                     'store' => 'string',
+                    'attachment' => 'string',
                 ),
                 'new' => array(
                     'from' => 'string',
@@ -438,6 +440,7 @@ class DefinitionChecker
                     'f-option' => 'boolean',
                     'body-wrap' => 'integer',
                     'store' => 'string',
+                    'attachment' => 'string',
                 ),
                 'create' => array(
                     'from' => 'string',
@@ -457,6 +460,7 @@ class DefinitionChecker
                     'f-option' => 'boolean',
                     'body-wrap' => 'integer',
                     'store' => 'string',
+                    'attachment' => 'string',
                 ),
                 'edit' => array(
                     'from' => 'string',
@@ -476,6 +480,7 @@ class DefinitionChecker
                     'f-option' => 'boolean',
                     'body-wrap' => 'integer',
                     'store' => 'string',
+                    'attachment' => 'string',
                 ),
                 'update' => array(
                     'from' => 'string',
@@ -495,6 +500,7 @@ class DefinitionChecker
                     'f-option' => 'boolean',
                     'body-wrap' => 'integer',
                     'store' => 'string',
+                    'attachment' => 'string',
                 ),
             )
         ),

@@ -103,7 +103,7 @@ class FileUploader
         $this->db = $dbProxyInstance;
         $dbProxyInstance->initialize($datasource, $options, $dbspec, $debug, $_POST["_im_contextname"]);
 
-        $dbProxyInstance->logger->setDebugMessage("$$$$ processing start");
+        $dbProxyInstance->logger->setDebugMessage("FileUploader class's processing starts");
 
         $useContainer = FALSE;
         $dbProxyContext = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
@@ -170,6 +170,7 @@ class FileUploader
             $fileInfoTemp = $fileInfo['tmp_name'];
         }
         $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
+        $dbProxyInstance->logger->setDebugMessage("########## filePathInfo={$filePathInfo}",2);
 
         if ($_POST["_im_field"] != "_im_csv_upload") {
             // file uploading or FM's container

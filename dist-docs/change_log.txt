@@ -30,6 +30,7 @@ Ver.6-dev (in development)
 - Deprecated global variables $g_dbInstance, $g_serverSideCall in INTER-Mediator.php are removed.
 - Metadata.json is removed, composer.json takes over.
 - Mail is going to send with swiftmailer.
+- File can be attached with swiftmailer by 'attachment' keyed value in the 'send-mail' block.
 - In the PDO connection string for MySQL uses host=localhost instead of unix_socket=.
 - The method template "public function createInDB($bypassAuth)" is changed to "public function createInDB()" in
   DBClass_Interface. Some processes relevant to apply the privilege of record to an user was bypassed, but it requires
@@ -44,13 +45,14 @@ Ver.6-dev (in development)
 - [BUG FIX] Calculation from other contexts didn't work, and fix it.
 - [BUG FIX] The class name 'Null' wasn't permitted in PHP7. It was changed to NullDB.
 
-Ver.5.10-dev (in development)
-- In the PDO connection string for MySQL uses host=localhost instead of unix_socket=.
+Ver.5.10 (April 17, 2019)
 - The Japanese new gengo REIWA is supported in the date formatter.
+- In the PDO connection string for MySQL uses host=localhost instead of unix_socket=.
 - [BUG FIX] RSA parameters for phpseclib v2 are set as the correct description with const parameters.
 - [BUG FIX] New LDAP user couldn't log in after Ver.5.8.
 - [BUG FIX] New LDAP user required 2 log-in trial after Ver.5.2.
 - [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
+- [BUG FIX] Fix handling starting dates of the Japanese new era in the date formatter.
 
 Ver.5.9 (January 29, 2019)
 - Reduce error messages when using PHP 7.2 and DB_FileMaker_DataAPI class.

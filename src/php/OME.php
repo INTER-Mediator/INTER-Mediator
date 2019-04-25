@@ -57,6 +57,7 @@ class OME
     private $errorMessage = '';
     private $sendmailParam = '';
     private $tmpContents = '';
+    private $attachments = [];
 
     private $senderAddress = null;
     private $smtpInfo = null;
@@ -470,6 +471,14 @@ class OME
         return mb_ereg_match("/[[:cntrl:]]/", $str);
     }
 
+    /**    添付ファイルを指定する
+     * @param string 添付するファイルへのパス
+     */
+    public function addAttachment($fpath)
+    {
+        $this->attachments[] = $fpath;
+    }
+
     /**    メールを送信する。
      *
      *    念のため、To、Cc、Bccのデータにコントロールコードが入っているかどうかをチェックしている。
@@ -563,6 +572,9 @@ class OME
             }
             $message->setSubject($this->subject);
             $message->setBody($bodyString);
+            foreach($this->attachments as $path) {
+                $message->attach(\Swift_Attachment::fromPath($path)->setFilename(basename($path)));
+            }
             $resultMail = $mailer->send($message, $failures);
             if (!$resultMail) {
                 $this->errorMessage = 'Unsent recipients: ' . var_export($failures, true) . '\n';
@@ -576,7 +588,7 @@ class OME
         $result = [];
         foreach ($ar as $item) {
             if (strlen(trim($item)) > 1) {
-                if (preg_match('([^<]*)<([^>])+>', trim($item), $matched) === 1) {
+                if (preg_match('/([^<]*)<([^>])+>/', trim($item), $matched) === 1) {
                     $name = trim($matched[1]);
                     $addr = $matched[2];
                     if (strlen($name) > 0) {

@@ -637,7 +637,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->userExpanded->setUpSharedObjects($this);
             }
         }
-
         $this->dbSettings->setPrimaryKeyOnly(isset($this->PostData['pkeyonly']));
 
         $this->dbSettings->setCurrentUser(isset($this->PostData['authuser']) ? $this->PostData['authuser'] : null);
@@ -708,6 +707,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->paramCryptResponse = isset($this->PostData['cresponse']) ? $this->PostData['cresponse'] : "";
         $this->clientId = isset($this->PostData['clientid']) ? $this->PostData['clientid'] :
             (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "Non-browser-client");
+
+        $this->dbSettings->setMediaRoot(isset($options['media-root-dir']) ? $options['media-root-dir'] : null);
+
+        $this->logger->setDebugMessage("Server side locale: " . setlocale(LC_ALL, "0"), 2);
         return true;
     }
 
