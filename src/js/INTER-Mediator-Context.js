@@ -355,21 +355,25 @@ IMLibContext.prototype.getRecordNumber = function () {
         recordNumber = 1
     } else {
         // The number of records is the records keyed value.
-        recordNumber = parseInt(this.contextDefinition.records, 10)
-        // From INTERMediator.recordLimit property
-        for (key in INTERMediator.recordLimit) {
-            if (INTERMediator.recordLimit.hasOwnProperty(key)) {
-                value = String(INTERMediator.recordLimit[key])
-                if (key === this.contextDefinition.name &&
-                    value.length > 0) {
-                    recordNumber = parseInt(value)
-                    INTERMediator.setLocalProperty('_im_pagedSize', recordNumber)
-                }
-            }
+        if(this.contextDefinition.records) {
+            recordNumber = parseInt(this.contextDefinition.records)
         }
+        // From INTERMediator.recordLimit property
+        // for (key in INTERMediator.recordLimit) {
+        //     if (INTERMediator.recordLimit.hasOwnProperty(key)) {
+        //         value = String(INTERMediator.recordLimit[key])
+        //         if (key === this.contextDefinition.name &&
+        //             value.length > 0) {
+        //             recordNumber = parseInt(value)
+        //             INTERMediator.setLocalProperty('_im_pagedSize', recordNumber)
+        //         }
+        //     }
+        // }
         // From INTERMediator.pagedSize
-        if (parseInt(INTERMediator.pagedSize, 10) > 0) {
-            recordNumber = INTERMediator.pagedSize
+        if (parseInt(INTERMediator.pagedSize) > 0 &&
+          this.contextDefinition.paging &&
+          Boolean(this.contextDefinition.paging) === true) {
+            recordNumber = parseInt(INTERMediator.pagedSize)
             INTERMediator.setLocalProperty('_im_pagedSize', recordNumber)
         }
         // From Local context's limitnumber directive
