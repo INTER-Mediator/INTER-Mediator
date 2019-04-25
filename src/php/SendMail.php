@@ -138,8 +138,19 @@ class SendMail
                 $ome->setBody($result[$i][$sendMailParam['body']]);
             }
 
+            if (isset($sendMailParam['attachment']) && $dbProxy->dbSettings->getMediaRoot()) {
+                $fpath = "{$dbProxy->dbSettings->getMediaRoot()}/";
+                if(substr($sendMailParam['attachment'],0,1)==='@'){
+                    $fpath .= $result[$i][substr($sendMailParam['attachment'], 1)];
+                } else {
+                    $fpath .= $sendMailParam['attachment'];
+                }
+                $ome->addAttachment($fpath);
+                $dbProxy->logger->setDebugMessage("Attachment: {$fpath}",2);
+            }
+
             if ($ome->send()) {
-                if ($sendMailParam['store']) {
+                if (isset($sendMailParam['store'])) {
                     $storeContext = new DB\Proxy();
                     $storeContext->ignoringPost();
                     $storeContext->initialize(

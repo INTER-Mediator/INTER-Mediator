@@ -74,6 +74,7 @@ class Settings
     private $params_ldapContainer;
     private $params_ldapAccountKey;
     private $params_ldapExpiringSeconds;
+    private $params_mediaRoot;
 
     private $aggregation_select = null;
     private $aggregation_from = null;
@@ -692,6 +693,16 @@ class Settings
             }
         }
         return null;
+    }
+
+    public function setMediaRoot($value)
+    {
+        $this->params_mediaRoot = $value;
+    }
+
+    public function getMediaRoot()
+    {
+        return $this->params_mediaRoot;
     }
 
     public function setGlobalInContext($contextName, $operation, $field, $value)

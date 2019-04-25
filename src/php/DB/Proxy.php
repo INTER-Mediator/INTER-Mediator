@@ -708,6 +708,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->clientId = isset($this->PostData['clientid']) ? $this->PostData['clientid'] :
             (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "Non-browser-client");
 
+        $this->dbSettings->setMediaRoot(isset($options['media-root-dir']) ? $options['media-root-dir'] : null);
+
         $this->logger->setDebugMessage("Server side locale: " . setlocale(LC_ALL, "0"), 2);
         return true;
     }
