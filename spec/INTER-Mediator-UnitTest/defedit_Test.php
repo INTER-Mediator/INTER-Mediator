@@ -6,7 +6,7 @@ use \PHPUnit\Framework\TestCase;
 
 class defedit_Test extends TestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';

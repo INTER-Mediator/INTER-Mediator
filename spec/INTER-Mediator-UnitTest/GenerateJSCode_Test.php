@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class GenerateJSCode_Test extends TestCase
 {
-    protected function setUp()
+    protected function setUp():void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         $this->generater = new GenerateJSCode();

@@ -9,7 +9,7 @@ use \PHPUnit\Framework\TestCase;
 
 class DB_FMS_FX_Test extends DB_FMS_Test_Common
 {
-    function setUp()
+    protected function setUp():void
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');

@@ -67,7 +67,7 @@
   },
   "scripts": {
     "test": [
-      "vendor/bin/phpunit --bootstrap src/vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+      "vendor/bin/phpunit --globals-backup --bootstrap vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
     ],
     "post-update-cmd": [
       "vendor/bin/npm --save install"

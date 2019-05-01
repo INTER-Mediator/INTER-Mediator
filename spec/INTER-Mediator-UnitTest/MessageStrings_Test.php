@@ -9,7 +9,7 @@ use \INTERMediator\Message\MessageStrings;
 
 class MessageStrings_Test extends TestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         $this->messagestrings = new MessageStrings();
     }
@@ -32,31 +32,31 @@ class MessageStrings_Test extends TestCase
         $expected = 'Record #';
         $message = $this->messagestrings->getMessageAs(1, array());
         $this->assertEquals($expected, $message);
-        
+
         $expected = 'Refresh';
         $message = $this->messagestrings->getMessageAs(2, array());
         $this->assertEquals($expected, $message);
-        
+
         $expected = 'Add Record';
         $message = $this->messagestrings->getMessageAs(3, array());
         $this->assertEquals($expected, $message);
-        
+
         $expected = 'Delete Record';
         $message = $this->messagestrings->getMessageAs(4, array());
         $this->assertEquals($expected, $message);
-        
+
         $expected = 'Save';
         $message = $this->messagestrings->getMessageAs(7, array());
         $this->assertEquals($expected, $message);
-        
+
         $expected = 'Login as: ';
         $message = $this->messagestrings->getMessageAs(8, array());
         $this->assertEquals($expected, $message);
-        
+
         $expected = 'Logout';
         $message = $this->messagestrings->getMessageAs(9, array());
         $this->assertEquals($expected, $message);
-        
+
         $expected = 'The field name specified in the page file doesn\'t exist [folder=testfield]';
         $message = $this->messagestrings->getMessageAs(1033, array('testfield'));
         $this->assertEquals($expected, $message);
