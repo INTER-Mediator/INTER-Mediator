@@ -22,7 +22,8 @@
     "paragonie/constant_time_encoding": "*",
     "yodarunamok/fxphp": "*",
     "inter-mediator/fmdataapi": "*",
-    "swiftmailer/swiftmailer": "*"
+    "swiftmailer/swiftmailer": "*",
+    "tecnickcom/tcpdf": "*"
   },
   "extra": {
     "mouf": {
