@@ -40,6 +40,10 @@ IM_Entry(
             ),
             'repeat-control'=>'delete',
         ),
+        array(
+            'name' => 'item_master',
+            'key' => 'id',
+        ),
     ),
     array(
         'formatter' => array(

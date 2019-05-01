@@ -1,6 +1,0 @@
-jQuery File Upload is an alternative of the file upload form.
-
-If you want to try samples file_upload_jQuery_*.html, you have to place the 'jQuery-File-Upload' folder
-in this folder. You can clone from below url with setting the current directory to here.
-
-https://github.com/blueimp/jQuery-File-Upload

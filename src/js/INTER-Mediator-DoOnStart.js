@@ -146,4 +146,6 @@ if (window) {
     }
   })
 }
+
+IMParts_Catalog = {}
 // ****** This file should terminate on the new line. INTER-Mediator adds some codes before here. ****

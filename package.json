@@ -41,12 +41,22 @@
     "power-assert": "*"
   },
   "dependencies": {
+    "jsencrypt": "*",
+    "jssha": "*",
     "forever": "*",
     "forever-win": "*",
     "request": "^2.88.0",
     "socket.io": "*",
-    "codemirror": "*",
-    "inter-mediator-plugin-codemirror": "*"
+    "inter-mediator-expressionparser": "1.0.1",
+    "inter-mediator-nodegraph": "1.0.0",
+    "inter-mediator-queue": "1.0.0",
+    "inter-mediator-plugin-codemirror": "1.0.0",
+    "inter-mediator-plugin-fileupload": "1.0.0",
+    "inter-mediator-plugin-jsonformatter": "1.0.0",
+    "inter-mediator-plugin-jquerydatepicker": "1.0.2",
+    "inter-mediator-plugin-jqueryfileupload": "1.0.3",
+    "inter-mediator-plugin-popupselector": "1.0.1",
+    "inter-mediator-plugin-tinymce": "1.0.1"
   },
   "engines": {
     "node": "*"

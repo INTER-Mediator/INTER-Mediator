@@ -13,21 +13,16 @@
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>INTER-Mediator - Sample - Authorized Chat / MySQL</title>
-    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.js"></script>
+    <title>INTER-Mediator - Sample - Plugin/popupselector</title>
     <script src="include_MySQL.php"></script>
-    <script type="text/javascript" src="../../node_modules/inter-mediator-plugin-jquerydatepicker/index.js"></script>
+    <script type="text/javascript" src="../../node_modules/inter-mediator-plugin-popupselector/index.js"></script>
 </head>
 <body>
 <header>
   <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
 </header>
 <div id="wrapper">
-<h1>JavaScript Component Test (jQuery Date Picker)</h1>
+<h1>JavaScript Component Test</h1>
 <table>
     <thead>
     <tr>
@@ -38,11 +33,10 @@
     </thead>
     <tbody>
     <tr>
-        <td>
-            <input type="text" data-im="testtable@dt1"
-                   data-im-widget="jquery_datepicker">
-        </td>
-        <td data-im="testtable@text1"></td>
+        <td><div data-im="testtable@dt1"></div></td>
+        <td data-im="testtable@text1"
+            data-im-widget="popupselector"
+            data-im-popup="item_master@id@data-im-value item_master@name"></td>
         <td></td>
     </tr>
     </tbody>

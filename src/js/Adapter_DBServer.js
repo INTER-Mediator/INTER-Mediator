@@ -52,7 +52,7 @@ const INTERMediator_DBAdapter = {
             IMLib.nl_char + INTERMediatorOnPage.authChallenge
           )
           authParams += '&cresponse=' + encodeURIComponent(encrypted +
-              IMLib.nl_char + INTERMediatorOnPage.authCryptedPassword.substr(220))
+            IMLib.nl_char + INTERMediatorOnPage.authCryptedPassword.substr(220))
           if (INTERMediator_DBAdapter.debugMessage) {
             INTERMediatorLog.setDebugMessage('generate_authParams/authCryptedPassword=' +
               INTERMediatorOnPage.authCryptedPassword)
@@ -64,8 +64,10 @@ const INTERMediator_DBAdapter = {
         }
       }
       if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
-        shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, 'ASCII')
-        hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge, 'ASCII', 'SHA-256', 'HEX')
+        shaObj = new jsSHA('SHA-256', 'TEXT')
+        shaObj.setHMACKey(INTERMediatorOnPage.authChallenge, 'TEXT')
+        shaObj.update(INTERMediatorOnPage.authHashedPassword)
+        hmacValue = shaObj.getHMAC('HEX')
         authParams += '&response=' + encodeURIComponent(hmacValue)
         if (INTERMediator_DBAdapter.debugMessage) {
           INTERMediatorLog.setDebugMessage('generate_authParams/authHashedPassword=' +
@@ -131,7 +133,7 @@ const INTERMediator_DBAdapter = {
 
   /* No return values */
   server_access_async: function (accessURL, debugMessageNumber, errorMessageNumber,
-    successProc = null, failedProc = null, authAgainProc = null) {
+                                 successProc = null, failedProc = null, authAgainProc = null) {
     // 'use strict'
     let newRecordKeyValue = ''
     let dbresult = ''
@@ -458,47 +460,47 @@ const INTERMediator_DBAdapter = {
     }
     params = INTERMediator_DBAdapter.db_queryParameters(args)
     return new Promise((resolve, reject) => {
-      this.server_access_async(params, 1012, 1004,
-        (() => {
-          let contextDef
-          let contextName = args.name
-          let recordsNumber = Number(args.records)
-          let resolveCapt = resolve
-          return (result) => {
-            result.count = result.dbresult ? Object.keys(result.dbresult).length : 0
-            contextDef = IMLibContextPool.getContextDef(contextName)
-            if (!contextDef.relation &&
-              args.paging && Boolean(args.paging) === true) {
-              INTERMediator.pagedAllCount = parseInt(result.resultCount, 10)
-              if (result.totalCount) {
-                INTERMediator.totalRecordCount = parseInt(result.totalCount, 10)
+        this.server_access_async(params, 1012, 1004,
+          (() => {
+            let contextDef
+            let contextName = args.name
+            let recordsNumber = Number(args.records)
+            let resolveCapt = resolve
+            return (result) => {
+              result.count = result.dbresult ? Object.keys(result.dbresult).length : 0
+              contextDef = IMLibContextPool.getContextDef(contextName)
+              if (!contextDef.relation &&
+                args.paging && Boolean(args.paging) === true) {
+                INTERMediator.pagedAllCount = parseInt(result.resultCount, 10)
+                if (result.totalCount) {
+                  INTERMediator.totalRecordCount = parseInt(result.totalCount, 10)
+                }
               }
-            }
-            if ((args.paging !== null) && (Boolean(args.paging) === true)) {
-              INTERMediator.pagination = true
-              if (!(recordsNumber >= Number(INTERMediator.pagedSize) &&
-                Number(INTERMediator.pagedSize) > 0)) {
-                INTERMediator.pagedSize = parseInt(recordsNumber, 10)
+              if ((args.paging !== null) && (Boolean(args.paging) === true)) {
+                INTERMediator.pagination = true
+                if (!(recordsNumber >= Number(INTERMediator.pagedSize) &&
+                  Number(INTERMediator.pagedSize) > 0)) {
+                  INTERMediator.pagedSize = parseInt(recordsNumber, 10)
+                }
               }
+              successProc ? successProc(result) : false
+              resolveCapt(result)
             }
-            successProc ? successProc(result) : false
-            resolveCapt(result)
-          }
-        })(),
-        failedProc,
-        INTERMediator_DBAdapter.createExceptionFunc(
-          1016,
-          (function () {
-            var argsCapt = args
-            var succesProcCapt = successProc
-            var failedProcCapt = failedProc
-            return function () {
-              INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
-            }
-          })()
+          })(),
+          failedProc,
+          INTERMediator_DBAdapter.createExceptionFunc(
+            1016,
+            (function () {
+              var argsCapt = args
+              var succesProcCapt = successProc
+              var failedProcCapt = failedProc
+              return function () {
+                INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+              }
+            })()
+          )
         )
-      )
-    }
+      }
     ).catch((err) => {
       throw err
     })
@@ -527,7 +529,7 @@ const INTERMediator_DBAdapter = {
     } else {
       if (parseInt(args.records, 10) === 0 &&
         (INTERMediatorOnPage.dbClassName === 'FileMaker_FX' ||
-        INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI')) {
+          INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI')) {
         params = 'access=describe&name=' + encodeURIComponent(args.name)
       } else {
         params = 'access=read&name=' + encodeURIComponent(args.name)
