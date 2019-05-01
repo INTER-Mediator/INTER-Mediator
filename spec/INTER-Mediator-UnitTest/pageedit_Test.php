@@ -24,7 +24,7 @@ class pageedit_Test extends TestCase
         $imPath = \INTERMediator\IMUtil::pathToINTERMediator();
         require_once($imPath . '/editors/pageedit.php');
         $output = ob_get_contents();
-        $this->assertNotContains('INTERMediatorLog.debugMode=', $output);
+        $this->assertStringNotContainsString('INTERMediatorLog.debugMode=', $output);
         ob_end_clean();
     }
 }

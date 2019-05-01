@@ -1,4 +1,3 @@
-//const assert = require('power-assert');
 const INTERMediator = require('../../src/js/INTER-Mediator')
 
 test('INTERMediator.separator', () => {

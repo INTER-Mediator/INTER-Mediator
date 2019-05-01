@@ -1,62 +1,9 @@
-/*
- * How to test locally.
- *
- * [Preparation]
- * - Install Node.js locally.
- * - Set the current directory to the INTER-Mediator dirctory.
- * - Execute command 'sudo npm install buster -g'
- *
- * [At the start of your development]
- * - Set the current directory to the INTER-Mediator dirctory.
- * - Execute command 'buster-server'
- *     Don't stop the process started by above command.
- * - Open any browser and connect to http://localhost:1111
- * - Click 'Capture browser' button on the browser page
- * - Execute command 'buster-test'   <-- Repeat it!
- */
-
 // JSHint support
 /* global INTERMediator,buster,INTERMediatorLib, IMLibFormat,INTERMediatorOnPage,IMLibElement */
 
-var assert = buster.referee.assert;
+const IMLibFormat = require('../../src/js/INTER-Mediator-Format')
 
-buster.testCase('repeaterTagFromEncTag() Test', {
-    'should return \'TR\' if parameter is "TBODY"': function () {
-        'use strict';
-        assert.equals(INTERMediatorLib.repeaterTagFromEncTag('TBODY'), 'TR');
-    },
-    'should return \'OPTION\' if parameter is "SELECT"': function () {
-        'use strict';
-        assert.equals(INTERMediatorLib.repeaterTagFromEncTag('SELECT'), 'OPTION');
-    },
-    'should return \'LI\' if parameter is "UL"': function () {
-        'use strict';
-        assert.equals(INTERMediatorLib.repeaterTagFromEncTag('UL'), 'LI');
-    },
-    'should return \'LI\' if parameter is "OL"': function () {
-        'use strict';
-        assert.equals(INTERMediatorLib.repeaterTagFromEncTag('OL'), 'LI');
-    },
-    //'should return 'DIV' if parameter is 'DIV'': function () {'use strict';
-    //    assert.equals(INTERMediatorLib.repeaterTagFromEncTag('DIV'), 'DIV');
-    //},
-    //'should return 'SPAN' if parameter is 'SPAN'': function () {'use strict';
-    //    assert.equals(INTERMediatorLib.repeaterTagFromEncTag('SPAN'), 'SPAN');
-    //},
-    //'should return null if parameter is 'BODY'': function () {'use strict';
-    //    assert.equals(INTERMediatorLib.repeaterTagFromEncTag('BODY'), null);
-    //}
-});
-
-buster.testCase('INTERMediatorLib.generatePasswordHash() Test', {
-    'Valid password hash should be generated': function () {
-        'use strict';
-        var hash = INTERMediatorLib.generatePasswordHash('1234');
-        assert.equals(hash.length, 48);
-    }
-});
-
-buster.testCase('IMLibFormat.numberFormat() Test', {
+test('IMLibFormat.numberFormat() Test', ()=>{
     setUp: function () {
         'use strict';
         INTERMediatorOnPage.localeInfo = {
@@ -122,7 +69,7 @@ buster.testCase('IMLibFormat.numberFormat() Test', {
     }
 });
 
-buster.testCase('IMLibFormat.decimalFormat() Test', {
+test('IMLibFormat.decimalFormat() Test', {
     setUp: function () {
         'use strict';
         INTERMediatorOnPage.localeInfo = {
@@ -284,26 +231,7 @@ buster.testCase('IMLibFormat.decimalFormat() Test', {
     }
 });
 
-buster.testCase('IMLibFormat.booleanFormat() Test', {
-    'should return \'\' if the first parameter is \'\'': function () {
-        'use strict';
-        assert.equals(IMLibFormat.booleanFormat('', 'non-zeros, zeros', null), '');
-    },
-    'should return \'\' if the first parameter is null': function () {
-        'use strict';
-        assert.equals(IMLibFormat.booleanFormat(null, 'non-zeros, zeros', null), '');
-    },
-    'should return \'non-zeros\' if the first parameter is 1': function () {
-        'use strict';
-        assert.equals(IMLibFormat.booleanFormat(1, 'non-zeros, zeros', null), 'non-zeros');
-    },
-    'should return \'zeros\' if the first parameter is 0': function () {
-        'use strict';
-        assert.equals(IMLibFormat.booleanFormat(0, 'non-zeros, zeros', null), 'zeros');
-    }
-});
-
-buster.testCase('IMLibFormat.percentFormat() Test', {
+test('IMLibFormat.percentFormat() Test', {
     setUp: function () {
         'use strict';
         INTERMediatorOnPage.localeInfo = {
@@ -391,97 +319,46 @@ buster.testCase('IMLibFormat.percentFormat() Test', {
     }
 });
 
-buster.testCase('INTERMediatorLib.Round() Test', {
-    'Round library function test for positive value.': function () {
-        'use strict';
-        assert.equals(INTERMediatorLib.Round(Math.PI, 0), 3);
-        assert.equals(INTERMediatorLib.Round(Math.PI, 1), 3.1);
-        assert.equals(INTERMediatorLib.Round(Math.PI, 2), 3.14);
-        assert.equals(INTERMediatorLib.Round(Math.PI, 3), 3.142);
-    },
-    'Round library function test for negative value.': function () {
-        'use strict';
-        var v = 45678;
-        assert.equals(INTERMediatorLib.Round(v, 0), v);
-        assert.equals(INTERMediatorLib.Round(v, -1), 45680);
-        assert.equals(INTERMediatorLib.Round(v, -2), 45700);
-        assert.equals(INTERMediatorLib.Round(v, -3), 46000);
-        assert.equals(INTERMediatorLib.Round(v, -4), 50000);
-        assert.equals(INTERMediatorLib.Round(v, -5), 0);
-        assert.equals(INTERMediatorLib.Round(v, -6), 0);
-    }
-});
 
-buster.testCase('IMLibElement.getValueFromIMNode() Test', {
-    'should return \'\' if parameter is null.': function () {
-        'use strict';
-        assert.equals(IMLibElement.getValueFromIMNode(null), '');
-    }
-});
+test('booleanFormat() should return \'\' if the first parameter is \'\'', function () {
+    'use strict'
+    expect(IMLibFormat.booleanFormat('', 'non-zeros, zeros', null)).toBe('')
+})
 
-buster.testCase('IMLib Date/Time String Test', {
-    'should return the valid date time string(1)': function () {
-        'use strict';
-        var dt = new Date(2015, 7, 25, 12, 43, 51);
-        assert.equals(INTERMediatorLib.dateTimeStringISO(dt), '2015-08-25 12:43:51');
-    },
-    'should return the valid date time string(2)': function () {
-        'use strict';
-        var dt = new Date(2015, 7, 25, 12, 43, 51);
-        assert.equals(INTERMediatorLib.dateTimeStringFileMaker(dt), '08/25/2015 12:43:51');
-    },
-    'should return the valid date string(1)': function () {
-        'use strict';
-        var dt = new Date(2015, 7, 25, 12, 43, 51);
-        assert.equals(INTERMediatorLib.dateStringISO(dt), '2015-08-25');
-    },
-    'should return the valid date string(2)': function () {
-        'use strict';
-        var dt = new Date(2015, 7, 25, 12, 43, 51);
-        assert.equals(INTERMediatorLib.dateStringFileMaker(dt), '08/25/2015');
-    },
-    'should return the valid time string(1)': function () {
-        'use strict';
-        var dt = new Date(2015, 7, 25, 12, 43, 51);
-        assert.equals(INTERMediatorLib.timeString(dt), '12:43:51');
-    }
-});
+test('booleanFormat() should return \'\' if the first parameter is null', function () {
+    'use strict'
+    expect(IMLibFormat.booleanFormat(null, 'non-zeros, zeros', null)).toBe('')
+})
 
-buster.testCase('IMLibFormat.getLocalYear() Test', {
+test('booleanFormat() should return \'non-zeros\' if the first parameter is 1', function () {
+    'use strict'
+    expect(IMLibFormat.booleanFormat(1, 'non-zeros, zeros', null)).toBe('non-zeros')
+})
+
+test('booleanFormat() should return \'zeros\' if the first parameter is 0', function () {
+    'use strict'
+    expect(IMLibFormat.booleanFormat(0, 'non-zeros, zeros', null)).toBe('zeros')
+})
+
+test('IMLibFormat.getLocalYear() Test', {
     'should return the gengo year.': function () {
-        'use strict';
-        assert.equals(IMLibFormat.getLocalYear(new Date('2019/5/1')), '令和元年');
-        assert.equals(IMLibFormat.getLocalYear(new Date('2019/4/30')), '平成31年');
-        assert.equals(IMLibFormat.getLocalYear(new Date('2017/3/3')), '平成29年');
-        assert.equals(IMLibFormat.getLocalYear(new Date('1989/1/9')), '平成元年');
-        assert.equals(IMLibFormat.getLocalYear(new Date('1989/1/8')), '平成元年');
-        assert.equals(IMLibFormat.getLocalYear(new Date('1989/1/7')), '昭和64年');
-        assert.equals(IMLibFormat.getLocalYear(new Date('1926/12/26')), '昭和元年');
+        'use strict'
+        expect(IMLibFormat.getLocalYear(new Date('2019/5/1'))).toBe( '令和元年')
+        expect(IMLibFormat.getLocalYear(new Date('2019/4/30'))).toBe( '平成31年')
+        expect(IMLibFormat.getLocalYear(new Date('2017/3/3'))).toBe( '平成29年')
+        expect(IMLibFormat.getLocalYear(new Date('1989/1/9'))).toBe( '平成元年')
+        expect(IMLibFormat.getLocalYear(new Date('1989/1/8'))).toBe( '平成元年')
+        expect(IMLibFormat.getLocalYear(new Date('1989/1/7'))).toBe( '昭和64年')
+        expect(IMLibFormat.getLocalYear(new Date('1926/12/26')),).toBe('昭和元年')
     }
-});
+})
 
-buster.testCase('IMLibFormat.getKanjiNumber() Test', {
+test('IMLibFormat.getKanjiNumber() Test', {
     'should return the kanji numbers.': function () {
-        'use strict';
-        assert.equals(IMLibFormat.getKanjiNumber(0), '〇');
-        assert.equals(IMLibFormat.getKanjiNumber(3), '三');
-        assert.equals(IMLibFormat.getKanjiNumber(45), '四十五');
-        assert.equals(IMLibFormat.getKanjiNumber(2345), '二千三百四十五');
+        'use strict'
+        expect(IMLibFormat.getKanjiNumber(0)).toBe( '〇')
+        expect(IMLibFormat.getKanjiNumber(3)).toBe( '三')
+        expect(IMLibFormat.getKanjiNumber(45)).toBe( '四十五')
+        expect(IMLibFormat.getKanjiNumber(2345)).toBe( '二千三百四十五')
     }
-});
-
-buster.testCase('INTERMediatorLib.normalizeNumerics(str) Test', {
-    'should return the numeric characters only numbers.': function () {
-        'use strict';
-        assert.equals(INTERMediatorLib.normalizeNumerics(0), 0);
-        assert.equals(INTERMediatorLib.normalizeNumerics(99), 99);
-        assert.equals(INTERMediatorLib.normalizeNumerics(120.5), 120.5);
-        assert.equals(INTERMediatorLib.normalizeNumerics('15,236.77'), 15236.77);
-        assert.equals(INTERMediatorLib.normalizeNumerics('$15,236.77'), 15236.77);
-        assert.equals(INTERMediatorLib.normalizeNumerics('¥15,236.77'), 15236.77);
-        assert.equals(INTERMediatorLib.normalizeNumerics('¥15,236.77-'), 15236.77);
-        assert.equals(INTERMediatorLib.normalizeNumerics('４３０'), 430);
-        assert.equals(INTERMediatorLib.normalizeNumerics('４３０．９９９'), 430.999);
-    }
-});
-
+})

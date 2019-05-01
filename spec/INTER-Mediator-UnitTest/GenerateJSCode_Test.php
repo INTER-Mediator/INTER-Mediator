@@ -71,7 +71,7 @@ class GenerateJSCode_Test extends TestCase
             $method = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'readJSSource');
             $method->setAccessible(true);
             $partOfCode = $method->invokeArgs($this->generater, array($nodeModuleDir . 'inter-mediator-expressionparser/index.js'));
-            $this->assertContains($partOfCode, $content);
+            $this->assertStringContainsString($partOfCode, $content);
         }
     }
 
