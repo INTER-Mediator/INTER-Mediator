@@ -384,7 +384,6 @@ class GenerateJSCode
     {
         $imDir = IMUtil::pathToINTERMediator();
         $jsCodeDir = $imDir . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
-        $jsLibDir = $imDir . DIRECTORY_SEPARATOR . 'src'  . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
         $nodeModuleDir = $imDir . DIRECTORY_SEPARATOR . 'node_modules' . DIRECTORY_SEPARATOR;
         $content = '';
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator.js');
