@@ -625,7 +625,7 @@ let INTERMediatorOnPage = {
       INTERMediatorOnPage.authCryptedPassword = encrypt.encrypt(inputPassword)
 
       INTERMediatorOnPage.authHashedPassword =
-        SHA1(inputPassword + INTERMediatorOnPage.authUserSalt) +
+        INTERMediatorLib.SHA1(inputPassword + INTERMediatorOnPage.authUserSalt) +
         INTERMediatorOnPage.authUserHexSalt
 
       if (INTERMediatorOnPage.authUser.length > 0) { // Authentication succeed, Store coockies.

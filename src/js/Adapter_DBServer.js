@@ -305,7 +305,7 @@ const INTERMediator_DBAdapter = {
         }
       }
       INTERMediatorOnPage.authHashedPassword =
-        SHA1(oldpassword + INTERMediatorOnPage.authUserSalt) +
+        INTERMediatorLib.SHA1(oldpassword + INTERMediatorOnPage.authUserSalt) +
         INTERMediatorOnPage.authUserHexSalt
       params = 'access=changepassword&newpass=' + INTERMediatorLib.generatePasswordHash(newpassword)
 
@@ -315,7 +315,7 @@ const INTERMediator_DBAdapter = {
             encrypt.setPublicKey(INTERMediatorOnPage.publickey)
             INTERMediatorOnPage.authCryptedPassword = encrypt.encrypt(newpassword)
             INTERMediatorOnPage.authHashedPassword =
-              SHA1(newpassword + INTERMediatorOnPage.authUserSalt) + INTERMediatorOnPage.authUserHexSalt
+              INTERMediatorLib.SHA1(newpassword + INTERMediatorOnPage.authUserSalt) + INTERMediatorOnPage.authUserHexSalt
             INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
             resolve(true)
           } else {

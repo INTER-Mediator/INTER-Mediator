@@ -394,25 +394,18 @@ class GenerateJSCode
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-LocalContext.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Lib.js');
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-nodegraph/index.js');
-        //$content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Graph.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Format.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Element.js');
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-expressionparser/index.js');
-        //$content .= $this->readJSSource($jsLibDir . 'js-expression-eval-parser.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Calc.js');
         $content .= $this->readJSSource($jsCodeDir . 'Adapter_DBServer.js');
-        //$content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Parts.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Navi.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-UI.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Log.js');
-        $content .= ';' . $this->readJSSource($jsLibDir . 'tinySHA1.js');
         $content .= $this->readJSSource($nodeModuleDir . 'jssha/src/sha.js');
-        //$content .= $this->readJSSource($jsLibDir . 'sha256.js');
         $content .= $this->readJSSource($nodeModuleDir . 'jsencrypt/bin/jsencrypt.js');
-        //$content .= $this->readJSSource($jsLibDir . 'jsencrypt.min.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Events.js');
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-queue/index.js');
-        //$content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Queuing.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-DoOnStart.js');
 
         return $content;
