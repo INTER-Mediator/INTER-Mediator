@@ -625,7 +625,7 @@ let INTERMediatorOnPage = {
       INTERMediatorOnPage.authCryptedPassword = encrypt.encrypt(inputPassword)
 
       INTERMediatorOnPage.authHashedPassword =
-        SHA1(inputPassword + INTERMediatorOnPage.authUserSalt) +
+        INTERMediatorLib.SHA1(inputPassword + INTERMediatorOnPage.authUserSalt) +
         INTERMediatorOnPage.authUserHexSalt
 
       if (INTERMediatorOnPage.authUser.length > 0) { // Authentication succeed, Store coockies.
@@ -1199,3 +1199,6 @@ let INTERMediatorOnPage = {
 
 // @@IM@@IgnoringRestOfFile
 module.exports = INTERMediatorOnPage
+const JSEncryptLib = require('../../node_modules/jsencrypt/bin/jsencrypt.js')
+const JSEncrypt = JSEncryptLib.JSEncrypt
+const INTERMediatorLib = require('../../src/js/INTER-Mediator-Lib')

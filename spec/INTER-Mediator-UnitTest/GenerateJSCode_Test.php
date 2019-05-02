@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class GenerateJSCode_Test extends TestCase
 {
-    protected function setUp()
+    protected function setUp():void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         $this->generater = new GenerateJSCode();
@@ -67,12 +67,11 @@ class GenerateJSCode_Test extends TestCase
             $currentDir = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR .
                 'src' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
             $content = $this->reflectionMethod->invokeArgs($this->generater, array($currentDir));
-            $jsLibDir = dirname($currentDir) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR .
-                'js_lib' . DIRECTORY_SEPARATOR;
+            $nodeModuleDir = dirname(dirname($currentDir)) . DIRECTORY_SEPARATOR . 'node_modules' . DIRECTORY_SEPARATOR;
             $method = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'readJSSource');
             $method->setAccessible(true);
-            $partOfCode = $method->invokeArgs($this->generater, array($jsLibDir . 'tinySHA1.js'));
-            $this->assertContains($partOfCode, $content);
+            $partOfCode = $method->invokeArgs($this->generater, array($nodeModuleDir . 'inter-mediator-expressionparser/index.js'));
+            $this->assertStringContainsString($partOfCode, $content);
         }
     }
 

@@ -39,11 +39,23 @@ Ver.6-dev (in development)
   the mail content is going to store the context with fields named "errors", "to_field", "bcc_field",
   "cc_field", "from_field", "subject", "body". So far the field names is fixed.
 - The date formatter started to support the Japanese new gengo Reiwa.
+- The following repositories are separated from the core code.
+    inter-mediator-expressionparser
+    inter-mediator-nodegraph
+    inter-mediator-queue
+    inter-mediator-plugin-codemirror
+    inter-mediator-plugin-fileupload
+    inter-mediator-plugin-jsonformatter
+    inter-mediator-plugin-jquerydatepicker
+    inter-mediator-plugin-jqueryfileupload
+    inter-mediator-plugin-popupselector
+    inter-mediator-plugin-tinymce
 - [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
 - [BUG FIX] Calculation from other contexts didn't work, and fix it.
 - [BUG FIX] The class name 'Null' wasn't permitted in PHP7. It was changed to NullDB.
+- [INFO] The src/lib/js_lib directory is removed.
 
 Ver.5.10 (April 17, 2019)
 - The Japanese new gengo REIWA is supported in the date formatter.

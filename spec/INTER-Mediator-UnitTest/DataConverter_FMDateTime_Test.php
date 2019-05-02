@@ -7,13 +7,13 @@ use \INTERMediator\Data_Converter\FMDateTime;
 
 class DataConverter_FMDateTime_Test extends TestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
-        
+
         $this->dataconverter = new FMDateTime();
     }
-    
+
     public function test_converterFromDBtoUser()
     {
         $expected = '';
@@ -44,7 +44,7 @@ class DataConverter_FMDateTime_Test extends TestCase
         $timeString = '12:34:56';
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($timeString));
     }
-    
+
     public function test_converterFromUserToDB()
     {
         $expected = '';

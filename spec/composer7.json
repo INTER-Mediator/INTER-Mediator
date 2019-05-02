@@ -22,7 +22,8 @@
     "paragonie/constant_time_encoding": "*",
     "yodarunamok/fxphp": "*",
     "inter-mediator/fmdataapi": "*",
-    "swiftmailer/swiftmailer": "*"
+    "swiftmailer/swiftmailer": "*",
+    "tecnickcom/tcpdf": "*"
   },
   "extra": {
     "mouf": {
@@ -32,7 +33,8 @@
     }
   },
   "require-dev": {
-    "matthiasmullie/minify": "1.3.*"
+    "matthiasmullie/minify": "*",
+    "phpunit/phpunit": "*"
   },
   "autoload": {
     "psr-4": {
@@ -66,10 +68,16 @@
   },
   "scripts": {
     "test": [
-      "phpunit --bootstrap src/vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+      "vendor/bin/phpunit --globals-backup --bootstrap vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+    ],
+    "jest": [
+      "vendor/bin/npm test"
+    ],
+    "clear": [
+      "rm -rf node_modules vendor"
     ],
     "post-update-cmd": [
-      "npm --save install"
+      "vendor/bin/npm install"
     ],
     "post-create-project-cmd": [
       "mkdir -p ../398A6028-0181-4B75-BFD9-1C094B5ADD9F",
@@ -88,6 +96,12 @@
       "sed -E -e 's|INTER-Mediator.php|lib/INTER-Mediator/INTER-Mediator.php|g' t.php > template.php",
       "rm t.php lib/p.php gen.key",
       "lib/src/INTER-Mediator/dist-docs/buildup.sh --deploy"
+    ],
+    "forever-list": [
+      "node_modules/forever/bin/forever list"
+    ],
+    "forever-stopall": [
+      "node_modules/forever/bin/forever stopall"
     ]
   }
 }

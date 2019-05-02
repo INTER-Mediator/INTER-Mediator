@@ -4,7 +4,7 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATO
 
 class CWPKit_Test extends TestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         $config = array(
             'urlScheme' => 'http',

@@ -170,7 +170,6 @@ class FileUploader
             $fileInfoTemp = $fileInfo['tmp_name'];
         }
         $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
-        $dbProxyInstance->logger->setDebugMessage("########## filePathInfo={$filePathInfo}",2);
 
         if ($_POST["_im_field"] != "_im_csv_upload") {
             // file uploading or FM's container

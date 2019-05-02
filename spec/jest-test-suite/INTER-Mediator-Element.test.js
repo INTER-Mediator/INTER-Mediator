@@ -270,7 +270,7 @@ test('IMLibElement.setValueToIMNode() has to set the date/time value to div', ()
   expect(tempElement.value).toBe('Sunday')
   tempElement.setAttribute('data-im-format', 'date(%a)')
   IMLibElement.setValueToIMNode(tempElement, '', '2017-07-23 14:39:06', true)
-  expect(tempElement.value).toBe( 'Sun')
+  expect(tempElement.value).toBe('Sun')
   tempElement.setAttribute('data-im-format', 'date(%W)')
   IMLibElement.setValueToIMNode(tempElement, '', '2017-07-23 14:39:06', true)
   expect(tempElement.value).toBe('日曜日')
@@ -391,3 +391,10 @@ test('IMLibElement.setValueToIMNode() has to set the date/time value to div', ()
   IMLibElement.setValueToIMNode(tempElement, '', '2017-07-23 14:39:06', true)
   expect(tempElement.value).toBe('14:39')
 })
+
+test('IMLibElement.getValueFromIMNode() should return \'\' if parameter is null.', function () {
+  'use strict'
+  expect(IMLibElement.getValueFromIMNode(null)).toBe('')
+})
+
+

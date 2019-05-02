@@ -1,7 +1,0 @@
-Bootstrap is CSS library and more.
-
-If you want to try samples file_upload_jQuery_*.html, you have to place the 'bootstrap' folder
-in this folder. You can download the compiled and minified files from below url, and the folder
-name you downloaded is going to change 'bootstrap'.
-
-http://getbootstrap.com/

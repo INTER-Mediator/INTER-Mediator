@@ -8,7 +8,7 @@ use \INTERMediator\DB\Proxy;
 
 class DB_Proxy_Test extends TestCase
 {
-    function setUp()
+    protected function setUp():void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         mb_internal_encoding('UTF-8');

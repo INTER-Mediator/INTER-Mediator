@@ -1,3 +1,0 @@
-Tinymce is the JavaScript HTML editor.
-
-http://www.tinymce.com/

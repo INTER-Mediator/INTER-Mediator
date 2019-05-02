@@ -4,7 +4,7 @@
  cd spec
  ../vendor/bin/node ../node_modules/.bin/jest
  */
-const parser = require('../../src/lib/js_lib/js-expression-eval-parser.js')
+const parser = require('../../node_modules/inter-mediator-expressionparser/index.js')
 const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
 
 test('should be equal to', () => {
