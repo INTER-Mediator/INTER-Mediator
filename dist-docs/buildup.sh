@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # INTER-Mediator Deployment File Set Builder
 # Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)

@@ -16,6 +16,8 @@
 
 namespace INTERMediator;
 
+use mysql_xdevapi\Exception;
+
 class GenerateJSCode
 {
     public function __construct()
@@ -386,25 +388,25 @@ class GenerateJSCode
         $jsCodeDir = $imDir . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
         $nodeModuleDir = $imDir . DIRECTORY_SEPARATOR . 'node_modules' . DIRECTORY_SEPARATOR;
         $content = '';
+        $content .= $this->readJSSource($nodeModuleDir . 'jsencrypt/bin/jsencrypt.js');
+        $content .= $this->readJSSource($nodeModuleDir . 'jssha/src/sha.js');
+        $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-queue/index.js');
+        $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-nodegraph/index.js');
+        $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-expressionparser/index.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Page.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-ContextPool.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Context.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-LocalContext.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Lib.js');
-        $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-nodegraph/index.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Format.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Element.js');
-        $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-expressionparser/index.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Calc.js');
         $content .= $this->readJSSource($jsCodeDir . 'Adapter_DBServer.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Navi.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-UI.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Log.js');
-        $content .= $this->readJSSource($nodeModuleDir . 'jssha/src/sha.js');
-        $content .= $this->readJSSource($nodeModuleDir . 'jsencrypt/bin/jsencrypt.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Events.js');
-        $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-queue/index.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-DoOnStart.js');
 
         return $content;
@@ -412,6 +414,12 @@ class GenerateJSCode
 
     private function readJSSource($filename)
     {
+        if (!file_exists($filename))    {
+            $errorMsg = "[INTER-Mediator Error] The file {$filename} doesn't exist. ".
+                "Did you run the 'composer update' command?";
+            echo "console.error(\"{$errorMsg}\");";
+            return "/* {$errorMsg} */\n";
+        }
         $content = file_get_contents($filename);
         $pos = strpos($content, "@@IM@@IgnoringRestOfFile");
         if ($pos !== false) {

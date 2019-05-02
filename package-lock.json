@@ -4002,9 +4002,9 @@
       }
     },
     "inter-mediator-plugin-fileupload": {
-      "version": "1.0.0",
-      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-fileupload/-/inter-mediator-plugin-fileupload-1.0.0.tgz",
-      "integrity": "sha512-8P6ubjIQbP5eKXYf4OWIi6+CLNGX4y9cvpkUktg5MEp8JpeOHX9DPakakwjeNJ2ghHAx5NWM7BtGtFMeZSBsWw=="
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-fileupload/-/inter-mediator-plugin-fileupload-1.0.1.tgz",
+      "integrity": "sha512-vYaR1xMWCFXHZV8++QL4PX3CjPLwMHowXrYpMEzkN1adXlzaYctga3oIXdHpWdAb3y08eACCvjSnUcHjKHJb1w=="
     },
     "inter-mediator-plugin-jquerydatepicker": {
       "version": "1.0.2",
@@ -4012,9 +4012,9 @@
       "integrity": "sha512-0+riC+qmBG4B4WuFXQ64gA6fepj3+aRCvROumN00ZZ7wX49EShxCUhMwag14zm95Xhd5dB5S9O+SpQwfLkrnZw=="
     },
     "inter-mediator-plugin-jqueryfileupload": {
-      "version": "1.0.3",
-      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-jqueryfileupload/-/inter-mediator-plugin-jqueryfileupload-1.0.3.tgz",
-      "integrity": "sha512-y+9QDL8QmWwjGA1bHsN85ccagLgnivpb/Vn6toTxUfmvmgSNJ3Oy8aDxi/JTKRrctUCRG18qEAL1/N0zS8vnhg=="
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-jqueryfileupload/-/inter-mediator-plugin-jqueryfileupload-1.0.4.tgz",
+      "integrity": "sha512-E0/Be7LtQYm0Op2DpFSxGN5s6QuGIw7aHuiKOOfoQ8ODWOPIcTQfQMOP/jyM5hCJ+O2YQ6LYmlLVR8Xr72Lwkg=="
     },
     "inter-mediator-plugin-jsonformatter": {
       "version": "1.0.0",
