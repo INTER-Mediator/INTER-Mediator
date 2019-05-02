@@ -73,8 +73,11 @@
     "jest": [
       "vendor/bin/npm test"
     ],
+    "clear": [
+      "rm -rf node_modules vendor"
+    ],
     "post-update-cmd": [
-      "vendor/bin/npm --save install"
+      "vendor/bin/npm install"
     ],
     "post-create-project-cmd": [
       "mkdir -p ../398A6028-0181-4B75-BFD9-1C094B5ADD9F",
