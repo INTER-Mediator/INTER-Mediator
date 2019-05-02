@@ -33,7 +33,7 @@
     "url": "https://github.com/INTER-Mediator/INTER-Mediator.git"
   },
   "scripts": {
-    "test": "node_modules/.bin/jest --config spec/jest.config.js"
+    "test": "cd node_modules/.bin; jest --config ../../spec/jest.config.js"
   },
   "devDependencies": {
     "request": "*",

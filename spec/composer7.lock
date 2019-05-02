@@ -733,16 +733,16 @@
         },
         {
             "name": "yodarunamok/fxphp",
-            "version": "dev-master",
+            "version": "v6.10.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/yodarunamok/fxphp.git",
-                "reference": "1b0447070e10c97537390324cd7089e02a43f4d9"
+                "url": "https://github.com/ejsexton82/fxphp.git",
+                "reference": "7ac25b5ab36daba64fca6b655b0c763d39e5b2a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yodarunamok/fxphp/zipball/1b0447070e10c97537390324cd7089e02a43f4d9",
-                "reference": "1b0447070e10c97537390324cd7089e02a43f4d9",
+                "url": "https://api.github.com/repos/ejsexton82/fxphp/zipball/7ac25b5ab36daba64fca6b655b0c763d39e5b2a9",
+                "reference": "7ac25b5ab36daba64fca6b655b0c763d39e5b2a9",
                 "shasum": ""
             },
             "require": {
@@ -766,6 +766,9 @@
                     "name": "Chris Adams"
                 },
                 {
+                    "name": "Masayuki Nii"
+                },
+                {
                     "name": "Chris Hansen",
                     "email": "chris@iviking.org",
                     "homepage": "http://www.iviking.org"
@@ -774,23 +777,20 @@
                     "name": "Gjermund Gusland Thorsen",
                     "email": "gjermundprivat@gmail.com",
                     "homepage": "https://github.com/TyrfingMjolnir/"
-                },
-                {
-                    "name": "Masayuki Nii",
-                    "email": "nii@msyk.net",
-                    "homepage": "http://msyk.net/"
                 }
             ],
-            "description": "FX.php is a FMPXMLRESULT parser class for php",
+            "description": "A Free, Open Source PHP database abstraction class for accessing FileMaker Pro and other data sources.",
             "homepage": "https://github.com/yodarunamok/fxphp",
             "keywords": [
                 "FMPXMLRESULT",
                 "FX.php",
                 "FileMaker",
                 "FileMaker CWP",
-                "cwp"
+                "cwp",
+                "mysql",
+                "xml"
             ],
-            "time": "2018-11-21T17:19:40+00:00"
+            "time": "2018-07-09T14:48:10+00:00"
         }
     ],
     "packages-dev": [

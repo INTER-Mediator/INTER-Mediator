@@ -68,16 +68,16 @@
   },
   "scripts": {
     "test": [
-      "vendor/bin/phpunit --globals-backup --bootstrap vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+      "cd vendor/bin; phpunit --globals-backup --bootstrap vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
     ],
     "jest": [
-      "vendor/bin/npm test"
+      "cd node_modules/.bin; jest --config ../../spec/jest.config.js"
     ],
     "clear": [
       "rm -rf node_modules vendor"
     ],
     "post-update-cmd": [
-      "vendor/bin/npm install"
+      "cd vendor/bin; npm -prefix ../../ install ../../"
     ],
     "post-create-project-cmd": [
       "mkdir -p ../398A6028-0181-4B75-BFD9-1C094B5ADD9F",
