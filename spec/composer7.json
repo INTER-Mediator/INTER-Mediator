@@ -17,7 +17,7 @@
     "ext-bcmath": "*",
     "ext-curl": "*",
     "ext-xml": "*",
-    "mouf/nodejs-installer": "*",
+    "mouf/nodejs-installer": "~1.0",
     "phpseclib/phpseclib": "*",
     "paragonie/constant_time_encoding": "*",
     "yodarunamok/fxphp": "*",

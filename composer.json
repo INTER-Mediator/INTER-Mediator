@@ -77,7 +77,7 @@
       "rm -rf node_modules vendor"
     ],
     "post-update-cmd": [
-      "cd vendor/bin; npm -prefix ../../ install ../../"
+      "if [ $(uname -s|grep -E \"(CYGWIN|MINGW|Msys)\") ]; then .\\vendor\\bin\\npm.bat install; else vendor/bin/npm install; fi"
     ],
     "post-create-project-cmd": [
       "mkdir -p ../398A6028-0181-4B75-BFD9-1C094B5ADD9F",
