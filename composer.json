@@ -17,7 +17,7 @@
     "ext-bcmath": "*",
     "ext-curl": "*",
     "ext-xml": "*",
-    "mouf/nodejs-installer": "*",
+    "mouf/nodejs-installer": "~1.0",
     "phpseclib/phpseclib": "*",
     "paragonie/constant_time_encoding": "*",
     "yodarunamok/fxphp": "*",
@@ -98,10 +98,10 @@
       "lib/src/INTER-Mediator/dist-docs/buildup.sh --deploy"
     ],
     "forever-list": [
-      "node_modules/forever/bin/forever list"
+      "cd node_modules/forever/bin; forever list"
     ],
     "forever-stopall": [
-      "node_modules/forever/bin/forever stopall"
+      "cd node_modules/forever/bin; forever stopall"
     ]
   }
 }

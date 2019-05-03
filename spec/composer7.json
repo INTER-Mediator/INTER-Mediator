@@ -28,7 +28,8 @@
   "extra": {
     "mouf": {
       "nodejs": {
-        "version": "^11"
+        "version": "^11",
+        "includeBinInPath": true
       }
     }
   },
@@ -68,16 +69,16 @@
   },
   "scripts": {
     "test": [
-      "cd vendor/bin; phpunit --globals-backup --bootstrap vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+      "./vendor/bin/phpunit --globals-backup --bootstrap ./vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
     ],
     "jest": [
-      "cd node_modules/.bin; jest --config ../../spec/jest.config.js"
+      "./node_modules/.bin/jest --config ../../spec/jest.config.js"
     ],
     "clear": [
       "rm -rf node_modules vendor"
     ],
     "post-update-cmd": [
-      "if [ $(uname -s|grep -E \"(CYGWIN|MINGW|Msys)\") ]; then .\\vendor\\bin\\npm.bat install; else vendor/bin/npm install; fi"
+      "./vendor/bin/npm install; fi"
     ],
     "post-create-project-cmd": [
       "mkdir -p ../398A6028-0181-4B75-BFD9-1C094B5ADD9F",
@@ -98,10 +99,10 @@
       "lib/src/INTER-Mediator/dist-docs/buildup.sh --deploy"
     ],
     "forever-list": [
-      "cd node_modules/forever/bin; forever list"
+      "./node_modules/forever/bin/forever list"
     ],
     "forever-stopall": [
-      "cd node_modules/forever/bin; forever stopall"
+      "./node_modules/forever/bin/forever stopall"
     ]
   }
 }
