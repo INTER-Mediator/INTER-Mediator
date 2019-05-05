@@ -72,7 +72,7 @@
       "./vendor/bin/phpunit --globals-backup --bootstrap ./vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
     ],
     "jest": [
-      "./node_modules/.bin/jest --config ../../spec/jest.config.js"
+      "./node_modules/.bin/jest --config ./spec/jest.config.js"
     ],
     "clear": [
       "rm -rf node_modules vendor"

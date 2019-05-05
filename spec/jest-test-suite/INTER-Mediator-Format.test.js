@@ -1,8 +1,7 @@
 // JSHint support
 /* global INTERMediator,buster,INTERMediatorLib, IMLibFormat,INTERMediatorOnPage,IMLibElement */
 
-const IMLibFormat = require('../../src/js/INTER-Mediator-Format')
-const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
+const IMLibFormat = require('../../node_modules/inter-mediator-formatter/index')
 
 beforeEach(() => {
   INTERMediatorLocale = {

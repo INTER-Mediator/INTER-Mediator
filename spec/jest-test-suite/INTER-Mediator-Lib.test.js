@@ -19,6 +19,7 @@
 /* global INTERMediator,buster,INTERMediatorLib, IMLibFormat,INTERMediatorOnPage,IMLibElement */
 
 const INTERMediatorLib = require('../../src/js/INTER-Mediator-Lib')
+const INTERMediatorLocale = require('../../node_modules/inter-mediator-locale/index').INTERMediatorLocale
 
 test('repeaterTagFromEncTag() should return \'TR\' if parameter is "TBODY"', function () {
   'use strict'

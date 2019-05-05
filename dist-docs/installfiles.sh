@@ -59,6 +59,7 @@ case ${choice} in
     cp package-lock.json spec/package-lock7.json
     ;;
 4 )
+    mv '__Did_you_run_composer_update?.txt' spec/tempfile
     /bin/echo "## From spec as for PHP 7 to root"
     cp spec/composer7.json composer.json
     rm composer.lock
@@ -73,5 +74,7 @@ case ${choice} in
     cp composer.lock spec/composer7.lock
     cp package.json spec/package7.json
     cp package-lock.json spec/package-lock7.json
+
+    mv spec/tempfile '__Did_you_run_composer_update?.txt'
     ;;
 esac

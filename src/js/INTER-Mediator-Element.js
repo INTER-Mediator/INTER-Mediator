@@ -18,7 +18,7 @@
  * @fileoverview IMLibElement class is defined here.
  */
 // @@IM@@IgnoringNextLine
-const IMLibFormat =  require('../../src/js/INTER-Mediator-Format')
+const IMLibFormat =  require('../../node_modules/inter-mediator-formatter/index')
 /**
  *
  * Usually you don't have to instanciate this class with new operator.
