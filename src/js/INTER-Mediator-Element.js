@@ -384,7 +384,7 @@ const IMLibElement = {
       }
     }
     if (formatSpec && negativeColor) {
-      negativeSign = INTERMediatorOnPage.localeInfo.negative_sign
+      negativeSign = INTERMediatorLocale.negative_sign
       negativeTailSign = ''
       flags = IMLibElement.initilaizeFlags(element)
       if (flags.negativeStyle === 0 || flags.negativeStyle === 1) {

@@ -70,7 +70,7 @@ class ServiceServerProxy
 
     public function checkPossibility()
     {
-        if(!is_writable($this->foreverPath)){
+        if (!is_writable($this->foreverPath)) {
             $this->errors[] = "{$this->messageHead}The Forever script file is NOT writable: {$this->foreverPath}";
         }
         return is_writable($this->foreverPath);
@@ -140,10 +140,12 @@ class ServiceServerProxy
     private function startServer()
     {
         $imPath = IMUtil::pathToINTERMediator();
+        putenv('PATH=' . realpath($imPath . "/vendor/bin") .
+            (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
 
-        $script = file_get_contents($this->foreverPath);
-        $script = str_replace(" node", " " . $this->nodePath, $script);
-        file_put_contents($this->foreverPath, $script);
+//        $script = file_get_contents($this->foreverPath);
+//        $script = str_replace(" node", " " . $this->nodePath, $script);
+//        file_put_contents($this->foreverPath, $script);
         $logFile = tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
         $cmd = "'{$this->foreverPath}' start -a -l {$logFile} --minUptime 5000 --spinSleepTime 5000 " .
             "'{$imPath}/src/js/Service_Server.js' {$this->paramsPort}";

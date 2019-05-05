@@ -5,7 +5,7 @@ const IMLibFormat = require('../../src/js/INTER-Mediator-Format')
 const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
 
 beforeEach(() => {
-  INTERMediatorOnPage.localeInfo = {
+  INTERMediatorLocale = {
     'decimal_point': '.',
     'thousands_sep': ',',
     'int_curr_symbol': 'JPY ',
@@ -76,9 +76,9 @@ test('IMLibFormat.numberFormat(): each 3-digits should be devided.', function ()
 })
 test('IMLibFormat.numberFormat(): format string detection', function () {
   'use strict'
-  expect(INTERMediatorOnPage.localeInfo.mon_decimal_point).toBe('.')
-  expect(INTERMediatorOnPage.localeInfo.mon_thousands_sep).toBe(',')
-  expect(INTERMediatorOnPage.localeInfo.currency_symbol).toBe('¥')
+  expect(INTERMediatorLocale.mon_decimal_point).toBe('.')
+  expect(INTERMediatorLocale.mon_thousands_sep).toBe(',')
+  expect(INTERMediatorLocale.currency_symbol).toBe('¥')
 })
 
 

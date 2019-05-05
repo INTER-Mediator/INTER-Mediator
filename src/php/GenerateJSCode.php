@@ -269,7 +269,7 @@ class GenerateJSCode
 
         if (!is_null($appLocale)) {
             $this->generateAssignJS("INTERMediatorOnPage.appLocale", "{$q}{$appLocale}{$q}");
-            $this->generateAssignJS("INTERMediatorOnPage.localeInfo",
+            $this->generateAssignJS("INTERMediatorLocale",
                 "JSON.parse('" . json_encode(Locale\IMLocaleFormatTable::getCurrentLocaleFormat()) . "')");
         }
         if (!is_null($appCurrency)) {
@@ -390,6 +390,8 @@ class GenerateJSCode
         $content = '';
         $content .= $this->readJSSource($nodeModuleDir . 'jsencrypt/bin/jsencrypt.js');
         $content .= $this->readJSSource($nodeModuleDir . 'jssha/src/sha.js');
+        $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-formatter/index.js');
+        $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-locale/index.js');
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-queue/index.js');
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-nodegraph/index.js');
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-expressionparser/index.js');
@@ -399,7 +401,6 @@ class GenerateJSCode
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Context.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-LocalContext.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Lib.js');
-        $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Format.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Element.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Calc.js');
         $content .= $this->readJSSource($jsCodeDir . 'Adapter_DBServer.js');

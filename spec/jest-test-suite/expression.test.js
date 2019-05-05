@@ -128,7 +128,7 @@ test('should be equal to', () => {
 )
 
 test('should be equal to', () => {
-    INTERMediatorOnPage.localeInfo = {
+    INTERMediatorLocale = {
       'decimal_point': '.',
       'thousands_sep': ',',
       'int_curr_symbol': 'JPY ',
@@ -384,7 +384,7 @@ test('Wrong expression.2', () => {
 })
 
 test('each 3-digits should be devided.', () => {
-    INTERMediatorOnPage.localeInfo = {
+    INTERMediatorLocale = {
       'decimal_point': '.',
       'thousands_sep': ',',
       'int_curr_symbol': 'JPY ',
@@ -428,7 +428,7 @@ test('each 3-digits should be devided.', () => {
   }
 )
 test('each 3-digits should be devided with currency.', () => {
-    INTERMediatorOnPage.localeInfo = {
+    INTERMediatorLocale = {
       'decimal_point': '.',
       'thousands_sep': ',',
       'int_curr_symbol': 'JPY ',

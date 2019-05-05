@@ -10,7 +10,8 @@
 let port = process.argv[2] ? process.argv[2] : 21000
 let acceptClient = '0.0.0.0/0'
 
-let parser = require('../../node_modules/inter-mediator-expressionparser/index')
+const parser = require('../../node_modules/inter-mediator-expressionparser/index')
+
 // const querystring = require('querystring')
 // console.log(parser.evaluate('a+b',{a:3,b:4}))
 let url = require('url')
@@ -28,7 +29,7 @@ if (!app.listening) {
 /*
    Server core
  */
-function handler (req, res) {
+function handler(req, res) {
   var reqParams = url.parse(req.url, true)
   var ipaddr = cleanUpIPAddress(req.socket.remoteAddress)
   if (!isIncludeIPAddress(ipaddr, acceptClient)) {
@@ -36,15 +37,15 @@ function handler (req, res) {
     res.end('ERROR')
     return
   }
-  var postData = '';
+  var postData = ''
   if (req.method == 'POST') {
     req.on('data', function (data) {
-      postData += data;
-    });
+      postData += data
+    })
     req.on('end', function () {
       requestProcessing(reqParams, res, postData)
-    });
-  } else if (req.method == 'GET'){
+    })
+  } else if (req.method == 'GET') {
     requestProcessing(reqParams, res, postData)
   } else {
     res.writeHead(405, {'Content-Type': 'text/html; charset=utf-8'})
@@ -70,8 +71,8 @@ requestBroker['/info'] = function (params, res, postData) {
 requestBroker['/eval'] = function (params, res, postData) {
   res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
   let jsonData = JSON.parse(postData)
-  let rule = jsonData.expression;
-  let values = jsonData.values;
+  let rule = jsonData.expression
+  let values = jsonData.values
   let result = parser.evaluate(rule, values)
 
   res.write(result ? 'true' : 'false')
@@ -104,14 +105,14 @@ io.on('connection', function (socket) {
 /*
   Network Utility
  */
-function cleanUpIPAddress (str) {
+function cleanUpIPAddress(str) {
   if (str.match(/::ffff:/)) {
     return str.substr(7)
   }
   return str
 }
 
-function isIncludeIPAddress (ipaddr, range) {
+function isIncludeIPAddress(ipaddr, range) {
   var ipArray = ipaddr.split('.')
   if ((ipaddr === '127.0.0.1') || (ipaddr === '::1')) {
     return true
