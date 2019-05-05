@@ -391,7 +391,7 @@ class GenerateJSCode
         $content .= $this->readJSSource($nodeModuleDir . 'jsencrypt/bin/jsencrypt.js');
         $content .= $this->readJSSource($nodeModuleDir . 'jssha/src/sha.js');
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-formatter/index.js');
-        $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-locale/index.js');
+        //$content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-locale/index.js');
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-queue/index.js');
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-nodegraph/index.js');
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-expressionparser/index.js');
