@@ -19,7 +19,7 @@ class ServiceServerProxy
     private $errors = [];
     private $messages = [];
     private $messageHead = "[ServiceServerProxy] ";
-    private $nodePath;
+//    private $nodePath;
     private $foreverPath;
 
     static public function instance()
@@ -39,12 +39,12 @@ class ServiceServerProxy
         $this->paramsPort = $params["serviceServerPort"] ? intval($params["serviceServerPort"]) : 11478;
         $this->paramsQuit = $params["stopSSEveryQuit"] == NULL ? false : boolval($params["stopSSEveryQuit"]);
         $imPath = IMUtil::pathToINTERMediator();
-        $this->foreverPath = "{$imPath}/node_modules/forever/bin/forever";
-        $this->nodePath = "vendor/bin/node";
+        $this->foreverPath = realpath("{$imPath}/node_modules/forever/bin/forever");
+//        $this->nodePath = "vendor/bin/node";
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
         if (IMUtil::isPHPExecutingWindows()) {
-            $this->foreverPath = str_replace("/", DIRECTORY_SEPARATOR, $this->foreverPath) . "-win";
-            $this->nodePath = str_replace("/", DIRECTORY_SEPARATOR, $this->nodePath);
+            $this->foreverPath = realpath("{$imPath}/node_modules/forever-win/bin/forever");
+//            $this->nodePath = str_replace("/", DIRECTORY_SEPARATOR, $this->nodePath);
         }
     }
 
@@ -68,13 +68,13 @@ class ServiceServerProxy
         return $this->errors;
     }
 
-    public function checkPossibility()
-    {
-        if (!is_writable($this->foreverPath)) {
-            $this->errors[] = "{$this->messageHead}The Forever script file is NOT writable: {$this->foreverPath}";
-        }
-        return is_writable($this->foreverPath);
-    }
+//    public function checkPossibility()
+//    {
+//        if (!is_writable($this->foreverPath)) {
+//            $this->errors[] = "{$this->messageHead}The Forever script file is NOT writable: {$this->foreverPath}";
+//        }
+//        return is_writable($this->foreverPath);
+//    }
 
     public function checkServiceServer()
     {
@@ -146,9 +146,10 @@ class ServiceServerProxy
 //        $script = file_get_contents($this->foreverPath);
 //        $script = str_replace(" node", " " . $this->nodePath, $script);
 //        file_put_contents($this->foreverPath, $script);
+        $scriptPath = realpath("{$imPath}/src/js/Service_Server.js");
         $logFile = tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
         $cmd = "'{$this->foreverPath}' start -a -l {$logFile} --minUptime 5000 --spinSleepTime 5000 " .
-            "'{$imPath}/src/js/Service_Server.js' {$this->paramsPort}";
+            "'{$scriptPath}' {$this->paramsPort}";
         $this->messages[] = $this->messageHead . "Command: {$cmd}";
         $result = [];
         $returnValue = 0;

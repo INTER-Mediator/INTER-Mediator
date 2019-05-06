@@ -124,17 +124,17 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
             }
         }
         // Bootstrap of Service Server
-        if(ServiceServerProxy::instance()->checkPossibility()) {
-            ServiceServerProxy::instance()->checkServiceServer();
-        }
+        //if(ServiceServerProxy::instance()->checkPossibility()) {
+        ServiceServerProxy::instance()->checkServiceServer();
+        //}
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
         ServiceServerProxy::instance()->stopServer();
     } else {    // Database accessing
         $dbInstance = new DB\Proxy();
-        if(ServiceServerProxy::instance()->checkPossibility()) {
-            ServiceServerProxy::instance()->checkServiceServer();
-        }
+        //if(ServiceServerProxy::instance()->checkPossibility()) {
+        ServiceServerProxy::instance()->checkServiceServer();
+        //}
         if (!$dbInstance->initialize($datasource, $options, $dbspecification, $debug)) {
             $dbInstance->finishCommunication(true);
         } else {
