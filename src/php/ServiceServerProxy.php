@@ -20,7 +20,7 @@ class ServiceServerProxy
     private $messages = [];
     private $messageHead = "[ServiceServerProxy] ";
 //    private $nodePath;
-    private $foreverPath;
+//    private $foreverPath;
 
     static public function instance()
     {
@@ -39,13 +39,13 @@ class ServiceServerProxy
         $this->paramsPort = $params["serviceServerPort"] ? intval($params["serviceServerPort"]) : 11478;
         $this->paramsQuit = $params["stopSSEveryQuit"] == NULL ? false : boolval($params["stopSSEveryQuit"]);
         $imPath = IMUtil::pathToINTERMediator();
-        $this->foreverPath = realpath("{$imPath}/node_modules/forever/bin/forever");
+//        $this->foreverPath ="{$imPath}/node_modules/forever/bin/forever";
 //        $this->nodePath = "vendor/bin/node";
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
-        if (IMUtil::isPHPExecutingWindows()) {
-            $this->foreverPath = realpath("{$imPath}/node_modules/forever-win/bin/forever");
+//        if (IMUtil::isPHPExecutingWindows()) {
+//            $this->foreverPath = str_replace("/", DIRECTORY_SEPARATOR, "{$imPath}/node_modules/.bin/forever.cmd");
 //            $this->nodePath = str_replace("/", DIRECTORY_SEPARATOR, $this->nodePath);
-        }
+//        }
     }
 
     public function clearMessages()
@@ -141,15 +141,20 @@ class ServiceServerProxy
     {
         $imPath = IMUtil::pathToINTERMediator();
         putenv('PATH=' . realpath($imPath . "/vendor/bin") .
-            (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
+        (IMUtil::isPHPExecutingWindows() ? ';' : ':') . realpath($imPath . "/node_modules/.bin") .
+        (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
 
 //        $script = file_get_contents($this->foreverPath);
 //        $script = str_replace(" node", " " . $this->nodePath, $script);
 //        file_put_contents($this->foreverPath, $script);
-        $scriptPath = realpath("{$imPath}/src/js/Service_Server.js");
+        $forever = "forever";
+        $scriptPath = "src/js/Service_Server.js";
+        if (IMUtil::isPHPExecutingWindows()) {
+            $forever = "forever.cmd";
+            $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath);
+        }
         $logFile = tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
-        $cmd = "'{$this->foreverPath}' start -a -l {$logFile} --minUptime 5000 --spinSleepTime 5000 " .
-            "'{$scriptPath}' {$this->paramsPort}";
+        $cmd = "{$forever}.cmd start -a -l {$logFile} --minUptime 5000 --spinSleepTime 5000 {$scriptPath} {$this->paramsPort}";
         $this->messages[] = $this->messageHead . "Command: {$cmd}";
         $result = [];
         $returnValue = 0;
@@ -165,7 +170,15 @@ class ServiceServerProxy
     {
         if ($this->paramsQuit) {
             $imPath = IMUtil::pathToINTERMediator();
-            $cmd = "'{$this->foreverPath}' stopall";
+            putenv('PATH=' . realpath($imPath . "/vendor/bin") .
+            (IMUtil::isPHPExecutingWindows() ? ';' : ':') . realpath($imPath . "/node_modules/.bin") .
+            (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
+            $forever = "forever";
+            if (IMUtil::isPHPExecutingWindows()) {
+                $forever = "forever.cmd";
+            }
+    
+            $cmd = "{$forever} stopall";
             $this->messages[] = $this->messageHead . "Command: {$cmd}";
             chdir($imPath);
             exec($cmd, $result, $returnValue);
