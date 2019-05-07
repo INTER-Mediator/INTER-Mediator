@@ -11,6 +11,7 @@ use \INTERMediator\IMUtil;
 class IMUtil_Test extends TestCase {
 
     private $util;
+
     public function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;

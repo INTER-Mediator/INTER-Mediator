@@ -15,6 +15,7 @@ use \INTERMediator\DB\Proxy;
 class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
 {
     protected $dsn;
+
     function setUp(): void
     {
         mb_internal_encoding('UTF-8');

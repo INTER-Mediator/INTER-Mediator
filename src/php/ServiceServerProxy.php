@@ -126,7 +126,6 @@ class ServiceServerProxy
         putenv('PATH=' . realpath($imPath . "/vendor/bin") .
             (IMUtil::isPHPExecutingWindows() ? ';' : ':') . realpath($imPath . "/node_modules/.bin") .
             (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
-
         $forever = "forever";
         $scriptPath = "src/js/Service_Server.js";
         if (IMUtil::isPHPExecutingWindows()) {
