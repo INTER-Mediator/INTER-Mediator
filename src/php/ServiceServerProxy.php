@@ -40,11 +40,11 @@ class ServiceServerProxy
         $this->paramsQuit = $params["stopSSEveryQuit"] == NULL ? false : boolval($params["stopSSEveryQuit"]);
         $imPath = IMUtil::pathToINTERMediator();
         $this->foreverPath = "{$imPath}/node_modules/forever/bin/forever";
-        $this->nodePath = "vendor/bin/node";
+        $this->nodePath = "{$imPath}/vendor/bin/node";
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
         if (IMUtil::isPHPExecutingWindows()) {
             $this->foreverPath = str_replace("/", DIRECTORY_SEPARATOR, $this->foreverPath) . "-win";
-            $this->nodePath = str_replace("/", DIRECTORY_SEPARATOR, $this->nodePath);
+            $this->nodePath = str_replace("/", DIRECTORY_SEPARATOR, "{$imPath}/vendor/bin/node");
         }
     }
 
@@ -66,14 +66,6 @@ class ServiceServerProxy
     public function getErrors()
     {
         return $this->errors;
-    }
-
-    public function checkPossibility()
-    {
-        if(!is_writable($this->foreverPath)){
-            $this->errors[] = "{$this->messageHead}The Forever script file is NOT writable: {$this->foreverPath}";
-        }
-        return is_writable($this->foreverPath);
     }
 
     public function checkServiceServer()
@@ -150,7 +142,6 @@ class ServiceServerProxy
         $this->messages[] = $this->messageHead . "Command: {$cmd}";
         $result = [];
         $returnValue = 0;
-        chdir($imPath);
         exec($cmd, $result, $returnValue);
 
         $this->messages[] = $this->messageHead . "Returns: {$returnValue}, Output:" . implode("/", $result);
@@ -164,7 +155,6 @@ class ServiceServerProxy
             $imPath = IMUtil::pathToINTERMediator();
             $cmd = "'{$this->foreverPath}' stopall";
             $this->messages[] = $this->messageHead . "Command: {$cmd}";
-            chdir($imPath);
             exec($cmd, $result, $returnValue);
             $this->messages[] = $this->messageHead . "Returns: {$returnValue}, Output:" . implode("/", $result);
         }

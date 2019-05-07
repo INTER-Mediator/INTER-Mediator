@@ -8,7 +8,7 @@ use \INTERMediator\Data_Converter\MarkdownString;
 
 class DataConverter_MarkdownString_Test extends TestCase
 {
-    protected function setUp(): void
+    public function setUp()
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
 

@@ -8,7 +8,7 @@ require_once(dirname(__FILE__) . '/../params.php');
 
 class FileUploader_Test extends TestCase
 {
-    protected function setUp():void
+    protected function setUp()
     {
         $this->uploader = new FileUploader();
     }

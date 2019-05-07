@@ -8,7 +8,7 @@ use \INTERMediator\Data_Converter\Number;
 
 class DataConverter_Number_Test extends TestCase
 {
-    protected function setUp(): void
+    public function setUp()
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
         setlocale(LC_ALL, 'ja_JP', 'ja');

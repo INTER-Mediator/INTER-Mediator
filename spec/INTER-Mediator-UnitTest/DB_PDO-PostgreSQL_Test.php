@@ -13,7 +13,7 @@ use \INTERMediator\DB\Proxy;
 
 class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
 {
-    protected function setUp():void
+    function setUp()
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         mb_internal_encoding('UTF-8');

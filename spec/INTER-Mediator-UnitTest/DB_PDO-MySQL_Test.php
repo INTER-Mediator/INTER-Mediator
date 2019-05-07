@@ -15,8 +15,7 @@ use \INTERMediator\DB\Proxy;
 class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
 {
     protected $dsn;
-
-    protected function setUp():void
+    function setUp()
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');

@@ -8,13 +8,13 @@ use \INTERMediator\Data_Converter\MySQLDateTime;
 
 class DataConverter_MySQLDateTime_Test extends TestCase
 {
-    protected function setUp(): void
+    public function setUp()
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
-
+        
         $this->dataconverter = new MySQLDateTime();
     }
-
+    
     public function test_converterFromDBtoUser()
     {
         $expected = '';
@@ -55,7 +55,7 @@ class DataConverter_MySQLDateTime_Test extends TestCase
         $timeString = '12:34:56';
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($timeString));
     }
-
+    
     public function test_converterFromUserToDB()
     {
         $expected = null;
