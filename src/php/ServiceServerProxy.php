@@ -19,6 +19,8 @@ class ServiceServerProxy
     private $errors = [];
     private $messages = [];
     private $messageHead = "[ServiceServerProxy] ";
+//    private $nodePath;
+//    private $foreverPath;
 
     static public function instance()
     {
@@ -36,7 +38,14 @@ class ServiceServerProxy
         $this->paramsHost = $params["serviceServerHost"] ? $params["serviceServerHost"] : "localhost";
         $this->paramsPort = $params["serviceServerPort"] ? intval($params["serviceServerPort"]) : 11478;
         $this->paramsQuit = $params["stopSSEveryQuit"] == NULL ? false : boolval($params["stopSSEveryQuit"]);
+        $imPath = IMUtil::pathToINTERMediator();
+//        $this->foreverPath ="{$imPath}/node_modules/forever/bin/forever";
+//        $this->nodePath = "vendor/bin/node";
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
+//        if (IMUtil::isPHPExecutingWindows()) {
+//            $this->foreverPath = str_replace("/", DIRECTORY_SEPARATOR, "{$imPath}/node_modules/.bin/forever.cmd");
+//            $this->nodePath = str_replace("/", DIRECTORY_SEPARATOR, $this->nodePath);
+//        }
     }
 
     public function clearMessages()
@@ -58,6 +67,14 @@ class ServiceServerProxy
     {
         return $this->errors;
     }
+
+//    public function checkPossibility()
+//    {
+//        if (!is_writable($this->foreverPath)) {
+//            $this->errors[] = "{$this->messageHead}The Forever script file is NOT writable: {$this->foreverPath}";
+//        }
+//        return is_writable($this->foreverPath);
+//    }
 
     public function checkServiceServer()
     {
@@ -124,9 +141,12 @@ class ServiceServerProxy
     {
         $imPath = IMUtil::pathToINTERMediator();
         putenv('PATH=' . realpath($imPath . "/vendor/bin") .
-            (IMUtil::isPHPExecutingWindows() ? ';' : ':') . realpath($imPath . "/node_modules/.bin") .
-            (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
+        (IMUtil::isPHPExecutingWindows() ? ';' : ':') . realpath($imPath . "/node_modules/.bin") .
+        (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
 
+//        $script = file_get_contents($this->foreverPath);
+//        $script = str_replace(" node", " " . $this->nodePath, $script);
+//        file_put_contents($this->foreverPath, $script);
         $forever = "forever";
         $scriptPath = "src/js/Service_Server.js";
         if (IMUtil::isPHPExecutingWindows()) {
@@ -134,7 +154,7 @@ class ServiceServerProxy
             $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath);
         }
         $logFile = tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
-        $cmd = "{$forever} start -a -l {$logFile} --minUptime 5000 --spinSleepTime 5000 {$scriptPath} {$this->paramsPort}";
+        $cmd = "{$forever}.cmd start -a -l {$logFile} --minUptime 5000 --spinSleepTime 5000 {$scriptPath} {$this->paramsPort}";
         $this->messages[] = $this->messageHead . "Command: {$cmd}";
         $result = [];
         $returnValue = 0;
@@ -142,6 +162,7 @@ class ServiceServerProxy
         exec($cmd, $result, $returnValue);
 
         $this->messages[] = $this->messageHead . "Returns: {$returnValue}, Output:" . implode("/", $result);
+        //closelog();
         return true;
     }
 
@@ -150,13 +171,13 @@ class ServiceServerProxy
         if ($this->paramsQuit) {
             $imPath = IMUtil::pathToINTERMediator();
             putenv('PATH=' . realpath($imPath . "/vendor/bin") .
-                (IMUtil::isPHPExecutingWindows() ? ';' : ':') . realpath($imPath . "/node_modules/.bin") .
-                (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
+            (IMUtil::isPHPExecutingWindows() ? ';' : ':') . realpath($imPath . "/node_modules/.bin") .
+            (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
             $forever = "forever";
             if (IMUtil::isPHPExecutingWindows()) {
                 $forever = "forever.cmd";
             }
-
+    
             $cmd = "{$forever} stopall";
             $this->messages[] = $this->messageHead . "Command: {$cmd}";
             chdir($imPath);
