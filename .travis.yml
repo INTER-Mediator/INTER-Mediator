@@ -19,6 +19,7 @@ php:
 matrix:
   allow_failures:
     - php: nightly
+    - 7.0
     - php: 5.6
 
 ## for Headless Chrome and trusty
