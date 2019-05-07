@@ -382,7 +382,9 @@ class GenerateJSCode
 
     private function combineScripts($currentDir)
     {
-        $jsLibDir = dirname($currentDir) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
+        $imPath = IMUtil::pathToINTERMediator();
+        $jsCodeDir = $imPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'js'. DIRECTORY_SEPARATOR;
+        $nodeModuleDir = $imPath . DIRECTORY_SEPARATOR . 'node_modules'. DIRECTORY_SEPARATOR;
         $content = '';
         $content .= $this->readJSSource($nodeModuleDir . 'jsencrypt/bin/jsencrypt.js');
         $content .= $this->readJSSource($nodeModuleDir . 'jssha/src/sha.js');
