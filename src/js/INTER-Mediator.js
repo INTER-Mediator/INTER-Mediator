@@ -1864,6 +1864,9 @@ const INTERMediator = {
     'use strict'
     let i
     let value = INTERMediator.additionalCondition
+    if (!value){
+      value = {}
+    }
     if (label === undefined) {
       if (value[contextName]) {
         delete value[contextName]
@@ -1942,3 +1945,5 @@ const INTERMediator = {
 
 // @@IM@@IgnoringRestOfFile
 module.exports = INTERMediator
+const INTERMediator_DBAdapter = require('../../src/js/Adapter_DBServer')
+const IMLibLocalContext = require('../../src/js/INTER-Mediator-LocalContext')

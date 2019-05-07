@@ -107,7 +107,12 @@ const INTERMediatorLib = {
       salt += String.fromCharCode(code)
       saltHex += numToHex[highCode] + numToHex[lowCode]
     }
-    return encodeURIComponent(SHA1(password + salt) + saltHex)
+
+    let shaObj = new jsSHA('SHA-1', 'TEXT')
+    shaObj.update(password + salt)
+    let hash = shaObj.getHash('HEX')
+
+    return encodeURIComponent(hash + saltHex)
   },
 
   getParentRepeater: function (node) {
@@ -1196,5 +1201,4 @@ module.exports = INTERMediatorLib
 const IMLibLocalContext = require('../../src/js/INTER-Mediator-LocalContext')
 const INTERMediator = require('../../src/js/INTER-Mediator')
 const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
-
-
+const jsSHA = require('../../node_modules/jssha/src/sha.js')

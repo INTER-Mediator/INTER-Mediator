@@ -11,7 +11,7 @@
 // JSHint support
 /* global IMLibContextPool, INTERMediator, IMLibMouseEventDispatch, IMLibLocalContext,
  IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibUI,
- IMLibEventResponder, INTERMediatorLog, SHA1, IMLib, JSEncrypt */
+ IMLibEventResponder, INTERMediatorLog, IMLib, JSEncrypt */
 /* jshint -W083 */ // Function within a loop
 /**
  * @fileoverview INTERMediatorOnPage class is defined here.
@@ -624,9 +624,10 @@ let INTERMediatorOnPage = {
       encrypt.setPublicKey(INTERMediatorOnPage.publickey)
       INTERMediatorOnPage.authCryptedPassword = encrypt.encrypt(inputPassword)
 
-      INTERMediatorOnPage.authHashedPassword =
-        INTERMediatorLib.SHA1(inputPassword + INTERMediatorOnPage.authUserSalt) +
-        INTERMediatorOnPage.authUserHexSalt
+      let shaObj = new jsSHA('SHA-1', 'TEXT')
+      shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
+      let hash = shaObj.getHash('HEX')
+      INTERMediatorOnPage.authHashedPassword = hash + INTERMediatorOnPage.authUserHexSalt
 
       if (INTERMediatorOnPage.authUser.length > 0) { // Authentication succeed, Store coockies.
         INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
@@ -1045,7 +1046,8 @@ let INTERMediatorOnPage = {
     let s = '', i, targetKey
     try {
       s = document.cookie.split('; ')
-    } catch (e) { }
+    } catch (e) {
+    }
     targetKey = this.getKeyWithRealm(key)
     for (i = 0; i < s.length; i++) {
       if (s[i].indexOf(targetKey + '=') === 0) {
