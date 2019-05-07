@@ -9,10 +9,6 @@
  */
 let port = process.argv[2] ? process.argv[2] : 21000
 let acceptClient = '0.0.0.0/0'
-
-<<<<<<< HEAD
-let parser = require('../lib/js_lib/js-expression-eval-parser')
-=======
 const parser = require('../../node_modules/inter-mediator-expressionparser/index')
 
 >>>>>>> cfa0cee8dcc7fe07431a55d8448595ebd7bcd6e8

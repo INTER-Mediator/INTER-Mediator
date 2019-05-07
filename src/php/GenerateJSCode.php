@@ -384,30 +384,6 @@ class GenerateJSCode
     {
         $jsLibDir = dirname($currentDir) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
         $content = '';
-<<<<<<< HEAD
-        $content .= $this->readJSSource($currentDir . 'INTER-Mediator.js');
-        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Page.js');
-        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-ContextPool.js');
-        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Context.js');
-        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-LocalContext.js');
-        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Lib.js');
-        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Graph.js');
-        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Format.js');
-        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Element.js');
-        $content .= $this->readJSSource($jsLibDir . 'js-expression-eval-parser.js');
-        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Calc.js');
-        $content .= $this->readJSSource($currentDir . 'Adapter_DBServer.js');
-        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Parts.js');
-        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Navi.js');
-        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-UI.js');
-        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Log.js');
-        $content .= ';' . $this->readJSSource($jsLibDir . 'tinySHA1.js');
-        $content .= $this->readJSSource($jsLibDir . 'sha256.js');
-        $content .= $this->readJSSource($jsLibDir . 'jsencrypt.min.js');
-        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Events.js');
-        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Queuing.js');
-        $content .= $this->readJSSource($currentDir . 'INTER-Mediator-DoOnStart.js');
-=======
         $content .= $this->readJSSource($nodeModuleDir . 'jsencrypt/bin/jsencrypt.js');
         $content .= $this->readJSSource($nodeModuleDir . 'jssha/src/sha.js');
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-formatter/index.js');
@@ -429,7 +405,6 @@ class GenerateJSCode
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Log.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Events.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-DoOnStart.js');
->>>>>>> cfa0cee8dcc7fe07431a55d8448595ebd7bcd6e8
 
         return $content;
     }
