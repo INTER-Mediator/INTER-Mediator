@@ -16,66 +16,16 @@
     <title>INTER-Mediator - Sample - Authorized Chat / MySQL</title>
     <link href="../../node_modules/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
     <script src="../../node_modules/flatpickr/dist/flatpickr.min.js"></script>
+    <script src="../../node_modules/flatpickr/dist/l10n/ja.js"></script>
     <script src="include_MySQL.php"></script>
-    <!--    <script type="text/javascript" src="../../node_modules/inter-mediator-plugin-jquerydatepicker/index.js"></script>-->
-    <script>
-      IMParts_Catalog.flatpicker = {
-        instanciate: function (targetNode) {
-          var nodeId = targetNode.getAttribute('id')
-          this.ids.push(nodeId)
-
-          targetNode._im_getComponentId = (function () {
-            var theId = nodeId
-            return function () {
-              return theId
-            }
-          })()
-          targetNode._im_setValue = (function () {
-            var aNode = targetNode
-            return function (str) {
-              aNode.value = str
-            }
-          })()
-          targetNode._im_getValue = (function () {
-            var aNode = targetNode
-            return function () {
-              return aNode.value
-            }
-          })()
-        },
-
-        ids: [],
-        dateFormat: 'yy-mm-dd',
-
-        finish: function () {
-          for (var i = 0; i < IMParts_Catalog.jquery_datepicker.ids.length; i++) {
-            var targetId = IMParts_Catalog.jquery_datepicker.ids[i]
-            var targetNode = document.getElementById(targetId)
-            if (targetNode) {
-              flatpicker(targetNode, {
-                dateFormat: IMParts_Catalog.jquery_datepicker.dateFormat,
-                onSelect: (function () {
-                  var thisId = targetId
-                  var thidNode = targetNode
-                  return function (dateText) {
-                    thidNode.value = dateText
-                    IMLibUI.valueChange(thisId)
-                  }
-                })()
-              })
-            }
-          }
-          this.ids = []
-        }
-      }
-    </script>
+    <script src="../../node_modules/inter-mediator-plugin-flatpickr/index.js"></script>
 </head>
 <body>
 <header>
     <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
 </header>
 <div id="wrapper">
-    <h1>JavaScript Component Test (jQuery Date Picker)</h1>
+    <h1>JavaScript Component Test (flatpickr)</h1>
     <table>
         <thead>
         <tr>
@@ -86,10 +36,7 @@
         </thead>
         <tbody>
         <tr>
-            <td>
-                <input type="text" data-im="testtable@dt1"
-                       data-im-widget="flatpicker">
-            </td>
+            <td><input type="text" data-im="testtable@dt1" data-im-widget="flatpickr"></td>
             <td data-im="testtable@text1"></td>
             <td></td>
         </tr>
