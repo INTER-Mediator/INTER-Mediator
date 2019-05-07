@@ -19,7 +19,8 @@ class PDFSample
         $tsString = $timestamp->format("Y-m-d H:i:s");
         $fileName = "{$prodId}.pdf";
 
-        $pdf = new \TCPDF("P", "mm", "A4", true, "UTF-8");
+        require_once './tcpdf/tcpdf.php';
+        $pdf = new TCPDF("P", "mm", "A4", true, "UTF-8");
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
         $pdf->SetMargins(0, 0, 0, 0);

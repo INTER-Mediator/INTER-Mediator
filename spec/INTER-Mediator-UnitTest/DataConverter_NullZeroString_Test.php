@@ -7,13 +7,13 @@ use \INTERMediator\Data_Converter\NullZeroString;
 
 class DataConverter_NullZeroString_Test extends TestCase
 {
-    protected function setUp(): void
+    public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
-
+        
         $this->dataconverter = new NullZeroString();
     }
-
+    
     public function test_converterFromUserToDB()
     {
         $string = '';
@@ -23,7 +23,7 @@ class DataConverter_NullZeroString_Test extends TestCase
         $string = 'Test';
         $this->assertSame($expected, $this->dataconverter->converterFromUserToDB($string));
     }
-
+    
     public function test_converterFromDBtoUser()
     {
         $expected = '';

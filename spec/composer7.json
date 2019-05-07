@@ -1,7 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
   "version": "6-dev",
-  "time": "2019-04-14",
+  "time": "2019-05-07",
   "repositories": [
     {
       "type": "git",
@@ -17,7 +17,7 @@
     "ext-bcmath": "*",
     "ext-curl": "*",
     "ext-xml": "*",
-    "mouf/nodejs-installer": "*",
+    "mouf/nodejs-installer": "~1.0",
     "phpseclib/phpseclib": "*",
     "paragonie/constant_time_encoding": "*",
     "yodarunamok/fxphp": "*",
@@ -28,7 +28,8 @@
   "extra": {
     "mouf": {
       "nodejs": {
-        "version": "^11"
+        "version": "^10",
+        "includeBinInPath": true
       }
     }
   },
@@ -68,13 +69,17 @@
   },
   "scripts": {
     "test": [
-      "vendor/bin/phpunit --globals-backup --bootstrap vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+      "./vendor/bin/phpunit --globals-backup --bootstrap ./vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
     ],
     "jest": [
-      "vendor/bin/npm test"
+      "./node_modules/.bin/jest --config ./spec/jest.config.js"
+    ],
+    "clear": [
+      "rm -rf node_modules vendor"
     ],
     "post-update-cmd": [
-      "vendor/bin/npm --save install"
+      "npm install",
+      "rm -f __Did_you_run_composer_update.txt"
     ],
     "post-create-project-cmd": [
       "mkdir -p ../398A6028-0181-4B75-BFD9-1C094B5ADD9F",
@@ -95,10 +100,10 @@
       "lib/src/INTER-Mediator/dist-docs/buildup.sh --deploy"
     ],
     "forever-list": [
-      "node_modules/forever/bin/forever list"
+      "./node_modules/forever/bin/forever list"
     ],
     "forever-stopall": [
-      "node_modules/forever/bin/forever stopall"
+      "./node_modules/forever/bin/forever stopall"
     ]
   }
 }

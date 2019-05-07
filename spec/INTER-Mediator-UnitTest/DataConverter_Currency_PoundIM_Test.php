@@ -7,7 +7,7 @@ require_once(dirname(__FILE__) . '/DataConverter_Currency_Base_Test.php');
 
 class DataConverter_Currency_PoundIM_Test extends DataConverter_Currency_Base_Test
 {
-    protected function setUp(): void
+    public function setUp(): void
     {
         \INTERMediator\Locale\IMLocale::$localForTest = 'en_GB';
         \INTERMediator\Locale\IMLocale::$alwaysIMClasses = true;

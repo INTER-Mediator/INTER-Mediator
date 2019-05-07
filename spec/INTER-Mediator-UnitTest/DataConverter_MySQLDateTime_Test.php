@@ -8,7 +8,7 @@ use \INTERMediator\Data_Converter\MySQLDateTime;
 
 class DataConverter_MySQLDateTime_Test extends TestCase
 {
-    protected function setUp(): void
+    public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
 

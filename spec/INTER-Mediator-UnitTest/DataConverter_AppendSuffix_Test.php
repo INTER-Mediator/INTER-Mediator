@@ -7,13 +7,13 @@ use \INTERMediator\Data_Converter\AppendSuffix;
 
 class DataConverter_AppendSuffix_Test extends TestCase
 {
-    protected function setUp(): void
+    public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
-
+        
         $this->dataconverter = new AppendSuffix('円');
     }
-
+    
     public function test_converterFromDBtoUser()
     {
         $string = '1000';

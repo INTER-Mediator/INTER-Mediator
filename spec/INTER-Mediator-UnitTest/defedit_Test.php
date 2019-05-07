@@ -6,7 +6,7 @@ use \PHPUnit\Framework\TestCase;
 
 class defedit_Test extends TestCase
 {
-    protected function setUp(): void
+    public function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
@@ -24,7 +24,7 @@ class defedit_Test extends TestCase
         $imPath = \INTERMediator\IMUtil::pathToINTERMediator();
         require_once($imPath . '/editors/defedit.php');
         $output = ob_get_contents();
-        $this->assertStringNotContainsString('INTERMediatorLog.debugMode=', $output);
+        $this->assertNotContains('INTERMediatorLog.debugMode=', $output);
         ob_end_clean();
     }
 }

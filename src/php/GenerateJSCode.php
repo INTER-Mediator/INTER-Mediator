@@ -16,8 +16,6 @@
 
 namespace INTERMediator;
 
-use mysql_xdevapi\Exception;
-
 class GenerateJSCode
 {
     public function __construct()
@@ -106,7 +104,7 @@ class GenerateJSCode
         $currentDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR . 'src' .
             DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
         if (!file_exists($currentDir . 'INTER-Mediator.min.js')) {
-            echo $this->combineScripts();
+            echo $this->combineScripts($currentDir);
 //        } else if (file_exists($currentDir . 'INTER-Mediator-IE.js')) {
 //            readfile($currentDir . 'INTER-Mediator-IE.js');
         } else {
@@ -269,7 +267,7 @@ class GenerateJSCode
 
         if (!is_null($appLocale)) {
             $this->generateAssignJS("INTERMediatorOnPage.appLocale", "{$q}{$appLocale}{$q}");
-            $this->generateAssignJS("INTERMediatorOnPage.localeInfo",
+            $this->generateAssignJS("INTERMediatorLocale",
                 "JSON.parse('" . json_encode(Locale\IMLocaleFormatTable::getCurrentLocaleFormat()) . "')");
         }
         if (!is_null($appCurrency)) {
@@ -382,14 +380,14 @@ class GenerateJSCode
         $this->generateAssignJS("INTERMediatorOnPage.serviceServerStatus", $sss ? "true" : "false");
     }
 
-    private function combineScripts()
+    private function combineScripts($currentDir)
     {
-        $imDir = IMUtil::pathToINTERMediator();
-        $jsCodeDir = $imDir . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
-        $nodeModuleDir = $imDir . DIRECTORY_SEPARATOR . 'node_modules' . DIRECTORY_SEPARATOR;
+        $jsLibDir = dirname($currentDir) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
         $content = '';
         $content .= $this->readJSSource($nodeModuleDir . 'jsencrypt/bin/jsencrypt.js');
         $content .= $this->readJSSource($nodeModuleDir . 'jssha/src/sha.js');
+        $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-formatter/index.js');
+        //$content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-locale/index.js');
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-queue/index.js');
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-nodegraph/index.js');
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-expressionparser/index.js');
@@ -399,7 +397,6 @@ class GenerateJSCode
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Context.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-LocalContext.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Lib.js');
-        $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Format.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Element.js');
         $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Calc.js');
         $content .= $this->readJSSource($jsCodeDir . 'Adapter_DBServer.js');
@@ -414,12 +411,6 @@ class GenerateJSCode
 
     private function readJSSource($filename)
     {
-        if (!file_exists($filename))    {
-            $errorMsg = "[INTER-Mediator Error] The file {$filename} doesn't exist. ".
-                "Did you run the 'composer update' command?";
-            echo "console.error(\"{$errorMsg}\");";
-            return "/* {$errorMsg} */\n";
-        }
         $content = file_get_contents($filename);
         $pos = strpos($content, "@@IM@@IgnoringRestOfFile");
         if ($pos !== false) {
