@@ -18,7 +18,7 @@
  * @fileoverview IMLibElement class is defined here.
  */
 // @@IM@@IgnoringNextLine
-const IMLibFormat =  require('../../src/js/INTER-Mediator-Format')
+const IMLibFormat =  require('../../node_modules/inter-mediator-formatter/index')
 /**
  *
  * Usually you don't have to instanciate this class with new operator.
@@ -384,7 +384,7 @@ const IMLibElement = {
       }
     }
     if (formatSpec && negativeColor) {
-      negativeSign = INTERMediatorOnPage.localeInfo.negative_sign
+      negativeSign = INTERMediatorLocale.negative_sign
       negativeTailSign = ''
       flags = IMLibElement.initilaizeFlags(element)
       if (flags.negativeStyle === 0 || flags.negativeStyle === 1) {

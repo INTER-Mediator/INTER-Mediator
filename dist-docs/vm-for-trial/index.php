@@ -129,7 +129,7 @@ if (file_exists('/etc/alpine-release')) {
     </li>
 </ul>
 
-<h3><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/../../Auth_Support/MySQL_accountmanager.html"
+<h3><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/../../samples/Auth_Support/MySQL_accountmanager.html"
       target="_blank">ユーザー管理ページサンプル</a></h3>
 <ul>
     <li>ユーザー名、パスワード共に、user1でログインができますが、通常の利用は、利用者と別の管理者を作り、その管理者でのみログインできるようにします。</li>

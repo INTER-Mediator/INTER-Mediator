@@ -28,9 +28,6 @@ IM_Entry(
             'default-values'=>array(
                 array('field'=>'dt1', 'value'=>date('Y-m-d H:i:s')),
             ),
-            'file-upload' => array(
-                array('field'=>'vc1', 'context'=>'fileupload',)
-            ),
         ),
         array(
             'name' => 'fileupload',
@@ -48,5 +45,5 @@ IM_Entry(
         'media-root-dir' => '/tmp',
     ),
     array('db-class' => 'PDO'),
-    false
+false
 );

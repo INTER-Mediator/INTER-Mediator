@@ -124,13 +124,25 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
             }
         }
         // Bootstrap of Service Server
+<<<<<<< HEAD
         ServiceServerProxy::instance()->checkServiceServer();
+=======
+        //if(ServiceServerProxy::instance()->checkPossibility()) {
+        ServiceServerProxy::instance()->checkServiceServer();
+        //}
+>>>>>>> cfa0cee8dcc7fe07431a55d8448595ebd7bcd6e8
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
         ServiceServerProxy::instance()->stopServer();
     } else {    // Database accessing
         ServiceServerProxy::instance()->checkServiceServer();
         $dbInstance = new DB\Proxy();
+<<<<<<< HEAD
+=======
+        //if(ServiceServerProxy::instance()->checkPossibility()) {
+        ServiceServerProxy::instance()->checkServiceServer();
+        //}
+>>>>>>> cfa0cee8dcc7fe07431a55d8448595ebd7bcd6e8
         if (!$dbInstance->initialize($datasource, $options, $dbspecification, $debug)) {
             $dbInstance->finishCommunication(true);
         } else {

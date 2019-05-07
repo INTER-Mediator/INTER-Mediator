@@ -267,7 +267,7 @@ class GenerateJSCode
 
         if (!is_null($appLocale)) {
             $this->generateAssignJS("INTERMediatorOnPage.appLocale", "{$q}{$appLocale}{$q}");
-            $this->generateAssignJS("INTERMediatorOnPage.localeInfo",
+            $this->generateAssignJS("INTERMediatorLocale",
                 "JSON.parse('" . json_encode(Locale\IMLocaleFormatTable::getCurrentLocaleFormat()) . "')");
         }
         if (!is_null($appCurrency)) {
@@ -384,6 +384,7 @@ class GenerateJSCode
     {
         $jsLibDir = dirname($currentDir) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
         $content = '';
+<<<<<<< HEAD
         $content .= $this->readJSSource($currentDir . 'INTER-Mediator.js');
         $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Page.js');
         $content .= $this->readJSSource($currentDir . 'INTER-Mediator-ContextPool.js');
@@ -406,6 +407,29 @@ class GenerateJSCode
         $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Events.js');
         $content .= $this->readJSSource($currentDir . 'INTER-Mediator-Queuing.js');
         $content .= $this->readJSSource($currentDir . 'INTER-Mediator-DoOnStart.js');
+=======
+        $content .= $this->readJSSource($nodeModuleDir . 'jsencrypt/bin/jsencrypt.js');
+        $content .= $this->readJSSource($nodeModuleDir . 'jssha/src/sha.js');
+        $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-formatter/index.js');
+        //$content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-locale/index.js');
+        $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-queue/index.js');
+        $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-nodegraph/index.js');
+        $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-expressionparser/index.js');
+        $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator.js');
+        $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Page.js');
+        $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-ContextPool.js');
+        $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Context.js');
+        $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-LocalContext.js');
+        $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Lib.js');
+        $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Element.js');
+        $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Calc.js');
+        $content .= $this->readJSSource($jsCodeDir . 'Adapter_DBServer.js');
+        $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Navi.js');
+        $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-UI.js');
+        $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Log.js');
+        $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-Events.js');
+        $content .= $this->readJSSource($jsCodeDir . 'INTER-Mediator-DoOnStart.js');
+>>>>>>> cfa0cee8dcc7fe07431a55d8448595ebd7bcd6e8
 
         return $content;
     }
