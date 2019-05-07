@@ -123,12 +123,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/msyk/FMDataAPI.git",
-                "reference": "d2a91a912825727aaa86003fee31f315880965f1"
+                "reference": "ce9e52817b3660e77dadc98cbf2ab1ad86f31d36"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/msyk/FMDataAPI/zipball/d2a91a912825727aaa86003fee31f315880965f1",
-                "reference": "d2a91a912825727aaa86003fee31f315880965f1",
+                "url": "https://api.github.com/repos/msyk/FMDataAPI/zipball/ce9e52817b3660e77dadc98cbf2ab1ad86f31d36",
+                "reference": "ce9e52817b3660e77dadc98cbf2ab1ad86f31d36",
                 "shasum": ""
             },
             "require": {
@@ -160,7 +160,7 @@
                 "api",
                 "rest"
             ],
-            "time": "2019-01-08T04:06:22+00:00"
+            "time": "2019-05-06T06:58:46+00:00"
         },
         {
             "name": "mouf/nodejs-installer",
