@@ -142,7 +142,6 @@ readFileUntilMark "${originalPath}/src/js/INTER-Mediator-ContextPool.js" "${buil
 readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Context.js" "${buildPath}/src/js/temp.js"
 readFileUntilMark "${originalPath}/src/js/INTER-Mediator-LocalContext.js" "${buildPath}/src/js/temp.js"
 readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Lib.js" "${buildPath}/src/js/temp.js"
-readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Format.js" "${buildPath}/src/js/temp.js"
 readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Element.js" "${buildPath}/src/js/temp.js"
 readFileUntilMark "${originalPath}/src/js/INTER-Mediator-Calc.js" "${buildPath}/src/js/temp.js"
 readFileUntilMark "${originalPath}/src/js/Adapter_DBServer.js" "${buildPath}/src/js/temp.js"
