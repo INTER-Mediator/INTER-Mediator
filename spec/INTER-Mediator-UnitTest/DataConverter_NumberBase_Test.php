@@ -8,12 +8,12 @@ use \INTERMediator\Data_Converter\NumberBase;
 
 class DataConverter_NumberBase_Test extends TestCase
 {
-    protected function setUp(): void
+    public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
         setlocale (LC_ALL, 'ja_JP', 'ja');
         $this->dataconverter = new NumberBase();
-
+        
 //        $locInfo = localeconv();
 //        $this->decimalMark = $locInfo['mon_decimal_point'];
 //        if (strlen($this->decimalMark) == 0) {

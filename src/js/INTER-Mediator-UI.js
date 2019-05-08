@@ -42,9 +42,9 @@ const IMLibUI = {
     if (!changedObj) {
       return false
     }
-    if (changedObj.readOnly) { // for Internet Explorer
-      return true
-    }
+    // if (changedObj.readOnly) { // for Internet Explorer
+    //   return true
+    // }
     // Validating
     if (!IMLibUI.validation(changedObj)) { // Validation error.
       changedObj.focus()

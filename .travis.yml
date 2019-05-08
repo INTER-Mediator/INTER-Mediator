@@ -33,7 +33,6 @@ addons:
 before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
-  - sleep 5
   - composer update
   - sleep 5
   - firefox http://localhost:1111/capture &
@@ -51,7 +50,7 @@ before_script:
 
 script:
   - composer test
-  - vendor/bin/npm test
+  - composer jest
 
 notifications:
   slack:

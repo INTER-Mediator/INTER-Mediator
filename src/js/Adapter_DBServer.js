@@ -15,7 +15,7 @@
 // JSHint support
 /* global IMLibContextPool, INTERMediator, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibLocalContext,
  IMLibChangeEventDispatch, INTERMediatorLib, IMLibQueue, IMLibCalc, IMLibPageNavigation, INTERMediatorLog,
- IMLibEventResponder, IMLibElement, Parser, IMLib, jsSHA, SHA1, JSEncrypt */
+ IMLibEventResponder, IMLibElement, Parser, IMLib, jsSHA, JSEncrypt */
 
 /**
  * @fileoverview INTERMediator_DBAdapter class is defined here.
@@ -304,9 +304,10 @@ const INTERMediator_DBAdapter = {
           return
         }
       }
-      INTERMediatorOnPage.authHashedPassword =
-        INTERMediatorLib.SHA1(oldpassword + INTERMediatorOnPage.authUserSalt) +
-        INTERMediatorOnPage.authUserHexSalt
+      let shaObj = new jsSHA('SHA-1', 'TEXT')
+      shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
+      let hash = shaObj.getHash('HEX')
+      INTERMediatorOnPage.authHashedPassword = hash + INTERMediatorOnPage.authUserHexSalt
       params = 'access=changepassword&newpass=' + INTERMediatorLib.generatePasswordHash(newpassword)
 
       this.server_access_async(params, 1029, 1030,
@@ -314,8 +315,10 @@ const INTERMediator_DBAdapter = {
           if (result.newPasswordResult) {
             encrypt.setPublicKey(INTERMediatorOnPage.publickey)
             INTERMediatorOnPage.authCryptedPassword = encrypt.encrypt(newpassword)
-            INTERMediatorOnPage.authHashedPassword =
-              INTERMediatorLib.SHA1(newpassword + INTERMediatorOnPage.authUserSalt) + INTERMediatorOnPage.authUserHexSalt
+            let shaObj = new jsSHA('SHA-1', 'TEXT')
+            shaObj.update(newpassword + INTERMediatorOnPage.authUserSalt)
+            let hash = shaObj.getHash('HEX')
+            INTERMediatorOnPage.authHashedPassword = hash + INTERMediatorOnPage.authUserHexSalt
             INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
             resolve(true)
           } else {

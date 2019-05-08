@@ -33,7 +33,7 @@
     "url": "https://github.com/INTER-Mediator/INTER-Mediator.git"
   },
   "scripts": {
-    "test": "node_modules/.bin/jest --config spec/jest.config.js"
+    "test": "cd node_modules/.bin; jest --config ../../spec/jest.config.js"
   },
   "devDependencies": {
     "request": "*",
@@ -46,12 +46,16 @@
     "forever": "*",
     "forever-win": "*",
     "request": "^2.88.0",
+    "flatpickr": "*",
     "socket.io": "*",
-    "inter-mediator-expressionparser": "1.0.1",
+    "inter-mediator-expressionparser": "1.0.2",
+    "inter-mediator-formatter": "1.0.1",
+    "inter-mediator-locale": "1.0.0",
     "inter-mediator-nodegraph": "1.0.0",
     "inter-mediator-queue": "1.0.0",
     "inter-mediator-plugin-codemirror": "1.0.0",
     "inter-mediator-plugin-fileupload": "1.0.1",
+    "inter-mediator-plugin-flatpickr": "1.0.0",
     "inter-mediator-plugin-jsonformatter": "1.0.0",
     "inter-mediator-plugin-jquerydatepicker": "1.0.2",
     "inter-mediator-plugin-jqueryfileupload": "1.0.4",

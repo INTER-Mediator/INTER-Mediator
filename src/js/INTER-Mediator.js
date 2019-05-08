@@ -15,7 +15,7 @@
 /* jshint -W083 */ // Function within a loop
 
 /**
- * Preventing error on module.export in merged jest-test-suite file.
+ * Preventing error on module.export in merged js file.
  */
 // let module = {}
 /**
@@ -1864,7 +1864,7 @@ const INTERMediator = {
     'use strict'
     let i
     let value = INTERMediator.additionalCondition
-    if(value === null || value === undefined){
+    if (!value){
       value = {}
     }
     if (label === undefined) {
@@ -1945,5 +1945,5 @@ const INTERMediator = {
 
 // @@IM@@IgnoringRestOfFile
 module.exports = INTERMediator
-INTERMediator_DBAdapter  = require('../../src/js/Adapter_DBServer')
-IMLibLocalContext  = require('../../src/js/INTER-Mediator-LocalContext')
+const INTERMediator_DBAdapter = require('../../src/js/Adapter_DBServer')
+const IMLibLocalContext = require('../../src/js/INTER-Mediator-LocalContext')

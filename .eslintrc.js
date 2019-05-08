@@ -29,7 +29,6 @@ module.exports = {
     'IMLibUI': false,
     'Parser': false,
     'Pusher': false,
-    'SHA1': false,
     'jsSHA': false,
     'Base64': false,
     'console': false,

@@ -9,38 +9,35 @@
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */  -->
-<html lang="ja">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>INTER-Mediator - Sample - Uploading a file / FileMaker Server</title>
-    <script type="text/javascript" src="include_FileMaker.php"></script>
-    <script type="text/javascript">
-        IMParts_Catalog.fileupload.progressSupported = true;
-    </script>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>INTER-Mediator - Sample - Authorized Chat / MySQL</title>
+    <link href="../../node_modules/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+    <script src="../../node_modules/flatpickr/dist/flatpickr.min.js"></script>
+    <script src="../../node_modules/flatpickr/dist/l10n/ja.js"></script>
+    <script src="include_MySQL.php"></script>
+    <script src="../../node_modules/inter-mediator-plugin-flatpickr/index.js"></script>
 </head>
 <body>
 <header>
     <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
 </header>
 <div id="wrapper">
-    <h1>Uploading a file to the container field Test</h1>
+    <h1>JavaScript Component Test (flatpickr)</h1>
     <table>
         <thead>
         <tr>
             <th>Date and Time</th>
             <th>Message</th>
-            <th>Image</th>
             <th></th>
         </tr>
         </thead>
         <tbody>
         <tr>
-            <td>
-                <div data-im="testtable@dt1"></div>
-            </td>
-            <td data-im="testtable@vc1" data-im-widget="fileupload"></td>
-            <td><img src="" data-im="testtable@vc1@#src"></td>
+            <td><input type="text" data-im="testtable@dt1" data-im-widget="flatpickr"></td>
+            <td data-im="testtable@text1"></td>
             <td></td>
         </tr>
         </tbody>

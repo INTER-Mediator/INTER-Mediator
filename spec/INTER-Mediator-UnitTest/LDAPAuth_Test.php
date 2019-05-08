@@ -13,7 +13,7 @@ use \INTERMediator\LDAPAuth;
 class LDAPAuth_Test extends TestCase {
 
     private $obj;
-    protected function setUp(): void
+    public function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         $this->obj = new LDAPAuth();

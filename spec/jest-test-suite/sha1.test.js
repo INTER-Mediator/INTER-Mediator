@@ -20,13 +20,3 @@ test('The result of jssha should be SHA-1 based hash', () => {
   let hash = shaObj.getHash("HEX");
   assert(hash, '7110eda4d09e062aa5e4a390b0a572ac0d2c0220')
 })
-
-test('Valid password hash should be generated using SHA1()\'', () => {
-  'use strict'
-  assert(INTERMediatorLib.SHA1("1234").length, 40)
-})
-
-test('The result of SHA1() should be SHA-1 based hash', () => {
-  'use strict'
-  assert(INTERMediatorLib.SHA1("1234"), '7110eda4d09e062aa5e4a390b0a572ac0d2c0220')
-})

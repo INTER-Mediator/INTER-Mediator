@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a668e5bd189dc4304bce5a2560c59ca6",
+    "content-hash": "fe1da8dce2708c1781e8e49fc405bcb6",
     "packages": [
         {
             "name": "doctrine/lexer",
@@ -123,12 +123,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/msyk/FMDataAPI.git",
-                "reference": "d2a91a912825727aaa86003fee31f315880965f1"
+                "reference": "ce9e52817b3660e77dadc98cbf2ab1ad86f31d36"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/msyk/FMDataAPI/zipball/d2a91a912825727aaa86003fee31f315880965f1",
-                "reference": "d2a91a912825727aaa86003fee31f315880965f1",
+                "url": "https://api.github.com/repos/msyk/FMDataAPI/zipball/ce9e52817b3660e77dadc98cbf2ab1ad86f31d36",
+                "reference": "ce9e52817b3660e77dadc98cbf2ab1ad86f31d36",
                 "shasum": ""
             },
             "require": {
@@ -160,7 +160,7 @@
                 "api",
                 "rest"
             ],
-            "time": "2019-01-08T04:06:22+00:00"
+            "time": "2019-05-06T06:58:46+00:00"
         },
         {
             "name": "mouf/nodejs-installer",
@@ -733,16 +733,16 @@
         },
         {
             "name": "yodarunamok/fxphp",
-            "version": "v6.10.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/ejsexton82/fxphp.git",
-                "reference": "7ac25b5ab36daba64fca6b655b0c763d39e5b2a9"
+                "url": "https://github.com/yodarunamok/fxphp.git",
+                "reference": "1b0447070e10c97537390324cd7089e02a43f4d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ejsexton82/fxphp/zipball/7ac25b5ab36daba64fca6b655b0c763d39e5b2a9",
-                "reference": "7ac25b5ab36daba64fca6b655b0c763d39e5b2a9",
+                "url": "https://api.github.com/repos/yodarunamok/fxphp/zipball/1b0447070e10c97537390324cd7089e02a43f4d9",
+                "reference": "1b0447070e10c97537390324cd7089e02a43f4d9",
                 "shasum": ""
             },
             "require": {
@@ -766,9 +766,6 @@
                     "name": "Chris Adams"
                 },
                 {
-                    "name": "Masayuki Nii"
-                },
-                {
                     "name": "Chris Hansen",
                     "email": "chris@iviking.org",
                     "homepage": "http://www.iviking.org"
@@ -777,20 +774,23 @@
                     "name": "Gjermund Gusland Thorsen",
                     "email": "gjermundprivat@gmail.com",
                     "homepage": "https://github.com/TyrfingMjolnir/"
+                },
+                {
+                    "name": "Masayuki Nii",
+                    "email": "nii@msyk.net",
+                    "homepage": "http://msyk.net/"
                 }
             ],
-            "description": "A Free, Open Source PHP database abstraction class for accessing FileMaker Pro and other data sources.",
+            "description": "FX.php is a FMPXMLRESULT parser class for php",
             "homepage": "https://github.com/yodarunamok/fxphp",
             "keywords": [
                 "FMPXMLRESULT",
                 "FX.php",
                 "FileMaker",
                 "FileMaker CWP",
-                "cwp",
-                "mysql",
-                "xml"
+                "cwp"
             ],
-            "time": "2018-07-09T14:48:10+00:00"
+            "time": "2018-11-21T17:19:40+00:00"
         }
     ],
     "packages-dev": [
@@ -1825,16 +1825,16 @@
         },
         {
             "name": "sebastian/environment",
-            "version": "4.2.1",
+            "version": "4.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/environment.git",
-                "reference": "3095910f0f0fb155ac4021fc51a4a7a39ac04e8a"
+                "reference": "f2a2c8e1c97c11ace607a7a667d73d47c19fe404"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/3095910f0f0fb155ac4021fc51a4a7a39ac04e8a",
-                "reference": "3095910f0f0fb155ac4021fc51a4a7a39ac04e8a",
+                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/f2a2c8e1c97c11ace607a7a667d73d47c19fe404",
+                "reference": "f2a2c8e1c97c11ace607a7a667d73d47c19fe404",
                 "shasum": ""
             },
             "require": {
@@ -1874,7 +1874,7 @@
                 "environment",
                 "hhvm"
             ],
-            "time": "2019-04-25T07:55:20+00:00"
+            "time": "2019-05-05T09:05:15+00:00"
         },
         {
             "name": "sebastian/exporter",

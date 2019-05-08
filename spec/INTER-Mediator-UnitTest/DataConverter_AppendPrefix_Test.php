@@ -7,13 +7,13 @@ use \INTERMediator\Data_Converter\AppendPrefix;
 
 class DataConverter_AppendPrefix_Test extends TestCase
 {
-    protected function setUp(): void
+    public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
-
+        
         $this->dataconverter = new AppendPrefix('￥');
     }
-
+    
     public function test_converterFromDBtoUser()
     {
         $string = '1000';
