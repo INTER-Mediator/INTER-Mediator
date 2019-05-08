@@ -2,6 +2,7 @@
   "name": "INTER-Mediator",
   "description": "Web Development Framework",
   "author": "INTER-Mediator Directive Committee",
+  "license": "MIT",
   "contributors": [
     {
       "name": "Masayuki Nii"
@@ -36,7 +37,6 @@
     "test": "cd node_modules/.bin; jest --config ../../spec/jest.config.js"
   },
   "devDependencies": {
-    "request": "*",
     "jest": "*",
     "power-assert": "*"
   },
@@ -45,7 +45,7 @@
     "jssha": "*",
     "forever": "*",
     "forever-win": "*",
-    "request": "^2.88.0",
+    "request": "*",
     "flatpickr": "*",
     "socket.io": "*",
     "inter-mediator-expressionparser": "1.0.2",
