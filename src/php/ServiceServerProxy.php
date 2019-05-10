@@ -63,7 +63,7 @@ class ServiceServerProxy
     {
         $waitSec = 2;
         $startDT = new \DateTime();
-        $counterInit = $counter = 10;
+        $counterInit = $counter = 5;
         while (!$this->isActive()) {
             $this->startServer();
             $counter -= 1;
@@ -79,7 +79,7 @@ class ServiceServerProxy
                 $this->errors[] = $this->messageHead . 'Service Server could not be available for timeout.';
                 return;
             }
-            sleep(2.0);
+            sleep(1.0);
         }
     }
 

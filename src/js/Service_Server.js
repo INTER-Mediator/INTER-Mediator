@@ -11,7 +11,6 @@ let port = process.argv[2] ? process.argv[2] : 21000
 let acceptClient = '0.0.0.0/0'
 const parser = require('../../node_modules/inter-mediator-expressionparser/index')
 
->>>>>>> cfa0cee8dcc7fe07431a55d8448595ebd7bcd6e8
 // const querystring = require('querystring')
 // console.log(parser.evaluate('a+b',{a:3,b:4}))
 let url = require('url')
