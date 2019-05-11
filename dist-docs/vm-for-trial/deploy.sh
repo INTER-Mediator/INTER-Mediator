@@ -88,14 +88,16 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache php7-phar
     apk add --no-cache php7-mbstring
     apk add --no-cache php7-xml
+    apk add --no-cache php7-xmlwriter
+    apk add --no-cache php7-tokenizer
     apk add --no-cache php7-simplexml
     apk add --no-cache php7-session
     apk add --no-cache php7-mysqli
     apk add --no-cache composer
     apk add --no-cache libbsd=0.8.6-r2
     apk add --no-cache git
-    apk add --no-cache nodejs
-    apk add --no-cache nodejs-npm
+    #apk add --no-cache nodejs
+    #apk add --no-cache nodejs-npm
     apk add --no-cache samba
     apk add --no-cache dbus
     #apk add --no-cache firefox
@@ -110,9 +112,9 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache ca-certificates
     apk add --no-cache wget
     update-ca-certificates
-    wget https://phar.phpunit.de/phpunit-6.phar -P /tmp
-    mv /tmp/phpunit-6.phar /usr/local/bin/phpunit
-    chmod +x /usr/local/bin/phpunit
+    #wget https://phar.phpunit.de/phpunit-6.phar -P /tmp
+    #mv /tmp/phpunit-6.phar /usr/local/bin/phpunit
+    #chmod +x /usr/local/bin/phpunit
 
     rc-service apache2 start
     rc-update add apache2
@@ -147,12 +149,12 @@ else
     apt-get install php-xmlrpc --assume-yes
     apt-get install php-intl --assume-yes
     apt-get install git --assume-yes
-    apt-get install nodejs --assume-yes && update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10
-    apt-get install nodejs-legacy --assume-yes
-    apt-get install npm --assume-yes
+    #apt-get install nodejs --assume-yes && update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10
+    #apt-get install nodejs-legacy --assume-yes
+    #apt-get install npm --assume-yes
     apt-get install libfontconfig1 --assume-yes
     apt-get install samba --assume-yes
-    apt-get install phpunit --assume-yes
+    #apt-get install phpunit --assume-yes
     #apt-get install firefox --assume-yes
     apt-get install chromium-browser --assume-yes
     apt-get install xvfb --assume-yes
@@ -250,10 +252,10 @@ else
     echo "\$dbDSN = 'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=test_db;charset=utf8mb4';" \
         >> "${WEBROOT}/params.php"
 fi
-echo "\$dbOption = array();" >> "${WEBROOT}/params.php"
-echo "\$browserCompatibility = array(" >> "${WEBROOT}/params.php"
+echo "\$dbOption = [];" >> "${WEBROOT}/params.php"
+echo "\$browserCompatibility = [" >> "${WEBROOT}/params.php"
 echo "'Chrome' => '1+','FireFox' => '2+','msie' => '9+','Opera' => '1+'," >> "${WEBROOT}/params.php"
-echo "'Safari' => '4+','Trident' => '5+',);" >> "${WEBROOT}/params.php"
+echo "'Safari' => '4+','Trident' => '5+',];" >> "${WEBROOT}/params.php"
 echo "\$dbServer = '192.168.56.1';" >> "${WEBROOT}/params.php"
 echo "\$dbPort = '80';" >> "${WEBROOT}/params.php"
 echo "\$dbDatabase = 'TestDB';" >> "${WEBROOT}/params.php"
@@ -261,25 +263,46 @@ echo "\$dbProtocol = 'HTTP';" >> "${WEBROOT}/params.php"
 echo "\$passPhrase = '';" >> "${WEBROOT}/params.php"
 echo "\$generatedPrivateKey = <<<EOL" >> "${WEBROOT}/params.php"
 echo "-----BEGIN RSA PRIVATE KEY-----" >> "${WEBROOT}/params.php"
-echo "MIIBOwIBAAJBAKihibtt92M6A/z49CqNcWugBd3sPrW3HF8TtKANZd1EWQ/agZ65" >> "${WEBROOT}/params.php"
-echo "H2/NdL8H6zCgmKpYFTqFGwlYrnWrsbD1UxcCAwEAAQJAWX5pl1Q0D7Axf6csBg1M" >> "${WEBROOT}/params.php"
-echo "3V5u3qlLWqsUXo0ZtjuGDRgk5FsJOA9bkxfpJspbr2CFkodpBuBCBYpOTQhLUc2H" >> "${WEBROOT}/params.php"
-echo "MQIhAN1stwI2BIiSBNbDx2YiW5IVTEh/gTEXxOCazRDNWPQJAiEAwvZvqIQLexer" >> "${WEBROOT}/params.php"
-echo "TnKj7q+Zcv4G2XgbkhtaLH/ELiA/Fh8CIQDGIC3M86qwzP85cCrub5XCK/567GQc" >> "${WEBROOT}/params.php"
-echo "GmmWk80j2KpciQIhAI/ybFa7x85Gl5EAS9F7jYy9ykjeyVyDHX0liK+V1355AiAG" >> "${WEBROOT}/params.php"
-echo "jU6zr1wG9awuXj8j5x37eFXnfD/p92GpteyHuIDpog==" >> "${WEBROOT}/params.php"
+echo "MIIEpAIBAAKCAQEAp5xZdpzUZcbG8+MDgHIsHnBC6DGbJZ769/dfGKdFvE5+LGkw" >> "${WEBROOT}/params.php"
+echo "p7nsRqcZ6ETZAHG9ghgn7scR6lmfQdwWHeFxDnl2OZ0CP4J0ZnJ36noTLHyycmlU" >> "${WEBROOT}/params.php"
+echo "02vQII83DcPfi7+4FCuGwyJOTwLHENvNGDajQm1mMJgZ1A0O7JxPaDUpT+u4uDx3" >> "${WEBROOT}/params.php"
+echo "Bjv9dF3m6ZigB1fJ+El1WI++YAlYSWIzEzwdeGP87bfHBB0G07YAZhFvBEen6l53" >> "${WEBROOT}/params.php"
+echo "x0WKkt/p4GP5G1JOZZgaqURDD8XZTKAO8t9TzeOROCI832bEsmZ7S/U91MlVbmOI" >> "${WEBROOT}/params.php"
+echo "qJlKyhaQVy6H05sfV/Okfsn08EJp4oanZbqAFwIDAQABAoIBAHzWKpv5ewjC4HPN" >> "${WEBROOT}/params.php"
+echo "5VHJt6qEGpEuQUvn+SyvBhkqnPn/zGHvhtml1KFa3CTvAmEeVfOLYlKp2mIdlkxL" >> "${WEBROOT}/params.php"
+echo "S/29Z6NMPA31LzN2SpPzNfViLt23koE8in1dk4psoKiT9u/zP3tmX9z+tCyM+Q9J" >> "${WEBROOT}/params.php"
+echo "ZpxeNYLIUJBo+PPDNhZs5YfL8JUg28cJ5ekraBUlNQP0TaawmZolQlTfgjQYzt89" >> "${WEBROOT}/params.php"
+echo "5fFk/CcAyUKe4dnJu39IF75wUe2HYLkrECzD/hiDatdYJ9FK5bMj0TxG4AIZNhx6" >> "${WEBROOT}/params.php"
+echo "QbCgQ0Ojjchxxi2goKJRiRzE8H0BpVezXvJ+fTmXb6aOtnMrxMD+8VJoykSI/sCx" >> "${WEBROOT}/params.php"
+echo "bOQ2JOECgYEAz4n6qcggtV+3f/Aw4WtgU38vkwzVqcUr464nCSHS7H+AZu8/DP3+" >> "${WEBROOT}/params.php"
+echo "YbFCNJob89Uoge1qIuSHmf2flZnooGZLhK0CQKthgjb125pBaCeERu0KDrqpmThu" >> "${WEBROOT}/params.php"
+echo "Ea7d91JTEH2U4LpAi/QXQs8MfOzsastrDXn/6J0quQjdB8rYZ3ImEwUCgYEAzr+W" >> "${WEBROOT}/params.php"
+echo "QYfxnJ70Q04GgEQ+c8tdE0+uoY+q8d5Q7unShBbB5KU1IbIlKaEPNaQD/xDdKMvd" >> "${WEBROOT}/params.php"
+echo "sFTn4bTmWyRKzokVWjBdRUvHNQU9CS8gawhZysv2GIyJPY2iwnr+gFVyBmT5/2KW" >> "${WEBROOT}/params.php"
+echo "9oxz2elZ3xA6MwHsr/pA7CVJk1BrAlaH+hBN6WsCgYATqL5V1t9CTw7Sz63RrJoz" >> "${WEBROOT}/params.php"
+echo "TpjzFQQoUMUXjCemdc3FGU7QcVlHoce2+VOMKAz9y/NKW3LyWzN9Isk7IpkmmIoO" >> "${WEBROOT}/params.php"
+echo "x1SvS4yxCQPBCZuoghXFoi6RtpzaJr5GbooYI3Q626p+nyX+G+EYMwS70LWUaDB7" >> "${WEBROOT}/params.php"
+echo "1lKndjvVy0Eku9JD+kwhAQKBgQDODrkM2xb9yJcetZdZI6sy8Y70fkhIkc4IflEf" >> "${WEBROOT}/params.php"
+echo "rT+5kozw+4924/yR/woPpkatYvtpe7aZ1iW+GPQ2BnfgXVRArU9oj1weBfiNPMEM" >> "${WEBROOT}/params.php"
+echo "rCgCLUI7uWXXSWDcgIVDFuYsZVudI3/efqHAoAiIf73htJtX0Q3/zjIEdvQQQnoH" >> "${WEBROOT}/params.php"
+echo "y1Q7vQKBgQC635mth5vpv96xzxHlHHuGJUMECyJRrpxRkWQkmJIY7rBrHHADP3NU" >> "${WEBROOT}/params.php"
+echo "L4glO+uLW/ffp8RtbDcPDEWsGK5fzKm69qCsBaguU/IIrXFcZxhFAO7MqJLrfEhP" >> "${WEBROOT}/params.php"
+echo "H1mRfJ9Twh2tPyssPqNYhweL2loa8xpef/HQCtTKrzQR0x3HaNmKaA==" >> "${WEBROOT}/params.php"
 echo "-----END RSA PRIVATE KEY-----" >> "${WEBROOT}/params.php"
 echo "EOL;" >> "${WEBROOT}/params.php"
-echo "\$webServerName = array('');" >> "${WEBROOT}/params.php"
+echo "\$webServerName = [''];" >> "${WEBROOT}/params.php"
 
 if [ $OS = 'alpine' ] ; then
     ln -s ${WEBROOT} ${OLDWEBROOT}
 fi
 
-# Install npm packages
+# Install php/js libraries
 
 cd "${IMROOT}"
-npm install -g buster
+composer update
+if [ $? -ne 0 ]; then
+    vendor/bin/npm install
+fi
 
 # Copy Templates
 
@@ -380,11 +403,11 @@ fi
 
 # composer install
 
-if [ $OS = 'alpine' ] ; then
-    "${IMROOT}"/dist-docs/installfiles.sh -2
-    composer install
-    npm install
-fi
+#if [ $OS = 'alpine' ] ; then
+#    "${IMROOT}"/dist-docs/installfiles.sh -2
+#    composer install
+#    npm install
+#fi
 
 # Launch buster-server for unit testing
 
