@@ -125,7 +125,7 @@ class ServiceServerProxy
     private function startServer()
     {
         $imPath = IMUtil::pathToINTERMediator();
-        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
+        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "./node_modules/forever/bin/forever";
         if ($this->paramsBoot) {
             putenv('PATH=' . realpath($imPath . "/node_modules/.bin") .
                 (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
@@ -156,7 +156,7 @@ class ServiceServerProxy
             return;
         }
         $imPath = IMUtil::pathToINTERMediator();
-        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
+        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "./node_modules/forever/bin/forever";
         if ($this->paramsBoot) {
             putenv('PATH=' . realpath($imPath . "/node_modules/.bin") .
                 (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
