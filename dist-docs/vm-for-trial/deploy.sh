@@ -304,6 +304,7 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache nodejs
     apk add --no-cache nodejs-npm
     npm install
+    chmod a+x node_modules/forever/bin/forever
 else
     composer update
 fi

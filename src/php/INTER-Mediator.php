@@ -127,11 +127,20 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         ServiceServerProxy::instance()->checkServiceServer();
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
+        foreach(ServiceServerProxy::instance()->getErrors() as $message) {
+            $generator->generateErrorMessageJS($message);
+        }
+        foreach(ServiceServerProxy::instance()->getMessages() as $message) {
+            $generator->generateDebugMessageJS($message);
+        }
         ServiceServerProxy::instance()->stopServer();
     } else {    // Database accessing
         ServiceServerProxy::instance()->checkServiceServer();
         $dbInstance = new DB\Proxy();
-        if (!$dbInstance->initialize($datasource, $options, $dbspecification, $debug)) {
+        $isInitialized = $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
+        $dbInstance->logger->setErrorMessages(ServiceServerProxy::instance()->getErrors());
+        $dbInstance->logger->setDebugMessages(ServiceServerProxy::instance()->getMessages());
+        if (!$isInitialized) {
             $dbInstance->finishCommunication(true);
         } else {
             $util = new IMUtil();
