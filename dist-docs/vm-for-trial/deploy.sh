@@ -299,9 +299,13 @@ fi
 # Install php/js libraries
 
 cd "${IMROOT}"
-composer update
-if [ $? -ne 0 ]; then
-    vendor/bin/npm install
+if [ $OS = 'alpine' ] ; then
+    composer update # returns error for the script of nodejs-installer.
+    apk add --no-cache nodejs
+    apk add --no-cache nodejs-npm
+    npm install
+else
+    composer update
 fi
 
 # Copy Templates
