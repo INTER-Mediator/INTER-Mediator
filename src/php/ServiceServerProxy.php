@@ -20,6 +20,7 @@ class ServiceServerProxy
     private $errors = [];
     private $messages = [];
     private $messageHead = "[ServiceServerProxy] ";
+    private $firstTrial;
 
     static public function instance()
     {
@@ -63,11 +64,16 @@ class ServiceServerProxy
 
     public function checkServiceServer()
     {
-        $waitSec = 2;
+        $waitSec = 5;
         $startDT = new \DateTime();
         $counterInit = $counter = 5;
+        $this->firstTrial = true;
+        $isStartServer = false;
         while (!$this->isActive()) {
-            $this->startServer();
+            if (!$isStartServer) {
+                $this->startServer();
+                $isStartServer = true;
+            }
             $counter -= 1;
 
             if ($counter < 1) {
@@ -89,7 +95,7 @@ class ServiceServerProxy
     {
         $this->messages[] = $this->messageHead . 'Check server working:';
 
-        $result = $this->callServer("info");
+        $result = $this->callServer("info", false, $this->firstTrial);
         $this->messages[] = $this->messageHead . 'Server returns:' . $result;
 
         if (!$result) {
@@ -102,7 +108,7 @@ class ServiceServerProxy
         return true;
     }
 
-    private function callServer($path, $postData = false)
+    private function callServer($path, $postData = false, $ignoreError = false)
     {
         $url = "http://{$this->paramsHost}:{$this->paramsPort}/{$path}";
         $ch = curl_init($url);
@@ -114,7 +120,7 @@ class ServiceServerProxy
         $result = curl_exec($ch);
         $this->messages[] = $this->messageHead . "URL:$url, Result:$result";
         $info = curl_getinfo($ch);
-        if (curl_errno($ch) !== CURLE_OK || $info['http_code'] !== 200) {
+        if (!$ignoreError && (curl_errno($ch) !== CURLE_OK || $info['http_code'] !== 200)) {
             $this->errors[] = $this->messageHead . 'Absent Service Server or Communication Probrems.';
             $this->errors[] = $this->messageHead . curl_error($ch);
             return false;
@@ -125,7 +131,7 @@ class ServiceServerProxy
     private function startServer()
     {
         $imPath = IMUtil::pathToINTERMediator();
-        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "./node_modules/forever/bin/forever";
+        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
         if ($this->paramsBoot) {
             putenv('PATH=' . realpath($imPath . "/node_modules/.bin") .
                 (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
@@ -147,6 +153,7 @@ class ServiceServerProxy
         exec($cmd, $result, $returnValue);
 
         $this->messages[] = $this->messageHead . "Returns: {$returnValue}, Output:" . implode("/", $result);
+        $this->firstTrial = false;
         return true;
     }
 
@@ -156,7 +163,7 @@ class ServiceServerProxy
             return;
         }
         $imPath = IMUtil::pathToINTERMediator();
-        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "./node_modules/forever/bin/forever";
+        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
         if ($this->paramsBoot) {
             putenv('PATH=' . realpath($imPath . "/node_modules/.bin") .
                 (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
