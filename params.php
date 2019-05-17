@@ -236,3 +236,5 @@ $appCurrency = "JP";    // Locale for currency has to be specified the country c
 $serviceServerPort = "11478";
 $serviceServerHost = "localhost";
 $stopSSEveryQuit = false;
+$bootWithInstalledNode = false;
+
