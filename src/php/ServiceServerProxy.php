@@ -20,7 +20,6 @@ class ServiceServerProxy
     private $errors = [];
     private $messages = [];
     private $messageHead = "[ServiceServerProxy] ";
-    private $firstTrial;
 
     static public function instance()
     {
@@ -67,7 +66,6 @@ class ServiceServerProxy
         $waitSec = 5;
         $startDT = new \DateTime();
         $counterInit = $counter = 5;
-        $this->firstTrial = true;
         $isStartServer = false;
         while (!$this->isActive()) {
             if (!$isStartServer) {
@@ -95,7 +93,7 @@ class ServiceServerProxy
     {
         $this->messages[] = $this->messageHead . 'Check server working:';
 
-        $result = $this->callServer("info", false, $this->firstTrial);
+        $result = $this->callServer("info", false);
         $this->messages[] = $this->messageHead . 'Server returns:' . $result;
 
         if (!$result) {
@@ -112,7 +110,11 @@ class ServiceServerProxy
     {
         $url = "http://{$this->paramsHost}:{$this->paramsPort}/{$path}";
         $ch = curl_init($url);
-        curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 1,]);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 10,
+            CURLOPT_CONNECTTIMEOUT => 5
+        ]);
         if ($postData) {
             curl_setopt($ch, CURLOPT_POST, TRUE);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
@@ -121,8 +123,8 @@ class ServiceServerProxy
         $this->messages[] = $this->messageHead . "URL:$url, Result:$result";
         $info = curl_getinfo($ch);
         if (!$ignoreError && (curl_errno($ch) !== CURLE_OK || $info['http_code'] !== 200)) {
-            $this->errors[] = $this->messageHead . 'Absent Service Server or Communication Probrems.';
-            $this->errors[] = $this->messageHead . curl_error($ch);
+            $this->messages[] = $this->messageHead . 'Absent Service Server or Communication Probrems.';
+            $this->messages[] = $this->messageHead . curl_error($ch);
             return false;
         }
         return $result;
@@ -140,20 +142,21 @@ class ServiceServerProxy
                 (IMUtil::isPHPExecutingWindows() ? ';' : ':') . realpath($imPath . "/node_modules/.bin") .
                 (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
         }
+        $this->messages[] = $this->messageHead . "PATH = " . getenv('PATH');
         $scriptPath = "src/js/Service_Server.js";
         if (IMUtil::isPHPExecutingWindows()) {
             $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath);
         }
         $logFile = tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
-        $cmd = "{$forever} start -a -l {$logFile} --minUptime 5000 --spinSleepTime 5000 {$scriptPath} {$this->paramsPort}";
+        $options = "-a -l {$logFile} --minUptime 5000 --spinSleepTime 5000";
+        $cmd = "{$forever} start {$options} {$scriptPath} {$this->paramsPort}";
         $this->messages[] = $this->messageHead . "Command: {$cmd}";
         $result = [];
         $returnValue = 0;
         chdir($imPath);
+        $this->messages[] = $this->messageHead . "PWD = " . getcwd();
         exec($cmd, $result, $returnValue);
-
         $this->messages[] = $this->messageHead . "Returns: {$returnValue}, Output:" . implode("/", $result);
-        $this->firstTrial = false;
         return true;
     }
 
