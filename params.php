@@ -237,5 +237,5 @@ $serviceServerPort = "11478";
 $serviceServerHost = "localhost";
 $stopSSEveryQuit = false;
 $bootWithInstalledNode = false;
-$preventSSAutoBoot = true;
+$preventSSAutoBoot = false;
 
