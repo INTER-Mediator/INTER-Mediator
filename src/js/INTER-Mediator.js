@@ -1747,10 +1747,12 @@ const INTERMediator = {
         mark = document.createTextNode('Service Server Status:')
         spNode.appendChild(mark)
         markNode = document.createElement('span')
+        markNode.setAttribute('title','Service Server is a server side helper for just validation on Ver.6.');
         spNode.appendChild(markNode)
         markNode.appendChild(document.createTextNode('◆'))
         markNode.style.color = INTERMediatorOnPage.serviceServerStatus ? 'green' : 'red'
         markNode.style.marginRight = '2em'
+        markNode.style.cursor = 'help'
 
         spNode = document.createElement('span')
         cNode.appendChild(spNode)
