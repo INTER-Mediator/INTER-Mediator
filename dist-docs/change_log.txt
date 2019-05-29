@@ -10,6 +10,10 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
+Ver.5.11-dev (in development)
+- Support FileMaker Data API of FileMaker Server 18.
+- Update FMDataAPI.php (Ver.18) and DB_FileMaker_DataAPI.php for FileMaker Data API.
+
 Ver.5.10 (April 17, 2019)
 - The Japanese new gengo REIWA is supported in the date formatter.
 - In the PDO connection string for MySQL uses host=localhost instead of unix_socket=.
