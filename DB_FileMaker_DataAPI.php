@@ -684,7 +684,11 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             }
 
             $productInfo = $this->fmData->getProductInfo();
-            $productVersion = intval($productInfo->version);
+            if (is_object($productInfo) && property_exists($productInfo, 'version')) {
+                $productVersion = intval($productInfo->version);
+            } else {
+                $productVersion = 17;
+            }
             if ($scriptResultPrerequest !== NULL || $scriptResultPresort !== NULL || $scriptResult !== NULL) {
                 // Avoid multiple executing FileMaker script
                 if ($scriptResultPresort === NULL && $scriptResult === NULL) {
@@ -713,7 +717,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                     }
                 }
                 if ($productVersion >= 18) {
-                    $this->mainTableCount = $result->getTotalCount();
+                    $this->mainTableTotalCount = $result->getTotalCount();
                 } else {
                     $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 100000000, NULL, $script);
                     $this->mainTableTotalCount = $result->count();
