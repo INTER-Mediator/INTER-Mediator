@@ -1,7 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
   "version": "6-dev",
-  "time": "2019-05-07",
+  "time": "2019-06-02",
   "repositories": [
     {
       "type": "git",
@@ -100,10 +100,10 @@
       "lib/src/INTER-Mediator/dist-docs/buildup.sh --deploy"
     ],
     "forever-list": [
-      "./node_modules/forever/bin/forever list"
+      "./node_modules/.bin/forever list"
     ],
     "forever-stopall": [
-      "./node_modules/forever/bin/forever stopall"
+      "./node_modules/.bin/forever stopall"
     ]
   }
 }

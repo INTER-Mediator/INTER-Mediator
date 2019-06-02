@@ -11,8 +11,9 @@ Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.6-dev (in development)
-- All communications go async.
+- All communications went async.
 - Composer/npm based library management.
+- The Service Server based-on node.js is introduced, and it uses on the server-side validation so far.
 - Version number of major build is assigned as integer number.
 - The script "dist-docs/build.sh" can call with parameter -a/-c/-d. Moreover it contains "deployment mode."
 - The following methods are removed.
@@ -30,7 +31,6 @@ Ver.6-dev (in development)
 - Deprecated global variables $g_dbInstance, $g_serverSideCall in INTER-Mediator.php are removed.
 - Metadata.json is removed, composer.json takes over.
 - Mail is going to send with swiftmailer.
-- File can be attached with swiftmailer by 'attachment' keyed value in the 'send-mail' block.
 - In the PDO connection string for MySQL uses host=localhost instead of unix_socket=.
 - The method template "public function createInDB($bypassAuth)" is changed to "public function createInDB()" in
   DBClass_Interface. Some processes relevant to apply the privilege of record to an user was bypassed, but it requires
@@ -38,10 +38,13 @@ Ver.6-dev (in development)
 - After mailing with setting the 'send-mail' keyed value, if the 'store' keyed value has the context name,
   the mail content is going to store the context with fields named "errors", "to_field", "bcc_field",
   "cc_field", "from_field", "subject", "body". So far the field names is fixed.
+- File can be attached with swiftmailer by 'attachment' keyed value in the 'send-mail' block.
 - The date formatter started to support the Japanese new gengo Reiwa.
 - The following repositories are separated from the core code.
     inter-mediator-expressionparser
     inter-mediator-nodegraph
+    inter-mediator-formatter
+    inter-mediator-locale
     inter-mediator-queue
     inter-mediator-plugin-codemirror
     inter-mediator-plugin-fileupload
@@ -50,6 +53,10 @@ Ver.6-dev (in development)
     inter-mediator-plugin-jqueryfileupload
     inter-mediator-plugin-popupselector
     inter-mediator-plugin-tinymce
+- In the params.php file, the $bootWithInstalledNode variable is defined for use a node.js in path parameter.
+  This is for manual installation for npm based libraries.
+- In the params.php file, the $preventSSAutoBoot is definde for it doesn't boot a service server, just in case of
+  a server manager is going to boot the service server manually.
 - [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.

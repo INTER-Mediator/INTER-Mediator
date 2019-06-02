@@ -23,7 +23,11 @@ class IMUtil
     public static function currentDTString($subSeconds = 0)
     {
         $currentDT = new DateTime();
-        $currentDT->sub(new \DateInterval("PT" . intval($subSeconds) . "S"));
+        if($subSeconds>=0) {
+            $currentDT->sub(new \DateInterval("PT" . intval($subSeconds) . "S"));
+        }else{
+            $currentDT->add(new \DateInterval("PT" . -intval($subSeconds) . "S"));
+        }
         $currentDTStr = $currentDT->format('Y-m-d H:i:s');
         return $currentDTStr;
     }
@@ -31,7 +35,11 @@ class IMUtil
     public static function currentDTStringFMS($subSeconds = 0)
     {
         $currentDT = new DateTime();
-        $currentDT->sub(new \DateInterval("PT" . intval($subSeconds) . "S"));
+        if($subSeconds>=0) {
+            $currentDT->sub(new \DateInterval("PT" . intval($subSeconds) . "S"));
+        }else{
+            $currentDT->add(new \DateInterval("PT" . -intval($subSeconds) . "S"));
+        }
         $currentDTStr = $currentDT->format('m/d/Y H:i:s');
         return $currentDTStr;
     }

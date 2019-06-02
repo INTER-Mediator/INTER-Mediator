@@ -2,13 +2,15 @@
 /**
  * IMUtil_Test file
  */
+
 use \PHPUnit\Framework\TestCase;
 use \INTERMediator\IMUtil;
 
 //$imRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
 //require "{$imRoot}" . DIRECTORY_SEPARATOR .'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
-class IMUtil_Test extends TestCase {
+class IMUtil_Test extends TestCase
+{
 
     private $util;
 
@@ -180,5 +182,16 @@ class IMUtil_Test extends TestCase {
             $this->assertContains('Content-Security-Policy: frame-ancestors https://inter-mediator.com http://inter-mediator.info', $headers);
             $this->assertContains('Access-Control-Allow-Origin: *', $headers);
         }
+    }
+
+    public function test_DateTimeString()
+    {
+        $cdt1 = IMUtil::currentDTString();
+        $cdt2 = IMUtil::currentDTString(20);
+        $cdt3 = IMUtil::currentDTString(-20);
+
+        $this->assertGreaterThan($cdt2, $cdt1, "IMUtil::currentDTString checked with order but it mighit be corrupted.");
+        $this->assertGreaterThan($cdt2, $cdt3, "IMUtil::currentDTString checked with order but it mighit be corrupted.");
+        $this->assertGreaterThan($cdt1, $cdt3, "IMUtil::currentDTString checked with order but it mighit be corrupted.");
     }
 }

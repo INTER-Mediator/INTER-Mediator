@@ -1,0 +1,10 @@
+{
+  "uid": "startup forever",
+  "append": true,
+  "watch": true,
+  "script": "Service_Server.js",
+  "sourceDir": "src/js",
+  "logFile": "/var/www/forever.log",
+  "outFile": "/var/www/forever-out.log",
+  "errFile": "/var/www/forever-error.log"
+}

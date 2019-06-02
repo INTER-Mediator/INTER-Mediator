@@ -32,6 +32,9 @@ IMVMROOT="${IMROOT}/dist-docs/vm-for-trial"
 APACHEOPTCONF="/etc/apache2/sites-enabled/inter-mediator-server.conf"
 SMBCONF="/etc/samba/smb.conf"
 
+#IMREPOSITORY="https://github.com/INTER-Mediator/INTER-Mediator.git"
+IMREPOSITORY="https://github.com/msyk/INTER-Mediator.git"
+
 RESULT=`id developer 2>/dev/null`
 if [ $RESULT = '' ] ; then
     adduser developer
@@ -225,7 +228,7 @@ a2enmod headers
 echo "#Header add Content-Security-Policy \"default-src 'self'\"" > "${APACHEOPTCONF}"
 
 cd "${WEBROOT}"
-git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git && git checkout stable
+git clone ${IMREPOSITORY} && cd INTER-Mediator && git remote add upstream ${IMREPOSITORY} checkout stable
 result=`git diff master..release 2> /dev/null`
 if [ "$result" = '' ]; then
     #git checkout stable
@@ -233,10 +236,6 @@ if [ "$result" = '' ]; then
 fi
 
 rm -f "${WEBROOT}/index.html"
-
-#cd "${IMSUPPORT}"
-#git clone https://github.com/codemirror/CodeMirror.git
-
 cd "${WEBROOT}"
 ln -s "${IMVMROOT}/index.php" index.php
 
@@ -291,6 +290,8 @@ echo "H1mRfJ9Twh2tPyssPqNYhweL2loa8xpef/HQCtTKrzQR0x3HaNmKaA==" >> "${WEBROOT}/p
 echo "-----END RSA PRIVATE KEY-----" >> "${WEBROOT}/params.php"
 echo "EOL;" >> "${WEBROOT}/params.php"
 echo "\$webServerName = [''];" >> "${WEBROOT}/params.php"
+echo "\$preventSSAutoBoot = true;" >> "${WEBROOT}/params.php"
+
 
 if [ $OS = 'alpine' ] ; then
     ln -s ${WEBROOT} ${OLDWEBROOT}
@@ -304,10 +305,15 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache nodejs
     apk add --no-cache nodejs-npm
     npm install
-    chmod a+x node_modules/forever/bin/forever
+    chown -R apache:developer /var/www
 else
     composer update
 fi
+
+# Auto starting of Service Server
+
+Crontab="/etc/crontabs/root"
+echo "@reboot /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/forever-startup.sh" >> "${Crontab}"
 
 # Copy Templates
 
@@ -416,14 +422,14 @@ fi
 
 # Launch buster-server for unit testing
 
-if [ $OS = 'alpine' ] ; then
-    echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\nexport DISPLAY=:99.0\nXvfb :99 -screen 0 1024x768x24 &\n/bin/sleep 5\n/usr/bin/buster-server &\n/bin/sleep 5\n#firefox http://localhost:1111/capture > /dev/null &\nchromium-browser --no-sandbox http://localhost:1111/capture > /dev/null &\n/bin/sleep 5\nexit 0' > /etc/local.d/buster-server.start
-    chmod 755 /etc/local.d/buster-server.start
-    rc-update add local default
-else
-    echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\n/usr/local/bin/buster-server &\n/bin/sleep 5\n#firefox http://localhost:1111/capture > /dev/null &\nchromium-browser --no-sandbox --headless --remote-debugging-port=9222 http://localhost:1111/capture > /dev/null &\n/bin/sleep 5\nexit 0' > /etc/rc.local
-    chmod 755 /etc/rc.local
-fi
+#if [ $OS = 'alpine' ] ; then
+#    echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\nexport DISPLAY=:99.0\nXvfb :99 -screen 0 1024x768x24 &\n/bin/sleep 5\n/usr/bin/buster-server &\n/bin/sleep 5\n#firefox http://localhost:1111/capture > /dev/null &\nchromium-browser --no-sandbox http://localhost:1111/capture > /dev/null &\n/bin/sleep 5\nexit 0' > /etc/local.d/buster-server.start
+#    chmod 755 /etc/local.d/buster-server.start
+#    rc-update add local default
+#else
+#    echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\n/usr/local/bin/buster-server &\n/bin/sleep 5\n#firefox http://localhost:1111/capture > /dev/null &\nchromium-browser --no-sandbox --headless --remote-debugging-port=9222 http://localhost:1111/capture > /dev/null &\n/bin/sleep 5\nexit 0' > /etc/rc.local
+#    chmod 755 /etc/rc.local
+#fi
 
 # The end of task.
 
