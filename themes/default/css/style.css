@@ -208,6 +208,51 @@ div.IM_CREDIT {
 
 }
 
+div.IM_CREDIT ._im_credit1 {
+    background-color: #F6F7FF;
+    height: 2px;
+    margin: 0;
+    padding: 0;
+}
+
+div.IM_CREDIT ._im_credit2 {
+    background-color: #EBF1FF;
+    height: 2px;
+    margin: 0;
+    padding: 0;
+}
+
+div.IM_CREDIT ._im_credit3 {
+    background-color: #E1EAFF;
+    height: 2px;
+    margin: 0;
+    padding: 0;
+}
+
+div.IM_CREDIT ._im_credit4 {
+    background-color: #D7E4FF;
+    margin: 0;
+    padding: 0;
+    text-align: right;
+    color: #666666;
+    font-size: 7pt;
+    line-height: 120%;
+}
+
+div.IM_CREDIT ._im_credit_mark {
+    color: red;
+    margin-right: 2em;
+    cursor: help;
+}
+
+div.IM_CREDIT ._im_credit_ssstatus {
+
+}
+
+div.IM_CREDIT ._im_credit_vstring {
+
+}
+
 /* INTER-Mediator specific style definitions === Message with Post-Only Mode */
 span.IM_POSTMESSAGE {
     color: #7c7caa;

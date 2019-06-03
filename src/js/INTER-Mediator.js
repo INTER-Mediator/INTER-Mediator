@@ -1713,48 +1713,31 @@ const INTERMediator = {
 
         cNode = document.createElement('div')
         creditNode.appendChild(cNode)
-        cNode.style.backgroundColor = '#F6F7FF'
-        cNode.style.height = '2px'
-        cNode.style.margin = '0'
-        cNode.style.padding = '0'
-
+        cNode.className = "_im_credit1"
         cNode = document.createElement('div')
         creditNode.appendChild(cNode)
-        cNode.style.backgroundColor = '#EBF1FF'
-        cNode.style.height = '2px'
-        cNode.style.margin = '0'
-        cNode.style.padding = '0'
-
+        cNode.className = "_im_credit2"
         cNode = document.createElement('div')
         creditNode.appendChild(cNode)
-        cNode.style.backgroundColor = '#E1EAFF'
-        cNode.style.height = '2px'
-        cNode.style.margin = '0'
-        cNode.style.padding = '0'
-
+        cNode.className = "_im_credit3"
         cNode = document.createElement('div')
         creditNode.appendChild(cNode)
-        cNode.setAttribute('align', 'right')
-        cNode.style.backgroundColor = '#D7E4FF'
-        cNode.style.padding = '2px'
-        cNode.style.margin = '0'
-        cNode.style.padding = '0'
-        cNode.style.color = '#666666'
-        cNode.style.fontSize = '7pt'
+        cNode.className = "_im_credit4"
 
         spNode = document.createElement('span')
+        spNode.className = "_im_credit_ssstatus"
         cNode.appendChild(spNode)
         mark = document.createTextNode('Service Server Status:')
         spNode.appendChild(mark)
         markNode = document.createElement('span')
+        markNode.className = "_im_credit_mark"
         markNode.setAttribute('title','Service Server is a server side helper for just validation on Ver.6.');
         spNode.appendChild(markNode)
         markNode.appendChild(document.createTextNode('◆'))
         markNode.style.color = INTERMediatorOnPage.serviceServerStatus ? 'green' : 'red'
-        markNode.style.marginRight = '2em'
-        markNode.style.cursor = 'help'
 
         spNode = document.createElement('span')
+        spNode.className = "_im_credit_vstring"
         cNode.appendChild(spNode)
         aNode = document.createElement('a')
         aNode.appendChild(document.createTextNode('INTER-Mediator'))
