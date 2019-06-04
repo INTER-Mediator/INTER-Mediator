@@ -13,6 +13,7 @@ Also the Migration Guide (Japanese) might be informative:
 Ver.5.11-dev (in development)
 - Support FileMaker Data API of FileMaker Server 18.
 - Update FMDataAPI.php (Ver.18) and DB_FileMaker_DataAPI.php for FileMaker Data API.
+- Reduce error messages when using PHP 7.x, DB_FileMaker_FX class and portal access mode.
 
 Ver.5.10 (April 17, 2019)
 - The Japanese new gengo REIWA is supported in the date formatter.
