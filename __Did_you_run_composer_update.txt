@@ -1,0 +1,4 @@
+Before you try the INTER-Mediator, I'd like to execute the below command.
+
+cd INTER-Mediator  # Set the current directory to the root of INTER-Mediator.
+composer update    # PHP and JavaScript libraries are going to be installed.
