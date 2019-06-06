@@ -1910,11 +1910,11 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem2.3 install bundler --no-ri --no-rdoc' do
       command 'gem2.3 install bundler --no-ri --no-rdoc'
     end
-    execute 'gem2.3 install ffi -v --no-doc' do
-      command 'gem2.3 install ffi -v --no-doc'
+    execute 'gem2.3 install ffi --no-ri --no-rdoc' do
+      command 'gem2.3 install ffi --no-ri --no-rdoc'
     end
-    execute 'gem2.3 install selenium-webdriver -v "3.142.3" --no-doc' do
-      command 'gem2.3 install selenium-webdriver -v "3.142.3" --no-doc'
+    execute 'gem2.3 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc' do
+      command 'gem2.3 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc'
     end
   else
     package 'ruby' do
