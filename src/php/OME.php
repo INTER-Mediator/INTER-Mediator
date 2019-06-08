@@ -48,6 +48,7 @@ class OME
     private $mailEncoding = "UTF-8";
 
     private $body = '';
+    private $bodyType = '';
     private $subject = '';
     private $toField = '';
     private $ccField = '';
@@ -105,9 +106,10 @@ class OME
      *
      * @param string メールの本文に設定する文字列
      */
-    public function setBody($str)
+    public function setBody($str, $type = false)
     {
         $this->body = $str;
+        $this->bodyType = $type;
     }
 
     public function getBody()
@@ -571,8 +573,12 @@ class OME
                 $message->setBcc($addArray);
             }
             $message->setSubject($this->subject);
-            $message->setBody($bodyString);
-            foreach($this->attachments as $path) {
+            if ($this->bodyType) {
+                $message->setBody($bodyString, $this->bodyType);
+            } else {
+                $message->setBody($bodyString);
+            }
+            foreach ($this->attachments as $path) {
                 $message->attach(\Swift_Attachment::fromPath($path)->setFilename(basename($path)));
             }
             $resultMail = $mailer->send($message, $failures);
