@@ -39,6 +39,8 @@ Ver.6-dev (in development)
   the mail content is going to store the context with fields named "errors", "to_field", "bcc_field",
   "cc_field", "from_field", "subject", "body". So far the field names is fixed.
 - File can be attached with swiftmailer by 'attachment' keyed value in the 'send-mail' block.
+- Template of sending mail can be stored in table. The table must have the field "to_field", "bcc_field", "cc_field",
+  "from_field", "subject", "body".
 - The date formatter started to support the Japanese new gengo Reiwa.
 - The following repositories are separated from the core code.
     inter-mediator-expressionparser

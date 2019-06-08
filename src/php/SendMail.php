@@ -63,7 +63,7 @@ class SendMail
                 }
             }
 
-            if ($this->isCompatible) {// ================================== Old send main archtecture
+            if ($this->isCompatible) {// ================================== Old send main architecture
                 if (isset($sendMailParam['to-constant'])) {
                     $items = explode(",", $sendMailParam['to-constant']);
                     foreach ($items as $item) {
@@ -140,7 +140,7 @@ class SendMail
                 } else if (isset($result[$i]) && $sendMailParam['body'] && isset($result[$i][$sendMailParam['body']])) {
                     $ome->setBody($result[$i][$sendMailParam['body']]);
                 }
-            } else { // ==================================================== New send main archtecture
+            } else { // ==================================================== New send main architecture
                 $labels = ['to', 'cc', 'bcc', 'from', 'subject', 'body'];
                 $mailSeed = [];
                 foreach ($labels as $label) {
