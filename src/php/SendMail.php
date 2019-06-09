@@ -144,7 +144,7 @@ class SendMail
                 $labels = ['to', 'cc', 'bcc', 'from', 'subject', 'body'];
                 $mailSeed = [];
                 foreach ($labels as $label) {
-                    $mailSeed[$label] = $sendMailParam[$label] ? $sendMailParam[$label] : '';
+                    $mailSeed[$label] = isset($sendMailParam[$label]) ? $sendMailParam[$label] : '';
                 }
                 if (isset($sendMailParam['template-context'])) {
                     $cParam = explode('@', $sendMailParam['template-context']);
@@ -153,15 +153,15 @@ class SendMail
                         if (count($idParam) == 2) {
                             $storeContext = new DB\Proxy();
                             $storeContext->ignoringPost();
-                            $storeContext->dbSettings->setCurrentUser($dbProxy->dbSettings->getCurrentUser());
                             $storeContext->initialize(
                                 $dbProxy->dbSettings->getDataSource(),
                                 $dbProxy->dbSettings->getOptions(),
                                 $dbProxy->dbSettings->getDbSpec(),
                                 2, $cParam[0], null);
-                            $storeContext->logger->setDebugMessage("Proxy with the {$cParam[0]} context.", 2);
+                            $storeContext->dbSettings->setCurrentUser($dbProxy->dbSettings->getCurrentUser());
+                            $dbProxy->logger->setDebugMessage("Proxy with the {$cParam[0]} context.", 2);
                             $storeContext->dbSettings->addExtraCriteria($idParam[0], "=", $idParam[1]);
-                            $storeContext->processingRequest("read");
+                            $storeContext->processingRequest("read", true);
                             $templateRecords = $storeContext->getDatabaseResult();
                             $mailSeed = [
                                 'to' => $templateRecords[0]['to_field'],
@@ -171,12 +171,15 @@ class SendMail
                                 'subject' => $templateRecords[0]['subject'],
                                 'body' => $templateRecords[0]['body'],
                             ];
+                            $dbProxy->logger->setDebugMessages($storeContext->logger->getDebugMessages());
+                            $dbProxy->logger->setErrorMessages($storeContext->logger->getErrorMessages());
                         }
                     } else { // Specify a file name.
                         $fpath = dirname($_SERVER["SCRIPT_FILENAME"]) . '/' . $sendMailParam['template-context'];
                         $mailSeed['body'] = file_get_contents($fpath);
                     }
                 }
+
                 $items = explode(",", $this->modernTemplating($result[$i], $mailSeed['to']));
                 foreach ($items as $item) {
                     $ome->appendToField(trim($item));
@@ -189,21 +192,18 @@ class SendMail
                 foreach ($items as $item) {
                     $ome->appendBccField(trim($item));
                 }
-                $ome->appendFromField(trim($this->modernTemplating($result[$i], $mailSeed['from'])));
+                $ome->setFromField(trim($this->modernTemplating($result[$i], $mailSeed['from'])));
                 $ome->setSubject($this->modernTemplating($result[$i], $mailSeed['subject']));
                 $bodyString = $this->modernTemplating($result[$i], $mailSeed['body']);
-                $type = strpos($bodyString, '<html>') === 0 ? 'text/html' : false;
+                $type = (strpos($bodyString, '<html>') === 0) ? 'text/html' : false;
+
                 $ome->setBody($bodyString, $type);
             }
             // ====================================================
 
             if (isset($sendMailParam['attachment']) && $dbProxy->dbSettings->getMediaRoot()) {
-                $fpath = "{$dbProxy->dbSettings->getMediaRoot()}/";
-                if (substr($sendMailParam['attachment'], 0, 1) === '@') {
-                    $fpath .= $result[$i][substr($sendMailParam['attachment'], 1)];
-                } else {
-                    $fpath .= $sendMailParam['attachment'];
-                }
+                $fpath = $dbProxy->dbSettings->getMediaRoot() . "/" .
+                    $this->modernTemplating($result[$i], $sendMailParam['attachment']);
                 $ome->addAttachment($fpath);
                 $dbProxy->logger->setDebugMessage("Attachment: {$fpath}", 2);
             }
@@ -257,15 +257,17 @@ class SendMail
     private function modernTemplating($record, $tempStr)
     {
         $bodyStr = $tempStr;
-        $startPos = strpos($bodyStr, '@@');
-        $endPos = strpos($bodyStr, '@@', $startPos + 2);
-        while ($startPos !== false && $endPos !== false) {
-            $fieldName = trim(substr($bodyStr, $startPos + 2, $endPos - $startPos - 2));
-            $bodyStr = substr($bodyStr, 0, $startPos) .
-                (isset($record[$fieldName]) ? $record[$fieldName] : '=field not exist=') .
-                substr($bodyStr, $endPos + 2);
-            $startPos = strpos($bodyStr, '@@');
+        if (strlen($tempStr) > 5) {
+            $startPos = strpos($bodyStr, '@@', 0);
             $endPos = strpos($bodyStr, '@@', $startPos + 2);
+            while ($startPos !== false && $endPos !== false) {
+                $fieldName = trim(substr($bodyStr, $startPos + 2, $endPos - $startPos - 2));
+                $bodyStr = substr($bodyStr, 0, $startPos) .
+                    (isset($record[$fieldName]) ? $record[$fieldName] : '=field not exist=') .
+                    substr($bodyStr, $endPos + 2);
+                $startPos = strpos($bodyStr, '@@');
+                $endPos = strpos($bodyStr, '@@', $startPos + 2);
+            }
         }
         return $bodyStr;
     }

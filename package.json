@@ -42,27 +42,26 @@
     "power-assert": "*"
   },
   "dependencies": {
-    "flatpickr": "*",
+    "jsencrypt": "*",
+    "jssha": "*",
     "forever": "*",
-    "forever-win": "^0.10.11",
+    "request": "*",
+    "flatpickr": "*",
+    "socket.io": "*",
+    "npm-platform-dependencies": "*",
     "inter-mediator-expressionparser": "1.0.2",
     "inter-mediator-formatter": "1.0.1",
     "inter-mediator-locale": "1.0.0",
     "inter-mediator-nodegraph": "1.0.0",
+    "inter-mediator-queue": "1.0.0",
     "inter-mediator-plugin-codemirror": "1.0.0",
     "inter-mediator-plugin-fileupload": "1.0.1",
     "inter-mediator-plugin-flatpickr": "1.0.0",
+    "inter-mediator-plugin-jsonformatter": "1.0.0",
     "inter-mediator-plugin-jquerydatepicker": "1.0.2",
     "inter-mediator-plugin-jqueryfileupload": "1.0.4",
-    "inter-mediator-plugin-jsonformatter": "1.0.0",
     "inter-mediator-plugin-popupselector": "1.0.1",
-    "inter-mediator-plugin-tinymce": "1.0.1",
-    "inter-mediator-queue": "1.0.0",
-    "jsencrypt": "*",
-    "jssha": "*",
-    "npm-platform-dependencies": "*",
-    "request": "*",
-    "socket.io": "*"
+    "inter-mediator-plugin-tinymce": "1.0.1"
   },
   "win32Dependencies": {
     "forever-win": "*"
