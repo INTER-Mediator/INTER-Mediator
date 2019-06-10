@@ -357,7 +357,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
             $parentTable = $this->dbSettings->getDataSourceTargetArray();
             if (isset($parentTable['paging']) && $parentTable['paging'] === true) {
                 $this->fx->FMSkipRecords($this->dbSettings->getStart());
-                $portalParentKeyField = $parentTable['key'];
+                $portalParentKeyField = isset($parentTable['key']) ? $parentTable['key'] : '';
             }
             if (isset($parentTable['query'])) {
                 foreach ($parentTable['query'] as $condition) {

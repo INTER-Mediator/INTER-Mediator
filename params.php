@@ -163,6 +163,8 @@ $sendMailSMTP = array(
     'password' => 'string',
 );
 */
+// Sending email features compatibility with INTER-Mediator v5 unless 'template-context' key isn't specified.
+$sendMailCompatibilityMode = true;  // default is true
 
 /*
  * If you want to specify the Pusher information, set them below.
@@ -238,4 +240,3 @@ $serviceServerHost = "localhost";
 $stopSSEveryQuit = false;
 $bootWithInstalledNode = false;
 $preventSSAutoBoot = false;
-

@@ -48,6 +48,7 @@ class OME
     private $mailEncoding = "UTF-8";
 
     private $body = '';
+    private $bodyType = '';
     private $subject = '';
     private $toField = '';
     private $ccField = '';
@@ -105,9 +106,10 @@ class OME
      *
      * @param string メールの本文に設定する文字列
      */
-    public function setBody($str)
+    public function setBody($str, $type = false)
     {
         $this->body = $str;
+        $this->bodyType = $type;
     }
 
     public function getBody()
@@ -164,11 +166,14 @@ class OME
 
     private function divideMailAddress($addr)
     {
-        if (preg_match(
-                "/(.*)<(([a-zA-Z0-9])+([a-zA-Z0-9_\.-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+))+>/",
-                $addr, $matches) === 1
-        ) {
-            return array('name' => trim($matches[1]), 'address' => $matches[2]);
+        if (strlen($addr) > 1) {
+            $lpos = mb_strpos($addr, '<');
+            $rpos = mb_strpos($addr, '>', $lpos);
+            if ($lpos !== false && $rpos !== false) {
+                $name = trim(mb_substr($addr, 0, $lpos)) . trim(mb_substr($addr, $rpos + 1));
+                $addr = trim(mb_substr($addr, $lpos + 1, $rpos - $lpos - 1));
+                return array('name' => $name, 'address' => $addr);
+            }
         }
         return array('name' => '', 'address' => trim($addr));
     }
@@ -520,12 +525,11 @@ class OME
         if ($this->extHeaders != '')
             $headerField .= $this->extHeaders;
 
-        $bodyString = $this->devideWithLimitingWidth($this->body);
-        if ($this->mailEncoding != 'UTF-8') {
-            $bodyString = mb_convert_encoding($bodyString, $this->mailEncoding);
-        }
-
         if ($this->smtpInfo === null) {
+            $bodyString = $this->devideWithLimitingWidth($this->body);
+            if ($this->mailEncoding != 'UTF-8') {
+                $bodyString = mb_convert_encoding($bodyString, $this->mailEncoding);
+            }
             if ($this->isUseSendmailParam) {
                 $resultMail = mail(
                     rtrim($this->header_base64_encode($this->toField, False)),
@@ -555,8 +559,11 @@ class OME
             }
             $mailer = new \Swift_Mailer($transport);
             $message = new \Swift_Message($headerField);
-            if ($this->senderAddress != null) {
-                $message->setFrom([$this->senderAddress]);
+            if ($this->fromField != null) {
+                $addArray = $this->recepientsArray(explode(',', $this->fromField));
+                if (count($addArray) > 0) {
+                    $message->setFrom($addArray);
+                }
             }
             $addArray = $this->recepientsArray(explode(',', $this->toField));
             if (count($addArray) > 0) {
@@ -571,10 +578,28 @@ class OME
                 $message->setBcc($addArray);
             }
             $message->setSubject($this->subject);
-            $message->setBody($bodyString);
-            foreach($this->attachments as $path) {
-                $message->attach(\Swift_Attachment::fromPath($path)->setFilename(basename($path)));
+
+            $this->bodyType = ($this->bodyType === false) ? 'text/plain' : $this->bodyType;
+            $targetTerm = "##image##";
+            if (strpos($this->body, $targetTerm) !== false && $this->bodyType == 'text/html') {
+                $imagePos = strpos($this->body, $targetTerm);
+                foreach ($this->attachments as $path) {
+                    $cid = $message->embed(\Swift_Image::fromPath($path));
+                }
+                $bodyString = substr($this->body, 0, $imagePos) . $cid .
+                    substr($this->body, $imagePos + strlen($targetTerm));
+                $message->setBody($bodyString, $this->bodyType);
+            } else {
+                $bodyString = ($this->bodyType == 'text/html') ? $this->body : $this->devideWithLimitingWidth($this->body);
+                if ($this->mailEncoding != 'UTF-8') {
+                    $bodyString = mb_convert_encoding($bodyString, $this->mailEncoding);
+                }
+                foreach ($this->attachments as $path) {
+                    $message->attach(\Swift_Attachment::fromPath($path)->setFilename(basename($path)));
+                }
+                $message->setBody($bodyString, $this->bodyType);
             }
+
             $resultMail = $mailer->send($message, $failures);
             if (!$resultMail) {
                 $this->errorMessage = 'Unsent recipients: ' . var_export($failures, true) . '\n';
@@ -585,20 +610,19 @@ class OME
 
     private function recepientsArray($ar)
     {
+        mb_regex_encoding('UTF-8');
         $result = [];
         foreach ($ar as $item) {
-            if (strlen(trim($item)) > 1) {
-                if (preg_match('/([^<]*)<([^>])+>/', trim($item), $matched) === 1) {
-                    $name = trim($matched[1]);
-                    $addr = $matched[2];
-                    if (strlen($name) > 0) {
-                        $result[$name] = $addr;
-                    } else {
-                        $result[] = $addr;
-                    }
+            $str = trim($item);
+            if (strlen($str) > 1) {
+                $r = $this->divideMailAddress($str);
+                if (strlen($r['name']) > 0) {
+                    $result[$r['address']] = $r['name'];
                 } else {
-                    $result[] = trim($item);
+                    $result[] = $r['address'];
                 }
+            } else {
+                $result[] = $str;
             }
         }
         return $result;
@@ -633,7 +657,6 @@ class OME
                     && !$this->isInhibitLineTopChar($posChar)
                     && !$this->isInhibitLineEndChar($beforeChar)
                 ) {
-
                     if (($this->isJapanese($posChar)
                             && !$this->isSpace($posChar))
                         || ($this->isJapanese($beforeChar)
@@ -641,7 +664,6 @@ class OME
                         || (!$this->isWordElement($beforeChar)
                             && $this->isWordElement($posChar))
                     ) {
-
                         $devidedStr .= $newLine;
                         $byteLength = 0;
                         $lineByteCounter = 0;

@@ -401,6 +401,7 @@ class DefinitionChecker
                     'body-wrap' => 'integer',
                     'store' => 'string',
                     'attachment' => 'string',
+                    'template-context' => 'string',
                 ),
                 'read' => array(
                     'from' => 'string',
@@ -421,6 +422,7 @@ class DefinitionChecker
                     'body-wrap' => 'integer',
                     'store' => 'string',
                     'attachment' => 'string',
+                    'template-context' => 'string',
                 ),
                 'new' => array(
                     'from' => 'string',
@@ -441,6 +443,7 @@ class DefinitionChecker
                     'body-wrap' => 'integer',
                     'store' => 'string',
                     'attachment' => 'string',
+                    'template-context' => 'string',
                 ),
                 'create' => array(
                     'from' => 'string',
@@ -461,6 +464,7 @@ class DefinitionChecker
                     'body-wrap' => 'integer',
                     'store' => 'string',
                     'attachment' => 'string',
+                    'template-context' => 'string',
                 ),
                 'edit' => array(
                     'from' => 'string',
@@ -481,6 +485,7 @@ class DefinitionChecker
                     'body-wrap' => 'integer',
                     'store' => 'string',
                     'attachment' => 'string',
+                    'template-context' => 'string',
                 ),
                 'update' => array(
                     'from' => 'string',
@@ -501,9 +506,9 @@ class DefinitionChecker
                     'body-wrap' => 'integer',
                     'store' => 'string',
                     'attachment' => 'string',
+                    'template-context' => 'string',
                 ),
             )
         ),
     );
-
 }
