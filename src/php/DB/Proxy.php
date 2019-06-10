@@ -979,8 +979,15 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $fInfo[] = $def["field"];
                     }
                 }
+                $calcFields = [];
+                if(isset($this->dbSettings->getDataSourceTargetArray()['calculation'])) {
+                    foreach ($this->dbSettings->getDataSourceTargetArray()['calculation'] as $entry) {
+                        $calcFields[] = $entry['field'];
+                    }
+                }
                 foreach ($this->dbSettings->getFieldsRequired() as $fieldName) {
-                    if (!$this->dbClass->specHandler->isContainingFieldName($fieldName, $fInfo)) {
+                    if (!$this->dbClass->specHandler->isContainingFieldName($fieldName, $fInfo) &&
+                        !in_array($fieldName, $calcFields)) {
                         $this->logger->setErrorMessage($messageClass->getMessageAs(1033, array($fieldName)));
                     }
                 }
