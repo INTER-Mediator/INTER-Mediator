@@ -50,7 +50,7 @@
     "socket.io": "*",
     "npm-platform-dependencies": "*",
     "inter-mediator-expressionparser": "1.0.2",
-    "inter-mediator-formatter": "1.0.1",
+    "inter-mediator-formatter": "1.0.2",
     "inter-mediator-locale": "1.0.0",
     "inter-mediator-nodegraph": "1.0.0",
     "inter-mediator-queue": "1.0.0",
