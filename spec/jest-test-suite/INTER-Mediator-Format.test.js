@@ -73,6 +73,11 @@ test('IMLibFormat.numberFormat(): each 3-digits should be devided.', function ()
   expect(IMLibFormat.numberFormat(999999, -3)).toBe('1,000,000')
   // A negative second parameter doesn't support so far.
 })
+test('IMLibFormat.numberFormat(): minus value and having fractions', function () {
+  'use strict'
+  expect(IMLibFormat.numberFormat(0.5678, 2)).toBe('0.57')
+  expect(IMLibFormat.numberFormat(-0.5678, 2)).toBe('-0.57')
+})
 test('IMLibFormat.numberFormat(): format string detection', function () {
   'use strict'
   expect(INTERMediatorLocale.mon_decimal_point).toBe('.')
