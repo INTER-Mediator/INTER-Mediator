@@ -19,8 +19,10 @@ OS=`cat /etc/os-release | grep ^ID | cut -d'=' -f2`
 if [ $OS = 'alpine' ] ; then
     WEBROOT="/var/www/localhost/htdocs"
     OLDWEBROOT="/var/www/html"
+    WWWUSERNAME="apache"
 else
     WEBROOT="/var/www/html"
+    WWWUSERNAME="www-data"
 fi
 
 IMROOT="${WEBROOT}/INTER-Mediator"
@@ -177,11 +179,11 @@ fi
 if [ $OS = 'alpine' ] ; then
     addgroup im-developer
     addgroup developer im-developer
-    addgroup apache im-developer
+    addgroup ${WWWUSERNAME} im-developer
 else
     groupadd im-developer
     usermod -a -G im-developer developer
-    usermod -a -G im-developer www-data
+    usermod -a -G im-developer ${WWWUSERNAME}
 fi
 yes im4135dev | passwd postgres
 
@@ -310,7 +312,7 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache nodejs
     apk add --no-cache nodejs-npm
     npm install
-    chown -R apache:developer /var/www
+    chown -R ${WWWUSERNAME}:im-developer /var/www
     chmod a+x "${IMROOT}/node_modules/forever/bin/forever"
 fi
 
@@ -333,6 +335,10 @@ do
 done
 
 # Import schema
+
+mkdir -p /var/db/im
+chown -R "${WWWUSERNAME}":im-developer /var/db/im
+chmod 775 /var/db/im
 
 echo "y" | source "${IMVMROOT}/dbupdate.sh"
 
@@ -415,25 +421,6 @@ if [ $OS != 'alpine' ] ; then
     chmod u+s /usr/bin/fbterm
     dpkg-reconfigure -f noninteractive keyboard-configuration
 fi
-
-# composer install
-
-#if [ $OS = 'alpine' ] ; then
-#    "${IMROOT}"/dist-docs/installfiles.sh -2
-#    composer install
-#    npm install
-#fi
-
-# Launch buster-server for unit testing
-
-#if [ $OS = 'alpine' ] ; then
-#    echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\nexport DISPLAY=:99.0\nXvfb :99 -screen 0 1024x768x24 &\n/bin/sleep 5\n/usr/bin/buster-server &\n/bin/sleep 5\n#firefox http://localhost:1111/capture > /dev/null &\nchromium-browser --no-sandbox http://localhost:1111/capture > /dev/null &\n/bin/sleep 5\nexit 0' > /etc/local.d/buster-server.start
-#    chmod 755 /etc/local.d/buster-server.start
-#    rc-update add local default
-#else
-#    echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\n/usr/local/bin/buster-server &\n/bin/sleep 5\n#firefox http://localhost:1111/capture > /dev/null &\nchromium-browser --no-sandbox --headless --remote-debugging-port=9222 http://localhost:1111/capture > /dev/null &\n/bin/sleep 5\nexit 0' > /etc/rc.local
-#    chmod 755 /etc/rc.local
-#fi
 
 # The end of task.
 
