@@ -336,11 +336,7 @@ done
 
 # Import schema
 
-mkdir -p /var/db/im
-chown -R "${WWWUSERNAME}":im-developer /var/db/im
-chmod 775 /var/db/im
-
-echo "y" | source "${IMVMROOT}/dbupdate.sh"
+# echo "y" | source "${IMVMROOT}/dbupdate.sh"
 
 # Modify permissions
 
