@@ -34,6 +34,7 @@ SMBCONF="/etc/samba/smb.conf"
 
 #IMREPOSITORY="https://github.com/INTER-Mediator/INTER-Mediator.git"
 IMREPOSITORY="https://github.com/msyk/INTER-Mediator.git"
+IMBRANCH="master"
 
 RESULT=`id developer 2>/dev/null`
 if [ $RESULT = '' ] ; then
@@ -228,12 +229,14 @@ a2enmod headers
 echo "#Header add Content-Security-Policy \"default-src 'self'\"" > "${APACHEOPTCONF}"
 
 cd "${WEBROOT}"
-git clone ${IMREPOSITORY} && cd INTER-Mediator && git remote add upstream ${IMREPOSITORY} checkout stable
-result=`git diff master..release 2> /dev/null`
-if [ "$result" = '' ]; then
+git clone -b ${IMBRANCH} ${IMREPOSITORY}
+cd INTER-Mediator
+git remote add upstream ${IMREPOSITORY} checkout ${IMBRANCH}
+#result=`git diff master..release 2> /dev/null`
+#if [ "$result" = '' ]; then
     #git checkout stable
-    git checkout master
-fi
+#    git checkout master
+#fi
 
 rm -f "${WEBROOT}/index.html"
 cd "${WEBROOT}"
@@ -302,15 +305,13 @@ fi
 # Install php/js libraries
 
 cd "${IMROOT}"
+composer update # returns error for the script of nodejs-installer.
 if [ $OS = 'alpine' ] ; then
-    composer update # returns error for the script of nodejs-installer.
     apk add --no-cache nodejs
     apk add --no-cache nodejs-npm
     npm install
     chown -R apache:developer /var/www
-    chmod a+x ./node_modules/forever/bin/forever
-else
-    composer update
+    chmod a+x "${IMROOT}/node_modules/forever/bin/forever"
 fi
 
 # Auto starting of Service Server
