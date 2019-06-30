@@ -231,7 +231,7 @@ a2enmod headers
 echo "#Header add Content-Security-Policy \"default-src 'self'\"" > "${APACHEOPTCONF}"
 
 cd "${WEBROOT}"
-git clone ${IMREPOSITORY}
+git clone --branch ${IMBRANCH} ${IMREPOSITORY}
 cd INTER-Mediator
 git checkout ${IMBRANCH}
 #git remote add upstream ${IMREPOSITORY} checkout ${IMBRANCH}
@@ -313,8 +313,8 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache nodejs
     apk add --no-cache nodejs-npm
     npm install
-    chown -R ${WWWUSERNAME}:im-developer /var/www
-    chmod a+x "${IMROOT}/node_modules/forever/bin/forever"
+    sudo chown -R ${WWWUSERNAME}:im-developer /var/www
+    sudo chmod a+x "${IMROOT}/node_modules/forever/bin/forever"
 fi
 
 # Auto starting of Service Server
@@ -341,14 +341,14 @@ echo "y" | source "${IMVMROOT}/dbupdate.sh"
 
 # Modify permissions
 
-setfacl --recursive --modify g:im-developer:rwx,d:g:im-developer:rwx "${WEBROOT}"
-chown -R developer:im-developer "${WEBROOT}"
-chmod -R a=rX,u+w,g+w "${WEBROOT}"
+sudo setfacl --recursive --modify g:im-developer:rwx,d:g:im-developer:rwx "${WEBROOT}"
+sudo chown -R developer:im-developer "${WEBROOT}"
+sudo chmod -R a=rX,u+w,g+w "${WEBROOT}"
 cd "${WEBROOT}" && cd INTER-Mediator && git checkout .
-chmod 664 ${WEBROOT}/*.html
-chmod 664 ${WEBROOT}/*.php
-chmod 664 "${IMVMROOT}/dbupdate.sh"
-chmod 755 "${IMVMROOT}/index.php"
+sudo chmod 664 ${WEBROOT}/*.html
+sudo chmod 664 ${WEBROOT}/*.php
+sudo chmod 664 "${IMVMROOT}/dbupdate.sh"
+sudo chmod 755 "${IMVMROOT}/index.php"
 
 # Home directory permissions modifying
 
@@ -415,7 +415,7 @@ if [ $OS != 'alpine' ] ; then
     mv /etc/default/keyboard.tmp /etc/default/keyboard
     cat /etc/default/locale | sed -e 's/LANG="en_US.UTF-8"/LANG="ja_JP.UTF-8"/g' > /etc/default/locale.tmp
     mv /etc/default/locale.tmp /etc/default/locale
-    chmod u+s /usr/bin/fbterm
+    sudo chmod u+s /usr/bin/fbterm
     dpkg-reconfigure -f noninteractive keyboard-configuration
 fi
 
