@@ -17,8 +17,7 @@ SQLITEDB="${SQLITEDIR}/sample.sq3"
 
 VMPASSWORD="im4135dev"
 
-#read -p "Do you initialize the test databases? [y/n]: " INPUT
-INPUT="y"
+read -p "Do you initialize the test databases? [y/n]: " INPUT
 
 if [ "$INPUT" = "y" -o "$INPUT" = "Y" ]; then
     echo "Initializing databases..."

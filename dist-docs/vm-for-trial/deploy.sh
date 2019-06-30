@@ -231,9 +231,9 @@ a2enmod headers
 echo "#Header add Content-Security-Policy \"default-src 'self'\"" > "${APACHEOPTCONF}"
 
 cd "${WEBROOT}"
-git clone -b ${IMBRANCH} ${IMREPOSITORY}
+git clone --branch ${IMBRANCH} ${IMREPOSITORY}
 cd INTER-Mediator
-git remote add upstream ${IMREPOSITORY} checkout ${IMBRANCH}
+#git remote add upstream ${IMREPOSITORY} checkout ${IMBRANCH}
 #result=`git diff master..release 2> /dev/null`
 #if [ "$result" = '' ]; then
     #git checkout stable
@@ -336,7 +336,7 @@ done
 
 # Import schema
 
-# echo "y" | source "${IMVMROOT}/dbupdate.sh"
+echo "y" | source "${IMVMROOT}/dbupdate.sh"
 
 # Modify permissions
 
