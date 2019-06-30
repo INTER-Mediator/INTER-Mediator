@@ -231,8 +231,9 @@ a2enmod headers
 echo "#Header add Content-Security-Policy \"default-src 'self'\"" > "${APACHEOPTCONF}"
 
 cd "${WEBROOT}"
-git clone --branch ${IMBRANCH} ${IMREPOSITORY}
+git clone ${IMREPOSITORY}
 cd INTER-Mediator
+git checkout ${IMBRANCH}
 #git remote add upstream ${IMREPOSITORY} checkout ${IMBRANCH}
 #result=`git diff master..release 2> /dev/null`
 #if [ "$result" = '' ]; then
