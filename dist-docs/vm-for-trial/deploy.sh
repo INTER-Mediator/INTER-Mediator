@@ -291,6 +291,8 @@ echo "-----END RSA PRIVATE KEY-----" >> "${WEBROOT}/params.php"
 echo "EOL;" >> "${WEBROOT}/params.php"
 echo "\$webServerName = [''];" >> "${WEBROOT}/params.php"
 echo "\$preventSSAutoBoot = true;" >> "${WEBROOT}/params.php"
+echo "\$serviceServerPort = "11478";" >> "${WEBROOT}/params.php"
+echo "\$serviceServerHost = "localhost";" >> "${WEBROOT}/params.php"
 
 
 if [ $OS = 'alpine' ] ; then
@@ -306,6 +308,7 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache nodejs-npm
     npm install
     chown -R apache:developer /var/www
+    chmod a+x ./node_modules/forever/bin/forever
 else
     composer update
 fi
