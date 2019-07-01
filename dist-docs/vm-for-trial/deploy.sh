@@ -313,14 +313,14 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache nodejs
     apk add --no-cache nodejs-npm
     npm install
-    chown -R ${WWWUSERNAME}:im-developer /var/www
+    chown -R ${WWWUSERNAME}:im-developer "/var/www"
     chmod a+x "${IMROOT}/node_modules/forever/bin/forever"
 fi
 
 # Auto starting of Service Server
 
 Crontab="/etc/crontabs/root"
-echo "@reboot /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/forever-startup.sh" >> "${Crontab}"
+echo "@reboot ${IMROOT}/dist-docs/vm-for-trial/forever-startup.sh" >> "${Crontab}"
 
 # Copy Templates
 
