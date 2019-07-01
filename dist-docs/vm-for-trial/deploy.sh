@@ -19,8 +19,10 @@ OS=`cat /etc/os-release | grep ^ID | cut -d'=' -f2`
 if [ $OS = 'alpine' ] ; then
     WEBROOT="/var/www/localhost/htdocs"
     OLDWEBROOT="/var/www/html"
+    WWWUSERNAME="apache"
 else
     WEBROOT="/var/www/html"
+    WWWUSERNAME="www-data"
 fi
 
 IMROOT="${WEBROOT}/INTER-Mediator"
@@ -34,6 +36,7 @@ SMBCONF="/etc/samba/smb.conf"
 
 #IMREPOSITORY="https://github.com/INTER-Mediator/INTER-Mediator.git"
 IMREPOSITORY="https://github.com/msyk/INTER-Mediator.git"
+IMBRANCH="master"
 
 RESULT=`id developer 2>/dev/null`
 if [ $RESULT = '' ] ; then
@@ -176,11 +179,11 @@ fi
 if [ $OS = 'alpine' ] ; then
     addgroup im-developer
     addgroup developer im-developer
-    addgroup apache im-developer
+    addgroup ${WWWUSERNAME} im-developer
 else
     groupadd im-developer
     usermod -a -G im-developer developer
-    usermod -a -G im-developer www-data
+    usermod -a -G im-developer ${WWWUSERNAME}
 fi
 yes im4135dev | passwd postgres
 
@@ -228,12 +231,15 @@ a2enmod headers
 echo "#Header add Content-Security-Policy \"default-src 'self'\"" > "${APACHEOPTCONF}"
 
 cd "${WEBROOT}"
-git clone ${IMREPOSITORY} && cd INTER-Mediator && git remote add upstream ${IMREPOSITORY} checkout stable
-result=`git diff master..release 2> /dev/null`
-if [ "$result" = '' ]; then
+git clone --branch ${IMBRANCH} ${IMREPOSITORY}
+cd INTER-Mediator
+git checkout ${IMBRANCH}
+#git remote add upstream ${IMREPOSITORY} checkout ${IMBRANCH}
+#result=`git diff master..release 2> /dev/null`
+#if [ "$result" = '' ]; then
     #git checkout stable
-    git checkout master
-fi
+#    git checkout master
+#fi
 
 rm -f "${WEBROOT}/index.html"
 cd "${WEBROOT}"
@@ -291,6 +297,8 @@ echo "-----END RSA PRIVATE KEY-----" >> "${WEBROOT}/params.php"
 echo "EOL;" >> "${WEBROOT}/params.php"
 echo "\$webServerName = [''];" >> "${WEBROOT}/params.php"
 echo "\$preventSSAutoBoot = true;" >> "${WEBROOT}/params.php"
+echo "\$serviceServerPort = "11478";" >> "${WEBROOT}/params.php"
+echo "\$serviceServerHost = "localhost";" >> "${WEBROOT}/params.php"
 
 
 if [ $OS = 'alpine' ] ; then
@@ -300,14 +308,13 @@ fi
 # Install php/js libraries
 
 cd "${IMROOT}"
+composer update # returns error for the script of nodejs-installer.
 if [ $OS = 'alpine' ] ; then
-    composer update # returns error for the script of nodejs-installer.
     apk add --no-cache nodejs
     apk add --no-cache nodejs-npm
     npm install
-    chown -R apache:developer /var/www
-else
-    composer update
+    chown -R ${WWWUSERNAME}:im-developer /var/www
+    chmod a+x "${IMROOT}/node_modules/forever/bin/forever"
 fi
 
 # Auto starting of Service Server
@@ -411,25 +418,6 @@ if [ $OS != 'alpine' ] ; then
     chmod u+s /usr/bin/fbterm
     dpkg-reconfigure -f noninteractive keyboard-configuration
 fi
-
-# composer install
-
-#if [ $OS = 'alpine' ] ; then
-#    "${IMROOT}"/dist-docs/installfiles.sh -2
-#    composer install
-#    npm install
-#fi
-
-# Launch buster-server for unit testing
-
-#if [ $OS = 'alpine' ] ; then
-#    echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\nexport DISPLAY=:99.0\nXvfb :99 -screen 0 1024x768x24 &\n/bin/sleep 5\n/usr/bin/buster-server &\n/bin/sleep 5\n#firefox http://localhost:1111/capture > /dev/null &\nchromium-browser --no-sandbox http://localhost:1111/capture > /dev/null &\n/bin/sleep 5\nexit 0' > /etc/local.d/buster-server.start
-#    chmod 755 /etc/local.d/buster-server.start
-#    rc-update add local default
-#else
-#    echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\n/usr/local/bin/buster-server &\n/bin/sleep 5\n#firefox http://localhost:1111/capture > /dev/null &\nchromium-browser --no-sandbox --headless --remote-debugging-port=9222 http://localhost:1111/capture > /dev/null &\n/bin/sleep 5\nexit 0' > /etc/rc.local
-#    chmod 755 /etc/rc.local
-#fi
 
 # The end of task.
 
