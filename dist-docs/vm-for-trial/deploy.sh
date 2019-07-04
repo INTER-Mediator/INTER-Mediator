@@ -314,7 +314,7 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache nodejs-npm
     npm install
     chown -R ${WWWUSERNAME}:im-developer "/var/www"
-    chmod a+x "${IMROOT}/node_modules/forever/bin/forever"
+    chmod 775 "${IMROOT}/node_modules/forever/bin/forever"
 fi
 
 # Auto starting of Service Server
@@ -347,8 +347,8 @@ chmod -R a=rX,u+w,g+w "${WEBROOT}"
 cd "${WEBROOT}" && cd INTER-Mediator && git checkout .
 chmod 664 ${WEBROOT}/*.html
 chmod 664 ${WEBROOT}/*.php
-chmod 664 "${IMVMROOT}/dbupdate.sh"
-chmod 755 "${IMVMROOT}/index.php"
+chmod 775 "${IMVMROOT}/dbupdate.sh"
+chmod 664 "${IMVMROOT}/index.php"
 
 # Home directory permissions modifying
 
