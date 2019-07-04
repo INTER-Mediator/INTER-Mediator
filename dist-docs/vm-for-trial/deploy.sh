@@ -34,8 +34,8 @@ IMVMROOT="${IMROOT}/dist-docs/vm-for-trial"
 APACHEOPTCONF="/etc/apache2/sites-enabled/inter-mediator-server.conf"
 SMBCONF="/etc/samba/smb.conf"
 
-#IMREPOSITORY="https://github.com/INTER-Mediator/INTER-Mediator.git"
-IMREPOSITORY="https://github.com/msyk/INTER-Mediator.git"
+IMREPOSITORY="https://github.com/INTER-Mediator/INTER-Mediator.git"
+#IMREPOSITORY="https://github.com/msyk/INTER-Mediator.git"
 IMBRANCH="master"
 
 RESULT=`id developer 2>/dev/null`
