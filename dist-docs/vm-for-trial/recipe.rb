@@ -1883,8 +1883,11 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem2.0 install ffi -v "1.9.18" --no-ri --no-rdoc' do
       command 'gem2.0 install ffi -v "1.9.18" --no-ri --no-rdoc'
     end
-    execute 'gem2.0 install selenium-webdriver --no-ri --no-rdoc' do
-      command 'gem2.0 install selenium-webdriver --no-ri --no-rdoc'
+    execute 'gem2.0 install childprocess -v "0.9.0" --no-ri --no-rdoc' do
+      command 'gem2.0 install childprocess -v "0.9.0" --no-ri --no-rdoc'
+    end
+    execute 'gem2.0 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc' do
+      command 'gem2.0 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc'
     end
   elsif node[:platform_version].to_f < 18
     package 'ruby2.3' do
@@ -1902,8 +1905,11 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem2.3 install ffi -v "1.9.18" --no-ri --no-rdoc' do
       command 'gem2.3 install ffi -v "1.9.18" --no-ri --no-rdoc'
     end
-    execute 'gem2.3 install selenium-webdriver --no-ri --no-rdoc' do
-      command 'gem2.3 install selenium-webdriver --no-ri --no-rdoc'
+    execute 'gem2.3 install childprocess -v "0.9.0" --no-ri --no-rdoc' do
+      command 'gem2.3 install childprocess -v "0.9.0" --no-ri --no-rdoc'
+    end
+    execute 'gem2.3 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc' do
+      command 'gem2.3 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc'
     end
   else
     package 'ruby' do
@@ -1921,8 +1927,11 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem install ffi --no-ri --no-rdoc' do
       command 'gem install ffi --no-ri --no-rdoc'
     end
-    execute 'gem install selenium-webdriver --no-ri --no-rdoc' do
-      command 'gem install selenium-webdriver --no-ri --no-rdoc'
+    execute 'gem install childprocess -v "0.9.0" --no-ri --no-rdoc' do
+      command 'gem install childprocess -v "0.9.0" --no-ri --no-rdoc'
+    end
+    execute 'gem install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc' do
+      command 'gem install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc'
     end
   end
   package 'firefox' do
