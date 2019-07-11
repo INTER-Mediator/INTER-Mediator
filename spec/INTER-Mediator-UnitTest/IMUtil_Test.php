@@ -198,52 +198,49 @@ class IMUtil_Test extends TestCase
     public function test_getMimeType()
     {
         if (((float)phpversion()) >= 5.3) {
-            $this->reflectionMethod = new ReflectionMethod('\INTERMediator\IMUtil', 'getMimeType');
-            $this->reflectionMethod->setAccessible(true);
-
             $path = '';
             $expected = 'application/octet-stream';
-            $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
+            $this->assertEquals($expected, IMUtil::getMimeType($path));
 
             $path = 'test.jpg';
             $expected = 'image/jpeg';
-            $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
+            $this->assertEquals($expected, IMUtil::getMimeType($path));
 
             $path = 'test.jpeg';
             $expected = 'image/jpeg';
-            $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
+            $this->assertEquals($expected, IMUtil::getMimeType($path));
 
             $path = 'test.png';
             $expected = 'image/png';
-            $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
+            $this->assertEquals($expected, IMUtil::getMimeType($path));
 
             $path = 'test.html';
             $expected = 'text/html';
-            $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
+            $this->assertEquals($expected, IMUtil::getMimeType($path));
 
             $path = 'test.txt';
             $expected = 'text/plain';
-            $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
+            $this->assertEquals($expected, IMUtil::getMimeType($path));
 
             $path = 'test.gif';
             $expected = 'image/gif';
-            $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
+            $this->assertEquals($expected, IMUtil::getMimeType($path));
 
             $path = 'test.bmp';
             $expected = 'image/bmp';
-            $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
+            $this->assertEquals($expected, IMUtil::getMimeType($path));
 
             $path = 'test.tif';
             $expected = 'image/tiff';
-            $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
+            $this->assertEquals($expected, IMUtil::getMimeType($path));
 
             $path = 'test.tiff';
             $expected = 'image/tiff';
-            $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
+            $this->assertEquals($expected, IMUtil::getMimeType($path));
 
             $path = 'test.pdf';
             $expected = 'application/pdf';
-            $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
+            $this->assertEquals($expected, IMUtil::getMimeType($path));
         }
     }
 }
