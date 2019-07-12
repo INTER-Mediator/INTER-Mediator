@@ -1238,7 +1238,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                 }
             }
         }
-        if (!$bypassAuth && isset($context['authentication'])
+        if (isset($context['authentication'])
             && (isset($context['authentication']['all'])
                 || isset($context['authentication']['new'])
                 || isset($context['authentication']['create']))
