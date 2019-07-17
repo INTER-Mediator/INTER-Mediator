@@ -1140,9 +1140,9 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                     $value = $fieldValues[$counter];
 
                     if (strpos($value, "[increment]") === 0) {
-                        $value = $row[$originalfield] + intval(substr($value, 11));
+                        $value = $row[$originalfield][0] + intval(substr($value, 11));
                     } else if (strpos($value, "[decrement]") === 0) {
-                        $value = $row[$originalfield] - intval(substr($value, 11));
+                        $value = $row[$originalfield][0] - intval(substr($value, 11));
                     }
 
                     $counter++;
