@@ -14,6 +14,7 @@
  */
 
 namespace INTERMediator\DB;
+
 use \Exception;
 use INTERMediator\IMUtil;
 
@@ -776,7 +777,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                             }
                         }
                         if (!$usePortal || ($usePortal === true && $fieldName === $portalParentKeyField && !empty($portalParentKeyField))) {
-                            if (is_array($fieldValue) && count($fieldValue) === 0){
+                            if (is_array($fieldValue) && count($fieldValue) === 0) {
                                 $dataArray += array($fieldName => '');
                             } else {
                                 $dataArray += array($fieldName => $fieldValue);
@@ -1137,6 +1138,13 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                         $originalfield = $field;
                     }
                     $value = $fieldValues[$counter];
+
+                    if (strpos($value, "[increment]") === 0) {
+                        $value = $row[$originalfield][0] + intval(substr($value, 11));
+                    } else if (strpos($value, "[decrement]") === 0) {
+                        $value = $row[$originalfield][0] - intval(substr($value, 11));
+                    }
+
                     $counter++;
                     $convVal = $this->stringReturnOnly((is_array($value)) ? implode("\n", $value) : $value);
                     $convVal = $this->formatter->formatterToDB(
@@ -1238,7 +1246,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                 }
             }
         }
-        if (!$bypassAuth && isset($context['authentication'])
+        if (isset($context['authentication'])
             && (isset($context['authentication']['all'])
                 || isset($context['authentication']['new'])
                 || isset($context['authentication']['create']))
@@ -1599,7 +1607,8 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
         return $direction;
     }
 
-    protected function _field_exists($fieldName) {
+    protected function _field_exists($fieldName)
+    {
         $config = array(
             'urlScheme' => $this->fx->urlScheme,
             'dataServer' => $this->fx->dataServer,
@@ -1616,7 +1625,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
         $parsedData = $cwpkit->query($queryString);
         $data = json_decode(json_encode($parsedData), true);
 
-        foreach($data['metadata']['field-definition'] as $field) {
+        foreach ($data['metadata']['field-definition'] as $field) {
             if ($field['@attributes']['name'] === $fieldName) {
                 return true;
             }

@@ -65,7 +65,7 @@ class MediaAccess
                 if ($qPos !== false) {
                     $fileName = substr($fileName, 0, $qPos);
                 }
-                header("Content-Type: " . $this->getMimeType($fileName));
+                header("Content-Type: " . IMUtil::getMimeType($fileName));
                 header("Content-Length: " . strlen($content));
                 header("Content-Disposition: {$this->disposition}; filename={$dq}" . urlencode($fileName) . $dq);
                 $util = new IMUtil();
@@ -127,7 +127,7 @@ class MediaAccess
                 if ($qPos !== false) {
                     $fileName = str_replace("%20", " ", substr($fileName, 0, $qPos));
                 }
-                header("Content-Type: " . $this->getMimeType($fileName));
+                header("Content-Type: " . IMUtil::getMimeType($fileName));
                 header("Content-Length: " . strlen($content));
                 header("Content-Disposition: {$this->disposition}; filename={$dq}"
                     . str_replace("+", "%20", urlencode($fileName)) . $dq);
@@ -372,43 +372,43 @@ class MediaAccess
             $this->contextRecord = $dbProxyInstance->readFromDB();
         }
     }
-    private function getMimeType($path)
-    {
-        $type = "application/octet-stream";
-        switch (strtolower(substr($path, strrpos($path, '.') + 1))) {
-            case 'jpg':
-                $type = 'image/jpeg';
-                break;
-            case 'jpeg':
-                $type = 'image/jpeg';
-                break;
-            case 'png':
-                $type = 'image/png';
-                break;
-            case 'html':
-                $type = 'text/html';
-                break;
-            case 'txt':
-                $type = 'text/plain';
-                break;
-            case 'gif':
-                $type = 'image/gif';
-                break;
-            case 'bmp':
-                $type = 'image/bmp';
-                break;
-            case 'tif':
-                $type = 'image/tiff';
-                break;
-            case 'tiff':
-                $type = 'image/tiff';
-                break;
-            case 'pdf':
-                $type = 'application/pdf';
-                break;
-        }
-        return $type;
-    }
+//    private function getMimeType($path)
+//    {
+//        $type = "application/octet-stream";
+//        switch (strtolower(substr($path, strrpos($path, '.') + 1))) {
+//            case 'jpg':
+//                $type = 'image/jpeg';
+//                break;
+//            case 'jpeg':
+//                $type = 'image/jpeg';
+//                break;
+//            case 'png':
+//                $type = 'image/png';
+//                break;
+//            case 'html':
+//                $type = 'text/html';
+//                break;
+//            case 'txt':
+//                $type = 'text/plain';
+//                break;
+//            case 'gif':
+//                $type = 'image/gif';
+//                break;
+//            case 'bmp':
+//                $type = 'image/bmp';
+//                break;
+//            case 'tif':
+//                $type = 'image/tiff';
+//                break;
+//            case 'tiff':
+//                $type = 'image/tiff';
+//                break;
+//            case 'pdf':
+//                $type = 'application/pdf';
+//                break;
+//        }
+//        return $type;
+//    }
     private function outputImage($content)
     {
         $rotate = false;
