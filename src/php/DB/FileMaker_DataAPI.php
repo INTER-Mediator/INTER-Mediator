@@ -938,9 +938,9 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                     $value = $fieldValues[$counter];
 
                     if (strpos($value, "[increment]") === 0) {
-                        $value = $record[$originalfield] + intval(substr($value, 11));
+                        $value = $record->$originalfield + intval(substr($value, 11));
                     } else if (strpos($value, "[decrement]") === 0) {
-                        $value = $record[$originalfield] - intval(substr($value, 11));
+                        $value = $record->$originalfield - intval(substr($value, 11));
                     }
 
                     $counter++;
