@@ -36,10 +36,10 @@ const IMLibPageNavigation = {
   navigationSetup: function () {
     'use strict'
     var navigation, i, insideNav, navLabel, node, start, pageSize, allCount, disableClass, c_node,
-      prevPageCount, nextPageCount, endPageCount, contextName, contextDef, buttonLabel, dataSource
+      prevPageCount, nextPageCount, endPageCount, contextName, contextDef,
+      buttonLabel, dataSource
 
-    navigation = document.getElementById('IM_NAVIGATOR')
-    if (navigation !== null) {
+    while (navigation = nextNavigator()) {
       if (!IMLibContextPool.getPagingContext()) {
         navigation.style.display = 'none'
         return
@@ -86,7 +86,7 @@ const IMLibPageNavigation = {
           ((navLabel === null || navLabel[4] === null) ? INTERMediatorOnPage.getMessages()[1] : navLabel[4]) +
           (allCount === 0 ? 0 : start + 1) +
           ((Math.min(start + pageSize, allCount) - start > 1) ? (((navLabel === null || navLabel[5] === null) ? '-' : navLabel[5]) +
-          Math.min(start + pageSize, allCount)) : '') +
+            Math.min(start + pageSize, allCount)) : '') +
           ((navLabel === null || navLabel[6] === null) ? ' / ' : navLabel[6]) + (allCount) +
           ((navLabel === null || navLabel[7] === null) ? '' : navLabel[7])))
         node.setAttribute('class', 'IM_NAV_info')
@@ -114,9 +114,12 @@ const IMLibPageNavigation = {
         if (!node.id) {
           node.id = INTERMediator.nextIdValue()
         }
-        IMLibMouseEventDispatch.setExecute(node.id, function () {
-          IMLibPageNavigation.moveRecordFromNavi('navimoving', prevPageCount)
-        })
+        IMLibMouseEventDispatch.setExecute(node.id, (function () {
+          var pageCount = prevPageCount
+          return function () {
+            IMLibPageNavigation.moveRecordFromNavi('navimoving', pageCount)
+          }
+        })())
 
         node = document.createElement('SPAN')
         navigation.appendChild(node)
@@ -128,9 +131,12 @@ const IMLibPageNavigation = {
         if (!node.id) {
           node.id = INTERMediator.nextIdValue()
         }
-        IMLibMouseEventDispatch.setExecute(node.id, function () {
-          IMLibPageNavigation.moveRecordFromNavi('navimoving', nextPageCount)
-        })
+        IMLibMouseEventDispatch.setExecute(node.id, (function () {
+          var pageCount = nextPageCount
+          return function () {
+            IMLibPageNavigation.moveRecordFromNavi('navimoving', pageCount)
+          }
+        })())
 
         node = document.createElement('SPAN')
         navigation.appendChild(node)
@@ -145,9 +151,12 @@ const IMLibPageNavigation = {
         if (!node.id) {
           node.id = INTERMediator.nextIdValue()
         }
-        IMLibMouseEventDispatch.setExecute(node.id, function () {
-          IMLibPageNavigation.moveRecordFromNavi('navimoving', (endPageCount > 0) ? endPageCount : 0)
-        })
+        IMLibMouseEventDispatch.setExecute(node.id, (function () {
+          var pageCount = endPageCount
+          return function () {
+            IMLibPageNavigation.moveRecordFromNavi('navimoving', (pageCount > 0) ? pageCount : 0)
+          }
+        })())
 
         // Get from http://agilmente.com/blog/2013/08/04/inter-mediator_pagenation_1/
         node = document.createElement('SPAN')
@@ -163,19 +172,22 @@ const IMLibPageNavigation = {
         node.appendChild(c_node)
         node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[11]))
         // ---------
-        IMLibChangeEventDispatch.setExecute(c_node.id, function () {
-          var moveTo, max_page
-          moveTo = INTERMediatorLib.toNumber(c_node.value)
-          if (moveTo < 1) {
-            moveTo = 1
+        IMLibChangeEventDispatch.setExecute(c_node.id, (function () {
+          var targetNode = c_node
+          return function () {
+            var moveTo, max_page
+            moveTo = INTERMediatorLib.toNumber(targetNode.value)
+            if (moveTo < 1) {
+              moveTo = 1
+            }
+            max_page = Math.ceil(allCount / pageSize)
+            if (max_page < moveTo) {
+              moveTo = max_page
+            }
+            INTERMediator.startFrom = (moveTo - 1) * pageSize
+            INTERMediator.constructMain(true)
           }
-          max_page = Math.ceil(allCount / pageSize)
-          if (max_page < moveTo) {
-            moveTo = max_page
-          }
-          INTERMediator.startFrom = (moveTo - 1) * pageSize
-          INTERMediator.constructMain(true)
-        })
+        })())
       }
 
       if (navLabel === null || navLabel[9] !== false) {
@@ -297,6 +309,19 @@ const IMLibPageNavigation = {
             })
         }
       }
+    }
+
+    function nextNavigator() {
+      var naviIdElement, naviClassElements
+      naviIdElement = document.getElementById('IM_NAVIGATOR')
+      if (naviIdElement) {
+        return naviIdElement
+      }
+      naviClassElements = document.getElementsByClassName('IM_NAVIGATOR')
+      if (naviClassElements) {
+        return naviClassElements[0]
+      }
+      return null
     }
   },
 
@@ -891,7 +916,7 @@ const IMLibPageNavigation = {
 
     if (!currentContextDef['navi-control'] ||
       (!currentContextDef['navi-control'].match(/master/i) &&
-      !currentContextDef['navi-control'].match(/step/i)) ||
+        !currentContextDef['navi-control'].match(/step/i)) ||
       encNodeTag === 'SELECT') {
       return
     }
@@ -1363,7 +1388,7 @@ const IMLibPageNavigation = {
       )
     }
 
-    function createBackButton (tagName, currentContextDef) {
+    function createBackButton(tagName, currentContextDef) {
       var buttonNode, buttonName
       buttonNode = document.createElement(tagName)
       INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_BackNavi')
@@ -1376,14 +1401,14 @@ const IMLibPageNavigation = {
       return buttonNode
     }
 
-    function setIdForIMButtons (node) {
+    function setIdForIMButtons(node) {
       var thisId
       thisId = 'IM_Button_' + INTERMediator.buttonIdNum
       node.setAttribute('id', thisId)
       INTERMediator.buttonIdNum++
     }
 
-    function tbodyTargetNode (node, isTop, buttonNode) {
+    function tbodyTargetNode(node, isTop, buttonNode) {
       var targetNodeTag, enclosedNode, firstLevelNodes, targetNode, existingButtons, trNode, tdNode
 
       targetNodeTag = isTop ? 'THEAD' : 'TFOOT'
@@ -1418,7 +1443,7 @@ const IMLibPageNavigation = {
       }
     }
 
-    function genericTargetNode (node, isTop, naviEncTag, buttonNode) {
+    function genericTargetNode(node, isTop, naviEncTag, buttonNode) {
       var newNode, existingButtons
       newNode = document.createElement(naviEncTag)
       existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_BackNavi')
@@ -1432,7 +1457,7 @@ const IMLibPageNavigation = {
       }
     }
 
-    function moveToMaster (a, b, c, d) {
+    function moveToMaster(a, b, c, d) {
       var masterContextCL = a
       let detailContextCL = b
       let pageNaviShow = c
