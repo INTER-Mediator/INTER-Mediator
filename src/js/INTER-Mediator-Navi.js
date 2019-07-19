@@ -315,6 +315,7 @@ const IMLibPageNavigation = {
       var naviIdElement, naviClassElements
       naviIdElement = document.getElementById('IM_NAVIGATOR')
       if (naviIdElement) {
+        naviIdElement.removeAttribute('id')
         return naviIdElement
       }
       naviClassElements = document.getElementsByClassName('IM_NAVIGATOR')
