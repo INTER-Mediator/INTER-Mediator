@@ -936,6 +936,13 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                         $originalfield = $field;
                     }
                     $value = $fieldValues[$counter];
+
+                    if (strpos($value, "[increment]") === 0) {
+                        $value = $record->$originalfield + intval(substr($value, 11));
+                    } else if (strpos($value, "[decrement]") === 0) {
+                        $value = $record->$originalfield - intval(substr($value, 11));
+                    }
+
                     $counter++;
                     $convVal = $this->stringReturnOnly((is_array($value)) ? implode("\n", $value) : $value);
                     $convVal = $this->formatter->formatterToDB(
