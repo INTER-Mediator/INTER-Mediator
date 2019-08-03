@@ -240,3 +240,7 @@ $serviceServerHost = "localhost";
 $stopSSEveryQuit = false;
 $bootWithInstalledNode = false;
 $preventSSAutoBoot = false;
+
+// Spec for Sync Clients
+$syncServerPort = "11479";
+$syncServerHost = "localhost";

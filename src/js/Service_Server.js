@@ -10,6 +10,7 @@
 let port = process.argv[2] ? process.argv[2] : 21000
 let acceptClient = '0.0.0.0/0'
 const parser = require('../../node_modules/inter-mediator-expressionparser/index')
+const jssha = require('jssha')
 
 // const querystring = require('querystring')
 // console.log(parser.evaluate('a+b',{a:3,b:4}))
@@ -18,6 +19,11 @@ let http = require('http')
 let app = http.createServer(handler)
 let io = require('socket.io')(app)
 let requestBroker = {}
+
+let shaObj = new jsSHA('SHA-256', 'TEXT')
+shaObj.setHMACKey(INTERMediatorOnPage.authChallenge, 'TEXT')
+shaObj.update(INTERMediatorOnPage.authHashedPassword)
+const serverKey = shaObj.getHMAC('HEX')
 
 app.listen(port)
 

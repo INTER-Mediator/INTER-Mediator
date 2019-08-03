@@ -63,12 +63,10 @@ class GenerateJSCode
         $themeName = "default";
         $dbClass = null;
         $params = IMUtil::getFromParamsPHPFile(array(
-            "generatedPrivateKey", "passPhrase", "browserCompatibility",
-            "scriptPathPrefix", "scriptPathSuffix",
-            "oAuthProvider", "oAuthClientID", "oAuthRedirect",
-            "passwordPolicy", "documentRootPrefix", "dbClass", "dbDSN",
-            "nonSupportMessageId", "valuesForLocalContext", "themeName",
-            "appLocale", "appCurrency", "resetPage", "enrollPage",
+            "generatedPrivateKey", "passPhrase", "browserCompatibility", "scriptPathPrefix", "scriptPathSuffix",
+            "oAuthProvider", "oAuthClientID", "oAuthRedirect", "passwordPolicy", "documentRootPrefix", "dbClass",
+            "dbDSN", "nonSupportMessageId", "valuesForLocalContext", "themeName", "appLocale", "appCurrency",
+            "resetPage", "enrollPage", "syncServerPort","syncServerHost"
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -94,13 +92,15 @@ class GenerateJSCode
             : (isset($params['resetPage']) ? $params["resetPage"] : null);
         $enrollPage = isset($options['authentication']['enroll-page']) ? $options['authentication']['enroll-page']
             : (isset($params['enrollPage']) ? $params["enrollPage"] : null);
+        $syncServerPort = isset($_SERVER['syncServerPort']) ? $_SERVER['syncServerPort'] : "11479";
+        $syncServerHost = isset($_SERVER['syncServerHost']) ? $_SERVER['syncServerHost'] : "localhost";
 
         $serverName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
         $documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : 'Not_on_web_server';
         $scriptName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
         /*
-         * Read the JS programs regarding by the developing or deployed.
-         */
+              * Read the JS programs regarding by the developing or deployed.
+              */
         $currentDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR . 'src' .
             DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
         if (!file_exists($currentDir . 'INTER-Mediator.min.js')) {
@@ -376,6 +376,9 @@ class GenerateJSCode
         }
         $sss = ServiceServerProxy::instance()->isActive();
         $this->generateAssignJS("INTERMediatorOnPage.serviceServerStatus", $sss ? "true" : "false");
+
+        $this->generateAssignJS("INTERMediatorOnPage.syncServerPort", $syncServerPort);
+        $this->generateAssignJS("INTERMediatorOnPage.syncServerHost", $syncServerHost);
     }
 
     private function combineScripts($currentDir)
