@@ -26,8 +26,7 @@ $dbPassword = 'password';
 
 /* FileMaker_FX aware below:
  */
-//$dbServer = '127.0.0.1';
-$dbServer = '10.0.1.21';
+$dbServer = '127.0.0.1';
 $dbPort = '80';
 //$dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
@@ -35,7 +34,7 @@ $dbProtocol = 'HTTP';
 
 /* PDO awares below:
  */
-$dbDSN = 'mysql: host=localhost;dbname=test_db;charset=utf8mb4';
+$dbDSN = 'mysql:host=127.0.0.1;dbname=test_db;charset=utf8mb4';
 //$dbDSN = 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;charset=utf8mb4';
 $dbOption = array();
 
