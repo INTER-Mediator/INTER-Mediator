@@ -144,8 +144,14 @@ class ServiceServerProxy
     private function executeCommand($command)
     {
         $imPath = IMUtil::pathToINTERMediator();
-        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
-        if ($this->paramsBoot) {
+        if(IMUtil::isPHPExecutingWindows()){
+            $home = getenv("USERPROFILE");
+            putenv('FOREVER_ROOT=' . $home);
+        }else {
+            $user = posix_getpwuid(posix_getuid());
+            putenv('FOREVER_ROOT=' . $user['dir']);
+        }
+        if ( $this->paramsBoot) {
             putenv('PATH=' . realpath($imPath . "/node_modules/.bin") .
                 (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
         } else {
