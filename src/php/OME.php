@@ -580,6 +580,7 @@ class OME
             $message->setSubject($this->subject);
 
             $this->bodyType = ($this->bodyType === false) ? 'text/plain' : $this->bodyType;
+            $message->setContentType($this->bodyType);
             $targetTerm = "##image##";
             if (strpos($this->body, $targetTerm) !== false && $this->bodyType == 'text/html') {
                 $imagePos = strpos($this->body, $targetTerm);
