@@ -599,7 +599,9 @@ class OME
                 }
                 $message->setBody($bodyString, $this->bodyType);
             }
-            $message->setContentType($this->bodyType);
+            $type = $message->getHeaders()->get('Content-Type');
+            $type->setValue($this->bodyType);
+            $type->setParameter('charset', 'utf-8');
 
             $resultMail = $mailer->send($message, $failures);
             if (!$resultMail) {
