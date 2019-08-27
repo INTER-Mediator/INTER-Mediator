@@ -600,12 +600,9 @@ class OME
                 if($this->bodyType == 'text/html') {
                     $message->setBody($bodyString, $this->bodyType);
                 } else {
-                    $message->setBody($bodyString);
+                    $message->setBody($bodyString); // In case of 'text/plain', the mime code shouldn't set.
                 }
             }
-//            $type = $message->getHeaders()->get('Content-Type');
-//            $type->setValue($this->bodyType);
-//            $type->setParameter('charset', 'utf-8');
 
             $resultMail = $mailer->send($message, $failures);
             if (!$resultMail) {
