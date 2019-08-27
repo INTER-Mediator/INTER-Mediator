@@ -566,15 +566,15 @@ class OME
                 }
             }
             $addArray = $this->recepientsArray(explode(',', $this->toField));
-            if (count($addArray) > 0) {
+            if (strlen($this->toField) > 0 && count($addArray) > 0) {
                 $message->setTo($addArray);
             }
             $addArray = $this->recepientsArray(explode(',', $this->ccField));
-            if (count($addArray) > 0) {
+            if (strlen($this->ccField) > 0 && count($addArray) > 0) {
                 $message->setCc($addArray);
             }
             $addArray = $this->recepientsArray(explode(',', $this->bccField));
-            if (count($addArray) > 0) {
+            if (strlen($this->bccField) > 0 && strlen($this->toField) > 0 && count($addArray) > 0) {
                 $message->setBcc($addArray);
             }
             $message->setSubject($this->subject);
