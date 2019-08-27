@@ -597,11 +597,15 @@ class OME
                 foreach ($this->attachments as $path) {
                     $message->attach(\Swift_Attachment::fromPath($path)->setFilename(basename($path)));
                 }
-                $message->setBody($bodyString, $this->bodyType);
+                if($this->bodyType == 'text/html') {
+                    $message->setBody($bodyString, $this->bodyType);
+                } else {
+                    $message->setBody($bodyString);
+                }
             }
-            $type = $message->getHeaders()->get('Content-Type');
-            $type->setValue($this->bodyType);
-            $type->setParameter('charset', 'utf-8');
+//            $type = $message->getHeaders()->get('Content-Type');
+//            $type->setValue($this->bodyType);
+//            $type->setParameter('charset', 'utf-8');
 
             $resultMail = $mailer->send($message, $failures);
             if (!$resultMail) {
