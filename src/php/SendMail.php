@@ -263,7 +263,8 @@ class SendMail
             while ($startPos !== false && $endPos !== false) {
                 $fieldName = trim(substr($bodyStr, $startPos + 2, $endPos - $startPos - 2));
                 $bodyStr = substr($bodyStr, 0, $startPos) .
-                    (isset($record[$fieldName]) ? $record[$fieldName] : '=field not exist=') .
+                    (isset($record[$fieldName]) ? $record[$fieldName] :
+                        (($record[$fieldName] == NULL) ? '' : '=field not exist=')) .
                     substr($bodyStr, $endPos + 2);
                 $startPos = strpos($bodyStr, '@@');
                 $endPos = strpos($bodyStr, '@@', $startPos + 2);
