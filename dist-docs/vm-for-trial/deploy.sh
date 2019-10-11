@@ -58,8 +58,8 @@ if [ $OS = 'alpine' ] ; then
     echo "	netmask 255.255.255.0" >> /etc/network/interfaces
 
     echo "#/media/cdrom/apks" > /etc/apk/repositories
-    echo "http://dl-cdn.alpinelinux.org/alpine/v3.8/main" >> /etc/apk/repositories
-    echo "http://dl-cdn.alpinelinux.org/alpine/v3.8/community" >> /etc/apk/repositories
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.10/main" >> /etc/apk/repositories
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.10/community" >> /etc/apk/repositories
     echo "#http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
     echo "#http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
     echo "#http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
@@ -92,6 +92,7 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache php7-session
     apk add --no-cache php7-mysqli
     apk add --no-cache libbsd=0.8.6-r2
+    apk add --no-cache python
     apk add --no-cache git
     apk add --no-cache nodejs
     apk add --no-cache nodejs-npm
@@ -225,8 +226,8 @@ cd "${WEBROOT}"
 git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git && git checkout 5.x
 result=`git diff 5.x..release 2> /dev/null`
 if [ "$result" = '' ]; then
-    git checkout stable
-    #git checkout 5.x
+    #git checkout stable
+    git checkout 5.x
 fi
 
 rm -f "${WEBROOT}/index.html"
