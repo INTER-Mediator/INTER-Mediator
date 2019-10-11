@@ -738,7 +738,7 @@ const INTERMediatorLib = {
     'use strict'
     var s = ''
     let i, c
-    var dp = INTERMediatorLocale.mon_decimal_point ? INTERMediatorLocale.mon_decimal_point : '.'
+    var dp = (INTERMediatorLocale && INTERMediatorLocale.mon_decimal_point) ? INTERMediatorLocale.mon_decimal_point : '.'
     str = str.toString()
     for (i = 0; i < str.length; i += 1) {
       c = str.charAt(i)
@@ -772,8 +772,8 @@ const INTERMediatorLib = {
   normalizeNumerics: function (value) {
     'use strict'
     var i
-    var punc = INTERMediatorLocale.decimal_point ? INTERMediatorLocale.decimal_point : '.'
-    var mpunc = INTERMediatorLocale.mon_decimal_point ? INTERMediatorLocale.mon_decimal_point : '.'
+    var punc = (INTERMediatorLocale && INTERMediatorLocale.decimal_point) ? INTERMediatorLocale.decimal_point : '.'
+    var mpunc = (INTERMediatorLocale && INTERMediatorLocale.mon_decimal_point) ? INTERMediatorLocale.mon_decimal_point : '.'
     var rule = '0123456789'
     if (punc) {
       rule += '\\' + punc
