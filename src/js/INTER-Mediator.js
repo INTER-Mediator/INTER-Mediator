@@ -237,7 +237,7 @@ const INTERMediator = {
       for (i = position + 4; i < ua.length; i++) {
         c = ua.charAt(i)
         if (!(c === ' ' || c === '.' || (c >= '0' && c <= '9'))) {
-          INTERMediator.ieVersion = INTERMediatorLib.toNumber(ua.substring(position + 4, i))
+          INTERMediator.ieVersion = parseInt(ua.substring(position + 4, i))
           break
         }
       }
@@ -248,7 +248,7 @@ const INTERMediator = {
       for (i = position + 10; i < ua.length; i++) {
         c = ua.charAt(i)
         if (!(c === ' ' || c === '.' || (c >= '0' && c <= '9'))) {
-          INTERMediator.ieVersion = INTERMediatorLib.toNumber(ua.substring(position + 10, i)) + 4
+          INTERMediator.ieVersion = parseInt(ua.substring(position + 10, i)) + 4
           if (INTERMediator.ieVersion === 11) {
             INTERMediator.isIE = true
           }
@@ -262,7 +262,7 @@ const INTERMediator = {
       for (i = position + 6; i < ua.length; i++) {
         c = ua.charAt(i)
         if (!(c === ' ' || c === '.' || (c >= '0' && c <= '9')) || i === ua.length - 1) {
-          INTERMediator.ieVersion = INTERMediatorLib.toNumber(ua.substring(position + 6, i))
+          INTERMediator.ieVersion = parseInt(ua.substring(position + 6, i))
           break
         }
       }
