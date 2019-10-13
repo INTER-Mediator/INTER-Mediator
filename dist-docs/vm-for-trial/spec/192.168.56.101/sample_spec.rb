@@ -141,7 +141,7 @@ describe user('postgres') do
   it { should exist }
 end
 
-describe file('/etc/mysql/my.cnf'), :if => os[:family] == 'alpine' do
+describe file('/etc/my.cnf.d/inter-mediator-server.cnf'), :if => os[:family] == 'alpine' do
   it { should be_file }
   its(:content) { should match /[mysqld]/ }
   its(:content) { should match /socket=\/run\/mysqld\/mysqld.sock/ }
@@ -150,6 +150,10 @@ describe file('/etc/mysql/my.cnf'), :if => os[:family] == 'alpine' do
   its(:content) { should match /[client]/ }
   its(:content) { should match /[mysqldump]/ }
   its(:content) { should match /[mysql]/ }
+end
+describe file('/etc/my.cnf.d/mariadb-server.cnf'), :if => os[:family] == 'alpine' do
+  it { should be_file }
+  its(:content) { should match /#skip-networking/ }
 end
 describe file('/etc/mysql/conf.d/im.cnf'), :if => os[:family] == 'ubuntu' do
   it { should be_file }
