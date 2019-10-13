@@ -236,8 +236,8 @@ if node[:platform] == 'alpine'
       owner 'mysql'
       group 'mysql'
     end
-  end  
-  file '/etc/mysql/my.cnf' do
+  end
+  file '/etc/my.cnf.d/inter-mediator-server.cnf' do
     content <<-EOF
 [mysqld]
 datadir=/var/lib/mysql
@@ -262,6 +262,9 @@ default-character-set=utf8mb4
 default-character-set=utf8mb4
 EOF
   end
+  execute 'sed -i "s/^skip-networking/#skip-networking/" /etc/my.cnf.d/mariadb-server.cnf' do
+    command 'sed -i "s/^skip-networking/#skip-networking/" /etc/my.cnf.d/mariadb-server.cnf'
+  end  
   if node[:virtualization][:system] != 'docker'
     execute '/etc/init.d/mariadb setup' do
       command '/etc/init.d/mariadb setup'
@@ -479,7 +482,6 @@ if node[:platform] == 'alpine'
   end
   package 'libbsd' do
     action :install
-    version '0.8.6-r2'
   end
   package 'ca-certificates' do
     action :install
