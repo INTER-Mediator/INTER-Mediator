@@ -210,8 +210,8 @@ if node[:platform] == 'alpine'
     service 'postgresql' do
       action [ :enable ]
     end
-    execute 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/10/data -l /var/log/postgresql/postgresql.log"' do
-      command 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/10/data -l /var/log/postgresql/postgresql.log"'
+    execute 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/11/data -l /var/log/postgresql/postgresql.log"' do
+      command 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/11/data -l /var/log/postgresql/postgresql.log"'
     end  
   end
 else
