@@ -482,7 +482,6 @@ if node[:platform] == 'alpine'
   end
   package 'libbsd' do
     action :install
-    version '0.8.6-r2'
   end
 elsif node[:platform] == 'ubuntu'
   package 'libmysqlclient-dev' do
