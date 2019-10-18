@@ -416,9 +416,6 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
   package 'apt-transport-https' do
     action :install
   end
-  execute 'sudo add-apt-repository ppa:ondrej/php' do
-    command 'sudo add-apt-repository ppa:ondrej/php'
-  end
   execute 'sudo add-apt-repository "$(curl https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"' do
     command 'sudo add-apt-repository "$(curl https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"'
   end
@@ -436,6 +433,13 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
   end
   service 'mssql-server' do
     action [ :enable, :start ]
+  end
+
+  execute 'LC_ALL=C.UTF-8 sudo add-apt-repository ppa:ondrej/php -y' do
+    command 'LC_ALL=C.UTF-8 sudo add-apt-repository ppa:ondrej/php -y'
+  end
+  execute 'sudo apt-get update' do
+    command 'sudo apt-get update'
   end
 #elsif node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 18
 #  execute 'sudo apt-get update' do
