@@ -1,8 +1,8 @@
-# Recipe file of Itamae for Alpine Linux 3.8, Ubuntu Server 16.04/18.04, CentOS 6/7
+# Recipe file of Itamae for Alpine Linux 3.10, Ubuntu Server 16.04/18.04, CentOS 6/7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
-#     See detail: http://serverspec.org/
+#     See detail: https://serverspec.org/
 #   - Change directory to "vm-for-trial" directory on the host of VM
 #   - Run "rake spec" on the host of VM
 
@@ -46,12 +46,12 @@ iface eth1 inet static
 EOF
     end
   end
-  if node[:platform_version].to_f >= 3.8
+  if node[:platform_version].to_f >= 3.10
     file '/etc/apk/repositories' do
       content <<-EOF
 #/media/cdrom/apks
-http://dl-cdn.alpinelinux.org/alpine/v3.8/main
-http://dl-cdn.alpinelinux.org/alpine/v3.8/community
+http://dl-cdn.alpinelinux.org/alpine/v3.10/main
+http://dl-cdn.alpinelinux.org/alpine/v3.10/community
 #http://dl-cdn.alpinelinux.org/alpine/edge/main
 #http://dl-cdn.alpinelinux.org/alpine/edge/community
 #http://dl-cdn.alpinelinux.org/alpine/edge/testing
@@ -61,8 +61,8 @@ EOF
     file '/etc/apk/repositories' do
       content <<-EOF
 #/media/cdrom/apks
-http://dl-5.alpinelinux.org/alpine/v3.7/main
-http://dl-5.alpinelinux.org/alpine/v3.7/community
+http://dl-5.alpinelinux.org/alpine/v3.8/main
+http://dl-5.alpinelinux.org/alpine/v3.8/community
 #http://dl-5.alpinelinux.org/alpine/edge/main
 #http://dl-5.alpinelinux.org/alpine/edge/community
 #http://dl-5.alpinelinux.org/alpine/edge/testing
@@ -141,10 +141,25 @@ if node[:platform] == 'ubuntu'
     end
   end
 
-  if node[:platform_version].to_f < 16
-    execute 'apt update' do
-      command 'apt update'
+  if node[:platform_version].to_f >= 18
+    #execute 'sed -i -e "s/security.ubuntu.com/archive.ubuntu.com/g" /etc/apt/sources.list' do
+    #  command 'sed -i -e "s/security.ubuntu.com/archive.ubuntu.com/g" /etc/apt/sources.list'
+    #end
+    #execute 'sed -i -e "s/jp.archive.ubuntu.com/archive.ubuntu.com/g" /etc/apt/sources.list' do
+    #  command 'sed -i -e "s/jp.archive.ubuntu.com/archive.ubuntu.com/g" /etc/apt/sources.list'
+    #end
+    execute 'rm -rf /var/lib/apt/lists/*' do
+      command 'rm -rf /var/lib/apt/lists/*'
     end
+    execute 'apt autoclean' do
+      command 'apt autoclean'
+    end
+    execute 'apt clean' do
+      command 'apt clean'
+    end
+  end
+  execute 'apt update' do
+    command 'apt update'
   end
   
   if node[:virtualization][:system] != 'docker'
@@ -210,8 +225,8 @@ if node[:platform] == 'alpine'
     service 'postgresql' do
       action [ :enable ]
     end
-    execute 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/10/data -l /var/log/postgresql/postgresql.log"' do
-      command 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/10/data -l /var/log/postgresql/postgresql.log"'
+    execute 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/11/data -l /var/log/postgresql/postgresql.log"' do
+      command 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/11/data -l /var/log/postgresql/postgresql.log"'
     end  
   end
 else
@@ -261,6 +276,9 @@ default-character-set=utf8mb4
 [mysql]
 default-character-set=utf8mb4
 EOF
+  end
+  execute 'sed -i "s/^skip-networking/#skip-networking/" /etc/my.cnf.d/mariadb-server.cnf' do
+    command 'sed -i "s/^skip-networking/#skip-networking/" /etc/my.cnf.d/mariadb-server.cnf'
   end
   if node[:virtualization][:system] != 'docker'
     execute '/etc/init.d/mariadb setup' do
@@ -387,7 +405,8 @@ else
   end
 end
 
-if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16 && node[:platform_version].to_f < 18
+#if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16 && node[:platform_version].to_f < 18
+if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
   execute 'curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -' do
     command 'curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -'
   end
@@ -415,10 +434,17 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16 && node[:pl
   service 'mssql-server' do
     action [ :enable, :start ]
   end
-elsif node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 18
+
+  execute 'LC_ALL=C.UTF-8 sudo add-apt-repository ppa:ondrej/php -y' do
+    command 'LC_ALL=C.UTF-8 sudo add-apt-repository ppa:ondrej/php -y'
+  end
   execute 'sudo apt-get update' do
     command 'sudo apt-get update'
   end
+#elsif node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 18
+#  execute 'sudo apt-get update' do
+#    command 'sudo apt-get update'
+#  end
 end
 
 package 'acl' do
@@ -482,7 +508,6 @@ if node[:platform] == 'alpine'
   end
   package 'libbsd' do
     action :install
-    version '0.8.6-r2'
   end
 elsif node[:platform] == 'ubuntu'
   package 'libmysqlclient-dev' do
@@ -508,22 +533,22 @@ elsif node[:platform] == 'ubuntu'
       action :install
     end
   elsif node[:platform_version].to_f >= 16
-    package 'php7.0' do
+    package 'php7.2' do
       action :install
     end
-    package 'php7.0-cli' do
+    package 'php7.2-cli' do
       action :install
     end
-    package 'libapache2-mod-php7.0' do
+    package 'libapache2-mod-php7.2' do
       action :install
     end
-    package 'php7.0-dom' do
+    package 'php7.2-dom' do
       action :install
     end
-    package 'php7.0-mbstring' do
+    package 'php7.2-mbstring' do
       action :install
     end
-    package 'php7.0-bcmath' do
+    package 'php7.2-bcmath' do
       action :install
     end
   end
@@ -580,7 +605,7 @@ if node[:platform] == 'ubuntu'
       action :install
     end
   elsif node[:platform_version].to_f < 18
-    package 'php7.0-mysql' do
+    package 'php7.2-mysql' do
       action :install
     end
   else
@@ -612,7 +637,7 @@ if node[:platform] == 'ubuntu'
       action :install
     end
   elsif node[:platform_version].to_f < 18
-    package 'php7.0-pgsql' do
+    package 'php7.2-pgsql' do
       action :install
     end
   else
@@ -632,7 +657,7 @@ if node[:platform] == 'ubuntu'
       action :install
     end
   elsif node[:platform_version].to_f < 18
-    package 'php7.0-sqlite3' do
+    package 'php7.2-sqlite3' do
       action :install
     end
   else
@@ -661,16 +686,16 @@ if node[:platform] == 'ubuntu'
       action :install
     end
   elsif node[:platform_version].to_f < 18
-    package 'php7.0-curl' do
+    package 'php7.2-curl' do
       action :install
     end
-    package 'php7.0-gd' do
+    package 'php7.2-gd' do
       action :install
     end
-    package 'php7.0-xmlrpc' do
+    package 'php7.2-xmlrpc' do
       action :install
     end
-    package 'php7.0-intl' do
+    package 'php7.2-intl' do
       action :install
     end
   else
@@ -883,6 +908,12 @@ if node[:platform] == 'ubuntu'
     action :install
   end
   package 'unifont' do
+    action :install
+  end
+end
+
+if node[:platform] == 'alpine'
+  package 'python' do
     action :install
   end
 end
@@ -1786,8 +1817,8 @@ EOF
   execute 'locale-gen en_GB.UTF-8' do
     command 'locale-gen en_GB.UTF-8'
   end
-  execute '/usr/sbin/update-locale LANG=ja_JP.UTF-8' do
-    command '/usr/sbin/update-locale LANG=ja_JP.UTF-8'
+  execute '/usr/sbin/update-locale LANG="ja_JP.UTF-8"' do
+    command '/usr/sbin/update-locale LANG="ja_JP.UTF-8"'
   end
 
   file '/etc/rc.local' do

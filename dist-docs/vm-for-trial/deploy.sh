@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# setup shell script for Alpine Linux 3.8 and Ubuntu Server 18.04
+# setup shell script for Alpine Linux 3.10 and Ubuntu Server 18.04
 #
 # This file can get from the URL below.
 # https://raw.githubusercontent.com/INTER-Mediator/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh
@@ -64,8 +64,8 @@ if [ $OS = 'alpine' ] ; then
     echo "	netmask 255.255.255.0" >> /etc/network/interfaces
 
     echo "#/media/cdrom/apks" > /etc/apk/repositories
-    echo "http://dl-cdn.alpinelinux.org/alpine/v3.8/main" >> /etc/apk/repositories
-    echo "http://dl-cdn.alpinelinux.org/alpine/v3.8/community" >> /etc/apk/repositories
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.10/main" >> /etc/apk/repositories
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.10/community" >> /etc/apk/repositories
     echo "#http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
     echo "#http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
     echo "#http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
@@ -101,6 +101,7 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache php7-mysqli
     apk add --no-cache composer
     apk add --no-cache libbsd=0.8.6-r2
+    apk add --no-cache python
     apk add --no-cache git
     #apk add --no-cache nodejs
     #apk add --no-cache nodejs-npm
@@ -297,8 +298,8 @@ echo "-----END RSA PRIVATE KEY-----" >> "${WEBROOT}/params.php"
 echo "EOL;" >> "${WEBROOT}/params.php"
 echo "\$webServerName = [''];" >> "${WEBROOT}/params.php"
 echo "\$preventSSAutoBoot = true;" >> "${WEBROOT}/params.php"
-echo "\$serviceServerPort = "11478";" >> "${WEBROOT}/params.php"
-echo "\$serviceServerHost = "localhost";" >> "${WEBROOT}/params.php"
+echo "\$serviceServerPort = '11478';" >> "${WEBROOT}/params.php"
+echo "\$serviceServerHost = 'localhost';" >> "${WEBROOT}/params.php"
 
 
 if [ $OS = 'alpine' ] ; then
@@ -310,6 +311,7 @@ fi
 cd "${IMROOT}"
 composer update # returns error for the script of nodejs-installer.
 if [ $OS = 'alpine' ] ; then
+    sudo ln -s /var/www/html/INTER-Mediator/vendor/bin/phpunit /usr/local/bin/phpunit
     apk add --no-cache nodejs
     apk add --no-cache nodejs-npm
     npm install
@@ -349,6 +351,9 @@ chmod 664 ${WEBROOT}/*.html
 chmod 664 ${WEBROOT}/*.php
 chmod 775 "${IMVMROOT}/dbupdate.sh"
 chmod 664 "${IMVMROOT}/index.php"
+if [ $OS = 'alpine' ] ; then
+    chmod +x /var/www/html/INTER-Mediator/vendor/bin/phpunit
+fi
 
 # Home directory permissions modifying
 

@@ -272,9 +272,6 @@ end
 describe package('php7-phar'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe file('/usr/local/bin/phpunit'), :if => os[:family] == 'alpine' do
-  it { should be_file }
-end
 describe package('libmysqlclient-dev'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
@@ -488,8 +485,8 @@ describe package('fontconfig-devel'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
 
-describe package('phpunit'), :if => os[:family] == 'ubuntu' do
-  it { should be_installed }
+describe file('/usr/local/bin/phpunit'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
+  it { should be_file }
 end
 describe package('php-phpunit-PHPUnit'), :if => os[:family] == 'redhat' && os[:release].to_f >= 6 do
   it { should be_installed }
