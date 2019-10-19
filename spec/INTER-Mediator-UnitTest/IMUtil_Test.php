@@ -17,6 +17,7 @@ class IMUtil_Test extends TestCase
     public function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
+        $_SERVER['REQUEST_TIME_FLOAT'] = microtime(true);
         $this->util = new IMUtil();
     }
 
