@@ -49,9 +49,9 @@ class GenerateJSCode_Test extends TestCase
             header_remove();
             ob_clean();
 
-            $this->assertStringContainsString('Content-Type: text/javascript;charset="UTF-8"', $headers);
-            $this->assertStringContainsString('X-XSS-Protection: 1; mode=block', $headers);
-            $this->assertStringContainsString('X-Frame-Options: SAMEORIGIN', $headers);
+            $this->assertStringContainsString('Content-Type: text/javascript;charset="UTF-8"', implode("\n", $headers));
+            $this->assertStringContainsString('X-XSS-Protection: 1; mode=block', implode("\n", $headers));
+            $this->assertStringContainsString('X-Frame-Options: SAMEORIGIN', implode("\n", $headers));
         }
     }
 
