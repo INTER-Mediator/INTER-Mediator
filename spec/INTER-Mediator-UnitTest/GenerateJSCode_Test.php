@@ -49,9 +49,9 @@ class GenerateJSCode_Test extends TestCase
             header_remove();
             ob_clean();
 
-            $this->assertContains('Content-Type: text/javascript;charset="UTF-8"', $headers);
-            $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
-            $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
+            $this->assertStringContainsString('Content-Type: text/javascript;charset="UTF-8"', $headers);
+            $this->assertStringContainsString('X-XSS-Protection: 1; mode=block', $headers);
+            $this->assertStringContainsString('X-Frame-Options: SAMEORIGIN', $headers);
         }
     }
 
@@ -71,7 +71,7 @@ class GenerateJSCode_Test extends TestCase
             $method = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'readJSSource');
             $method->setAccessible(true);
             $partOfCode = $method->invokeArgs($this->generater, array($jsLibDir . 'jssha/src/sha.js'));
-            $this->assertContains($partOfCode, $content);
+            $this->assertStringContainsString($partOfCode, $content);
         }
     }
 
