@@ -293,6 +293,12 @@ end
 describe package('php7-xml'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
+describe package('php7-xmlwriter'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('php7-tokenizer'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
 describe package('php7-simplexml'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
@@ -446,9 +452,9 @@ describe package('npm'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redh
   it { should be_installed }
 end
 
-describe package('buster'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
-  it { should be_installed.by('npm').with_version('0.7.18') }
-end
+#describe package('buster'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+#  it { should be_installed.by('npm').with_version('0.7.18') }
+#end
 
 describe package('bzip2'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
   it { should be_installed }
@@ -823,7 +829,7 @@ describe file('/etc/local.d/buster-server.start'), :if => os[:family] == 'alpine
   it { should be_mode 755 }
   its(:content) { should match /export DISPLAY=:99.0/ }
   its(:content) { should match /Xvfb :99 -screen 0 1024x768x24 &/ }
-  its(:content) { should match /\/usr\/bin\/buster-server &/ }
+  #its(:content) { should match /\/usr\/bin\/buster-server &/ }
   its(:content) { should match /firefox http:\/\/localhost:1111\/capture > \/dev\/null &/ }
 end
 describe file('/etc/rc.local'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 14 && os[:release].to_f < 18 do
@@ -839,7 +845,7 @@ describe file('/etc/rc.local'), :if => os[:family] == 'ubuntu' && os[:release].t
 end
 
 describe file('/var/www/localhost/htdocs/INTER-Mediator/node_modules/jest/bin/jest.js'), :if => os[:family] == 'alpine' do
-  it { should be_mode 775 }
+  it { should be_mode 755 }
 end
 
 describe file('/etc/motd'), :if => os[:family] == 'alpine' do
