@@ -15,5 +15,8 @@ class DataConverter_Currency_DollerIM_Test extends DataConverter_Currency_Base_T
 
         $this->thSepMark = ',';
         $this->currencyMark = '$';
+        if (getenv('CIRCLECI') === 'true') {
+            $this->currencyMark = '¥';
+        }
     }
 }
