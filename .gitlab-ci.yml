@@ -37,6 +37,8 @@ pages:
   - ls minify || git clone https://github.com/matthiasmullie/minify
   - cd -
   - ls -al
+  - ls -al dist-docs
+  - chmod +x ./dist-docs/buildup.sh
   - ./dist-docs/buildup.sh --core && cd ../im_build/ && zip -r INTER-Mediator-master.zip ./INTER-Mediator/ && mv INTER-Mediator-master.zip ../INTER-Mediator/public/
   artifacts:
     paths:
