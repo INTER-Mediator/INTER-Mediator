@@ -599,7 +599,7 @@ end
 describe file(WEBROOT + '/params.php') do
   it { should be_file }
   its(:content) { should match /\$dbUser = 'web';/ }
-  its(:content) { should match /\$dbOption = array\(\);/ }
+  its(:content) { should match /\$dbOption = \[\];/ }
   its(:content) { should match /\$dbServer = '192.168.56.1';/ }
   its(:content) { should match /\$generatedPrivateKey = <<<EOL/ }
   its(:content) { should_not match /\$dbDataType = 'FMPro12';/ }
@@ -627,7 +627,7 @@ end
 
 describe file(WEBROOT + '/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh') do
   it { should be_file }
-  it { should be_mode 664 }
+  it { should be_mode 775 }
 end
 
 describe command('date -d "`cat ' + WEBROOT + '/INTER-Mediator/dist-docs/readme.txt  | grep TestDB | cut -d"(" -f2 | cut -d")" -f1 | cut -d":" -f2`" +"%Y-%m-%d" | grep -o `git --git-dir=' + WEBROOT + '/INTER-Mediator/.git log -1 --date=short --pretty=format:"%cd" -- -p dist-docs/TestDB.fmp12` | wc -l') do
@@ -836,6 +836,10 @@ describe file('/etc/rc.local'), :if => os[:family] == 'ubuntu' && os[:release].t
   it { should be_mode 755 }
   its(:content) { should match /\/usr\/local\/bin\/buster-server &/ }
   its(:content) { should match /chromium-browser --no-sandbox --headless --remote-debugging-port=9222 http:\/\/localhost:1111\/capture > \/dev\/null &/ }
+end
+
+describe file('/var/www/localhost/htdocs/INTER-Mediator/node_modules/jest/bin/jest.js'), :if => os[:family] == 'alpine' do
+  it { should be_mode 775 }
 end
 
 describe file('/etc/motd'), :if => os[:family] == 'alpine' do
