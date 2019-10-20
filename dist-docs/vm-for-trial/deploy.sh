@@ -429,7 +429,7 @@ fi
 # The end of task.
 
 if [ $OS = 'alpine' ] ; then
-    chmod 775 "${WEBROOT}//INTER-Mediator/node_modules/jest/bin/jest.js"
+    chmod 755 "${WEBROOT}//INTER-Mediator/node_modules/jest/bin/jest.js"
     echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd
     poweroff
 else

@@ -494,6 +494,12 @@ if node[:platform] == 'alpine'
   package 'php7-xml' do
     action :install
   end
+  package 'php7-xmlwriter' do
+    action :install
+  end
+  package 'php7-tokenizer' do
+    action :install
+  end
   package 'php7-simplexml' do
     action :install
   end
@@ -986,7 +992,7 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
 $dbUser = 'web';
 $dbPassword = 'password';
 $dbDSN = 'mysql:unix_socket=#{MYSQLSOCKPATH};dbname=test_db;charset=utf8mb4';
-$dbOption = array();
+$dbOption = [];
 $browserCompatibility = array(
     'Chrome' => '1+',
     'FireFox' => '2+',
@@ -1039,7 +1045,7 @@ elsif node[:platform] == 'redhat' && node[:platform_version].to_f < 7
 $dbUser = 'web';
 $dbPassword = 'password';
 $dbDSN = 'mysql:unix_socket=/var/lib/mysql/mysql.sock;dbname=test_db;charset=utf8';
-$dbOption = array();
+$dbOption = [];
 $browserCompatibility = array(
     'Chrome' => '1+',
     'FireFox' => '2+',
@@ -1082,7 +1088,7 @@ UeplZBKmxW3+wQ5gVWIguqisfvi9/m07Z/3+uwCLSryHU6Kgg7Md9ezU9Obx+jxp
 cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
-$webServerName = array('');
+$webServerName = [''];
 EOF
   end
 elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
@@ -1092,7 +1098,7 @@ elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
 $dbUser = 'web';
 $dbPassword = 'password';
 $dbDSN = 'mysql:unix_socket=/var/lib/mysql/mysql.sock;dbname=test_db;charset=utf8mb4';
-$dbOption = array();
+$dbOption = [];
 $browserCompatibility = array(
     'Chrome' => '1+',
     'FireFox' => '2+',
@@ -1135,7 +1141,7 @@ UeplZBKmxW3+wQ5gVWIguqisfvi9/m07Z/3+uwCLSryHU6Kgg7Md9ezU9Obx+jxp
 cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
-$webServerName = array('');
+$webServerName = [''];
 EOF
   end
 end
@@ -1156,21 +1162,21 @@ end
 # Install npm packages
 
 if node[:platform] == 'alpine' || (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
-  execute 'npm install -g buster --unsafe-perm' do
-    command 'npm install -g buster --unsafe-perm'
-  end
+  #execute 'npm install -g buster --unsafe-perm' do
+  #  command 'npm install -g buster --unsafe-perm'
+  #end
 
-  if node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
-    package 'bzip2' do
-      action :install  # for phantomjs
-    end
-  end
+  #if node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
+  #  package 'bzip2' do
+  #    action :install  # for phantomjs
+  #  end
+  #end
 
-  if node[:platform] != 'alpine'
-    execute 'npm install -g phantomjs-prebuilt --unsafe-perm' do
-      command 'npm install -g phantomjs-prebuilt --unsafe-perm'
-    end
-  end
+  #if node[:platform] != 'alpine'
+  #  execute 'npm install -g phantomjs-prebuilt --unsafe-perm' do
+  #    command 'npm install -g phantomjs-prebuilt --unsafe-perm'
+  #  end
+  #end
 end
 
 if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
@@ -1437,8 +1443,8 @@ execute "chmod 664 #{WEBROOT}/*.php" do
   command "chmod 664 #{WEBROOT}/*.php"
 end
 
-execute "chmod 664 \"#{IMVMROOT}/dbupdate.sh\"" do
-  command "chmod 664 \"#{IMVMROOT}/dbupdate.sh\""
+execute "chmod 775 \"#{IMVMROOT}/dbupdate.sh\"" do
+  command "chmod 775 \"#{IMVMROOT}/dbupdate.sh\""
 end
 
 directory '/home/developer' do
@@ -2013,8 +2019,8 @@ if node[:platform] == 'alpine'
 export DISPLAY=:99.0
 Xvfb :99 -screen 0 1024x768x24 &
 /bin/sleep 5
-/usr/bin/buster-server &
-/bin/sleep 5
+#/usr/bin/buster-server &
+#/bin/sleep 5
 firefox http://localhost:1111/capture > /dev/null &
 #chromium-browser --no-sandbox http://localhost:1111/capture > /dev/null &
 /bin/sleep 5
@@ -2036,11 +2042,11 @@ if node[:platform] == 'alpine'
   execute "\"#{IMROOT}\"/dist-docs/installfiles.sh -2" do
     command "\"#{IMROOT}\"/dist-docs/installfiles.sh -2"
   end
-  execute "composer install" do
-    command "composer install"
+  execute "cd \"#{IMROOT}\";composer install" do
+    command "cd \"#{IMROOT}\";composer install"
   end
-  execute "npm install" do
-    command "npm install"
+  execute "cd \"#{IMROOT}\";npm install" do
+    command "cd \"#{IMROOT}\";npm install"
   end
 end
 
