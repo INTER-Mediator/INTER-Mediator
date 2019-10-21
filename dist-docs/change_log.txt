@@ -11,10 +11,10 @@ Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.5.11-dev (in development)
-- Support FileMaker Data API of FileMaker Server 18.
-- Update FMDataAPI.php (Ver.18) and DB_FileMaker_DataAPI.php for FileMaker Data API.
+- Support FileMaker Data API of FileMaker Server 18 and FileMaker Cloud for AWS 1.18.
+- Update FMDataAPI.php (Ver.20) and DB_FileMaker_DataAPI.php for FileMaker Data API.
 - Reduce error messages when using PHP 7.x, DB_FileMaker_FX class and portal access mode.
-- Improve stability of INTERMediatorLib.getParentRepeaters.
+- Improve stability of INTERMediatorLib.getParentRepeaters in some cases.
 
 Ver.5.10 (April 17, 2019)
 - The Japanese new gengo REIWA is supported in the date formatter.
