@@ -12,11 +12,7 @@ abstract class DataConverter_Currency_Base_Test extends TestCase
 
     public function test_converterFromDBtoUser()
     {
-        if (getenv('CIRCLECI') === 'true') {
-            $expected = "￥1{$this->thSepMark}000";
-        } else {
-            $expected = "{$this->currencyMark}1{$this->thSepMark}000";
-        }
+        $expected = "{$this->currencyMark}1{$this->thSepMark}000";
         $string = '1000';
         $this->assertEquals($expected, $this->dataconverter->converterFromDBtoUser($string));
     }
