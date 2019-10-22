@@ -18,7 +18,6 @@ test:
     - docker run -e "container=docker" -d --name alpine alpine:latest /sbin/init
     - docker exec -e DISPLAY=:99.0 -i alpine sh -c "apk add --no-cache sudo curl php7 php7-xmlwriter php7-tokenizer ruby ruby-json ruby-io-console ruby-etc git && git clone https://github.com/INTER-Mediator/INTER-Mediator && cd INTER-Mediator && git checkout master && gem install itamae --no-doc && itamae local dist-docs/vm-for-trial/recipe.rb; dist-docs/installfiles.sh -2"
     - docker exec -e DISPLAY=:99.0 -i alpine sh -c "php -v; curl -sS https://getcomposer.org/installer | php; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer; cd /INTER-Mediator/; composer require --dev phpunit/phpunit ^8; composer install; ./vendor/bin/phpunit --bootstrap /INTER-Mediator/vendor/autoload.php --configuration /INTER-Mediator/spec/INTER-Mediator-UnitTest/phpunit.xml /INTER-Mediator/spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
-    #- docker exec -e DISPLAY=:99.0 -i alpine sh -c "/usr/bin/buster-test -r specification -c /INTER-Mediator/spec/buster.js"
     - docker exec -e DISPLAY=:99.0 -i alpine sh -c "cd /INTER-Mediator/spec && ../node_modules/.bin/jest"
     - docker stop alpine
     - docker rm alpine
@@ -30,6 +29,7 @@ pages:
   - uname -a
   - apk update
   - apk add --no-cache php7
+  - apk add --no-cache composer
   - apk add --no-cache git
   - apk add --no-cache bash
   - apk add --no-cache zip
@@ -37,9 +37,7 @@ pages:
   - cd ..
   - ls minify || git clone https://github.com/matthiasmullie/minify
   - cd -
-  - ls -al
-  - ls -al dist-docs
-  - chmod +x ./dist-docs/buildup.sh
+  - composer update
   - ./dist-docs/buildup.sh --core && cd ../im_build/ && zip -r INTER-Mediator-master.zip ./INTER-Mediator/ && mv INTER-Mediator-master.zip ../INTER-Mediator/public/
   artifacts:
     paths:
