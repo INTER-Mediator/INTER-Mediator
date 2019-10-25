@@ -239,3 +239,7 @@ $serviceServerHost = "localhost";
 $stopSSEveryQuit = false;
 $bootWithInstalledNode = false;
 $preventSSAutoBoot = false;
+
+// Altering messages, overwrite and/or adding new messages.
+$messages['default'][1022] = "We don't support Internet Explorer. We'd like you to access by Edge or any major browser.";
+$messages['ja'][1022] = "Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。";
