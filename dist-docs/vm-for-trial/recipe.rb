@@ -1041,6 +1041,11 @@ cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
 $webServerName = [''];
+$preventSSAutoBoot = true;
+$serviceServerPort = '11478';
+$serviceServerHost = 'localhost';
+$messages['default'][1022] = "We don't support Internet Explorer. We'd like you to access by Edge or any major browser.";
+$messages['ja'][1022] = "Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。";
 EOF
   end
 elsif node[:platform] == 'redhat' && node[:platform_version].to_f < 7
@@ -1094,6 +1099,11 @@ cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
 $webServerName = [''];
+$preventSSAutoBoot = true;
+$serviceServerPort = '11478';
+$serviceServerHost = 'localhost';
+$messages['default'][1022] = "We don't support Internet Explorer. We'd like you to access by Edge or any major browser.";
+$messages['ja'][1022] = "Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。";
 EOF
   end
 elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
@@ -1147,6 +1157,11 @@ cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
 $webServerName = [''];
+$preventSSAutoBoot = true;
+$serviceServerPort = '11478';
+$serviceServerHost = 'localhost';
+$messages['default'][1022] = "We don't support Internet Explorer. We'd like you to access by Edge or any major browser.";
+$messages['ja'][1022] = "Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。";
 EOF
   end
 end
