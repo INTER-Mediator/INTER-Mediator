@@ -1046,7 +1046,7 @@ $webServerName = [''];
 $preventSSAutoBoot = true;
 $serviceServerPort = '11478';
 $serviceServerHost = 'localhost';
-$messages['default'][1022] = 'We don\'t support Internet Explorer. We\'d like you to access by Edge or any major browser.';
+$messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any major browser.';
 $messages['ja'][1022] = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
 EOF
   end
@@ -1104,7 +1104,7 @@ $webServerName = [''];
 $preventSSAutoBoot = true;
 $serviceServerPort = '11478';
 $serviceServerHost = 'localhost';
-$messages['default'][1022] = 'We don\'t support Internet Explorer. We\'d like you to access by Edge or any major browser.';
+$messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any major browser.';
 $messages['ja'][1022] = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
 EOF
   end
@@ -1162,7 +1162,7 @@ $webServerName = [''];
 $preventSSAutoBoot = true;
 $serviceServerPort = '11478';
 $serviceServerHost = 'localhost';
-$messages['default'][1022] = 'We don\'t support Internet Explorer. We\'d like you to access by Edge or any major browser.';
+$messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any major browser.';
 $messages['ja'][1022] = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
 EOF
   end
@@ -2080,6 +2080,9 @@ end
 
 
 if node[:platform] == 'alpine'
+  execute "chmod 755 \"#{WEBROOT}\"/INTER-Mediator/node_modules/jest/bin/jest.js" do
+    command "chmod 755 \"#{WEBROOT}\"/INTER-Mediator/node_modules/jest/bin/jest.js"
+  end
   execute 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd' do
     command 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd'
   end
