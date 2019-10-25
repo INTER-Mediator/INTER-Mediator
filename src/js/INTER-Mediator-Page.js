@@ -702,7 +702,7 @@ let INTERMediatorOnPage = {
           INTERMediatorLib.getInsertedStringFromErrorNumber(2012)))
     }
 
-    window.scroll(0, 0)
+    window.scrollTo(0, 0)
     userBox.focus()
     INTERMediatorOnPage.authCount++
   },
