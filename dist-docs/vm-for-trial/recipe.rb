@@ -141,13 +141,13 @@ if node[:platform] == 'ubuntu'
     end
   end
 
-  if node[:platform_version].to_f >= 18
-    #execute 'sed -i -e "s/security.ubuntu.com/archive.ubuntu.com/g" /etc/apt/sources.list' do
-    #  command 'sed -i -e "s/security.ubuntu.com/archive.ubuntu.com/g" /etc/apt/sources.list'
-    #end
-    #execute 'sed -i -e "s/jp.archive.ubuntu.com/archive.ubuntu.com/g" /etc/apt/sources.list' do
-    #  command 'sed -i -e "s/jp.archive.ubuntu.com/archive.ubuntu.com/g" /etc/apt/sources.list'
-    #end
+  if node[:platform_version].to_f >= 16
+    execute 'sed -i -e "s/security.ubuntu.com/archive.ubuntu.com/g" /etc/apt/sources.list' do
+      command 'sed -i -e "s/security.ubuntu.com/archive.ubuntu.com/g" /etc/apt/sources.list'
+    end
+    execute 'sed -i -e "s/jp.archive.ubuntu.com/archive.ubuntu.com/g" /etc/apt/sources.list' do
+      command 'sed -i -e "s/jp.archive.ubuntu.com/archive.ubuntu.com/g" /etc/apt/sources.list'
+    end
     execute 'rm -rf /var/lib/apt/lists/*' do
       command 'rm -rf /var/lib/apt/lists/*'
     end
@@ -428,11 +428,13 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
   execute 'sudo /opt/mssql/bin/mssql-conf set telemetry.customerfeedback false' do
     command 'sudo /opt/mssql/bin/mssql-conf set telemetry.customerfeedback false'
   end
-  execute 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="**********" /opt/mssql/bin/mssql-conf setup' do
-    command 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="im4135devX" /opt/mssql/bin/mssql-conf setup'
-  end
-  service 'mssql-server' do
-    action [ :enable, :start ]
+  if node[:virtualization][:system] == 'docker'
+    execute 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="**********" /opt/mssql/bin/mssql-conf setup' do
+      command 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="im4135devX" /opt/mssql/bin/mssql-conf setup'
+    end
+    service 'mssql-server' do
+      action [ :enable, :start ]
+    end
   end
 
   execute 'LC_ALL=C.UTF-8 sudo add-apt-repository ppa:ondrej/php -y' do
@@ -494,6 +496,12 @@ if node[:platform] == 'alpine'
   package 'php7-xml' do
     action :install
   end
+  package 'php7-xmlwriter' do
+    action :install
+  end
+  package 'php7-tokenizer' do
+    action :install
+  end
   package 'php7-simplexml' do
     action :install
   end
@@ -551,6 +559,9 @@ elsif node[:platform] == 'ubuntu'
     package 'php7.2-bcmath' do
       action :install
     end
+  end
+  execute 'curl -sS https://getcomposer.org/installer | php; sudo mv composer.phar /usr/local/bin/composer; sudo chmod +x /usr/local/bin/composer;' do
+    command 'curl -sS https://getcomposer.org/installer | php; sudo mv composer.phar /usr/local/bin/composer; sudo chmod +x /usr/local/bin/composer;'
   end
 elsif node[:platform] == 'redhat'
   package 'php' do
@@ -986,7 +997,7 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
 $dbUser = 'web';
 $dbPassword = 'password';
 $dbDSN = 'mysql:unix_socket=#{MYSQLSOCKPATH};dbname=test_db;charset=utf8mb4';
-$dbOption = array();
+$dbOption = [];
 $browserCompatibility = array(
     'Chrome' => '1+',
     'FireFox' => '2+',
@@ -1029,7 +1040,7 @@ UeplZBKmxW3+wQ5gVWIguqisfvi9/m07Z/3+uwCLSryHU6Kgg7Md9ezU9Obx+jxp
 cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
-$webServerName = array('');
+$webServerName = [''];
 EOF
   end
 elsif node[:platform] == 'redhat' && node[:platform_version].to_f < 7
@@ -1039,7 +1050,7 @@ elsif node[:platform] == 'redhat' && node[:platform_version].to_f < 7
 $dbUser = 'web';
 $dbPassword = 'password';
 $dbDSN = 'mysql:unix_socket=/var/lib/mysql/mysql.sock;dbname=test_db;charset=utf8';
-$dbOption = array();
+$dbOption = [];
 $browserCompatibility = array(
     'Chrome' => '1+',
     'FireFox' => '2+',
@@ -1082,7 +1093,7 @@ UeplZBKmxW3+wQ5gVWIguqisfvi9/m07Z/3+uwCLSryHU6Kgg7Md9ezU9Obx+jxp
 cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
-$webServerName = array('');
+$webServerName = [''];
 EOF
   end
 elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
@@ -1092,7 +1103,7 @@ elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
 $dbUser = 'web';
 $dbPassword = 'password';
 $dbDSN = 'mysql:unix_socket=/var/lib/mysql/mysql.sock;dbname=test_db;charset=utf8mb4';
-$dbOption = array();
+$dbOption = [];
 $browserCompatibility = array(
     'Chrome' => '1+',
     'FireFox' => '2+',
@@ -1135,7 +1146,7 @@ UeplZBKmxW3+wQ5gVWIguqisfvi9/m07Z/3+uwCLSryHU6Kgg7Md9ezU9Obx+jxp
 cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
-$webServerName = array('');
+$webServerName = [''];
 EOF
   end
 end
@@ -1152,10 +1163,15 @@ if node[:platform] == 'alpine'
   end
 end
 
+# Install php/js libraries
+
+execute "cd \"#{IMROOT}\" && composer update" do
+  command "cd \"#{IMROOT}\" && composer update"  # returns error for the script of nodejs-installer.
+end
 
 # Install npm packages
 
-if node[:platform] == 'alpine' || (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
+if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   execute 'npm install -g buster --unsafe-perm' do
     command 'npm install -g buster --unsafe-perm'
   end
@@ -1437,8 +1453,8 @@ execute "chmod 664 #{WEBROOT}/*.php" do
   command "chmod 664 #{WEBROOT}/*.php"
 end
 
-execute "chmod 664 \"#{IMVMROOT}/dbupdate.sh\"" do
-  command "chmod 664 \"#{IMVMROOT}/dbupdate.sh\""
+execute "chmod 775 \"#{IMVMROOT}/dbupdate.sh\"" do
+  command "chmod 775 \"#{IMVMROOT}/dbupdate.sh\""
 end
 
 directory '/home/developer' do
@@ -1483,8 +1499,8 @@ if node[:platform] == 'ubuntu'
       command 'cat /etc/php5/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php5/apache2/php.ini.tmp && mv /etc/php5/apache2/php.ini.tmp /etc/php5/apache2/php.ini'
     end
   elsif node[:platform_version].to_f < 18
-    execute 'cat /etc/php/7.0/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/7.0/apache2/php.ini.tmp && mv /etc/php/7.0/apache2/php.ini.tmp /etc/php/7.0/apache2/php.ini' do
-      command 'cat /etc/php/7.0/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/7.0/apache2/php.ini.tmp && mv /etc/php/7.0/apache2/php.ini.tmp /etc/php/7.0/apache2/php.ini'
+    execute 'cat /etc/php/7.2/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/7.2/apache2/php.ini.tmp && mv /etc/php/7.2/apache2/php.ini.tmp /etc/php/7.2/apache2/php.ini' do
+      command 'cat /etc/php/7.2/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/7.2/apache2/php.ini.tmp && mv /etc/php/7.2/apache2/php.ini.tmp /etc/php/7.2/apache2/php.ini'
     end
   else
     execute 'cat /etc/php/7.2/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/7.2/apache2/php.ini.tmp && mv /etc/php/7.2/apache2/php.ini.tmp /etc/php/7.2/apache2/php.ini' do
@@ -1839,6 +1855,7 @@ EOF
 #
 # By default this script does nothing.
 
+export DISPLAY=:99.0
 /usr/local/bin/buster-server &
 /bin/sleep 5
 #/usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &
@@ -2013,8 +2030,8 @@ if node[:platform] == 'alpine'
 export DISPLAY=:99.0
 Xvfb :99 -screen 0 1024x768x24 &
 /bin/sleep 5
-/usr/bin/buster-server &
-/bin/sleep 5
+#/usr/bin/buster-server &
+#/bin/sleep 5
 firefox http://localhost:1111/capture > /dev/null &
 #chromium-browser --no-sandbox http://localhost:1111/capture > /dev/null &
 /bin/sleep 5
@@ -2036,11 +2053,11 @@ if node[:platform] == 'alpine'
   execute "\"#{IMROOT}\"/dist-docs/installfiles.sh -2" do
     command "\"#{IMROOT}\"/dist-docs/installfiles.sh -2"
   end
-  execute "composer install" do
-    command "composer install"
+  execute "cd \"#{IMROOT}\";composer install" do
+    command "cd \"#{IMROOT}\";composer install"
   end
-  execute "npm install" do
-    command "npm install"
+  execute "cd \"#{IMROOT}\";npm install" do
+    command "cd \"#{IMROOT}\";npm install"
   end
 end
 

@@ -12,7 +12,7 @@ use \INTERMediator\FieldDivider;
 //require_once(dirname(__FILE__) . '/../LineDivider.php');
 //require_once(dirname(__FILE__) . '/../FieldDivider.php');
 
-class LineFieldDividerTest extends TestCase
+class Line_Field_Divider_Test extends TestCase
 {
 
     private function checkLines($d)

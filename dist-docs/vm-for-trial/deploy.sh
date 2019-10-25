@@ -212,6 +212,8 @@ if [ $OS = 'alpine' ] ; then
     echo "[mysql]" >> /etc/mysql/my.cnf
     echo "default-character-set=utf8mb4" >> /etc/mysql/my.cnf
 
+    sed -i "s/^skip-networking/#skip-networking/" /etc/my.cnf.d/mariadb-server.cnf
+
     /etc/init.d/mariadb setup
     rc-service mariadb start
     /usr/bin/mysqladmin -u root password 'im4135dev'
@@ -427,6 +429,7 @@ fi
 # The end of task.
 
 if [ $OS = 'alpine' ] ; then
+    chmod 755 "${WEBROOT}//INTER-Mediator/node_modules/jest/bin/jest.js"
     echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd
     poweroff
 else
