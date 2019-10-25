@@ -239,3 +239,8 @@ $serviceServerHost = "localhost";
 $stopSSEveryQuit = false;
 $bootWithInstalledNode = false;
 $preventSSAutoBoot = false;
+
+// Altering messages, overwrite and/or adding new messages. The first index is a language, and the second is the error number.
+$messages['default'][1022] = "We don't support Internet Explorer. We'd like you to access by Edge or any major browser.";
+$messages['ja'][1022] = "Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。";
+// These messages are for sample purpose but they are used for unit tests. If you modify them, you have to care about the test code.

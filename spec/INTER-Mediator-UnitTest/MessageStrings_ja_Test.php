@@ -29,6 +29,14 @@ class MessageStrings_ja_Test extends TestCase
         $this->assertEquals($expected, $messages[$number]);
     }
 
+    public function test_getCustomizedMessages()
+    {
+        $expected = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
+        $messages = $this->messagestrings->getMessages();
+        $number = 1022;
+        $this->assertEquals($expected, $messages[$number]);
+    }
+
     public function test_getMessagesAs()
     {
         $expected = 'レコード番号';
