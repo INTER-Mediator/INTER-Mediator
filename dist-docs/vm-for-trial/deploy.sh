@@ -302,6 +302,8 @@ echo "\$webServerName = [''];" >> "${WEBROOT}/params.php"
 echo "\$preventSSAutoBoot = true;" >> "${WEBROOT}/params.php"
 echo "\$serviceServerPort = '11478';" >> "${WEBROOT}/params.php"
 echo "\$serviceServerHost = 'localhost';" >> "${WEBROOT}/params.php"
+echo "\$messages['default'][1022] = \"We don't support Internet Explorer. We'd like you to access by Edge or any major browser.\";" >> "${WEBROOT}/params.php"
+echo "\$messages['ja'][1022] = \"Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。\";" >> "${WEBROOT}/params.php"
 
 
 if [ $OS = 'alpine' ] ; then
