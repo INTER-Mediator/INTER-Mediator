@@ -1,3 +1,5 @@
+# coding: utf-8
+
 # Recipe file of Itamae for Alpine Linux 3.10, Ubuntu Server 16.04/18.04, CentOS 6/7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
@@ -1041,6 +1043,11 @@ cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
 $webServerName = [''];
+$preventSSAutoBoot = true;
+$serviceServerPort = '11478';
+$serviceServerHost = 'localhost';
+$messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any major browser.';
+$messages['ja'][1022] = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
 EOF
   end
 elsif node[:platform] == 'redhat' && node[:platform_version].to_f < 7
@@ -1094,6 +1101,11 @@ cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
 $webServerName = [''];
+$preventSSAutoBoot = true;
+$serviceServerPort = '11478';
+$serviceServerHost = 'localhost';
+$messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any major browser.';
+$messages['ja'][1022] = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
 EOF
   end
 elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
@@ -1147,6 +1159,11 @@ cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
 $webServerName = [''];
+$preventSSAutoBoot = true;
+$serviceServerPort = '11478';
+$serviceServerHost = 'localhost';
+$messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any major browser.';
+$messages['ja'][1022] = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
 EOF
   end
 end
@@ -2063,6 +2080,9 @@ end
 
 
 if node[:platform] == 'alpine'
+  execute "chmod 755 \"#{WEBROOT}\"/INTER-Mediator/node_modules/jest/bin/jest.js" do
+    command "chmod 755 \"#{WEBROOT}\"/INTER-Mediator/node_modules/jest/bin/jest.js"
+  end
   execute 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd' do
     command 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd'
   end

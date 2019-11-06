@@ -5,6 +5,7 @@
  env PATH="../vendor/bin:$PATH" ../node_modules/.bin/jest
  */
 module.exports = {
-  "verbose": true,
-  "testURL": "http://localhost/",
+  'verbose': true,
+  'testURL': 'http://localhost/',
+  'setupFiles': ['./test-setup.js']
 }
