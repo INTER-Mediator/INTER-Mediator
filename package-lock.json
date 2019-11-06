@@ -3722,9 +3722,9 @@
       "integrity": "sha512-0+riC+qmBG4B4WuFXQ64gA6fepj3+aRCvROumN00ZZ7wX49EShxCUhMwag14zm95Xhd5dB5S9O+SpQwfLkrnZw=="
     },
     "inter-mediator-plugin-jqueryfileupload": {
-      "version": "1.0.5",
-      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-jqueryfileupload/-/inter-mediator-plugin-jqueryfileupload-1.0.5.tgz",
-      "integrity": "sha512-Ev2AAeeFymXPs5AE5gPmVGgGBhniQZWUDuJ7OJ4X1TyrxWbZZyagMWMfLGdvGyDzjYHHLMccMpge6Ii7XHpHLQ=="
+      "version": "1.0.6",
+      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-jqueryfileupload/-/inter-mediator-plugin-jqueryfileupload-1.0.6.tgz",
+      "integrity": "sha512-5hlXTyc1Byijlyv13qEuwPpnN8zGv4wagcIEvrH172RQ33JjQ3OByNyQ26XnyApu84QiXTlgLFw922efvaDYcQ=="
     },
     "inter-mediator-plugin-jsonformatter": {
       "version": "1.0.0",
