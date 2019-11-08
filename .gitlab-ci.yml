@@ -28,7 +28,7 @@ pages:
   - export LANG=ja_JP.UTF-8
   - uname -a
   - apk update
-  - apk add --no-cache php7 php7-json php7-phar php7-iconv php7-openssl php7-dom php7-mbstring php7-pdo php7-bcmath php7-curl php7-xml
+  - apk add --no-cache php7 php7-json php7-phar php7-iconv php7-openssl php7-dom php7-mbstring php7-pdo php7-bcmath php7-curl php7-xml php7-simplexml php7-ctype php7-tokenizer php7-xmlwriter
   - apk add --no-cache curl
   - curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer
   - apk add --no-cache git
