@@ -15,8 +15,5 @@ class DataConverter_Currency_PoundIM_Test extends DataConverter_Currency_Base_Te
 
         $this->thSepMark = ',';
         $this->currencyMark = '£';
-        if (getenv('CIRCLECI') === 'true') {
-            $this->currencyMark = '￥';
-        }
     }
 }
