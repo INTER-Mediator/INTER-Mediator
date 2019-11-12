@@ -29,7 +29,7 @@ class MessageStrings_Test extends TestCase
 
     public function test_getCustomizedMessages()
     {
-        $expected = 'We don\'t support Internet Explorer. We\'d like you to access by Edge or any major browser.';
+        $expected = "We don't support Internet Explorer. We'd like you to access by Edge or any other major browsers.";
         $messages = $this->messagestrings->getMessages();
         $number = 1022;
         $this->assertEquals($expected, $messages[$number]);
