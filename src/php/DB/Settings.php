@@ -645,7 +645,7 @@ class Settings
         unset($this->extraCriteria[$index]);
     }
 
-    public function addExtraCriteria($field, $operator, $value)
+    public function addExtraCriteria($field, $operator = '=', $value = null)
     {
         $this->extraCriteria[] = array('field' => $field, 'operator' => $operator, 'value' => $value);
     }
