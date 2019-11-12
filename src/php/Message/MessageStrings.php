@@ -29,7 +29,7 @@ class MessageStrings
         $className = get_class($this);
         $underLine = strpos($className, '_');
         $thisLang = ($underLine === false) ? 'default' : substr($className, $underLine + 1);
-        if (!is_null($altMessages)) {
+        if (is_array($altMessages)) {
             foreach ($altMessages as $lang => $langMessages) {
                 if ($lang == $thisLang) {
                     foreach ($langMessages as $number => $message) {
