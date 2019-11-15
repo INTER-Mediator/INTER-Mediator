@@ -15,6 +15,7 @@ Ver.5.11-dev (in development)
 - Update FMDataAPI.php (Ver.20) and DB_FileMaker_DataAPI.php for FileMaker Data API.
 - Reduce error messages when using PHP 7.x, DB_FileMaker_FX class and portal access mode.
 - Improve stability of INTERMediatorLib.getParentRepeaters in some cases.
+- Update deploy.sh and Vagrantfile etc. for the INTER-Mediator-Server VM (Update to Alpine Linux 3.10).
 
 Ver.5.10 (April 17, 2019)
 - The Japanese new gengo REIWA is supported in the date formatter.
