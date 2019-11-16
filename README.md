@@ -49,6 +49,7 @@ The demo with INTER-Mediator Ver.6 is as below, but it's experimental. Ver.6 is 
 - Akinori Mizoguchi
 - Hiromi Morita
 - Yukio Murakami
+- Kenzo Nakata
 - Shin Ninagawa
 - Osamu Noda
 - Tomoyuki Sugihara
@@ -56,6 +57,7 @@ The demo with INTER-Mediator Ver.6 is as below, but it's experimental. Ver.6 is 
 - Takanori Taniguchi
 - Kozue Uriu
 - Kenji Utsumi
+- Takayoshi Wada
 - Tsutomu Yuasa
 
 ## Driven by INTER-Mediator Directive Committee
