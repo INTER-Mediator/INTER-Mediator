@@ -143,15 +143,31 @@ class DefinitionChecker
         }
     }
 
+    function __construct()
+    {
+        $this->prohibitKeywordsForDataSource['*']['send-mail'] = array(
+            'load' => $this->prohibitKeywordsMessaging,
+            'read' => $this->prohibitKeywordsMessaging,
+            'new' => $this->prohibitKeywordsMessaging,
+            'create' => $this->prohibitKeywordsMessaging,
+            'edit' => $this->prohibitKeywordsMessaging,
+            'update' => $this->prohibitKeywordsMessaging,
+        );
+        $this->prohibitKeywordsForDataSource['*']['messaging'] = array(
+            'driver' => 'string',
+            'load' => $this->prohibitKeywordsMessaging,
+            'read' => $this->prohibitKeywordsMessaging,
+            'new' => $this->prohibitKeywordsMessaging,
+            'create' => $this->prohibitKeywordsMessaging,
+            'edit' => $this->prohibitKeywordsMessaging,
+            'update' => $this->prohibitKeywordsMessaging,
+        );
+    }
 
-    private
-        $message;
-    private
-        $path;
-    private
-        $currentProhibit;
-    private
-        $prohibitKeywordsForDBSpec = array(
+    private $message;
+    private $path;
+    private $currentProhibit;
+    private $prohibitKeywordsForDBSpec = array(
         'db-class' => 'string',
         'dsn' => 'string',
         'option' => 'array',
@@ -164,8 +180,7 @@ class DefinitionChecker
         'datatype' => 'string',
         'external-db' => array('#' => 'string'),
     );
-    private
-        $prohibitKeywordsForOption = array(
+    private $prohibitKeywordsForOption = array(
         'separator' => 'string',
         'formatter' => array(
             '*' => array(
@@ -222,8 +237,28 @@ class DefinitionChecker
         'app-locale' => 'string',
         'app-currency' => 'string',
     );
-    private
-        $prohibitKeywordsForDataSource = array(
+    private $prohibitKeywordsMessaging = [
+        'from' => 'string',
+        'to' => 'string',
+        'cc' => 'string',
+        'bcc' => 'string',
+        'subject' => 'string',
+        'body' => 'string',
+        'from-constant' => 'string',
+        'to-constant' => 'string',
+        'cc-constant' => 'string',
+        'bcc-constant' => 'string',
+        'subject-constant' => 'string',
+        'body-constant' => 'string',
+        'body-template' => 'string',
+        'body-fields' => 'string',
+        'f-option' => 'boolean',
+        'body-wrap' => 'integer',
+        'store' => 'string',
+        'attachment' => 'string',
+        'template-context' => 'string',
+    ];
+    private $prohibitKeywordsForDataSource = [
         '*' => array(
             'name' => 'string',
             'table' => 'string',
@@ -381,134 +416,6 @@ class DefinitionChecker
                 'navi-back' => 'string',
                 'copy' => 'string',
             ),
-            'send-mail' => array(
-                'load' => array(
-                    'from' => 'string',
-                    'to' => 'string',
-                    'cc' => 'string',
-                    'bcc' => 'string',
-                    'subject' => 'string',
-                    'body' => 'string',
-                    'from-constant' => 'string',
-                    'to-constant' => 'string',
-                    'cc-constant' => 'string',
-                    'bcc-constant' => 'string',
-                    'subject-constant' => 'string',
-                    'body-constant' => 'string',
-                    'body-template' => 'string',
-                    'body-fields' => 'string',
-                    'f-option' => 'boolean',
-                    'body-wrap' => 'integer',
-                    'store' => 'string',
-                    'attachment' => 'string',
-                    'template-context' => 'string',
-                ),
-                'read' => array(
-                    'from' => 'string',
-                    'to' => 'string',
-                    'cc' => 'string',
-                    'bcc' => 'string',
-                    'subject' => 'string',
-                    'body' => 'string',
-                    'from-constant' => 'string',
-                    'to-constant' => 'string',
-                    'cc-constant' => 'string',
-                    'bcc-constant' => 'string',
-                    'subject-constant' => 'string',
-                    'body-constant' => 'string',
-                    'body-template' => 'string',
-                    'body-fields' => 'string',
-                    'f-option' => 'boolean',
-                    'body-wrap' => 'integer',
-                    'store' => 'string',
-                    'attachment' => 'string',
-                    'template-context' => 'string',
-                ),
-                'new' => array(
-                    'from' => 'string',
-                    'to' => 'string',
-                    'cc' => 'string',
-                    'bcc' => 'string',
-                    'subject' => 'string',
-                    'body' => 'string',
-                    'from-constant' => 'string',
-                    'to-constant' => 'string',
-                    'cc-constant' => 'string',
-                    'bcc-constant' => 'string',
-                    'subject-constant' => 'string',
-                    'body-constant' => 'string',
-                    'body-template' => 'string',
-                    'body-fields' => 'string',
-                    'f-option' => 'boolean',
-                    'body-wrap' => 'integer',
-                    'store' => 'string',
-                    'attachment' => 'string',
-                    'template-context' => 'string',
-                ),
-                'create' => array(
-                    'from' => 'string',
-                    'to' => 'string',
-                    'cc' => 'string',
-                    'bcc' => 'string',
-                    'subject' => 'string',
-                    'body' => 'string',
-                    'from-constant' => 'string',
-                    'to-constant' => 'string',
-                    'cc-constant' => 'string',
-                    'bcc-constant' => 'string',
-                    'subject-constant' => 'string',
-                    'body-constant' => 'string',
-                    'body-template' => 'string',
-                    'body-fields' => 'string',
-                    'f-option' => 'boolean',
-                    'body-wrap' => 'integer',
-                    'store' => 'string',
-                    'attachment' => 'string',
-                    'template-context' => 'string',
-                ),
-                'edit' => array(
-                    'from' => 'string',
-                    'to' => 'string',
-                    'cc' => 'string',
-                    'bcc' => 'string',
-                    'subject' => 'string',
-                    'body' => 'string',
-                    'from-constant' => 'string',
-                    'to-constant' => 'string',
-                    'cc-constant' => 'string',
-                    'bcc-constant' => 'string',
-                    'subject-constant' => 'string',
-                    'body-constant' => 'string',
-                    'body-template' => 'string',
-                    'body-fields' => 'string',
-                    'f-option' => 'boolean',
-                    'body-wrap' => 'integer',
-                    'store' => 'string',
-                    'attachment' => 'string',
-                    'template-context' => 'string',
-                ),
-                'update' => array(
-                    'from' => 'string',
-                    'to' => 'string',
-                    'cc' => 'string',
-                    'bcc' => 'string',
-                    'subject' => 'string',
-                    'body' => 'string',
-                    'from-constant' => 'string',
-                    'to-constant' => 'string',
-                    'cc-constant' => 'string',
-                    'bcc-constant' => 'string',
-                    'subject-constant' => 'string',
-                    'body-constant' => 'string',
-                    'body-template' => 'string',
-                    'body-fields' => 'string',
-                    'f-option' => 'boolean',
-                    'body-wrap' => 'integer',
-                    'store' => 'string',
-                    'attachment' => 'string',
-                    'template-context' => 'string',
-                ),
-            )
-        ),
-    );
+        ), // There is additional definitions. See the constructor.
+    ];
 }
