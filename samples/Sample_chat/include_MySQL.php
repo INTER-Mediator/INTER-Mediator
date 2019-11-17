@@ -33,6 +33,13 @@ IM_Entry(
                     'field' => 'user',
                 ),
             ),
+            'messaging' => [
+                'driver' => 'email',
+                'create' => [
+                    'from' => 'me',
+                    'to' => 'you',
+                ]
+            ]
         ),
     ),
     array(
@@ -48,5 +55,5 @@ IM_Entry(
         ),
     ),
     array('db-class' => 'PDO'),
-    false
+    2
 );
