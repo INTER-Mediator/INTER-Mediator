@@ -141,7 +141,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             foreach ($tableInfo['query'] as $condition) {
                 if ($condition['field'] == '__operation__') {
                     $chunkCount++;
-                    if ($condition['operator'] == 'ex') {
+                    if (isset($condition['operator']) && $condition['operator'] == 'ex') {
                         $insideOp = ' OR ';
                         $outsideOp = ' AND ';
                     }
@@ -182,7 +182,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 }
                 if ($condition['field'] == '__operation__') {
                     $chunkCount++;
-                    if ($condition['operator'] == 'ex') {
+                    if (isset($condition['operator']) && $condition['operator'] == 'ex') {
                         $insideOp = ' OR ';
                         $outsideOp = ' AND ';
                     }

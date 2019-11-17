@@ -62,6 +62,9 @@ Ver.6-dev (in development)
 - FileMaker_FX and FileMaker_DataAPI classes support the value "[increment]1" and "[decrement]1" in case of updating
   a record. [increment] and [decrement] are defined value and following any number.
 - Multiple navigation bars are supported. Setting any tags to class="IM_NAVIGATOR", and both id and class can be set.
+- Messages from INTER-Mediator can be customized with the params.php file. The 'messages' variable is used for storing
+  replacing/adding messages. The value of the messages variable has to be the 2-dimensional array with the language and
+  the message number as indices. The params.php file has a sample of overwriting messages.
 - [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.

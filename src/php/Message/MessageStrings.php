@@ -16,11 +16,28 @@
 
 namespace INTERMediator\Message;
 
+use INTERMediator\IMUtil;
+
 class MessageStrings
 {
 
     public function getMessages()
     {
+        $params = IMUtil::getFromParamsPHPFile(["messages"], true);
+        $altMessages = $params["messages"];
+
+        $className = get_class($this);
+        $underLine = strpos($className, '_');
+        $thisLang = ($underLine === false) ? 'default' : substr($className, $underLine + 1);
+        if (is_array($altMessages)) {
+            foreach ($altMessages as $lang => $langMessages) {
+                if ($lang == $thisLang) {
+                    foreach ($langMessages as $number => $message) {
+                        $this->messages[$number] = $message;
+                    }
+                }
+            }
+        }
         return $this->messages;
     }
 
@@ -28,7 +45,7 @@ class MessageStrings
     {
         $msg = $this->messages[$num];
         $index = 1;
-        if (! is_null($appending)) {
+        if (!is_null($appending)) {
             foreach ($appending as $keyword) {
                 $msg = str_replace("@{$index}@", $keyword, $msg);
                 $index++;

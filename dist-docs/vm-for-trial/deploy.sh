@@ -212,6 +212,8 @@ if [ $OS = 'alpine' ] ; then
     echo "[mysql]" >> /etc/mysql/my.cnf
     echo "default-character-set=utf8mb4" >> /etc/mysql/my.cnf
 
+    sed -i "s/^skip-networking/#skip-networking/" /etc/my.cnf.d/mariadb-server.cnf
+
     /etc/init.d/mariadb setup
     rc-service mariadb start
     /usr/bin/mysqladmin -u root password 'im4135dev'
@@ -300,6 +302,8 @@ echo "\$webServerName = [''];" >> "${WEBROOT}/params.php"
 echo "\$preventSSAutoBoot = true;" >> "${WEBROOT}/params.php"
 echo "\$serviceServerPort = '11478';" >> "${WEBROOT}/params.php"
 echo "\$serviceServerHost = 'localhost';" >> "${WEBROOT}/params.php"
+echo "\$messages['default'][1022] = \"We don't support Internet Explorer. We'd like you to access by Edge or any major browser.\";" >> "${WEBROOT}/params.php"
+echo "\$messages['ja'][1022] = \"Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。\";" >> "${WEBROOT}/params.php"
 
 
 if [ $OS = 'alpine' ] ; then
@@ -427,6 +431,7 @@ fi
 # The end of task.
 
 if [ $OS = 'alpine' ] ; then
+    chmod 755 "${WEBROOT}//INTER-Mediator/node_modules/jest/bin/jest.js"
     echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd
     poweroff
 else
