@@ -10,7 +10,7 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.5.11-dev (in development)
+Ver.5.11 (November 17, 2019)
 - Support FileMaker Data API of FileMaker Server 18 and FileMaker Cloud for AWS 1.18.
 - Update FMDataAPI.php (Ver.20) and DB_FileMaker_DataAPI.php for FileMaker Data API.
 - Improve handling Microsoft Office documents in MediaAccess class (Thanks to Mr. Takayoshi Wada).
