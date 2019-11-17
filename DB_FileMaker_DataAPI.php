@@ -683,7 +683,12 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 }
             }
 
-
+            $productInfo = $this->fmData->getProductInfo();
+            if (is_object($productInfo) && property_exists($productInfo, 'version')) {
+                $productVersion = intval($productInfo->version);
+            } else {
+                $productVersion = 17;
+            }
             if ($scriptResultPrerequest !== NULL || $scriptResultPresort !== NULL || $scriptResult !== NULL) {
                 // Avoid multiple executing FileMaker script
                 if ($scriptResultPresort === NULL && $scriptResult === NULL) {
@@ -704,11 +709,19 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 if ($conditions && count($conditions) === 1 && isset($conditions[0]['recordId']) && is_numeric($recordId)) {
                     $this->mainTableCount = 1;
                 } else {
-                    $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 100000000, NULL, $script);
-                    $this->mainTableCount = $result->count();
+                    if ($productVersion >= 18) {
+                        $this->mainTableCount = $result->getFoundCount();
+                    } else {
+                        $result = $this->fmData->{$layout}->query($conditions, NULL, 1, 100000000, NULL, $script);
+                        $this->mainTableCount = $result->count();
+                    }
                 }
-                $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 100000000, NULL, $script);
-                $this->mainTableTotalCount = $result->count();
+                if ($productVersion >= 18) {
+                    $this->mainTableTotalCount = $result->getTotalCount();
+                } else {
+                    $result = $this->fmData->{$layout}->query(NULL, NULL, 1, 100000000, NULL, $script);
+                    $this->mainTableTotalCount = $result->count();
+                }
             }
         }
 

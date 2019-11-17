@@ -1,8 +1,8 @@
-# Recipe file of Itamae for Alpine Linux 3.8, Ubuntu Server 16.04/18.04, CentOS 6/7
+# Recipe file of Itamae for Alpine Linux 3.10, Ubuntu Server 16.04/18.04, CentOS 6/7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
-#     See detail: http://serverspec.org/
+#     See detail: https://serverspec.org/
 #   - Change directory to "vm-for-trial" directory on the host of VM
 #   - Run "rake spec" on the host of VM
 
@@ -46,12 +46,12 @@ iface eth1 inet static
 EOF
     end
   end
-  if node[:platform_version].to_f >= 3.8
+  if node[:platform_version].to_f >= 3.10
     file '/etc/apk/repositories' do
       content <<-EOF
 #/media/cdrom/apks
-http://dl-cdn.alpinelinux.org/alpine/v3.8/main
-http://dl-cdn.alpinelinux.org/alpine/v3.8/community
+http://dl-cdn.alpinelinux.org/alpine/v3.10/main
+http://dl-cdn.alpinelinux.org/alpine/v3.10/community
 #http://dl-cdn.alpinelinux.org/alpine/edge/main
 #http://dl-cdn.alpinelinux.org/alpine/edge/community
 #http://dl-cdn.alpinelinux.org/alpine/edge/testing
@@ -61,8 +61,8 @@ EOF
     file '/etc/apk/repositories' do
       content <<-EOF
 #/media/cdrom/apks
-http://dl-5.alpinelinux.org/alpine/v3.7/main
-http://dl-5.alpinelinux.org/alpine/v3.7/community
+http://dl-5.alpinelinux.org/alpine/v3.8/main
+http://dl-5.alpinelinux.org/alpine/v3.8/community
 #http://dl-5.alpinelinux.org/alpine/edge/main
 #http://dl-5.alpinelinux.org/alpine/edge/community
 #http://dl-5.alpinelinux.org/alpine/edge/testing
@@ -210,8 +210,8 @@ if node[:platform] == 'alpine'
     service 'postgresql' do
       action [ :enable ]
     end
-    execute 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/10/data -l /var/log/postgresql/postgresql.log"' do
-      command 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/10/data -l /var/log/postgresql/postgresql.log"'
+    execute 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/11/data -l /var/log/postgresql/postgresql.log"' do
+      command 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/11/data -l /var/log/postgresql/postgresql.log"'
     end  
   end
 else
@@ -236,8 +236,8 @@ if node[:platform] == 'alpine'
       owner 'mysql'
       group 'mysql'
     end
-  end  
-  file '/etc/mysql/my.cnf' do
+  end
+  file '/etc/my.cnf.d/inter-mediator-server.cnf' do
     content <<-EOF
 [mysqld]
 datadir=/var/lib/mysql
@@ -262,6 +262,9 @@ default-character-set=utf8mb4
 default-character-set=utf8mb4
 EOF
   end
+  execute 'sed -i "s/^skip-networking/#skip-networking/" /etc/my.cnf.d/mariadb-server.cnf' do
+    command 'sed -i "s/^skip-networking/#skip-networking/" /etc/my.cnf.d/mariadb-server.cnf'
+  end  
   if node[:virtualization][:system] != 'docker'
     execute '/etc/init.d/mariadb setup' do
       command '/etc/init.d/mariadb setup'
@@ -479,7 +482,6 @@ if node[:platform] == 'alpine'
   end
   package 'libbsd' do
     action :install
-    version '0.8.6-r2'
   end
   package 'ca-certificates' do
     action :install
@@ -872,6 +874,12 @@ if node[:platform] == 'ubuntu'
     action :install
   end
   package 'unifont' do
+    action :install
+  end
+end
+
+if node[:platform] == 'alpine'
+  package 'python' do
     action :install
   end
 end
@@ -1883,8 +1891,11 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem2.0 install ffi -v "1.9.18" --no-ri --no-rdoc' do
       command 'gem2.0 install ffi -v "1.9.18" --no-ri --no-rdoc'
     end
-    execute 'gem2.0 install selenium-webdriver --no-ri --no-rdoc' do
-      command 'gem2.0 install selenium-webdriver --no-ri --no-rdoc'
+    execute 'gem2.0 install childprocess -v "0.9.0" --no-ri --no-rdoc' do
+      command 'gem2.0 install childprocess -v "0.9.0" --no-ri --no-rdoc'
+    end
+    execute 'gem2.0 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc' do
+      command 'gem2.0 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc'
     end
   elsif node[:platform_version].to_f < 18
     package 'ruby2.3' do
@@ -1902,8 +1913,11 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem2.3 install ffi -v "1.9.18" --no-ri --no-rdoc' do
       command 'gem2.3 install ffi -v "1.9.18" --no-ri --no-rdoc'
     end
-    execute 'gem2.3 install selenium-webdriver --no-ri --no-rdoc' do
-      command 'gem2.3 install selenium-webdriver --no-ri --no-rdoc'
+    execute 'gem2.3 install childprocess -v "0.9.0" --no-ri --no-rdoc' do
+      command 'gem2.3 install childprocess -v "0.9.0" --no-ri --no-rdoc'
+    end
+    execute 'gem2.3 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc' do
+      command 'gem2.3 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc'
     end
   else
     package 'ruby' do
@@ -1921,8 +1935,11 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem install ffi --no-ri --no-rdoc' do
       command 'gem install ffi --no-ri --no-rdoc'
     end
-    execute 'gem install selenium-webdriver --no-ri --no-rdoc' do
-      command 'gem install selenium-webdriver --no-ri --no-rdoc'
+    execute 'gem install childprocess -v "0.9.0" --no-ri --no-rdoc' do
+      command 'gem install childprocess -v "0.9.0" --no-ri --no-rdoc'
+    end
+    execute 'gem install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc' do
+      command 'gem install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc'
     end
   end
   package 'firefox' do

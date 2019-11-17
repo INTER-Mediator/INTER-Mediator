@@ -384,6 +384,24 @@ class MediaAccess
     {
         $type = "application/octet-stream";
         switch (strtolower(substr($path, strrpos($path, '.') + 1))) {
+            case 'doc':
+                $type = 'application/msword';
+                break;
+            case 'docx':
+                $type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+                break;
+            case 'xls':
+                $type = 'applicsation/vnd.ms-excel';
+                break;
+            case 'xlsx':
+                $type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                break;
+            case 'ppt':
+                $type = 'application/vnd.ms-powerpoint';
+                break;
+            case 'pptx':
+                $type = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+                break;
             case 'jpg':
                 $type = 'image/jpeg';
                 break;

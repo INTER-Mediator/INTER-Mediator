@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# setup shell script for Alpine Linux 3.8 and Ubuntu Server 18.04
+# setup shell script for Alpine Linux 3.10 and Ubuntu Server 18.04
 #
 # This file can get from the URL below.
 # https://raw.githubusercontent.com/INTER-Mediator/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh
@@ -58,8 +58,8 @@ if [ $OS = 'alpine' ] ; then
     echo "	netmask 255.255.255.0" >> /etc/network/interfaces
 
     echo "#/media/cdrom/apks" > /etc/apk/repositories
-    echo "http://dl-cdn.alpinelinux.org/alpine/v3.8/main" >> /etc/apk/repositories
-    echo "http://dl-cdn.alpinelinux.org/alpine/v3.8/community" >> /etc/apk/repositories
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.10/main" >> /etc/apk/repositories
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.10/community" >> /etc/apk/repositories
     echo "#http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
     echo "#http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
     echo "#http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
@@ -92,6 +92,7 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache php7-session
     apk add --no-cache php7-mysqli
     apk add --no-cache libbsd=0.8.6-r2
+    apk add --no-cache python
     apk add --no-cache git
     apk add --no-cache nodejs
     apk add --no-cache nodejs-npm
@@ -180,27 +181,29 @@ yes im4135dev | passwd postgres
 
 mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' identified by 'im4135dev';" -u root
 if [ $OS = 'alpine' ] ; then
-    echo "[mysqld]" > /etc/mysql/my.cnf
-    echo "datadir=/var/lib/mysql" >> /etc/mysql/my.cnf
-    echo "socket=/run/mysqld/mysqld.sock" >> /etc/mysql/my.cnf
-    echo "user=mysql" >> /etc/mysql/my.cnf
-    echo "# Disabling symbolic-links is recommended to prevent assorted security risks" >> /etc/mysql/my.cnf
-    echo "symbolic-links=0" >> /etc/mysql/my.cnf
-    echo "character-set-server=utf8mb4" >> /etc/mysql/my.cnf
-    echo "skip-character-set-client-handshake" >> /etc/mysql/my.cnf
-    echo "" >> /etc/mysql/my.cnf
-    echo "[mysqld_safe]" >> /etc/mysql/my.cnf
-    echo "#log-error=/var/log/mysqld.log" >> /etc/mysql/my.cnf
-    echo "pid-file=/var/run/mysqld/mysqld.pid" >> /etc/mysql/my.cnf
-    echo "" >> /etc/mysql/my.cnf
-    echo "[client]" >> /etc/mysql/my.cnf
-    echo "default-character-set=utf8mb4" >> /etc/mysql/my.cnf
-    echo "" >> /etc/mysql/my.cnf
-    echo "[mysqldump]" >> /etc/mysql/my.cnf
-    echo "default-character-set=utf8mb4" >> /etc/mysql/my.cnf
-    echo "" >> /etc/mysql/my.cnf
-    echo "[mysql]" >> /etc/mysql/my.cnf
-    echo "default-character-set=utf8mb4" >> /etc/mysql/my.cnf
+    echo "[mysqld]" > /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "datadir=/var/lib/mysql" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "socket=/run/mysqld/mysqld.sock" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "user=mysql" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "# Disabling symbolic-links is recommended to prevent assorted security risks" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "symbolic-links=0" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "character-set-server=utf8mb4" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "skip-character-set-client-handshake" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "[mysqld_safe]" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "#log-error=/var/log/mysqld.log" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "pid-file=/var/run/mysqld/mysqld.pid" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "[client]" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "default-character-set=utf8mb4" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "[mysqldump]" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "default-character-set=utf8mb4" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "[mysql]" >> /etc/my.cnf.d/inter-mediator-server.cnf
+    echo "default-character-set=utf8mb4" >> /etc/my.cnf.d/inter-mediator-server.cnf
+
+    sed -i 's/^skip-networking/#skip-networking/' /etc/my.cnf.d/mariadb-server.cnf
 
     /etc/init.d/mariadb setup
     rc-service mariadb start

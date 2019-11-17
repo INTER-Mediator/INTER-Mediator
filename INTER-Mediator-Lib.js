@@ -146,8 +146,10 @@ var INTERMediatorLib = {
       } else {
         repeaters = seekFromContextPool(node);
       }
-      for (i = 0; i < repeaters.length; i += 1) {
-        result.push(document.getElementById(repeaters[i].id));
+      if(repeaters) {
+        for (i = 0; i < repeaters.length; i += 1) {
+          result.push(document.getElementById(repeaters[i].id));
+        }
       }
       return result;
 
