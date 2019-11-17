@@ -176,7 +176,7 @@ const IMLibPageNavigation = {
           var targetNode = c_node
           return function () {
             var moveTo, max_page
-            moveTo = INTERMediatorLib.toNumber(targetNode.value)
+            moveTo = parseInt(targetNode.value)
             if (moveTo < 1) {
               moveTo = 1
             }
