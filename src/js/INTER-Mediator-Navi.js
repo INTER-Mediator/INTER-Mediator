@@ -675,7 +675,7 @@ const IMLibPageNavigation = {
   setupCopyButton: function (encNodeTag, repNodeTag, repeaters, currentContext, currentRecord) {
     // Handling Copy buttons
     'use strict'
-    var buttonNode, thisId, tdNodes, tdNode, buttonName, currentContextDef
+    var buttonNode, thisId, buttonName, currentContextDef
 
     currentContextDef = currentContext.getContextDef()
     if (!currentContextDef['repeat-control'] || !currentContextDef['repeat-control'].match(/copy/i)) {
@@ -702,22 +702,7 @@ const IMLibPageNavigation = {
           IMLibUI.copyButton(currentContextCapt, currentRecordCapt)
         }
       })())
-      switch (encNodeTag) {
-        case 'TBODY':
-          tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD')
-          tdNode = tdNodes[tdNodes.length - 1]
-          tdNode.appendChild(buttonNode)
-          break
-        case 'SELECT':
-          break
-        default:
-          if (repeaters[0] && repeaters[0].childNodes) {
-            repeaters[repeaters.length - 1].appendChild(buttonNode)
-          } else {
-            repeaters.push(buttonNode)
-          }
-          break
-      }
+      IMLibPageNavigation.includeButtonInContext(encNodeTag, repeaters, buttonNode)
     } else {
       IMLibPageNavigation.deleteInsertOnNavi.push({
         kind: 'COPY',
@@ -734,7 +719,7 @@ const IMLibPageNavigation = {
   setupDeleteButton: function (encNodeTag, repeaters, currentContext, keyField, keyValue) {
     // Handling Delete buttons
     'use strict'
-    var buttonNode, thisId, tdNodes, tdNode, buttonName, currentContextDef
+    var buttonNode, thisId, buttonName, currentContextDef
 
     currentContextDef = currentContext.contextDefinition
     if (!currentContextDef['repeat-control'] ||
@@ -764,23 +749,7 @@ const IMLibPageNavigation = {
           IMLibUI.deleteButton(currentContextCapt, keyFieldCapt, keyValueCapt, confirmingCapt)
         }
       })())
-      switch (encNodeTag) {
-        case 'TBODY':
-          tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD')
-          tdNode = tdNodes[tdNodes.length - 1]
-          tdNode.appendChild(buttonNode)
-          break
-        case 'SELECT':
-          // OPTION tag can't contain any other tags.
-          break
-        default:
-          if (repeaters[0] && repeaters[0].childNodes) {
-            repeaters[repeaters.length - 1].appendChild(buttonNode)
-          } else {
-            repeaters.push(buttonNode)
-          }
-          break
-      }
+      IMLibPageNavigation.includeButtonInContext(encNodeTag, repeaters, buttonNode)
     } else {
       IMLibPageNavigation.deleteInsertOnNavi.push({
         kind: 'DELETE',
@@ -792,6 +761,43 @@ const IMLibPageNavigation = {
     }
   },
 
+  includeButtonInContext: function (encNodeTag, repeaters, buttonNode) {
+    var tdNodes, repeaterCtl, repeaterIx, ignoreTerms
+
+    ignoreTerms = ['header', 'separator', 'footerheader', 'separator', 'footer']
+    switch (encNodeTag) {
+      case 'TBODY':
+        repeaterIx = repeaters.length - 1
+        while (repeaterIx >= 0) {
+          repeaterCtl = repeaters[repeaterIx].getAttribute('data-im-control')
+          if (!repeaterCtl || (repeaterCtl && ignoreTerms.indexOf(repeaterCtl.toLowerCase()) < 0)) {
+            tdNodes = repeaters[repeaterIx].getElementsByTagName('TD')
+            tdNodes[tdNodes.length - 1].appendChild(buttonNode)
+            break
+          }
+          repeaterIx -= 1
+        }
+        break
+      case 'SELECT':
+        // OPTION tag can't contain any other tags.
+        break
+      default:
+        repeaterIx = repeaters.length - 1
+        while (repeaterIx >= 0) {
+          repeaterCtl = repeaters[repeaterIx].getAttribute('data-im-control').toLowerCase()
+          if (!repeaterCtl || (repeaterCtl && ignoreTerms.indexOf(repeaterCtl.toLowerCase()) < 0)) {
+            if (repeaters[repeaterIx] && repeaters[repeaterIx].childNodes) {
+              repeaters[repeaterIx].appendChild(buttonNode)
+            } else {
+              repeaters.push(buttonNode)
+            }
+            break
+          }
+          repeaterIx -= 1
+        }
+        break
+    }
+  },
   /* --------------------------------------------------------------------
 
    */
@@ -907,7 +913,8 @@ const IMLibPageNavigation = {
         })
       }
     }
-  },
+  }
+  ,
 
   /* --------------------------------------------------------------------
 
@@ -1036,13 +1043,15 @@ const IMLibPageNavigation = {
           break
       }
     }
-  },
+  }
+  ,
 
   getStepLastSelectedRecord: function () {
     'use strict'
     var lastSelection = IMLibPageNavigation.stepNavigation[IMLibPageNavigation.stepNavigation.length - 1]
     return lastSelection.context.store[lastSelection.key]
-  },
+  }
+  ,
 
   isNotExpandingContext: function (contextDef) {
     'use strict'
@@ -1050,13 +1059,15 @@ const IMLibPageNavigation = {
       return IMLibPageNavigation.stepCurrentContextName !== contextDef.name
     }
     return false
-  },
+  }
+  ,
 
   startStep: function () {
     'use strict'
     IMLibPageNavigation.initializeStepInfo(true)
     INTERMediator.constructMain(IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName))
-  },
+  }
+  ,
 
   initializeStepInfo: function (includeHide) {
     'use strict'
@@ -1084,7 +1095,8 @@ const IMLibPageNavigation = {
         }
       }
     }
-  },
+  }
+  ,
 
   setupStepReturnButton: function (style) {
     'use strict'
@@ -1099,7 +1111,8 @@ const IMLibPageNavigation = {
         INTERMediatorLib.markProcessed(nodes[i])
       }
     }
-  },
+  }
+  ,
 
   moveToNextStep: function (contextObj, keyField, keyValue) {
     'use strict'
@@ -1111,7 +1124,8 @@ const IMLibPageNavigation = {
         complete()
       })
     }
-  },
+  }
+  ,
 
   moveToNextStepImpl: async function (contextObj, keying) {
     'use strict'
@@ -1161,7 +1175,8 @@ const IMLibPageNavigation = {
     }
     await INTERMediator.constructMain(nextContext)
     IMLibPageNavigation.setupStepReturnButton('')
-  },
+  }
+  ,
 
   backToPreviousStep: async function () {
     'use strict'
@@ -1179,7 +1194,8 @@ const IMLibPageNavigation = {
     }
     await INTERMediator.constructMain(currentContext)
     await INTERMediator.constructMain(prevInfo.context)
-  },
+  }
+  ,
 
   moveToDetail: function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
     'use strict'
@@ -1192,7 +1208,8 @@ const IMLibPageNavigation = {
     return function () {
       return IMLibPageNavigation.moveToDetailImpl(etag, f, v, mh, pnh)
     }
-  },
+  }
+  ,
 
   moveToDetailImpl: async function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
     'use strict'
@@ -1251,7 +1268,8 @@ const IMLibPageNavigation = {
         INTERMediatorOnPage.naviAfterMoveToDetail(masterContext, detailContext)
       }
     }
-  },
+  }
+  ,
 
   setupDetailAreaToFirstRecord: function (currentContextDef, masterContext) {
     'use strict'
@@ -1278,14 +1296,16 @@ const IMLibPageNavigation = {
         }
       }
     }
-  },
+  }
+  ,
 
   moveDetailOnceAgain: function () {
     'use strict'
     var p = IMLibPageNavigation.previousModeDetail
     IMLibPageNavigation.moveToDetailImpl(
       p.encNodeTag, p.keyField, p.keyValue, p.isHide, p.isHidePageNavi)
-  },
+  }
+  ,
 
   /* --------------------------------------------------------------------
 
