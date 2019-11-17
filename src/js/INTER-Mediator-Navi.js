@@ -37,9 +37,11 @@ const IMLibPageNavigation = {
     'use strict'
     var navigation, i, insideNav, navLabel, node, start, pageSize, allCount, disableClass, c_node,
       prevPageCount, nextPageCount, endPageCount, contextName, contextDef,
-      buttonLabel, dataSource
+      buttonLabel, dataSource, allNavNodes, ix
 
-    while (navigation = nextNavigator()) {
+    allNavNodes = allNavigator()
+    for (ix = 0; ix < allNavNodes.length; ix++) {
+      navigation = allNavNodes[ix]
       if (!IMLibContextPool.getPagingContext()) {
         navigation.style.display = 'none'
         return
@@ -49,7 +51,7 @@ const IMLibPageNavigation = {
         navigation.removeChild(insideNav[i])
       }
       navigation.innerHTML = ''
-      navigation.setAttribute('class', 'IM_NAV_panel')
+      navigation.setAttribute('class', navigation.getAttribute('class') + ' IM_NAV_panel')
       navLabel = INTERMediator.navigationLabel
 
       if (navLabel === null || navLabel[8] !== false) {
@@ -69,16 +71,15 @@ const IMLibPageNavigation = {
       }
 
       if (navLabel === null || navLabel[4] !== false) {
-        start = Number(INTERMediator.startFrom)
+        start = parseInt(INTERMediator.startFrom)
 
         dataSource = IMLibContextPool.getPagingContext().getContextDef()
         if (dataSource && dataSource.maxrecords &&
-          dataSource.maxrecords < parseInt(INTERMediator.pagedSize, 10)) {
+          dataSource.maxrecords < parseInt(INTERMediator.pagedSize)) {
           INTERMediator.pagedSize = dataSource.maxrecords
         }
-
-        pageSize = Number(INTERMediator.pagedSize)
-        allCount = Number(INTERMediator.pagedAllCount)
+        pageSize = parseInt(INTERMediator.pagedSize)
+        allCount = parseInt(INTERMediator.pagedAllCount)
         disableClass = ' IM_NAV_disabled'
         node = document.createElement('SPAN')
         navigation.appendChild(node)
@@ -176,7 +177,7 @@ const IMLibPageNavigation = {
           var targetNode = c_node
           return function () {
             var moveTo, max_page
-            moveTo = INTERMediatorLib.toNumber(targetNode.value)
+            moveTo = parseInt(targetNode.value)
             if (moveTo < 1) {
               moveTo = 1
             }
@@ -311,18 +312,20 @@ const IMLibPageNavigation = {
       }
     }
 
-    function nextNavigator() {
-      var naviIdElement, naviClassElements
+    function allNavigator() {
+      var naviIdElement, naviClassElements, nodes = [], ix
       naviIdElement = document.getElementById('IM_NAVIGATOR')
       if (naviIdElement) {
-        naviIdElement.removeAttribute('id')
-        return naviIdElement
+        //naviIdElement.removeAttribute('id')
+        nodes.push(naviIdElement)
       }
       naviClassElements = document.getElementsByClassName('IM_NAVIGATOR')
       if (naviClassElements) {
-        return naviClassElements[0]
+        for (ix = 0; ix < naviClassElements.length; ix++) {
+          nodes.push(naviClassElements[ix])
+        }
       }
-      return null
+      return nodes
     }
   },
 
@@ -681,7 +684,7 @@ const IMLibPageNavigation = {
     if (currentContextDef.relation ||
       currentContextDef.records === undefined ||
       !currentContextDef.paging ||
-      (currentContextDef.records > 1 && Number(INTERMediator.pagedSize) !== 1)) {
+      (currentContextDef.records > 1 && parseInt(INTERMediator.pagedSize) !== 1)) {
       buttonNode = document.createElement('BUTTON')
       INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Copy')
       buttonName = INTERMediatorOnPage.getMessages()[14]
@@ -741,7 +744,7 @@ const IMLibPageNavigation = {
     if (currentContextDef.relation ||
       currentContextDef.records === undefined ||
       !currentContextDef.paging ||
-      (currentContextDef.records > 1 && Number(INTERMediator.pagedSize) !== 1)) {
+      (currentContextDef.records > 1 && parseInt(INTERMediator.pagedSize) !== 1)) {
       buttonNode = document.createElement('BUTTON')
       INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Delete')
       buttonName = INTERMediatorOnPage.getMessages()[6]

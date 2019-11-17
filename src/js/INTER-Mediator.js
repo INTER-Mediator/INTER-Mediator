@@ -362,6 +362,10 @@ const INTERMediator = {
     if (INTERMediatorOnPage.doBeforeConstruct) {
       INTERMediatorOnPage.doBeforeConstruct()
     }
+    if (updateRequiredContext !== true && updateRequiredContext !== undefined && updateRequiredContext &&
+      INTERMediatorOnPage.doBeforePartialConstruct) {
+      INTERMediatorOnPage.doBeforePartialConstruct(updateRequiredContext)
+    }
     if (!INTERMediatorOnPage.isAutoConstruct) {
       return
     }
@@ -486,6 +490,10 @@ const INTERMediator = {
       }
     }
 
+    if (updateRequiredContext !== true && updateRequiredContext !== undefined && updateRequiredContext &&
+      INTERMediatorOnPage.doAfterPartialConstruct) {
+      INTERMediatorOnPage.doAfterPartialConstruct(updateRequiredContext)
+    }
     if (INTERMediatorOnPage.doAfterConstruct) {
       INTERMediatorOnPage.doAfterConstruct()
     }
@@ -499,7 +507,7 @@ const INTERMediator = {
 
      [1] INTERMediator.constructMain() or INTERMediator.constructMain(true)
      */
-    async function pageConstruct () {
+    async function pageConstruct() {
       let i, bodyNode, emptyElement
 
       IMLibCalc.calculateRequiredObject = {}
@@ -580,7 +588,7 @@ const INTERMediator = {
      * Seeking nodes and if a node is an enclosure, proceed repeating.
      */
 
-    async function seekEnclosureNode (node, currentRecord, parentObjectInfo, currentContextObj) {
+    async function seekEnclosureNode(node, currentRecord, parentObjectInfo, currentContextObj) {
       let children, className, i, attr
       if (node.nodeType === 1) { // Work for an element
         try {
@@ -626,7 +634,7 @@ const INTERMediator = {
     /* --------------------------------------------------------------------
      Post only mode.
      */
-    function setupPostOnlyEnclosure (node) {
+    function setupPostOnlyEnclosure(node) {
       let nodes, postNodes
       postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, '_im_post')
       for (i = 0; i < postNodes.length; i++) {
@@ -653,7 +661,7 @@ const INTERMediator = {
       }
 
       // -------------------------------------------
-      async function seekEnclosureInPostOnly (node) {
+      async function seekEnclosureInPostOnly(node) {
         let children, wInfo, i, target
         if (node.nodeType === 1) { // Work for an element
           try {
@@ -707,7 +715,7 @@ const INTERMediator = {
      * Expanding an enclosure.
      */
 
-    async function expandEnclosure (node, currentRecord, parentObjectInfo, currentContextObj) {
+    async function expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj) {
       let recId, repNodeTag, repeatersOriginal
       let imControl = node.getAttribute('data-im-control')
       if (currentContextObj &&
@@ -731,7 +739,7 @@ const INTERMediator = {
       /** --------------------------------------------------------------------
        * Expanding enclosure as usual (means not 'cross tabole').
        */
-      async function enclosureProcessing (
+      async function enclosureProcessing(
         enclosureNode, repeatersOriginal, currentRecord, parentObjectInfo,
         currentContextObj, procBeforeRetrieve, customExpandRepeater) {
         let linkedNodes, repeaters, linkDefs, voteResult, currentContextDef, fieldList, i, targetRecords,
@@ -871,7 +879,7 @@ const INTERMediator = {
           throw ex
         }
 
-        function seekWithAttribute (node, attrName) {
+        function seekWithAttribute(node, attrName) {
           if (!node || node.nodeType !== 1) {
             return null
           }
@@ -879,7 +887,7 @@ const INTERMediator = {
           return result
         }
 
-        function seekWithAttributeImpl (node, attrName) {
+        function seekWithAttributeImpl(node, attrName) {
           let ix, adding
           let result = []
           if (node && node.nodeType === 1) {
@@ -902,7 +910,7 @@ const INTERMediator = {
       /** --------------------------------------------------------------------
        * expanding enclosure for cross table
        */
-      async function expandCrossTableEnclosure (node, parentObjectInfo, currentContextObj) {
+      async function expandCrossTableEnclosure(node, parentObjectInfo, currentContextObj) {
         let i, j, colArray, rowArray, nodeForKeyValues, record, targetRepeater, lineNode, colContext,
           rowContext, appendingNode, trNodes, repeaters, linkedNodes, linkDefs,
           crossCellContext, labelKeyColumn, labelKeyRow
@@ -1014,13 +1022,13 @@ const INTERMediator = {
       } // The end of function expandCrossTableEnclosure().
 
       // Detect cross table components in a tbody enclosure.
-      function crossTableComponents (node) {
+      function crossTableComponents(node) {
         let components = []
         let count = 0
         repeatCTComponents(node.childNodes)
         return components
 
-        function repeatCTComponents (nodes) {
+        function repeatCTComponents(nodes) {
           let childNodes, i
           for (i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType === 1 && (nodes[i].tagName === 'TH' || nodes[i].tagName === 'TD')) {
@@ -1040,7 +1048,7 @@ const INTERMediator = {
     /** --------------------------------------------------------------------
      * Set the value to node and context.
      */
-    function setupLinkedNode (linkedElements, contextObj, targetRecordset, ix, keyingValue) {
+    function setupLinkedNode(linkedElements, contextObj, targetRecordset, ix, keyingValue) {
       let currentWidgetNodes, currentLinkedNodes, nInfo, currentContextDef, j, keyField, k, nodeId,
         curVal, replacedNode, typeAttr, children, wInfo, nameTable
       let idValuesForFieldName = {}
@@ -1146,7 +1154,7 @@ const INTERMediator = {
     /** --------------------------------------------------------------------
      * Expanding an repeater.
      */
-    async function expandRepeaters (contextObj, node, targetRecords) {
+    async function expandRepeaters(contextObj, node, targetRecords) {
       let newNode, nodeClass, dataAttr, repeatersOneRec, newlyAddedNodes, encNodeTag, repNodeTag, ix,
         repeatersOriginal, targetRecordset, targetTotalCount, i, currentContextDef, indexContext,
         insertNode, countRecord, linkedElements, keyingValue, keyField, keyValue,
@@ -1272,7 +1280,7 @@ const INTERMediator = {
     /* --------------------------------------------------------------------
 
      */
-    async function retrieveDataForEnclosure (contextObj, fieldList, relationValue) {
+    async function retrieveDataForEnclosure(contextObj, fieldList, relationValue) {
       let targetRecords = {}
       let recordNumber, useLimit, key
       let recordset = []
@@ -1338,7 +1346,7 @@ const INTERMediator = {
     /* --------------------------------------------------------------------
      This implementation for cache is quite limited.
      */
-    async function retrieveDataFromCache (currentContextDef, relationValue, completion) {
+    async function retrieveDataFromCache(currentContextDef, relationValue, completion) {
       let targetRecords = null
       let pagingValue, counter, ix, oneRecord, isMatch, index, keyField, fieldName, recordsValue
       try {
@@ -1409,7 +1417,7 @@ const INTERMediator = {
     /* --------------------------------------------------------------------
 
      */
-    function callbackForRepeaters (currentContextDef, node, newlyAddedNodes) {
+    function callbackForRepeaters(currentContextDef, node, newlyAddedNodes) {
       try {
         if (INTERMediatorOnPage.additionalExpandingRecordFinish[currentContextDef.name]) {
           INTERMediatorOnPage.additionalExpandingRecordFinish[currentContextDef.name](node)
@@ -1452,7 +1460,7 @@ const INTERMediator = {
     /* --------------------------------------------------------------------
 
      */
-    function callbackForEnclosure (currentContextDef, node) {
+    function callbackForEnclosure(currentContextDef, node) {
       try {
         if (INTERMediatorOnPage.additionalExpandingEnclosureFinish[currentContextDef.name]) {
           INTERMediatorOnPage.additionalExpandingEnclosureFinish[currentContextDef.name](node)
@@ -1502,7 +1510,7 @@ const INTERMediator = {
     /* --------------------------------------------------------------------
 
      */
-    function callbackForAfterQueryStored (currentContextDef, context) {
+    function callbackForAfterQueryStored(currentContextDef, context) {
       try {
         if (currentContextDef['post-query-stored']) {
           INTERMediatorOnPage[currentContextDef['post-query-stored']](context)
@@ -1523,7 +1531,7 @@ const INTERMediator = {
     /* --------------------------------------------------------------------
 
      */
-    function collectRepeatersOriginal (node, repNodeTag) {
+    function collectRepeatersOriginal(node, repNodeTag) {
       let i
       let repeatersOriginal = []
       let children, imControl
@@ -1559,7 +1567,7 @@ const INTERMediator = {
     /* --------------------------------------------------------------------
 
      */
-    function collectRepeaters (repeatersOriginal) {
+    function collectRepeaters(repeatersOriginal) {
       let i
       let repeaters = []
       let inDocNode, parentOfRep, cloneNode
@@ -1579,7 +1587,7 @@ const INTERMediator = {
     /* --------------------------------------------------------------------
 
      */
-    function collectLinkDefinitions (linkedNodes) {
+    function collectLinkDefinitions(linkedNodes) {
       let linkDefs = []
       let nodeDefs, j, k
       for (j = 0; j < linkedNodes.length; j++) {
@@ -1596,7 +1604,7 @@ const INTERMediator = {
     /* --------------------------------------------------------------------
 
      */
-    function tableVoting (linkDefs) {
+    function tableVoting(linkDefs) {
       let j, nodeInfoArray, nodeInfoField, nodeInfoTable, maxVoted, maxTableName, tableName,
         nodeInfoTableIndex, context
       let restDefs = []
@@ -1658,7 +1666,7 @@ const INTERMediator = {
     /* --------------------------------------------------------------------
 
      */
-    function cloneEveryNodes (originalNodes) {
+    function cloneEveryNodes(originalNodes) {
       let i
       let clonedNodes = []
       for (i = 0; i < originalNodes.length; i++) {
@@ -1670,7 +1678,7 @@ const INTERMediator = {
     /* --------------------------------------------------------------------
 
      */
-    function getEnclosedNode (rootNode, tableName, fieldName) {
+    function getEnclosedNode(rootNode, tableName, fieldName) {
       let i, j, nodeInfo, nInfo, children, r
 
       if (rootNode.nodeType === 1) {
@@ -1695,7 +1703,7 @@ const INTERMediator = {
     /* --------------------------------------------------------------------
 
      */
-    function appendCredit () {
+    function appendCredit() {
       let bodyNode, creditNode, cNode, spNode, aNode, versionString, markNode, mark
 
       if (document.getElementById('IM_CREDIT') === null) {
@@ -1713,31 +1721,31 @@ const INTERMediator = {
 
         cNode = document.createElement('div')
         creditNode.appendChild(cNode)
-        cNode.className = "_im_credit1"
+        cNode.className = '_im_credit1'
         cNode = document.createElement('div')
         creditNode.appendChild(cNode)
-        cNode.className = "_im_credit2"
+        cNode.className = '_im_credit2'
         cNode = document.createElement('div')
         creditNode.appendChild(cNode)
-        cNode.className = "_im_credit3"
+        cNode.className = '_im_credit3'
         cNode = document.createElement('div')
         creditNode.appendChild(cNode)
-        cNode.className = "_im_credit4"
+        cNode.className = '_im_credit4'
 
         spNode = document.createElement('span')
-        spNode.className = "_im_credit_ssstatus"
+        spNode.className = '_im_credit_ssstatus'
         cNode.appendChild(spNode)
         mark = document.createTextNode('Service Server Status:')
         spNode.appendChild(mark)
         markNode = document.createElement('span')
-        markNode.className = "_im_credit_mark"
-        markNode.setAttribute('title','Service Server is a server side helper for just validation on Ver.6.');
+        markNode.className = '_im_credit_mark'
+        markNode.setAttribute('title', 'Service Server is a server side helper for just validation on Ver.6.')
         spNode.appendChild(markNode)
         markNode.appendChild(document.createTextNode('◆'))
         markNode.style.color = INTERMediatorOnPage.serviceServerStatus ? 'green' : 'red'
 
         spNode = document.createElement('span')
-        spNode.className = "_im_credit_vstring"
+        spNode.className = '_im_credit_vstring'
         cNode.appendChild(spNode)
         aNode = document.createElement('a')
         aNode.appendChild(document.createTextNode('INTER-Mediator'))
@@ -1789,7 +1797,7 @@ const INTERMediator = {
     INTERMediator.linkedElmCounter++
     return currentIdValue()
 
-    function currentIdValue () {
+    function currentIdValue() {
       return 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter
     }
   },
@@ -1849,7 +1857,7 @@ const INTERMediator = {
     'use strict'
     let i
     let value = INTERMediator.additionalCondition
-    if (!value){
+    if (!value) {
       value = {}
     }
     if (label === undefined) {

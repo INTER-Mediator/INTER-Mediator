@@ -223,7 +223,7 @@ const IMLibLocalContext = {
               let contextName = params[1]
               return async function () {
                 await IMLibUI.eventUpdateHandler(contextName)
-                IMLibPageNavigation.navigationSetup()
+                //IMLibPageNavigation.navigationSetup()
               }
             })())
             node.setAttribute('data-imchangeadded', 'set')
