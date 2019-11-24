@@ -34,10 +34,12 @@ IM_Entry(
                 ),
             ),
             'messaging' => [
-                'driver' => 'email',
+                'driver' => 'mail',
                 'create' => [
-                    'from' => 'me',
-                    'to' => 'you',
+                    'from-constant' => 'msyk@msyk.net',
+                    'to-constant' => 'msyk@msyk.net',
+                    'subject-constant' => 'Mail From INTER-Mediator',
+                    'body-constant' => 'INTER-Mediator Sample.',
                 ]
             ]
         ),

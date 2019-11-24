@@ -40,7 +40,7 @@
  * @version
  */
 
-namespace INTERMediator;
+namespace INTERMediator\Messaging;
 
 class OME
 {
