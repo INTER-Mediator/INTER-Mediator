@@ -13,21 +13,24 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-namespace INTERMediator;
+namespace INTERMediator\Messaging;
 
-use INTERMediator\DB\Proxy;
-
-class SendMail
+class SendMail implements MessagingProvider
 {
     private $isCompatible = true;
 
     public function __construct()
     {
-        $params = IMUtil::getFromParamsPHPFile(["sendMailCompatibilityMode"], true);
+        $params = \INTERMediator\IMUtil::getFromParamsPHPFile(["sendMailCompatibilityMode"], true);
         $this->isCompatible = $params['sendMailCompatibilityMode'] ? $params['sendMailCompatibilityMode'] : true;
     }
 
-    public function processing($dbProxy, $sendMailParam, $result, $smtpConfig)
+    public function processing($dbProxy, $sendMailParam, $result)
+    {
+        return $this->processingImpl($dbProxy, $sendMailParam, $result, $dbProxy->dbSettings->getSmtpConfiguration());
+    }
+
+    private function processingImpl($dbProxy, $sendMailParam, $result, $smtpConfig)
     {
         if (isset($sendMailParam['template-context'])) {
             $this->isCompatible = false;
@@ -52,7 +55,7 @@ class SendMail
                         'protocol' => 'SMTP_AUTH',
                         'user' => $smtpConfig['username'],
                         'pass' => $smtpConfig['password'],
-                        'encryption' => $smtpConfig['encryption'],
+                        'encryption' => isset($smtpConfig['encryption']) ? $smtpConfig['encryption'] : null,
                     ));
                 } else {
                     $ome->setSmtpInfo(array(
@@ -151,7 +154,7 @@ class SendMail
                     if (count($cParam) == 2) {  // Specify a context and target record criteria
                         $idParam = explode('=', $cParam[1]);
                         if (count($idParam) == 2) {
-                            $storeContext = new DB\Proxy();
+                            $storeContext = new \INTERMediator\DB\Proxy();
                             $storeContext->ignoringPost();
                             $storeContext->initialize(
                                 $dbProxy->dbSettings->getDataSource(),

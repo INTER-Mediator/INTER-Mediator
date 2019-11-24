@@ -161,26 +161,22 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $this->dbClass->notifyHandler->queriedPrimaryKeys()
                 );
             }
-            if (isset($currentDataSource['send-mail']['load'])
-                || isset($currentDataSource['send-mail']['read'])
-            ) {
-                $this->logger->setDebugMessage("Try to send an email.", 2);
-                $mailSender = new \INTERMediator\SendMail();
-                if (isset($currentDataSource['send-mail']['load'])) {
-                    $dataSource = $currentDataSource['send-mail']['load'];
-                } else if (isset($currentDataSource['send-mail']['read'])) {
-                    $dataSource = $currentDataSource['send-mail']['read'];
-                }
-                $mailResult = $mailSender->processing(
-                    $this,
-                    $dataSource,
-                    $result,
-                    $this->dbSettings->getSmtpConfiguration());
-                if ($mailResult !== true) {
-                    $this->logger->setErrorMessage("Mail sending error: $mailResult");
+            // Messaging
+            $msgEntry = isset($currentDataSource['send-mail']) ? $currentDataSource['send-mail'] :
+                (isset($currentDataSource['messaging']) ? $currentDataSource['messaging'] : null);
+            if ($msgEntry) {
+                $msgArray = isset($msgEntry['load']) ? $msgEntry['load'] :
+                    (isset($msgEntry['read']) ? $msgEntry['read'] : null);
+                if ($msgArray) {
+                    $this->logger->setDebugMessage("Try to send a message.", 2);
+                    $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
+                    $msgProxy = new \INTERMediator\Messaging\MessagingProxy($driver);
+                    $msgResult = $msgProxy->processing($this, $msgArray, $result);
+                    if ($msgResult !== true) {
+                        $this->logger->setErrorMessage("Mail sending error: $msgResult");
+                    }
                 }
             }
-
         } catch (\Exception $e) {
             $this->logger->setErrorMessage("Exception:[1] {$e->getMessage()}");
             return false;
@@ -258,23 +254,20 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 }
             }
-            if (isset($currentDataSource['send-mail']['edit'])
-                || isset($currentDataSource['send-mail']['update'])
-            ) {
-                $this->logger->setDebugMessage("Try to send an email.", 2);
-                $mailSender = new \INTERMediator\SendMail();
-                if (isset($currentDataSource['send-mail']['edit'])) {
-                    $dataSource = $currentDataSource['send-mail']['edit'];
-                } else if (isset($currentDataSource['send-mail']['update'])) {
-                    $dataSource = $currentDataSource['send-mail']['update'];
-                }
-                $mailResult = $mailSender->processing(
-                    $this,
-                    $dataSource,
-                    $this->dbClass->updatedRecord(),
-                    $this->dbSettings->getSmtpConfiguration());
-                if ($mailResult !== true) {
-                    $this->logger->setErrorMessage("Mail sending error: $mailResult");
+            // Messaging
+            $msgEntry = isset($currentDataSource['send-mail']) ? $currentDataSource['send-mail'] :
+                (isset($currentDataSource['messaging']) ? $currentDataSource['messaging'] : null);
+            if ($msgEntry) {
+                $msgArray = isset($msgEntry['edit']) ? $msgEntry['edit'] :
+                    (isset($msgEntry['update']) ? $msgEntry['update'] : null);
+                if ($msgArray) {
+                    $this->logger->setDebugMessage("Try to send a message.", 2);
+                    $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
+                    $msgProxy = new \INTERMediator\Messaging\MessagingProxy($driver);
+                    $msgResult = $msgProxy->processing($this, $msgArray, $result);
+                    if ($msgResult !== true) {
+                        $this->logger->setErrorMessage("Mail sending error: $msgResult");
+                    }
                 }
             }
         } catch (\Exception $e) {
@@ -323,23 +316,20 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 }
             }
-            if (isset($currentDataSource['send-mail']['new']) ||
-                isset($currentDataSource['send-mail']['create'])
-            ) {
-                $this->logger->setDebugMessage("Try to send an email.");
-                $mailSender = new \INTERMediator\SendMail();
-                if (isset($currentDataSource['send-mail']['new'])) {
-                    $dataSource = $currentDataSource['send-mail']['new'];
-                } else if (isset($currentDataSource['send-mail']['create'])) {
-                    $dataSource = $currentDataSource['send-mail']['create'];
-                }
-                $mailResult = $mailSender->processing(
-                    $this,
-                    $dataSource,
-                    $this->dbClass->updatedRecord(),
-                    $this->dbSettings->getSmtpConfiguration());
-                if ($mailResult !== true) {
-                    $this->logger->setErrorMessage("Mail sending error: $mailResult");
+            // Messaging
+            $msgEntry = isset($currentDataSource['send-mail']) ? $currentDataSource['send-mail'] :
+                (isset($currentDataSource['messaging']) ? $currentDataSource['messaging'] : null);
+            if ($msgEntry) {
+                $msgArray = isset($msgEntry['new']) ? $msgEntry['new'] :
+                    (isset($msgEntry['create']) ? $msgEntry['create'] : null);
+                if ($msgArray) {
+                    $this->logger->setDebugMessage("Try to send a message with driver '{$msgEntry['driver']}'.", 2);
+                    $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
+                    $msgProxy = new \INTERMediator\Messaging\MessagingProxy($driver);
+                    $msgResult = $msgProxy->processing($this, $msgArray, $result);
+                    if ($msgResult !== true) {
+                        $this->logger->setErrorMessage("Mail sending error: $msgResult");
+                    }
                 }
             }
         } catch (\Exception $e) {
@@ -980,7 +970,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 }
                 $calcFields = [];
-                if(isset($this->dbSettings->getDataSourceTargetArray()['calculation'])) {
+                if (isset($this->dbSettings->getDataSourceTargetArray()['calculation'])) {
                     foreach ($this->dbSettings->getDataSourceTargetArray()['calculation'] as $entry) {
                         $calcFields[] = $entry['field'];
                     }
