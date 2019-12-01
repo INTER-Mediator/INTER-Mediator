@@ -14,8 +14,7 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace INTERMediator\DB\Support;
-use \PDO;
-use \Exception;
+use Exception;
 
 class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
 {
@@ -70,7 +69,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
             'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money',
             'timestamp', 'date', 'time', 'interval', );
         $matches = array();
-        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             preg_match("/[a-z ]+/", strtolower($row[$fieldNameForType]), $matches);
             if ($row[$fieldNameForNullable] &&
                 in_array($matches[0], $numericFieldTypes)
@@ -130,7 +129,7 @@ test_db       | im_sample    | person     | memo        |
         }
         $fieldArray = array();
         $listArray = array();
-        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             if ($keyField === $row['column_name'] || !is_null($row['column_default'])) {
 
             } else if ($assocField === $row['column_name']) {
