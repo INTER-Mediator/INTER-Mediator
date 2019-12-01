@@ -16,6 +16,12 @@
 
 namespace INTERMediator\DB;
 
+use INTERMediator\IMUtil;
+use INTERMediator\LDAPAuth;
+use INTERMediator\Locale\IMLocale;
+use INTERMediator\Messaging\MessagingProxy;
+use INTERMediator\ServiceServerProxy;
+
 class Proxy extends UseSharedObjects implements Proxy_Interface
 {
     /**
@@ -117,7 +123,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
             header('Expires: 0');
             header('X-Content-Type-Options: nosniff');
-            $util = new \INTERMediator\IMUtil();
+            $util = new IMUtil();
             $util->outputSecurityHeaders();
         }
     }
@@ -170,7 +176,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 if ($msgArray) {
                     $this->logger->setDebugMessage("Try to send a message.", 2);
                     $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
-                    $msgProxy = new \INTERMediator\Messaging\MessagingProxy($driver);
+                    $msgProxy = new MessagingProxy($driver);
                     $msgResult = $msgProxy->processing($this, $msgArray, $result);
                     if ($msgResult !== true) {
                         $this->logger->setErrorMessage("Mail sending error: $msgResult");
@@ -263,7 +269,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 if ($msgArray) {
                     $this->logger->setDebugMessage("Try to send a message.", 2);
                     $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
-                    $msgProxy = new \INTERMediator\Messaging\MessagingProxy($driver);
+                    $msgProxy = new MessagingProxy($driver);
                     $msgResult = $msgProxy->processing($this, $msgArray, $result);
                     if ($msgResult !== true) {
                         $this->logger->setErrorMessage("Mail sending error: $msgResult");
@@ -325,7 +331,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 if ($msgArray) {
                     $this->logger->setDebugMessage("Try to send a message with driver '{$msgEntry['driver']}'.", 2);
                     $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
-                    $msgProxy = new \INTERMediator\Messaging\MessagingProxy($driver);
+                    $msgProxy = new MessagingProxy($driver);
                     $msgResult = $msgProxy->processing($this, $msgArray, $result);
                     if ($msgResult !== true) {
                         $this->logger->setErrorMessage("Mail sending error: $msgResult");
@@ -481,7 +487,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->PostData = $this->ignorePost ? array() : $_POST;
         $this->setUpSharedObjects();
 
-        $params = \INTERMediator\IMUtil::getFromParamsPHPFile(array(
+        $params = IMUtil::getFromParamsPHPFile(array(
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
             "dbOption", "dbDSN", "pusherParameters", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
         ), true);
@@ -489,7 +495,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->clientSyncAvailable = \INTERMediator\ServiceServerProxy::instance()->checkServiceServer();
         $this->dbSettings->setDataSource($datasource);
         $this->dbSettings->setOptions($options);
-        \INTERMediator\Locale\IMLocale::$options = $options;
+        IMLocale::$options = $options;
         $this->dbSettings->setDbSpec($dbspec);
 
         $this->dbSettings->setSeparator(isset($options['separator']) ? $options['separator'] : '@');
@@ -497,7 +503,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->dbSettings->setDataSourceName(!is_null($target) ? $target : (isset($this->PostData['name']) ? $this->PostData['name'] : "_im_auth"));
         $context = $this->dbSettings->getDataSourceTargetArray();
 
-        $dbClassName = '\\INTERMediator\\DB\\' .
+        $dbClassName = 'INTERMediator\\DB\\' .
             (isset($context['db-class']) ? $context['db-class'] :
                 (isset($dbspec['db-class']) ? $dbspec['db-class'] :
                     (isset ($params['dbClass']) ? $params['$dbClass'] : '')));
@@ -671,7 +677,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             if (!isset($this->PostData["value_{$i}"])) {
                 break;
             }
-            $value = \INTERMediator\IMUtil::removeNull(filter_var($this->PostData["value_{$i}"]));
+            $value = IMUtil::removeNull(filter_var($this->PostData["value_{$i}"]));
             $this->dbSettings->addValue(get_magic_quotes_gpc() ? stripslashes($value) : $value);
         }
         if (isset($options['authentication']) && isset($options['authentication']['email-as-username'])) {
@@ -729,7 +735,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $options = $this->dbSettings->getAuthentication();
 
         //$this->outputOfProcessing = array();
-        $messageClass = \INTERMediator\IMUtil::getMessageClassInstance();
+        $messageClass = IMUtil::getMessageClassInstance();
 
         /* Aggregation Judgement */
         $isSelect = $this->dbSettings->getAggregationSelect();
@@ -831,7 +837,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($this->paramAuthUser);
 
                     $authSucceed = false;
-                    $ldap = new \INTERMediator\LDAPAuth();
+                    $ldap = new LDAPAuth();
                     $ldap->setLogger($this->logger);
                     if ($this->checkAuthorization($signedUser, $this->paramResponse, $this->clientId, $ldap->isActive)) {
                         $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
@@ -1071,7 +1077,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $generatedPrivateKey = '';
         $passPhrase = '';
 
-        $imRootDir = \INTERMediator\IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
+        $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
         $currentDirParam = $imRootDir . 'params.php';
         $parentDirParam = dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php';
         if (file_exists($parentDirParam)) {
@@ -1381,7 +1387,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $counter++;
             }
 
-            $serviceServer = \INTERMediator\ServiceServerProxy::instance();
+            $serviceServer = ServiceServerProxy::instance();
             $inValid = false;
             foreach ($tableInfo['validation'] as $entry) {
                 if (array_key_exists($entry['field'], $reqestedFieldValue)) {

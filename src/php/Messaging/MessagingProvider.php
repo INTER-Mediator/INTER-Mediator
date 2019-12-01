@@ -20,7 +20,7 @@ namespace INTERMediator\Messaging;
  * Interface MessagingProvider
  * @package INTERMediator\Messaging
  */
-interface MessagingProvider
+abstract class MessagingProvider
 {
     /**
      * @param $dbProxy The DB\Proxy class's instance.
@@ -28,5 +28,24 @@ interface MessagingProvider
      * @param $result The result of query or other db operations.
      * @return mixed (No return)
      */
-    public function processing($dbProxy, $contextDef, $result);
+    public abstract function processing($dbProxy, $contextDef, $result);
+
+    protected function modernTemplating($record, $tempStr)
+    {
+        $bodyStr = $tempStr;
+        if (strlen($tempStr) > 5) {
+            $startPos = strpos($bodyStr, '@@', 0);
+            $endPos = strpos($bodyStr, '@@', $startPos + 2);
+            while ($startPos !== false && $endPos !== false) {
+                $fieldName = trim(substr($bodyStr, $startPos + 2, $endPos - $startPos - 2));
+                $bodyStr = substr($bodyStr, 0, $startPos) .
+                    (isset($record[$fieldName]) ? $record[$fieldName] :
+                        (($record[$fieldName] == NULL) ? '' : '=field not exist=')) .
+                    substr($bodyStr, $endPos + 2);
+                $startPos = strpos($bodyStr, '@@');
+                $endPos = strpos($bodyStr, '@@', $startPos + 2);
+            }
+        }
+        return $bodyStr;
+    }
 }

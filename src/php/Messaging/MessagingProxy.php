@@ -16,14 +16,14 @@
 
 namespace INTERMediator\Messaging;
 
-class MessagingProxy implements MessagingProvider
+class MessagingProxy extends MessagingProvider
 {
     private $msgProvider;
 
     public function __construct($driver)
     {
         $className = ucfirst(strtolower(mb_ereg_replace('([a-zA-Z]+)', '\1', $driver)));
-        $className = "\\INTERMediator\\Messaging\\Send{$className}";
+        $className = "INTERMediator\\Messaging\\Send{$className}";
         $this->msgProvider = new $className;
     }
 

@@ -1,4 +1,6 @@
 <?php
+
+use INTERMediator\IMUtil;
 use PHPUnit\Framework\TestCase;
 
 class VM_Test extends TestCase
@@ -7,7 +9,7 @@ class VM_Test extends TestCase
     public function test_checkVersionString()
     {
         $expected = '';
-        $imPath = \INTERMediator\IMUtil::pathToINTERMediator();
+        $imPath = IMUtil::pathToINTERMediator();
         $content = file_get_contents($imPath . DIRECTORY_SEPARATOR . 'dist-docs' . DIRECTORY_SEPARATOR . 'change_log.txt');
         $pos = strpos($content, 'Ver.');
         if ($pos !== FALSE) {

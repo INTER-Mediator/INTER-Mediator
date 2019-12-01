@@ -232,6 +232,10 @@ class DefinitionChecker
             'secret' => 'string',
             'channel' => 'string',
         ),
+        'slack' => array(
+            'token' => 'string',
+            'channel' => 'string',
+        ),
         'credit-including' => 'string',
         'theme' => 'string',
         'app-locale' => 'string',
