@@ -14,8 +14,7 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace INTERMediator\DB\Support;
-use \PDO;
-use \Exception;
+use Exception;
 
 class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 {
@@ -70,7 +69,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
             'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2', 'int8',
             'double', 'double precision', 'float', 'decimal', 'boolean', 'date', 'datetime',);
         $matches = array();
-        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             preg_match("/[a-z ]+/", strtolower($row[$fieldNameForType]), $matches);
             if (!$row[$fieldNameForNullable] &&
                 in_array($matches[0], $numericFieldTypes)
@@ -121,7 +120,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         }
         $fieldArray = array();
         $listArray = array();
-        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             if ($keyField === $row['name'] || !is_null($row['dflt_value'])) {
 
             } else if ($assocField === $row['name']) {
