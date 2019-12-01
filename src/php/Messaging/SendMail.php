@@ -109,18 +109,7 @@ class SendMail extends MessagingProvider
                     $ome->setFromField($result[$i][$sendMailParam['from']]);
                 }
                 if (isset($sendMailParam['subject-constant'])) {
-                    $subjectStr = $sendMailParam['subject-constant'];
-                    $startPos = strpos($subjectStr, '@@');
-                    $endPos = strpos($subjectStr, '@@', $startPos + 2);
-                    while ($startPos !== false && $endPos !== false) {
-                        $fieldName = trim(substr($subjectStr, $startPos + 2, $endPos - $startPos - 2));
-                        $subjectStr = substr($subjectStr, 0, $startPos) .
-                            (isset($result[$i][$fieldName]) ? $result[$i][$fieldName] : '') .
-                            substr($subjectStr, $endPos + 2);
-                        $startPos = strpos($subjectStr, '@@');
-                        $endPos = strpos($subjectStr, '@@', $startPos + 2);
-                    }
-                    $ome->setSubject($subjectStr);
+                    $ome->setSubject($this->modernTemplating($result[$i], $sendMailParam['subject-constant']), true);
                 } else if (isset($result[$i]) && isset($sendMailParam['subject']) && isset($result[$i][$sendMailParam['subject']])) {
                     $ome->setSubject($result[$i][$sendMailParam['subject']]);
                 }
@@ -142,7 +131,7 @@ class SendMail extends MessagingProvider
                     }
                     $ome->insertToTemplate($dataArray);
                 } else if (isset($sendMailParam['body-constant'])) {
-                    $ome->setBody($this->modernTemplating($result[$i], $sendMailParam['body-constant']));
+                    $ome->setBody($this->modernTemplating($result[$i], $sendMailParam['body-constant']), true);
                 } else if (isset($result[$i]) && $sendMailParam['body'] && isset($result[$i][$sendMailParam['body']])) {
                     $ome->setBody($result[$i][$sendMailParam['body']]);
                 }

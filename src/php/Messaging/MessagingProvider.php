@@ -30,9 +30,12 @@ abstract class MessagingProvider
      */
     public abstract function processing($dbProxy, $contextDef, $result);
 
-    protected function modernTemplating($record, $tempStr)
+    protected function modernTemplating($record, $tempStr, $ignoreField = false)
     {
         $bodyStr = $tempStr;
+        if(!$ignoreField && isset($record[$tempStr])){
+            $bodyStr = $record[$tempStr];
+        }
         if (strlen($tempStr) > 5) {
             $startPos = strpos($bodyStr, '@@', 0);
             $endPos = strpos($bodyStr, '@@', $startPos + 2);
