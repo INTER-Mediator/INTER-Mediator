@@ -13,7 +13,8 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace INTERMediator\DB\Support;
-use \Datetime;
+use Datetime;
+use INTERMediator\IMUtil;
 
 class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interface_DB
 {
@@ -520,7 +521,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         }
         $this->dbClass->setupFXforAuth($hashTable, 1);
         $this->dbClass->fxAuth->AddDBParam("hash", $hash);
-        $this->dbClass->fxAuth->AddDBParam("expired", \INTERMediator\IMUtil::currentDTStringFMS());
+        $this->dbClass->fxAuth->AddDBParam("expired", IMUtil::currentDTStringFMS());
         $this->dbClass->fxAuth->AddDBParam("user_id", $userid);
         $result = $this->dbClass->fxAuth->DoFxAction('new', TRUE, TRUE, 'full');
         if (!is_array($result)) {
@@ -541,7 +542,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         $this->dbClass->setupFXforAuth($hashTable, 1);
         $this->dbClass->fxAuth->AddDBParam("hash", $hash, "eq");
         $this->dbClass->fxAuth->AddDBParam("clienthost", "", "eq");
-        $this->dbClass->fxAuth->AddDBParam("expired", \INTERMediator\IMUtil::currentDTStringFMS(3600), "gt");
+        $this->dbClass->fxAuth->AddDBParam("expired", IMUtil::currentDTStringFMS(3600), "gt");
         $result = $this->dbClass->fxAuth->DoFxAction('perform_find', TRUE, TRUE, 'full');
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());

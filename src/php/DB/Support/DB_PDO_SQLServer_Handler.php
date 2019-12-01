@@ -74,7 +74,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
             'float', 'hierarchyid', 'int', 'money', 'numeric', 'real', 'smalldatetime', 'smallint',
             'smallmoney', 'time', 'timestamp', 'tinyint',);
         $matches = array();
-        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             preg_match("/[a-z]+/", strtolower($row[$fieldNameForType]), $matches);
             if ($row[$fieldNameForNullable] &&
                 in_array($matches[0], $numericFieldTypes)
@@ -134,31 +134,31 @@ date
 datetime
 datetime2
 datetimeoffset
-decimal 
-float 
+decimal
+float
 geography
 geometry
 hierarchyid
-image 
+image
 int
-money 
-nchar 
-ntext 
-numeric 
+money
+nchar
+ntext
+numeric
 nvarchar
 real
 smalldatetime
 smallint
-smallmoney 
+smallmoney
 sql_variant
-sysname 
+sysname
 text
 time
 timestamp
-tinyint 
+tinyint
 uniqueidentifier
 varbinary
-varchar 
+varchar
 xml
 
     */
@@ -172,7 +172,7 @@ xml
         }
         $fieldArray = array();
         $listArray = array();
-        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             $quatedFieldName = $this->quotedEntityName($row['name']);
             if ($keyField === $row['name'] || $row['is_identity'] === 1) {
                 // skip key field to asign value.

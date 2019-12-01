@@ -194,9 +194,9 @@ class IMUtil
                 if (strlen($langCountry[0]) > 0) {
                     $clientLang = explode('-', $langCountry[0]);
                     if ($clientLang[0] === 'en') {
-                        $messageClass = "\INTERMediator\Message\MessageStrings";
+                        $messageClass = "INTERMediator\Message\MessageStrings";
                     } else {
-                        $messageClass = "\INTERMediator\Message\MessageStrings_{$clientLang[0]}";
+                        $messageClass = "INTERMediator\Message\MessageStrings_{$clientLang[0]}";
                     }
                     try {
                         $messageClass = new $messageClass();

@@ -2,9 +2,9 @@
 /**
  * MediaAccess_Test file
  */
-use \PHPUnit\Framework\TestCase;
-use \INTERMediator\MediaAccess;
-//require_once(dirname(__FILE__) . '/../MediaAccess.php');
+
+use INTERMediator\MediaAccess;
+use PHPUnit\Framework\TestCase;
 
 class MediaAccess_Test extends TestCase
 {
@@ -19,10 +19,10 @@ class MediaAccess_Test extends TestCase
             $this->reflectionClass = new ReflectionClass('\INTERMediator\MediaAccess');
             $disposition = $this->reflectionClass->getProperty('disposition');
             $disposition->setAccessible(true);
-        
+
             $expected = 'inline';
             $this->assertEquals($expected, $disposition->getValue($this->mediaaccess));
-        
+
             $expected = 'attachment';
             $attachment = $this->reflectionClass->getMethod('asAttachment');
             $attachment->setAccessible(true);
@@ -36,7 +36,7 @@ class MediaAccess_Test extends TestCase
         if (((float)phpversion()) >= 5.3) {
             $this->reflectionMethod = new ReflectionMethod('\INTERMediator\MediaAccess', 'exitAsError');
             $this->reflectionMethod->setAccessible(true);
-    
+
             $code = '';
             $expected = 'Respond HTTP Error.';
             try {

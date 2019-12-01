@@ -14,8 +14,8 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace INTERMediator\DB\Support;
-use \PDO;
-use \Exception;
+use Exception;
+use PDO;
 
 class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 {
@@ -70,7 +70,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
             'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision',
             'date', 'datetime', 'timestamp', 'time', 'year',);
         $matches = array();
-        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             preg_match("/[a-z]+/", strtolower($row[$fieldNameForType]), $matches);
             if ($row[$fieldNameForNullable] &&
                 in_array($matches[0], $numericFieldTypes)
@@ -121,7 +121,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         }
         $fieldArray = array();
         $listArray = array();
-        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             if ($keyField === $row['Field'] || !is_null($row['Default'])) {
                 // skip key field to asing value.
             } else if ($assocField === $row['Field']) {

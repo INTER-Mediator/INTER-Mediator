@@ -16,6 +16,8 @@
 
 namespace INTERMediator\Locale;
 
+use INTERMediator\IMUtil;
+
 class IMLocaleFormatTable
 {
     public static function getCurrentLocaleFormat()
@@ -24,7 +26,7 @@ class IMLocaleFormatTable
         if (isset(IMLocaleFormatTable::$localeInfoTable[IMLocale::$choosenLocale])) {
             $info = array_merge($info, IMLocaleFormatTable::$localeInfoTable[IMLocale::$choosenLocale]);
         } else {
-            if (\INTERMediator\IMUtil::isPHPExecutingWindows()) {
+            if (IMUtil::isPHPExecutingWindows()) {
                 $info = array_merge($info, IMLocaleFormatTable::$localeInfoTable["en"]);
             } else {
                 $info["ABDAY"] = array(

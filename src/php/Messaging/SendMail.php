@@ -13,11 +13,12 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-namespace INTERMediator;
+namespace INTERMediator\Messaging;
 
 use INTERMediator\DB\Proxy;
+use INTERMediator\IMUtil;
 
-class SendMail
+class SendMail extends MessagingProvider
 {
     private $isCompatible = true;
 
@@ -27,7 +28,12 @@ class SendMail
         $this->isCompatible = $params['sendMailCompatibilityMode'] ? $params['sendMailCompatibilityMode'] : true;
     }
 
-    public function processing($dbProxy, $sendMailParam, $result, $smtpConfig)
+    public function processing($dbProxy, $sendMailParam, $result)
+    {
+        return $this->processingImpl($dbProxy, $sendMailParam, $result, $dbProxy->dbSettings->getSmtpConfiguration());
+    }
+
+    private function processingImpl($dbProxy, $sendMailParam, $result, $smtpConfig)
     {
         if (isset($sendMailParam['template-context'])) {
             $this->isCompatible = false;
@@ -52,7 +58,7 @@ class SendMail
                         'protocol' => 'SMTP_AUTH',
                         'user' => $smtpConfig['username'],
                         'pass' => $smtpConfig['password'],
-                        'encryption' => $smtpConfig['encryption'],
+                        'encryption' => isset($smtpConfig['encryption']) ? $smtpConfig['encryption'] : null,
                     ));
                 } else {
                     $ome->setSmtpInfo(array(
@@ -103,18 +109,7 @@ class SendMail
                     $ome->setFromField($result[$i][$sendMailParam['from']]);
                 }
                 if (isset($sendMailParam['subject-constant'])) {
-                    $subjectStr = $sendMailParam['subject-constant'];
-                    $startPos = strpos($subjectStr, '@@');
-                    $endPos = strpos($subjectStr, '@@', $startPos + 2);
-                    while ($startPos !== false && $endPos !== false) {
-                        $fieldName = trim(substr($subjectStr, $startPos + 2, $endPos - $startPos - 2));
-                        $subjectStr = substr($subjectStr, 0, $startPos) .
-                            (isset($result[$i][$fieldName]) ? $result[$i][$fieldName] : '') .
-                            substr($subjectStr, $endPos + 2);
-                        $startPos = strpos($subjectStr, '@@');
-                        $endPos = strpos($subjectStr, '@@', $startPos + 2);
-                    }
-                    $ome->setSubject($subjectStr);
+                    $ome->setSubject($this->modernTemplating($result[$i], $sendMailParam['subject-constant']), true);
                 } else if (isset($result[$i]) && isset($sendMailParam['subject']) && isset($result[$i][$sendMailParam['subject']])) {
                     $ome->setSubject($result[$i][$sendMailParam['subject']]);
                 }
@@ -136,7 +131,7 @@ class SendMail
                     }
                     $ome->insertToTemplate($dataArray);
                 } else if (isset($sendMailParam['body-constant'])) {
-                    $ome->setBody($this->modernTemplating($result[$i], $sendMailParam['body-constant']));
+                    $ome->setBody($this->modernTemplating($result[$i], $sendMailParam['body-constant']), true);
                 } else if (isset($result[$i]) && $sendMailParam['body'] && isset($result[$i][$sendMailParam['body']])) {
                     $ome->setBody($result[$i][$sendMailParam['body']]);
                 }
@@ -151,7 +146,7 @@ class SendMail
                     if (count($cParam) == 2) {  // Specify a context and target record criteria
                         $idParam = explode('=', $cParam[1]);
                         if (count($idParam) == 2) {
-                            $storeContext = new DB\Proxy();
+                            $storeContext = new Proxy();
                             $storeContext->ignoringPost();
                             $storeContext->initialize(
                                 $dbProxy->dbSettings->getDataSource(),
@@ -209,7 +204,7 @@ class SendMail
             }
             if ($ome->send()) {
                 if (isset($sendMailParam['store'])) {
-                    $storeContext = new DB\Proxy();
+                    $storeContext = new Proxy();
                     $storeContext->ignoringPost();
                     $storeContext->initialize(
                         $dbProxy->dbSettings->getDataSource(),
@@ -252,24 +247,5 @@ class SendMail
             return $errorMsg;
         }
         return true;
-    }
-
-    private function modernTemplating($record, $tempStr)
-    {
-        $bodyStr = $tempStr;
-        if (strlen($tempStr) > 5) {
-            $startPos = strpos($bodyStr, '@@', 0);
-            $endPos = strpos($bodyStr, '@@', $startPos + 2);
-            while ($startPos !== false && $endPos !== false) {
-                $fieldName = trim(substr($bodyStr, $startPos + 2, $endPos - $startPos - 2));
-                $bodyStr = substr($bodyStr, 0, $startPos) .
-                    (isset($record[$fieldName]) ? $record[$fieldName] :
-                        (($record[$fieldName] == NULL) ? '' : '=field not exist=')) .
-                    substr($bodyStr, $endPos + 2);
-                $startPos = strpos($bodyStr, '@@');
-                $endPos = strpos($bodyStr, '@@', $startPos + 2);
-            }
-        }
-        return $bodyStr;
     }
 }

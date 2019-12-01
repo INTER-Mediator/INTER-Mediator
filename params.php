@@ -244,3 +244,9 @@ $preventSSAutoBoot = false;
 $messages['default'][1022] = "We don't support Internet Explorer. We'd like you to access by Edge or any other major browsers.";
 $messages['ja'][1022] = "Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。";
 // These messages are for sample purpose but they are used for unit tests. If you modify them, you have to care about the test code.
+
+// Slack posting token and channel. You must create the Slack App permitting 'chat:write:bot' and generate OAuth2 token.
+$slackParameters = [
+    "token"=>'xoxp-XXXXXXXXXXX-XXXXXXXXXXX-XXXXXXXXXXXX-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+    "channel" => 'message-posting-test',
+];

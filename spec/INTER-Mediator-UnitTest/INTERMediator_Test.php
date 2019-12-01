@@ -2,10 +2,12 @@
 /**
  * INTERMediator_Test file
  */
-use \PHPUnit\Framework\TestCase;
-use \INTERMediator\DB\Proxy;
-use \INTERMediator\Locale\IMLocale;
-use \INTERMediator\IMUtil;
+
+use INTERMediator\DB\Proxy;
+use INTERMediator\IMUtil;
+use INTERMediator\Locale\IMLocale;
+use PHPUnit\Framework\TestCase;
+
 //require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
 //spl_autoload_register('loadClass');
 

@@ -14,11 +14,10 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace INTERMediator\DB\Support;
-use \PDO;
 
-class DB_Notification_Handler_PDO
-    extends DB_Notification_Common
-    implements DB_Interface_Registering
+use INTERMediator\IMUtil;
+
+class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_Interface_Registering
 {
     public function isExistRequiredTable()
     {
@@ -51,7 +50,7 @@ class DB_Notification_Handler_PDO
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $currentDTFormat = \INTERMediator\IMUtil::currentDTString();
+        $currentDTFormat = IMUtil::currentDTString();
         $sql = "{$this->dbClass->handler->sqlINSERTCommand()}{$regTable} (clientid,entity,conditions,registereddt) VALUES("
             . implode(',', array(
                 $this->dbClass->link->quote($clientId),
@@ -145,7 +144,7 @@ class DB_Notification_Handler_PDO
                     $this->dbClass->errorMessageStore('Select:' . $sql);
                     return false;
                 }
-                foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
                     $contextIds[] = $row['id'];
                 }
             }
@@ -191,7 +190,7 @@ class DB_Notification_Handler_PDO
             return false;
         }
         $targetClients = array();
-        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             $targetClients[] = $row['clientid'];
         }
         return array_unique($targetClients);
@@ -212,7 +211,7 @@ class DB_Notification_Handler_PDO
             return false;
         }
         $targetClients = array();
-        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             $targetClients[] = $row['clientid'];
             $sql = "{$this->dbClass->handler->sqlINSERTCommand()}{$pksTable} (context_id,pk) VALUES(" . $this->dbClass->link->quote($row['id']) .
                 "," . $this->dbClass->link->quote($pkArray[0]) . ")";
@@ -243,7 +242,7 @@ class DB_Notification_Handler_PDO
             return false;
         }
         $targetClients = array();
-        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             $targetClients[] = $row['clientid'];
             $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$pksTable} WHERE context_id = " . $this->dbClass->link->quote($row['id']) .
                 " AND pk = " . $this->dbClass->link->quote($pkArray[0]);

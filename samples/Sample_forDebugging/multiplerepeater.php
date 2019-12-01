@@ -13,9 +13,19 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-require_once('src/php/INTER-Mediator.php');
+require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 
-function IM_Entry($datasource, $options, $dbspecification, $debug = false)
-{
-    INTERMediator\IM_Entry($datasource, $options, $dbspecification, $debug);
-}
+IM_Entry(
+    [
+        [
+            'name' => 'postalcode',
+            'key' => 'id',
+            'records' => 5,
+            'paging' => true,
+            'repeat-control' => 'insert delete copy',
+        ]
+    ],
+    [],
+    ['db-class' => 'PDO'],
+    false
+);

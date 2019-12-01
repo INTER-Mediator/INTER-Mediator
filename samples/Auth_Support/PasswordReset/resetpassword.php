@@ -6,6 +6,9 @@
  * Time: 20:39
  * To change this template use File | Settings | File Templates.
  */
+
+use INTERMediator\DB\Proxy;
+
 session_start(); // this MUST be called prior to any output including whitespaces and line breaks!
 
 $message = '';
@@ -22,7 +25,7 @@ if (count($_POST) > 0) {
     $hashedpw = preg_replace('/[^0-9A-Fa-f]/', '', $_POST['hashedpw']);
 
     require_once('../../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
-    $dbInstance = new \INTERMediator\DB\Proxy();
+    $dbInstance = new Proxy();
     $dbInstance->initialize(
         array(),
         array('authentication' => array('email-as-username' => true,),),
@@ -33,7 +36,7 @@ if (count($_POST) > 0) {
 //    $dbInstance->exportOutputDataAsJSON();
 
     if ($result) {
-        $dbInstance = new \INTERMediator\DB\Proxy();
+        $dbInstance = new Proxy();
         $dbInstance->initialize(
             array(
                 array(
