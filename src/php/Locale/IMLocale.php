@@ -16,8 +16,7 @@
 
 namespace INTERMediator\Locale;
 
-//require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.php');
-//spl_autoload_register('loadClass');
+use INTERMediator\IMUtil;
 
 class IMLocale
 {
@@ -53,7 +52,7 @@ class IMLocale
         $isSetCurrency = false;
         $appLocale = null;
         $appCurrency = null;
-        $params = \INTERMediator\IMUtil::getFromParamsPHPFile(array("appLocale", "appCurrency",), true);
+        $params = IMUtil::getFromParamsPHPFile(array("appLocale", "appCurrency",), true);
         $appLocale = isset(IMLocale::$options['app-locale']) ? IMLocale::$options['app-locale'] : $params["appLocale"];
         $appCurrency = isset(IMLocale::$options['app-currency']) ? IMLocale::$options['app-currency'] : $params["appCurrency"];
 

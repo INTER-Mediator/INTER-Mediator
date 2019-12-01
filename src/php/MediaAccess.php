@@ -14,7 +14,7 @@
  */
 namespace INTERMediator;
 
-use \Exception;
+use Exception;
 
 class MediaAccess
 {
@@ -182,7 +182,7 @@ class MediaAccess
                 $passPhrase = '';
                 $generatedPrivateKey = ''; // avoid errors for defined in params.php.
 
-                $imRootDir = \INTERMediator\IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
+                $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
                 $currentDirParam = $imRootDir . 'params.php';
                 $parentDirParam = dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php';
                 if (file_exists($parentDirParam)) {

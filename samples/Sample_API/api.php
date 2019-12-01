@@ -15,6 +15,7 @@
 
 require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 //spl_autoload_register('loadClass');
+use INTERMediator\DB\Proxy;
 
 $pid = mb_eregi_replace("/[^0-9]/", "", $_GET["id"]);
 if ($pid < 1) {
@@ -31,7 +32,7 @@ $contextDef = array(
         'sort' => array(array('field' => 'name', 'direction' => 'ASC'),),
     ),
 );
-$dbInstance = new \INTERMediator\DB\Proxy();
+$dbInstance = new Proxy();
 $dbInstance->ignoringPost();
 $dbInstance->initialize($contextDef, array(), array("db-class" => "PDO"), 2, "product");
 $dbInstance->dbSettings->addExtraCriteria("id", "=", $pid);

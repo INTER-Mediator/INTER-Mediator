@@ -6,6 +6,9 @@
  * Time: 17:54
  * To change this template use File | Settings | File Templates.
  */
+
+use INTERMediator\DB\Proxy;
+
 session_start(); // this MUST be called prior to any output including whitespaces and line breaks!
 
 $message = '';
@@ -20,7 +23,7 @@ if (count($_POST) > 0) {
         $message .= 'メールアドレスの形式が正しくありません。';
     } else {
         require_once('../../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
-        $dbInstance = new \INTERMediator\DB\Proxy();
+        $dbInstance = new Proxy();
         $dbInstance->initialize(
             array(),
             array(
@@ -35,7 +38,7 @@ if (count($_POST) > 0) {
         if ($result === false) {
             $message .= 'パスワードのリセット処理に問題が発生しました。登録されたメールアドレスでない可能性があります。';
         } else {
-            $dbInstance = new \INTERMediator\DB\Proxy();
+            $dbInstance = new Proxy();
             $dbInstance->initialize(
                 array(
                     array(

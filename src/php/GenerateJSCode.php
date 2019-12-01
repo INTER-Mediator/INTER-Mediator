@@ -137,7 +137,7 @@ class GenerateJSCode
         $defaultKey = null;
         $classBaseName = (isset($dbspecification['db-class']) ? $dbspecification['db-class'] :
             (!is_null($dbClass) ? $dbClass : ''));
-        $dbClassName = '\\INTERMediator\\DB\\' . $classBaseName;
+        $dbClassName = 'INTERMediator\\DB\\' . $classBaseName;
         $dbInstance = new $dbClassName();
         $dbInstance->setupHandlers($dbDSN);
         if ($dbInstance != null && $dbInstance->specHandler != null) {

@@ -14,6 +14,7 @@
  */
 
 namespace INTERMediator\DB;
+use INTERMediator\FileMakerServer\RESTAPI\FMDataAPI;
 use INTERMediator\IMUtil;
 
 class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
@@ -102,7 +103,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             if ($token === '') {
                 throw new \Exception();
             }
-            $fmDataObj = new \INTERMediator\FileMakerServer\RESTAPI\FMDataAPI(
+            $fmDataObj = new FMDataAPI(
                 $this->dbSettings->getDbSpecDatabase(),
                 '',
                 '',
@@ -115,7 +116,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             $fmDataObj->{$layoutName}->startCommunication();
             $fmDataObj->{$layoutName}->query(NULL, NULL, -1, 1);
         } catch (\Exception $e) {
-            $fmDataObj = new \INTERMediator\FileMakerServer\RESTAPI\FMDataAPI(
+            $fmDataObj = new FMDataAPI(
                 $this->dbSettings->getDbSpecDatabase(),
                 $user,
                 $password,

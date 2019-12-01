@@ -3,15 +3,16 @@
  * DB_Formatters_Test file
  */
 
-use \PHPUnit\Framework\TestCase;
+use INTERMediator\DB\Formatters;
+use PHPUnit\Framework\TestCase;
 
 class DB_Formatters_Test extends TestCase
 {
     public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
-        
-        $this->dataconverter_htmlstring = new \INTERMediator\DB\Formatters();
+
+        $this->dataconverter_htmlstring = new Formatters();
         $this->dataconverter_htmlstring->setFormatter(array(
             array('field' => 'f1', 'converter-class' => 'HTMLString'),
             array('field' => 'f2', 'converter-class' => 'HTMLString', 'parameter' => false),
@@ -22,7 +23,7 @@ class DB_Formatters_Test extends TestCase
             array('field' => 'f7', 'converter-class' => 'HTMLString', 'parameter' => 'noescape'),
         ));
     }
-    
+
     public function test_formatterFromDB()
     {
         $expected = '';

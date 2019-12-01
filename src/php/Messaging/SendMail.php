@@ -15,13 +15,16 @@
 
 namespace INTERMediator\Messaging;
 
-class SendMail implements MessagingProvider
+use INTERMediator\DB\Proxy;
+use INTERMediator\IMUtil;
+
+class SendMail extends MessagingProvider
 {
     private $isCompatible = true;
 
     public function __construct()
     {
-        $params = \INTERMediator\IMUtil::getFromParamsPHPFile(["sendMailCompatibilityMode"], true);
+        $params = IMUtil::getFromParamsPHPFile(["sendMailCompatibilityMode"], true);
         $this->isCompatible = $params['sendMailCompatibilityMode'] ? $params['sendMailCompatibilityMode'] : true;
     }
 
@@ -154,7 +157,7 @@ class SendMail implements MessagingProvider
                     if (count($cParam) == 2) {  // Specify a context and target record criteria
                         $idParam = explode('=', $cParam[1]);
                         if (count($idParam) == 2) {
-                            $storeContext = new \INTERMediator\DB\Proxy();
+                            $storeContext = new Proxy();
                             $storeContext->ignoringPost();
                             $storeContext->initialize(
                                 $dbProxy->dbSettings->getDataSource(),
@@ -212,7 +215,7 @@ class SendMail implements MessagingProvider
             }
             if ($ome->send()) {
                 if (isset($sendMailParam['store'])) {
-                    $storeContext = new DB\Proxy();
+                    $storeContext = new Proxy();
                     $storeContext->ignoringPost();
                     $storeContext->initialize(
                         $dbProxy->dbSettings->getDataSource(),
@@ -255,24 +258,5 @@ class SendMail implements MessagingProvider
             return $errorMsg;
         }
         return true;
-    }
-
-    private function modernTemplating($record, $tempStr)
-    {
-        $bodyStr = $tempStr;
-        if (strlen($tempStr) > 5) {
-            $startPos = strpos($bodyStr, '@@', 0);
-            $endPos = strpos($bodyStr, '@@', $startPos + 2);
-            while ($startPos !== false && $endPos !== false) {
-                $fieldName = trim(substr($bodyStr, $startPos + 2, $endPos - $startPos - 2));
-                $bodyStr = substr($bodyStr, 0, $startPos) .
-                    (isset($record[$fieldName]) ? $record[$fieldName] :
-                        (($record[$fieldName] == NULL) ? '' : '=field not exist=')) .
-                    substr($bodyStr, $endPos + 2);
-                $startPos = strpos($bodyStr, '@@');
-                $endPos = strpos($bodyStr, '@@', $startPos + 2);
-            }
-        }
-        return $bodyStr;
     }
 }

@@ -17,5 +17,5 @@ require_once('src/php/INTER-Mediator.php');
 
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
-    \INTERMediator\IM_Entry($datasource, $options, $dbspecification, $debug);
+    INTERMediator\IM_Entry($datasource, $options, $dbspecification, $debug);
 }

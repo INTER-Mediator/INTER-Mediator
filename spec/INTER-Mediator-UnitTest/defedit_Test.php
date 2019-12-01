@@ -2,7 +2,9 @@
 /**
  * defedit_Test file
  */
-use \PHPUnit\Framework\TestCase;
+
+use INTERMediator\IMUtil;
+use PHPUnit\Framework\TestCase;
 
 class defedit_Test extends TestCase
 {
@@ -21,7 +23,7 @@ class defedit_Test extends TestCase
     public function test___construct()
     {
         ob_start();
-        $imPath = \INTERMediator\IMUtil::pathToINTERMediator();
+        $imPath = IMUtil::pathToINTERMediator();
         require_once($imPath . '/editors/defedit.php');
         $output = ob_get_contents();
         $this->assertStringNotContainsString('INTERMediatorLog.debugMode=', $output);

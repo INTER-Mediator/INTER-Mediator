@@ -8,6 +8,9 @@
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
+
+use INTERMediator\DB\Proxy;
+
 $result = -3;
 if (isset($_GET['m']) && strlen($_GET['m']) > 0) {
     require_once('../../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
@@ -18,7 +21,7 @@ if (isset($_GET['m']) && strlen($_GET['m']) > 0) {
             array('field' => 'email', 'operator' => '=', 'value' => $_GET['m']),
         ),
     );
-    $dbInstance = new \INTERMediator\DB\Proxy();
+    $dbInstance = new Proxy();
     $dbInstance->initialize(
         array($contextDef),
         array(),

@@ -14,6 +14,8 @@
  */
 namespace INTERMediator\Data_Converter;
 
+use INTERMediator\Locale\IMLocale;
+
 class NumberBase
 {
     protected $decimalMark = null;
@@ -25,10 +27,10 @@ class NumberBase
 
     public function __construct()
     {
-        \INTERMediator\Locale\IMLocale::setLocale(LC_ALL);
-        $this->choosenLocale = \INTERMediator\Locale\IMLocale::$choosenLocale;
-        $this->useMbstring = \INTERMediator\Locale\IMLocale::$useMbstring;
-        $nfClass = \INTERMediator\Locale\IMLocale::numberFormatterClassName();
+        IMLocale::setLocale(LC_ALL);
+        $this->choosenLocale = IMLocale::$choosenLocale;
+        $this->useMbstring = IMLocale::$useMbstring;
+        $nfClass = IMLocale::numberFormatterClassName();
         $this->formatter = new $nfClass($this->choosenLocale, 2 /*NumberFormatter::CURRENCY*/);
         if (!$this->formatter) {
             return null;

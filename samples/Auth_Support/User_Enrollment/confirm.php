@@ -9,6 +9,8 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
+use INTERMediator\DB\Proxy;
+
 $message = '';
 $ermessage = '';
 if (count($_GET) > 0) {
@@ -43,7 +45,7 @@ if (count($_GET) > 0) {
                 ),
             )
         );
-        $dbInstance = new \INTERMediator\DB\Proxy();
+        $dbInstance = new Proxy();
         $dbInstance->initialize(
             array($contextDef),
             array(),
@@ -56,7 +58,7 @@ if (count($_GET) > 0) {
             $ermessage .= '確認しましたが、該当する申し込みがありません。';
         } else {
             $message .= 'アカウントを発行し、そのご案内をメールでお送りしました。';
-            $dbInstance = new \INTERMediator\DB\Proxy();
+            $dbInstance = new Proxy();
             $dbInstance->initialize(
                 array($contextDef),
                 array(),

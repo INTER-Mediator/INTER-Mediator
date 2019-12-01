@@ -33,13 +33,20 @@ IM_Entry(
                     'field' => 'user',
                 ),
             ),
+//            'messaging' => [
+//                'driver' => 'mail',
+//                'create' => [
+//                    'from-constant' => 'msyk@msyk.net',
+//                    'to-constant' => 'msyk@msyk.net',
+//                    'subject-constant' => 'Mail From INTER-Mediator',
+//                    'body-constant' => 'INTER-Mediator Sample.',
+//                ]
+//            ],
             'messaging' => [
-                'driver' => 'mail',
+                'driver' => 'slack',
                 'create' => [
-                    'from-constant' => 'msyk@msyk.net',
-                    'to-constant' => 'msyk@msyk.net',
-                    'subject-constant' => 'Mail From INTER-Mediator',
-                    'body-constant' => 'INTER-Mediator Sample.',
+                    'subject-constant' => 'message-posting-test',
+                    'body' => 'message',
                 ]
             ]
         ),

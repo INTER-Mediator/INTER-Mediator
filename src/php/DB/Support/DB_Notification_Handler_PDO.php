@@ -14,7 +14,9 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace INTERMediator\DB\Support;
-use \PDO;
+
+use INTERMediator\DB\PDO;
+use INTERMediator\IMUtil;
 
 class DB_Notification_Handler_PDO
     extends DB_Notification_Common
@@ -51,7 +53,7 @@ class DB_Notification_Handler_PDO
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $currentDTFormat = \INTERMediator\IMUtil::currentDTString();
+        $currentDTFormat = IMUtil::currentDTString();
         $sql = "{$this->dbClass->handler->sqlINSERTCommand()}{$regTable} (clientid,entity,conditions,registereddt) VALUES("
             . implode(',', array(
                 $this->dbClass->link->quote($clientId),
