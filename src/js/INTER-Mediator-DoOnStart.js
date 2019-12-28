@@ -103,11 +103,10 @@ if (!INTERMediator.additionalSortKey) {
 }
 
 if (window) {
-  INTERMediatorLib.addEvent(window, 'beforeunload', function (e) {
+  INTERMediatorLib.addEvent(window, 'beforeunload', function (event) {
     if (IMLibQueue.tasks.length > 0) {
       const confirmationMessage = 'Test'
-      const ev = (e || window.event)
-      ev.returnValue = confirmationMessage //Gecko + IE
+      event.returnValue = confirmationMessage //Gecko + IE
       return confirmationMessage //Webkit, Safari, Chrome etc.
     } else {
       return undefined
