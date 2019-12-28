@@ -68,6 +68,8 @@ Ver.6-dev (in development)
 - INTERMediatorOnPage.doBeforePartialConstruct and INTERMediatorOnPage.doAfterPartialConstruct methods can be defined.
   These are called just before/after to construct the page partially, i.e. INTERMediator.constructMain(<Existing Context>.
 - Slack messeging can be sent as like e-mail. "messaging" key is introduced and it can be replaced with "send-mail".
+- Removed the Internet Explorer specific codes.
+- Removed the INTERMediatorLib.toNumber(str) method. Alternative one is the IMLibFormat.numberFormat(str, digit).
 - [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
