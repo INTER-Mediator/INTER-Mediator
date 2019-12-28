@@ -373,8 +373,8 @@ const INTERMediator = {
 
     INTERMediator.crossTableStage = 0
     INTERMediator.appendingNodesAtLast = []
-    IMLibEventResponder.setup()
-    await INTERMediatorOnPage.retrieveAuthInfo()
+    IMLibEventResponder.setup() // Previously do it on the partial constructing
+    await INTERMediatorOnPage.retrieveAuthInfo() // Previously do it on the partial constructing
     try {
       if (Pusher.VERSION) {
         INTERMediator.pusherAvailable = true
@@ -516,7 +516,7 @@ const INTERMediator = {
 
       // Restoring original HTML Document from backup data.
       bodyNode = document.getElementsByTagName('BODY')[0]
-      if (INTERMediator.rootEnclosure === null) {
+      if (INTERMediator.rootEnclosure == null) {
         INTERMediator.rootEnclosure = bodyNode.innerHTML
       } else {
         bodyNode.innerHTML = INTERMediator.rootEnclosure
@@ -593,23 +593,13 @@ const INTERMediator = {
       if (node.nodeType === 1) { // Work for an element
         try {
           if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
-            className = INTERMediatorLib.getClassAttributeFromNode(node)
+            className = node.getAttribute('class')
             attr = node.getAttribute('data-im-control')
             if ((className && className.match(/_im_post/)) ||
               (attr && attr.indexOf('post') >= 0)) {
               setupPostOnlyEnclosure(node)
             } else {
-              if (INTERMediator.isIE) {
-                try {
-                  await expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj)
-                } catch (ex) {
-                  if (ex.message === '_im_auth_required_') {
-                    throw ex
-                  }
-                }
-              } else {
-                await expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj)
-              }
+              await expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj)
             }
           } else {
             children = node.childNodes // Check all child nodes.
@@ -1182,7 +1172,7 @@ const INTERMediator = {
       if (targetRecords.count === 0) {
         for (i = 0; i < repeatersOriginal.length; i++) {
           newNode = repeatersOriginal[i].cloneNode(true)
-          nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode)
+          nodeClass = newNode.getAttribute('class')
           dataAttr = newNode.getAttribute('data-im-control')
           if ((nodeClass && nodeClass.indexOf(INTERMediator.noRecordClassName) > -1) ||
             (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) > -1)) {
@@ -1224,7 +1214,7 @@ const INTERMediator = {
           }
           for (i = 0; i < repeatersOneRec.length; i++) {
             newNode = repeatersOneRec[i]
-            nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode)
+            nodeClass = newNode.getAttribute('class')
             dataAttr = newNode.getAttribute('data-im-control')
             if (!(nodeClass && nodeClass.indexOf(INTERMediator.noRecordClassName) >= 0) &&
               !(dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) >= 0) &&
@@ -1552,9 +1542,9 @@ const INTERMediator = {
             ) {
               repeatersOriginal.push(children[i])
             }
-          } else if (!repNodeTag && INTERMediatorLib.getClassAttributeFromNode(children[i]) &&
-            INTERMediatorLib.getClassAttributeFromNode(children[i]).match(/_im_repeater/)) {
-            imControl = INTERMediatorLib.getClassAttributeFromNode(children[i])
+          } else if (!repNodeTag && children[i].getAttribute('class') &&
+            children[i].getAttribute('class').match(/_im_repeater/)) {
+            imControl = children[i].getAttribute('class')
             if (imControl.indexOf(INTERMediatorLib.roleAsRepeaterClassName) > -1) {
               repeatersOriginal.push(children[i])
             }

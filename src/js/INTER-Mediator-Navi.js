@@ -686,7 +686,7 @@ const IMLibPageNavigation = {
       !currentContextDef.paging ||
       (currentContextDef.records > 1 && parseInt(INTERMediator.pagedSize) !== 1)) {
       buttonNode = document.createElement('BUTTON')
-      INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Copy')
+      buttonNode.setAttribute('class', 'IM_Button_Copy')
       buttonName = INTERMediatorOnPage.getMessages()[14]
       if (currentContextDef['button-names'] && currentContextDef['button-names'].copy) {
         buttonName = currentContextDef['button-names'].copy
@@ -731,7 +731,7 @@ const IMLibPageNavigation = {
       !currentContextDef.paging ||
       (currentContextDef.records > 1 && parseInt(INTERMediator.pagedSize) !== 1)) {
       buttonNode = document.createElement('BUTTON')
-      INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Delete')
+      buttonNode.setAttribute('class', 'IM_Button_Delete')
       buttonName = INTERMediatorOnPage.getMessages()[6]
       if (currentContextDef['button-names'] && currentContextDef['button-names'].delete) {
         buttonName = currentContextDef['button-names'].delete
@@ -812,7 +812,7 @@ const IMLibPageNavigation = {
     if (currentContextDef['repeat-control'] && currentContextDef['repeat-control'].match(/insert/i)) {
       if (relationValue.length > 0 || !currentContextDef.paging || currentContextDef.paging === false) {
         buttonNode = document.createElement('BUTTON')
-        INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Insert')
+        buttonNode.setAttribute('class', 'IM_Button_Insert')
         buttonName = INTERMediatorOnPage.getMessages()[5]
         if (currentContextDef['button-names'] && currentContextDef['button-names'].insert) {
           buttonName = currentContextDef['button-names'].insert
@@ -845,10 +845,10 @@ const IMLibPageNavigation = {
             existingButtons = INTERMediatorLib.getElementsByClassName(footNode, 'IM_Button_Insert')
             if (existingButtons.length === 0) {
               trNode = document.createElement('TR')
-              INTERMediatorLib.setClassAttributeToNode(trNode, 'IM_Insert_TR')
+              trNode.setAttribute('class', 'IM_Insert_TR')
               tdNode = document.createElement('TD')
               tdNode.setAttribute('colspan', 100)
-              INTERMediatorLib.setClassAttributeToNode(tdNode, 'IM_Insert_TD')
+              tdNode.setAttribute('class', 'IM_Insert_TD')
               INTERMediator.setIdValue(trNode)
               if (setTop && footNode.childNodes) {
                 footNode.insertBefore(trNode, footNode.childNodes[0])
@@ -950,7 +950,7 @@ const IMLibPageNavigation = {
     }
 
     buttonNode = document.createElement('BUTTON')
-    INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Master')
+    buttonNode.setAttribute('class', 'IM_Button_Master')
     buttonName = INTERMediatorOnPage.getMessages()[12]
     if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-detail']) {
       buttonName = currentContextDef['button-names']['navi-detail']
@@ -1415,7 +1415,7 @@ const IMLibPageNavigation = {
     function createBackButton(tagName, currentContextDef) {
       var buttonNode, buttonName
       buttonNode = document.createElement(tagName)
-      INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_BackNavi')
+      buttonNode.setAttribute('class', 'IM_Button_BackNavi')
       buttonName = INTERMediatorOnPage.getMessages()[13]
       if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-back']) {
         buttonName = currentContextDef['button-names']['navi-back']
@@ -1456,10 +1456,10 @@ const IMLibPageNavigation = {
       existingButtons = INTERMediatorLib.getElementsByClassName(targetNode, 'IM_Button_BackNavi')
       if (existingButtons.length === 0) {
         trNode = document.createElement('TR')
-        INTERMediatorLib.setClassAttributeToNode(trNode, 'IM_NaviBack_TR')
+        trNode.setAttribute('class', 'IM_NaviBack_TR')
         tdNode = document.createElement('TD')
         tdNode.setAttribute('colspan', 100)
-        INTERMediatorLib.setClassAttributeToNode(tdNode, 'IM_NaviBack_TD')
+        tdNode.setAttribute('class', 'IM_NaviBack_TD')
         INTERMediator.setIdValue(trNode)
         targetNode.appendChild(trNode)
         trNode.appendChild(tdNode)
