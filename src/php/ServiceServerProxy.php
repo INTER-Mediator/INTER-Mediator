@@ -34,7 +34,7 @@ class ServiceServerProxy
     {
         $params = IMUtil::getFromParamsPHPFile([
             "serviceServerPort", "serviceServerHost", "stopSSEveryQuit",
-            "bootWithInstalledNode","preventSSAutoBoot"], true);
+            "bootWithInstalledNode", "preventSSAutoBoot"], true);
         $this->paramsHost = $params["serviceServerHost"] ? $params["serviceServerHost"] : "localhost";
         $this->paramsPort = $params["serviceServerPort"] ? intval($params["serviceServerPort"]) : 11478;
         $this->paramsQuit = $params["stopSSEveryQuit"] == NULL ? false : boolval($params["stopSSEveryQuit"]);
@@ -65,9 +65,9 @@ class ServiceServerProxy
 
     public function checkServiceServer()
     {
-        if ($this->dontAutoBoot)   {
-            $ssStatus= $this->isActive();
-            if(!$ssStatus){
+        if ($this->dontAutoBoot) {
+            $ssStatus = $this->isActive();
+            if (!$ssStatus) {
                 $this->messages[] = $this->messageHead . 'Service Server is NOT working so far.';
             }
             return $ssStatus;
@@ -104,7 +104,7 @@ class ServiceServerProxy
     {
         $this->messages[] = $this->messageHead . 'Check server working:';
 
-        $result = $this->callServer("info", false);
+        $result = $this->callServer("info", []);
         $this->messages[] = $this->messageHead . 'Server returns:' . $result;
 
         if (!$result) {
@@ -126,7 +126,8 @@ class ServiceServerProxy
             CURLOPT_TIMEOUT => 10,
             CURLOPT_CONNECTTIMEOUT => 5
         ]);
-        if ($postData) {
+        if (is_array($postData)) {
+            $postData['vcode'] = $this->getSSVersionCode();
             curl_setopt($ch, CURLOPT_POST, TRUE);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
         }
@@ -144,14 +145,14 @@ class ServiceServerProxy
     private function executeCommand($command)
     {
         $imPath = IMUtil::pathToINTERMediator();
-        if(IMUtil::isPHPExecutingWindows()){
+        if (IMUtil::isPHPExecutingWindows()) {
             $home = getenv("USERPROFILE");
             putenv('FOREVER_ROOT=' . $home);
-        }else {
+        } else {
             $user = posix_getpwuid(posix_getuid());
             putenv('FOREVER_ROOT=' . $user['dir']);
         }
-        if ( $this->paramsBoot) {
+        if ($this->paramsBoot) {
             putenv('PATH=' . realpath($imPath . "/node_modules/.bin") .
                 (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
         } else {
@@ -192,8 +193,7 @@ class ServiceServerProxy
         $this->executeCommand($cmd);
     }
 
-    public
-    function validate($expression, $values)
+    public function validate($expression, $values)
     {
         $this->messages[] = $this->messageHead . 'Validation start:' . $expression . ' with ' . var_export($values, true);
 
@@ -206,5 +206,11 @@ class ServiceServerProxy
             return false;
         }
         return true;
+    }
+
+    private function getSSVersionCode()
+    {
+        $composer = json_decode(file_get_contents(IMUtil::pathToINTERMediator() . "/composer.json"));
+        return hash("sha256", $composer->time . $composer->version);
     }
 }

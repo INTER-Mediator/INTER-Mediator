@@ -7,6 +7,9 @@
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
+const fs = require('fs')
+const crypto = require('crypto')
+
 let port = process.argv[2] ? process.argv[2] : 21000
 let acceptClient = '0.0.0.0/0'
 const parser = require('../../node_modules/inter-mediator-expressionparser/index')
@@ -24,6 +27,9 @@ app.listen(port)
 if (!app.listening) {
   process.exit(1)
 }
+
+let verCode = getVersionCode()
+console.log(verCode)
 
 /*
    Server core
@@ -54,6 +60,7 @@ function handler(req, res) {
 
 function requestProcessing(reqParams, res, postData) {
   if (reqParams.pathname in requestBroker) {
+    console.log(postData)
     requestBroker[reqParams.pathname](reqParams.query, res, postData)
   } else {
     res.writeHead(403, {'Content-Type': 'text/html; charset=utf-8'})
@@ -62,8 +69,14 @@ function requestProcessing(reqParams, res, postData) {
 }
 
 requestBroker['/info'] = function (params, res, postData) {
+  const data = JSON.parse(postData)
+  if (data.vcode != verCode) {
+    resposeOnDiffVersion(res, data.vcode)
+  }
   res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
   res.write('Service Server is active.')
+  res.write(' Request Version:' + data.vcode)
+  res.write(' Server Version:' + verCode)
   res.end('\n')
 }
 
@@ -76,6 +89,22 @@ requestBroker['/eval'] = function (params, res, postData) {
 
   res.write(result ? 'true' : 'false')
   res.end('\n')
+}
+
+function getVersionCode() {
+  let fc = fs.readFileSync('composer.json')
+  const jsonObj = JSON.parse(fc)
+  const hash = crypto.createHash('sha256')
+  hash.update(jsonObj.time + jsonObj.version)
+  return hash.digest('hex')
+}
+
+function resposeOnDiffVersion(res, reqVer) {
+  res.writeHead(503, {'Content-Type': 'text/html; charset=utf-8'})
+  res.write('Different version of Server Server requested, and Service Server is going to shutdown.')
+  res.write(' Request Version:' + reqVer)
+  res.write(' Server Version:' + verCode)
+  res.end('\n','utf-8', ()=>{process.exit(1)})
 }
 
 /*

@@ -14,6 +14,7 @@ Ver.6-dev (in development)
 - All communications went async.
 - Composer/npm based library management.
 - The Service Server based-on node.js is introduced, and it uses on the server-side validation so far.
+- The Service Server can reboot when the version in composer.json is different.
 - Version number of major build is assigned as integer number.
 - The script "dist-docs/build.sh" can call with parameter -a/-c/-d. Moreover it contains "deployment mode."
 - The following methods are removed.
