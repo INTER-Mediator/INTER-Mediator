@@ -243,6 +243,7 @@ const IMLibLocalContext = {
         IMLibLocalContext.setValue(nodeInfo.field, nodeValue)
       }
     }
+    IMLibCalc.recalculation(idValue)
   },
 
   updateFromStore: function (idValue) {
