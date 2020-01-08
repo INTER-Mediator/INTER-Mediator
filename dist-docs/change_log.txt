@@ -14,6 +14,7 @@ Ver.6-dev (in development)
 - All communications went async.
 - Composer/npm based library management.
 - The Service Server based-on node.js is introduced, and it uses on the server-side validation so far.
+- The Service Server can reboot when the version in composer.json is different.
 - Version number of major build is assigned as integer number.
 - The script "dist-docs/build.sh" can call with parameter -a/-c/-d. Moreover it contains "deployment mode."
 - The following methods are removed.
@@ -68,11 +69,14 @@ Ver.6-dev (in development)
 - INTERMediatorOnPage.doBeforePartialConstruct and INTERMediatorOnPage.doAfterPartialConstruct methods can be defined.
   These are called just before/after to construct the page partially, i.e. INTERMediator.constructMain(<Existing Context>.
 - Slack messeging can be sent as like e-mail. "messaging" key is introduced and it can be replaced with "send-mail".
+- Removed the Internet Explorer specific codes.
+- Removed the INTERMediatorLib.toNumber(str) method. Alternative one is the IMLibFormat.numberFormat(str, digit).
 - [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
 - [BUG FIX] Calculation from other contexts didn't work, and fix it.
 - [BUG FIX] The class name 'Null' wasn't permitted in PHP7. It was changed to NullDB.
+- [BUG FIX] Local context values didn't involve in any calculations.
 - [INFO] The src/lib/js_lib directory is removed.
 
 Ver.5.11 (November 17, 2019)

@@ -18,7 +18,7 @@
  * @fileoverview IMLibElement class is defined here.
  */
 // @@IM@@IgnoringNextLine
-const IMLibFormat =  require('../../node_modules/inter-mediator-formatter/index')
+const IMLibFormat = require('../../node_modules/inter-mediator-formatter/index')
 /**
  *
  * Usually you don't have to instanciate this class with new operator.
@@ -114,7 +114,7 @@ const IMLibElement = {
     let params, formatFunc, firstParen, lastParen
 
     formatSpec = element.getAttribute('data-im-format')
-   if (!formatSpec) {
+    if (!formatSpec) {
       return null
     }
     flags = IMLibElement.initilaizeFlags(element)
@@ -185,25 +185,25 @@ const IMLibElement = {
 
     if (clearField && curTarget === '') {
       switch (element.tagName) {
-      case 'INPUT':
-        switch (element.getAttribute('type')) {
-        case 'text':
-          element.value = ''
-          break
-        }
-        break
-      case 'SELECT':
-        break
-      default:
-        while (element.childNodes.length > 0) {
-          if (element.parentNode.getAttribute('data-im-element') === 'processed' ||
-            INTERMediatorLib.isWidgetElement(element.parentNode)) {
-            // for data-im-widget
-            return false
+        case 'INPUT':
+          switch (element.getAttribute('type')) {
+            case 'text':
+              element.value = ''
+              break
           }
-          element.removeChild(element.childNodes[0])
-        }
-        break
+          break
+        case 'SELECT':
+          break
+        default:
+          while (element.childNodes.length > 0) {
+            if (element.parentNode.getAttribute('data-im-element') === 'processed' ||
+              INTERMediatorLib.isWidgetElement(element.parentNode)) {
+              // for data-im-widget
+              return false
+            }
+            element.removeChild(element.childNodes[0])
+          }
+          break
       }
     }
     formattedValue = IMLibElement.getFormattedValue(element, curVal)
@@ -256,9 +256,6 @@ const IMLibElement = {
         if (curTarget === 'innerHTML') {
           currentValue = element.innerHTML
           curVal = currentValue.replace('$', curVal)
-          if (INTERMediator.isIE && INTERMediator.ieVersion < 10) { // for IE
-            curVal = curVal.replace(/\r\n/g, '\r').replace(/\n/g, '\r').replace(/\r/g, '<br/>')
-          }
           element.innerHTML = curVal
         } else if (curTarget === 'textNode' || curTarget === 'script') {
           currentValue = element.textContent
@@ -291,9 +288,6 @@ const IMLibElement = {
             element._im_setValue(curVal)
           }
         } else if (curTarget === 'innerHTML') { // Setting
-          if (INTERMediator.isIE && INTERMediator.ieVersion < 10) { // for IE
-            curVal = curVal.replace(/\r\n/g, '\r').replace(/\n/g, '\r').replace(/\r/g, '<br/>')
-          }
           element.innerHTML = curVal
         } else if (curTarget === 'textNode') {
           textNode = document.createTextNode(curVal)
@@ -315,9 +309,6 @@ const IMLibElement = {
             element.style[styleName] = curVal
           }
         } else {
-          if (INTERMediator.isIE && INTERMediator.ieVersion < 10 && element.tagName === 'TEXTAREA') { // for IE
-            curVal = curVal.replace(/\r\n/g, '\r').replace(/\n/g, '\r').replace(/\r/g, '<br/>')
-          }
           element.setAttribute(curTarget, curVal)
         }
       }
@@ -335,21 +326,13 @@ const IMLibElement = {
             for (i = 0; i < curValues.length; i += 1) {
               if (valueAttr === curValues[i] && !INTERMediator.dontSelectRadioCheck) {
                 // The above operator shuold be '==' not '==='
-                if (INTERMediator.isIE) {
-                  element.setAttribute('checked', 'checked')
-                } else {
-                  element.checked = true
-                }
+                element.checked = true
               }
             }
           } else {
             if (valueAttr === curVal && !INTERMediator.dontSelectRadioCheck) {
               // The above operator shuold be '==' not '==='
-              if (INTERMediator.isIE) {
-                element.setAttribute('checked', 'checked')
-              } else {
-                element.checked = true
-              }
+              element.checked = true
             } else {
               element.checked = false
             }
@@ -368,9 +351,6 @@ const IMLibElement = {
         element.value = curVal
       } else if (element.tagName === 'TEXTAREA') {
         if (INTERMediator.defaultTargetInnerHTML) {
-          if (INTERMediator.isIE && INTERMediator.ieVersion < 10) { // for IE
-            curVal = curVal.replace(/\r\n/g, '\r').replace(/\n/g, '\r').replace(/\r/g, '<br/>')
-          }
           element.innerHTML = curVal
         } else {
           element.value = curVal
@@ -508,11 +488,7 @@ const IMLibElement = {
     } else if (nodeTag === 'SELECT') {
       newValue = element.value
     } else if (nodeTag === 'TEXTAREA') {
-      if (INTERMediator.isIE && INTERMediator.ieVersion < 10) { // for IE
-        newValue = element.innerHTML.replace(/<br[\/]{0,1}>/g, '\n')
-      } else {
-        newValue = element.value
-      }
+      newValue = element.value
     } else {
       newValue = element.innerHTML
     }
@@ -583,6 +559,16 @@ const IMLibElement = {
         }
       }
     }
+  }
+}
+
+const IMLibTextEditing = {
+  eventList: [],
+
+  eventDetect: function (event) {
+    let id = event.target.id
+    let key = event.key
+    let code = event.code
   }
 }
 

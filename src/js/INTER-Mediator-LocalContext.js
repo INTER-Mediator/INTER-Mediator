@@ -63,35 +63,31 @@ const IMLibLocalContext = {
     return value === undefined ? null : value
   },
 
+  getHostNameForKey: function () {
+    let key, searchLen, hashLen, trailLen
+    searchLen = location.search ? location.search.length : 0
+    hashLen = location.hash ? location.hash.length : 0
+    trailLen = searchLen + hashLen
+    key = '_im_localcontext' + document.URL.toString()
+    key = (trailLen > 0) ? key.slice(0, -trailLen) : key
+    return key
+  },
+
   archive: function () {
     'use strict'
-    let jsonString, key, searchLen, hashLen, trailLen
+    let jsonString
     INTERMediatorOnPage.removeCookie('_im_localcontext')
-    if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
-      this.store._im_additionalCondition = INTERMediator.additionalCondition
-      this.store._im_additionalSortKey = INTERMediator.additionalSortKey
-      this.store._im_startFrom = INTERMediator.startFrom
-      this.store._im_pagedSize = INTERMediator.pagedSize
-      /*
-       IE8 issue: '' string is modified as 'null' on JSON stringify.
-       http://blogs.msdn.com/b/jscript/archive/2009/06/23/serializing-the-value-of-empty-dom-elements-using-native-json-in-ie8.aspx
-       */
-      jsonString = JSON.stringify(this.store, function (k, v) {
-        return v === '' ? '' : v
-      })
-    } else {
-      jsonString = JSON.stringify(this.store)
-    }
+    jsonString = JSON.stringify(this.store)
     if (INTERMediator.useSessionStorage === true &&
       typeof sessionStorage !== 'undefined' &&
       sessionStorage !== null) {
       try {
-        searchLen = location.search ? location.search.length : 0
-        hashLen = location.hash ? location.hash.length : 0
-        trailLen = searchLen + hashLen
-        key = '_im_localcontext' + document.URL.toString()
-        key = (trailLen > 0) ? key.slice(0, -trailLen) : key
-        sessionStorage.setItem(key, jsonString)
+        // searchLen = location.search ? location.search.length : 0
+        // hashLen = location.hash ? location.hash.length : 0
+        // trailLen = searchLen + hashLen
+        // key = '_im_localcontext' + document.URL.toString()
+        // key = (trailLen > 0) ? key.slice(0, -trailLen) : key
+        sessionStorage.setItem(IMLibLocalContext.getHostNameForKey(), jsonString)
       } catch (ex) {
         INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0)
       }
@@ -102,18 +98,17 @@ const IMLibLocalContext = {
 
   unarchive: function () {
     'use strict'
-    let localContext = ''
-    let searchLen, hashLen, key, trailLen
+    let localContext
     if (INTERMediator.useSessionStorage === true &&
       typeof sessionStorage !== 'undefined' &&
       sessionStorage !== null) {
       try {
-        searchLen = location.search ? location.search.length : 0
-        hashLen = location.hash ? location.hash.length : 0
-        trailLen = searchLen + hashLen
-        key = '_im_localcontext' + document.URL.toString()
-        key = (trailLen > 0) ? key.slice(0, -trailLen) : key
-        localContext = sessionStorage.getItem(key)
+        // searchLen = location.search ? location.search.length : 0
+        // hashLen = location.hash ? location.hash.length : 0
+        // trailLen = searchLen + hashLen
+        // key = '_im_localcontext' + document.URL.toString()
+        // key = (trailLen > 0) ? key.slice(0, -trailLen) : key
+        localContext = sessionStorage.getItem(IMLibLocalContext.getHostNameForKey())
       } catch (ex) {
         localContext = INTERMediatorOnPage.getCookie('_im_localcontext')
       }
@@ -122,20 +117,6 @@ const IMLibLocalContext = {
     }
     if (localContext && localContext.length > 0) {
       this.store = JSON.parse(localContext)
-      if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
-        if (this.store._im_additionalCondition) {
-          INTERMediator.additionalCondition = this.store._im_additionalCondition
-        }
-        if (this.store._im_additionalSortKey) {
-          INTERMediator.additionalSortKey = this.store._im_additionalSortKey
-        }
-        if (this.store._im_startFrom) {
-          INTERMediator.startFrom = this.store._im_startFrom
-        }
-        if (this.store._im_pagedSize) {
-          INTERMediator.pagedSize = this.store._im_pagedSize
-        }
-      }
       this.updateAll(true)
     }
   },
@@ -187,30 +168,30 @@ const IMLibLocalContext = {
             IMLibMouseEventDispatch.setExecute(idValue, (function () {
               let contextName = params[1]
               return async function () {
-                INTERMediator.startFrom = 0
-                await IMLibUI.eventUpdateHandler(contextName)
-                IMLibPageNavigation.navigationSetup()
+                updateFirstContext(contextName)
               }
             })())
             break
           case 'condition':
             let attrType = node.getAttribute('type')
             if (attrType && attrType === 'text') {
-              IMLibKeyDownEventDispatch.setExecuteByCode(idValue, 13, (function () {
+              IMLibKeyDownEventDispatch.setExecuteByCode(idValue, 'Enter', (function () {
                 let contextName = params[1]
-                return async function () {
-                  INTERMediator.startFrom = 0
-                  await IMLibUI.eventUpdateHandler(contextName)
-                  IMLibPageNavigation.navigationSetup()
+                return async function (event) {
+                  if (event.keyCode == 13) {
+                    updateFirstContext(contextName)
+                  }
+                  /* We understand the keyCode property is already deprecated. But the code property is "Enter" for
+                     both Enter key and the finalize key of an input method, and there is no way to distinguish these
+                     keys. The keyCode property is 13 for Enter and 229 for the finalize key, and it's a better way
+                     to prevent the context updating for the finalize key. msyk 2019-12-28 */
                 }
               })())
             } else if (attrType && (attrType === 'checkbox' || attrType === 'radio')) {
               IMLibChangeEventDispatch.setExecute(idValue, (function () {
                 let contextName = params[1]
                 return async function () {
-                  INTERMediator.startFrom = 0
-                  await IMLibUI.eventUpdateHandler(contextName)
-                  IMLibPageNavigation.navigationSetup()
+                  updateFirstContext(contextName)
                 }
               })())
             }
@@ -222,8 +203,7 @@ const IMLibLocalContext = {
             IMLibChangeEventDispatch.setExecute(idValue, (function () {
               let contextName = params[1]
               return async function () {
-                await IMLibUI.eventUpdateHandler(contextName)
-                //IMLibPageNavigation.navigationSetup()
+                updateFirstContext(contextName)
               }
             })())
             node.setAttribute('data-imchangeadded', 'set')
@@ -233,6 +213,15 @@ const IMLibLocalContext = {
             break
         }
       }
+    }
+
+    async function updateFirstContext(contextName) {
+      INTERMediator.startFrom = 0
+      // await IMLibUI.eventUpdateHandler(contextName)
+      IMLibLocalContext.updateAll()
+      let context = IMLibContextPool.getContextFromName(contextName)
+      await INTERMediator.constructMain(context[0])
+      //IMLibPageNavigation.navigationSetup()
     }
   },
 
@@ -254,6 +243,7 @@ const IMLibLocalContext = {
         IMLibLocalContext.setValue(nodeInfo.field, nodeValue)
       }
     }
+    IMLibCalc.recalculation(idValue)
   },
 
   updateFromStore: function (idValue) {
@@ -286,8 +276,8 @@ const IMLibLocalContext = {
           targetNode = document.getElementById(idValue)
           if (targetNode &&
             (targetNode.tagName === 'INPUT' ||
-            targetNode.tagName === 'TEXTAREA' ||
-            targetNode.tagName === 'SELECT')) {
+              targetNode.tagName === 'TEXTAREA' ||
+              targetNode.tagName === 'SELECT')) {
             if (isStore === true) {
               IMLibLocalContext.updateFromStore(idValue)
             } else {
@@ -308,7 +298,7 @@ const IMLibLocalContext = {
     seek(rootNode)
     IMLibLocalContext.checkedBinding.push(rootNode)
 
-    function seek (node) {
+    function seek(node) {
       let children, i
       if (node !== rootNode && IMLibLocalContext.checkedBinding.indexOf(node) > -1) {
         return // Stop on already checked enclosure nodes.

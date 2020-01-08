@@ -30,19 +30,19 @@ const IMLib = {
   doubleQuote_char: '"',
   backSlash_char: '\\',
 
-  get zerolength_str () {
+  get zerolength_str() {
     'use strict'
     return ''
   },
-  set zerolength_str (value) {
+  set zerolength_str(value) {
     // do nothing
   },
 
-  get crlf_str () {
+  get crlf_str() {
     'use strict'
     return '\r\n'
   },
-  set crlf_str (value) {
+  set crlf_str(value) {
     // do nothing
   }
 }
@@ -75,8 +75,6 @@ const INTERMediatorLib = {
     'use strict'
     if (window.addEventListener) {
       window.addEventListener('load', INTERMediatorLib.initialize, false)
-    } else if (window.attachEvent) { // for IE
-      window.attachEvent('onload', INTERMediatorLib.initialize)
     } else {
       window.onload = INTERMediatorLib.initialize
     }
@@ -150,7 +148,7 @@ const INTERMediatorLib = {
     if (!repeaters) {
       repeaters = seekFromContextPool(node)
     }
-    if(repeaters) {
+    if (repeaters) {
       for (i = 0; i < repeaters.length; i += 1) {
         result.push(document.getElementById(repeaters[i].id))
       }
@@ -158,7 +156,7 @@ const INTERMediatorLib = {
     return result
 
     function seekFromContextPool(node) {
-      let i, j, k, currentNode;
+      let i, j, k, currentNode
       if (!node) {
         return null
       }
@@ -168,7 +166,7 @@ const INTERMediatorLib = {
           for (i = 0; i < IMLibContextPool.poolingContexts.length; i++) {
             for (j in IMLibContextPool.poolingContexts[i].binding) {
               if (IMLibContextPool.poolingContexts[i].binding.hasOwnProperty(j) &&
-                  IMLibContextPool.poolingContexts[i].binding[j].hasOwnProperty('_im_repeater')) {
+                IMLibContextPool.poolingContexts[i].binding[j].hasOwnProperty('_im_repeater')) {
                 for (k = 0; k < IMLibContextPool.poolingContexts[i].binding[j]._im_repeater.length; k++) {
                   if (IMLibContextPool.poolingContexts[i].binding[j]._im_repeater[k].id === currentNode.id) {
                     return IMLibContextPool.poolingContexts[i].binding[j]._im_repeater
@@ -182,7 +180,7 @@ const INTERMediatorLib = {
       }
       return null
     }
-    },
+  },
 
   getParentEnclosure: function (node) {
     'use strict'
@@ -203,7 +201,7 @@ const INTERMediatorLib = {
     if (!node || node.nodeType !== 1) {
       return false
     }
-    className = INTERMediatorLib.getClassAttributeFromNode(node)
+    className = node.getAttribute('class')
     if (className && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0) {
       return false
     }
@@ -217,10 +215,10 @@ const INTERMediatorLib = {
       (tagName === 'OL') ||
       (tagName === 'SELECT') ||
       ((tagName === 'DIV' || tagName === 'SPAN') &&
-      className &&
-      className.indexOf(INTERMediatorLib.roleAsEnclosureClassName) >= 0) ||
+        className &&
+        className.indexOf(INTERMediatorLib.roleAsEnclosureClassName) >= 0) ||
       (controlAttr &&
-      controlAttr.indexOf(INTERMediatorLib.roleAsEnclosureDataControlName) >= 0)) {
+        controlAttr.indexOf(INTERMediatorLib.roleAsEnclosureDataControlName) >= 0)) {
       if (nodeOnly) {
         return true
       } else {
@@ -242,7 +240,7 @@ const INTERMediatorLib = {
     if (!node || node.nodeType !== 1) {
       return false
     }
-    className = INTERMediatorLib.getClassAttributeFromNode(node)
+    className = node.getAttribute('class')
     if (className && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0) {
       return false
     }
@@ -267,7 +265,7 @@ const INTERMediatorLib = {
     }
     return false
 
-    function searchLinkedElement (node) {
+    function searchLinkedElement(node) {
       if (INTERMediatorLib.isLinkedElement(node)) {
         return true
       }
@@ -307,7 +305,7 @@ const INTERMediatorLib = {
         }
       }
       if (INTERMediator.classAsLinkInfo) {
-        classInfo = INTERMediatorLib.getClassAttributeFromNode(node)
+        classInfo = node.getAttribute('class')
         if (classInfo !== null) {
           matched = classInfo.match(/IM\[.*\]/)
           if (matched) {
@@ -331,7 +329,7 @@ const INTERMediatorLib = {
       if (attr) {
         return true
       }
-      classInfo = INTERMediatorLib.getClassAttributeFromNode(node)
+      classInfo = node.getAttribute('class')
       if (classInfo !== null) {
         matched = classInfo.match(/IM_WIDGET\[.*\]/)
         if (matched) {
@@ -345,7 +343,7 @@ const INTERMediatorLib = {
         if (attr) {
           return true
         }
-        classInfo = INTERMediatorLib.getClassAttributeFromNode(parentNode)
+        classInfo = parentNode.getAttribute('class')
         if (classInfo !== null) {
           matched = classInfo.match(/IM_WIDGET\[.*\]/)
           if (matched) {
@@ -405,7 +403,7 @@ const INTERMediatorLib = {
      * Check the pair of nodes in argument is valid for repater/enclosure.
      */
 
-    function isRepeaterOfEnclosure (repeater, enclosure) {
+    function isRepeaterOfEnclosure(repeater, enclosure) {
       var repeaterTag, enclosureTag, enclosureClass, repeaterClass, enclosureDataAttr,
         repeaterDataAttr, repeaterType
       if (!repeater || !enclosure) {
@@ -419,11 +417,11 @@ const INTERMediatorLib = {
         (repeaterTag === 'LI' && enclosureTag === 'UL')) {
         return true
       }
-      enclosureClass = INTERMediatorLib.getClassAttributeFromNode(enclosure)
+      enclosureClass = enclosure.getAttribute('class')
       enclosureDataAttr = enclosure.getAttribute('data-im-control')
       if ((enclosureClass && enclosureClass.indexOf(INTERMediatorLib.roleAsEnclosureClassName) >= 0) ||
         (enclosureDataAttr && enclosureDataAttr.indexOf('enclosure') >= 0)) {
-        repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater)
+        repeaterClass = repeater.getAttribute('class')
         repeaterDataAttr = repeater.getAttribute('data-im-control')
         if ((repeaterClass && repeaterClass.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0) ||
           (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0) ||
@@ -486,7 +484,7 @@ const INTERMediatorLib = {
         return defs
       }
       if (INTERMediator.classAsLinkInfo) {
-        attr = INTERMediatorLib.getClassAttributeFromNode(node)
+        attr = node.getAttribute('class')
         if (attr !== null && attr.length > 0) {
           matched = attr.match(/IM\[([^\]]*)\]/)
           eachDefs = matched[1].split(INTERMediator.defDivider)
@@ -499,7 +497,7 @@ const INTERMediatorLib = {
     }
     return false
 
-    function resolveAlias (def) {
+    function resolveAlias(def) {
       var aliases = INTERMediatorOnPage.getOptionsAliases()
       if (aliases && aliases[def]) {
         return aliases[def]
@@ -524,7 +522,7 @@ const INTERMediatorLib = {
         }
         return defs
       }
-      classAttr = INTERMediatorLib.getClassAttributeFromNode(node)
+      classAttr = node.getAttribute('class')
       if (classAttr && classAttr.length > 0) {
         matched = classAttr.match(/IM_WIDGET\[([^\]]*)\]/)
         eachDefs = matched[1].split(INTERMediator.defDivider)
@@ -675,52 +673,13 @@ const INTERMediatorLib = {
     }
   },
 
-  /* As for IE7, DOM element can't have any prototype. */
-
-  getClassAttributeFromNode: function (node) {
-    'use strict'
-    var str = ''
-    if (node === null) {
-      return ''
-    }
-    if (INTERMediator.isIE && INTERMediator.ieVersion < 8) {
-      str = node.getAttribute('className')
-    } else {
-      str = node.getAttribute('class')
-    }
-    return str
-  },
-
-  setClassAttributeToNode: function (node, className) {
-    'use strict'
-    if (node === null) {
-      return
-    }
-    if (INTERMediator.isIE && INTERMediator.ieVersion < 8) {
-      node.setAttribute('className', className)
-    } else {
-      node.setAttribute('class', className)
-    }
-  },
-
-  /*
-   INTER-Mediator supporting browser is over Ver.9 for IE. So this method is already deprecated.
-   The eventInfos property doesn't use other than below methods.
-   */
   eventInfos: [],
 
   addEvent: function (node, evt, func) {
     'use strict'
-    if (node.addEventListener) {
-      node.addEventListener(evt, func, false)
-      this.eventInfos.push({'node': node, 'event': evt, 'function': func})
-      return this.eventInfos.length - 1
-    } else if (node.attachEvent) {
-      node.attachEvent('on' + evt, func)
-      this.eventInfos.push({'node': node, 'event': evt, 'function': func})
-      return this.eventInfos.length - 1
-    }
-    return -1
+    node.addEventListener(evt, func, false)
+    this.eventInfos.push({'node': node, 'event': evt, 'function': func})
+    return this.eventInfos.length - 1
   },
 
   removeEvent: function (serialId) {
@@ -819,11 +778,6 @@ const INTERMediatorLib = {
     } else {
       return sq + obj + sq
     }
-  },
-
-  numberFormat: function (str, digit, flags) {
-    'use strict'
-    return IMLibFormat.numberFormat(str, digit, flags)
   },
 
   getTargetTableForRetrieve: function (element) {
@@ -981,12 +935,12 @@ const INTERMediatorLib = {
     }
     return nodes
 
-    function checkNode (target) {
+    function checkNode(target) {
       var value, i, items
       if (target === undefined || target.nodeType !== 1) {
         return
       }
-      value = INTERMediatorLib.getClassAttributeFromNode(target)
+      value = target.getAttribute('class')
       if (value) {
         items = value.split('|')
         for (i = 0; i < items.length; i += 1) {
@@ -1026,7 +980,7 @@ const INTERMediatorLib = {
     checkNode(node)
     return nodes
 
-    function checkNode (target) {
+    function checkNode(target) {
       var aValue, i
       if (target === undefined || target.nodeType !== 1) {
         return
@@ -1048,12 +1002,12 @@ const INTERMediatorLib = {
     checkNode(node)
     return nodes
 
-    function checkNode (target) {
+    function checkNode(target) {
       var className, i
       if (target === undefined || target.nodeType !== 1) {
         return
       }
-      className = INTERMediatorLib.getClassAttributeFromNode(target)
+      className = target.getAttribute('class')
       if (className && className.match(reg)) {
         nodes.push(target)
       }
@@ -1070,7 +1024,7 @@ const INTERMediatorLib = {
     checkNode(node)
     return nodes
 
-    function checkNode (target) {
+    function checkNode(target) {
       var nodeId, i
       if (target === undefined || target.nodeType !== 1) {
         return
@@ -1101,7 +1055,7 @@ const INTERMediatorLib = {
     }
     return {linkedNode: linkedNodesCollection, widgetNode: widgetNodesCollection}
 
-    function seekLinkedElement (node) {
+    function seekLinkedElement(node) {
       var nType, currentEnclosure, children, i
       nType = node.nodeType
       if (nType === 1) {
@@ -1134,7 +1088,7 @@ const INTERMediatorLib = {
     'use strict'
     var messageNode
     messageNode = document.createElement(tag)
-    INTERMediatorLib.setClassAttributeToNode(messageNode, '_im_alertmessage')
+    messageNode.setAttribute('class',  '_im_alertmessage')
     messageNode.appendChild(document.createTextNode(message))
     return messageNode
   },

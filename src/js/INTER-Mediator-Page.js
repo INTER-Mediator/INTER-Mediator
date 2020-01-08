@@ -457,7 +457,7 @@ let INTERMediatorOnPage = {
         userSpan.style.textAlign = 'right'
         userSpan.style.cssFloat = 'left'
       }
-      INTERMediatorLib.setClassAttributeToNode(userSpan, '_im_authlabel')
+      userSpan.setAttribute('class',  '_im_authlabel')
       userLabel.appendChild(userSpan)
       msgNumber = INTERMediatorOnPage.isEmailAsUsername ? 2011 : 2002
       userSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(msgNumber)))
@@ -480,7 +480,7 @@ let INTERMediatorOnPage = {
         passwordSpan.style.textAlign = 'right'
         passwordSpan.style.cssFloat = 'left'
       }
-      INTERMediatorLib.setClassAttributeToNode(passwordSpan, '_im_authlabel')
+      passwordSpan.setAttribute('class',  '_im_authlabel')
       passwordLabel.appendChild(passwordSpan)
       passwordSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2003)))
       passwordBox = document.createElement('INPUT')
@@ -521,7 +521,7 @@ let INTERMediatorOnPage = {
           newPasswordSpan.style.fontSize = '0.7em'
           newPasswordSpan.style.paddingTop = '4px'
         }
-        INTERMediatorLib.setClassAttributeToNode(newPasswordSpan, '_im_authlabel_pwchange')
+        newPasswordSpan.setAttribute('class',  '_im_authlabel_pwchange')
         newPasswordLabel.appendChild(newPasswordSpan)
         newPasswordSpan.appendChild(
           document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2006)))
@@ -583,15 +583,13 @@ let INTERMediatorOnPage = {
       }
     }
     passwordBox.onkeydown = function (event) {
-      keyCode = (window.event) ? window.event.which : event.keyCode
-      if (keyCode === 13) {
+      if (event.code === "Enter") {
         authButton.onclick()
       }
     }
     userBox.value = INTERMediatorOnPage.authUser
     userBox.onkeydown = function (event) {
-      keyCode = (window.event) ? window.event.which : event.keyCode
-      if (keyCode === 13) {
+      if (event.code === "Enter") {
         passwordBox.focus()
       }
     }
