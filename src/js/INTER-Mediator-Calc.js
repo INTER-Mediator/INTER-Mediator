@@ -266,10 +266,16 @@ var IMLibCalc = {
               } else {  // Other context
                 expCName = field.substr(0, field.indexOf('@'))
                 context = IMLibContextPool.contextFromName(expCName)
-                if (context) {
-                  for (key in context.store) {
-                    if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
-                      vArray.push(context.store[key][fName])
+                if (context ) {
+                  if (context instanceof IMLibContext) {
+                    for (key in context.store) {    // Collect field data from all records
+                      if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
+                        vArray.push(context.store[key][fName])
+                      }
+                    }
+                  } else { // Local Context
+                    if (context.store.hasOwnProperty(fName)) {
+                      vArray.push(context.store[fName])
                     }
                   }
                 }
