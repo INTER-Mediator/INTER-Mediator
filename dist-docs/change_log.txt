@@ -58,8 +58,9 @@ Ver.6-dev (in development)
     inter-mediator-plugin-tinymce
 - In the params.php file, the $bootWithInstalledNode variable is defined for use a node.js in path parameter.
   This is for manual installation for npm based libraries.
-- In the params.php file, the $preventSSAutoBoot is definde for it doesn't boot a service server, just in case of
+- In the params.php file, the $preventSSAutoBoot is defined for it doesn't boot a service server, just in case of
   a server manager is going to boot the service server manually.
+- In the params.php file, the $notUserServiceServer is defined for not boot the service server.
 - FileMaker_FX and FileMaker_DataAPI classes support the value "[increment]1" and "[decrement]1" in case of updating
   a record. [increment] and [decrement] are defined value and following any number.
 - Multiple navigation bars are supported. Setting any tags to class="IM_NAVIGATOR", and both id and class can be set.
