@@ -205,8 +205,8 @@ cp -prf "${originalPath}/themes" "${buildPath}"
 cd "${buildPath}"
 composer update --no-dev
 
-/bin/echo "Clean up dot files."
-find "${buildPath}" -name "\.*" -exec rm -rf {} \; -prune
+# /bin/echo "Clean up dot files."
+# find "${buildPath}" -name "\.*" -exec rm -rf {} \; -prune
 
 if [ $choice = 3 ]; then
     targetDir=$(dirname "${topOfDir}")
