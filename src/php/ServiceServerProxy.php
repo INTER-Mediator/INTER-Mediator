@@ -17,6 +17,7 @@ class ServiceServerProxy
     private $paramsPort;
     private $paramsQuit;
     private $paramsBoot;
+    private $dontUse;
     private $errors = [];
     private $messages = [];
     private $messageHead = "[ServiceServerProxy] ";
@@ -34,12 +35,13 @@ class ServiceServerProxy
     {
         $params = IMUtil::getFromParamsPHPFile([
             "serviceServerPort", "serviceServerHost", "stopSSEveryQuit",
-            "bootWithInstalledNode", "preventSSAutoBoot"], true);
+            "bootWithInstalledNode", "preventSSAutoBoot", "notUserServiceServer"], true);
         $this->paramsHost = $params["serviceServerHost"] ? $params["serviceServerHost"] : "localhost";
         $this->paramsPort = $params["serviceServerPort"] ? intval($params["serviceServerPort"]) : 11478;
         $this->paramsQuit = $params["stopSSEveryQuit"] == NULL ? false : boolval($params["stopSSEveryQuit"]);
         $this->paramsBoot = $params["bootWithInstalledNode"] == NULL ? false : boolval($params["bootWithInstalledNode"]);
         $this->dontAutoBoot = $params["preventSSAutoBoot"] == NULL ? false : boolval($params["preventSSAutoBoot"]);
+        $this->dontUse = $params["notUserServiceServer"] == NULL ? false : boolval($params["notUserServiceServer"]);
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
     }
 
@@ -65,7 +67,7 @@ class ServiceServerProxy
 
     public function checkServiceServer()
     {
-        if ($this->dontAutoBoot) {
+        if ($this->dontAutoBoot || $this->dontUse) {
             $ssStatus = $this->isActive();
             if (!$ssStatus) {
                 $this->messages[] = $this->messageHead . 'Service Server is NOT working so far.';
@@ -102,6 +104,11 @@ class ServiceServerProxy
 
     public function isActive()
     {
+        if ($this->dontUse) {
+            $this->messages[] = $this->messageHead . 'Service Server is NOT used.';
+            return false;
+        }
+
         $this->messages[] = $this->messageHead . 'Check server working:';
 
         $result = $this->callServer("info", []);
@@ -195,6 +202,11 @@ class ServiceServerProxy
 
     public function validate($expression, $values)
     {
+        if ($this->dontUse) {
+            $this->messages[] = $this->messageHead . 'Service Server is NOT used.';
+            return true;
+        }
+
         $this->messages[] = $this->messageHead . 'Validation start:' . $expression . ' with ' . var_export($values, true);
 
         $result = $this->callServer("eval", ["expression" => $expression, "values" => $values]);
