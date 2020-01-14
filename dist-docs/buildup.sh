@@ -160,9 +160,8 @@ if [ -e "${minifyjsDir}" ]; then
 	"${minifyjsBin}" "${buildPath}/src/js/temp.js" > "${buildPath}/src/js/INTER-Mediator.min.js"
 	#cat "${originalPath}/node_modules/jsencrypt/bin/jsencrypt.js" >> "${buildPath}/src/js/INTER-Mediator.min.js"
 	/bin/echo "" >> "${buildPath}/src/js/INTER-Mediator.min.js"
-else
-    rm  "${buildPath}/src/js/temp.js"
 fi
+rm  "${buildPath}/src/js/temp.js"
 
 # Copy "lib" path php contents.
 /bin/echo "PROCESSING: ${originalPath}/src/lib"
@@ -205,8 +204,8 @@ cp -prf "${originalPath}/themes" "${buildPath}"
 cd "${buildPath}"
 composer update --no-dev
 
-/bin/echo "Clean up dot files."
-find "${buildPath}" -name "\.*" -exec rm -rf {} \; -prune
+# /bin/echo "Clean up dot files."
+# find "${buildPath}" -name "\.*" -exec rm -rf {} \; -prune
 
 if [ $choice = 3 ]; then
     targetDir=$(dirname "${topOfDir}")
