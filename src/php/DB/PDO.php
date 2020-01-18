@@ -586,7 +586,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $this->notifyHandler->addQueriedPrimaryKeys($rowArray[$keyField]);
                     $isFirstRow = false;
                 }
-                $this->updatedRecord = $sqlResult;
+                $this->updatedRecord = count($sqlResult) ? $sqlResult : null;
             }
         }
 
@@ -725,7 +725,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $sqlResult[] = $rowArray;
                     $isFirstRow = false;
                 }
-                $this->updatedRecord = $sqlResult;
+                $this->updatedRecord = count($sqlResult) ? $sqlResult : null;
             }
         }
 
