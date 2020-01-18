@@ -13,7 +13,9 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\DB\Support;
+
 use Exception;
 use PDO;
 
@@ -51,8 +53,11 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 
     public function sqlSETClause($setColumnNames, $keyField, $setValues)
     {
+        $setNames = array_map(function ($value) {
+            return $this->quotedEntityName($value);
+        }, $setColumnNames);
         return (count($setColumnNames) == 0) ? "SET {$keyField}=DEFAULT" :
-            '(' . implode(',', $setColumnNames) . ') VALUES(' . implode(',', $setValues) . ')';
+            '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValues) . ')';
     }
 
     public function getNullableNumericFields($tableName)

@@ -762,7 +762,7 @@ const IMLibPageNavigation = {
   },
 
   includeButtonInContext: function (encNodeTag, repeaters, buttonNode) {
-    var tdNodes, repeaterCtl, repeaterIx, ignoreTerms
+    var tdNodes, repeaterCtl, repeaterIx, ignoreTerms, repeaterIMCtrl
 
     ignoreTerms = ['header', 'separator', 'footerheader', 'separator', 'footer']
     switch (encNodeTag) {
@@ -784,14 +784,17 @@ const IMLibPageNavigation = {
       default:
         repeaterIx = repeaters.length - 1
         while (repeaterIx >= 0) {
-          repeaterCtl = repeaters[repeaterIx].getAttribute('data-im-control').toLowerCase()
-          if (!repeaterCtl || (repeaterCtl && ignoreTerms.indexOf(repeaterCtl.toLowerCase()) < 0)) {
-            if (repeaters[repeaterIx] && repeaters[repeaterIx].childNodes) {
-              repeaters[repeaterIx].appendChild(buttonNode)
-            } else {
-              repeaters.push(buttonNode)
+          repeaterIMCtrl = repeaterCtl = repeaters[repeaterIx].getAttribute('data-im-control')
+          if (repeaterIMCtrl) {
+            repeaterCtl = repeaterIMCtrl.toLowerCase()
+            if (!repeaterCtl || (repeaterCtl && ignoreTerms.indexOf(repeaterCtl.toLowerCase()) < 0)) {
+              if (repeaters[repeaterIx] && repeaters[repeaterIx].childNodes) {
+                repeaters[repeaterIx].appendChild(buttonNode)
+              } else {
+                repeaters.push(buttonNode)
+              }
+              break
             }
-            break
           }
           repeaterIx -= 1
         }

@@ -61,7 +61,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     private $previousClientid;
 
-    private $clientSyncAvailable;
+    private $clientPusherAvailable;
 
     private $ignorePost = false;
     private $PostData = null;
@@ -160,7 +160,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $result = $this->userExpanded->doAfterReadFromDB($result);
             }
 
-            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
+            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
                 $this->outputOfProcessing['registeredid'] = $this->dbSettings->notifyServer->register(
                     $this->dbClass->notifyHandler->queriedEntity(),
                     $this->dbClass->notifyHandler->queriedCondition(),
@@ -243,7 +243,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterUpdateToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterUpdateToDB($result);
             }
-            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
+            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
                 try {
                     $this->dbSettings->notifyServer->updated(
                         $this->PostData['notifyid'],
@@ -306,7 +306,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterCreateToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterCreateToDB($result);
             }
-            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
+            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
                 try {
                     $this->dbSettings->notifyServer->created(
                         $this->PostData['notifyid'],
@@ -377,7 +377,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterDeleteFromDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterDeleteFromDB($result);
             }
-            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
+            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
                 try {
                     $this->dbSettings->notifyServer->deleted(
                         $this->PostData['notifyid'],
@@ -419,7 +419,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterCopyInDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterCopyInDB($result);
             }
-            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
+            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
                 try {
                     $this->dbSettings->notifyServer->created(
                         $this->PostData['notifyid'],
@@ -492,7 +492,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             "dbOption", "dbDSN", "pusherParameters", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
         ), true);
 
-        $this->clientSyncAvailable = \INTERMediator\ServiceServerProxy::instance()->checkServiceServer();
+        $this->clientPusherAvailable = (isset($this->PostData["pusher"]) && $this->PostData["pusher"] == "yes");
         $this->dbSettings->setDataSource($datasource);
         $this->dbSettings->setOptions($options);
         IMLocale::$options = $options;
@@ -610,7 +610,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
 
         $this->dbSettings->notifyServer = null;
-        if ($this->clientSyncAvailable) {
+        if ($this->clientPusherAvailable) {
             $this->dbSettings->notifyServer = new NotifyServer();
             if (isset($this->PostData['notifyid'])
                 && $this->dbSettings->notifyServer->initialize($this->authDbClass, $this->dbSettings, $this->PostData['notifyid'])
@@ -957,7 +957,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 break;
             case 'unregister':
                 $this->logger->setDebugMessage("[processingRequest] start unregister processing", 2);
-                if (!is_null($this->dbSettings->notifyServer) && $this->clientSyncAvailable) {
+                if (!is_null($this->dbSettings->notifyServer) && $this->clientPusherAvailable) {
                     $tableKeys = null;
                     if (isset($this->PostData['pks'])) {
                         $tableKeys = json_decode($this->PostData['pks'], true);
