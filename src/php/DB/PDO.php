@@ -692,7 +692,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $setClause = $this->handler->sqlSETClause($setColumnNames, $keyField, $setValues);
         $sql = "{$this->handler->sqlINSERTCommand()}{$tableName} {$setClause}";
         $this->logger->setDebugMessage($sql);
-        $result = $this->link->query($sql);
+        $result = $this->link->exec($sql);
         if ($result === false) {
             $this->errorMessageStore('Insert:' . $sql);
             return false;
@@ -707,7 +707,6 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $sql = $this->handler->sqlSELECTCommand() . "* FROM " . $viewName
                 . " WHERE " . $keyField . "=" . $this->link->quote($lastKeyValue);
             $result = $this->link->query($sql);
-            $this->logger->setDebugMessage($sql);
             if ($result === false) {
                 $this->errorMessageStore('Select:' . $sql);
             } else {
