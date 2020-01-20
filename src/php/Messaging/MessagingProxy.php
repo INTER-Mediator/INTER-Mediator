@@ -31,6 +31,6 @@ class MessagingProxy extends MessagingProvider
     {
         $className = get_class($this->msgProvider);
         $dbProxy->logger->setDebugMessage("Processing with {$className} class", 2);
-        return $this->msgProvider->processing($dbProxy, $contextDef, $result, );
+        return $this->msgProvider->processing($dbProxy, $contextDef, $result);
     }
 }
