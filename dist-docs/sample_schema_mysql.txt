@@ -16,7 +16,7 @@ Enter password:
 */
 SET NAMES 'utf8mb4';
 
-DROP USER 'web'@'localhost'; # After v5.7, 'IF EXISTS' can be set.
+# DROP USER 'web'@'localhost'; # After v5.7, 'IF EXISTS' can be set.
 CREATE USER 'web'@'localhost' IDENTIFIED BY 'password';
 
 ######### For MySQL v8, alter above block as follwing.
