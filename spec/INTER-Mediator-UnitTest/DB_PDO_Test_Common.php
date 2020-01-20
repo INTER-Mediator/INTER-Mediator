@@ -325,7 +325,8 @@ abstract class DB_PDO_Test_Common extends TestCase
 
         $this->db_proxy->processingRequest("read");
         $this->assertTrue(is_null($this->db_proxy->getDatabaseResult()), $testName);
-        $this->assertTrue(is_null($this->db_proxy->getDatabaseResultCount()), $testName);
+        $this->assertTrue(is_null($this->db_proxy->getDatabaseResultCount()) ||
+            $this->db_proxy->getDatabaseResultCount() == 0, $testName);
         $this->assertTrue(is_null($this->db_proxy->getDatabaseTotalCount()), $testName);
         $this->assertTrue(is_null($this->db_proxy->getDatabaseResult()), $testName);
         $this->assertTrue($this->db_proxy->dbSettings->getRequireAuthentication(), $testName);
