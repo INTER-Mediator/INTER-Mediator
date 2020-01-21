@@ -50,8 +50,11 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
 
     public function sqlSETClause($setColumnNames, $keyField, $setValues)
     {
+        $setNames = array_map(function ($value) {
+            return $this->quotedEntityName($value);
+        }, $setColumnNames);
         return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
-            '(' . implode(',', $setColumnNames) . ') VALUES(' . implode(',', $setValues) . ')';
+            '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValues) . ')';
     }
 
     public function getNullableNumericFields($tableName)

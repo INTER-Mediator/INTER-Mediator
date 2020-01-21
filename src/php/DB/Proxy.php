@@ -238,6 +238,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             if ($this->dbClass) {
                 $this->dbClass->requireUpdatedRecord(true); // Always Get Updated Record
                 $result = $this->dbClass->updateDB();
+                $result = $this->dbClass->updatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterUpdateToDB")) {
                 $this->logger->setDebugMessage("The method 'doAfterUpdateToDB' of the class '{$className}' is calling.", 2);
@@ -306,6 +307,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterCreateToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterCreateToDB($result);
             }
+
             if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
                 try {
                     $this->dbSettings->notifyServer->created(
@@ -923,7 +925,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             case 'create':
                 $this->logger->setDebugMessage("[processingRequest] start create processing", 2);
                 if ($this->checkValidation()) {
-                    $result = $this->createInDB($bypassAuth);
+                    $result = $this->createInDB();
                     $this->outputOfProcessing['newRecordKeyValue'] = $result;
                     $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
                 } else {
@@ -1041,13 +1043,16 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         if (isset($this->outputOfProcessing['dbresult'])) {
             return $this->outputOfProcessing['dbresult'];
         }
-        return null;
+        return $this->updatedRecord();
     }
 
     public function getDatabaseResultCount()
     {
         if (isset($this->outputOfProcessing['resultCount'])) {
             return $this->outputOfProcessing['resultCount'];
+        }
+        if ($this->dbClass) {
+            return $this->dbClass->countQueryResult();
         }
         return null;
     }
@@ -1056,6 +1061,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         if (isset($this->outputOfProcessing['totalCount'])) {
             return $this->outputOfProcessing['totalCount'];
+        }
+        if ($this->dbClass) {
+            return $this->dbClass->getTotalCount();
         }
         return null;
     }

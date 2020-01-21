@@ -24,6 +24,7 @@
 </header>
 <div id="wrapper">
     <h1>Invoice (Sample for Calculation)</h1>
+    <p style="color: red">This page is under construction for the lookup features.</p>
     <div class="sub_title" id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
     <table>
         <tbody>
@@ -35,7 +36,7 @@
             <th>issued</th>
             <td>
                 <input type="text" data-im="invoice@issued" data-im-format="date(long)">
-                <span data-im="invoice@issued" data-im-format="date(%g%m月%d日)">
+                <span data-im="invoice@issued" data-im-format="date(%g%m月%d日)"></span>
             </td>
         </tr>
         <tr>
@@ -50,7 +51,10 @@
                     <tr>
                         <th>product</th>
                         <th>qty</th>
-                        <th>unitprice (master)</th>
+                        <th>product_name</th>
+                        <th>unitprice</th>
+                        <th>net price</th>
+                        <th>tax price</th>
                         <th>amount</th>
                         <th></th>
                     </tr>
@@ -70,25 +74,44 @@
                                 <option data-im="productlist@id@value productlist@name"></option>
                             </select>
                         </td>
-                        <td><input class="price" type="text" size="5"
+                        <td>
+                            <input class="price" type="text" size="5"
                                    data-im="item@qty item@qty_color@style.color">
                         </td>
                         <td>
-                            <input class="price" type="text" size="8"
-                                   data-im="item@unitprice" data-im-format="number()"
+                            <div><input type="text" size="20" data-im="item@product_name"></div>
+                            <div data-im-control="enclosure">
+                                <div data-im-control="repeater"><span data-im="product@name"></span></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <input class="price" type="text" size="8"
+                                   data-im="item@product_unitprice" data-im-format="number()"
                                    data-im-format-options="useseparator">
-
-                            <div class="inline" data-im-control="enclosure">
-                                <div class="inline price" data-im-control="repeater">
-                                    (<span data-im="product@unitprice" data-im-format="number(2)"
-                                           data-im-format-options="useseparator"></span>)
+                            </div>
+                            <div data-im-control="enclosure">
+                                <div class="price" data-im-control="repeater">
+                                    <span data-im="product@unitprice" data-im-format="number()"
+                                           data-im-format-options="useseparator"></span>
                                 </div>
                             </div>
                         </td>
-                        <td align="right"><span style="text-align: right"
-                                                data-im="item@amount_calc"
-                                                data-im-format="number()"
-                                                data-im-format-options="useseparator"></span></td>
+                        <td align="right">
+                            <span style="text-align: right"
+                                  data-im="item@net_price"
+                                  data-im-format="number()"
+                                  data-im-format-options="useseparator"></span></td>
+                        <td align="right">
+                            <span style="text-align: right"
+                                  data-im="item@tax_price"
+                                  data-im-format="number()"
+                                  data-im-format-options="useseparator"></span></td>
+                        <td align="right">
+                            <span style="text-align: right"
+                                  data-im="item@amount_calc"
+                                  data-im-format="number()"
+                                  data-im-format-options="useseparator"></span></td>
                         <td></td>
                     </tr>
                     </tbody>

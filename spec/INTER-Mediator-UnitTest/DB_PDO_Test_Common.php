@@ -77,7 +77,7 @@ abstract class DB_PDO_Test_Common extends TestCase
     {
         $this->dbProxySetupForAccess("contact", 1000000);
         $this->db_proxy->requireUpdatedRecord(true);
-        $newKeyValue = $this->db_proxy->createInDB(true);
+        $newKeyValue = $this->db_proxy->createInDB();
 //        $msg = $this->db_proxy->logger->getErrorMessages();
 //        var_dump($msg);
 //        $msg = $this->db_proxy->logger->getDebugMessages();
@@ -89,7 +89,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 
         $this->dbProxySetupForAccess("person", 1000000);
         $this->db_proxy->requireUpdatedRecord(true);
-        $newKeyValue = $this->db_proxy->createInDB(true);
+        $newKeyValue = $this->db_proxy->createInDB();
         $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
         $createdRecord = $this->db_proxy->updatedRecord();
         $this->assertTrue($createdRecord != null, "Created record should be exists.");
@@ -104,7 +104,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->db_proxy->dbSettings->addTargetField("address");
         $this->db_proxy->dbSettings->addValue($addressValue);
         $this->db_proxy->requireUpdatedRecord(true);
-        $result = $this->db_proxy->updateDB("person", true);
+        $result = $this->db_proxy->updateDB();
         $createdRecord = $this->db_proxy->updatedRecord();
         $this->assertTrue($createdRecord != null, "Update record should be exists.");
         $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");
@@ -325,8 +325,10 @@ abstract class DB_PDO_Test_Common extends TestCase
 
         $this->db_proxy->processingRequest("read");
         $this->assertTrue(is_null($this->db_proxy->getDatabaseResult()), $testName);
-        $this->assertTrue(is_null($this->db_proxy->getDatabaseResultCount()), $testName);
-        $this->assertTrue(is_null($this->db_proxy->getDatabaseTotalCount()), $testName);
+        $this->assertTrue(is_null($this->db_proxy->getDatabaseResultCount()) ||
+            $this->db_proxy->getDatabaseResultCount() == 0, $testName);
+        $this->assertTrue(is_null($this->db_proxy->getDatabaseTotalCount()) ||
+            $this->db_proxy->getDatabaseTotalCount() == 0, $testName);
         $this->assertTrue(is_null($this->db_proxy->getDatabaseResult()), $testName);
         $this->assertTrue($this->db_proxy->dbSettings->getRequireAuthentication(), $testName);
     }
