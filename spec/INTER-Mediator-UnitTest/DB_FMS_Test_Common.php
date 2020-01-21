@@ -2,7 +2,8 @@
 /**
  * DB_FMS_Test_Common file
  */
-use \PHPUnit\Framework\TestCase;
+
+use PHPUnit\Framework\TestCase;
 
 class DB_FMS_Test_Common extends TestCase
 {
@@ -574,7 +575,7 @@ class DB_FMS_Test_Common extends TestCase
     {
         $this->dbProxySetupForAccess("contact_to", 1000000);
         $this->db_proxy->requireUpdatedRecord(true);
-        $newKeyValue = $this->db_proxy->createInDB(true);
+        $newKeyValue = $this->db_proxy->createInDB();
         $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
         $createdRecord = $this->db_proxy->updatedRecord();
         $this->assertTrue($createdRecord != null, "Created record should be exists.");
@@ -582,7 +583,7 @@ class DB_FMS_Test_Common extends TestCase
 
         $this->dbProxySetupForAccess("person_layout", 1000000);
         $this->db_proxy->requireUpdatedRecord(true);
-        $newKeyValue = $this->db_proxy->createInDB(true);
+        $newKeyValue = $this->db_proxy->createInDB();
         $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
         $createdRecord = $this->db_proxy->updatedRecord();
         $this->assertTrue($createdRecord != null, "Created record should be exists.");
@@ -597,7 +598,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->addTargetField("address");
         $this->db_proxy->dbSettings->addValue($addressValue);
         $this->db_proxy->requireUpdatedRecord(true);
-        $result = $this->db_proxy->updateDB("person_layout", true);
+        $result = $this->db_proxy->updateDB();
         $createdRecord = $this->db_proxy->updatedRecord();
         $this->assertTrue($createdRecord != null, "Update record should be exists.");
         $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");
