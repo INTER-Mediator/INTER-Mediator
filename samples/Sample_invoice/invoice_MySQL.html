@@ -79,7 +79,9 @@
                                    data-im="item@qty item@qty_color@style.color">
                         </td>
                         <td>
-                            <div><input type="text" size="20" data-im="item@product_name"></div>
+                            <div><input type="text" size="20"
+                                        data-im="item@product_name"
+                                        data-im-control="lookup:item@product_id:product@name"></div>
                             <div data-im-control="enclosure">
                                 <div data-im-control="repeater"><span data-im="product@name"></span></div>
                             </div>
@@ -87,13 +89,16 @@
                         <td>
                             <div>
                                 <input class="price" type="text" size="8"
-                                   data-im="item@product_unitprice" data-im-format="number()"
-                                   data-im-format-options="useseparator">
+                                       data-im="item@product_unitprice"
+                                       data-im-control="lookup:item@product_id:product@unitprice"
+                                       data-im-format="number()"
+                                       data-im-format-options="useseparator">
                             </div>
                             <div data-im-control="enclosure">
                                 <div class="price" data-im-control="repeater">
-                                    <span data-im="product@unitprice" data-im-format="number()"
-                                           data-im-format-options="useseparator"></span>
+                                    <span data-im="product@unitprice"
+                                          data-im-format="number()"
+                                          data-im-format-options="useseparator"></span>
                                 </div>
                             </div>
                         </td>

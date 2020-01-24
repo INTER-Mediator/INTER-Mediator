@@ -1040,9 +1040,8 @@ const INTERMediator = {
      */
     function setupLinkedNode(linkedElements, contextObj, targetRecordset, ix, keyingValue) {
       let currentWidgetNodes, currentLinkedNodes, nInfo, currentContextDef, j, keyField, k, nodeId,
-        curVal, replacedNode, typeAttr, children, wInfo, nameTable
-      let idValuesForFieldName = {}
-      let linkInfoArray, nameTableKey, nameNumber, nameAttr, curTarget
+        curVal, replacedNode, typeAttr, children, wInfo, nameTable, idValuesForFieldName = {},
+        linkInfoArray, nameTableKey, nameNumber, nameAttr, curTarget
 
       currentContextDef = contextObj.getContextDef()
       try {
@@ -1091,12 +1090,10 @@ const INTERMediator = {
           if (INTERMediatorLib.isWidgetElement(currentLinkedNodes[k])) {
             nodeId = currentLinkedNodes[k]._im_getComponentId()
             // INTERMediator.widgetElementIds.push(nodeId)
-          }
-          // get the tag name of the element
-          typeAttr = currentLinkedNodes[k].getAttribute('type')
-          // type attribute
-          linkInfoArray = INTERMediatorLib.getLinkedElementInfo(currentLinkedNodes[k])
-          // info array for it  set the name attribute of radio button
+          } // get the tag name of the element
+          typeAttr = currentLinkedNodes[k].getAttribute('type') // type attribute
+          linkInfoArray = INTERMediatorLib.getLinkedElementInfo(currentLinkedNodes[k]) // info array for it
+          // set the name attribute of radio button
           // should be different for each group
           if (typeAttr === 'radio') { // set the value to radio button
             nameTableKey = linkInfoArray.join('|')
