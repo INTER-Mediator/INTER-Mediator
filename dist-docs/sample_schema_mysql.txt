@@ -17,7 +17,7 @@ Enter password:
 SET NAMES 'utf8mb4';
 
 # DROP USER 'web'@'localhost'; # After v5.7, 'IF EXISTS' can be set.
-CREATE USER 'web'@'localhost' IDENTIFIED BY 'password';
+CREATE USER 'web'@'localhost' IDENTIFIED BY 'password'; # plugin caching_sha2_password
 
 ######### For MySQL v8, alter above block as follwing.
 # DROP USER IF EXISTS 'web'@'localhost';

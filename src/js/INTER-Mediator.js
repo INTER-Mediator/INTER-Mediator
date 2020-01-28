@@ -1039,20 +1039,20 @@ const INTERMediator = {
      * Set the value to node and context.
      */
     function setupLinkedNode(linkedElements, contextObj, targetRecordset, ix, keyingValue) {
-      let currentWidgetNodes, currentLinkedNodes, nInfo, currentContextDef, j, keyField, k, nodeId,
-        curVal, replacedNode, typeAttr, children, wInfo, nameTable, idValuesForFieldName = {},
+      let nInfo, j, keyField, k, nodeId, curVal, replacedNode, typeAttr, children, wInfo, nameTable,
         linkInfoArray, nameTableKey, nameNumber, nameAttr, curTarget
-
-      currentContextDef = contextObj.getContextDef()
+      let idValuesForFieldName = {}
+      const currentContextDef = contextObj.getContextDef()
+      const currentWidgetNodes = linkedElements.widgetNode
+      const currentLinkedNodes = linkedElements.linkedNode
       try {
-        currentWidgetNodes = linkedElements.widgetNode
-        currentLinkedNodes = linkedElements.linkedNode
         keyField = contextObj.getKeyField()
         if (targetRecordset[ix] && (targetRecordset[ix][keyField] || targetRecordset[ix][keyField] === 0)) {
           for (k = 0; k < currentLinkedNodes.length; k++) {
             // for each linked element
             nodeId = currentLinkedNodes[k].getAttribute('id')
             replacedNode = INTERMediator.setIdValue(currentLinkedNodes[k])
+            contextObj.setupLookup(currentLinkedNodes[k], ix)
             typeAttr = replacedNode.getAttribute('type')
             if (typeAttr === 'checkbox' || typeAttr === 'radio') {
               children = replacedNode.parentNode.childNodes
