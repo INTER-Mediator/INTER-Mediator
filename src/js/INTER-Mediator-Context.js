@@ -41,6 +41,8 @@ class IMLibContext {
     this.enclosureNode = null // Set on initialization.
     this.repeaterNodes = null // Set on initialization.
     this.dependingObject = []
+    this.lookingUp = {}
+    this.lookingUpInfo = null
     this.original = null // Set on initialization.
     this.nullAcceptable = true
     this.parentContext = null
@@ -59,12 +61,12 @@ class IMLibContext {
 
   async updateFieldValue(idValue, succeedProc, errorProc, warnMultipleRecProc, warnOthersModifyProc) {
     'use strict'
-    let nodeInfo, contextInfo, linkInfo, changedObj, criteria, newValue
+    let criteria, newValue
 
-    changedObj = document.getElementById(idValue)
-    linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj)
-    nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]) // Suppose to be the first definition.
-    contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target) // suppose to target = ''
+    const changedObj = document.getElementById(idValue)
+    const linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj)
+    const nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]) // Suppose to be the first definition.
+    const contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target) // suppose to target = ''
 
     if (INTERMediator.ignoreOptimisticLocking) {
       IMLibContextPool.updateContext(idValue, nodeInfo.target)
@@ -285,9 +287,11 @@ class IMLibContext {
     'use strict'
     let calcDef = this.contextDefinition.calculation
     let calcFields = []
-    let ix
-    for (ix of calcDef) {
-      calcFields.push(calcDef[ix].field)
+    let key
+    if (calcDef) {
+      for (key of Object.keys(calcDef)) {
+        calcFields.push(calcDef[key].field)
+      }
     }
     return calcFields
   }
@@ -362,7 +366,7 @@ class IMLibContext {
         INTERMediator.setLocalProperty('_im_pagedSize', recordNumber)
       }
       // From Local context's limitnumber directive
-      for (key of IMLibLocalContext.store) {
+      for (key of Object.keys(IMLibLocalContext.store)) {
         value = String(IMLibLocalContext.store[key])
         keyParams = key.split(':')
         if (keyParams &&
@@ -395,7 +399,7 @@ class IMLibContext {
       try {
         relationDef = this.contextDefinition.relation
         if (relationDef) {
-          for (index of relationDef) {
+          for (index of Object.keys(relationDef)) {
             if (Boolean(relationDef[index].portal) === true) {
               this.isPortal = true
               this.potalContainingRecordKV = INTERMediatorOnPage.defaultKeyName + '=' +
@@ -722,7 +726,7 @@ class IMLibContext {
     if (records.dbresult) {
       for (ix = 0; ix < records.dbresult.length; ix++) {
         record = records.dbresult[ix]
-        for (field of record) {
+        for (field of Object.keys(record)) {
           keyValue = record[keyField] ? record[keyField] : ix
           this.setValue(keyField + '=' + keyValue, field, record[field])
         }
@@ -1094,6 +1098,93 @@ class IMLibContext {
       field = fields[i]
       value = values[i]
       this.setValue(pkvalue, field, value)
+    }
+  }
+
+  // data-im-control="lookup:item@product_id:product@name"
+  /*
+  lookingUp:
+    IM3-27:
+      keying: 0
+      trigger: "item@product_id"
+      from: "product@name"
+      target: "item@product_name"
+    IM3-28:
+      keying: 0
+      trigger: "item@product_id"
+      from: "product@unitprice"
+      target: "item@product_unitprice"
+   */
+  setupLookup(node, ix) {
+    let components
+    const imControl = node.getAttribute('data-im-control')
+    if (imControl && imControl.match(/^lookup:/)) {
+      components = imControl.split(':')
+      if (components.length === 3) {
+        this.lookingUp[node.id] = {
+          keying: ix,
+          trigger: components[1],
+          from: components[2],
+          target: node.getAttribute('data-im')
+        }
+        this.lookingUpInfo = null
+      }
+    }
+  }
+
+  updateContext(idValue, target, contextInfo, value) {
+    let key, keying, obj, imTarget, lookingContexts, fromValue, contextName,
+      contexts, context, cnt, contextDef, relation
+    let fromStore = {}
+    const keyField = this.getKeyField()
+    if (this.lookingUpInfo === null) {
+      this.lookingUpInfo = {}
+      for (key of Object.keys(this.lookingUp)) {
+        keying = keyField + '=' + this.lookingUp[key].keying
+        obj = {
+          keying: keying,
+          key_value: this.lookingUp[key].keying,
+          node_id: key,
+          trigger: this.lookingUp[key].trigger,
+          from: this.lookingUp[key].from,
+          target: this.lookingUp[key].target
+        }
+        if (!this.lookingUpInfo[keying]) {
+          this.lookingUpInfo[keying] = [obj]
+        } else {
+          this.lookingUpInfo[keying].push(obj)
+        }
+      }
+    }
+    lookingContexts = []
+    for (obj of this.lookingUpInfo[contextInfo.record]) {
+      fromValue = obj.from.split('@')
+      if (lookingContexts.indexOf(fromValue[0]) < 0) {
+        lookingContexts.push(fromValue[0])
+      }
+    }
+    cnt = 0
+    for (contextName of lookingContexts) {
+      contexts = IMLibContextPool.getContextFromName(contextName)
+      for (context of contexts) {
+        contextDef = context.getContextDef()
+        relation = contextDef.relation
+        if (context.parentContext == this && relation  /* && relation[0]['foreign-key'] == keyField*/) {
+          keying = relation[0]['foreign-key'] + '=' + value
+          if (context.store[keying]) {
+            fromStore[contextName] = context.store[keying]
+          } else {
+
+          }
+        }
+      }
+      cnt += 1
+    }
+    console.log(fromStore)
+    for (obj of this.lookingUpInfo[contextInfo.record]) {
+      imTarget = obj.target.split('@')
+      fromValue = obj.from.split('@')
+      this.setDataWithKey(obj.key_value, imTarget[1], fromStore[fromValue[0]][fromValue[1]])
     }
   }
 }
