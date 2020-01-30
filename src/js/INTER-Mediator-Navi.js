@@ -35,9 +35,8 @@ const IMLibPageNavigation = {
 
   navigationSetup: function () {
     'use strict'
-    var navigation, i, insideNav, navLabel, node, start, pageSize, allCount, disableClass, c_node,
-      prevPageCount, nextPageCount, endPageCount, contextName, contextDef,
-      buttonLabel, dataSource, allNavNodes, ix
+    let navigation, i, insideNav, navLabel, node, start, pageSize, allCount, disableClass, c_node,
+      prevPageCount, nextPageCount, endPageCount, contextName, contextDef, buttonLabel, dataSource, allNavNodes, ix
 
     allNavNodes = allNavigator()
     for (ix = 0; ix < allNavNodes.length; ix++) {
@@ -981,9 +980,10 @@ const IMLibPageNavigation = {
           'event': 'touchstart',
           'todo': (function () {
             var targetNode = repeaters[i]
-            return function () {
+            return function (ev) {
               IMLibEventResponder.touchEventCancel = false
               targetNode.style.backgroundColor = IMLibUI.mobileSelectionColor
+              //ev.preventDefault() // If this line is active, page scrolling doesn't work
             }
           })()
         })
@@ -993,12 +993,13 @@ const IMLibPageNavigation = {
           'todo': (function () {
             var targetNode = repeaters[i]
             var orgColor = originalColor
-            return function () {
+            return function (ev) {
               targetNode.style.backgroundColor = orgColor
               if (!IMLibEventResponder.touchEventCancel) {
                 IMLibEventResponder.touchEventCancel = false
                 moveToDetailFunc()
               }
+              //ev.preventDefault() // Prevent to process at the next page.
             }
           })()
         })
@@ -1082,16 +1083,20 @@ const IMLibPageNavigation = {
     IMLibPageNavigation.setupStepReturnButton('none')
     if (INTERMediatorOnPage.getDataSources) { // Avoid processing on unit test
       dataSrcs = INTERMediatorOnPage.getDataSources()
-      for (key in dataSrcs) {
-        if (dataSrcs.hasOwnProperty(key)) {
-          cDef = dataSrcs[key]
-          if (cDef['navi-control']) {
-            judgeHide = includeHide || (!includeHide && !cDef['navi-control'].match(/hide/i))
-            if (cDef['navi-control'] && cDef['navi-control'].match(/step/i)) {
-              if (judgeHide && !isDetected) {
-                IMLibPageNavigation.stepCurrentContextName = cDef.name
-                IMLibPageNavigation.stepStartContextName = IMLibPageNavigation.stepCurrentContextName
-                isDetected = true
+      for (key of Object.keys(dataSrcs)) {
+        cDef = dataSrcs[key]
+        if (cDef['navi-control']) {
+          judgeHide = includeHide || (!includeHide && !cDef['navi-control'].match(/hide/i))
+          if (cDef['navi-control'] && cDef['navi-control'].match(/step/i)) {
+            if (judgeHide && !isDetected) {
+              IMLibPageNavigation.stepCurrentContextName = cDef.name
+              IMLibPageNavigation.stepStartContextName = IMLibPageNavigation.stepCurrentContextName
+              isDetected = true
+              if (cDef['navi-title']) {
+                IMLibLocalContext.setValue('navi_title', cDef['navi-title'], !0)
+              }
+              if (INTERMediatorOnPage[cDef['just-move-thisstep']]) {
+                INTERMediatorOnPage[cDef['just-move-thisstep']]()
               }
             }
           }
@@ -1109,9 +1114,25 @@ const IMLibPageNavigation = {
       nodes[i].style.display = style
       if (!INTERMediatorLib.isProcessed(nodes[i])) {
         INTERMediatorLib.addEvent(nodes[i], 'click', function () {
-          IMLibPageNavigation.backToPreviousStep()
+          IMLibQueue.setTask(function (complete) {
+            IMLibPageNavigation.backToPreviousStep()
+            complete()
+          })
         })
         INTERMediatorLib.markProcessed(nodes[i])
+      }
+    }
+    nodes = document.getElementsByClassName('IM_Button_StepInsert')
+    for (i = 0; i < nodes.length; i += 1) {
+      nodes[i].style.display = style
+      if (!INTERMediatorLib.isProcessedInsert(nodes[i])) {
+        INTERMediatorLib.addEvent(nodes[i], 'click', function () {
+          IMLibQueue.setTask(function (complete) {
+            //IMLibPageNavigation.backToPreviousStep()
+            complete()
+          })
+        })
+        INTERMediatorLib.markProcessedInsert(nodes[i])
       }
     }
   }
@@ -1132,15 +1153,20 @@ const IMLibPageNavigation = {
 
   moveToNextStepImpl: async function (contextObj, keying) {
     'use strict'
-    var key, cDef, dataSrcs, contextDef
+    let key, cDef, dataSrcs, contextDef, lastRecord, lastSelection = -1
     let isAfterCurrent = false
     let control = null
     let hasNextContext = false
+    let hasBeforeMoveNext = false
     let nextContext
     contextDef = contextObj.getContextDef()
     IMLibPageNavigation.stepNavigation.push({context: contextObj, key: keying})
     if (INTERMediatorOnPage[contextDef['before-move-nextstep']]) {
       control = INTERMediatorOnPage[contextDef['before-move-nextstep']]()
+      hasBeforeMoveNext = true
+    } else {
+      lastRecord = IMLibPageNavigation.getStepLastSelectedRecord()
+      lastSelection = lastRecord[contextDef['key']]
     }
     if (control === false) {
       IMLibPageNavigation.stepNavigation.pop()
@@ -1149,21 +1175,22 @@ const IMLibPageNavigation = {
       IMLibPageNavigation.stepCurrentContextName = control
     } else {
       dataSrcs = INTERMediatorOnPage.getDataSources()
-      for (key in dataSrcs) {
-        if (dataSrcs.hasOwnProperty(key)) {
-          cDef = dataSrcs[key]
-          if (cDef.name === contextDef.name) {
-            isAfterCurrent = true
-          } else if (isAfterCurrent && cDef['navi-control'].match(/step/i)) {
-            IMLibPageNavigation.stepCurrentContextName = cDef.name
-            hasNextContext = true
-            break
-          }
+      for (key of Object.keys(dataSrcs)) {
+        cDef = dataSrcs[key]
+        if (cDef.name === contextDef.name) {
+          isAfterCurrent = true
+        } else if (isAfterCurrent && cDef['navi-control'].match(/step/i)) {
+          IMLibPageNavigation.stepCurrentContextName = cDef.name
+          hasNextContext = true
+          break
         }
       }
       if (!hasNextContext) {
         return // Do nothing on the last step context
       }
+    }
+    if (INTERMediatorOnPage[contextDef['just-leave-thisstep']]) {
+      INTERMediatorOnPage[contextDef['just-leave-thisstep']]()
     }
     if (contextObj.enclosureNode.tagName === 'TBODY') {
       contextObj.enclosureNode.parentNode.style.display = 'none'
@@ -1171,19 +1198,31 @@ const IMLibPageNavigation = {
       contextObj.enclosureNode.style.display = 'none'
     }
     nextContext = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName)
+    contextDef = nextContext.getContextDef()
     if (nextContext.enclosureNode.tagName === 'TBODY') {
       nextContext.enclosureNode.parentNode.style.display = ''
     } else {
       nextContext.enclosureNode.style.display = ''
     }
+    if (!hasBeforeMoveNext) {
+      INTERMediator.clearCondition(IMLibPageNavigation.stepCurrentContextName)
+      INTERMediator.addCondition(IMLibPageNavigation.stepCurrentContextName,
+        {field: contextDef['key'], operator: '=', value: lastSelection})
+    }
     await INTERMediator.constructMain(nextContext)
     IMLibPageNavigation.setupStepReturnButton('')
+    if (contextDef['navi-title']) {
+      IMLibLocalContext.setValue('navi_title', contextDef['navi-title'], !0)
+    }
+    if (INTERMediatorOnPage[contextDef['just-move-thisstep']]) {
+      INTERMediatorOnPage[contextDef['just-move-thisstep']]()
+    }
   }
   ,
 
   backToPreviousStep: async function () {
     'use strict'
-    var currentContext, prevInfo
+    var currentContext, prevInfo, contextDef
     currentContext = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName)
     prevInfo = IMLibPageNavigation.stepNavigation.pop()
     IMLibPageNavigation.stepCurrentContextName = prevInfo.context.contextName
@@ -1197,6 +1236,13 @@ const IMLibPageNavigation = {
     }
     await INTERMediator.constructMain(currentContext)
     await INTERMediator.constructMain(prevInfo.context)
+    contextDef = prevInfo.context.getContextDef()
+    if (contextDef['navi-title']) {
+      IMLibLocalContext.setValue('navi_title', contextDef['navi-title'], !0)
+    }
+    if (INTERMediatorOnPage[contextDef['just-move-thisstep']]) {
+      INTERMediatorOnPage[contextDef['just-move-thisstep']]()
+    }
   }
   ,
 

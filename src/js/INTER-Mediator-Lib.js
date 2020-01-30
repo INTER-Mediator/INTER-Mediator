@@ -84,12 +84,26 @@ const INTERMediatorLib = {
 
   markProcessed: function (node) {
     'use strict'
-    node.setAttribute('data-im-element', 'processed')
+    const nodeAttr = node.getAttribute('data-im-element')
+    node.setAttribute('data-im-element', nodeAttr + ' processed')
   },
 
   isProcessed: function (node) {
     'use strict'
-    return node.getAttribute('data-im-element') === 'processed'
+    const nodeAttr = node.getAttribute('data-im-element')
+    return nodeAttr && nodeAttr.match(/processed/)
+  },
+
+  markProcessedInsert: function (node) {
+    'use strict'
+    const nodeAttr = node.getAttribute('data-im-element')
+    node.setAttribute('data-im-element', nodeAttr + ' insert')
+  },
+
+  isProcessedInsert: function (node) {
+    'use strict'
+    const nodeAttr = node.getAttribute('data-im-element')
+    return nodeAttr && nodeAttr.match(/insert/)
   },
 
   generatePasswordHash: function (password) {

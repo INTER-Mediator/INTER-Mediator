@@ -44,7 +44,7 @@ class IMLibContext {
     this.lookingUp = {}
     this.lookingUpInfo = null
     this.original = null // Set on initialization.
-    this.nullAcceptable = true
+ //   this.nullAcceptable = true
     this.parentContext = null
     this.registeredId = null
     this.sequencing = false // Set true on initialization.
@@ -1135,6 +1135,9 @@ class IMLibContext {
   updateContext(idValue, target, contextInfo, value) {
     let key, keying, obj, imTarget, lookingContexts, fromValue, contextName,
       contexts, context, cnt, contextDef, relation
+    if(Object.keys(this.lookingUp).length === 0) {
+      return
+    }
     let fromStore = {}
     const keyField = this.getKeyField()
     if (this.lookingUpInfo === null) {
@@ -1156,11 +1159,16 @@ class IMLibContext {
         }
       }
     }
+    if(Object.keys(this.lookingUpInfo).length === 0) {
+      return
+    }
     lookingContexts = []
-    for (obj of this.lookingUpInfo[contextInfo.record]) {
-      fromValue = obj.from.split('@')
-      if (lookingContexts.indexOf(fromValue[0]) < 0) {
-        lookingContexts.push(fromValue[0])
+    if(this.lookingUpInfo[contextInfo.record]) {
+      for (obj of this.lookingUpInfo[contextInfo.record]) {
+        fromValue = obj.from.split('@')
+        if (lookingContexts.indexOf(fromValue[0]) < 0) {
+          lookingContexts.push(fromValue[0])
+        }
       }
     }
     cnt = 0
@@ -1180,7 +1188,6 @@ class IMLibContext {
       }
       cnt += 1
     }
-    console.log(fromStore)
     for (obj of this.lookingUpInfo[contextInfo.record]) {
       imTarget = obj.target.split('@')
       fromValue = obj.from.split('@')
