@@ -11,8 +11,7 @@ IM_Entry(
             'maxrecords' => 10000,
             'key' => 'id',
             'navi-control' => 'step',
-            'repeat-control' => 'insert-top',
-           // 'before-move-nextstep'=>'nextStepFromList'
+//            'before-move-nextstep'=>'nextStepFromList'
         ),
         array(
             'name' => 'memoview',
@@ -22,7 +21,6 @@ IM_Entry(
             'maxrecords' => 1,
             'key' => 'id',
             'navi-control' => 'step-hide',
-           // 'before-move-nextstep'=>'nextStepFromView'
         ),
         array(
             'name' => 'memoedit',
@@ -32,7 +30,7 @@ IM_Entry(
             'maxrecords' => 1,
             'key' => 'id',
             'navi-control' => 'step-hide',
-            'before-move-nextstep'=>'nextStepFromEdit',
+//            'before-move-nextstep'=>'nextStepFromEdit',
             'just-move-thisstep'=>'editPageStart'
         ),
     ),

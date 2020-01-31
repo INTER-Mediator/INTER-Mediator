@@ -691,7 +691,7 @@ const INTERMediatorLib = {
 
   addEvent: function (node, evt, func) {
     'use strict'
-    node.addEventListener(evt, func, false)
+    node.addEventListener(evt, func,  evt.match(/touch/) ? {passive: true} : false)
     this.eventInfos.push({'node': node, 'event': evt, 'function': func})
     return this.eventInfos.length - 1
   },
