@@ -915,12 +915,10 @@ const IMLibPageNavigation = {
         })
       }
     }
-  }
-  ,
-
+  },
   /* --------------------------------------------------------------------
 
-   */
+     */
   setupNavigationButton: function (encNodeTag, repeaters, currentContextDef, keyField, keyValue, contextObj) {
     // Handling Detail buttons
     'use strict'
@@ -994,12 +992,30 @@ const IMLibPageNavigation = {
             var targetNode = repeaters[i]
             var orgColor = originalColor
             return function (ev) {
+              console.log(ev)
+              // targetNode.style.backgroundColor = orgColor
+              // if (!IMLibEventResponder.touchEventCancel) {
+              //   IMLibEventResponder.touchEventCancel = false
+              //   moveToDetailFunc()
+              // }
+              // ev.preventDefault() // Prevent to process at the next page.
+            }
+          })()
+        })
+        INTERMediator.eventListenerPostAdding.push({
+          'id': repeaters[i].id,
+          'event': 'click',
+          'todo': (function () {
+            var targetNode = repeaters[i]
+            var orgColor = originalColor
+            return function (ev) {
+              console.log(ev)
               targetNode.style.backgroundColor = orgColor
               if (!IMLibEventResponder.touchEventCancel) {
                 IMLibEventResponder.touchEventCancel = false
                 moveToDetailFunc()
               }
-              //ev.preventDefault() // Prevent to process at the next page.
+              // ev.preventDefault() // Prevent to process at the next page.
             }
           })()
         })
@@ -1047,32 +1063,24 @@ const IMLibPageNavigation = {
           break
       }
     }
-  }
-  ,
-
+  },
   getStepLastSelectedRecord: function () {
     'use strict'
     var lastSelection = IMLibPageNavigation.stepNavigation[IMLibPageNavigation.stepNavigation.length - 1]
     return lastSelection.context.store[lastSelection.key]
-  }
-  ,
-
+  },
   isNotExpandingContext: function (contextDef) {
     'use strict'
     if (contextDef['navi-control'] && contextDef['navi-control'].match(/step/i)) {
       return IMLibPageNavigation.stepCurrentContextName !== contextDef.name
     }
     return false
-  }
-  ,
-
+  },
   startStep: function () {
     'use strict'
     IMLibPageNavigation.initializeStepInfo(true)
     INTERMediator.constructMain(IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName))
-  }
-  ,
-
+  },
   initializeStepInfo: function (includeHide) {
     'use strict'
     var key, dataSrcs, cDef, judgeHide
@@ -1103,9 +1111,7 @@ const IMLibPageNavigation = {
         }
       }
     }
-  }
-  ,
-
+  },
   setupStepReturnButton: function (style) {
     'use strict'
     var nodes, i
@@ -1124,20 +1130,29 @@ const IMLibPageNavigation = {
     }
     nodes = document.getElementsByClassName('IM_Button_StepInsert')
     for (i = 0; i < nodes.length; i += 1) {
-      nodes[i].style.display = style
       if (!INTERMediatorLib.isProcessedInsert(nodes[i])) {
         INTERMediatorLib.addEvent(nodes[i], 'click', function () {
-          IMLibQueue.setTask(function (complete) {
-            //IMLibPageNavigation.backToPreviousStep()
-            complete()
+          let index
+          INTERMediatorOnPage.showProgress()
+          let context = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName)
+          IMLibQueue.setTask(function (completeTask) {
+            INTERMediator_DBAdapter.db_createRecord_async(
+              {name: IMLibPageNavigation.stepCurrentContextName, dataset: {}},
+              function (result) {
+                INTERMediator.constructMain(context)
+                completeTask()
+              },
+              function () {
+                INTERMediatorLog.setErrorMessage('Insert Error', 'EXCEPTION-4')
+                completeTask()
+              }
+            )
           })
         })
         INTERMediatorLib.markProcessedInsert(nodes[i])
       }
     }
-  }
-  ,
-
+  },
   moveToNextStep: function (contextObj, keyField, keyValue) {
     'use strict'
     var context = contextObj
@@ -1148,9 +1163,7 @@ const IMLibPageNavigation = {
         complete()
       })
     }
-  }
-  ,
-
+  },
   moveToNextStepImpl: async function (contextObj, keying) {
     'use strict'
     let key, cDef, dataSrcs, contextDef, lastRecord, lastSelection = -1
@@ -1186,6 +1199,7 @@ const IMLibPageNavigation = {
         }
       }
       if (!hasNextContext) {
+        IMLibPageNavigation.stepNavigation.pop()
         return // Do nothing on the last step context
       }
     }
@@ -1217,9 +1231,7 @@ const IMLibPageNavigation = {
     if (INTERMediatorOnPage[contextDef['just-move-thisstep']]) {
       INTERMediatorOnPage[contextDef['just-move-thisstep']]()
     }
-  }
-  ,
-
+  },
   backToPreviousStep: async function () {
     'use strict'
     var currentContext, prevInfo, contextDef
@@ -1243,9 +1255,7 @@ const IMLibPageNavigation = {
     if (INTERMediatorOnPage[contextDef['just-move-thisstep']]) {
       INTERMediatorOnPage[contextDef['just-move-thisstep']]()
     }
-  }
-  ,
-
+  },
   moveToDetail: function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
     'use strict'
     var f = keyField
@@ -1257,9 +1267,7 @@ const IMLibPageNavigation = {
     return function () {
       return IMLibPageNavigation.moveToDetailImpl(etag, f, v, mh, pnh)
     }
-  }
-  ,
-
+  },
   moveToDetailImpl: async function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
     'use strict'
     var masterContext, detailContext, contextName, masterEnclosure, detailEnclosure, node, contextDef
@@ -1317,9 +1325,7 @@ const IMLibPageNavigation = {
         INTERMediatorOnPage.naviAfterMoveToDetail(masterContext, detailContext)
       }
     }
-  }
-  ,
-
+  },
   setupDetailAreaToFirstRecord: function (currentContextDef, masterContext) {
     'use strict'
     var i, comp
@@ -1345,20 +1351,16 @@ const IMLibPageNavigation = {
         }
       }
     }
-  }
-  ,
-
+  },
   moveDetailOnceAgain: function () {
     'use strict'
     var p = IMLibPageNavigation.previousModeDetail
     IMLibPageNavigation.moveToDetailImpl(
       p.encNodeTag, p.keyField, p.keyValue, p.isHide, p.isHidePageNavi)
-  }
-  ,
-
+  },
   /* --------------------------------------------------------------------
 
-   */
+     */
   setupBackNaviButton: function (currentContext, node) {
     'use strict'
     var buttonNode, divNode, i, masterContext, naviControlValue, currentContextDef, showingNode,
