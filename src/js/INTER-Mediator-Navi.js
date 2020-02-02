@@ -985,23 +985,22 @@ const IMLibPageNavigation = {
             }
           })()
         })
-        INTERMediator.eventListenerPostAdding.push({
-          'id': repeaters[i].id,
-          'event': 'touchend',
-          'todo': (function () {
-            var targetNode = repeaters[i]
-            var orgColor = originalColor
-            return function (ev) {
-              console.log(ev)
-              // targetNode.style.backgroundColor = orgColor
-              // if (!IMLibEventResponder.touchEventCancel) {
-              //   IMLibEventResponder.touchEventCancel = false
-              //   moveToDetailFunc()
-              // }
-              // ev.preventDefault() // Prevent to process at the next page.
-            }
-          })()
-        })
+        // INTERMediator.eventListenerPostAdding.push({
+        //   'id': repeaters[i].id,
+        //   'event': 'touchend',
+        //   'todo': (function () {
+        //     var targetNode = repeaters[i]
+        //     var orgColor = originalColor
+        //     return function (ev) {
+        //       // targetNode.style.backgroundColor = orgColor
+        //       // if (!IMLibEventResponder.touchEventCancel) {
+        //       //   IMLibEventResponder.touchEventCancel = false
+        //       //   moveToDetailFunc()
+        //       // }
+        //       // ev.preventDefault() // Prevent to process at the next page.
+        //     }
+        //   })()
+        // })
         INTERMediator.eventListenerPostAdding.push({
           'id': repeaters[i].id,
           'event': 'click',
@@ -1009,7 +1008,6 @@ const IMLibPageNavigation = {
             var targetNode = repeaters[i]
             var orgColor = originalColor
             return function (ev) {
-              console.log(ev)
               targetNode.style.backgroundColor = orgColor
               if (!IMLibEventResponder.touchEventCancel) {
                 IMLibEventResponder.touchEventCancel = false
