@@ -84,12 +84,26 @@ const INTERMediatorLib = {
 
   markProcessed: function (node) {
     'use strict'
-    node.setAttribute('data-im-element', 'processed')
+    const nodeAttr = node.getAttribute('data-im-element')
+    node.setAttribute('data-im-element', nodeAttr + ' processed')
   },
 
   isProcessed: function (node) {
     'use strict'
-    return node.getAttribute('data-im-element') === 'processed'
+    const nodeAttr = node.getAttribute('data-im-element')
+    return nodeAttr && nodeAttr.match(/processed/)
+  },
+
+  markProcessedInsert: function (node) {
+    'use strict'
+    const nodeAttr = node.getAttribute('data-im-element')
+    node.setAttribute('data-im-element', nodeAttr + ' insert')
+  },
+
+  isProcessedInsert: function (node) {
+    'use strict'
+    const nodeAttr = node.getAttribute('data-im-element')
+    return nodeAttr && nodeAttr.match(/insert/)
   },
 
   generatePasswordHash: function (password) {
@@ -677,7 +691,7 @@ const INTERMediatorLib = {
 
   addEvent: function (node, evt, func) {
     'use strict'
-    node.addEventListener(evt, func, false)
+    node.addEventListener(evt, func,  evt.match(/touch/) ? {passive: true} : false)
     this.eventInfos.push({'node': node, 'event': evt, 'function': func})
     return this.eventInfos.length - 1
   },
