@@ -44,7 +44,7 @@ class IMLibContext {
     this.lookingUp = {}
     this.lookingUpInfo = null
     this.original = null // Set on initialization.
- //   this.nullAcceptable = true
+    //   this.nullAcceptable = true
     this.parentContext = null
     this.registeredId = null
     this.sequencing = false // Set true on initialization.
@@ -1132,14 +1132,35 @@ class IMLibContext {
     }
   }
 
-  updateContext(idValue, target, contextInfo, value) {
-    let key, keying, obj, imTarget, lookingContexts, fromValue, contextName,
-      contexts, context, cnt, contextDef, relation
-    if(Object.keys(this.lookingUp).length === 0) {
+  async updateContext(idValue, target, contextInfo, value) {
+    console.log(idValue, target, contextInfo, value)
+    let key, keying, obj, imTarget, lookingContexts, fromValue, contextName, newContext, contexts, context, contextDef,
+      aContext
+    if (Object.keys(this.lookingUp).length === 0) { // In case of no lookup node.
       return
     }
     let fromStore = {}
     const keyField = this.getKeyField()
+    /*
+    this.lookingUpInfo
+      id=0:
+        0:
+          keying: "id=0"
+          key_value: 0
+          node_id: "IM3-27"
+          trigger: "item@product_id"
+          from: "product@name"
+          target: "item@product_name"
+        1:
+          keying: "id=0"
+          key_value: 0
+          node_id: "IM3-28"
+          trigger: "item@product_id"
+          from: "product@unitprice"
+          target: "item@product_unitprice"
+       id=1: (2) [{…}, {…}]
+       id=2: (2) [{…}, {…}]
+     */
     if (this.lookingUpInfo === null) {
       this.lookingUpInfo = {}
       for (key of Object.keys(this.lookingUp)) {
@@ -1159,11 +1180,11 @@ class IMLibContext {
         }
       }
     }
-    if(Object.keys(this.lookingUpInfo).length === 0) {
+    if (Object.keys(this.lookingUpInfo).length === 0) { // Just in case.
       return
     }
-    lookingContexts = []
-    if(this.lookingUpInfo[contextInfo.record]) {
+    lookingContexts = [] // Correcting the context names of contexts looked up. i.e. 'from' key data
+    if (this.lookingUpInfo[contextInfo.record]) {
       for (obj of this.lookingUpInfo[contextInfo.record]) {
         fromValue = obj.from.split('@')
         if (lookingContexts.indexOf(fromValue[0]) < 0) {
@@ -1171,33 +1192,75 @@ class IMLibContext {
         }
       }
     }
-    cnt = 0
-    for (contextName of lookingContexts) {
-      contexts = IMLibContextPool.getContextFromName(contextName)
-      for (context of contexts) {
-        contextDef = context.getContextDef()
-        relation = contextDef.relation
-        if (context.parentContext == this && relation  /* && relation[0]['foreign-key'] == keyField*/) {
-          keying = relation[0]['foreign-key'] + '=' + value
-          if (context.store[keying]) {
-            fromStore[contextName] = context.store[keying]
-          } else {
-
+    loop: // Search for the valid record to be looked up.
+      for (contextName of lookingContexts) {
+        contexts = IMLibContextPool.getContextFromName(contextName)
+        for (context of contexts) {
+          contextDef = context.getContextDef()
+          if (context.parentContext == this && contextDef.relation  /* && relation[0]['foreign-key'] == keyField*/) {
+            keying = contextDef.relation[0]['foreign-key'] + '=' + value
+            if (context.store[keying]) {
+              fromStore[contextName] = context.store[keying]
+              break loop
+            }
           }
         }
       }
-      cnt += 1
+    console.log(fromStore)
+    if (Object.keys(fromStore) == 0) {
+      for (contextName of lookingContexts) {
+        aContext = IMLibContextPool.contextFromName(contextName)
+        contextDef = aContext.getContextDef()
+        newContext = IMLibContextPool.generateContextObject(contextDef, null, null, null)
+        newContext.parentContext = this
+        try {
+          await INTERMediator_DBAdapter.db_query_async(
+            {
+              'name': contextDef.name,
+              'records': 1,
+              'paging': contextDef.paging,
+              'fields': "*",
+              'parentkeyvalue': value,
+              'conditions': null,
+              'useoffset': true,
+              'uselimit': newContext.isUseLimit()
+            },
+            function (result) {
+              newContext.storeRecords(result)
+            },
+            null)
+        } catch (ex) {
+          if (ex.message === '_im_auth_required_') {
+            throw ex
+          } else {
+            INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-12')
+          }
+        }
+        keying = contextDef.relation[0]['foreign-key'] + '=' + value
+        fromStore[contextName] = context.store[keying]
+      }
     }
-    for (obj of this.lookingUpInfo[contextInfo.record]) {
-      imTarget = obj.target.split('@')
-      fromValue = obj.from.split('@')
-      this.setDataWithKey(obj.key_value, imTarget[1], fromStore[fromValue[0]][fromValue[1]])
+    console.log(fromStore)
+
+    if (this.lookingUpInfo[contextInfo.record]) {
+      for (obj of this.lookingUpInfo[contextInfo.record]) {
+        imTarget = obj.target.split('@')
+        fromValue = obj.from.split('@')
+
+        if (imTarget[1] && fromValue[0] && fromStore[fromValue[0]] && fromValue[1] && fromStore[fromValue[0]][fromValue[1]]) {
+          this.setDataWithKey(obj.key_value, imTarget[1], fromStore[fromValue[0]][fromValue[1]])
+        }
+      }
     }
   }
 }
 
 // @@IM@@IgnoringRestOfFile
-module.exports = IMLibContext
-const IMLibContextPool = require('../../src/js/INTER-Mediator-ContextPool')
-const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
-const INTERMediator = require('../../src/js/INTER-Mediator')
+module
+  .exports = IMLibContext
+const
+  IMLibContextPool = require('../../src/js/INTER-Mediator-ContextPool')
+const
+  INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
+const
+  INTERMediator = require('../../src/js/INTER-Mediator')
