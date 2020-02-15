@@ -24,7 +24,6 @@
 </header>
 <div id="wrapper">
     <h1>Invoice (Sample for Calculation)</h1>
-    <p style="color: red">This page is under construction for the lookup features.</p>
     <div class="sub_title" id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
     <table>
         <tbody>
@@ -45,7 +44,6 @@
         </tr>
         <tr>
             <td colspan="2">
-                <p>If the product id is no value, popup menu to select the product appears.</p>
                 <table>
                     <thead>
                     <tr>
@@ -62,7 +60,7 @@
                     <tbody>
                     <tr>
                         <td>
-                            <div data-im="item@pinfo_style@style.display">
+                            <div>
                                 <input type="text" data-im="item@product_id" size="2">
                                 <div class="inline" data-im-control="enclosure">
                                     <div class="inline" data-im-control="repeater">
@@ -70,7 +68,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <select data-im="item@product_id item@popup_style@style.display">
+                            <select data-im="item@product_id">
                                 <option data-im="productlist@id@value productlist@name"></option>
                             </select>
                         </td>
@@ -82,9 +80,6 @@
                             <div><input type="text" size="20"
                                         data-im="item@product_name"
                                         data-im-control="lookup:item@product_id:product@name"></div>
-                            <div data-im-control="enclosure">
-                                <div data-im-control="repeater"><span data-im="product@name"></span></div>
-                            </div>
                         </td>
                         <td>
                             <div>
@@ -93,13 +88,6 @@
                                        data-im-control="lookup:item@product_id:product@unitprice"
                                        data-im-format="number()"
                                        data-im-format-options="useseparator">
-                            </div>
-                            <div data-im-control="enclosure">
-                                <div class="price" data-im-control="repeater">
-                                    <span data-im="product@unitprice"
-                                          data-im-format="number()"
-                                          data-im-format-options="useseparator"></span>
-                                </div>
                             </div>
                         </td>
                         <td align="right">

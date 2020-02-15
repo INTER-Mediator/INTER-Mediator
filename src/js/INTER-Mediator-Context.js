@@ -1132,10 +1132,9 @@ class IMLibContext {
     }
   }
 
-  async updateContext(idValue, target, contextInfo, value) {
-    console.log(idValue, target, contextInfo, value)
-    let key, keying, obj, imTarget, lookingContexts, fromValue, contextName, newContext, contexts, context, contextDef,
-      aContext
+  updateContext(idValue, target, contextInfo, value) {
+    let key, keying, obj, imTarget, lookingContexts, fromValue, contextName, newContext, contexts, context,
+      contextDef, aContext, isModified
     if (Object.keys(this.lookingUp).length === 0) { // In case of no lookup node.
       return
     }
@@ -1143,23 +1142,23 @@ class IMLibContext {
     const keyField = this.getKeyField()
     /*
     this.lookingUpInfo
-      id=0:
+      id=1:
         0:
-          keying: "id=0"
-          key_value: 0
+          keying: "id=1"
+          key_value: 1
           node_id: "IM3-27"
           trigger: "item@product_id"
           from: "product@name"
           target: "item@product_name"
         1:
-          keying: "id=0"
-          key_value: 0
+          keying: "id=1"
+          key_value: 1
           node_id: "IM3-28"
           trigger: "item@product_id"
           from: "product@unitprice"
           target: "item@product_unitprice"
-       id=1: (2) [{…}, {…}]
        id=2: (2) [{…}, {…}]
+       id=3: (2) [{…}, {…}]
      */
     if (this.lookingUpInfo === null) {
       this.lookingUpInfo = {}
@@ -1192,75 +1191,113 @@ class IMLibContext {
         }
       }
     }
-    loop: // Search for the valid record to be looked up.
-      for (contextName of lookingContexts) {
-        contexts = IMLibContextPool.getContextFromName(contextName)
-        for (context of contexts) {
-          contextDef = context.getContextDef()
-          if (context.parentContext == this && contextDef.relation  /* && relation[0]['foreign-key'] == keyField*/) {
-            keying = contextDef.relation[0]['foreign-key'] + '=' + value
-            if (context.store[keying]) {
-              fromStore[contextName] = context.store[keying]
-              break loop
+    // Search for the valid record to be looked up.
+    for (contextName of lookingContexts) {
+      contexts = IMLibContextPool.getContextFromName(contextName)
+      for (context of contexts) {
+        contextDef = context.getContextDef()
+        if (context.parentContext == this && contextDef.relation  /* && relation[0]['foreign-key'] == keyField*/) {
+          keying = contextDef.relation[0]['foreign-key'] + '=' + value
+          if (context.store[keying]) {  // There is the lookup required data on any context
+            fromStore[contextName] = context.store[keying]
+            isModified = false
+            if (this.lookingUpInfo[contextInfo.record]) {
+              for (obj of this.lookingUpInfo[contextInfo.record]) {
+                imTarget = obj.target.split('@')
+                fromValue = obj.from.split('@')
+                if (imTarget[1] && fromValue[0] && fromStore[fromValue[0]] && fromValue[1] && fromStore[fromValue[0]][fromValue[1]]) {
+                  this.setDataWithKey(obj.key_value, imTarget[1], fromStore[fromValue[0]][fromValue[1]])
+                  isModified = true
+                }
+              }
             }
+            if (isModified) {
+              IMLibQueue.setTask((completeTask)=>{
+                IMLibCalc.recalculation(true)
+                completeTask()
+              })
+            }
+            return
           }
         }
-      }
-    console.log(fromStore)
-    if (Object.keys(fromStore) == 0) {
-      for (contextName of lookingContexts) {
-        aContext = IMLibContextPool.contextFromName(contextName)
-        contextDef = aContext.getContextDef()
-        newContext = IMLibContextPool.generateContextObject(contextDef, null, null, null)
-        newContext.parentContext = this
-        try {
-          await INTERMediator_DBAdapter.db_query_async(
-            {
-              'name': contextDef.name,
-              'records': 1,
-              'paging': contextDef.paging,
-              'fields': "*",
-              'parentkeyvalue': value,
-              'conditions': null,
-              'useoffset': true,
-              'uselimit': newContext.isUseLimit()
-            },
-            function (result) {
-              newContext.storeRecords(result)
-            },
-            null)
-        } catch (ex) {
-          if (ex.message === '_im_auth_required_') {
-            throw ex
-          } else {
-            INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-12')
-          }
-        }
-        keying = contextDef.relation[0]['foreign-key'] + '=' + value
-        fromStore[contextName] = context.store[keying]
       }
     }
-    console.log(fromStore)
-
-    if (this.lookingUpInfo[contextInfo.record]) {
-      for (obj of this.lookingUpInfo[contextInfo.record]) {
-        imTarget = obj.target.split('@')
-        fromValue = obj.from.split('@')
-
-        if (imTarget[1] && fromValue[0] && fromStore[fromValue[0]] && fromValue[1] && fromStore[fromValue[0]][fromValue[1]]) {
-          this.setDataWithKey(obj.key_value, imTarget[1], fromStore[fromValue[0]][fromValue[1]])
-        }
+    for (contextName of lookingContexts) {
+      if (this.lookingUpInfo[contextInfo.record]) {
+        aContext = IMLibContextPool.contextFromName(contextName)
+        newContext = IMLibContextPool.generateContextObject(contextDef, null, null, null)
+        newContext.parentContext = this
+        IMLibQueue.setTask((() => {
+          const targetContext = newContext
+          const contextDef = aContext.getContextDef()
+          const pValue = value
+          const lookingUpInfoObj = this.lookingUpInfo[contextInfo.record]
+          const thisObj = this
+          let fields = []
+          for (obj of lookingUpInfoObj) {
+            let fromValue = obj.from.split('@')
+            if (fromValue[0] == targetContext.contextName && fromValue[1]) {
+              fields.push(fromValue[1])
+            }
+          }
+          return (completeTask) => {
+            try {
+              INTERMediator_DBAdapter.db_query_async(
+                {
+                  'name': contextDef.name,
+                  'records': 1,
+                  'paging': contextDef.paging,
+                  'fields': fields,
+                  'parentkeyvalue': pValue,
+                  'conditions': null,
+                  'useoffset': true,
+                  'uselimit': targetContext.isUseLimit()
+                },
+                (result) => {
+                  let imTarget, fromValue, aRecord
+                  targetContext.storeRecords(result)
+                  keying = contextDef.relation[0]['foreign-key'] + '=' + pValue
+                  aRecord = targetContext.store[keying]
+                  if (aRecord) {
+                    for (obj of lookingUpInfoObj) {
+                      imTarget = obj.target.split('@')
+                      fromValue = obj.from.split('@')
+                      if (imTarget[1] && fromValue[0] && fromValue[1]
+                        && fromValue[0] == targetContext.contextName && aRecord[fromValue[1]]) {
+                        thisObj.setDataWithKey(obj.key_value, imTarget[1], aRecord[fromValue[1]])
+                      }
+                    }
+                  }
+                  IMLibQueue.setTask((completeTask)=>{
+                    IMLibCalc.recalculation(true)
+                    completeTask()
+                  })
+                  INTERMediatorLog.flushMessage()
+                  completeTask()
+                },
+                () => {
+                  INTERMediatorLog.flushMessage()
+                  completeTask()
+                }
+              )
+            } catch (ex) {
+              if (ex.message === '_im_auth_required_') {
+                throw ex
+              } else {
+                INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-13')
+              }
+            }
+          }
+        })())
       }
     }
   }
+
+  // }
 }
 
 // @@IM@@IgnoringRestOfFile
-module
-  .exports = IMLibContext
-const
-  IMLibContextPool = require('../../src/js/INTER-Mediator-ContextPool')
-const
-  INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
-const
-  INTERMediator = require('../../src/js/INTER-Mediator')
+module.exports = IMLibContext
+const IMLibContextPool = require('../../src/js/INTER-Mediator-ContextPool')
+const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
+const INTERMediator = require('../../src/js/INTER-Mediator')

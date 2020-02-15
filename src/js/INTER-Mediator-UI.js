@@ -184,10 +184,13 @@ const IMLibUI = {
                   }
                 }
               }
-              IMLibCalc.recalculation()
-              if (INTERMediatorOnPage.doAfterValueChange) {
-                INTERMediatorOnPage.doAfterValueChange(idValueCapt2)
-              }
+              IMLibQueue.setTask((completeTask) => {
+                IMLibCalc.recalculation()
+                if (INTERMediatorOnPage.doAfterValueChange) {
+                  INTERMediatorOnPage.doAfterValueChange(idValueCapt2)
+                }
+                completeTask()
+              })
               INTERMediatorOnPage.hideProgress()
               INTERMediatorLog.flushMessage()
               if (completeTaskCapt) {
