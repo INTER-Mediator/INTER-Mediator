@@ -401,11 +401,11 @@ const IMLibElement = {
     }
     if ((element.tagName === 'INPUT' || element.tagName === 'SELECT' || element.tagName === 'TEXTAREA') &&
       !isReplaceOrAppend &&
-      (!imControl || imControl.indexOf('unbind') > 0)) {
+      (!imControl || imControl.indexOf('unbind') > 0 || imControl.indexOf('lookup') === 0)) {
       if (!element.getAttribute('data-imbluradded')) {
         INTERMediatorLib.addEvent(element, 'blur', (function () {
-          var idValue = element.id
-          var elementCapt = element
+          const idValue = element.id
+          const elementCapt = element
           return function () {
             if (!IMLibUI.valueChange(idValue, true)) {
               elementCapt.focus()
@@ -417,8 +417,8 @@ const IMLibElement = {
       }
       if (!element.getAttribute('data-imchangeadded')) {
         IMLibChangeEventDispatch.setExecute(element.id, (function () {
-          var idValue = element.id
-          var elementCapt = element
+          const idValue = element.id
+          const elementCapt = element
           return function () {
             if (!IMLibUI.valueChange(idValue, false)) {
               elementCapt.focus()
@@ -429,8 +429,8 @@ const IMLibElement = {
       }
       if ((INTERMediator.isTrident || INTERMediator.isEdge) && !element.getAttribute('data-iminputadded')) {
         IMLibInputEventDispatch.setExecute(element.id, (function () {
-          var idValue = element.id
-          var elementCapt = element
+          const idValue = element.id
+          const elementCapt = element
           return function () {
             if (document.getElementById(idValue).value === '') {
               if (!IMLibUI.valueChange(idValue, false)) {

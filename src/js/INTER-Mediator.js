@@ -1052,7 +1052,7 @@ const INTERMediator = {
             // for each linked element
             nodeId = currentLinkedNodes[k].getAttribute('id')
             replacedNode = INTERMediator.setIdValue(currentLinkedNodes[k])
-            contextObj.setupLookup(currentLinkedNodes[k], ix)
+            contextObj.setupLookup(currentLinkedNodes[k], targetRecordset[ix][keyField])
             typeAttr = replacedNode.getAttribute('type')
             if (typeAttr === 'checkbox' || typeAttr === 'radio') {
               children = replacedNode.parentNode.childNodes

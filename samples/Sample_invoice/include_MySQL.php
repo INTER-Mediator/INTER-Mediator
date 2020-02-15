@@ -27,7 +27,7 @@ IM_Entry(
             'repeat-control' => 'insert delete',
             'calculation' => [[
                 'field' => 'total_calc',
-                'expression' => 'sum(item@amount_calc) * (1 + _@taxRate )',
+                'expression' => 'sum(item@amount_calc)',
             ],],
         ],
         [
@@ -51,17 +51,23 @@ IM_Entry(
             ],
             'calculation' => [
                 [
+                    'field' => 'net_price',
+                    'expression' => 'qty * product_unitprice',
+                ],                [
+                    'field' => 'tax_price',
+                    'expression' => 'net_price * _@taxRate',
+                ],                [
                     'field' => 'amount_calc',
-                    'expression' => 'qty * if(unitprice = \'\', product@unitprice, unitprice)',
+                    'expression' => 'net_price + tax_price',
                 ], [
                     'field' => 'qty_color',
                     'expression' => 'if (qty >= 10, \'red\', \'black\')',
-                ], [
-                    'field' => 'popup_style',
-                    'expression' => "if (length(product_id) = 0, 'block', 'none')",
-                ], [
-                    'field' => 'pinfo_style',
-                    'expression' => "if (length(product_id) > 0, 'block', 'none')",
+//                ], [
+//                    'field' => 'popup_style',
+//                    'expression' => "if (length(product_id) = 0, 'block', 'none')",
+//                ], [
+//                    'field' => 'pinfo_style',
+//                    'expression' => "if (length(product_id) > 0, 'block', 'none')",
                 ],
             ],
         ],

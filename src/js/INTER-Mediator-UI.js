@@ -42,6 +42,10 @@ const IMLibUI = {
     if (!changedObj) {
       return false
     }
+    // if (changedObj.readOnly) { // for Internet Explorer
+    //   return true
+    // }
+    // Validating
     if (!IMLibUI.validation(changedObj)) { // Validation error.
       changedObj.focus()
       linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj)
@@ -137,7 +141,6 @@ const IMLibUI = {
             let contextInfoCapt = contextInfo
             let newValueCapt = newValue
             let completeTaskCapt = completeTask
-            let nodeInfoCapt = nodeInfo
             return async function (result) {
               let updateRequiredContext, currentValue, associatedNode, field, node, children, delNodes,
                 recordObj, keepProp
@@ -181,9 +184,6 @@ const IMLibUI = {
                   }
                 }
               }
-
-              contextInfoCapt.context.updateContext(idValueCapt2, nodeInfoCapt.target, contextInfoCapt, currentValue)
-
               IMLibCalc.recalculation()
               if (INTERMediatorOnPage.doAfterValueChange) {
                 INTERMediatorOnPage.doAfterValueChange(idValueCapt2)

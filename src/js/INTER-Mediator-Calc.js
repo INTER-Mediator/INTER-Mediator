@@ -319,6 +319,7 @@ var IMLibCalc = {
           }
           if (newValueAdded) {
             updatedValue = Parser.evaluate(calcObject.expression, calcObject.values)
+            console.log(calcObject.expression, calcObject.values, updatedValue, idValue)
             IMLibElement.setValueToIMNode(document.getElementById(idValue), nInfo.target, updatedValue, true)
             updatedNodeIds.push(idValue)
             updateNodeValues.push(updatedValue)
