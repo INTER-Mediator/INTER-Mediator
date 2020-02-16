@@ -1140,6 +1140,7 @@ class IMLibContext {
     }
     let fromStore = {}
     const keyField = this.getKeyField()
+    // IMLibUI.recalculationOnValueChange = false
     /*
     this.lookingUpInfo
       id=1:
@@ -1213,7 +1214,7 @@ class IMLibContext {
             }
             if (isModified) {
               IMLibQueue.setTask((completeTask)=>{
-                IMLibCalc.recalculation(true)
+                IMLibCalc.recalculation()
                 completeTask()
               })
             }
@@ -1269,7 +1270,7 @@ class IMLibContext {
                     }
                   }
                   IMLibQueue.setTask((completeTask)=>{
-                    IMLibCalc.recalculation(true)
+                    IMLibCalc.recalculation()
                     completeTask()
                   })
                   INTERMediatorLog.flushMessage()

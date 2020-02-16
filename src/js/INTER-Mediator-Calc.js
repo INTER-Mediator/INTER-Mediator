@@ -252,7 +252,7 @@ var IMLibCalc = {
           valuesArray = calcObject.values
           refersArray = calcObject.referes
           contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nInfo.target)
-          if (contextInfo && contextInfo.context) {
+          if (contextInfo && contextInfo.context ) {
             record = contextInfo.context.getContextRecord(idValue)
           } else {
             record = null
@@ -319,7 +319,6 @@ var IMLibCalc = {
           }
           if (newValueAdded) {
             updatedValue = Parser.evaluate(calcObject.expression, calcObject.values)
-            console.log(calcObject.expression, calcObject.values, updatedValue, idValue)
             IMLibElement.setValueToIMNode(document.getElementById(idValue), nInfo.target, updatedValue, true)
             updatedNodeIds.push(idValue)
             updateNodeValues.push(updatedValue)
