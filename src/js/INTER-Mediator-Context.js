@@ -1256,11 +1256,7 @@ class IMLibContext {
 }
 
 // @@IM@@IgnoringRestOfFile
-module
-  .exports = IMLibContext
-const
-  IMLibContextPool = require('../../src/js/INTER-Mediator-ContextPool')
-const
-  INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
-const
-  INTERMediator = require('../../src/js/INTER-Mediator')
+module.exports = IMLibContext
+const IMLibContextPool = require('../../src/js/INTER-Mediator-ContextPool')
+const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
+const INTERMediator = require('../../src/js/INTER-Mediator')

@@ -154,7 +154,7 @@ const IMLibContextPool = {
     if (contextInfo) {
       contextInfo.context.setValue(
         contextInfo.record, contextInfo.field, value, false, target, contextInfo.portal)
-      contextInfo.context.updateContext(idValue, target, contextInfo, value)
+      //contextInfo.context.updateContext(idValue, target, contextInfo, value)
     }
   },
 
