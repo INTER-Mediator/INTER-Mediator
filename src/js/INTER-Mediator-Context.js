@@ -1101,6 +1101,7 @@ class IMLibContext {
     }
   }
 
+  // ****** Look-up processing ******
   // data-im-control="lookup:item@product_id:product@name"
   /*
   lookingUp:
@@ -1132,36 +1133,30 @@ class IMLibContext {
     }
   }
 
-  async updateContext(idValue, target, contextInfo, value) {
-    console.log(idValue, target, contextInfo, value)
-    let key, keying, obj, imTarget, lookingContexts, fromValue, contextName, newContext, contexts, context, contextDef,
-      aContext
-    if (Object.keys(this.lookingUp).length === 0) { // In case of no lookup node.
-      return
-    }
-    let fromStore = {}
+  updateLookupInfo(force = false) {
+    let key, keying, obj
     const keyField = this.getKeyField()
     /*
-    this.lookingUpInfo
-      id=0:
-        0:
-          keying: "id=0"
-          key_value: 0
-          node_id: "IM3-27"
-          trigger: "item@product_id"
-          from: "product@name"
-          target: "item@product_name"
-        1:
-          keying: "id=0"
-          key_value: 0
-          node_id: "IM3-28"
-          trigger: "item@product_id"
-          from: "product@unitprice"
-          target: "item@product_unitprice"
-       id=1: (2) [{…}, {…}]
-       id=2: (2) [{…}, {…}]
-     */
-    if (this.lookingUpInfo === null) {
+this.lookingUpInfo
+  id=1:
+    0:
+      keying: "id=1"
+      key_value: 1
+      node_id: "IM3-27"
+      trigger: "item@product_id"
+      from: "product@name"
+      target: "item@product_name"
+    1:
+      keying: "id=1"
+      key_value: 1
+      node_id: "IM3-28"
+      trigger: "item@product_id"
+      from: "product@unitprice"
+      target: "item@product_unitprice"
+   id=2: (2) [{…}, {…}]
+   id=3: (2) [{…}, {…}]
+ */
+    if (force || this.lookingUpInfo === null) {
       this.lookingUpInfo = {}
       for (key of Object.keys(this.lookingUp)) {
         keying = keyField + '=' + this.lookingUp[key].keying
@@ -1180,76 +1175,146 @@ class IMLibContext {
         }
       }
     }
+  }
+
+  updateContextAfterInsertAsLookup(newRecordId) {
+    let node, nodes, value, binds, field, bind
+    const keyField = this.getContextDef().key
+    this.updateLookupInfo(true)
+    nodes = []
+    binds = this.binding[keyField + '=' + newRecordId]
+    for (field in binds) {
+      for (bind of binds[field]) {
+        if (nodes.indexOf(bind.id) < 0) {
+          nodes.push(bind.id)
+        }
+      }
+    }
+    for (node of nodes) {
+      value = document.getElementById(node).value
+      if(value) {
+        this.updateContextAsLookup(node, value)
+      }
+    }
+  }
+
+  updateContextAsLookup(idValue = null, value = null) {
+    let keying, obj, imTarget, lookingContexts, fromValue, contextName, newContext, contexts, context,
+      contextDef, aContext, isModified, changedObj, linkInfo, nodeInfo, contextInfo
+
+    if (Object.keys(this.lookingUp).length === 0) { // In case of no lookup node.
+      return
+    }
+    if (!idValue) { // call with null, non operations required
+      return
+    }
+    let fromStore = {}
+    this.updateLookupInfo()// Update the table for looking-up operations
     if (Object.keys(this.lookingUpInfo).length === 0) { // Just in case.
       return
     }
+    changedObj = document.getElementById(idValue)
+    linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj)
+    nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]) // Suppose to be the first definition.
+    contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target)
+
     lookingContexts = [] // Correcting the context names of contexts looked up. i.e. 'from' key data
     if (this.lookingUpInfo[contextInfo.record]) {
       for (obj of this.lookingUpInfo[contextInfo.record]) {
-        fromValue = obj.from.split('@')
-        if (lookingContexts.indexOf(fromValue[0]) < 0) {
-          lookingContexts.push(fromValue[0])
+        if(obj.trigger == linkInfo[0]) { // Suppose to be the first definition.
+          fromValue = obj.from.split('@')
+          if (lookingContexts.indexOf(fromValue[0]) < 0) {
+            lookingContexts.push(fromValue[0])
+          }
         }
       }
     }
-    loop: // Search for the valid record to be looked up.
-      for (contextName of lookingContexts) {
-        contexts = IMLibContextPool.getContextFromName(contextName)
-        for (context of contexts) {
-          contextDef = context.getContextDef()
-          if (context.parentContext == this && contextDef.relation  /* && relation[0]['foreign-key'] == keyField*/) {
-            keying = contextDef.relation[0]['foreign-key'] + '=' + value
-            if (context.store[keying]) {
-              fromStore[contextName] = context.store[keying]
-              break loop
+    // Search for the valid record to be looked up.
+    for (contextName of lookingContexts) {
+      contexts = IMLibContextPool.getContextFromName(contextName)
+      for (context of contexts) {
+        contextDef = context.getContextDef()
+        if (context.parentContext == this && contextDef.relation  /* && relation[0]['foreign-key'] == keyField*/) {
+          keying = contextDef.relation[0]['foreign-key'] + '=' + value
+          if (context.store[keying]) {  // There is the lookup required data on any context
+            fromStore[contextName] = context.store[keying]
+            isModified = false
+            if (this.lookingUpInfo[contextInfo.record]) {
+              for (obj of this.lookingUpInfo[contextInfo.record]) {
+                imTarget = obj.target.split('@')
+                fromValue = obj.from.split('@')
+                if (imTarget[1] && fromValue[0] && fromStore[fromValue[0]] && fromValue[1] && fromStore[fromValue[0]][fromValue[1]]) {
+                  this.setDataWithKey(obj.key_value, imTarget[1], fromStore[fromValue[0]][fromValue[1]])
+                  isModified = true
+                }
+              }
+            }
+            return
+          }
+        }
+      }
+    }
+    for (contextName of lookingContexts) {
+      if (this.lookingUpInfo[contextInfo.record]) {
+        contextDef = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', contextName)
+        newContext = IMLibContextPool.generateContextObject(contextDef)
+        newContext.parentContext = this
+        IMLibQueue.setTask((() => {
+          const targetContext = newContext
+          const cDef = contextDef
+          const pValue = value
+          const lookingUpInfoObj = this.lookingUpInfo[contextInfo.record]
+          const thisObj = this
+          let fields = []
+          for (obj of lookingUpInfoObj) {
+            let fromValue = obj.from.split('@')
+            if (fromValue[0] == targetContext.contextName && fromValue[1]) {
+              fields.push(fromValue[1])
             }
           }
-        }
-      }
-    console.log(fromStore)
-    if (Object.keys(fromStore) == 0) {
-      for (contextName of lookingContexts) {
-        aContext = IMLibContextPool.contextFromName(contextName)
-        contextDef = aContext.getContextDef()
-        newContext = IMLibContextPool.generateContextObject(contextDef, null, null, null)
-        newContext.parentContext = this
-        try {
-          await INTERMediator_DBAdapter.db_query_async(
-            {
-              'name': contextDef.name,
-              'records': 1,
-              'paging': contextDef.paging,
-              'fields': "*",
-              'parentkeyvalue': value,
-              'conditions': null,
-              'useoffset': true,
-              'uselimit': newContext.isUseLimit()
-            },
-            function (result) {
-              newContext.storeRecords(result)
-            },
-            null)
-        } catch (ex) {
-          if (ex.message === '_im_auth_required_') {
-            throw ex
-          } else {
-            INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-12')
+          return (completeTask) => {
+            try {
+              INTERMediator_DBAdapter.db_query_async(
+                {
+                  'name': cDef.name,
+                  'records': 1,
+                  'paging': cDef.paging,
+                  'fields': fields,
+                  'parentkeyvalue': pValue,
+                  'conditions': null,
+                  'useoffset': true,
+                  'uselimit': targetContext.isUseLimit()
+                },
+                (result) => {
+                  let imTarget, fromValue, aRecord
+                  targetContext.storeRecords(result)
+                  keying = cDef.relation[0]['foreign-key'] + '=' + pValue
+                  aRecord = targetContext.store[keying]
+                  if (aRecord) {
+                    for (obj of lookingUpInfoObj) {
+                      imTarget = obj.target.split('@')
+                      fromValue = obj.from.split('@')
+                      if (imTarget[1] && fromValue[0] && fromValue[1]
+                        && fromValue[0] == targetContext.contextName && aRecord[fromValue[1]]) {
+                        thisObj.setDataWithKey(obj.key_value, imTarget[1], aRecord[fromValue[1]])
+                      }
+                    }
+                  }
+                  completeTask()
+                },
+                () => {
+                  completeTask()
+                }
+              )
+            } catch (ex) {
+              if (ex.message === '_im_auth_required_') {
+                throw ex
+              } else {
+                INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-13')
+              }
+            }
           }
-        }
-        keying = contextDef.relation[0]['foreign-key'] + '=' + value
-        fromStore[contextName] = context.store[keying]
-      }
-    }
-    console.log(fromStore)
-
-    if (this.lookingUpInfo[contextInfo.record]) {
-      for (obj of this.lookingUpInfo[contextInfo.record]) {
-        imTarget = obj.target.split('@')
-        fromValue = obj.from.split('@')
-
-        if (imTarget[1] && fromValue[0] && fromStore[fromValue[0]] && fromValue[1] && fromStore[fromValue[0]][fromValue[1]]) {
-          this.setDataWithKey(obj.key_value, imTarget[1], fromStore[fromValue[0]][fromValue[1]])
-        }
+        })())
       }
     }
   }

@@ -181,15 +181,17 @@ const IMLibUI = {
                   }
                 }
               }
+              contextInfoCapt.context.updateContextAsLookup(idValueCapt2, newValueCapt)
 
-              contextInfoCapt.context.updateContext(idValueCapt2, nodeInfoCapt.target, contextInfoCapt, currentValue)
-
-              IMLibCalc.recalculation()
-              if (INTERMediatorOnPage.doAfterValueChange) {
-                INTERMediatorOnPage.doAfterValueChange(idValueCapt2)
-              }
-              INTERMediatorOnPage.hideProgress()
-              INTERMediatorLog.flushMessage()
+              IMLibQueue.setTask((completeTask) => {
+                IMLibCalc.recalculation()
+                if (INTERMediatorOnPage.doAfterValueChange) {
+                  INTERMediatorOnPage.doAfterValueChange(idValueCapt2)
+                }
+                INTERMediatorOnPage.hideProgress()
+                INTERMediatorLog.flushMessage()
+                completeTask()
+              })
               if (completeTaskCapt) {
                 completeTaskCapt()
               }
@@ -696,8 +698,8 @@ const IMLibUI = {
               let existRelatedCapt = existRelated
               let keyValueCapt2 = keyValueCapt
               return async function (result) {
-                let keyField, newRecordId, associatedContext, conditions, createdRecord,
-                  i, sameOriginContexts
+                let keyField, newRecordId, associatedContext, conditions, createdRecord, i, sameOriginContexts, context
+
                 newRecordId = result.newRecordKeyValue
                 keyField = currentContextCapt.key ? currentContextCapt.key : INTERMediatorOnPage.defaultKeyName
                 associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodesCapt2)
@@ -721,9 +723,21 @@ const IMLibUI = {
                     await INTERMediator.constructMain(sameOriginContexts[i], null)
                   }
                 }
-                IMLibCalc.recalculation()
-                INTERMediatorOnPage.hideProgress()
-                INTERMediatorLog.flushMessage()
+
+                // To work the looking-up feature
+                const contexts = IMLibContextPool.getContextFromName(associatedContext.contextName)
+                for (context of contexts) {
+                  context.updateContextAfterInsertAsLookup(newRecordId)
+                }
+
+                // reacalculation later
+                IMLibQueue.setTask((completeTask) => {
+                  IMLibCalc.recalculation()
+                  INTERMediatorOnPage.hideProgress()
+                  INTERMediatorLog.flushMessage()
+                  completeTask()
+                })
+
               }
             })(),
             function () {
