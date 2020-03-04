@@ -154,7 +154,7 @@ const IMLibContextPool = {
     if (contextInfo) {
       contextInfo.context.setValue(
         contextInfo.record, contextInfo.field, value, false, target, contextInfo.portal)
-      contextInfo.context.updateContext(idValue, target, contextInfo, value)
+      //contextInfo.context.updateContext(idValue, target, contextInfo, value)
     }
   },
 
@@ -339,13 +339,16 @@ const IMLibContextPool = {
     IMLibElement.deleteNodes(delNodes)
 
     this.poolingContexts = this.poolingContexts.filter(function (context) {
-      return nodeIds.indexOf(context.enclosureNode.id) < 0
+      if(context.enclosureNode) {
+        return nodeIds.indexOf(context.enclosureNode.id) < 0
+      }
+      return false;
     })
 
     return countDeleteNodes
 
     // Private functions
-    function getContextAndKeyFromId (repeaterIdValue) {
+    function getContextAndKeyFromId(repeaterIdValue) {
       var i, field, j, keying, foreignKey
 
       for (i = 0; i < IMLibContextPool.poolingContexts.length; i += 1) {
@@ -555,8 +558,7 @@ const IMLibContextPool = {
     return null
   },
 
-  generateContextObject: function (contextDef, enclosure, repeaters, repeatersOriginal) {
-    'use strict'
+  generateContextObject: function (contextDef, enclosure = null, repeaters = null, repeatersOriginal = null) {
     var contextObj = new IMLibContext(contextDef.name)
     contextObj.contextDefinition = contextDef
     contextObj.enclosureNode = enclosure
