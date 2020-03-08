@@ -3723,9 +3723,9 @@
       }
     },
     "inter-mediator-plugin-fileupload": {
-      "version": "1.0.2",
-      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-fileupload/-/inter-mediator-plugin-fileupload-1.0.2.tgz",
-      "integrity": "sha512-Rq0LBAVDbN9ND2/2Mx4HQyan29KiSrsehVbINLIxRt5YCjouehEs53F92eG3OAu7iGOB2oBwG+G1HkXKoxrGYw=="
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-fileupload/-/inter-mediator-plugin-fileupload-1.0.3.tgz",
+      "integrity": "sha512-FYt9JIC1RdqLL28FvlB3LspvkNCNgQdYq2p0sOiXvQjcrGdp5pwk3TnM2nogxhduzTe5ndTs7sG6n3tAzLsSQQ=="
     },
     "inter-mediator-plugin-flatpickr": {
       "version": "1.0.0",
