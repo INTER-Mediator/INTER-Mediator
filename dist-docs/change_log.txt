@@ -76,6 +76,7 @@ Ver.6-dev (in development)
   name field value to this node with the trigger of changing product_id field value. I'd like you to check the
   samples/Sample_invoice/invoice_MySQL.html.
 - The INTERMediatorLib.setClassAttributeToNode method is removed. It was for the IE supporting.
+- The SELinux policy files are added in the dist-docs/selinux directory.
 - [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
