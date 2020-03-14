@@ -10,6 +10,13 @@ Most possible operations are done when we collect 'deny' informations, but they 
 for example you want to set the document root of apache to another directory from the default one, you have to
 apply to allow your demands.
 
+If you want to write files on your server for accepting uploaded files, you have to add permission to the directory
+of storing uploaded files. The example of command for setting the '/var/www/files' directory as the 'media-root-dir':
+
+sudo semanage fcontext -a -t httpd_sys_rw_content_t "/var/www/files(/.)?"
+sudo semanage fcontext -l | grep /var/www/files
+sudo restorecon -R /var/www/files
+
 If you think some definitions are not appropriate, you can modify the .te file, compile it and apply it.
 I'd like to refer about the detail instructions to any site as like:
 
