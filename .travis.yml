@@ -18,7 +18,6 @@ php:
 matrix:
   allow_failures:
     - php: nightly
-    - php: 7.4
 
 ## for Headless Chrome and trusty
 addons:
