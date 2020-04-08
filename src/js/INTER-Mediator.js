@@ -1156,12 +1156,14 @@ const INTERMediator = {
       targetTotalCount = targetRecords.totalCount
 
       repeatersOneRec = cloneEveryNodes(repeatersOriginal)
-      for (i = 0; i < repeatersOneRec.length; i++) {
-        newNode = repeatersOneRec[i]
-        dataAttr = newNode.getAttribute('data-im-control')
-        if (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0) {
-          if (!insertNode) {
-            node.appendChild(newNode)
+      if (!INTERMediatorOnPage.notShowHeaderFooterOnNoResult || targetRecords.count !== 0) {
+        for (i = 0; i < repeatersOneRec.length; i++) {
+          newNode = repeatersOneRec[i]
+          dataAttr = newNode.getAttribute('data-im-control')
+          if (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0) {
+            if (!insertNode) {
+              node.appendChild(newNode)
+            }
           }
         }
       }
@@ -1253,12 +1255,14 @@ const INTERMediator = {
       IMLibPageNavigation.setupDetailAreaToFirstRecord(currentContextDef, contextObj)
 
       repeatersOneRec = cloneEveryNodes(repeatersOriginal)
-      for (i = 0; i < repeatersOneRec.length; i++) {
-        newNode = repeatersOneRec[i]
-        dataAttr = newNode.getAttribute('data-im-control')
-        if (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0) {
-          if (!insertNode) {
-            node.appendChild(newNode)
+      if (!INTERMediatorOnPage.notShowHeaderFooterOnNoResult || targetRecords.count !== 0) {
+        for (i = 0; i < repeatersOneRec.length; i++) {
+          newNode = repeatersOneRec[i]
+          dataAttr = newNode.getAttribute('data-im-control')
+          if (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0) {
+            if (!insertNode) {
+              node.appendChild(newNode)
+            }
           }
         }
       }

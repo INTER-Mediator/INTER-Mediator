@@ -85,6 +85,8 @@ let INTERMediatorOnPage = {
   appCurrency: null,
   isShowProgress: true,
 
+  notShowHeaderFooterOnNoResult: false,
+
   clearCredentials: function () {
     'use strict'
     INTERMediatorOnPage.authChallenge = null

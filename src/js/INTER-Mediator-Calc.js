@@ -406,8 +406,10 @@ var IMLibCalc = {
           calcObject.referes[field] = []
           calcObject.values[field] = []
           for (ix = 0; ix < targetIds.length; ix++) {
-            calcObject.referes[field].push(targetIds[ix])
-            calcObject.values[field].push(undefined)
+            if(typeof (targetIds[ix]) == "string" || targetIds[ix] instanceof String) {
+              calcObject.referes[field].push(targetIds[ix])
+              calcObject.values[field].push(undefined)
+            }
           }
         } else {
           calcObject.referes[field] = [undefined]
