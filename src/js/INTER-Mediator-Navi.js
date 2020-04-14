@@ -985,22 +985,6 @@ const IMLibPageNavigation = {
             }
           })()
         })
-        // INTERMediator.eventListenerPostAdding.push({
-        //   'id': repeaters[i].id,
-        //   'event': 'touchend',
-        //   'todo': (function () {
-        //     var targetNode = repeaters[i]
-        //     var orgColor = originalColor
-        //     return function (ev) {
-        //       // targetNode.style.backgroundColor = orgColor
-        //       // if (!IMLibEventResponder.touchEventCancel) {
-        //       //   IMLibEventResponder.touchEventCancel = false
-        //       //   moveToDetailFunc()
-        //       // }
-        //       // ev.preventDefault() // Prevent to process at the next page.
-        //     }
-        //   })()
-        // })
         INTERMediator.eventListenerPostAdding.push({
           'id': repeaters[i].id,
           'event': 'click',
@@ -1153,14 +1137,19 @@ const IMLibPageNavigation = {
   },
   moveToNextStep: function (contextObj, keyField, keyValue) {
     'use strict'
-    var context = contextObj
-    let keying = keyField + '=' + keyValue
+    const context = contextObj
+    const keying = keyField + '=' + keyValue
     return function () {
       IMLibQueue.setTask(function (complete) {
         IMLibPageNavigation.moveToNextStepImpl(context, keying)
         complete()
       })
     }
+  },
+  moveNextStep: function (keying) {
+    'use strict'
+    const context = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName)
+    IMLibPageNavigation.moveToNextStepImpl(context, keying)
   },
   moveToNextStepImpl: async function (contextObj, keying) {
     'use strict'
@@ -1171,7 +1160,7 @@ const IMLibPageNavigation = {
     let hasBeforeMoveNext = false
     let nextContext
     contextDef = contextObj.getContextDef()
-    IMLibPageNavigation.stepNavigation.push({context: contextObj, key: keying})
+      IMLibPageNavigation.stepNavigation.push({context: contextObj, key: keying})
     if (INTERMediatorOnPage[contextDef['before-move-nextstep']]) {
       control = INTERMediatorOnPage[contextDef['before-move-nextstep']]()
       hasBeforeMoveNext = true
@@ -1254,6 +1243,9 @@ const IMLibPageNavigation = {
       INTERMediatorOnPage[contextDef['just-move-thisstep']]()
     }
   },
+
+  /* --------------------------------------------------------------------
+   */
   moveToDetail: function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
     'use strict'
     var f = keyField

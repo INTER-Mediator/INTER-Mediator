@@ -79,6 +79,7 @@ Ver.6-dev (in development)
 - The SELinux policy files are added in the dist-docs/selinux directory.
 - The variable INTERMediatorOnPage.notShowHeaderFooterOnNoResult is defined for disappering the 'hearder' and
   'footer' repeaters in case of no record is retrieved.
+- Add the IMLibNavigation.moveNextStep method. It was missing to merge here.
 - [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
