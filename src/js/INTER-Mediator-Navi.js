@@ -923,7 +923,7 @@ const IMLibPageNavigation = {
     // Handling Detail buttons
     'use strict'
     var buttonNode, thisId, tdNodes, tdNode, firstInNode, isMasterDetail, isStep, isHide, masterContext,
-      detailContext, showingNode, isHidePageNavi, buttonName, i, isTouchRepeater, moveToDetailFunc
+      detailContext, showingNode, isHidePageNavi, buttonName, i, isTouchRepeater, moveToDetailFunc, isNoNavi, isFullNavi
 
     if (!currentContextDef['navi-control'] ||
       (!currentContextDef['navi-control'].match(/master/i) &&
@@ -937,6 +937,8 @@ const IMLibPageNavigation = {
     isHidePageNavi = isHide && !!currentContextDef.paging
     isMasterDetail = currentContextDef['navi-control'].match(/master/i)
     isStep = currentContextDef['navi-control'].match(/step/i)
+    isNoNavi = currentContextDef['navi-control'].match(/nonavi/i)
+    isFullNavi = currentContextDef['navi-control'].match(/fullnavi/i)
 
     if (isMasterDetail && INTERMediator.detailNodeOriginalDisplay) {
       detailContext = IMLibContextPool.getDetailContext()
@@ -962,26 +964,28 @@ const IMLibPageNavigation = {
     if (isMasterDetail) {
       masterContext = IMLibContextPool.getMasterContext()
       masterContext.setValue(keyField + '=' + keyValue, '_im_button_master_id', thisId, thisId)
-    }
-    if (isMasterDetail) {
       moveToDetailFunc = IMLibPageNavigation.moveToDetail(
         encNodeTag, keyField, keyValue, isHide, isHidePageNavi)
     }
     if (isStep) {
       moveToDetailFunc = IMLibPageNavigation.moveToNextStep(contextObj, keyField, keyValue)
     }
-    if (isTouchRepeater) {
+    if (isTouchRepeater || isFullNavi) {
       for (i = 0; i < repeaters.length; i += 1) {
-        var originalColor = repeaters[i].style.backgroundColor
+        const originalColor = repeaters[i].style.backgroundColor
+        repeaters[i].style.cursor = 'pointer'
+        const css = '#' + repeaters[i].id + ':hover{background-color:' + IMLibUI.mobileSelectionColor + '}'
+        const style = document.createElement('style')
+        style.appendChild(document.createTextNode(css))
+        document.getElementsByTagName('head')[0].appendChild(style)
         INTERMediator.eventListenerPostAdding.push({
           'id': repeaters[i].id,
           'event': 'touchstart',
           'todo': (function () {
-            var targetNode = repeaters[i]
+            const targetNode = repeaters[i]
             return function (ev) {
               IMLibEventResponder.touchEventCancel = false
               targetNode.style.backgroundColor = IMLibUI.mobileSelectionColor
-              //ev.preventDefault() // If this line is active, page scrolling doesn't work
             }
           })()
         })
@@ -989,8 +993,8 @@ const IMLibPageNavigation = {
           'id': repeaters[i].id,
           'event': 'click',
           'todo': (function () {
-            var targetNode = repeaters[i]
-            var orgColor = originalColor
+            const targetNode = repeaters[i]
+            const orgColor = originalColor
             return function (ev) {
               targetNode.style.backgroundColor = orgColor
               if (!IMLibEventResponder.touchEventCancel) {
@@ -1021,28 +1025,30 @@ const IMLibPageNavigation = {
         })
       }
     } else {
-      IMLibMouseEventDispatch.setExecute(thisId, moveToDetailFunc)
-      switch (encNodeTag) {
-        case 'TBODY':
-          tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD')
-          tdNode = tdNodes[0]
-          firstInNode = tdNode.childNodes[0]
-          if (firstInNode) {
-            tdNode.insertBefore(buttonNode, firstInNode)
-          } else {
-            tdNode.appendChild(buttonNode)
-          }
-          break
-        case 'SELECT':
-          break
-        default:
-          firstInNode = repeaters[repeaters.length - 1].childNodes[0]
-          if (firstInNode) {
-            repeaters[repeaters.length - 1].insertBefore(buttonNode, firstInNode)
-          } else {
-            repeaters[repeaters.length - 1].appendChild(buttonNode)
-          }
-          break
+      if (!isNoNavi) {
+        IMLibMouseEventDispatch.setExecute(thisId, moveToDetailFunc)
+        switch (encNodeTag) {
+          case 'TBODY':
+            tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD')
+            tdNode = tdNodes[0]
+            firstInNode = tdNode.childNodes[0]
+            if (firstInNode) {
+              tdNode.insertBefore(buttonNode, firstInNode)
+            } else {
+              tdNode.appendChild(buttonNode)
+            }
+            break
+          case 'SELECT':
+            break
+          default:
+            firstInNode = repeaters[repeaters.length - 1].childNodes[0]
+            if (firstInNode) {
+              repeaters[repeaters.length - 1].insertBefore(buttonNode, firstInNode)
+            } else {
+              repeaters[repeaters.length - 1].appendChild(buttonNode)
+            }
+            break
+        }
       }
     }
   },
@@ -1160,7 +1166,7 @@ const IMLibPageNavigation = {
     let hasBeforeMoveNext = false
     let nextContext
     contextDef = contextObj.getContextDef()
-      IMLibPageNavigation.stepNavigation.push({context: contextObj, key: keying})
+    IMLibPageNavigation.stepNavigation.push({context: contextObj, key: keying})
     if (INTERMediatorOnPage[contextDef['before-move-nextstep']]) {
       control = INTERMediatorOnPage[contextDef['before-move-nextstep']]()
       hasBeforeMoveNext = true
