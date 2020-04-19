@@ -687,7 +687,7 @@ const IMLibUI = {
           } else {
             INTERMediatorLog.setErrorMessage('Insert Error (Portal Access Mode)', 'EXCEPTION-4')
           }
-        } else {
+        } else { // This is not portal.
           INTERMediator_DBAdapter.db_createRecord_async(
             {name: targetName, dataset: recordSet},
             (function () {
@@ -735,6 +735,9 @@ const IMLibUI = {
                   IMLibCalc.recalculation()
                   INTERMediatorOnPage.hideProgress()
                   INTERMediatorLog.flushMessage()
+                  if(INTERMediatorOnPage.doAfterCreateRecord){
+                    INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId)
+                  }
                   completeTask()
                 })
 

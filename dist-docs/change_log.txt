@@ -82,6 +82,8 @@ Ver.6-dev (in development)
 - Add the IMLibNavigation.moveNextStep method. It was missing to merge here.
 - The navi-control key can have the value of 'step-nonavi' or 'step-fullnavi'. The step-nonavi doesn't show any
   navigation controls, and the step-fullnavi let the repeaters respond to click both mobile and desktop envs.
+- INTERMediatorOnPage.newRecordId is the key value of newly created record.
+- INTERMediatorOnPage.doAfterCreateRecord is the function that is called when create record operation is succeed.
 - [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
