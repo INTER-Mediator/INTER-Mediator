@@ -1101,6 +1101,7 @@ class IMLibContext {
     }
   }
 
+  // ****** Look-up processing ******
   // data-im-control="lookup:item@product_id:product@name"
   /*
   lookingUp:
@@ -1132,35 +1133,30 @@ class IMLibContext {
     }
   }
 
-  updateContext(idValue, target, contextInfo, value) {
-    let key, keying, obj, imTarget, lookingContexts, fromValue, contextName, newContext, contexts, context,
-      contextDef, aContext, isModified
-    if (Object.keys(this.lookingUp).length === 0) { // In case of no lookup node.
-      return
-    }
-    let fromStore = {}
+  updateLookupInfo(force = false) {
+    let key, keying, obj
     const keyField = this.getKeyField()
     /*
-    this.lookingUpInfo
-      id=1:
-        0:
-          keying: "id=1"
-          key_value: 1
-          node_id: "IM3-27"
-          trigger: "item@product_id"
-          from: "product@name"
-          target: "item@product_name"
-        1:
-          keying: "id=1"
-          key_value: 1
-          node_id: "IM3-28"
-          trigger: "item@product_id"
-          from: "product@unitprice"
-          target: "item@product_unitprice"
-       id=2: (2) [{…}, {…}]
-       id=3: (2) [{…}, {…}]
-     */
-    if (this.lookingUpInfo === null) {
+this.lookingUpInfo
+  id=1:
+    0:
+      keying: "id=1"
+      key_value: 1
+      node_id: "IM3-27"
+      trigger: "item@product_id"
+      from: "product@name"
+      target: "item@product_name"
+    1:
+      keying: "id=1"
+      key_value: 1
+      node_id: "IM3-28"
+      trigger: "item@product_id"
+      from: "product@unitprice"
+      target: "item@product_unitprice"
+   id=2: (2) [{…}, {…}]
+   id=3: (2) [{…}, {…}]
+ */
+    if (force || this.lookingUpInfo === null) {
       this.lookingUpInfo = {}
       for (key of Object.keys(this.lookingUp)) {
         keying = keyField + '=' + this.lookingUp[key].keying
@@ -1179,15 +1175,57 @@ class IMLibContext {
         }
       }
     }
+  }
+
+  updateContextAfterInsertAsLookup(newRecordId) {
+    let node, nodes, value, binds, field, bind
+    const keyField = this.getContextDef().key
+    this.updateLookupInfo(true)
+    nodes = []
+    binds = this.binding[keyField + '=' + newRecordId]
+    for (field in binds) {
+      for (bind of binds[field]) {
+        if (nodes.indexOf(bind.id) < 0) {
+          nodes.push(bind.id)
+        }
+      }
+    }
+    for (node of nodes) {
+      value = document.getElementById(node).value
+      if(value) {
+        this.updateContextAsLookup(node, value)
+      }
+    }
+  }
+
+  updateContextAsLookup(idValue = null, value = null) {
+    let keying, obj, imTarget, lookingContexts, fromValue, contextName, newContext, contexts, context,
+      contextDef, aContext, isModified, changedObj, linkInfo, nodeInfo, contextInfo
+
+    if (Object.keys(this.lookingUp).length === 0) { // In case of no lookup node.
+      return
+    }
+    if (!idValue) { // call with null, non operations required
+      return
+    }
+    let fromStore = {}
+    this.updateLookupInfo()// Update the table for looking-up operations
     if (Object.keys(this.lookingUpInfo).length === 0) { // Just in case.
       return
     }
+    changedObj = document.getElementById(idValue)
+    linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj)
+    nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]) // Suppose to be the first definition.
+    contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target)
+
     lookingContexts = [] // Correcting the context names of contexts looked up. i.e. 'from' key data
     if (this.lookingUpInfo[contextInfo.record]) {
       for (obj of this.lookingUpInfo[contextInfo.record]) {
-        fromValue = obj.from.split('@')
-        if (lookingContexts.indexOf(fromValue[0]) < 0) {
-          lookingContexts.push(fromValue[0])
+        if(obj.trigger == linkInfo[0]) { // Suppose to be the first definition.
+          fromValue = obj.from.split('@')
+          if (lookingContexts.indexOf(fromValue[0]) < 0) {
+            lookingContexts.push(fromValue[0])
+          }
         }
       }
     }
@@ -1211,12 +1249,6 @@ class IMLibContext {
                 }
               }
             }
-            if (isModified) {
-              IMLibQueue.setTask((completeTask)=>{
-                IMLibCalc.recalculation(true)
-                completeTask()
-              })
-            }
             return
           }
         }
@@ -1224,12 +1256,12 @@ class IMLibContext {
     }
     for (contextName of lookingContexts) {
       if (this.lookingUpInfo[contextInfo.record]) {
-        aContext = IMLibContextPool.contextFromName(contextName)
-        newContext = IMLibContextPool.generateContextObject(contextDef, null, null, null)
+        contextDef = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', contextName)
+        newContext = IMLibContextPool.generateContextObject(contextDef)
         newContext.parentContext = this
         IMLibQueue.setTask((() => {
           const targetContext = newContext
-          const contextDef = aContext.getContextDef()
+          const cDef = contextDef
           const pValue = value
           const lookingUpInfoObj = this.lookingUpInfo[contextInfo.record]
           const thisObj = this
@@ -1244,9 +1276,9 @@ class IMLibContext {
             try {
               INTERMediator_DBAdapter.db_query_async(
                 {
-                  'name': contextDef.name,
+                  'name': cDef.name,
                   'records': 1,
-                  'paging': contextDef.paging,
+                  'paging': cDef.paging,
                   'fields': fields,
                   'parentkeyvalue': pValue,
                   'conditions': null,
@@ -1256,7 +1288,7 @@ class IMLibContext {
                 (result) => {
                   let imTarget, fromValue, aRecord
                   targetContext.storeRecords(result)
-                  keying = contextDef.relation[0]['foreign-key'] + '=' + pValue
+                  keying = cDef.relation[0]['foreign-key'] + '=' + pValue
                   aRecord = targetContext.store[keying]
                   if (aRecord) {
                     for (obj of lookingUpInfoObj) {
@@ -1268,15 +1300,9 @@ class IMLibContext {
                       }
                     }
                   }
-                  IMLibQueue.setTask((completeTask)=>{
-                    IMLibCalc.recalculation(true)
-                    completeTask()
-                  })
-                  INTERMediatorLog.flushMessage()
                   completeTask()
                 },
                 () => {
-                  INTERMediatorLog.flushMessage()
                   completeTask()
                 }
               )
@@ -1292,8 +1318,6 @@ class IMLibContext {
       }
     }
   }
-
-  // }
 }
 
 // @@IM@@IgnoringRestOfFile
