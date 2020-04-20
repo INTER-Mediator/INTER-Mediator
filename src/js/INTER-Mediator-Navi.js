@@ -1251,6 +1251,18 @@ const IMLibPageNavigation = {
 
   /* --------------------------------------------------------------------
    */
+  moveDetail: (keying) => {
+    const keyValue = keying.split('=')
+    if (keyValue.length >= 2) {
+      const field = keyValue[0]
+      const value = keyValue.slice(1).join('=')
+      const masterContext = IMLibContextPool.getMasterContext()
+      const contextDef = masterContext.getContextDef()
+      const isHide = contextDef['navi-control'].match(/hide/i)
+      const isHidePageNavi = isHide && !!contextDef.paging
+      IMLibPageNavigation.moveToDetail(field, value, isHide, isHidePageNavi)()
+    }
+  },
   moveToDetail: function (keyField, keyValue, isHide, isHidePageNavi) {
     'use strict'
     var f = keyField
