@@ -3764,9 +3764,9 @@
       }
     },
     "inter-mediator-queue": {
-      "version": "1.0.0",
-      "resolved": "https://registry.npmjs.org/inter-mediator-queue/-/inter-mediator-queue-1.0.0.tgz",
-      "integrity": "sha512-PMQt7EkpdNjqsC27fGccaR27rtsd2mYJYj1HVH/9PrTH8treXIdzq1bhtMTHu6dvP7lllxx7jIPWHqaJaREqgQ=="
+      "version": "1.0.5",
+      "resolved": "https://registry.npmjs.org/inter-mediator-queue/-/inter-mediator-queue-1.0.5.tgz",
+      "integrity": "sha512-b32LJ2VxGNBjCmMnY7GKGkheyuN/lkycJKDdUyQ94c0+lxzV5V0o92o03lAUaywrKWWi4q4v11747PfgbTJN+A=="
     },
     "invariant": {
       "version": "2.2.4",

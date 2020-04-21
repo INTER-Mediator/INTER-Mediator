@@ -964,13 +964,12 @@ const IMLibPageNavigation = {
     if (isMasterDetail) {
       masterContext = IMLibContextPool.getMasterContext()
       masterContext.setValue(keyField + '=' + keyValue, '_im_button_master_id', thisId, thisId)
-      moveToDetailFunc = IMLibPageNavigation.moveToDetail(
-        encNodeTag, keyField, keyValue, isHide, isHidePageNavi)
+      moveToDetailFunc = IMLibPageNavigation.moveToDetail(keyField, keyValue, isHide, isHidePageNavi)
     }
     if (isStep) {
       moveToDetailFunc = IMLibPageNavigation.moveToNextStep(contextObj, keyField, keyValue)
     }
-    if (isTouchRepeater || isFullNavi) {
+    if ((isTouchRepeater && !isNoNavi) || isFullNavi) {
       for (i = 0; i < repeaters.length; i += 1) {
         const originalColor = repeaters[i].style.backgroundColor
         repeaters[i].style.cursor = 'pointer'
@@ -1252,24 +1251,34 @@ const IMLibPageNavigation = {
 
   /* --------------------------------------------------------------------
    */
-  moveToDetail: function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
+  moveDetail: (keying) => {
+    const keyValue = keying.split('=')
+    if (keyValue.length >= 2) {
+      const field = keyValue[0]
+      const value = keyValue.slice(1).join('=')
+      const masterContext = IMLibContextPool.getMasterContext()
+      const contextDef = masterContext.getContextDef()
+      const isHide = contextDef['navi-control'].match(/hide/i)
+      const isHidePageNavi = isHide && !!contextDef.paging
+      IMLibPageNavigation.moveToDetail(field, value, isHide, isHidePageNavi)()
+    }
+  },
+  moveToDetail: function (keyField, keyValue, isHide, isHidePageNavi) {
     'use strict'
     var f = keyField
     let v = keyValue
-    let etag = encNodeTag
     let mh = isHide
     let pnh = isHidePageNavi
 
     return function () {
-      return IMLibPageNavigation.moveToDetailImpl(etag, f, v, mh, pnh)
+      return IMLibPageNavigation.moveToDetailImpl(f, v, mh, pnh)
     }
   },
-  moveToDetailImpl: async function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
+  moveToDetailImpl: async function (keyField, keyValue, isHide, isHidePageNavi) {
     'use strict'
     var masterContext, detailContext, contextName, masterEnclosure, detailEnclosure, node, contextDef
 
     IMLibPageNavigation.previousModeDetail = {
-      encNodeTag: encNodeTag,
       keyField: keyField,
       keyValue: keyValue,
       isHide: isHide,
@@ -1296,7 +1305,7 @@ const IMLibPageNavigation = {
         INTERMediatorOnPage.masterScrollPosition = {x: window.scrollX, y: window.scrollY}
         window.scrollTo(0, 0)
         masterEnclosure = masterContext.enclosureNode
-        if (encNodeTag === 'TBODY') {
+        if (masterEnclosure.tagName === 'TBODY') {
           masterEnclosure = masterEnclosure.parentNode
         }
         INTERMediator.masterNodeOriginalDisplay = masterEnclosure.style.display

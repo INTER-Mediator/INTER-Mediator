@@ -550,6 +550,7 @@ const IMLibUI = {
         return
       }
     }
+    INTERMediatorOnPage.newRecordId = null
     IMLibQueue.setTask((function () {
       let currentContext, targetName, isPortal, parentContextName
       let keyValueCapt = keyValue
@@ -687,7 +688,7 @@ const IMLibUI = {
           } else {
             INTERMediatorLog.setErrorMessage('Insert Error (Portal Access Mode)', 'EXCEPTION-4')
           }
-        } else {
+        } else { // This is not portal.
           INTERMediator_DBAdapter.db_createRecord_async(
             {name: targetName, dataset: recordSet},
             (function () {
@@ -698,9 +699,10 @@ const IMLibUI = {
               let existRelatedCapt = existRelated
               let keyValueCapt2 = keyValueCapt
               return async function (result) {
-                let keyField, newRecordId, associatedContext, conditions, createdRecord, i, sameOriginContexts, context
+                let keyField, newRecordId, associatedContext, conditions, i, sameOriginContexts, context
 
                 newRecordId = result.newRecordKeyValue
+                INTERMediatorOnPage.newRecordId = newRecordId
                 keyField = currentContextCapt.key ? currentContextCapt.key : INTERMediatorOnPage.defaultKeyName
                 associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodesCapt2)
                 completeTask()
@@ -715,8 +717,6 @@ const IMLibUI = {
                     }
                     INTERMediator.additionalCondition = conditions
                   }
-                  createdRecord = [{}]
-                  createdRecord[0][keyField] = newRecordId
                   await INTERMediator.constructMain(associatedContext, result.dbresult)
                   sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(associatedContext)
                   for (i = 0; i < sameOriginContexts.length; i++) {
@@ -735,6 +735,9 @@ const IMLibUI = {
                   IMLibCalc.recalculation()
                   INTERMediatorOnPage.hideProgress()
                   INTERMediatorLog.flushMessage()
+                  if(INTERMediatorOnPage.doAfterCreateRecord){
+                    INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId)
+                  }
                   completeTask()
                 })
 

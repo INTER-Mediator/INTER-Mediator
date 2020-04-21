@@ -1191,7 +1191,7 @@ this.lookingUpInfo
       }
     }
     for (node of nodes) {
-      value = document.getElementById(node).value
+      value = IMLibElement.getValueFromIMNode(document.getElementById(node))
       if(value) {
         this.updateContextAsLookup(node, value)
       }
