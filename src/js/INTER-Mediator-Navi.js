@@ -969,7 +969,7 @@ const IMLibPageNavigation = {
     if (isStep) {
       moveToDetailFunc = IMLibPageNavigation.moveToNextStep(contextObj, keyField, keyValue)
     }
-    if (isTouchRepeater || isFullNavi) {
+    if ((isTouchRepeater && !isNoNavi) || isFullNavi) {
       for (i = 0; i < repeaters.length; i += 1) {
         const originalColor = repeaters[i].style.backgroundColor
         repeaters[i].style.cursor = 'pointer'
