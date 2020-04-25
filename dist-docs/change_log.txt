@@ -91,7 +91,10 @@ Ver.6-dev (in development)
 - [BUG FIX] Calculation from other contexts didn't work, and fix it.
 - [BUG FIX] The class name 'Null' wasn't permitted in PHP7. It was changed to NullDB.
 - [BUG FIX] Local context values didn't involve in any calculations.
+- [BUG FIX] INTERMediatorOnPage.getIMRootPath is removed.
+  (it's not this version, previous but unrecoverable which version was.)
 - [INFO] The src/lib/js_lib directory is removed.
+- Some codes in the INTERMediator_DBAdapter.db_updateParameters method are removed for just depending on IE ver.8.
 
 Ver.5.11 (November 17, 2019)
 - Support FileMaker Data API of FileMaker Server 18 and FileMaker Cloud for AWS 1.18.
