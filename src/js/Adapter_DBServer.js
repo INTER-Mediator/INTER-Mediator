@@ -760,11 +760,7 @@ const INTERMediator_DBAdapter = {
     }
     for (extCount = 0; extCount < args.dataset.length; extCount++) {
       params += '&field_' + (counter + extCount) + '=' + encodeURIComponent(args.dataset[extCount].field)
-      if (INTERMediator.isTrident && INTERMediator.ieVersion === 8) {
-        params += '&value_' + (counter + extCount) + '=' + encodeURIComponent(args.dataset[extCount].value.replace(/\n/g, ''))
-      } else {
-        params += '&value_' + (counter + extCount) + '=' + encodeURIComponent(args.dataset[extCount].value)
-      }
+      params += '&value_' + (counter + extCount) + '=' + encodeURIComponent(args.dataset[extCount].value)
     }
     return params
   },

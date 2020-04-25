@@ -181,8 +181,6 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.getTheme", "function(){return {$q}",
             isset($options['theme']) ? $options['theme'] : $themeName, "{$q};}");
-//        $this->generateAssignJS(
-//            "INTERMediatorOnPage.getIMRootPath", "function(){return {$q}{$pathToIMRootDir}{$q};}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getDataSources", "function(){return ",
             IMUtil::arrayToJSExcluding($datasource, '', array('password')), ";}");

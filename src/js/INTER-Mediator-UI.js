@@ -25,8 +25,8 @@
 const IMLibUI = {
 
   mobileSelectionColor: '#BBBBBB',
-  mobileNaviBackButtonId: null,
-  mergedFieldSeparator: '\n',
+  mobileNaviBackButtonId: null, // @Private
+  mergedFieldSeparator: '\n', // @Private
 
   /*
    valueChange

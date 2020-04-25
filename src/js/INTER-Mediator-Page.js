@@ -46,7 +46,7 @@ let INTERMediatorOnPage = {
   isEmailAsUsername: false,
   passwordPolicy: null,
   creditIncluding: null,
-  masterScrollPosition: null,
+  masterScrollPosition: null, // @Private
   nonSupportMessageId: 'nonsupportmessage',
   isFinishToConstruct: false,
   isAutoConstruct: true,
@@ -54,34 +54,28 @@ let INTERMediatorOnPage = {
   isShowChangePassword: true,
   isSetDefaultStyle: false,
   authPanelTitle: null,
-  isOAuthAvailable: false,
-  oAuthClientID: null,
-  oAuthClientSecret: null,
-  oAuthBaseURL: null,
-  oAuthRedirect: null,
-  oAuthScope: null,
+  isOAuthAvailable: false, // @Private
+  oAuthClientID: null, // @Private
+  oAuthClientSecret: null, // @Private
+  oAuthBaseURL: null, // @Private
+  oAuthRedirect: null, // @Private
+  oAuthScope: null, // @Private
 
   additionalExpandingEnclosureFinish: {},
   additionalExpandingRecordFinish: {},
 
   getEditorPath: null,
   getEntryPath: null,
-  getIMRootPath: null,
   getDataSources: null,
   getOptionsAliases: null,
   getOptionsTransaction: null,
   dbClassName: null,
-  defaultKeyName: null,
+  defaultKeyName: null, // @Private
   browserCompatibility: null,
-  clientNotificationIdentifier: null,
+  clientNotificationIdentifier: null, // @Private
   metadata: null,
   isLDAP: null,
   appLocale: null,
-  localeInfo: {
-    mon_decimal_point: '.',
-    mon_thousands_sep: ',',
-    currency_symbol: '￥'
-  },
   appCurrency: null,
   isShowProgress: true,
 

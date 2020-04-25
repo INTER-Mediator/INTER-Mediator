@@ -196,10 +196,6 @@ const INTERMediator = {
    */
   pusherAvailable: false,
   /**
-   * @type {boolean}
-   */
-  dateTimeFunction: false,
-  /**
    * @type {integer}
    */
   postOnlyNumber: 1,
