@@ -16,12 +16,6 @@
 
 namespace INTERMediator\DB;
 
-use INTERMediator\IMUtil;
-use INTERMediator\LDAPAuth;
-use INTERMediator\Locale\IMLocale;
-use INTERMediator\Messaging\MessagingProxy;
-use INTERMediator\ServiceServerProxy;
-
 class Proxy extends UseSharedObjects implements Proxy_Interface
 {
     /**
@@ -61,7 +55,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     private $previousClientid;
 
-    private $clientSyncAvailable;
+    private $clientPusherAvailable;
 
     private $ignorePost = false;
     private $PostData = null;
@@ -123,7 +117,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
             header('Expires: 0');
             header('X-Content-Type-Options: nosniff');
-            $util = new IMUtil();
+            $util = new \INTERMediator\IMUtil();
             $util->outputSecurityHeaders();
         }
     }
@@ -160,29 +154,33 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $result = $this->userExpanded->doAfterReadFromDB($result);
             }
 
-            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
+            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
                 $this->outputOfProcessing['registeredid'] = $this->dbSettings->notifyServer->register(
                     $this->dbClass->notifyHandler->queriedEntity(),
                     $this->dbClass->notifyHandler->queriedCondition(),
                     $this->dbClass->notifyHandler->queriedPrimaryKeys()
                 );
             }
-            // Messaging
-            $msgEntry = isset($currentDataSource['send-mail']) ? $currentDataSource['send-mail'] :
-                (isset($currentDataSource['messaging']) ? $currentDataSource['messaging'] : null);
-            if ($msgEntry) {
-                $msgArray = isset($msgEntry['load']) ? $msgEntry['load'] :
-                    (isset($msgEntry['read']) ? $msgEntry['read'] : null);
-                if ($msgArray) {
-                    $this->logger->setDebugMessage("Try to send a message.", 2);
-                    $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
-                    $msgProxy = new MessagingProxy($driver);
-                    $msgResult = $msgProxy->processing($this, $msgArray, $result);
-                    if ($msgResult !== true) {
-                        $this->logger->setErrorMessage("Mail sending error: $msgResult");
-                    }
+            if (isset($currentDataSource['send-mail']['load'])
+                || isset($currentDataSource['send-mail']['read'])
+            ) {
+                $this->logger->setDebugMessage("Try to send an email.", 2);
+                $mailSender = new \INTERMediator\SendMail();
+                if (isset($currentDataSource['send-mail']['load'])) {
+                    $dataSource = $currentDataSource['send-mail']['load'];
+                } else if (isset($currentDataSource['send-mail']['read'])) {
+                    $dataSource = $currentDataSource['send-mail']['read'];
+                }
+                $mailResult = $mailSender->processing(
+                    $this,
+                    $dataSource,
+                    $result,
+                    $this->dbSettings->getSmtpConfiguration());
+                if ($mailResult !== true) {
+                    $this->logger->setErrorMessage("Mail sending error: $mailResult");
                 }
             }
+
         } catch (\Exception $e) {
             $this->logger->setErrorMessage("Exception:[1] {$e->getMessage()}");
             return false;
@@ -238,13 +236,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             if ($this->dbClass) {
                 $this->dbClass->requireUpdatedRecord(true); // Always Get Updated Record
                 $result = $this->dbClass->updateDB();
-                $result = $this->dbClass->updatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterUpdateToDB")) {
                 $this->logger->setDebugMessage("The method 'doAfterUpdateToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterUpdateToDB($result);
             }
-            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
+            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
                 try {
                     $this->dbSettings->notifyServer->updated(
                         $this->PostData['notifyid'],
@@ -261,20 +258,23 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 }
             }
-            // Messaging
-            $msgEntry = isset($currentDataSource['send-mail']) ? $currentDataSource['send-mail'] :
-                (isset($currentDataSource['messaging']) ? $currentDataSource['messaging'] : null);
-            if ($msgEntry) {
-                $msgArray = isset($msgEntry['edit']) ? $msgEntry['edit'] :
-                    (isset($msgEntry['update']) ? $msgEntry['update'] : null);
-                if ($msgArray) {
-                    $this->logger->setDebugMessage("Try to send a message.", 2);
-                    $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
-                    $msgProxy = new MessagingProxy($driver);
-                    $msgResult = $msgProxy->processing($this, $msgArray, $result);
-                    if ($msgResult !== true) {
-                        $this->logger->setErrorMessage("Mail sending error: $msgResult");
-                    }
+            if (isset($currentDataSource['send-mail']['edit'])
+                || isset($currentDataSource['send-mail']['update'])
+            ) {
+                $this->logger->setDebugMessage("Try to send an email.", 2);
+                $mailSender = new \INTERMediator\SendMail();
+                if (isset($currentDataSource['send-mail']['edit'])) {
+                    $dataSource = $currentDataSource['send-mail']['edit'];
+                } else if (isset($currentDataSource['send-mail']['update'])) {
+                    $dataSource = $currentDataSource['send-mail']['update'];
+                }
+                $mailResult = $mailSender->processing(
+                    $this,
+                    $dataSource,
+                    $this->dbClass->updatedRecord(),
+                    $this->dbSettings->getSmtpConfiguration());
+                if ($mailResult !== true) {
+                    $this->logger->setErrorMessage("Mail sending error: $mailResult");
                 }
             }
         } catch (\Exception $e) {
@@ -307,7 +307,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterCreateToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterCreateToDB($result);
             }
-            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
+            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
                 try {
                     $this->dbSettings->notifyServer->created(
                         $this->PostData['notifyid'],
@@ -323,20 +323,23 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 }
             }
-            // Messaging
-            $msgEntry = isset($currentDataSource['send-mail']) ? $currentDataSource['send-mail'] :
-                (isset($currentDataSource['messaging']) ? $currentDataSource['messaging'] : null);
-            if ($msgEntry) {
-                $msgArray = isset($msgEntry['new']) ? $msgEntry['new'] :
-                    (isset($msgEntry['create']) ? $msgEntry['create'] : null);
-                if ($msgArray) {
-                    $this->logger->setDebugMessage("Try to send a message with driver '{$msgEntry['driver']}'.", 2);
-                    $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
-                    $msgProxy = new MessagingProxy($driver);
-                    $msgResult = $msgProxy->processing($this, $msgArray, $result);
-                    if ($msgResult !== true) {
-                        $this->logger->setErrorMessage("Mail sending error: $msgResult");
-                    }
+            if (isset($currentDataSource['send-mail']['new']) ||
+                isset($currentDataSource['send-mail']['create'])
+            ) {
+                $this->logger->setDebugMessage("Try to send an email.");
+                $mailSender = new \INTERMediator\SendMail();
+                if (isset($currentDataSource['send-mail']['new'])) {
+                    $dataSource = $currentDataSource['send-mail']['new'];
+                } else if (isset($currentDataSource['send-mail']['create'])) {
+                    $dataSource = $currentDataSource['send-mail']['create'];
+                }
+                $mailResult = $mailSender->processing(
+                    $this,
+                    $dataSource,
+                    $this->dbClass->updatedRecord(),
+                    $this->dbSettings->getSmtpConfiguration());
+                if ($mailResult !== true) {
+                    $this->logger->setErrorMessage("Mail sending error: $mailResult");
                 }
             }
         } catch (\Exception $e) {
@@ -378,7 +381,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterDeleteFromDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterDeleteFromDB($result);
             }
-            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
+            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
                 try {
                     $this->dbSettings->notifyServer->deleted(
                         $this->PostData['notifyid'],
@@ -420,7 +423,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterCopyInDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterCopyInDB($result);
             }
-            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
+            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
                 try {
                     $this->dbSettings->notifyServer->created(
                         $this->PostData['notifyid'],
@@ -487,28 +490,24 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         $this->PostData = $this->ignorePost ? array() : $_POST;
         $this->setUpSharedObjects();
-        $this->logger->setDebugMessage("Start to initialize the DB\Proxy class instance.", 2);
 
-        $params = IMUtil::getFromParamsPHPFile(array(
+        $params = \INTERMediator\IMUtil::getFromParamsPHPFile(array(
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
             "dbOption", "dbDSN", "pusherParameters", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
         ), true);
 
-        $this->clientSyncAvailable = (isset($this->PostData["pusher"]) && $this->PostData["pusher"] == "yes");
+        $this->clientPusherAvailable = (isset($this->PostData["pusher"]) && $this->PostData["pusher"] == "yes");
         $this->dbSettings->setDataSource($datasource);
         $this->dbSettings->setOptions($options);
-        IMLocale::$options = $options;
+        \INTERMediator\Locale\IMLocale::$options = $options;
         $this->dbSettings->setDbSpec($dbspec);
 
         $this->dbSettings->setSeparator(isset($options['separator']) ? $options['separator'] : '@');
         $this->formatter->setFormatter(isset($options['formatter']) ? $options['formatter'] : null);
         $this->dbSettings->setDataSourceName(!is_null($target) ? $target : (isset($this->PostData['name']) ? $this->PostData['name'] : "_im_auth"));
         $context = $this->dbSettings->getDataSourceTargetArray();
-        if (count($_FILES) > 0) {
-            $this->dbSettings->setAttachedFiles($context['name'], $_FILES);
-        }
 
-        $dbClassName = 'INTERMediator\\DB\\' .
+        $dbClassName = '\\INTERMediator\\DB\\' .
             (isset($context['db-class']) ? $context['db-class'] :
                 (isset($dbspec['db-class']) ? $dbspec['db-class'] :
                     (isset ($params['dbClass']) ? $params['$dbClass'] : '')));
@@ -615,7 +614,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
 
         $this->dbSettings->notifyServer = null;
-        if ($this->clientSyncAvailable) {
+        if ($this->clientPusherAvailable) {
             $this->dbSettings->notifyServer = new NotifyServer();
             if (isset($this->PostData['notifyid'])
                 && $this->dbSettings->notifyServer->initialize($this->authDbClass, $this->dbSettings, $this->PostData['notifyid'])
@@ -682,7 +681,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             if (!isset($this->PostData["value_{$i}"])) {
                 break;
             }
-            $value = IMUtil::removeNull(filter_var($this->PostData["value_{$i}"]));
+            $value = \INTERMediator\IMUtil::removeNull(filter_var($this->PostData["value_{$i}"]));
             $this->dbSettings->addValue(get_magic_quotes_gpc() ? stripslashes($value) : $value);
         }
         if (isset($options['authentication']) && isset($options['authentication']['email-as-username'])) {
@@ -734,13 +733,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param null $access
      * @param bool $bypassAuth
      */
-    function processingRequest($access = null, $bypassAuth = false, $ignoreFiles = false)
+    function processingRequest($access = null, $bypassAuth = false)
     {
         $this->logger->setDebugMessage("[processingRequest]", 2);
         $options = $this->dbSettings->getAuthentication();
 
         //$this->outputOfProcessing = array();
-        $messageClass = IMUtil::getMessageClassInstance();
+        $messageClass = \INTERMediator\IMUtil::getMessageClassInstance();
 
         /* Aggregation Judgement */
         $isSelect = $this->dbSettings->getAggregationSelect();
@@ -842,7 +841,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($this->paramAuthUser);
 
                     $authSucceed = false;
-                    $ldap = new LDAPAuth();
+                    $ldap = new \INTERMediator\LDAPAuth();
                     $ldap->setLogger($this->logger);
                     if ($this->checkAuthorization($signedUser, $this->paramResponse, $this->clientId, $ldap->isActive)) {
                         $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
@@ -928,23 +927,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             case 'create':
                 $this->logger->setDebugMessage("[processingRequest] start create processing", 2);
                 if ($this->checkValidation()) {
-                    $result = $this->createInDB();
+                    $result = $this->createInDB($bypassAuth);
                     $this->outputOfProcessing['newRecordKeyValue'] = $result;
                     $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
-                    if(!$ignoreFiles) {
-                        $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
-
-                        $this->logger->setDebugMessage("[processingRequest][uploadFiles of {$tableInfo['name']}]" . var_export($uploadFiles, true), 2);
-
-                        if ($uploadFiles && count($tableInfo) > 0) {
-                            (new \INTERMediator\FileUploader())->processingWithParameters(
-                                $this->dbSettings->getDataSource(), $this->dbSettings->getOptions(),
-                                $this->dbSettings->getDbSpec(), $this->logger->getDebugLevel(),
-                                $tableInfo['name'], $tableInfo['key'], $result,
-                                $this->dbSettings->getAttachedFields(), $uploadFiles, true
-                            );
-                        }
-                    }
                 } else {
                     $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
                 }
@@ -976,7 +961,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 break;
             case 'unregister':
                 $this->logger->setDebugMessage("[processingRequest] start unregister processing", 2);
-                if (!is_null($this->dbSettings->notifyServer) && $this->clientSyncAvailable) {
+                if (!is_null($this->dbSettings->notifyServer) && $this->clientPusherAvailable) {
                     $tableKeys = null;
                     if (isset($this->PostData['pks'])) {
                         $tableKeys = json_decode($this->PostData['pks'], true);
@@ -995,7 +980,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 }
                 $calcFields = [];
-                if (isset($this->dbSettings->getDataSourceTargetArray()['calculation'])) {
+                if(isset($this->dbSettings->getDataSourceTargetArray()['calculation'])) {
                     foreach ($this->dbSettings->getDataSourceTargetArray()['calculation'] as $entry) {
                         $calcFields[] = $entry['field'];
                     }
@@ -1096,7 +1081,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $generatedPrivateKey = '';
         $passPhrase = '';
 
-        $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
+        $imRootDir = \INTERMediator\IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
         $currentDirParam = $imRootDir . 'params.php';
         $parentDirParam = dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php';
         if (file_exists($parentDirParam)) {
@@ -1406,7 +1391,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $counter++;
             }
 
-            $serviceServer = ServiceServerProxy::instance();
+            $serviceServer = \INTERMediator\ServiceServerProxy::instance();
             $inValid = false;
             foreach ($tableInfo['validation'] as $entry) {
                 if (array_key_exists($entry['field'], $reqestedFieldValue)) {

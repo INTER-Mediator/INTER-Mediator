@@ -114,6 +114,10 @@ option {
     font-size: 11pt;
 }
 
+select {
+    font-size: 11pt;
+}
+
 button {
     font-size: 11pt;
     padding: 2px 10px;
