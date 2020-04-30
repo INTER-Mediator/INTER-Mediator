@@ -725,9 +725,8 @@ const INTERMediator = {
       /** --------------------------------------------------------------------
        * Expanding enclosure as usual (means not 'cross tabole').
        */
-      async function enclosureProcessing(
-        enclosureNode, repeatersOriginal, currentRecord, parentObjectInfo,
-        currentContextObj, procBeforeRetrieve, customExpandRepeater) {
+      async function enclosureProcessing(enclosureNode, repeatersOriginal, currentRecord, parentObjectInfo,
+                                         currentContextObj, procBeforeRetrieve, customExpandRepeater) {
         let linkedNodes, repeaters, linkDefs, voteResult, currentContextDef, fieldList, i, targetRecords,
           newNode, keyValue, selectedNode, isExpanding, calcFields,
           targetRecordset, keyingValue, footerNodes, headerNodes, nInfo

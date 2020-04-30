@@ -66,7 +66,7 @@ class GenerateJSCode
             "generatedPrivateKey", "passPhrase", "browserCompatibility", "scriptPathPrefix", "scriptPathSuffix",
             "oAuthProvider", "oAuthClientID", "oAuthRedirect", "passwordPolicy", "documentRootPrefix", "dbClass",
             "dbDSN", "nonSupportMessageId", "valuesForLocalContext", "themeName", "appLocale", "appCurrency",
-            "resetPage", "enrollPage", "syncServerPort","syncServerHost"
+            "resetPage", "enrollPage", "syncServerPort", "syncServerHost"
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -376,14 +376,14 @@ class GenerateJSCode
         $this->generateAssignJS("INTERMediatorOnPage.serviceServerStatus", $sss ? "true" : "false");
 
         $this->generateAssignJS("INTERMediatorOnPage.syncServerPort", $syncServerPort);
-        $this->generateAssignJS("INTERMediatorOnPage.syncServerHost", $syncServerHost);
+        $this->generateAssignJS("INTERMediatorOnPage.syncServerHost", $q, $syncServerHost, $q);
     }
 
     private function combineScripts($currentDir)
     {
         $imPath = IMUtil::pathToINTERMediator();
-        $jsCodeDir = $imPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'js'. DIRECTORY_SEPARATOR;
-        $nodeModuleDir = $imPath . DIRECTORY_SEPARATOR . 'node_modules'. DIRECTORY_SEPARATOR;
+        $jsCodeDir = $imPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
+        $nodeModuleDir = $imPath . DIRECTORY_SEPARATOR . 'node_modules' . DIRECTORY_SEPARATOR;
         $content = '';
         $content .= $this->readJSSource($nodeModuleDir . 'jsencrypt/bin/jsencrypt.js');
         $content .= $this->readJSSource($nodeModuleDir . 'jssha/src/sha.js');

@@ -565,10 +565,7 @@ const IMLibUI = {
         parentContextName = currentObj.parentContext ? currentObj.parentContext.contextName : null
       }
       return async function (completeTask) {
-        let portalField, recordSet, index, targetPortalField, targetPortalValue
-        let existRelated = false
-        let relatedRecordSet
-
+        let portalField, recordSet, index, targetPortalField, targetPortalValue, relatedRecordSet, existRelated = false
         INTERMediatorOnPage.showProgress()
         recordSet = []
         relatedRecordSet = []
@@ -735,7 +732,7 @@ const IMLibUI = {
                   IMLibCalc.recalculation()
                   INTERMediatorOnPage.hideProgress()
                   INTERMediatorLog.flushMessage()
-                  if(INTERMediatorOnPage.doAfterCreateRecord){
+                  if (INTERMediatorOnPage.doAfterCreateRecord) {
                     INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId)
                   }
                   completeTask()
@@ -755,9 +752,9 @@ const IMLibUI = {
 
   clickPostOnlyButton: function (node) {
     'use strict'
-    let i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo
-    let mergedValues, inputNodes, typeAttr, k, messageNode, result, alertmessage
-    let linkedNodes, namedNodes, index, hasInvalid, isMerged, contextNodes
+    let i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo,
+      mergedValues, inputNodes, typeAttr, k, messageNode, result, alertmessage, widgetValue, linkedNodes,
+      namedNodes, index, hasInvalid, isMerged, contextNodes
     let targetNode = node.parentNode
     while (!INTERMediatorLib.isEnclosure(targetNode, true)) {
       targetNode = targetNode.parentNode
@@ -862,7 +859,10 @@ const IMLibUI = {
             }
           }
           if (INTERMediatorLib.isWidgetElement(linkedNodes[i])) {
-            fieldData.push({field: comp[1], value: linkedNodes[i]._im_getValue()})
+            widgetValue = linkedNodes[i]._im_getValue()
+            if (widgetValue) {
+              fieldData.push({field: comp[1], value: widgetValue})
+            }
           } else if (linkedNodes[i].tagName === 'SELECT') {
             fieldData.push({field: comp[1], value: linkedNodes[i].value})
           } else if (linkedNodes[i].tagName === 'TEXTAREA') {

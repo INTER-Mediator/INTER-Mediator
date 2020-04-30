@@ -155,5 +155,6 @@ class MessageStrings
         3209 => "Select File...",
         3210 => "Selected File: ",
         3211 => "Upload",
+        3212 => "File uploading failed for corrupted files.",
     );
 }
