@@ -312,7 +312,7 @@ class FileUploader
                     $this->db->dbSettings->setValue(array($fileName . "\n" . base64_encode(file_get_contents($filePath))));
                 }
 
-                $this->db->processingRequest("update");
+                $this->db->processingRequest("update", true);
                 $dbProxyRecord = $this->db->getDatabaseResult();
 
                 $relatedContext = null;
