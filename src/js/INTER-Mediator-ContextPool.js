@@ -98,7 +98,7 @@ const IMLibContextPool = {
 
   getContextInfoFromId: function (idValue, target) {
     'use strict'
-    var i, targetContext, element, linkInfo, nodeInfo, targetName
+    let targetContext, element, linkInfo, nodeInfo, targetName
     let result = null
     if (!idValue) {
       return result
@@ -117,9 +117,9 @@ const IMLibContextPool = {
 
     targetName = target ? target : '_im_no_target'
     if (this.poolingContexts === null) {
-      return null
+      return result
     }
-    for (i = 0; i < this.poolingContexts.length; i += 1) {
+    for (let i = 0; i < this.poolingContexts.length; i += 1) {
       targetContext = this.poolingContexts[i]
       if (targetContext.contextInfo[idValue] &&
         targetContext.contextInfo[idValue][targetName] &&
@@ -128,7 +128,7 @@ const IMLibContextPool = {
         return result
       }
     }
-    return null
+    return result
   },
 
   getKeyFieldValueFromId: function (idValue, target) {
@@ -339,10 +339,7 @@ const IMLibContextPool = {
     IMLibElement.deleteNodes(delNodes)
 
     this.poolingContexts = this.poolingContexts.filter(function (context) {
-      if(context.enclosureNode) {
-        return nodeIds.indexOf(context.enclosureNode.id) < 0
-      }
-      return false;
+      return nodeIds.indexOf(context.enclosureNode.id) < 0
     })
 
     return countDeleteNodes
@@ -558,7 +555,8 @@ const IMLibContextPool = {
     return null
   },
 
-  generateContextObject: function (contextDef, enclosure = null, repeaters = null, repeatersOriginal = null) {
+  generateContextObject: function (contextDef, enclosure, repeaters, repeatersOriginal ) {
+    'use strict'
     var contextObj = new IMLibContext(contextDef.name)
     contextObj.contextDefinition = contextDef
     contextObj.enclosureNode = enclosure

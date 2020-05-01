@@ -96,9 +96,7 @@ class Settings
     public function getAttachedFiles($contextName)
     {
         if ($contextName && $this->attachedFiles && isset($this->attachedFiles[$contextName])) {
-            $copied = $this->attachedFiles[$contextName];
-            unset($this->attachedFiles[$contextName]);
-            return $copied;
+            return $this->attachedFiles[$contextName];
         }
         return null;
     }

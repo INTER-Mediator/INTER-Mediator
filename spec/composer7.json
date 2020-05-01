@@ -69,7 +69,7 @@
   },
   "scripts": {
     "test": [
-      "./vendor/bin/phpunit --globals-backup --bootstrap ./vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+      "./vendor/bin/phpunit --globals-backup --bootstrap ./vendor/autoload.php spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
     ],
     "jest": [
       "./node_modules/.bin/jest --config ./spec/jest.config.js"
@@ -83,21 +83,22 @@
     ],
     "post-create-project-cmd": [
       "mkdir -p ../398A6028-0181-4B75-BFD9-1C094B5ADD9F",
-      "mv -f * ../398A6028-0181-4B75-BFD9-1C094B5ADD9F",
-      "mkdir -p lib/src",
-      "mv ../398A6028-0181-4B75-BFD9-1C094B5ADD9F lib/src/INTER-Mediator",
-      "openssl genrsa -out gen.key 2048",
-      "cp lib/src/INTER-Mediator/params.php lib/p.php",
-      "grep -B 10000 -e '-----BEGIN RSA PRIVATE KEY-----' lib/p.php > lib/params.php",
-      "tail -n +2 gen.key | head -n 25 >> lib/params.php",
-      "grep -A 10000 -e '-----END RSA PRIVATE KEY-----' lib/p.php >> lib/params.php",
-      "cp lib/src/INTER-Mediator/dist-docs/sample_schema_mysql.txt lib/",
-      "cp lib/src/INTER-Mediator/dist-docs/project-start.html index.html",
-      "cp lib/src/INTER-Mediator/samples/templates/page_file_simple.html template.html",
-      "cp lib/src/INTER-Mediator/samples/templates/definition_file_simple.php t.php",
-      "sed -E -e 's|INTER-Mediator.php|lib/INTER-Mediator/INTER-Mediator.php|g' t.php > template.php",
-      "rm t.php lib/p.php gen.key",
-      "lib/src/INTER-Mediator/dist-docs/buildup.sh --deploy"
+      "mkdir -p ../398A6028-0181-4B75-BFD9-1C094B5ADD9F/lib/src",
+      "cp -f -r ../INTER-Mediator ../398A6028-0181-4B75-BFD9-1C094B5ADD9F/lib/src",
+      "mv ../398A6028-0181-4B75-BFD9-1C094B5ADD9F ../IM-Project",
+      "cd ../IM-Project",
+      "openssl genrsa -out ../IM-Project/gen.key 2048",
+      "cp ../IM-Project/lib/src/INTER-Mediator/params.php ../IM-Project/lib/p.php",
+      "grep -B 10000 -e '-----BEGIN RSA PRIVATE KEY-----' ../IM-Project/lib/p.php > ../IM-Project/lib/params.php",
+      "tail -n +2 gen.key | head -n 25 >> ../IM-Project/lib/params.php",
+      "grep -A 10000 -e '-----END RSA PRIVATE KEY-----' ../IM-Project/lib/p.php >> ../IM-Project/lib/params.php",
+      "cp ../IM-Project/lib/src/INTER-Mediator/dist-docs/sample_schema_mysql.txt ../IM-Project/lib/",
+      "cp ../IM-Project/lib/src/INTER-Mediator/dist-docs/project-start.html ../IM-Project/index.html",
+      "cp ../IM-Project/lib/src/INTER-Mediator/samples/templates/page_file_simple.html ../IM-Project/template.html",
+      "cp ../IM-Project/lib/src/INTER-Mediator/samples/templates/definition_file_simple.php ../IM-Project/t.php",
+      "sed -E -e 's|INTER-Mediator.php|lib/INTER-Mediator/INTER-Mediator.php|g' ../IM-Project/t.php > ../IM-Project/template.php",
+      "rm ../IM-Project/t.php ../IM-Project/lib/p.php ../IM-Project/gen.key",
+      "../IM-Project/lib/src/INTER-Mediator/dist-docs/buildup.sh --deploy"
     ],
     "forever-list": [
       "./node_modules/.bin/forever list"

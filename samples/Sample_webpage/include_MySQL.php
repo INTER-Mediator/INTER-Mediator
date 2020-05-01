@@ -24,9 +24,14 @@ IM_Entry(
             'sort' => array(
                 array('field' => 'dt1', 'direction' => 'desc'),
             ),
-            'repeat-control'=>'insert delete',
-            'default-values'=>array(
-                array('field'=>'dt1', 'value'=>date('Y-m-d H:i:s')),
+            'file-upload' => array(
+                array('field' => 'vc2', 'context' => 'fileupload'),
+            ),
+            'post-reconstruct' => true,
+            'repeat-control' => 'insert delete',
+            'default-values' => array(
+                array('field' => 'dt1', 'value' => date('Y-m-d H:i:s'),
+                ),
             ),
         ),
         array(
@@ -35,8 +40,12 @@ IM_Entry(
             'relation' => array(
                 array('foreign-key' => 'f_id', 'join-field' => 'id', 'operator' => '=')
             ),
-            'repeat-control'=>'delete',
+            'repeat-control' => 'delete',
         ),
+        array(
+            'name' => 'item_master',
+            'view'=>'product',
+        )
     ),
     array(
         'formatter' => array(
@@ -45,5 +54,5 @@ IM_Entry(
         'media-root-dir' => '/tmp',
     ),
     array('db-class' => 'PDO'),
-false
+    false
 );

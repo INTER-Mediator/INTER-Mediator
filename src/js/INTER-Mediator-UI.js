@@ -25,8 +25,8 @@
 const IMLibUI = {
 
   mobileSelectionColor: '#BBBBBB',
-  mobileNaviBackButtonId: null,
-  mergedFieldSeparator: '\n',
+  mobileNaviBackButtonId: null, // @Private
+  mergedFieldSeparator: '\n', // @Private
 
   /*
    valueChange
@@ -42,10 +42,6 @@ const IMLibUI = {
     if (!changedObj) {
       return false
     }
-    // if (changedObj.readOnly) { // for Internet Explorer
-    //   return true
-    // }
-    // Validating
     if (!IMLibUI.validation(changedObj)) { // Validation error.
       changedObj.focus()
       linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj)
@@ -74,7 +70,7 @@ const IMLibUI = {
     return returnValue
 
     // After validating, update nodes and database.
-    async function valueChangeImpl (idValue, completeTask) {
+    async function valueChangeImpl(idValue, completeTask) {
       let changedObj, objType, i, newValue, result, linkInfo, nodeInfo,
         contextInfo, parentContext, targetField, targetNode, targetSpec
       let returnValue = true
@@ -141,6 +137,7 @@ const IMLibUI = {
             let contextInfoCapt = contextInfo
             let newValueCapt = newValue
             let completeTaskCapt = completeTask
+            let nodeInfoCapt = nodeInfo
             return async function (result) {
               let updateRequiredContext, currentValue, associatedNode, field, node, children, delNodes,
                 recordObj, keepProp
@@ -184,12 +181,16 @@ const IMLibUI = {
                   }
                 }
               }
-              IMLibCalc.recalculation()
-              if (INTERMediatorOnPage.doAfterValueChange) {
-                INTERMediatorOnPage.doAfterValueChange(idValueCapt2)
-              }
-              INTERMediatorOnPage.hideProgress()
-              INTERMediatorLog.flushMessage()
+              contextInfoCapt.context.updateContextAsLookup(idValueCapt2, newValueCapt)
+              IMLibQueue.setTask((completeTask) => {
+                IMLibCalc.recalculation()
+                if (INTERMediatorOnPage.doAfterValueChange) {
+                  INTERMediatorOnPage.doAfterValueChange(idValueCapt2)
+                }
+                INTERMediatorOnPage.hideProgress()
+                INTERMediatorLog.flushMessage()
+                completeTask()
+              })
               if (completeTaskCapt) {
                 completeTaskCapt()
               }
@@ -563,9 +564,7 @@ const IMLibUI = {
         parentContextName = currentObj.parentContext ? currentObj.parentContext.contextName : null
       }
       return async function (completeTask) {
-        let portalField, recordSet, index, targetPortalField, targetPortalValue
-        let existRelated = false
-        let relatedRecordSet
+        let portalField, recordSet, index, targetPortalField, targetPortalValue, relatedRecordSet, existRelated = false
 
         INTERMediatorOnPage.showProgress()
         recordSet = []
@@ -595,48 +594,21 @@ const IMLibUI = {
           if (relatedRecordSet.length === 0) {
             targetPortalValue = ''
             await INTERMediator_DBAdapter.db_query_async({
-              name: targetName,
-              records: 1,
-              conditions: [
-                {
-                  field: currentContext.key ? currentContext.key : INTERMediatorOnPage.defaultKeyName,
-                  operator: '=',
-                  value: keyValueCapt
-                }
-              ]
-            },
-            async function (targetRecord) {
-              if (targetRecord.dbresult && targetRecord.dbresult[0] && targetRecord.dbresult[0][0]) {
-                for (portalField in targetRecord.dbresult[0][0]) {
-                  if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::' + INTERMediatorOnPage.defaultKeyName) {
-                    existRelated = true
-                    targetPortalField = portalField
-                    if (portalField === targetName + '::' + recordSet[0].field) {
-                      targetPortalValue = recordSet[0].value
-                      break
-                    }
-                    if (portalField !== targetName + '::id' &&
-                      portalField !== targetName + '::' + recordSet[0].field) {
-                      break
-                    }
+                name: targetName,
+                records: 1,
+                conditions: [
+                  {
+                    field: currentContext.key ? currentContext.key : INTERMediatorOnPage.defaultKeyName,
+                    operator: '=',
+                    value: keyValueCapt
                   }
-                }
-              }
-              if (existRelated === false) {
-                await INTERMediator_DBAdapter.db_query_async({
-                  name: targetName,
-                  records: 0,
-                  conditions: [
-                    {
-                      field: currentContext.key ? currentContext.key : INTERMediatorOnPage.defaultKeyName,
-                      operator: '=',
-                      value: keyValueCapt
-                    }
-                  ]
-                },
-                function (targetRecord) {
-                  for (portalField in targetRecord.dbresult) {
+                ]
+              },
+              async function (targetRecord) {
+                if (targetRecord.dbresult && targetRecord.dbresult[0] && targetRecord.dbresult[0][0]) {
+                  for (portalField in targetRecord.dbresult[0][0]) {
                     if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::' + INTERMediatorOnPage.defaultKeyName) {
+                      existRelated = true
                       targetPortalField = portalField
                       if (portalField === targetName + '::' + recordSet[0].field) {
                         targetPortalValue = recordSet[0].value
@@ -648,12 +620,39 @@ const IMLibUI = {
                       }
                     }
                   }
-                },
-                null
-                )
-              }
-            },
-            null
+                }
+                if (existRelated === false) {
+                  await INTERMediator_DBAdapter.db_query_async({
+                      name: targetName,
+                      records: 0,
+                      conditions: [
+                        {
+                          field: currentContext.key ? currentContext.key : INTERMediatorOnPage.defaultKeyName,
+                          operator: '=',
+                          value: keyValueCapt
+                        }
+                      ]
+                    },
+                    function (targetRecord) {
+                      for (portalField in targetRecord.dbresult) {
+                        if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::' + INTERMediatorOnPage.defaultKeyName) {
+                          targetPortalField = portalField
+                          if (portalField === targetName + '::' + recordSet[0].field) {
+                            targetPortalValue = recordSet[0].value
+                            break
+                          }
+                          if (portalField !== targetName + '::id' &&
+                            portalField !== targetName + '::' + recordSet[0].field) {
+                            break
+                          }
+                        }
+                      }
+                    },
+                    null
+                  )
+                }
+              },
+              null
             )
 
             if (foreignValuesCapt && recordSet[0]) {
@@ -670,18 +669,18 @@ const IMLibUI = {
           if (currentContext.relation && currentContext.relation[0] &&
             currentContext.relation[0]['join-field']) {
             INTERMediator_DBAdapter.db_update_async({
-              name: parentContextName,
-              conditions: [{
-                field: currentContext.relation[0]['join-field'],
-                operator: '=',
-                value: foreignValuesCapt && foreignValuesCapt.id ? foreignValuesCapt.id : keyValueCapt
-              }],
-              dataset: relatedRecordSet
-            },
-            function (result) {
-              INTERMediator.constructMain()
-            },
-            null)
+                name: parentContextName,
+                conditions: [{
+                  field: currentContext.relation[0]['join-field'],
+                  operator: '=',
+                  value: foreignValuesCapt && foreignValuesCapt.id ? foreignValuesCapt.id : keyValueCapt
+                }],
+                dataset: relatedRecordSet
+              },
+              function (result) {
+                INTERMediator.constructMain()
+              },
+              null)
           } else {
             INTERMediatorLog.setErrorMessage('Insert Error (Portal Access Mode)', 'EXCEPTION-4')
           }
@@ -721,9 +720,23 @@ const IMLibUI = {
                     await INTERMediator.constructMain(sameOriginContexts[i], null)
                   }
                 }
-                IMLibCalc.recalculation()
-                INTERMediatorOnPage.hideProgress()
+                // To work the looking-up feature
+                const contexts = IMLibContextPool.getContextFromName(associatedContext.contextName)
                 INTERMediatorLog.flushMessage()
+                for (context of contexts) {
+                  context.updateContextAfterInsertAsLookup(newRecordId)
+                }
+
+                // reacalculation later
+                IMLibQueue.setTask((completeTask) => {
+                  IMLibCalc.recalculation()
+                  INTERMediatorOnPage.hideProgress()
+                  INTERMediatorLog.flushMessage()
+                  if (INTERMediatorOnPage.doAfterCreateRecord) {
+                    INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId)
+                  }
+                  completeTask()
+                })
               }
             })(),
             function () {
@@ -740,7 +753,7 @@ const IMLibUI = {
     'use strict'
     let i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo
     let mergedValues, inputNodes, typeAttr, k, messageNode, result, alertmessage
-    let linkedNodes, namedNodes, index, hasInvalid, isMerged, contextNodes
+    let linkedNodes, namedNodes, index, hasInvalid, isMerged, contextNodes, widgetValue
     let targetNode = node.parentNode
     while (!INTERMediatorLib.isEnclosure(targetNode, true)) {
       targetNode = targetNode.parentNode
@@ -845,7 +858,10 @@ const IMLibUI = {
             }
           }
           if (INTERMediatorLib.isWidgetElement(linkedNodes[i])) {
-            fieldData.push({field: comp[1], value: linkedNodes[i]._im_getValue()})
+            widgetValue = linkedNodes[i]._im_getValue()
+            if (widgetValue) {
+              fieldData.push({field: comp[1], value: widgetValue})
+            }
           } else if (linkedNodes[i].tagName === 'SELECT') {
             fieldData.push({field: comp[1], value: linkedNodes[i].value})
           } else if (linkedNodes[i].tagName === 'TEXTAREA') {
@@ -948,7 +964,7 @@ const IMLibUI = {
         }
       }, null)
 
-    function seekLinkedElementInThisContext (node) { // Just seek out side of inner enclosure
+    function seekLinkedElementInThisContext(node) { // Just seek out side of inner enclosure
       let children, i
       if (node.nodeType === 1) {
         if (INTERMediatorLib.isLinkedElement(node)) {
@@ -967,7 +983,7 @@ const IMLibUI = {
       }
     }
 
-    function seekLinkedElementInAllChildren (node) { // Traverse inside of enclosure
+    function seekLinkedElementInAllChildren(node) { // Traverse inside of enclosure
       let children, i
       if (node.nodeType === 1) {
         if (INTERMediatorLib.isNamedElement(node)) {
@@ -986,14 +1002,7 @@ const IMLibUI = {
     }
   },
 
-  eventUpdateHandler: async function (contextName) {
-    'use strict'
-    IMLibLocalContext.updateAll()
-    let context = IMLibContextPool.getContextFromName(contextName)
-    await INTERMediator.constructMain(context[0])
-  },
-
-  eventAddOrderHandler: function (e) { // e is mouse event
+  eventAddOrderHandler: async function (e) { // e is mouse event
     'use strict'
     let targetKey, targetSplit, key, itemSplit, extValue
     if (e.target) {
@@ -1017,7 +1026,9 @@ const IMLibUI = {
       }
     }
     IMLibLocalContext.setValue('valueof' + targetKey.substring(2), 1)
-    IMLibUI.eventUpdateHandler(targetSplit[1])
+    IMLibLocalContext.updateAll()
+    let context = IMLibContextPool.getContextFromName(targetSplit[1])
+    await INTERMediator.constructMain(context[0])
   }
 }
 
