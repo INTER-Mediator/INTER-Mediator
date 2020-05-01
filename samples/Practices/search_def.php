@@ -26,5 +26,5 @@ IM_Entry(
     ),
     null,
     array('db-class' => 'PDO'),
-    2
+    false
 );

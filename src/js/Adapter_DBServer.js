@@ -263,7 +263,9 @@ const INTERMediator_DBAdapter = {
         if (fData) {
           for (const param of authParams.split('&')) {
             const comp = param.split('=')
-            fData.append(comp[0], comp[1])
+            if (comp.length == 2 && comp[0].length > 0) {
+              fData.append(comp[0], decodeURIComponent(comp[1]))
+            }
           }
           //myRequest.setRequestHeader('Content-Type', 'multipart/form-data')
           myRequest.send(fData)
