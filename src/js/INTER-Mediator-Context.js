@@ -235,7 +235,7 @@ class IMLibContext {
                 criteria = contextInfoCapt.record.split('=')
                 INTERMediator_DBAdapter.db_update_async(
                   {
-                    name: targetContextCapt.context.contextName,
+                    name: targetContextCapt.contextName,
                     conditions: [{field: criteria[0], operator: '=', value: criteria[1]}],
                     dataset: [{field: contextInfo.field, value: newValue}]
                   },
