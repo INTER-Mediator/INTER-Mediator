@@ -11,16 +11,16 @@ If you want to implement more complex logic, you can write programs both client 
 
 All information can be available at:
 - https://inter-mediator.com/
-- http://inter-mediator.info/
+- https://inter-mediator.info/
 
 Sample pages within this repository are published at below,
 and anyone can see sample pages working with database.
 You don't have to deploy the samples if you just want to see this at a glance.
 This demo page works on INTER-Mediator Ver.5.x (Stable version).
-- http://demo.inter-mediator.com:8080/INTER-Mediator_stable/Samples/
+- https://demo.inter-mediator.com/INTER-Mediator_stable/Samples/
 
 The demo with INTER-Mediator Ver.6 is as below, but it's experimental. Ver.6 is still under construction.
-- http://demo.inter-mediator.com:8080/INTER-Mediator/samples/
+- https://demo.inter-mediator.com/INTER-Mediator/samples/
 
 ## Documentation
 
