@@ -603,7 +603,7 @@ class IMLibContext {
     }
     lower = 0
     upper = this.recordOrder.length
-    for (i = 0; i < fields.length; i += 1) {
+    for (let i = 0; i < fields.length; i += 1) {
       if (oneRecord[fields[i]]) {
         index = parseInt((upper + lower) / 2)
         do {
