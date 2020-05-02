@@ -1,7 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
   "version": "6-dev",
-  "time": "2020-03-04",
+  "time": "2019-06-02",
   "repositories": [
     {
       "type": "git",
@@ -11,7 +11,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "php": "^7.1",
+    "php": "^7",
     "ext-mbstring": "*",
     "ext-PDO": "*",
     "ext-bcmath": "*",

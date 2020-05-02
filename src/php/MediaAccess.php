@@ -315,9 +315,6 @@ class MediaAccess
                 if (count($authorizedGroups) == 0 && count($authorizedUsers) == 0) {
                     return;
                 }
-//                if (in_array($_COOKIE[$cookieNameUser], $authorizedUsers)) {
-//                    return;
-//                }
                 $belongGroups = $dbProxyInstance->dbClass->authHandler->authSupportGetGroupsOfUser($_COOKIE[$cookieNameUser]);
                 if (!in_array($_COOKIE[$cookieNameUser], $authorizedUsers)
                     && count(array_intersect($belongGroups, $authorizedGroups)) == 0
@@ -372,43 +369,7 @@ class MediaAccess
             $this->contextRecord = $dbProxyInstance->readFromDB();
         }
     }
-//    private function getMimeType($path)
-//    {
-//        $type = "application/octet-stream";
-//        switch (strtolower(substr($path, strrpos($path, '.') + 1))) {
-//            case 'jpg':
-//                $type = 'image/jpeg';
-//                break;
-//            case 'jpeg':
-//                $type = 'image/jpeg';
-//                break;
-//            case 'png':
-//                $type = 'image/png';
-//                break;
-//            case 'html':
-//                $type = 'text/html';
-//                break;
-//            case 'txt':
-//                $type = 'text/plain';
-//                break;
-//            case 'gif':
-//                $type = 'image/gif';
-//                break;
-//            case 'bmp':
-//                $type = 'image/bmp';
-//                break;
-//            case 'tif':
-//                $type = 'image/tiff';
-//                break;
-//            case 'tiff':
-//                $type = 'image/tiff';
-//                break;
-//            case 'pdf':
-//                $type = 'application/pdf';
-//                break;
-//        }
-//        return $type;
-//    }
+
     private function outputImage($content)
     {
         $rotate = false;
@@ -420,7 +381,7 @@ class MediaAccess
                 $tmpDir = sys_get_temp_dir();
             }
             $temp = 'IM_TEMP_' .
-                str_replace(DIRECTORY_SEPARATOR, '-', base64_encode(randomString(12))) .
+                str_replace(DIRECTORY_SEPARATOR, '-', base64_encode(IMUtil::randomString(12))) .
                 '.jpg';
             if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
                 $tempPath = $tmpDir . $temp;

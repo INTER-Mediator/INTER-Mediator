@@ -362,10 +362,6 @@ const INTERMediator = {
     if (INTERMediatorOnPage.doBeforeConstruct) {
       INTERMediatorOnPage.doBeforeConstruct()
     }
-    if (updateRequiredContext !== true && updateRequiredContext !== undefined && updateRequiredContext &&
-      INTERMediatorOnPage.doBeforePartialConstruct) {
-      INTERMediatorOnPage.doBeforePartialConstruct(updateRequiredContext)
-    }
     if (!INTERMediatorOnPage.isAutoConstruct) {
       return
     }
@@ -373,8 +369,12 @@ const INTERMediator = {
 
     INTERMediator.crossTableStage = 0
     INTERMediator.appendingNodesAtLast = []
-    IMLibEventResponder.setup() // Previously do it on the partial constructing
-    await INTERMediatorOnPage.retrieveAuthInfo() // Previously do it on the partial constructing
+    if (updateRequiredContext !== true && updateRequiredContext !== undefined && updateRequiredContext &&
+      INTERMediatorOnPage.doBeforePartialConstruct) {
+      INTERMediatorOnPage.doBeforePartialConstruct(updateRequiredContext)
+    }
+    IMLibEventResponder.setup()
+    await INTERMediatorOnPage.retrieveAuthInfo()
     try {
       if (Pusher.VERSION) {
         INTERMediator.pusherAvailable = true
@@ -490,8 +490,8 @@ const INTERMediator = {
       }
     }
 
-    if (updateRequiredContext !== true && updateRequiredContext !== undefined && updateRequiredContext &&
-      INTERMediatorOnPage.doAfterPartialConstruct) {
+    if (updateRequiredContext !== true && updateRequiredContext !== undefined
+      && updateRequiredContext && INTERMediatorOnPage.doAfterPartialConstruct) {
       INTERMediatorOnPage.doAfterPartialConstruct(updateRequiredContext)
     }
     if (INTERMediatorOnPage.doAfterConstruct) {
@@ -516,7 +516,7 @@ const INTERMediator = {
 
       // Restoring original HTML Document from backup data.
       bodyNode = document.getElementsByTagName('BODY')[0]
-      if (INTERMediator.rootEnclosure == null) {
+      if (INTERMediator.rootEnclosure === null) {
         INTERMediator.rootEnclosure = bodyNode.innerHTML
       } else {
         bodyNode.innerHTML = INTERMediator.rootEnclosure
@@ -1039,8 +1039,8 @@ const INTERMediator = {
      * Set the value to node and context.
      */
     function setupLinkedNode(linkedElements, contextObj, targetRecordset, ix, keyingValue) {
-      let nInfo, j, keyField, k, nodeId, curVal, replacedNode, typeAttr, children, wInfo, nameTable,
-        linkInfoArray, nameTableKey, nameNumber, nameAttr, curTarget
+      let nInfo, j, keyField, k, nodeId, linkInfoArray, nameTableKey, nameNumber, nameAttr, curTarget,
+        curVal, replacedNode, typeAttr, children, wInfo, nameTable
       let idValuesForFieldName = {}
       const currentContextDef = contextObj.getContextDef()
       const currentWidgetNodes = linkedElements.widgetNode
@@ -1090,10 +1090,11 @@ const INTERMediator = {
           if (INTERMediatorLib.isWidgetElement(currentLinkedNodes[k])) {
             nodeId = currentLinkedNodes[k]._im_getComponentId()
             // INTERMediator.widgetElementIds.push(nodeId)
-          } // get the tag name of the element
-          typeAttr = currentLinkedNodes[k].getAttribute('type') // type attribute
-          linkInfoArray = INTERMediatorLib.getLinkedElementInfo(currentLinkedNodes[k]) // info array for it
-          // set the name attribute of radio button
+          }
+          // get the tag name of the element
+          typeAttr = currentLinkedNodes[k].getAttribute('type')// type attribute
+          linkInfoArray = INTERMediatorLib.getLinkedElementInfo(currentLinkedNodes[k])
+          // info array for it  set the name attribute of radio button
           // should be different for each group
           if (typeAttr === 'radio') { // set the value to radio button
             nameTableKey = linkInfoArray.join('|')
@@ -1167,7 +1168,6 @@ const INTERMediator = {
           }
         }
       }
-
       if (targetRecords.count === 0) {
         for (i = 0; i < repeatersOriginal.length; i++) {
           newNode = repeatersOriginal[i].cloneNode(true)

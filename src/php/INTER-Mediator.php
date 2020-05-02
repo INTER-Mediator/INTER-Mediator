@@ -108,11 +108,21 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     ) {     // File uploading
         $fileUploader = new FileUploader();
         if (IMUtil::guessFileUploadError()) {
-            $fileUploader->processingAsError($datasource, $options, $dbspecification, $debug);
+            $fileUploader->processingAsError($datasource, $options, $dbspecification, $debug, $_POST["_im_contextname"]);
         } else {
             $fileUploader->processing($datasource, $options, $dbspecification, $debug);
         }
     } else if (!isset($_POST['access']) && !isset($_GET['media'])) {    // Download JS module to client
+        if($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $db = new DB\Proxy();
+            $db->initialize($datasource, $options, $dbspecification, $debug, '');
+            $messages = IMUtil::getMessageClassInstance();
+            $db->logger->setErrorMessage($messages->getMessageAs(3212));
+            $db->processingRequest("noop");
+            $db->finishCommunication();
+            $db->exportOutputDataAsJSON();
+            return;
+        }
         if ($debug) {
             $dc = new DefinitionChecker();
             $defErrorMessage = $dc->checkDefinitions($datasource, $options, $dbspecification);
@@ -127,10 +137,10 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         ServiceServerProxy::instance()->checkServiceServer();
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
-        foreach(ServiceServerProxy::instance()->getErrors() as $message) {
+        foreach (ServiceServerProxy::instance()->getErrors() as $message) {
             $generator->generateErrorMessageJS($message);
         }
-        foreach(ServiceServerProxy::instance()->getMessages() as $message) {
+        foreach (ServiceServerProxy::instance()->getMessages() as $message) {
             $generator->generateDebugMessageJS($message);
         }
         ServiceServerProxy::instance()->stopServer();

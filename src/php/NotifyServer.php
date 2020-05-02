@@ -18,11 +18,17 @@ namespace INTERMediator;
 
 class NotifyServer
 {
-
     private $dbClass;
     private $dbSettings;
     private $clientId;
+    private $syncServerKey;
 
+    /**
+     * @param $dbClass
+     * @param $dbSettings
+     * @param $clientId
+     * @return bool
+     */
     public function initialize($dbClass, $dbSettings, $clientId)
     {
         $this->dbClass = $dbClass;
@@ -40,87 +46,90 @@ class NotifyServer
         return true;
     }
 
+    /**
+     * @param $channels
+     * @param $operation
+     * @param $data
+     */
+    private function trigger($channels, $operation, $data)
+    {
+
+    }
+
+    /**
+     * @param $entity
+     * @param $condition
+     * @param $pkArray
+     * @return mixed
+     */
     public function register($entity, $condition, $pkArray)
     {
         return $this->dbClass->notifyHandler->register($this->clientId, $entity, $condition, $pkArray);
     }
 
+    /**
+     * @param $client
+     * @param $tableKeys
+     * @return mixed
+     */
     public function unregister($client, $tableKeys)
     {
         return $this->dbClass->notifyHandler->unregister($client, $tableKeys);
     }
 
+    /**
+     * @param $clientId
+     * @param $entity
+     * @param $pkArray
+     * @param $field
+     * @param $value
+     */
     public function updated($clientId, $entity, $pkArray, $field, $value)
     {
         $channels = $this->dbClass->notifyHandler->matchInRegisterd($clientId, $entity, $pkArray);
-
-        $this->loadPusher();
-        $pusher = new Pusher(
-            $this->dbSettings->pusherKey,
-            $this->dbSettings->pusherSecret,
-            $this->dbSettings->pusherAppId
-        );
         $data = array('entity' => $entity, 'pkvalue' => $pkArray, 'field' => $field, 'value' => $value);
-        $response = $pusher->trigger($channels, 'update', $data);
+        $this->trigger($channels, 'update', $data);
     }
 
+    /**
+     * @param $clientId
+     * @param $entity
+     * @param $pkArray
+     * @param $record
+     */
     public function created($clientId, $entity, $pkArray, $record)
     {
         $channels = $this->dbClass->notifyHandler->appendIntoRegisterd($clientId, $entity, $pkArray);
 
-        $this->loadPusher();
-        $pusher = new Pusher(
-            $this->dbSettings->pusherKey,
-            $this->dbSettings->pusherSecret,
-            $this->dbSettings->pusherAppId
-        );
         $data = array(
             'entity' => $entity,
             'pkvalue' => $pkArray,
             //   'field'=>array_keys($record),
             'value' => array_values($record)
         );
-        $response = $pusher->trigger($channels, 'create', $data);
+        $this->trigger($channels, 'create', $data);
     }
 
+    /**
+     * @param $clientId
+     * @param $entity
+     * @param $pkArray
+     */
     public function deleted($clientId, $entity, $pkArray)
     {
         $channels = $this->dbClass->notifyHandler->removeFromRegisterd($clientId, $entity, $pkArray);
 
-        $this->loadPusher();
-        $pusher = new Pusher(
-            $this->dbSettings->pusherKey,
-            $this->dbSettings->pusherSecret,
-            $this->dbSettings->pusherAppId
-        );
         $data = array('entity' => $entity, 'pkvalue' => $pkArray);
-        $response = $pusher->trigger($channels, 'delete', $data);
+        $this->trigger($channels, 'delete', $data);
     }
 
+    /**
+     * @param $client
+     * @param $entity
+     * @param $keying
+     */
     public function notify($client, $entity, $keying)
     {
 
     }
-
-    protected function loadPusher()
-    {
-        $paths = explode(PATH_SEPARATOR, get_include_path());
-        foreach ($paths as $dirPath) {
-            if ($dirPath === '.') {
-                $dirPath = dirname(__FILE__);
-            }
-            if (file_exists($dirPath)) {
-                $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dirPath));
-                foreach ($iterator as $element) {
-                    $path = dirname($element) . DIRECTORY_SEPARATOR . 'Pusher.php';
-                    if (is_file($path) && is_readable($path)) {
-                        include_once($path);
-                        return;
-                    }
-                }
-            }
-        }
-        throw new Exception('_im_no_pusher_exception');
-    }
-
 }

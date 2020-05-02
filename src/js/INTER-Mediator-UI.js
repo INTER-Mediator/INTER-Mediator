@@ -25,8 +25,8 @@
 const IMLibUI = {
 
   mobileSelectionColor: '#BBBBBB',
-  mobileNaviBackButtonId: null,
-  mergedFieldSeparator: '\n',
+  mobileNaviBackButtonId: null, // @Private
+  mergedFieldSeparator: '\n', // @Private
 
   /*
    valueChange
@@ -182,7 +182,6 @@ const IMLibUI = {
                 }
               }
               contextInfoCapt.context.updateContextAsLookup(idValueCapt2, newValueCapt)
-
               IMLibQueue.setTask((completeTask) => {
                 IMLibCalc.recalculation()
                 if (INTERMediatorOnPage.doAfterValueChange) {
@@ -550,7 +549,6 @@ const IMLibUI = {
         return
       }
     }
-    INTERMediatorOnPage.newRecordId = null
     IMLibQueue.setTask((function () {
       let currentContext, targetName, isPortal, parentContextName
       let keyValueCapt = keyValue
@@ -566,9 +564,7 @@ const IMLibUI = {
         parentContextName = currentObj.parentContext ? currentObj.parentContext.contextName : null
       }
       return async function (completeTask) {
-        let portalField, recordSet, index, targetPortalField, targetPortalValue
-        let existRelated = false
-        let relatedRecordSet
+        let portalField, recordSet, index, targetPortalField, targetPortalValue, relatedRecordSet, existRelated = false
 
         INTERMediatorOnPage.showProgress()
         recordSet = []
@@ -688,7 +684,7 @@ const IMLibUI = {
           } else {
             INTERMediatorLog.setErrorMessage('Insert Error (Portal Access Mode)', 'EXCEPTION-4')
           }
-        } else { // This is not portal.
+        } else {
           INTERMediator_DBAdapter.db_createRecord_async(
             {name: targetName, dataset: recordSet},
             (function () {
@@ -699,10 +695,9 @@ const IMLibUI = {
               let existRelatedCapt = existRelated
               let keyValueCapt2 = keyValueCapt
               return async function (result) {
-                let keyField, newRecordId, associatedContext, conditions, i, sameOriginContexts, context
-
+                let keyField, newRecordId, associatedContext, conditions, createdRecord,
+                  i, sameOriginContexts
                 newRecordId = result.newRecordKeyValue
-                INTERMediatorOnPage.newRecordId = newRecordId
                 keyField = currentContextCapt.key ? currentContextCapt.key : INTERMediatorOnPage.defaultKeyName
                 associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodesCapt2)
                 completeTask()
@@ -717,15 +712,17 @@ const IMLibUI = {
                     }
                     INTERMediator.additionalCondition = conditions
                   }
+                  createdRecord = [{}]
+                  createdRecord[0][keyField] = newRecordId
                   await INTERMediator.constructMain(associatedContext, result.dbresult)
                   sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(associatedContext)
                   for (i = 0; i < sameOriginContexts.length; i++) {
                     await INTERMediator.constructMain(sameOriginContexts[i], null)
                   }
                 }
-
                 // To work the looking-up feature
                 const contexts = IMLibContextPool.getContextFromName(associatedContext.contextName)
+                INTERMediatorLog.flushMessage()
                 for (context of contexts) {
                   context.updateContextAfterInsertAsLookup(newRecordId)
                 }
@@ -735,12 +732,11 @@ const IMLibUI = {
                   IMLibCalc.recalculation()
                   INTERMediatorOnPage.hideProgress()
                   INTERMediatorLog.flushMessage()
-                  if(INTERMediatorOnPage.doAfterCreateRecord){
+                  if (INTERMediatorOnPage.doAfterCreateRecord) {
                     INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId)
                   }
                   completeTask()
                 })
-
               }
             })(),
             function () {
@@ -757,7 +753,7 @@ const IMLibUI = {
     'use strict'
     let i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo
     let mergedValues, inputNodes, typeAttr, k, messageNode, result, alertmessage
-    let linkedNodes, namedNodes, index, hasInvalid, isMerged, contextNodes
+    let linkedNodes, namedNodes, index, hasInvalid, isMerged, contextNodes, widgetValue
     let targetNode = node.parentNode
     while (!INTERMediatorLib.isEnclosure(targetNode, true)) {
       targetNode = targetNode.parentNode
@@ -862,7 +858,10 @@ const IMLibUI = {
             }
           }
           if (INTERMediatorLib.isWidgetElement(linkedNodes[i])) {
-            fieldData.push({field: comp[1], value: linkedNodes[i]._im_getValue()})
+            widgetValue = linkedNodes[i]._im_getValue()
+            if (widgetValue) {
+              fieldData.push({field: comp[1], value: widgetValue})
+            }
           } else if (linkedNodes[i].tagName === 'SELECT') {
             fieldData.push({field: comp[1], value: linkedNodes[i].value})
           } else if (linkedNodes[i].tagName === 'TEXTAREA') {
@@ -948,7 +947,7 @@ const IMLibUI = {
           parentOfTarget = targetNode.parentNode
           parentOfTarget.removeChild(targetNode)
           newNode = document.createElement('SPAN')
-          newNode.setAttribute('class', 'IM_POSTMESSAGE')
+          INTERMediatorLib.setClassAttributeToNode(newNode, 'IM_POSTMESSAGE')
           newNode.appendChild(document.createTextNode(thisContext['post-dismiss-message']))
           parentOfTarget.appendChild(newNode)
           isSetMsg = true

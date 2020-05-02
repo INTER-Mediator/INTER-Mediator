@@ -80,6 +80,32 @@ class Settings
     private $aggregation_from = null;
     private $aggregation_group_by = null;
 
+    private $attachedFiles = [];
+    private $attachedFields = null;
+
+    public function setAttachedFiles($contextName, $files)
+    {
+        if ($contextName && $files && count($files) > 0) {
+            $this->attachedFiles[$contextName] = $files;
+            if (isset($_POST['_im_filesfields'])) {
+                $this->attachedFields = explode(',', $_POST['_im_filesfields']);
+            }
+        }
+    }
+
+    public function getAttachedFiles($contextName)
+    {
+        if ($contextName && $this->attachedFiles && isset($this->attachedFiles[$contextName])) {
+            return $this->attachedFiles[$contextName];
+        }
+        return null;
+    }
+
+    public function getAttachedFields()
+    {
+        return $this->attachedFields;
+    }
+
     function __construct()
     {
         $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;

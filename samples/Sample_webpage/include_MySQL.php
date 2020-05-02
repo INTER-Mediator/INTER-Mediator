@@ -24,9 +24,14 @@ IM_Entry(
             'sort' => array(
                 array('field' => 'dt1', 'direction' => 'desc'),
             ),
+            'file-upload' => array(
+                array('field' => 'vc2', 'context' => 'fileupload'),
+            ),
+            'post-reconstruct' => true,
             'repeat-control' => 'insert delete',
             'default-values' => array(
-                array('field' => 'dt1', 'value' => date('Y-m-d H:i:s')),
+                array('field' => 'dt1', 'value' => date('Y-m-d H:i:s'),
+                ),
             ),
         ),
         array(
