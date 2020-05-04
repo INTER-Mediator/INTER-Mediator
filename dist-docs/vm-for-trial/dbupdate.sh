@@ -4,10 +4,15 @@
 # https://raw.githubusercontent.com/INTER-Mediator/INTER-Mediator/master/dist-docs/vm-for-trial/dbupdate.sh
 #
 
+OS=`cat /etc/os-release | grep ^ID | head -n 1 | cut -d'=' -f2 | cut -d'"' -f2`
+
 WEBROOT="/var/www/html"
 WWWUSERNAME="www-data"
 if [ -e "/etc/alpine-release" ]; then
     WEBROOT="/var/www/localhost/htdocs"
+    WWWUSERNAME="apache"
+fi
+if [ $OS = 'centos' ] ; then
     WWWUSERNAME="apache"
 fi
 IMROOT="${WEBROOT}/INTER-Mediator"

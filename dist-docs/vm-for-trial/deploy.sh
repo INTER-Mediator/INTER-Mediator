@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# setup shell script for Alpine Linux 3.10 and Ubuntu Server 18.04
+# setup shell script for CentOS 7.8, Ubuntu Server 18.04 and Alpine Linux 3.10
 #
 # This file can get from the URL below.
 # https://raw.githubusercontent.com/INTER-Mediator/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh
@@ -14,9 +14,12 @@
 # - Run "rake spec" on the host of VM
 #
 
-OS=`cat /etc/os-release | grep ^ID | cut -d'=' -f2`
+OS=`cat /etc/os-release | grep ^ID | head -n 1 | cut -d'=' -f2 | cut -d'"' -f2`
 
-if [ $OS = 'alpine' ] ; then
+if [ $OS = 'centos' ] ; then
+    WEBROOT="/var/www/html"
+    WWWUSERNAME="apache"
+elif [ $OS = 'alpine' ] ; then
     WEBROOT="/var/www/localhost/htdocs"
     OLDWEBROOT="/var/www/html"
     WWWUSERNAME="apache"
@@ -48,7 +51,36 @@ if [ $RESULT = '' ] ; then
     chown developer:developer /home/developer/.viminfo
 fi
 
-if [ $OS = 'alpine' ] ; then
+if [ $OS = 'centos' ] ; then
+    echo "127.0.0.1 localhost inter-mediator-server" > /etc/hosts
+    nmcli c mod "有線接続 1" ipv4.addresses 192.168.56.101/24
+    nmcli c mod "有線接続 1" connection.id enp0s8
+    mv /etc/sysconfig/network-scripts/ifcfg-有線接続_1 /etc/sysconfig/network-scripts/ifcfg-enp0s8
+    yum install -y httpd
+    yum install -y mariadb-server
+    yum install -y postgresql-server
+    yum install -y php
+    yum install -y php-mbstring
+    yum install -y mariadb-devel
+    yum install -y php-mysqlnd
+    yum install -y php-pdo
+    yum install -y git
+    yum install -y epel-release
+    yum install -y composer
+    yum install -y nodejs
+    yum install -y npm
+    yum install -y samba
+    yum install -y bzip2
+    yum install -y fontconfig-devel
+    yum install -y php-phpunit-PHPUnit
+    npm install -g buster --unsafe-perm
+    npm install -g phantomjs-prebuilt --unsafe-perm
+    systemctl enable httpd.service
+    systemctl enable mariadb.service
+    systemctl enable postgresql.service
+    postgresql-setup initdb
+    systemctl enable smb.service
+elif [ $OS = 'alpine' ] ; then
     echo "127.0.0.1 localhost inter-mediator-server" > /etc/hosts
     ip addr add 192.168.56.101/24 dev eth1
     echo "auto lo" > /etc/network/interfaces
@@ -186,10 +218,29 @@ else
     usermod -a -G im-developer developer
     usermod -a -G im-developer ${WWWUSERNAME}
 fi
+
 yes im4135dev | passwd postgres
+if [ $OS = 'centos' ] ; then
+    sed -i -e "s/\ peer/\ trust/g" /var/lib/pgsql/data/pg_hba.conf
+    sed -i -e "s/\ ident/\ trust/g" /var/lib/pgsql/data/pg_hba.conf
+fi
 
 mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' identified by 'im4135dev';" -u root
-if [ $OS = 'alpine' ] ; then
+if [ $OS = 'centos' ] ; then
+    echo "[mysqld]" > /etc/my.cnf.d/im.cnf
+    echo "datadir=/var/lib/mysql" >> /etc/my.cnf.d/im.cnf
+    echo "socket=/var/lib/mysql/mysql.sock" >> /etc/my.cnf.d/im.cnf
+    echo "character-set-server=utf8mb4" >> /etc/my.cnf.d/im.cnf
+    echo "skip-character-set-client-handshake" >> /etc/my.cnf.d/im.cnf
+    echo "[client]" >> /etc/my.cnf.d/im.cnf
+    echo "default-character-set=utf8mb4" >> /etc/my.cnf.d/im.cnf
+    echo "[mysqldump]" >> /etc/my.cnf.d/im.cnf
+    echo "default-character-set=utf8mb4" >> /etc/my.cnf.d/im.cnf
+    echo "[mysql]" >> /etc/my.cnf.d/im.cnf
+    echo "default-character-set=utf8mb4" >> /etc/my.cnf.d/im.cnf
+    systemctl start mariadb
+    mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' identified by 'im4135dev';" -u root
+elif [ $OS = 'alpine' ] ; then
     echo "[mysqld]" > /etc/mysql/my.cnf
     echo "datadir=/var/lib/mysql" >> /etc/mysql/my.cnf
     echo "socket=/run/mysqld/mysqld.sock" >> /etc/mysql/my.cnf
@@ -253,7 +304,10 @@ echo 'AddType "text/html; charset=UTF-8" .html' > "${WEBROOT}/.htaccess"
 echo '<?php' > "${WEBROOT}/params.php"
 echo "\$dbUser = 'web';" >> "${WEBROOT}/params.php"
 echo "\$dbPassword = 'password';" >> "${WEBROOT}/params.php"
-if [ $OS = 'alpine' ] ; then
+if [ $OS = 'centos' ] ; then
+    echo "\$dbDSN = 'mysql:unix_socket=/var/lib/mysql/mysql.sock;dbname=test_db;charset=utf8mb4';" \
+        >> "${WEBROOT}/params.php"
+elif [ $OS = 'alpine' ] ; then
     echo "\$dbDSN = 'mysql:unix_socket=/run/mysqld/mysqld.sock;dbname=test_db;charset=utf8mb4';" \
         >> "${WEBROOT}/params.php"
 else
@@ -341,9 +395,12 @@ do
         "${IMSAMPLE}/templates/page_file_simple.html" > "${WEBROOT}/${PageFile}"
 done
 
-# Import schema
+# Firewall
 
-echo "y" | source "${IMVMROOT}/dbupdate.sh"
+if [ $OS = 'centos' ] ; then
+    firewall-cmd --zone=public --add-service=http --permanent
+    firewall-cmd --reload
+fi
 
 # Modify permissions
 
@@ -365,6 +422,10 @@ cd ~developer
 touch /home/developer/.bashrc
 touch /home/developer/.viminfo
 chown developer:developer .*
+
+# Import schema
+
+echo "y" | source "${IMVMROOT}/dbupdate.sh"
 
 # Add a conf file for Apache HTTP Server
 
@@ -389,7 +450,7 @@ fi
 
 # Share the Web Root Directory with SMB.
 
-if [ $OS = 'alpine' ] ; then
+if [ $OS = 'centos' || $OS = 'alpine' ] ; then
     echo "   hosts allow = 192.168.56. 127." >> "${SMBCONF}"
     echo "" >> "${SMBCONF}"
     echo "[global]" >> "${SMBCONF}"
