@@ -208,7 +208,7 @@ end
 if node[:platform] == 'alpine'
   if node[:virtualization][:system] == 'docker'
     # [workaround] https://gitlab.alpinelinux.org/alpine/aports/issues/11122
-    file '/etc/sudoers.conf' do
+    file '/etc/sudo.conf' do
       content 'Set disable_coredump false'
     end
   end
