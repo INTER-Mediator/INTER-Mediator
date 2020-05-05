@@ -126,21 +126,6 @@ class INTERMediator_Test extends TestCase
         $this->assertSame(IMUtil::arrayToJSExcluding($ar, $prefix, $exarray), $resultString, $testName);
     }
 
-    public function test_hex2bin_for53()
-    {
-        $testName = "Check hex2bin_for53 function in INTER-Mediator.php.";
-
-        $hexString = "616263643132333441424344242526";
-        $binaryString = "abcd1234ABCD$%&";
-
-        $this->assertTrue(IMUtil::hex2bin_for53($hexString) === $binaryString, $testName);
-
-        $version = explode('.', PHP_VERSION);
-        if ($version[0] >= 5 && $version[1] >= 4) {
-            $this->assertTrue(IMUtil::hex2bin_for53($hexString) === hex2bin($hexString), $testName);
-        }
-    }
-
     public function test_randomString()
     {
         $testName = "Check randamString function in INTER-Mediator.php.";

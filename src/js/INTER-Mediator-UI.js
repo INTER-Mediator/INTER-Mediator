@@ -549,6 +549,7 @@ const IMLibUI = {
         return
       }
     }
+    INTERMediatorOnPage.newRecordId = null
     IMLibQueue.setTask((function () {
       let currentContext, targetName, isPortal, parentContextName
       let keyValueCapt = keyValue
@@ -695,9 +696,9 @@ const IMLibUI = {
               let existRelatedCapt = existRelated
               let keyValueCapt2 = keyValueCapt
               return async function (result) {
-                let keyField, newRecordId, associatedContext, conditions, createdRecord,
-                  i, sameOriginContexts
+                let keyField, newRecordId, associatedContext, conditions, createdRecord, i, sameOriginContexts
                 newRecordId = result.newRecordKeyValue
+                INTERMediatorOnPage.newRecordId = newRecordId
                 keyField = currentContextCapt.key ? currentContextCapt.key : INTERMediatorOnPage.defaultKeyName
                 associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodesCapt2)
                 completeTask()
@@ -723,7 +724,7 @@ const IMLibUI = {
                 // To work the looking-up feature
                 const contexts = IMLibContextPool.getContextFromName(associatedContext.contextName)
                 INTERMediatorLog.flushMessage()
-                for (context of contexts) {
+                for (const context of contexts) {
                   context.updateContextAfterInsertAsLookup(newRecordId)
                 }
 

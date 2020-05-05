@@ -23,9 +23,9 @@ class IMUtil
     public static function currentDTString($subSeconds = 0)
     {
         $currentDT = new DateTime();
-        if($subSeconds>=0) {
+        if ($subSeconds >= 0) {
             $currentDT->sub(new \DateInterval("PT" . intval($subSeconds) . "S"));
-        }else{
+        } else {
             $currentDT->add(new \DateInterval("PT" . -intval($subSeconds) . "S"));
         }
         $currentDTStr = $currentDT->format('Y-m-d H:i:s');
@@ -35,9 +35,9 @@ class IMUtil
     public static function currentDTStringFMS($subSeconds = 0)
     {
         $currentDT = new DateTime();
-        if($subSeconds>=0) {
+        if ($subSeconds >= 0) {
             $currentDT->sub(new \DateInterval("PT" . intval($subSeconds) . "S"));
-        }else{
+        } else {
             $currentDT->add(new \DateInterval("PT" . -intval($subSeconds) . "S"));
         }
         $currentDTStr = $currentDT->format('m/d/Y H:i:s');
@@ -52,7 +52,7 @@ class IMUtil
         return $timeValue;
     }
 
-    public static function phpVersion($verStr='')
+    public static function phpVersion($verStr = '')
     {
         $vString = explode('.', $verStr == '' ? phpversion() : $verStr);
         $vNum = 0;
@@ -166,7 +166,7 @@ class IMUtil
     public static function isPHPExecutingUNIX()
     {
         $osName = php_uname("s");
-        return $osName == "Linux"|| $osName == "FreeBSD";
+        return $osName == "Linux" || $osName == "FreeBSD";
     }
 
     public static function phpSecLibClass($aClass)
@@ -492,50 +492,6 @@ class IMUtil
         }
 
         return $returnStr;
-    }
-
-    /**
-     * Create parameter strng from array (UNUSED)
-     * @param array ar parameter array
-     * @param string prefix strings for the prefix for key
-     * @return string parameter string
-     */
-//    public static function arrayToQuery($ar, $prefix)
-//    {
-//        if (is_array($ar)) {
-//            $items = array();
-//            foreach ($ar as $key => $value) {
-//                $items[] = IMUtil::arrayToQuery($value, "{$prefix}_{$key}");
-//            }
-//            $returnStr = implode('', $items);
-//        } else {
-//            $returnStr = "&{$prefix}=" . urlencode($ar);
-//        }
-//        return $returnStr;
-//    }
-
-    /**
-     * Get the relative path from the caller to the directory of 'INTER-Mediator.php'. (UNUSED)
-     * @return Relative path as a part of URL.
-     */
-//    public static function getRelativePath()
-//    {
-//        $caller = explode(DIRECTORY_SEPARATOR, dirname($_SERVER['SCRIPT_FILENAME']));
-//        $imDirectory = explode(DIRECTORY_SEPARATOR, dirname(__FILE__));
-//        $shorterLength = min(count($caller), count($imDirectory));
-//        for ($i = 0; $i < $shorterLength; $i++) {
-//            if ($caller[$i] != $imDirectory[$i]) {
-//                break;
-//            }
-//        }
-//        $relPath = str_repeat('../', count($caller) - $i)
-//            . implode('/', array_slice($imDirectory, $i));
-//        return $relPath;
-//    }
-
-    public static function hex2bin_for53($str)
-    {
-        return pack("H*", $str);
     }
 
     public static function randomString($digit)

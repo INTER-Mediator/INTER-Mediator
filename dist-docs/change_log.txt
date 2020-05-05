@@ -98,6 +98,7 @@ Ver.6-dev (in development)
 - Add the favicon.ico file on the root folder of this repository.
 - The jQuery-File-Upload (Ver.1.1 or later) widget supports the post only mode. It can preview the file.
   The sample is /samples/Sample_webpage/fileuploadPost_jQuery_MySQL.html.
+- Remove unused function hex2bin_for53 in IMUtil class.
 
 Ver.5.11 (November 17, 2019)
 - Support FileMaker Data API of FileMaker Server 18 and FileMaker Cloud for AWS 1.18.
