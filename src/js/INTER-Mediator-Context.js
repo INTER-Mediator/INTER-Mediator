@@ -1178,7 +1178,7 @@ this.lookingUpInfo
     nodes = []
     binds = this.binding[keyField + '=' + newRecordId]
     if (binds) {
-      for (const field of binds) {
+      for (const field of Object.keys(binds)) {
         for (const bind of binds[field]) {
           if (nodes.indexOf(bind.id) < 0) {
             nodes.push(bind.id)
