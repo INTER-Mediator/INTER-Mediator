@@ -433,6 +433,10 @@ describe package('git'), :if => os[:family] == 'alpine' || os[:family] == 'ubunt
   it { should be_installed }
 end
 
+describe package('epel-release'), :if => os[:family] == 'redhat' do
+  it { should be_installed }
+end
+
 describe package('nodejs'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
   it { should be_installed }
 end
@@ -667,7 +671,7 @@ describe file('/var/lib/pgsql/data/pg_hba.conf'), :if => os[:family] == 'redhat'
   it { should be_owned_by 'postgres' }
   it { should be_grouped_into 'postgres' }
   it { should be_mode 600 }
-  its(:content) { should match /host    all         all         ::1\/128               trust/ }
+  its(:content) { should match /host    all             all             ::1\/128                 trust/ }
 end
 
 describe file('/var/db/im') do
