@@ -723,7 +723,7 @@ const IMLibUI = {
                 // To work the looking-up feature
                 const contexts = IMLibContextPool.getContextFromName(associatedContext.contextName)
                 INTERMediatorLog.flushMessage()
-                for (context of contexts) {
+                for (const context of contexts) {
                   context.updateContextAfterInsertAsLookup(newRecordId)
                 }
 
