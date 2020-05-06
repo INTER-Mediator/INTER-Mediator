@@ -332,7 +332,6 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $this->mainTableCount = 0;
         $this->mainTableTotalCount = 0;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $tableName = $this->dbSettings->getEntityForRetrieve();
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         if (!$this->setupConnection()) { //Establish the connection
@@ -359,8 +358,11 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
         $sortClause = $this->getSortClause();
         $isAggregate = ($this->dbSettings->getAggregationSelect() != null);
+        $tableName = $this->dbSettings->getEntityForRetrieve();
         $viewOrTableName = $isAggregate ? $this->dbSettings->getAggregationFrom()
-            : $this->handler->quotedEntityName(isset($tableInfo['view']) ? $tableInfo['view'] : $tableName);
+            : $this->handler->quotedEntityName($tableName);
+        $countingName = $isAggregate ? $this->dbSettings->getAggregationFrom()
+            : $this->handler->quotedEntityName($this->dbSettings->getEntityForCount());
 
         // Create SQL
         $limitParam = 100000000;
@@ -398,7 +400,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $offset = '';
         } else {
             // Count all records matched with the condtions
-            $sql = "{$this->handler->sqlSelectCommand()}count(*) FROM {$viewOrTableName} {$queryClause} {$groupBy}";
+            $sql = "{$this->handler->sqlSelectCommand()}count(*) FROM {$countingName} {$queryClause} {$groupBy}";
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
             if ($result === false) {
@@ -411,7 +413,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 $this->mainTableTotalCount = $this->mainTableCount;
             } else {
                 // Count all records
-                $sql = "{$this->handler->sqlSELECTCommand()}count(*) FROM {$viewOrTableName} {$groupBy}";
+                $sql = "{$this->handler->sqlSELECTCommand()}count(*) FROM {$countingName} {$groupBy}";
                 $this->logger->setDebugMessage($sql);
                 $result = $this->link->query($sql);
                 if ($result === false) {
