@@ -770,6 +770,18 @@ class Settings
         return $dsrc['name'];
     }
 
+    public function getEntityForCount()
+    {
+        $dsrc = $this->getDataSourceTargetArray();
+        if (isset($dsrc['count'])) {
+            return $dsrc['count'];
+        }
+        if (isset($dsrc['view'])) {
+            return $dsrc['view'];
+        }
+        return $dsrc['name'];
+    }
+
     public function getEntityForUpdate()
     {
         $dsrc = $this->getDataSourceTargetArray();

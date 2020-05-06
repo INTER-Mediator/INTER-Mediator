@@ -286,7 +286,7 @@ const INTERMediator_DBAdapter = {
     return promise
   },
 
-  changePassword: async function (username, oldpassword, newpassword) {
+  changePassword: async function (username, oldpassword, newpassword, doSucceed, doFail) {
     'use strict'
     let params
     var encrypt = new JSEncrypt()
@@ -323,13 +323,13 @@ const INTERMediator_DBAdapter = {
             let hash = shaObj.getHash('HEX')
             INTERMediatorOnPage.authHashedPassword = hash + INTERMediatorOnPage.authUserHexSalt
             INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
-            resolve(true)
+            doSucceed()
           } else {
-            reject(new Error('_im_changepw_notchange'))
+            doFail()
           }
         },
         (er) => {
-          reject(er)
+          doFail()
         }
       )
     }).catch((er) => {

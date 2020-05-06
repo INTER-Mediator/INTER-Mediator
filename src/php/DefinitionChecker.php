@@ -267,6 +267,7 @@ class DefinitionChecker
             'name' => 'string',
             'table' => 'string',
             'view' => 'string',
+            'count' => 'string',
             'source' => 'string',
             'records' => 'integer',
             'maxrecords' => 'integer',
