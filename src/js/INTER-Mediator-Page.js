@@ -659,12 +659,18 @@ let INTERMediatorOnPage = {
           return
         }
 
-        result = INTERMediator_DBAdapter.changePassword(inputUsername, inputPassword, inputNewPassword)
-        messageNode.appendChild(
-          document.createTextNode(
-            INTERMediatorLib.getInsertedStringFromErrorNumber(result ? 2009 : 2010)))
-
-        INTERMediatorLog.flushMessage()
+        INTERMediator_DBAdapter.changePassword(inputUsername, inputPassword, inputNewPassword,
+          () => {
+            messageNode.appendChild(document.createTextNode(
+              INTERMediatorLib.getInsertedStringFromErrorNumber(2009)))
+            INTERMediatorLog.flushMessage()
+          },
+          () => {
+            messageNode.appendChild(document.createTextNode(
+              INTERMediatorLib.getInsertedStringFromErrorNumber(2010)))
+            INTERMediatorLog.flushMessage()
+          }
+        )
       }
     }
     if (this.isOAuthAvailable && oAuthButton) {
