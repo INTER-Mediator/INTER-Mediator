@@ -3695,9 +3695,9 @@
       "integrity": "sha512-RZY5huIKCMRWDUqZlEi72f/lmXKMvuszcMBduliQ3nnWbx9X/ZBQO7DijMEYS9EhHBb2qacRUMtC7svLwe0lcw=="
     },
     "inter-mediator-expressionparser": {
-      "version": "1.0.2",
-      "resolved": "https://registry.npmjs.org/inter-mediator-expressionparser/-/inter-mediator-expressionparser-1.0.2.tgz",
-      "integrity": "sha512-c2Fm2c0bhYlU/dZQnFLNEQAlk0Je3H2mPO84IzIRssrYZiS2LzmQeHgNWFx2BuEGqDVkXkZ7K29kflls6q0qxg=="
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/inter-mediator-expressionparser/-/inter-mediator-expressionparser-1.0.3.tgz",
+      "integrity": "sha512-yn9cRfnM3hN0cB+uoYXplkD5CuVnEVukBWinAMhT2CLQBRa27OBlEEq2ajA+bg5cTRrrLaHGh4fPsHvuygXfAg=="
     },
     "inter-mediator-formatter": {
       "version": "1.0.2",
