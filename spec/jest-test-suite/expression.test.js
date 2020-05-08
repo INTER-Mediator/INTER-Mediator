@@ -590,4 +590,31 @@ test('Constants for boolean.', () => {
     expect(parser.evaluate('if(false,a+b,a-b)', {a: 5, b: 2})).toBe(3)
   }
 )
+test('File path functions test.', () => {
+    expect(parser.evaluate('basename(a)', {a: 'partial/path/file.ext'})).toBe('file.ext')
+    expect(parser.evaluate('extname(a)', {a: 'partial.inner/path/file.ext'})).toBe('ext')
+    expect(parser.evaluate('dirname(a)', {a: 'partial/path/file.ext'})).toBe('partial/path')
+    expect(parser.evaluate('basename(a)', {a: 'file.ext'})).toBe('file.ext')
+    expect(parser.evaluate('basename(a)', {a: 'partial/path/'})).toBe('path')
+    expect(parser.evaluate('extname(a)', {a: 'file.ext'})).toBe('ext')
+    expect(parser.evaluate('extname(a)', {a: 'aaaaaa'})).toBe('')
+    expect(parser.evaluate('dirname(a)', {a: 'file.ext'})).toBe('')
+  }
+)
+test('if false test.', () => {
+  expect(parser.evaluate("if(a,'T','F')", {a: 'partial/path/file.ext'})).toBe('T')
+  expect(parser.evaluate("if(a,'T','F')", {a: ''})).toBe('F')
+  expect(parser.evaluate("if(a,'T','F')", {a: '\n'})).toBe('T')
+  expect(parser.evaluate("if(a,'T','F')", {a: null})).toBe('F')
+  expect(parser.evaluate("if(a,'T','F')", {a: undefined})).toBe('F')
+  expect(parser.evaluate("if(a,'T','F')", {a: 1000})).toBe('T')
+  expect(parser.evaluate("if(a,'T','F')", {a: -1000})).toBe('T')
+  expect(parser.evaluate("if(a,'T','F')", {a: 0})).toBe('F')
+  expect(parser.evaluate("if(a,'T','F')", {a: -1})).toBe('T')
+  expect(parser.evaluate("if(a,'T','F')", {a: '1000'})).toBe('T')
+  expect(parser.evaluate("if(a,'T','F')", {a: '-1000'})).toBe('T')
+  expect(parser.evaluate("if(a,'T','F')", {a: '0'})).toBe('T') // Check this!
+  expect(parser.evaluate("if(a,'T','F')", {a: '-1'})).toBe('T')
+  }
+)
 
