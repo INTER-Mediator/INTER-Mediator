@@ -154,7 +154,7 @@ var IMLibCalc = {
             if (valuesArray.hasOwnProperty(field)) {
               vArray = []
               if (field.indexOf('@') < 0) { // In same context
-                vArray.push(record[fName])
+                vArray.push((record && record[fName]) ? record[fName]: null)
               } else {  // Other context
                 expCName = field.substr(0, field.indexOf('@'))
                 context = IMLibContextPool.contextFromName(expCName)
@@ -262,7 +262,7 @@ var IMLibCalc = {
             if (valuesArray.hasOwnProperty(field)) {
               vArray = []
               if (field.indexOf('@') < 0) { // In same context
-                vArray.push(record[fName])
+                vArray.push((record && record[fName]) ? record[fName]: null)
               } else {  // Other context
                 expCName = field.substr(0, field.indexOf('@'))
                 context = IMLibContextPool.contextFromName(expCName)
@@ -319,7 +319,6 @@ var IMLibCalc = {
           }
           if (newValueAdded) {
             updatedValue = Parser.evaluate(calcObject.expression, calcObject.values)
-            console.log(calcObject.expression, calcObject.values, updatedValue, idValue)
             IMLibElement.setValueToIMNode(document.getElementById(idValue), nInfo.target, updatedValue, true)
             updatedNodeIds.push(idValue)
             updateNodeValues.push(updatedValue)
