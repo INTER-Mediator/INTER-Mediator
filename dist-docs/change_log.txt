@@ -103,6 +103,9 @@ Ver.6-dev (in development)
 - The 'count' key is introduced into the context definition. It specifies any entity in the db and refers as a table
   to get COUNT(*) value. If the 'view' key referring any view which is take a time, the 'count' key can refer any
   table which represents the same result as the view.
+- The 'media-context' keyed value in the option parameter in IM_Entry function can be eliminated.
+- The getDataAtLastRecord, setDataAtLastRecord, getDataAtLastRecord methods in IMLibContext class can handle record
+  with multiple fields.
 
 Ver.5.11 (November 17, 2019)
 - Support FileMaker Data API of FileMaker Server 18 and FileMaker Cloud for AWS 1.18.
