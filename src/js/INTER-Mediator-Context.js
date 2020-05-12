@@ -751,45 +751,45 @@ class IMLibContext {
   }
 
   setDataWithKey(pkValue, key, value = false) {
-    let targetKey, contextDef, storeElements, contextName, dataset = []
-    contextDef = this.getContextDef()
+    let contextDef = this.getContextDef()
     if (!contextDef) {
       return
     }
-    targetKey = contextDef.key + '=' + pkValue
-    storeElements = this.store[targetKey]
-    if (storeElements) {
-      if (INTERMediatorLib.isObject(key) && value === false) {
-        for (const field of Object.keys(key)) {
-          dataset.push({field: field, value: key[field]})
-          this.setValue(lastKey, field, key[field])
-        }
-      } else {
-        dataset.push({field: key, value: value})
-        this.setValue(lastKey, key, value)
-      }
-      contextName = this.contextName
-      IMLibQueue.setTask((function () {
-        let params = {
-          name: contextName,
-          conditions: [{field: contextDef.key, operator: '=', value: pkValue}],
-          dataset: dataset
-        }
-        return function (completeTask) {
-          INTERMediator_DBAdapter.db_update_async(
-            params,
-            (result) => {
-              INTERMediatorLog.flushMessage()
-              completeTask()
-            },
-            () => {
-              INTERMediatorLog.flushMessage()
-              completeTask()
-            }
-          )
-        }
-      })())
+    let targetKey = contextDef.key + '=' + pkValue
+    if (!this.store[targetKey]) {
+      return
     }
+    let dataset = []
+    if (INTERMediatorLib.isObject(key) && value === false) {
+      for (const field of Object.keys(key)) {
+        dataset.push({field: field, value: key[field]})
+        this.setValue(targetKey, field, key[field])
+      }
+    } else {
+      dataset.push({field: key, value: value})
+      this.setValue(targetKey, key, value)
+    }
+    let contextName = this.contextName
+    IMLibQueue.setTask((function () {
+      let params = {
+        name: contextName,
+        conditions: [{field: contextDef.key, operator: '=', value: pkValue}],
+        dataset: dataset
+      }
+      return function (completeTask) {
+        INTERMediator_DBAdapter.db_update_async(
+          params,
+          (result) => {
+            INTERMediatorLog.flushMessage()
+            completeTask()
+          },
+          () => {
+            INTERMediatorLog.flushMessage()
+            completeTask()
+          }
+        )
+      }
+    })())
   }
 
   setValue(recKey, key, value, nodeId, target, portal) {
