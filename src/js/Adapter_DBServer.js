@@ -553,13 +553,10 @@ const INTERMediator_DBAdapter = {
       params += '&pkeyonly=true'
     }
 
-    // if (args.fields) {
-    //   for (i = 0; i < args.fields.length; i++) {
-    //     params += '&field_' + i + '=' + encodeURIComponent(args.fields[i])
-    //   }
-    // }
-    for (i of args.fields) {
-      params += '&field_' + i + '=' + encodeURIComponent(i)
+    counter = 0
+    for (const field of args.fields) {
+      params += '&field_' + counter + '=' + encodeURIComponent(field)
+      counter += 1
     }
     counter = 0
     if (args.parentkeyvalue) {

@@ -82,6 +82,31 @@ const INTERMediatorLib = {
     return null
   },
 
+  // Refer to: https://qiita.com/amamamaou/items/ef0b797156b324bb4ef3
+  isObject: (val) => {
+    return Object.prototype.toString.call(val).slice(8, -1).toLowerCase() == 'object'
+  },
+
+  isArray: (val) => {
+    return Array.isArray(val)
+  },
+
+  isNaN: (val) => {
+    return Number.isNaN(val)
+  },
+
+  isNull: (val) => {
+    return Object.prototype.toString.call(val).slice(8, -1).toLowerCase() == 'null'
+  },
+
+  isUndefined: (val) => {
+    return Object.prototype.toString.call(val).slice(8, -1).toLowerCase() == 'undefined'
+  },
+
+  isBoolean: (val) => {
+    return Object.prototype.toString.call(val).slice(8, -1).toLowerCase() == 'boolean'
+  },
+
   markProcessed: function (node) {
     'use strict'
     const nodeAttr = node.getAttribute('data-im-element')
@@ -691,7 +716,7 @@ const INTERMediatorLib = {
 
   addEvent: function (node, evt, func) {
     'use strict'
-    node.addEventListener(evt, func,  evt.match(/touch/) ? {passive: true} : false)
+    node.addEventListener(evt, func, evt.match(/touch/) ? {passive: true} : false)
     this.eventInfos.push({'node': node, 'event': evt, 'function': func})
     return this.eventInfos.length - 1
   },
@@ -1102,7 +1127,7 @@ const INTERMediatorLib = {
     'use strict'
     var messageNode
     messageNode = document.createElement(tag)
-    messageNode.setAttribute('class',  '_im_alertmessage')
+    messageNode.setAttribute('class', '_im_alertmessage')
     messageNode.appendChild(document.createTextNode(message))
     return messageNode
   },

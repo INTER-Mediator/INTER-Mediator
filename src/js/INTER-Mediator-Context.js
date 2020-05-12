@@ -728,8 +728,7 @@ class IMLibContext {
     }
   }
 
-  getDataAtLastRecord(key) {
-    'use strict'
+  getDataAtLastRecord(key = false) {
     let lastKey
     let storekeys = Object.keys(this.store)
     if (storekeys.length > 0) {
@@ -741,72 +740,56 @@ class IMLibContext {
 
 // setData____ methods are for storing data both the model and the database.
 //
-  setDataAtLastRecord(key, value) {
-    'use strict'
-    let lastKey, keyAndValue, contextName
+  setDataAtLastRecord(key, value = false) {
+    let lastKey, keyAndValue, contextName, dataset = []
     let storekeys = Object.keys(this.store)
     if (storekeys.length > 0) {
       lastKey = storekeys[storekeys.length - 1]
-      this.setValue(lastKey, key, value)
-      contextName = this.contextName
       keyAndValue = lastKey.split('=')
-      IMLibQueue.setTask((function () {
-        let params = {
-          name: contextName,
-          conditions: [{field: keyAndValue[0], operator: '=', value: keyAndValue[1]}],
-          dataset: [{field: key, value: value}]
-        }
-        return function (completeTask) {
-          INTERMediator_DBAdapter.db_update_async(
-            params,
-            (result) => {
-              IMLibCalc.recalculation()
-              INTERMediatorLog.flushMessage()
-              completeTask()
-            },
-            () => {
-              INTERMediatorLog.flushMessage()
-              completeTask()
-            }
-          )
-        }
-      })())
+      this.setDataWithKey(keyAndValue[1], key, value)
     }
   }
 
-  setDataWithKey(pkValue, key, value) {
-    'use strict'
-    let targetKey, contextDef, storeElements, contextName
-    contextDef = this.getContextDef()
+  setDataWithKey(pkValue, key, value = false) {
+    let contextDef = this.getContextDef()
     if (!contextDef) {
       return
     }
-    targetKey = contextDef.key + '=' + pkValue
-    storeElements = this.store[targetKey]
-    if (storeElements) {
-      this.setValue(targetKey, key, value)
-      contextName = this.contextName
-      IMLibQueue.setTask((function () {
-        let params = {
-          name: contextName,
-          conditions: [{field: contextDef.key, operator: '=', value: pkValue}],
-          dataset: [{field: key, value: value}]
-        }
-        return function (completeTask) {
-          INTERMediator_DBAdapter.db_update_async(
-            params,
-            (result) => {
-              INTERMediatorLog.flushMessage()
-              completeTask()
-            },
-            () => {
-              INTERMediatorLog.flushMessage()
-              completeTask()
-            }
-          )
-        }
-      })())
+    let targetKey = contextDef.key + '=' + pkValue
+    if (!this.store[targetKey]) {
+      return
     }
+    let dataset = []
+    if (INTERMediatorLib.isObject(key) && value === false) {
+      for (const field of Object.keys(key)) {
+        dataset.push({field: field, value: key[field]})
+        this.setValue(targetKey, field, key[field])
+      }
+    } else {
+      dataset.push({field: key, value: value})
+      this.setValue(targetKey, key, value)
+    }
+    let contextName = this.contextName
+    IMLibQueue.setTask((function () {
+      let params = {
+        name: contextName,
+        conditions: [{field: contextDef.key, operator: '=', value: pkValue}],
+        dataset: dataset
+      }
+      return function (completeTask) {
+        INTERMediator_DBAdapter.db_update_async(
+          params,
+          (result) => {
+            INTERMediatorLog.flushMessage()
+            completeTask()
+          },
+          () => {
+            INTERMediatorLog.flushMessage()
+            completeTask()
+          }
+        )
+      }
+    })())
   }
 
   setValue(recKey, key, value, nodeId, target, portal) {
@@ -872,14 +855,13 @@ class IMLibContext {
     return updatedNodeIds
   }
 
-  getValue(recKey, key, portal) {
-    'use strict'
+  getValue(recKey, key = false, portal = false) {
     let value
     try {
       if (portal) {
-        value = this.store[portal][key]
+        value = (key === false) ? this.store[portal] : this.store[portal][key]
       } else {
-        value = this.store[recKey][key]
+        value = (key === false) ? this.store[recKey] : this.store[recKey][key]
       }
       if (Array.isArray(value)) {
         value = value.join()

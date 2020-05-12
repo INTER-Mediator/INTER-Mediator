@@ -3695,24 +3695,24 @@
       "integrity": "sha512-RZY5huIKCMRWDUqZlEi72f/lmXKMvuszcMBduliQ3nnWbx9X/ZBQO7DijMEYS9EhHBb2qacRUMtC7svLwe0lcw=="
     },
     "inter-mediator-expressionparser": {
-      "version": "1.0.2",
-      "resolved": "https://registry.npmjs.org/inter-mediator-expressionparser/-/inter-mediator-expressionparser-1.0.2.tgz",
-      "integrity": "sha512-c2Fm2c0bhYlU/dZQnFLNEQAlk0Je3H2mPO84IzIRssrYZiS2LzmQeHgNWFx2BuEGqDVkXkZ7K29kflls6q0qxg=="
+      "version": "1.0.8",
+      "resolved": "https://registry.npmjs.org/inter-mediator-expressionparser/-/inter-mediator-expressionparser-1.0.8.tgz",
+      "integrity": "sha512-/qLpzTz9bNosWX/CXsV8fLIEFReR6D2JJ31NEUGKbeDKuBhylg079nROkxPDnCQq3cNY9sSHWjP7oH1nUuNyOA=="
     },
     "inter-mediator-formatter": {
-      "version": "1.0.2",
-      "resolved": "https://registry.npmjs.org/inter-mediator-formatter/-/inter-mediator-formatter-1.0.2.tgz",
-      "integrity": "sha512-57OM5PFe04cnMKXUP4ZnaladdNejV3gMqqdBWbv0MtNFnrKuEdNsZVjPqZJdcotuTJO3vjcrJA7O4Aks0U0xJA=="
+      "version": "1.0.5",
+      "resolved": "https://registry.npmjs.org/inter-mediator-formatter/-/inter-mediator-formatter-1.0.5.tgz",
+      "integrity": "sha512-ZuTocs4+s2+Oz9uzjKRujbbdUojsIvyMDCc5dFYtK9xGbGzRNArdYvc7+JheSRvNnDNOukB4+/IxpnjyCiFprg=="
     },
     "inter-mediator-locale": {
-      "version": "1.0.0",
-      "resolved": "https://registry.npmjs.org/inter-mediator-locale/-/inter-mediator-locale-1.0.0.tgz",
-      "integrity": "sha512-UsMTURUtlWYUlVv+ZBdFgU3k42HUPzsF7czfCPWXl+VIPWPgQQDUa4lziAF9f90NSfOxpJ2d8dj6Xp9gblD6Jg=="
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/inter-mediator-locale/-/inter-mediator-locale-1.0.3.tgz",
+      "integrity": "sha512-rWW6EIOGUjWU3YWCHH/b5RP/Ag5WQ8bMD4aLjIaZMlc3AErCNVjvO3nz67+SRBV7FaoEjhCIlesXIM6KQwgyGA=="
     },
     "inter-mediator-nodegraph": {
-      "version": "1.0.0",
-      "resolved": "https://registry.npmjs.org/inter-mediator-nodegraph/-/inter-mediator-nodegraph-1.0.0.tgz",
-      "integrity": "sha512-BJK6cDqWEWr1WpzBX2ZctdVC9K1tIZ6guwhMH1O6Vn5hWtj0wtbWgUquAwYJtIxux9N2RuENePMcSQ4nqDKBUg=="
+      "version": "1.0.5",
+      "resolved": "https://registry.npmjs.org/inter-mediator-nodegraph/-/inter-mediator-nodegraph-1.0.5.tgz",
+      "integrity": "sha512-rW6S1nXhmIO4ykE7y3Jk5fY3nLzCv8ifR/xCrmfO4DcyxYH31eN0o5RXxx8O5+kUnC0ppIt706wQ4tgnXMuiOw=="
     },
     "inter-mediator-plugin-codemirror": {
       "version": "1.0.0",
@@ -3764,9 +3764,9 @@
       }
     },
     "inter-mediator-queue": {
-      "version": "1.0.5",
-      "resolved": "https://registry.npmjs.org/inter-mediator-queue/-/inter-mediator-queue-1.0.5.tgz",
-      "integrity": "sha512-b32LJ2VxGNBjCmMnY7GKGkheyuN/lkycJKDdUyQ94c0+lxzV5V0o92o03lAUaywrKWWi4q4v11747PfgbTJN+A=="
+      "version": "1.0.7",
+      "resolved": "https://registry.npmjs.org/inter-mediator-queue/-/inter-mediator-queue-1.0.7.tgz",
+      "integrity": "sha512-/wUdGBjHJo4f/OqlWgPptgcBmvWsGsNh4lAkQLUTFzeSXXSa50zxre3eHUgHRh2lOHkZtlTc4Udwp1GsorMMsQ=="
     },
     "invariant": {
       "version": "2.2.4",
