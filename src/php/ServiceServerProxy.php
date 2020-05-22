@@ -35,13 +35,13 @@ class ServiceServerProxy
     {
         $params = IMUtil::getFromParamsPHPFile([
             "serviceServerPort", "serviceServerHost", "stopSSEveryQuit",
-            "bootWithInstalledNode", "preventSSAutoBoot", "notUserServiceServer"], true);
+            "bootWithInstalledNode", "preventSSAutoBoot", "notUseServiceServer"], true);
         $this->paramsHost = $params["serviceServerHost"] ? $params["serviceServerHost"] : "localhost";
         $this->paramsPort = $params["serviceServerPort"] ? intval($params["serviceServerPort"]) : 11478;
         $this->paramsQuit = $params["stopSSEveryQuit"] == NULL ? false : boolval($params["stopSSEveryQuit"]);
         $this->paramsBoot = $params["bootWithInstalledNode"] == NULL ? false : boolval($params["bootWithInstalledNode"]);
         $this->dontAutoBoot = $params["preventSSAutoBoot"] == NULL ? false : boolval($params["preventSSAutoBoot"]);
-        $this->dontUse = $params["notUserServiceServer"] == NULL ? false : boolval($params["notUserServiceServer"]);
+        $this->dontUse = $params["notUseServiceServer"] == NULL ? false : boolval($params["notUseServiceServer"]);
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
     }
 
