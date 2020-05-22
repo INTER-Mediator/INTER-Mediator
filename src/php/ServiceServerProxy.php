@@ -35,13 +35,13 @@ class ServiceServerProxy
     {
         $params = IMUtil::getFromParamsPHPFile([
             "serviceServerPort", "serviceServerHost", "stopSSEveryQuit",
-            "bootWithInstalledNode", "preventSSAutoBoot", "notUserServiceServer"], true);
+            "bootWithInstalledNode", "preventSSAutoBoot", "notUseServiceServer"], true);
         $this->paramsHost = $params["serviceServerHost"] ? $params["serviceServerHost"] : "localhost";
         $this->paramsPort = $params["serviceServerPort"] ? intval($params["serviceServerPort"]) : 11478;
         $this->paramsQuit = $params["stopSSEveryQuit"] == NULL ? false : boolval($params["stopSSEveryQuit"]);
         $this->paramsBoot = $params["bootWithInstalledNode"] == NULL ? false : boolval($params["bootWithInstalledNode"]);
         $this->dontAutoBoot = $params["preventSSAutoBoot"] == NULL ? false : boolval($params["preventSSAutoBoot"]);
-        $this->dontUse = $params["notUserServiceServer"] == NULL ? false : boolval($params["notUserServiceServer"]);
+        $this->dontUse = $params["notUseServiceServer"] == NULL ? false : boolval($params["notUseServiceServer"]);
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
     }
 
@@ -74,7 +74,14 @@ class ServiceServerProxy
             }
             return $ssStatus;
         } else {
-            $waitSec = 5;
+            if (!$this->isServerStartable()) {
+                $userName = get_current_user();
+                $homeDir = posix_getpwnam($userName)["dir"];
+                $this->errors[] = $this->messageHead . "Service Server can't boot " .
+                    "because the root directory ({$homeDir}) of the web server user ({$userName})  isn't writable.";
+                return false;
+            }
+            $waitSec = 3;
             $startDT = new \DateTime();
             $counterInit = $counter = 5;
             $isStartServer = false;
@@ -175,6 +182,16 @@ class ServiceServerProxy
         $this->messages[] = $this->messageHead . "PWD = " . getcwd();
         exec($command, $result, $returnValue);
         $this->messages[] = $this->messageHead . "Returns: {$returnValue}, Output:" . implode("/", $result);
+    }
+
+    private function isServerStartable()
+    {
+        $userName = get_current_user();
+        $homeDir = posix_getpwnam($userName)["dir"];
+        if(file_exists($homeDir) && is_dir($homeDir) && is_writable($homeDir)) {
+            return true;
+        }
+        return false;
     }
 
     private function startServer()
