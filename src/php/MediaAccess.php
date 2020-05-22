@@ -56,15 +56,10 @@ class MediaAccess
             if (isset($options['media-context'])) {
                 $this->checkAuthentication($dbProxyInstance, $options, $target);
             }
-
-            file_put_contents('/var/www/1.txt',"[Check Point 10]\n",FILE_APPEND);
-
             $content = false;
             $dq = '"';
             if (!$isURL) { // File path.
-                file_put_contents('/var/www/1.txt',"[Check Point 12]\n",FILE_APPEND);
                 if (!empty($file) && !file_exists($target)) {
-                    file_put_contents('/var/www/1.txt',"[Check Point 13]\n",FILE_APPEND);
                     $this->exitAsError(500);
                 }
                 $content = file_get_contents($target);
@@ -81,9 +76,6 @@ class MediaAccess
                 $this->outputImage($content);
             } else if (stripos($target, 'http://') === 0 || stripos($target, 'https://') === 0) { // http or https
                 $parsedUrl = parse_url($target);
-
-                file_put_contents('/var/www/1.txt',"[Check Point 11]\n",FILE_APPEND);
-
                 if (get_class($dbProxyInstance->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI' &&
                     isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver') {
                     // for FileMaker Data API
@@ -254,15 +246,10 @@ class MediaAccess
      */
     private function checkAuthentication($dbProxyInstance, $options, $target)
     {
-        file_put_contents('/var/www/1.txt',"options=".var_export($options,true)."\n",FILE_APPEND);
-        file_put_contents('/var/www/1.txt',"target={$target}\n",FILE_APPEND);
         if ($this->analyzeTarget($target)) {
             $dbProxyInstance->dbSettings->setDataSourceName($this->targetContextName);
             $context = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
         }
-
-        file_put_contents('/var/www/1.txt',"this->targetContextName={$this->targetContextName}\n",FILE_APPEND);
-
         if (!$context) {
             $dbProxyInstance->dbSettings->setDataSourceName($options['media-context']);
             $context = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
@@ -283,7 +270,6 @@ class MediaAccess
             $cValueUser = isset($_COOKIE[$cookieNameUser]) ? $_COOKIE[$cookieNameUser] : '';
             $cValueToken = isset($_COOKIE[$cookieNameToken]) ? $_COOKIE[$cookieNameToken] : '';
             if (!$dbProxyInstance->checkMediaToken($cValueUser, $cValueToken)) {
-                file_put_contents('/var/www/1.txt',"[Check Point 1]\n",FILE_APPEND);
                 $this->exitAsError(401);
             }
             if (isset($context['authentication']['load'])) {
@@ -298,7 +284,6 @@ class MediaAccess
             }
             if ($authInfoTarget == 'field-user') {
                 if (!$this->targetContextName) {
-                    file_put_contents('/var/www/1.txt',"[Check Point 2]\n",FILE_APPEND);
                     $this->exitAsError(401);
                 }
                 $dbProxyInstance->dbSettings->setDataSourceName($this->targetContextName);
@@ -306,7 +291,6 @@ class MediaAccess
                 $this->contextRecord = $dbProxyInstance->dbClass->authHandler->authSupportCheckMediaPrivilege(
                     $tableName, $authInfoField, $_COOKIE[$cookieNameUser], $this->targetKeyField, $this->targetKeyValue);
                 if ($this->contextRecord === false) {
-                    file_put_contents('/var/www/1.txt',"[Check Point 3]\n",FILE_APPEND);
                     $this->exitAsError(401);
                 }
             } else if ($authInfoTarget == 'field-group') {
@@ -329,7 +313,6 @@ class MediaAccess
                 if (!in_array($_COOKIE[$cookieNameUser], $authorizedUsers)
                     && count(array_intersect($belongGroups, $authorizedGroups)) == 0
                 ) {
-                    file_put_contents('/var/www/1.txt',"[Check Point 4]\n",FILE_APPEND);
                     $this->exitAsError(400);
                 }
                 $endOfPath = strpos($target, "?");
