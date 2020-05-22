@@ -56,10 +56,15 @@ class MediaAccess
             if (isset($options['media-context'])) {
                 $this->checkAuthentication($dbProxyInstance, $options, $target);
             }
+
+            file_put_contents('/var/www/1.txt',"[Check Point 10]\n",FILE_APPEND);
+
             $content = false;
             $dq = '"';
             if (!$isURL) { // File path.
+                file_put_contents('/var/www/1.txt',"[Check Point 12]\n",FILE_APPEND);
                 if (!empty($file) && !file_exists($target)) {
+                    file_put_contents('/var/www/1.txt',"[Check Point 13]\n",FILE_APPEND);
                     $this->exitAsError(500);
                 }
                 $content = file_get_contents($target);
@@ -76,6 +81,9 @@ class MediaAccess
                 $this->outputImage($content);
             } else if (stripos($target, 'http://') === 0 || stripos($target, 'https://') === 0) { // http or https
                 $parsedUrl = parse_url($target);
+
+                file_put_contents('/var/www/1.txt',"[Check Point 11]\n",FILE_APPEND);
+
                 if (get_class($dbProxyInstance->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI' &&
                     isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver') {
                     // for FileMaker Data API
