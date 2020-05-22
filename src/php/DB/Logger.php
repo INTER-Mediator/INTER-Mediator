@@ -52,7 +52,7 @@ class Logger
 
     public function setDebugMessages($msgs, $level = 1)
     {
-        if ($this->debugLevel !== false && $this->debugLevel >= $level) {
+        if ($this->debugLevel !== false && $this->debugLevel >= $level && is_array($msgs)) {
             foreach($msgs as $msg) {
                 $this->debugMessage[] = $msg;
             }

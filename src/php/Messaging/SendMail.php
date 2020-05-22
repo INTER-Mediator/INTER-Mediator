@@ -40,7 +40,7 @@ class SendMail extends MessagingProvider
         }
         $isError = false;
         $errorMsg = "";
-        for ($i = 0; $i < count($result); $i++) {
+        for ($i = 0; $i < (is_array($result) ? count($result) : 0); $i++) {
             $ome = new OME();
 
             if (isset($sendMailParam['f-option']) && $sendMailParam['f-option'] === true) {
