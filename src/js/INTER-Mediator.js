@@ -104,23 +104,23 @@ const INTERMediator = {
   additionalFieldValueOnDelete: {},
   /**
    * @public
-   * @type {integer}
+   * @type {int}
    */
   waitSecondsAfterPostMessage: 4,
   /**
    * @public
-   * @type {integer}
+   * @type {int}
    */
   pagedAllCount: 0,
   /**
    * This property is for FileMaker_FX.
    * @public
-   * @type {integer}
+   * @type {int}
    */
   totalRecordCount: null,
   /**
    * @private
-   * @type {integer}
+   * @type {int}
    */
   currentEncNumber: 0,
   /**
@@ -136,7 +136,7 @@ const INTERMediator = {
    */
   isEdge: false,
   /**
-   * @type {integer}
+   * @type {int}
    */
   ieVersion: -1,
   /**
@@ -172,7 +172,7 @@ const INTERMediator = {
    */
   partialConstructing: true,
   /**
-   * @type {integer}
+   * @type {int}
    */
   linkedElmCounter: 0,
   /**
@@ -180,7 +180,7 @@ const INTERMediator = {
    */
   pusherObject: null,
   /**
-   * @type {integer}
+   * @type {int}
    */
   buttonIdNum: 0,
   /**
@@ -200,7 +200,7 @@ const INTERMediator = {
    */
   dateTimeFunction: false,
   /**
-   * @type {integer}
+   * @type {int}
    */
   postOnlyNumber: 1,
   /**
@@ -212,7 +212,7 @@ const INTERMediator = {
    */
   isMobile: false,
   /**
-   * @type {integer}
+   * @type {int}
    */
   crossTableStage: 0, // 0: not cross table, 1: column label, 2: row label, 3 interchange cells
 
@@ -305,6 +305,41 @@ const INTERMediator = {
     IMLibLocalContext.archive()
   },
 
+  ssSocket: null,
+  connectToServiceServer: () => {
+    if (!INTERMediatorOnPage.serviceServerStatus || !INTERMediatorOnPage.activateClientService) {
+      return
+    }
+    $connectTo = `http://${INTERMediatorOnPage.serviceServerHost}:${INTERMediatorOnPage.serviceServerPort}`
+    INTERMediator.ssSocket = io($connectTo)
+    INTERMediator.ssSocket.on('connected', INTERMediator.serviceServerConnected)
+    window.addEventListener('unload', INTERMediator.serviceServerShouldDisconnect)
+    INTERMediator.ssSocket.on('notify', (msg) => {
+      /*
+       INTERMediator.pusherChannel.bind('update', function (data) {
+                    IMLibContextPool.updateOnAnotherClient('update', data)
+                  })
+                  INTERMediator.pusherChannel.bind('create', function (data) {
+                    IMLibContextPool.updateOnAnotherClient('create', data)
+                  })
+                  INTERMediator.pusherChannel.bind('delete', function (data) {
+                    IMLibContextPool.updateOnAnotherClient('delete', data)
+                  })
+       */
+    })
+  },
+
+  serviceServerConnected: () => {
+    INTERMediator.ssSocket.emit('init', {'clientid': INTERMediatorOnPage.clientNotificationIdentifier()})
+  },
+
+  serviceServerShouldDisconnect: () => {
+    if (!INTERMediatorOnPage.serviceServerStatus || !INTERMediatorOnPage.activateClientService) {
+      return
+    }
+    INTERMediator.ssSocket.disconnect()
+  },
+
   /** Construct Page **
    * Construct the Web Page with DB Data. Usually this method will be called automatically.
    * @param indexOfKeyFieldObject If this parameter is omitted or set to true,
@@ -322,7 +357,8 @@ const INTERMediator = {
     } else {
       INTERMediator.constructMain(indexOfKeyFieldObject)
     }
-  },
+  }
+  ,
 
   /**
    * This method is page generation main method. This will be called with one of the following
@@ -375,22 +411,7 @@ const INTERMediator = {
     }
     IMLibEventResponder.setup()
     await INTERMediatorOnPage.retrieveAuthInfo()
-    try {
-      if (Pusher.VERSION) {
-        INTERMediator.pusherAvailable = true
-        if (!INTERMediatorOnPage.clientNotificationKey) {
-          INTERMediatorLog.setErrorMessage(
-            Error('Pusher Configuration Error'), INTERMediatorOnPage.getMessages()[1039])
-          INTERMediator.pusherAvailable = false
-        }
-      }
-    } catch (ex) {
-      INTERMediator.pusherAvailable = false
-      if (INTERMediatorOnPage.clientNotificationKey) {
-        INTERMediatorLog.setErrorMessage(
-          Error('Pusher Configuration Error'), INTERMediatorOnPage.getMessages()[1038])
-      }
-    }
+    INTERMediator.connectToServiceServer()
 
     try {
       if (updateRequiredContext === true || updateRequiredContext === undefined) {
@@ -553,34 +574,6 @@ const INTERMediator = {
       }
       IMLibCalc.updateCalculationFields()
       IMLibPageNavigation.navigationSetup()
-
-      if (isAcceptNotify && INTERMediator.pusherAvailable) {
-        let channelName = INTERMediatorOnPage.clientNotificationIdentifier()
-        let appKey = INTERMediatorOnPage.clientNotificationKey()
-        if (appKey && appKey !== '_im_key_isnt_supplied' && !INTERMediator.pusherObject) {
-          try {
-            Pusher.log = function (message) {
-              if (window.console && window.console.log) {
-                window.console.log(message)
-              }
-            }
-
-            INTERMediator.pusherObject = new Pusher(appKey)
-            INTERMediator.pusherChannel = INTERMediator.pusherObject.subscribe(channelName)
-            INTERMediator.pusherChannel.bind('update', function (data) {
-              IMLibContextPool.updateOnAnotherClient('update', data)
-            })
-            INTERMediator.pusherChannel.bind('create', function (data) {
-              IMLibContextPool.updateOnAnotherClient('create', data)
-            })
-            INTERMediator.pusherChannel.bind('delete', function (data) {
-              IMLibContextPool.updateOnAnotherClient('delete', data)
-            })
-          } catch (ex) {
-            INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-47')
-          }
-        }
-      }
       appendCredit()
     }
 
@@ -1758,7 +1751,7 @@ const INTERMediator = {
   /* --------------------------------------------------------------------
 
    */
-  setIdValue: function (node) {
+  setIdValue: (node) => {
     'use strict'
     let i, elementInfo, comp
     let overwrite = true
@@ -1793,19 +1786,19 @@ const INTERMediator = {
     }
   },
 
-  getLocalProperty: function (localKey, defaultValue) {
+  getLocalProperty: (localKey, defaultValue) => {
     'use strict'
     let value
     value = IMLibLocalContext.getValue(localKey)
     return value === null ? defaultValue : value
   },
 
-  setLocalProperty: function (localKey, value) {
+  setLocalProperty: (localKey, value) => {
     'use strict'
     IMLibLocalContext.setValue(localKey, value, true)
   },
 
-  addCondition: function (contextName, condition, notMatching, label) {
+  addCondition: (contextName, condition, notMatching, label) => {
     'use strict'
     let value, i, hasIdentical
     if (notMatching) {
@@ -1844,7 +1837,7 @@ const INTERMediator = {
     IMLibLocalContext.archive()
   },
 
-  clearCondition: function (contextName, label) {
+  clearCondition: (contextName, label) => {
     'use strict'
     let i
     let value = INTERMediator.additionalCondition
@@ -1871,7 +1864,7 @@ const INTERMediator = {
     }
   },
 
-  addSortKey: function (contextName, sortKey) {
+  addSortKey: (contextName, sortKey) => {
     'use strict'
     let value = INTERMediator.additionalSortKey
     if (value[contextName]) {
@@ -1883,7 +1876,7 @@ const INTERMediator = {
     IMLibLocalContext.archive()
   },
 
-  clearSortKey: function (contextName) {
+  clearSortKey: (contextName) => {
     'use strict'
     let value = INTERMediator.additionalSortKey
     if (value[contextName]) {
@@ -1893,7 +1886,7 @@ const INTERMediator = {
     }
   },
 
-  setRecordLimit: function (contextName, limit) {
+  setRecordLimit: (contextName, limit) => {
     'use strict'
     var value = INTERMediator.recordLimit
     value[contextName] = limit
@@ -1901,7 +1894,7 @@ const INTERMediator = {
     IMLibLocalContext.archive()
   },
 
-  clearRecordLimit: function (contextName) {
+  clearRecordLimit: (contextName) => {
     'use strict'
     var value = INTERMediator.recordLimit
     if (value[contextName]) {
@@ -1917,11 +1910,11 @@ const INTERMediator = {
     'use strict'
     INTERMediatorLog.flushMessage()
   },
-  setErrorMessage: function (ex, moreMessage) {
+  setErrorMessage: (ex, moreMessage) => {
     'use strict'
     INTERMediatorLog.setErrorMessage(ex, moreMessage)
   },
-  setDebugMessage: function (message, level) {
+  setDebugMessage: (message, level) => {
     'use strict'
     INTERMediatorLog.setDebugMessage(message, level)
   }

@@ -35,7 +35,7 @@ if (!app.listening) {
 }
 
 let verCode = getVersionCode()
-console.log(verCode)
+console.log(`Booted Service Server of INTER-Mediator: Version Code = ${verCode}`)
 
 /*
    Server core
@@ -76,11 +76,12 @@ function requestProcessing(reqParams, res, postData) {
 
 requestBroker['/info'] = function (params, res, postData) {
   const data = JSON.parse(postData)
-  if (data.vcode != verCode) {
-    resposeOnDiffVersion(res, data.vcode)
-  }
   res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
-  res.write('Service Server is active.')
+  if (data.vcode != verCode) {
+    res.write('Different version of Server Server requested, and Service Server should be shutdown.')
+  } else {
+    res.write('Service Server is active.')
+  }
   res.write(' Request Version:' + data.vcode)
   res.write(' Server Version:' + verCode)
   res.end('\n')
@@ -105,35 +106,36 @@ function getVersionCode() {
   return hash.digest('hex')
 }
 
-function resposeOnDiffVersion(res, reqVer) {
-  res.writeHead(503, {'Content-Type': 'text/html; charset=utf-8'})
-  res.write('Different version of Server Server requested, and Service Server is going to shutdown.')
-  res.write(' Request Version:' + reqVer)
-  res.write(' Server Version:' + verCode)
-  res.end('\n','utf-8', ()=>{process.exit(1)})
-}
-
 /*
   Automatic processing
  */
-setInterval(function () {
+//setInterval(function () {
+  // process.exit() // This doesn't work becase the forever attempts to reboot this.
+//}, 10000)
 
-}, 3000)
-
+const watching = {}
 /*
   Socket processing
  */
-io.on('connection', function (socket) {
+io.on('connection', (socket) => {
   console.log(socket.id + '/connected')
   socket.emit('connected')
   socket.on('init', function (req) {
-    socket.join(req.room)
-    socket.join(socket.id)
-    console.log(req.room + '/' + socket.id + '/init')
+    watching[req.clientid] = {startdt: new Date(),socketid:socket.id}
+    console.log("watching=", watching)
   })
   socket.on('disconnect', function () {
-    console.log(socket.id + '/disconnect')
+    for(const oneClient of Object.keys(watching)){
+      if(watching[oneClient].socketid == socket.id){
+        delete watching[oneClient]
+        break
+      }
+    }
+    console.log("watching=", watching)
   })
+})
+
+io.on('init', (socket) => {
 })
 
 /*

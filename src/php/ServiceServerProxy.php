@@ -18,6 +18,7 @@ class ServiceServerProxy
     private $paramsQuit;
     private $paramsBoot;
     private $dontUse;
+    private $forerverLog;
     private $errors = [];
     private $messages = [];
     private $messageHead = "[ServiceServerProxy] ";
@@ -34,14 +35,15 @@ class ServiceServerProxy
     private function __construct()
     {
         $params = IMUtil::getFromParamsPHPFile([
-            "serviceServerPort", "serviceServerHost", "stopSSEveryQuit",
-            "bootWithInstalledNode", "preventSSAutoBoot", "notUseServiceServer"], true);
-        $this->paramsHost = $params["serviceServerHost"] ? $params["serviceServerHost"] : "localhost";
+            "serviceServerPort", "serviceServerConnect", "stopSSEveryQuit",
+            "bootWithInstalledNode", "preventSSAutoBoot", "notUseServiceServer", "foreverLog"], true);
+        $this->paramsHost = $params["serviceServerConnect"] ? $params["serviceServerConnect"] : "localhost";
         $this->paramsPort = $params["serviceServerPort"] ? intval($params["serviceServerPort"]) : 11478;
-        $this->paramsQuit = $params["stopSSEveryQuit"] == NULL ? false : boolval($params["stopSSEveryQuit"]);
-        $this->paramsBoot = $params["bootWithInstalledNode"] == NULL ? false : boolval($params["bootWithInstalledNode"]);
-        $this->dontAutoBoot = $params["preventSSAutoBoot"] == NULL ? false : boolval($params["preventSSAutoBoot"]);
-        $this->dontUse = $params["notUseServiceServer"] == NULL ? false : boolval($params["notUseServiceServer"]);
+        $this->paramsQuit = is_null($params["stopSSEveryQuit"]) ? false : boolval($params["stopSSEveryQuit"]);
+        $this->paramsBoot = is_null($params["bootWithInstalledNode"]) ? false : boolval($params["bootWithInstalledNode"]);
+        $this->dontAutoBoot = is_null($params["preventSSAutoBoot"]) ? false : boolval($params["preventSSAutoBoot"]);
+        $this->dontUse = is_null($params["notUseServiceServer"]) ? false : boolval($params["notUseServiceServer"]);
+        $this->foreverLog = is_null($params["foreverLog"]) ? "" : $params["foreverLog"];
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
     }
 
@@ -120,11 +122,28 @@ class ServiceServerProxy
 
         $result = $this->callServer("info", []);
         $this->messages[] = $this->messageHead . 'Server returns:' . $result;
-
+        /*
+         * Request Version:f413bb8852485e3dccdf04d76a95b1afb6b6cf601fdd26e33f87ce6b75460780
+         * Server Version:f413bb8852485e3dccdf04d76a95b1afb6b6cf601fdd26e33f87ce6b75460780
+         */
+        $keyword = 'Request Version:';
+        $rPos = strpos($result, $keyword);
+        $reqVerStr = $rPos >= 0 ? substr($result, $rPos + strlen($keyword), 64) : "aa";
+        $keyword = 'Server Version:';
+        $sPos = strpos($result, 'Server Version:');
+        $svrVerStr = $sPos >= 0 ? substr($result, $sPos + strlen($keyword), 64) : "bb";
+        if ($reqVerStr != $svrVerStr) {
+            $this->messages[] = $this->messageHead . "Restart Service Server: reqVerStr={$reqVerStr}, svrVerStr={$svrVerStr}";
+            $this->stopServerCommand();
+            //$this->restartServer(); // Restart is going to fail. Why??
+            //throw new \Exception('Different version server is executing.');
+            //$this->startServer();
+            return false;
+        }
         if (!$result) {
             return false;
         }
-        if (strpos($result, 'Service Server is active.') === false) {
+        if (strpos($result, "Service Server is active.") === false) {
             $this->errors[] = $this->messageHead . 'Server respond an irregular message.';
             return false;
         }
@@ -188,7 +207,7 @@ class ServiceServerProxy
     {
         $userName = get_current_user();
         $homeDir = posix_getpwnam($userName)["dir"];
-        if(file_exists($homeDir) && is_dir($homeDir) && is_writable($homeDir)) {
+        if (file_exists($homeDir) && is_dir($homeDir) && is_writable($homeDir)) {
             return true;
         }
         return false;
@@ -196,25 +215,46 @@ class ServiceServerProxy
 
     private function startServer()
     {
+        $this->messages[] = $this->messageHead . "startServer() called";
         $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
         $scriptPath = "src/js/Service_Server.js";
         if (IMUtil::isPHPExecutingWindows()) {
             $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath);
         }
-        $logFile = tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
+
+        $logFile = $this->foreverLog ? $this->foreverLog : tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
         $options = "-a -l {$logFile} --minUptime 5000 --spinSleepTime 5000";
         $cmd = "{$forever} start {$options} {$scriptPath} {$this->paramsPort}";
         $this->executeCommand($cmd);
     }
 
+    private function restartServer()
+    {
+        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
+        $scriptPath = "src/js/Service_Server.js";
+        if (IMUtil::isPHPExecutingWindows()) {
+            $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath);
+        }
+        $cmd = "{$forever} restart {$scriptPath}";
+        $this->executeCommand($cmd);
+    }
+
     public function stopServer()
     {
+        $this->messages[] = $this->messageHead . "stopServer() called";
         if (!$this->paramsQuit) {
             return;
         }
+        $this->stopServerCommand();
+    }
+
+    private function stopServerCommand()
+    {
+        $this->messages[] = $this->messageHead . "stopServerCommand() called";
         $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
         $cmd = "{$forever} stopall";
         $this->executeCommand($cmd);
+        //sleep(1);
     }
 
     public function validate($expression, $values)
