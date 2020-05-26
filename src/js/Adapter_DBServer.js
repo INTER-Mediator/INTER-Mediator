@@ -554,9 +554,11 @@ const INTERMediator_DBAdapter = {
     }
 
     counter = 0
-    for (const field of args.fields) {
-      params += '&field_' + counter + '=' + encodeURIComponent(field)
-      counter += 1
+    if(INTERMediatorLib.isArray(args.fields)) {
+      for (const field of args.fields) {
+        params += '&field_' + counter + '=' + encodeURIComponent(field)
+        counter += 1
+      }
     }
     counter = 0
     if (args.parentkeyvalue) {
