@@ -158,6 +158,10 @@ class SendMail extends MessagingProvider
                             $storeContext->dbSettings->addExtraCriteria($idParam[0], "=", $idParam[1]);
                             $storeContext->processingRequest("read", true);
                             $templateRecords = $storeContext->getDatabaseResult();
+                            if(count($templateRecords)>0) {
+                                $dbProxy->logger->setDebugMessage("[Messaging\SendMail] Acquired mail template: "
+                                    . $sendMailParam['template-context'], 2);
+                            }
                             $mailSeed = [
                                 'to' => $templateRecords[0]['to_field'],
                                 'cc' => $templateRecords[0]['cc_field'],
@@ -200,9 +204,10 @@ class SendMail extends MessagingProvider
                 $fpath = $dbProxy->dbSettings->getMediaRoot() . "/" .
                     $this->modernTemplating($result[$i], $sendMailParam['attachment']);
                 $ome->addAttachment($fpath);
-                $dbProxy->logger->setDebugMessage("Attachment: {$fpath}", 2);
+                $dbProxy->logger->setDebugMessage("[Messaging\SendMail] Attachment: {$fpath}", 2);
             }
             if ($ome->send()) {
+                $dbProxy->logger->setDebugMessage("[Messaging\SendMail] !!! Succeed to send mail.", 2);
                 if (isset($sendMailParam['store'])) {
                     $storeContext = new Proxy();
                     $storeContext->ignoringPost();
@@ -241,6 +246,8 @@ class SendMail extends MessagingProvider
                     $dbProxy->logger->setErrorMessages($storeContext->logger->getErrorMessages());
                 }
             } else {
+                $dbProxy->logger->setDebugMessage("[Messaging\SendMail] !!! Fail to send mail. "
+                    . $ome->getErrorMessage(), 2);
                 $isError = true;
                 $errorMsg .= (strlen($errorMsg) > 0) ? " / {$ome->getErrorMessage()}" : '';
             }
