@@ -170,8 +170,6 @@ class SendMail extends MessagingProvider
                                 'subject' => $templateRecords[0]['subject'],
                                 'body' => $templateRecords[0]['body'],
                             ];
-                            $dbProxy->logger->setDebugMessages($storeContext->logger->getDebugMessages());
-                            $dbProxy->logger->setErrorMessages($storeContext->logger->getErrorMessages());
                         }
                     } else { // Specify a file name.
                         $fpath = dirname($_SERVER["SCRIPT_FILENAME"]) . '/' . $sendMailParam['template-context'];
@@ -242,8 +240,6 @@ class SendMail extends MessagingProvider
                         }
                     }
                     $storeContext->processingRequest("create", true);
-                    $dbProxy->logger->setDebugMessages($storeContext->logger->getDebugMessages());
-                    $dbProxy->logger->setErrorMessages($storeContext->logger->getErrorMessages());
                 }
             } else {
                 $dbProxy->logger->setDebugMessage("[Messaging\SendMail] !!! Fail to send mail. "
