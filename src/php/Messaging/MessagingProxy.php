@@ -30,7 +30,11 @@ class MessagingProxy extends MessagingProvider
     public function processing($dbProxy, $contextDef, $result)
     {
         $className = get_class($this->msgProvider);
-        $dbProxy->logger->setDebugMessage("Processing with {$className} class", 2);
+        $dbProxy->logger->setDebugMessage("[Messaging\MessagingProxy] Processing with {$className} class.", 1);
+        $dbProxy->logger->setDebugMessage("[Messaging\MessagingProxy] context definition: "
+            . str_replace("\n", "",substr(var_export($contextDef, true),0,60)), 2);
+        $dbProxy->logger->setDebugMessage("[Messaging\MessagingProxy] processing with: "
+            . str_replace("\n", "",substr(var_export($result, true),0,60)), 2);
         return $this->msgProvider->processing($dbProxy, $contextDef, $result);
     }
 }

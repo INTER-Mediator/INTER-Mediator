@@ -271,7 +271,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $this->logger->setDebugMessage("Try to send a message.", 2);
                     $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
                     $msgProxy = new MessagingProxy($driver);
-                    $msgResult = $msgProxy->processing($this, $msgArray, $result);
+                    $msgResult = $msgProxy->processing($this, $msgArray, $this->dbClass->updatedRecord());
                     if ($msgResult !== true) {
                         $this->logger->setErrorMessage("Mail sending error: $msgResult");
                     }
