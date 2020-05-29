@@ -30,6 +30,8 @@ class SendMail extends MessagingProvider
 
     public function processing($dbProxy, $sendMailParam, $result)
     {
+        $dbProxy->logger->setDebugMessages("[Messagin\SendMail] sendMailParam with: " . var_export($sendMailParam, true), 2);
+        $dbProxy->logger->setDebugMessages("[Messagin\SendMail] processing with: " . var_export($result, true), 2);
         return $this->processingImpl($dbProxy, $sendMailParam, $result, $dbProxy->dbSettings->getSmtpConfiguration());
     }
 
@@ -237,6 +239,8 @@ class SendMail extends MessagingProvider
                         }
                     }
                     $storeContext->processingRequest("create", true);
+                    $dbProxy->logger->setDebugMessages($storeContext->logger->getDebugMessages());
+                    $dbProxy->logger->setErrorMessages($storeContext->logger->getErrorMessages());
                 }
             } else {
                 $isError = true;
