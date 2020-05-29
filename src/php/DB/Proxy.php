@@ -239,7 +239,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             if ($this->dbClass) {
                 $this->dbClass->requireUpdatedRecord(true); // Always Get Updated Record
                 $result = $this->dbClass->updateDB();
-                $result = $this->dbClass->updatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterUpdateToDB")) {
                 $this->logger->setDebugMessage("The method 'doAfterUpdateToDB' of the class '{$className}' is calling.", 2);
@@ -272,7 +271,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $this->logger->setDebugMessage("Try to send a message.", 2);
                     $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
                     $msgProxy = new MessagingProxy($driver);
-                    $msgResult = $msgProxy->processing($this, $msgArray, $result);
+                    $msgResult = $msgProxy->processing($this, $msgArray, $this->dbClass->updatedRecord());
                     if ($msgResult !== true) {
                         $this->logger->setErrorMessage("Mail sending error: $msgResult");
                     }
