@@ -59,20 +59,23 @@ if [ $OS = 'centos' ] ; then
     yum install -y httpd
     yum install -y mariadb-server
     yum install -y postgresql-server
-    yum install -y php
-    yum install -y php-mbstring
-    yum install -y mariadb-devel
-    yum install -y php-mysqlnd
-    yum install -y php-pdo
-    yum install -y git
     yum install -y epel-release
-    yum install -y composer
+    yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm
+    yum install -y --enablerepo=epel,remi,remi-php73 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath
+    yum install -y mariadb-devel
+    curl -sS https://getcomposer.org/installer | php
+    mv composer.phar /usr/local/bin/composer
+    chmod +x /usr/local/bin/composer
+    yum install -y wget
+    wget https://phar.phpunit.de/phpunit-8.phar -P /tmp
+    mv /tmp/phpunit-8.phar /usr/local/bin/phpunit
+    chmod +x /usr/local/bin/phpunit
+    yum install -y git
     yum install -y nodejs
     yum install -y npm
     yum install -y samba
     yum install -y bzip2
     yum install -y fontconfig-devel
-    yum install -y php-phpunit-PHPUnit
     npm install -g buster --unsafe-perm
     npm install -g phantomjs-prebuilt --unsafe-perm
     systemctl enable httpd.service
@@ -223,6 +226,7 @@ yes im4135dev | passwd postgres
 if [ $OS = 'centos' ] ; then
     sed -i -e "s/\ peer/\ trust/g" /var/lib/pgsql/data/pg_hba.conf
     sed -i -e "s/\ ident/\ trust/g" /var/lib/pgsql/data/pg_hba.conf
+    systemctl restart postgresql.service
 fi
 
 mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' identified by 'im4135dev';" -u root
@@ -367,7 +371,11 @@ fi
 # Install php/js libraries
 
 cd "${IMROOT}"
-composer update # returns error for the script of nodejs-installer.
+if [ $OS = 'centos' ] ; then
+    /usr/local/bin/composer update
+else
+    composer update  # returns error for the script of nodejs-installer.
+fi
 if [ $OS = 'alpine' ] ; then
     sudo ln -s /var/www/html/INTER-Mediator/vendor/bin/phpunit /usr/local/bin/phpunit
     apk add --no-cache nodejs
@@ -450,7 +458,16 @@ fi
 
 # Share the Web Root Directory with SMB.
 
-if [ $OS = 'centos' || $OS = 'alpine' ] ; then
+if [ $OS = 'centos' ] ; then
+    echo "   hosts allow = 192.168.56. 127." >> "${SMBCONF}"
+    echo "" >> "${SMBCONF}"
+    echo "[global]" >> "${SMBCONF}"
+    echo "   browseable = no" >> "${SMBCONF}"
+    echo "" >> "${SMBCONF}"
+    echo "[webroot]" >> "${SMBCONF}"
+    echo "   comment = Apache Root Directory" >> "${SMBCONF}"
+    echo "   path = /var/www/html" >> "${SMBCONF}"
+elif [ $OS = 'alpine' ] ; then
     echo "   hosts allow = 192.168.56. 127." >> "${SMBCONF}"
     echo "" >> "${SMBCONF}"
     echo "[global]" >> "${SMBCONF}"

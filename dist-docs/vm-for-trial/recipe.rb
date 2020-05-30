@@ -187,6 +187,11 @@ if node[:platform] == 'alpine' || (node[:platform] == 'ubuntu' && node[:platform
   end
 end
 
+if node[:platform] == 'alpine'
+  package 'bash' do
+    action :install
+  end
+end
 if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   package 'postgresql' do
     action :install
@@ -1426,11 +1431,6 @@ elsif node[:platform] == 'redhat'
   end
 end
 
-if node[:platform] == 'alpine'
-  package 'bash' do
-    action :install
-  end
-end
 execute "echo \"y\" | bash \"#{IMVMROOT}/dbupdate.sh\"" do
   command "echo \"y\" | bash \"#{IMVMROOT}/dbupdate.sh\""
 end
