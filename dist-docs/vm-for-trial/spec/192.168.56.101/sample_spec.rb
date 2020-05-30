@@ -269,6 +269,9 @@ end
 describe package('php-bcmath'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
+describe package('php7-php-bcmath'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
 describe package('php7-phar'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
@@ -302,14 +305,20 @@ end
 describe package('php7-simplexml'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
+describe package('php-xml'), :if => os[:family] == 'redhat' do
+  it { should be_installed }
+end
 describe package('php7-session'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 describe package('php7-mysqli'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('composer') do
+describe package('composer'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
   it { should be_installed }
+end
+describe file('/usr/local/bin/composer'), :if => os[:family] == 'redhat' do
+  it { should be_file }
 end
 describe package('libbsd'), :if => os[:family] == 'alpine' do
   it { should be_installed }
@@ -332,9 +341,6 @@ end
 describe package('mariadb-devel'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
   it { should be_installed }
 end
-describe package('php-mysqlnd'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
-  it { should be_installed }
-end
 
 describe package('php5-mysql'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
   it { should be_installed }
@@ -345,7 +351,7 @@ end
 describe package('php-mysql'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
-describe package('php-mysql'), :if => os[:family] == 'readhat' do
+describe package('php-mysqlnd'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
   it { should be_installed }
 end
 
@@ -358,7 +364,7 @@ end
 describe package('php-pgsql'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
-describe package('php-pgsql'), :if => os[:family] == 'readhat' do
+describe package('php-pgsql'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
 
@@ -495,11 +501,8 @@ describe package('fontconfig-devel'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
 
-describe file('/usr/local/bin/phpunit'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
+describe file('/usr/local/bin/phpunit') do
   it { should be_file }
-end
-describe package('php-phpunit-PHPUnit'), :if => os[:family] == 'redhat' && os[:release].to_f >= 6 do
-  it { should be_installed }
 end
 
 describe package('samba') do
