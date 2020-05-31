@@ -50,7 +50,7 @@ if (file_exists('/etc/alpine-release')) {
 }
 if (file_exists('/etc/redhat-release')) {
     $osName = 'CentOS Linux';
-    $osVersion = file_get_contents('/etc/redhat-release');
+    $osVersion = str_replace('CentOS Linux ', '', file_get_contents('/etc/redhat-release'));
 }
 ?>
 <html lang="ja">
@@ -90,7 +90,7 @@ if (file_exists('/etc/redhat-release')) {
         概ね、user1でログインができますが、アクセス権の設定のテストも行っており、すべてのユーザーでのログインができるとは限りません。
         設定を参照の上ログインの確認や、あるいはできないことの確認をしてください。
     </li>
-    <li>FileMaker向けのサンプルプログラムはホストマシンで、FileMaker Serverが稼働している場合で、このVMのネットワークを「ホストオンリーアダプター」にしていれば、おそらくそのまま稼働します。他のホストや異なるネットワーク設定の場合は、<?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo '/var/www/localhost/htdocs'; } else { echo '/var/www/html'; }; ?>/params.phpファイルの、$dbServer変数の値を変更してください。<a href="INTER-Mediator/dist-docs/TestDB.fmp12">TestDB.fmp12</a>（サンプルデータベース）の管理者アカウント名とパスワードに関する情報については、<a href="INTER-Mediator/dist-docs/readme.txt">readme.txt</a> ファイル内の「Account Information for FileMaker Database」を参照してください。</li>
+    <li>FileMaker向けのサンプルプログラムはホストマシンで、FileMaker Serverが稼働している場合で、このVMのネットワークを「ホストオンリーアダプター」にしていれば、おそらくそのまま稼働します。他のホストや異なるネットワーク設定の場合は、<?php if ($osName === 'Alpine Linux') { echo '/var/www/localhost/htdocs'; } else { echo '/var/www/html'; }; ?>/params.phpファイルの、$dbServer変数の値を変更してください。<a href="INTER-Mediator/dist-docs/TestDB.fmp12">TestDB.fmp12</a>（サンプルデータベース）の管理者アカウント名とパスワードに関する情報については、<a href="INTER-Mediator/dist-docs/readme.txt">readme.txt</a> ファイル内の「Account Information for FileMaker Database」を参照してください。</li>
     <li><strong>サンプルデータベースの最終更新日</strong>：<?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo 'MariaDB'; } else { echo 'MySQL'; }; ?>=<?php echo htmlspecialchars($mysqlModDate, ENT_QUOTES, 'UTF-8'); ?>、
         FileMaker=<?php echo htmlspecialchars($fmModDate, ENT_QUOTES, 'UTF-8'); ?>
         <br><strong>あなたがお使いのサンプルデータベース</strong>：
@@ -643,7 +643,7 @@ if (file_exists('/etc/redhat-release')) {
     <li>キーボード：Japanese</li>
     <li>タイムゾーン：Asia/Tokyo</li>
     <li>ホスト名：inter-mediator-server</li>
-    <li>Webサーバルート：<?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo '/var/www/localhost/htdocs'; } else { echo '/var/www/html'; }; ?></li>
+    <li>Webサーバルート：<?php if ($osName === 'Alpine Linux') { echo '/var/www/localhost/htdocs'; } else { echo '/var/www/html'; }; ?></li>
     <?php if ($osName === 'Ubuntu Server') { echo '<li>初期設定：OpenSSH Server, LAMP Server, Mail Server, PostgreSQL database</li>'; }; ?>
     <li>アクセス方法：SSH、SFTP、HTTP、SMB</li>
     <li>作成グループ：im-developer（developerおよびwww-dataが所属）</li>
@@ -659,7 +659,7 @@ if (file_exists('/etc/redhat-release')) {
 
 <p>VM上で下記のコマンドを実行すると、サンプルデータベース（<?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo 'MariaDB'; } else { echo 'MySQL'; }; ?>、PostgreSQL、SQLite）を初期化できます。</p>
 <ul>
-    <li><?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo 'source /var/www/localhost/htdocs/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh'; } else { echo 'source /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh'; }; ?></li>
+    <li><?php if ($osName === 'Alpine Linux') { echo 'source /var/www/localhost/htdocs/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh'; } else { echo 'source /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh'; }; ?></li>
 </ul>
 <p>上記コマンドを実行すると「Do you initialize the test databases? [y/n]:
     」と尋ねられるので、「y」を入力してenterキーあるいはreturnキーを押すとサンプルデータベースが初期化されます。
@@ -668,8 +668,8 @@ if (file_exists('/etc/redhat-release')) {
 
 <p>VM上で下記のコマンドを実行すると、INTER-Mediatorのテストを実行できます。</p>
 <ul>
-    <li><?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo 'cd /var/www/localhost/htdocs/INTER-Mediator; composer test'; } else { echo 'cd /var/www/html/INTER-Mediator; composer test'; }; ?></li>
-    <li><?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo 'cd /var/www/localhost/htdocs/INTER-Mediator; composer jest'; } else { echo 'cd /var/www/html/INTER-Mediator; composer jest'; }; ?></li>
+    <li><?php if ($osName === 'Alpine Linux') { echo 'cd /var/www/localhost/htdocs/INTER-Mediator; composer test'; } else { echo 'cd /var/www/html/INTER-Mediator; composer test'; }; ?></li>
+    <li><?php if ($osName === 'Alpine Linux') { echo 'cd /var/www/localhost/htdocs/INTER-Mediator; composer jest'; } else { echo 'cd /var/www/html/INTER-Mediator; composer jest'; }; ?></li>
 </ul>
 
 </body>

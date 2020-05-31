@@ -407,6 +407,7 @@ done
 
 if [ $OS = 'centos' ] ; then
     firewall-cmd --zone=public --add-service=http --permanent
+    firewall-cmd --zone=public --add-service=samba --permanent
     firewall-cmd --reload
 fi
 
@@ -430,6 +431,12 @@ cd ~developer
 touch /home/developer/.bashrc
 touch /home/developer/.viminfo
 chown developer:developer .*
+
+# SELinux
+
+if [ $OS = 'centos' ] ; then
+    setsebool -P samba_export_all_rw 1
+fi
 
 # Import schema
 
@@ -459,10 +466,15 @@ fi
 # Share the Web Root Directory with SMB.
 
 if [ $OS = 'centos' ] ; then
-    echo "   hosts allow = 192.168.56. 127." >> "${SMBCONF}"
-    echo "" >> "${SMBCONF}"
-    echo "[global]" >> "${SMBCONF}"
+    echo "[global]" > "${SMBCONF}"
+    echo "   security = user" >> "${SMBCONF}"
+    echo "   passdb backend = tdbsam" >> "${SMBCONF}"
+    echo "   max protocol = SMB3" >> "${SMBCONF}"
+    echo "   min protocol = SMB2" >> "${SMBCONF}"
+    echo "   ea support = yes" >> "${SMBCONF}"
+    echo "   unix extensions = no" >> "${SMBCONF}"
     echo "   browseable = no" >> "${SMBCONF}"
+    echo "   hosts allow = 192.168.56. 127." >> "${SMBCONF}"
     echo "" >> "${SMBCONF}"
     echo "[webroot]" >> "${SMBCONF}"
     echo "   comment = Apache Root Directory" >> "${SMBCONF}"
