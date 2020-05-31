@@ -21,7 +21,7 @@ use INTERMediator\LDAPAuth;
 use INTERMediator\Locale\IMLocale;
 use INTERMediator\Messaging\MessagingProxy;
 use INTERMediator\ServiceServerProxy;
-use INTERMediator\Messaging\SendMail;
+use INTERMediator\NotifyServer;
 
 class Proxy extends UseSharedObjects implements Proxy_Interface
 {
@@ -493,9 +493,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $params = IMUtil::getFromParamsPHPFile(array(
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
             "dbOption", "dbDSN", "pusherParameters", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
+            "activateClientService",
         ), true);
 
-        $this->clientSyncAvailable = (isset($this->PostData["pusher"]) && $this->PostData["pusher"] == "yes");
+        $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
         $this->dbSettings->setDataSource($datasource);
         $this->dbSettings->setOptions($options);
         IMLocale::$options = $options;

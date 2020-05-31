@@ -554,7 +554,7 @@ const INTERMediator_DBAdapter = {
     }
 
     counter = 0
-    if(INTERMediatorLib.isArray(args.fields)) {
+    if (INTERMediatorLib.isArray(args.fields)) {
       for (const field of args.fields) {
         params += '&field_' + counter + '=' + encodeURIComponent(field)
         counter += 1
@@ -1050,8 +1050,7 @@ const INTERMediator_DBAdapter = {
         )
       )
     }
-  }
-  ,
+  },
 
   db_copyParameters: function (args) {
     'use strict'
@@ -1084,8 +1083,7 @@ const INTERMediator_DBAdapter = {
       }
     }
     return params
-  }
-  ,
+  },
 
   createExceptionFunc: function (errMessageNumber, AuthProc) {
     'use strict'
@@ -1103,23 +1101,18 @@ const INTERMediator_DBAdapter = {
             ['Communication Error', myRequest.responseText]))
       }
     }
-  }
-  ,
+  },
 
   unregister: function (entityPkInfo) {
     'use strict'
     let result = null
     let params
-    if (INTERMediatorOnPage.clientNotificationKey) {
-      let appKey = INTERMediatorOnPage.clientNotificationKey()
-      if (appKey && appKey !== '_im_key_isnt_supplied') {
-        params = 'access=unregister'
-        if (entityPkInfo) {
-          params += '&pks=' + encodeURIComponent(JSON.stringify(entityPkInfo))
-        }
-        result = this.server_access(params, 1018, 1016)
-        return result
+    if (INTERMediatorOnPage.activateClientService) {
+      params = 'access=unregister'
+      if (entityPkInfo) {
+        params += '&pks=' + encodeURIComponent(JSON.stringify(entityPkInfo))
       }
+      INTERMediator_DBAdapter.server_access_async(params, 1018, 1016, null, null, null)
     }
   }
 }
