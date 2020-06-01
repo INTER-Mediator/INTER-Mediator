@@ -933,7 +933,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $result = $this->createInDB();
                     $this->outputOfProcessing['newRecordKeyValue'] = $result;
                     $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
-                    if(!$ignoreFiles) {
+                    if (!$ignoreFiles) {
                         $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
                         if ($uploadFiles && count($tableInfo) > 0) {
                             (new \INTERMediator\FileUploader())->processingWithParameters(
@@ -999,10 +999,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $calcFields[] = $entry['field'];
                     }
                 }
-                foreach ($this->dbSettings->getFieldsRequired() as $fieldName) {
-                    if (!$this->dbClass->specHandler->isContainingFieldName($fieldName, $fInfo) &&
-                        !in_array($fieldName, $calcFields)) {
-                        $this->logger->setErrorMessage($messageClass->getMessageAs(1033, array($fieldName)));
+                if ($access == 'read' || $access == 'select') {
+                    foreach ($this->dbSettings->getFieldsRequired() as $fieldName) {
+                        if (!$this->dbClass->specHandler->isContainingFieldName($fieldName, $fInfo) &&
+                            !in_array($fieldName, $calcFields)) {
+                            $this->logger->setErrorMessage($messageClass->getMessageAs(1033, array($fieldName)));
+                        }
                     }
                 }
             }
