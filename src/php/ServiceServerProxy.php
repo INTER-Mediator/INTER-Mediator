@@ -77,8 +77,10 @@ class ServiceServerProxy
             return $ssStatus;
         } else {
             if (!$this->isServerStartable()) {
-                $userName = get_current_user();
-                $homeDir = posix_getpwnam($userName)["dir"];
+                // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
+                $uInfo = posix_getpwuid(posix_geteuid());
+                $userName = $uInfo['name'];
+                $homeDir = $uInfo["dir"];
                 $this->errors[] = $this->messageHead . "Service Server can't boot " .
                     "because the root directory ({$homeDir}) of the web server user ({$userName})  isn't writable.";
                 return false;
@@ -205,8 +207,7 @@ class ServiceServerProxy
 
     private function isServerStartable()
     {
-        $userName = get_current_user();
-        $homeDir = posix_getpwnam($userName)["dir"];
+        $homeDir = posix_getpwuid(posix_geteuid())["dir"];
         if (file_exists($homeDir) && is_dir($homeDir) && is_writable($homeDir)) {
             return true;
         }
