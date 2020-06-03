@@ -78,11 +78,10 @@ class ServiceServerProxy
         } else {
             if (!$this->isServerStartable()) {
                 // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
+                // get_current_user doen't work on the ubuntu 18 of EC2. It returns the user logs in with ssh.
                 $uInfo = posix_getpwuid(posix_geteuid());
-                $userName = $uInfo['name'];
-                $homeDir = $uInfo["dir"];
-                $this->errors[] = $this->messageHead . "Service Server can't boot " .
-                    "because the root directory ({$homeDir}) of the web server user ({$userName})  isn't writable.";
+                $this->errors[] = $this->messageHead . "Service Server can't boot because the root directory " .
+                    "({$uInfo["dir"]}) of the web server user ({$uInfo['name']})  isn't writable.";
                 return false;
             }
             $waitSec = 3;
@@ -128,13 +127,14 @@ class ServiceServerProxy
          * Request Version:f413bb8852485e3dccdf04d76a95b1afb6b6cf601fdd26e33f87ce6b75460780
          * Server Version:f413bb8852485e3dccdf04d76a95b1afb6b6cf601fdd26e33f87ce6b75460780
          */
+        // Checking both version of the executing and the code
         $keyword = 'Request Version:';
         $rPos = strpos($result, $keyword);
         $reqVerStr = $rPos >= 0 ? substr($result, $rPos + strlen($keyword), 64) : "aa";
         $keyword = 'Server Version:';
         $sPos = strpos($result, 'Server Version:');
         $svrVerStr = $sPos >= 0 ? substr($result, $sPos + strlen($keyword), 64) : "bb";
-        if ($reqVerStr != $svrVerStr) {
+        if ($reqVerStr != $svrVerStr) { // If they are different version.
             $this->messages[] = $this->messageHead . "Restart Service Server: reqVerStr={$reqVerStr}, svrVerStr={$svrVerStr}";
             $this->stopServerCommand();
             //$this->restartServer(); // Restart is going to fail. Why??
@@ -207,6 +207,8 @@ class ServiceServerProxy
 
     private function isServerStartable()
     {
+        // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
+        // get_current_user doen't work on the ubuntu 18 of EC2. It returns the user logs in with ssh.
         $homeDir = posix_getpwuid(posix_geteuid())["dir"];
         if (file_exists($homeDir) && is_dir($homeDir) && is_writable($homeDir)) {
             return true;
