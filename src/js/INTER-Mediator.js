@@ -410,9 +410,9 @@ const INTERMediator = {
     await INTERMediatorOnPage.retrieveAuthInfo()
     INTERMediator.connectToServiceServer()
 
+    IMLibPageNavigation.deleteInsertOnNavi = []
     try {
       if (updateRequiredContext === true || updateRequiredContext === undefined) {
-        IMLibPageNavigation.deleteInsertOnNavi = []
         INTERMediator.partialConstructing = false
         INTERMediator.buttonIdNum = 1
         IMLibContextPool.clearAll()
