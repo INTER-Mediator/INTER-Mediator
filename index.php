@@ -92,7 +92,7 @@ if (file_exists('/etc/redhat-release')) {
         概ね、user1でログインができますが、アクセス権の設定のテストも行っており、すべてのユーザーでのログインができるとは限りません。
         設定を参照の上ログインの確認や、あるいはできないことの確認をしてください。
     </li>
-    <li>FileMaker向けのサンプルプログラムはホストマシンで、FileMaker Serverが稼働している場合で、このVMのネットワークを「ホストオンリーアダプター」にしていれば、おそらくそのまま稼働します。他のホストや異なるネットワーク設定の場合は、<?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo htmlspecialchars($wwwRoot, ENT_QUOTES, 'UTF-8'); }; ?>/params.phpファイルの、$dbServer変数の値を変更してください。<a href="INTER-Mediator/dist-docs/TestDB.fmp12">TestDB.fmp12</a>（サンプルデータベース）の管理者アカウント名とパスワードに関する情報については、<a href="INTER-Mediator/dist-docs/readme.txt">readme.txt</a> ファイル内の「Account Information for FileMaker Database」を参照してください。</li>
+    <li>FileMaker向けのサンプルプログラムはホストマシンで、FileMaker Serverが稼働している場合で、このVMのネットワークを「ホストオンリーアダプター」にしていれば、おそらくそのまま稼働します。他のホストや異なるネットワーク設定の場合は、<?php echo htmlspecialchars($wwwRoot, ENT_QUOTES, 'UTF-8'); ?>/params.phpファイルの、$dbServer変数の値を変更してください。<a href="INTER-Mediator/dist-docs/TestDB.fmp12">TestDB.fmp12</a>（サンプルデータベース）の管理者アカウント名とパスワードに関する情報については、<a href="INTER-Mediator/dist-docs/readme.txt">readme.txt</a> ファイル内の「Account Information for FileMaker Database」を参照してください。</li>
     <li><strong>サンプルデータベースの最終更新日</strong>：<?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo 'MariaDB'; } else { echo 'MySQL'; }; ?>=<?php echo htmlspecialchars($mysqlModDate, ENT_QUOTES, 'UTF-8'); ?>、
         FileMaker=<?php echo htmlspecialchars($fmModDate, ENT_QUOTES, 'UTF-8'); ?>
         <br><strong>あなたがお使いのサンプルデータベース</strong>：
