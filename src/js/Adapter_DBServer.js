@@ -896,7 +896,7 @@ const INTERMediator_DBAdapter = {
 
    This function returns the value of the key field of the new record.
    */
-  setupStepReturnButton: async function (args, successProc, failedProc) {
+  db_createRecord_async: async function (args, successProc, failedProc) {
     'use strict'
     let isFormData = false, paramsStr = '', paramsFD = null
     for (const def of args.dataset) { // Checking the multi parted form data is required.
