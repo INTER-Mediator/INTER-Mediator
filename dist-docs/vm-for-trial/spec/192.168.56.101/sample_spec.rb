@@ -713,10 +713,17 @@ describe command('getfacl ' + WEBROOT), :if => os[:family] == 'alpine' || os[:fa
   its(:stdout) { should match /^default:group:im-developer:rwx$/ }
 end
 
-describe file(WEBROOT) do
+describe file(WEBROOT), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
   it { should be_directory }
   it { should be_mode 775 }
   it { should be_owned_by 'developer' }
+  it { should be_grouped_into 'im-developer' }
+end
+
+describe file(WEBROOT), :if => os[:family] == 'redhat' do
+  it { should be_directory }
+  it { should be_mode 775 }
+  it { should be_owned_by 'apache' }
   it { should be_grouped_into 'im-developer' }
 end
 
