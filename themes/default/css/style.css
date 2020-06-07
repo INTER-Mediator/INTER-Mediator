@@ -245,6 +245,12 @@ div.IM_CREDIT ._im_credit4 {
 
 div.IM_CREDIT ._im_credit_mark {
     color: red;
+    margin: 0;
+    cursor: help;
+}
+
+div.IM_CREDIT ._im_socket_mark {
+    color: red;
     margin-right: 2em;
     cursor: help;
 }

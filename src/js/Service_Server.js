@@ -20,7 +20,9 @@ const jsSHA = require('../../node_modules/jssha/src/sha.js')
 let url = require('url')
 let http = require('http')
 let app = http.createServer(handler)
-let io = require('socket.io')(app)
+let io = require('socket.io')(app, {
+  pingTimeout: 60000, // https://github.com/socketio/socket.io/issues/3259#issuecomment-448058937
+})
 let requestBroker = {}
 
 let shaObj = new jsSHA('SHA-256', 'TEXT')
@@ -110,7 +112,7 @@ function getVersionCode() {
   Automatic processing
  */
 //setInterval(function () {
-  // process.exit() // This doesn't work becase the forever attempts to reboot this.
+// process.exit() // This doesn't work becase the forever attempts to reboot this.
 //}, 10000)
 
 const watching = {}
@@ -121,17 +123,17 @@ io.on('connection', (socket) => {
   console.log(socket.id + '/connected')
   socket.emit('connected')
   socket.on('init', function (req) {
-    watching[req.clientid] = {startdt: new Date(),socketid:socket.id}
-    console.log("watching=", watching)
+    watching[req.clientid] = {startdt: new Date(), socketid: socket.id}
+    console.log('watching=', watching)
   })
   socket.on('disconnect', function () {
-    for(const oneClient of Object.keys(watching)){
-      if(watching[oneClient].socketid == socket.id){
+    for (const oneClient of Object.keys(watching)) {
+      if (watching[oneClient].socketid == socket.id) {
         delete watching[oneClient]
         break
       }
     }
-    console.log("watching=", watching)
+    console.log('watching=', watching)
   })
 })
 
