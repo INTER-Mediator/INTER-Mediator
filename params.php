@@ -230,7 +230,7 @@ $uploadFilePathMode = "";
 //$themeName = "blackbird";      //Default theme name.
 
 // Server side locale for this application. This locale replaces the browser's accepting languages.
-$appLocale = "ja_JP";   // Locale for application has to be specified the langunage_country code.
+$appLocale = "ja_JP";   // Locale for application has to be specified the language_country code.
 $appCurrency = "JP";    // Locale for currency has to be specified the country code.
 
 // Port number and host name for service server

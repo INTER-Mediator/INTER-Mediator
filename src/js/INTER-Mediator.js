@@ -220,6 +220,7 @@ const INTERMediator = {
   appendingNodesAtLast: null,
   currentContext: null,
   currentRecordset: null,
+  socketMarkNode: null,
 
   // Detect Internet Explorer and its version.
   propertyIETridentSetup: () => {
@@ -313,30 +314,26 @@ const INTERMediator = {
     $connectTo = `http://${INTERMediatorOnPage.serviceServerHost}:${INTERMediatorOnPage.serviceServerPort}`
     INTERMediator.ssSocket = io($connectTo)
     INTERMediator.ssSocket.on('connected', INTERMediator.serviceServerConnected)
-    window.addEventListener('unload', INTERMediator.serviceServerShouldDisconnect)
+    // window.addEventListener('unload', INTERMediator.serviceServerShouldDisconnect)
     INTERMediator.ssSocket.on('notify', (msg) => {
-      /*
-       INTERMediator.pusherChannel.bind('update', function (data) {
-                    IMLibContextPool.updateOnAnotherClient('update', data)
-                  })
-                  INTERMediator.pusherChannel.bind('create', function (data) {
-                    IMLibContextPool.updateOnAnotherClient('create', data)
-                  })
-                  INTERMediator.pusherChannel.bind('delete', function (data) {
-                    IMLibContextPool.updateOnAnotherClient('delete', data)
-                  })
-       */
+      'update' || 'create' || 'delete'
+      IMLibContextPool.updateOnAnotherClient('update', msg)
     })
   },
 
   serviceServerConnected: () => {
     INTERMediator.ssSocket.emit('init', {'clientid': INTERMediatorOnPage.clientNotificationIdentifier()})
+    if (INTERMediator.socketMarkNode) {
+      INTERMediator.socketMarkNode.style.color = 'yellow'
+    }
   },
 
   serviceServerShouldDisconnect: () => {
     if (!INTERMediatorOnPage.serviceServerStatus || !INTERMediatorOnPage.activateClientService) {
       return
     }
+    INTERMediator_DBAdapter.unregister()
+    INTERMediator.socketMarkNode.style.color = 'red'
     INTERMediator.ssSocket.disconnect()
   },
 
@@ -413,9 +410,9 @@ const INTERMediator = {
     await INTERMediatorOnPage.retrieveAuthInfo()
     INTERMediator.connectToServiceServer()
 
+    IMLibPageNavigation.deleteInsertOnNavi = []
     try {
       if (updateRequiredContext === true || updateRequiredContext === undefined) {
-        IMLibPageNavigation.deleteInsertOnNavi = []
         INTERMediator.partialConstructing = false
         INTERMediator.buttonIdNum = 1
         IMLibContextPool.clearAll()
@@ -1688,7 +1685,7 @@ const INTERMediator = {
 
      */
     function appendCredit() {
-      let bodyNode, creditNode, cNode, spNode, aNode, versionString, markNode, mark
+      let bodyNode, creditNode, cNode, spNode, aNode, versionString, markNode, mark, markSktNode
 
       if (document.getElementById('IM_CREDIT') === null) {
         if (INTERMediatorOnPage.creditIncluding) {
@@ -1727,7 +1724,16 @@ const INTERMediator = {
         spNode.appendChild(markNode)
         markNode.appendChild(document.createTextNode('◆'))
         markNode.style.color = INTERMediatorOnPage.serviceServerStatus ? 'green' : 'red'
-
+        if (INTERMediatorOnPage.activateClientService) {
+          markSktNode = document.createElement('span')
+          markSktNode.appendChild(document.createTextNode('➤'))
+          markSktNode.className = '_im_socket_mark'
+          spNode.appendChild(markSktNode)
+          INTERMediator.socketMarkNode = markSktNode
+          if (INTERMediator.ssSocket) {
+            markSktNode.style.color = 'yellow'
+          }
+        }
         spNode = document.createElement('span')
         spNode.className = '_im_credit_vstring'
         cNode.appendChild(spNode)

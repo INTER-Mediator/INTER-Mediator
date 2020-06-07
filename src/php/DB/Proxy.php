@@ -21,7 +21,7 @@ use INTERMediator\LDAPAuth;
 use INTERMediator\Locale\IMLocale;
 use INTERMediator\Messaging\MessagingProxy;
 use INTERMediator\ServiceServerProxy;
-use INTERMediator\Messaging\SendMail;
+use INTERMediator\NotifyServer;
 
 class Proxy extends UseSharedObjects implements Proxy_Interface
 {
@@ -493,9 +493,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $params = IMUtil::getFromParamsPHPFile(array(
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
             "dbOption", "dbDSN", "pusherParameters", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
+            "activateClientService",
         ), true);
 
-        $this->clientSyncAvailable = (isset($this->PostData["pusher"]) && $this->PostData["pusher"] == "yes");
+        $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
         $this->dbSettings->setDataSource($datasource);
         $this->dbSettings->setOptions($options);
         IMLocale::$options = $options;
@@ -932,7 +933,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $result = $this->createInDB();
                     $this->outputOfProcessing['newRecordKeyValue'] = $result;
                     $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
-                    if(!$ignoreFiles) {
+                    if (!$ignoreFiles) {
                         $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
                         if ($uploadFiles && count($tableInfo) > 0) {
                             (new \INTERMediator\FileUploader())->processingWithParameters(
@@ -998,10 +999,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $calcFields[] = $entry['field'];
                     }
                 }
-                foreach ($this->dbSettings->getFieldsRequired() as $fieldName) {
-                    if (!$this->dbClass->specHandler->isContainingFieldName($fieldName, $fInfo) &&
-                        !in_array($fieldName, $calcFields)) {
-                        $this->logger->setErrorMessage($messageClass->getMessageAs(1033, array($fieldName)));
+                if ($access == 'read' || $access == 'select') {
+                    foreach ($this->dbSettings->getFieldsRequired() as $fieldName) {
+                        if (!$this->dbClass->specHandler->isContainingFieldName($fieldName, $fInfo) &&
+                            !in_array($fieldName, $calcFields)) {
+                            $this->logger->setErrorMessage($messageClass->getMessageAs(1033, array($fieldName)));
+                        }
                     }
                 }
             }

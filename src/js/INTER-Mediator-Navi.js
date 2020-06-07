@@ -1101,9 +1101,8 @@ const IMLibPageNavigation = {
   },
   setupStepReturnButton: function (style) {
     'use strict'
-    var nodes, i
-    nodes = document.getElementsByClassName('IM_Button_StepBack')
-    for (i = 0; i < nodes.length; i += 1) {
+    let nodes = document.getElementsByClassName('IM_Button_StepBack')
+    for (let i = 0; i < nodes.length; i += 1) {
       nodes[i].style.display = style
       if (!INTERMediatorLib.isProcessed(nodes[i])) {
         INTERMediatorLib.addEvent(nodes[i], 'click', function () {
@@ -1116,15 +1115,14 @@ const IMLibPageNavigation = {
       }
     }
     nodes = document.getElementsByClassName('IM_Button_StepInsert')
-    for (i = 0; i < nodes.length; i += 1) {
+    for (let i = 0; i < nodes.length; i += 1) {
       if (!INTERMediatorLib.isProcessedInsert(nodes[i])) {
         INTERMediatorLib.addEvent(nodes[i], 'click', function () {
-          let index
           INTERMediatorOnPage.showProgress()
           let context = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName)
           IMLibQueue.setTask(function (completeTask) {
             INTERMediator_DBAdapter.db_createRecord_async(
-              {name: IMLibPageNavigation.stepCurrentContextName, dataset: {}},
+              {name: IMLibPageNavigation.stepCurrentContextName, dataset: []},
               function (result) {
                 INTERMediator.constructMain(context)
                 completeTask()
