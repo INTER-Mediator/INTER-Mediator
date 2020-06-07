@@ -34,6 +34,7 @@ IMSAMPLE="${IMROOT}/samples"
 IMUNITTEST="${IMROOT}/spec/INTER-Mediator-UnitTest"
 IMDISTDOC="${IMROOT}/dist-docs"
 IMVMROOT="${IMROOT}/dist-docs/vm-for-trial"
+IMSELINUX="${IMROOT}/dist-docs/selinux"
 APACHEOPTCONF="/etc/apache2/sites-enabled/inter-mediator-server.conf"
 SMBCONF="/etc/samba/smb.conf"
 
@@ -61,7 +62,7 @@ if [ $OS = 'centos' ] ; then
     yum install -y postgresql-server
     yum install -y epel-release
     yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm
-    yum install -y --enablerepo=epel,remi,remi-php73 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath
+    yum install -y --enablerepo=epel,remi,remi-php73 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process
     yum install -y mariadb-devel
     curl -sS https://getcomposer.org/installer | php
     mv composer.phar /usr/local/bin/composer
@@ -357,9 +358,12 @@ echo "H1mRfJ9Twh2tPyssPqNYhweL2loa8xpef/HQCtTKrzQR0x3HaNmKaA==" >> "${WEBROOT}/p
 echo "-----END RSA PRIVATE KEY-----" >> "${WEBROOT}/params.php"
 echo "EOL;" >> "${WEBROOT}/params.php"
 echo "\$webServerName = [''];" >> "${WEBROOT}/params.php"
-echo "\$preventSSAutoBoot = true;" >> "${WEBROOT}/params.php"
 echo "\$serviceServerPort = '11478';" >> "${WEBROOT}/params.php"
 echo "\$serviceServerHost = 'localhost';" >> "${WEBROOT}/params.php"
+echo "\$serviceServerConnect = 'localhost';" >> "${WEBROOT}/params.php"
+echo "\$stopSSEveryQuit = false;" >> "${WEBROOT}/params.php"
+echo "\$preventSSAutoBoot = false;" >> "${WEBROOT}/params.php"
+echo "\$notUseServiceServer = false;" >> "${WEBROOT}/params.php"
 echo "\$messages['default'][1022] = \"We don't support Internet Explorer. We'd like you to access by Edge or any other major browsers.\";" >> "${WEBROOT}/params.php"
 echo "\$messages['ja'][1022] = \"Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。\";" >> "${WEBROOT}/params.php"
 
@@ -414,14 +418,20 @@ fi
 # Modify permissions
 
 setfacl --recursive --modify g:im-developer:rwx,d:g:im-developer:rwx "${WEBROOT}"
-chown -R developer:im-developer "${WEBROOT}"
+if [ $OS = 'centos' ] ; then
+    chown -R apache:im-developer "${WEBROOT}"
+else
+    chown -R developer:im-developer "${WEBROOT}"
+fi
 chmod -R a=rX,u+w,g+w "${WEBROOT}"
 cd "${WEBROOT}" && cd INTER-Mediator && git checkout .
 chmod 664 ${WEBROOT}/*.html
 chmod 664 ${WEBROOT}/*.php
 chmod 775 "${IMVMROOT}/dbupdate.sh"
 chmod 664 "${IMVMROOT}/index.php"
-if [ $OS = 'alpine' ] ; then
+if [ $OS = 'centos' ] ; then
+    chown -R apache:im-developer /usr/share/httpd
+elif [ $OS = 'alpine' ] ; then
     chmod +x /var/www/html/INTER-Mediator/vendor/bin/phpunit
 fi
 
@@ -431,12 +441,6 @@ cd ~developer
 touch /home/developer/.bashrc
 touch /home/developer/.viminfo
 chown developer:developer .*
-
-# SELinux
-
-if [ $OS = 'centos' ] ; then
-    setsebool -P samba_export_all_rw 1
-fi
 
 # Import schema
 
@@ -506,6 +510,14 @@ echo "   create mask = 0664" >> "${SMBCONF}"
 echo "   directory mask = 0775" >> "${SMBCONF}"
 echo "   force group = im-developer" >> "${SMBCONF}"
 ( echo im4135dev; echo im4135dev ) | sudo smbpasswd -s -a developer
+
+# SELinux
+
+if [ $OS = 'centos' ] ; then
+    setsebool -P samba_export_all_rw 1
+    cd "${IMSELINUX}"
+    semodule -i inter-mediator.pp
+fi
 
 # Modify /etc/default/keyboard, /etc/default/locale for Japanese
 
