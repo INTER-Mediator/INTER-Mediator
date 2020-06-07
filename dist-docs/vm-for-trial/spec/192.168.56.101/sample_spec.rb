@@ -266,7 +266,7 @@ end
 describe package('php7.2-bcmath'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
   it { should be_installed }
 end
-describe package('php-bcmath'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
+describe package('php-bcmath'), :if => os[:family] == 'redhat' || (os[:family] == 'ubuntu' && os[:release].to_f >= 18) do
   it { should be_installed }
 end
 describe package('php7-php-bcmath'), :if => os[:family] == 'alpine' do
@@ -312,6 +312,9 @@ describe package('php7-session'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 describe package('php7-mysqli'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('php-process'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
 describe package('composer'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
