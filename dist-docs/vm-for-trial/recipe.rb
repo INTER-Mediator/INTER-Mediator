@@ -982,8 +982,10 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   end
 end
 
-execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
-  command "chown -R developer:im-developer \"#{WEBROOT}\""
+if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
+  execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
+    command "chown -R developer:im-developer \"#{WEBROOT}\""
+  end
 end
 #execute "cd \"#{IMSUPPORT}\" && git clone https://github.com/codemirror/CodeMirror.git" do
 #  command "cd \"#{IMSUPPORT}\" && git clone https://github.com/codemirror/CodeMirror.git"
@@ -1467,8 +1469,14 @@ if node[:platform] == 'alpine' || node[:platform] == 'redhat'
   end
 end
 
-execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
-  command "chown -R developer:im-developer \"#{WEBROOT}\""
+if node[:platform] == 'redhat'
+  execute "chown -R apache:im-developer \"#{WEBROOT}\"" do
+    command "chown -R apache:im-developer \"#{WEBROOT}\""
+  end
+else
+  execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
+    command "chown -R developer:im-developer \"#{WEBROOT}\""
+  end
 end
 
 execute "chmod -R a=rX,u+w,g+w \"#{WEBROOT}\"" do
