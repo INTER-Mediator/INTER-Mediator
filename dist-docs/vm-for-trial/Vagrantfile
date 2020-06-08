@@ -6,7 +6,7 @@
 # $ gem install itamae
 
 Vagrant.configure(2) do |config|
-  config.vm.box = "INTER-Mediator-Server"
+  config.vm.box = "INTER-Mediator-Server-CentOS7-2003"
   config.vm.box_url = "https://inter-mediator.com/archives/INTER-Mediator-Server-CentOS-7.8.box"
   #config.vm.box_url = "https://inter-mediator.com/archives/INTER-Mediator-Server-Alpine-Linux-3.10.2.box"
   #config.vm.box_url = "https://inter-mediator.com/archives/INTER-Mediator-Server-Ubuntu-14.04.3.box"
