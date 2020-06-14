@@ -5,7 +5,7 @@ Driven by INTER-Mediator Directive Committee (http://inter-mediator.org/)
 Thanks for your interest of this software.
 
 Product information: https://inter-mediator.com
-Online manual: http://inter-mediator.info
+Online manual: https://inter-mediator.info
 
 Sample pages with this archived file are published at below.
 You don't have to deploy the samples if you just want to just a glance.
@@ -46,7 +46,7 @@ JSEncrypt includes the following libraries.
 ==========================================
 Account Information for FileMaker Database
 ------------------------------------------
-The FileMaker database files "TestDB.fmp12" and "TestDB.fp7" (Last updated: February 24, 2018)
+The FileMaker database files "TestDB.fmp12" and "TestDB.fp7" (Last updated: June 14, 2020)
 have the administrator account as:
 
  username: admin
