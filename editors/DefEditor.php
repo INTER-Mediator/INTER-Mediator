@@ -79,7 +79,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
         $dataSourceName = $this->dbSettings->getDataSourceName();
 
         $filePath = $this->dbSettings->getCriteriaValue('target');
-        if (substr_count($filePath, '../') > 3) {
+        if (substr_count($filePath, '../') > 5) {
             $this->logger->setErrorMessage("You can't access files in inhibit area: {$dataSourceName}.");
             return null;
         }
