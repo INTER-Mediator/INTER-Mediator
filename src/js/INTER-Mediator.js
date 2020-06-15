@@ -526,7 +526,7 @@ const INTERMediator = {
      [1] INTERMediator.constructMain() or INTERMediator.constructMain(true)
      */
     async function pageConstruct() {
-      let i, bodyNode, emptyElement
+      let i, bodyNode, emptyElement, node
 
       IMLibCalc.calculateRequiredObject = {}
       INTERMediator.currentEncNumber = 1
@@ -557,8 +557,8 @@ const INTERMediator = {
 
       // After work to set up popup menus.
       for (i = 0; i < postSetFields.length; i++) {
-        if (postSetFields[i].value === '' &&
-          document.getElementById(postSetFields[i].id).tagName === 'SELECT') {
+        node = document.getElementById(postSetFields[i].id)
+        if (postSetFields[i].value === '' && node && node.tagName === 'SELECT') {
           // for compatibility with Firefox when the value of select tag is empty.
           emptyElement = document.createElement('option')
           emptyElement.setAttribute('id', INTERMediator.nextIdValue())
@@ -567,7 +567,9 @@ const INTERMediator = {
           document.getElementById(postSetFields[i].id).insertBefore(
             emptyElement, document.getElementById(postSetFields[i].id).firstChild)
         }
-        document.getElementById(postSetFields[i].id).value = postSetFields[i].value
+        if (node) {
+          node.value = postSetFields[i].value
+        }
       }
       IMLibCalc.updateCalculationFields()
       IMLibPageNavigation.navigationSetup()

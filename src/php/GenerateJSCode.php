@@ -119,14 +119,17 @@ class GenerateJSCode
          */
         $relativeToDefFile = '';
         $editorPath = realpath($pathToIM . $ds . 'editors');
-        $defFilePath = realpath($documentRoot . $serverName);
-        while (strpos($defFilePath, $editorPath) !== 0 && strlen($editorPath) > 1) {
-            $editorPath = dirname($editorPath);
-            $relativeToDefFile .= '..' . $ds;
+        if ($editorPath) { // In case of core only build.
+            $defFilePath = realpath($documentRoot . $serverName);
+            while (strpos($defFilePath, $editorPath) !== 0 && strlen($editorPath) > 1) {
+                $editorPath = dirname($editorPath);
+                $relativeToDefFile .= '..' . $ds;
+            }
+            $relativeToDefFile .= substr($defFilePath, strlen($editorPath) + 1);
+            $editorPath = $pathToIM . $ds . 'editors' . $ds . 'defedit.html';
+        } else {
+            $editorPath = "Editors don't exist.";
         }
-        $relativeToDefFile .= substr($defFilePath, strlen($editorPath) + 1);
-        $editorPath = $pathToIM . $ds
-            . 'editors' . $ds . 'defedit.html';
         if (file_exists($editorPath)) {
             $relativeToEditor = substr($editorPath, strlen($_SERVER['DOCUMENT_ROOT']));
             $this->generateAssignJS("INTERMediatorOnPage.getEditorPath",
