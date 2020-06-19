@@ -208,6 +208,38 @@ test('IMLibElement.setValueToIMNode() with innerHTML target', () => {
   expect(tempElement.innerHTML).toBe(value1)
 })
 
+test('IMLibElement.setValueToIMNode() has to set the numeric value to div', () => {
+  'use strict'
+  var tempElement = document.createElement('input')
+  tempElement.setAttribute('type', 'text')
+
+  tempElement.setAttribute('data-im-format', 'number(0)')
+  IMLibElement.setValueToIMNode(tempElement, '', '1234.567', true)
+  expect(tempElement.value).toBe('1235')
+
+  tempElement.setAttribute('data-im-format', 'number(2)')
+  IMLibElement.setValueToIMNode(tempElement, '', '1234.567', true)
+  expect(tempElement.value).toBe('1234.57')
+
+  tempElement.setAttribute('data-im-format', 'number(0)')
+  tempElement.setAttribute('data-im-format-options', 'useseparator blankifzero')
+  IMLibElement.setValueToIMNode(tempElement, '', '1234.567', true)
+  expect(tempElement.value).toBe('1,235')
+  IMLibElement.setValueToIMNode(tempElement, '', '234.567', true)
+  expect(tempElement.value).toBe('235')
+  IMLibElement.setValueToIMNode(tempElement, '', '', true)
+  expect(tempElement.value).toBe('')
+
+  tempElement.setAttribute('data-im-format', 'number(2)')
+  tempElement.setAttribute('data-im-format-options', 'useseparator blankifzero')
+  IMLibElement.setValueToIMNode(tempElement, '', '1234.567', true)
+  expect(tempElement.value).toBe('1,234.57')
+  IMLibElement.setValueToIMNode(tempElement, '', '234.567', true)
+  expect(tempElement.value).toBe('234.57')
+  IMLibElement.setValueToIMNode(tempElement, '', '', true)
+  expect(tempElement.value).toBe('')
+})
+
 test('IMLibElement.setValueToIMNode() has to set the date/time value to div', () => {
   'use strict'
   var tempElement = document.createElement('input')
