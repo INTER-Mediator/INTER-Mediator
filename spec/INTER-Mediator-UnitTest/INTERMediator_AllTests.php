@@ -13,6 +13,8 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+error_reporting(E_ALL);
+
 use \PHPUnit\Framework\TestCase;
 use \PHPUnit\Framework\TestSuite;
 
