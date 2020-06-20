@@ -64,7 +64,11 @@
     "inter-mediator-plugin-jquerydatepicker": "1.0.2",
     "inter-mediator-plugin-jqueryfileupload": "1.1.0",
     "inter-mediator-plugin-popupselector": "1.0.1",
-    "inter-mediator-plugin-tinymce": "1.0.3"
+    "inter-mediator-plugin-tinymce": "1.0.3",
+    "handlebars": ">=4.3.0",
+    "lodash": ">=4.17.12",
+    "acorn": ">=5.7.4",
+    "mixin-deep": ">=1.3.2"
   },
   "win32Dependencies": {
     "forever-win": "*"
