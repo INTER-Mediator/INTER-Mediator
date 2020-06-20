@@ -15,10 +15,12 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
         date_default_timezone_set('Asia/Tokyo');
     }
 
+    /*
     public function testAggregation()
     {
         // The sample schema doesn't have a data to check this feature.
     }
+    */
 
     function dbProxySetupForAccess($contextName, $maxRecord, $subContextName = null)
     {
@@ -93,6 +95,9 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
         );
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testNativeUser()
     {
         // SQLite doesn't have native users.

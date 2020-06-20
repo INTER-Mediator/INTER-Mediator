@@ -19,6 +19,9 @@ class LDAPAuth_Test extends TestCase {
         $this->obj = new LDAPAuth();
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function test_valueForJSInsert()
     {
         $user = "test1";
