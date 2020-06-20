@@ -57,7 +57,7 @@
     "inter-mediator-locale": "1.0.3",
     "inter-mediator-nodegraph": "1.0.5",
     "inter-mediator-queue": "1.0.7",
-    "inter-mediator-plugin-codemirror": "1.0.0",
+    "inter-mediator-plugin-codemirror": "1.0.1",
     "inter-mediator-plugin-fileupload": "1.0.3",
     "inter-mediator-plugin-flatpickr": "1.0.0",
     "inter-mediator-plugin-jsonformatter": "1.0.0",
