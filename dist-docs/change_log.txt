@@ -95,6 +95,7 @@ Ver.6-dev (in development)
   (it's not this version, previous but unrecoverable which version was.)
 - [INFO] The src/lib/js_lib directory is removed.
 - [BUG FIX] The changePassword method of the INTERMediator_DBAdapter class had a bug in case of wrong old password.
+- [BUG FIX] Fix handling multibyte currency symbols in some cases.
 - Some codes in the INTERMediator_DBAdapter.db_updateParameters method are removed for just depending on IE ver.8.
 - Add the favicon.ico file on the root folder of this repository.
 - The jQuery-File-Upload (Ver.1.1 or later) widget supports the post only mode. It can preview the file.
