@@ -27,6 +27,9 @@ read -p "Do you initialize the test databases? [y/n]: " INPUT
 if [ "$INPUT" = "y" -o "$INPUT" = "Y" ]; then
     echo "Initializing databases..."
 
+    if [ -e "/etc/redhat-release" ]; then
+        mysql -u root --password="${VMPASSWORD}" test_db -e "DROP USER 'web'@'localhost';"
+    fi
     if [ -e "/etc/alpine-release" ]; then
         mysql -u root --password="${VMPASSWORD}" test_db -e "DROP USER IF EXISTS 'web'@'localhost';"
     fi
