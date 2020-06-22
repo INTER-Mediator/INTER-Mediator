@@ -9,7 +9,7 @@
 #
 # - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 # - Install Serverspec 2 on the host of VM (ex. "sudo gem install serverspec" on macOS)
-#   See detail: http://serverspec.org/
+#   See detail: https://serverspec.org/
 # - Change directory to "vm-for-trial" directory on the host of VM
 # - Run "rake spec" on the host of VM
 #
@@ -532,9 +532,9 @@ fi
 
 # The end of task.
 
+echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd
 if [ $OS = 'alpine' ] ; then
     chmod 755 "${WEBROOT}//INTER-Mediator/node_modules/jest/bin/jest.js"
-    echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd
     poweroff
 else
     /sbin/shutdown -h now

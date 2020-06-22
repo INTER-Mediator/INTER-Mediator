@@ -1,6 +1,6 @@
 # coding: utf-8
 
-# Recipe file of Itamae for Alpine Linux 3.10, Ubuntu Server 16.04/18.04, CentOS 6/7
+# Recipe file of Itamae for Alpine Linux 3.10, Ubuntu Server 16.04/18.04, CentOS Linux 7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -23,6 +23,7 @@ IMSAMPLE = "#{IMROOT}/samples"
 IMUNITTEST = "#{IMROOT}/spec/INTER-Mediator-UnitTest"
 IMDISTDOC = "#{IMROOT}/dist-docs"
 IMVMROOT = "#{IMROOT}/dist-docs/vm-for-trial"
+IMSELINUX = "#{IMROOT}/dist-docs/selinux"
 APACHEOPTCONF="/etc/apache2/sites-enabled/inter-mediator-server.conf"
 SMBCONF = "/etc/samba/smb.conf"
 
@@ -576,8 +577,11 @@ elsif node[:platform] == 'ubuntu'
     command 'curl -sS https://getcomposer.org/installer | php; sudo mv composer.phar /usr/local/bin/composer; sudo chmod +x /usr/local/bin/composer;'
   end
 elsif node[:platform] == 'redhat'
-  package 'php' do
-    action :install
+  execute 'yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm' do
+    command 'yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm'
+  end
+  execute 'yum install -y --enablerepo=epel,remi,remi-php73 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process' do
+    command 'yum install -y --enablerepo=epel,remi,remi-php73 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process'
   end
   if node[:platform_version].to_f < 6
     package 'php-mbstring' do
@@ -620,6 +624,9 @@ elsif node[:platform] == 'redhat'
     #  content 'extension=timezonedb.so'
     #end
   end
+  execute 'curl -sS https://getcomposer.org/installer | php; sudo mv composer.phar /usr/local/bin/composer; sudo chmod +x /usr/local/bin/composer;' do
+    command 'curl -sS https://getcomposer.org/installer | php; sudo mv composer.phar /usr/local/bin/composer; sudo chmod +x /usr/local/bin/composer;'
+  end
 end
 
 if node[:platform] == 'ubuntu'
@@ -646,9 +653,6 @@ elsif node[:platform] == 'redhat'
     end
   else
     package 'mariadb-devel' do
-      action :install
-    end
-    package 'php-mysqlnd' do
       action :install
     end
   end
@@ -866,10 +870,10 @@ if node[:platform] == 'alpine'
     command 'update-ca-certificates'
   end
 end
+package 'wget' do
+  action :install
+end
 if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
-  package 'wget' do
-    action :install
-  end
   if node[:platform] == 'ubuntu' && node[:platform_version].to_f < 18
     execute 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp' do
       command 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp'
@@ -888,10 +892,16 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   execute 'chmod +x /usr/local/bin/phpunit' do
     command 'chmod +x /usr/local/bin/phpunit'
   end
-elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 6
-  package 'php-phpunit-PHPUnit' do
-    action :install
+elsif node[:platform] == 'redhat'
+  execute 'wget https://phar.phpunit.de/phpunit-8.phar -P /tmp' do
+    command 'wget https://phar.phpunit.de/phpunit-8.phar -P /tmp'
   end
+  execute 'mv /tmp/phpunit-8.phar /usr/local/bin/phpunit' do
+    command 'mv /tmp/phpunit-8.phar /usr/local/bin/phpunit'
+  end
+end
+execute 'chmod +x /usr/local/bin/phpunit' do
+  command 'chmod +x /usr/local/bin/phpunit'
 end
 
 package 'samba' do
@@ -1206,8 +1216,14 @@ end
 
 # Install php/js libraries
 
-execute "cd \"#{IMROOT}\" && composer update" do
-  command "cd \"#{IMROOT}\" && composer update"  # returns error for the script of nodejs-installer.
+if node[:platform] == 'redhat'
+  execute "cd \"#{IMROOT}\" && /usr/local/bin/composer update" do
+    command "cd \"#{IMROOT}\" && /usr/local/bin/composer update"
+  end
+else
+  execute "cd \"#{IMROOT}\" && composer update" do
+    command "cd \"#{IMROOT}\" && composer update"  # returns error for the script of nodejs-installer.
+  end
 end
 
 # Install npm packages
@@ -1320,6 +1336,9 @@ EOF
     else
       execute 'firewall-cmd --zone=public --add-service=http --permanent' do
         command 'firewall-cmd --zone=public --add-service=http --permanent'
+      end
+      execute 'firewall-cmd --zone=public --add-service=samba --permanent' do
+        command 'firewall-cmd --zone=public --add-service=samba --permanent'
       end
       execute 'firewall-cmd --reload' do
         command 'firewall-cmd --reload'
@@ -1472,6 +1491,9 @@ end
 if node[:platform] == 'redhat'
   execute "chown -R apache:im-developer \"#{WEBROOT}\"" do
     command "chown -R apache:im-developer \"#{WEBROOT}\""
+  end
+  execute "chown -R apache:im-developer /usr/share/httpd" do
+    command "chown -R apache:im-developer /usr/share/httpd"
   end
 else
   execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
@@ -1817,7 +1839,14 @@ file "#{SMBCONF}" do
 ;   write list = root, @lpadmin
 
 [global]
+   security = user
+   passdb backend = tdbsam
+   max protocol = SMB3
+   min protocol = SMB2
+   ea support = yes
+   unix extensions = no
    browseable = no
+   hosts allow = 192.168.56. 127.
 
 [webroot]
    comment = Apache Root Directory
@@ -1833,6 +1862,17 @@ end
 
 execute '( echo *********; echo ********* ) | sudo smbpasswd -s -a developer' do
   command '( echo im4135dev; echo im4135dev ) | sudo smbpasswd -s -a developer'
+end
+
+
+# SELinux
+if node[:platform] == 'redhat'
+  execute 'setsebool -P samba_export_all_rw 1' do
+    command 'setsebool -P samba_export_all_rw 1'
+  end
+  execute "cd \"#{IMSELINUX}\" && semodule -i inter-mediator.pp" do
+    command "cd \"#{IMSELINUX}\" && semodule -i inter-mediator.pp"
+  end
 end
 
 
@@ -2104,17 +2144,17 @@ if node[:platform] == 'alpine'
 end
 
 
+execute 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd' do
+  command 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd'
+end
 if node[:platform] == 'alpine'
   execute "chmod 755 \"#{WEBROOT}\"/INTER-Mediator/node_modules/jest/bin/jest.js" do
     command "chmod 755 \"#{WEBROOT}\"/INTER-Mediator/node_modules/jest/bin/jest.js"
   end
-  execute 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd' do
-    command 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd'
-  end
-  if node[:virtualization][:system] != 'docker'
-    execute 'poweroff' do
-      command 'poweroff'
-    end
+end
+if node[:platform] == 'alpine' && node[:virtualization][:system] != 'docker'
+  execute 'poweroff' do
+    command 'poweroff'
   end
 end
 if node[:platform] == 'ubuntu'
