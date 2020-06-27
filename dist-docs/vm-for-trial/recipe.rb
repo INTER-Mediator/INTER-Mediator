@@ -822,23 +822,23 @@ if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform
   end
 end
 if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 18) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
-  #execute 'npm install -g n' do
-  #  command 'npm install -g n'
-  #end
-  #execute 'n stable' do
-  #  command 'n stable'
-  #end
-  #execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
-  #  command 'ln -sf /usr/local/bin/node /usr/bin/node'
-  #end
-  #execute 'ln -sf /usr/local/bin/npm /usr/bin/npm' do
-  #  command 'ln -sf /usr/local/bin/npm /usr/bin/npm'
-  #end
-  #if node[:platform] == 'ubuntu'
-  #  execute 'apt-get purge -y nodejs npm' do
-  #    command 'apt-get purge -y nodejs npm'
-  #  end
-  #end
+  execute 'npm install -g n' do
+    command 'npm install -g n'
+  end
+  execute 'n stable' do
+    command 'n stable'
+  end
+  execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
+    command 'ln -sf /usr/local/bin/node /usr/bin/node'
+  end
+  execute 'ln -sf /usr/local/bin/npm /usr/bin/npm' do
+    command 'ln -sf /usr/local/bin/npm /usr/bin/npm'
+  end
+  if node[:platform] == 'ubuntu'
+    execute 'apt-get purge -y nodejs npm' do
+      command 'apt-get purge -y nodejs npm'
+    end
+  end
 end
 
 if node[:platform] == 'alpine'
@@ -1230,9 +1230,9 @@ end
 # Install npm packages
 
 if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
-  #execute 'npm install -g buster --unsafe-perm' do
-  #  command 'npm install -g buster --unsafe-perm'
-  #end
+  execute 'npm install -g buster --unsafe-perm' do
+    command 'npm install -g buster --unsafe-perm'
+  end
 
   if node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
     package 'bzip2' do
@@ -1240,11 +1240,11 @@ if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || (node[
     end
   end
 
-  #if node[:platform] != 'alpine'
-  #  execute 'npm install -g phantomjs-prebuilt --unsafe-perm' do
-  #    command 'npm install -g phantomjs-prebuilt --unsafe-perm'
-  #  end
-  #end
+  if node[:platform] != 'alpine'
+    execute 'npm install -g phantomjs-prebuilt --unsafe-perm' do
+      command 'npm install -g phantomjs-prebuilt --unsafe-perm'
+    end
+  end
 end
 
 if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
@@ -2086,9 +2086,9 @@ elsif node[:platform] == 'ubuntu'
   package 'chromium-browser' do
     action :install
   end
-  #execute 'npm install -g chromedriver --unsafe-perm' do
-  #    command 'npm install -g chromedriver --unsafe-perm'
-  #end
+  execute 'npm install -g chromedriver --unsafe-perm' do
+      command 'npm install -g chromedriver --unsafe-perm'
+  end
 end
 
 
