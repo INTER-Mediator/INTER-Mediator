@@ -443,8 +443,11 @@ describe package('epel-release'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
 
-describe package('nodejs'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+describe package('nodejs'), :if => os[:family] == 'alpine' || (os[:family] == 'ubuntu' && os[:release].to_f >= 18) || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
   it { should be_installed }
+end
+describe package('nodejs'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 18 do
+  it { should_not be_installed }
 end
 
 describe file('/usr/bin/node'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
@@ -454,8 +457,11 @@ end
 describe package('nodejs-npm'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('npm'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+describe package('npm'), :if => (os[:family] == 'ubuntu' && os[:release].to_f >= 18) || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
   it { should be_installed }
+end
+describe package('npm'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 18 do
+  it { should_not be_installed }
 end
 
 #describe package('buster'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
