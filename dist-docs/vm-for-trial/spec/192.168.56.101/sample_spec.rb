@@ -251,9 +251,6 @@ end
 describe package('php7-dom'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php7.2-dom'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
-  it { should be_installed }
-end
 describe package('php7.2-xml'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
@@ -317,10 +314,10 @@ end
 describe package('php-process'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
-describe package('composer'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
+describe package('composer'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe file('/usr/local/bin/composer'), :if => os[:family] == 'redhat' do
+describe file('/usr/local/bin/composer'), :if => os[:family] == 'redhat' || os[:family] == 'ubuntu' do
   it { should be_file }
 end
 describe package('libbsd'), :if => os[:family] == 'alpine' do
@@ -454,10 +451,6 @@ describe file('/usr/bin/node'), :if => os[:family] == 'ubuntu' || (os[:family] =
   it { should be_file }
 end
 
-describe package('nodejs-legacy'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 18 do
-  it { should be_installed }
-end
-
 describe package('nodejs-npm'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
@@ -465,9 +458,9 @@ describe package('npm'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redh
   it { should be_installed }
 end
 
-describe package('buster'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
-  it { should be_installed.by('npm').with_version('0.7.18') }
-end
+#describe package('buster'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+#  it { should be_installed.by('npm').with_version('0.7.18') }
+#end
 
 describe package('bzip2'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
   it { should be_installed }
@@ -490,9 +483,9 @@ describe package('libgudev'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 
-describe package('phantomjs-prebuilt'), :if => (os[:family] == 'ubuntu' && os[:release].to_f >= 14 && os[:release].to_f < 18) || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
-  it { should be_installed.by('npm').with_version('2.1.16') }
-end
+#describe package('phantomjs-prebuilt'), :if => (os[:family] == 'ubuntu' && os[:release].to_f >= 14 && os[:release].to_f < 18) || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+#  it { should be_installed.by('npm').with_version('2.1.16') }
+#end
 
 describe package('fontconfig-dev'), :if => os[:family] == 'alpine' do
   it { should be_installed }
@@ -851,7 +844,7 @@ describe file('/etc/local.d/buster-server.start'), :if => os[:family] == 'alpine
 end
 describe file('/etc/rc.local'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 14 && os[:release].to_f < 18 do
   it { should be_file }
-  its(:content) { should match /\/usr\/local\/bin\/buster-server &/ }
+  #its(:content) { should match /\/usr\/local\/bin\/buster-server &/ }
   its(:content) { should match /\/usr\/local\/bin\/phantomjs \/usr\/local\/lib\/node_modules\/buster\/script\/phantom.js http:\/\/localhost:1111\/capture > \/dev\/null &/ }
 end
 describe file('/etc/rc.local'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18  do
@@ -869,6 +862,6 @@ describe file('/etc/motd'), :if => os[:family] == 'redhat' || os[:family] == 'al
   its(:content) { should match /Welcome to INTER-Mediator-Server VM!/ }
 end
 
-describe service('buster-server'), :if => os[:family] == 'ubuntu' do
-  it { should be_running }
-end
+#describe service('buster-server'), :if => os[:family] == 'ubuntu' do
+#  it { should be_running }
+#end
