@@ -442,8 +442,8 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
     command 'sudo /opt/mssql/bin/mssql-conf set telemetry.customerfeedback false'
   end
   if node[:virtualization][:system] == 'docker'
-    execute 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="**********" /opt/mssql/bin/mssql-conf setup' do
-      command 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="im4135devX" /opt/mssql/bin/mssql-conf setup'
+    execute 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_LCID=1041 MSSQL_SA_PASSWORD="**********" /opt/mssql/bin/mssql-conf setup' do
+      command 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_LCID=1041 MSSQL_SA_PASSWORD="im4135devX" /opt/mssql/bin/mssql-conf setup'
     end
     service 'mssql-server' do
       action [ :enable, :start ]
@@ -802,20 +802,13 @@ if node[:platform] == 'redhat'
     action :install
   end
 end
-if node[:platform] == 'alpine' || (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14 && node[:platform_version].to_f < 18) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
-  package 'nodejs' do
-    action :install
-  end
+package 'nodejs' do
+  action :install
 end
 
-if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14 && node[:platform_version].to_f < 18) || node[:platform] == 'redhat'
+if node[:platform] == 'redhat' || node[:platform] == 'ubuntu'
   execute 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10' do
     command 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10'
-  end
-end
-if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 18
-  package 'nodejs' do
-    action :install
   end
 end
 if node[:platform] == 'alpine'
@@ -829,23 +822,23 @@ if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform
   end
 end
 if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 18) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
-  execute 'npm install -g n' do
-    command 'npm install -g n'
-  end
-  execute 'n stable' do
-    command 'n stable'
-  end
-  execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
-    command 'ln -sf /usr/local/bin/node /usr/bin/node'
-  end
-  execute 'ln -sf /usr/local/bin/npm /usr/bin/npm' do
-    command 'ln -sf /usr/local/bin/npm /usr/bin/npm'
-  end
-  if node[:platform] == 'ubuntu'
-    execute 'apt-get purge -y nodejs npm' do
-      command 'apt-get purge -y nodejs npm'
-    end
-  end
+  #execute 'npm install -g n' do
+  #  command 'npm install -g n'
+  #end
+  #execute 'n stable' do
+  #  command 'n stable'
+  #end
+  #execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
+  #  command 'ln -sf /usr/local/bin/node /usr/bin/node'
+  #end
+  #execute 'ln -sf /usr/local/bin/npm /usr/bin/npm' do
+  #  command 'ln -sf /usr/local/bin/npm /usr/bin/npm'
+  #end
+  #if node[:platform] == 'ubuntu'
+  #  execute 'apt-get purge -y nodejs npm' do
+  #    command 'apt-get purge -y nodejs npm'
+  #  end
+  #end
 end
 
 if node[:platform] == 'alpine'
@@ -1237,9 +1230,9 @@ end
 # Install npm packages
 
 if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
-  execute 'npm install -g buster --unsafe-perm' do
-    command 'npm install -g buster --unsafe-perm'
-  end
+  #execute 'npm install -g buster --unsafe-perm' do
+  #  command 'npm install -g buster --unsafe-perm'
+  #end
 
   if node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
     package 'bzip2' do
@@ -1247,11 +1240,11 @@ if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || (node[
     end
   end
 
-  if node[:platform] != 'alpine'
-    execute 'npm install -g phantomjs-prebuilt --unsafe-perm' do
-      command 'npm install -g phantomjs-prebuilt --unsafe-perm'
-    end
-  end
+  #if node[:platform] != 'alpine'
+  #  execute 'npm install -g phantomjs-prebuilt --unsafe-perm' do
+  #    command 'npm install -g phantomjs-prebuilt --unsafe-perm'
+  #  end
+  #end
 end
 
 if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
@@ -1946,10 +1939,11 @@ EOF
 # By default this script does nothing.
 
 export DISPLAY=:99.0
-/usr/local/bin/buster-server &
-/bin/sleep 5
+#/usr/local/bin/buster-server &
+#/bin/sleep 5
 #/usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &
 /usr/bin/Xvfb :99 -screen 0 1024x768x24 -extension RANDR > /dev/null 2>&1 &
+/bin/sleep 5
 firefox http://localhost:1111/capture > /dev/null &
 chromium-browser --no-sandbox --headless --remote-debugging-port=9222 http://localhost:1111/capture > /dev/null &
 exit 0
@@ -2086,15 +2080,15 @@ elsif node[:platform] == 'ubuntu'
   package 'firefox' do
     action :install
   end
-  execute 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux64.tar.gz > /tmp/geckodriver-v0.23.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.23.0-linux64.tar.gz' do
-    command 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux64.tar.gz > /tmp/geckodriver-v0.23.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.23.0-linux64.tar.gz'
+  execute 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz > /tmp/geckodriver-v0.26.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.26.0-linux64.tar.gz' do
+    command 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz > /tmp/geckodriver-v0.26.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.26.0-linux64.tar.gz'
   end
   package 'chromium-browser' do
     action :install
   end
-  execute 'npm install -g chromedriver --unsafe-perm' do
-      command 'npm install -g chromedriver --unsafe-perm'
-  end
+  #execute 'npm install -g chromedriver --unsafe-perm' do
+  #    command 'npm install -g chromedriver --unsafe-perm'
+  #end
 end
 
 
