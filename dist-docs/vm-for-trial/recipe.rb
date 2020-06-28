@@ -997,6 +997,14 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
     command "chown -R developer:im-developer \"#{WEBROOT}\""
   end
 end
+if node[:platform] == 'ubuntu'
+  execute "chown developer:im-developer /var/www" do
+    command "chown developer:im-developer /var/www"
+  end
+  execute "chmod 775 /var/www" do
+    command "chmod 775 /var/www"
+  end
+end
 #execute "cd \"#{IMSUPPORT}\" && git clone https://github.com/codemirror/CodeMirror.git" do
 #  command "cd \"#{IMSUPPORT}\" && git clone https://github.com/codemirror/CodeMirror.git"
 #end
@@ -2152,13 +2160,36 @@ if node[:platform] == 'alpine'
     command "chmod 755 \"#{WEBROOT}\"/INTER-Mediator/node_modules/jest/bin/jest.js"
   end
 end
-if node[:platform] == 'alpine' && node[:virtualization][:system] != 'docker'
-  execute 'poweroff' do
-    command 'poweroff'
-  end
-end
 if node[:platform] == 'ubuntu'
   execute 'sudo /etc/rc.local &' do
       command 'sudo /etc/rc.local &'
+  end
+end
+if node[:virtualization][:system] != 'docker'
+  if node[:platform] == 'redhat'
+    service 'smb' do
+      action [ :stop ]
+    end
+    service 'postgresql' do
+      action [ :stop ]
+    end
+    service 'mariadb' do
+      action [ :stop ]
+    end
+    service 'httpd' do
+      action [ :stop ]
+    end
+  end
+  if node[:platform] == 'redhat' || node[:platform] == 'ubuntu'
+    execute '/var/www/html/INTER-Mediator/node_modules/.bin/forever stopall' do
+      command '/var/www/html/INTER-Mediator/node_modules/.bin/forever stopall'
+    end
+    execute '/sbin/shutdown -h +1' do
+      command '/sbin/shutdown -h +1'
+    end
+  else
+    execute 'poweroff' do
+      command 'poweroff'
+    end
   end
 end
