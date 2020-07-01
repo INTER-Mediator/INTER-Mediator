@@ -70,7 +70,7 @@ describe service('org.apache.httpd'), :if => os[:family] == 'darwin' do
   it { should be_running }
 end
 
-describe port(80) do
+describe port(80), :if => host_inventory['virtualization'][:system] != 'docker' do
   it { should be_listening }
 end
 

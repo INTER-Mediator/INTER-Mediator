@@ -176,9 +176,12 @@ elsif node[:platform] == 'redhat'
   end
 end
 
-if node[:platform] == 'ubuntu'
+if node[:platform] == 'redhat' || node[:platform] == 'ubuntu'
   package 'openssh-server' do
     action :install
+  end
+  service 'sshd' do
+    action [ :enable, :start ]
   end
 end
 
@@ -206,8 +209,8 @@ elsif node[:platform] == 'redhat'
       command 'sudo su - postgres -c "initdb --encoding=UTF8 --no-locale"'
     end
   else
-    execute 'service postgresql initdb' do
-      command 'service postgresql initdb'
+    execute 'postgresql-setup initdb' do
+      command 'postgresql-setup initdb'
     end
   end
 end
@@ -580,8 +583,8 @@ elsif node[:platform] == 'redhat'
   execute 'yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm' do
     command 'yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm'
   end
-  execute 'yum install -y --enablerepo=epel,remi,remi-php73 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process' do
-    command 'yum install -y --enablerepo=epel,remi,remi-php73 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process'
+  execute 'yum install -y --enablerepo=epel,remi,remi-php73 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip' do
+    command 'yum install -y --enablerepo=epel,remi,remi-php73 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip'
   end
   if node[:platform_version].to_f < 6
     package 'php-mbstring' do
@@ -624,8 +627,8 @@ elsif node[:platform] == 'redhat'
     #  content 'extension=timezonedb.so'
     #end
   end
-  execute 'curl -sS https://getcomposer.org/installer | php; sudo mv composer.phar /usr/local/bin/composer; sudo chmod +x /usr/local/bin/composer;' do
-    command 'curl -sS https://getcomposer.org/installer | php; sudo mv composer.phar /usr/local/bin/composer; sudo chmod +x /usr/local/bin/composer;'
+  execute 'curl -sS https://getcomposer.org/installer | php; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer;' do
+    command 'curl -sS https://getcomposer.org/installer | php; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer;'
   end
 end
 
@@ -1204,8 +1207,8 @@ EOF
 end
 
 if node[:platform] == 'redhat'
-  execute 'service httpd restart' do
-    command 'service httpd restart'
+  service 'httpd' do
+    action [ :restart ]
   end
 end
 
@@ -1290,28 +1293,6 @@ end
 
 if node[:platform] == 'redhat'
   if node[:platform_version].to_f >= 6
-    execute 'setenforce 0' do
-      command 'setenforce 0'
-    end
-    file '/etc/selinux/config' do
-      owner 'root'
-      group 'root'
-      mode '644'
-      content <<-EOF
-# This file controls the state of SELinux on the system.
-# SELINUX= can take one of these three values:
-#     enforcing - SELinux security policy is enforced.
-#     permissive - SELinux prints warnings instead of enforcing.
-#     disabled - No SELinux policy is loaded.
-SELINUX=disabled
-# SELINUXTYPE= can take one of these two values:
-#     targeted - Targeted processes are protected,
-#     mls - Multi Level Security protection.
-SELINUXTYPE=targeted
-
-
-EOF
-    end
     if node[:platform_version].to_f >= 6 && node[:platform_version].to_f < 7
       file '/etc/sysconfig/iptables' do
         content <<-EOF
@@ -1335,6 +1316,12 @@ EOF
         command 'service iptables restart'
       end
     else
+      package 'firewalld' do
+        action :install
+      end
+      service 'firewalld' do
+        action [ :enable, :start ]
+      end
       execute 'firewall-cmd --zone=public --add-service=http --permanent' do
         command 'firewall-cmd --zone=public --add-service=http --permanent'
       end
@@ -1346,9 +1333,6 @@ EOF
       end
     end
   end
-  #execute 'setenforce 1' do
-  #  command 'setenforce 1'
-  #end
 end
 
 if node[:platform] == 'redhat'
@@ -1861,13 +1845,19 @@ file "#{SMBCONF}" do
 EOF
 end
 
-execute '( echo *********; echo ********* ) | sudo smbpasswd -s -a developer' do
-  command '( echo im4135dev; echo im4135dev ) | sudo smbpasswd -s -a developer'
+execute '( echo *********; echo ********* ) | smbpasswd -s -a developer' do
+  command '( echo im4135dev; echo im4135dev ) | smbpasswd -s -a developer'
 end
 
 
 # SELinux
-if node[:platform] == 'redhat'
+if node[:platform] == 'redhat' && node[:virtualization][:system] != 'docker'
+  package 'policycoreutils' do
+    action :install
+  end
+  package 'libselinux-utils' do
+    action :install
+  end
   execute 'setsebool -P samba_export_all_rw 1' do
     command 'setsebool -P samba_export_all_rw 1'
   end
