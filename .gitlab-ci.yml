@@ -41,7 +41,7 @@ pages:
   - cd ..
   - ls minify || git clone https://github.com/matthiasmullie/minify
   - cd -
-  - composer update
+  - composer install
   - ./dist-docs/buildup.sh --core && cd ../im_build/ && zip -r INTER-Mediator-master.zip ./INTER-Mediator/ && mv INTER-Mediator-master.zip ../INTER-Mediator/public/
   artifacts:
     paths:
