@@ -78,11 +78,11 @@
       "rm -rf node_modules vendor"
     ],
     "post-update-cmd": [
-      "./vendor/bin/npm install",
+      "npm install",
       "rm -f __Did_you_run_composer_update.txt"
     ],
     "post-install-cmd": [
-      "./vendor/bin/npm install",
+      "npm install",
       "rm -f __Did_you_run_composer_update.txt"
     ],
     "post-create-project-cmd": [
