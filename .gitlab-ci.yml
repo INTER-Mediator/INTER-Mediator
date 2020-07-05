@@ -27,22 +27,21 @@ test:
 pages:
   stage: deploy
   script:
-    - ls -al
+    - pwd
     - mkdir public
-    - mkdir -p /tmp/public
-    - docker run -v "/tmp/public:/public" -e "container=docker" --privileged -d --name php73-alpine php:7.3.19-fpm-alpine /sbin/init
+    - ls -al
+    - ls -al /
+    - docker run -v "/var/www/html/public:/public" -e "container=docker" --privileged -d --name php73-alpine php:7.3.19-fpm-alpine /sbin/init
     - docker exec --privileged -i php73-alpine sh -c "apk update"
     - docker exec --privileged -i php73-alpine sh -c "docker-php-ext-install bcmath"
     - docker exec --privileged -i php73-alpine sh -c "apk add --no-cache curl"
     - docker exec --privileged -i php73-alpine sh -c "curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer"
     - docker exec --privileged -i php73-alpine sh -c "apk add --no-cache git bash zip nodejs-npm"
     - docker exec --privileged -i php73-alpine sh -c "ls minify || git clone https://github.com/matthiasmullie/minify"
-    - ls -al
     - docker exec --privileged -i php73-alpine sh -c "git clone https://github.com/INTER-Mediator/INTER-Mediator && cd INTER-Mediator && ./dist-docs/buildup.sh --core && cd ../im_build/ && zip -r INTER-Mediator-master.zip ./INTER-Mediator/ && mv INTER-Mediator-master.zip /public/"
-    - ls -al /tmp/public/
-    - ls -al /
-    - mv /tmp/public/INTER-Mediator-master.zip /public/INTER-Mediator-master.zip
-    - ls -al /public/
+    - docker exec --privileged -i php73-alpine sh -c "ls -al; ls -al /; ls -al /public/"
+    - ls -al
+    - ls -al public
   artifacts:
     paths:
       - public
