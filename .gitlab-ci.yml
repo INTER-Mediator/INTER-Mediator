@@ -2,24 +2,17 @@ stages:
   - test
   - deploy
 
-image: docker:17.12.1-ce
-
-variables:
-  DOCKER_DRIVER: overlay2
-
-services:
-- docker:dind
-
-before_script:
-  - docker info
+image: php:7.3.19-fpm-alpine
 
 test:
   script:
+    - apk update
+    - apk add --no-cache docker
     - docker run -e "container=docker" --privileged -d --name centos7 centos:7 /sbin/init
-    - docker exec -e DISPLAY=:99.0 --privileged -i centos7 sh -c "yum install -y git curl sudo zip unzip && git clone https://github.com/matsuo/INTER-Mediator && cd INTER-Mediator && git checkout update-gitlab-ci-yml && curl -L https://github.com/itamae-kitchen/mitamae/releases/latest/download/mitamae-x86_64-linux.tar.gz | tar xvz && mv mitamae-x86_64-linux mitamae && ./mitamae local dist-docs/vm-for-trial/recipe.rb; dist-docs/installfiles.sh -2"
+    - docker exec -e --privileged -i centos7 sh -c "yum install -y git curl sudo zip unzip && git clone https://github.com/matsuo/INTER-Mediator && cd INTER-Mediator && git checkout update-gitlab-ci-yml && curl -L https://github.com/itamae-kitchen/mitamae/releases/latest/download/mitamae-x86_64-linux.tar.gz | tar xvz && mv mitamae-x86_64-linux mitamae && ./mitamae local dist-docs/vm-for-trial/recipe.rb; dist-docs/installfiles.sh -2"
     - docker exec --privileged -i centos7 sh -c "yum install -y ruby && gem install --no-doc net-ssh -v 4.2.0 && gem install --no-doc rake -v 12.3.3 && gem install --no-doc serverspec"
     - docker exec --privileged -i centos7 sh -c "cd /INTER-Mediator/dist-docs/vm-for-trial/ && echo \"require 'serverspec'\" > spec/spec_helper.rb; echo \"\" >> spec/spec_helper; echo \"set :backend, :exec\" >> spec/spec_helper.rb; rspec /INTER-Mediator/dist-docs/vm-for-trial/spec/192.168.56.101/sample_spec.rb -f doc -c"
-    - docker exec -e DISPLAY=:99.0 --privileged -i centos7 sh -c "php -v; curl -sS https://getcomposer.org/installer | php; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer; cd /INTER-Mediator/; /usr/local/bin/composer require --dev phpunit/phpunit ^8; /usr/local/bin/composer update; ./vendor/bin/phpunit --bootstrap /INTER-Mediator/vendor/autoload.php --configuration /INTER-Mediator/spec/INTER-Mediator-UnitTest/phpunit.xml /INTER-Mediator/spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+    - docker exec -e --privileged -i centos7 sh -c "php -v; curl -sS https://getcomposer.org/installer | php; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer; cd /INTER-Mediator/; /usr/local/bin/composer require --dev phpunit/phpunit ^8; /usr/local/bin/composer update; ./vendor/bin/phpunit --bootstrap /INTER-Mediator/vendor/autoload.php --configuration /INTER-Mediator/spec/INTER-Mediator-UnitTest/phpunit.xml /INTER-Mediator/spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
     - docker exec -e DISPLAY=:99.0 --privileged -i centos7 sh -c "cd /INTER-Mediator/ && npm test"
     - docker stop centos7
     - docker rm centos7
@@ -27,24 +20,20 @@ test:
 pages:
   stage: deploy
   script:
-  - export LANG=ja_JP.UTF-8
-  - uname -a
-  - apk update
-  - apk add --no-cache php7 php7-json php7-phar php7-iconv php7-openssl php7-dom php7-mbstring php7-pdo php7-bcmath php7-curl php7-xml php7-simplexml php7-ctype php7-tokenizer php7-xmlwriter
-  - apk add --no-cache curl
-  - curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer
-  - apk add --no-cache git
-  - apk add --no-cache bash
-  - apk add --no-cache zip
-  - apk add --no-cache nodejs-npm
-  - mkdir public
-  - cd ..
-  - ls minify || git clone https://github.com/matthiasmullie/minify
-  - cd -
-  - composer install
-  - ./dist-docs/buildup.sh --core && cd ../im_build/ && zip -r INTER-Mediator-master.zip ./INTER-Mediator/ && mv INTER-Mediator-master.zip ../INTER-Mediator/public/
+    - export LANG=ja_JP.UTF-8
+    - uname -a
+    - apk update
+    - docker-php-ext-install bcmath
+    - apk add --no-cache curl
+    - curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer
+    - apk add --no-cache git bash zip nodejs-npm
+    - mkdir public
+    - cd ..
+    - ls minify || git clone https://github.com/matthiasmullie/minify
+    - cd -
+    - ./dist-docs/buildup.sh --core && cd ../im_build/ && zip -r INTER-Mediator-master.zip ./INTER-Mediator/ && mv INTER-Mediator-master.zip ../INTER-Mediator/public/
   artifacts:
     paths:
-    - public
+      - public
   only:
-  - master
+    - master
