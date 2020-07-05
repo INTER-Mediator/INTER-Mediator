@@ -31,7 +31,7 @@ pages:
     - mkdir public
     - ls -al
     - ls -al /
-    - docker run -v "/var/www/html/public:/public" -e "container=docker" --privileged -d --name php73-alpine php:7.3.19-fpm-alpine /sbin/init
+    - docker run -v "/builds/INTER-Mediator/INTER-Mediator/public:/public" -e "container=docker" --privileged -d --name php73-alpine php:7.3.19-fpm-alpine /sbin/init
     - docker exec --privileged -i php73-alpine sh -c "apk update"
     - docker exec --privileged -i php73-alpine sh -c "docker-php-ext-install bcmath"
     - docker exec --privileged -i php73-alpine sh -c "apk add --no-cache curl"
