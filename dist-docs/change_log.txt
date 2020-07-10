@@ -60,7 +60,7 @@ Ver.6-dev (in development)
   This is for manual installation for npm based libraries.
 - In the params.php file, the $preventSSAutoBoot is defined for it doesn't boot a service server, just in case of
   a server manager is going to boot the service server manually.
-- In the params.php file, the $notUserServiceServer is defined for not boot the service server.
+- In the params.php file, the $notUseServiceServer is defined for not boot the service server.
 - FileMaker_FX and FileMaker_DataAPI classes support the value "[increment]1" and "[decrement]1" in case of updating
   a record. [increment] and [decrement] are defined value and following any number.
 - Multiple navigation bars are supported. Setting any tags to class="IM_NAVIGATOR", and both id and class can be set.
@@ -72,13 +72,41 @@ Ver.6-dev (in development)
 - Slack messeging can be sent as like e-mail. "messaging" key is introduced and it can be replaced with "send-mail".
 - Removed the Internet Explorer specific codes.
 - Removed the INTERMediatorLib.toNumber(str) method. Alternative one is the IMLibFormat.numberFormat(str, digit).
+- Look-up is implemented. The attribute 'data-im-control="lookup:item@product_id:product@name"' happens to copy the
+  name field value to this node with the trigger of changing product_id field value. I'd like you to check the
+  samples/Sample_invoice/invoice_MySQL.html.
+- The INTERMediatorLib.setClassAttributeToNode method is removed. It was for the IE supporting.
+- The SELinux policy files are added in the dist-docs/selinux directory.
+- The variable INTERMediatorOnPage.notShowHeaderFooterOnNoResult is defined for disappering the 'hearder' and
+  'footer' repeaters in case of no record is retrieved.
+- Add the IMLibNavigation.moveNextStep method. It was missing to merge here.
+- The navi-control key can have the value of 'step-nonavi' or 'step-fullnavi'. The step-nonavi doesn't show any
+  navigation controls, and the step-fullnavi let the repeaters respond to click both mobile and desktop envs.
+- INTERMediatorOnPage.newRecordId is the key value of newly created record.
+- INTERMediatorOnPage.doAfterCreateRecord is the function that is called when create record operation is succeed.
+- IMLibPageNavigation.moveDetail(keying) is implemented for moveing from master to detail contexts.
 - [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
 - [BUG FIX] Calculation from other contexts didn't work, and fix it.
 - [BUG FIX] The class name 'Null' wasn't permitted in PHP7. It was changed to NullDB.
 - [BUG FIX] Local context values didn't involve in any calculations.
+- [BUG FIX] INTERMediatorOnPage.getIMRootPath is removed.
+  (it's not this version, previous but unrecoverable which version was.)
 - [INFO] The src/lib/js_lib directory is removed.
+- [BUG FIX] The changePassword method of the INTERMediator_DBAdapter class had a bug in case of wrong old password.
+- [BUG FIX] Fix handling multibyte currency symbols in some cases.
+- Some codes in the INTERMediator_DBAdapter.db_updateParameters method are removed for just depending on IE ver.8.
+- Add the favicon.ico file on the root folder of this repository.
+- The jQuery-File-Upload (Ver.1.1 or later) widget supports the post only mode. It can preview the file.
+  The sample is /samples/Sample_webpage/fileuploadPost_jQuery_MySQL.html.
+- Remove unused function hex2bin_for53 in IMUtil class.
+- The 'count' key is introduced into the context definition. It specifies any entity in the db and refers as a table
+  to get COUNT(*) value. If the 'view' key referring any view which is take a time, the 'count' key can refer any
+  table which represents the same result as the view.
+- The 'media-context' keyed value in the option parameter in IM_Entry function can be eliminated.
+- The getDataAtLastRecord, setDataAtLastRecord, getDataAtLastRecord methods in IMLibContext class can handle record
+  with multiple fields.
 
 Ver.5.11 (November 17, 2019)
 - Support FileMaker Data API of FileMaker Server 18 and FileMaker Cloud for AWS 1.18.

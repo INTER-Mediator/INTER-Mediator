@@ -267,6 +267,7 @@ class DefinitionChecker
             'name' => 'string',
             'table' => 'string',
             'view' => 'string',
+            'count' => 'string',
             'source' => 'string',
             'records' => 'integer',
             'maxrecords' => 'integer',
@@ -301,7 +302,9 @@ class DefinitionChecker
                 )
             ),
             'repeat-control' => 'string(insert|delete|confirm-insert|confirm-delete|copy|copy-*)',
-            'navi-control' => 'string(master|detail|master-hide|detail-top|detail-bottom|detail-update|detail-top-update|detail-bottom-update|step|step-hide)',
+            'navi-control' => 'string(step|step-hide|step-nonavi|step-hide-nonavi|step-fullnavi|step-hide-fullnavi'
+                .'|detail|detail-top|detail-bottom|detail-update|detail-top-update|detail-bottom-update'
+                .'|master|master-nonavi|master-fullnavi|master-hide|master-hide-nonavi|master-hide-fullnavi)',
             'navi-title' => 'string',
             'validation' => array(
                 '*' => array(

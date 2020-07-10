@@ -46,13 +46,70 @@ class INTERMediator_Test extends TestCase
     {
         $testName = "Check parameters in params.php.";
 
-        $imPath = IMUtil::pathToINTERMediator();
-        include($imPath . '/params.php');
+        $params = IMUtil::getFromParamsPHPFile(
+            ["issuedHashDSN", "scriptPathPrefix", "ldapServer", "oAuthClientSecret"], true);
 
-        $this->assertFalse(isset($issuedHashDSN), $testName);
-        $this->assertFalse(isset($scriptPathPrefix), $testName);
-        $this->assertFalse(isset($ldapServer), $testName);
-        $this->assertFalse(isset($oAuthClientSecret), $testName);
+        $this->assertFalse(isset($params['issuedHashDSN']), $testName);
+        $this->assertFalse(isset($params['scriptPathPrefix']), $testName);
+        $this->assertFalse(isset($params['ldapServer']), $testName);
+        $this->assertFalse(isset($params['oAuthClientSecret']), $testName);
+    }
+
+    public function test_checkParamsFileDefault()
+    {
+        $params = IMUtil::getFromParamsPHPFile([
+            "activateClientService", "serviceServerPort", "serviceServerHost", "serviceServerConnect",
+            "stopSSEveryQuit", "bootWithInstalledNode", "preventSSAutoBoot", "notUseServiceServer", "foreverLog"
+        ], true);
+        $this->assertSame(9, count($params), "IMUtil::getFromParamsPHPFile should return any values.");
+
+        $key = 'activateClientService';
+        $assertValue = false;
+        $assertStr = 'false';
+        $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
+        $this->assertEquals($assertValue, $params[$key], $message);
+
+        $key = 'serviceServerHost';
+        $assertValue = 'localhost';
+        $assertStr = 'localhost';
+        $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
+        $this->assertEquals($assertValue, $params[$key], $message);
+
+        $key = 'serviceServerConnect';
+        $assertValue = 'localhost';
+        $assertStr = 'localhost';
+        $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
+        $this->assertEquals($assertValue, $params[$key], $message);
+
+        $key = 'stopSSEveryQuit';
+        $assertValue = false;
+        $assertStr = 'false';
+        $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
+        $this->assertEquals($assertValue, $params[$key], $message);
+
+        $key = 'bootWithInstalledNode';
+        $assertValue = false;
+        $assertStr = 'false';
+        $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
+        $this->assertEquals($assertValue, $params[$key], $message);
+
+        $key = 'preventSSAutoBoot';
+        $assertValue = false;
+        $assertStr = 'false';
+        $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
+        $this->assertEquals($assertValue, $params[$key], $message);
+
+        $key = 'notUseServiceServer';
+        $assertValue = false;
+        $assertStr = 'false';
+        $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
+        $this->assertEquals($assertValue, $params[$key], $message);
+
+        $key = 'foreverLog';
+        $assertValue = false;
+        $assertStr = 'undefined';
+        $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
+        $this->assertFalse(isset($params[$key]), $message);
     }
 
     public function test_valueForJSInsert()
@@ -124,21 +181,6 @@ class INTERMediator_Test extends TestCase
         $exarray = array('password');
         $resultString = "{'user':'web','database':'TestDB'}";
         $this->assertSame(IMUtil::arrayToJSExcluding($ar, $prefix, $exarray), $resultString, $testName);
-    }
-
-    public function test_hex2bin_for53()
-    {
-        $testName = "Check hex2bin_for53 function in INTER-Mediator.php.";
-
-        $hexString = "616263643132333441424344242526";
-        $binaryString = "abcd1234ABCD$%&";
-
-        $this->assertTrue(IMUtil::hex2bin_for53($hexString) === $binaryString, $testName);
-
-        $version = explode('.', PHP_VERSION);
-        if ($version[0] >= 5 && $version[1] >= 4) {
-            $this->assertTrue(IMUtil::hex2bin_for53($hexString) === hex2bin($hexString), $testName);
-        }
     }
 
     public function test_randomString()

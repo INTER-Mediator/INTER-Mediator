@@ -31,7 +31,7 @@ IM_Entry(
             'post-reconstruct' => true,
             'post-dismiss-message' => '送信完了',
             // 'post-move-url' => 'http://inter-mediator.com/',
-            'extending-class' => 'MailSending',
+            //'extending-class' => 'MailSending',
             'validation' => array(
                 array(
                     'field' => 'message',

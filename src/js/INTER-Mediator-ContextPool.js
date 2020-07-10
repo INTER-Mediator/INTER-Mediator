@@ -98,7 +98,7 @@ const IMLibContextPool = {
 
   getContextInfoFromId: function (idValue, target) {
     'use strict'
-    var i, targetContext, element, linkInfo, nodeInfo, targetName
+    let targetContext, element, linkInfo, nodeInfo, targetName
     let result = null
     if (!idValue) {
       return result
@@ -117,9 +117,9 @@ const IMLibContextPool = {
 
     targetName = target ? target : '_im_no_target'
     if (this.poolingContexts === null) {
-      return null
+      return result
     }
-    for (i = 0; i < this.poolingContexts.length; i += 1) {
+    for (let i = 0; i < this.poolingContexts.length; i += 1) {
       targetContext = this.poolingContexts[i]
       if (targetContext.contextInfo[idValue] &&
         targetContext.contextInfo[idValue][targetName] &&
@@ -128,7 +128,7 @@ const IMLibContextPool = {
         return result
       }
     }
-    return null
+    return result
   },
 
   getKeyFieldValueFromId: function (idValue, target) {
@@ -154,7 +154,7 @@ const IMLibContextPool = {
     if (contextInfo) {
       contextInfo.context.setValue(
         contextInfo.record, contextInfo.field, value, false, target, contextInfo.portal)
-      contextInfo.context.updateContext(idValue, target, contextInfo, value)
+      //contextInfo.context.updateContext(idValue, target, contextInfo, value)
     }
   },
 
@@ -345,7 +345,7 @@ const IMLibContextPool = {
     return countDeleteNodes
 
     // Private functions
-    function getContextAndKeyFromId (repeaterIdValue) {
+    function getContextAndKeyFromId(repeaterIdValue) {
       var i, field, j, keying, foreignKey
 
       for (i = 0; i < IMLibContextPool.poolingContexts.length; i += 1) {
@@ -555,7 +555,7 @@ const IMLibContextPool = {
     return null
   },
 
-  generateContextObject: function (contextDef, enclosure, repeaters, repeatersOriginal) {
+  generateContextObject: function (contextDef, enclosure, repeaters, repeatersOriginal ) {
     'use strict'
     var contextObj = new IMLibContext(contextDef.name)
     contextObj.contextDefinition = contextDef

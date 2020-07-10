@@ -12,6 +12,7 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator;
 
 use Exception;
@@ -20,10 +21,12 @@ class MediaAccess
 {
     private $contextRecord = null;
     private $disposition = "inline";
+
     function asAttachment()
     {
         $this->disposition = "attachment";
     }
+
     function processing($dbProxyInstance, $options, $file)
     {
         try {
@@ -144,6 +147,7 @@ class MediaAccess
             // do nothing
         }
     }
+
     /**
      * @param $code any error code, but supported just 204, 401 and 500.
      * @throws Exception happens anytime.
@@ -164,6 +168,7 @@ class MediaAccess
         }
         throw new Exception('Respond HTTP Error.');
     }
+
     /**
      * @param $dbProxyInstance
      * @param $options
@@ -233,6 +238,7 @@ class MediaAccess
         }
         return array($file, $isURL);
     }
+
     /**
      * @param $dbProxyInstance
      * @param $options
@@ -240,14 +246,19 @@ class MediaAccess
      */
     private function checkAuthentication($dbProxyInstance, $options, $target)
     {
-        $dbProxyInstance->dbSettings->setDataSourceName($options['media-context']);
-        $context = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
+        if ($this->analyzeTarget($target)) {
+            $dbProxyInstance->dbSettings->setDataSourceName($this->targetContextName);
+            $context = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
+        }
+        if (!$context) {
+            $dbProxyInstance->dbSettings->setDataSourceName($options['media-context']);
+            $context = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
+        }
         if (isset($context['authentication'])
             && (isset($context['authentication']['all'])
                 || isset($context['authentication']['load'])
                 || isset($context['authentication']['read']))
         ) {
-            $realm = '';
             $cookieNameUser = "_im_username";
             $cookieNameToken = "_im_mediatoken";
             if (isset($options['authentication']['realm'])) {
@@ -256,8 +267,8 @@ class MediaAccess
                 $cookieNameUser .= ('_' . $realm);
                 $cookieNameToken .= ('_' . $realm);
             }
-            $cValueUser = isset($_COOKIE[$cookieNameUser])?$_COOKIE[$cookieNameUser]:'';
-            $cValueToken = isset($_COOKIE[$cookieNameToken])?$_COOKIE[$cookieNameToken]:'';
+            $cValueUser = isset($_COOKIE[$cookieNameUser]) ? $_COOKIE[$cookieNameUser] : '';
+            $cValueToken = isset($_COOKIE[$cookieNameToken]) ? $_COOKIE[$cookieNameToken] : '';
             if (!$dbProxyInstance->checkMediaToken($cValueUser, $cValueToken)) {
                 $this->exitAsError(401);
             }
@@ -272,30 +283,13 @@ class MediaAccess
                 $authInfoTarget = $dbProxyInstance->dbClass->authHandler->getTargetForAuthorization("all");
             }
             if ($authInfoTarget == 'field-user') {
-                $endOfPath = strpos($target, "?");
-                $endOfPath = ($endOfPath === false) ? strlen($target) : $endOfPath;
-                $pathComponents = explode('/', substr($target, 0, $endOfPath));
-                $indexKeying = -1;
-                foreach ($pathComponents as $index => $dname) {
-                    $decodedComponent = urldecode($dname);
-                    if (strpos($decodedComponent, '=') !== false) {
-                        $indexKeying = $index;
-                        $fieldComponents = explode('=', $decodedComponent);
-                        $keyField = $fieldComponents[0];
-                        $keyValue = $fieldComponents[1];
-                    }
-                }
-                if ($indexKeying == -1) {
+                if (!$this->targetContextName) {
                     $this->exitAsError(401);
                 }
-                $contextName = $pathComponents[$indexKeying - 1];
-                if ($contextName != $options['media-context']) {
-                    $this->exitAsError(401);
-                }
-                $dbProxyInstance->dbSettings->setDataSourceName($contextName);
+                $dbProxyInstance->dbSettings->setDataSourceName($this->targetContextName);
                 $tableName = $dbProxyInstance->dbSettings->getEntityForRetrieve();
                 $this->contextRecord = $dbProxyInstance->dbClass->authHandler->authSupportCheckMediaPrivilege(
-                    $tableName, $authInfoField, $_COOKIE[$cookieNameUser], $keyField, $keyValue);
+                    $tableName, $authInfoField, $_COOKIE[$cookieNameUser], $this->targetKeyField, $this->targetKeyValue);
                 if ($this->contextRecord === false) {
                     $this->exitAsError(401);
                 }
@@ -315,9 +309,6 @@ class MediaAccess
                 if (count($authorizedGroups) == 0 && count($authorizedUsers) == 0) {
                     return;
                 }
-//                if (in_array($_COOKIE[$cookieNameUser], $authorizedUsers)) {
-//                    return;
-//                }
                 $belongGroups = $dbProxyInstance->dbClass->authHandler->authSupportGetGroupsOfUser($_COOKIE[$cookieNameUser]);
                 if (!in_array($_COOKIE[$cookieNameUser], $authorizedUsers)
                     && count(array_intersect($belongGroups, $authorizedGroups)) == 0
@@ -372,43 +363,43 @@ class MediaAccess
             $this->contextRecord = $dbProxyInstance->readFromDB();
         }
     }
-//    private function getMimeType($path)
-//    {
-//        $type = "application/octet-stream";
-//        switch (strtolower(substr($path, strrpos($path, '.') + 1))) {
-//            case 'jpg':
-//                $type = 'image/jpeg';
-//                break;
-//            case 'jpeg':
-//                $type = 'image/jpeg';
-//                break;
-//            case 'png':
-//                $type = 'image/png';
-//                break;
-//            case 'html':
-//                $type = 'text/html';
-//                break;
-//            case 'txt':
-//                $type = 'text/plain';
-//                break;
-//            case 'gif':
-//                $type = 'image/gif';
-//                break;
-//            case 'bmp':
-//                $type = 'image/bmp';
-//                break;
-//            case 'tif':
-//                $type = 'image/tiff';
-//                break;
-//            case 'tiff':
-//                $type = 'image/tiff';
-//                break;
-//            case 'pdf':
-//                $type = 'application/pdf';
-//                break;
-//        }
-//        return $type;
-//    }
+
+    private $targetKeyField;
+    private $targetKeyValue;
+    private $targetContextName;
+    private $targetFieldName;
+
+    private function analyzeTarget($target)
+    {
+        $this->targetKeyField = null;
+        $this->targetKeyValue = null;
+        $this->targetContextName = null;
+        $this->targetFieldName = null;
+
+        $result = false;
+        $endOfPath = strpos($target, "?");
+        $endOfPath = ($endOfPath === false) ? strlen($target) : $endOfPath;
+        $pathComponents = explode('/', substr($target, 0, $endOfPath));
+        $indexKeying = -1;
+        foreach ($pathComponents as $index => $dname) {
+            $decodedComponent = urldecode($dname);
+            if (strpos($decodedComponent, '=') !== false) {
+                $indexKeying = $index;
+                $fieldComponents = explode('=', $decodedComponent);
+                $this->targetKeyField = $fieldComponents[0];
+                $this->targetKeyValue = $fieldComponents[1];
+            }
+        }
+        if ($indexKeying > 0) {
+            $this->targetContextName = urldecode($pathComponents[$indexKeying - 1]);
+            if (isset($pathComponents[$indexKeying + 1])) {
+                $this->targetFieldName = urldecode($pathComponents[$indexKeying + 1]);
+                $result = true;
+            }
+        }
+        return $result;
+    }
+
     private function outputImage($content)
     {
         $rotate = false;
@@ -420,7 +411,7 @@ class MediaAccess
                 $tmpDir = sys_get_temp_dir();
             }
             $temp = 'IM_TEMP_' .
-                str_replace(DIRECTORY_SEPARATOR, '-', base64_encode(randomString(12))) .
+                str_replace(DIRECTORY_SEPARATOR, '-', base64_encode(IMUtil::randomString(12))) .
                 '.jpg';
             if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
                 $tempPath = $tmpDir . $temp;

@@ -923,7 +923,7 @@ const IMLibPageNavigation = {
     // Handling Detail buttons
     'use strict'
     var buttonNode, thisId, tdNodes, tdNode, firstInNode, isMasterDetail, isStep, isHide, masterContext,
-      detailContext, showingNode, isHidePageNavi, buttonName, i, isTouchRepeater, moveToDetailFunc
+      detailContext, showingNode, isHidePageNavi, buttonName, i, isTouchRepeater, moveToDetailFunc, isNoNavi, isFullNavi
 
     if (!currentContextDef['navi-control'] ||
       (!currentContextDef['navi-control'].match(/master/i) &&
@@ -937,6 +937,8 @@ const IMLibPageNavigation = {
     isHidePageNavi = isHide && !!currentContextDef.paging
     isMasterDetail = currentContextDef['navi-control'].match(/master/i)
     isStep = currentContextDef['navi-control'].match(/step/i)
+    isNoNavi = currentContextDef['navi-control'].match(/nonavi/i)
+    isFullNavi = currentContextDef['navi-control'].match(/fullnavi/i)
 
     if (isMasterDetail && INTERMediator.detailNodeOriginalDisplay) {
       detailContext = IMLibContextPool.getDetailContext()
@@ -962,51 +964,36 @@ const IMLibPageNavigation = {
     if (isMasterDetail) {
       masterContext = IMLibContextPool.getMasterContext()
       masterContext.setValue(keyField + '=' + keyValue, '_im_button_master_id', thisId, thisId)
-    }
-    if (isMasterDetail) {
-      moveToDetailFunc = IMLibPageNavigation.moveToDetail(
-        encNodeTag, keyField, keyValue, isHide, isHidePageNavi)
+      moveToDetailFunc = IMLibPageNavigation.moveToDetail(keyField, keyValue, isHide, isHidePageNavi)
     }
     if (isStep) {
       moveToDetailFunc = IMLibPageNavigation.moveToNextStep(contextObj, keyField, keyValue)
     }
-    if (isTouchRepeater) {
+    if ((isTouchRepeater && !isNoNavi) || isFullNavi) {
       for (i = 0; i < repeaters.length; i += 1) {
-        var originalColor = repeaters[i].style.backgroundColor
+        const originalColor = repeaters[i].style.backgroundColor
+        repeaters[i].style.cursor = 'pointer'
+        const css = '#' + repeaters[i].id + ':hover{background-color:' + IMLibUI.mobileSelectionColor + '}'
+        const style = document.createElement('style')
+        style.appendChild(document.createTextNode(css))
+        document.getElementsByTagName('head')[0].appendChild(style)
         INTERMediator.eventListenerPostAdding.push({
           'id': repeaters[i].id,
           'event': 'touchstart',
           'todo': (function () {
-            var targetNode = repeaters[i]
+            const targetNode = repeaters[i]
             return function (ev) {
               IMLibEventResponder.touchEventCancel = false
               targetNode.style.backgroundColor = IMLibUI.mobileSelectionColor
-              //ev.preventDefault() // If this line is active, page scrolling doesn't work
             }
           })()
         })
-        // INTERMediator.eventListenerPostAdding.push({
-        //   'id': repeaters[i].id,
-        //   'event': 'touchend',
-        //   'todo': (function () {
-        //     var targetNode = repeaters[i]
-        //     var orgColor = originalColor
-        //     return function (ev) {
-        //       // targetNode.style.backgroundColor = orgColor
-        //       // if (!IMLibEventResponder.touchEventCancel) {
-        //       //   IMLibEventResponder.touchEventCancel = false
-        //       //   moveToDetailFunc()
-        //       // }
-        //       // ev.preventDefault() // Prevent to process at the next page.
-        //     }
-        //   })()
-        // })
         INTERMediator.eventListenerPostAdding.push({
           'id': repeaters[i].id,
           'event': 'click',
           'todo': (function () {
-            var targetNode = repeaters[i]
-            var orgColor = originalColor
+            const targetNode = repeaters[i]
+            const orgColor = originalColor
             return function (ev) {
               targetNode.style.backgroundColor = orgColor
               if (!IMLibEventResponder.touchEventCancel) {
@@ -1037,28 +1024,30 @@ const IMLibPageNavigation = {
         })
       }
     } else {
-      IMLibMouseEventDispatch.setExecute(thisId, moveToDetailFunc)
-      switch (encNodeTag) {
-        case 'TBODY':
-          tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD')
-          tdNode = tdNodes[0]
-          firstInNode = tdNode.childNodes[0]
-          if (firstInNode) {
-            tdNode.insertBefore(buttonNode, firstInNode)
-          } else {
-            tdNode.appendChild(buttonNode)
-          }
-          break
-        case 'SELECT':
-          break
-        default:
-          firstInNode = repeaters[repeaters.length - 1].childNodes[0]
-          if (firstInNode) {
-            repeaters[repeaters.length - 1].insertBefore(buttonNode, firstInNode)
-          } else {
-            repeaters[repeaters.length - 1].appendChild(buttonNode)
-          }
-          break
+      if (!isNoNavi) {
+        IMLibMouseEventDispatch.setExecute(thisId, moveToDetailFunc)
+        switch (encNodeTag) {
+          case 'TBODY':
+            tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD')
+            tdNode = tdNodes[0]
+            firstInNode = tdNode.childNodes[0]
+            if (firstInNode) {
+              tdNode.insertBefore(buttonNode, firstInNode)
+            } else {
+              tdNode.appendChild(buttonNode)
+            }
+            break
+          case 'SELECT':
+            break
+          default:
+            firstInNode = repeaters[repeaters.length - 1].childNodes[0]
+            if (firstInNode) {
+              repeaters[repeaters.length - 1].insertBefore(buttonNode, firstInNode)
+            } else {
+              repeaters[repeaters.length - 1].appendChild(buttonNode)
+            }
+            break
+        }
       }
     }
   },
@@ -1112,9 +1101,8 @@ const IMLibPageNavigation = {
   },
   setupStepReturnButton: function (style) {
     'use strict'
-    var nodes, i
-    nodes = document.getElementsByClassName('IM_Button_StepBack')
-    for (i = 0; i < nodes.length; i += 1) {
+    let nodes = document.getElementsByClassName('IM_Button_StepBack')
+    for (let i = 0; i < nodes.length; i += 1) {
       nodes[i].style.display = style
       if (!INTERMediatorLib.isProcessed(nodes[i])) {
         INTERMediatorLib.addEvent(nodes[i], 'click', function () {
@@ -1127,15 +1115,14 @@ const IMLibPageNavigation = {
       }
     }
     nodes = document.getElementsByClassName('IM_Button_StepInsert')
-    for (i = 0; i < nodes.length; i += 1) {
+    for (let i = 0; i < nodes.length; i += 1) {
       if (!INTERMediatorLib.isProcessedInsert(nodes[i])) {
         INTERMediatorLib.addEvent(nodes[i], 'click', function () {
-          let index
           INTERMediatorOnPage.showProgress()
           let context = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName)
           IMLibQueue.setTask(function (completeTask) {
             INTERMediator_DBAdapter.db_createRecord_async(
-              {name: IMLibPageNavigation.stepCurrentContextName, dataset: {}},
+              {name: IMLibPageNavigation.stepCurrentContextName, dataset: []},
               function (result) {
                 INTERMediator.constructMain(context)
                 completeTask()
@@ -1153,14 +1140,19 @@ const IMLibPageNavigation = {
   },
   moveToNextStep: function (contextObj, keyField, keyValue) {
     'use strict'
-    var context = contextObj
-    let keying = keyField + '=' + keyValue
+    const context = contextObj
+    const keying = keyField + '=' + keyValue
     return function () {
       IMLibQueue.setTask(function (complete) {
         IMLibPageNavigation.moveToNextStepImpl(context, keying)
         complete()
       })
     }
+  },
+  moveNextStep: function (keying) {
+    'use strict'
+    const context = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName)
+    IMLibPageNavigation.moveToNextStepImpl(context, keying)
   },
   moveToNextStepImpl: async function (contextObj, keying) {
     'use strict'
@@ -1254,24 +1246,37 @@ const IMLibPageNavigation = {
       INTERMediatorOnPage[contextDef['just-move-thisstep']]()
     }
   },
-  moveToDetail: function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
+
+  /* --------------------------------------------------------------------
+   */
+  moveDetail: (keying) => {
+    const keyValue = keying.split('=')
+    if (keyValue.length >= 2) {
+      const field = keyValue[0]
+      const value = keyValue.slice(1).join('=')
+      const masterContext = IMLibContextPool.getMasterContext()
+      const contextDef = masterContext.getContextDef()
+      const isHide = contextDef['navi-control'].match(/hide/i)
+      const isHidePageNavi = isHide && !!contextDef.paging
+      IMLibPageNavigation.moveToDetail(field, value, isHide, isHidePageNavi)()
+    }
+  },
+  moveToDetail: function (keyField, keyValue, isHide, isHidePageNavi) {
     'use strict'
     var f = keyField
     let v = keyValue
-    let etag = encNodeTag
     let mh = isHide
     let pnh = isHidePageNavi
 
     return function () {
-      return IMLibPageNavigation.moveToDetailImpl(etag, f, v, mh, pnh)
+      return IMLibPageNavigation.moveToDetailImpl(f, v, mh, pnh)
     }
   },
-  moveToDetailImpl: async function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
+  moveToDetailImpl: async function (keyField, keyValue, isHide, isHidePageNavi) {
     'use strict'
     var masterContext, detailContext, contextName, masterEnclosure, detailEnclosure, node, contextDef
 
     IMLibPageNavigation.previousModeDetail = {
-      encNodeTag: encNodeTag,
       keyField: keyField,
       keyValue: keyValue,
       isHide: isHide,
@@ -1298,7 +1303,7 @@ const IMLibPageNavigation = {
         INTERMediatorOnPage.masterScrollPosition = {x: window.scrollX, y: window.scrollY}
         window.scrollTo(0, 0)
         masterEnclosure = masterContext.enclosureNode
-        if (encNodeTag === 'TBODY') {
+        if (masterEnclosure.tagName === 'TBODY') {
           masterEnclosure = masterEnclosure.parentNode
         }
         INTERMediator.masterNodeOriginalDisplay = masterEnclosure.style.display

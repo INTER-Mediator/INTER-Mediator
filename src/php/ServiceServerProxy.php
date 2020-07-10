@@ -18,6 +18,7 @@ class ServiceServerProxy
     private $paramsQuit;
     private $paramsBoot;
     private $dontUse;
+    private $forerverLog;
     private $errors = [];
     private $messages = [];
     private $messageHead = "[ServiceServerProxy] ";
@@ -34,14 +35,15 @@ class ServiceServerProxy
     private function __construct()
     {
         $params = IMUtil::getFromParamsPHPFile([
-            "serviceServerPort", "serviceServerHost", "stopSSEveryQuit",
-            "bootWithInstalledNode", "preventSSAutoBoot", "notUserServiceServer"], true);
-        $this->paramsHost = $params["serviceServerHost"] ? $params["serviceServerHost"] : "localhost";
+            "serviceServerPort", "serviceServerConnect", "stopSSEveryQuit",
+            "bootWithInstalledNode", "preventSSAutoBoot", "notUseServiceServer", "foreverLog"], true);
+        $this->paramsHost = $params["serviceServerConnect"] ? $params["serviceServerConnect"] : "localhost";
         $this->paramsPort = $params["serviceServerPort"] ? intval($params["serviceServerPort"]) : 11478;
-        $this->paramsQuit = $params["stopSSEveryQuit"] == NULL ? false : boolval($params["stopSSEveryQuit"]);
-        $this->paramsBoot = $params["bootWithInstalledNode"] == NULL ? false : boolval($params["bootWithInstalledNode"]);
-        $this->dontAutoBoot = $params["preventSSAutoBoot"] == NULL ? false : boolval($params["preventSSAutoBoot"]);
-        $this->dontUse = $params["notUserServiceServer"] == NULL ? false : boolval($params["notUserServiceServer"]);
+        $this->paramsQuit = is_null($params["stopSSEveryQuit"]) ? false : boolval($params["stopSSEveryQuit"]);
+        $this->paramsBoot = is_null($params["bootWithInstalledNode"]) ? false : boolval($params["bootWithInstalledNode"]);
+        $this->dontAutoBoot = is_null($params["preventSSAutoBoot"]) ? false : boolval($params["preventSSAutoBoot"]);
+        $this->dontUse = is_null($params["notUseServiceServer"]) ? false : boolval($params["notUseServiceServer"]);
+        $this->foreverLog = is_null($params["foreverLog"]) ? "" : $params["foreverLog"];
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
     }
 
@@ -74,7 +76,15 @@ class ServiceServerProxy
             }
             return $ssStatus;
         } else {
-            $waitSec = 5;
+            if (!$this->isServerStartable()) {
+                // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
+                // get_current_user doen't work on the ubuntu 18 of EC2. It returns the user logs in with ssh.
+                $uInfo = posix_getpwuid(posix_geteuid());
+                $this->errors[] = $this->messageHead . "Service Server can't boot because the root directory " .
+                    "({$uInfo["dir"]}) of the web server user ({$uInfo['name']})  isn't writable.";
+                return false;
+            }
+            $waitSec = 3;
             $startDT = new \DateTime();
             $counterInit = $counter = 5;
             $isStartServer = false;
@@ -113,11 +123,29 @@ class ServiceServerProxy
 
         $result = $this->callServer("info", []);
         $this->messages[] = $this->messageHead . 'Server returns:' . $result;
-
+        /*
+         * Request Version:f413bb8852485e3dccdf04d76a95b1afb6b6cf601fdd26e33f87ce6b75460780
+         * Server Version:f413bb8852485e3dccdf04d76a95b1afb6b6cf601fdd26e33f87ce6b75460780
+         */
+        // Checking both version of the executing and the code
+        $keyword = 'Request Version:';
+        $rPos = strpos($result, $keyword);
+        $reqVerStr = $rPos >= 0 ? substr($result, $rPos + strlen($keyword), 64) : "aa";
+        $keyword = 'Server Version:';
+        $sPos = strpos($result, 'Server Version:');
+        $svrVerStr = $sPos >= 0 ? substr($result, $sPos + strlen($keyword), 64) : "bb";
+        if ($reqVerStr != $svrVerStr) { // If they are different version.
+            $this->messages[] = $this->messageHead . "Restart Service Server: reqVerStr={$reqVerStr}, svrVerStr={$svrVerStr}";
+            $this->stopServerCommand();
+            //$this->restartServer(); // Restart is going to fail. Why??
+            //throw new \Exception('Different version server is executing.');
+            //$this->startServer();
+            return false;
+        }
         if (!$result) {
             return false;
         }
-        if (strpos($result, 'Service Server is active.') === false) {
+        if (strpos($result, "Service Server is active.") === false) {
             $this->errors[] = $this->messageHead . 'Server respond an irregular message.';
             return false;
         }
@@ -177,27 +205,59 @@ class ServiceServerProxy
         $this->messages[] = $this->messageHead . "Returns: {$returnValue}, Output:" . implode("/", $result);
     }
 
+    private function isServerStartable()
+    {
+        // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
+        // get_current_user doen't work on the ubuntu 18 of EC2. It returns the user logs in with ssh.
+        $homeDir = posix_getpwuid(posix_geteuid())["dir"];
+        if (file_exists($homeDir) && is_dir($homeDir) && is_writable($homeDir)) {
+            return true;
+        }
+        return false;
+    }
+
     private function startServer()
+    {
+        $this->messages[] = $this->messageHead . "startServer() called";
+        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
+        $scriptPath = "src/js/Service_Server.js";
+        if (IMUtil::isPHPExecutingWindows()) {
+            $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath);
+        }
+
+        $logFile = $this->foreverLog ? $this->foreverLog : tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
+        $options = "-a -l {$logFile} --minUptime 5000 --spinSleepTime 5000";
+        $cmd = "{$forever} start {$options} {$scriptPath} {$this->paramsPort}";
+        $this->executeCommand($cmd);
+    }
+
+    private function restartServer()
     {
         $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
         $scriptPath = "src/js/Service_Server.js";
         if (IMUtil::isPHPExecutingWindows()) {
             $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath);
         }
-        $logFile = tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
-        $options = "-a -l {$logFile} --minUptime 5000 --spinSleepTime 5000";
-        $cmd = "{$forever} start {$options} {$scriptPath} {$this->paramsPort}";
+        $cmd = "{$forever} restart {$scriptPath}";
         $this->executeCommand($cmd);
     }
 
     public function stopServer()
     {
+        $this->messages[] = $this->messageHead . "stopServer() called";
         if (!$this->paramsQuit) {
             return;
         }
+        $this->stopServerCommand();
+    }
+
+    private function stopServerCommand()
+    {
+        $this->messages[] = $this->messageHead . "stopServerCommand() called";
         $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
         $cmd = "{$forever} stopall";
         $this->executeCommand($cmd);
+        //sleep(1);
     }
 
     public function validate($expression, $values)

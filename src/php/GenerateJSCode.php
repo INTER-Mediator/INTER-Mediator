@@ -52,6 +52,7 @@ class GenerateJSCode
     public function generateInitialJSCode($datasource, $options, $dbspecification, $debug)
     {
         $q = '"';
+        $ds = DIRECTORY_SEPARATOR;
         $generatedPrivateKey = null;
         $passPhrase = null;
         $browserCompatibility = null;
@@ -63,12 +64,10 @@ class GenerateJSCode
         $themeName = "default";
         $dbClass = null;
         $params = IMUtil::getFromParamsPHPFile(array(
-            "generatedPrivateKey", "passPhrase", "browserCompatibility",
-            "scriptPathPrefix", "scriptPathSuffix",
-            "oAuthProvider", "oAuthClientID", "oAuthRedirect",
-            "passwordPolicy", "documentRootPrefix", "dbClass", "dbDSN",
-            "nonSupportMessageId", "valuesForLocalContext", "themeName",
-            "appLocale", "appCurrency", "resetPage", "enrollPage",
+            "generatedPrivateKey", "passPhrase", "browserCompatibility", "scriptPathPrefix", "scriptPathSuffix",
+            "oAuthProvider", "oAuthClientID", "oAuthRedirect", "passwordPolicy", "documentRootPrefix", "dbClass",
+            "dbDSN", "nonSupportMessageId", "valuesForLocalContext", "themeName", "appLocale", "appCurrency",
+            "resetPage", "enrollPage", "serviceServerPort", "serviceServerHost", "activateClientService"
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -94,15 +93,21 @@ class GenerateJSCode
             : (isset($params['resetPage']) ? $params["resetPage"] : null);
         $enrollPage = isset($options['authentication']['enroll-page']) ? $options['authentication']['enroll-page']
             : (isset($params['enrollPage']) ? $params["enrollPage"] : null);
+        $serviceServerPort = isset($params['serviceServerPort']) ? $params['serviceServerPort'] : "11479";
+        $serviceServerHost = (isset($params['serviceServerHost']) && $params['serviceServerHost'])
+            ? $params['serviceServerHost'] : $_SERVER['SERVER_ADDR'];
+        $serviceServerHost = $serviceServerHost ? $serviceServerHost : 'localhost';
+        $activateClientService = isset($params['activateClientService']) ? boolval($params['activateClientService']) : true;
 
         $serverName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
         $documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : 'Not_on_web_server';
         $scriptName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
+
+        $pathToIM = IMUtil::pathToINTERMediator();
         /*
-         * Read the JS programs regarding by the developing or deployed.
-         */
-        $currentDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR . 'src' .
-            DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
+              * Read the JS programs regarding by the developing or deployed.
+              */
+        $currentDir = "{$pathToIM}{$ds}src{$ds}js{$ds}";
         if (!file_exists($currentDir . 'INTER-Mediator.min.js')) {
             echo $this->combineScripts($currentDir);
         } else {
@@ -113,15 +118,18 @@ class GenerateJSCode
          * Generate the link to the definition file editor
          */
         $relativeToDefFile = '';
-        $editorPath = realpath(IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR . 'editors');
-        $defFilePath = realpath($documentRoot . $serverName);
-        while (strpos($defFilePath, $editorPath) !== 0 && strlen($editorPath) > 1) {
-            $editorPath = dirname($editorPath);
-            $relativeToDefFile .= '..' . DIRECTORY_SEPARATOR;
+        $editorPath = realpath($pathToIM . $ds . 'editors');
+        if ($editorPath) { // In case of core only build.
+            $defFilePath = realpath($documentRoot . $serverName);
+            while (strpos($defFilePath, $editorPath) !== 0 && strlen($editorPath) > 1) {
+                $editorPath = dirname($editorPath);
+                $relativeToDefFile .= '..' . $ds;
+            }
+            $relativeToDefFile .= substr($defFilePath, strlen($editorPath) + 1);
+            $editorPath = $pathToIM . $ds . 'editors' . $ds . 'defedit.html';
+        } else {
+            $editorPath = "Editors don't exist.";
         }
-        $relativeToDefFile .= substr($defFilePath, strlen($editorPath) + 1);
-        $editorPath = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR
-            . 'editors' . DIRECTORY_SEPARATOR . 'defedit.html';
         if (file_exists($editorPath)) {
             $relativeToEditor = substr($editorPath, strlen($_SERVER['DOCUMENT_ROOT']));
             $this->generateAssignJS("INTERMediatorOnPage.getEditorPath",
@@ -130,7 +138,9 @@ class GenerateJSCode
             $this->generateAssignJS("INTERMediatorOnPage.getEditorPath",
                 "function(){return '';}");
         }
-
+        $relativeToIM = substr($pathToIM, strlen($_SERVER['DOCUMENT_ROOT']));
+        $this->generateAssignJS("INTERMediatorOnPage.getPathToIMRoot",
+            "function(){return {$q}{$relativeToIM}{$q};}");
         /*
          * from db-class, determine the default key field string
          */
@@ -181,8 +191,6 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.getTheme", "function(){return {$q}",
             isset($options['theme']) ? $options['theme'] : $themeName, "{$q};}");
-//        $this->generateAssignJS(
-//            "INTERMediatorOnPage.getIMRootPath", "function(){return {$q}{$pathToIMRootDir}{$q};}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getDataSources", "function(){return ",
             IMUtil::arrayToJSExcluding($datasource, '', array('password')), ";}");
@@ -242,17 +250,17 @@ class GenerateJSCode
         } else if (isset($options['pusher'])) {
             $pusherParams = $options['pusher'];
         }
-        if (!is_null($pusherParams)) {
-            $appKey = isset($pusherParams['key']) ? $pusherParams['key'] : "_im_key_isnt_supplied";
-            $chName = isset($pusherParams['channel']) ? $pusherParams['channel'] : "_im_pusher_default_channel";
-            $this->generateAssignJS(
-                "INTERMediatorOnPage.clientNotificationKey",
-                "function(){return ", IMUtil::arrayToJS($appKey, ''), ";}");
-            $this->generateAssignJS(
-                "INTERMediatorOnPage.clientNotificationChannel",
-                "function(){return ", IMUtil::arrayToJS($chName, ''), ";}");
-        }
-        $metadata = json_decode(file_get_contents(IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR . "composer.json"));
+//        if (!is_null($pusherParams)) {
+//            $appKey = isset($pusherParams['key']) ? $pusherParams['key'] : "_im_key_isnt_supplied";
+//            $chName = isset($pusherParams['channel']) ? $pusherParams['channel'] : "_im_pusher_default_channel";
+//            $this->generateAssignJS(
+//                "INTERMediatorOnPage.clientNotificationKey",
+//                "function(){return ", IMUtil::arrayToJS($appKey, ''), ";}");
+//            $this->generateAssignJS(
+//                "INTERMediatorOnPage.clientNotificationChannel",
+//                "function(){return ", IMUtil::arrayToJS($chName, ''), ";}");
+//        }
+        $metadata = json_decode(file_get_contents($pathToIM . $ds . "composer.json"));
         $this->generateAssignJS("INTERMediatorOnPage.metadata",
             "{version:{$q}{$metadata->version}{$q},releasedate:{$q}{$metadata->time}{$q}}");
 
@@ -376,16 +384,22 @@ class GenerateJSCode
         }
         $sss = ServiceServerProxy::instance()->isActive();
         $this->generateAssignJS("INTERMediatorOnPage.serviceServerStatus", $sss ? "true" : "false");
+
+        $this->generateAssignJS("INTERMediatorOnPage.activateClientService", $activateClientService ? "true" : "false");
+        $this->generateAssignJS("INTERMediatorOnPage.serviceServerPort", $serviceServerPort);
+        $this->generateAssignJS("INTERMediatorOnPage.serviceServerHost", $q, $serviceServerHost, $q);
     }
 
     private function combineScripts($currentDir)
     {
         $imPath = IMUtil::pathToINTERMediator();
-        $jsCodeDir = $imPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'js'. DIRECTORY_SEPARATOR;
-        $nodeModuleDir = $imPath . DIRECTORY_SEPARATOR . 'node_modules'. DIRECTORY_SEPARATOR;
+        $jsCodeDir = $imPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
+        $nodeModuleDir = $imPath . DIRECTORY_SEPARATOR . 'node_modules' . DIRECTORY_SEPARATOR;
         $content = '';
         $content .= $this->readJSSource($nodeModuleDir . 'jsencrypt/bin/jsencrypt.js');
         $content .= $this->readJSSource($nodeModuleDir . 'jssha/src/sha.js');
+        $content .= $this->readJSSource($nodeModuleDir . '/socket.io-client/dist/socket.io.js');
+        $content .= "\n";
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-formatter/index.js');
         //$content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-locale/index.js');
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-queue/index.js');

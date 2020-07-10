@@ -13,14 +13,22 @@ const crypto = require('crypto')
 let port = process.argv[2] ? process.argv[2] : 21000
 let acceptClient = '0.0.0.0/0'
 const parser = require('../../node_modules/inter-mediator-expressionparser/index')
+const jsSHA = require('../../node_modules/jssha/src/sha.js')
 
 // const querystring = require('querystring')
 // console.log(parser.evaluate('a+b',{a:3,b:4}))
 let url = require('url')
 let http = require('http')
 let app = http.createServer(handler)
-let io = require('socket.io')(app)
+let io = require('socket.io')(app, {
+  pingTimeout: 60000, // https://github.com/socketio/socket.io/issues/3259#issuecomment-448058937
+})
 let requestBroker = {}
+
+let shaObj = new jsSHA('SHA-256', 'TEXT')
+shaObj.setHMACKey('INTERMediatorOnPage.authChallenge', 'TEXT')
+shaObj.update('INTERMediatorOnPage.authHashedPassword')
+const serverKey = shaObj.getHMAC('HEX')
 
 app.listen(port)
 
@@ -29,7 +37,7 @@ if (!app.listening) {
 }
 
 let verCode = getVersionCode()
-console.log(verCode)
+console.log(`Booted Service Server of INTER-Mediator: Version Code = ${verCode}`)
 
 /*
    Server core
@@ -70,11 +78,12 @@ function requestProcessing(reqParams, res, postData) {
 
 requestBroker['/info'] = function (params, res, postData) {
   const data = JSON.parse(postData)
-  if (data.vcode != verCode) {
-    resposeOnDiffVersion(res, data.vcode)
-  }
   res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
-  res.write('Service Server is active.')
+  if (data.vcode != verCode) {
+    res.write('Different version of Server Server requested, and Service Server should be shutdown.')
+  } else {
+    res.write('Service Server is active.')
+  }
   res.write(' Request Version:' + data.vcode)
   res.write(' Server Version:' + verCode)
   res.end('\n')
@@ -99,35 +108,36 @@ function getVersionCode() {
   return hash.digest('hex')
 }
 
-function resposeOnDiffVersion(res, reqVer) {
-  res.writeHead(503, {'Content-Type': 'text/html; charset=utf-8'})
-  res.write('Different version of Server Server requested, and Service Server is going to shutdown.')
-  res.write(' Request Version:' + reqVer)
-  res.write(' Server Version:' + verCode)
-  res.end('\n','utf-8', ()=>{process.exit(1)})
-}
-
 /*
   Automatic processing
  */
-setInterval(function () {
+//setInterval(function () {
+// process.exit() // This doesn't work becase the forever attempts to reboot this.
+//}, 10000)
 
-}, 3000)
-
+const watching = {}
 /*
   Socket processing
  */
-io.on('connection', function (socket) {
+io.on('connection', (socket) => {
   console.log(socket.id + '/connected')
   socket.emit('connected')
   socket.on('init', function (req) {
-    socket.join(req.room)
-    socket.join(socket.id)
-    console.log(req.room + '/' + socket.id + '/init')
+    watching[req.clientid] = {startdt: new Date(), socketid: socket.id}
+    console.log('watching=', watching)
   })
   socket.on('disconnect', function () {
-    console.log(socket.id + '/disconnect')
+    for (const oneClient of Object.keys(watching)) {
+      if (watching[oneClient].socketid == socket.id) {
+        delete watching[oneClient]
+        break
+      }
+    }
+    console.log('watching=', watching)
   })
+})
+
+io.on('init', (socket) => {
 })
 
 /*

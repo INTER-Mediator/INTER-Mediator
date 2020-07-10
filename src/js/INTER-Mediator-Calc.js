@@ -154,11 +154,11 @@ var IMLibCalc = {
             if (valuesArray.hasOwnProperty(field)) {
               vArray = []
               if (field.indexOf('@') < 0) { // In same context
-                vArray.push(record[fName])
+                vArray.push((record && record[fName]) ? record[fName] : null)
               } else {  // Other context
                 expCName = field.substr(0, field.indexOf('@'))
                 context = IMLibContextPool.contextFromName(expCName)
-                if (context ) {
+                if (context) {
                   if (context instanceof IMLibContext) {
                     for (key in context.store) {    // Collect field data from all records
                       if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
@@ -195,7 +195,8 @@ var IMLibCalc = {
           }
           val = Parser.evaluate(exp, valuesArray)
           IMLibElement.setValueToIMNode(targetNode, nInfo.target, val, true)
-          contextInfo.context.setValue(contextInfo.record, contextInfo.field, val, nodeId, targetNode, false)
+          if (contextInfo && contextInfo.context && contextInfo.record && contextInfo.field)
+            contextInfo.context.setValue(contextInfo.record, contextInfo.field, val, nodeId, targetNode, false)
         }
       }
     } while (leafNodes.length > 0)
@@ -262,11 +263,11 @@ var IMLibCalc = {
             if (valuesArray.hasOwnProperty(field)) {
               vArray = []
               if (field.indexOf('@') < 0) { // In same context
-                vArray.push(record[fName])
+                vArray.push((record && record[fName]) ? record[fName] : null)
               } else {  // Other context
                 expCName = field.substr(0, field.indexOf('@'))
                 context = IMLibContextPool.contextFromName(expCName)
-                if (context ) {
+                if (context) {
                   if (context instanceof IMLibContext) {
                     for (key in context.store) {    // Collect field data from all records
                       if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
@@ -406,8 +407,10 @@ var IMLibCalc = {
           calcObject.referes[field] = []
           calcObject.values[field] = []
           for (ix = 0; ix < targetIds.length; ix++) {
-            calcObject.referes[field].push(targetIds[ix])
-            calcObject.values[field].push(undefined)
+            if (typeof (targetIds[ix]) == 'string' || targetIds[ix] instanceof String) {
+              calcObject.referes[field].push(targetIds[ix])
+              calcObject.values[field].push(undefined)
+            }
           }
         } else {
           calcObject.referes[field] = [undefined]

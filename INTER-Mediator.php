@@ -13,6 +13,8 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+// error_reporting(E_ALL); // For debugging
+
 require_once('src/php/INTER-Mediator.php');
 
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)

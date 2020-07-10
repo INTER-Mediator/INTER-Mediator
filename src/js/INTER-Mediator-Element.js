@@ -97,7 +97,11 @@ const IMLibElement = {
       kanjiSeparator: 0
     }
     formatOption = element.getAttribute('data-im-format-options')
-    flags = IMLibElement.appendObject(flags, IMLibElement.formatOptions[formatOption])
+    if(formatOption) {
+      for (const oneOption of formatOption.split(' ')) {
+        flags = IMLibElement.appendObject(flags, IMLibElement.formatOptions[oneOption])
+      }
+    }
     negativeStyle = element.getAttribute('data-im-format-negative-style')
     flags = IMLibElement.appendObject(flags, IMLibElement.formatNegativeStyle[negativeStyle])
     charStyle = element.getAttribute('data-im-format-numeral-type')

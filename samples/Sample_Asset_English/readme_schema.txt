@@ -1,6 +1,6 @@
 /*
  * INTER-Mediator Sample for our software paper
- * Copyright (c) 2010-2019 INTER-Mediator Directive Committee, All rights reserved.
+ * Copyright (c) 2010-2020 INTER-Mediator Directive Committee, All rights reserved.
 
 This schema file is for the sample of INTER-Mediator using MySQL, encoded by UTF-8.
 

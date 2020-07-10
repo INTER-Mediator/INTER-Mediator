@@ -82,7 +82,7 @@ const INTERMediator_DBAdapter = {
 
     authParams += '&notifyid='
     authParams += encodeURIComponent(INTERMediatorOnPage.clientNotificationIdentifier())
-    authParams += ('&pusher=' + (INTERMediator.pusherAvailable ? 'yes' : ''))
+    // authParams += ('&pusher=' + (INTERMediator.pusherAvailable ? 'yes' : ''))
     return authParams
   },
 
@@ -133,22 +133,12 @@ const INTERMediator_DBAdapter = {
 
   /* No return values */
   server_access_async: function (accessURL, debugMessageNumber, errorMessageNumber,
-                                 successProc = null, failedProc = null, authAgainProc = null) {
+                                 successProc = null, failedProc = null, authAgainProc = null,
+                                 fData = null) {
     // 'use strict'
-    let newRecordKeyValue = ''
-    let dbresult = ''
-    let resultCount = 0
-    let totalCount = null
-    let challenge = null
-    let clientid = null
-    let requireAuth = false
-    let myRequest = null
-    let changePasswordResult = null
-    let mediatoken = null
-    let appPath, authParams, jsonObject, i
-    let notifySupport = false
-    let useNull = false
-    let registeredID = ''
+    let newRecordKeyValue = '', dbresult = '', resultCount = 0, totalCount = null, challenge = null, clientid = null,
+      requireAuth = false, myRequest = null, changePasswordResult = null, mediatoken = null, appPath, authParams,
+      jsonObject, i, notifySupport = false, useNull = false, registeredID = '', alertBackup
     appPath = INTERMediatorOnPage.getEntryPath()
     authParams = INTERMediator_DBAdapter.generate_authParams()
     INTERMediator_DBAdapter.logging_comAction(debugMessageNumber, appPath, accessURL, authParams)
@@ -156,12 +146,10 @@ const INTERMediator_DBAdapter = {
     const promise = new Promise((resolve, reject) => {
       try {
         myRequest = new XMLHttpRequest()
-        myRequest.open('POST', appPath, true,
-          INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd)
-        myRequest.setRequestHeader('charset', 'utf-8')
-        myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+        myRequest.open('POST', appPath, true, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd)
         myRequest.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
         myRequest.setRequestHeader('X-From', location.href)
+        myRequest.setRequestHeader('charset', 'utf-8')
         myRequest.onreadystatechange = () => {
           switch (myRequest.readyState) {
             case 0: // Unsent
@@ -193,9 +181,12 @@ const INTERMediator_DBAdapter = {
               changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null
               mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null
               notifySupport = jsonObject.notifySupport
+              alertBackup = INTERMediatorLog.errorMessageByAlert
+              INTERMediatorLog.errorMessageByAlert = false
               for (i = 0; i < jsonObject.errorMessages.length; i++) {
                 INTERMediatorLog.setErrorMessage(jsonObject.errorMessages[i])
               }
+              INTERMediatorLog.errorMessageByAlert = alertBackup
               for (i = 0; i < jsonObject.debugMessages.length; i++) {
                 INTERMediatorLog.setDebugMessage(jsonObject.debugMessages[i])
               }
@@ -269,7 +260,19 @@ const INTERMediator_DBAdapter = {
               break
           }
         }
-        myRequest.send(accessURL + authParams)
+        if (fData) {
+          for (const param of authParams.split('&')) {
+            const comp = param.split('=')
+            if (comp.length == 2 && comp[0].length > 0) {
+              fData.append(comp[0], decodeURIComponent(comp[1]))
+            }
+          }
+          //myRequest.setRequestHeader('Content-Type', 'multipart/form-data')
+          myRequest.send(fData)
+        } else {
+          myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+          myRequest.send(accessURL + authParams)
+        }
       } catch (e) {
         INTERMediatorLog.setErrorMessage(e,
           INTERMediatorLib.getInsertedString(
@@ -283,7 +286,7 @@ const INTERMediator_DBAdapter = {
     return promise
   },
 
-  changePassword: async function (username, oldpassword, newpassword) {
+  changePassword: async function (username, oldpassword, newpassword, doSucceed, doFail) {
     'use strict'
     let params
     var encrypt = new JSEncrypt()
@@ -320,13 +323,13 @@ const INTERMediator_DBAdapter = {
             let hash = shaObj.getHash('HEX')
             INTERMediatorOnPage.authHashedPassword = hash + INTERMediatorOnPage.authUserHexSalt
             INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
-            resolve(true)
+            doSucceed()
           } else {
-            reject(new Error('_im_changepw_notchange'))
+            doFail()
           }
         },
         (er) => {
-          reject(er)
+          doFail()
         }
       )
     }).catch((er) => {
@@ -521,8 +524,7 @@ const INTERMediator_DBAdapter = {
 
   db_queryParameters: function (args) {
     'use strict'
-    let i, index, params, counter, extCount, criteriaObject, sortkeyObject,
-      extCountSort
+    let i, index, params, counter, extCount, criteriaObject, sortkeyObject, extCountSort
     let recordLimit = 10000000
     let conditions, conditionSign, modifyConditions, orderFields, key,
       keyParams, value, fields, operator, orderedKeys
@@ -550,9 +552,11 @@ const INTERMediator_DBAdapter = {
       params += '&pkeyonly=true'
     }
 
-    if (args.fields) {
-      for (i = 0; i < args.fields.length; i++) {
-        params += '&field_' + i + '=' + encodeURIComponent(args.fields[i])
+    counter = 0
+    if (INTERMediatorLib.isArray(args.fields)) {
+      for (const field of args.fields) {
+        params += '&field_' + counter + '=' + encodeURIComponent(field)
+        counter += 1
       }
     }
     counter = 0
@@ -760,11 +764,7 @@ const INTERMediator_DBAdapter = {
     }
     for (extCount = 0; extCount < args.dataset.length; extCount++) {
       params += '&field_' + (counter + extCount) + '=' + encodeURIComponent(args.dataset[extCount].field)
-      if (INTERMediator.isTrident && INTERMediator.ieVersion === 8) {
-        params += '&value_' + (counter + extCount) + '=' + encodeURIComponent(args.dataset[extCount].value.replace(/\n/g, ''))
-      } else {
-        params += '&value_' + (counter + extCount) + '=' + encodeURIComponent(args.dataset[extCount].value)
-      }
+      params += '&value_' + (counter + extCount) + '=' + encodeURIComponent(args.dataset[extCount].value)
     }
     return params
   },
@@ -898,26 +898,33 @@ const INTERMediator_DBAdapter = {
    */
   db_createRecord_async: async function (args, successProc, failedProc) {
     'use strict'
-    let params = INTERMediator_DBAdapter.db_createParameters(args)
-    if (params) {
+    let isFormData = false, paramsStr = '', paramsFD = null
+    for (const def of args.dataset) { // Checking the multi parted form data is required.
+      if (def.value && def.value.file && def.value.kind && def.value.kind == 'attached') {
+        isFormData = true
+      }
+    }
+    paramsStr = INTERMediator_DBAdapter.db_createParameters(args)
+    if (isFormData) {
+      paramsFD = INTERMediator_DBAdapter.db_createParametersAsForm(args)
+    }
+    if (paramsStr) {
       await INTERMediatorOnPage.retrieveAuthInfo()
       INTERMediator_DBAdapter.server_access_async(
-        params,
+        paramsStr,
         1018,
         1016,
         successProc,
         failedProc,
-        INTERMediator_DBAdapter.createExceptionFunc(
-          1016,
-          (function () {
-            let argsCapt = args
-            let succesProcCapt = successProc
-            let failedProcCapt = failedProc
-            return function () {
-              INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
-            }
-          })()
-        )
+        INTERMediator_DBAdapter.createExceptionFunc(1016, (function () {
+          let argsCapt = args
+          let succesProcCapt = successProc
+          let failedProcCapt = failedProc
+          return function () {
+            INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+          }
+        })()),
+        paramsFD
       )
     }
   },
@@ -936,20 +943,36 @@ const INTERMediator_DBAdapter = {
         INTERMediatorLib.getInsertedStringFromErrorNumber(1045, [args.name]))
       return false
     }
-    ds = INTERMediatorOnPage.getDataSources() // Get DataSource parameters
-    targetKey = null
-    for (key in ds) { // Search this table from DataSource
-      if (ds.hasOwnProperty(key) && ds[key].name === args.name) {
-        targetKey = key
-        break
-      }
-    }
-    if (targetKey === null) {
-      INTERMediatorLog.setErrorMessage('no targetname :' + args.name)
-      return false
-    }
     params = 'access=create&name=' + encodeURIComponent(args.name)
     counter = 0
+    if (INTERMediator.additionalFieldValueOnNewRecord &&
+      INTERMediator.additionalFieldValueOnNewRecord[args.name]) {
+      addedObject = INTERMediator.additionalFieldValueOnNewRecord[args.name]
+      if (addedObject.field) {
+        addedObject = [addedObject]
+      }
+      for (const def of addedObject) {
+        params += '&field_' + counter + '=' + encodeURIComponent(def.field)
+        params += '&value_' + counter + '=' + encodeURIComponent(def.value)
+        counter++
+      }
+    }
+    for (i = 0; i < args.dataset.length; i++) {
+      params += '&field_' + counter + '=' + encodeURIComponent(args.dataset[i].field)
+      params += '&value_' + counter + '=' + encodeURIComponent(args.dataset[i].value)
+      counter++
+    }
+    return params
+  },
+
+  db_createParametersAsForm: function (args) {
+    let params, i, index, addedObject, counter, counterAttach, fields
+    params = new FormData()
+    params.append('access', 'create')
+    params.append('name', encodeURIComponent(args.name))
+    fields = ''
+    counter = 0
+    counterAttach = 0
     if (INTERMediator.additionalFieldValueOnNewRecord &&
       INTERMediator.additionalFieldValueOnNewRecord[args.name]) {
       addedObject = INTERMediator.additionalFieldValueOnNewRecord[args.name]
@@ -959,18 +982,32 @@ const INTERMediator_DBAdapter = {
       for (index in addedObject) {
         if (addedObject.hasOwnProperty(index)) {
           let oneDefinition = addedObject[index]
-          params += '&field_' + counter + '=' + encodeURIComponent(oneDefinition.field)
-          params += '&value_' + counter + '=' + encodeURIComponent(oneDefinition.value)
-          counter++
+          if (oneDefinition.value && oneDefinition.value.file
+            && oneDefinition.value.kind && oneDefinition.value.kind == 'attached') {
+            params.append('value_' + counterAttach, oneDefinition.value.name)
+            fields += (fields.length === 0 ? '' : ',') + oneDefinition.field
+            counterAttach++
+          } else {
+            params.append('field_' + counter, oneDefinition.field)
+            params.append('value_' + counter, oneDefinition.value ? oneDefinition.value : '')
+            counter++
+          }
         }
       }
     }
-
     for (i = 0; i < args.dataset.length; i++) {
-      params += '&field_' + counter + '=' + encodeURIComponent(args.dataset[i].field)
-      params += '&value_' + counter + '=' + encodeURIComponent(args.dataset[i].value)
-      counter++
+      if (args.dataset[i].value && args.dataset[i].value.file
+        && args.dataset[i].value.kind && args.dataset[i].value.kind == 'attached') {
+        params.append('attach_' + counterAttach, args.dataset[i].value.file, args.dataset[i].value.file.name)
+        fields += (fields.length === 0 ? '' : ',') + args.dataset[i].field
+        counterAttach++
+      } else {
+        params.append('field_' + counter, args.dataset[i].field)
+        params.append('value_' + counter, args.dataset[i].value ? args.dataset[i].value : '')
+        counter++
+      }
     }
+    params.append('_im_filesfields', fields)
     return params
   },
 
@@ -1069,16 +1106,12 @@ const INTERMediator_DBAdapter = {
     'use strict'
     let result = null
     let params
-    if (INTERMediatorOnPage.clientNotificationKey) {
-      let appKey = INTERMediatorOnPage.clientNotificationKey()
-      if (appKey && appKey !== '_im_key_isnt_supplied') {
-        params = 'access=unregister'
-        if (entityPkInfo) {
-          params += '&pks=' + encodeURIComponent(JSON.stringify(entityPkInfo))
-        }
-        result = this.server_access(params, 1018, 1016)
-        return result
+    if (INTERMediatorOnPage.activateClientService) {
+      params = 'access=unregister'
+      if (entityPkInfo) {
+        params += '&pks=' + encodeURIComponent(JSON.stringify(entityPkInfo))
       }
+      INTERMediator_DBAdapter.server_access_async(params, 1018, 1016, null, null, null)
     }
   }
 }

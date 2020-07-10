@@ -13,6 +13,8 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+error_reporting(E_ALL);
+
 use \PHPUnit\Framework\TestCase;
 use \PHPUnit\Framework\TestSuite;
 
@@ -32,9 +34,9 @@ class INTERMediator_AllTests extends TestCase
         $suite->addTestFile($folder . 'DataConverter_Currency_PoundIM_Test.php');
         $suite->addTestFile($folder . 'DataConverter_Currency_PoundIntl_Test.php');
         $suite->addTestFile($folder . 'DB_Formatters_Test.php');
-        $suite->addTestFile($folder . 'DB_PDO-MySQL_Test.php');
-        $suite->addTestFile($folder . 'DB_PDO-PostgreSQL_Test.php');
-        $suite->addTestFile($folder . 'DB_PDO-SQLite_Test.php');
+        $suite->addTestFile($folder . 'DB_PDO_MySQL_Test.php');
+        $suite->addTestFile($folder . 'DB_PDO_PostgreSQL_Test.php');
+        $suite->addTestFile($folder . 'DB_PDO_SQLite_Test.php');
         //$suite->addTestFile($folder . 'DB_FMS_DataAPI_Test.php');
         //$suite->addTestFile($folder . 'DB_FMS_FX_Test.php');
         $suite->addTestFile($folder . 'DB_Proxy_Test.php');

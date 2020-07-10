@@ -21,6 +21,7 @@ use INTERMediator\LDAPAuth;
 use INTERMediator\Locale\IMLocale;
 use INTERMediator\Messaging\MessagingProxy;
 use INTERMediator\ServiceServerProxy;
+use INTERMediator\NotifyServer;
 
 class Proxy extends UseSharedObjects implements Proxy_Interface
 {
@@ -61,7 +62,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     private $previousClientid;
 
-    private $clientPusherAvailable;
+    private $clientSyncAvailable;
 
     private $ignorePost = false;
     private $PostData = null;
@@ -160,7 +161,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $result = $this->userExpanded->doAfterReadFromDB($result);
             }
 
-            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
+            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
                 $this->outputOfProcessing['registeredid'] = $this->dbSettings->notifyServer->register(
                     $this->dbClass->notifyHandler->queriedEntity(),
                     $this->dbClass->notifyHandler->queriedCondition(),
@@ -238,13 +239,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             if ($this->dbClass) {
                 $this->dbClass->requireUpdatedRecord(true); // Always Get Updated Record
                 $result = $this->dbClass->updateDB();
-                $result = $this->dbClass->updatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterUpdateToDB")) {
                 $this->logger->setDebugMessage("The method 'doAfterUpdateToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterUpdateToDB($result);
             }
-            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
+            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
                 try {
                     $this->dbSettings->notifyServer->updated(
                         $this->PostData['notifyid'],
@@ -271,12 +271,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $this->logger->setDebugMessage("Try to send a message.", 2);
                     $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
                     $msgProxy = new MessagingProxy($driver);
-                    $msgResult = $msgProxy->processing($this, $msgArray, $result);
+                    $msgResult = $msgProxy->processing($this, $msgArray, $this->dbClass->updatedRecord());
                     if ($msgResult !== true) {
                         $this->logger->setErrorMessage("Mail sending error: $msgResult");
                     }
                 }
             }
+
         } catch (\Exception $e) {
             $this->logger->setErrorMessage("Exception:[2] {$e->getMessage()}");
             return false;
@@ -307,8 +308,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterCreateToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterCreateToDB($result);
             }
-
-            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
+            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
                 try {
                     $this->dbSettings->notifyServer->created(
                         $this->PostData['notifyid'],
@@ -331,7 +331,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $msgArray = isset($msgEntry['new']) ? $msgEntry['new'] :
                     (isset($msgEntry['create']) ? $msgEntry['create'] : null);
                 if ($msgArray) {
-                    $this->logger->setDebugMessage("Try to send a message with driver '{$msgEntry['driver']}'.", 2);
+                    $this->logger->setDebugMessage("Try to send a message.", 2);
                     $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
                     $msgProxy = new MessagingProxy($driver);
                     $msgResult = $msgProxy->processing($this, $msgArray, $result);
@@ -379,7 +379,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterDeleteFromDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterDeleteFromDB($result);
             }
-            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
+            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
                 try {
                     $this->dbSettings->notifyServer->deleted(
                         $this->PostData['notifyid'],
@@ -421,7 +421,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterCopyInDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterCopyInDB($result);
             }
-            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
+            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
                 try {
                     $this->dbSettings->notifyServer->created(
                         $this->PostData['notifyid'],
@@ -488,13 +488,15 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         $this->PostData = $this->ignorePost ? array() : $_POST;
         $this->setUpSharedObjects();
+        $this->logger->setDebugMessage("Start to initialize the DB\Proxy class instance.", 2);
 
         $params = IMUtil::getFromParamsPHPFile(array(
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
             "dbOption", "dbDSN", "pusherParameters", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
+            "activateClientService",
         ), true);
 
-        $this->clientPusherAvailable = (isset($this->PostData["pusher"]) && $this->PostData["pusher"] == "yes");
+        $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
         $this->dbSettings->setDataSource($datasource);
         $this->dbSettings->setOptions($options);
         IMLocale::$options = $options;
@@ -504,8 +506,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->formatter->setFormatter(isset($options['formatter']) ? $options['formatter'] : null);
         $this->dbSettings->setDataSourceName(!is_null($target) ? $target : (isset($this->PostData['name']) ? $this->PostData['name'] : "_im_auth"));
         $context = $this->dbSettings->getDataSourceTargetArray();
+        if (count($_FILES) > 0) {
+            $this->dbSettings->setAttachedFiles($context['name'], $_FILES);
+        }
 
-        $dbClassName = 'INTERMediator\\DB\\' .
+        $dbClassName = '\\INTERMediator\\DB\\' .
             (isset($context['db-class']) ? $context['db-class'] :
                 (isset($dbspec['db-class']) ? $dbspec['db-class'] :
                     (isset ($params['dbClass']) ? $params['$dbClass'] : '')));
@@ -612,7 +617,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
 
         $this->dbSettings->notifyServer = null;
-        if ($this->clientPusherAvailable) {
+        if ($this->clientSyncAvailable) {
             $this->dbSettings->notifyServer = new NotifyServer();
             if (isset($this->PostData['notifyid'])
                 && $this->dbSettings->notifyServer->initialize($this->authDbClass, $this->dbSettings, $this->PostData['notifyid'])
@@ -680,7 +685,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 break;
             }
             $value = IMUtil::removeNull(filter_var($this->PostData["value_{$i}"]));
-            $this->dbSettings->addValue(get_magic_quotes_gpc() ? stripslashes($value) : $value);
+            $this->dbSettings->addValue($value);
         }
         if (isset($options['authentication']) && isset($options['authentication']['email-as-username'])) {
             $this->dbSettings->setEmailAsAccount($options['authentication']['email-as-username']);
@@ -731,7 +736,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param null $access
      * @param bool $bypassAuth
      */
-    function processingRequest($access = null, $bypassAuth = false)
+    function processingRequest($access = null, $bypassAuth = false, $ignoreFiles = false)
     {
         $this->logger->setDebugMessage("[processingRequest]", 2);
         $options = $this->dbSettings->getAuthentication();
@@ -928,6 +933,17 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $result = $this->createInDB();
                     $this->outputOfProcessing['newRecordKeyValue'] = $result;
                     $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
+                    if (!$ignoreFiles) {
+                        $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
+                        if ($uploadFiles && count($tableInfo) > 0) {
+                            (new \INTERMediator\FileUploader())->processingWithParameters(
+                                $this->dbSettings->getDataSource(), $this->dbSettings->getOptions(),
+                                $this->dbSettings->getDbSpec(), $this->logger->getDebugLevel(),
+                                $tableInfo['name'], $tableInfo['key'], $result,
+                                $this->dbSettings->getAttachedFields(), $uploadFiles, true
+                            );
+                        }
+                    }
                 } else {
                     $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
                 }
@@ -959,7 +975,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 break;
             case 'unregister':
                 $this->logger->setDebugMessage("[processingRequest] start unregister processing", 2);
-                if (!is_null($this->dbSettings->notifyServer) && $this->clientPusherAvailable) {
+                if (!is_null($this->dbSettings->notifyServer) && $this->clientSyncAvailable) {
                     $tableKeys = null;
                     if (isset($this->PostData['pks'])) {
                         $tableKeys = json_decode($this->PostData['pks'], true);
@@ -983,10 +999,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $calcFields[] = $entry['field'];
                     }
                 }
-                foreach ($this->dbSettings->getFieldsRequired() as $fieldName) {
-                    if (!$this->dbClass->specHandler->isContainingFieldName($fieldName, $fInfo) &&
-                        !in_array($fieldName, $calcFields)) {
-                        $this->logger->setErrorMessage($messageClass->getMessageAs(1033, array($fieldName)));
+                if ($access == 'read' || $access == 'select') {
+                    foreach ($this->dbSettings->getFieldsRequired() as $fieldName) {
+                        if (!$this->dbClass->specHandler->isContainingFieldName($fieldName, $fInfo) &&
+                            !in_array($fieldName, $calcFields)) {
+                            $this->logger->setErrorMessage($messageClass->getMessageAs(1033, array($fieldName)));
+                        }
                     }
                 }
             }
@@ -1043,16 +1061,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         if (isset($this->outputOfProcessing['dbresult'])) {
             return $this->outputOfProcessing['dbresult'];
         }
-        return $this->updatedRecord();
+        return null;
     }
 
     public function getDatabaseResultCount()
     {
         if (isset($this->outputOfProcessing['resultCount'])) {
             return $this->outputOfProcessing['resultCount'];
-        }
-        if ($this->dbClass) {
-            return $this->dbClass->countQueryResult();
         }
         return null;
     }
@@ -1061,9 +1076,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         if (isset($this->outputOfProcessing['totalCount'])) {
             return $this->outputOfProcessing['totalCount'];
-        }
-        if ($this->dbClass) {
-            return $this->dbClass->getTotalCount();
         }
         return null;
     }

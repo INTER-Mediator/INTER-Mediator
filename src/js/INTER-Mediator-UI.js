@@ -25,8 +25,8 @@
 const IMLibUI = {
 
   mobileSelectionColor: '#BBBBBB',
-  mobileNaviBackButtonId: null,
-  mergedFieldSeparator: '\n',
+  mobileNaviBackButtonId: null, // @Private
+  mergedFieldSeparator: '\n', // @Private
 
   recalculationOnValueChange: true,
   /*
@@ -43,10 +43,6 @@ const IMLibUI = {
     if (!changedObj) {
       return false
     }
-    // if (changedObj.readOnly) { // for Internet Explorer
-    //   return true
-    // }
-    // Validating
     if (!IMLibUI.validation(changedObj)) { // Validation error.
       changedObj.focus()
       linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj)
@@ -144,6 +140,7 @@ const IMLibUI = {
             let contextInfoCapt = contextInfo
             let newValueCapt = newValue
             let completeTaskCapt = completeTask
+            let nodeInfoCapt = nodeInfo
             return async function (result) {
               let updateRequiredContext, currentValue, associatedNode, field, node, children, delNodes,
                 recordObj, keepProp
@@ -187,6 +184,7 @@ const IMLibUI = {
                   }
                 }
               }
+              contextInfoCapt.context.updateContextAsLookup(idValueCapt2, newValueCapt)
               IMLibQueue.setTask((completeTask) => {
                 if(IMLibUI.recalculationOnValueChange) {
                   IMLibCalc.recalculation()
@@ -194,10 +192,10 @@ const IMLibUI = {
                 if (INTERMediatorOnPage.doAfterValueChange) {
                   INTERMediatorOnPage.doAfterValueChange(idValueCapt2)
                 }
+                INTERMediatorOnPage.hideProgress()
+                INTERMediatorLog.flushMessage()
                 completeTask()
               })
-              INTERMediatorOnPage.hideProgress()
-              INTERMediatorLog.flushMessage()
               if (completeTaskCapt) {
                 completeTaskCapt()
               }
@@ -556,6 +554,7 @@ const IMLibUI = {
         return
       }
     }
+    INTERMediatorOnPage.newRecordId = null
     IMLibQueue.setTask((function () {
       let currentContext, targetName, isPortal, parentContextName
       let keyValueCapt = keyValue
@@ -571,9 +570,7 @@ const IMLibUI = {
         parentContextName = currentObj.parentContext ? currentObj.parentContext.contextName : null
       }
       return async function (completeTask) {
-        let portalField, recordSet, index, targetPortalField, targetPortalValue
-        let existRelated = false
-        let relatedRecordSet
+        let portalField, recordSet, index, targetPortalField, targetPortalValue, relatedRecordSet, existRelated = false
 
         INTERMediatorOnPage.showProgress()
         recordSet = []
@@ -704,9 +701,9 @@ const IMLibUI = {
               let existRelatedCapt = existRelated
               let keyValueCapt2 = keyValueCapt
               return async function (result) {
-                let keyField, newRecordId, associatedContext, conditions, createdRecord,
-                  i, sameOriginContexts
+                let keyField, newRecordId, associatedContext, conditions, createdRecord, i, sameOriginContexts
                 newRecordId = result.newRecordKeyValue
+                INTERMediatorOnPage.newRecordId = newRecordId
                 keyField = currentContextCapt.key ? currentContextCapt.key : INTERMediatorOnPage.defaultKeyName
                 associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodesCapt2)
                 completeTask()
@@ -729,9 +726,23 @@ const IMLibUI = {
                     await INTERMediator.constructMain(sameOriginContexts[i], null)
                   }
                 }
-                IMLibCalc.recalculation()
-                INTERMediatorOnPage.hideProgress()
+                // To work the looking-up feature
+                const contexts = IMLibContextPool.getContextFromName(associatedContext.contextName)
                 INTERMediatorLog.flushMessage()
+                for (const context of contexts) {
+                  context.updateContextAfterInsertAsLookup(newRecordId)
+                }
+
+                // reacalculation later
+                IMLibQueue.setTask((completeTask) => {
+                  IMLibCalc.recalculation()
+                  INTERMediatorOnPage.hideProgress()
+                  INTERMediatorLog.flushMessage()
+                  if (INTERMediatorOnPage.doAfterCreateRecord) {
+                    INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId)
+                  }
+                  completeTask()
+                })
               }
             })(),
             function () {
@@ -748,7 +759,7 @@ const IMLibUI = {
     'use strict'
     let i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo
     let mergedValues, inputNodes, typeAttr, k, messageNode, result, alertmessage
-    let linkedNodes, namedNodes, index, hasInvalid, isMerged, contextNodes
+    let linkedNodes, namedNodes, index, hasInvalid, isMerged, contextNodes, widgetValue
     let targetNode = node.parentNode
     while (!INTERMediatorLib.isEnclosure(targetNode, true)) {
       targetNode = targetNode.parentNode
@@ -853,7 +864,10 @@ const IMLibUI = {
             }
           }
           if (INTERMediatorLib.isWidgetElement(linkedNodes[i])) {
-            fieldData.push({field: comp[1], value: linkedNodes[i]._im_getValue()})
+            widgetValue = linkedNodes[i]._im_getValue()
+            if (widgetValue) {
+              fieldData.push({field: comp[1], value: widgetValue})
+            }
           } else if (linkedNodes[i].tagName === 'SELECT') {
             fieldData.push({field: comp[1], value: linkedNodes[i].value})
           } else if (linkedNodes[i].tagName === 'TEXTAREA') {
@@ -939,7 +953,7 @@ const IMLibUI = {
           parentOfTarget = targetNode.parentNode
           parentOfTarget.removeChild(targetNode)
           newNode = document.createElement('SPAN')
-          newNode.setAttribute('class', 'IM_POSTMESSAGE')
+          INTERMediatorLib.setClassAttributeToNode(newNode, 'IM_POSTMESSAGE')
           newNode.appendChild(document.createTextNode(thisContext['post-dismiss-message']))
           parentOfTarget.appendChild(newNode)
           isSetMsg = true

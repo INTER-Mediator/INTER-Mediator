@@ -112,11 +112,11 @@ if (window) {
       return undefined
     }
   })
-
-  INTERMediatorLib.addEvent(window, 'unload', function () {
-    'use strict'
-    INTERMediator_DBAdapter.unregister()
-  })
+  //
+  // INTERMediatorLib.addEvent(window, 'unload', function () {
+  //   'use strict'
+  //   INTERMediator_DBAdapter.unregister()
+  // })
 
   INTERMediatorLib.addEvent(window, 'load', function () {
     'use strict'

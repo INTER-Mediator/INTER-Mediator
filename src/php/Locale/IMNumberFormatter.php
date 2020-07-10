@@ -27,7 +27,7 @@ class IMNumberFormatter
     public function __construct($locale, $style, $pattern = '')
     {
         $this->locale = $locale;
-        setlocale(LC_ALL, $locale);
+        setlocale(LC_ALL, $locale . '.UTF-8');
         $locInfo = localeconv();
         if ($locInfo['currency_symbol'] == '') {
             $locInfo = IMLocaleFormatTable::getLocaleFormat($locale);

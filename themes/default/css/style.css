@@ -114,6 +114,10 @@ option {
     font-size: 11pt;
 }
 
+select {
+    font-size: 11pt;
+}
+
 button {
     font-size: 11pt;
     padding: 2px 10px;
@@ -167,8 +171,8 @@ footer {
 /* INTER-Mediator specific style definitions === Repeat Controls */
 
 .IM_Button_Delete, .IM_Button_Copy {
-    margin-bottom: 10PX;
-    margin-left: 10PX;
+    /*margin-bottom: 10PX;*/
+    /*margin-left: 10PX;*/
 }
 
 /* INTER-Mediator specific style definitions === Navigation */
@@ -240,6 +244,12 @@ div.IM_CREDIT ._im_credit4 {
 }
 
 div.IM_CREDIT ._im_credit_mark {
+    color: red;
+    margin: 0;
+    cursor: help;
+}
+
+div.IM_CREDIT ._im_socket_mark {
     color: red;
     margin-right: 2em;
     cursor: help;

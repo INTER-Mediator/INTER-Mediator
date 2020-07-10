@@ -13,7 +13,7 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-class MailSending implements Extending_Interface_AfterCreate
+class MailSending implements \INTERMediator\DB\Extending\AfterCreate
 {
     public function doAfterCreateToDB($result)
     {

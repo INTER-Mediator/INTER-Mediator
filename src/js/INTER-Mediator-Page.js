@@ -46,7 +46,7 @@ let INTERMediatorOnPage = {
   isEmailAsUsername: false,
   passwordPolicy: null,
   creditIncluding: null,
-  masterScrollPosition: null,
+  masterScrollPosition: null, // @Private
   nonSupportMessageId: 'nonsupportmessage',
   isFinishToConstruct: false,
   isAutoConstruct: true,
@@ -54,36 +54,33 @@ let INTERMediatorOnPage = {
   isShowChangePassword: true,
   isSetDefaultStyle: false,
   authPanelTitle: null,
-  isOAuthAvailable: false,
-  oAuthClientID: null,
-  oAuthClientSecret: null,
-  oAuthBaseURL: null,
-  oAuthRedirect: null,
-  oAuthScope: null,
+  isOAuthAvailable: false, // @Private
+  oAuthClientID: null, // @Private
+  oAuthClientSecret: null, // @Private
+  oAuthBaseURL: null, // @Private
+  oAuthRedirect: null, // @Private
+  oAuthScope: null, // @Private
 
   additionalExpandingEnclosureFinish: {},
   additionalExpandingRecordFinish: {},
 
   getEditorPath: null,
   getEntryPath: null,
-  getIMRootPath: null,
   getDataSources: null,
   getOptionsAliases: null,
   getOptionsTransaction: null,
   dbClassName: null,
-  defaultKeyName: null,
+  defaultKeyName: null, // @Private
   browserCompatibility: null,
-  clientNotificationIdentifier: null,
+  clientNotificationIdentifier: null, // @Private
   metadata: null,
   isLDAP: null,
   appLocale: null,
-  localeInfo: {
-    mon_decimal_point: '.',
-    mon_thousands_sep: ',',
-    currency_symbol: '￥'
-  },
   appCurrency: null,
   isShowProgress: true,
+
+  notShowHeaderFooterOnNoResult: false,
+  newRecordId: null,
 
   clearCredentials: function () {
     'use strict'
@@ -457,7 +454,7 @@ let INTERMediatorOnPage = {
         userSpan.style.textAlign = 'right'
         userSpan.style.cssFloat = 'left'
       }
-      userSpan.setAttribute('class',  '_im_authlabel')
+      userSpan.setAttribute('class', '_im_authlabel')
       userLabel.appendChild(userSpan)
       msgNumber = INTERMediatorOnPage.isEmailAsUsername ? 2011 : 2002
       userSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(msgNumber)))
@@ -480,7 +477,7 @@ let INTERMediatorOnPage = {
         passwordSpan.style.textAlign = 'right'
         passwordSpan.style.cssFloat = 'left'
       }
-      passwordSpan.setAttribute('class',  '_im_authlabel')
+      passwordSpan.setAttribute('class', '_im_authlabel')
       passwordLabel.appendChild(passwordSpan)
       passwordSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2003)))
       passwordBox = document.createElement('INPUT')
@@ -521,7 +518,7 @@ let INTERMediatorOnPage = {
           newPasswordSpan.style.fontSize = '0.7em'
           newPasswordSpan.style.paddingTop = '4px'
         }
-        newPasswordSpan.setAttribute('class',  '_im_authlabel_pwchange')
+        newPasswordSpan.setAttribute('class', '_im_authlabel_pwchange')
         newPasswordLabel.appendChild(newPasswordSpan)
         newPasswordSpan.appendChild(
           document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2006)))
@@ -583,13 +580,13 @@ let INTERMediatorOnPage = {
       }
     }
     passwordBox.onkeydown = function (event) {
-      if (event.code === "Enter") {
+      if (event.code === 'Enter') {
         authButton.onclick()
       }
     }
     userBox.value = INTERMediatorOnPage.authUser
     userBox.onkeydown = function (event) {
-      if (event.code === "Enter") {
+      if (event.code === 'Enter') {
         passwordBox.focus()
       }
     }
@@ -662,12 +659,18 @@ let INTERMediatorOnPage = {
           return
         }
 
-        result = INTERMediator_DBAdapter.changePassword(inputUsername, inputPassword, inputNewPassword)
-        messageNode.appendChild(
-          document.createTextNode(
-            INTERMediatorLib.getInsertedStringFromErrorNumber(result ? 2009 : 2010)))
-
-        INTERMediatorLog.flushMessage()
+        INTERMediator_DBAdapter.changePassword(inputUsername, inputPassword, inputNewPassword,
+          () => {
+            messageNode.appendChild(document.createTextNode(
+              INTERMediatorLib.getInsertedStringFromErrorNumber(2009)))
+            INTERMediatorLog.flushMessage()
+          },
+          () => {
+            messageNode.appendChild(document.createTextNode(
+              INTERMediatorLib.getInsertedStringFromErrorNumber(2010)))
+            INTERMediatorLog.flushMessage()
+          }
+        )
       }
     }
     if (this.isOAuthAvailable && oAuthButton) {

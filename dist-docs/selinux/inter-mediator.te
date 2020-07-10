@@ -1,0 +1,118 @@
+
+module inter-mediator 1.0;
+
+require {
+	type postfix_etc_t;
+	type audisp_t;
+	type auditd_t;
+	type NetworkManager_t;
+	type initrc_t;
+	type chkpwd_t;
+	type local_login_t;
+	type smtp_port_t;
+	type systemd_tmpfiles_t;
+	type insmod_t;
+	type httpd_sys_content_t;
+	type dhcpc_t;
+	type unreserved_port_t;
+	type usr_t;
+	type firewalld_t;
+	type httpd_t;
+	type iptables_t;
+	type postfix_pickup_t;
+	type sshd_t;
+	type mysqld_port_t;
+	type postfix_qmgr_t;
+	type postfix_master_t;
+	class process { execmem noatsecure rlimitinh setrlimit siginh };
+	class capability net_admin;
+	class tcp_socket { name_bind name_connect };
+	class file { create execute execute_no_trans getattr open read write };
+	class sock_file create;
+	class dir { add_name create write };
+}
+
+#============= NetworkManager_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow NetworkManager_t dhcpc_t:process { noatsecure rlimitinh siginh };
+
+#!!!! This avc is allowed in the current policy
+allow NetworkManager_t initrc_t:process { noatsecure rlimitinh siginh };
+
+#============= auditd_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow auditd_t audisp_t:process { noatsecure siginh };
+
+#============= firewalld_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow firewalld_t insmod_t:process { noatsecure rlimitinh siginh };
+
+#!!!! This avc is allowed in the current policy
+allow firewalld_t iptables_t:process { noatsecure rlimitinh siginh };
+
+#============= httpd_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t httpd_sys_content_t:file { execute execute_no_trans };
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t mysqld_port_t:tcp_socket name_connect;
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t postfix_etc_t:file { getattr open read };
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t self:capability net_admin;
+
+#!!!! This avc can be allowed using the boolean 'httpd_setrlimit'
+allow httpd_t self:process setrlimit;
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t self:process execmem;
+
+#!!!! This avc can be allowed using one of the these booleans:
+#     httpd_can_network_connect, httpd_can_sendmail, nis_enabled
+allow httpd_t smtp_port_t:tcp_socket name_connect;
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t unreserved_port_t:tcp_socket { name_bind name_connect };
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t usr_t:dir { add_name create write };
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t usr_t:file { create write };
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t usr_t:sock_file create;
+
+#============= iptables_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow iptables_t insmod_t:process { noatsecure rlimitinh siginh };
+
+#============= local_login_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow local_login_t self:capability net_admin;
+
+#============= postfix_master_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow postfix_master_t postfix_pickup_t:process { noatsecure rlimitinh siginh };
+
+#!!!! This avc is allowed in the current policy
+allow postfix_master_t postfix_qmgr_t:process { noatsecure rlimitinh siginh };
+
+#============= sshd_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow sshd_t chkpwd_t:process { noatsecure rlimitinh siginh };
+
+#============= systemd_tmpfiles_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow systemd_tmpfiles_t self:capability net_admin;

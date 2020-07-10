@@ -104,23 +104,23 @@ const INTERMediator = {
   additionalFieldValueOnDelete: {},
   /**
    * @public
-   * @type {integer}
+   * @type {int}
    */
   waitSecondsAfterPostMessage: 4,
   /**
    * @public
-   * @type {integer}
+   * @type {int}
    */
   pagedAllCount: 0,
   /**
    * This property is for FileMaker_FX.
    * @public
-   * @type {integer}
+   * @type {int}
    */
   totalRecordCount: null,
   /**
    * @private
-   * @type {integer}
+   * @type {int}
    */
   currentEncNumber: 0,
   /**
@@ -136,7 +136,7 @@ const INTERMediator = {
    */
   isEdge: false,
   /**
-   * @type {integer}
+   * @type {int}
    */
   ieVersion: -1,
   /**
@@ -172,7 +172,7 @@ const INTERMediator = {
    */
   partialConstructing: true,
   /**
-   * @type {integer}
+   * @type {int}
    */
   linkedElmCounter: 0,
   /**
@@ -180,7 +180,7 @@ const INTERMediator = {
    */
   pusherObject: null,
   /**
-   * @type {integer}
+   * @type {int}
    */
   buttonIdNum: 0,
   /**
@@ -200,7 +200,7 @@ const INTERMediator = {
    */
   dateTimeFunction: false,
   /**
-   * @type {integer}
+   * @type {int}
    */
   postOnlyNumber: 1,
   /**
@@ -212,7 +212,7 @@ const INTERMediator = {
    */
   isMobile: false,
   /**
-   * @type {integer}
+   * @type {int}
    */
   crossTableStage: 0, // 0: not cross table, 1: column label, 2: row label, 3 interchange cells
 
@@ -220,6 +220,7 @@ const INTERMediator = {
   appendingNodesAtLast: null,
   currentContext: null,
   currentRecordset: null,
+  socketMarkNode: null,
 
   // Detect Internet Explorer and its version.
   propertyIETridentSetup: () => {
@@ -305,6 +306,37 @@ const INTERMediator = {
     IMLibLocalContext.archive()
   },
 
+  ssSocket: null,
+  connectToServiceServer: () => {
+    if (!INTERMediatorOnPage.serviceServerStatus || !INTERMediatorOnPage.activateClientService) {
+      return
+    }
+    $connectTo = `http://${INTERMediatorOnPage.serviceServerHost}:${INTERMediatorOnPage.serviceServerPort}`
+    INTERMediator.ssSocket = io($connectTo)
+    INTERMediator.ssSocket.on('connected', INTERMediator.serviceServerConnected)
+    // window.addEventListener('unload', INTERMediator.serviceServerShouldDisconnect)
+    INTERMediator.ssSocket.on('notify', (msg) => {
+      'update' || 'create' || 'delete'
+      IMLibContextPool.updateOnAnotherClient('update', msg)
+    })
+  },
+
+  serviceServerConnected: () => {
+    INTERMediator.ssSocket.emit('init', {'clientid': INTERMediatorOnPage.clientNotificationIdentifier()})
+    if (INTERMediator.socketMarkNode) {
+      INTERMediator.socketMarkNode.style.color = 'yellow'
+    }
+  },
+
+  serviceServerShouldDisconnect: () => {
+    if (!INTERMediatorOnPage.serviceServerStatus || !INTERMediatorOnPage.activateClientService) {
+      return
+    }
+    INTERMediator_DBAdapter.unregister()
+    INTERMediator.socketMarkNode.style.color = 'red'
+    INTERMediator.ssSocket.disconnect()
+  },
+
   /** Construct Page **
    * Construct the Web Page with DB Data. Usually this method will be called automatically.
    * @param indexOfKeyFieldObject If this parameter is omitted or set to true,
@@ -322,7 +354,8 @@ const INTERMediator = {
     } else {
       INTERMediator.constructMain(indexOfKeyFieldObject)
     }
-  },
+  }
+  ,
 
   /**
    * This method is page generation main method. This will be called with one of the following
@@ -362,10 +395,6 @@ const INTERMediator = {
     if (INTERMediatorOnPage.doBeforeConstruct) {
       INTERMediatorOnPage.doBeforeConstruct()
     }
-    if (updateRequiredContext !== true && updateRequiredContext !== undefined && updateRequiredContext &&
-      INTERMediatorOnPage.doBeforePartialConstruct) {
-      INTERMediatorOnPage.doBeforePartialConstruct(updateRequiredContext)
-    }
     if (!INTERMediatorOnPage.isAutoConstruct) {
       return
     }
@@ -373,28 +402,17 @@ const INTERMediator = {
 
     INTERMediator.crossTableStage = 0
     INTERMediator.appendingNodesAtLast = []
-    IMLibEventResponder.setup() // Previously do it on the partial constructing
-    await INTERMediatorOnPage.retrieveAuthInfo() // Previously do it on the partial constructing
-    try {
-      if (Pusher.VERSION) {
-        INTERMediator.pusherAvailable = true
-        if (!INTERMediatorOnPage.clientNotificationKey) {
-          INTERMediatorLog.setErrorMessage(
-            Error('Pusher Configuration Error'), INTERMediatorOnPage.getMessages()[1039])
-          INTERMediator.pusherAvailable = false
-        }
-      }
-    } catch (ex) {
-      INTERMediator.pusherAvailable = false
-      if (INTERMediatorOnPage.clientNotificationKey) {
-        INTERMediatorLog.setErrorMessage(
-          Error('Pusher Configuration Error'), INTERMediatorOnPage.getMessages()[1038])
-      }
+    if (updateRequiredContext !== true && updateRequiredContext !== undefined && updateRequiredContext &&
+      INTERMediatorOnPage.doBeforePartialConstruct) {
+      INTERMediatorOnPage.doBeforePartialConstruct(updateRequiredContext)
     }
+    IMLibEventResponder.setup()
+    await INTERMediatorOnPage.retrieveAuthInfo()
+    INTERMediator.connectToServiceServer()
 
+    IMLibPageNavigation.deleteInsertOnNavi = []
     try {
       if (updateRequiredContext === true || updateRequiredContext === undefined) {
-        IMLibPageNavigation.deleteInsertOnNavi = []
         INTERMediator.partialConstructing = false
         INTERMediator.buttonIdNum = 1
         IMLibContextPool.clearAll()
@@ -490,8 +508,8 @@ const INTERMediator = {
       }
     }
 
-    if (updateRequiredContext !== true && updateRequiredContext !== undefined && updateRequiredContext &&
-      INTERMediatorOnPage.doAfterPartialConstruct) {
+    if (updateRequiredContext !== true && updateRequiredContext !== undefined
+      && updateRequiredContext && INTERMediatorOnPage.doAfterPartialConstruct) {
       INTERMediatorOnPage.doAfterPartialConstruct(updateRequiredContext)
     }
     if (INTERMediatorOnPage.doAfterConstruct) {
@@ -508,7 +526,7 @@ const INTERMediator = {
      [1] INTERMediator.constructMain() or INTERMediator.constructMain(true)
      */
     async function pageConstruct() {
-      let i, bodyNode, emptyElement
+      let i, bodyNode, emptyElement, node
 
       IMLibCalc.calculateRequiredObject = {}
       INTERMediator.currentEncNumber = 1
@@ -516,7 +534,7 @@ const INTERMediator = {
 
       // Restoring original HTML Document from backup data.
       bodyNode = document.getElementsByTagName('BODY')[0]
-      if (INTERMediator.rootEnclosure == null) {
+      if (INTERMediator.rootEnclosure === null) {
         INTERMediator.rootEnclosure = bodyNode.innerHTML
       } else {
         bodyNode.innerHTML = INTERMediator.rootEnclosure
@@ -539,8 +557,8 @@ const INTERMediator = {
 
       // After work to set up popup menus.
       for (i = 0; i < postSetFields.length; i++) {
-        if (postSetFields[i].value === '' &&
-          document.getElementById(postSetFields[i].id).tagName === 'SELECT') {
+        node = document.getElementById(postSetFields[i].id)
+        if (postSetFields[i].value === '' && node && node.tagName === 'SELECT') {
           // for compatibility with Firefox when the value of select tag is empty.
           emptyElement = document.createElement('option')
           emptyElement.setAttribute('id', INTERMediator.nextIdValue())
@@ -549,38 +567,12 @@ const INTERMediator = {
           document.getElementById(postSetFields[i].id).insertBefore(
             emptyElement, document.getElementById(postSetFields[i].id).firstChild)
         }
-        document.getElementById(postSetFields[i].id).value = postSetFields[i].value
+        if (node) {
+          node.value = postSetFields[i].value
+        }
       }
       IMLibCalc.updateCalculationFields()
       IMLibPageNavigation.navigationSetup()
-
-      if (isAcceptNotify && INTERMediator.pusherAvailable) {
-        let channelName = INTERMediatorOnPage.clientNotificationIdentifier()
-        let appKey = INTERMediatorOnPage.clientNotificationKey()
-        if (appKey && appKey !== '_im_key_isnt_supplied' && !INTERMediator.pusherObject) {
-          try {
-            Pusher.log = function (message) {
-              if (window.console && window.console.log) {
-                window.console.log(message)
-              }
-            }
-
-            INTERMediator.pusherObject = new Pusher(appKey)
-            INTERMediator.pusherChannel = INTERMediator.pusherObject.subscribe(channelName)
-            INTERMediator.pusherChannel.bind('update', function (data) {
-              IMLibContextPool.updateOnAnotherClient('update', data)
-            })
-            INTERMediator.pusherChannel.bind('create', function (data) {
-              IMLibContextPool.updateOnAnotherClient('create', data)
-            })
-            INTERMediator.pusherChannel.bind('delete', function (data) {
-              IMLibContextPool.updateOnAnotherClient('delete', data)
-            })
-          } catch (ex) {
-            INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-47')
-          }
-        }
-      }
       appendCredit()
     }
 
@@ -1039,8 +1031,8 @@ const INTERMediator = {
      * Set the value to node and context.
      */
     function setupLinkedNode(linkedElements, contextObj, targetRecordset, ix, keyingValue) {
-      let nInfo, j, keyField, k, nodeId, curVal, replacedNode, typeAttr, children, wInfo, nameTable,
-        linkInfoArray, nameTableKey, nameNumber, nameAttr, curTarget
+      let nInfo, j, keyField, k, nodeId, linkInfoArray, nameTableKey, nameNumber, nameAttr, curTarget,
+        curVal, replacedNode, typeAttr, children, wInfo, nameTable
       let idValuesForFieldName = {}
       const currentContextDef = contextObj.getContextDef()
       const currentWidgetNodes = linkedElements.widgetNode
@@ -1090,10 +1082,11 @@ const INTERMediator = {
           if (INTERMediatorLib.isWidgetElement(currentLinkedNodes[k])) {
             nodeId = currentLinkedNodes[k]._im_getComponentId()
             // INTERMediator.widgetElementIds.push(nodeId)
-          } // get the tag name of the element
-          typeAttr = currentLinkedNodes[k].getAttribute('type') // type attribute
-          linkInfoArray = INTERMediatorLib.getLinkedElementInfo(currentLinkedNodes[k]) // info array for it
-          // set the name attribute of radio button
+          }
+          // get the tag name of the element
+          typeAttr = currentLinkedNodes[k].getAttribute('type')// type attribute
+          linkInfoArray = INTERMediatorLib.getLinkedElementInfo(currentLinkedNodes[k])
+          // info array for it  set the name attribute of radio button
           // should be different for each group
           if (typeAttr === 'radio') { // set the value to radio button
             nameTableKey = linkInfoArray.join('|')
@@ -1156,16 +1149,17 @@ const INTERMediator = {
       targetTotalCount = targetRecords.totalCount
 
       repeatersOneRec = cloneEveryNodes(repeatersOriginal)
-      for (i = 0; i < repeatersOneRec.length; i++) {
-        newNode = repeatersOneRec[i]
-        dataAttr = newNode.getAttribute('data-im-control')
-        if (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0) {
-          if (!insertNode) {
-            node.appendChild(newNode)
+      if (!INTERMediatorOnPage.notShowHeaderFooterOnNoResult || targetRecords.count !== 0) {
+        for (i = 0; i < repeatersOneRec.length; i++) {
+          newNode = repeatersOneRec[i]
+          dataAttr = newNode.getAttribute('data-im-control')
+          if (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0) {
+            if (!insertNode) {
+              node.appendChild(newNode)
+            }
           }
         }
       }
-
       if (targetRecords.count === 0) {
         for (i = 0; i < repeatersOriginal.length; i++) {
           newNode = repeatersOriginal[i].cloneNode(true)
@@ -1253,12 +1247,14 @@ const INTERMediator = {
       IMLibPageNavigation.setupDetailAreaToFirstRecord(currentContextDef, contextObj)
 
       repeatersOneRec = cloneEveryNodes(repeatersOriginal)
-      for (i = 0; i < repeatersOneRec.length; i++) {
-        newNode = repeatersOneRec[i]
-        dataAttr = newNode.getAttribute('data-im-control')
-        if (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0) {
-          if (!insertNode) {
-            node.appendChild(newNode)
+      if (!INTERMediatorOnPage.notShowHeaderFooterOnNoResult || targetRecords.count !== 0) {
+        for (i = 0; i < repeatersOneRec.length; i++) {
+          newNode = repeatersOneRec[i]
+          dataAttr = newNode.getAttribute('data-im-control')
+          if (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0) {
+            if (!insertNode) {
+              node.appendChild(newNode)
+            }
           }
         }
       }
@@ -1691,7 +1687,7 @@ const INTERMediator = {
 
      */
     function appendCredit() {
-      let bodyNode, creditNode, cNode, spNode, aNode, versionString, markNode, mark
+      let bodyNode, creditNode, cNode, spNode, aNode, versionString, markNode, mark, markSktNode
 
       if (document.getElementById('IM_CREDIT') === null) {
         if (INTERMediatorOnPage.creditIncluding) {
@@ -1730,7 +1726,16 @@ const INTERMediator = {
         spNode.appendChild(markNode)
         markNode.appendChild(document.createTextNode('◆'))
         markNode.style.color = INTERMediatorOnPage.serviceServerStatus ? 'green' : 'red'
-
+        if (INTERMediatorOnPage.activateClientService) {
+          markSktNode = document.createElement('span')
+          markSktNode.appendChild(document.createTextNode('➤'))
+          markSktNode.className = '_im_socket_mark'
+          spNode.appendChild(markSktNode)
+          INTERMediator.socketMarkNode = markSktNode
+          if (INTERMediator.ssSocket) {
+            markSktNode.style.color = 'yellow'
+          }
+        }
         spNode = document.createElement('span')
         spNode.className = '_im_credit_vstring'
         cNode.appendChild(spNode)
@@ -1754,7 +1759,7 @@ const INTERMediator = {
   /* --------------------------------------------------------------------
 
    */
-  setIdValue: function (node) {
+  setIdValue: (node) => {
     'use strict'
     let i, elementInfo, comp
     let overwrite = true
@@ -1789,19 +1794,19 @@ const INTERMediator = {
     }
   },
 
-  getLocalProperty: function (localKey, defaultValue) {
+  getLocalProperty: (localKey, defaultValue) => {
     'use strict'
     let value
     value = IMLibLocalContext.getValue(localKey)
     return value === null ? defaultValue : value
   },
 
-  setLocalProperty: function (localKey, value) {
+  setLocalProperty: (localKey, value) => {
     'use strict'
     IMLibLocalContext.setValue(localKey, value, true)
   },
 
-  addCondition: function (contextName, condition, notMatching, label) {
+  addCondition: (contextName, condition, notMatching, label) => {
     'use strict'
     let value, i, hasIdentical
     if (notMatching) {
@@ -1840,7 +1845,7 @@ const INTERMediator = {
     IMLibLocalContext.archive()
   },
 
-  clearCondition: function (contextName, label) {
+  clearCondition: (contextName, label) => {
     'use strict'
     let i
     let value = INTERMediator.additionalCondition
@@ -1867,7 +1872,7 @@ const INTERMediator = {
     }
   },
 
-  addSortKey: function (contextName, sortKey) {
+  addSortKey: (contextName, sortKey) => {
     'use strict'
     let value = INTERMediator.additionalSortKey
     if (value[contextName]) {
@@ -1879,7 +1884,7 @@ const INTERMediator = {
     IMLibLocalContext.archive()
   },
 
-  clearSortKey: function (contextName) {
+  clearSortKey: (contextName) => {
     'use strict'
     let value = INTERMediator.additionalSortKey
     if (value[contextName]) {
@@ -1889,7 +1894,7 @@ const INTERMediator = {
     }
   },
 
-  setRecordLimit: function (contextName, limit) {
+  setRecordLimit: (contextName, limit) => {
     'use strict'
     var value = INTERMediator.recordLimit
     value[contextName] = limit
@@ -1897,7 +1902,7 @@ const INTERMediator = {
     IMLibLocalContext.archive()
   },
 
-  clearRecordLimit: function (contextName) {
+  clearRecordLimit: (contextName) => {
     'use strict'
     var value = INTERMediator.recordLimit
     if (value[contextName]) {
@@ -1913,11 +1918,11 @@ const INTERMediator = {
     'use strict'
     INTERMediatorLog.flushMessage()
   },
-  setErrorMessage: function (ex, moreMessage) {
+  setErrorMessage: (ex, moreMessage) => {
     'use strict'
     INTERMediatorLog.setErrorMessage(ex, moreMessage)
   },
-  setDebugMessage: function (message, level) {
+  setDebugMessage: (message, level) => {
     'use strict'
     INTERMediatorLog.setDebugMessage(message, level)
   }

@@ -34,8 +34,8 @@ IM_Entry(
             'name' => 'item',
             'key' => 'id',
             'relation' => [['foreign-key' => 'invoice_id', 'join-field' => 'id', 'operator' => '=',]],
-            'repeat-control' => 'insert delete',
-            'default-values' => [['field' => 'product_id', 'value' => 1,]],
+            'repeat-control' => 'insert delete copy',
+            'default-values' => [['field' => 'product_id', 'value' => 3,]],
             'validation' => [
                 [
                     'field' => 'qty',

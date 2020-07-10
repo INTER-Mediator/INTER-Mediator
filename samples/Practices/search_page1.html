@@ -16,6 +16,11 @@
     <title>INTER-Mediator - Sample - Search/MySQL</title>
     <link rel="stylesheet" type="text/css" href="search.css">
     <script type="text/javascript" src="search_def.php"></script>
+    <script>
+        INTERMediatorOnPage.doBeforeConstruct = ()=>{
+          INTERMediatorLog.errorMessageByAlert = true;
+        }
+    </script>
 </head>
 <body>
 <header>

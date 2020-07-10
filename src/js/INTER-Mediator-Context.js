@@ -44,7 +44,6 @@ class IMLibContext {
     this.lookingUp = {}
     this.lookingUpInfo = null
     this.original = null // Set on initialization.
-    //   this.nullAcceptable = true
     this.parentContext = null
     this.registeredId = null
     this.sequencing = false // Set true on initialization.
@@ -57,7 +56,6 @@ class IMLibContext {
      */
     this.setTable(this)
   }
-
 
   async updateFieldValue(idValue, succeedProc, errorProc, warnMultipleRecProc, warnOthersModifyProc) {
     'use strict'
@@ -285,11 +283,9 @@ class IMLibContext {
 
   getCalculationFields() {
     'use strict'
-    let calcDef = this.contextDefinition.calculation
-    let calcFields = []
-    let key
+    let calcDef = this.contextDefinition.calculation, calcFields = []
     if (calcDef) {
-      for (key of Object.keys(calcDef)) {
+      for (const key in calcDef) {
         calcFields.push(calcDef[key].field)
       }
     }
@@ -323,8 +319,7 @@ class IMLibContext {
 
   getPortalRecordsetImpl(store, contextName) {
     'use strict'
-    let result, recId, recordset, key, contextDef
-    recordset = []
+    let result, recId, recordset = [], key, contextDef
     if (store[0]) {
       if (!store[0][contextName]) {
         for (key of store[0]) {
@@ -391,15 +386,14 @@ class IMLibContext {
 
   setRelationWithParent(currentRecord, parentObjectInfo, parentContext) {
     'use strict'
-    let relationDef, index, joinField, fieldName, i
+    let relationDef, joinField, fieldName, i
 
     this.parentContext = parentContext
-
     if (currentRecord) {
       try {
         relationDef = this.contextDefinition.relation
         if (relationDef) {
-          for (index of Object.keys(relationDef)) {
+          for (const index of Object.keys(relationDef)) {
             if (Boolean(relationDef[index].portal) === true) {
               this.isPortal = true
               this.potalContainingRecordKV = INTERMediatorOnPage.defaultKeyName + '=' +
@@ -430,12 +424,11 @@ class IMLibContext {
 
   getInsertOrder(/* record */) {
     'use strict'
-    let cName
+    let contextDef
     let sortKeys = []
-    let contextDef, i
     let sortFields = []
     let sortDirections = []
-    for (cName in INTERMediator.additionalSortKey) {
+    for (const cName in INTERMediator.additionalSortKey) {
       if (cName === this.contextName) {
         sortKeys.push(INTERMediator.additionalSortKey[cName])
       }
@@ -444,7 +437,7 @@ class IMLibContext {
     if (contextDef.sort) {
       sortKeys.push(contextDef.sort)
     }
-    for (i = 0; i < sortKeys.length; i += 1) {
+    for (let i = 0; i < sortKeys.length; i += 1) {
       if (sortFields.indexOf(sortKeys[i].field) < 0) {
         sortFields.push(sortKeys[i].field)
         sortDirections.push(sortKeys[i].direction)
@@ -455,11 +448,12 @@ class IMLibContext {
   indexingArray(keyField) {
     'use strict'
     let ar = []
-    let key
     let counter = 0
-    for (key of this.store) {
-      ar[counter] = this.store[key][keyField]
-      counter += 1
+    for (const key in this.store) {
+      if (this.store.hasOwnProperty(key)) {
+        ar[counter] = this.store[key][keyField]
+        counter += 1
+      }
     }
     return ar
   }
@@ -502,9 +496,8 @@ class IMLibContext {
 
   setOriginal(repeaters) {
     'use strict'
-    let i
     this.original = []
-    for (i = 0; i < repeaters.length; i += 1) {
+    for (let i = 0; i < repeaters.length; i += 1) {
       this.original.push(repeaters[i].cloneNode(true))
     }
   }
@@ -541,11 +534,11 @@ class IMLibContext {
     INTERMediator_DBAdapter.unregister(regIds)
 
     function seekRemovingContext(context) {
-      let i, myChildren
+      let myChildren
       childContexts.push(context)
       regIds.push(context.registeredId)
       myChildren = IMLibContextPool.getChildContexts(context)
-      for (i = 0; i < myChildren.length; i += 1) {
+      for (let i = 0; i < myChildren.length; i += 1) {
         seekRemovingContext(myChildren[i])
       }
     }
@@ -571,7 +564,7 @@ class IMLibContext {
 
   getContextDef() {
     'use strict'
-    let contextDef
+    var contextDef
     contextDef = INTERMediatorLib.getNamedObject(
       INTERMediatorOnPage.getDataSources(), 'name', this.contextName)
     return contextDef
@@ -582,7 +575,6 @@ class IMLibContext {
    */
   checkOrder(oneRecord, isDebug) {
     'use strict'
-    let i
     let fields = []
     let directions = []
     let oneSortKey, condtextDef, lower, upper, index, targetRecord, contextValue, checkingValue, stop
@@ -598,7 +590,7 @@ class IMLibContext {
       }
       condtextDef = this.getContextDef()
       if (condtextDef && condtextDef.sort) {
-        for (i = 0; i < condtextDef.sort.length; i += 1) {
+        for (let i = 0; i < condtextDef.sort.length; i += 1) {
           oneSortKey = condtextDef.sort[i]
           if (!(oneSortKey.field in fields)) {
             fields.push(oneSortKey.field)
@@ -611,7 +603,7 @@ class IMLibContext {
     }
     lower = 0
     upper = this.recordOrder.length
-    for (i = 0; i < fields.length; i += 1) {
+    for (let i = 0; i < fields.length; i += 1) {
       if (oneRecord[fields[i]]) {
         index = parseInt((upper + lower) / 2)
         do {
@@ -675,8 +667,8 @@ class IMLibContext {
    */
   rearrangePendingOrder(isDebug) {
     'use strict'
-    let i, index, targetRecord
-    for (i = 0; i < this.pendingOrder.length; i += 1) {
+    let index, targetRecord
+    for (let i = 0; i < this.pendingOrder.length; i += 1) {
       targetRecord = this.store[this.pendingOrder[i]]
       index = this.checkOrder(targetRecord, isDebug)
       if (index >= -1) {
@@ -719,23 +711,24 @@ class IMLibContext {
 
   storeRecords(records) {
     'use strict'
-    let ix, record, field, keyField, keyValue
+    let record, field, keyField, keyValue
     let contextDef = INTERMediatorLib.getNamedObject(
       INTERMediatorOnPage.getDataSources(), 'name', this.contextName)
     keyField = contextDef.key ? contextDef.key : 'id'
     if (records.dbresult) {
-      for (ix = 0; ix < records.dbresult.length; ix++) {
+      for (let ix = 0; ix < records.dbresult.length; ix++) {
         record = records.dbresult[ix]
-        for (field of Object.keys(record)) {
-          keyValue = record[keyField] ? record[keyField] : ix
-          this.setValue(keyField + '=' + keyValue, field, record[field])
+        for (field in record) {
+          if (record.hasOwnProperty(field)) {
+            keyValue = record[keyField] ? record[keyField] : ix
+            this.setValue(keyField + '=' + keyValue, field, record[field])
+          }
         }
       }
     }
   }
 
-  getDataAtLastRecord(key) {
-    'use strict'
+  getDataAtLastRecord(key = false) {
     let lastKey
     let storekeys = Object.keys(this.store)
     if (storekeys.length > 0) {
@@ -747,72 +740,56 @@ class IMLibContext {
 
 // setData____ methods are for storing data both the model and the database.
 //
-  setDataAtLastRecord(key, value) {
-    'use strict'
-    let lastKey, keyAndValue, contextName
+  setDataAtLastRecord(key, value = false) {
+    let lastKey, keyAndValue, contextName, dataset = []
     let storekeys = Object.keys(this.store)
     if (storekeys.length > 0) {
       lastKey = storekeys[storekeys.length - 1]
-      this.setValue(lastKey, key, value)
-      contextName = this.contextName
       keyAndValue = lastKey.split('=')
-      IMLibQueue.setTask((function () {
-        let params = {
-          name: contextName,
-          conditions: [{field: keyAndValue[0], operator: '=', value: keyAndValue[1]}],
-          dataset: [{field: key, value: value}]
-        }
-        return function (completeTask) {
-          INTERMediator_DBAdapter.db_update_async(
-            params,
-            function () {
-              IMLibCalc.recalculation()
-              INTERMediatorLog.flushMessage()
-              completeTask()
-            },
-            function () {
-              INTERMediatorLog.flushMessage()
-              completeTask()
-            }
-          )
-        }
-      })())
+      this.setDataWithKey(keyAndValue[1], key, value)
     }
   }
 
-  setDataWithKey(pkValue, key, value) {
-    'use strict'
-    let targetKey, contextDef, storeElements, contextName
-    contextDef = this.getContextDef()
+  setDataWithKey(pkValue, key, value = false) {
+    let contextDef = this.getContextDef()
     if (!contextDef) {
       return
     }
-    targetKey = contextDef.key + '=' + pkValue
-    storeElements = this.store[targetKey]
-    if (storeElements) {
-      this.setValue(targetKey, key, value)
-      contextName = this.contextName
-      IMLibQueue.setTask((function () {
-        let params = {
-          name: contextName,
-          conditions: [{field: contextDef.key, operator: '=', value: pkValue}],
-          dataset: [{field: key, value: value}]
-        }
-        return function (completeTask) {
-          INTERMediator_DBAdapter.db_update_async(
-            params,
-            (result) => {
-              INTERMediatorLog.flushMessage()
-              completeTask()
-            },
-            () => {
-              INTERMediatorLog.flushMessage()
-              completeTask()
-            }
-          )
-        }
-      })())
+    let targetKey = contextDef.key + '=' + pkValue
+    if (!this.store[targetKey]) {
+      return
     }
+    let dataset = []
+    if (INTERMediatorLib.isObject(key) && value === false) {
+      for (const field of Object.keys(key)) {
+        dataset.push({field: field, value: key[field]})
+        this.setValue(targetKey, field, key[field])
+      }
+    } else {
+      dataset.push({field: key, value: value})
+      this.setValue(targetKey, key, value)
+    }
+    let contextName = this.contextName
+    IMLibQueue.setTask((function () {
+      let params = {
+        name: contextName,
+        conditions: [{field: contextDef.key, operator: '=', value: pkValue}],
+        dataset: dataset
+      }
+      return function (completeTask) {
+        INTERMediator_DBAdapter.db_update_async(
+          params,
+          (result) => {
+            INTERMediatorLog.flushMessage()
+            completeTask()
+          },
+          () => {
+            INTERMediatorLog.flushMessage()
+            completeTask()
+          }
+        )
+      }
+    })())
   }
 
   setValue(recKey, key, value, nodeId, target, portal) {
@@ -878,14 +855,13 @@ class IMLibContext {
     return updatedNodeIds
   }
 
-  getValue(recKey, key, portal) {
-    'use strict'
+  getValue(recKey, key = false, portal = false) {
     let value
     try {
       if (portal) {
-        value = this.store[portal][key]
+        value = (key === false) ? this.store[portal] : this.store[portal][key]
       } else {
-        value = this.store[recKey][key]
+        value = (key === false) ? this.store[recKey] : this.store[recKey][key]
       }
       if (Array.isArray(value)) {
         value = value.join()
@@ -936,11 +912,11 @@ class IMLibContext {
 
   getContextRecord(nodeId) {
     'use strict'
-    let infos, keys, i
+    let infos, keys
     try {
       infos = this.contextInfo[nodeId]
       keys = Object.keys(infos)
-      for (i = 0; i < keys.length; i += 1) {
+      for (let i = 0; i < keys.length; i += 1) {
         if (infos[keys[i]]) {
           return this.store[infos[keys[i]].record]
         }
@@ -953,7 +929,7 @@ class IMLibContext {
 
   removeEntry(pkvalue) {
     'use strict'
-    let keyField, keying, bindingInfo, contextDef, targetNode, repeaterNodes, i
+    let keyField, keying, bindingInfo, contextDef, targetNode, repeaterNodes
     let removingNodeIds = []
     contextDef = this.getContextDef()
     keyField = contextDef.key
@@ -962,16 +938,16 @@ class IMLibContext {
     if (bindingInfo) {
       repeaterNodes = bindingInfo._im_repeater
       if (repeaterNodes) {
-        for (i = 0; i < repeaterNodes.length; i += 1) {
+        for (let i = 0; i < repeaterNodes.length; i += 1) {
           removingNodeIds.push(repeaterNodes[i].id)
         }
       }
     }
     if (removingNodeIds.length > 0) {
-      for (i = 0; i < removingNodeIds.length; i += 1) {
+      for (let i = 0; i < removingNodeIds.length; i += 1) {
         IMLibContextPool.removeRecordFromPool(removingNodeIds[i])
       }
-      for (i = 0; i < removingNodeIds.length; i += 1) {
+      for (let i = 0; i < removingNodeIds.length; i += 1) {
         targetNode = document.getElementById(removingNodeIds[i])
         if (targetNode) {
           targetNode.parentNode.removeChild(targetNode)
@@ -984,17 +960,17 @@ class IMLibContext {
     'use strict'
     let contextDef, contextName
     let checkResult = []
-    let i, fieldName, result, opePosition, leftHand, rightHand, leftResult, rightResult
+    let result, opePosition, leftHand, rightHand, leftResult, rightResult
 
     contextDef = this.getContextDef()
     contextName = contextDef.name
     if (contextDef.query) {
-      for (i of contextDef.query) {
+      for (const i of contextDef.query) {
         checkResult.push(checkCondition(contextDef.query[i], value))
       }
     }
     if (INTERMediator.additionalCondition[contextName]) {
-      for (i = 0; i < INTERMediator.additionalCondition[contextName].length; i += 1) {
+      for (let i = 0; i < INTERMediator.additionalCondition[contextName].length; i += 1) {
         checkResult.push(checkCondition(INTERMediator.additionalCondition[contextName][i], value))
       }
     }
@@ -1038,9 +1014,9 @@ class IMLibContext {
     }
 
     if (this.foreignValue) {
-      for (fieldName in this.foreignValue) {
+      for (const fieldName of this.foreignValue) {
         if (contextDef.relation) {
-          for (i in contextDef.relation) {
+          for (let i in contextDef.relation) {
             if (contextDef.relation[i]['join-field'] === fieldName) {
               result &= (checkCondition({
                 field: contextDef.relation[i]['foreign-key'],
@@ -1093,14 +1069,15 @@ class IMLibContext {
 
   insertEntry(pkvalue, fields, values) {
     'use strict'
-    let i, field, value
-    for (i = 0; i < fields.length; i += 1) {
+    let field, value
+    for (let i = 0; i < fields.length; i += 1) {
       field = fields[i]
       value = values[i]
       this.setValue(pkvalue, field, value)
     }
   }
 
+  // ****** Look-up processing ******
   // data-im-control="lookup:item@product_id:product@name"
   /*
   lookingUp:
@@ -1132,36 +1109,31 @@ class IMLibContext {
     }
   }
 
-  updateContext(idValue, target, contextInfo, value) {
-    let key, keying, obj, imTarget, lookingContexts, fromValue, contextName, newContext, contexts, context,
-      contextDef, aContext, isModified
-    if (Object.keys(this.lookingUp).length === 0) { // In case of no lookup node.
-      return
-    }
-    let fromStore = {}
+  updateLookupInfo(force = false) {
+    let key, keying, obj
     const keyField = this.getKeyField()
     // IMLibUI.recalculationOnValueChange = false
     /*
-    this.lookingUpInfo
-      id=1:
-        0:
-          keying: "id=1"
-          key_value: 1
-          node_id: "IM3-27"
-          trigger: "item@product_id"
-          from: "product@name"
-          target: "item@product_name"
-        1:
-          keying: "id=1"
-          key_value: 1
-          node_id: "IM3-28"
-          trigger: "item@product_id"
-          from: "product@unitprice"
-          target: "item@product_unitprice"
-       id=2: (2) [{…}, {…}]
-       id=3: (2) [{…}, {…}]
-     */
-    if (this.lookingUpInfo === null) {
+this.lookingUpInfo
+  id=1:
+    0:
+      keying: "id=1"
+      key_value: 1
+      node_id: "IM3-27"
+      trigger: "item@product_id"
+      from: "product@name"
+      target: "item@product_name"
+    1:
+      keying: "id=1"
+      key_value: 1
+      node_id: "IM3-28"
+      trigger: "item@product_id"
+      from: "product@unitprice"
+      target: "item@product_unitprice"
+   id=2: (2) [{…}, {…}]
+   id=3: (2) [{…}, {…}]
+ */
+    if (force || this.lookingUpInfo === null) {
       this.lookingUpInfo = {}
       for (key of Object.keys(this.lookingUp)) {
         keying = keyField + '=' + this.lookingUp[key].keying
@@ -1180,22 +1152,66 @@ class IMLibContext {
         }
       }
     }
+  }
+
+  updateContextAfterInsertAsLookup(newRecordId) {
+    let nodes, value, binds
+    const keyField = this.getContextDef().key
+    this.updateLookupInfo(true)
+    nodes = []
+    binds = this.binding[keyField + '=' + newRecordId]
+    if (binds) {
+      for (const field of Object.keys(binds)) {
+        for (const bind of binds[field]) {
+          if (nodes.indexOf(bind.id) < 0) {
+            nodes.push(bind.id)
+          }
+        }
+      }
+      for (const node of nodes) {
+        value = document.getElementById(node).value
+        if (value) {
+          this.updateContextAsLookup(node, value)
+        }
+      }
+    }
+  }
+
+
+  updateContextAsLookup(idValue = null, value = null) {
+    let keying, obj, imTarget, lookingContexts, fromValue, newContext, contexts,
+      contextDef, isModified, changedObj, linkInfo, nodeInfo, contextInfo
+
+    if (Object.keys(this.lookingUp).length === 0) { // In case of no lookup node.
+      return
+    }
+    if (!idValue) { // call with null, non operations required
+      return
+    }
+    let fromStore = {}
+    this.updateLookupInfo()// Update the table for looking-up operations
     if (Object.keys(this.lookingUpInfo).length === 0) { // Just in case.
       return
     }
+    changedObj = document.getElementById(idValue)
+    linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj)
+    nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]) // Suppose to be the first definition.
+    contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target)
     lookingContexts = [] // Correcting the context names of contexts looked up. i.e. 'from' key data
     if (this.lookingUpInfo[contextInfo.record]) {
-      for (obj of this.lookingUpInfo[contextInfo.record]) {
-        fromValue = obj.from.split('@')
-        if (lookingContexts.indexOf(fromValue[0]) < 0) {
-          lookingContexts.push(fromValue[0])
+      for (const obj of this.lookingUpInfo[contextInfo.record]) {
+        if (obj.trigger == linkInfo[0]) { // Suppose to be the first definition.
+          fromValue = obj.from.split('@')
+          if (lookingContexts.indexOf(fromValue[0]) < 0) {
+            lookingContexts.push(fromValue[0])
+          }
         }
       }
     }
     // Search for the valid record to be looked up.
-    for (contextName of lookingContexts) {
+    for (const contextName of lookingContexts) {
       contexts = IMLibContextPool.getContextFromName(contextName)
-      for (context of contexts) {
+      for (const context of contexts) {
         contextDef = context.getContextDef()
         if (context.parentContext == this && contextDef.relation  /* && relation[0]['foreign-key'] == keyField*/) {
           keying = contextDef.relation[0]['foreign-key'] + '=' + value
@@ -1203,7 +1219,7 @@ class IMLibContext {
             fromStore[contextName] = context.store[keying]
             isModified = false
             if (this.lookingUpInfo[contextInfo.record]) {
-              for (obj of this.lookingUpInfo[contextInfo.record]) {
+              for (const obj of this.lookingUpInfo[contextInfo.record]) {
                 imTarget = obj.target.split('@')
                 fromValue = obj.from.split('@')
                 if (imTarget[1] && fromValue[0] && fromStore[fromValue[0]] && fromValue[1] && fromStore[fromValue[0]][fromValue[1]]) {
@@ -1223,14 +1239,14 @@ class IMLibContext {
         }
       }
     }
-    for (contextName of lookingContexts) {
+    for (const contextName of lookingContexts) {
       if (this.lookingUpInfo[contextInfo.record]) {
-        aContext = IMLibContextPool.contextFromName(contextName)
-        newContext = IMLibContextPool.generateContextObject(contextDef, null, null, null)
+        contextDef = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', contextName)
+        newContext = IMLibContextPool.generateContextObject(contextDef)
         newContext.parentContext = this
         IMLibQueue.setTask((() => {
           const targetContext = newContext
-          const contextDef = aContext.getContextDef()
+          const cDef = contextDef
           const pValue = value
           const lookingUpInfoObj = this.lookingUpInfo[contextInfo.record]
           const thisObj = this
@@ -1245,9 +1261,9 @@ class IMLibContext {
             try {
               INTERMediator_DBAdapter.db_query_async(
                 {
-                  'name': contextDef.name,
+                  'name': cDef.name,
                   'records': 1,
-                  'paging': contextDef.paging,
+                  'paging': cDef.paging,
                   'fields': fields,
                   'parentkeyvalue': pValue,
                   'conditions': null,
@@ -1257,10 +1273,10 @@ class IMLibContext {
                 (result) => {
                   let imTarget, fromValue, aRecord
                   targetContext.storeRecords(result)
-                  keying = contextDef.relation[0]['foreign-key'] + '=' + pValue
+                  keying = cDef.relation[0]['foreign-key'] + '=' + pValue
                   aRecord = targetContext.store[keying]
                   if (aRecord) {
-                    for (obj of lookingUpInfoObj) {
+                    for (const obj of lookingUpInfoObj) {
                       imTarget = obj.target.split('@')
                       fromValue = obj.from.split('@')
                       if (imTarget[1] && fromValue[0] && fromValue[1]
@@ -1277,7 +1293,6 @@ class IMLibContext {
                   completeTask()
                 },
                 () => {
-                  INTERMediatorLog.flushMessage()
                   completeTask()
                 }
               )
@@ -1293,8 +1308,6 @@ class IMLibContext {
       }
     }
   }
-
-  // }
 }
 
 // @@IM@@IgnoringRestOfFile

@@ -1,7 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
   "version": "6-dev",
-  "time": "2020-01-10",
+  "time": "2020-06-07",
   "repositories": [
     {
       "type": "git",
@@ -11,7 +11,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "php": "^7.1",
+    "php": "^7",
     "ext-mbstring": "*",
     "ext-PDO": "*",
     "ext-bcmath": "*",
@@ -69,7 +69,7 @@
   },
   "scripts": {
     "test": [
-      "./vendor/bin/phpunit --globals-backup --bootstrap ./vendor/autoload.php INTERMediator_AllTests spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+      "./vendor/bin/phpunit --globals-backup --bootstrap ./vendor/autoload.php spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
     ],
     "jest": [
       "./node_modules/.bin/jest --config ./spec/jest.config.js"
@@ -78,6 +78,10 @@
       "rm -rf node_modules vendor"
     ],
     "post-update-cmd": [
+      "npm install",
+      "rm -f __Did_you_run_composer_update.txt"
+    ],
+    "post-install-cmd": [
       "npm install",
       "rm -f __Did_you_run_composer_update.txt"
     ],

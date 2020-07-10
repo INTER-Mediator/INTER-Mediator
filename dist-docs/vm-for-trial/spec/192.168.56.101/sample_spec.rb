@@ -70,7 +70,7 @@ describe service('org.apache.httpd'), :if => os[:family] == 'darwin' do
   it { should be_running }
 end
 
-describe port(80) do
+describe port(80), :if => host_inventory['virtualization'][:system] != 'docker' do
   it { should be_listening }
 end
 
@@ -251,9 +251,6 @@ end
 describe package('php7-dom'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php7.2-dom'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
-  it { should be_installed }
-end
 describe package('php7.2-xml'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
@@ -266,7 +263,10 @@ end
 describe package('php7.2-bcmath'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
   it { should be_installed }
 end
-describe package('php-bcmath'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
+describe package('php-bcmath'), :if => os[:family] == 'redhat' || (os[:family] == 'ubuntu' && os[:release].to_f >= 18) do
+  it { should be_installed }
+end
+describe package('php7-php-bcmath'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 describe package('php7-phar'), :if => os[:family] == 'alpine' do
@@ -302,14 +302,23 @@ end
 describe package('php7-simplexml'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
+describe package('php-xml'), :if => os[:family] == 'redhat' do
+  it { should be_installed }
+end
 describe package('php7-session'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 describe package('php7-mysqli'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('composer') do
+describe package('php-process'), :if => os[:family] == 'redhat' do
   it { should be_installed }
+end
+describe package('composer'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe file('/usr/local/bin/composer'), :if => os[:family] == 'redhat' || os[:family] == 'ubuntu' do
+  it { should be_file }
 end
 describe package('libbsd'), :if => os[:family] == 'alpine' do
   it { should be_installed }
@@ -332,9 +341,6 @@ end
 describe package('mariadb-devel'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
   it { should be_installed }
 end
-describe package('php-mysqlnd'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
-  it { should be_installed }
-end
 
 describe package('php5-mysql'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
   it { should be_installed }
@@ -345,7 +351,7 @@ end
 describe package('php-mysql'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
-describe package('php-mysql'), :if => os[:family] == 'readhat' do
+describe package('php-mysqlnd'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
   it { should be_installed }
 end
 
@@ -358,7 +364,7 @@ end
 describe package('php-pgsql'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
-describe package('php-pgsql'), :if => os[:family] == 'readhat' do
+describe package('php-pgsql'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
 
@@ -433,28 +439,34 @@ describe package('git'), :if => os[:family] == 'alpine' || os[:family] == 'ubunt
   it { should be_installed }
 end
 
-describe package('nodejs'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+describe package('epel-release'), :if => os[:family] == 'redhat' do
   it { should be_installed }
+end
+
+describe package('nodejs'), :if => os[:family] == 'alpine' || (os[:family] == 'ubuntu' && os[:release].to_f >= 18) || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+  it { should be_installed }
+end
+describe package('nodejs'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 18 do
+  it { should_not be_installed }
 end
 
 describe file('/usr/bin/node'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
   it { should be_file }
 end
 
-describe package('nodejs-legacy'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 18 do
-  it { should be_installed }
-end
-
 describe package('nodejs-npm'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('npm'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+describe package('npm'), :if => (os[:family] == 'ubuntu' && os[:release].to_f >= 18) || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
   it { should be_installed }
 end
-
-describe package('buster'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
-  it { should be_installed.by('npm').with_version('0.7.18') }
+describe package('npm'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 18 do
+  it { should_not be_installed }
 end
+
+#describe package('buster'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+#  it { should be_installed.by('npm').with_version('0.7.18') }
+#end
 
 describe package('bzip2'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
   it { should be_installed }
@@ -477,9 +489,9 @@ describe package('libgudev'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 
-describe package('phantomjs-prebuilt'), :if => (os[:family] == 'ubuntu' && os[:release].to_f >= 14 && os[:release].to_f < 18) || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
-  it { should be_installed.by('npm').with_version('2.1.16') }
-end
+#describe package('phantomjs-prebuilt'), :if => (os[:family] == 'ubuntu' && os[:release].to_f >= 14 && os[:release].to_f < 18) || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+#  it { should be_installed.by('npm').with_version('2.1.16') }
+#end
 
 describe package('fontconfig-dev'), :if => os[:family] == 'alpine' do
   it { should be_installed }
@@ -491,11 +503,8 @@ describe package('fontconfig-devel'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
 
-describe file('/usr/local/bin/phpunit'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
+describe file('/usr/local/bin/phpunit') do
   it { should be_file }
-end
-describe package('php-phpunit-PHPUnit'), :if => os[:family] == 'redhat' && os[:release].to_f >= 6 do
-  it { should be_installed }
 end
 
 describe package('samba') do
@@ -575,7 +584,7 @@ describe file(WEBROOT + '/INTER-Mediator/spec/INTER-Mediator-UnitTest') do
   it { should be_directory }
 end
 
-describe file(WEBROOT + '/INTER-Mediator/spec/INTER-Mediator-UnitTest/DB_PDO-SQLite_Test.php') do
+describe file(WEBROOT + '/INTER-Mediator/spec/INTER-Mediator-UnitTest/DB_PDO_SQLite_Test.php') do
   it { should be_file }
   its(:content) { should match /sqlite:\/var\/db\/im\/sample.sq3/ }
 end
@@ -667,7 +676,7 @@ describe file('/var/lib/pgsql/data/pg_hba.conf'), :if => os[:family] == 'redhat'
   it { should be_owned_by 'postgres' }
   it { should be_grouped_into 'postgres' }
   it { should be_mode 600 }
-  its(:content) { should match /host    all         all         ::1\/128               trust/ }
+  its(:content) { should match /host    all             all             ::1\/128                 trust/ }
 end
 
 describe file('/var/db/im') do
@@ -703,10 +712,17 @@ describe command('getfacl ' + WEBROOT), :if => os[:family] == 'alpine' || os[:fa
   its(:stdout) { should match /^default:group:im-developer:rwx$/ }
 end
 
-describe file(WEBROOT) do
+describe file(WEBROOT), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
   it { should be_directory }
   it { should be_mode 775 }
   it { should be_owned_by 'developer' }
+  it { should be_grouped_into 'im-developer' }
+end
+
+describe file(WEBROOT), :if => os[:family] == 'redhat' do
+  it { should be_directory }
+  it { should be_mode 775 }
+  it { should be_owned_by 'apache' }
   it { should be_grouped_into 'im-developer' }
 end
 
@@ -834,7 +850,7 @@ describe file('/etc/local.d/buster-server.start'), :if => os[:family] == 'alpine
 end
 describe file('/etc/rc.local'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 14 && os[:release].to_f < 18 do
   it { should be_file }
-  its(:content) { should match /\/usr\/local\/bin\/buster-server &/ }
+  #its(:content) { should match /\/usr\/local\/bin\/buster-server &/ }
   its(:content) { should match /\/usr\/local\/bin\/phantomjs \/usr\/local\/lib\/node_modules\/buster\/script\/phantom.js http:\/\/localhost:1111\/capture > \/dev\/null &/ }
 end
 describe file('/etc/rc.local'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18  do
@@ -848,10 +864,10 @@ describe file('/var/www/localhost/htdocs/INTER-Mediator/node_modules/jest/bin/je
   it { should be_mode 755 }
 end
 
-describe file('/etc/motd'), :if => os[:family] == 'alpine' do
+describe file('/etc/motd'), :if => os[:family] == 'redhat' || os[:family] == 'alpine' do
   its(:content) { should match /Welcome to INTER-Mediator-Server VM!/ }
 end
 
-describe service('buster-server'), :if => os[:family] == 'ubuntu' do
-  it { should be_running }
-end
+#describe service('buster-server'), :if => os[:family] == 'ubuntu' do
+#  it { should be_running }
+#end

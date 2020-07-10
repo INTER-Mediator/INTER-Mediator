@@ -4,10 +4,15 @@
 # https://raw.githubusercontent.com/INTER-Mediator/INTER-Mediator/master/dist-docs/vm-for-trial/dbupdate.sh
 #
 
+OS=`cat /etc/os-release | grep ^ID | head -n 1 | cut -d'=' -f2 | cut -d'"' -f2`
+
 WEBROOT="/var/www/html"
 WWWUSERNAME="www-data"
 if [ -e "/etc/alpine-release" ]; then
     WEBROOT="/var/www/localhost/htdocs"
+    WWWUSERNAME="apache"
+fi
+if [ $OS = 'centos' ] ; then
     WWWUSERNAME="apache"
 fi
 IMROOT="${WEBROOT}/INTER-Mediator"
@@ -22,6 +27,9 @@ read -p "Do you initialize the test databases? [y/n]: " INPUT
 if [ "$INPUT" = "y" -o "$INPUT" = "Y" ]; then
     echo "Initializing databases..."
 
+    if [ -e "/etc/redhat-release" ]; then
+        mysql -u root --password="${VMPASSWORD}" test_db -e "DROP USER 'web'@'localhost';"
+    fi
     if [ -e "/etc/alpine-release" ]; then
         mysql -u root --password="${VMPASSWORD}" test_db -e "DROP USER IF EXISTS 'web'@'localhost';"
     fi

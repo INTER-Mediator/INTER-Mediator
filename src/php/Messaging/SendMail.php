@@ -40,7 +40,7 @@ class SendMail extends MessagingProvider
         }
         $isError = false;
         $errorMsg = "";
-        for ($i = 0; $i < count($result); $i++) {
+        for ($i = 0; $i < (is_array($result) ? count($result) : 0); $i++) {
             $ome = new OME();
 
             if (isset($sendMailParam['f-option']) && $sendMailParam['f-option'] === true) {
@@ -158,6 +158,10 @@ class SendMail extends MessagingProvider
                             $storeContext->dbSettings->addExtraCriteria($idParam[0], "=", $idParam[1]);
                             $storeContext->processingRequest("read", true);
                             $templateRecords = $storeContext->getDatabaseResult();
+                            if(count($templateRecords)>0) {
+                                $dbProxy->logger->setDebugMessage("[Messaging\SendMail] Acquired mail template: "
+                                    . $sendMailParam['template-context'], 2);
+                            }
                             $mailSeed = [
                                 'to' => $templateRecords[0]['to_field'],
                                 'cc' => $templateRecords[0]['cc_field'],
@@ -166,8 +170,6 @@ class SendMail extends MessagingProvider
                                 'subject' => $templateRecords[0]['subject'],
                                 'body' => $templateRecords[0]['body'],
                             ];
-                            $dbProxy->logger->setDebugMessages($storeContext->logger->getDebugMessages());
-                            $dbProxy->logger->setErrorMessages($storeContext->logger->getErrorMessages());
                         }
                     } else { // Specify a file name.
                         $fpath = dirname($_SERVER["SCRIPT_FILENAME"]) . '/' . $sendMailParam['template-context'];
@@ -200,9 +202,10 @@ class SendMail extends MessagingProvider
                 $fpath = $dbProxy->dbSettings->getMediaRoot() . "/" .
                     $this->modernTemplating($result[$i], $sendMailParam['attachment']);
                 $ome->addAttachment($fpath);
-                $dbProxy->logger->setDebugMessage("Attachment: {$fpath}", 2);
+                $dbProxy->logger->setDebugMessage("[Messaging\SendMail] Attachment: {$fpath}", 2);
             }
             if ($ome->send()) {
+                $dbProxy->logger->setDebugMessage("[Messaging\SendMail] !!! Succeed to send mail.", 2);
                 if (isset($sendMailParam['store'])) {
                     $storeContext = new Proxy();
                     $storeContext->ignoringPost();
@@ -239,6 +242,8 @@ class SendMail extends MessagingProvider
                     $storeContext->processingRequest("create", true);
                 }
             } else {
+                $dbProxy->logger->setDebugMessage("[Messaging\SendMail] !!! Fail to send mail. "
+                    . $ome->getErrorMessage(), 2);
                 $isError = true;
                 $errorMsg .= (strlen($errorMsg) > 0) ? " / {$ome->getErrorMessage()}" : '';
             }

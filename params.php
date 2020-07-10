@@ -230,16 +230,19 @@ $uploadFilePathMode = "";
 //$themeName = "blackbird";      //Default theme name.
 
 // Server side locale for this application. This locale replaces the browser's accepting languages.
-$appLocale = "ja_JP";   // Locale for application has to be specified the langunage_country code.
+$appLocale = "ja_JP";   // Locale for application has to be specified the language_country code.
 $appCurrency = "JP";    // Locale for currency has to be specified the country code.
 
 // Port number and host name for service server
+$activateClientService = false;  // Default is TRUE!!. (In case of debuging phase, it should be false.)
 $serviceServerPort = "11478";
-$serviceServerHost = "localhost";
+$serviceServerHost = "localhost";   // The Service Server host name to connect from client. "" for public ip address.
+$serviceServerConnect = "localhost";     // The Service Server host name to connect from the INTER-Mediator server
 $stopSSEveryQuit = false;
 $bootWithInstalledNode = false;
 $preventSSAutoBoot = false;
-$notUserServiceServer = false;
+$notUseServiceServer = false;
+//$forerverLog = '/tmp/forever.log';
 
 // Altering messages, overwrite and/or adding new messages. The first index is a language, and the second is the error number.
 $messages['default'][1022] = "We don't support Internet Explorer. We'd like you to access by Edge or any other major browsers.";

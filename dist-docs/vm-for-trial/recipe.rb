@@ -1,6 +1,6 @@
 # coding: utf-8
 
-# Recipe file of Itamae for Alpine Linux 3.10, Ubuntu Server 16.04/18.04, CentOS 6/7
+# Recipe file of Itamae for Alpine Linux 3.10, Ubuntu Server 16.04/18.04, CentOS Linux 7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -23,6 +23,7 @@ IMSAMPLE = "#{IMROOT}/samples"
 IMUNITTEST = "#{IMROOT}/spec/INTER-Mediator-UnitTest"
 IMDISTDOC = "#{IMROOT}/dist-docs"
 IMVMROOT = "#{IMROOT}/dist-docs/vm-for-trial"
+IMSELINUX = "#{IMROOT}/dist-docs/selinux"
 APACHEOPTCONF="/etc/apache2/sites-enabled/inter-mediator-server.conf"
 SMBCONF = "/etc/samba/smb.conf"
 
@@ -175,9 +176,12 @@ elsif node[:platform] == 'redhat'
   end
 end
 
-if node[:platform] == 'ubuntu'
+if node[:platform] == 'redhat' || node[:platform] == 'ubuntu'
   package 'openssh-server' do
     action :install
+  end
+  service 'sshd' do
+    action [ :enable, :start ]
   end
 end
 
@@ -187,6 +191,11 @@ if node[:platform] == 'alpine' || (node[:platform] == 'ubuntu' && node[:platform
   end
 end
 
+if node[:platform] == 'alpine'
+  package 'bash' do
+    action :install
+  end
+end
 if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   package 'postgresql' do
     action :install
@@ -200,12 +209,17 @@ elsif node[:platform] == 'redhat'
       command 'sudo su - postgres -c "initdb --encoding=UTF8 --no-locale"'
     end
   else
-    execute 'service postgresql initdb' do
-      command 'service postgresql initdb'
+    execute 'postgresql-setup initdb' do
+      command 'postgresql-setup initdb'
     end
   end
 end
 if node[:platform] == 'alpine'
+  if node[:virtualization][:system] == 'docker'
+    user "postgres" do
+      action :create
+    end  
+  end
   execute 'yes ********* | sudo passwd postgres' do
     command 'yes im4135dev | sudo passwd postgres'
   end
@@ -431,8 +445,8 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
     command 'sudo /opt/mssql/bin/mssql-conf set telemetry.customerfeedback false'
   end
   if node[:virtualization][:system] == 'docker'
-    execute 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="**********" /opt/mssql/bin/mssql-conf setup' do
-      command 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="im4135devX" /opt/mssql/bin/mssql-conf setup'
+    execute 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_LCID=1041 MSSQL_SA_PASSWORD="**********" /opt/mssql/bin/mssql-conf setup' do
+      command 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_LCID=1041 MSSQL_SA_PASSWORD="im4135devX" /opt/mssql/bin/mssql-conf setup'
     end
     service 'mssql-server' do
       action [ :enable, :start ]
@@ -566,8 +580,11 @@ elsif node[:platform] == 'ubuntu'
     command 'curl -sS https://getcomposer.org/installer | php; sudo mv composer.phar /usr/local/bin/composer; sudo chmod +x /usr/local/bin/composer;'
   end
 elsif node[:platform] == 'redhat'
-  package 'php' do
-    action :install
+  execute 'yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm' do
+    command 'yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm'
+  end
+  execute 'yum install -y --enablerepo=epel,remi,remi-php73 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip' do
+    command 'yum install -y --enablerepo=epel,remi,remi-php73 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip'
   end
   if node[:platform_version].to_f < 6
     package 'php-mbstring' do
@@ -610,6 +627,9 @@ elsif node[:platform] == 'redhat'
     #  content 'extension=timezonedb.so'
     #end
   end
+  execute 'curl -sS https://getcomposer.org/installer | php; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer;' do
+    command 'curl -sS https://getcomposer.org/installer | php; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer;'
+  end
 end
 
 if node[:platform] == 'ubuntu'
@@ -636,9 +656,6 @@ elsif node[:platform] == 'redhat'
     end
   else
     package 'mariadb-devel' do
-      action :install
-    end
-    package 'php-mysqlnd' do
       action :install
     end
   end
@@ -788,20 +805,13 @@ if node[:platform] == 'redhat'
     action :install
   end
 end
-if node[:platform] == 'alpine' || (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14 && node[:platform_version].to_f < 18) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
-  package 'nodejs' do
-    action :install
-  end
+package 'nodejs' do
+  action :install
 end
 
-if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14 && node[:platform_version].to_f < 18) || node[:platform] == 'redhat'
+if node[:platform] == 'redhat' || node[:platform] == 'ubuntu'
   execute 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10' do
     command 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10'
-  end
-end
-if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 18
-  package 'nodejs' do
-    action :install
   end
 end
 if node[:platform] == 'alpine'
@@ -856,10 +866,10 @@ if node[:platform] == 'alpine'
     command 'update-ca-certificates'
   end
 end
+package 'wget' do
+  action :install
+end
 if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
-  package 'wget' do
-    action :install
-  end
   if node[:platform] == 'ubuntu' && node[:platform_version].to_f < 18
     execute 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp' do
       command 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp'
@@ -878,10 +888,16 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   execute 'chmod +x /usr/local/bin/phpunit' do
     command 'chmod +x /usr/local/bin/phpunit'
   end
-elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 6
-  package 'php-phpunit-PHPUnit' do
-    action :install
+elsif node[:platform] == 'redhat'
+  execute 'wget https://phar.phpunit.de/phpunit-8.phar -P /tmp' do
+    command 'wget https://phar.phpunit.de/phpunit-8.phar -P /tmp'
   end
+  execute 'mv /tmp/phpunit-8.phar /usr/local/bin/phpunit' do
+    command 'mv /tmp/phpunit-8.phar /usr/local/bin/phpunit'
+  end
+end
+execute 'chmod +x /usr/local/bin/phpunit' do
+  command 'chmod +x /usr/local/bin/phpunit'
 end
 
 package 'samba' do
@@ -972,8 +988,18 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   end
 end
 
-execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
-  command "chown -R developer:im-developer \"#{WEBROOT}\""
+if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
+  execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
+    command "chown -R developer:im-developer \"#{WEBROOT}\""
+  end
+end
+if node[:platform] == 'ubuntu'
+  execute "chown developer:im-developer /var/www" do
+    command "chown developer:im-developer /var/www"
+  end
+  execute "chmod 775 /var/www" do
+    command "chmod 775 /var/www"
+  end
 end
 #execute "cd \"#{IMSUPPORT}\" && git clone https://github.com/codemirror/CodeMirror.git" do
 #  command "cd \"#{IMSUPPORT}\" && git clone https://github.com/codemirror/CodeMirror.git"
@@ -1046,6 +1072,10 @@ $webServerName = [''];
 $preventSSAutoBoot = true;
 $serviceServerPort = '11478';
 $serviceServerHost = 'localhost';
+$serviceServerConnect = 'localhost';
+$stopSSEveryQuit = false;
+$preventSSAutoBoot = false;
+$notUseServiceServer = false;
 $messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any other major browsers.';
 $messages['ja'][1022] = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
 EOF
@@ -1104,6 +1134,10 @@ $webServerName = [''];
 $preventSSAutoBoot = true;
 $serviceServerPort = '11478';
 $serviceServerHost = 'localhost';
+$serviceServerConnect = 'localhost';
+$stopSSEveryQuit = false;
+$preventSSAutoBoot = false;
+$notUseServiceServer = false;
 $messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any other major browsers.';
 $messages['ja'][1022] = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
 EOF
@@ -1162,6 +1196,10 @@ $webServerName = [''];
 $preventSSAutoBoot = true;
 $serviceServerPort = '11478';
 $serviceServerHost = 'localhost';
+$serviceServerConnect = 'localhost';
+$stopSSEveryQuit = false;
+$preventSSAutoBoot = false;
+$notUseServiceServer = false;
 $messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any other major browsers.';
 $messages['ja'][1022] = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
 EOF
@@ -1169,8 +1207,8 @@ EOF
 end
 
 if node[:platform] == 'redhat'
-  execute 'service httpd restart' do
-    command 'service httpd restart'
+  service 'httpd' do
+    action [ :restart ]
   end
 end
 
@@ -1182,8 +1220,14 @@ end
 
 # Install php/js libraries
 
-execute "cd \"#{IMROOT}\" && composer update" do
-  command "cd \"#{IMROOT}\" && composer update"  # returns error for the script of nodejs-installer.
+if node[:platform] == 'redhat'
+  execute "cd \"#{IMROOT}\" && /usr/local/bin/composer update" do
+    command "cd \"#{IMROOT}\" && /usr/local/bin/composer update"
+  end
+else
+  execute "cd \"#{IMROOT}\" && composer update" do
+    command "cd \"#{IMROOT}\" && composer update"  # returns error for the script of nodejs-installer.
+  end
 end
 
 # Install npm packages
@@ -1249,28 +1293,6 @@ end
 
 if node[:platform] == 'redhat'
   if node[:platform_version].to_f >= 6
-    execute 'setenforce 0' do
-      command 'setenforce 0'
-    end
-    file '/etc/selinux/config' do
-      owner 'root'
-      group 'root'
-      mode '644'
-      content <<-EOF
-# This file controls the state of SELinux on the system.
-# SELINUX= can take one of these three values:
-#     enforcing - SELinux security policy is enforced.
-#     permissive - SELinux prints warnings instead of enforcing.
-#     disabled - No SELinux policy is loaded.
-SELINUX=disabled
-# SELINUXTYPE= can take one of these two values:
-#     targeted - Targeted processes are protected,
-#     mls - Multi Level Security protection.
-SELINUXTYPE=targeted
-
-
-EOF
-    end
     if node[:platform_version].to_f >= 6 && node[:platform_version].to_f < 7
       file '/etc/sysconfig/iptables' do
         content <<-EOF
@@ -1294,17 +1316,23 @@ EOF
         command 'service iptables restart'
       end
     else
+      package 'firewalld' do
+        action :install
+      end
+      service 'firewalld' do
+        action [ :enable, :start ]
+      end
       execute 'firewall-cmd --zone=public --add-service=http --permanent' do
         command 'firewall-cmd --zone=public --add-service=http --permanent'
+      end
+      execute 'firewall-cmd --zone=public --add-service=samba --permanent' do
+        command 'firewall-cmd --zone=public --add-service=samba --permanent'
       end
       execute 'firewall-cmd --reload' do
         command 'firewall-cmd --reload'
       end
     end
   end
-  #execute 'setenforce 1' do
-  #  command 'setenforce 1'
-  #end
 end
 
 if node[:platform] == 'redhat'
@@ -1394,11 +1422,11 @@ if node[:platform] == 'redhat'
 # TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
 
 # "local" is for Unix domain socket connections only
-local   all         all                               trust
+local   all             all                                     trust
 # IPv4 local connections:
-host    all         all         127.0.0.1/32          trust
+host    all             all             127.0.0.1/32            trust
 # IPv6 local connections:
-host    all         all         ::1/128               trust
+host    all             all             ::1/128                 trust
 EOF
   end
   service 'postgresql' do
@@ -1421,11 +1449,6 @@ elsif node[:platform] == 'redhat'
   end
 end
 
-if node[:platform] == 'alpine'
-  package 'bash' do
-    action :install
-  end
-end
 execute "echo \"y\" | bash \"#{IMVMROOT}/dbupdate.sh\"" do
   command "echo \"y\" | bash \"#{IMVMROOT}/dbupdate.sh\""
 end
@@ -1450,8 +1473,17 @@ if node[:platform] == 'alpine' || node[:platform] == 'redhat'
   end
 end
 
-execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
-  command "chown -R developer:im-developer \"#{WEBROOT}\""
+if node[:platform] == 'redhat'
+  execute "chown -R apache:im-developer \"#{WEBROOT}\"" do
+    command "chown -R apache:im-developer \"#{WEBROOT}\""
+  end
+  execute "chown -R apache:im-developer /usr/share/httpd" do
+    command "chown -R apache:im-developer /usr/share/httpd"
+  end
+else
+  execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
+    command "chown -R developer:im-developer \"#{WEBROOT}\""
+  end
 end
 
 execute "chmod -R a=rX,u+w,g+w \"#{WEBROOT}\"" do
@@ -1792,7 +1824,14 @@ file "#{SMBCONF}" do
 ;   write list = root, @lpadmin
 
 [global]
+   security = user
+   passdb backend = tdbsam
+   max protocol = SMB3
+   min protocol = SMB2
+   ea support = yes
+   unix extensions = no
    browseable = no
+   hosts allow = 192.168.56. 127.
 
 [webroot]
    comment = Apache Root Directory
@@ -1806,8 +1845,25 @@ file "#{SMBCONF}" do
 EOF
 end
 
-execute '( echo *********; echo ********* ) | sudo smbpasswd -s -a developer' do
-  command '( echo im4135dev; echo im4135dev ) | sudo smbpasswd -s -a developer'
+execute '( echo *********; echo ********* ) | smbpasswd -s -a developer' do
+  command '( echo im4135dev; echo im4135dev ) | smbpasswd -s -a developer'
+end
+
+
+# SELinux
+if node[:platform] == 'redhat' && node[:virtualization][:system] != 'docker'
+  package 'policycoreutils' do
+    action :install
+  end
+  package 'libselinux-utils' do
+    action :install
+  end
+  execute 'setsebool -P samba_export_all_rw 1' do
+    command 'setsebool -P samba_export_all_rw 1'
+  end
+  execute "cd \"#{IMSELINUX}\" && semodule -i inter-mediator.pp" do
+    command "cd \"#{IMSELINUX}\" && semodule -i inter-mediator.pp"
+  end
 end
 
 
@@ -1873,10 +1929,11 @@ EOF
 # By default this script does nothing.
 
 export DISPLAY=:99.0
-/usr/local/bin/buster-server &
-/bin/sleep 5
+#/usr/local/bin/buster-server &
+#/bin/sleep 5
 #/usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &
 /usr/bin/Xvfb :99 -screen 0 1024x768x24 -extension RANDR > /dev/null 2>&1 &
+/bin/sleep 5
 firefox http://localhost:1111/capture > /dev/null &
 chromium-browser --no-sandbox --headless --remote-debugging-port=9222 http://localhost:1111/capture > /dev/null &
 exit 0
@@ -2013,8 +2070,8 @@ elsif node[:platform] == 'ubuntu'
   package 'firefox' do
     action :install
   end
-  execute 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux64.tar.gz > /tmp/geckodriver-v0.23.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.23.0-linux64.tar.gz' do
-    command 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux64.tar.gz > /tmp/geckodriver-v0.23.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.23.0-linux64.tar.gz'
+  execute 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz > /tmp/geckodriver-v0.26.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.26.0-linux64.tar.gz' do
+    command 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz > /tmp/geckodriver-v0.26.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.26.0-linux64.tar.gz'
   end
   package 'chromium-browser' do
     action :install
@@ -2079,21 +2136,44 @@ if node[:platform] == 'alpine'
 end
 
 
+execute 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd' do
+  command 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd'
+end
 if node[:platform] == 'alpine'
   execute "chmod 755 \"#{WEBROOT}\"/INTER-Mediator/node_modules/jest/bin/jest.js" do
     command "chmod 755 \"#{WEBROOT}\"/INTER-Mediator/node_modules/jest/bin/jest.js"
-  end
-  execute 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd' do
-    command 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd'
-  end
-  if node[:virtualization][:system] != 'docker'
-    execute 'poweroff' do
-      command 'poweroff'
-    end
   end
 end
 if node[:platform] == 'ubuntu'
   execute 'sudo /etc/rc.local &' do
       command 'sudo /etc/rc.local &'
+  end
+end
+if node[:virtualization][:system] != 'docker'
+  if node[:platform] == 'redhat'
+    service 'smb' do
+      action [ :stop ]
+    end
+    service 'postgresql' do
+      action [ :stop ]
+    end
+    service 'mariadb' do
+      action [ :stop ]
+    end
+    service 'httpd' do
+      action [ :stop ]
+    end
+  end
+  if node[:platform] == 'redhat' || node[:platform] == 'ubuntu'
+    execute '/var/www/html/INTER-Mediator/node_modules/.bin/forever stopall' do
+      command '/var/www/html/INTER-Mediator/node_modules/.bin/forever stopall'
+    end
+    execute '/sbin/shutdown -h +1' do
+      command '/sbin/shutdown -h +1'
+    end
+  else
+    execute 'poweroff' do
+      command 'poweroff'
+    end
   end
 end
