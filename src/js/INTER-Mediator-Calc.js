@@ -253,7 +253,7 @@ var IMLibCalc = {
           valuesArray = calcObject.values
           refersArray = calcObject.referes
           contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nInfo.target)
-          if (contextInfo && contextInfo.context) {
+          if (contextInfo && contextInfo.context ) {
             record = contextInfo.context.getContextRecord(idValue)
           } else {
             record = null

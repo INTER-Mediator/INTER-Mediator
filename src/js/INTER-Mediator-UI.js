@@ -28,6 +28,7 @@ const IMLibUI = {
   mobileNaviBackButtonId: null, // @Private
   mergedFieldSeparator: '\n', // @Private
 
+  recalculationOnValueChange: true,
   /*
    valueChange
    Parameters: It the validationOnly parameter is set to true, this method should return the boolean value
@@ -84,7 +85,9 @@ const IMLibUI = {
           targetSpec = targetNode.getAttribute('data-im')
           if (targetSpec && targetSpec.split(INTERMediator.separator)[0] === IMLibLocalContext.contextName) {
             IMLibLocalContext.updateFromNodeValue(idValue)
-            IMLibCalc.recalculation()
+            if(IMLibUI.recalculationOnValueChange) {
+              IMLibCalc.recalculation()
+            }
             completeTask()
             return true
           }
@@ -183,7 +186,9 @@ const IMLibUI = {
               }
               contextInfoCapt.context.updateContextAsLookup(idValueCapt2, newValueCapt)
               IMLibQueue.setTask((completeTask) => {
-                IMLibCalc.recalculation()
+                if(IMLibUI.recalculationOnValueChange) {
+                  IMLibCalc.recalculation()
+                }
                 if (INTERMediatorOnPage.doAfterValueChange) {
                   INTERMediatorOnPage.doAfterValueChange(idValueCapt2)
                 }

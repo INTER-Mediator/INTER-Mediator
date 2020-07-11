@@ -1784,14 +1784,13 @@ const INTERMediator = {
     return node
   },
 
-  nextIdValue: () => {
-    'use strict'
+  nextIdValue: (adding = false) => {
     INTERMediator.linkedElmCounter++
-    return currentIdValue()
-
-    function currentIdValue() {
-      return 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter
+    let idString = 'IM'
+    if (adding) {
+      idString += '_' + adding + '_'
     }
+    return idString + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter
   },
 
   getLocalProperty: (localKey, defaultValue) => {

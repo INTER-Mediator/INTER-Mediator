@@ -1112,6 +1112,7 @@ class IMLibContext {
   updateLookupInfo(force = false) {
     let key, keying, obj
     const keyField = this.getKeyField()
+    // IMLibUI.recalculationOnValueChange = false
     /*
 this.lookingUpInfo
   id=1:
@@ -1227,6 +1228,12 @@ this.lookingUpInfo
                 }
               }
             }
+            if (isModified) {
+              IMLibQueue.setTask((completeTask)=>{
+                IMLibCalc.recalculation()
+                completeTask()
+              })
+            }
             return
           }
         }
@@ -1278,6 +1285,11 @@ this.lookingUpInfo
                       }
                     }
                   }
+                  IMLibQueue.setTask((completeTask)=>{
+                    IMLibCalc.recalculation()
+                    completeTask()
+                  })
+                  INTERMediatorLog.flushMessage()
                   completeTask()
                 },
                 () => {
