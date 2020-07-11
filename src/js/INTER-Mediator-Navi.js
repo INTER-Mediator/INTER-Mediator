@@ -691,7 +691,7 @@ const IMLibPageNavigation = {
         buttonName = currentContextDef['button-names'].copy
       }
       buttonNode.appendChild(document.createTextNode(buttonName))
-      thisId = 'IM_Button_' + INTERMediator.nextIdValue() // INTERMediator.buttonIdNum
+      thisId = INTERMediator.nextIdValue('CopyButton') // 'IM_Button_' + INTERMediator.buttonIdNum
       buttonNode.setAttribute('id', thisId)
       INTERMediator.buttonIdNum++
       IMLibMouseEventDispatch.setExecute(thisId, (function () {
@@ -736,7 +736,7 @@ const IMLibPageNavigation = {
         buttonName = currentContextDef['button-names'].delete
       }
       buttonNode.appendChild(document.createTextNode(buttonName))
-      thisId = 'IM_Button_' + INTERMediator.nextIdValue()  // INTERMediator.buttonIdNum
+      thisId = INTERMediator.nextIdValue('DeleteButton') // 'IM_Button_' + INTERMediator.buttonIdNum
       buttonNode.setAttribute('id', thisId)
       INTERMediator.buttonIdNum++
       IMLibMouseEventDispatch.setExecute(thisId, (function () {
@@ -820,7 +820,7 @@ const IMLibPageNavigation = {
           buttonName = currentContextDef['button-names'].insert
         }
         buttonNode.appendChild(document.createTextNode(buttonName))
-        thisId = 'IM_Button_' + INTERMediator.nextIdValue() // INTERMediator.buttonIdNum
+        thisId = INTERMediator.nextIdValue('InsertButton') // 'IM_Button_' + INTERMediator.buttonIdNum
         buttonNode.setAttribute('id', thisId)
         INTERMediator.buttonIdNum++
         switch (encNodeTag) {
@@ -958,7 +958,7 @@ const IMLibPageNavigation = {
       buttonName = currentContextDef['button-names']['navi-detail']
     }
     buttonNode.appendChild(document.createTextNode(buttonName))
-    thisId = 'IM_Button_' + INTERMediator.nextIdValue() // INTERMediator.buttonIdNum
+    thisId = INTERMediator.nextIdValue('MasterButton') // 'IM_Button_' + INTERMediator.buttonIdNum
     buttonNode.setAttribute('id', thisId)
     INTERMediator.buttonIdNum++
     if (isMasterDetail) {
@@ -1481,7 +1481,7 @@ const IMLibPageNavigation = {
 
     function setIdForIMButtons(node) {
       var thisId
-      thisId = 'IM_Button_' + INTERMediator.nextIdValue() // INTERMediator.buttonIdNum
+      thisId = INTERMediator.nextIdValue('BackButton') // 'IM_Button_' + INTERMediator.buttonIdNum
       node.setAttribute('id', thisId)
       INTERMediator.buttonIdNum++
     }
