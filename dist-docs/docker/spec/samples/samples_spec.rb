@@ -133,7 +133,7 @@ describe "INTER-Mediator-Server VM" do
       element = @driver.find_element(:xpath, "//a[contains(@href, 'Sample_webpage/fileupload_MySQL.html')]")
       element.click
       sleep 1
-      element = @driver.find_element(:id, "IM_Button_1")
+      element = @driver.find_element(:id, "IM_InsertButton_4-23")
       element.click
       sleep 1
       element = @driver.find_element(:xpath, "//td[@data-im='testtable@vc1']")
