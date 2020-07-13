@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  test:
     docker:
       - image: docker:17.06.2-ce-git
     working_directory: ~/INTER-Mediator
@@ -15,3 +15,9 @@ jobs:
       - run: docker exec -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile -e DISPLAY=:99.0 -it ubuntu sh -c "/etc/rc.local; apt-get -y install ruby-dev firefox; gem install bundler --no-doc; bundle; curl -L https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz > /tmp/geckodriver-v0.26.0-linux64.tar.gz; cd /usr/bin/; sudo tar xzvf /tmp/geckodriver-v0.26.0-linux64.tar.gz; rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec -f doc -c /var/www/html/INTER-Mediator/dist-docs/docker/spec/samples/samples_spec.rb"
       - run: docker stop ubuntu
       - run: docker rm ubuntu
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - test
