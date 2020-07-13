@@ -97,6 +97,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     public function exportOutputDataAsJSON()
     {
+        file_put_contents('/var/www/d1.txt',var_export($this->outputOfProcessing, true));
+
+
         $jsonString = json_encode($this->outputOfProcessing,
             JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
         if ($jsonString === false) {
