@@ -246,6 +246,7 @@ class MediaAccess
      */
     private function checkAuthentication($dbProxyInstance, $options, $target)
     {
+        $context = NULL;
         if ($this->analyzeTarget($target)) {
             $dbProxyInstance->dbSettings->setDataSourceName($this->targetContextName);
             $context = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
@@ -269,6 +270,7 @@ class MediaAccess
             }
             $cValueUser = isset($_COOKIE[$cookieNameUser]) ? $_COOKIE[$cookieNameUser] : '';
             $cValueToken = isset($_COOKIE[$cookieNameToken]) ? $_COOKIE[$cookieNameToken] : '';
+
             if (!$dbProxyInstance->checkMediaToken($cValueUser, $cValueToken)) {
                 $this->exitAsError(401);
             }
@@ -357,7 +359,11 @@ class MediaAccess
                 }
             }
             if ($indexKeying == -1) {
-                //    $this->exitAsError(401);
+                if ($pathComponents[0] == 'class:') {
+                    $contextName = $pathComponents[3];
+                } else {
+                    $this->exitAsError(401);
+                }
             }
             $dbProxyInstance->dbSettings->setDataSourceName($contextName);
             $this->contextRecord = $dbProxyInstance->readFromDB();
