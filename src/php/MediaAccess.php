@@ -258,9 +258,8 @@ class MediaAccess
 
         $isContextAuth = (isset($context['authentication']) && (isset($context['authentication']['all'])
                 || isset($context['authentication']['load']) || isset($context['authentication']['read'])));
-        $isOptionAuth = (isset($options['authentication']) && (isset($options['authentication']['all'])
-                || isset($options['authentication']['load']) || isset($options['authentication']['read'])));
-        if (!$isContextAuth && $isOptionAuth) {
+        $isOptionAuth = isset($options['authentication']);
+        if (!$isContextAuth && !$isOptionAuth) {
             $this->exitAsError(401);
         }
 
@@ -275,7 +274,6 @@ class MediaAccess
         }
         $cValueUser = isset($_COOKIE[$cookieNameUser]) ? $_COOKIE[$cookieNameUser] : '';
         $cValueToken = isset($_COOKIE[$cookieNameToken]) ? $_COOKIE[$cookieNameToken] : '';
-
         if (!$dbProxyInstance->checkMediaToken($cValueUser, $cValueToken)) {
             $this->exitAsError(401);
         }
