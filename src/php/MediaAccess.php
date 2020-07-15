@@ -255,25 +255,31 @@ class MediaAccess
             $dbProxyInstance->dbSettings->setDataSourceName($options['media-context']);
             $context = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
         }
-        if (isset($context['authentication'])
-            && (isset($context['authentication']['all'])
-                || isset($context['authentication']['load'])
-                || isset($context['authentication']['read']))
-        ) {
-            $cookieNameUser = "_im_username";
-            $cookieNameToken = "_im_mediatoken";
-            if (isset($options['authentication']['realm'])) {
-                $realm = str_replace(" ", "_",
-                    str_replace(".", "_", $options['authentication']['realm']));
-                $cookieNameUser .= ('_' . $realm);
-                $cookieNameToken .= ('_' . $realm);
-            }
-            $cValueUser = isset($_COOKIE[$cookieNameUser]) ? $_COOKIE[$cookieNameUser] : '';
-            $cValueToken = isset($_COOKIE[$cookieNameToken]) ? $_COOKIE[$cookieNameToken] : '';
 
-            if (!$dbProxyInstance->checkMediaToken($cValueUser, $cValueToken)) {
-                $this->exitAsError(401);
-            }
+        $isContextAuth = (isset($context['authentication']) && (isset($context['authentication']['all'])
+                || isset($context['authentication']['load']) || isset($context['authentication']['read'])));
+        $isOptionAuth = (isset($options['authentication']) && (isset($options['authentication']['all'])
+                || isset($options['authentication']['load']) || isset($options['authentication']['read'])));
+        if (!$isContextAuth && $isOptionAuth) {
+            $this->exitAsError(401);
+        }
+
+        // Check the authentication credential on cookie
+        $cookieNameUser = "_im_username";
+        $cookieNameToken = "_im_mediatoken";
+        if (isset($options['authentication']['realm'])) {
+            $realm = str_replace(" ", "_",
+                str_replace(".", "_", $options['authentication']['realm']));
+            $cookieNameUser .= ('_' . $realm);
+            $cookieNameToken .= ('_' . $realm);
+        }
+        $cValueUser = isset($_COOKIE[$cookieNameUser]) ? $_COOKIE[$cookieNameUser] : '';
+        $cValueToken = isset($_COOKIE[$cookieNameToken]) ? $_COOKIE[$cookieNameToken] : '';
+
+        if (!$dbProxyInstance->checkMediaToken($cValueUser, $cValueToken)) {
+            $this->exitAsError(401);
+        }
+        if ($isContextAuth) {
             if (isset($context['authentication']['load'])) {
                 $authInfoField = $dbProxyInstance->dbClass->authHandler->getFieldForAuthorization("load");
                 $authInfoTarget = $dbProxyInstance->dbClass->authHandler->getTargetForAuthorization("load");
@@ -298,50 +304,28 @@ class MediaAccess
             } else if ($authInfoTarget == 'field-group') {
                 //
             } else {
-                if (isset($context['authentication']['load'])) {
-                    $authorizedUsers = $dbProxyInstance->dbClass->authHandler->getAuthorizedUsers("load");
-                    $authorizedGroups = $dbProxyInstance->dbClass->authHandler->getAuthorizedGroups("load");
-                } else if (isset($context['authentication']['read'])) {
-                    $authorizedUsers = $dbProxyInstance->dbClass->authHandler->getAuthorizedUsers("read");
-                    $authorizedGroups = $dbProxyInstance->dbClass->authHandler->getAuthorizedGroups("read");
-                } else if (isset($context['authentication']['all'])) {
-                    $authorizedUsers = $dbProxyInstance->dbClass->authHandler->getAuthorizedUsers("all");
-                    $authorizedGroups = $dbProxyInstance->dbClass->authHandler->getAuthorizedGroups("all");
-                }
-                if (count($authorizedGroups) == 0 && count($authorizedUsers) == 0) {
-                    return;
-                }
+                $isOptionAuth = true;
+            }
+        }
+        if ($isOptionAuth) {
+            if (isset($context['authentication']['load'])) {
+                $authorizedUsers = $dbProxyInstance->dbClass->authHandler->getAuthorizedUsers("load");
+                $authorizedGroups = $dbProxyInstance->dbClass->authHandler->getAuthorizedGroups("load");
+            } else if (isset($context['authentication']['read'])) {
+                $authorizedUsers = $dbProxyInstance->dbClass->authHandler->getAuthorizedUsers("read");
+                $authorizedGroups = $dbProxyInstance->dbClass->authHandler->getAuthorizedGroups("read");
+            } else if (isset($context['authentication']['all'])) {
+                $authorizedUsers = $dbProxyInstance->dbClass->authHandler->getAuthorizedUsers("all");
+                $authorizedGroups = $dbProxyInstance->dbClass->authHandler->getAuthorizedGroups("all");
+            }
+            if (count($authorizedGroups) != 0 || count($authorizedUsers) != 0) {
                 $belongGroups = $dbProxyInstance->dbClass->authHandler->authSupportGetGroupsOfUser($_COOKIE[$cookieNameUser]);
                 if (!in_array($_COOKIE[$cookieNameUser], $authorizedUsers)
                     && count(array_intersect($belongGroups, $authorizedGroups)) == 0
                 ) {
                     $this->exitAsError(400);
                 }
-                $endOfPath = strpos($target, "?");
-                $endOfPath = ($endOfPath === false) ? strlen($target) : $endOfPath;
-                $pathComponents = explode('/', substr($target, 0, $endOfPath));
-                $indexKeying = -1;
-                $contextName = '';
-                foreach ($pathComponents as $index => $dname) {
-                    $decodedComponent = urldecode($dname);
-                    if (strpos($decodedComponent, '=') !== false) {
-                        $indexKeying = $index;
-                        $fieldComponents = explode('=', $decodedComponent);
-                        $keyField = $fieldComponents[0];
-                        $keyValue = $fieldComponents[1];
-                        $dbProxyInstance->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
-                    } else {
-                        $contextName = $pathComponents[$index];
-                    }
-                }
-                if ($indexKeying == -1) {
-                    //    $this->exitAsError(401);
-                }
-                $dbProxyInstance->dbSettings->setCurrentUser($_COOKIE[$cookieNameUser]);
-                $dbProxyInstance->dbSettings->setDataSourceName($contextName);
-                $this->contextRecord = $dbProxyInstance->readFromDB();
             }
-        } else {
             $endOfPath = strpos($target, "?");
             $endOfPath = ($endOfPath === false) ? strlen($target) : $endOfPath;
             $pathComponents = explode('/', substr($target, 0, $endOfPath));
@@ -355,7 +339,8 @@ class MediaAccess
                     $keyField = $fieldComponents[0];
                     $keyValue = $fieldComponents[1];
                     $dbProxyInstance->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
-                    $contextName = $pathComponents[$index - 1];
+                } else {
+                    $contextName = $pathComponents[$index];
                 }
             }
             if ($indexKeying == -1) {
@@ -365,6 +350,7 @@ class MediaAccess
                     $this->exitAsError(401);
                 }
             }
+            $dbProxyInstance->dbSettings->setCurrentUser($_COOKIE[$cookieNameUser]);
             $dbProxyInstance->dbSettings->setDataSourceName($contextName);
             $this->contextRecord = $dbProxyInstance->readFromDB();
         }
