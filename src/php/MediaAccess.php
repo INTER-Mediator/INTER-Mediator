@@ -306,6 +306,8 @@ class MediaAccess
             }
         }
         if ($isOptionAuth) {
+            $authorizedUsers = [];
+            $authorizedGroups  =[];
             if (isset($context['authentication']['load'])) {
                 $authorizedUsers = $dbProxyInstance->dbClass->authHandler->getAuthorizedUsers("load");
                 $authorizedGroups = $dbProxyInstance->dbClass->authHandler->getAuthorizedGroups("load");
