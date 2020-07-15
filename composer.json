@@ -1,7 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
   "version": "6-dev",
-  "time": "2020-06-07",
+  "time": "2020-06-15",
   "repositories": [
     {
       "type": "git",
@@ -78,11 +78,11 @@
       "rm -rf node_modules vendor"
     ],
     "post-update-cmd": [
-      "npm install",
+      "./vendor/bin/npm install",
       "rm -f __Did_you_run_composer_update.txt"
     ],
     "post-install-cmd": [
-      "npm install",
+      "./vendor/bin/npm install",
       "rm -f __Did_you_run_composer_update.txt"
     ],
     "post-create-project-cmd": [
