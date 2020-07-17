@@ -251,7 +251,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $this->dbSettings->notifyServer->updated(
                         $this->PostData['notifyid'],
                         $this->dbClass->notifyHandler->queriedEntity(),
-                        $this->dbClass->notifyHandler->qqueriedPrimaryKeys(),
+                        $this->dbClass->notifyHandler->queriedPrimaryKeys(),
                         $this->dbSettings->getFieldsRequired(),
                         $this->dbSettings->getValue()
                     );
