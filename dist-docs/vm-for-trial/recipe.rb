@@ -183,8 +183,8 @@ elsif node[:platform] == 'redhat'
       command 'sudo su - postgres -c "initdb --encoding=UTF8 --no-locale"'
     end
   else
-    execute 'service postgresql initdb' do
-      command 'service postgresql initdb'
+    execute 'postgresql-setup initdb' do
+      command 'postgresql-setup initdb'
     end
   end
 end
