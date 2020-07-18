@@ -189,6 +189,11 @@ elsif node[:platform] == 'redhat'
   end
 end
 if node[:platform] == 'alpine'
+  if node[:virtualization][:system] == 'docker'
+    user "postgres" do
+      action :create
+    end  
+  end
   execute 'yes ********* | sudo passwd postgres' do
     command 'yes im4135dev | sudo passwd postgres'
   end
