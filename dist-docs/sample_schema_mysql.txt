@@ -224,6 +224,7 @@ CREATE TABLE product (
 	acknowledgement	    VARCHAR(100),
 	ack_link			VARCHAR(100),
 	memo				VARCHAR(120),
+	user                VARCHAR(16),
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
@@ -538,11 +539,11 @@ CREATE TABLE information (
 		ENGINE=InnoDB;
 
 # Sample Data
-INSERT product SET name="Apple",id=1,category_id=1,unitprice=340,taxrate=0.08,photofile='mela-verde.png',acknowledgement='Image: djcodrin / FreeDigitalPhotos.net',ack_link='http://www.freedigitalphotos.net/images/view_photog.php?photogid=982';
-INSERT product SET name="Orange",id=2,category_id=1,unitprice=1540,taxrate=0.08,photofile='orange_1.png',acknowledgement='Image: Suat Eman / FreeDigitalPhotos.net',ack_link='http://www.freedigitalphotos.net/images/view_photog.php?photogid=151';
-INSERT product SET name="Melon",id=3,category_id=1,unitprice=3840,taxrate=0.1,photofile='galia-melon.png',acknowledgement='Image: FreeDigitalPhotos.net',ack_link='http://www.freedigitalphotos.net';
-INSERT product SET name="Tomato",id=4,category_id=2,unitprice=2440,taxrate=0.1,photofile='tomatos.png',acknowledgement='Image: Tina Phillips / FreeDigitalPhotos.net',ack_link='http://www.freedigitalphotos.net/images/view_photog.php?photogid=503';
-INSERT product SET name="Onion",id=5,category_id=2,unitprice=21340,taxrate=0.1,photofile='onion2.png',acknowledgement='Image: FreeDigitalPhotos.net',ack_link='http://www.freedigitalphotos.net';
+INSERT product SET name="Apple",id=1,user='user1',category_id=1,unitprice=340,taxrate=0.08,photofile='mela-verde.png',acknowledgement='Image: djcodrin / FreeDigitalPhotos.net',ack_link='http://www.freedigitalphotos.net/images/view_photog.php?photogid=982';
+INSERT product SET name="Orange",id=2,user='user2',category_id=1,unitprice=1540,taxrate=0.08,photofile='orange_1.png',acknowledgement='Image: Suat Eman / FreeDigitalPhotos.net',ack_link='http://www.freedigitalphotos.net/images/view_photog.php?photogid=151';
+INSERT product SET name="Melon",id=3,user='user1',category_id=1,unitprice=3840,taxrate=0.1,photofile='galia-melon.png',acknowledgement='Image: FreeDigitalPhotos.net',ack_link='http://www.freedigitalphotos.net';
+INSERT product SET name="Tomato",id=4,user='user2',category_id=2,unitprice=2440,taxrate=0.1,photofile='tomatos.png',acknowledgement='Image: Tina Phillips / FreeDigitalPhotos.net',ack_link='http://www.freedigitalphotos.net/images/view_photog.php?photogid=503';
+INSERT product SET name="Onion",id=5,user='user1',category_id=2,unitprice=21340,taxrate=0.1,photofile='onion2.png',acknowledgement='Image: FreeDigitalPhotos.net',ack_link='http://www.freedigitalphotos.net';
 
 INSERT invoice SET id=1,issued="2010-2-4",title='Invoice';
 INSERT invoice SET id=2,issued="2010-2-6",title='Invoice';

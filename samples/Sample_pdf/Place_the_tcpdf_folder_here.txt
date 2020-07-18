@@ -1,5 +1,0 @@
-This sample requres the 'tcpdf' library for generating PDF.
-You should download the 'tcpdf' from below, and the 'tcpdf' folder should be placed on this directory.
-
-http://www.tcpdf.org/
-

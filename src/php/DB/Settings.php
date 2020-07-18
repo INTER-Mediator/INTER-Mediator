@@ -764,6 +764,9 @@ class Settings
     public function getEntityForRetrieve()
     {
         $dsrc = $this->getDataSourceTargetArray();
+        if(is_null($dsrc)){
+            return null;
+        }
         if (isset($dsrc['view'])) {
             return $dsrc['view'];
         }
@@ -773,6 +776,9 @@ class Settings
     public function getEntityForCount()
     {
         $dsrc = $this->getDataSourceTargetArray();
+        if(is_null($dsrc)){
+            return null;
+        }
         if (isset($dsrc['count'])) {
             return $dsrc['count'];
         }
@@ -785,6 +791,9 @@ class Settings
     public function getEntityForUpdate()
     {
         $dsrc = $this->getDataSourceTargetArray();
+        if(is_null($dsrc)){
+            return null;
+        }
         if (isset($dsrc['table'])) {
             return $dsrc['table'];
         }

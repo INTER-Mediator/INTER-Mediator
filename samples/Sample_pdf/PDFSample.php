@@ -11,7 +11,7 @@ class PDFSample
 
     function processing($contextData, $options)
     {
-        $prodId = $contextData[0]['id'];
+       $prodId = $contextData[0]['id'];
         $prodName = $contextData[0]['name'];
         $unitPrice = $contextData[0]['unitprice'];
         $pFile = $contextData[0]['photofile'];

@@ -19,43 +19,95 @@ use Exception;
 
 class MediaAccess
 {
-    private $contextRecord = null;
-    private $disposition = "inline";
+    private $disposition = "inline";    // default disposition.
+    private $targetKeyField;    // set with the analyzeTarget method.
+    private $targetKeyValue;  // set with the analyzeTarget method.
+    private $targetContextName;  // set with the analyzeTarget method.
+    private $targetFieldName;  // set with the analyzeTarget method.
+    private $cookieUser;    // set with the checkAuthentication method.
 
-    function asAttachment()
+    private function asAttachment()
     {
         $this->disposition = "attachment";
     }
 
-    function processing($dbProxyInstance, $options, $file)
+    private function isPossibleSchema($file)
     {
+        $schema = ["https:", "http:", "class:"];
+        foreach ($schema as $scheme) {
+            if (strpos($file, $scheme) === 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function processing($dbProxyInstance, $options, $file)
+    {
+         $contextRecord = null;
         try {
             // It the $file ('media'parameter) isn't specified, it doesn't respond an error.
             if (strlen($file) === 0) {
-                $this->exitAsError(204);
+                echo "[INTER-Mediator] The value of the 'media' key in url isn't specified.";
+                $this->exitAsError(200);
             }
             // If the media parameter is an URL, the variable isURL will be set to true.
-            $schema = array("https:", "http:", "class:");
-            $isURL = false;
-            foreach ($schema as $scheme) {
-                if (strpos($file, $scheme) === 0) {
-                    $isURL = true;
-                    break;
-                }
+            $isURL = $this->isPossibleSchema($file);
+            if(!$isURL && !isset($options['media-root-dir'])) {
+                echo "[INTER-Mediator] This MediaAccess operation requires the option value of the 'media-root-dir' key.";
+                $this->exitAsError(200); // The file accessing requires the media-root-dir keyed value.
             }
-            list($file, $isURL) = $this->checkForFileMakerMedia($dbProxyInstance, $options, $file, $isURL);
             /*
-                         * If the FileMaker's object field is storing a PDF, the $file could be "http://server:16000/...
-                         * style URL. In case of an image, $file is just the path info as like above.
-                         */
+             * If the FileMaker's object field is storing a PDF, the $file could be "http://server:16000/...
+             * style URL. In case of an image, $file is just the path info as like above.
+             */
+            list($file, $isURL) = $this->checkForFileMakerMedia($dbProxyInstance, $options, $file, $isURL);
+
+            // Set the target variable
             $file = IMUtil::removeNull($file);
-            if (strpos($file, '../') !== false) {
-                return;
+            if (strpos($file, '../') !== false) { // Stop for security reason.
+                echo "[INTER-Mediator] The '..' path component isn't permitted.";
+                $this->exitAsError(200);
             }
             $target = $isURL ? $file : "{$options['media-root-dir']}/{$file}";
-            if (isset($options['media-context'])) {
-                $this->checkAuthentication($dbProxyInstance, $options, $target);
+            // Analyze the target variable if it contains context name and key parameters.
+            $analyzeResult = $this->analyzeTarget($target);  // Check the context name and key fields.
+            if ($analyzeResult) {
+                $dbProxyInstance->dbSettings->setDataSourceName($this->targetContextName);
+//                $context = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
             }
+            // Check the authentication and authorization
+            //if (isset($options['media-context'])) { // media-context is removed. This comment is for my memo.
+            $this->cookieUser = null;
+            $authResult = $this->checkAuthentication($dbProxyInstance, $options);
+            // Authentication error or authorization error rise an exception within checkAuthentication
+            if ($analyzeResult) { // Get the relevant relation to the context.
+                switch ($authResult) {
+                    case  'field_user':
+                        $authInfoField = $dbProxyInstance->dbClass->authHandler->getFieldForAuthorization("load");
+                        $tableName = $dbProxyInstance->dbSettings->getEntityForRetrieve();
+                        $contextRecord = $dbProxyInstance->dbClass->authHandler->authSupportCheckMediaPrivilege(
+                            $tableName, $authInfoField, $this->cookieUser, $this->targetKeyField, $this->targetKeyValue);
+                        if ($contextRecord === false) {
+                            $this->exitAsError(401);
+                        }
+                        $contextRecord = [$contextRecord];
+                        break;
+                    case  'field_group':
+                        // Not implemented
+                        throw new Exception('The field-group is not supported so far on the MediaAccess class.');
+                        break;
+                    default: // 'context_auth' or 'no_auth'
+                        if($this->targetContextName) {
+                            if ($this->targetKeyField && $this->targetKeyValue) {
+                                $dbProxyInstance->dbSettings->addExtraCriteria($this->targetKeyField, "=", $this->targetKeyValue);
+                            }
+                            $dbProxyInstance->dbSettings->setCurrentUser($this->cookieUser);
+                            $contextRecord = $dbProxyInstance->readFromDB();
+                        }
+                }
+            }
+            // Responding the contents
             $content = false;
             $dq = '"';
             if (!$isURL) { // File path.
@@ -141,7 +193,7 @@ class MediaAccess
                 $noscheme = substr($target, 8);
                 $className = substr($noscheme, 0, strpos($noscheme, "/"));
                 $processingObject = new $className();
-                $processingObject->processing($this->contextRecord, $options);
+                $processingObject->processing($contextRecord, $options);
             }
         } catch (Exception $ex) {
             // do nothing
@@ -243,24 +295,22 @@ class MediaAccess
      * @param $dbProxyInstance
      * @param $options
      * @param $target
+     * @return
+     * 'context_auth'
+     * 'no_auth'
+     * 'field_user'
+     * 'field_group'
      */
-    private function checkAuthentication($dbProxyInstance, $options, $target)
+    private function checkAuthentication($dbProxyInstance, $options)
     {
-        $context = NULL;
-        if ($this->analyzeTarget($target)) {
-            $dbProxyInstance->dbSettings->setDataSourceName($this->targetContextName);
-            $context = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
-        }
-        if (!$context) {
-            $dbProxyInstance->dbSettings->setDataSourceName($options['media-context']);
-            $context = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
-        }
+        $contextDef = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
 
-        $isContextAuth = (isset($context['authentication']) && (isset($context['authentication']['all'])
-                || isset($context['authentication']['load']) || isset($context['authentication']['read'])));
+        $isContextAuth = (isset($contextDef['authentication']) && (isset($contextDef['authentication']['all'])
+                || isset($contextDef['authentication']['load']) || isset($contextDef['authentication']['read'])));
         $isOptionAuth = isset($options['authentication']);
-        if (!$isContextAuth && !$isOptionAuth) {
-            $this->exitAsError(401);
+
+        if (!$isContextAuth && !$isOptionAuth) { // No authentication
+            return 'no_auth';
         }
 
         // Check the authentication credential on cookie
@@ -273,51 +323,28 @@ class MediaAccess
             $cookieNameToken .= ('_' . $realm);
         }
         $cValueUser = isset($_COOKIE[$cookieNameUser]) ? $_COOKIE[$cookieNameUser] : '';
+        $this->cookieUser = $cValueUser;
         $cValueToken = isset($_COOKIE[$cookieNameToken]) ? $_COOKIE[$cookieNameToken] : '';
         if (!$dbProxyInstance->checkMediaToken($cValueUser, $cValueToken)) {
             $this->exitAsError(401);
         }
-        if ($isContextAuth) {
-            if (isset($context['authentication']['load'])) {
-                $authInfoField = $dbProxyInstance->dbClass->authHandler->getFieldForAuthorization("load");
-                $authInfoTarget = $dbProxyInstance->dbClass->authHandler->getTargetForAuthorization("load");
-            } else if (isset($context['authentication']['read'])) {
-                $authInfoField = $dbProxyInstance->dbClass->authHandler->getFieldForAuthorization("read");
-                $authInfoTarget = $dbProxyInstance->dbClass->authHandler->getTargetForAuthorization("read");
-            } else if (isset($context['authentication']['all'])) {
-                $authInfoField = $dbProxyInstance->dbClass->authHandler->getFieldForAuthorization("all");
-                $authInfoTarget = $dbProxyInstance->dbClass->authHandler->getTargetForAuthorization("all");
-            }
+        if ($isContextAuth) { // If the context definition has authentication keyed value.
+            $authInfoTarget = $dbProxyInstance->dbClass->authHandler->getTargetForAuthorization("read");
             if ($authInfoTarget == 'field-user') {
                 if (!$this->targetContextName) {
                     $this->exitAsError(401);
                 }
-                $dbProxyInstance->dbSettings->setDataSourceName($this->targetContextName);
-                $tableName = $dbProxyInstance->dbSettings->getEntityForRetrieve();
-                $this->contextRecord = $dbProxyInstance->dbClass->authHandler->authSupportCheckMediaPrivilege(
-                    $tableName, $authInfoField, $_COOKIE[$cookieNameUser], $this->targetKeyField, $this->targetKeyValue);
-                if ($this->contextRecord === false) {
-                    $this->exitAsError(401);
-                }
+                return 'field_user';
             } else if ($authInfoTarget == 'field-group') {
-                //
+                // unimplemented
+                return 'field_group';
             } else {
-                $isOptionAuth = true;
+                $isOptionAuth = true; // Follow the below process if the target isn't specified.
             }
         }
-        if ($isOptionAuth) {
-            $authorizedUsers = [];
-            $authorizedGroups  =[];
-            if (isset($context['authentication']['load'])) {
-                $authorizedUsers = $dbProxyInstance->dbClass->authHandler->getAuthorizedUsers("load");
-                $authorizedGroups = $dbProxyInstance->dbClass->authHandler->getAuthorizedGroups("load");
-            } else if (isset($context['authentication']['read'])) {
-                $authorizedUsers = $dbProxyInstance->dbClass->authHandler->getAuthorizedUsers("read");
-                $authorizedGroups = $dbProxyInstance->dbClass->authHandler->getAuthorizedGroups("read");
-            } else if (isset($context['authentication']['all'])) {
-                $authorizedUsers = $dbProxyInstance->dbClass->authHandler->getAuthorizedUsers("all");
-                $authorizedGroups = $dbProxyInstance->dbClass->authHandler->getAuthorizedGroups("all");
-            }
+        if ($isOptionAuth) { // If the option setting has authentication keyed value.
+            $authorizedUsers = $dbProxyInstance->dbClass->authHandler->getAuthorizedUsers("read");
+            $authorizedGroups = $dbProxyInstance->dbClass->authHandler->getAuthorizedGroups("read");
             if (count($authorizedGroups) != 0 || count($authorizedUsers) != 0) {
                 $belongGroups = $dbProxyInstance->dbClass->authHandler->authSupportGetGroupsOfUser($_COOKIE[$cookieNameUser]);
                 if (!in_array($_COOKIE[$cookieNameUser], $authorizedUsers)
@@ -326,43 +353,13 @@ class MediaAccess
                     $this->exitAsError(400);
                 }
             }
-            $endOfPath = strpos($target, "?");
-            $endOfPath = ($endOfPath === false) ? strlen($target) : $endOfPath;
-            $pathComponents = explode('/', substr($target, 0, $endOfPath));
-            $indexKeying = -1;
-            $contextName = '';
-            foreach ($pathComponents as $index => $dname) {
-                $decodedComponent = urldecode($dname);
-                if (strpos($decodedComponent, '=') !== false) {
-                    $indexKeying = $index;
-                    $fieldComponents = explode('=', $decodedComponent);
-                    $keyField = $fieldComponents[0];
-                    $keyValue = $fieldComponents[1];
-                    $dbProxyInstance->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
-                } else {
-                    $contextName = $pathComponents[$index];
-                }
-            }
-            if ($indexKeying == -1) {
-                if ($pathComponents[0] == 'class:') {
-                    $contextName = $pathComponents[3];
-                } else {
-                    $this->exitAsError(401);
-                }
-            }
-            $dbProxyInstance->dbSettings->setCurrentUser($_COOKIE[$cookieNameUser]);
-            $dbProxyInstance->dbSettings->setDataSourceName($contextName);
-            $this->contextRecord = $dbProxyInstance->readFromDB();
+            return 'context_auth';
         }
     }
 
-    private $targetKeyField;
-    private $targetKeyValue;
-    private $targetContextName;
-    private $targetFieldName;
-
     private function analyzeTarget($target)
     {
+        // The following properties are the results of this method.
         $this->targetKeyField = null;
         $this->targetKeyValue = null;
         $this->targetContextName = null;
@@ -386,6 +383,11 @@ class MediaAccess
             $this->targetContextName = urldecode($pathComponents[$indexKeying - 1]);
             if (isset($pathComponents[$indexKeying + 1])) {
                 $this->targetFieldName = urldecode($pathComponents[$indexKeying + 1]);
+            }
+            $result = true;
+        } else {
+            if ($pathComponents[0] == 'class:' && isset($pathComponents[3])) {
+                $this->targetContextName = urldecode($pathComponents[3]);
                 $result = true;
             }
         }

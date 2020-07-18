@@ -24,6 +24,7 @@ IM_Entry(
             'key' => 'id',
             'query' => array(array('field' => 'name', 'value' => '%', 'operator' => 'LIKE')),
             'sort' => array(array('field' => 'name', 'direction' => 'ASC'),),
+            'authentication' => ['media-handling' => true],
         ),
         array(
             'records' => 1,
@@ -33,6 +34,11 @@ IM_Entry(
         ),
     ),
     array(
+        'authentication' => [
+            'user' => ['user1', 'user2'],
+            'authexpired' => '3600',
+            'storing' => 'session-storage',
+        ],
         'formatter' => array(
             array('field' => 'product@unitprice', 'converter-class' => 'Number', 'parameter' => '0'),
         ),
