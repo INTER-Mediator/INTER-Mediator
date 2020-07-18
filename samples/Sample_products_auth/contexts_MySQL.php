@@ -27,7 +27,6 @@ IM_Entry(
             'navi-control' => 'master-hide',
             'authentication'=> array(
                 'media-handling' => true,
-                'load' => array(),
             ),
         ),
         array(
@@ -38,7 +37,6 @@ IM_Entry(
             'navi-control' => 'detail',
             'authentication'=> array(
                 'media-handling' => true,
-                'load' => array(),
             ),
         ),
     ),
@@ -54,8 +52,7 @@ IM_Entry(
             'storing' => 'session-storage',
             'realm' => 'Sample_products_auth',
         ),
-        'media-root-dir' => $_SERVER['DOCUMENT_ROOT'] . '/INTER-Mediator/samples/Sample_products/images',
-        'media-context' => 'productlist',
+        'media-root-dir' => $_SERVER['DOCUMENT_ROOT'] . '/samples/Sample_products/images',
     ),
     array('db-class' => 'PDO'),
     false

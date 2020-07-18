@@ -38,19 +38,19 @@ spl_autoload_register(function ($className) {
     return false;
 });
 
-// Character set for mbstring
-if (function_exists('mb_internal_encoding')) {
-    mb_internal_encoding('UTF-8');
-}
-// Setup Timezone
-$params = IMUtil::getFromParamsPHPFile(array("defaultTimezone"), true);
-if (isset($params['defaultTimezone'])) {
-    date_default_timezone_set($params['defaultTimezone']);
-} else if (ini_get('date.timezone') == null) {
-    date_default_timezone_set('UTC');
-}
-// Setup Locale
-Locale\IMLocale::setLocale(LC_ALL);
+//// Character set for mbstring
+//if (function_exists('mb_internal_encoding')) {
+//    mb_internal_encoding('UTF-8');
+//}
+//// Setup Timezone
+//$params = IMUtil::getFromParamsPHPFile(array("defaultTimezone"), true);
+//if (isset($params['defaultTimezone'])) {
+//    date_default_timezone_set($params['defaultTimezone']);
+//} else if (ini_get('date.timezone') == null) {
+//    date_default_timezone_set('UTC');
+//}
+//// Setup Locale
+//Locale\IMLocale::setLocale(LC_ALL);
 // Define constant
 define("IM_TODAY", strftime('%Y-%m-%d'));
 
@@ -63,6 +63,16 @@ define("IM_TODAY", strftime('%Y-%m-%d'));
  */
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
+    // Setup Timezone
+    $params = IMUtil::getFromParamsPHPFile(array("defaultTimezone"), true);
+    if (isset($params['defaultTimezone'])) {
+        date_default_timezone_set($params['defaultTimezone']);
+    } else if (ini_get('date.timezone') == null) {
+        date_default_timezone_set('UTC');
+    }
+    // Setup Locale
+    Locale\IMLocale::setLocale(LC_ALL);
+
     // check required PHP extensions
     $requiredFunctions = array(
         'mbstring' => 'mb_internal_encoding',
@@ -87,6 +97,10 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
             $generator->generateErrorMessageJS("PHP extension \"" . $key . "\" is required for running INTER-Mediator.");
             return;
         }
+    }
+// Character set for mbstring
+    if (function_exists('mb_internal_encoding')) {
+        mb_internal_encoding('UTF-8');
     }
 
     if (isset($_GET['theme'])) {    // Get theme data

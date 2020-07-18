@@ -24,6 +24,13 @@ IM_Entry(
             'key' => 'id',
             'query' => array(array('field' => 'name', 'value' => '%', 'operator' => 'LIKE')),
             'sort' => array(array('field' => 'name', 'direction' => 'ASC'),),
+            'authentication' => [
+                'media-handling' => true,
+                'all'=>[
+                    'target'=>'field-user',
+                    'field'=>'user',
+                ]
+            ],
         ),
         array(
             'records' => 1,
@@ -33,6 +40,10 @@ IM_Entry(
         ),
     ),
     array(
+        'authentication' => [
+            'authexpired' => '3600', // Set as seconds.
+            'storing' => 'session-storage', // 'session-storage', 'cookie'(default), 'cookie-domainwide', 'none'
+        ],
         'formatter' => array(
             array('field' => 'product@unitprice', 'converter-class' => 'Number', 'parameter' => '0'),
         ),

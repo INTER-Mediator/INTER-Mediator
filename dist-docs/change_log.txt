@@ -85,17 +85,6 @@ Ver.6-dev (in development)
 - INTERMediatorOnPage.newRecordId is the key value of newly created record.
 - INTERMediatorOnPage.doAfterCreateRecord is the function that is called when create record operation is succeed.
 - IMLibPageNavigation.moveDetail(keying) is implemented for moveing from master to detail contexts.
-- [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
-- [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
-- [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
-- [BUG FIX] Calculation from other contexts didn't work, and fix it.
-- [BUG FIX] The class name 'Null' wasn't permitted in PHP7. It was changed to NullDB.
-- [BUG FIX] Local context values didn't involve in any calculations.
-- [BUG FIX] INTERMediatorOnPage.getIMRootPath is removed.
-  (it's not this version, previous but unrecoverable which version was.)
-- [INFO] The src/lib/js_lib directory is removed.
-- [BUG FIX] The changePassword method of the INTERMediator_DBAdapter class had a bug in case of wrong old password.
-- [BUG FIX] Fix handling multibyte currency symbols in some cases.
 - Some codes in the INTERMediator_DBAdapter.db_updateParameters method are removed for just depending on IE ver.8.
 - Add the favicon.ico file on the root folder of this repository.
 - The jQuery-File-Upload (Ver.1.1 or later) widget supports the post only mode. It can preview the file.
@@ -107,6 +96,18 @@ Ver.6-dev (in development)
 - The 'media-context' keyed value in the option parameter in IM_Entry function can be eliminated.
 - The getDataAtLastRecord, setDataAtLastRecord, getDataAtLastRecord methods in IMLibContext class can handle record
   with multiple fields.
+- [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
+- [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
+- [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
+- [BUG FIX] Calculation from other contexts didn't work, and fix it.
+- [BUG FIX] The class name 'Null' wasn't permitted in PHP7. It was changed to NullDB.
+- [BUG FIX] Local context values didn't involve in any calculations.
+- [BUG FIX] INTERMediatorOnPage.getIMRootPath is removed.
+  (it's not this version, previous but unrecoverable which version was.)
+- [INFO] The src/lib/js_lib directory is removed.
+- [BUG FIX] The changePassword method of the INTERMediator_DBAdapter class had a bug in case of wrong old password.
+- [BUG FIX] Fix handling multibyte currency symbols in some cases.
+- [BUG FIX] MediaAccess classe's bugs are fixed.
 
 Ver.5.11 (November 17, 2019)
 - Support FileMaker Data API of FileMaker Server 18 and FileMaker Cloud for AWS 1.18.

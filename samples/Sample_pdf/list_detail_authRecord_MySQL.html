@@ -14,12 +14,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator - Sample - List-Detail Style Navigation/MySQL</title>
-    <script type="text/javascript" src="contexts_MySQL.php"></script>
+    <script type="text/javascript" src="contexts_authRecord_MySQL.php"></script>
 </head>
 <body>
 <h1>Product List with PDF Generating</h1>
 <!-- Table for the list view -->
 <div id="listarea">
+    <a href="javascript:INTERMediatorOnPage.logout();location.reload()">ログアウト</a>
     <table border="1">
         <thead>
         <tr>
@@ -29,7 +30,7 @@
         <tbody>
         <tr>
             <td>
-                <a href="contexts_MySQL.php?media=class://PDFSample/productlist/id=$/"
+                <a href="contexts_authRecord_MySQL.php?media=class://PDFSample/productlist/id=$/"
                    data-im="productlist@id@$href">PDF</a>
             </td>
             <td data-im="productlist@name"></td>
