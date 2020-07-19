@@ -853,7 +853,7 @@ describe file('/etc/rc.local'), :if => os[:family] == 'ubuntu' && os[:release].t
   #its(:content) { should match /\/usr\/local\/bin\/buster-server &/ }
   its(:content) { should match /\/usr\/local\/bin\/phantomjs \/usr\/local\/lib\/node_modules\/buster\/script\/phantom.js http:\/\/localhost:1111\/capture > \/dev\/null &/ }
 end
-describe file('/etc/rc.local'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18  do
+describe file('/etc/rc.local'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_file }
   it { should be_mode 755 }
   its(:content) { should match /\/usr\/local\/bin\/buster-server &/ }
@@ -863,6 +863,33 @@ end
 describe file('/var/www/localhost/htdocs/INTER-Mediator/node_modules/jest/bin/jest.js'), :if => os[:family] == 'alpine' do
   it { should be_mode 755 }
 end
+
+
+describe package('unzip'), :if => os[:family] == 'redhat' do
+  it { should be_installed }
+end
+describe user('fmserver') do
+  it { should exist }
+  it { should belong_to_group 'fmsadmin' }
+end
+describe group('fmsadmin') do
+  it { should exist }
+end
+describe file('/etc/httpd/conf.d/filemaker.conf'), :if => os[:family] == 'redhat' do
+  it { should be_file }
+  its(:content) { should match /RewriteRule \^\/admin-console\(\.\*\)/ }
+end
+describe file('/opt/FileMaker/FileMaker Server/Data/Databases') do
+  it { should be_directory }
+  it { should be_owned_by 'fmserver' }
+  it { should be_grouped_into 'fmsadmin' }
+end
+describe file('/opt/FileMaker/FileMaker Server/Data/Databases/TestDB.fmp12') do
+  it { should be_file }
+  it { should be_owned_by 'fmserver' }
+  it { should be_grouped_into 'fmsadmin' }
+end
+
 
 describe file('/etc/motd'), :if => os[:family] == 'redhat' || os[:family] == 'alpine' do
   its(:content) { should match /Welcome to INTER-Mediator-Server VM!/ }
