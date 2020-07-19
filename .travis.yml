@@ -27,7 +27,6 @@ matrix:
       dist: precise
   allow_failures:
     - php: nightly
-    - php: 7.4
 
 ## for Headless Chrome and trusty (Headless Chrome is available on trusty)
 addons:
