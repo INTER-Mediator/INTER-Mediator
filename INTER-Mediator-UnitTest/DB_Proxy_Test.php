@@ -75,28 +75,48 @@ class DB_Proxy_Test extends PHPUnit_Framework_TestCase
             header_remove();
             ob_clean();
 
-            $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
-            $this->assertContains('X-Content-Type-Options: nosniff', $headers);
-            $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
+            if (((float)phpversion()) >= 5.3) {
+                $this->assertNotFalse(array_search('X-XSS-Protection: 1; mode=block', $headers));
+                $this->assertNotFalse(array_search('X-Content-Type-Options: nosniff', $headers));
+                $this->assertNotFalse(array_search('X-Frame-Options: SAMEORIGIN', $headers));
+            } else {
+                $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
+                $this->assertContains('X-Content-Type-Options: nosniff', $headers);
+                $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
+            }
         }
     }
 
     function testAuthGroup()
     {
         $aGroup = $this->db_proxy->dbClass->authHandler->getAuthorizedGroups("read");
-        $this->assertContains('group1', $aGroup);
-        $this->assertContains('group2', $aGroup);
-        $this->assertNotContains('group3', $aGroup);
+        if (((float)phpversion()) >= 5.3) {
+            $this->assertNotFalse(array_search('group1', $aGroup));
+            $this->assertNotFalse(array_search('group2', $aGroup));
+            $this->assertFalse(array_search('group3', $aGroup));
+        } else {
+            $this->assertContains('group1', $aGroup);
+            $this->assertContains('group2', $aGroup);
+            $this->assertNotContains('group3', $aGroup);
+        }
     }
 
     function testAuthUser()
     {
         $aGroup = $this->db_proxy->dbClass->authHandler->getAuthorizedUsers("read");
-        $this->assertContains('user1', $aGroup);
-        $this->assertNotContains('user2', $aGroup);
-        $this->assertNotContains('user3', $aGroup);
-        $this->assertNotContains('user4', $aGroup);
-        $this->assertNotContains('user5', $aGroup);
+        if (((float)phpversion()) >= 5.3) {
+            $this->assertNotFalse(array_search('user1', $aGroup));
+            $this->assertFalse(array_search('user2', $aGroup));
+            $this->assertFalse(array_search('user3', $aGroup));
+            $this->assertFalse(array_search('user4', $aGroup));
+            $this->assertFalse(array_search('user5', $aGroup));
+        } else {
+            $this->assertContains('user1', $aGroup);
+            $this->assertNotContains('user2', $aGroup);
+            $this->assertNotContains('user3', $aGroup);
+            $this->assertNotContains('user4', $aGroup);
+            $this->assertNotContains('user5', $aGroup);
+        }
     }
 
 }
