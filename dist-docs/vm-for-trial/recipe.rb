@@ -1,4 +1,4 @@
-# Recipe file of Itamae for Alpine Linux 3.10, Ubuntu Server 16.04/18.04, CentOS 6/7
+# Recipe file of Itamae for Alpine Linux 3.12, Ubuntu Server 16.04/18.04, CentOS 6/7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -46,12 +46,12 @@ iface eth1 inet static
 EOF
     end
   end
-  if node[:platform_version].to_f >= 3.10
+  if node[:platform_version].to_f >= 3.12
     file '/etc/apk/repositories' do
       content <<-EOF
 #/media/cdrom/apks
-http://dl-cdn.alpinelinux.org/alpine/v3.10/main
-http://dl-cdn.alpinelinux.org/alpine/v3.10/community
+http://dl-cdn.alpinelinux.org/alpine/v3.12/main
+http://dl-cdn.alpinelinux.org/alpine/v3.12/community
 #http://dl-cdn.alpinelinux.org/alpine/edge/main
 #http://dl-cdn.alpinelinux.org/alpine/edge/community
 #http://dl-cdn.alpinelinux.org/alpine/edge/testing
@@ -197,8 +197,15 @@ if node[:platform] == 'alpine'
   execute 'yes ********* | sudo passwd postgres' do
     command 'yes im4135dev | sudo passwd postgres'
   end
-  execute 'echo "*********" | sudo /etc/init.d/postgresql setup' do
-    command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
+  if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
+    directory '/var/lib/postgresql/12/data' do
+      action :create
+      owner 'postgres'
+      group 'postgres'
+    end
+  end
+  execute 'echo "*********" | /etc/init.d/postgresql setup' do
+    command 'echo "im4135dev" | /etc/init.d/postgresql setup'
   end
   if node[:virtualization][:system] != 'docker'
     service 'postgresql' do
@@ -215,8 +222,8 @@ if node[:platform] == 'alpine'
     service 'postgresql' do
       action [ :enable ]
     end
-    execute 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/11/data -l /var/log/postgresql/postgresql.log"' do
-      command 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/11/data -l /var/log/postgresql/postgresql.log"'
+    execute 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/12/data -l /var/log/postgresql/postgresql.log"' do
+      command 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/12/data -l /var/log/postgresql/postgresql.log"'
     end  
   end
 else
@@ -884,8 +891,14 @@ if node[:platform] == 'ubuntu'
 end
 
 if node[:platform] == 'alpine'
-  package 'python' do
-    action :install
+  if node[:platform_version].to_f >= 3.12
+    package 'python3' do
+      action :install
+    end
+  else
+    package 'python' do
+      action :install
+    end
   end
 end
 
