@@ -57,13 +57,17 @@ before_script:
   - psql -U postgres -f ./dist-docs/sample_schema_pgsql.txt test_db
   - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" && $TRAVIS_PHP_VERSION != "5.2" && $TRAVIS_PHP_VERSION != "5.6" ]]; then composer require 'phpunit/phpunit=4.8.x'; composer install; fi
   - if [[ $TRAVIS_PHP_VERSION == "5.6" ]]; then composer require 'phpunit/phpunit=5.7.x'; composer install; fi
-  - if [[ $TRAVIS_PHP_VERSION == "7.0" || $TRAVIS_PHP_VERSION == "7.1" || $TRAVIS_PHP_VERSION == "7.2" ]]; then composer require 'phpunit/phpunit=6.5.x'; composer install; fi
-  - if [[ $TRAVIS_PHP_VERSION == "7.3" || $TRAVIS_PHP_VERSION == "nightly" ]]; then composer require 'phpunit/phpunit=7.3.x'; composer install; fi
+  - if [[ $TRAVIS_PHP_VERSION == "7.0" ]]; then composer require 'phpunit/phpunit=6.5.x'; composer install; fi
+  - if [[ $TRAVIS_PHP_VERSION == "7.1" ]]; then composer require 'phpunit/phpunit=7.5.x'; composer install; fi
+  - if [[ $TRAVIS_PHP_VERSION == "7.2" ]]; then composer require 'phpunit/phpunit=8.5.x'; composer install; fi
+  - if [[ $TRAVIS_PHP_VERSION == "7.3" ]]; then composer require 'phpunit/phpunit=8.5.x'; composer install; fi
+  - if [[ $TRAVIS_PHP_VERSION == "7.4" || $TRAVIS_PHP_VERSION == "nightly" ]]; then composer require 'phpunit/phpunit=9.2.x'; composer install; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} != "5" && $TRAVIS_PHP_VERSION != "7.0" ]]; then find INTER-Mediator-UnitTest/*.php -type f -print0 | xargs -0 sed -i -e "s/function\ setUp()/function\ setUp():\ void/g"; fi
 
 script:
   - if [[ $TRAVIS_PHP_VERSION == "5.2" ]]; then phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi
   - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" && $TRAVIS_PHP_VERSION != "5.2" ]]; then vendor/bin/phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi
-  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" || $TRAVIS_PHP_VERSION == "nightly" ]]; then vendor/bin/phpunit --globals-backup --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi  
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} != "5" ]]; then vendor/bin/phpunit --globals-backup --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi
   - npm test
 
 notifications:
