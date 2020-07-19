@@ -40,6 +40,7 @@ class GenerateJSCode_Test extends PHPUnit_Framework_TestCase
     /**
      * @runInSeparateProcess
      * @preserveGlobalState disabled
+     * @doesNotPerformAssertions
      */
     function test___construct()
     {
