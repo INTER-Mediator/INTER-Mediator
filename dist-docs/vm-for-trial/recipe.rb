@@ -1207,6 +1207,44 @@ EOF
 end
 
 if node[:platform] == 'redhat'
+  user "fmserver" do
+    action :create
+  end
+  execute 'groupadd fmsadmin' do
+    command 'groupadd fmsadmin'
+  end
+  execute 'usermod -a -G fmsadmin fmserver' do
+    command 'usermod -a -G fmsadmin fmserver'
+  end
+  file '/etc/httpd/conf.d/filemaker.conf' do
+    content <<-EOF
+RewriteEngine on
+RewriteRule ^/admin-console(.*) http://127.0.0.1:16001/admin-console$1 [P,L]
+RewriteRule ^/assets/(.*) http://127.0.0.1:16001/assets/$1 [P,L]
+RewriteRule ^/(.*)-es(.*).js http://127.0.0.1:16001/$1-es$2.js [P,L]
+RewriteRule ^/scripts.(.*).js http://127.0.0.1:16001/scripts.$1.js [P,L]
+RewriteRule ^/styles.(.*).css http://127.0.0.1:16001/styles.$1.css [P,L]
+RewriteCond %{SERVER_PORT} 80
+RewriteRule ^/socket\.io/(.*) ws://127.0.0.1:16001/socket\.io/$1 [P,L]
+RewriteRule ^/fmi/admin/(.*) http://127.0.0.1:16001/fmi/admin/$1 [P,L]
+RewriteRule ^/fmi/data/(.*) http://127.0.0.1:3000/fmi/data/$1 [P,L]
+EOF
+  end
+  directory '/opt/FileMaker/FileMaker Server/Data/Databases' do
+    action :create
+    owner 'fmserver'
+    group 'fmsadmin'
+  end
+  execute 'cp -p /var/www/html/INTER-Mediator/dist-docs/TestDB.fmp12 "/opt/FileMaker/FileMaker Server/Data/Databases/"' do
+    command 'cp -p /var/www/html/INTER-Mediator/dist-docs/TestDB.fmp12 "/opt/FileMaker/FileMaker Server/Data/Databases/"'
+  end
+  execute 'chown fmserver:fmsadmin "/opt/FileMaker/FileMaker Server/Data/Databases/TestDB.fmp12"' do
+    command 'chown fmserver:fmsadmin "/opt/FileMaker/FileMaker Server/Data/Databases/TestDB.fmp12"'
+  end
+  package 'unzip' do
+    action :install
+  end
+
   service 'httpd' do
     action [ :restart ]
   end
@@ -1842,6 +1880,16 @@ file "#{SMBCONF}" do
    create mask = 0664
    directory mask = 0775
    force group = im-developer
+
+[developer]
+   comment = Home Directory
+   path = /home/developer
+   guest ok = no
+   browseable = yes
+   read only = no
+   create mask = 0664
+   directory mask = 0775
+   force group = im-developer
 EOF
 end
 
@@ -2168,12 +2216,12 @@ if node[:virtualization][:system] != 'docker'
     execute '/var/www/html/INTER-Mediator/node_modules/.bin/forever stopall' do
       command '/var/www/html/INTER-Mediator/node_modules/.bin/forever stopall'
     end
-    execute '/sbin/shutdown -h +1' do
-      command '/sbin/shutdown -h +1'
+    execute 'rm -f mitamae-x86_64-linux; rm -f recipe.rb; /sbin/shutdown -h +1' do
+      command 'rm -f mitamae-x86_64-linux; rm -f recipe.rb; /sbin/shutdown -h +1'
     end
   else
-    execute 'poweroff' do
-      command 'poweroff'
+    execute 'rm -f mitamae-x86_64-linux; rm -f recipe.rb; poweroff' do
+      command 'rm -f mitamae-x86_64-linux; rm -f recipe.rb; poweroff'
     end
   end
 end
