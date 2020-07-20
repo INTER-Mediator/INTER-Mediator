@@ -3790,19 +3790,19 @@
       "integrity": "sha512-xul46dfzdfDVW3KDjC1N4C6BzrG6Tml3QAvMVVjPx/WWnlbLitDirdFoReBF9Unnqj4/RisEjkH9FJqbxMsWUA=="
     },
     "inter-mediator-formatter": {
-      "version": "1.0.5",
-      "resolved": "https://registry.npmjs.org/inter-mediator-formatter/-/inter-mediator-formatter-1.0.5.tgz",
-      "integrity": "sha512-ZuTocs4+s2+Oz9uzjKRujbbdUojsIvyMDCc5dFYtK9xGbGzRNArdYvc7+JheSRvNnDNOukB4+/IxpnjyCiFprg=="
+      "version": "1.0.6",
+      "resolved": "https://registry.npmjs.org/inter-mediator-formatter/-/inter-mediator-formatter-1.0.6.tgz",
+      "integrity": "sha512-g7L+JwxsWq2aJccpN0VSaz8CooZLzS3Zqz75c2T4u2EI3ypXcT4O4isIMt1OVJUWlhlzEHV8N0ZsAVIHIIOTaA=="
     },
     "inter-mediator-locale": {
-      "version": "1.0.3",
-      "resolved": "https://registry.npmjs.org/inter-mediator-locale/-/inter-mediator-locale-1.0.3.tgz",
-      "integrity": "sha512-rWW6EIOGUjWU3YWCHH/b5RP/Ag5WQ8bMD4aLjIaZMlc3AErCNVjvO3nz67+SRBV7FaoEjhCIlesXIM6KQwgyGA=="
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/inter-mediator-locale/-/inter-mediator-locale-1.0.4.tgz",
+      "integrity": "sha512-lwwXGuG6Gmsoe+IYbqniifFJMBClK7VFXRiy8TXifKpZX0CxArdacpeRt5rdzrac6RN55iG7RIh9NobXXZ1WUg=="
     },
     "inter-mediator-nodegraph": {
-      "version": "1.0.5",
-      "resolved": "https://registry.npmjs.org/inter-mediator-nodegraph/-/inter-mediator-nodegraph-1.0.5.tgz",
-      "integrity": "sha512-rW6S1nXhmIO4ykE7y3Jk5fY3nLzCv8ifR/xCrmfO4DcyxYH31eN0o5RXxx8O5+kUnC0ppIt706wQ4tgnXMuiOw=="
+      "version": "1.0.6",
+      "resolved": "https://registry.npmjs.org/inter-mediator-nodegraph/-/inter-mediator-nodegraph-1.0.6.tgz",
+      "integrity": "sha512-0HGx2d4QhxMLNJpU1KCEuqjjniDg1Lk2RTGfsDGD/MmFh5ZQwI92nmf4igQ4fOgWzlahYTzrK4AqY5aRdAUPlQ=="
     },
     "inter-mediator-plugin-codemirror": {
       "version": "1.0.1",
@@ -3854,9 +3854,9 @@
       }
     },
     "inter-mediator-queue": {
-      "version": "1.0.7",
-      "resolved": "https://registry.npmjs.org/inter-mediator-queue/-/inter-mediator-queue-1.0.7.tgz",
-      "integrity": "sha512-/wUdGBjHJo4f/OqlWgPptgcBmvWsGsNh4lAkQLUTFzeSXXSa50zxre3eHUgHRh2lOHkZtlTc4Udwp1GsorMMsQ=="
+      "version": "1.0.8",
+      "resolved": "https://registry.npmjs.org/inter-mediator-queue/-/inter-mediator-queue-1.0.8.tgz",
+      "integrity": "sha512-iUIXZuu/Y9FErDK/+n1peHOz3pC7Mc0/CvsE8g0Zh9Egg4ZNGv71NtBHyjz9ysqA3v8Auf7XEoxVUm+RF2NFeA=="
     },
     "invariant": {
       "version": "2.2.4",
