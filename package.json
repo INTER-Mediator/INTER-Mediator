@@ -52,7 +52,7 @@
     "flatpickr": "*",
     "socket.io": "*",
     "npm-platform-dependencies": "*",
-    "inter-mediator-expressionparser": "1.0.12",
+    "inter-mediator-expressionparser": "1.0.13",
     "inter-mediator-formatter": "1.0.6",
     "inter-mediator-locale": "1.0.4",
     "inter-mediator-nodegraph": "1.0.6",
