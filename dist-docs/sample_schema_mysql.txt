@@ -15,9 +15,11 @@ Enter password:
 
 */
 SET NAMES 'utf8mb4';
-
-# DROP USER 'web'@'localhost'; # After v5.7, 'IF EXISTS' can be set.
+# For Ver.5.7.5 or earlier. DROP USER statement should be activate on the first run.
+# DROP USER 'web'@'localhost';
 CREATE USER 'web'@'localhost' IDENTIFIED BY 'password'; # plugin caching_sha2_password
+# For Ver.5.7.6 or later.
+# CREATE USER IF NOT EXISTS 'web'@'localhost' IDENTIFIED BY 'password'; # plugin caching_sha2_password
 
 ######### For MySQL v8, alter above block as follwing.
 # DROP USER IF EXISTS 'web'@'localhost';
@@ -471,7 +473,7 @@ CREATE TABLE authcor (
 	id					INT  AUTO_INCREMENT,
 	user_id             INT,
 	group_id            INT,
-	dest_group_id             INT,
+	dest_group_id       INT,
 	privname			VARCHAR(48),
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8mb4,
@@ -513,6 +515,29 @@ CREATE INDEX issuedhash_clienthost
   ON issuedhash (clienthost);
 CREATE INDEX issuedhash_user_id_clienthost
   ON issuedhash (user_id, clienthost);
+
+# Operation Log Store
+CREATE TABLE operationlog (
+	id				INT  AUTO_INCREMENT,
+	dt          	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	user            VARCHAR(48),
+	client_id_in    VARCHAR(48),
+	client_id_out   VARCHAR(48),
+	require_auth    BIT(1),
+	set_auth        BIT(1),
+	client_ip       VARCHAR(60),
+	path            VARCHAR(256),
+	access          VARCHAR(20),
+	context         VARCHAR(50),
+	get_data        TEXT,
+	post_data       TEXT,
+	result          TEXT,
+	error           TEXT,
+	PRIMARY KEY(id)
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
+		ENGINE=InnoDB;
+# In case of real deployment, some indices are required for quick operations.
 
 CREATE TABLE testtable (
     id INT AUTO_INCREMENT,

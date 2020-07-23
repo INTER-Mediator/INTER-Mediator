@@ -25,8 +25,17 @@ class MediaAccess
     private $targetContextName;  // set with the analyzeTarget method.
     private $targetFieldName;  // set with the analyzeTarget method.
     private $cookieUser;    // set with the checkAuthentication method.
+    private $accessLogLevel = 0;
+    private $outputMessage = ['apology'=>'Logging messages are not implemented so far.'];
 
-    private function asAttachment()
+    public function getResultForLog(){
+        if($this->accessLogLevel < 1) {
+            return [];
+        }
+        return $this->outputMessage;
+    }
+
+    public function asAttachment()
     {
         $this->disposition = "attachment";
     }

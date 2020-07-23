@@ -18,7 +18,6 @@ class ServiceServerProxy
     private $paramsQuit;
     private $paramsBoot;
     private $dontUse;
-    private $forerverLog;
     private $errors = [];
     private $messages = [];
     private $messageHead = "[ServiceServerProxy] ";

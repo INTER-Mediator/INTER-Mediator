@@ -67,6 +67,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     private $ignorePost = false;
     private $PostData = null;
 
+    private $accessLogLevel;
+    private $result4Log = [];
+
     public static function defaultKey()
     {
         trigger_error("Don't call the static method defaultKey of Proxy class.");
@@ -112,6 +115,33 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     public function exportOutputDataAsJason()
     {
         $this->exportOutputDataAsJSON();
+    }
+
+    public function getResultForLog()
+    {
+        if ($this->accessLogLevel < 1) {
+            return [];
+        }
+        $setToArray = function ($k, $v = null) {
+            if (!is_null($v)) {
+                $this->result4Log[$k] = $v;
+            } else if (isset($this->outputOfProcessing[$k])) {
+                $this->result4Log[$k] = $this->outputOfProcessing[$k];
+            }
+        };
+        if (isset($this->outputOfProcessing['dbresult']) && is_array($this->outputOfProcessing['dbresult'])) {
+            $count = count($this->outputOfProcessing['dbresult']);
+            $setToArray('dbresult', "Query result includes {$count} records.");
+        }
+        $setToArray('resultCount');
+        $setToArray('totalCount');
+        $setToArray('newRecordKeyValue');
+        $setToArray('changePasswordResult');
+        $setToArray('getRequireAuthorization', $this->dbSettings->getRequireAuthorization());
+        $setToArray('challenge');
+        $setToArray('clientid');
+        $setToArray('requireAuth', $this->dbSettings->getRequireAuthentication());
+        return $this->result4Log;
     }
 
     /**
@@ -495,9 +525,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $params = IMUtil::getFromParamsPHPFile(array(
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
             "dbOption", "dbDSN", "pusherParameters", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
-            "activateClientService",
+            "activateClientService", "accessLogLevel",
         ), true);
-
+        $this->accessLogLevel = intval($params['accessLogLevel']);
         $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
         $this->dbSettings->setDataSource($datasource);
         $this->dbSettings->setOptions($options);
@@ -1020,11 +1050,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         $this->logger->setDebugMessage(
             "[finishCommunication]getRequireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
-
         $this->outputOfProcessing['usenull'] = false;
-        if ($this->dbClass->specHandler) {
-            $this->outputOfProcessing['usenull'] = $this->dbClass->specHandler->isNullAcceptable();
-        }
         $this->outputOfProcessing['notifySupport']
             = is_null($this->dbSettings->notifyServer) ? false : $this->dbSettings->pusherKey;
         if (!$notFinish && $this->dbSettings->getRequireAuthorization()) {
@@ -1033,7 +1059,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->logger->setDebugMessage("generatedChallenge = $generatedChallenge", 2);
             $userSalt = $this->saveChallenge(
                 $this->dbSettings->isDBNative() ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
-
             $this->previousChallenge = "{$generatedChallenge}{$userSalt}";
             $this->previousClientid = "{$generatedUID}";
             $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";

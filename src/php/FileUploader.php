@@ -20,6 +20,15 @@ class FileUploader
 {
     private $db;
     private $url = NULL;
+    private $accessLogLevel = 0;
+    private $outputMessage = ['apology'=>'Logging messages are not implemented so far.'];
+
+    public function getResultForLog(){
+        if($this->accessLogLevel < 1) {
+            return [];
+        }
+        return $this->outputMessage;
+    }
 
     public function finishCommunication()
     {

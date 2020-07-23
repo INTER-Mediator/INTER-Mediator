@@ -20,12 +20,28 @@ class Theme
 {
     private $altThemePath;
     private $themeName;
+    private $accessLogLevel;
+    private $outputMessage = [];
 
-    function processing()
+    public function __construct()
     {
-        $params = IMUtil::getFromParamsPHPFile(array("altThemePath", "themeName",), true);
+        // Read from params.php
+        $paramKeys = ["accessLogLevel", "altThemePath", "themeName"];
+        $params = IMUtil::getFromParamsPHPFile($paramKeys, true);
+        $this->accessLogLevel = intval($params['accessLogLevel']);    // false: No logging, 1: without data, 2: with data
         $this->altThemePath = $params["altThemePath"];
         $this->themeName = $params["themeName"];
+    }
+
+    public function getResultForLog(){
+        if($this->accessLogLevel < 1) {
+            return [];
+        }
+        return $this->outputMessage;
+    }
+
+    public function processing()
+    {
         $themeNameInRequest = $_GET['theme'];
         $selfInRequest = $_SERVER["SCRIPT_NAME"];
 
@@ -66,6 +82,7 @@ class Theme
                 return $item;
             }
         }
+        $this->outputMessage['pathToTheme'] = "The theme file for '{$themeName}' doesn't exist.";
         return null;
     }
 }
