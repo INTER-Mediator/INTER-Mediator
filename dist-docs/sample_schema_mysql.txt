@@ -15,10 +15,11 @@ Enter password:
 
 */
 SET NAMES 'utf8mb4';
-
-CREATE USER IF NOT EXISTS 'web'@'localhost' IDENTIFIED BY 'password'; # plugin caching_sha2_password
-# For Ver.5.7.5 or earlier, You have to remove the terms 'IF NOT EXIST' at the first trial.
-# And You have to comment the above statement after the second trial.
+# For Ver.5.7.5 or earlier.
+DROP USER 'web'@'localhost';
+CREATE USER 'web'@'localhost' IDENTIFIED BY 'password'; # plugin caching_sha2_password
+# For Ver.5.7.6 or later.
+# CREATE USER IF NOT EXISTS 'web'@'localhost' IDENTIFIED BY 'password'; # plugin caching_sha2_password
 
 ######### For MySQL v8, alter above block as follwing.
 # DROP USER IF EXISTS 'web'@'localhost';
