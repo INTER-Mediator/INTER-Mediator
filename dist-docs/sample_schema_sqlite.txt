@@ -398,6 +398,26 @@ CREATE INDEX issuedhash_clienthost
 CREATE INDEX issuedhash_user_id_clienthost
   ON issuedhash (user_id, clienthost);
 
+* Operation Log Store */
+CREATE TABLE operationlog (
+	id				INTEGER PRIMARY KEY AUTOINCREMENT,
+	dt          	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	user            VARCHAR(48),
+	client_id_in    VARCHAR(48),
+	client_id_out   VARCHAR(48),
+	require_auth    BIT(1),
+	set_auth        BIT(1),
+	client_ip       VARCHAR(60),
+	path            VARCHAR(256),
+	access          VARCHAR(20),
+	context         VARCHAR(50),
+	get_data        TEXT,
+	post_data       TEXT,
+	result          TEXT,
+	error           TEXT
+);
+/* In case of real deployment, some indices are required for quick operations. */
+
 /* # Sample Data */
 INSERT INTO product(name,id,category_id,unitprice,photofile,acknowledgement,ack_link)
     VALUES("Apple",1,1,340,'mela-verde.png','Image: djcodrin / FreeDigitalPhotos.net',

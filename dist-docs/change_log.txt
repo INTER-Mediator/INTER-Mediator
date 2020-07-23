@@ -96,6 +96,8 @@ Ver.6-dev (in development)
 - The 'media-context' keyed value in the option parameter in IM_Entry function can be eliminated.
 - The getDataAtLastRecord, setDataAtLastRecord, getDataAtLastRecord methods in IMLibContext class can handle record
   with multiple fields.
+- The operation logging feature is implemented, but it's off as default. See the $accessLogLevel variable
+  in the params.php file.
 - [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.

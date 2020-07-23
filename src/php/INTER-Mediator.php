@@ -63,16 +63,6 @@ define("IM_TODAY", strftime('%Y-%m-%d'));
  */
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
-    // Setup Timezone
-    $params = IMUtil::getFromParamsPHPFile(array("defaultTimezone"), true);
-    if (isset($params['defaultTimezone'])) {
-        date_default_timezone_set($params['defaultTimezone']);
-    } else if (ini_get('date.timezone') == null) {
-        date_default_timezone_set('UTC');
-    }
-    // Setup Locale
-    Locale\IMLocale::setLocale(LC_ALL);
-
     // check required PHP extensions
     $requiredFunctions = array(
         'mbstring' => 'mb_internal_encoding',
@@ -98,17 +88,33 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
             return;
         }
     }
-// Character set for mbstring
+
+    // Read from params.php
+    $params = IMUtil::getFromParamsPHPFile(array("defaultTimezone","accessLogLevel"), true);
+
+    // Setup Timezone
+    if (isset($params['defaultTimezone'])) {
+        date_default_timezone_set($params['defaultTimezone']);
+    } else if (ini_get('date.timezone') == null) {
+        date_default_timezone_set('UTC');
+    }
+    // Setup Locale
+    Locale\IMLocale::setLocale(LC_ALL);
+
+    // Character set for mbstring
     if (function_exists('mb_internal_encoding')) {
         mb_internal_encoding('UTF-8');
     }
 
+    $resultLog = [];
     if (isset($_GET['theme'])) {    // Get theme data
         $themeManager = new Theme();
         $themeManager->processing();
+        $resultLog = $themeManager->getResultForLog();
     } else if (!isset($_POST['access']) && isset($_GET['uploadprocess'])) { // Upload progress
         $fileUploader = new FileUploader();
         $fileUploader->processInfo();
+        $resultLog = $fileUploader->getResultForLog();
     } else if (!isset($_POST['access']) && isset($_GET['media'])) { // Media accessing
         $dbProxyInstance = new DB\Proxy();
         $dbProxyInstance->initialize($datasource, $options, $dbspecification, $debug);
@@ -117,6 +123,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
             $mediaHandler->asAttachment();
         }
         $mediaHandler->processing($dbProxyInstance, $options, $_GET['media']);
+        $resultLog = $mediaHandler->getResultForLog();
     } else if ((isset($_POST['access']) && $_POST['access'] == 'uploadfile')
         || (isset($_GET['access']) && $_GET['access'] == 'uploadfile')
     ) {     // File uploading
@@ -126,6 +133,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         } else {
             $fileUploader->processing($datasource, $options, $dbspecification, $debug);
         }
+        $resultLog = $fileUploader->getResultForLog();
     } else if (!isset($_POST['access']) && !isset($_GET['media'])) {    // Download JS module to client
         if($_SERVER['REQUEST_METHOD'] == 'POST') {
             $db = new DB\Proxy();
@@ -177,7 +185,12 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
             }
         }
         $dbInstance->exportOutputDataAsJSON();
+        $resultLog = $dbInstance->getResultForLog();
         ServiceServerProxy::instance()->stopServer();
+    }
+    if($params['accessLogLevel']){
+        $logging = new DB\OperationLog();
+        $logging->setEntry($resultLog);
     }
 }
 
