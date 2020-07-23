@@ -15,8 +15,8 @@ Enter password:
 
 */
 SET NAMES 'utf8mb4';
-# For Ver.5.7.5 or earlier.
-DROP USER 'web'@'localhost';
+# For Ver.5.7.5 or earlier. DROP USER statement should be activate on the first run.
+# DROP USER 'web'@'localhost';
 CREATE USER 'web'@'localhost' IDENTIFIED BY 'password'; # plugin caching_sha2_password
 # For Ver.5.7.6 or later.
 # CREATE USER IF NOT EXISTS 'web'@'localhost' IDENTIFIED BY 'password'; # plugin caching_sha2_password
