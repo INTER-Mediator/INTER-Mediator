@@ -13,7 +13,7 @@ const crypto = require('crypto')
 let port = process.argv[2] ? process.argv[2] : 21000
 let acceptClient = '0.0.0.0/0'
 const parser = require('../../node_modules/inter-mediator-expressionparser/index')
-const jsSHA = require('../../node_modules/jssha/src/sha.js')
+const jsSHA = require('../../node_modules/jssha/dist/sha.js')
 
 // const querystring = require('querystring')
 // console.log(parser.evaluate('a+b',{a:3,b:4}))

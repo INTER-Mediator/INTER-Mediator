@@ -397,7 +397,7 @@ class GenerateJSCode
         $nodeModuleDir = $imPath . DIRECTORY_SEPARATOR . 'node_modules' . DIRECTORY_SEPARATOR;
         $content = '';
         $content .= $this->readJSSource($nodeModuleDir . 'jsencrypt/bin/jsencrypt.js');
-        $content .= $this->readJSSource($nodeModuleDir . 'jssha/src/sha.js');
+        $content .= $this->readJSSource($nodeModuleDir . 'jssha/dist/sha.js');
         $content .= $this->readJSSource($nodeModuleDir . '/socket.io-client/dist/socket.io.js');
         $content .= "\n";
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-formatter/index.js');

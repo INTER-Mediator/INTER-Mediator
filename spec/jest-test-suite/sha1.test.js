@@ -2,7 +2,7 @@
 /* global SHA1,buster */
 
 const assert = require('power-assert')
-const jsSHA = require('../../node_modules/jssha/src/sha.js')
+const jsSHA = require('../../node_modules/jssha/dist/sha.js')
 const INTERMediatorLib = require('../../src/js/INTER-Mediator-Lib')
 
 test('Valid password hash should be generated using jssha\'', () => {
