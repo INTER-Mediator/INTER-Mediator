@@ -21,10 +21,6 @@ IMDISTDOC=`dirname ${IMVMFORTRIAL}`
 SQLITEDIR="/var/db/im"
 SQLITEDB="${SQLITEDIR}/sample.sq3"
 
-MYSQLHOSTOPTION=""
-if [ -e '/.dockerenv' ]; then
-    MYSQLHOSTOPTION="-h db"
-fi
 VMPASSWORD="im4135dev"
 
 read -p "Do you initialize the test databases? [y/n]: " INPUT
@@ -33,17 +29,22 @@ if [ "$INPUT" = "y" -o "$INPUT" = "Y" ]; then
     echo "Initializing databases..."
 
     if [ -e "/etc/redhat-release" ]; then
-        mysql "${MYSQLHOSTOPTION}" -u root --password="${VMPASSWORD}" test_db -e "DROP USER 'web'@'localhost';"
+        mysql -u root --password="${VMPASSWORD}" test_db -e "DROP USER 'web'@'localhost';"
     fi
     if [ -e "/etc/alpine-release" ]; then
-        mysql "${MYSQLHOSTOPTION}" -u root --password="${VMPASSWORD}" test_db -e "DROP USER IF EXISTS 'web'@'localhost';"
+        mysql -u root --password="${VMPASSWORD}" test_db -e "DROP USER IF EXISTS 'web'@'localhost';"
     fi
-    mysql "${MYSQLHOSTOPTION}" -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.txt"
+    mysql -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.txt" > /dev/null 2>&1
+    if [ $? -gt 0 ]; then
+        if [ -e '/.dockerenv' ]; then
+            mysql -h db -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.txt"
+        fi
+    fi
     if [ ! -e '/.dockerenv' ]; then
         if [ -e "/etc/alpine-release" ]; then
-            mysql "${MYSQLHOSTOPTION}" -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk '{print $3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
+            mysql -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk '{print $3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
         else
-            mysql "${MYSQLHOSTOPTION}" -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk '{print $2,$3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
+            mysql -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk '{print $2,$3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
         fi
 
         echo "${VMPASSWORD}" | sudo -u postgres -S psql -c 'drop database if exists test_db;'
