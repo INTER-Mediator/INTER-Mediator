@@ -22,8 +22,11 @@ SQLITEDIR="/var/db/im"
 SQLITEDB="${SQLITEDIR}/sample.sq3"
 
 MYSQLHOSTOPTION=""
-if [ -e '/.dockerenv' ]; then
+if [ -e "/.dockerenv" ]; then
     MYSQLHOSTOPTION="-h db"
+fi
+if [ "$CI" = "true" ] ; then
+    MYSQLHOSTOPTION=""
 fi
 VMPASSWORD="im4135dev"
 
