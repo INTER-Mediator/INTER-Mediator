@@ -1196,4 +1196,4 @@ module.exports = INTERMediatorLib
 const IMLibLocalContext = require('../../src/js/INTER-Mediator-LocalContext')
 const INTERMediator = require('../../src/js/INTER-Mediator')
 const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
-const jsSHA = require('../../node_modules/jssha/src/sha.js')
+const jsSHA = require('../../node_modules/jssha/dist/sha.js')

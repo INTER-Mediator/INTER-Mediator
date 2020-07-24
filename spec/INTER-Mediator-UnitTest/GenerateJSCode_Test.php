@@ -71,7 +71,7 @@ class GenerateJSCode_Test extends TestCase
             $jsLibDir = dirname(dirname($currentDir)) . DIRECTORY_SEPARATOR . 'node_modules' . DIRECTORY_SEPARATOR;
             $method = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'readJSSource');
             $method->setAccessible(true);
-            $partOfCode = $method->invokeArgs($this->generater, array($jsLibDir . 'jssha/src/sha.js'));
+            $partOfCode = $method->invokeArgs($this->generater, array($jsLibDir . 'jssha/dist/sha.js'));
             $this->assertStringContainsString($partOfCode, $content);
         }
     }
