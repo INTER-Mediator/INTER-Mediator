@@ -33,17 +33,17 @@ if [ "$INPUT" = "y" -o "$INPUT" = "Y" ]; then
     echo "Initializing databases..."
 
     if [ -e "/etc/redhat-release" ]; then
-        mysql "${MYSQLHOSTOPTION}" -u root --password="${VMPASSWORD}" test_db -e "DROP USER 'web'@'localhost';"
+        mysql ${MYSQLHOSTOPTION} -u root --password="${VMPASSWORD}" test_db -e "DROP USER 'web'@'localhost';"
     fi
     if [ -e "/etc/alpine-release" ]; then
-        mysql "${MYSQLHOSTOPTION}" -u root --password="${VMPASSWORD}" test_db -e "DROP USER IF EXISTS 'web'@'localhost';"
+        mysql ${MYSQLHOSTOPTION} -u root --password="${VMPASSWORD}" test_db -e "DROP USER IF EXISTS 'web'@'localhost';"
     fi
-    mysql "${MYSQLHOSTOPTION}" -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.txt"
+    mysql ${MYSQLHOSTOPTION} -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.txt"
     if [ ! -e '/.dockerenv' ]; then
         if [ -e "/etc/alpine-release" ]; then
-            mysql "${MYSQLHOSTOPTION}" -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk '{print $3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
+            mysql ${MYSQLHOSTOPTION} -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk '{print $3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
         else
-            mysql "${MYSQLHOSTOPTION}" -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk '{print $2,$3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
+            mysql ${MYSQLHOSTOPTION} -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk '{print $2,$3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
         fi
 
         echo "${VMPASSWORD}" | sudo -u postgres -S psql -c 'drop database if exists test_db;'
