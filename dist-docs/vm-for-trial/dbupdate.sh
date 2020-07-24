@@ -25,7 +25,7 @@ MYSQLHOSTOPTION=""
 if [ -e "/.dockerenv" ]; then
     MYSQLHOSTOPTION="-h db"
 fi
-if [ "$CI" = "true" ] ; then
+if [ "$CI" = "true" -o "$CIRCLECI" = "true" ]; then
     MYSQLHOSTOPTION=""
 fi
 VMPASSWORD="im4135dev"
