@@ -42,7 +42,15 @@
   },
   "devDependencies": {
     "jest": "*",
-    "power-assert": "*"
+    "power-assert": "*",
+    "handlebars": ">=4.3.0",
+    "lodash": ">=4.17.19",
+    "acorn": ">=5.7.4",
+    "mixin-deep": ">=1.3.2",
+    "set-value": ">=2.0.1",
+    "minimist": ">=0.2.1",
+    "lodash.template": ">=4.5.0",
+    "braces": ">=2.3.1"
   },
   "dependencies": {
     "jsencrypt": "*",
@@ -64,15 +72,7 @@
     "inter-mediator-plugin-jquerydatepicker": "1.0.2",
     "inter-mediator-plugin-jqueryfileupload": "1.1.0",
     "inter-mediator-plugin-popupselector": "1.0.1",
-    "inter-mediator-plugin-tinymce": "1.0.3",
-    "handlebars": ">=4.3.0",
-    "lodash": ">=4.17.19",
-    "acorn": ">=5.7.4",
-    "mixin-deep": ">=1.3.2",
-    "set-value": ">=2.0.1",
-    "minimist": ">=0.2.1",
-    "lodash.template": ">=4.5.0",
-    "braces": ">=2.3.1"
+    "inter-mediator-plugin-tinymce": "1.0.3"
   },
   "win32Dependencies": {
     "forever-win": "*"
