@@ -17,7 +17,11 @@ if [ $OS = 'centos' ] ; then
 fi
 IMROOT="${WEBROOT}/INTER-Mediator"
 IMVMFORTRIAL=`dirname $0`
-IMDISTDOC=`dirname ${IMVMFORTRIAL}`
+if [ $IMVMFORTRIAL = '.' ] ; then
+    IMDISTDOC=".."
+else
+    IMDISTDOC=`dirname ${IMVMFORTRIAL}`
+fi
 SQLITEDIR="/var/db/im"
 SQLITEDB="${SQLITEDIR}/sample.sq3"
 
