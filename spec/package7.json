@@ -50,7 +50,8 @@
     "minimist": ">=0.2.1",
     "mixin-deep": "^2.0.1",
     "power-assert": "*",
-    "set-value": "^3.0.2"
+    "set-value": "^3.0.2",
+    "tinymce": ">=5.4.1"
   },
   "dependencies": {
     "flatpickr": "^4.6.3",
