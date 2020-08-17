@@ -20,6 +20,6 @@ services:
       MYSQL_ROOT_PASSWORD: im4135dev
       MYSQL_USER: web
       MYSQL_PASSWORD: password
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_bin
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
     ports:
       - 3306:3306
