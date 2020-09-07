@@ -85,7 +85,7 @@ const IMLibUI = {
           targetSpec = targetNode.getAttribute('data-im')
           if (targetSpec && targetSpec.split(INTERMediator.separator)[0] === IMLibLocalContext.contextName) {
             IMLibLocalContext.updateFromNodeValue(idValue)
-            if(IMLibUI.recalculationOnValueChange) {
+            if (IMLibUI.recalculationOnValueChange) {
               IMLibCalc.recalculation()
             }
             completeTask()
@@ -186,7 +186,7 @@ const IMLibUI = {
               }
               contextInfoCapt.context.updateContextAsLookup(idValueCapt2, newValueCapt)
               IMLibQueue.setTask((completeTask) => {
-                if(IMLibUI.recalculationOnValueChange) {
+                if (IMLibUI.recalculationOnValueChange) {
                   IMLibCalc.recalculation()
                 }
                 if (INTERMediatorOnPage.doAfterValueChange) {
@@ -409,6 +409,7 @@ const IMLibUI = {
               return async function (result) {
                 let restore, conditions, sameOriginContexts
                 let newId = result.newRecordKeyValue
+                INTERMediatorOnPage.newRecordId = newId
                 if (newId > -1) {
                   restore = INTERMediator.additionalCondition
                   INTERMediator.startFrom = 0
@@ -429,6 +430,9 @@ const IMLibUI = {
                 IMLibCalc.recalculation()
                 INTERMediatorOnPage.hideProgress()
                 // IMLibUI.unlockUIElement(contextDefCapt.name)
+                if (INTERMediatorOnPage.doAfterCreateRecord) {
+                  INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId)
+                }
                 completeTaskCapt()
                 INTERMediatorLog.flushMessage()
               }

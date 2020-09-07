@@ -366,6 +366,7 @@ const IMLibPageNavigation = {
             {name: targetNameCapt, dataset: []},
             async function (response) {
               var newId = response.newRecordKeyValue
+              INTERMediatorOnPage.newRecordId = newId
               if (newId > -1) {
                 restore = INTERMediator.additionalCondition
                 if (contextDefCapt.records <= 1) {
@@ -387,6 +388,9 @@ const IMLibPageNavigation = {
               IMLibCalc.recalculation()
               INTERMediatorOnPage.hideProgress()
               INTERMediatorLog.flushMessage()
+              if (INTERMediatorOnPage.doAfterCreateRecord) {
+                INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId)
+              }
             },
             completeTask
           )
@@ -507,6 +511,7 @@ const IMLibPageNavigation = {
               return async function (result) {
                 var restore, conditions
                 var newId = result.newRecordKeyValue
+                INTERMediatorOnPage.newRecordId = newId
                 completeTask()
                 if (newId > -1) {
                   restore = INTERMediator.additionalCondition
@@ -523,6 +528,9 @@ const IMLibPageNavigation = {
                 }
                 IMLibCalc.recalculation()
                 INTERMediatorOnPage.hideProgress()
+                if (INTERMediatorOnPage.doAfterCreateRecord) {
+                  INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId)
+                }
                 INTERMediatorLog.flushMessage()
               }
             })(),
