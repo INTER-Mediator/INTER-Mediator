@@ -431,7 +431,7 @@ const IMLibUI = {
                 INTERMediatorOnPage.hideProgress()
                 // IMLibUI.unlockUIElement(contextDefCapt.name)
                 if (INTERMediatorOnPage.doAfterCreateRecord) {
-                  INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId)
+                  INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId, contextDefCapt.name)
                 }
                 completeTaskCapt()
                 INTERMediatorLog.flushMessage()
@@ -743,7 +743,7 @@ const IMLibUI = {
                   INTERMediatorOnPage.hideProgress()
                   INTERMediatorLog.flushMessage()
                   if (INTERMediatorOnPage.doAfterCreateRecord) {
-                    INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId)
+                    INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId, targetNameCapt)
                   }
                   completeTask()
                 })

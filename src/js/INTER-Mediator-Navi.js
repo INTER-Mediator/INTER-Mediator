@@ -389,7 +389,7 @@ const IMLibPageNavigation = {
               INTERMediatorOnPage.hideProgress()
               INTERMediatorLog.flushMessage()
               if (INTERMediatorOnPage.doAfterCreateRecord) {
-                INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId)
+                INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId, contextDefCapt.name)
               }
             },
             completeTask
@@ -529,7 +529,7 @@ const IMLibPageNavigation = {
                 IMLibCalc.recalculation()
                 INTERMediatorOnPage.hideProgress()
                 if (INTERMediatorOnPage.doAfterCreateRecord) {
-                  INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId)
+                  INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId, contextDefCapt2.name)
                 }
                 INTERMediatorLog.flushMessage()
               }
