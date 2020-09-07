@@ -84,6 +84,7 @@ Ver.6-dev (in development)
   navigation controls, and the step-fullnavi let the repeaters respond to click both mobile and desktop envs.
 - INTERMediatorOnPage.newRecordId is the key value of newly created record.
 - INTERMediatorOnPage.doAfterCreateRecord is the function that is called when create record operation is succeed.
+  This method is going to be called from both the pagenation navi and adding buttons, and not only creating record also copying.
 - IMLibPageNavigation.moveDetail(keying) is implemented for moveing from master to detail contexts.
 - Some codes in the INTERMediator_DBAdapter.db_updateParameters method are removed for just depending on IE ver.8.
 - Add the favicon.ico file on the root folder of this repository.
