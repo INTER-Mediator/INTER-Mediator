@@ -148,7 +148,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         }
         $fieldArray = array();
         $listArray = array();
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result as $row) {
             if ($keyField === $row['name'] || !is_null($row['dflt_value'])) {
 
             } else if ($assocField === $row['name']) {

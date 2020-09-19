@@ -197,7 +197,7 @@ xml
         }
         $fieldArray = array();
         $listArray = array();
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result as $row) {
             $quatedFieldName = $this->quotedEntityName($row['name']);
             if ($keyField === $row['name'] || $row['is_identity'] === 1) {
                 // skip key field to asign value.

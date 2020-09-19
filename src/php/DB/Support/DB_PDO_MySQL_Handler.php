@@ -147,7 +147,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         }
         $fieldArray = array();
         $listArray = array();
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result as $row) {
             if ($keyField === $row['Field'] || !is_null($row['Default'])) {
                 // skip key field to asing value.
             } else if ($assocField === $row['Field']) {
