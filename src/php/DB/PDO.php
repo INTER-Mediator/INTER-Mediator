@@ -31,6 +31,13 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     private $updatedRecord = null;
     private $softDeleteField = null;
     private $softDeleteValue = null;
+    private $isFollwingTimezones = false;
+
+    public function __construct()
+    {
+        $params = IMUtil::getFromParamsPHPFile(["follwingTimezones",], true);
+        $this->isFollwingTimezones = isset($params["follwingTimezones"]) ? $params["follwingTimezones"] : false;
+    }
 
     public function updatedRecord()
     {
@@ -390,8 +397,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $skipParam = $this->dbSettings->getStart();
         }
         $fields = $isAggregate ? $this->dbSettings->getAggregationSelect()
-            : (isset($tableInfo['specify-fields']) ?
-                implode(',', array_unique($this->dbSettings->getFieldsRequired())) : "*");
+            : (isset($tableInfo['specify-fields'])
+                ? implode(',', array_unique($this->dbSettings->getFieldsRequired())) : "*");
         $groupBy = ($isAggregate && $this->dbSettings->getAggregationGroupBy())
             ? ("GROUP BY " . $this->dbSettings->getAggregationGroupBy()) : "";
         $offset = $skipParam;
@@ -427,7 +434,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             . $this->handler->sqlOrderByCommand($sortClause, $limitParam, $offset);
         $this->logger->setDebugMessage($sql);
         $this->notifyHandler->setQueriedEntity($viewOrTableName);
-        $this->notifyHandler->setQueriedCondition("{$queryClause} {$this->handler->sqlOrderByCommand($sortClause, $limitParam, $offset)}");
+        $this->notifyHandler->setQueriedCondition(
+            "{$queryClause} {$this->handler->sqlOrderByCommand($sortClause, $limitParam, $offset)}");
 
         // Query
         $result = $this->link->query($sql);
@@ -438,6 +446,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
         $this->notifyHandler->setQueriedPrimaryKeys(array());
         $keyField = $this->getKeyFieldOfContext($tableInfo);
+        $timeFields = ($this->isFollwingTimezones && !$this->dbSettings->getAggregationFrom())
+            ? $this->handler->getTimeFields($this->dbSettings->getEntityForRetrieve()) : [];
         $sqlResult = array();
         $isFirstRow = true;
         foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
@@ -448,6 +458,13 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 }
                 $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
                 $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
+                // Convert the time explanation from UTC to server setup timezone
+                if (in_array($field, $timeFields) && !is_null($rowArray[$field]) && $rowArray[$field] !== '') {
+                    $dt = new \DateTime($rowArray[$field], new \DateTimeZone(date_default_timezone_get()));
+                    $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $rowArray[$field]);
+                    $dt->setTimezone(new \DateTimeZone('UTC'));
+                    $rowArray[$field] = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+                }
             }
             $sqlResult[] = $rowArray;
             if ($keyField && isset($rowArray[$keyField])) {
@@ -503,7 +520,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $this->fieldInfo = null;
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
-        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
+        $timeFields = $this->isFollwingTimezones
+            ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
+       $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         if (!$this->setupConnection()) { //Establish the connection
@@ -536,6 +555,13 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             } else {
                 $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                 $convertedValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
+                // Convert the time explanation from UTC to server setup timezone
+                if (in_array($field, $timeFields) && !is_null($convertedValue) && $convertedValue !== '') {
+                    $dt = new \DateTime($convertedValue, new \DateTimeZone('UTC'));
+                    $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $convertedValue);
+                    $dt->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+                    $convertedValue = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+                }
                 $setClause[] = $this->handler->quotedEntityName($field) . "=?";
                 $setParameter[] = $convertedValue;
             }
@@ -617,6 +643,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     {
         $this->fieldInfo = null;
         $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
+        $timeFields = $this->isFollwingTimezones
+            ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $viewName = $this->handler->quotedEntityName($this->dbSettings->getEntityForRetrieve());
@@ -657,6 +685,13 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             } else {
                 $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                 $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
+                // Convert the time explanation from UTC to server setup timezone
+                if (in_array($field, $timeFields) && !is_null($convertedValue) && $convertedValue !== '') {
+                    $dt = new \DateTime($convertedValue, new \DateTimeZone('UTC'));
+                    $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $convertedValue);
+                    $dt->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+                    $convertedValue = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+                }
                 $setValues[] = $this->link->quote(
                     $this->formatter->formatterToDB($filedInForm, $convertedValue));
             }

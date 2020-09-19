@@ -67,41 +67,62 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         } catch (Exception $ex) {
             throw $ex;
         }
-        $fieldNameForField = 'Field';
-        $fieldNameForNullable = 'Null';
-        $fieldNameForType = 'Type';
-        $fieldArray = array();
-        $numericFieldTypes = array('int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
+        $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
             'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision',
-            'date', 'datetime', 'timestamp', 'time', 'year',);
-        $matches = array();
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-            preg_match("/[a-z]+/", strtolower($row[$fieldNameForType]), $matches);
-            if ($row[$fieldNameForNullable] &&
-                in_array($matches[0], $numericFieldTypes)
-            ) {
-                $fieldArray[] = $row[$fieldNameForField];
+            'date', 'datetime', 'timestamp', 'time', 'year',];
+        $fieldNameForNullable = 'Null';
+        $fieldArray = [];
+        $matches = [];
+        foreach ($result as $row) {
+            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if ($row[$fieldNameForNullable] && in_array($matches[0], $numericFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
+
+    public function getTimeFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+        $fieldArray = [];
+        $matches = [];
+        foreach ($result as $row) {
+            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if (in_array($matches[0], $timeFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
             }
         }
         return $fieldArray;
     }
 
     private $tableInfo = array();
+    private $fieldNameForField = 'Field';
+    private $fieldNameForType = 'Type';
 
     protected function getTableInfo($tableName)
     {
+        $infoResult = [];
         if (!isset($this->tableInfo[$tableName])) {
             $sql = "SHOW COLUMNS FROM " . $this->quotedEntityName($tableName);
             $this->dbClassObj->logger->setDebugMessage($sql);
             $result = $this->dbClassObj->link->query($sql);
-            $this->tableInfo[$tableName] = $result;
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $infoResult[] = $row;
+            }
+            $this->tableInfo[$tableName] = $infoResult;
             if (!$result) {
                 throw new Exception('INSERT Error:' . $sql);
             }
         } else {
-            $result = $this->tableInfo[$tableName];
+            $infoResult = $this->tableInfo[$tableName];
         }
-        return $result;
+        return $infoResult;
     }
 
     /*

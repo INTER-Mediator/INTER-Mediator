@@ -13,9 +13,11 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\DB\Support;
 
 use \Exception;
+
 //require_once("DB_PDO_MySQL_Handler.php");
 //require_once("DB_PDO_PostgreSQL_Handler.php");
 //require_once("DB_PDO_SQLite_Handler.php");
@@ -90,6 +92,8 @@ abstract class DB_PDO_Handler
 
 
     public abstract function getNullableNumericFields($tableName);
+
+    public abstract function getTimeFields($tableName);
 
     public abstract function quotedEntityName($entityName);
 

@@ -13,6 +13,7 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\DB\Support;
 
 class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
@@ -69,26 +70,42 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         } catch (Exception $ex) {
             throw $ex;
         }
-        $fieldNameForField = 'name';
         $fieldNameForNullable = 'is_nullable';
-        $fieldNameForType = 'type';
         $fieldArray = array();
         $numericFieldTypes = array('bigint', 'bit', 'date', 'datetime', 'datetime2', 'decimal',
             'float', 'hierarchyid', 'int', 'money', 'numeric', 'real', 'smalldatetime', 'smallint',
             'smallmoney', 'time', 'timestamp', 'tinyint',);
         $matches = array();
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-            preg_match("/[a-z]+/", strtolower($row[$fieldNameForType]), $matches);
-            if ($row[$fieldNameForNullable] &&
-                in_array($matches[0], $numericFieldTypes)
-            ) {
-                $fieldArray[] = $row[$fieldNameForField];
+        foreach ($result as $row) {
+            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if ($row[$fieldNameForNullable] && in_array($matches[0], $numericFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
             }
         }
         return $fieldArray;
     }
 
+    public function getTimeFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $timeFieldTypes = ['datetime', 'datetime2', 'datetimeoffset', 'time', 'smaldatetime'];
+        $fieldArray = [];
+        foreach ($result as $row) {
+            if (in_array(strtolower($row[$this->fieldNameForType]), $timeFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
+
+
     private $tableInfo = array();
+    private $fieldNameForField = 'name';
+    private $fieldNameForType = 'type';
 
     protected function getTableInfo($tableName)
     {
@@ -103,10 +120,15 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
             if (!$result) {
                 throw new Exception('INSERT Error:' . $sql);
             }
+            $infoResult = [];
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $infoResult[] = $row;
+            }
+            $this->tableInfo[$tableName] = $infoResult;
         } else {
-            $result = $this->tableInfo[$tableName];
+            $infoResult = $this->tableInfo[$tableName];
         }
-        return $result;
+        return $infoResult;
     }
 
     /*
@@ -180,7 +202,7 @@ xml
             if ($keyField === $row['name'] || $row['is_identity'] === 1) {
                 // skip key field to asign value.
             } else if ($assocField === $row['name']) {
-                if (array_search($quatedFieldName, $fieldArray)===FALSE) {
+                if (array_search($quatedFieldName, $fieldArray) === FALSE) {
                     $fieldArray[] = $quatedFieldName;
                     $listArray[] = $this->dbClassObj->link->quote($assocValue);
                 }

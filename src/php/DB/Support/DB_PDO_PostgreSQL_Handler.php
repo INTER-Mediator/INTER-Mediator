@@ -64,26 +64,43 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         } catch (Exception $ex) {
             throw $ex;
         }
-        $fieldNameForField = 'column_name';
         $fieldNameForNullable = 'is_nullable';
-        $fieldNameForType = 'data_type';
         $fieldArray = array();
         $numericFieldTypes = array('smallint', 'integer', 'bigint', 'decimal', 'numeric',
             'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money',
             'timestamp', 'date', 'time', 'interval', );
         $matches = array();
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-            preg_match("/[a-z ]+/", strtolower($row[$fieldNameForType]), $matches);
-            if ($row[$fieldNameForNullable] &&
-                in_array($matches[0], $numericFieldTypes)
-            ) {
-                $fieldArray[] = $row[$fieldNameForField];
+        foreach ($result as $row) {
+            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if ($row[$fieldNameForNullable] && in_array($matches[0], $numericFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
+
+    public function getTimeFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+        $fieldArray = [];
+        $matches = [];
+        foreach ($result as $row) {
+            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if (in_array($matches[0], $timeFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
             }
         }
         return $fieldArray;
     }
 
     private $tableInfo = array();
+    private $fieldNameForField = 'column_name';
+    private $fieldNameForType = 'data_type';
 
     protected function getTableInfo($tableName)
     {
@@ -103,10 +120,15 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
             if (!$result) {
                 throw new Exception('INSERT Error:' . $sql);
             }
+            $infoResult = [];
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $infoResult[] = $row;
+            }
+            $this->tableInfo[$tableName] = $infoResult;
         } else {
-            $result = $this->tableInfo[$tableName];
+            $infoResult = $this->tableInfo[$tableName];
         }
-        return $result;
+        return $infoResult;
     }
     /*
 # select table_catalog,table_schema,table_name,column_name,column_default from information_schema.columns where table_name='person';

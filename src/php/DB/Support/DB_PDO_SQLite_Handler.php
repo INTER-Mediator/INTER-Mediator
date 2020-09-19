@@ -13,7 +13,9 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\DB\Support;
+
 use Exception;
 
 class DB_PDO_SQLite_Handler extends DB_PDO_Handler
@@ -64,26 +66,44 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         } catch (Exception $ex) {
             throw $ex;
         }
-        $fieldNameForField = 'name';
         $fieldNameForNullable = 'notnull';
-        $fieldNameForType = 'type';
         $fieldArray = array();
         $numericFieldTypes = array('integer', 'real', 'numeric',
             'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2', 'int8',
             'double', 'double precision', 'float', 'decimal', 'boolean', 'date', 'datetime',);
         $matches = array();
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-            preg_match("/[a-z ]+/", strtolower($row[$fieldNameForType]), $matches);
-            if (!$row[$fieldNameForNullable] &&
-                in_array($matches[0], $numericFieldTypes)
-            ) {
-                $fieldArray[] = $row[$fieldNameForField];
+        foreach ($result as $row) {
+            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if (!$row[$fieldNameForNullable] && in_array($matches[0], $numericFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
+
+    public function getTimeFields($tableName)
+    {
+        /* This isn't work because SQLite doesn't have any Date/Time type. It uses the text or numeric field. */
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+        $fieldArray = [];
+        $matches = [];
+        foreach ($result as $row) {
+            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if (in_array($matches[0], $timeFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
             }
         }
         return $fieldArray;
     }
 
     private $tableInfo = array();
+    private $fieldNameForField = 'name';
+    private $fieldNameForType = 'type';
 
     protected function getTableInfo($tableName)
     {
@@ -94,10 +114,15 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
             if (!$result) {
                 throw new Exception('INSERT Error:' . $sql);
             }
+            $infoResult = [];
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $infoResult[] = $row;
+            }
+            $this->tableInfo[$tableName] = $infoResult;
         } else {
-            $result = $this->tableInfo[$tableName];
+            $infoResult = $this->tableInfo[$tableName];
         }
-        return $result;
+        return $infoResult;
     }
 
     /*
