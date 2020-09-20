@@ -23,4 +23,4 @@ IM_Entry(
             'key' => 'id',
             'repeat-control' => 'insert delete',
         ]
-    ], [], ['db-class' => 'PDO'], 2);
+    ], [], ['db-class' => 'PDO'], 0);
