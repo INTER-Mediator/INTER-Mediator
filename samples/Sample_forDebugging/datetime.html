@@ -15,6 +15,12 @@
     <meta charset="UTF-8">
     <title>INTER-Mediator - Sample - DateTime for Debugging/MySQL</title>
     <script type="text/javascript" src="datetime.php"></script>
+    <script>
+        function setToday() {
+          const context = IMLibContextPool.contextFromName('testtable')
+          context.setDataAtLastRecord('ts2',INTERMediatorLib.dateTimeStringISO())
+        }
+    </script>
 </head>
 <body>
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
@@ -51,7 +57,10 @@
     <tr>
         <th>ts2</th>
         <td><input type="datetime-local" data-im="testtable@ts2"></td>
-        <td><input type="text" size="36" data-im="testtable@ts2" data-im-format="datetime(long)"></td>
+        <td>
+            <input type="text" size="36" data-im="testtable@ts2" data-im-format="datetime(long)"><br>
+            <button onclick="setToday()">今現在を設定</button>
+        </td>
         <td data-im="testtable@ts2"></td>
         <td></td>
     </tr>
