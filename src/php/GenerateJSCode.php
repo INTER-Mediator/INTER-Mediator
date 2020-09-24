@@ -67,7 +67,8 @@ class GenerateJSCode
             "generatedPrivateKey", "passPhrase", "browserCompatibility", "scriptPathPrefix", "scriptPathSuffix",
             "oAuthProvider", "oAuthClientID", "oAuthRedirect", "passwordPolicy", "documentRootPrefix", "dbClass",
             "dbDSN", "nonSupportMessageId", "valuesForLocalContext", "themeName", "appLocale", "appCurrency",
-            "resetPage", "enrollPage", "serviceServerPort", "serviceServerHost", "activateClientService"
+            "resetPage", "enrollPage", "serviceServerPort", "serviceServerHost", "activateClientService",
+            "follwingTimezones"
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -98,6 +99,7 @@ class GenerateJSCode
             ? $params['serviceServerHost'] : $_SERVER['SERVER_ADDR'];
         $serviceServerHost = $serviceServerHost ? $serviceServerHost : 'localhost';
         $activateClientService = isset($params['activateClientService']) ? boolval($params['activateClientService']) : true;
+        $follwingTimezones =isset($params['follwingTimezones']) ? boolval($params['follwingTimezones']) : false;
 
         $serverName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
         $documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : 'Not_on_web_server';
@@ -388,6 +390,8 @@ class GenerateJSCode
         $this->generateAssignJS("INTERMediatorOnPage.activateClientService", $activateClientService ? "true" : "false");
         $this->generateAssignJS("INTERMediatorOnPage.serviceServerPort", $serviceServerPort);
         $this->generateAssignJS("INTERMediatorOnPage.serviceServerHost", $q, $serviceServerHost, $q);
+        $this->generateAssignJS("INTERMediatorOnPage.serverDefaultTimezone", $q, date_default_timezone_get(), $q);
+        $this->generateAssignJS("INTERMediatorOnPage.isFollowingTimezone", $follwingTimezones ? "true" : "false");
     }
 
     private function combineScripts($currentDir)

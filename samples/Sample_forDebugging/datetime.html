@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ */
+-->
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>INTER-Mediator - Sample - DateTime for Debugging/MySQL</title>
+    <script type="text/javascript" src="datetime.php"></script>
+    <script>
+        function setToday() {
+          const context = IMLibContextPool.contextFromName('testtable')
+          context.setDataAtLastRecord('ts2',INTERMediatorLib.dateTimeStringISO())
+        }
+    </script>
+</head>
+<body>
+<div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
+<table>
+    <tbody>
+    <tr>
+        <th>dt1</th>
+        <td><input type="datetime-local" data-im="testtable@dt1"></td>
+        <td><input type="text" size="36" data-im="testtable@dt1" data-im-format="datetime(middle)"></td>
+        <td data-im="testtable@dt1"></td>
+        <td></td>
+    </tr>
+    <tr>
+        <th>date1</th>
+        <td><input type="date" data-im="testtable@date1"></td>
+        <td><input type="text" size="36" data-im="testtable@date1" data-im-format="date(long)"></td>
+        <td data-im="testtable@date1"></td>
+        <td></td>
+    </tr>
+    <tr>
+        <th>time1</th>
+        <td><input type="text" data-im="testtable@time1"></td>
+        <td><input type="text" data-im="testtable@time1" data-im-format="time(long)"></td>
+        <td data-im="testtable@time1"></td>
+        <td></td>
+    </tr>
+    <tr>
+        <th>ts1</th>
+        <td><input type="datetime-local" data-im="testtable@ts1"></td>
+        <td><input type="text" size="36" data-im="testtable@ts1" data-im-format="datetime(long)"></td>
+        <td data-im="testtable@ts1"></td>
+        <td></td>
+    </tr>
+    <tr>
+        <th>ts2</th>
+        <td><input type="datetime-local" data-im="testtable@ts2"></td>
+        <td>
+            <input type="text" size="36" data-im="testtable@ts2" data-im-format="datetime(long)"><br>
+            <button onclick="setToday()">今現在を設定</button>
+        </td>
+        <td data-im="testtable@ts2"></td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

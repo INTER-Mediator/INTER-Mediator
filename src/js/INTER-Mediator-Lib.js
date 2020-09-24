@@ -1155,6 +1155,11 @@ const INTERMediatorLib = {
   dateTimeStringISO: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
+    if(INTERMediatorOnPage.isFollowingTimezone){
+      return dt.getUTCFullYear() + '-' + ('0' + (dt.getUTCMonth() + 1)).substr(-2, 2) + '-' +
+        ('0' + dt.getUTCDate()).substr(-2, 2) + ' ' + ('0' + dt.getUTCHours()).substr(-2, 2) + ':' +
+        ('0' + dt.getUTCMinutes()).substr(-2, 2) + ':' + ('0' + dt.getUTCSeconds()).substr(-2, 2)
+    }
     return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '-' +
       ('0' + dt.getDate()).substr(-2, 2) + ' ' + ('0' + dt.getHours()).substr(-2, 2) + ':' +
       ('0' + dt.getMinutes()).substr(-2, 2) + ':' + ('0' + dt.getSeconds()).substr(-2, 2)
@@ -1163,6 +1168,11 @@ const INTERMediatorLib = {
   dateTimeStringFileMaker: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
+    if(INTERMediatorOnPage.isFollowingTimezone){
+      return ('0' + (dt.getUTCMonth() + 1)).substr(-2, 2) + '/' + ('0' + dt.getUTCDate()).substr(-2, 2) + '/' +
+        dt.getUTCFullYear() + ' ' + ('0' + dt.getUTCHours()).substr(-2, 2) + ':' +
+        ('0' + dt.getUTCMinutes()).substr(-2, 2) + ':' + ('0' + dt.getUTCSeconds()).substr(-2, 2)
+    }
     return ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '/' + ('0' + dt.getDate()).substr(-2, 2) + '/' +
       dt.getFullYear() + ' ' + ('0' + dt.getHours()).substr(-2, 2) + ':' +
       ('0' + dt.getMinutes()).substr(-2, 2) + ':' + ('0' + dt.getSeconds()).substr(-2, 2)
@@ -1171,6 +1181,10 @@ const INTERMediatorLib = {
   dateStringISO: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
+    if(INTERMediatorOnPage.isFollowingTimezone){
+      return dt.getUTCFullYear() + '-' + ('0' + (dt.getUTCMonth() + 1)).substr(-2, 2) +
+        '-' + ('0' + dt.getUTCDate()).substr(-2, 2)
+    }
     return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).substr(-2, 2) +
       '-' + ('0' + dt.getDate()).substr(-2, 2)
   },
@@ -1178,6 +1192,10 @@ const INTERMediatorLib = {
   dateStringFileMaker: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
+    if(INTERMediatorOnPage.isFollowingTimezone){
+      return ('0' + (dt.getUTCMonth() + 1)).substr(-2, 2) + '/' +
+        ('0' + dt.getUTCDate()).substr(-2, 2) + '/' + dt.getUTCFullYear()
+    }
     return ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '/' +
       ('0' + dt.getDate()).substr(-2, 2) + '/' + dt.getFullYear()
   },

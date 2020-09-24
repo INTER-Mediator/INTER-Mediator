@@ -139,7 +139,8 @@ $prohibitDebugMode = false;
 
 // If you don't set the default timezone in the php.ini file,
 //      activate the line below and specify suitable timezone name.
-//$defaultTimezone = 'Asia/Tokyo';
+$defaultTimezone = 'Asia/Tokyo';
+//$follwingTimezones = true;
 
 // The 'issuedhash' table for storing challenges of authentication can be use another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';

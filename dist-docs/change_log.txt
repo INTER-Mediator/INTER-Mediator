@@ -99,6 +99,10 @@ Ver.6-dev (in development)
   with multiple fields.
 - The operation logging feature is implemented, but it's off as default. See the $accessLogLevel variable
   in the params.php file.
+- The timezone of browsers are involved. The variable $follwingTimezones in params.php indicates timezone supporting.
+  If it's true, the timezone of the server (or db existing) to the variable $defaultTimezone and following the browsers
+  timezone. The default value of $follwingTimezones is false, and it means just passing through the time data from db
+  to browsers. The timezone supporing depends on ES6 browser because new Date() without timezone recognize as local time.
 - [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
 - [BUG FIX] Buttons on pagination (ex. Insert...) was disappeared in case of clicking Insert button on related context.
 - [BUG FIX] Cache mode did't work. This bug is added after branching 6(master) and 5.x.
