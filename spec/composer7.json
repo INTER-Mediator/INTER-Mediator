@@ -23,7 +23,8 @@
     "yodarunamok/fxphp": "*",
     "inter-mediator/fmdataapi": "*",
     "swiftmailer/swiftmailer": "*",
-    "tecnickcom/tcpdf": "*"
+    "tecnickcom/tcpdf": "*",
+    "aws/aws-sdk-php": "*"
   },
   "extra": {
     "mouf": {
