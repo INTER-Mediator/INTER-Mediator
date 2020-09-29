@@ -968,19 +968,33 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     if (!$ignoreFiles) {
                         $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
                         if ($uploadFiles && count($tableInfo) > 0) {
-                            (new \INTERMediator\FileUploader())->processingWithParameters(
-                                $this->dbSettings->getDataSource(), $this->dbSettings->getOptions(),
-                                $this->dbSettings->getDbSpec(), $this->logger->getDebugLevel(),
-                                $tableInfo['name'], $tableInfo['key'], $result,
-                                $this->dbSettings->getAttachedFields(), $uploadFiles, true
-                            );
+                            $fileUploader = new \INTERMediator\FileUploader();
+                            if (IMUtil::guessFileUploadError()) {
+                                $fileUploader->processingAsError(
+                                    $this->dbSettings->getDataSource(),
+                                    $this->dbSettings->getOptions(),
+                                    $this->dbSettings->getDbSpec(), true,
+                                    $this->dbSettings->getDataSourceName(), true);
+                            } else {
+                                $fileUploader->processingWithParameters(
+                                    $this->dbSettings->getDataSource(),
+                                    $this->dbSettings->getOptions(),
+                                    $this->dbSettings->getDbSpec(),
+                                    $this->logger->getDebugLevel(),
+                                    $tableInfo['name'], $tableInfo['key'],
+                                    $result,
+                                    $this->dbSettings->getAttachedFields(),
+                                    $uploadFiles, true
+                                );
+                            }
                         }
                     }
                 } else {
                     $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
                 }
                 break;
-            case 'delete':
+            case
+            'delete':
                 $this->logger->setDebugMessage("[processingRequest] start delete processing", 2);
                 $this->deleteFromDB($this->dbSettings->getDataSourceName());
                 break;
@@ -1083,7 +1097,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         //$this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
     }
 
-    public function getDatabaseResult()
+    public
+    function getDatabaseResult()
     {
         if (isset($this->outputOfProcessing['dbresult'])) {
             return $this->outputOfProcessing['dbresult'];
@@ -1091,7 +1106,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return null;
     }
 
-    public function getDatabaseResultCount()
+    public
+    function getDatabaseResultCount()
     {
         if (isset($this->outputOfProcessing['resultCount'])) {
             return $this->outputOfProcessing['resultCount'];
@@ -1099,7 +1115,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return null;
     }
 
-    public function getDatabaseTotalCount()
+    public
+    function getDatabaseTotalCount()
     {
         if (isset($this->outputOfProcessing['totalCount'])) {
             return $this->outputOfProcessing['totalCount'];
@@ -1107,7 +1124,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return null;
     }
 
-    public function getDatabaseNewRecordKey()
+    public
+    function getDatabaseNewRecordKey()
     {
         if (isset($this->outputOfProcessing['newRecordKeyValue'])) {
             return $this->outputOfProcessing['newRecordKeyValue'];
@@ -1420,7 +1438,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $result;
     }
 
-    private function checkValidation()
+    private
+    function checkValidation()
     {
         $inValid = false;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -1453,37 +1472,44 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
 
-    public function setupConnection()
+    public
+    function setupConnection()
     {
         // TODO: Implement setupConnection() method.
     }
 
-    public function setupHandlers($dsn = false)
+    public
+    function setupHandlers($dsn = false)
     {
         // TODO: Implement setupHandlers() method.
     }
 
-    public function normalizedCondition($condition)
+    public
+    function normalizedCondition($condition)
     {
         // TODO: Implement normalizedCondition() method.
     }
 
-    public function softDeleteActivate($field, $value)
+    public
+    function softDeleteActivate($field, $value)
     {
         // TODO: Implement softDeleteActivate() method.
     }
 
-    public function setUpdatedRecord($field, $value, $index = 0)
+    public
+    function setUpdatedRecord($field, $value, $index = 0)
     {
         // TODO: Implement setUpdatedRecord() method.
     }
 
-    public function queryForTest($table, $conditions = null)
+    public
+    function queryForTest($table, $conditions = null)
     {
         // TODO: Implement queryForTest() method.
     }
 
-    public function deleteForTest($table, $conditions = null)
+    public
+    function deleteForTest($table, $conditions = null)
     {
         // TODO: Implement deleteForTest() method.
     }

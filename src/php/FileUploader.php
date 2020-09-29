@@ -41,7 +41,7 @@ class FileUploader
 
     */
 
-    public function processingAsError($datasource, $options, $dbspec, $debug, $contextname)
+    public function processingAsError($datasource, $options, $dbspec, $debug, $contextname, $noOutput)
     {
         $this->db = new DB\Proxy();
         $this->db->initialize($datasource, $options, $dbspec, $debug, $contextname);
@@ -80,9 +80,11 @@ class FileUploader
                 }
             }
         }
-        $this->db->processingRequest("noop");
-        $this->db->finishCommunication();
-        $this->db->exportOutputDataAsJSON();
+        if (!$noOutput) {
+            $this->db->processingRequest("noop");
+            $this->db->finishCommunication();
+            $this->db->exportOutputDataAsJSON();
+        }
         return;
     }
 

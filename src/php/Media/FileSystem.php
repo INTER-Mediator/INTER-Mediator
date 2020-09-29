@@ -16,7 +16,6 @@
 
 namespace INTERMediator\Media;
 
-
 use INTERMediator\IMUtil;
 use INTERMediator\DB\Proxy;
 
@@ -140,7 +139,7 @@ class FileSystem implements UploadingSupport
                 if (isset($dbProxyContext['file-upload'])) {
                     foreach ($dbProxyContext['file-upload'] as $item) {
                         if ($item['field'] == $targetFieldName) {
-                            $relatedContext = new DB\Proxy();
+                            $relatedContext = new Proxy();
                             $relatedContext->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : null);
                             $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
                             $fields = array();

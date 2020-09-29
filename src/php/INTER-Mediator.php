@@ -129,7 +129,8 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     ) {     // File uploading
         $fileUploader = new FileUploader();
         if (IMUtil::guessFileUploadError()) {
-            $fileUploader->processingAsError($datasource, $options, $dbspecification, $debug, $_POST["_im_contextname"]);
+            $fileUploader->processingAsError(
+                $datasource, $options, $dbspecification, $debug, $_POST["_im_contextname"], false);
         } else {
             $fileUploader->processing($datasource, $options, $dbspecification, $debug);
         }
