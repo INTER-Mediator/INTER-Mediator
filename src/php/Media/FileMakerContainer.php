@@ -23,21 +23,6 @@ class FileMakerContainer implements UploadingSupport
 {
     public function processing($db, $url, $options, $files, $noOutput, $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug)
     {
-        if (count($files) < 1) {
-            if (!is_null($url)) {
-                header('Location: ' . $url);
-            } else {
-                $messages = IMUtil::getMessageClassInstance();
-                $db->logger->setErrorMessage($messages->getMessageAs(3202));
-                $db->processingRequest("noop");
-                if (!$noOutput) {
-                    $db->finishCommunication();
-                    $db->exportOutputDataAsJSON();
-                }
-            }
-            return;
-        }
-
         $counter = -1;
         foreach ($files as $fn => $fileInfo) {
             $counter += 1;

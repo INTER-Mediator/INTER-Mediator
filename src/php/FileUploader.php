@@ -116,6 +116,7 @@ class FileUploader
         $className = "FileSystem";
         $useFMContainer = FALSE;
         $dbProxyContext = $this->db->dbSettings->getDataSourceTargetArray();
+
         if (($dbspec['db-class'] === 'FileMaker_FX' || $dbspec['db-class'] === 'FileMaker_DataAPI') &&
             isset($dbProxyContext['file-upload'])) {
             foreach ($dbProxyContext['file-upload'] as $item) {
@@ -166,7 +167,23 @@ class FileUploader
             return;
         }
 
+        if (count($files) < 1) {
+            if (!is_null($this->url)) {
+                header('Location: ' . $url);
+            } else {
+                $messages = IMUtil::getMessageClassInstance();
+                $this->db->logger->setErrorMessage($messages->getMessageAs(3202));
+                $this->db->processingRequest("noop");
+                if (!$noOutput) {
+                    $this->db->finishCommunication();
+                    $this->db->exportOutputDataAsJSON();
+                }
+            }
+            return;
+        }
+
         $className = "INTERMediator\\Media\\{$className}";
+        $this->db->logger->setDebugMessage("Instantiate the class '{$className}'", 2);
         $processing = new $className();
         $processing->processing($this->db, $this->url, $options, $files, $noOutput, $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug);
     }

@@ -407,7 +407,7 @@ class DefinitionChecker
                 '*' => array(
                     'field' => 'string',
                     'context' => 'string',
-                    'container' => 'boolean',
+                    'container' => 'boolean|string(FileSystem|FileMakerContainer|S3)',
                 )
             ),
             'calculation' => array(

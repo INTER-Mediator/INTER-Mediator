@@ -15,6 +15,9 @@
 
 namespace INTERMediator;
 
+use Aws\Credentials\Credentials;
+use Aws\S3\Exception\S3Exception;
+use Aws\S3\S3Client;
 use Exception;
 
 class MediaAccess
@@ -23,13 +26,13 @@ class MediaAccess
     private $targetKeyField;    // set with the analyzeTarget method.
     private $targetKeyValue;  // set with the analyzeTarget method.
     private $targetContextName;  // set with the analyzeTarget method.
-    private $targetFieldName;  // set with the analyzeTarget method.
     private $cookieUser;    // set with the checkAuthentication method.
     private $accessLogLevel = 0;
-    private $outputMessage = ['apology'=>'Logging messages are not implemented so far.'];
+    private $outputMessage = ['apology' => 'Logging messages are not implemented so far.'];
 
-    public function getResultForLog(){
-        if($this->accessLogLevel < 1) {
+    public function getResultForLog()
+    {
+        if ($this->accessLogLevel < 1) {
             return [];
         }
         return $this->outputMessage;
@@ -42,7 +45,7 @@ class MediaAccess
 
     private function isPossibleSchema($file)
     {
-        $schema = ["https:", "http:", "class:"];
+        $schema = ["https:", "http:", "class:", "s3:"];
         foreach ($schema as $scheme) {
             if (strpos($file, $scheme) === 0) {
                 return true;
@@ -53,17 +56,21 @@ class MediaAccess
 
     public function processing($dbProxyInstance, $options, $file)
     {
-         $contextRecord = null;
+        $contextRecord = null;
         try {
             // It the $file ('media'parameter) isn't specified, it doesn't respond an error.
             if (strlen($file) === 0) {
-                echo "[INTER-Mediator] The value of the 'media' key in url isn't specified.";
+                $erMessage = "[INTER-Mediator] The value of the 'media' key in url isn't specified.";
+                echo $erMessage;
+                error_log($erMessage);
                 $this->exitAsError(200);
             }
             // If the media parameter is an URL, the variable isURL will be set to true.
             $isURL = $this->isPossibleSchema($file);
-            if(!$isURL && !isset($options['media-root-dir'])) {
-                echo "[INTER-Mediator] This MediaAccess operation requires the option value of the 'media-root-dir' key.";
+            if (!$isURL && !isset($options['media-root-dir'])) {
+                $erMessage = "[INTER-Mediator] This MediaAccess operation requires the option value of the 'media-root-dir' key.";
+                echo $erMessage;
+                error_log($erMessage);
                 $this->exitAsError(200); // The file accessing requires the media-root-dir keyed value.
             }
             /*
@@ -75,7 +82,9 @@ class MediaAccess
             // Set the target variable
             $file = IMUtil::removeNull($file);
             if (strpos($file, '../') !== false) { // Stop for security reason.
-                echo "[INTER-Mediator] The '..' path component isn't permitted.";
+                $erMessage = "[INTER-Mediator] The '..' path component isn't permitted.";
+                echo $erMessage;
+                error_log($erMessage);
                 $this->exitAsError(200);
             }
             $target = $isURL ? $file : "{$options['media-root-dir']}/{$file}";
@@ -107,7 +116,7 @@ class MediaAccess
                         throw new Exception('The field-group is not supported so far on the MediaAccess class.');
                         break;
                     default: // 'context_auth' or 'no_auth'
-                        if($this->targetContextName) {
+                        if ($this->targetContextName) {
                             if ($this->targetKeyField && $this->targetKeyValue) {
                                 $dbProxyInstance->dbSettings->addExtraCriteria($this->targetKeyField, "=", $this->targetKeyValue);
                             }
@@ -116,9 +125,19 @@ class MediaAccess
                         }
                 }
             }
+
+            if (count($contextRecord) !== 1) {
+                $erMessage = "[INTER-Mediator] No record which is associated with the parameters in the url({$target}).";
+                echo $erMessage;
+                error_log($erMessage);
+                $this->exitAsError(500);
+            }
+
             // Responding the contents
+            $result = null;
             $content = false;
             $dq = '"';
+
             if (!$isURL) { // File path.
                 if (!empty($file) && !file_exists($target)) {
                     $this->exitAsError(500);
@@ -203,6 +222,44 @@ class MediaAccess
                 $className = substr($noscheme, 0, strpos($noscheme, "/"));
                 $processingObject = new $className();
                 $processingObject->processing($contextRecord, $options);
+            } else if (stripos($target, 's3://') === 0) {
+                $params = IMUtil::getFromParamsPHPFile(["accessRegion", "rootBucket",
+                    "s3AccessKey", "s3AccessSecret", "s3AccessProfile"], true);
+                $accessRegion = $params["accessRegion"];
+                $rootBucket = $params["rootBucket"];
+                $s3AccessProfile = $params["s3AccessProfile"];
+                $s3AccessKey = $params["s3AccessKey"];
+                $s3AccessSecret = $params["s3AccessSecret"];
+                $startOfPath = strpos($target, "/", 5);
+                $urlPath = substr($target, $startOfPath + 1);
+                $fileName = basename($urlPath);
+                $clientArgs = ['version' => 'latest', 'region' => $accessRegion];
+                if ($s3AccessProfile) {
+                    $clientArgs['profile'] = $s3AccessProfile;
+                } else if ($s3AccessKey && $s3AccessSecret) {
+                    $clientArgs['credentials'] = new Credentials($s3AccessKey, $s3AccessSecret);
+                }
+                $s3 = new S3Client($clientArgs);
+                $objectSpec = ['Bucket' => $rootBucket, 'Key' => $urlPath,];
+                try {
+                    $result = $s3->getObject($objectSpec);
+                } catch (S3Exception $e) {
+                    error_log($e->getMessage());
+                    $this->exitAsError(500);
+                }
+                if (interface_exists($result['Body'], 'Psr\Http\Message\StreamInterface')) {
+                    $content = $result['Body']->getContents();
+                } else {
+                    $content = $result['Body'];
+                }
+
+                header("Content-Type: " . IMUtil::getMimeType($fileName));
+                header("Content-Length: " . strlen($content));
+                header("Content-Disposition: {$this->disposition}; filename={$dq}"
+                    . str_replace("+", "%20", urlencode($fileName)) . $dq);
+                $util = new IMUtil();
+                $util->outputSecurityHeaders();
+                $this->outputImage($content);
             }
         } catch (Exception $ex) {
             // do nothing
@@ -372,7 +429,6 @@ class MediaAccess
         $this->targetKeyField = null;
         $this->targetKeyValue = null;
         $this->targetContextName = null;
-        $this->targetFieldName = null;
 
         $result = false;
         $endOfPath = strpos($target, "?");
@@ -390,9 +446,6 @@ class MediaAccess
         }
         if ($indexKeying > 0) {
             $this->targetContextName = urldecode($pathComponents[$indexKeying - 1]);
-            if (isset($pathComponents[$indexKeying + 1])) {
-                $this->targetFieldName = urldecode($pathComponents[$indexKeying + 1]);
-            }
             $result = true;
         } else {
             if ($pathComponents[0] == 'class:' && isset($pathComponents[3])) {

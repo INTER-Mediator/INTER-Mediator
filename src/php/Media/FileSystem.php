@@ -28,22 +28,6 @@ class FileSystem implements UploadingSupport
             $fileRoot .= '/';
         }
 
-
-        if (count($files) < 1) {
-            if (!is_null($url)) {
-                header('Location: ' . $url);
-            } else {
-                $messages = IMUtil::getMessageClassInstance();
-                $db->logger->setErrorMessage($messages->getMessageAs(3202));
-                $db->processingRequest("noop");
-                if (!$noOutput) {
-                    $db->finishCommunication();
-                    $db->exportOutputDataAsJSON();
-                }
-            }
-            return;
-        }
-
         $counter = -1;
         foreach ($files as $fn => $fileInfo) {
             $counter += 1;
