@@ -109,13 +109,16 @@ if (window) {
       event.returnValue = confirmationMessage //Gecko + IE
       return confirmationMessage //Webkit, Safari, Chrome etc.
     } else {
+      if(INTERMediatorOnPage.activateClientService) {
+        INTERMediator_DBAdapter.unregister()
+      }
       return undefined
     }
   })
-  //
-  // INTERMediatorLib.addEvent(window, 'unload', function () {
+
+  // INTERMediatorLib.addEvent(window, 'unload',  function () {
   //   'use strict'
-  //   INTERMediator_DBAdapter.unregister()
+  //    INTERMediator_DBAdapter.unregister()
   // })
 
   INTERMediatorLib.addEvent(window, 'load', function () {

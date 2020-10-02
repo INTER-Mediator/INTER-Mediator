@@ -69,6 +69,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     private $accessLogLevel;
     private $result4Log = [];
+    private $isStopNotifyAndMessaging = false;
 
     public static function defaultKey()
     {
@@ -79,6 +80,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     public function getDefaultKey()
     {
         return $this->dbClass->specHandler->getDefaultKey();
+    }
+
+    public function setStopNotifyAndMessaging() {
+        $this->isStopNotifyAndMessaging = true;
     }
 
     public function addOutputData($key, $value)
@@ -340,35 +345,37 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterCreateToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterCreateToDB($result);
             }
-            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
-                try {
-                    $this->dbSettings->notifyServer->created(
-                        $this->PostData['notifyid'],
-                        $this->dbClass->notifyHandler->queriedEntity(),
-                        $this->dbClass->notifyHandler->queriedPrimaryKeys(),
-                        $result
-                    );
-                } catch (\Exception $ex) {
-                    if ($ex->getMessage() == '_im_no_pusher_exception') {
-                        $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
-                    } else {
-                        throw $ex;
+            if (!$this->isStopNotifyAndMessaging) {
+                if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
+                    try {
+                        $this->dbSettings->notifyServer->created(
+                            $this->PostData['notifyid'],
+                            $this->dbClass->notifyHandler->queriedEntity(),
+                            $this->dbClass->notifyHandler->queriedPrimaryKeys(),
+                            $result
+                        );
+                    } catch (\Exception $ex) {
+                        if ($ex->getMessage() == '_im_no_pusher_exception') {
+                            $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
+                        } else {
+                            throw $ex;
+                        }
                     }
                 }
-            }
-            // Messaging
-            $msgEntry = isset($currentDataSource['send-mail']) ? $currentDataSource['send-mail'] :
-                (isset($currentDataSource['messaging']) ? $currentDataSource['messaging'] : null);
-            if ($msgEntry) {
-                $msgArray = isset($msgEntry['new']) ? $msgEntry['new'] :
-                    (isset($msgEntry['create']) ? $msgEntry['create'] : null);
-                if ($msgArray) {
-                    $this->logger->setDebugMessage("Try to send a message.", 2);
-                    $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
-                    $msgProxy = new MessagingProxy($driver);
-                    $msgResult = $msgProxy->processing($this, $msgArray, $result);
-                    if ($msgResult !== true) {
-                        $this->logger->setErrorMessage("Mail sending error: $msgResult");
+                // Messaging
+                $msgEntry = isset($currentDataSource['send-mail']) ? $currentDataSource['send-mail'] :
+                    (isset($currentDataSource['messaging']) ? $currentDataSource['messaging'] : null);
+                if ($msgEntry) {
+                    $msgArray = isset($msgEntry['new']) ? $msgEntry['new'] :
+                        (isset($msgEntry['create']) ? $msgEntry['create'] : null);
+                    if ($msgArray) {
+                        $this->logger->setDebugMessage("Try to send a message.", 2);
+                        $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
+                        $msgProxy = new MessagingProxy($driver);
+                        $msgResult = $msgProxy->processing($this, $msgArray, $result);
+                        if ($msgResult !== true) {
+                            $this->logger->setErrorMessage("Mail sending error: $msgResult");
+                        }
                     }
                 }
             }
