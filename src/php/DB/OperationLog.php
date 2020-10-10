@@ -95,6 +95,7 @@ class OperationLog
             $dbInstance->dbSettings->addValueWithField("result", $this->arrayToString($result));
             $dbInstance->dbSettings->addValueWithField("error",
                 $this->arrayToString($dbInstance->logger->getErrorMessages()));
+            $dbInstance->setStopNotifyAndMessaging();
             $dbInstance->processingRequest("create", true, true);
         }
     }

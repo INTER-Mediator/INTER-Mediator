@@ -94,12 +94,14 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                 $sql .= "({$newContextId},{$qPk})";
                 $isFirstRow = false;
             }
-            $this->logger->setDebugMessage($sql);
-            $result = $this->dbClass->link->exec($sql);
-            if ($result < 1) {
-                $this->logger->setDebugMessage($this->dbClass->link->errorInfo());
-                $this->dbClass->errorMessageStore('Insert:' . $sql);
-                return false;
+            if(!$isFirstRow) {
+                $this->logger->setDebugMessage($sql);
+                $result = $this->dbClass->link->exec($sql);
+                if ($result < 1) {
+                    $this->logger->setDebugMessage($this->dbClass->link->errorInfo());
+                    $this->dbClass->errorMessageStore('Insert:' . $sql);
+                    return false;
+                }
             }
         }
         return $newContextId;

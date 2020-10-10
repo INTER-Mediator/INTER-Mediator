@@ -218,7 +218,6 @@ class IMUtil
     public static function guessFileUploadError()
     {
         $postMaxSize = self::return_bytes(ini_get('post_max_size'));
-
         if ($_SERVER['REQUEST_METHOD'] == 'POST'
             && $_SERVER['CONTENT_LENGTH'] > $postMaxSize
             && strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') === 0

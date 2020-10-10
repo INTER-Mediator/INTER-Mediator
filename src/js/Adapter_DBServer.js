@@ -132,9 +132,9 @@ const INTERMediator_DBAdapter = {
   },
 
   /* No return values */
-  server_access_async: function (accessURL, debugMessageNumber, errorMessageNumber,
-                                 successProc = null, failedProc = null, authAgainProc = null,
-                                 fData = null) {
+  server_access_async: async function (accessURL, debugMessageNumber, errorMessageNumber,
+                                       successProc = null, failedProc = null, authAgainProc = null,
+                                       fData = null) {
     // 'use strict'
     let newRecordKeyValue = '', dbresult = '', resultCount = 0, totalCount = null, challenge = null, clientid = null,
       requireAuth = false, myRequest = null, changePasswordResult = null, mediatoken = null, appPath, authParams,
@@ -1102,17 +1102,17 @@ const INTERMediator_DBAdapter = {
     }
   },
 
-  unregister: function (entityPkInfo) {
+  unregister: async function(entityPkInfo) {
     'use strict'
-    let result = null
-    let params
+    let params, p = null
     if (INTERMediatorOnPage.activateClientService) {
       params = 'access=unregister'
       if (entityPkInfo) {
         params += '&pks=' + encodeURIComponent(JSON.stringify(entityPkInfo))
       }
-      INTERMediator_DBAdapter.server_access_async(params, 1018, 1016, null, null, null)
+      p = await INTERMediator_DBAdapter.server_access_async(params, 1018, 1016, null, null, null)
     }
+    return p
   }
 }
 

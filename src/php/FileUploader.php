@@ -21,10 +21,11 @@ class FileUploader
     private $db;
     private $url = NULL;
     private $accessLogLevel = 0;
-    private $outputMessage = ['apology'=>'Logging messages are not implemented so far.'];
+    private $outputMessage = ['apology' => 'Logging messages are not implemented so far.'];
 
-    public function getResultForLog(){
-        if($this->accessLogLevel < 1) {
+    public function getResultForLog()
+    {
+        if ($this->accessLogLevel < 1) {
             return [];
         }
         return $this->outputMessage;
@@ -40,28 +41,7 @@ class FileUploader
 
     */
 
-    private function justfyPathComponent($str, $mode = "default")
-    {
-        $jStr = $str;
-        switch ($mode) {
-            case "assjis":
-                $jStr = mb_convert_encoding($jStr, "SJIS", "UTF-8");
-                $jStr = mb_convert_encoding($jStr, "UTF-8", "SJIS");
-                $jStr = str_replace(DIRECTORY_SEPARATOR, '_', str_replace('.', '_', $jStr));
-                break;
-            case "asucs4":
-                $jStr = mb_convert_encoding($jStr, "UCS-4", "UTF-8");
-                $jStr = mb_convert_encoding($jStr, "UTF-8", "UCS-4");
-                $jStr = str_replace(DIRECTORY_SEPARATOR, '_', str_replace('.', '_', $jStr));
-                break;
-            default:
-                $jStr = str_replace('.', '_', urlencode($jStr));
-                break;
-        }
-        return $jStr;
-    }
-
-    public function processingAsError($datasource, $options, $dbspec, $debug, $contextname)
+    public function processingAsError($datasource, $options, $dbspec, $debug, $contextname, $noOutput)
     {
         $this->db = new DB\Proxy();
         $this->db->initialize($datasource, $options, $dbspec, $debug, $contextname);
@@ -100,9 +80,11 @@ class FileUploader
                 }
             }
         }
-        $this->db->processingRequest("noop");
-        $this->db->finishCommunication();
-        $this->db->exportOutputDataAsJSON();
+        if (!$noOutput) {
+            $this->db->processingRequest("noop");
+            $this->db->finishCommunication();
+            $this->db->exportOutputDataAsJSON();
+        }
         return;
     }
 
@@ -131,16 +113,31 @@ class FileUploader
 
         $this->db->logger->setDebugMessage("FileUploader class's processing starts");
 
-        $useContainer = FALSE;
+        $className = "FileSystem";
+        $useFMContainer = FALSE;
         $dbProxyContext = $this->db->dbSettings->getDataSourceTargetArray();
+
         if (($dbspec['db-class'] === 'FileMaker_FX' || $dbspec['db-class'] === 'FileMaker_DataAPI') &&
             isset($dbProxyContext['file-upload'])) {
             foreach ($dbProxyContext['file-upload'] as $item) {
-                if (isset($item['container']) && (boolean)$item['container'] === TRUE) {
-                    $useContainer = TRUE;
+                if (isset($item['container'])
+                    && (((boolean)$item['container'] === TRUE)
+                        || ($item['container'] === 'FileMaker'))) {
+                    $useFMContainer = TRUE;
+                    $className = "FileMakerContainer";
                 }
             }
         }
+        $useS3 = FALSE;
+        if (isset($dbProxyContext['file-upload'])) {
+            foreach ($dbProxyContext['file-upload'] as $item) {
+                if (isset($item['container']) && ($item['container'] === 'S3')) {
+                    $useS3 = TRUE;
+                    $className = "AWSS3";
+                }
+            }
+        }
+        $useFileSystem = !($useS3 || $useFMContainer);
 
         if (isset($_POST['_im_redirect'])) {
             $this->url = $this->getRedirectUrl($_POST['_im_redirect']);
@@ -148,7 +145,7 @@ class FileUploader
                 header("HTTP/1.1 500 Internal Server Error");
                 $this->db->logger->setErrorMessage('Header may not contain more than a single header, new line detected.');
                 $this->db->processingRequest('noop');
-                if(!$noOutput) {
+                if (!$noOutput) {
                     $this->db->finishCommunication();
                     $this->db->exportOutputDataAsJSON();
                 }
@@ -156,35 +153,28 @@ class FileUploader
             }
         }
 
-        if (!isset($options['media-root-dir']) && $useContainer === FALSE) {
+        if (!isset($options['media-root-dir']) && ($useFileSystem || $useFMContainer)) {
             if (!is_null($this->url)) {
                 header('Location: ' . $this->url);
             } else {
                 $this->db->logger->setErrorMessage("'media-root-dir' isn't specified");
                 $this->db->processingRequest("noop");
-                if(!$noOutput) {
+                if (!$noOutput) {
                     $this->db->finishCommunication();
                     $this->db->exportOutputDataAsJSON();
                 }
             }
             return;
-        }
-        if ($useContainer === FALSE) {
-            // requires media-root-dir specification.
-            $fileRoot = $options['media-root-dir'];
-            if (substr($fileRoot, strlen($fileRoot) - 1, 1) !== '/') {
-                $fileRoot .= '/';
-            }
         }
 
         if (count($files) < 1) {
             if (!is_null($this->url)) {
-                header('Location: ' . $this->url);
+                header('Location: ' . $url);
             } else {
                 $messages = IMUtil::getMessageClassInstance();
                 $this->db->logger->setErrorMessage($messages->getMessageAs(3202));
                 $this->db->processingRequest("noop");
-                if(!$noOutput) {
+                if (!$noOutput) {
                     $this->db->finishCommunication();
                     $this->db->exportOutputDataAsJSON();
                 }
@@ -192,211 +182,10 @@ class FileUploader
             return;
         }
 
-        $counter = -1;
-        foreach ($files as $fn => $fileInfo) {
-            $counter += 1;
-            if (is_array($fileInfo['name'])) {   // JQuery File Upload Style
-                $fileInfoName = $fileInfo['name'][0];
-                $fileInfoTemp = $fileInfo['tmp_name'][0];
-            } else {
-                $fileInfoName = $fileInfo['name'];
-                $fileInfoTemp = $fileInfo['tmp_name'];
-            }
-            $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
-
-            $targetFieldName = $field[$counter];
-            if ($targetFieldName != "_im_csv_upload") {
-                // file uploading or FM's container
-                if ($useContainer) {
-                    // for uploading to FileMaker's container field
-                    $fileName = $filePathInfo['filename'] . '.' . $filePathInfo['extension'];
-                    $tmpDir = ini_get('upload_tmp_dir');
-                    if ($tmpDir === '') {
-                        $tmpDir = sys_get_temp_dir();
-                    }
-                    if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
-                        $filePath = $tmpDir . $fileName;
-                    } else {
-                        $filePath = $tmpDir . DIRECTORY_SEPARATOR . $fileName;
-                    }
-                } else { // for normal file uploading
-                    $fileRoot = $options['media-root-dir'];
-                    if (substr($fileRoot, strlen($fileRoot) - 1, 1) != '/') {
-                        $fileRoot .= '/';
-                    }
-
-                    $uploadFilePathMode = null;
-                    $params = IMUtil::getFromParamsPHPFile(array("uploadFilePathMode",), true);
-                    $uploadFilePathMode = $params["uploadFilePathMode"];
-
-
-                    $dirPath =
-                        $this->justfyPathComponent($contextname, $uploadFilePathMode) . DIRECTORY_SEPARATOR
-                        . $this->justfyPathComponent($keyfield, $uploadFilePathMode) . "="
-                        . $this->justfyPathComponent($keyvalue, $uploadFilePathMode) . DIRECTORY_SEPARATOR
-                        . $this->justfyPathComponent($targetFieldName, $uploadFilePathMode);
-                    $rand4Digits = rand(1000, 9999);
-                    $filePartialPath = $dirPath . '/' . $filePathInfo['filename'] . '_'
-                        . $rand4Digits . '.' . $filePathInfo['extension'];
-                    $filePath = $fileRoot . $filePartialPath;
-                    if (strpos($filePath, $fileRoot) !== 0) {
-                        $this->db->logger->setErrorMessage("Invalid Path Error.");
-                        $this->db->processingRequest("noop");
-                        if(!$noOutput) {
-                            $this->db->finishCommunication();
-                            $this->db->exportOutputDataAsJSON();
-                        }
-                        return;
-                    }
-
-                    if (!file_exists($fileRoot . $dirPath)) {
-                        $result = mkdir($fileRoot . $dirPath, 0755, true);
-                        if (!$result) {
-                            $this->db->logger->setErrorMessage("Can't make directory. [{$dirPath}]");
-                            $this->db->processingRequest("noop");
-                            if(!$noOutput) {
-                                $this->db->finishCommunication();
-                                $this->db->exportOutputDataAsJSON();
-                            }
-                            return;
-                        }
-                    }
-                    //exec("chmod -R o+x " . escapeshellcmd($fileRoot));
-                }
-                $result = move_uploaded_file(IMUtil::removeNull($fileInfoTemp), $filePath);
-                if (!$result) {
-                    if (!is_null($this->url)) {
-                        header('Location: ' . $this->url);
-                    } else {
-                        $this->db->logger->setErrorMessage("Fail to move the uploaded file in the media folder.");
-                        $this->db->processingRequest("noop");
-                        if(!$noOutput) {
-                            $this->db->finishCommunication();
-                            $this->db->exportOutputDataAsJSON();
-                        }
-                    }
-                    return;
-                }
-
-                if ($useContainer === FALSE) {
-                    $dbProxyContext = $this->db->dbSettings->getDataSourceTargetArray();
-                    if (isset($dbProxyContext['file-upload'])) {
-                        foreach ($dbProxyContext['file-upload'] as $item) {
-                            if (isset($item['field']) && !isset($item['context'])) {
-                                $targetFieldName = $item['field'];
-                            }
-                        }
-                    }
-                }
-
-                $this->db = new DB\Proxy();
-                $this->db->initialize($datasource, $options, $dbspec, $debug, $contextname);
-                $this->db->dbSettings->addExtraCriteria($keyfield, "=", $keyvalue);
-                $this->db->dbSettings->setFieldsRequired(array($targetFieldName));
-
-                // If the file content is base64 encoded url starting with 'data:,', decode it and store a file.
-                $fileContent = file_get_contents($filePath, false, null, 0, 30);
-                $headerTop = strpos($fileContent, "data:");
-                $endOfHeader = strpos($fileContent, ",");
-                if ($headerTop === 0 && $endOfHeader > 0) {
-                    $tempFilePath = $filePath . ".temp";
-                    rename($filePath, $tempFilePath);
-                    $step = 1024;
-                    if (strpos($fileContent, ";base64") !== false) {
-                        $fw = fopen($filePath, "w");
-                        $fp = fopen($tempFilePath, "r");
-                        fread($fp, $endOfHeader + 1);
-                        while ($str = fread($fp, $step)) {
-                            fwrite($fw, base64_decode($str));
-                        }
-                        fclose($fp);
-                        fclose($fw);
-                        unlink($tempFilePath);
-                    }
-                }
-
-                if ($useContainer === FALSE) {
-                    $this->db->dbSettings->setValue(array($filePartialPath));
-                } else {
-                    $this->db->dbSettings->setValue(array($fileName . "\n" . base64_encode(file_get_contents($filePath))));
-                }
-
-                $this->db->processingRequest("update", true);
-                $dbProxyRecord = $this->db->getDatabaseResult();
-
-                $relatedContext = null;
-                if ($useContainer === FALSE) {
-                    if (isset($dbProxyContext['file-upload'])) {
-                        foreach ($dbProxyContext['file-upload'] as $item) {
-                            if ($item['field'] == $targetFieldName) {
-                                $relatedContext = new DB\Proxy();
-                                $relatedContext->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : null);
-                                $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
-                                $fields = array();
-                                $values = array();
-                                if (isset($relatedContextInfo["query"])) {
-                                    foreach ($relatedContextInfo["query"] as $cItem) {
-                                        if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
-                                            $fields[] = $cItem['field'];
-                                            $values[] = $cItem['value'];
-                                        }
-                                    }
-                                }
-                                if (isset($relatedContextInfo["relation"])) {
-                                    foreach ($relatedContextInfo["relation"] as $cItem) {
-                                        if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
-                                            $fields[] = $cItem['foreign-key'];
-                                            $values[] = $dbProxyRecord[0][$cItem['join-field']];
-                                        }
-                                    }
-                                }
-                                $fields[] = "path";
-                                $values[] = $filePartialPath;
-                                $relatedContext->dbSettings->setFieldsRequired($fields);
-                                $relatedContext->dbSettings->setValue($values);
-                                $relatedContext->processingRequest("create", true, true);
-                                /* 2019-03-13 msyk
-                                Why can the authentication bypass here? This db access is followed by another db processing,
-                                and if the authentication is not valid, previous processing is going to arise any errors.
-                                */
-                                //    $relatedContext->finishCommunication(true);
-                                //    $relatedContext->exportOutputDataAsJSON();
-                            }
-                        }
-                    }
-                }
-            } else {    // CSV File uploading
-
-            }
-
-            if ($useContainer === FALSE) {
-                $this->db->addOutputData('dbresult', $filePath);
-            } else {
-                if ($dbspec['db-class'] === 'FileMaker_FX') {
-                    $this->db->addOutputData('dbresult',
-                        '/fmi/xml/cnt/' . $fileName .
-                        '?-db=' . urlencode($this->db->dbSettings->getDbSpecDatabase()) .
-                        '&-lay=' . urlencode($datasource[0]['name']) .
-                        '&-recid=' . intval($keyvalue) .
-                        '&-field=' . urlencode($targetFieldName));
-                } else if ($dbspec['db-class'] === 'FileMaker_DataAPI') {
-                    $layout = $datasource[0]['name'];
-                    $this->db->dbClass->setupFMDataAPIforDB($layout, urlencode($targetFieldName));
-                    $result = $this->db->dbClass->fmData->{$layout}->query(NULL, NULL, 1, 1);
-                    $path = '';
-                    $host = filter_input(INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_URL);
-                    if ($host === NULL || $host === FALSE) {
-                        $host = 'localhost';
-                    }
-                    foreach ($result as $record) {
-                        $path = str_replace('https://' . $host, '', $record->{$targetFieldName});
-                        break;
-                    }
-                    $path = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL) . '?media=' . urlencode($path);
-                    $this->db->addOutputData('dbresult', $path);
-                }
-            }
-        }
+        $className = "INTERMediator\\Media\\{$className}";
+        $this->db->logger->setDebugMessage("Instantiate the class '{$className}'", 2);
+        $processing = new $className();
+        $processing->processing($this->db, $this->url, $options, $files, $noOutput, $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug);
     }
 
     //
