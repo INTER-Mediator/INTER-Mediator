@@ -59,6 +59,9 @@ class AWSS3 implements UploadingSupport
                 $fileInfoName = $fileInfo['name'];
                 $fileInfoTemp = $fileInfo['tmp_name'];
             }
+            if(!is_uploaded_file($fileInfoTemp)){ // Security check
+                return;
+            }
             $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
             $targetFieldName = $field[$counter];
             $dirPath = $contextname . DIRECTORY_SEPARATOR
@@ -73,7 +76,7 @@ class AWSS3 implements UploadingSupport
                 $clientArgs['credentials'] = new Credentials($this->s3AccessKey, $this->s3AccessSecret);
             }
 
-            $s3 = new S3Client($clientArgs);
+            $s3 = new S3Client($clientArgs); // Initialize S3 client
             $objectSpec = [
                 'Bucket' => $this->rootBucket,
                 'Key' => $objectKey,
@@ -81,7 +84,7 @@ class AWSS3 implements UploadingSupport
                 'ACL' => $this->applyingACL
             ];
             try {
-                $result = $s3->putObject($objectSpec);
+                $result = $s3->putObject($objectSpec); // Store to S3
             } catch (S3Exception $e) {
                 if (!is_null($url)) {
                     header('Location: ' . $url);
@@ -95,6 +98,8 @@ class AWSS3 implements UploadingSupport
                 }
                 return;
             }
+            unlink($fileInfoTemp); // Remove upload file
+
             $schemaInUrl = "https://";
             if ($this->s3urlCustomize && strpos($result['ObjectURL'], $schemaInUrl) === 0) {
                 $storedURL = str_replace($schemaInUrl, "s3://", $result['ObjectURL']);
@@ -122,7 +127,7 @@ class AWSS3 implements UploadingSupport
             $relatedContext = null;
             if (isset($dbProxyContext['file-upload'])) {
                 foreach ($dbProxyContext['file-upload'] as $item) {
-                    if ($item['field'] == $targetFieldName) {
+                    if (isset($item['field']) && $item['field'] == $targetFieldName) {
                         $relatedContext = new Proxy();
                         $relatedContext->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : null);
                         $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
