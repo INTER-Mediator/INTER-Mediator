@@ -3277,9 +3277,9 @@
       }
     },
     "inter-mediator-formatter": {
-      "version": "1.0.8",
-      "resolved": "https://registry.npmjs.org/inter-mediator-formatter/-/inter-mediator-formatter-1.0.8.tgz",
-      "integrity": "sha512-8y/oQa5xsD4rnOq1wbmGqEwwYz9DuJd+mSswbMhTtWKvDmEezCoJ/TqhgaDX4h2tbssY8qkwLChdin1y8hdauw=="
+      "version": "1.0.14",
+      "resolved": "https://registry.npmjs.org/inter-mediator-formatter/-/inter-mediator-formatter-1.0.14.tgz",
+      "integrity": "sha512-XlZqqH5dHoEJvGUvxcb3S0s4LfNc/yHq1+9/dgCgpEbrTIqx6rmQhWZrBFVxQDaFhCWl5dgkRnIA47vajoQDCg=="
     },
     "inter-mediator-locale": {
       "version": "1.0.4",

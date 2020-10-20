@@ -125,6 +125,7 @@ class FileUploader
                         || ($item['container'] === 'FileMaker'))) {
                     $useFMContainer = TRUE;
                     $className = "FileMakerContainer";
+                    break;
                 }
             }
         }
@@ -134,6 +135,7 @@ class FileUploader
                 if (isset($item['container']) && ($item['container'] === 'S3')) {
                     $useS3 = TRUE;
                     $className = "AWSS3";
+                    break;
                 }
             }
         }
@@ -169,7 +171,7 @@ class FileUploader
 
         if (count($files) < 1) {
             if (!is_null($this->url)) {
-                header('Location: ' . $url);
+                header('Location: ' . $this->url);
             } else {
                 $messages = IMUtil::getMessageClassInstance();
                 $this->db->logger->setErrorMessage($messages->getMessageAs(3202));

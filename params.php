@@ -140,7 +140,7 @@ $prohibitDebugMode = false;
 // If you don't set the default timezone in the php.ini file,
 //      activate the line below and specify suitable timezone name.
 $defaultTimezone = 'Asia/Tokyo';
-//$follwingTimezones = true;
+$follwingTimezones = true;
 
 // The 'issuedhash' table for storing challenges of authentication can be use another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
@@ -274,7 +274,6 @@ $applyingACL = "bucket-owner-read";
 $s3AccessProfile = "im-develop";
 $s3AccessKey = "AKIAXXXXXXXXXXXXXXXX";
 $s3AccessSecret = "XXXXXXXXXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXX";
-$s3AccessProfile = "im-develop";
 // Profile can push any credentials out of codes. The profile is prior than key/secret.
 // https://docs.aws.amazon.com/ja_jp/sdk-for-php/v3/developer-guide/guide_credentials_profiles.html
 $s3urlCustomize = true; // The default value is TRUE.

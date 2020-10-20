@@ -22,7 +22,10 @@ IM_Entry(
             'name' => 'testtable',
             'key' => 'id',
             'sort' => [['field' => 'dt1', 'direction' => 'desc'],],
-            'file-upload' => [['field' => 'vc2', 'context' => 'fileupload', /*'container'=>'S3',*/],],
+            'file-upload' => [
+                ['field' => 'vc2', 'context' => 'fileupload',],
+//                ['container' => 'S3',],
+            ],
             'post-reconstruct' => true,
             'repeat-control' => 'insert delete',
             'default-values' => [['field' => 'dt1', 'value' => date('Y-m-d H:i:s'),],],
@@ -35,7 +38,7 @@ IM_Entry(
         ],
         [
             'name' => 'item_master',
-            'view'=>'product',
+            'view' => 'product',
         ]
     ],
     [
