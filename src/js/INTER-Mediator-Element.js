@@ -126,9 +126,7 @@ const IMLibElement = {
     flags = IMLibElement.initilaizeFlags(element)
     params = 0
     formatFunc = IMLibElement.formatters[formatSpec.trim().toLocaleLowerCase()] // in case of no parameters in attribute
-    if (typeof formatFunc == 'undefined') {
-      formattedValue = curVal
-    } else if (!formatFunc) {
+    if (!formatFunc) {
       firstParen = formatSpec.indexOf('(')
       lastParen = formatSpec.lastIndexOf(')')
       parsed = formatSpec.substr(0, firstParen).match(/[^a-zA-Z]*([a-zA-Z]+).*/)
