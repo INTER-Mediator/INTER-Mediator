@@ -33,6 +33,7 @@ const IMLibElement = {
     percent: IMLibFormat.percentFormat,
     date: IMLibFormat.dateFormat,
     datetime: IMLibFormat.datetimeFormat,
+    datetimelocal: IMLibFormat.dateTimeLocalFormat,
     time: IMLibFormat.timeFormat
   },
 
@@ -43,6 +44,7 @@ const IMLibElement = {
     percent: IMLibFormat.convertPercent,
     date: IMLibFormat.convertDate,
     datetime: IMLibFormat.convertDateTime,
+    datetimelocal: IMLibFormat.convertDateTimeLocal,
     time: IMLibFormat.convertTime
   },
 
@@ -97,7 +99,7 @@ const IMLibElement = {
       kanjiSeparator: 0
     }
     formatOption = element.getAttribute('data-im-format-options')
-    if(formatOption) {
+    if (formatOption) {
       for (const oneOption of formatOption.split(' ')) {
         flags = IMLibElement.appendObject(flags, IMLibElement.formatOptions[oneOption])
       }
@@ -124,7 +126,9 @@ const IMLibElement = {
     flags = IMLibElement.initilaizeFlags(element)
     params = 0
     formatFunc = IMLibElement.formatters[formatSpec.trim().toLocaleLowerCase()] // in case of no parameters in attribute
-    if (!formatFunc) {
+    if (typeof formatFunc == 'undefined') {
+      formattedValue = curVal
+    } else if (!formatFunc) {
       firstParen = formatSpec.indexOf('(')
       lastParen = formatSpec.lastIndexOf(')')
       parsed = formatSpec.substr(0, firstParen).match(/[^a-zA-Z]*([a-zA-Z]+).*/)
