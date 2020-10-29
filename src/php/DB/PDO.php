@@ -609,6 +609,13 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                         }
                         $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                         $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
+                        // Convert the time explanation from UTC to server setup timezone
+                        if (in_array($field, $timeFields) && !is_null($rowArray[$field]) && $rowArray[$field] !== '') {
+                            $dt = new \DateTime($rowArray[$field], new \DateTimeZone(date_default_timezone_get()));
+                            $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $rowArray[$field]);
+                            $dt->setTimezone(new \DateTimeZone('UTC'));
+                            $rowArray[$field] = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+                        }
                     }
                     $sqlResult[] = $rowArray;
                     $this->notifyHandler->addQueriedPrimaryKeys($rowArray[$keyField]);
@@ -757,6 +764,13 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                         }
                         $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                         $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
+                        // Convert the time explanation from UTC to server setup timezone
+                        if (in_array($field, $timeFields) && !is_null($rowArray[$field]) && $rowArray[$field] !== '') {
+                            $dt = new \DateTime($rowArray[$field], new \DateTimeZone(date_default_timezone_get()));
+                            $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $rowArray[$field]);
+                            $dt->setTimezone(new \DateTimeZone('UTC'));
+                            $rowArray[$field] = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+                        }
                     }
                     $sqlResult[] = $rowArray;
                     $isFirstRow = false;
@@ -847,6 +861,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->dbSettings->getEntityForUpdate();
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+        $timeFields = $this->isFollwingTimezones
+            ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
 
         if (!$this->setupConnection()) { //Establish the connection
             return false;
@@ -918,6 +934,13 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                         }
                         $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                         $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
+                        // Convert the time explanation from UTC to server setup timezone
+                        if (in_array($field, $timeFields) && !is_null($rowArray[$field]) && $rowArray[$field] !== '') {
+                            $dt = new \DateTime($rowArray[$field], new \DateTimeZone(date_default_timezone_get()));
+                            $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $rowArray[$field]);
+                            $dt->setTimezone(new \DateTimeZone('UTC'));
+                            $rowArray[$field] = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+                        }
                     }
                     $sqlResult[] = $rowArray;
                     $isFirstRow = false;

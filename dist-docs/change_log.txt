@@ -102,7 +102,9 @@ Ver.6-dev (in development)
 - The timezone of browsers are involved. The variable $follwingTimezones in params.php indicates timezone supporting.
   If it's true, the timezone of the server (or db existing) to the variable $defaultTimezone and following the browsers
   timezone. The default value of $follwingTimezones is false, and it means just passing through the time data from db
-  to browsers. The timezone supporing depends on ES6 browser because new Date() without timezone recognize as local time.
+  to browsers. The timezone features depends on ES6 browser because new Date() without timezone recognize as local time.
+- data-im-format attribute can specify the value 'datetimelocal' and 'timelocal' for type is 'datetime-local' and 'time'
+  of INPUT tag element. These are for following timezones.
 - Amazon S3 can set as the container of media files. The context definition in definition file might have the 'file-upload'
   entries and the 'container' key can have the value "S3". The paramters for accessing S3 is defined in the params.php.
 - [BUG FIX] After the password of ldap user is changed, propagation of the new password is improved.
