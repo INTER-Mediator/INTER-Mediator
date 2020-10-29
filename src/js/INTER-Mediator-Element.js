@@ -34,7 +34,8 @@ const IMLibElement = {
     date: IMLibFormat.dateFormat,
     datetime: IMLibFormat.datetimeFormat,
     datetimelocal: IMLibFormat.dateTimeLocalFormat,
-    time: IMLibFormat.timeFormat
+    time: IMLibFormat.timeFormat,
+    timelocal: IMLibFormat.timeFormatLocal
   },
 
   unformatters: {
@@ -45,7 +46,8 @@ const IMLibElement = {
     date: IMLibFormat.convertDate,
     datetime: IMLibFormat.convertDateTime,
     datetimelocal: IMLibFormat.convertDateTimeLocal,
-    time: IMLibFormat.convertTime
+    time: IMLibFormat.convertTime,
+    timelocal: IMLibFormat.convertTimeLocal
   },
 
   formatOptions: {
@@ -343,12 +345,12 @@ const IMLibElement = {
               element.checked = false
             }
           }
-        } else if (typeAttr === 'date') {
-          element.value = IMLibFormat.dateFormat(curVal, '%Y-%M-%D')
-        } else if (typeAttr === 'time') {
-          element.value = IMLibFormat.timeFormat(curVal, '%H:%I:%S')
-        } else if (typeAttr === 'datetime-local') {
-          element.value = IMLibFormat.datetimeFormat(curVal, '%Y-%M-%DT%H:%I:%S')
+        // } else if (typeAttr === 'date') {
+        //   element.value = IMLibFormat.dateFormat(curVal, '%Y-%M-%D')
+        // } else if (typeAttr === 'time') {
+        //   element.value = IMLibFormat.timeFormat(curVal, '%H:%I:%S')
+        // } else if (typeAttr === 'datetime-local') {
+        //   element.value = IMLibFormat.datetimeFormat(curVal, '%Y-%M-%DT%H:%I:%S')
         } else { // this node must be text field
           element.value = curVal
         }

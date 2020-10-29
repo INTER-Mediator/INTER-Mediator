@@ -106,8 +106,7 @@ const IMLibUI = {
         newValue = IMLibElement.getValueFromIMNode(changedObj)
         if (contextInfo.context.parentContext) {
           parentContext = contextInfo.context.parentContext
-        } else {
-          // for FileMaker Portal Access Mode
+        } else { // for FileMaker Portal Access Mode
           parentContext = IMLibContextPool.getContextFromName(contextInfo.context.sourceName)[0]
         }
         if (parentContext) {
