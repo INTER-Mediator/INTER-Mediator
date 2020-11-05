@@ -156,9 +156,11 @@ const IMLibElement = {
     if (!unformatFunc) {
       firstParen = formatSpec.indexOf('(')
       lastParen = formatSpec.lastIndexOf(')')
-      parsed = formatSpec.substr(0, firstParen).match(/[^a-zA-Z]*([a-zA-Z]+).*/)
-      unformatFunc = IMLibElement.unformatters[parsed[1].toLocaleLowerCase()]
-      params = formatSpec.substring(firstParen + 1, lastParen)
+      if(firstParen>=0 && lastParen>=0) {
+        parsed = formatSpec.substr(0, firstParen).match(/[^a-zA-Z]*([a-zA-Z]+).*/)
+        unformatFunc = IMLibElement.unformatters[parsed[1].toLocaleLowerCase()]
+        params = formatSpec.substring(firstParen + 1, lastParen)
+      }
     }
     if (unformatFunc) {
       convertedValue = unformatFunc(value, params, flags)
