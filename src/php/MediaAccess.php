@@ -126,7 +126,12 @@ class MediaAccess
                 }
             }
 
-            if (count($contextRecord) < 1) {
+            $isClass = (stripos($target, 'class://') === 0);
+            $isNoRec = (count($contextRecord) === 0);
+            $isOneRec = (count($contextRecord) === 1);
+            if (!$isOneRec && (!$isClass || ($isClass && $isNoRec))) {
+                // In case of the "class:" schema, the record set can have 1 or more than 1 records.
+                // In case of non class: schema, the record set has to have just 1 record.
                 $erMessage = "[INTER-Mediator] No record which is associated with the parameters in the url({$target}).";
                 echo $erMessage;
                 error_log($erMessage);
