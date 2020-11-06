@@ -126,7 +126,7 @@ class MediaAccess
                 }
             }
 
-            if (count($contextRecord) !== 1) {
+            if (count($contextRecord) < 1) {
                 $erMessage = "[INTER-Mediator] No record which is associated with the parameters in the url({$target}).";
                 echo $erMessage;
                 error_log($erMessage);
