@@ -23,8 +23,8 @@ IM_Entry(
             'key' => 'id',
             'sort' => [['field' => 'dt1', 'direction' => 'desc'],],
             'file-upload' => [
-//                ['field' => 'vc2', 'context' => 'fileupload',],
-                ['container' => 'S3',],
+                ['field' => 'vc2', 'context' => 'fileupload',],
+//                ['container' => 'S3',],
             ],
             'post-reconstruct' => true,
             'repeat-control' => 'insert delete',
