@@ -67,7 +67,7 @@ case ${choice} in
     rm package-lock.json
 
     /bin/echo "## composer update"
-    composer update
+    composer update --with-all-dependencies
 
     /bin/echo "## From root to spec as for PHP 7"
     cp composer.json spec/composer7.json
