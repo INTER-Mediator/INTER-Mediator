@@ -98,7 +98,7 @@ class GenerateJSCode
         $serviceServerHost = (isset($params['serviceServerHost']) && $params['serviceServerHost'])
             ? $params['serviceServerHost'] : $_SERVER['SERVER_ADDR'];
         $serviceServerHost = $serviceServerHost ? $serviceServerHost : 'localhost';
-        $activateClientService = isset($params['activateClientService']) ? boolval($params['activateClientService']) : true;
+        $activateClientService = isset($params['activateClientService']) ? boolval($params['activateClientService']) : false;
         $follwingTimezones =isset($params['follwingTimezones']) ? boolval($params['follwingTimezones']) : false;
 
         $serverName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
