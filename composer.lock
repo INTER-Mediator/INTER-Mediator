@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "799d8aed0f0b3960e8b017332d8b026b",
+    "content-hash": "a28e05e60e12a5c3566c34e2ba2088f0",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.158.22",
+            "version": "3.159.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "0aae6d7d0e9fc40ace69ed7f7785d7ddab4dabd0"
+                "reference": "56785395913fe4253202d0da9055c2da87ac0a59"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/0aae6d7d0e9fc40ace69ed7f7785d7ddab4dabd0",
-                "reference": "0aae6d7d0e9fc40ace69ed7f7785d7ddab4dabd0",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/56785395913fe4253202d0da9055c2da87ac0a59",
+                "reference": "56785395913fe4253202d0da9055c2da87ac0a59",
                 "shasum": ""
             },
             "require": {
@@ -92,9 +92,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.158.22"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.159.0"
             },
-            "time": "2020-11-06T19:13:12+00:00"
+            "time": "2020-11-09T17:18:56+00:00"
         },
         {
             "name": "doctrine/lexer",
