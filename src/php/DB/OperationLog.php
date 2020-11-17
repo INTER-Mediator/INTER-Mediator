@@ -25,9 +25,11 @@ class OperationLog
     private $dbUserLog;
     private $dbPasswordLog;
     private $dbDSNLog;
+    private $contextOptions;
 
-    public function __construct()
+    public function __construct($options)
     {
+        $this->contextOptions = $options;
         // Read from params.php
         $paramKeys = ["accessLogLevel", "dbClassLog", "dbUserLog", "dbPasswordLog", "dbDSNLog"];
         $params = IMUtil::getFromParamsPHPFile($paramKeys, true);
@@ -59,7 +61,16 @@ class OperationLog
         $debug = 2;
         $isInitialized = $dbInstance->initialize($dataSource, $options, $dbSpecification, $debug, $contextName);
         if ($isInitialized) {
-            $dbInstance->dbSettings->addValueWithField("user", isset($_POST['authuser']) ? $_POST['authuser'] : '');
+            $userValue = isset($_POST['authuser']) ? $_POST['authuser'] : '';
+            if ($userValue === '') {
+                $cookieNameUser = "_im_username";
+                if (isset($this->contextOptions['authentication']['realm'])) {
+                    $cookieNameUser .= ('_' . str_replace(" ", "_",
+                            str_replace(".", "_", $this->contextOptions['authentication']['realm'])));
+                }
+                $userValue = isset($_COOKIE[$cookieNameUser]) ? $_COOKIE[$cookieNameUser] : '';
+            }
+            $dbInstance->dbSettings->addValueWithField("user", $userValue);
             $dbInstance->dbSettings->addValueWithField("client_id_in", isset($_POST['clientid']) ? $_POST['clientid'] : '');
             $clientIdOut = '';
             foreach ($result as $key => $value) {

@@ -190,7 +190,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         ServiceServerProxy::instance()->stopServer();
     }
     if($params['accessLogLevel']){
-        $logging = new DB\OperationLog();
+        $logging = new DB\OperationLog($options);
         $logging->setEntry($resultLog);
     }
 }
