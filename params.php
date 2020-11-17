@@ -259,6 +259,7 @@ $dbClassLog = $dbClass;
 $dbDSNLog = $dbDSN;
 $dbUserLog = $dbUser;
 $dbPasswordLog = $dbPassword;
+$recordingContexts = false; // false or no-definition: record all context, or an array of context names you want to record.
 
 // S3 Support
 $accessRegion = "ap-northeast-1"; // This means the Tokyo region.
