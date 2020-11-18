@@ -956,7 +956,7 @@ const IMLibUI = {
           parentOfTarget = targetNode.parentNode
           parentOfTarget.removeChild(targetNode)
           newNode = document.createElement('SPAN')
-          INTERMediatorLib.setClassAttributeToNode(newNode, 'IM_POSTMESSAGE')
+          newNode.className = 'IM_POSTMESSAGE'
           newNode.appendChild(document.createTextNode(thisContext['post-dismiss-message']))
           parentOfTarget.appendChild(newNode)
           isSetMsg = true

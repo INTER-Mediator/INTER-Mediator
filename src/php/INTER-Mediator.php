@@ -38,19 +38,6 @@ spl_autoload_register(function ($className) {
     return false;
 });
 
-//// Character set for mbstring
-//if (function_exists('mb_internal_encoding')) {
-//    mb_internal_encoding('UTF-8');
-//}
-//// Setup Timezone
-//$params = IMUtil::getFromParamsPHPFile(array("defaultTimezone"), true);
-//if (isset($params['defaultTimezone'])) {
-//    date_default_timezone_set($params['defaultTimezone']);
-//} else if (ini_get('date.timezone') == null) {
-//    date_default_timezone_set('UTC');
-//}
-//// Setup Locale
-//Locale\IMLocale::setLocale(LC_ALL);
 // Define constant
 define("IM_TODAY", strftime('%Y-%m-%d'));
 
