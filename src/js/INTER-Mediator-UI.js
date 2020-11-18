@@ -777,6 +777,7 @@ const IMLibUI = {
       }
     }
 
+    INTERMediatorOnPage.showProgress()
     contextNodes = []
     linkedNodes = []
     namedNodes = []
@@ -796,6 +797,7 @@ const IMLibUI = {
       }
     }
     if (contextCount.length < 1) {
+      INTERMediatorOnPage.hideProgress()
       return
     }
     let maxCount = -100
@@ -931,9 +933,11 @@ const IMLibUI = {
 
     if (alertmessage.length > 0) {
       window.alert(alertmessage)
+      INTERMediatorOnPage.hideProgress()
       return
     }
     if (hasInvalid) {
+      INTERMediatorOnPage.hideProgress()
       return
     }
 
@@ -961,6 +965,7 @@ const IMLibUI = {
           parentOfTarget.appendChild(newNode)
           isSetMsg = true
         }
+        INTERMediatorOnPage.hideProgress()
         if (thisContext['post-reconstruct']) {
           setTimeout(function () {
             INTERMediator.construct(true)
@@ -971,7 +976,10 @@ const IMLibUI = {
             location.href = thisContext['post-move-url']
           }, isSetMsg ? INTERMediator.waitSecondsAfterPostMessage * 1000 : 0)
         }
-      }, null)
+      },
+      function(){
+        INTERMediatorOnPage.hideProgress()
+      })
 
     function seekLinkedElementInThisContext(node) { // Just seek out side of inner enclosure
       let children, i
