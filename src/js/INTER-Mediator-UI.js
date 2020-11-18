@@ -763,7 +763,7 @@ const IMLibUI = {
     let i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo
     let mergedValues, inputNodes, typeAttr, k, messageNode, result, alertmessage
     let linkedNodes, namedNodes, index, hasInvalid, isMerged, contextNodes, widgetValue
-    let targetNode = node.parentNode
+    let targetNode = node.parentNode, nodeValue
     while (!INTERMediatorLib.isEnclosure(targetNode, true)) {
       targetNode = targetNode.parentNode
       if (!targetNode) {
@@ -777,6 +777,7 @@ const IMLibUI = {
       }
     }
 
+    INTERMediatorOnPage.showProgress()
     contextNodes = []
     linkedNodes = []
     namedNodes = []
@@ -796,6 +797,7 @@ const IMLibUI = {
       }
     }
     if (contextCount.length < 1) {
+      INTERMediatorOnPage.hideProgress()
       return
     }
     let maxCount = -100
@@ -834,9 +836,13 @@ const IMLibUI = {
                 validationInfo = contextInfo.validation[index]
                 if (validationInfo.field === comp[1]) {
                   if (validationInfo) {
+                    nodeValue = linkedNodes[i].value
+                    if (INTERMediatorLib.isWidgetElement(linkedNodes[i])) {
+                      nodeValue = linkedNodes[i]._im_getValue()
+                    }
                     result = Parser.evaluate(
                       validationInfo.rule,
-                      {'value': linkedNodes[i].value, 'target': linkedNodes[i]}
+                      {'value': nodeValue, 'target': linkedNodes[i]}
                     )
                     if (!result) {
                       hasInvalid = true
@@ -931,9 +937,11 @@ const IMLibUI = {
 
     if (alertmessage.length > 0) {
       window.alert(alertmessage)
+      INTERMediatorOnPage.hideProgress()
       return
     }
     if (hasInvalid) {
+      INTERMediatorOnPage.hideProgress()
       return
     }
 
@@ -956,11 +964,12 @@ const IMLibUI = {
           parentOfTarget = targetNode.parentNode
           parentOfTarget.removeChild(targetNode)
           newNode = document.createElement('SPAN')
-          INTERMediatorLib.setClassAttributeToNode(newNode, 'IM_POSTMESSAGE')
+          newNode.className = 'IM_POSTMESSAGE'
           newNode.appendChild(document.createTextNode(thisContext['post-dismiss-message']))
           parentOfTarget.appendChild(newNode)
           isSetMsg = true
         }
+        INTERMediatorOnPage.hideProgress()
         if (thisContext['post-reconstruct']) {
           setTimeout(function () {
             INTERMediator.construct(true)
@@ -971,7 +980,10 @@ const IMLibUI = {
             location.href = thisContext['post-move-url']
           }, isSetMsg ? INTERMediator.waitSecondsAfterPostMessage * 1000 : 0)
         }
-      }, null)
+      },
+      function(){
+        INTERMediatorOnPage.hideProgress()
+      })
 
     function seekLinkedElementInThisContext(node) { // Just seek out side of inner enclosure
       let children, i

@@ -3268,11 +3268,11 @@
       "integrity": "sha512-RZY5huIKCMRWDUqZlEi72f/lmXKMvuszcMBduliQ3nnWbx9X/ZBQO7DijMEYS9EhHBb2qacRUMtC7svLwe0lcw=="
     },
     "inter-mediator-expressionparser": {
-      "version": "1.0.13",
-      "resolved": "https://registry.npmjs.org/inter-mediator-expressionparser/-/inter-mediator-expressionparser-1.0.13.tgz",
-      "integrity": "sha512-KsR3cYGdWPMwe6A1ezhOOlK7oUJF5Z3z8q1mCTnxlqviY7oIYs5KiGf1L1ZrWPdXAOH0rOhr/HbuvsFFGYI9AQ==",
+      "version": "1.0.14",
+      "resolved": "https://registry.npmjs.org/inter-mediator-expressionparser/-/inter-mediator-expressionparser-1.0.14.tgz",
+      "integrity": "sha512-35CbEMp/dhwxunxJWS/VeO9EfB8MdHQiILIdza7zgULAhfeD1KFD5rqIRVA/8etqb85ijw8gy6lTxZfaS9vsHg==",
       "requires": {
-        "inter-mediator-formatter": "^1.0.6",
+        "inter-mediator-formatter": "^1.0.18",
         "inter-mediator-locale": "^1.0.4"
       }
     },
