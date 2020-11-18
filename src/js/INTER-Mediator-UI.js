@@ -763,7 +763,7 @@ const IMLibUI = {
     let i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo
     let mergedValues, inputNodes, typeAttr, k, messageNode, result, alertmessage
     let linkedNodes, namedNodes, index, hasInvalid, isMerged, contextNodes, widgetValue
-    let targetNode = node.parentNode
+    let targetNode = node.parentNode, nodeValue
     while (!INTERMediatorLib.isEnclosure(targetNode, true)) {
       targetNode = targetNode.parentNode
       if (!targetNode) {
@@ -836,9 +836,13 @@ const IMLibUI = {
                 validationInfo = contextInfo.validation[index]
                 if (validationInfo.field === comp[1]) {
                   if (validationInfo) {
+                    nodeValue = linkedNodes[i].value
+                    if (INTERMediatorLib.isWidgetElement(linkedNodes[i])) {
+                      nodeValue = linkedNodes[i]._im_getValue()
+                    }
                     result = Parser.evaluate(
                       validationInfo.rule,
-                      {'value': linkedNodes[i].value, 'target': linkedNodes[i]}
+                      {'value': nodeValue, 'target': linkedNodes[i]}
                     )
                     if (!result) {
                       hasInvalid = true
