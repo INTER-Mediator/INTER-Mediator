@@ -33,7 +33,7 @@ class NullDB extends UseSharedObjects implements DBClass_Interface
         return 0;
     }
 
-    public function updateDB()
+    public function updateDB($bypassAuth)
     {
         return null;
     }

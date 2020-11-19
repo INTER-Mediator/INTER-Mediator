@@ -96,7 +96,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         }
         if (in_array($layoutName, array($this->dbSettings->getUserTable(), $this->dbSettings->getHashTable()))) {
             $token = isset($_SESSION['X-FM-Data-Access-Token-Auth']) ? $_SESSION['X-FM-Data-Access-Token-Auth'] : '';
-            } else {
+        } else {
             $token = isset($_SESSION['X-FM-Data-Access-Token']) ? $_SESSION['X-FM-Data-Access-Token'] : '';
         }
         try {
@@ -626,15 +626,15 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 $dataArray = array();
                 if (!$usePortal) {
                     $dataArray = $dataArray + array(
-                        'recordId' => $record->getRecordId(),
-                    );
+                            'recordId' => $record->getRecordId(),
+                        );
                 }
                 foreach ($result->getFieldNames() as $key => $fieldName) {
                     $dataArray = $dataArray + array(
-                        $fieldName => $this->formatter->formatterFromDB(
-                            $this->getFieldForFormatter($tableName, $fieldName), strval($record->{$fieldName})
-                        )
-                    );
+                            $fieldName => $this->formatter->formatterFromDB(
+                                $this->getFieldForFormatter($tableName, $fieldName), strval($record->{$fieldName})
+                            )
+                        );
                 }
 
                 $relatedsetArray = array();
@@ -656,7 +656,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                                                 $this->formatter->formatterFromDB(
                                                     "{$tableOccurrence}{$this->dbSettings->getSeparator()}{$relatedFieldName}",
                                                     $portalRecord->{$relatedFieldName}
-                                            )
+                                                )
                                         );
                                     }
                                 }
@@ -771,7 +771,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         return $this->mainTableTotalCount;
     }
 
-    public function updateDB()
+    public function updateDB($bypassAuth)
     {
         $this->fieldInfo = null;
         $dataSourceName = $this->dbSettings->getDataSourceName();
@@ -1083,9 +1083,9 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             if ($field != $keyFieldName) {
                 $recordData += array(
                     $field =>
-                    $this->formatter->formatterToDB(
-                        "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}",
-                        $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value))
+                        $this->formatter->formatterToDB(
+                            "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}",
+                            $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value))
                 );
             }
         }
@@ -1111,13 +1111,13 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
                 $recordData += array(
                     $authInfoField =>
-                    strlen($this->dbSettings->getCurrentUser()) == 0 ? IMUtil::randomString(10) : $signedUser
+                        strlen($this->dbSettings->getCurrentUser()) == 0 ? IMUtil::randomString(10) : $signedUser
                 );
             } else if ($authInfoTarget == 'field-group') {
                 $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
                 $recordData += array(
                     $authInfoField =>
-                    strlen($belongGroups[0]) == 0 ? IMUtil::randomString(10) : $belongGroups[0]
+                        strlen($belongGroups[0]) == 0 ? IMUtil::randomString(10) : $belongGroups[0]
                 );
             } else {
                 if ($this->dbSettings->isDBNative()) {

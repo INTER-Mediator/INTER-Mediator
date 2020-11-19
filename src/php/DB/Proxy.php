@@ -264,7 +264,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $dataSourceName
      * @return mixed
      */
-    function updateDB()
+    function updateDB($bypassAuth)
     {
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
@@ -275,7 +275,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
             if ($this->dbClass) {
                 $this->dbClass->requireUpdatedRecord(true); // Always Get Updated Record
-                $result = $this->dbClass->updateDB();
+                $result = $this->dbClass->updateDB($bypassAuth);
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterUpdateToDB")) {
                 $this->logger->setDebugMessage("The method 'doAfterUpdateToDB' of the class '{$className}' is calling.", 2);
@@ -959,7 +959,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $this->dbSettings->setValue($valueArray);
                     }
                     $this->dbClass->requireUpdatedRecord(true);
-                    $this->updateDB();
+                    $this->updateDB($bypassAuth);
                     $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
                 } else {
                     $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
