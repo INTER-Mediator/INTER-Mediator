@@ -771,7 +771,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         return $this->mainTableTotalCount;
     }
 
-    public function updateDB()
+    public function updateDB($bypassAuth)
     {
         $this->fieldInfo = null;
         $dataSourceName = $this->dbSettings->getDataSourceName();

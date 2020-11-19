@@ -135,7 +135,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
      * @param string $signedUser
      * @return string
      */
-    private function getWhereClause($currentOperation, $includeContext = true, $includeExtra = true, $signedUser = '')
+    private function getWhereClause(
+        $currentOperation, $includeContext = true, $includeExtra = true, $signedUser = '', $bypassAuth = false)
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $queryClause = '';
@@ -252,7 +253,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $authInfoField = $this->authHandler->getFieldForAuthorization($keywordAuth);
             $authInfoTarget = $this->authHandler->getTargetForAuthorization($keywordAuth);
             if ($authInfoTarget == 'field-user') {
-                if (strlen($signedUser) == 0) {
+                if (strlen($signedUser) == 0 && !$bypassAuth) {
                     $queryClause = 'FALSE';
                 } else {
                     $queryClause = (($queryClause != '') ? "({$queryClause}) AND " : '')
@@ -264,7 +265,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 foreach ($belongGroups as $oneGroup) {
                     $groupCriteria[] = "{$authInfoField}=" . $this->link->quote($oneGroup);
                 }
-                if (strlen($signedUser) == 0 || count($groupCriteria) == 0) {
+                if ((strlen($signedUser) == 0 || count($groupCriteria) == 0) && !$bypassAuth) {
                     $queryClause = 'FALSE';
                 } else {
                     $queryClause = (($queryClause != '') ? "({$queryClause}) AND " : '')
@@ -277,6 +278,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 if (count($authorizedUsers) > 0 || count($authorizedGroups) > 0) {
                     if (!in_array($signedUser, $authorizedUsers)
                         && count(array_intersect($belongGroups, $authorizedGroups)) == 0
+                        && !$bypassAuth
                     ) {
                         $queryClause = 'FALSE';
                     }
@@ -515,14 +517,14 @@ class PDO extends UseSharedObjects implements DBClass_Interface
      * @param $dataSourceName
      * @return bool
      */
-    function updateDB()
+    function updateDB($bypassAuth)
     {
         $this->fieldInfo = null;
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
         $timeFields = $this->isFollwingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
-       $tableInfo = $this->dbSettings->getDataSourceTargetArray();
+        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         if (!$this->setupConnection()) { //Establish the connection
@@ -572,7 +574,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
         $setClause = implode(',', $setClause);
 
-        $queryClause = $this->getWhereClause('update', false, true, $signedUser);
+        $queryClause = $this->getWhereClause('update', false, true, $signedUser, $bypassAuth);
         if ($queryClause != '') {
             $queryClause = "WHERE {$queryClause}";
         }
