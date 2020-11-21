@@ -405,7 +405,7 @@ const INTERMediatorLib = {
       }
       nameInfo = node.getAttribute('name')
       if (nameInfo) {
-        matched = nameInfo.match(/IM\[.*\]/)
+        matched = nameInfo.match(/Name-[\d]+/)
         if (matched) {
           return true
         }
@@ -592,7 +592,7 @@ const INTERMediatorLib = {
       }
       nameAttr = node.getAttribute('name')
       if (nameAttr && nameAttr.length > 0) {
-        matched = nameAttr.match(/IM\[([^\]]*)\]/)
+        matched = nameAttr.match(/Name-[\d]*/)
         eachDefs = matched[1].split(INTERMediator.defDivider)
         for (i = 0; i < eachDefs.length; i += 1) {
           defs.push(eachDefs[i])
