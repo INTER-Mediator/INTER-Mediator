@@ -82,7 +82,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $this->dbClass->specHandler->getDefaultKey();
     }
 
-    public function setStopNotifyAndMessaging() {
+    public function setStopNotifyAndMessaging()
+    {
         $this->isStopNotifyAndMessaging = true;
     }
 
@@ -972,7 +973,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $result = $this->createInDB();
                     $this->outputOfProcessing['newRecordKeyValue'] = $result;
                     $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
-                    if (!$ignoreFiles) {
+                    if (!$ignoreFiles && $result !== false) {
                         $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
                         if ($uploadFiles && count($tableInfo) > 0) {
                             $fileUploader = new \INTERMediator\FileUploader();

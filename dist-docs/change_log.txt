@@ -10,7 +10,7 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.6-dev (in development)
+Ver.6 (November 21, 2020)
 - All communications went async.
 - Composer/npm based library management.
 - The Service Server based-on node.js is introduced, and it uses on the server-side validation so far.
@@ -118,7 +118,8 @@ Ver.6-dev (in development)
 - [INFO] The src/lib/js_lib directory is removed.
 - [BUG FIX] The changePassword method of the INTERMediator_DBAdapter class had a bug in case of wrong old password.
 - [BUG FIX] Fix handling multibyte currency symbols in some cases.
-- [BUG FIX] MediaAccess classe's bugs are fixed.
+- [BUG FIX] MediaAccess class's bugs are fixed.
+- [BUG FIX] When the post-only mode proceeds, validation for radio button set wasn't working.
 
 Ver.5.11 (November 17, 2019)
 - Support FileMaker Data API of FileMaker Server 18 and FileMaker Cloud for AWS 1.18.
