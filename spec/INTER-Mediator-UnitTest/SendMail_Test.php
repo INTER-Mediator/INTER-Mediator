@@ -79,7 +79,7 @@ class SendMail_Test extends TestCase
         $this->db_proxy->dbSettings->addTargetField("name");
         $this->db_proxy->dbSettings->addValue("Modified Name");
         $this->db_proxy->requireUpdatedRecord(true);
-        $result = $this->db_proxy->updateDB();
+        $result = $this->db_proxy->updateDB(false);
         $result = $this->db_proxy->updatedRecord();
 
 

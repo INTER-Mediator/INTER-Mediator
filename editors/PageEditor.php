@@ -50,7 +50,7 @@ class PageEditor extends UseSharedObjects implements DBClass_Interface
         return $this->recordCount;
     }
 
-    function updateDB()
+    function updateDB($bypassAuth)
     {
         $dataSourceName = $this->dbSettings->getDataSourceName();
         $filePath = $this->dbSettings->getValueOfField('target');

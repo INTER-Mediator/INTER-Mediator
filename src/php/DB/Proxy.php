@@ -272,7 +272,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $className = is_null($this->userExpanded) ? "" : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeUpdateDB")) {
                 $this->logger->setDebugMessage("The method 'doBeforeUpdateDB' of the class '{$className}' is calling.", 2);
-                $this->userExpanded->doBeforeUpdateDB();
+                $this->userExpanded->doBeforeUpdateDB(false);
             }
             if ($this->dbClass) {
                 $this->dbClass->requireUpdatedRecord(true); // Always Get Updated Record
@@ -410,7 +410,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $this->logger->setDebugMessage(
                         "The soft-delete applies to this delete operation with '{$delFlagField}' field.", 2);
                     $this->dbSettings->addValueWithField($delFlagField, 1);
-                    $result = $this->dbClass->updateDB();
+                    $result = $this->dbClass->updateDB(false);
                 } else {
                     $result = $this->dbClass->deleteFromDB();
                 }
