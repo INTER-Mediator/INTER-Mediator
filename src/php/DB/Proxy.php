@@ -82,7 +82,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $this->dbClass->specHandler->getDefaultKey();
     }
 
-    public function setStopNotifyAndMessaging() {
+    public function setStopNotifyAndMessaging()
+    {
         $this->isStopNotifyAndMessaging = true;
     }
 
@@ -264,18 +265,18 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $dataSourceName
      * @return mixed
      */
-    function updateDB()
+    function updateDB($bypassAuth)
     {
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
             $className = is_null($this->userExpanded) ? "" : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeUpdateDB")) {
                 $this->logger->setDebugMessage("The method 'doBeforeUpdateDB' of the class '{$className}' is calling.", 2);
-                $this->userExpanded->doBeforeUpdateDB();
+                $this->userExpanded->doBeforeUpdateDB(false);
             }
             if ($this->dbClass) {
                 $this->dbClass->requireUpdatedRecord(true); // Always Get Updated Record
-                $result = $this->dbClass->updateDB();
+                $result = $this->dbClass->updateDB($bypassAuth);
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterUpdateToDB")) {
                 $this->logger->setDebugMessage("The method 'doAfterUpdateToDB' of the class '{$className}' is calling.", 2);
@@ -409,7 +410,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $this->logger->setDebugMessage(
                         "The soft-delete applies to this delete operation with '{$delFlagField}' field.", 2);
                     $this->dbSettings->addValueWithField($delFlagField, 1);
-                    $result = $this->dbClass->updateDB();
+                    $result = $this->dbClass->updateDB(false);
                 } else {
                     $result = $this->dbClass->deleteFromDB();
                 }
@@ -959,7 +960,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $this->dbSettings->setValue($valueArray);
                     }
                     $this->dbClass->requireUpdatedRecord(true);
-                    $this->updateDB();
+                    $this->updateDB($bypassAuth);
                     $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
                 } else {
                     $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
@@ -972,7 +973,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $result = $this->createInDB();
                     $this->outputOfProcessing['newRecordKeyValue'] = $result;
                     $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
-                    if (!$ignoreFiles) {
+                    if (!$ignoreFiles && $result !== false) {
                         $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
                         if ($uploadFiles && count($tableInfo) > 0) {
                             $fileUploader = new \INTERMediator\FileUploader();
