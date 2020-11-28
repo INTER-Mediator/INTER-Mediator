@@ -33,15 +33,16 @@ abstract class DB_PDO_Test_Common extends TestCase
     {
         $this->dbProxySetupForAggregation();
 
-//        $this->db_proxy->logger->clearLogs();
+        $this->db_proxy->logger->clearLogs();
 
         $result = $this->db_proxy->readFromDB();
         $recordCount = $this->db_proxy->countQueryResult();
 
-//        var_export($this->db_proxy->logger->getErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessages());
+        var_export($this->db_proxy->logger->getErrorMessages());
+        var_export($this->db_proxy->logger->getDebugMessages());
 
-        $this->assertEquals(is_array($result) ? count($result) : -1, 10, "After the query, 10 records should be retrieved.");
+        $this->assertTrue(is_array($result) , "After the query, any array should be retrieved.");
+        $this->assertEquals(count($result), 10, "After the query, 10 records should be retrieved.");
         $this->assertEquals($recordCount, 10, "The aggregation didn't count real record, and should match with records key");
         $cStr = "Onion";
         $this->assertEquals(substr($result[0]["item_name"], 0, strlen($cStr)), $cStr, "Field value is not same as the definition(1).");
