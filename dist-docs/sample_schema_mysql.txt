@@ -552,7 +552,7 @@ CREATE TABLE testtable (
 	time1 Time,
 	time2 Time,
 	ts1 Timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	ts2 Timestamp,
+	ts2 Timestamp DEFAULT NULL,
 	vc1 VARCHAR(100),
 	vc2 VARCHAR(100),
 	vc3 VARCHAR(100),
