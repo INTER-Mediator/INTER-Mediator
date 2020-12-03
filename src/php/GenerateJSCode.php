@@ -83,7 +83,6 @@ class GenerateJSCode
         $dbDSN = isset($options['dsn']) ? $options['dsn']
             : (isset($params['dbDSN']) ? $params["dbDSN"] : '');
         $nonSupportMessageId = $params["nonSupportMessageId"];
-        $documentRootPrefix = is_null($params["documentRootPrefix"]) ? "" : $params["documentRootPrefix"];
         $valuesForLocalContext = $params["valuesForLocalContext"];
         $themeName = is_null($params["themeName"]) ? $themeName : $params["themeName"];
         $appLocale = isset($options['app-locale']) ? $options['app-locale']
@@ -111,7 +110,7 @@ class GenerateJSCode
               */
         $currentDir = "{$pathToIM}{$ds}src{$ds}js{$ds}";
         if (!file_exists($currentDir . 'INTER-Mediator.min.js')) {
-            echo $this->combineScripts($currentDir);
+            echo $this->combineScripts();
         } else {
             readfile($currentDir . 'INTER-Mediator.min.js');
         }
@@ -179,15 +178,6 @@ class GenerateJSCode
             $pathToMySelf = filter_var($scriptName);
         }
 
-        $pathToIMRootDir = '';
-        if (function_exists('mb_ereg_replace')) {
-            $pathToIMRootDir = mb_ereg_replace(
-                mb_ereg_replace("\\x5c", "/", "^{$documentRootPrefix}" . filter_var($_SERVER['DOCUMENT_ROOT'])),
-                "", mb_ereg_replace("\\x5c", "/", dirname(__FILE__)));
-        } else {
-            $pathToIMRootDir = '[ERROR]';
-        }
-
         $this->generateAssignJS(
             "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
         $this->generateAssignJS(
@@ -246,12 +236,12 @@ class GenerateJSCode
                 "{$q}{$nonSupportMessageId}{$q}");
         }
 
-        $pusherParams = null;
-        if (isset($pusherParameters)) {
-            $pusherParams = $pusherParameters;
-        } else if (isset($options['pusher'])) {
-            $pusherParams = $options['pusher'];
-        }
+//        $pusherParams = null;
+//        if (isset($pusherParameters)) {
+//            $pusherParams = $pusherParameters;
+//        } else if (isset($options['pusher'])) {
+//            $pusherParams = $options['pusher'];
+//        }
 //        if (!is_null($pusherParams)) {
 //            $appKey = isset($pusherParams['key']) ? $pusherParams['key'] : "_im_key_isnt_supplied";
 //            $chName = isset($pusherParams['channel']) ? $pusherParams['channel'] : "_im_pusher_default_channel";
@@ -394,7 +384,7 @@ class GenerateJSCode
         $this->generateAssignJS("INTERMediatorOnPage.isFollowingTimezone", $follwingTimezones ? "true" : "false");
     }
 
-    private function combineScripts($currentDir)
+    private function combineScripts()
     {
         $imPath = IMUtil::pathToINTERMediator();
         $jsCodeDir = $imPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;

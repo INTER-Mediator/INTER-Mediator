@@ -16,6 +16,7 @@
 namespace INTERMediator\DB\Support;
 
 use INTERMediator\IMUtil;
+use PDO;
 
 class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_Interface_Registering
 {
@@ -146,7 +147,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                     $this->dbClass->errorMessageStore('Select:' . $sql);
                     return false;
                 }
-                foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
                     $contextIds[] = $row['id'];
                 }
             }
@@ -192,7 +193,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
             return false;
         }
         $targetClients = array();
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $targetClients[] = $row['clientid'];
         }
         return array_unique($targetClients);
@@ -213,7 +214,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
             return false;
         }
         $targetClients = array();
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $targetClients[] = $row['clientid'];
             $sql = "{$this->dbClass->handler->sqlINSERTCommand()}{$pksTable} (context_id,pk) VALUES(" . $this->dbClass->link->quote($row['id']) .
                 "," . $this->dbClass->link->quote($pkArray[0]) . ")";
@@ -244,7 +245,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
             return false;
         }
         $targetClients = array();
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $targetClients[] = $row['clientid'];
             $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$pksTable} WHERE context_id = " . $this->dbClass->link->quote($row['id']) .
                 " AND pk = " . $this->dbClass->link->quote($pkArray[0]);

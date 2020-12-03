@@ -497,19 +497,14 @@ class Settings
         switch ($key) {
             case 'user-table':
                 return 'authuser';
-                break;
             case 'group-table':
                 return 'authgroup';
-                break;
             case 'corresponding-table':
                 return 'authcor';
-                break;
             case 'challenge-table':
                 return 'issuedhash';
-                break;
             case 'authexpired':
                 return 3600 * 8;
-                break;
         }
         return null;
     }

@@ -16,6 +16,7 @@
 
 namespace INTERMediator\Locale;
 
+use Exception;
 use INTERMediator\IMUtil;
 
 class IMLocale

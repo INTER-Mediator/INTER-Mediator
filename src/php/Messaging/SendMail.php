@@ -109,7 +109,7 @@ class SendMail extends MessagingProvider
                     $ome->setFromField($result[$i][$sendMailParam['from']]);
                 }
                 if (isset($sendMailParam['subject-constant'])) {
-                    $ome->setSubject($this->modernTemplating($result[$i], $sendMailParam['subject-constant']), true);
+                    $ome->setSubject($this->modernTemplating($result[$i], $sendMailParam['subject-constant']));
                 } else if (isset($result[$i]) && isset($sendMailParam['subject']) && isset($result[$i][$sendMailParam['subject']])) {
                     $ome->setSubject($result[$i][$sendMailParam['subject']]);
                 }

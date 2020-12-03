@@ -16,12 +16,15 @@
 
 namespace INTERMediator\DB;
 
+use Exception;
+use INTERMediator\FileUploader;
 use INTERMediator\IMUtil;
 use INTERMediator\LDAPAuth;
 use INTERMediator\Locale\IMLocale;
 use INTERMediator\Messaging\MessagingProxy;
 use INTERMediator\ServiceServerProxy;
 use INTERMediator\NotifyServer;
+use phpseclib\Crypt\RSA;
 
 class Proxy extends UseSharedObjects implements Proxy_Interface
 {
@@ -222,7 +225,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->setErrorMessage("Exception:[1] {$e->getMessage()}");
             return false;
         }
@@ -235,14 +238,16 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     function countQueryResult()
     {
+        $result = null;
         $className = is_null($this->userExpanded) ? null : get_class($this->userExpanded);
         if ($this->userExpanded && method_exists($this->userExpanded, "countQueryResult")) {
             $this->logger->setDebugMessage("The method 'countQueryResult' of the class '{$className}' is calling.", 2);
-            return $result = $this->userExpanded->countQueryResult();
+            $result = $this->userExpanded->countQueryResult();
         }
         if ($this->dbClass) {
-            return $result = $this->dbClass->countQueryResult();
+            $result = $this->dbClass->countQueryResult();
         }
+        return $result;
     }
 
     /**
@@ -251,14 +256,16 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     function getTotalCount()
     {
+        $result = null;
         $className = is_null($this->userExpanded) ? null : get_class($this->userExpanded);
         if ($this->userExpanded && method_exists($this->userExpanded, "getTotalCount")) {
             $this->logger->setDebugMessage("The method 'getTotalCount' of the class '{$className}' is calling.", 2);
-            return $result = $this->userExpanded->getTotalCount();
+            $result = $this->userExpanded->getTotalCount();
         }
         if ($this->dbClass) {
-            return $result = $this->dbClass->getTotalCount();
+            $result = $this->dbClass->getTotalCount();
         }
+        return $result;
     }
 
     /**
@@ -291,7 +298,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $this->dbSettings->getFieldsRequired(),
                         $this->dbSettings->getValue()
                     );
-                } catch (\Exception $ex) {
+                } catch (Exception $ex) {
                     if ($ex->getMessage() == '_im_no_pusher_exception') {
                         $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
                     } else {
@@ -316,7 +323,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 }
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->setErrorMessage("Exception:[2] {$e->getMessage()}");
             return false;
         }
@@ -355,7 +362,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                             $this->dbClass->notifyHandler->queriedPrimaryKeys(),
                             $result
                         );
-                    } catch (\Exception $ex) {
+                    } catch (Exception $ex) {
                         if ($ex->getMessage() == '_im_no_pusher_exception') {
                             $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
                         } else {
@@ -380,7 +387,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->setErrorMessage("Exception:[3] {$e->getMessage()}");
             return false;
         }
@@ -426,7 +433,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $this->dbClass->notifyHandler->queriedEntity(),
                         $this->dbClass->notifyHandler->queriedPrimaryKeys()
                     );
-                } catch (\Exception $ex) {
+                } catch (Exception $ex) {
                     if ($ex->getMessage() == '_im_no_pusher_exception') {
                         $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
                     } else {
@@ -434,7 +441,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->setErrorMessage("Exception:[4] {$e->getMessage()}");
             return false;
         }
@@ -469,7 +476,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $this->dbClass->notifyHandler->queriedPrimaryKeys(),
                         $this->dbClass->updatedRecord()
                     );
-                } catch (\Exception $ex) {
+                } catch (Exception $ex) {
                     if ($ex->getMessage() == '_im_no_pusher_exception') {
                         $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
                     } else {
@@ -477,7 +484,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->setErrorMessage("Exception:[5] {$e->getMessage()}");
             return false;
         }
@@ -976,7 +983,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     if (!$ignoreFiles && $result !== false) {
                         $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
                         if ($uploadFiles && count($tableInfo) > 0) {
-                            $fileUploader = new \INTERMediator\FileUploader();
+                            $fileUploader = new FileUploader();
                             if (IMUtil::guessFileUploadError()) {
                                 $fileUploader->processingAsError(
                                     $this->dbSettings->getDataSource(),
@@ -1004,12 +1011,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             case
             'delete':
                 $this->logger->setDebugMessage("[processingRequest] start delete processing", 2);
-                $this->deleteFromDB($this->dbSettings->getDataSourceName());
+                $this->deleteFromDB();
                 break;
             case 'copy':
                 $this->logger->setDebugMessage("[processingRequest] start copy processing", 2);
                 if ($this->checkValidation()) {
-                    $result = $this->copyInDB($this->dbSettings->getDataSourceName());
+                    $result = $this->copyInDB();
                     $this->outputOfProcessing['newRecordKeyValue'] = $result;
                     $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
                 } else {
@@ -1160,10 +1167,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
 
         /* cf.) encrypted in generate_authParams() of Adapter_DBServer.js */
-        $rsa = new \phpseclib\Crypt\RSA();
+        $rsa = new RSA();
         $rsa->setPassword($passPhrase);
         $rsa->loadKey($generatedPrivateKey);
-        $rsa->setEncryptionMode(\phpseclib\Crypt\RSA::ENCRYPTION_PKCS1);
+        $rsa->setEncryptionMode(RSA::ENCRYPTION_PKCS1);
         $token = isset($_SESSION['FM-Data-token']) ? $_SESSION['FM-Data-token'] : '';
         $array = explode("\n", $paramCryptResponse);
         if (strlen($array[0]) > 0 && isset($array[1]) && strlen($array[1]) > 0) {

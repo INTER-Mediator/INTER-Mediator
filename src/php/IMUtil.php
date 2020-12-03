@@ -16,7 +16,9 @@
 
 namespace INTERMediator;
 
+use DateInterval;
 use DateTime;
+use Exception;
 
 class IMUtil
 {
@@ -24,9 +26,9 @@ class IMUtil
     {
         $currentDT = new DateTime();
         if ($subSeconds >= 0) {
-            $currentDT->sub(new \DateInterval("PT" . intval($subSeconds) . "S"));
+            $currentDT->sub(new DateInterval("PT" . intval($subSeconds) . "S"));
         } else {
-            $currentDT->add(new \DateInterval("PT" . -intval($subSeconds) . "S"));
+            $currentDT->add(new DateInterval("PT" . -intval($subSeconds) . "S"));
         }
         $currentDTStr = $currentDT->format('Y-m-d H:i:s');
         return $currentDTStr;
@@ -36,9 +38,9 @@ class IMUtil
     {
         $currentDT = new DateTime();
         if ($subSeconds >= 0) {
-            $currentDT->sub(new \DateInterval("PT" . intval($subSeconds) . "S"));
+            $currentDT->sub(new DateInterval("PT" . intval($subSeconds) . "S"));
         } else {
-            $currentDT->add(new \DateInterval("PT" . -intval($subSeconds) . "S"));
+            $currentDT->add(new DateInterval("PT" . -intval($subSeconds) . "S"));
         }
         $currentDTStr = $currentDT->format('m/d/Y H:i:s');
         return $currentDTStr;
@@ -365,7 +367,7 @@ class IMUtil
 
         if (substr($host, -($length + 1)) === '.' . $webServerName &&
             strpos($webServerName, '.') !== FALSE &&
-            !preg_match('/^[0-9\.]+$/', $webServerName)
+            !preg_match('/^[0-9.]+$/', $webServerName)
         ) {
             return TRUE;
         }

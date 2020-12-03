@@ -21,7 +21,6 @@ class NotifyServer
     private $dbClass;
     private $dbSettings;
     private $clientId;
-    private $syncServerKey;
 
     /**
      * @param $dbClass

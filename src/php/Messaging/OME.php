@@ -42,6 +42,12 @@
 
 namespace INTERMediator\Messaging;
 
+use Swift_Attachment;
+use Swift_Image;
+use Swift_Mailer;
+use Swift_Message;
+use Swift_SmtpTransport;
+
 class OME
 {
     private $bodyWidth = 74;
@@ -187,7 +193,7 @@ class OME
      */
     public function checkEmail($address)
     {
-        if (!preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9_\.\+-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/", $address)) {
+        if (!preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9_.+-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9._-]+)+$/", $address)) {
             if (isset($address)) {
                 $this->errorMessage = "アドレス“{$address}”は正しくないメールアドレスです。";
             }
@@ -547,9 +553,9 @@ class OME
         } else {
             $port = (isset($this->smtpInfo['port']) && strlen($this->smtpInfo['port']) > 0) ? $this->smtpInfo['port'] : 25;
             if (isset($this->smtpInfo['encryption']) && strlen($this->smtpInfo['encryption']) > 0) {
-                $transport = new \Swift_SmtpTransport($this->smtpInfo['host'], $port, $this->smtpInfo['encryption']);
+                $transport = new Swift_SmtpTransport($this->smtpInfo['host'], $port, $this->smtpInfo['encryption']);
             } else {
-                $transport = new \Swift_SmtpTransport($this->smtpInfo['host'], $port);
+                $transport = new Swift_SmtpTransport($this->smtpInfo['host'], $port);
             }
             if (isset($this->smtpInfo['user']) && strlen($this->smtpInfo['user']) > 0) {
                 $transport->setUsername($this->smtpInfo['user']);
@@ -557,8 +563,8 @@ class OME
             if (isset($this->smtpInfo['pass']) && strlen($this->smtpInfo['pass']) > 0) {
                 $transport->setPassword($this->smtpInfo['pass']);
             }
-            $mailer = new \Swift_Mailer($transport);
-            $message = new \Swift_Message($headerField);
+            $mailer = new Swift_Mailer($transport);
+            $message = new Swift_Message($headerField);
             if ($this->fromField != null) {
                 $addArray = $this->recepientsArray(explode(',', $this->fromField));
                 if (count($addArray) > 0) {
@@ -584,7 +590,7 @@ class OME
             if (strpos($this->body, $targetTerm) !== false && $this->bodyType == 'text/html') {
                 $imagePos = strpos($this->body, $targetTerm);
                 foreach ($this->attachments as $path) {
-                    $cid = $message->embed(\Swift_Image::fromPath($path));
+                    $cid = $message->embed(Swift_Image::fromPath($path));
                 }
                 $bodyString = substr($this->body, 0, $imagePos) . $cid .
                     substr($this->body, $imagePos + strlen($targetTerm));
@@ -595,7 +601,7 @@ class OME
                     $bodyString = mb_convert_encoding($bodyString, $this->mailEncoding);
                 }
                 foreach ($this->attachments as $path) {
-                    $message->attach(\Swift_Attachment::fromPath($path)->setFilename(basename($path)));
+                    $message->attach(Swift_Attachment::fromPath($path)->setFilename(basename($path)));
                 }
                 if($this->bodyType == 'text/html') {
                     $message->setBody($bodyString, $this->bodyType);
@@ -747,7 +753,6 @@ class OME
             case '}':
             case '）':
             case '】':
-            case '”':
             case '］':
             case '」':
             case '』':

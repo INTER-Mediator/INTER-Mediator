@@ -14,6 +14,8 @@
  */
 
 namespace INTERMediator\DB;
+
+use Exception;
 use INTERMediator\FileMakerServer\RESTAPI\FMDataAPI;
 use INTERMediator\IMUtil;
 
@@ -27,11 +29,10 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
     private $mainTableCount = 0;
     private $mainTableTotalCount = 0;
     private $fieldInfo = null;
-
-    private $isRequiredUpdated = false;
     private $updatedRecord = null;
     private $softDeleteField = null;
     private $softDeleteValue = null;
+    private $errorMessage = [];
 
     /**
      * @param $str
@@ -91,7 +92,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
     {
         $this->targetLayout = $layoutName;
         $this->recordCount = $recordCount;
-        if(!isset($_SESSION)){
+        if (!isset($_SESSION)) {
             session_start();
         }
         if (in_array($layoutName, array($this->dbSettings->getUserTable(), $this->dbSettings->getHashTable()))) {
@@ -101,7 +102,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         }
         try {
             if ($token === '') {
-                throw new \Exception();
+                throw new Exception();
             }
             $fmDataObj = new FMDataAPI(
                 $this->dbSettings->getDbSpecDatabase(),
@@ -115,7 +116,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             $fmDataObj->setCertValidating(true);
             $fmDataObj->{$layoutName}->startCommunication();
             $fmDataObj->{$layoutName}->query(NULL, NULL, -1, 1);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $fmDataObj = new FMDataAPI(
                 $this->dbSettings->getDbSpecDatabase(),
                 $user,
@@ -127,7 +128,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             $fmDataObj->setCertValidating(true);
             try {
                 $fmDataObj->{$layoutName}->startCommunication();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
             }
         }
         return $fmDataObj;
@@ -183,6 +184,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         } else if ($operator === 'lte') {
             return array($field, '<=' . $value);
         }
+        return null;
     }
 
     private function executeScripts($scriptContext)
@@ -254,7 +256,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
                 $this->logger->setErrorMessage(
-                    $this->stringWithoutCredential(get_class($result) . ': '. $this->fmData->{$layout}->getDebugInfo()));
+                    $this->stringWithoutCredential(get_class($result) . ': ' . $this->fmData->{$layout}->getDebugInfo()));
             }
             return false;
         }
@@ -319,7 +321,6 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         $searchConditions = array();
         $neqConditions = array();
 
-        $hasFindParams = false;
         if (isset($context['query'])) {
             foreach ($context['query'] as $condition) {
                 if ($condition['field'] == '__operation__' && $condition['operator'] == 'or') {
@@ -328,7 +329,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                     if (isset($condition['operator'])) {
                         $condition = $this->normalizedCondition($condition);
                         if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                            throw new \Exception("Invalid Operator.: {$condition['operator']}");
+                            throw new Exception("Invalid Operator.: {$condition['operator']}");
                         }
                         $searchConditions[] = $this->setSearchConditionsForCompoundFound(
                             $condition['field'], $condition['value'], $condition['operator']);
@@ -336,7 +337,6 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                         $searchConditions[] = $this->setSearchConditionsForCompoundFound(
                             $condition['field'], $condition['value']);
                     }
-                    $hasFindParams = true;
 
                     if (isset($condition['operator']) && $condition['operator'] === 'neq') {
                         $neqConditions[] = TRUE;
@@ -356,7 +356,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 } else {
                     $condition = $this->normalizedCondition($condition);
                     if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                        throw new \Exception("Invalid Operator.: {$condition['field']}/{$condition['operator']}");
+                        throw new Exception("Invalid Operator.: {$condition['field']}/{$condition['operator']}");
                     }
 
                     $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -374,7 +374,6 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                         $neqConditions[] = FALSE;
                     }
 
-                    $hasFindParams = true;
                     if ($condition['field'] === $primaryKey) {
                         $skip = 0;
                     }
@@ -393,14 +392,13 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                         $formattedValue = $this->formatter->formatterToDB(
                             "{$tableName}{$this->dbSettings->getSeparator()}{$foreignField}", $foreignValue);
                         if (!$this->specHandler->isPossibleOperator($foreignOperator)) {
-                            throw new \Exception("Invalid Operator.: {$relDef['operator']}");
+                            throw new Exception("Invalid Operator.: {$relDef['operator']}");
                         }
                         if ($useOrOperation) {
-                            throw new \Exception("Condition Incompatible.: The OR operation and foreign key can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
+                            throw new Exception("Condition Incompatible.: The OR operation and foreign key can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
                         }
                         $searchConditions[] = $this->setSearchConditionsForCompoundFound(
                             $foreignField, $formattedValue, $foreignOperator);
-                        $hasFindParams = true;
 
                         if (isset($foreignOperator) && $foreignOperator === 'neq') {
                             $neqConditions[] = TRUE;
@@ -426,13 +424,11 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                     $authFailure = true;
                 } else {
                     if ($useOrOperation) {
-                        throw new \Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
+                        throw new Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
                     }
                     $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
                     $searchConditions[] = $this->setSearchConditionsForCompoundFound(
                         $authInfoField, '=' . $signedUser, 'eq');
-                    $hasFindParams = true;
-
                     $neqConditions[] = FALSE;
                 }
             } else
@@ -442,12 +438,10 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                         $authFailure = true;
                     } else {
                         if ($useOrOperation) {
-                            throw new \Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
+                            throw new Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
                         }
                         $searchConditions[] = $this->setSearchConditionsForCompoundFound(
                             $authInfoField, '=' . $belongGroups[0], 'eq');
-                        $hasFindParams = true;
-
                         $neqConditions[] = FALSE;
                     }
                 }
@@ -459,12 +453,10 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
 
         if (!is_null($this->softDeleteField) && !is_null($this->softDeleteValue)) {
             if ($useOrOperation) {
-                throw new \Exception("Condition Incompatible.: The soft-delete record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
+                throw new Exception("Condition Incompatible.: The soft-delete record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
             }
             $searchConditions[] = $this->setSearchConditionsForCompoundFound(
                 $this->softDeleteField, $this->softDeleteValue, 'neq');
-            $hasFindParams = true;
-
             $neqConditions[] = TRUE;
         }
 
@@ -473,7 +465,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             foreach ($context['sort'] as $condition) {
                 if (isset($condition['direction'])) {
                     if (!$this->specHandler->isPossibleOrderSpecifier($condition['direction'])) {
-                        throw new \Exception("Invalid Sort Specifier.");
+                        throw new Exception("Invalid Sort Specifier.");
                     }
                     $sort[] = array($condition['field'], $this->_adjustSortDirection($condition['direction']));
                 } else {
@@ -612,7 +604,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 }
             }
             $this->logger->setDebugMessage($this->stringWithoutCredential($this->fmData->{$layout}->getDebugInfo()));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Don't output error messages if no (related) records
             if (strpos($e->getMessage(), 'Error Code: 101, Error Message: Record is missing') === false &&
                 strpos($e->getMessage(), 'Error Code: 401, Error Message: No records match the request') === false) {
@@ -804,7 +796,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
                     $condition = $this->normalizedCondition($condition);
                     if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                        throw new \Exception("Invalid Operator.");
+                        throw new Exception("Invalid Operator.");
                     }
                     $convertedValue = $this->formatter->formatterToDB(
                         "{$tableSourceName}{$this->dbSettings->getSeparator()}{$condition['field']}",
@@ -818,7 +810,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             if (!$this->dbSettings->getPrimaryKeyOnly() || $value['field'] == $primaryKey) {
                 $value = $this->normalizedCondition($value);
                 if (!$this->specHandler->isPossibleOperator($value['operator'])) {
-                    throw new \Exception("Invalid Operator.: {$condition['operator']}");
+                    throw new Exception("Invalid Operator.: {$condition['operator']}");
                 }
                 $convertedValue = $this->formatter->formatterToDB(
                     "{$tableSourceName}{$this->dbSettings->getSeparator()}{$value['field']}", $value['value']);
@@ -847,8 +839,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                     $data += array($authInfoField => '=' . $belongGroups[0]);
                 }
             } else {
-                if ($this->dbSettings->isDBNative()) {
-                } else {
+                if (!$this->dbSettings->isDBNative()) {
                     $authorizedUsers = $this->authHandler->getAuthorizedUsers("update");
                     $authorizedGroups = $this->authHandler->getAuthorizedGroups("update");
                     $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
@@ -897,7 +888,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
                 $this->logger->setErrorMessage(
-                    $this->stringWithoutCredential(get_class($result) . ': '. $this->fmData->{$layout}->getDebugInfo()));
+                    $this->stringWithoutCredential(get_class($result) . ': ' . $this->fmData->{$layout}->getDebugInfo()));
             }
             return false;
         }
@@ -998,9 +989,8 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                     if ($tmpDir === '') {
                         $tmpDir = sys_get_temp_dir();
                     }
-                    $temp = 'IM_TEMP_' .
-                        str_replace(DIRECTORY_SEPARATOR, '-', base64_encode(randomString(12))) .
-                        '.jpg';
+                    $temp = 'IM_TEMP_' . str_replace(DIRECTORY_SEPARATOR, '-',
+                            base64_encode(IMUtil::randomString(12))) . '.jpg';
                     if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
                         $tempPath = $tmpDir . $temp;
                     } else {
@@ -1034,7 +1024,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 $result = $this->fmData->{$layout}->getRecord($recId);
                 if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                     $this->logger->setErrorMessage($this->stringWithoutCredential(
-                        get_class($result) . ': '. $this->fmData->{$layout}->getDebugInfo()));
+                        get_class($result) . ': ' . $this->fmData->{$layout}->getDebugInfo()));
                     return false;
                 }
                 if ($this->fmData->errorCode() > 0) {
@@ -1120,8 +1110,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                         strlen($belongGroups[0]) == 0 ? IMUtil::randomString(10) : $belongGroups[0]
                 );
             } else {
-                if ($this->dbSettings->isDBNative()) {
-                } else {
+                if (!$this->dbSettings->isDBNative()) {
                     $authorizedUsers = $this->authHandler->getAuthorizedUsers("create");
                     $authorizedGroups = $this->authHandler->getAuthorizedGroups("create");
                     $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
@@ -1206,7 +1195,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         foreach ($this->dbSettings->getExtraCriteria() as $value) {
             $value = $this->normalizedCondition($value);
             if (!$this->specHandler->isPossibleOperator($value['operator'])) {
-                throw new \Exception("Invalid Operator.");
+                throw new Exception("Invalid Operator.");
             }
             $condition += array($value['field'] => $value['value']);
         }
@@ -1223,7 +1212,6 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 } else {
                     $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
                     $condition += array($authInfoField => '=' . $signedUser);
-                    $hasFindParams = true;
                 }
             } else if ($authInfoTarget == 'field-group') {
                 $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
@@ -1231,11 +1219,9 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                     $authFailure = true;
                 } else {
                     $condition += array($authInfoField => '=' . $belongGroups[0]);
-                    $hasFindParams = true;
                 }
             } else {
-                if ($this->dbSettings->isDBNative()) {
-                } else {
+                if (!$this->dbSettings->isDBNative()) {
                     $authorizedUsers = $this->authHandler->getAuthorizedUsers("delete");
                     $authorizedGroups = $this->authHandler->getAuthorizedGroups("delete");
                     $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
@@ -1301,12 +1287,12 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
 
                 try {
                     $result = $this->fmData->{$layout}->delete($recId, $script);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     if ($this->dbSettings->isDBNative()) {
                         $this->dbSettings->setRequireAuthentication(true);
                     } else {
                         $this->logger->setErrorMessage($this->stringWithoutCredential(
-                            get_class($result) . ': '. $this->fmData->{$layout}->getDebugInfo()));
+                            get_class($result) . ': ' . $this->fmData->{$layout}->getDebugInfo()));
                     }
                     return false;
                 }
@@ -1436,7 +1422,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 }
                 $recordSet[] = $oneRecord;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
 
         return $recordSet;

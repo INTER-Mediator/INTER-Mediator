@@ -134,7 +134,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 
         $parentId = $result[rand(0, $recordCount - 1)]["id"];
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $parentId);
-        $this->db_proxy->copyInDB("person");
+        $this->db_proxy->copyInDB();
 
 //        echo "===ckeckpoint2===";
 //        var_export($this->db_proxy->logger->getErrorMessages());
@@ -167,7 +167,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->dbProxySetupForAccess("person", 1000000, "contact");
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $parentId);
         $this->db_proxy->dbSettings->addAssociated("contact", "person_id", $parentId);
-        $this->db_proxy->copyInDB("person");
+        $this->db_proxy->copyInDB();
 
 //        var_export($this->db_proxy->logger->getErrorMessages());
 //        var_export($this->db_proxy->logger->getDebugMessages());
