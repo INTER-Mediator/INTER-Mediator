@@ -28,6 +28,8 @@ addons:
       - dbus-x11
 
 before_script:
+  - echo "extension = gd.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - php -m
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
   - composer update
