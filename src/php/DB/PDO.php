@@ -35,12 +35,12 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     private $updatedRecord = null;
     private $softDeleteField = null;
     private $softDeleteValue = null;
-    private $isFollwingTimezones = false;
+    private $isFollowingTimezones;
 
     public function __construct()
     {
-        $params = IMUtil::getFromParamsPHPFile(["follwingTimezones",], true);
-        $this->isFollwingTimezones = isset($params["follwingTimezones"]) ? $params["follwingTimezones"] : false;
+        $params = IMUtil::getFromParamsPHPFile(["followingTimezones",], true);
+        $this->isFollowingTimezones = isset($params["followingTimezones"]) ? $params["followingTimezones"] : false;
     }
 
     public function updatedRecord()
@@ -452,7 +452,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
         $this->notifyHandler->setQueriedPrimaryKeys(array());
         $keyField = $this->getKeyFieldOfContext($tableInfo);
-        $timeFields = ($this->isFollwingTimezones && !$this->dbSettings->getAggregationFrom())
+        $timeFields = ($this->isFollowingTimezones && !$this->dbSettings->getAggregationFrom())
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForRetrieve()) : [];
         $sqlResult = array();
         $isFirstRow = true;
@@ -526,7 +526,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $this->fieldInfo = null;
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
-        $timeFields = $this->isFollwingTimezones
+        $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
@@ -656,7 +656,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     {
         $this->fieldInfo = null;
         $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
-        $timeFields = $this->isFollwingTimezones
+        $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
@@ -867,7 +867,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->dbSettings->getEntityForUpdate();
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
-        $timeFields = $this->isFollwingTimezones
+        $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
 
         if (!$this->setupConnection()) { //Establish the connection

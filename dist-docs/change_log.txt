@@ -10,6 +10,9 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
+Ver.7 (in development)
+- [BUG FIX] The variable name '$follwingTimezones' in the params.php file was typo at all! Change it to $followingTimezones.
+
 Ver.6 (November 21, 2020)
 - All communications went async.
 - Composer/npm based library management.

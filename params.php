@@ -136,7 +136,7 @@ $prohibitDebugMode = false;
 // If you don't set the default timezone in the php.ini file,
 //      activate the line below and specify suitable timezone name.
 $defaultTimezone = 'Asia/Tokyo';
-//$follwingTimezones = true;
+//$followingTimezones = true;
 
 // The 'issuedhash' table for storing challenges of authentication can be use another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
@@ -231,7 +231,7 @@ $appLocale = "ja_JP";   // Locale for application has to be specified the langua
 $appCurrency = "JP";    // Locale for currency has to be specified the country code.
 
 // Port number and host name for service server
-$activateClientService = false;  // Default is TRUE!!. (In case of debuging phase, it should be false.)
+$activateClientService = true;  // Default is TRUE!!. (In case of debuging phase, it should be false.)
 $serviceServerPort = "11478";
 $serviceServerHost = "localhost";   // The Service Server host name to connect from client. "" for public ip address.
 $serviceServerConnect = "localhost";     // The Service Server host name to connect from the INTER-Mediator server
