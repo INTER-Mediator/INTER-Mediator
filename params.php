@@ -231,7 +231,7 @@ $appLocale = "ja_JP";   // Locale for application has to be specified the langua
 $appCurrency = "JP";    // Locale for currency has to be specified the country code.
 
 // Port number and host name for service server
-$activateClientService = true;  // Default is TRUE!!. (In case of debuging phase, it should be false.)
+$activateClientService = false;  // Default is TRUE!!. (In case of debuging phase, it should be false.)
 $serviceServerPort = "11478";
 $serviceServerHost = "localhost";   // The Service Server host name to connect from client. "" for public ip address.
 $serviceServerConnect = "localhost";     // The Service Server host name to connect from the INTER-Mediator server
