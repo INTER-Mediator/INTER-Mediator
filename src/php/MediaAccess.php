@@ -426,6 +426,7 @@ class MediaAccess
             }
             return 'context_auth';
         }
+        return null;
     }
 
     private function analyzeTarget($target)

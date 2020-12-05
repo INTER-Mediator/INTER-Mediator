@@ -15,6 +15,8 @@
 
 namespace INTERMediator;
 
+use Exception;
+
 class LDAPAuth
 {
     public $errorString;

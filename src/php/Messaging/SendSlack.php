@@ -30,9 +30,9 @@ class SendSlack extends MessagingProvider
     }
 
     /**
-     * @param $dbProxy The DB\Proxy class's instance.
-     * @param $contextDef The context definition array of current context.
-     * @param $result The result of query or other db operations.
+     * @param $dbProxy  INTERMediator\DB\Proxy class's instance.
+     * @param $contextDef  context definition array of current context.
+     * @param $result  result of query or other db operations.
      * @return mixed (No return)
      */
     public function processing($dbProxy, $contextDef, $result)
