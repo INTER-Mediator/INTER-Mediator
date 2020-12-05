@@ -556,6 +556,9 @@ elsif node[:platform] == 'ubuntu'
     package 'php-bcmath' do
       action :install
     end
+    package 'php-ldap' do
+      action :install
+    end
   elsif node[:platform_version].to_f >= 16
     package 'php7.2' do
       action :install
@@ -573,6 +576,9 @@ elsif node[:platform] == 'ubuntu'
       action :install
     end
     package 'php7.2-bcmath' do
+      action :install
+    end
+    package 'php7.2-ldap' do
       action :install
     end
   end
