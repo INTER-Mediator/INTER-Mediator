@@ -7,6 +7,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - run: sudo -E apt-get install -y php-ldap
       - run: docker run --privileged -e "container=docker" --tmpfs /run -v /sys/fs/cgroup:/sys/fs/cgroup:ro -d --name ubuntu ubuntu:16.04 /sbin/init
       - run: docker exec -e DISPLAY=:99.0 -it ubuntu sh -c "apt-get update && apt-get -y install ruby git; git clone https://github.com/$CIRCLE_USERNAME/INTER-Mediator; cd INTER-Mediator; git checkout $CIRCLE_BRANCH; gem install itamae --no-doc; itamae local dist-docs/vm-for-trial/recipe.rb; echo y | sh /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh"
       - run: docker exec -it ubuntu sh -c "chown -R www-data /var/www"
