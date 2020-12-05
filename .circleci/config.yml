@@ -2,7 +2,7 @@ version: 2
 jobs:
   test:
     docker:
-      - image: docker:17.06.2-ce-git
+      - image: circleci/php:7.4.9-apache
     working_directory: ~/INTER-Mediator
     steps:
       - checkout
