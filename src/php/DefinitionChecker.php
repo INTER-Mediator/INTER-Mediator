@@ -270,6 +270,7 @@ class DefinitionChecker
             'view' => 'string',
             'count' => 'string',
             'source' => 'string',
+            'portals' => ['string'],
             'records' => 'integer',
             'maxrecords' => 'integer',
             'paging' => 'boolean',

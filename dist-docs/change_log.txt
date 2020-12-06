@@ -11,7 +11,7 @@ Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.7 (in development)
-- The FileMaker_DataAPI class updated for API protocol ver.2.
+- The FileMaker_DataAPI class updated for API protocol ver.2. And also introduced the 'portals' key on context definitions.
 - [BUG FIX] The variable name '$follwingTimezones' in the params.php file was typo at all! Change it to $followingTimezones.
 
 Ver.6 (November 21, 2020)

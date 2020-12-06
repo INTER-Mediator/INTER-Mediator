@@ -21,7 +21,8 @@ IM_Entry(
             'records' => 1,
             'paging' => true,
             'name' => 'person_layout',
-            'key' => 'recordId',
+            'key' => 'id',
+            'portals'=> ['Contact','History',],
             'repeat-control' => 'confirm-delete confirm-insert',
             'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
             'sort' => array(
@@ -72,7 +73,11 @@ IM_Entry(
     ),
     array(
         'db-class' => 'FileMaker_DataAPI',
-        'server' => 'localserver',
+        'server' => '192.168.17.109',
+//        'server' => 'localserver',
+        'port' => '443',
+        'protocol' => 'https',
+        'cert-verifying' => false,
     ),
     false
 );

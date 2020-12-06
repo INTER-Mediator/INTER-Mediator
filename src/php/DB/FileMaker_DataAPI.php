@@ -554,44 +554,50 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         $recordId = NULL;
         $result = NULL;
         try {
-            $result = $this->fmData->{$layout}->getMetadata();
-            if (!is_null($result)) {
-                // Get the portal array from the metadata of the layout.
-                if ($result->portalMetaData) {
-                    foreach ($result->portalMetaData as $key => $portalName) {
-                        $portal[] = $key;
-                    }
-                }
-                $result = null;
-                if ($conditions && count($conditions) === 1 && isset($conditions[0]['recordId'])) {
-                    $recordId = str_replace('=', '', $conditions[0]['recordId']);
-                    if (is_numeric($recordId)) {
-                        $conditions[0]['recordId'] = $recordId;
-                        $result = $this->fmData->{$layout}->getRecord($recordId);
-                    }
-                    if (is_null($result)) {
-                        $this->mainTableCount = 0;
-                        $this->mainTableTotalCount = 0;
-                    } else {
-                        $this->mainTableCount = 1;
-                        $this->mainTableTotalCount = 1;
-                    }
-                } else {
-                    $result = $this->fmData->{$layout}->query(
-                        $conditions,
-                        $sort,
-                        $skip + 1,
-                        $limitParam,
-                        array_unique($portal),
-                        $script
-                    );
-                    $this->mainTableCount = intval($this->fmData->getFoundCount());
-                    $this->mainTableTotalCount = intval($this->fmData->getTotalCount());
-                }
-                $this->notifyHandler->setQueriedEntity($layout);
-                $this->notifyHandler->setQueriedCondition("/fmi/rest/api/find/{$this->dbSettings->getDbSpecDatabase()}/{$layout}" . ($recordId ? "/{$recordId}" : ""));
+            if (isset($context['portals']) && is_array($context['portals'])) {
+                $portal = $context['portals'];
+            } else {
+                $result = $this->fmData->{$layout}->getMetadata();
                 $this->logger->setDebugMessage($this->stringWithoutCredential($this->fmData->{$layout}->getDebugInfo()));
+                // Get the portal array from the metadata of the layout.
+                if (!is_null($result)) {
+                    if ($result->portalMetaData) {
+                        foreach ($result->portalMetaData as $key => $portalName) {
+                            $portal[] = $key;
+                        }
+                    }
+                }
             }
+
+            $result = null;
+            if ($conditions && count($conditions) === 1 && isset($conditions[0]['recordId'])) {
+                $recordId = str_replace('=', '', $conditions[0]['recordId']);
+                if (is_numeric($recordId)) {
+                    $conditions[0]['recordId'] = $recordId;
+                    $result = $this->fmData->{$layout}->getRecord($recordId);
+                }
+                if (is_null($result)) {
+                    $this->mainTableCount = 0;
+                    $this->mainTableTotalCount = 0;
+                } else {
+                    $this->mainTableCount = 1;
+                    $this->mainTableTotalCount = 1;
+                }
+            } else {
+                $result = $this->fmData->{$layout}->query(
+                    $conditions,
+                    $sort,
+                    $skip + 1,
+                    $limitParam,
+                    array_unique($portal),
+                    $script
+                );
+                $this->mainTableCount = intval($this->fmData->getFoundCount());
+                $this->mainTableTotalCount = intval($this->fmData->getTotalCount());
+            }
+            $this->notifyHandler->setQueriedEntity($layout);
+            $this->notifyHandler->setQueriedCondition("/fmi/rest/api/find/{$this->dbSettings->getDbSpecDatabase()}/{$layout}" . ($recordId ? "/{$recordId}" : ""));
+            $this->logger->setDebugMessage($this->stringWithoutCredential($this->fmData->{$layout}->getDebugInfo()));
         } catch (Exception $e) {
             // Don't output error messages if no (related) records
             if (strpos($e->getMessage(), 'Error Code: 101, Error Message: Record is missing') === false &&
@@ -661,8 +667,6 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 }
             }
         }
-
-        $this->logger->setDebugMessage($this->stringWithoutCredential($this->fmData->{$layout}->getDebugInfo()));
 
         $token = $this->fmData->getSessionToken();
         if (in_array($layout, array($this->dbSettings->getUserTable(), $this->dbSettings->getHashTable()))) {
