@@ -179,6 +179,7 @@ class DefinitionChecker
         'protocol' => 'string',
         'datatype' => 'string',
         'external-db' => array('#' => 'string'),
+        'cert-verifying' => 'boolean',
     );
     private $prohibitKeywordsForOption = array(
         'separator' => 'string',
@@ -394,6 +395,7 @@ class DefinitionChecker
             'port' => 'string',
             'protocol' => 'string',
             'datatype' => 'string',
+            'cert-verifying' => 'boolean',
             'cache' => 'boolean',
             'post-reconstruct' => 'boolean',
             'post-dismiss-message' => 'string',

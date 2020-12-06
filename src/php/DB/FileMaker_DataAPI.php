@@ -113,7 +113,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 $this->dbSettings->getDbSpecProtocol()
             );
             $fmDataObj->setSessionToken($token);
-            $fmDataObj->setCertValidating(true);
+            $fmDataObj->setCertValidating($this->dbSettings->getCertVerifying());
             $fmDataObj->{$layoutName}->startCommunication();
             $fmDataObj->{$layoutName}->query(NULL, NULL, -1, 1);
         } catch (Exception $e) {
@@ -125,7 +125,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 $this->dbSettings->getDbSpecPort(),
                 $this->dbSettings->getDbSpecProtocol()
             );
-            $fmDataObj->setCertValidating(true);
+            $fmDataObj->setCertValidating($this->dbSettings->getCertVerifying());
             try {
                 $fmDataObj->{$layoutName}->startCommunication();
             } catch (Exception $e) {

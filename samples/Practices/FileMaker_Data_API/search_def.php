@@ -27,7 +27,11 @@ IM_Entry(
     null,
     array(
         'db-class' => 'FileMaker_DataAPI',
-        'server' => 'localserver',
+//        'server' => 'localserver',
+        'server' => '192.168.17.109',
+        'port' => '443',
+        'protocol' => 'https',
+        'cert-verifying' => false,
     ),
-    false
+    2
 );

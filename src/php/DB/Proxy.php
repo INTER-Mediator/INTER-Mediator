@@ -540,7 +540,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $params = IMUtil::getFromParamsPHPFile(array(
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
             "dbOption", "dbDSN", "pusherParameters", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
-            "activateClientService", "accessLogLevel",
+            "activateClientService", "accessLogLevel", "certVerifying",
         ), true);
         $this->accessLogLevel = intval($params['accessLogLevel']);
         $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
@@ -593,6 +593,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             isset($context['option']) ? $context['option'] :
                 (isset($dbspec['option']) ? $dbspec['option'] :
                     (isset ($params['dbOption']) ? $params['dbOption'] : '')));
+        $this->dbSettings->setCertVerifying(
+            isset($context['cert-verifying']) ? $context['cert-verifying'] :
+                (isset($dbspec['cert-verifying']) ? $dbspec['cert-verifying'] :
+                    (isset ($params['certVerifying']) ? $params['certVerifying'] : true)));
         if (isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn'])) {
             $this->dbSettings->setDbSpecDSN($options['authentication']['issuedhash-dsn']);
         } else {

@@ -31,6 +31,7 @@ $dbPort = '80';
 //$dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
+//$certVerifying = false;
 
 /* PDO awares below:
  */
