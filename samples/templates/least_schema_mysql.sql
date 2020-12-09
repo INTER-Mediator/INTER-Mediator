@@ -37,6 +37,8 @@ CREATE USER 'web'@'localhost' IDENTIFIED BY 'password';
 # Grant to CRUD operations for web account
 
 GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO 'web'@'localhost';
+GRANT SHOW VIEW ON TABLE test_db.* TO 'web'@'localhost';
+# For mysqldump, the SHOW VIEW privilege is just required, and use options --single-transaction and --no-tablespaces.
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # An example of table definition and insert a record
