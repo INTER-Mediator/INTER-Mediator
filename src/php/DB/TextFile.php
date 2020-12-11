@@ -16,6 +16,8 @@
 
 namespace INTERMediator\DB;
 
+use Exception;
+
 class TextFile extends UseSharedObjects implements DBClass_Interface
 {
     private $recordCount;

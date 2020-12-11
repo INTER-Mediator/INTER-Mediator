@@ -9,6 +9,8 @@
 
 namespace INTERMediator;
 
+use DateTime;
+
 $gSSPInstance = null;
 
 class ServiceServerProxy
@@ -84,7 +86,7 @@ class ServiceServerProxy
                 return false;
             }
             $waitSec = 3;
-            $startDT = new \DateTime();
+            $startDT = new DateTime();
             $counterInit = $counter = 5;
             $isStartServer = false;
             while (!$this->isActive()) {
@@ -99,7 +101,7 @@ class ServiceServerProxy
                     return false;
                 }
 
-                $intObj = (new \DateTime())->diff($startDT, true);
+                $intObj = (new DateTime())->diff($startDT, true);
                 $intSecs = ((((($intObj->y * 30) + $intObj->m) * 12 + $intObj->d) * 24 + $intObj->h) * 60 + $intObj->i) * 60 + $intObj->s;
                 if ($intSecs > $waitSec) {
                     $this->errors[] = $this->messageHead . 'Service Server could not be available for timeout.';

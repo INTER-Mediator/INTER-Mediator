@@ -57,7 +57,6 @@ class LineDivider implements Iterator
         } else {
             return substr($this->data, $this->pos);
         }
-        return null;
     }
 
     public function next()

@@ -37,7 +37,8 @@ class OperationLog
         $this->contextOptions = $options;
         // Read from params.php
         $paramKeys = ["accessLogLevel", "dbClassLog", "dbUserLog", "dbPasswordLog", "dbDSNLog",
-            "recordingContexts", "dontRecordTheme", "dontRecordChallenge", "dontRecordDownload"];
+            "recordingContexts", "dontRecordTheme", "dontRecordChallenge", "dontRecordDownload",
+            "dontRecordDownloadNoGet"];
         $params = IMUtil::getFromParamsPHPFile($paramKeys, true);
         $this->accessLogLevel = intval($params['accessLogLevel']);    // false: No logging, 1: without data, 2: with data
         $this->isWithData = ($this->accessLogLevel === 2);

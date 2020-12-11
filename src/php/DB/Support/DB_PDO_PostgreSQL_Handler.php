@@ -15,6 +15,7 @@
  */
 namespace INTERMediator\DB\Support;
 use Exception;
+use PDO;
 
 class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
 {
@@ -121,7 +122,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
                 throw new Exception('INSERT Error:' . $sql);
             }
             $infoResult = [];
-            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+            foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
                 $infoResult[] = $row;
             }
             $this->tableInfo[$tableName] = $infoResult;

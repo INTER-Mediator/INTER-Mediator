@@ -85,7 +85,6 @@ class FileUploader
             $this->db->finishCommunication();
             $this->db->exportOutputDataAsJSON();
         }
-        return;
     }
 
     public function processing($datasource, $options, $dbspec, $debug)

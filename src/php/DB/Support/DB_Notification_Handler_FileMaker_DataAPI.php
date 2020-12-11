@@ -15,6 +15,7 @@
  */
 namespace INTERMediator\DB\Support;
 use \DateTime;
+use \Exception;
 
 class DB_Notification_Handler_FileMaker_DataAPI
     extends DB_Notification_Common 
