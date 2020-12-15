@@ -263,16 +263,20 @@ const IMLibElement = {
         originalValue = element.getAttribute('data-im-original-' + curTarget)
         if (curTarget === 'innerHTML') {
           currentValue = element.innerHTML
-          curVal = currentValue.replace('$', curVal)
-          element.innerHTML = curVal
+          if(currentValue) {
+            curVal = currentValue.replace('$', curVal)
+            element.innerHTML = curVal
+          }
         } else if (curTarget === 'textNode' || curTarget === 'script') {
           currentValue = element.textContent
-          element.textContent = currentValue.replace('$', curVal)
+          if(currentValue) {
+            element.textContent = currentValue.replace('$', curVal)
+          }
         } else if (curTarget.indexOf('style.') === 0) {
           styleName = curTarget.substring(6, curTarget.length)
           currentValue = element.style[styleName]
-          if (curTarget !== 'style.color' ||
-            (curTarget === 'style.color' && !negativeColor)) {
+          if (currentValue && (curTarget !== 'style.color' ||
+            (curTarget === 'style.color' && !negativeColor))) {
             element.style[styleName] = currentValue.replace('$', curVal)
           }
         } else {
@@ -284,7 +288,9 @@ const IMLibElement = {
             curVal = INTERMediatorOnPage.getEntryPath() +
               '?media=' + curVal.replace('https://' + location.hostname, '')
           }
-          element.setAttribute(curTarget, currentValue.replace('$', curVal))
+          if(currentValue) {
+            element.setAttribute(curTarget, currentValue.replace('$', curVal))
+          }
         }
         isReplaceOrAppend = true
         if (!originalValue) {
