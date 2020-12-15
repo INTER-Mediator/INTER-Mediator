@@ -145,7 +145,7 @@ class OAuthAuth
             "realname" => $tokenID["realname"],
             "email" => $tokenID["email"]
         );
-        $this->isCreate = $dbProxy->dbClass->authSupportOAuthUserHandling($param);
+        $this->isCreate = $dbProxy->dbClass->authHandler->authSupportOAuthUserHandling($param);
         if ($this->debugMode)   {
             $this->errorMessage[] = "authSupportOAuthUserHandling sends "
             . var_export($param, true) . ", returns {$this->isCreate}.";

@@ -12,13 +12,10 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-namespace INTERMediator;
 
-// The variable pathToIM has to point the INTER-Mediator directory.
-$pathToIM = "..";   // Modify this to match your directories.
-//---------------------------------------------
+require_once '../../INTER-Mediator.php';
 
-$authObj = new OAuthAuth();
+$authObj = new INTERMediator\OAuthAuth();
 $authObj->setDoRedirect(true);
 if (is_null($authObj)) {
     echo "Couldn't authenticate with parameters you supplied.";
