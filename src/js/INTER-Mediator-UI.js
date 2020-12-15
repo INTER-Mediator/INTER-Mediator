@@ -760,10 +760,12 @@ const IMLibUI = {
 
   clickPostOnlyButton: function (node) {
     'use strict'
-    let i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo
-    let mergedValues, inputNodes, typeAttr, k, messageNode, result, alertmessage
-    let linkedNodes, namedNodes, index, hasInvalid, isMerged, contextNodes, widgetValue
+    let i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo, nodeValue
+    let messageNode, result, alertmessage, linkedNodes, index, contextNodes, widgetValue, skipNodes
+
     let targetNode = node.parentNode
+    let hasInvalid = false
+
     while (!INTERMediatorLib.isEnclosure(targetNode, true)) {
       targetNode = targetNode.parentNode
       if (!targetNode) {
@@ -772,14 +774,12 @@ const IMLibUI = {
     }
 
     if (INTERMediatorOnPage.processingBeforePostOnlyContext) {
-      if (!INTERMediatorOnPage.processingBeforePostOnlyContext(targetNode)) {
-        return
-      }
+      hasInvalid = !INTERMediatorOnPage.processingBeforePostOnlyContext(targetNode)
     }
 
+    INTERMediatorOnPage.showProgress()
     contextNodes = []
     linkedNodes = []
-    namedNodes = []
     for (i = 0; i < targetNode.childNodes.length; i++) {
       seekLinkedElementInThisContext(targetNode.childNodes[i])
       seekLinkedElementInAllChildren(targetNode.childNodes[i])
@@ -796,6 +796,7 @@ const IMLibUI = {
       }
     }
     if (contextCount.length < 1) {
+      INTERMediatorOnPage.hideProgress()
       return
     }
     let maxCount = -100
@@ -809,7 +810,7 @@ const IMLibUI = {
 
     alertmessage = ''
     fieldData = []
-    hasInvalid = false
+    skipNodes = []
     for (i = 0; i < linkedNodes.length; i++) {
       elementInfo = INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])
       for (j = 0; j < elementInfo.length; j++) {
@@ -819,24 +820,31 @@ const IMLibUI = {
             for (index in contextInfo.validation) {
               if (contextInfo.validation.hasOwnProperty(index)) {
                 validationInfo = contextInfo.validation[index]
-                if (validationInfo && validationInfo.field === comp[1]) {
-                  switch (validationInfo.notify) {
-                    case 'inline':
-                    case 'end-of-sibling':
-                      INTERMediatorLib.clearErrorMessage(linkedNodes[i])
-                      break
-                  }
-                }
-              }
-            }
-            for (index in contextInfo.validation) {
-              if (contextInfo.validation.hasOwnProperty(index)) {
-                validationInfo = contextInfo.validation[index]
                 if (validationInfo.field === comp[1]) {
                   if (validationInfo) {
+                    if (linkedNodes[i].tagName === 'INPUT' && linkedNodes[i].type === 'radio') {
+                      nodeValue = ''
+                      const nameAttr = linkedNodes[i].getAttribute('name')
+                      if (nameAttr && skipNodes.indexOf(nameAttr) < 0) {
+                        skipNodes.push(nameAttr)
+                        const nameNodes = targetNode.querySelectorAll('input[type=radio]')
+                        for (let node of nameNodes) {
+                          if (node.name == nameAttr && node.checked) {
+                            nodeValue = node.value
+                          }
+                        }
+                      } else {
+                        continue
+                      }
+                    } else {
+                      nodeValue = linkedNodes[i].value
+                    }
+                    if (INTERMediatorLib.isWidgetElement(linkedNodes[i])) {
+                      nodeValue = linkedNodes[i]._im_getValue()
+                    }
                     result = Parser.evaluate(
                       validationInfo.rule,
-                      {'value': linkedNodes[i].value, 'target': linkedNodes[i]}
+                      {'value': nodeValue, 'target': linkedNodes[i]}
                     )
                     if (!result) {
                       hasInvalid = true
@@ -860,6 +868,8 @@ const IMLibUI = {
                       if (INTERMediatorOnPage.doAfterValidationFailure) {
                         INTERMediatorOnPage.doAfterValidationFailure(linkedNodes[i])
                       }
+                    } else {
+                      INTERMediatorLib.clearErrorMessage(linkedNodes[i])
                     }
                   }
                 }
@@ -888,52 +898,13 @@ const IMLibUI = {
         }
       }
     }
-    for (i = 0; i < namedNodes.length; i++) {
-      elementInfo = INTERMediatorLib.getNamedInfo(namedNodes[i])
-      for (j = 0; j < elementInfo.length; j++) {
-        comp = elementInfo[j].split(INTERMediator.separator)
-        if (comp[0] === selectedContext) {
-          mergedValues = []
-          if (namedNodes[i].tagName === 'INPUT') {
-            inputNodes = [namedNodes[i]]
-          } else {
-            inputNodes = namedNodes[i].getElementsByTagName('INPUT')
-          }
-          for (k = 0; k < inputNodes.length; k++) {
-            typeAttr = inputNodes[k].getAttribute('type')
-            if (typeAttr === 'radio' || typeAttr === 'checkbox') {
-              if (inputNodes[k].checked) {
-                mergedValues.push(inputNodes[k].value)
-              }
-            } else {
-              mergedValues.push(inputNodes[k].value)
-            }
-          }
-          if (mergedValues.length > 0) {
-            isMerged = false
-            for (index = 0; index < fieldData.length; index++) {
-              if (fieldData[index].field === comp[1]) {
-                fieldData[index].value += IMLibUI.mergedFieldSeparator
-                fieldData[index].value += mergedValues.join(IMLibUI.mergedFieldSeparator)
-                isMerged = true
-              }
-            }
-            if (!isMerged) {
-              fieldData.push({
-                field: comp[1],
-                value: mergedValues.join(IMLibUI.mergedFieldSeparator)
-              })
-            }
-          }
-        }
-      }
-    }
-
     if (alertmessage.length > 0) {
       window.alert(alertmessage)
+      INTERMediatorOnPage.hideProgress()
       return
     }
     if (hasInvalid) {
+      INTERMediatorOnPage.hideProgress()
       return
     }
 
@@ -956,11 +927,12 @@ const IMLibUI = {
           parentOfTarget = targetNode.parentNode
           parentOfTarget.removeChild(targetNode)
           newNode = document.createElement('SPAN')
-          INTERMediatorLib.setClassAttributeToNode(newNode, 'IM_POSTMESSAGE')
+          newNode.className = 'IM_POSTMESSAGE'
           newNode.appendChild(document.createTextNode(thisContext['post-dismiss-message']))
           parentOfTarget.appendChild(newNode)
           isSetMsg = true
         }
+        INTERMediatorOnPage.hideProgress()
         if (thisContext['post-reconstruct']) {
           setTimeout(function () {
             INTERMediator.construct(true)
@@ -971,7 +943,10 @@ const IMLibUI = {
             location.href = thisContext['post-move-url']
           }, isSetMsg ? INTERMediator.waitSecondsAfterPostMessage * 1000 : 0)
         }
-      }, null)
+      },
+      function () {
+        INTERMediatorOnPage.hideProgress()
+      })
 
     function seekLinkedElementInThisContext(node) { // Just seek out side of inner enclosure
       let children, i
@@ -995,9 +970,7 @@ const IMLibUI = {
     function seekLinkedElementInAllChildren(node) { // Traverse inside of enclosure
       let children, i
       if (node.nodeType === 1) {
-        if (INTERMediatorLib.isNamedElement(node)) {
-          namedNodes.push(node)
-        } else if (INTERMediatorLib.isLinkedElement(node)) {
+        if (INTERMediatorLib.isLinkedElement(node)) {
           linkedNodes.push(node)
         } else if (INTERMediatorLib.isWidgetElement(node)) {
           linkedNodes.push(node)

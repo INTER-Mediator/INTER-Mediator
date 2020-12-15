@@ -82,6 +82,17 @@ class Settings
 
     private $attachedFiles = [];
     private $attachedFields = null;
+    private $certVerifying = true;
+
+    public function setCertVerifying($value)
+    {
+        $this->certVerifying = boolval($value);
+    }
+
+    public function getCertVerifying()
+    {
+        return $this->certVerifying;
+    }
 
     public function setAttachedFiles($contextName, $files)
     {
@@ -497,19 +508,14 @@ class Settings
         switch ($key) {
             case 'user-table':
                 return 'authuser';
-                break;
             case 'group-table':
                 return 'authgroup';
-                break;
             case 'corresponding-table':
                 return 'authcor';
-                break;
             case 'challenge-table':
                 return 'issuedhash';
-                break;
             case 'authexpired':
                 return 3600 * 8;
-                break;
         }
         return null;
     }
@@ -764,7 +770,7 @@ class Settings
     public function getEntityForRetrieve()
     {
         $dsrc = $this->getDataSourceTargetArray();
-        if(is_null($dsrc)){
+        if (is_null($dsrc)) {
             return null;
         }
         if (isset($dsrc['view'])) {
@@ -776,7 +782,7 @@ class Settings
     public function getEntityForCount()
     {
         $dsrc = $this->getDataSourceTargetArray();
-        if(is_null($dsrc)){
+        if (is_null($dsrc)) {
             return null;
         }
         if (isset($dsrc['count'])) {
@@ -791,7 +797,7 @@ class Settings
     public function getEntityForUpdate()
     {
         $dsrc = $this->getDataSourceTargetArray();
-        if(is_null($dsrc)){
+        if (is_null($dsrc)) {
             return null;
         }
         if (isset($dsrc['table'])) {

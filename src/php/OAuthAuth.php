@@ -16,6 +16,8 @@
 
 namespace INTERMediator;
 
+use INTERMediator\DB\Proxy;
+
 class OAuthAuth
 {
     public $isActive;

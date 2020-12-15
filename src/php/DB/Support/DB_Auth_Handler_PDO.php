@@ -19,6 +19,7 @@ namespace INTERMediator\DB\Support;
 use INTERMediator\IMUtil;
 use INTERMediator\LDAPAuth;
 use INTERMediator\OAuthAuth;
+use PDO;
 
 class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
 {
@@ -52,7 +53,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         }
         $this->logger->setDebugMessage("[authSupportStoreChallenge] {$sql}");
         $currentDTFormat = IMUtil::currentDTString();
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $sql = "{$this->dbClass->handler->sqlUPDATECommand()}{$hashTable} SET hash=" . $this->dbClass->link->quote($challenge)
                 . ",expired=" . $this->dbClass->link->quote($currentDTFormat)
                 . " WHERE id={$row['id']}";
@@ -105,7 +106,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         }
         $this->logger->setDebugMessage("[authSupportCheckMediaToken] {$sql}");
 
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $hashValue = $row['hash'];
             $seconds = IMUtil::secondsFromNow($row['expired']);
             if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
@@ -145,7 +146,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $this->logger->setDebugMessage("[authSupportRetrieveChallenge] {$sql}");
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $hashValue = $row['hash'];
             $recordId = $row['id'];
             if ($isDelete) {
@@ -266,7 +267,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $this->logger->setDebugMessage("[authSupportRetrieveHashedPassword] {$sql}");
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $limitSeconds = $this->dbSettings->getLDAPExpiringSeconds();
             if (isset($row['limitdt']) && !is_null($row['limitdt'])
                 && IMUtil::secondsFromNow($row['limitdt']) < $limitSeconds
@@ -321,7 +322,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
                 return false;
             }
             $this->logger->setDebugMessage("[authSupportCreateUser-LDAP] {$sql}, LDAP expiring={$this->dbSettings->getLDAPExpiringSeconds()}");
-            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+            foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
                 if (isset($row['limitdt']) && !is_null($row['limitdt'])) {
                     if (IMUtil::secondsFromNow($row['limitdt']) > $this->dbSettings->getLDAPExpiringSeconds()) {
                         $this->logger->setDebugMessage("[authSupportCreateUser-LDAP] Over Limit Datetime.");
@@ -434,7 +435,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $this->logger->setDebugMessage("[privateGetUserIdFromUsername] {$sql}");
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             if ($isCheckLimit && isset($row['limitdt']) && !is_null($row['limitdt'])) {
                 if (time() - strtotime($row['limitdt']) > $this->dbSettings->getLDAPExpiringSeconds()) {
                     $this->overLimitDTUser = false;
@@ -468,7 +469,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $this->logger->setDebugMessage("[authSupportGetGroupNameFromGroupId] {$sql}");
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             return $row['groupname'];
         }
         return false;
@@ -563,7 +564,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $this->logger->setDebugMessage("[resolveGroup] {$sql}");
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             if (!in_array($row['dest_group_id'], $this->belongGroups)) {
                 $this->belongGroups[] = $row['dest_group_id'];
                 $this->resolveGroup($row['dest_group_id']);
@@ -595,7 +596,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $this->logger->setDebugMessage("[authSupportCheckMediaPrivilege] {$sql}");
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             return $row;
         }
         return false;
@@ -626,7 +627,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $this->logger->setDebugMessage("[authSupportGetUserIdFromEmail] {$sql}");
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             return $row['id'];
         }
         return false;
@@ -657,7 +658,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $this->logger->setDebugMessage("[authSupportGetUsernameFromUserId] {$sql}");
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             return $row['username'];
         }
         return false;
@@ -690,7 +691,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         }
         $this->logger->setDebugMessage("[authSupportUnifyUsernameAndEmail] {$sql}");
         $usernameCandidate = '';
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             if ($row['username'] == $username) {
                 $usernameCandidate = $username;
             }
@@ -763,7 +764,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $this->logger->setDebugMessage("[authSupportCheckIssuedHashForResetPassword] {$sql}");
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $hashValue = $row['hash'];
             if (IMUtil::secondsFromNow($row['expired']) > 3600) {
                 return false;
@@ -816,7 +817,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $this->logger->setDebugMessage("[authSupportUserEnrollmentEnrollingUser] {$sql}");
-        foreach ($resultHash->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($resultHash->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $userID = $row['user_id'];
             if ($userID < 1) {
                 return false;
@@ -878,7 +879,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] {$sql}");
-        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] " . var_export($row, true));
             $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] ldapLimit={$this->dbSettings->getLDAPExpiringSeconds()}");
             if (isset($row['limitdt']) && !is_null($row['limitdt'])) {

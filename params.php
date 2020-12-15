@@ -31,6 +31,7 @@ $dbPort = '80';
 //$dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
+//$certVerifying = false;
 
 /* PDO awares below:
  */
@@ -88,19 +89,15 @@ EOL;
 /* Browser Compatibility Check:
  */
 $browserCompatibility = array(
+    'Chrome' => '1+',
     'Edge' => '12+',
     // Edge/12.0(Microsoft Edge 20)
-    'Trident' => '7+',
-    // Trident/4.0(Internet Explorer 8)
-    // Trident/5.0(Internet Explorer 9)
-    // Trident/6.0(Internet Explorer 10)
+    //'Trident' => '7+',
     // Trident/7.0(Internet Explorer 11)
-    // Before IE 7, 'Trident' token doesn't exist.
-    'Chrome' => '1+',
     'Firefox' => '2+',
+    'Opera' => '1+',
     'Safari' => '4+',
     //'Safari'=>array('Mac'=>'4+','Win'=>'4+'), // Sample for dividing with OS
-    'Opera' => '1+',
     'WebKit' => '1+',
 );
 
@@ -140,7 +137,7 @@ $prohibitDebugMode = false;
 // If you don't set the default timezone in the php.ini file,
 //      activate the line below and specify suitable timezone name.
 $defaultTimezone = 'Asia/Tokyo';
-//$follwingTimezones = true;
+//$followingTimezones = true;
 
 // The 'issuedhash' table for storing challenges of authentication can be use another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
@@ -263,6 +260,11 @@ $dbClassLog = $dbClass;
 $dbDSNLog = $dbDSN;
 $dbUserLog = $dbUser;
 $dbPasswordLog = $dbPassword;
+$recordingContexts = false; // false or no-definition: record all context, or an array of context names you want to record.
+$dontRecordTheme = false;
+$dontRecordChallenge = false;
+$dontRecordDownload = false;
+$dontRecordDownloadNoGet = false;
 
 // S3 Support
 $accessRegion = "ap-northeast-1"; // This means the Tokyo region.

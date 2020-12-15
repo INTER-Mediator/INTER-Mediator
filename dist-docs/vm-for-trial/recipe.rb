@@ -556,6 +556,9 @@ elsif node[:platform] == 'ubuntu'
     package 'php-bcmath' do
       action :install
     end
+    package 'php-ldap' do
+      action :install
+    end
   elsif node[:platform_version].to_f >= 16
     package 'php7.2' do
       action :install
@@ -573,6 +576,9 @@ elsif node[:platform] == 'ubuntu'
       action :install
     end
     package 'php7.2-bcmath' do
+      action :install
+    end
+    package 'php7.2-ldap' do
       action :install
     end
   end
@@ -988,12 +994,12 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   end
 end
 
-if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
+if node[:platform] == 'redhat' || node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
     command "chown -R developer:im-developer \"#{WEBROOT}\""
   end
 end
-if node[:platform] == 'ubuntu'
+if node[:platform] == 'redhat' || node[:platform] == 'ubuntu'
   execute "chown developer:im-developer /var/www" do
     command "chown developer:im-developer /var/www"
   end
@@ -1259,12 +1265,12 @@ end
 # Install php/js libraries
 
 if node[:platform] == 'redhat'
-  execute "cd \"#{IMROOT}\" && /usr/local/bin/composer update" do
-    command "cd \"#{IMROOT}\" && /usr/local/bin/composer update"
+  execute "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'" do
+    command "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'"
   end
 else
-  execute "cd \"#{IMROOT}\" && composer update" do
-    command "cd \"#{IMROOT}\" && composer update"  # returns error for the script of nodejs-installer.
+  execute "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'" do
+    command "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'"  # returns error for the script of nodejs-installer.
   end
 end
 

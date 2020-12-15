@@ -53,7 +53,7 @@ class Theme
             foreach ($cssFiles as $aFile) {
                 $fContent .= file_get_contents($aFile);
             }
-            $fContent = preg_replace("/url\(([^\)]+)\)/",
+            $fContent = preg_replace("/url\(([^)]+)\)/",
                 "url({$selfInRequest}?theme={$themeNameInRequest}" . '&type=images&name=$1)', $fContent);
             $fpath = "something.css";
         } else {

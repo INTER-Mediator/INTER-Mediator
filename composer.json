@@ -1,7 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
-  "version": "6-dev",
-  "time": "2020-09-26",
+  "version": "7",
+  "time": "2020-12-03",
   "repositories": [
     {
       "type": "git",
@@ -17,6 +17,12 @@
     "ext-bcmath": "*",
     "ext-curl": "*",
     "ext-xml": "*",
+    "ext-json": "*",
+    "ext-libxml": "*",
+    "ext-posix": "*",
+    "ext-exif": "*",
+    "ext-gd": "*",
+    "ext-ldap": "*",
     "mouf/nodejs-installer": "~1.0",
     "phpseclib/phpseclib": "*",
     "paragonie/constant_time_encoding": "*",

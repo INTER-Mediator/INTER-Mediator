@@ -16,6 +16,8 @@
 
 namespace INTERMediator\DB;
 
+use Exception;
+
 class TextFile extends UseSharedObjects implements DBClass_Interface
 {
     private $recordCount;
@@ -220,7 +222,7 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
         return $sortClause;
     }
 
-    public function updateDB()
+    public function updateDB($bypassAuth)
     {
 
     }

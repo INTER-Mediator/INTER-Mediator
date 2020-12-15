@@ -179,6 +179,7 @@ class DefinitionChecker
         'protocol' => 'string',
         'datatype' => 'string',
         'external-db' => array('#' => 'string'),
+        'cert-verifying' => 'boolean',
     );
     private $prohibitKeywordsForOption = array(
         'separator' => 'string',
@@ -269,6 +270,7 @@ class DefinitionChecker
             'view' => 'string',
             'count' => 'string',
             'source' => 'string',
+            'portals' => ['string'],
             'records' => 'integer',
             'maxrecords' => 'integer',
             'paging' => 'boolean',
@@ -306,6 +308,7 @@ class DefinitionChecker
                 .'|detail|detail-top|detail-bottom|detail-update|detail-top-update|detail-bottom-update'
                 .'|master|master-nonavi|master-fullnavi|master-hide|master-hide-nonavi|master-hide-fullnavi)',
             'navi-title' => 'string',
+            'sync-control' => 'string(notify|modify)',
             'validation' => array(
                 '*' => array(
                     'field' => 'string',
@@ -393,6 +396,7 @@ class DefinitionChecker
             'port' => 'string',
             'protocol' => 'string',
             'datatype' => 'string',
+            'cert-verifying' => 'boolean',
             'cache' => 'boolean',
             'post-reconstruct' => 'boolean',
             'post-dismiss-message' => 'string',

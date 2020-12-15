@@ -487,7 +487,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
         return $this->recordCount;
     }
 
-    function updateDB()
+    function updateDB($bypassAuth)
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
 
