@@ -52,7 +52,10 @@ const IMLibElement = {
 
   formatOptions: {
     'useseparator': {useSeparator: true},
-    'blankifzero': {blankIfZero: true}
+    'blankifzero': {blankIfZero: true},
+    'thousands': {upTo3Digits: 3},
+    'millions': {upTo3Digits: 6},
+    'billions': {upTo3Digits: 9},
   },
   formatNegativeStyle: {
     leadingminus: {negativeStyle: 0},
@@ -98,12 +101,13 @@ const IMLibElement = {
       blankIfZero: false,
       negativeStyle: 0,
       charStyle: 0,
-      kanjiSeparator: 0
+      kanjiSeparator: 0,
+      upTo3Digits: 0
     }
     formatOption = element.getAttribute('data-im-format-options')
     if (formatOption) {
       for (const oneOption of formatOption.split(' ')) {
-        flags = IMLibElement.appendObject(flags, IMLibElement.formatOptions[oneOption])
+        flags = IMLibElement.appendObject(flags, IMLibElement.formatOptions[oneOption.toLowerCase()])
       }
     }
     negativeStyle = element.getAttribute('data-im-format-negative-style')
@@ -156,7 +160,7 @@ const IMLibElement = {
     if (!unformatFunc) {
       firstParen = formatSpec.indexOf('(')
       lastParen = formatSpec.lastIndexOf(')')
-      if(firstParen>=0 && lastParen>=0) {
+      if (firstParen >= 0 && lastParen >= 0) {
         parsed = formatSpec.substr(0, firstParen).match(/[^a-zA-Z]*([a-zA-Z]+).*/)
         unformatFunc = IMLibElement.unformatters[parsed[1].toLocaleLowerCase()]
         params = formatSpec.substring(firstParen + 1, lastParen)
@@ -265,13 +269,13 @@ const IMLibElement = {
         originalValue = element.getAttribute('data-im-original-' + curTarget)
         if (curTarget === 'innerHTML') {
           currentValue = element.innerHTML
-          if(currentValue) {
+          if (currentValue) {
             curVal = currentValue.replace('$', curVal)
             element.innerHTML = curVal
           }
         } else if (curTarget === 'textNode' || curTarget === 'script') {
           currentValue = element.textContent
-          if(currentValue) {
+          if (currentValue) {
             element.textContent = currentValue.replace('$', curVal)
           }
         } else if (curTarget.indexOf('style.') === 0) {
@@ -290,7 +294,7 @@ const IMLibElement = {
             curVal = INTERMediatorOnPage.getEntryPath() +
               '?media=' + curVal.replace('https://' + location.hostname, '')
           }
-          if(currentValue) {
+          if (currentValue) {
             element.setAttribute(curTarget, currentValue.replace('$', curVal))
           }
         }
@@ -353,12 +357,12 @@ const IMLibElement = {
               element.checked = false
             }
           }
-        // } else if (typeAttr === 'date') {
-        //   element.value = IMLibFormat.dateFormat(curVal, '%Y-%M-%D')
-        // } else if (typeAttr === 'time') {
-        //   element.value = IMLibFormat.timeFormat(curVal, '%H:%I:%S')
-        // } else if (typeAttr === 'datetime-local') {
-        //   element.value = IMLibFormat.datetimeFormat(curVal, '%Y-%M-%DT%H:%I:%S')
+          // } else if (typeAttr === 'date') {
+          //   element.value = IMLibFormat.dateFormat(curVal, '%Y-%M-%D')
+          // } else if (typeAttr === 'time') {
+          //   element.value = IMLibFormat.timeFormat(curVal, '%H:%I:%S')
+          // } else if (typeAttr === 'datetime-local') {
+          //   element.value = IMLibFormat.datetimeFormat(curVal, '%Y-%M-%DT%H:%I:%S')
         } else { // this node must be text field
           element.value = curVal
         }
