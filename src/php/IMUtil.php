@@ -263,6 +263,13 @@ class IMUtil
 
     public static function getFromParamsPHPFile($vars, $permitUndef = false)
     {
+        // The recovering of misspelling a global variable
+        $pos = array_search("follwingTimezones", $vars);
+        if ($pos !== false) {
+            $vars=array_slice($vars, $pos, 1);
+            $vars[]="followingTimezones";
+        }
+
         $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
         $currentDirParam = $imRootDir . 'params.php';
         $parentDirParam = dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php';
@@ -271,6 +278,12 @@ class IMUtil
         } else if (file_exists($currentDirParam)) {
             include($currentDirParam);
         }
+
+        // The recovering of misspelling a global variable
+        if(isset($follwingTimezones)){
+            $followingTimezones = $follwingTimezones;
+        }
+
         $result = array();
         foreach ($vars as $var) {
             if (isset($$var)) {
