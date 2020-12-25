@@ -52,7 +52,8 @@
     "mixin-deep": "^2.0.1",
     "power-assert": "*",
     "set-value": "^3.0.2",
-    "tinymce": ">=5.4.1"
+    "tinymce": ">=5.4.1",
+    "node-notifier": ">=8.0.1"
   },
   "dependencies": {
     "flatpickr": "^4.6.3",
