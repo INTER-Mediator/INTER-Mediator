@@ -202,7 +202,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $result = $this->userExpanded->doAfterReadFromDB($result);
             }
 
-            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
+            if ($this->dbSettings->notifyServer
+                && $this->clientSyncAvailable
+                && isset($currentDataSource['sync-control'])) {
                 $this->outputOfProcessing['registeredid'] = $this->dbSettings->notifyServer->register(
                     $this->dbClass->notifyHandler->queriedEntity(),
                     $this->dbClass->notifyHandler->queriedCondition(),
@@ -289,7 +291,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterUpdateToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterUpdateToDB($result);
             }
-            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
+            if ($this->dbSettings->notifyServer
+                && $this->clientSyncAvailable
+                && isset($currentDataSource['sync-control'])) {
                 try {
                     $this->dbSettings->notifyServer->updated(
                         $this->PostData['notifyid'],
@@ -354,7 +358,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $result = $this->userExpanded->doAfterCreateToDB($result);
             }
             if (!$this->isStopNotifyAndMessaging) {
-                if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
+                if ($this->dbSettings->notifyServer
+                    && $this->clientSyncAvailable
+                    && isset($currentDataSource['sync-control'])) {
                     try {
                         $this->dbSettings->notifyServer->created(
                             $this->PostData['notifyid'],
@@ -426,7 +432,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterDeleteFromDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterDeleteFromDB($result);
             }
-            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
+            if ($this->dbSettings->notifyServer
+                && $this->clientSyncAvailable
+                && isset($currentDataSource['sync-control'])) {
                 try {
                     $this->dbSettings->notifyServer->deleted(
                         $this->PostData['notifyid'],
@@ -468,7 +476,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterCopyInDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterCopyInDB($result);
             }
-            if ($this->dbSettings->notifyServer && $this->clientSyncAvailable) {
+            if ($this->dbSettings->notifyServer
+                && $this->clientSyncAvailable
+                && isset($currentDataSource['sync-control'])) {
                 try {
                     $this->dbSettings->notifyServer->created(
                         $this->PostData['notifyid'],
@@ -519,6 +529,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     public function ignoringPost()
+    {
+        $this->ignorePost = true;
+    }
+
+    public function ignorePost()
     {
         $this->ignorePost = true;
     }
@@ -791,10 +806,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         $this->logger->setDebugMessage("[processingRequest]", 2);
         $options = $this->dbSettings->getAuthentication();
-
-        //$this->outputOfProcessing = array();
         $messageClass = IMUtil::getMessageClassInstance();
-
         /* Aggregation Judgement */
         $isSelect = $this->dbSettings->getAggregationSelect();
         $isFrom = $this->dbSettings->getAggregationFrom();
