@@ -945,6 +945,7 @@ const IMLibUI = {
         }
       },
       function () {
+        INTERMediatorLog.flushMessage()
         INTERMediatorOnPage.hideProgress()
       })
 

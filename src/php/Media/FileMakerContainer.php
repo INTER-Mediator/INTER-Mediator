@@ -23,6 +23,20 @@ class FileMakerContainer implements UploadingSupport
 {
     public function processing($db, $url, $options, $files, $noOutput, $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug)
     {
+        if (!isset($options['media-root-dir'])) {
+            if (!is_null($this->url)) {
+                header('Location: ' . $this->url);
+            } else {
+                $this->db->logger->setErrorMessage("'media-root-dir' isn't specified");
+                $this->db->processingRequest("noop");
+                if (!$noOutput) {
+                    $this->db->finishCommunication();
+                    $this->db->exportOutputDataAsJSON();
+                }
+            }
+            return;
+        }
+
         $counter = -1;
         foreach ($files as $fn => $fileInfo) {
             $counter += 1;

@@ -7,7 +7,7 @@
  * Time: 12:49
  */
 
-namespace INTERMediator;
+namespace INTERMediator\Media;
 
 use \Iterator;
 

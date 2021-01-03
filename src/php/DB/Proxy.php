@@ -28,41 +28,16 @@ use phpseclib\Crypt\RSA;
 
 class Proxy extends UseSharedObjects implements Proxy_Interface
 {
-    /**
-     * @var null
-     */
     public $dbClass = null; // for Default context
-    /**
-     * @var null
-     */
     public $authDbClass = null; // for issuedhash context
-    /**
-     * @var array
-     */
-    public $dbClassForContext = array();
-    /**
-     * @var null
-     */
     private $userExpanded = null;
-    /**
-     * @var string
-     */
-    private $outputOfProcessing = null;
-    /**
-     * @var
-     */
+    public $outputOfProcessing = null;
     public $paramAuthUser = null;
 
     public $paramResponse = null;
     public $paramCryptResponse = null;
     public $clientId;
-    /**
-     * @var
-     */
     private $previousChallenge;
-    /**
-     * @var
-     */
     private $previousClientid;
 
     private $clientSyncAvailable;
@@ -293,7 +268,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
             if ($this->dbSettings->notifyServer
                 && $this->clientSyncAvailable
-                && isset($currentDataSource['sync-control'])) {
+                && isset($currentDataSource['sync-control'])
+                && strpos(strtolower($currentDataSource['sync-control']), 'update') !== false) {
                 try {
                     $this->dbSettings->notifyServer->updated(
                         $this->PostData['notifyid'],
@@ -360,7 +336,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             if (!$this->isStopNotifyAndMessaging) {
                 if ($this->dbSettings->notifyServer
                     && $this->clientSyncAvailable
-                    && isset($currentDataSource['sync-control'])) {
+                    && isset($currentDataSource['sync-control'])
+                    && strpos(strtolower($currentDataSource['sync-control']), 'create') !== false) {
                     try {
                         $this->dbSettings->notifyServer->created(
                             $this->PostData['notifyid'],
@@ -434,7 +411,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
             if ($this->dbSettings->notifyServer
                 && $this->clientSyncAvailable
-                && isset($currentDataSource['sync-control'])) {
+                && isset($currentDataSource['sync-control'])
+                && strpos(strtolower($currentDataSource['sync-control']), 'delete') !== false) {
                 try {
                     $this->dbSettings->notifyServer->deleted(
                         $this->PostData['notifyid'],
@@ -478,7 +456,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
             if ($this->dbSettings->notifyServer
                 && $this->clientSyncAvailable
-                && isset($currentDataSource['sync-control'])) {
+                && isset($currentDataSource['sync-control'])
+                && strpos(strtolower($currentDataSource['sync-control']), 'create') !== false) {
                 try {
                     $this->dbSettings->notifyServer->created(
                         $this->PostData['notifyid'],
@@ -992,36 +971,60 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             case 'new':
             case 'create':
                 $this->logger->setDebugMessage("[processingRequest] start create processing", 2);
-                if ($this->checkValidation()) {
-                    $result = $this->createInDB();
-                    $this->outputOfProcessing['newRecordKeyValue'] = $result;
-                    $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
-                    if (!$ignoreFiles && $result !== false) {
-                        $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
-                        if ($uploadFiles && count($tableInfo) > 0) {
-                            $fileUploader = new FileUploader();
-                            if (IMUtil::guessFileUploadError()) {
-                                $fileUploader->processingAsError(
-                                    $this->dbSettings->getDataSource(),
-                                    $this->dbSettings->getOptions(),
-                                    $this->dbSettings->getDbSpec(), true,
-                                    $this->dbSettings->getDataSourceName(), true);
-                            } else {
-                                $fileUploader->processingWithParameters(
-                                    $this->dbSettings->getDataSource(),
-                                    $this->dbSettings->getOptions(),
-                                    $this->dbSettings->getDbSpec(),
-                                    $this->logger->getDebugLevel(),
-                                    $tableInfo['name'], $tableInfo['key'],
-                                    $result,
-                                    $this->dbSettings->getAttachedFields(),
-                                    $uploadFiles, true
-                                );
-                            }
+                $attachedFields = $this->dbSettings->getAttachedFields();
+                if (!$ignoreFiles && isset($attachedFields) && $attachedFields[0] == '_im_csv_upload') {
+                    $this->logger->setDebugMessage("File importing operation gets stated.", 2);
+                    $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
+                    if ($uploadFiles && count($tableInfo) > 0) {
+                        $fileUploader = new FileUploader();
+                        if (IMUtil::guessFileUploadError()) {
+                            $fileUploader->processingAsError(
+                                $this->dbSettings->getDataSource(),
+                                $this->dbSettings->getOptions(),
+                                $this->dbSettings->getDbSpec(), true,
+                                $this->dbSettings->getDataSourceName(), true);
+                        } else {
+                            $fileUploader->processingWithParameters(
+                                $this->dbSettings->getDataSource(),
+                                $this->dbSettings->getOptions(),
+                                $this->dbSettings->getDbSpec(),
+                                $this->logger->getDebugLevel(),
+                                $tableInfo['name'], $tableInfo['key'], null,
+                                $this->dbSettings->getAttachedFields(), $uploadFiles, true
+                            );
+                            $this->outputOfProcessing['dbresult'] = $fileUploader->dbresult;
                         }
                     }
                 } else {
-                    $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
+                    if ($this->checkValidation()) {
+                        $result = $this->createInDB();
+                        $this->outputOfProcessing['newRecordKeyValue'] = $result;
+                        $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
+                        if (!$ignoreFiles && $result !== false) {
+                            $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
+                            if ($uploadFiles && count($tableInfo) > 0) {
+                                $fileUploader = new FileUploader();
+                                if (IMUtil::guessFileUploadError()) {
+                                    $fileUploader->processingAsError(
+                                        $this->dbSettings->getDataSource(),
+                                        $this->dbSettings->getOptions(),
+                                        $this->dbSettings->getDbSpec(), true,
+                                        $this->dbSettings->getDataSourceName(), true);
+                                } else {
+                                    $fileUploader->processingWithParameters(
+                                        $this->dbSettings->getDataSource(),
+                                        $this->dbSettings->getOptions(),
+                                        $this->dbSettings->getDbSpec(),
+                                        $this->logger->getDebugLevel(),
+                                        $tableInfo['name'], $tableInfo['key'], $result,
+                                        $this->dbSettings->getAttachedFields(), $uploadFiles, true
+                                    );
+                                }
+                            }
+                        }
+                    } else {
+                        $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
+                    }
                 }
                 break;
             case

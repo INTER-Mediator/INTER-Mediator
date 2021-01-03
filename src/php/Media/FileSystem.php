@@ -42,6 +42,19 @@ class FileSystem implements UploadingSupport
 
             $targetFieldName = $field[$counter];
             if ($targetFieldName != "_im_csv_upload") {
+                if (!isset($options['media-root-dir'])) {
+                    if (!is_null($this->url)) {
+                        header('Location: ' . $this->url);
+                    } else {
+                        $this->db->logger->setErrorMessage("'media-root-dir' isn't specified");
+                        $this->db->processingRequest("noop");
+                        if (!$noOutput) {
+                            $this->db->finishCommunication();
+                            $this->db->exportOutputDataAsJSON();
+                        }
+                    }
+                    return;
+                }
                 $fileRoot = $options['media-root-dir'];
                 if (substr($fileRoot, strlen($fileRoot) - 1, 1) != '/') {
                     $fileRoot .= '/';
@@ -108,7 +121,6 @@ class FileSystem implements UploadingSupport
                     }
                 }
 
-
                 $db = new Proxy();
                 $db->initialize($datasource, $options, $dbspec, $debug, $contextname);
                 $db->dbSettings->addExtraCriteria($keyfield, "=", $keyvalue);
@@ -158,11 +170,54 @@ class FileSystem implements UploadingSupport
                         }
                     }
                 }
+                $db->addOutputData('dbresult', $filePath);
+
             } else {    // CSV File uploading
+                $params = IMUtil::getFromParamsPHPFile(["import1stLine", "importSkipLines"], true);
+                $import1stLine = (isset($options['import']) && isset($options['import']['1st-line']))
+                    ? $options['import']['1st-line']
+                    : (isset($params["import1stLine"]) ? $params["import1stLine"] : true);
+                $importSkipLines = (isset($options['import']) && isset($options['import']['skip-lines']))
+                    ? $options['import']['skip-lines']
+                    : (isset($params["importSkipLines"]) ? $params["importSkipLines"] : 0);
 
+                $db->ignoringPost();
+                $db->initialize($datasource, $options, $dbspec, $debug, $contextname);
+                $dbContext = $db->dbSettings->getDataSourceTargetArray();
+
+                $importingFields = [];
+                if (is_string($import1stLine)) {
+                    foreach (new FieldDivider($import1stLine) as $field) {
+                        $importingFields[] = trim($field);
+                    }
+                }
+                $is1stLine = true;
+                $createdKeys = [];
+                foreach (new LineDivider(file_get_contents(IMUtil::removeNull($fileInfoTemp))) as $line) {
+                    if ($importSkipLines > 0) {
+                        $importSkipLines -= 1;
+                    } else {
+                        if ($is1stLine && $import1stLine === true) {
+                            foreach (new FieldDivider($line) as $field) {
+                                $importingFields[] = trim($field);
+                            }
+                        } else {
+                            $db->dbSettings->setValue([]);
+                            $db->dbSettings->setFieldsRequired([]);
+                            foreach (new FieldDivider($line) as $index => $field) {
+                                if ($index < count($importingFields)) {
+                                    $db->dbSettings->addValueWithField($importingFields[$index], $field);
+                                }
+                            }
+                            $db->processingRequest("create", true, true);
+                            $createdKeys[] = [$dbContext['key'] => ($db->getDatabaseResult()[0])[$dbContext['key']]];
+                        }
+                        $is1stLine = false;
+                    }
+                }
+                unlink(IMUtil::removeNull($fileInfoTemp));
+                $db->outputOfProcessing['dbresult'] = $createdKeys;
             }
-
-            $db->addOutputData('dbresult', $filePath);
         }
     }
 

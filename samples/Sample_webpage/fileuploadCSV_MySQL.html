@@ -14,18 +14,6 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator - Sample - Uploading a file / MySQL</title>
-    <!-- Bootstrap -->
-<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"-->
-<!--          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">-->
-<!--    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"-->
-<!--            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"-->
-<!--            crossorigin="anonymous"></script>-->
-<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"-->
-<!--            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"-->
-<!--            crossorigin="anonymous"></script>-->
-<!--    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"-->
-<!--            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"-->
-<!--            crossorigin="anonymous"></script>-->
     <!-- jQuery File Upload -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet">
     <link rel="stylesheet"
@@ -37,10 +25,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.28.0/js/jquery.fileupload-process.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.28.0/js/jquery.fileupload-image.min.js"></script>
     <!-- Loading INTER-Mediator -->
-    <script type="text/javascript" src="include_authAll_MySQL.php"></script>
+    <script type="text/javascript" src="include_MySQL.php"></script>
     <script src="../../node_modules/inter-mediator-plugin-jqueryfileupload/index.js"></script>
     <script type="text/javascript">
-        // IMParts_Catalog.fileupload.progressSupported = true;
+      //INTERMediatorLog.suppressDebugMessageOnPage = true
+      INTERMediatorLog.errorMessageByAlert = true
+      IMParts_Catalog.jquery_fileupload.isShowPreview = false
     </script>
     <style>
         .jquery-fileupload-container {
@@ -49,6 +39,7 @@
             padding: 8px;
             margin: 2px 2px 2px 0;
         }
+
         .fileinput-button {
             background-color: #209f44;
             border-radius: 4px;
@@ -56,6 +47,7 @@
             color: white;
             display: inline-block;
         }
+
         .filesend-button {
             background-color: #1e98ca;
             border-radius: 4px;
@@ -74,26 +66,43 @@
     <div class="container">
         <h1>JavaScript Component Test for jQuery File Upload</h1>
         <p>This sample requires jQuery File Upload.</p>
-        <a href="javascript:INTERMediatorOnPage.logout();location.reload()">Logout</a>
-        <table>
+
+        <div data-im-control="post enclosure" style="padding: 10px;margin: 10px 0; border:gray 2px solid">
+            <div data-im-control="repeater">
+                <div>Here is the post only mode area with the context named 'testtable'.</div>
+                <div>After sending files, it doesn't redraw the page for checking log.</div>
+                <div style="display: flex">
+                    <span data-im="testtable@_im_csv_upload" data-im-widget="jquery_fileupload"></span>
+                </div>
+                <button data-im-control="post">送信</button>
+            </div>
+        </div>
+        <table style="width: 100%;max-width: 100%">
             <thead>
             <tr>
-                <th>Date and Time/Path</th>
-                <th>Upload</th>
-                <th>Picture</th>
+                <th>num1</th>
+                <th>num2</th>
+                <th>num3</th>
+                <th>dt1</th>
+                <th>vc1</th>
+                <th>vc2</th>
+                <th>vc3</th>
+                <th>text1</th>
+                <th>text2</th>
                 <th></th>
             </tr>
             </thead>
             <tbody>
             <tr>
-                <td>
-                    <div data-im="testtable@dt1"></div>
-                    <div data-im="testtable@vc1"></div>
-                </td>
-                <td data-im="testtable@vc1" data-im-widget="jquery_fileupload"></td>
-                <td>
-                    <img src="include_authAll_MySQL.php?media=" style="width: 50px" data-im="testtable@vc1@#src">
-                </td>
+                <td data-im="testtable@num1"></td>
+                <td data-im="testtable@num2"></td>
+                <td data-im="testtable@num3"></td>
+                <td data-im="testtable@dt1"></td>
+                <td data-im="testtable@vc1"></td>
+                <td data-im="testtable@vc2"></td>
+                <td data-im="testtable@vc3"></td>
+                <td data-im="testtable@text1"></td>
+                <td data-im="testtable@text2"></td>
                 <td></td>
             </tr>
             </tbody>

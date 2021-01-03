@@ -18,13 +18,12 @@ namespace INTERMediator\Media;
 interface UploadingSupport
 {
     /**
-     * @param bool $useFileSystem
+     * @param $db
+     * @param $url
      * @param $options
      * @param $files
      * @param $noOutput
      * @param $field
-     * @param bool $useFMContainer
-     * @param bool $useS3
      * @param $contextname
      * @param $keyfield
      * @param $keyvalue

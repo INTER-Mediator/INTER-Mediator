@@ -23,6 +23,8 @@ class FileUploader
     private $accessLogLevel = 0;
     private $outputMessage = ['apology' => 'Logging messages are not implemented so far.'];
 
+    public $dbresult = null;
+
     public function getResultForLog()
     {
         if ($this->accessLogLevel < 1) {
@@ -128,17 +130,14 @@ class FileUploader
                 }
             }
         }
-        $useS3 = FALSE;
         if (isset($dbProxyContext['file-upload'])) {
             foreach ($dbProxyContext['file-upload'] as $item) {
                 if (isset($item['container']) && ($item['container'] === 'S3')) {
-                    $useS3 = TRUE;
                     $className = "AWSS3";
                     break;
                 }
             }
         }
-        $useFileSystem = !($useS3 || $useFMContainer);
 
         if (isset($_POST['_im_redirect'])) {
             $this->url = $this->getRedirectUrl($_POST['_im_redirect']);
@@ -152,20 +151,6 @@ class FileUploader
                 }
                 return;
             }
-        }
-
-        if (!isset($options['media-root-dir']) && ($useFileSystem || $useFMContainer)) {
-            if (!is_null($this->url)) {
-                header('Location: ' . $this->url);
-            } else {
-                $this->db->logger->setErrorMessage("'media-root-dir' isn't specified");
-                $this->db->processingRequest("noop");
-                if (!$noOutput) {
-                    $this->db->finishCommunication();
-                    $this->db->exportOutputDataAsJSON();
-                }
-            }
-            return;
         }
 
         if (count($files) < 1) {
@@ -187,6 +172,9 @@ class FileUploader
         $this->db->logger->setDebugMessage("Instantiate the class '{$className}'", 2);
         $processing = new $className();
         $processing->processing($this->db, $this->url, $options, $files, $noOutput, $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug);
+        if(isset($this->db->outputOfProcessing['dbresult'])) { // For CSV importing
+            $this->dbresult = $this->db->outputOfProcessing['dbresult'];
+        }
     }
 
     //

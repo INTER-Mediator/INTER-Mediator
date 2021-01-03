@@ -241,6 +241,10 @@ class DefinitionChecker
         'theme' => 'string',
         'app-locale' => 'string',
         'app-currency' => 'string',
+        'import' => [
+            '1st-line' => 'boolean|string',
+            'skip-lines' => 'integer',
+        ],
     );
     private $prohibitKeywordsMessaging = [
         'from' => 'string',
@@ -308,7 +312,7 @@ class DefinitionChecker
                 .'|detail|detail-top|detail-bottom|detail-update|detail-top-update|detail-bottom-update'
                 .'|master|master-nonavi|master-fullnavi|master-hide|master-hide-nonavi|master-hide-fullnavi)',
             'navi-title' => 'string',
-            'sync-control' => 'string(notify|modify)',
+            'sync-control' => 'string(update|update-all|update-content|create|delete|delete-all|delete-content)',
             'validation' => array(
                 '*' => array(
                     'field' => 'string',
