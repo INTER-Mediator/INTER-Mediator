@@ -173,13 +173,18 @@ class FileSystem implements UploadingSupport
                 $db->addOutputData('dbresult', $filePath);
 
             } else {    // CSV File uploading
-                $params = IMUtil::getFromParamsPHPFile(["import1stLine", "importSkipLines"], true);
+                $params = IMUtil::getFromParamsPHPFile(
+                    ["import1stLine", "importSkipLines", "importFormat"], true);
                 $import1stLine = (isset($options['import']) && isset($options['import']['1st-line']))
                     ? $options['import']['1st-line']
                     : (isset($params["import1stLine"]) ? $params["import1stLine"] : true);
                 $importSkipLines = (isset($options['import']) && isset($options['import']['skip-lines']))
                     ? $options['import']['skip-lines']
                     : (isset($params["importSkipLines"]) ? $params["importSkipLines"] : 0);
+                $importFormat = (isset($options['import']) && isset($options['import']['format']))
+                    ? $options['import']['format']
+                    : (isset($params["importFormat"]) ? $params["importFormat"] : "CSV");
+                $separator = (strtolower($importFormat) == 'tsv') ? "\t" : ",";
 
                 $db->ignoringPost();
                 $db->initialize($datasource, $options, $dbspec, $debug, $contextname);
@@ -187,7 +192,7 @@ class FileSystem implements UploadingSupport
 
                 $importingFields = [];
                 if (is_string($import1stLine)) {
-                    foreach (new FieldDivider($import1stLine) as $field) {
+                    foreach (new FieldDivider($import1stLine, $separator) as $field) {
                         $importingFields[] = trim($field);
                     }
                 }
@@ -198,19 +203,19 @@ class FileSystem implements UploadingSupport
                         $importSkipLines -= 1;
                     } else {
                         if ($is1stLine && $import1stLine === true) {
-                            foreach (new FieldDivider($line) as $field) {
+                            foreach (new FieldDivider($line, $separator) as $field) {
                                 $importingFields[] = trim($field);
                             }
                         } else {
                             $db->dbSettings->setValue([]);
                             $db->dbSettings->setFieldsRequired([]);
-                            foreach (new FieldDivider($line) as $index => $field) {
+                            foreach (new FieldDivider($line, $separator) as $index => $field) {
                                 if ($index < count($importingFields)) {
                                     $db->dbSettings->addValueWithField($importingFields[$index], $field);
                                 }
                             }
                             $db->processingRequest("create", true, true);
-                            $createdKeys[] = [$dbContext['key'] => ($db->getDatabaseResult()[0])[$dbContext['key']]];
+                            //$createdKeys[] = [$dbContext['key'] => ($db->getDatabaseResult()[0])[$dbContext['key']]];
                         }
                         $is1stLine = false;
                     }
