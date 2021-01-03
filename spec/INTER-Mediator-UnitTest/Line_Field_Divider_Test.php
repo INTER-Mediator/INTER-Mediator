@@ -7,8 +7,8 @@
  * Time: 0:18
  */
 use \PHPUnit\Framework\TestCase;
-use \INTERMediator\LineDivider;
-use \INTERMediator\FieldDivider;
+use \INTERMediator\Media\LineDivider;
+use \INTERMediator\Media\FieldDivider;
 //require_once(dirname(__FILE__) . '/../LineDivider.php');
 //require_once(dirname(__FILE__) . '/../FieldDivider.php');
 
@@ -40,6 +40,7 @@ class Line_Field_Divider_Test extends TestCase
     {
         $dq = '"';
         $sq = "'";
+        $tab = "\t";
 
         $line = new FieldDivider("aaa,bbb,ccc");
         $ar = array();
@@ -118,5 +119,14 @@ class Line_Field_Divider_Test extends TestCase
         $this->assertEquals(count($ar), 2);
         $this->assertEquals($ar[0], "a{$sq}a{$dq}a");
         $this->assertEquals($ar[1], "{$sq}bbb,ccc");
+
+        $line = new FieldDivider("a{$sq}a{$dq}a{$tab}{$sq}bbb,ccc{$tab}qpqp", $tab);
+        $ar = array();
+        foreach ($line as $field) {
+            $ar[] = $field;
+        }
+        $this->assertEquals(count($ar), 2);
+        $this->assertEquals($ar[0], "a{$sq}a{$dq}a");
+        $this->assertEquals($ar[1], "{$sq}bbb,ccc{$tab}qpqp");
     }
 }
