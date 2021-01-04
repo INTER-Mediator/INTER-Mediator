@@ -222,26 +222,26 @@ abstract class DB_PDO_Test_Common extends TestCase
     {
         $this->dbProxySetupForAuth();
 
-        $this->db_proxy->logger->clearLogs();
+//        $this->db_proxy->logger->clearLogs();
 
         $testName = "Generate Challenge and Retrieve it";
-        $username = 'user1';
+        $uid = 1;
         $challenge = $this->db_proxy->generateChallenge();
-        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($username, $challenge, "TEST");
-        $retrieved = $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($username, "TEST");
+        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
+        $retrieved = $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($uid, "TEST");
 
-        var_export($this->db_proxy->logger->getErrorMessages());
-        var_export($this->db_proxy->logger->getDebugMessages());
+//        var_export($this->db_proxy->logger->getErrorMessages());
+//        var_export($this->db_proxy->logger->getDebugMessages());
 
         $this->assertEquals($challenge, $retrieved, $testName);
 
         $challenge = $this->db_proxy->generateChallenge();
-        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($username, $challenge, "TEST");
-        $this->assertEquals($challenge, $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($username, "TEST"), $testName);
+        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
+        $this->assertEquals($challenge, $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($uid, "TEST"), $testName);
 
         $challenge = $this->db_proxy->generateChallenge();
-        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($username, $challenge, "TEST");
-        $this->assertEquals($challenge, $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($username, "TEST"), $testName);
+        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
+        $this->assertEquals($challenge, $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($uid, "TEST"), $testName);
     }
 
     public function testAuthUser5()
