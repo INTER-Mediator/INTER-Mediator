@@ -18,9 +18,12 @@ namespace INTERMediator\DB;
 /**
  * Interface for Proxy
  */
-interface Proxy_Interface extends DBClass_Interface, Auth_Interface_Communication {
+interface Proxy_Interface extends DBClass_Interface, Auth_Interface_Communication
+{
     public function initialize($datasource, $options, $dbspec, $debug, $target = null);
-    public function processingRequest($access = null, $bypassAuth = false);
+
+    public function processingRequest($access = null, $bypassAuth = false, $ignoreFiles = false);
+
     public function finishCommunication();
 }
 

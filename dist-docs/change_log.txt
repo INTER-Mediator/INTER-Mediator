@@ -12,6 +12,10 @@ Also the Migration Guide (Japanese) might be informative:
 
 Ver.7 (in development)
 - The FileMaker_DataAPI class updated for API protocol ver.2. And also introduced the 'portals' key on context definitions.
+- CSV File uploading and add records for each line. I'd like to check the 'samples/Sample_webpage/fileuploadCSV_MySQL.html'
+  file or the Sample page > JS Components > jQuery FileUploader > CSV file upload with jQuery_File_Upload.
+- If setting INTERMediator.alwaysAddOperationExchange to true, the local context criteria combine logical
+  expressions with ADN operator.
 - [BUG FIX] The variable name '$follwingTimezones' in the params.php file was typo at all! Change it to $followingTimezones.
 
 Ver.6 (November 21, 2020)

@@ -14,18 +14,6 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator - Sample - Uploading a file / MySQL</title>
-    <!-- Bootstrap -->
-<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"-->
-<!--          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">-->
-<!--    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"-->
-<!--            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"-->
-<!--            crossorigin="anonymous"></script>-->
-<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"-->
-<!--            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"-->
-<!--            crossorigin="anonymous"></script>-->
-<!--    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"-->
-<!--            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"-->
-<!--            crossorigin="anonymous"></script>-->
     <!-- jQuery File Upload -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet">
     <link rel="stylesheet"
@@ -40,8 +28,9 @@
     <script type="text/javascript" src="include_MySQL.php"></script>
     <script src="../../node_modules/inter-mediator-plugin-jqueryfileupload/index.js"></script>
     <script type="text/javascript">
-      INTERMediatorLog.suppressDebugMessageOnPage = true
+      //INTERMediatorLog.suppressDebugMessageOnPage = true
       INTERMediatorLog.errorMessageByAlert = true
+      IMParts_Catalog.jquery_fileupload.isShowPreview = false
     </script>
     <style>
         .jquery-fileupload-container {
@@ -50,6 +39,7 @@
             padding: 8px;
             margin: 2px 2px 2px 0;
         }
+
         .fileinput-button {
             background-color: #209f44;
             border-radius: 4px;
@@ -57,6 +47,7 @@
             color: white;
             display: inline-block;
         }
+
         .filesend-button {
             background-color: #1e98ca;
             border-radius: 4px;
@@ -80,10 +71,8 @@
             <div data-im-control="repeater">
                 <div>Here is the post only mode area with the context named 'testtable'.</div>
                 <div>After sending files, it doesn't redraw the page for checking log.</div>
-                <label>Message: <input type="text" data-im="testtable@vc3"></label>
                 <div style="display: flex">
-                    <span data-im="testtable@text1" data-im-widget="jquery_fileupload"></span>
-                    <span data-im="testtable@text2" data-im-widget="jquery_fileupload"></span>
+                    <span data-im="testtable@_im_csv_upload" data-im-widget="jquery_fileupload"></span>
                 </div>
                 <button data-im-control="post">送信</button>
             </div>
@@ -91,38 +80,29 @@
         <table style="width: 100%;max-width: 100%">
             <thead>
             <tr>
-                <th>Date and Time</th>
-                <th>File Path</th>
-                <th>File Path</th>
-                <th>Message</th>
-                <th>History</th>
+                <th>num1</th>
+                <th>num2</th>
+                <th>num3</th>
+                <th>dt1</th>
+                <th>vc1</th>
+                <th>vc2</th>
+                <th>vc3</th>
+                <th>text1</th>
+                <th>text2</th>
                 <th></th>
             </tr>
             </thead>
             <tbody>
             <tr>
-                <td>
-                    <div data-im="testtable@dt1"></div>
-                </td>
-                <td style="width: 300px;max-width: 300px">
-                    <div data-im="testtable@text1"></div>
-                    <img src="include_MySQL.php?media=" data-im="testtable@text1@#src" style="max-width: 300px">
-                </td>
-                <td style="width: 300px;max-width: 300px">
-                    <div data-im="testtable@text2" data-im-widget="jquery_fileupload"></div>
-                    <div data-im="testtable@text2"></div>
-                    <img src="include_MySQL.php?media=" data-im="testtable@text2@#src" style="max-width: 300px">
-                </td>
-                <td data-im="testtable@vc3" style="max-width: 300px"></td>
-                <td>
-                    <table>
-                        <tbody>
-                        <tr>
-                            <td data-im="fileupload@path"></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </td>
+                <td data-im="testtable@num1"></td>
+                <td data-im="testtable@num2"></td>
+                <td data-im="testtable@num3"></td>
+                <td data-im="testtable@dt1"></td>
+                <td data-im="testtable@vc1"></td>
+                <td data-im="testtable@vc2"></td>
+                <td data-im="testtable@vc3"></td>
+                <td data-im="testtable@text1"></td>
+                <td data-im="testtable@text2"></td>
                 <td></td>
             </tr>
             </tbody>
@@ -130,7 +110,7 @@
     </div>
 </div>
 <footer>
-    <small>INTER-Mediator ©2021</small>
+    <small>INTER-Mediator ©2020</small>
 </footer>
 </body>
 </html>

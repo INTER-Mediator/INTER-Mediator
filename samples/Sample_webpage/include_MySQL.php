@@ -44,6 +44,10 @@ IM_Entry(
     [
         'formatter' => [['field' => 'chat@postdt', 'converter-class' => 'MySQLDateTime'],],
         'media-root-dir' => '/tmp',
+        'import' => [
+            '1st-line' => true,
+            'skip-lines' => 0,
+        ]
     ],
     ['db-class' => 'PDO'],
     false

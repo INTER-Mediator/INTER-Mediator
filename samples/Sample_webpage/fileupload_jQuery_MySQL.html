@@ -15,17 +15,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator - Sample - Uploading a file / MySQL</title>
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-            crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-            crossorigin="anonymous"></script>
+    <!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"-->
+    <!--          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">-->
+    <!--    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"-->
+    <!--            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"-->
+    <!--            crossorigin="anonymous"></script>-->
+    <!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"-->
+    <!--            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"-->
+    <!--            crossorigin="anonymous"></script>-->
+    <!--    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"-->
+    <!--            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"-->
+    <!--            crossorigin="anonymous"></script>-->
     <!-- jQuery File Upload -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet">
     <link rel="stylesheet"
@@ -39,8 +39,31 @@
     <!-- Loading INTER-Mediator -->
     <script type="text/javascript" src="include_MySQL.php"></script>
     <script src="../../node_modules/inter-mediator-plugin-jqueryfileupload/index.js"></script>
-    <script type="text/javascript">
-    </script>
+    <style>
+        .jquery-fileupload-container {
+            text-align: center;
+            border: 1px gray solid;
+            padding: 8px;
+            margin: 2px 2px 2px 0;
+        }
+
+        .fileinput-button {
+            background-color: #209f44;
+            border-radius: 4px;
+            padding: 4px 8px;
+            color: white;
+            display: inline-block;
+        }
+
+        .filesend-button {
+            background-color: #1e98ca;
+            border-radius: 4px;
+            padding: 4px 8px;
+            color: white;
+            display: inline-block;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 <header>
@@ -49,57 +72,8 @@
 <div id="wrapper">
     <div class="container">
         <h1>JavaScript Component Test for jQuery File Upload</h1>
-        <p>This sample requires jQuery File Upload and Bootstrap.</p>
-        <!--<span class="btn btn-success fileinput-button">-->
-        <!--<i class="glyphicon glyphicon-plus"></i>-->
-        <!--<span>ファイル選択...</span>-->
-            <!--&lt;!&ndash; The file input field used as target for the file upload widget &ndash;&gt;-->
-        <!--<input id="fileupload" type="file" name="files[]" multiple>-->
-    <!--</span>-->
-        <!--<span id="filenamelabel" style="display:none">選択ファイル: </span>-->
-        <!--<span id="filename" style="display:none"></span>-->
-        <!--<span id="uploadarea" class="btn btn-primary" style="display:none">-->
-        <!--<i class="glyphicon"></i>-->
-         <!--<span>アップロード</span>-->
-    <!--</span>-->
-        <!--&lt;!&ndash; The global progress bar &ndash;&gt;-->
-        <!--<div id="progress" class="progress" style="margin-top: 6px;">-->
-            <!--<div class="bar" style="width: 0%;"></div>-->
-        <!--</div>-->
-
-        <!--<input id="fileupload" type="file" name="files[]" data-url="server/php/" multiple>-->
-        <!--<div id="progress">-->
-        <!--<div class="bar" style="width: 0%;"></div>-->
-        <!--</div>-->
-        <!--<script>-->
-            <!--$(function () {-->
-                <!--$('#fileupload').fileupload({-->
-                    <!--dataType: 'json',-->
-                    <!--url: "jQuery-File-Upload/server/php/index.php",-->
-                    <!--add: function (e, data) {-->
-                        <!--$('#filename').text(data.files[0].name);-->
-                        <!--$('#filenamelabel').css('display', 'inline');-->
-                        <!--$('#filename').css('display', 'inline');-->
-                        <!--$('#uploadarea').css('display', 'inline');-->
-                        <!--$('#uploadarea').click(function () {-->
-                            <!--data.submit();-->
-                        <!--});-->
-                    <!--},-->
-                    <!--done: function (e, data) {-->
-
-                    <!--},-->
-                    <!--fail: function (e, data) {-->
-                        <!--window.alert(data.textStatus);-->
-                    <!--},-->
-                    <!--progressall: function (e, data) {-->
-                        <!--var progress = parseInt(data.loaded / data.total * 100, 10);-->
-                        <!--$('#progress .bar').css('width', progress + '%');-->
-                    <!--}-->
-                <!--});-->
-            <!--});-->
-        <!--</script>-->
-
-        <div data-im-control="testtable@_im_csv_upload" data-im-widget="jquery_fileupload"></div>
+        <p>This sample requires jQuery File Upload.</p>
+        <div data-im-widget="jquery_fileupload"></div>
         <table>
             <thead>
             <tr>

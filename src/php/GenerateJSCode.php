@@ -68,7 +68,7 @@ class GenerateJSCode
             "oAuthProvider", "oAuthClientID", "oAuthRedirect", "passwordPolicy", "documentRootPrefix", "dbClass",
             "dbDSN", "nonSupportMessageId", "valuesForLocalContext", "themeName", "appLocale", "appCurrency",
             "resetPage", "enrollPage", "serviceServerPort", "serviceServerHost", "activateClientService",
-            "followingTimezones"
+            "followingTimezones",
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -98,7 +98,7 @@ class GenerateJSCode
             ? $params['serviceServerHost'] : $_SERVER['SERVER_ADDR'];
         $serviceServerHost = $serviceServerHost ? $serviceServerHost : 'localhost';
         $activateClientService = isset($params['activateClientService']) ? boolval($params['activateClientService']) : false;
-        $followingTimezones =isset($params['followingTimezones']) ? boolval($params['followingTimezones']) : false;
+        $followingTimezones = isset($params['followingTimezones']) ? boolval($params['followingTimezones']) : false;
 
         $serverName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
         $documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : 'Not_on_web_server';

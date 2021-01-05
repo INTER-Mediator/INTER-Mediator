@@ -249,7 +249,7 @@ $messages['ja'][1022] = "Internet Explorerは使用できません。Edgeある�
 
 // Slack posting token and channel. You must create the Slack App permitting 'chat:write:bot' and generate OAuth2 token.
 $slackParameters = [
-    "token"=>'xoxp-XXXXXXXXXXX-XXXXXXXXXXX-XXXXXXXXXXXX-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+    "token" => 'xoxp-XXXXXXXXXXX-XXXXXXXXXXX-XXXXXXXXXXXX-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
     "channel" => 'message-posting-test',
 ];
 
@@ -280,3 +280,8 @@ $s3AccessSecret = "XXXXXXXXXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXX";
 // https://docs.aws.amazon.com/ja_jp/sdk-for-php/v3/developer-guide/guide_credentials_profiles.html
 $s3urlCustomize = true; // The default value is TRUE.
 // Replacing the string "https://" to "s3://" of the object url for working with the MediaAccess class.
+
+// Importing CSV file. The field names list can place on the first line of original csv file.
+$import1stLine = 'num1 ,num2 ,num3 ,dt1 ,vc1 ,vc2 , vc3 ,text1 ,text2 ,'; // Field names list
+$importSkipLines = 3; // Skipping lines from the start of csv file.
+//$importFormat = "TSV";  // or "TSV", the default is "CSV".

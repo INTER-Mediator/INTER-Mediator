@@ -528,6 +528,7 @@ const INTERMediator_DBAdapter = {
     let recordLimit = 10000000
     let conditions, conditionSign, modifyConditions, orderFields, key,
       keyParams, value, fields, operator, orderedKeys
+    let addExLimit = 1
     let removeIndice = []
     if (args.records === null) {
       params = 'access=read&name=' + encodeURIComponent(args.name)
@@ -658,6 +659,7 @@ const INTERMediator_DBAdapter = {
     }
 
     orderFields = {}
+    addExLimit = INTERMediator.alwaysAddOperationExchange ? 0 : addExLimit
     for (key in IMLibLocalContext.store) {
       if (IMLibLocalContext.store.hasOwnProperty(key)) {
         value = String(IMLibLocalContext.store[key])
@@ -666,7 +668,7 @@ const INTERMediator_DBAdapter = {
           if (keyParams[0].trim() === 'condition' && keyParams.length >= 4) {
             fields = keyParams[2].split(',')
             operator = keyParams[3].trim()
-            if (fields.length > 1) {
+            if (fields.length > addExLimit) {
               params += '&condition' + extCount + 'field=__operation__'
               params += '&condition' + extCount + 'operator=ex'
               extCount++
@@ -1102,7 +1104,7 @@ const INTERMediator_DBAdapter = {
     }
   },
 
-  unregister: async function(entityPkInfo) {
+  unregister: async function (entityPkInfo) {
     'use strict'
     let params, p = null
     if (INTERMediatorOnPage.activateClientService) {

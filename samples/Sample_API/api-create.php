@@ -30,8 +30,8 @@ $contextDef = array(
 $dbInstance = new Proxy();
 $dbInstance->ignoringPost();
 $dbInstance->initialize($contextDef, array(), array("db-class" => "PDO"), 2, "product");
-$dbInstance->dbSettings->addExtraCriteria("name", $prodName);
-$dbInstance->dbSettings->addExtraCriteria("unitprice", $prodPrice);
+$dbInstance->dbSettings->addValueWithField("name", $prodName);
+$dbInstance->dbSettings->addValueWithField("unitprice", $prodPrice);
 $dbInstance->processingRequest("create");
 $pInfo = $dbInstance->getDatabaseResult();
 $logInfo = $dbInstance->logger->getMessagesForJS();

@@ -7,7 +7,7 @@
  * Time: 12:49
  */
 
-namespace INTERMediator;
+namespace INTERMediator\Media;
 
 use \Iterator;
 
@@ -23,9 +23,9 @@ class FieldDivider implements Iterator
     private $dqCode;
     private $bsCode;
 
-    function __construct($d)
+    function __construct($d, $sp = ",")
     {
-        $this->sep = ",";
+        $this->sep = $sp;
         $this->sepCode = ord($this->sep);
         $this->sqCode = ord("'");
         $this->dqCode = ord('"');
