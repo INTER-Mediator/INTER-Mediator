@@ -221,6 +221,7 @@ const INTERMediator = {
   currentContext: null,
   currentRecordset: null,
   socketMarkNode: null,
+  alwaysAddOperationExchange: false,
 
   // Detect Internet Explorer and its version.
   propertyIETridentSetup: () => {
