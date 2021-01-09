@@ -315,7 +315,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $bypassAuth
      * @return mixed
      */
-    public function createInDB()
+    public function createInDB($isReplace = false)
     {
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
@@ -326,7 +326,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
             if ($this->dbClass) {
                 $this->dbClass->requireUpdatedRecord(true); // Always Requred Created Record
-                $resultOfCreate = $this->dbClass->createInDB();
+                $resultOfCreate = $this->dbClass->createInDB($isReplace);
                 $result = $this->dbClass->updatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterCreateToDB")) {
@@ -970,6 +970,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 break;
             case 'new':
             case 'create':
+            case 'replace':
                 $this->logger->setDebugMessage("[processingRequest] start create processing", 2);
                 $attachedFields = $this->dbSettings->getAttachedFields();
                 if (!$ignoreFiles && isset($attachedFields) && $attachedFields[0] == '_im_csv_upload') {
@@ -997,7 +998,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 } else {
                     if ($this->checkValidation()) {
-                        $result = $this->createInDB();
+                        $result = $this->createInDB($access == 'replace');
                         $this->outputOfProcessing['newRecordKeyValue'] = $result;
                         $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
                         if (!$ignoreFiles && $result !== false) {

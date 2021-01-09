@@ -174,17 +174,20 @@ class FileSystem implements UploadingSupport
 
             } else {    // CSV File uploading
                 $params = IMUtil::getFromParamsPHPFile(
-                    ["import1stLine", "importSkipLines", "importFormat"], true);
+                    ["import1stLine", "importSkipLines", "importFormat", "useReplace"], true);
                 $import1stLine = (isset($options['import']) && isset($options['import']['1st-line']))
                     ? $options['import']['1st-line']
                     : (isset($params["import1stLine"]) ? $params["import1stLine"] : true);
-                $importSkipLines = (isset($options['import']) && isset($options['import']['skip-lines']))
+                $importSkipLines = intval((isset($options['import']) && isset($options['import']['skip-lines']))
                     ? $options['import']['skip-lines']
-                    : (isset($params["importSkipLines"]) ? $params["importSkipLines"] : 0);
+                    : (isset($params["importSkipLines"]) ? $params["importSkipLines"] : 0));
                 $importFormat = (isset($options['import']) && isset($options['import']['format']))
                     ? $options['import']['format']
                     : (isset($params["importFormat"]) ? $params["importFormat"] : "CSV");
                 $separator = (strtolower($importFormat) == 'tsv') ? "\t" : ",";
+                $useReplace = boolval((isset($options['import']) && isset($options['import']['use-replace']))
+                    ? $options['import']['use-replace']
+                    : (isset($params["useReplace"]) ? $params["useReplace"] : false));
 
                 $db->ignoringPost();
                 $db->initialize($datasource, $options, $dbspec, $debug, $contextname);
@@ -214,7 +217,7 @@ class FileSystem implements UploadingSupport
                                     $db->dbSettings->addValueWithField($importingFields[$index], $field);
                                 }
                             }
-                            $db->processingRequest("create", true, true);
+                            $db->processingRequest($useReplace ? "replace" : "create", true, true);
                             //$createdKeys[] = [$dbContext['key'] => ($db->getDatabaseResult()[0])[$dbContext['key']]];
                         }
                         $is1stLine = false;

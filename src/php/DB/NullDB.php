@@ -38,7 +38,7 @@ class NullDB extends UseSharedObjects implements DBClass_Interface
         return null;
     }
 
-    public function createInDB()
+    public function createInDB($isReplace = false)
     {
         return null;
     }

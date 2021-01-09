@@ -245,6 +245,7 @@ class DefinitionChecker
             '1st-line' => 'boolean|string',
             'skip-lines' => 'integer',
             'format' => 'string(CSV|TSV)',
+            'use-replace' => 'boolean',
         ],
     );
     private $prohibitKeywordsMessaging = [

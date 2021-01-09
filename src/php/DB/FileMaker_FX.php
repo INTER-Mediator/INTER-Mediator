@@ -1195,7 +1195,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
         return true;
     }
 
-    public function createInDB()
+    public function createInDB($isReplace = false)
     {
         $this->fieldInfo = null;
 

@@ -18,10 +18,6 @@ namespace INTERMediator\DB\Support;
 
 use \Exception;
 
-//require_once("DB_PDO_MySQL_Handler.php");
-//require_once("DB_PDO_PostgreSQL_Handler.php");
-//require_once("DB_PDO_SQLite_Handler.php");
-
 abstract class DB_PDO_Handler
 {
     protected $dbClassObj = null;
@@ -66,6 +62,10 @@ abstract class DB_PDO_Handler
     public abstract function sqlUPDATECommand();
 
     public abstract function sqlINSERTCommand();
+
+    public function sqlREPLACECommand() {
+        return $this->sqlINSERTCommand();
+    }
 
     public abstract function sqlSETClause($setColumnNames, $keyField, $setValues);
 
