@@ -285,4 +285,4 @@ $s3urlCustomize = true; // The default value is TRUE.
 $import1stLine = 'num1 ,num2 ,num3 ,dt1 ,vc1 ,vc2 , vc3 ,text1 ,text2 ,'; // Field names list
 $importSkipLines = 3; // Skipping lines from the start of csv file.
 //$importFormat = "TSV";  // or "TSV", the default is "CSV".
-$useReplace = true; // For MySQL, use REPLACE instead of INSERT
+//$useReplace = true; // For MySQL, use REPLACE instead of INSERT

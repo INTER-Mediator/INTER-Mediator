@@ -23,11 +23,6 @@ class FileSystem implements UploadingSupport
 {
     public function processing($db, $url, $options, $files, $noOutput, $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug)
     {
-        $fileRoot = $options['media-root-dir'];
-        if (substr($fileRoot, strlen($fileRoot) - 1, 1) !== '/') {
-            $fileRoot .= '/';
-        }
-
         $counter = -1;
         foreach ($files as $fn => $fileInfo) {
             $counter += 1;
