@@ -47,6 +47,10 @@ IM_Entry(
         'import' => [
             '1st-line' => true,
             'skip-lines' => 0,
+            'use-replace' => true,
+            'convert-number' => ['num1', 'num2', 'num3'],
+            'convert-date' => ['dt1'],
+//            'convert-datetime' => [],
         ]
     ],
     ['db-class' => 'PDO'],
