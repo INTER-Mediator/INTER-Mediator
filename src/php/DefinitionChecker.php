@@ -245,6 +245,10 @@ class DefinitionChecker
             '1st-line' => 'boolean|string',
             'skip-lines' => 'integer',
             'format' => 'string(CSV|TSV)',
+            'use-replace' => 'boolean',
+            'convert-number' => array('*' => 'string'),
+            'convert-date' => array('*' => 'string'),
+            'convert-datetime' => array('*' => 'string'),
         ],
     );
     private $prohibitKeywordsMessaging = [
@@ -310,8 +314,8 @@ class DefinitionChecker
             ),
             'repeat-control' => 'string(insert|delete|confirm-insert|confirm-delete|copy|copy-*)',
             'navi-control' => 'string(step|step-hide|step-nonavi|step-hide-nonavi|step-fullnavi|step-hide-fullnavi'
-                .'|detail|detail-top|detail-bottom|detail-update|detail-top-update|detail-bottom-update'
-                .'|master|master-nonavi|master-fullnavi|master-hide|master-hide-nonavi|master-hide-fullnavi)',
+                . '|detail|detail-top|detail-bottom|detail-update|detail-top-update|detail-bottom-update'
+                . '|master|master-nonavi|master-fullnavi|master-hide|master-hide-nonavi|master-hide-fullnavi)',
             'navi-title' => 'string',
             'sync-control' => 'string(update|update-all|update-content|create|delete|delete-all|delete-content)',
             'validation' => array(

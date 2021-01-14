@@ -263,7 +263,7 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
         // TODO: Implement updatedRecord() method.
     }
 
-    public function createInDB()
+    public function createInDB($isReplace = false)
     {
         // TODO: Implement newToDB() method.
     }

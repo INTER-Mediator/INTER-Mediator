@@ -652,7 +652,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
      * @param $bypassAuth
      * @return bool
      */
-    public function createInDB()
+    public function createInDB($isReplace = false)
     {
         $this->fieldInfo = null;
         $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
@@ -740,7 +740,11 @@ class PDO extends UseSharedObjects implements DBClass_Interface
 
         $keyField = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
         $setClause = $this->handler->sqlSETClause($setColumnNames, $keyField, $setValues);
-        $sql = "{$this->handler->sqlINSERTCommand()}{$tableName} {$setClause}";
+        if ($isReplace) {
+            $sql = "{$this->handler->sqlREPLACECommand()}{$tableName} {$setClause}";
+        } else {
+            $sql = "{$this->handler->sqlINSERTCommand()}{$tableName} {$setClause}";
+        }
         $this->logger->setDebugMessage($sql);
         $result = $this->link->exec($sql);
         if ($result === false) {

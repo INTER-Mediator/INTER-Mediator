@@ -74,7 +74,7 @@ class PageEditor extends UseSharedObjects implements DBClass_Interface
         return $result;
     }
 
-    function createInDB()
+    function createInDB($isReplace = false)
     {
     }
 

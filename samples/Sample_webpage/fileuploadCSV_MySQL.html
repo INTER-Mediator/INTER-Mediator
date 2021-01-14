@@ -28,8 +28,8 @@
     <script type="text/javascript" src="include_MySQL.php"></script>
     <script src="../../node_modules/inter-mediator-plugin-jqueryfileupload/index.js"></script>
     <script type="text/javascript">
-      //INTERMediatorLog.suppressDebugMessageOnPage = true
-      INTERMediatorLog.errorMessageByAlert = true
+      INTERMediatorLog.suppressDebugMessageOnPage = true
+      //INTERMediatorLog.errorMessageByAlert = true
       IMParts_Catalog.jquery_fileupload.isShowPreview = false
     </script>
     <style>
@@ -70,7 +70,8 @@
         <div data-im-control="post enclosure" style="padding: 10px;margin: 10px 0; border:gray 2px solid">
             <div data-im-control="repeater">
                 <div>Here is the post only mode area with the context named 'testtable'.</div>
-                <div>After sending files, it doesn't redraw the page for checking log.</div>
+                <div>After sending files, this page redraws for checking.</div>
+                <div>Sample CSV file is <a href="sample.csv">here</a>.</div>
                 <div style="display: flex">
                     <span data-im="testtable@_im_csv_upload" data-im-widget="jquery_fileupload"></span>
                 </div>
@@ -80,6 +81,7 @@
         <table style="width: 100%;max-width: 100%">
             <thead>
             <tr>
+                <th>id</th>
                 <th>num1</th>
                 <th>num2</th>
                 <th>num3</th>
@@ -94,6 +96,7 @@
             </thead>
             <tbody>
             <tr>
+                <td data-im="testtable@id"></td>
                 <td data-im="testtable@num1"></td>
                 <td data-im="testtable@num2"></td>
                 <td data-im="testtable@num3"></td>

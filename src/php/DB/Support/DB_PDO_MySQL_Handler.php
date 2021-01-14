@@ -51,6 +51,11 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "INSERT IGNORE INTO ";
     }
 
+    public function sqlREPLACECommand()
+    {
+        return "REPLACE INTO ";
+    }
+
     public function sqlSETClause($setColumnNames, $keyField, $setValues)
     {
         $setNames = array_map(function ($value) {
@@ -182,4 +187,5 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
     {
         $this->dbClassObj->link->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
     }
+
 }

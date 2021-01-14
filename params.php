@@ -282,6 +282,10 @@ $s3urlCustomize = true; // The default value is TRUE.
 // Replacing the string "https://" to "s3://" of the object url for working with the MediaAccess class.
 
 // Importing CSV file. The field names list can place on the first line of original csv file.
-$import1stLine = 'num1 ,num2 ,num3 ,dt1 ,vc1 ,vc2 , vc3 ,text1 ,text2 ,'; // Field names list
-$importSkipLines = 3; // Skipping lines from the start of csv file.
+//$import1stLine = 'num1 ,num2 ,num3 ,dt1 ,vc1 ,vc2 , vc3 ,text1 ,text2 ,'; // Field names list
+//$importSkipLines = 3; // Skipping lines from the start of csv file.
 //$importFormat = "TSV";  // or "TSV", the default is "CSV".
+//$useReplace = true; // For MySQL, use REPLACE instead of INSERT
+//$convert2Number = ['num1','num2','num3'];
+//$convert2Date = ['dt1'];
+//$convert2DateTime = [];

@@ -115,7 +115,6 @@ class FileUploader
         $this->db->logger->setDebugMessage("FileUploader class's processing starts");
 
         $className = "FileSystem";
-        $useFMContainer = FALSE;
         $dbProxyContext = $this->db->dbSettings->getDataSourceTargetArray();
 
         if (($dbspec['db-class'] === 'FileMaker_FX' || $dbspec['db-class'] === 'FileMaker_DataAPI') &&
@@ -124,7 +123,6 @@ class FileUploader
                 if (isset($item['container'])
                     && (((boolean)$item['container'] === TRUE)
                         || ($item['container'] === 'FileMaker'))) {
-                    $useFMContainer = TRUE;
                     $className = "FileMakerContainer";
                     break;
                 }
