@@ -263,8 +263,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "{$this->dbClass->handler->sqlSELECTCommand()}hashedpasswd FROM {
-                $userTable} WHERE username = " . $this->dbClass->link->quote($signedUser);
+        $sql = "{$this->dbClass->handler->sqlSELECTCommand()}hashedpasswd FROM {$userTable} WHERE username = "
+            . $this->dbClass->link->quote($signedUser);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Select:' . $sql);
@@ -585,14 +585,12 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $corrTable = $this->dbSettings->getCorrTable();
 
         if ($this->firstLevel) {
-            $sql = "{
-                $this->dbClass->handler->sqlSELECTCommand()}* FROM {
-                $corrTable} WHERE user_id = " . $this->dbClass->link->quote($groupid);
+            $sql = "{$this->dbClass->handler->sqlSELECTCommand()}* FROM {$corrTable} WHERE user_id = "
+                . $this->dbClass->link->quote($groupid);
             $this->firstLevel = false;
         } else {
-            $sql = "{
-                $this->dbClass->handler->sqlSELECTCommand()}* FROM {
-                $corrTable} WHERE group_id = " . $this->dbClass->link->quote($groupid);
+            $sql = "{$this->dbClass->handler->sqlSELECTCommand()}* FROM {$corrTable} WHERE group_id = "
+                . $this->dbClass->link->quote($groupid);
             //    $this->belongGroups[] = $groupid;
         }
         $result = $this->dbClass->link->query($sql);

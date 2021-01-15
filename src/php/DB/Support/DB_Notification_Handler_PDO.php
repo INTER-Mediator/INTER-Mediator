@@ -87,8 +87,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                 }
             }
         } else {
-            $sql = $this->dbClass->handler->sqlINSERTCommand("{
-        $pksTable} (context_id,pk)", "VALUES ");
+            $sql = $this->dbClass->handler->sqlINSERTCommand("{$pksTable} (context_id,pk)", "VALUES ");
             $isFirstRow = true;
             foreach ($pkArray as $pk) {
                 if (!$isFirstRow) {
