@@ -15,99 +15,88 @@
 
 require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 
-IM_Entry(array(
-    array(
-        'records' => 1,
-        'paging' => true,
-        'name' => 'person',
-        'key' => 'id',
-        'query' =>
-            array(),
-        'sort' =>
-            array(
-                array(
-                    'field' => 'id',
-                    'direction' => 'asc',
-                ),
-            ),
-        'repeat-control' => 'insert copy-contact,history delete',
-        'sync-control' => 'create update delete',
-        'button-names' => array(
-            'insert'=>'レコード追加',
-            'delete'=>'レコード削除',
-            'copy'=>'レコード複製',
-        ),
-    ),
-    array(
-        'name' => 'contact',
-        'key' => 'id',
-        'relation' =>
-            array(
-                array(
+IM_Entry(
+    [
+        [
+            'records' => 1,
+            'paging' => true,
+            'name' => 'person',
+            'key' => 'id',
+            'query' => [],
+            'sort' => [['field' => 'id', 'direction' => 'asc',],],
+            'repeat-control' => 'insert copy-contact,history delete',
+            'sync-control' => 'create update delete',
+            'button-names' => [
+                'insert' => 'レコード追加',
+                'delete' => 'レコード削除',
+                'copy' => 'レコード複製',
+            ],
+        ],
+        [
+            'name' => 'contact',
+            'key' => 'id',
+            'relation' => [
+                [
                     'foreign-key' => 'person_id',
                     'join-field' => 'id',
                     'operator' => '=',
-                ),
-            ),
-        'sync-control' => 'create update delete',
-        'repeat-control' => 'insert delete copy',
+                ],
+            ],
+            'sync-control' => 'create update delete',
+            'repeat-control' => 'insert delete copy',
 //        'query' =>
-//            array(
-//                array(
+//            [
+//                [
 //                    'field' => 'datetime',
 //                    'value' => '2005-01-01 00:00:00',
 //                    'operator' => '>',
-//                ),
-//            ),
-        'default-values' =>
-            array(
-                array(
+//                ],
+//            ],
+            'default-values' => [
+                [
                     'field' => 'datetime',
                     'value' => '2012-01-01 00:00:00',
-                ),
-            ),
-    ),
-    array(
-        'name' => 'contact_way',
-        'key' => 'id',
-    ),
-    array(
-        'name' => 'cor_way_kindname',
-        'key' => 'id',
-        'relation' =>
-            array(
-                array(
+                ],
+            ],
+        ],
+        [
+            'name' => 'contact_way',
+            'key' => 'id',
+        ],
+        [
+            'name' => 'cor_way_kindname',
+            'key' => 'id',
+            'relation' => [
+                [
                     'foreign-key' => 'way_id',
                     'join-field' => 'way',
                     'operator' => '=',
-                ),
-            ),
-    ),
-    array(
-        'name' => 'history',
-        'key' => 'id',
-        'relation' =>
-            array(
-                array(
+                ],
+            ],
+        ],
+        [
+            'name' => 'history',
+            'key' => 'id',
+            'relation' => [
+                [
                     'foreign-key' => 'person_id',
                     'join-field' => 'id',
                     'operator' => '=',
-                ),
-            ),
-        'repeat-control' => 'insert delete',
-    ),
-),
-    array(
-        'formatter' =>
-            array(),
-        'aliases' =>
-            array(
-                'kindid' => 'cor_way_kindname@kind_id@value',
-                'kindname' => 'cor_way_kindname@name_kind@innerHTML',
-            ),
-    ),
-    array(
+                ],
+            ],
+            'repeat-control' => 'insert delete',
+        ],
+    ],
+    [
+        'formatter' => [],
+        'aliases' => [
+            'kindid' => 'cor_way_kindname@kind_id@value',
+            'kindname' => 'cor_way_kindname@name_kind@innerHTML',
+        ],
+    ],
+    [
         'db-class' => 'PDO',
-    ),
+        'dsn' => 'mysql:host=127.0.0.1;dbname=test_db;charset=utf8mb4',
+    ],
     false
 );

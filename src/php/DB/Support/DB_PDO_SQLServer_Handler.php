@@ -52,9 +52,9 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return "UPDATE ";
     }
 
-    public function sqlINSERTCommand()
+    public function sqlINSERTCommand($tableRef, $setClause)
     {
-        return "INSERT INTO ";
+        return "INSERT INTO {$tableRef} {$setClause}";
     }
 
     public function sqlSETClause($setColumnNames, $keyField, $setValues)

@@ -741,9 +741,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $keyField = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
         $setClause = $this->handler->sqlSETClause($setColumnNames, $keyField, $setValues);
         if ($isReplace) {
-            $sql = "{$this->handler->sqlREPLACECommand()}{$tableName} {$setClause}";
+            $sql = $this->handler->sqlREPLACECommand($tableName, $setClause);
         } else {
-            $sql = "{$this->handler->sqlINSERTCommand()}{$tableName} {$setClause}";
+            $sql = $this->handler->sqlINSERTCommand($tableName, $setClause);
         }
         $this->logger->setDebugMessage($sql);
         $result = $this->link->exec($sql);

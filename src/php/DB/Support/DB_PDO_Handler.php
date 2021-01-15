@@ -61,10 +61,11 @@ abstract class DB_PDO_Handler
 
     public abstract function sqlUPDATECommand();
 
-    public abstract function sqlINSERTCommand();
+    public abstract function sqlINSERTCommand($tableRef, $setClause);
 
-    public function sqlREPLACECommand() {
-        return $this->sqlINSERTCommand();
+    public function sqlREPLACECommand($tableRef, $setClause)
+    {
+        return $this->sqlINSERTCommand($tableRef, $setClause);
     }
 
     public abstract function sqlSETClause($setColumnNames, $keyField, $setValues);
@@ -75,8 +76,9 @@ abstract class DB_PDO_Handler
         try {
             list($fieldList, $listList) = $this->getFieldListsForCopy(
                 $tableName, $tableInfo['key'], $assocField, $assocValue, $defaultValues);
-            $sql = "{$this->sqlINSERTCommand()}{$tableName} ({$fieldList}) " .
-                "{$this->sqlSELECTCommand()}{$listList} FROM {$tableName} WHERE {$queryClause}";
+            $tableRef = "{$tableName} ({$fieldList})";
+            $setClause = "{$this->sqlSELECTCommand()}{$listList} FROM {$tableName} WHERE {$queryClause}";
+            $sql = $this->sqlINSERTCommand($tableRef, $setClause);
             $this->dbClassObj->logger->setDebugMessage($sql);
             $result = $this->dbClassObj->link->query($sql);
             if (!$result) {

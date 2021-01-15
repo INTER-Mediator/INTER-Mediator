@@ -13,6 +13,7 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\DB\Support;
 
 use INTERMediator\IMUtil;
@@ -52,13 +53,11 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
             return false;
         }
         $currentDTFormat = IMUtil::currentDTString();
-        $sql = "{$this->dbClass->handler->sqlINSERTCommand()}{$regTable} (clientid,entity,conditions,registereddt) VALUES("
-            . implode(',', array(
-                $this->dbClass->link->quote($clientId),
-                $this->dbClass->link->quote($entity),
-                $this->dbClass->link->quote($condition),
-                $this->dbClass->link->quote($currentDTFormat),
-            )) . ')';
+        $tableRef = "{$regTable} (clientid,entity,conditions,registereddt)";
+        $setArray = implode(',', array_map(function ($e) {
+            return $this->dbClass->link->quote($e);
+        }, [$clientId, $entity, $condition, $currentDTFormat]));
+        $sql = $this->dbClass->handler->sqlINSERTCommand($tableRef, "VALUES ({$setArray})");
         $this->logger->setDebugMessage($sql);
         $result = $this->dbClass->link->exec($sql);
         if ($result !== 1) {
@@ -74,8 +73,11 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
             // SQLite supports multiple records inserting, but it reported error.
             // PDO driver doesn't recognize it, does it ?
             foreach ($pkArray as $pk) {
-                $qPk = $this->dbClass->link->quote($pk);
-                $sql = "{$this->dbClass->handler->sqlINSERTCommand()}{$pksTable} (context_id,pk) VALUES ({$newContextId},{$qPk})";
+                $tableRef = "{
+        $pksTable} (context_id,pk)";
+                $setClause = "VALUES({$newContextId},{
+        $this->dbClass->link->quote($pk)})";
+                $sql = $this->dbClass->handler->sqlINSERTCommand($tableRef, $setClause);
                 $this->logger->setDebugMessage($sql);
                 $result = $this->dbClass->link->exec($sql);
                 if ($result < 1) {
@@ -85,17 +87,18 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                 }
             }
         } else {
-            $sql = "{$this->dbClass->handler->sqlINSERTCommand()}{$pksTable} (context_id,pk) VALUES ";
+            $sql = $this->dbClass->handler->sqlINSERTCommand("{
+        $pksTable} (context_id,pk)", "VALUES ");
             $isFirstRow = true;
             foreach ($pkArray as $pk) {
-                $qPk = $this->dbClass->link->quote($pk);
                 if (!$isFirstRow) {
                     $sql .= ",";
                 }
-                $sql .= "({$newContextId},{$qPk})";
+                $sql .= "({$newContextId},{
+        $this->dbClass->link->quote($pk)})";
                 $isFirstRow = false;
             }
-            if(!$isFirstRow) {
+            if (!$isFirstRow) {
                 $this->logger->setDebugMessage($sql);
                 $result = $this->dbClass->link->exec($sql);
                 if ($result < 1) {
@@ -108,7 +111,8 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         return $newContextId;
     }
 
-    public function unregister($clientId, $tableKeys)
+    public function unregister(
+        $clientId, $tableKeys)
     {
         $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
         $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
@@ -116,15 +120,15 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
             return false;
         }
 
-        $criteria = array("clientid=" . $this->dbClass->link->quote($clientId));
+        $criteria = array("clientid = " . $this->dbClass->link->quote($clientId));
         if ($tableKeys) {
             $subCriteria = array();
             foreach ($tableKeys as $regId) {
-                $subCriteria[] = "id=" . $this->dbClass->link->quote($regId);
+                $subCriteria[] = "id = " . $this->dbClass->link->quote($regId);
             }
-            $criteria[] = "(" . implode(" OR ", $subCriteria) . ")";
+            $criteria[] = "(" . implode(" or ", $subCriteria) . ")";
         }
-        $criteriaString = implode(" AND ", $criteria);
+        $criteriaString = implode(" and ", $criteria);
 
         $contextIds = array();
         // SQLite initially doesn't support delete cascade. To support it,
@@ -140,7 +144,9 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
             }
             $versionSign = explode('.', phpversion());
             if ($versionSign[0] <= 5 && $versionSign[1] <= 2) {
-                $sql = "SELECT id FROM {$regTable} WHERE {$criteriaString}";
+                $sql = "SELECT id FROM {
+        $regTable} WHERE {
+        $criteriaString}";
                 $this->logger->setDebugMessage($sql);
                 $result = $this->dbClass->link->query($sql);
                 if ($result === false) {
@@ -152,7 +158,10 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                 }
             }
         }
-        $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$regTable} WHERE {$criteriaString}";
+        $sql = "{
+        $this->dbClass->handler->sqlDELETECommand()}{
+        $regTable} WHERE {
+        $criteriaString}";
         $this->logger->setDebugMessage($sql);
         $result = $this->dbClass->link->exec($sql);
         if ($result === false) {
@@ -161,7 +170,9 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         }
         if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0 && count($contextIds) > 0) {
             foreach ($contextIds as $cId) {
-                $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$pksTable} WHERE context_id=" . $this->dbClass->link->quote($cId);
+                $sql = "{
+        $this->dbClass->handler->sqlDELETECommand()}{
+        $pksTable} WHERE context_id = " . $this->dbClass->link->quote($cId);
                 $this->logger->setDebugMessage($sql);
                 $result = $this->dbClass->link->exec($sql);
                 if ($result === false) {
@@ -182,9 +193,9 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         }
         $originPK = $pkArray[0];
         $sql = "SELECT DISTINCT clientid FROM " . $pksTable . "," . $regTable . " WHERE " .
-            "context_id = id AND clientid <> " . $this->dbClass->link->quote($clientId) .
-            " AND entity = " . $this->dbClass->link->quote($entity) .
-            " AND pk = " . $this->dbClass->link->quote($originPK) .
+            "context_id = id and clientid <> " . $this->dbClass->link->quote($clientId) .
+            " and entity = " . $this->dbClass->link->quote($entity) .
+            " and pk = " . $this->dbClass->link->quote($originPK) .
             " ORDER BY clientid";
         $this->logger->setDebugMessage($sql);
         $result = $this->dbClass->link->query($sql);
@@ -206,7 +217,8 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "SELECT id,clientid FROM {$regTable} WHERE entity = " . $this->dbClass->link->quote($entity);
+        $sql = "SELECT id,clientid FROM {
+        $regTable} WHERE entity = " . $this->dbClass->link->quote($entity);
         $this->logger->setDebugMessage($sql);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
@@ -216,8 +228,11 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         $targetClients = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $targetClients[] = $row['clientid'];
-            $sql = "{$this->dbClass->handler->sqlINSERTCommand()}{$pksTable} (context_id,pk) VALUES(" . $this->dbClass->link->quote($row['id']) .
-                "," . $this->dbClass->link->quote($pkArray[0]) . ")";
+            $tableRef = "{
+        $pksTable} (context_id,pk)";
+            $setClause = "VALUES({$this->dbClass->link->quote($row['id'])},{
+        $this->dbClass->link->quote($pkArray[0])})";
+            $sql = $this->dbClass->handler->sqlINSERTCommand($tableRef, $setClause);
             $this->logger->setDebugMessage($sql);
             $result = $this->dbClass->link->query($sql);
             if ($result === false) {
@@ -236,7 +251,8 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "SELECT id,clientid FROM {$regTable} WHERE entity = " . $this->dbClass->link->quote($entity);
+        $sql = "SELECT id,clientid FROM {
+        $regTable} WHERE entity = " . $this->dbClass->link->quote($entity);
         $this->logger->setDebugMessage($sql);
         $result = $this->dbClass->link->query($sql);
         $this->logger->setDebugMessage(var_export($result, true));
@@ -247,8 +263,10 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         $targetClients = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $targetClients[] = $row['clientid'];
-            $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$pksTable} WHERE context_id = " . $this->dbClass->link->quote($row['id']) .
-                " AND pk = " . $this->dbClass->link->quote($pkArray[0]);
+            $sql = "{
+        $this->dbClass->handler->sqlDELETECommand()}{
+        $pksTable} WHERE context_id = " . $this->dbClass->link->quote($row['id']) .
+                " and pk = " . $this->dbClass->link->quote($pkArray[0]);
             $this->logger->setDebugMessage($sql);
             $resultDelete = $this->dbClass->link->query($sql);
             if ($resultDelete === false) {

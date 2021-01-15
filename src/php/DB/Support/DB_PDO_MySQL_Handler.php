@@ -46,14 +46,14 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "UPDATE IGNORE ";
     }
 
-    public function sqlINSERTCommand()
+    public function sqlINSERTCommand($tableRef, $setClause)
     {
-        return "INSERT IGNORE INTO ";
+        return "INSERT IGNORE INTO {$tableRef} {$setClause}";
     }
 
-    public function sqlREPLACECommand()
+    public function sqlREPLACECommand($tableRef, $setClause)
     {
-        return "REPLACE INTO ";
+        return "REPLACE INTO {$tableRef} {$setClause}";
     }
 
     public function sqlSETClause($setColumnNames, $keyField, $setValues)

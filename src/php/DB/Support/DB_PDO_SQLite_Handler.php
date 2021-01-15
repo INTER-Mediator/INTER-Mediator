@@ -46,9 +46,14 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return "UPDATE ";
     }
 
-    public function sqlINSERTCommand()
+    public function sqlINSERTCommand($tableRef, $setClause)
     {
-        return "INSERT INTO ";
+        return "INSERT INTO {$tableRef} {$setClause}";
+    }
+
+    public function sqlREPLACECommand($tableRef, $setClause)
+    {
+        return "REPLACE INTO {$tableRef} {$setClause}";
     }
 
     public function sqlSETClause($setColumnNames, $keyField, $setValues)
