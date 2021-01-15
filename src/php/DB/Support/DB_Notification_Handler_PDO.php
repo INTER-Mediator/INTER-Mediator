@@ -73,10 +73,8 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
             // SQLite supports multiple records inserting, but it reported error.
             // PDO driver doesn't recognize it, does it ?
             foreach ($pkArray as $pk) {
-                $tableRef = "{
-        $pksTable} (context_id,pk)";
-                $setClause = "VALUES({$newContextId},{
-        $this->dbClass->link->quote($pk)})";
+                $tableRef = "{$pksTable} (context_id,pk)";
+                $setClause = "VALUES({$newContextId},{$this->dbClass->link->quote($pk)})";
                 $sql = $this->dbClass->handler->sqlINSERTCommand($tableRef, $setClause);
                 $this->logger->setDebugMessage($sql);
                 $result = $this->dbClass->link->exec($sql);
@@ -156,10 +154,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                 }
             }
         }
-        $sql = "{
-        $this->dbClass->handler->sqlDELETECommand()}{
-        $regTable} WHERE {
-        $criteriaString}";
+        $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$regTable} WHERE {$criteriaString}";
         $this->logger->setDebugMessage($sql);
         $result = $this->dbClass->link->exec($sql);
         if ($result === false) {
@@ -168,9 +163,8 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         }
         if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0 && count($contextIds) > 0) {
             foreach ($contextIds as $cId) {
-                $sql = "{
-        $this->dbClass->handler->sqlDELETECommand()}{
-        $pksTable} WHERE context_id = " . $this->dbClass->link->quote($cId);
+                $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$pksTable} WHERE context_id = "
+                    . $this->dbClass->link->quote($cId);
                 $this->logger->setDebugMessage($sql);
                 $result = $this->dbClass->link->exec($sql);
                 if ($result === false) {
@@ -226,10 +220,8 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         $targetClients = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $targetClients[] = $row['clientid'];
-            $tableRef = "{
-        $pksTable} (context_id,pk)";
-            $setClause = "VALUES({$this->dbClass->link->quote($row['id'])},{
-        $this->dbClass->link->quote($pkArray[0])})";
+            $tableRef = "{$pksTable} (context_id,pk)";
+            $setClause = "VALUES({$this->dbClass->link->quote($row['id'])},{$this->dbClass->link->quote($pkArray[0])})";
             $sql = $this->dbClass->handler->sqlINSERTCommand($tableRef, $setClause);
             $this->logger->setDebugMessage($sql);
             $result = $this->dbClass->link->query($sql);
@@ -261,10 +253,8 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         $targetClients = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $targetClients[] = $row['clientid'];
-            $sql = "{
-        $this->dbClass->handler->sqlDELETECommand()}{
-        $pksTable} WHERE context_id = " . $this->dbClass->link->quote($row['id']) .
-                " and pk = " . $this->dbClass->link->quote($pkArray[0]);
+            $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$pksTable} WHERE context_id = "
+                . $this->dbClass->link->quote($row['id']) . " and pk = " . $this->dbClass->link->quote($pkArray[0]);
             $this->logger->setDebugMessage($sql);
             $resultDelete = $this->dbClass->link->query($sql);
             if ($resultDelete === false) {

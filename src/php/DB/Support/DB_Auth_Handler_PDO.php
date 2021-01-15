@@ -306,8 +306,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             if (!$this->dbClass->setupConnection()) { //Establish the connection
                 return false;
             }
-            $tableRef = "{
-                $userTable} (username, hashedpasswd)";
+            $tableRef = "{$userTable} (username, hashedpasswd)";
             $setArray = implode(',', array_map(function ($e) {
                 return $this->dbClass->link->quote($e);
             }, [$username, $hashedpassword]));
@@ -327,9 +326,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
                 return false;
             }
 
-            $sql = "{
-                $this->dbClass->handler->sqlSELECTCommand()}* FROM {
-                $userTable} WHERE username = " . $this->dbClass->link->quote($username);
+            $sql = "{$this->dbClass->handler->sqlSELECTCommand()}* FROM {$userTable} WHERE username = "
+                . $this->dbClass->link->quote($username);
             $result = $this->dbClass->link->query($sql);
             if ($result === false) {
                 $this->dbClass->errorMessageStore('Select:' . $sql);
@@ -362,10 +360,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
                         $setClause .= ",hashedpasswd = " . $this->dbClass->link->quote($hashedpassword);
                     }
                 }
-                $sql = "{
-                $this->dbClass->handler->sqlUPDATECommand()}{
-                $userTable} SET {
-                $setClause} WHERE id = " . $user_id;
+                $sql = "{$this->dbClass->handler->sqlUPDATECommand()}{$userTable} SET {$setClause} WHERE id = {$user_id}";
                 $result = $this->dbClass->link->query($sql);
                 $this->logger->setDebugMessage("[authSupportCreateUser - LDAP] {
                 $sql}");
@@ -378,8 +373,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
                     return false;
                 }
             } else {
-                $tableRef = "{
-                $userTable} (username, hashedpasswd,limitdt)";
+                $tableRef = "{$userTable} (username, hashedpasswd,limitdt)";
                 $setArray = implode(',', array_map(function ($e) {
                     return $this->dbClass->link->quote($e);
                 }, [$username, $hashedpassword, $currentDTFormat]));
@@ -493,9 +487,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "{
-                $this->dbClass->handler->sqlSELECTCommand()}groupname FROM {
-                $groupTable} WHERE id = " . $this->dbClass->link->quote($groupid);
+        $sql = "{$this->dbClass->handler->sqlSELECTCommand()}groupname FROM {$groupTable} WHERE id = "
+            . $this->dbClass->link->quote($groupid);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Select:' . $sql);
@@ -664,9 +657,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "{
-                $this->dbClass->handler->sqlSELECTCommand()}id FROM {
-                $userTable} WHERE email = " . $this->dbClass->link->quote($email);
+        $sql = "{$this->dbClass->handler->sqlSELECTCommand()}id FROM {$userTable} WHERE email = "
+            . $this->dbClass->link->quote($email);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Select:' . $sql);
@@ -732,9 +724,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "{
-                $this->dbClass->handler->sqlSELECTCommand()}username,email FROM {
-                $userTable} WHERE username = " .
+        $sql = "{$this->dbClass->handler->sqlSELECTCommand()}username,email FROM {$userTable} WHERE username = " .
             $this->dbClass->link->quote($username) . " or email = " . $this->dbClass->link->quote($username);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
@@ -778,8 +768,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $currentDTFormat = IMUtil::currentDTString();
-        $tableRef = "{
-                $hashTable} (hash,expired,clienthost,user_id)";
+        $tableRef = "{$hashTable} (hash,expired,clienthost,user_id)";
         $setArray = implode(',', array_map(function ($e) {
             return $this->dbClass->link->quote($e);
         }, [$hash, $currentDTFormat, $clienthost, $userid]));
@@ -846,8 +835,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $currentDTFormat = IMUtil::currentDTString();
-        $tableRef = "{
-                $hashTable} (hash,expired,user_id)";
+        $tableRef = "{$hashTable} (hash,expired,user_id)";
         $setArray = implode(',', array_map(function ($e) {
             return $this->dbClass->link->quote($e);
         }, [$hash, $currentDTFormat, $userid]));
@@ -907,8 +895,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "{
-                $this->dbClass->handler->sqlUPDATECommand()}{
+        $sql = "{$this->dbClass->handler->sqlUPDATECommand()}{
                 $userTable} SET hashedpasswd = " . $this->dbClass->link->quote($password)
             . (($rawPWField !== false) ? "," . $rawPWField . " = " . $this->dbClass->link->quote($rawPW) : "")
             . " WHERE id = " . $this->dbClass->link->quote($userID);
@@ -944,8 +931,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "{
-                $this->dbClass->handler->sqlSELECTCommand()}* FROM {
+        $sql = "{$this->dbClass->handler->sqlSELECTCommand()}* FROM {
                 $userTable} WHERE id = " . $userID;
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
