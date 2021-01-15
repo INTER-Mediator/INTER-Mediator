@@ -240,8 +240,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "SELECT id,clientid FROM {
-        $regTable} WHERE entity = " . $this->dbClass->link->quote($entity);
+        $sql = "SELECT id,clientid FROM {$regTable} WHERE entity = " . $this->dbClass->link->quote($entity);
         $this->logger->setDebugMessage($sql);
         $result = $this->dbClass->link->query($sql);
         $this->logger->setDebugMessage(var_export($result, true));

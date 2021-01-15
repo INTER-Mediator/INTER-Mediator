@@ -619,12 +619,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $user = $this->authSupportUnifyUsernameAndEmail($user);
-        $sql = "{
-                $this->dbClass->handler->sqlSELECTCommand()}* FROM {
-                $tableName} WHERE {
-                $userField}="
-            . $this->dbClass->link->quote($user) . " and {
-                $keyField}=" . $this->dbClass->link->quote($keyValue);
+        $sql = "{$this->dbClass->handler->sqlSELECTCommand()}* FROM {$tableName} WHERE {$userField}="
+            . $this->dbClass->link->quote($user) . " and {$keyField}=" . $this->dbClass->link->quote($keyValue);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Select:' . $sql);
@@ -799,9 +795,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "{
-                $this->dbClass->handler->sqlSELECTCommand()}hash,expired FROM {
-                $hashTable} WHERE"
+        $sql = "{$this->dbClass->handler->sqlSELECTCommand()}hash,expired FROM {$hashTable} WHERE"
             . " user_id = " . $this->dbClass->link->quote($userid)
             . " and clienthost = " . $this->dbClass->link->quote($randdata);
         $result = $this->dbClass->link->query($sql);
@@ -904,10 +898,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $this->logger->setDebugMessage("[authSupportUserEnrollmentActivateUser] {
                 $sql}");
 
-        $sql = "{
-                $this->dbClass->handler->sqlDELETECommand()}{
-                $hashTable} " .
-            " WHERE user_id = " . $this->dbClass->link->quote($userID);
+        $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$hashTable} "
+            . " WHERE user_id = " . $this->dbClass->link->quote($userID);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Delete:' . $sql);
