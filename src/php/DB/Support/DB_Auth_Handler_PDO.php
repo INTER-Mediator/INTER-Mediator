@@ -408,9 +408,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "{
-                $this->dbClass->handler->sqlUPDATECommand()}{
-                $userTable} SET hashedpasswd = " . $this->dbClass->link->quote($hashednewpassword)
+        $sql = "{$this->dbClass->handler->sqlUPDATECommand()}{$userTable} SET hashedpasswd = "
+            . $this->dbClass->link->quote($hashednewpassword)
             . " WHERE username = " . $this->dbClass->link->quote($signedUser);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
@@ -690,9 +689,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "{
-                $this->dbClass->handler->sqlSELECTCommand()}username FROM {
-                $userTable} WHERE id = " . $this->dbClass->link->quote($userid);
+        $sql = "{$this->dbClass->handler->sqlSELECTCommand()}username FROM {$userTable} WHERE id = "
+            . $this->dbClass->link->quote($userid);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Select:' . $sql);
@@ -860,9 +858,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             return false;
         }
         $currentDTFormat = IMUtil::currentDTString(3600);
-        $sql = "{
-                $this->dbClass->handler->sqlSELECTCommand()}user_id FROM {
-                $hashTable} WHERE hash = " . $this->dbClass->link->quote($hash) .
+        $sql = "{$this->dbClass->handler->sqlSELECTCommand()}user_id FROM {$hashTable} WHERE hash = "
+            . $this->dbClass->link->quote($hash) .
             " and clienthost IS NULL and expired > " . $this->dbClass->link->quote($currentDTFormat);
         $resultHash = $this->dbClass->link->query($sql);
         if ($resultHash === false) {
