@@ -94,8 +94,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                 if (!$isFirstRow) {
                     $sql .= ",";
                 }
-                $sql .= "({$newContextId},{
-        $this->dbClass->link->quote($pk)})";
+                $sql .= "({$newContextId},{$this->dbClass->link->quote($pk)})";
                 $isFirstRow = false;
             }
             if (!$isFirstRow) {

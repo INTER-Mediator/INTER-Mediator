@@ -67,7 +67,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         }
         $tableRef = "{$hashTable} (user_id, clienthost, hash, expired)";
         $setClause = "VALUES ({$uid},{$this->dbClass->link->quote($clientId)},"
-            . "{$this->dbClass->link->quote($challenge)},{$this->dbClass->link->quote($currentDTFormat)}";
+            . "{$this->dbClass->link->quote($challenge)},{$this->dbClass->link->quote($currentDTFormat)})";
         $sql = $this->dbClass->handler->sqlINSERTCommand($tableRef, $setClause);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
@@ -263,8 +263,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "{
-                $this->dbClass->handler->sqlSELECTCommand()}hashedpasswd FROM {
+        $sql = "{$this->dbClass->handler->sqlSELECTCommand()}hashedpasswd FROM {
                 $userTable} WHERE username = " . $this->dbClass->link->quote($signedUser);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
@@ -458,9 +457,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "{
-                $this->dbClass->handler->sqlSELECTCommand()}* FROM {
-                $userTable} WHERE username = " . $this->dbClass->link->quote($username);
+        $sql = "{$this->dbClass->handler->sqlSELECTCommand()}* FROM {$userTable} WHERE username = "
+            . $this->dbClass->link->quote($username);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Select:' . $sql);
