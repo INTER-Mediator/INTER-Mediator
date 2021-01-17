@@ -275,7 +275,7 @@ class MediaAccess
      * @param $code int any error code, but supported just 204, 401 and 500.
      * @throws Exception happens anytime.
      */
-    private function exitAsError(int $code)
+    private function exitAsError($code)
     {
         switch ($code) {
             case 204:

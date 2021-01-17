@@ -64,8 +64,8 @@ class INTERMediator_Test extends TestCase
         $this->assertSame(9, count($params), "IMUtil::getFromParamsPHPFile should return any values.");
 
         $key = 'activateClientService';
-        $assertValue = false;
-        $assertStr = 'false';
+        $assertValue = true;
+        $assertStr = 'true';
         $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
         $this->assertEquals($assertValue, $params[$key], $message);
 
@@ -105,11 +105,11 @@ class INTERMediator_Test extends TestCase
         $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
         $this->assertEquals($assertValue, $params[$key], $message);
 
-        $key = 'foreverLog';
-        $assertValue = false;
-        $assertStr = 'undefined';
-        $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
-        $this->assertFalse(isset($params[$key]), $message);
+//        $key = 'foreverLog';
+//        $assertValue = false;
+//        $assertStr = 'undefined';
+//        $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
+//        $this->assertFalse(isset($params[$key]), $message);
     }
 
     public function test_valueForJSInsert()
