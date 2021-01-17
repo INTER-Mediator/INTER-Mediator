@@ -23,8 +23,10 @@ class ServiceServerProxy
     private $errors = [];
     private $messages = [];
     private $messageHead = "[ServiceServerProxy] ";
+    private $dontAutoBoot;
+    private $foreverLog;
 
-    static public function instance()
+    static public function instance(): ?ServiceServerProxy
     {
         global $gSSPInstance;
         if (is_null($gSSPInstance)) {
@@ -58,17 +60,17 @@ class ServiceServerProxy
         $this->errors = [];
     }
 
-    public function getMessages()
+    public function getMessages(): array
     {
         return $this->messages;
     }
 
-    public function getErrors()
+    public function getErrors(): array
     {
         return $this->errors;
     }
 
-    public function checkServiceServer()
+    public function checkServiceServer(): bool
     {
         if ($this->dontAutoBoot || $this->dontUse) {
             $ssStatus = $this->isActive();
@@ -113,7 +115,7 @@ class ServiceServerProxy
         }
     }
 
-    public function isActive()
+    public function isActive(): bool
     {
         if ($this->dontUse) {
             $this->messages[] = $this->messageHead . 'Service Server is NOT used.';
@@ -206,7 +208,7 @@ class ServiceServerProxy
         $this->messages[] = $this->messageHead . "Returns: {$returnValue}, Output:" . implode("/", $result);
     }
 
-    private function isServerStartable()
+    private function isServerStartable(): bool
     {
         // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
         // get_current_user doen't work on the ubuntu 18 of EC2. It returns the user logs in with ssh.
@@ -229,6 +231,10 @@ class ServiceServerProxy
         $logFile = $this->foreverLog ? $this->foreverLog : tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
         $options = "-a -l {$logFile} --minUptime 5000 --spinSleepTime 5000";
         $cmd = "{$forever} start {$options} {$scriptPath} {$this->paramsPort}";
+
+        file_put_contents("/tmp/1", $cmd);
+        file_put_contents("/tmp/2", $this->foreverLog);
+
         $this->executeCommand($cmd);
     }
 
@@ -261,7 +267,7 @@ class ServiceServerProxy
         //sleep(1);
     }
 
-    public function validate($expression, $values)
+    public function validate($expression, $values): bool
     {
         if ($this->dontUse) {
             $this->messages[] = $this->messageHead . 'Service Server is NOT used.';
@@ -281,7 +287,15 @@ class ServiceServerProxy
         return true;
     }
 
-    private function getSSVersionCode()
+    public function sync($channels,$operation,$data):bool{
+        if (!$this->checkServiceServer()) {
+            return false;
+        }
+        $result = $this->callServer("trigger", ['clients' => $channels, 'operation' => $operation, 'data' => $data]);
+        return true;
+    }
+
+    private function getSSVersionCode(): string
     {
         $composer = json_decode(file_get_contents(IMUtil::pathToINTERMediator() . "/composer.json"));
         return hash("sha256", $composer->time . $composer->version);

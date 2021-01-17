@@ -58,7 +58,7 @@ class LDAPAuth
         $this->logger = $log;
     }
 
-    function bindCheck($username, $password)
+    function bindCheck($username, $password): bool
     {
         if (! function_exists("ldap_connect"))  {
             $this->errorString = "This PHP doesn't support LDAP, check the result of infophp() function.";

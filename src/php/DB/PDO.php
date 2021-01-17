@@ -439,7 +439,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $sql = "{$this->handler->sqlSELECTCommand()}{$fields} FROM {$viewOrTableName} {$queryClause} {$groupBy} "
             . $this->handler->sqlOrderByCommand($sortClause, $limitParam, $offset);
         $this->logger->setDebugMessage($sql);
-        $this->notifyHandler->setQueriedEntity($viewOrTableName);
+        $this->notifyHandler->setQueriedEntity($isAggregate ? $this->dbSettings->getAggregationFrom() : $tableName);
         $this->notifyHandler->setQueriedCondition(
             "{$queryClause} {$this->handler->sqlOrderByCommand($sortClause, $limitParam, $offset)}");
 
@@ -584,7 +584,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
         $sql = "{$this->handler->sqlUPDATECommand()}{$tableName} SET {$setClause} {$queryClause}";
         $prepSQL = $this->link->prepare($sql);
-        $this->notifyHandler->setQueriedEntity($tableName);
+        $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityForUpdate());
 
         $this->logger->setDebugMessage(
             $prepSQL->queryString . " with " . str_replace("\n", " ", var_export($setParameter, true)));
@@ -755,7 +755,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $lastKeyValue = $this->link->lastInsertId($seqObject);
 
         $this->notifyHandler->setQueriedPrimaryKeys(array($lastKeyValue));
-        $this->notifyHandler->setQueriedEntity($tableName);
+        $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityForUpdate());
 
         if ($this->isRequiredUpdated) {
             $sql = $this->handler->sqlSELECTCommand() . "* FROM " . $viewName
@@ -847,7 +847,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $this->errorMessageStore('Delete Error:' . $sql);
             return false;
         }
-        $this->notifyHandler->setQueriedEntity($tableName);
+        $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityForUpdate());
 
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
@@ -927,7 +927,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
         //======
         if ($this->isRequiredUpdated) {
-            $sql = "{$this->handler->sqlSELECTCommand()}* FROM " . $tableName
+            $sql = "{$this->handler->sqlSELECTCommand()}* FROM " . $this->handler->quotedEntityName($tableName)
                 . " WHERE " . $tableInfo['key'] . "=" . $this->link->quote($lastKeyValue);
             $result = $this->link->query($sql);
             $this->logger->setDebugMessage($sql);

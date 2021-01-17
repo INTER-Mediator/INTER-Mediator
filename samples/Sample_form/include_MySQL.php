@@ -98,5 +98,5 @@ IM_Entry(
         'db-class' => 'PDO',
         'dsn' => 'mysql:host=127.0.0.1;dbname=test_db;charset=utf8mb4',
     ],
-    false
+    2
 );

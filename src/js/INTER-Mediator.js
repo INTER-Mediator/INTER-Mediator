@@ -317,8 +317,9 @@ const INTERMediator = {
     INTERMediator.ssSocket.on('connected', INTERMediator.serviceServerConnected)
     // window.addEventListener('unload', INTERMediator.serviceServerShouldDisconnect)
     INTERMediator.ssSocket.on('notify', (msg) => {
+      console.error(msg)
       'update' || 'create' || 'delete'
-      IMLibContextPool.updateOnAnotherClient('update', msg)
+      IMLibContextPool.updateOnAnotherClient(msg.operation, msg.data)
     })
   },
 

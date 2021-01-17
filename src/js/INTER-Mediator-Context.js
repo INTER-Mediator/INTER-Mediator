@@ -1014,7 +1014,7 @@ class IMLibContext {
     }
 
     if (this.foreignValue) {
-      for (const fieldName of this.foreignValue) {
+      for (const fieldName in this.foreignValue) {
         if (contextDef.relation) {
           for (let i in contextDef.relation) {
             if (contextDef.relation[i]['join-field'] === fieldName) {
