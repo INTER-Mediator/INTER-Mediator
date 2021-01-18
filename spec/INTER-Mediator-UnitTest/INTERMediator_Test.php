@@ -69,11 +69,11 @@ class INTERMediator_Test extends TestCase
         $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
         $this->assertEquals($assertValue, $params[$key], $message);
 
-        $key = 'serviceServerHost';
-        $assertValue = 'localhost';
-        $assertStr = 'localhost';
-        $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
-        $this->assertEquals($assertValue, $params[$key], $message);
+//        $key = 'serviceServerHost';
+//        $assertValue = 'localhost';
+//        $assertStr = 'localhost';
+//        $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
+//        $this->assertEquals($assertValue, $params[$key], $message);
 
         $key = 'serviceServerConnect';
         $assertValue = 'localhost';
