@@ -20,6 +20,8 @@ const jsSHA = require('../../node_modules/jssha/dist/sha.js')
 let url = require('url')
 let http = require('http')
 let app = http.createServer(handler)
+
+// For wss: setup, http://uorat.hatenablog.com/entry/2015/08/30/234757
 let io = require('socket.io')(app, {
   pingTimeout: 60000, // https://github.com/socketio/socket.io/issues/3259#issuecomment-448058937
 })
@@ -100,6 +102,21 @@ requestBroker['/eval'] = function (params, res, postData) {
   res.end('\n')
 }
 
+requestBroker['/trigger'] = function (params, res, postData) {
+  res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
+  let jsonData = JSON.parse(postData)
+  for(const id in watching) {
+    if(jsonData.clients.indexOf(id) > -1) {
+      console.log(`Emit to: ${id}`)
+      io.to(watching[id].socketid).emit('notify', jsonData)
+    }
+  }
+  let result = true
+
+  res.write(result ? 'true' : 'false')
+  res.end('\n')
+}
+
 function getVersionCode() {
   let fc = fs.readFileSync('composer.json')
   const jsonObj = JSON.parse(fc)
@@ -112,7 +129,7 @@ function getVersionCode() {
   Automatic processing
  */
 //setInterval(function () {
-// process.exit() // This doesn't work becase the forever attempts to reboot this.
+// process.exit() // This doesn't work because the forever attempts to reboot this.
 //}, 10000)
 
 const watching = {}

@@ -95,8 +95,13 @@ class GenerateJSCode
             : (isset($params['enrollPage']) ? $params["enrollPage"] : null);
         $serviceServerPort = isset($params['serviceServerPort']) ? $params['serviceServerPort'] : "11479";
         $serviceServerHost = (isset($params['serviceServerHost']) && $params['serviceServerHost'])
-            ? $params['serviceServerHost'] : $_SERVER['SERVER_ADDR'];
+            ? $params['serviceServerHost'] : false;
+        $serviceServerHost = $serviceServerHost ? $serviceServerHost
+            : (isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : false);
+        $serviceServerHost = $serviceServerHost ? $serviceServerHost
+            : (isset($_SERVER['HTTP_HOST']) ? parse_url($_SERVER['HTTP_HOST'], PHP_URL_HOST) : false);
         $serviceServerHost = $serviceServerHost ? $serviceServerHost : 'localhost';
+
         $activateClientService = isset($params['activateClientService']) ? boolval($params['activateClientService']) : false;
         $followingTimezones = isset($params['followingTimezones']) ? boolval($params['followingTimezones']) : false;
 
@@ -188,10 +193,10 @@ class GenerateJSCode
             IMUtil::arrayToJSExcluding($datasource, '', array('password')), ";}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getOptionsAliases",
-            "function(){return ", IMUtil::arrayToJS(isset($options['aliases']) ? $options['aliases'] : array(), ''), ";}");
+            "function(){return ", IMUtil::arrayToJS(isset($options['aliases']) ? $options['aliases'] : array()), ";}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getOptionsTransaction",
-            "function(){return ", IMUtil::arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";}");
+            "function(){return ", IMUtil::arrayToJS(isset($options['transaction']) ? $options['transaction'] : ''), ";}");
         $this->generateAssignJS("INTERMediatorOnPage.dbClassName", "{$q}{$dbClassName}{$q}");
         $this->generateAssignJS("INTERMediatorOnPage.defaultKeyName", "{$q}{$defaultKey}{$q}");
 
@@ -204,7 +209,7 @@ class GenerateJSCode
         $messageClass = IMUtil::getMessageClassInstance();
         $this->generateAssignJS(
             "INTERMediatorOnPage.getMessages",
-            "function(){return ", IMUtil::arrayToJS($messageClass->getMessages(), ''), ";}");
+            "function(){return ", IMUtil::arrayToJS($messageClass->getMessages()), ";}");
         if (isset($options['browser-compatibility'])) {
             $browserCompatibility = $options['browser-compatibility'];
         }
@@ -216,7 +221,7 @@ class GenerateJSCode
         }
         $this->generateAssignJS(
             "INTERMediatorOnPage.browserCompatibility",
-            "function(){return ", IMUtil::arrayToJS($browserCompatibility, ''), ";}");
+            "function(){return ", IMUtil::arrayToJS($browserCompatibility), ";}");
 
         $remoteAddr = filter_var($_SERVER['REMOTE_ADDR']);
         if (is_null($remoteAddr) || $remoteAddr === FALSE) {
@@ -228,7 +233,7 @@ class GenerateJSCode
 
         $this->generateAssignJS(
             "INTERMediatorOnPage.clientNotificationIdentifier",
-            "function(){return ", IMUtil::arrayToJS($clientId, ''), ";}");
+            "function(){return ", IMUtil::arrayToJS($clientId), ";}");
 
         if ($nonSupportMessageId != "") {
             $this->generateAssignJS(
@@ -287,7 +292,7 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.requireAuthentication", $boolValue);
         $this->generateAssignJS(
-            "INTERMediatorOnPage.authRequiredContext", IMUtil::arrayToJS($requireAuthenticationContext, ''));
+            "INTERMediatorOnPage.authRequiredContext", IMUtil::arrayToJS($requireAuthenticationContext));
         if (!is_null($enrollPage)) {
             $this->generateAssignJS("INTERMediatorOnPage.enrollPageURL", $q, $enrollPage, $q);
         }
@@ -384,7 +389,7 @@ class GenerateJSCode
         $this->generateAssignJS("INTERMediatorOnPage.isFollowingTimezone", $followingTimezones ? "true" : "false");
     }
 
-    private function combineScripts()
+    private function combineScripts(): string
     {
         $imPath = IMUtil::pathToINTERMediator();
         $jsCodeDir = $imPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;

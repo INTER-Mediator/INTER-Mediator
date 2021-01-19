@@ -19,7 +19,7 @@ namespace INTERMediator;
 class DefinitionChecker
 {
 
-    public function checkDefinitions($datasource, $options, $dbspecification)
+    public function checkDefinitions($datasource, $options, $dbspecification): string
     {
 //        if ($dbspecification['db-class'] == 'FileMaker_FX') {
 //            require_once('FileMaker_FX.php');
@@ -84,33 +84,23 @@ class DefinitionChecker
             if ($endPoint === null) {
                 $this->message .= "$currentPath includes an undefined keyword. ";
             } else if ($endPoint === 'string') {
-                if (is_string($items)) {
-                    $judge = true;
-                } else {
+                if (!is_string($items)) {
                     $this->message .= "$currentPath should be define as string. ";
                 }
             } else if ($endPoint === 'scalar') {
-                if (is_scalar($items)) {
-                    $judge = true;
-                } else {
+                if (!is_scalar($items)) {
                     $this->message .= "$currentPath should be define as string. ";
                 }
             } else if ($endPoint === 'boolean') {
-                if (is_bool($items)) {
-                    $judge = true;
-                } else {
+                if (!is_bool($items)) {
                     $this->message .= "$currentPath should be define as boolean. ";
                 }
             } else if ($endPoint === 'integer') {
-                if (is_integer($items)) {
-                    $judge = true;
-                } else {
+                if (!is_integer($items)) {
                     $this->message .= "$currentPath should be define as integer. ";
                 }
             } else if ($endPoint === 'array') {
-                if (is_array($items)) {
-                    $judge = true;
-                } else {
+                if (!is_array($items)) {
                     $this->message .= "$currentPath should be define as array. ";
                 }
             } else if (strpos('string', $endPoint) === 0) {
@@ -137,8 +127,6 @@ class DefinitionChecker
                 if (!$judge) {
                     $this->message = "$currentPath should be define as string within [$possibleString]. ";
                 }
-            }
-            if ($judge) {
             }
         }
     }

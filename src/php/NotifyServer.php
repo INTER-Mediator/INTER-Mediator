@@ -16,6 +16,8 @@
 
 namespace INTERMediator;
 
+use INTERMediator\DB\Logger;
+
 class NotifyServer
 {
     private $dbClass;
@@ -46,13 +48,25 @@ class NotifyServer
     }
 
     /**
-     * @param $channels
-     * @param $operation
-     * @param $data
+     * @param $channels array associated clinet ids as below:
+     *   ['5099b6c0b4d47a3d312ee21458216170916d7c0f09adb374a07ea0d44c6da7b0',
+     *    '7254b1a045fddc516c5df286df33a147364b64d65a7f18e9c3c7494cb3d7cc57',]
+     * @param $operation string 'update' and so on.
+     * @param $data array associated array describes modified data as like
+     * ['entity' => '`person`',
+     * 'pkvalue' => [0 => '1',]
+     * 'field' => [0 => 'name',]
+     * 'value' => [0 => 'Masayuki Nii',],]
      */
     private function trigger($channels, $operation, $data)
     {
-
+        $ssInstance = ServiceServerProxy::instance();
+        $ssInstance->clearMessages();
+        $ssInstance->clearErrors();
+        $ssInstance->sync($channels, $operation, $data);
+        $logger = Logger::getInstance();
+        $logger->setDebugMessages($ssInstance->getMessages());
+        $logger->setErrorMessages($ssInstance->getErrors());
     }
 
     /**
@@ -85,9 +99,9 @@ class NotifyServer
      */
     public function updated($clientId, $entity, $pkArray, $field, $value)
     {
-        $channels = $this->dbClass->notifyHandler->matchInRegisterd($clientId, $entity, $pkArray);
-        $data = array('entity' => $entity, 'pkvalue' => $pkArray, 'field' => $field, 'value' => $value);
-        $this->trigger($channels, 'update', $data);
+        $channels = $this->dbClass->notifyHandler->matchInRegistered($clientId, $entity, $pkArray);
+        $this->trigger($channels, 'update',
+            ['entity' => $entity, 'pkvalue' => $pkArray, 'field' => $field, 'value' => $value]);
     }
 
     /**
@@ -98,7 +112,7 @@ class NotifyServer
      */
     public function created($clientId, $entity, $pkArray, $record)
     {
-        $channels = $this->dbClass->notifyHandler->appendIntoRegisterd($clientId, $entity, $pkArray);
+        $channels = $this->dbClass->notifyHandler->appendIntoRegistered($clientId, $entity, $pkArray);
 
         $data = array(
             'entity' => $entity,
@@ -116,7 +130,7 @@ class NotifyServer
      */
     public function deleted($clientId, $entity, $pkArray)
     {
-        $channels = $this->dbClass->notifyHandler->removeFromRegisterd($clientId, $entity, $pkArray);
+        $channels = $this->dbClass->notifyHandler->removeFromRegistered($clientId, $entity, $pkArray);
 
         $data = array('entity' => $entity, 'pkvalue' => $pkArray);
         $this->trigger($channels, 'delete', $data);

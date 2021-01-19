@@ -33,7 +33,8 @@ class Theme
         $this->themeName = $params["themeName"];
     }
 
-    public function getResultForLog(){
+    public function getResultForLog(): array
+    {
         if($this->accessLogLevel < 1) {
             return [];
         }
@@ -68,7 +69,7 @@ class Theme
         echo $fContent;
     }
 
-    private function pathToTheme($themeName)
+    private function pathToTheme($themeName): ?string
     {
         $imPath = IMUtil::pathToINTERMediator();
         $themeName = str_replace('..', '', $themeName);

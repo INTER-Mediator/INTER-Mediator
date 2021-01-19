@@ -39,7 +39,6 @@ class GenerateJSCode_Test extends TestCase
     /**
      * @runInSeparateProcess
      * @preserveGlobalState disabled
-     * @doesNotPerformAssertions
      */
     function test___construct()
     {
@@ -48,6 +47,7 @@ class GenerateJSCode_Test extends TestCase
             $this->generater->__construct();
             $headers = xdebug_get_headers();
             header_remove();
+            ob_end_flush();
             ob_clean();
 
             $this->assertStringContainsString('Content-Type: text/javascript;charset="UTF-8"', implode("\n", $headers));

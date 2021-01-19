@@ -134,7 +134,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
         return true;
     }
 
-    public function matchInRegisterd($clientId, $entity, $pkArray)
+    public function matchInRegistered($clientId, $entity, $pkArray)
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -190,7 +190,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
         return array_unique($targetClients);
     }
 
-    public function appendIntoRegisterd($clientId, $entity, $pkArray)
+    public function appendIntoRegistered($clientId, $entity, $pkArray)
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -238,7 +238,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
         return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }
 
-    public function removeFromRegisterd($clientId, $entity, $pkArray)
+    public function removeFromRegistered($clientId, $entity, $pkArray)
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;

@@ -27,7 +27,7 @@ interface DB_Interface_Registering
     public function addQueriedPrimaryKeys($name);
     public function register($clientId, $entity, $condition, $pkArray);
     public function unregister($clientId, $tableKeys);
-    public function matchInRegisterd($clientId, $entity, $pkArray);
-    public function appendIntoRegisterd($clientId, $entity, $pkArray);
-    public function removeFromRegisterd($clientId, $entity, $pkArray);
+    public function matchInRegistered($clientId, $entity, $pkArray);
+    public function appendIntoRegistered($clientId, $entity, $pkArray);
+    public function removeFromRegistered($clientId, $entity, $pkArray);
 }

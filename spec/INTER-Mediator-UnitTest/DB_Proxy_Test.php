@@ -63,7 +63,6 @@ class DB_Proxy_Test extends TestCase
     /**
      * @runInSeparateProcess
      * @preserveGlobalState disabled
-     * @doesNotPerformAssertions
      */
     function test___construct()
     {
@@ -73,6 +72,7 @@ class DB_Proxy_Test extends TestCase
             $this->db_proxy->__construct();
             $headers = xdebug_get_headers();
             header_remove();
+            ob_end_flush();
             ob_clean();
 
             $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);

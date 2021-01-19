@@ -19,6 +19,7 @@ use Aws\Credentials\Credentials;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use Exception;
+use phpseclib\Crypt\RSA;
 
 class MediaAccess
 {
@@ -30,7 +31,7 @@ class MediaAccess
     private $accessLogLevel = 0;
     private $outputMessage = ['apology' => 'Logging messages are not implemented so far.'];
 
-    public function getResultForLog()
+    public function getResultForLog(): array
     {
         if ($this->accessLogLevel < 1) {
             return [];
@@ -43,7 +44,7 @@ class MediaAccess
         $this->disposition = "attachment";
     }
 
-    private function isPossibleSchema($file)
+    private function isPossibleSchema($file): bool
     {
         $schema = ["https:", "http:", "class:", "s3:"];
         foreach ($schema as $scheme) {
@@ -114,7 +115,6 @@ class MediaAccess
                     case  'field_group':
                         // Not implemented
                         throw new Exception('The field-group is not supported so far on the MediaAccess class.');
-                        break;
                     default: // 'context_auth' or 'no_auth'
                         if ($this->targetContextName) {
                             if ($this->targetKeyField && $this->targetKeyValue) {
@@ -272,7 +272,7 @@ class MediaAccess
     }
 
     /**
-     * @param $code any error code, but supported just 204, 401 and 500.
+     * @param $code int any error code, but supported just 204, 401 and 500.
      * @throws Exception happens anytime.
      */
     private function exitAsError($code)
@@ -299,7 +299,7 @@ class MediaAccess
      * @param $isURL
      * @return array
      */
-    public function checkForFileMakerMedia($dbProxyInstance, $options, $file, $isURL)
+    public function checkForFileMakerMedia($dbProxyInstance, $options, $file, $isURL): array
     {
         if (strpos($file, '/fmi/xml/cnt/') === 0 ||
             strpos($file, '/Streaming_SSL/MainDB') === 0) {
@@ -318,10 +318,10 @@ class MediaAccess
                 } else if (file_exists($currentDirParam)) {
                     include($currentDirParam);
                 }
-                $rsa = new \phpseclib\Crypt\RSA();
+                $rsa = new RSA();
                 $rsa->setPassword($passPhrase);
                 $rsa->loadKey($generatedPrivateKey);
-                $rsa->setEncryptionMode(\phpseclib\Crypt\RSA::ENCRYPTION_PKCS1);
+                $rsa->setEncryptionMode(RSA::ENCRYPTION_PKCS1);
                 $cookieNameUser = '_im_username';
                 $cookieNamePassword = '_im_crypted';
                 $credential = isset($_COOKIE[$cookieNameUser]) ? urlencode($_COOKIE[$cookieNameUser]) : '';
@@ -366,13 +366,13 @@ class MediaAccess
      * @param $dbProxyInstance
      * @param $options
      * @param $target
-     * @return
+     * @return ?string
      * 'context_auth'
      * 'no_auth'
      * 'field_user'
      * 'field_group'
      */
-    private function checkAuthentication($dbProxyInstance, $options)
+    private function checkAuthentication($dbProxyInstance, $options): ?string
     {
         $contextDef = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
 
@@ -429,7 +429,7 @@ class MediaAccess
         return null;
     }
 
-    private function analyzeTarget($target)
+    private function analyzeTarget($target): bool
     {
         // The following properties are the results of this method.
         $this->targetKeyField = null;

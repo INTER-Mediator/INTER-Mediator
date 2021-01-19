@@ -22,36 +22,43 @@ use Exception;
 
 class IMUtil
 {
-    public static function currentDTString($subSeconds = 0)
+    public static function currentDTString($subSeconds = 0): string
     {
         $currentDT = new DateTime();
-        if ($subSeconds >= 0) {
-            $currentDT->sub(new DateInterval("PT" . intval($subSeconds) . "S"));
-        } else {
-            $currentDT->add(new DateInterval("PT" . -intval($subSeconds) . "S"));
+        try {
+            if ($subSeconds >= 0) {
+                $currentDT->sub(new DateInterval("PT" . intval($subSeconds) . "S"));
+            } else {
+                $currentDT->add(new DateInterval("PT" . -intval($subSeconds) . "S"));
+            }
+        } catch (Exception $e) {
         }
-        $currentDTStr = $currentDT->format('Y-m-d H:i:s');
-        return $currentDTStr;
+        return $currentDT->format('Y-m-d H:i:s');
     }
 
-    public static function currentDTStringFMS($subSeconds = 0)
+    public static function currentDTStringFMS($subSeconds = 0): string
     {
         $currentDT = new DateTime();
-        if ($subSeconds >= 0) {
-            $currentDT->sub(new DateInterval("PT" . intval($subSeconds) . "S"));
-        } else {
-            $currentDT->add(new DateInterval("PT" . -intval($subSeconds) . "S"));
+        try {
+            if ($subSeconds >= 0) {
+                $currentDT->sub(new DateInterval("PT" . intval($subSeconds) . "S"));
+            } else {
+                $currentDT->add(new DateInterval("PT" . -intval($subSeconds) . "S"));
+            }
+        } catch (Exception $e) {
         }
-        $currentDTStr = $currentDT->format('m/d/Y H:i:s');
-        return $currentDTStr;
+        return $currentDT->format('m/d/Y H:i:s');
     }
 
-    public static function secondsFromNow($dtStr)
+    public static function secondsFromNow($dtStr): int
     {
         $currentDT = new DateTime();
-        $anotherDT = new DateTime($dtStr);
-        $timeValue = $currentDT->format("U") - $anotherDT->format("U");
-        return $timeValue;
+        try {
+            $anotherDT = new DateTime($dtStr);
+            return $currentDT->format("U") - $anotherDT->format("U");
+        } catch (Exception $e) {
+        }
+        return 0;
     }
 
     public static function phpVersion($verStr = '')
@@ -70,12 +77,12 @@ class IMUtil
         return $vNum;
     }
 
-    public static function pathToINTERMediator()
+    public static function pathToINTERMediator(): string
     {
         return dirname(dirname(dirname(__FILE__)));
     }
 
-    public static function getMIMEType($path)
+    public static function getMIMEType($path): string
     {
         $type = "application/octet-stream";
         switch (strtolower(substr($path, strrpos($path, '.') + 1))) {
@@ -97,14 +104,12 @@ class IMUtil
             case 'pptx':
                 $type = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
                 break;
+            case 'jpeg':
             case 'jpg':
                 $type = 'image/jpeg';
                 break;
             case 'css':
                 $type = 'text/css';
-                break;
-            case 'jpeg':
-                $type = 'image/jpeg';
                 break;
             case 'png':
                 $type = 'image/png';
@@ -121,10 +126,8 @@ class IMUtil
             case 'bmp':
                 $type = 'image/bmp';
                 break;
-            case 'tif':
-                $type = 'image/tiff';
-                break;
             case 'tiff':
+            case 'tif':
                 $type = 'image/tiff';
                 break;
             case 'pdf':
@@ -137,7 +140,7 @@ class IMUtil
         return $type;
     }
 
-    public static function combinePathComponents($ar)
+    public static function combinePathComponents($ar): string
     {
         $path = "";
         $isFirstItem = true;
@@ -159,19 +162,19 @@ class IMUtil
         return $path;
     }
 
-    public static function isPHPExecutingWindows()
+    public static function isPHPExecutingWindows(): bool
     {
         $osName = php_uname("s");
         return $osName == "Windows NT";
     }
 
-    public static function isPHPExecutingUNIX()
+    public static function isPHPExecutingUNIX(): bool
     {
         $osName = php_uname("s");
         return $osName == "Linux" || $osName == "FreeBSD";
     }
 
-    public static function phpSecLibClass($aClass)
+    public static function phpSecLibClass($aClass): string
     {
         $comp = explode("\\", $aClass);
         if (count($comp) >= 2) {
@@ -186,7 +189,7 @@ class IMUtil
     }
 
     // Message Class Detection
-    public static function getMessageClassInstance()
+    public static function getMessageClassInstance(): ?Message\MessageStrings
     {
         $messageClass = null;
         if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
@@ -217,7 +220,7 @@ class IMUtil
     }
 
 // Thanks for http://q.hatena.ne.jp/1193396523
-    public static function guessFileUploadError()
+    public static function guessFileUploadError(): bool
     {
         $postMaxSize = self::return_bytes(ini_get('post_max_size'));
         if ($_SERVER['REQUEST_METHOD'] == 'POST'
@@ -244,7 +247,7 @@ class IMUtil
     }
 
 // Example in http://php.net/manual/ja/function.ini-get.php.
-    public static function return_bytes($val)
+    public static function return_bytes($val): int
     {
         $val = trim($val);
         switch (strtolower($val[strlen($val) - 1])) {
@@ -266,8 +269,8 @@ class IMUtil
         // The recovering of misspelling a global variable
         $pos = array_search("follwingTimezones", $vars);
         if ($pos !== false) {
-            $vars=array_slice($vars, $pos, 1);
-            $vars[]="followingTimezones";
+            $vars = array_slice($vars, $pos, 1);
+            $vars[] = "followingTimezones";
         }
 
         $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
@@ -280,7 +283,7 @@ class IMUtil
         }
 
         // The recovering of misspelling a global variable
-        if(isset($follwingTimezones)){
+        if (isset($follwingTimezones)) {
             $followingTimezones = $follwingTimezones;
         }
 
@@ -298,7 +301,7 @@ class IMUtil
         return $result;
     }
 
-    public function protectCSRF()
+    public function protectCSRF(): bool
     {
         /*
          * Prevent CSRF Attack with XMLHttpRequest
@@ -358,7 +361,7 @@ class IMUtil
         return FALSE;
     }
 
-    public function checkHost($host, $webServerName)
+    public function checkHost($host, $webServerName): bool
     {
         $host = strtolower($host);
         $webServerName = strtolower($webServerName);
@@ -422,7 +425,7 @@ class IMUtil
      * Contributed by Atsushi Matsuo at Jan 17, 2010
      * @return string strings for JavaScript
      */
-    public static function valueForJSInsert($str)
+    public static function valueForJSInsert($str): string
     {
         return str_replace("'", "\\'",
             str_replace('"', '\\"',
@@ -442,7 +445,7 @@ class IMUtil
      * @param string prefix strings for the prefix for key
      * @return string JavaScript source
      */
-    public static function arrayToJS($ar, $prefix = "")
+    public static function arrayToJS($ar, $prefix = ""): string
     {
         if (is_array($ar)) {
             $items = array();
@@ -472,7 +475,7 @@ class IMUtil
      * @param array exarray array containing excluding keys
      * @return string JavaScript source
      */
-    public static function arrayToJSExcluding($ar, $prefix, $exarray)
+    public static function arrayToJSExcluding($ar, $prefix, $exarray): string
     {
         $returnStr = '';
 
@@ -504,11 +507,10 @@ class IMUtil
                 $returnStr = "'{$prefix}':'" . IMUtil::valueForJSInsert($ar) . "'";
             }
         }
-
         return $returnStr;
     }
 
-    public static function randomString($digit)
+    public static function randomString($digit): string
     {
         $resultStr = '';
         for ($i = 0; $i < $digit; $i++) {

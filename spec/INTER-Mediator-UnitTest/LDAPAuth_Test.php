@@ -5,29 +5,29 @@
  * Date: 15/06/20
  * Time: 23:49
  */
+
 use \PHPUnit\Framework\TestCase;
 use \INTERMediator\LDAPAuth;
 
 //require_once(dirname(__FILE__) . '/../LDAPAuth.php');
 
-class LDAPAuth_Test extends TestCase {
+class LDAPAuth_Test extends TestCase
+{
 
     private $obj;
+
     public function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         $this->obj = new LDAPAuth();
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
     public function test_valueForJSInsert()
     {
         $user = "test1";
         $pass = "whoarey";
 
-        if ( $this->obj->isActive) {
+        if ($this->obj->isActive) {
             $r = $this->obj->bindCheck("xxx", "xxxx");
             $this->assertFalse($r, "non-existing account");
 
@@ -36,6 +36,8 @@ class LDAPAuth_Test extends TestCase {
 
             $r = $this->obj->bindCheck($user, "xxxxx");
             $this->assertfalse($r, "wrong password");
+        } else {
+            $this->assertTrue(true, "This assert prevents for risky test alert.");
         }
     }
 }
