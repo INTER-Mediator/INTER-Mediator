@@ -75,7 +75,7 @@
     "jssha": ">=3.0.0",
     "npm-platform-dependencies": "*",
     "request": "^2.88.2",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.4.0"
   },
   "win32Dependencies": {
     "forever-win": "*"
