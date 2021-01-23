@@ -43,15 +43,14 @@ const IMLibContextPool = {
 
   synchronize: function (context, recKey, key, value, target, portal) {
     'use strict'
-    var i, j, viewName, refNode, targetNodes
     let result = []
     let calcKey
-    viewName = context.viewName
+    const viewName = context.viewName
     if (this.poolingContexts === null) {
       return null
     }
     if (portal) {
-      for (i = 0; i < this.poolingContexts.length; i += 1) {
+      for (let i = 0; i < this.poolingContexts.length; i += 1) {
         if (this.poolingContexts[i].viewName === viewName &&
           this.poolingContexts[i].binding[recKey] !== undefined &&
           this.poolingContexts[i].binding[recKey][key] !== undefined &&
@@ -60,9 +59,9 @@ const IMLibContextPool = {
           this.poolingContexts[i].store[recKey][key] !== undefined &&
           this.poolingContexts[i].store[recKey][key][portal] !== undefined) {
           this.poolingContexts[i].store[recKey][key][portal] = value
-          targetNodes = this.poolingContexts[i].binding[recKey][key][portal]
-          for (j = 0; j < targetNodes.length; j++) {
-            refNode = document.getElementById(targetNodes[j].id)
+          const targetNodes = this.poolingContexts[i].binding[recKey][key][portal]
+          for (let j = 0; j < targetNodes.length; j++) {
+            const refNode = document.getElementById(targetNodes[j].id)
             if (refNode) {
               IMLibElement.setValueToIMNode(refNode, targetNodes[j].target, value, true)
               result.push(targetNodes[j].id)
@@ -71,16 +70,16 @@ const IMLibContextPool = {
         }
       }
     } else {
-      for (i = 0; i < this.poolingContexts.length; i += 1) {
+      for (let i = 0; i < this.poolingContexts.length; i += 1) {
         if (this.poolingContexts[i].viewName === viewName &&
           this.poolingContexts[i].binding[recKey] !== undefined &&
           this.poolingContexts[i].binding[recKey][key] !== undefined &&
           this.poolingContexts[i].store[recKey] !== undefined &&
           this.poolingContexts[i].store[recKey][key] !== undefined) {
           this.poolingContexts[i].store[recKey][key] = value
-          targetNodes = this.poolingContexts[i].binding[recKey][key]
-          for (j = 0; j < targetNodes.length; j++) {
-            refNode = document.getElementById(targetNodes[j].id)
+          const targetNodes = this.poolingContexts[i].binding[recKey][key]
+          for (let j = 0; j < targetNodes.length; j++) {
+            const refNode = document.getElementById(targetNodes[j].id)
             calcKey = targetNodes[j].id
             if (targetNodes[j].target && targetNodes[j].target.length > 0) {
               calcKey += INTERMediator.separator + targetNodes[j].target
@@ -98,29 +97,28 @@ const IMLibContextPool = {
 
   getContextInfoFromId: function (idValue, target) {
     'use strict'
-    let targetContext, element, linkInfo, nodeInfo, targetName
     let result = null
     if (!idValue) {
       return result
     }
 
-    element = document.getElementById(idValue)
+    const element = document.getElementById(idValue)
     if (!element) {
       return result
     }
 
-    linkInfo = INTERMediatorLib.getLinkedElementInfo(element)
+    const linkInfo = INTERMediatorLib.getLinkedElementInfo(element)
     if (!linkInfo && INTERMediatorLib.isWidgetElement(element.parentNode)) {
       linkInfo = INTERMediatorLib.getLinkedElementInfo(element.parentNode)
     }
-    nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0])
+    const nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0])
 
-    targetName = target ? target : '_im_no_target'
+    const targetName = target ? target : '_im_no_target'
     if (this.poolingContexts === null) {
       return result
     }
     for (let i = 0; i < this.poolingContexts.length; i += 1) {
-      targetContext = this.poolingContexts[i]
+      const targetContext = this.poolingContexts[i]
       if (targetContext.contextInfo[idValue] &&
         targetContext.contextInfo[idValue][targetName] &&
         targetContext.contextInfo[idValue][targetName].context.contextName === nodeInfo.table) {
@@ -133,24 +131,23 @@ const IMLibContextPool = {
 
   getKeyFieldValueFromId: function (idValue, target) {
     'use strict'
-    var contextInfo = this.getContextInfoFromId(idValue, target)
+    const contextInfo = this.getContextInfoFromId(idValue, target)
     if (!contextInfo) {
       return null
     }
-    var contextName = contextInfo.context.contextName
-    var contextDef = IMLibContextPool.getContextDef(contextName)
+    const contextName = contextInfo.context.contextName
+    const contextDef = IMLibContextPool.getContextDef(contextName)
     if (!contextDef) {
       return null
     }
-    var keyField = contextDef.key ? contextDef.key : 'id'
+    const keyField = contextDef.key ? contextDef.key : 'id'
     return contextInfo.record.substr(keyField.length + 1)
   },
 
   updateContext: function (idValue, target) {
     'use strict'
-    var contextInfo, value
-    contextInfo = IMLibContextPool.getContextInfoFromId(idValue, target)
-    value = IMLibElement.getValueFromIMNode(document.getElementById(idValue))
+    const contextInfo = IMLibContextPool.getContextInfoFromId(idValue, target)
+    const value = IMLibElement.getValueFromIMNode(document.getElementById(idValue))
     if (contextInfo) {
       contextInfo.context.setValue(
         contextInfo.record, contextInfo.field, value, false, target, contextInfo.portal)
@@ -160,9 +157,7 @@ const IMLibContextPool = {
 
   getContextFromEnclosure: function (enclosureNode) {
     'use strict'
-    var i
-
-    for (i = 0; i < this.poolingContexts.length; i += 1) {
+    for (let i = 0; i < this.poolingContexts.length; i += 1) {
       if (this.poolingContexts[i].enclosureNode === enclosureNode) {
         return this.poolingContexts[i]
       }
@@ -171,12 +166,11 @@ const IMLibContextPool = {
 
   contextFromEnclosureId: function (idValue) {
     'use strict'
-    var i, enclosure
     if (!idValue) {
       return false
     }
-    for (i = 0; i < this.poolingContexts.length; i += 1) {
-      enclosure = this.poolingContexts[i].enclosureNode
+    for (let i = 0; i < this.poolingContexts.length; i += 1) {
+      const enclosure = this.poolingContexts[i].enclosureNode
       if (enclosure.getAttribute('id') === idValue) {
         return this.poolingContexts[i]
       }
@@ -186,14 +180,13 @@ const IMLibContextPool = {
 
   contextFromName: function (cName) {
     'use strict'
-    var i
     if (!cName) {
       return false
     }
     if (cName == '_') {
       return IMLibLocalContext
     }
-    for (i = 0; i < this.poolingContexts.length; i += 1) {
+    for (let i = 0; i < this.poolingContexts.length; i += 1) {
       if (this.poolingContexts[i].contextName === cName) {
         return this.poolingContexts[i]
       }
@@ -203,12 +196,11 @@ const IMLibContextPool = {
 
   getContextFromName: function (cName) {
     'use strict'
-    var i
     let result = []
     if (!cName) {
       return false
     }
-    for (i = 0; i < this.poolingContexts.length; i += 1) {
+    for (let i = 0; i < this.poolingContexts.length; i += 1) {
       if (this.poolingContexts[i].contextName === cName) {
         result.push(this.poolingContexts[i])
       }
@@ -218,13 +210,12 @@ const IMLibContextPool = {
 
   getContextsFromNameAndForeignValue: function (cName, fValue, parentKeyField) {
     'use strict'
-    var i
     let result = []
     if (!cName) {
       return false
     }
     // parentKeyField = 'id'
-    for (i = 0; i < this.poolingContexts.length; i += 1) {
+    for (let i = 0; i < this.poolingContexts.length; i += 1) {
       if (this.poolingContexts[i].contextName === cName &&
         this.poolingContexts[i].foreignValue[parentKeyField] === fValue) {
         result.push(this.poolingContexts[i])
@@ -235,13 +226,12 @@ const IMLibContextPool = {
 
   dependingObjects: function (idValue) {
     'use strict'
-    var i, j
     let result = []
     if (!idValue) {
       return false
     }
-    for (i = 0; i < this.poolingContexts.length; i += 1) {
-      for (j = 0; j < this.poolingContexts[i].dependingObject.length; j++) {
+    for (let i = 0; i < this.poolingContexts.length; i += 1) {
+      for (let j = 0; j < this.poolingContexts[i].dependingObject.length; j++) {
         if (this.poolingContexts[i].dependingObject[j] === idValue) {
           result.push(this.poolingContexts[i])
         }
@@ -252,9 +242,8 @@ const IMLibContextPool = {
 
   getChildContexts: function (parentContext) {
     'use strict'
-    var i
     let childContexts = []
-    for (i = 0; i < this.poolingContexts.length; i += 1) {
+    for (let i = 0; i < this.poolingContexts.length; i += 1) {
       if (this.poolingContexts[i].parentContext === parentContext) {
         childContexts.push(this.poolingContexts[i])
       }
@@ -266,16 +255,15 @@ const IMLibContextPool = {
 
   removeContextsFromPool: function (contexts) {
     'use strict'
-    var i
     let regIds = []
     let delIds = []
-    for (i = 0; i < this.poolingContexts.length; i += 1) {
+    for (let i = 0; i < this.poolingContexts.length; i += 1) {
       if (contexts.indexOf(this.poolingContexts[i]) > -1) {
         regIds.push(this.poolingContexts[i].registeredId)
         delIds.push(i)
       }
     }
-    for (i = delIds.length - 1; i > -1; i--) {
+    for (let i = delIds.length - 1; i > -1; i--) {
       this.poolingContexts.splice(delIds[i], 1)
     }
     return regIds
@@ -283,25 +271,21 @@ const IMLibContextPool = {
 
   removeRecordFromPool: function (repeaterIdValue) {
     'use strict'
-    var i, j, field
-    let nodeIds = []
-    let targetKeying, targetKeyingObj, parentKeying, relatedId, idValue, delNodes,
-      contextAndKey, sameOriginContexts, countDeleteNodes
-
-    contextAndKey = getContextAndKeyFromId(repeaterIdValue)
+    let nodeIds = [], delNodes = []
+    const contextAndKey = getContextAndKeyFromId(repeaterIdValue)
     if (contextAndKey === null) {
       return
     }
-    sameOriginContexts = this.getContextsWithSameOrigin(contextAndKey.context)
+    const sameOriginContexts = this.getContextsWithSameOrigin(contextAndKey.context)
     // sameOriginContexts.push(contextAndKey.context)
-    targetKeying = contextAndKey.key
+    const targetKeying = contextAndKey.key
     // targetKeyingObj = contextAndKey.context.binding[targetKeying]
 
-    for (i = 0; i < sameOriginContexts.length; i += 1) {
-      targetKeyingObj = sameOriginContexts[i].binding[targetKeying]
-      for (field in targetKeyingObj) {
+    for (let i = 0; i < sameOriginContexts.length; i += 1) {
+      const targetKeyingObj = sameOriginContexts[i].binding[targetKeying]
+      for (const field in targetKeyingObj) {
         if (targetKeyingObj.hasOwnProperty(field)) {
-          for (j = 0; j < targetKeyingObj[field].length; j++) {
+          for (let j = 0; j < targetKeyingObj[field].length; j++) {
             if (nodeIds.indexOf(targetKeyingObj[field][j].id) < 0) {
               nodeIds.push(targetKeyingObj[field][j].id)
             }
@@ -312,8 +296,8 @@ const IMLibContextPool = {
       if (INTERMediatorOnPage.dbClassName === 'FileMaker_FX' ||
         INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI') {
         // for FileMaker portal access mode
-        parentKeying = Object.keys(contextAndKey.context.binding)[0]
-        relatedId = targetKeying.split('=')[1]
+        const parentKeying = Object.keys(contextAndKey.context.binding)[0]
+        const relatedId = targetKeying.split('=')[1]
         if (sameOriginContexts[i].binding[parentKeying] &&
           sameOriginContexts[i].binding[parentKeying]._im_repeater &&
           sameOriginContexts[i].binding[parentKeying]._im_repeater[relatedId] &&
@@ -322,9 +306,8 @@ const IMLibContextPool = {
         }
       }
     }
-    delNodes = []
-    for (i = 0; i < sameOriginContexts.length; i += 1) {
-      for (idValue in sameOriginContexts[i].contextInfo) {
+    for (let i = 0; i < sameOriginContexts.length; i += 1) {
+      for (const idValue in sameOriginContexts[i].contextInfo) {
         if (sameOriginContexts[i].contextInfo.hasOwnProperty(idValue)) {
           if (nodeIds.indexOf(idValue) >= 0) {
             delete contextAndKey.context.contextInfo[idValue]
@@ -335,7 +318,7 @@ const IMLibContextPool = {
       delete sameOriginContexts[i].binding[targetKeying]
       delete sameOriginContexts[i].store[targetKeying]
     }
-    countDeleteNodes = delNodes.length
+    const countDeleteNodes = delNodes.length
     IMLibElement.deleteNodes(delNodes)
 
     this.poolingContexts = this.poolingContexts.filter(function (context) {
@@ -346,15 +329,13 @@ const IMLibContextPool = {
 
     // Private functions
     function getContextAndKeyFromId(repeaterIdValue) {
-      var i, field, j, keying, foreignKey
-
-      for (i = 0; i < IMLibContextPool.poolingContexts.length; i += 1) {
-        for (keying in IMLibContextPool.poolingContexts[i].binding) {
+      for (let i = 0; i < IMLibContextPool.poolingContexts.length; i += 1) {
+        for (const keying in IMLibContextPool.poolingContexts[i].binding) {
           if (IMLibContextPool.poolingContexts[i].binding.hasOwnProperty(keying)) {
-            for (field in IMLibContextPool.poolingContexts[i].binding[keying]) {
+            for (const field in IMLibContextPool.poolingContexts[i].binding[keying]) {
               if (IMLibContextPool.poolingContexts[i].binding[keying].hasOwnProperty(field) &&
                 field === '_im_repeater') {
-                for (j = 0; j < IMLibContextPool.poolingContexts[i].binding[keying][field].length; j++) {
+                for (let j = 0; j < IMLibContextPool.poolingContexts[i].binding[keying][field].length; j++) {
                   if (repeaterIdValue === IMLibContextPool.poolingContexts[i].binding[keying][field][j].id) {
                     return ({context: IMLibContextPool.poolingContexts[i], key: keying})
                   }
@@ -363,9 +344,9 @@ const IMLibContextPool = {
                 if (INTERMediatorOnPage.dbClassName === 'FileMaker_FX' ||
                   INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI') {
                   // for FileMaker portal access mode
-                  for (foreignKey in IMLibContextPool.poolingContexts[i].binding[keying][field]) {
+                  for (const foreignKey in IMLibContextPool.poolingContexts[i].binding[keying][field]) {
                     if (IMLibContextPool.poolingContexts[i].binding[keying][field].hasOwnProperty(foreignKey)) {
-                      for (j = 0; j < IMLibContextPool.poolingContexts[i].binding[keying][field][foreignKey].length; j++) {
+                      for (let j = 0; j < IMLibContextPool.poolingContexts[i].binding[keying][field][foreignKey].length; j++) {
                         if (repeaterIdValue === IMLibContextPool.poolingContexts[i].binding[keying][field][foreignKey][j].id) {
                           return ({
                             context: IMLibContextPool.poolingContexts[i],
@@ -387,14 +368,12 @@ const IMLibContextPool = {
 
   getContextsWithSameOrigin: function (originalContext) {
     'use strict'
-    var i
-    let contexts = []
-    let contextDef
+    const contexts = []
     let isPortal = false
 
-    contextDef = IMLibContextPool.getContextDef(originalContext.contextName)
+    const contextDef = IMLibContextPool.getContextDef(originalContext.contextName)
     if (contextDef && contextDef.relation) {
-      for (i in contextDef.relation) {
+      for (let i in contextDef.relation) {
         if (contextDef.relation.hasOwnProperty(i) && contextDef.relation[i].portal) {
           isPortal = true
           break
@@ -411,65 +390,64 @@ const IMLibContextPool = {
     return contexts
   },
 
-  updateOnAnotherClient: async function (eventName, info) {
-    'use strict'
-    let entityName = info.entity
-    let contextDef, contextView, keyField, recKey
+  updateOnAnotherClientUpdated: async function (info) {
+    const entityName = info.entity
+    for (let i = 0; i < this.poolingContexts.length; i += 1) {
+      const contextDef = this.getContextDef(this.poolingContexts[i].contextName)
+      const contextView = contextDef.view ? contextDef.view : contextDef.name
+      if (contextView === entityName) {
+        const keyField = contextDef.key
+        const recKey = keyField + '=' + info.pkvalue[0]
+        this.poolingContexts[i].setValue(recKey, info.field[0], info.value[0])
 
-    if (eventName === 'update') {
-      for (let i = 0; i < this.poolingContexts.length; i += 1) {
-        contextDef = this.getContextDef(this.poolingContexts[i].contextName)
-        contextView = contextDef.view ? contextDef.view : contextDef.name
-        if (contextView === entityName) {
-          keyField = contextDef.key
-          recKey = keyField + '=' + info.pkvalue[0]
-          this.poolingContexts[i].setValue(recKey, info.field[0], info.value[0])
-
-          var bindingInfo = this.poolingContexts[i].binding[recKey][info.field[0]]
-          for (let j = 0; j < bindingInfo.length; j++) {
-            var updateRequiredContext = IMLibContextPool.dependingObjects(bindingInfo[j].id)
-            for (let k = 0; k < updateRequiredContext.length; k++) {
-              updateRequiredContext[k].foreignValue = {}
-              updateRequiredContext[k].foreignValue[info.field[0]] = info.value[0]
-              if (updateRequiredContext[k]) {
-                await INTERMediator.constructMain(updateRequiredContext[k])
-              }
+        const bindingInfo = this.poolingContexts[i].binding[recKey][info.field[0]]
+        for (let j = 0; j < bindingInfo.length; j++) {
+          const updateRequiredContext = IMLibContextPool.dependingObjects(bindingInfo[j].id)
+          for (let k = 0; k < updateRequiredContext.length; k++) {
+            updateRequiredContext[k].foreignValue = {}
+            updateRequiredContext[k].foreignValue[info.field[0]] = info.value[0]
+            if (updateRequiredContext[k]) {
+              await INTERMediator.constructMain(updateRequiredContext[k])
             }
           }
         }
       }
-      IMLibCalc.recalculation()
-    } else if (eventName === 'create') {
-      for (let i = 0; i < this.poolingContexts.length; i += 1) {
-        contextDef = this.getContextDef(this.poolingContexts[i].contextName)
-        contextView = contextDef.view ? contextDef.view : contextDef.name
-        if (contextView === entityName) {
-          if (this.poolingContexts[i].isContaining(info.value[0])) {
-            await INTERMediator.constructMain(this.poolingContexts[i])
-          }
-        }
-      }
-      IMLibCalc.recalculation()
-    } else if (eventName === 'delete') {
-      for (let i = 0; i < this.poolingContexts.length; i += 1) {
-        contextDef = this.getContextDef(this.poolingContexts[i].contextName)
-        contextView = contextDef.view ? contextDef.view : contextDef.name
-        if (contextView === entityName) {
-          this.poolingContexts[i].removeEntry(info.pkvalue)
-        }
-      }
-      IMLibCalc.recalculation()
     }
+    IMLibCalc.recalculation()
+  },
+  updateOnAnotherClientCreated: async function (info) {
+    const entityName = info.entity
+    for (let i = 0; i < this.poolingContexts.length; i += 1) {
+      const contextDef = this.getContextDef(this.poolingContexts[i].contextName)
+      const contextView = contextDef.view ? contextDef.view : contextDef.name
+      if (contextView === entityName) {
+        if (this.poolingContexts[i].isContaining(info.value[0])) {
+          await INTERMediator.constructMain(this.poolingContexts[i])
+        }
+      }
+    }
+    IMLibCalc.recalculation()
+  },
+
+  updateOnAnotherClientDeleted: function (info) {
+    const entityName = info.entity
+    for (let i = 0; i < this.poolingContexts.length; i += 1) {
+      const contextDef = this.getContextDef(this.poolingContexts[i].contextName)
+      const contextView = contextDef.view ? contextDef.view : contextDef.name
+      if (contextView === entityName) {
+        this.poolingContexts[i].removeEntry(info.pkvalue)
+      }
+    }
+    IMLibCalc.recalculation()
   },
 
   getMasterContext: function () {
     'use strict'
-    var i, contextDef
     if (!this.poolingContexts) {
       return null
     }
-    for (i = 0; i < this.poolingContexts.length; i += 1) {
-      contextDef = this.poolingContexts[i].getContextDef()
+    for (let i = 0; i < this.poolingContexts.length; i += 1) {
+      const contextDef = this.poolingContexts[i].getContextDef()
       if (contextDef['navi-control'] && contextDef['navi-control'].match(/master/)) {
         return this.poolingContexts[i]
       }
@@ -479,12 +457,11 @@ const IMLibContextPool = {
 
   getDetailContext: function () {
     'use strict'
-    var i, contextDef
     if (!this.poolingContexts) {
       return null
     }
-    for (i = 0; i < this.poolingContexts.length; i += 1) {
-      contextDef = this.poolingContexts[i].getContextDef()
+    for (let i = 0; i < this.poolingContexts.length; i += 1) {
+      const contextDef = this.poolingContexts[i].getContextDef()
       if (contextDef['navi-control'] && contextDef['navi-control'].match(/detail/)) {
         return this.poolingContexts[i]
       }
@@ -499,35 +476,34 @@ const IMLibContextPool = {
 
   getContextFromNodeId: function (nodeId) {
     'use strict'
-    var i, context, contextDef, rKey, fKey, pKey, isPortal, bindInfo
     if (!this.poolingContexts) {
       return null
     }
-    for (i = 0; i < this.poolingContexts.length; i += 1) {
-      context = this.poolingContexts[i]
-      contextDef = context.getContextDef()
-      isPortal = false
+    for (let i = 0; i < this.poolingContexts.length; i += 1) {
+      const context = this.poolingContexts[i]
+      const contextDef = context.getContextDef()
+      let isPortal = false
       if (contextDef.relation) {
-        for (rKey in contextDef.relation) {
+        for (let rKey in contextDef.relation) {
           if (contextDef.relation[rKey].portal) {
             isPortal = true
           }
         }
       }
-      for (rKey in context.binding) {
+      for (const rKey in context.binding) {
         if (context.binding.hasOwnProperty(rKey)) {
-          for (fKey in context.binding[rKey]) {
+          for (const fKey in context.binding[rKey]) {
             if (isPortal) {
-              for (pKey in context.binding[rKey][fKey]) {
+              for (const pKey in context.binding[rKey][fKey]) {
                 if (context.binding[rKey][fKey].hasOwnProperty(pKey)) {
-                  bindInfo = context.binding[rKey][fKey][pKey]
+                  const bindInfo = context.binding[rKey][fKey][pKey]
                   if (bindInfo.nodeId === nodeId) {
                     return context
                   }
                 }
               }
             } else {
-              bindInfo = context.binding[rKey][fKey]
+              const bindInfo = context.binding[rKey][fKey]
               if (bindInfo.nodeId === nodeId) {
                 return context
               }
@@ -541,12 +517,11 @@ const IMLibContextPool = {
 
   getContextFromEnclosureNode: function (enclosureNode) {
     'use strict'
-    var i, context
     if (!this.poolingContexts) {
       return null
     }
-    for (i = 0; i < this.poolingContexts.length; i += 1) {
-      context = this.poolingContexts[i]
+    for (let i = 0; i < this.poolingContexts.length; i += 1) {
+      const context = this.poolingContexts[i]
       if (context.enclosureNode === enclosureNode) {
         return context
       }
@@ -554,7 +529,7 @@ const IMLibContextPool = {
     return null
   },
 
-  generateContextObject: function (contextDef, enclosure, repeaters, repeatersOriginal ) {
+  generateContextObject: function (contextDef, enclosure, repeaters, repeatersOriginal) {
     'use strict'
     var contextObj = new IMLibContext(contextDef.name)
     contextObj.contextDefinition = contextDef
@@ -567,11 +542,10 @@ const IMLibContextPool = {
 
   getPagingContext: function () {
     'use strict'
-    var i, context, contextDef
     if (this.poolingContexts) {
-      for (i = 0; i < this.poolingContexts.length; i += 1) {
-        context = this.poolingContexts[i]
-        contextDef = context.getContextDef()
+      for (let i = 0; i < this.poolingContexts.length; i += 1) {
+        const context = this.poolingContexts[i]
+        const contextDef = context.getContextDef()
         if (contextDef.paging) {
           return context
         }

@@ -82,6 +82,13 @@ let INTERMediatorOnPage = {
   notShowHeaderFooterOnNoResult: false,
   newRecordId: null,
 
+  syncBeforeUpdate: null,
+  syncAfterUpdate: null,
+  syncBeforeCreate: null,
+  syncAfterCreate: null,
+  syncBeforeDelete: null,
+  syncAfterDelete: null,
+
   clearCredentials: function () {
     'use strict'
     INTERMediatorOnPage.authChallenge = null

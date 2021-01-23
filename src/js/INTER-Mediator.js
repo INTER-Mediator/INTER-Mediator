@@ -317,9 +317,42 @@ const INTERMediator = {
     INTERMediator.ssSocket.on('connected', INTERMediator.serviceServerConnected)
     // window.addEventListener('unload', INTERMediator.serviceServerShouldDisconnect)
     INTERMediator.ssSocket.on('notify', (msg) => {
-      console.error(msg)
-      'update' || 'create' || 'delete'
-      IMLibContextPool.updateOnAnotherClient(msg.operation, msg.data)
+      let isContinue = true;
+      switch (msg.operation) {
+        case 'update':
+          if(INTERMediatorOnPage.syncBeforeUpdate) {
+            isContinue = INTERMediatorOnPage.syncBeforeUpdate(msg.data)
+          }
+          if(isContinue){
+            IMLibContextPool.updateOnAnotherClientUpdated(msg.data)
+            if(INTERMediatorOnPage.syncAfterUpdate) {
+              INTERMediatorOnPage.syncAfterUpdate(msg.data)
+            }
+          }
+          break;
+        case 'create':
+          if(INTERMediatorOnPage.syncBeforeCreate) {
+            isContinue = INTERMediatorOnPage.syncBeforeCreate(msg.data)
+          }
+          if(isContinue){
+            IMLibContextPool.updateOnAnotherClientCreated(msg.data)
+            if(INTERMediatorOnPage.syncAfterCreate) {
+              INTERMediatorOnPage.syncAfterCreate(msg.data)
+            }
+          }
+          break;
+        case 'delete':
+          if(INTERMediatorOnPage.syncBeforeDelete) {
+            isContinue = INTERMediatorOnPage.syncBeforeDelete(msg.data)
+          }
+          if(isContinue){
+            IMLibContextPool.updateOnAnotherClientDeleted(msg.data)
+            if(INTERMediatorOnPage.syncAfterDelete) {
+              INTERMediatorOnPage.syncAfterDelete(msg.data)
+            }
+          }
+          break;
+      }
     })
   },
 
