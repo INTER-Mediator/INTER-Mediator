@@ -16,6 +16,7 @@ Ver.7 (in development)
   file or the Sample page > JS Components > jQuery FileUploader > CSV file upload with jQuery_File_Upload.
 - If setting INTERMediator.alwaysAddOperationExchange to true, the local context criteria combine logical
   expressions with ADN operator.
+- The font-weight of the css * target changed from lighter to non description for adjusting the Android.
 - [BUG FIX] The variable name '$follwingTimezones' in the params.php file was typo at all! Change it to $followingTimezones.
 
 Ver.6 (November 21, 2020)
