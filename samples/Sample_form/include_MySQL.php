@@ -25,7 +25,7 @@ IM_Entry(
             'query' => [],
             'sort' => [['field' => 'id', 'direction' => 'asc',],],
             'repeat-control' => 'insert copy-contact,history delete',
-            'sync-control' => 'create update delete',
+            'sync-control' => 'create-notify update delete',
             'button-names' => [
                 'insert' => 'レコード追加',
                 'delete' => 'レコード削除',
@@ -98,5 +98,5 @@ IM_Entry(
         'db-class' => 'PDO',
 //        'dsn' => 'mysql:host=127.0.0.1;dbname=test_db;charset=utf8mb4',
     ],
-    false
+    2
 );

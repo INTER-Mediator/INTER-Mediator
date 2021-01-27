@@ -317,41 +317,45 @@ const INTERMediator = {
     INTERMediator.ssSocket.on('connected', INTERMediator.serviceServerConnected)
     // window.addEventListener('unload', INTERMediator.serviceServerShouldDisconnect)
     INTERMediator.ssSocket.on('notify', (msg) => {
-      let isContinue = true;
+      let isContinue = true
       switch (msg.operation) {
         case 'update':
-          if(INTERMediatorOnPage.syncBeforeUpdate) {
+          if (INTERMediatorOnPage.syncBeforeUpdate) {
             isContinue = INTERMediatorOnPage.syncBeforeUpdate(msg.data)
           }
-          if(isContinue){
-            IMLibContextPool.updateOnAnotherClientUpdated(msg.data)
-            if(INTERMediatorOnPage.syncAfterUpdate) {
+          if (isContinue) {
+            if (!msg.justnotify) {
+              IMLibContextPool.updateOnAnotherClientUpdated(msg.data)
+            }
+            if (INTERMediatorOnPage.syncAfterUpdate) {
               INTERMediatorOnPage.syncAfterUpdate(msg.data)
             }
           }
-          break;
+          break
         case 'create':
-          if(INTERMediatorOnPage.syncBeforeCreate) {
+          if (INTERMediatorOnPage.syncBeforeCreate) {
             isContinue = INTERMediatorOnPage.syncBeforeCreate(msg.data)
           }
-          if(isContinue){
-            IMLibContextPool.updateOnAnotherClientCreated(msg.data)
-            if(INTERMediatorOnPage.syncAfterCreate) {
+          if (isContinue) {
+            if (!msg.justnotify) {
+              IMLibContextPool.updateOnAnotherClientCreated(msg.data)
+            }
+            if (INTERMediatorOnPage.syncAfterCreate) {
               INTERMediatorOnPage.syncAfterCreate(msg.data)
             }
           }
-          break;
+          break
         case 'delete':
-          if(INTERMediatorOnPage.syncBeforeDelete) {
+          if (INTERMediatorOnPage.syncBeforeDelete) {
             isContinue = INTERMediatorOnPage.syncBeforeDelete(msg.data)
           }
-          if(isContinue){
+          if (isContinue) {
             IMLibContextPool.updateOnAnotherClientDeleted(msg.data)
-            if(INTERMediatorOnPage.syncAfterDelete) {
+            if (INTERMediatorOnPage.syncAfterDelete) {
               INTERMediatorOnPage.syncAfterDelete(msg.data)
             }
           }
-          break;
+          break
       }
     })
   },

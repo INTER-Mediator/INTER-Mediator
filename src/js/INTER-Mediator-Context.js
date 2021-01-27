@@ -965,7 +965,7 @@ class IMLibContext {
     contextDef = this.getContextDef()
     contextName = contextDef.name
     if (contextDef.query) {
-      for (const i of contextDef.query) {
+      for (const i in contextDef.query) {
         checkResult.push(checkCondition(contextDef.query[i], value))
       }
     }

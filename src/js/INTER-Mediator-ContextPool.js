@@ -380,7 +380,7 @@ const IMLibContextPool = {
         }
       }
     }
-    for (i = 0; i < IMLibContextPool.poolingContexts.length; i += 1) {
+    for (let i = 0; i < IMLibContextPool.poolingContexts.length; i += 1) {
       if (IMLibContextPool.poolingContexts[i].sourceName === originalContext.sourceName) {
         if (!isPortal || originalContext.parentContext !== IMLibContextPool.poolingContexts[i]) {
           contexts.push(IMLibContextPool.poolingContexts[i])

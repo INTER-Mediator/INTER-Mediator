@@ -97,11 +97,11 @@ class NotifyServer
      * @param $field
      * @param $value
      */
-    public function updated($clientId, $entity, $pkArray, $field, $value)
+    public function updated($clientId, $entity, $pkArray, $field, $value, $isNotify)
     {
         $channels = $this->dbClass->notifyHandler->matchInRegistered($clientId, $entity, $pkArray);
         $this->trigger($channels, 'update',
-            ['entity' => $entity, 'pkvalue' => $pkArray, 'field' => $field, 'value' => $value]);
+            ['justnotify' => $isNotify, 'entity' => $entity, 'pkvalue' => $pkArray, 'field' => $field, 'value' => $value]);
     }
 
     /**
@@ -110,17 +110,11 @@ class NotifyServer
      * @param $pkArray
      * @param $record
      */
-    public function created($clientId, $entity, $pkArray, $record)
+    public function created($clientId, $entity, $pkArray, $record, $isNotify)
     {
         $channels = $this->dbClass->notifyHandler->appendIntoRegistered($clientId, $entity, $pkArray);
-
-        $data = array(
-            'entity' => $entity,
-            'pkvalue' => $pkArray,
-            //   'field'=>array_keys($record),
-            'value' => array_values($record)
-        );
-        $this->trigger($channels, 'create', $data);
+        $this->trigger($channels, 'create',
+            ['justnotify' => $isNotify, 'entity' => $entity, 'pkvalue' => $pkArray, 'value' => array_values($record)]);
     }
 
     /**
