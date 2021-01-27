@@ -386,12 +386,10 @@ class IMLibContext {
 
   setRelationWithParent(currentRecord, parentObjectInfo, parentContext) {
     'use strict'
-    let relationDef, joinField, fieldName, i
-
     this.parentContext = parentContext
     if (currentRecord) {
       try {
-        relationDef = this.contextDefinition.relation
+        const relationDef = this.contextDefinition.relation
         if (relationDef) {
           for (const index of Object.keys(relationDef)) {
             if (Boolean(relationDef[index].portal) === true) {
@@ -399,11 +397,11 @@ class IMLibContext {
               this.potalContainingRecordKV = INTERMediatorOnPage.defaultKeyName + '=' +
                 currentRecord[INTERMediatorOnPage.defaultKeyName]
             }
-            joinField = relationDef[index]['join-field']
+            const joinField = relationDef[index]['join-field']
             this.addForeignValue(joinField, currentRecord[joinField])
-            for (fieldName in parentObjectInfo) {
+            for (const fieldName in parentObjectInfo) {
               if (fieldName === relationDef[index]['join-field']) {
-                for (i = 0; i < parentObjectInfo[fieldName].length; i += 1) {
+                for (let i = 0; i < parentObjectInfo[fieldName].length; i += 1) {
                   this.addDependingObject(parentObjectInfo[fieldName][i])
                 }
                 this.dependingParentObjectInfo =

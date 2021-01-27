@@ -553,7 +553,7 @@ const IMLibPageNavigation = {
 
     INTERMediatorOnPage.showProgress()
     // await INTERMediatorOnPage.retrieveAuthInfo()
-    for (i = 0; i < IMLibContextPool.poolingContexts.length; i += 1) {
+    for (let i = 0; i < IMLibContextPool.poolingContexts.length; i += 1) {
       context = IMLibContextPool.poolingContexts[i]
       updateData = context.getModified()
       for (keying in updateData) {
