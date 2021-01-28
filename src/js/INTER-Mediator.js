@@ -1180,11 +1180,7 @@ const INTERMediator = {
 
       repeatersOriginal = contextObj.original
       currentContextDef = contextObj.getContextDef()
-      if(currentContextDef.data) {
-        targetRecordset = targetRecords.recordset
-      } else {
-        targetRecordset = targetRecords.dbresult
-      }
+      targetRecordset = targetRecords.dbresult
       targetTotalCount = targetRecords.totalCount
 
       repeatersOneRec = cloneEveryNodes(repeatersOriginal)
