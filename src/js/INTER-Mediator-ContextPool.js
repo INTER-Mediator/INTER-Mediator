@@ -373,14 +373,14 @@ const IMLibContextPool = {
 
     const contextDef = IMLibContextPool.getContextDef(originalContext.contextName)
     if (contextDef && contextDef.relation) {
-      for (let i in contextDef.relation) {
+      for (const i in contextDef.relation) {
         if (contextDef.relation.hasOwnProperty(i) && contextDef.relation[i].portal) {
           isPortal = true
           break
         }
       }
     }
-    for (i = 0; i < IMLibContextPool.poolingContexts.length; i += 1) {
+    for (let i = 0; i < IMLibContextPool.poolingContexts.length; i += 1) {
       if (IMLibContextPool.poolingContexts[i].sourceName === originalContext.sourceName) {
         if (!isPortal || originalContext.parentContext !== IMLibContextPool.poolingContexts[i]) {
           contexts.push(IMLibContextPool.poolingContexts[i])

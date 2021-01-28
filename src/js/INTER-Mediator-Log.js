@@ -106,31 +106,29 @@ const INTERMediatorLog = {
 
   flushMessage: function () {
     'use strict'
-    var debugNode, title, body, i, j, lines, clearButton, tNode
-
     if (INTERMediatorLog.errorMessageByAlert) {
       INTERMediatorLog.suppressErrorMessageOnPage = true
     }
     if (!INTERMediatorLog.suppressErrorMessageOnPage &&
       INTERMediatorLog.errorMessages.length > 0) {
-      debugNode = document.getElementById('_im_error_panel_4873643897897')
+      let debugNode = document.getElementById('_im_error_panel_4873643897897')
       if (debugNode === null) {
         debugNode = document.createElement('div')
         debugNode.setAttribute('id', '_im_error_panel_4873643897897')
         debugNode.style.backgroundColor = '#FFDDDD'
-        title = document.createElement('h3')
+        const title = document.createElement('h3')
         title.appendChild(document.createTextNode('Error Info from INTER-Mediator'))
         title.appendChild(document.createElement('hr'))
         debugNode.appendChild(title)
-        body = document.getElementsByTagName('body')[0]
+        const body = document.getElementsByTagName('body')[0]
         body.insertBefore(debugNode, body.firstChild)
       }
       debugNode.appendChild(document.createTextNode(
         '============ERROR MESSAGE on ' + new Date() + '============'))
       debugNode.appendChild(document.createElement('hr'))
-      for (i = 0; i < INTERMediatorLog.errorMessages.length; i += 1) {
-        lines = INTERMediatorLog.errorMessages[i].split(IMLib.nl_char)
-        for (j = 0; j < lines.length; j++) {
+      for (let i = 0; i < INTERMediatorLog.errorMessages.length; i += 1) {
+        const lines = INTERMediatorLog.errorMessages[i].split(IMLib.nl_char)
+        for (let j = 0; j < lines.length; j++) {
           if (j > 0) {
             debugNode.appendChild(document.createElement('br'))
           }
@@ -142,12 +140,12 @@ const INTERMediatorLog = {
     if (!INTERMediatorLog.suppressDebugMessageOnPage &&
       INTERMediatorLog.debugMode &&
       INTERMediatorLog.debugMessages.length > 0) {
-      debugNode = document.getElementById('_im_debug_panel_4873643897897')
+      let debugNode = document.getElementById('_im_debug_panel_4873643897897')
       if (debugNode === null) {
         debugNode = document.createElement('div')
         debugNode.setAttribute('id', '_im_debug_panel_4873643897897')
         debugNode.style.backgroundColor = '#DDDDDD'
-        clearButton = document.createElement('button')
+        const clearButton = document.createElement('button')
         clearButton.setAttribute('title', 'clear')
         clearButton.id = '_im_debug_panel_4873643897897_button'
         IMLibMouseEventDispatch.setExecute(clearButton.id, function () {
@@ -155,14 +153,14 @@ const INTERMediatorLog = {
           target = document.getElementById('_im_debug_panel_4873643897897')
           target.parentNode.removeChild(target)
         })
-        tNode = document.createTextNode('clear')
+        const tNode = document.createTextNode('clear')
         clearButton.appendChild(tNode)
-        title = document.createElement('h3')
+        const title = document.createElement('h3')
         title.appendChild(document.createTextNode('Debug Info from INTER-Mediator'))
         title.appendChild(clearButton)
         title.appendChild(document.createElement('hr'))
         debugNode.appendChild(title)
-        body = document.getElementsByTagName('body')[0]
+        const body = document.getElementsByTagName('body')[0]
         if (body) {
           if (body.firstChild) {
             body.insertBefore(debugNode, body.firstChild)
@@ -180,9 +178,9 @@ const INTERMediatorLog = {
         debugNode.appendChild(aLink)
       }
       debugNode.appendChild(document.createElement('hr'))
-      for (i = 0; i < INTERMediatorLog.debugMessages.length; i += 1) {
-        lines = INTERMediatorLog.debugMessages[i].split(IMLib.nl_char)
-        for (j = 0; j < lines.length; j++) {
+      for (let i = 0; i < INTERMediatorLog.debugMessages.length; i += 1) {
+        const lines = INTERMediatorLog.debugMessages[i].split(IMLib.nl_char)
+        for (let j = 0; j < lines.length; j++) {
           if (j > 0) {
             debugNode.appendChild(document.createElement('br'))
           }

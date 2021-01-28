@@ -395,8 +395,7 @@ const IMLibUI = {
           }
 
           // await INTERMediatorOnPage.retrieveAuthInfo()
-          INTERMediator_DBAdapter.db_copy_async(
-            {
+          INTERMediator_DBAdapter.db_copy_async({
               name: contextDef.name,
               conditions: [{field: contextDef.key, operator: '=', value: keyValueCapt}],
               associated: assocDef.length > 0 ? assocDef : null

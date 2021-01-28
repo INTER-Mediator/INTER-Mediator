@@ -276,7 +276,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $this->dbClass->notifyHandler->queriedEntity(),
                         $this->dbClass->notifyHandler->queriedPrimaryKeys(),
                         $this->dbSettings->getFieldsRequired(),
-                        $this->dbSettings->getValue()
+                        $this->dbSettings->getValue(),
+                        strpos(strtolower($currentDataSource['sync-control']), 'update-notify') !== false
                     );
                 } catch (Exception $ex) {
                     if ($ex->getMessage() == '_im_no_pusher_exception') {
@@ -343,7 +344,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                             $this->PostData['notifyid'],
                             $this->dbClass->notifyHandler->queriedEntity(),
                             $this->dbClass->notifyHandler->queriedPrimaryKeys(),
-                            $result
+                            $result,
+                            strpos(strtolower($currentDataSource['sync-control']), 'create-notify') !== false
                         );
                     } catch (Exception $ex) {
                         if ($ex->getMessage() == '_im_no_pusher_exception') {
@@ -393,10 +395,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             if ($this->dbClass) {
                 $tableInfo = $this->dbSettings->getDataSourceTargetArray();
                 if (isset($tableInfo['soft-delete'])) {
-                    $delFlagField = 'delete';
-                    if (is_string($tableInfo['soft-delete'])) {
-                        $delFlagField = $tableInfo['soft-delete'];
-                    }
+                    $delFlagField = is_string($tableInfo['soft-delete']) ? $tableInfo['soft-delete'] : 'delete';
                     $this->logger->setDebugMessage(
                         "The soft-delete applies to this delete operation with '{$delFlagField}' field.", 2);
                     $this->dbSettings->addValueWithField($delFlagField, 1);
@@ -409,6 +408,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterDeleteFromDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterDeleteFromDB($result);
             }
+            $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
             if ($this->dbSettings->notifyServer
                 && $this->clientSyncAvailable
                 && isset($currentDataSource['sync-control'])
@@ -463,7 +463,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $this->PostData['notifyid'],
                         $this->dbClass->notifyHandler->queriedEntity(),
                         $this->dbClass->notifyHandler->queriedPrimaryKeys(),
-                        $this->dbClass->updatedRecord()
+                        $this->dbClass->updatedRecord(),
+                        strpos(strtolower($currentDataSource['sync-control']), 'create-notify') !== false
                     );
                 } catch (Exception $ex) {
                     if ($ex->getMessage() == '_im_no_pusher_exception') {
