@@ -240,23 +240,6 @@ class GenerateJSCode
                 "INTERMediatorOnPage.nonSupportMessageId",
                 "{$q}{$nonSupportMessageId}{$q}");
         }
-
-//        $pusherParams = null;
-//        if (isset($pusherParameters)) {
-//            $pusherParams = $pusherParameters;
-//        } else if (isset($options['pusher'])) {
-//            $pusherParams = $options['pusher'];
-//        }
-//        if (!is_null($pusherParams)) {
-//            $appKey = isset($pusherParams['key']) ? $pusherParams['key'] : "_im_key_isnt_supplied";
-//            $chName = isset($pusherParams['channel']) ? $pusherParams['channel'] : "_im_pusher_default_channel";
-//            $this->generateAssignJS(
-//                "INTERMediatorOnPage.clientNotificationKey",
-//                "function(){return ", IMUtil::arrayToJS($appKey, ''), ";}");
-//            $this->generateAssignJS(
-//                "INTERMediatorOnPage.clientNotificationChannel",
-//                "function(){return ", IMUtil::arrayToJS($chName, ''), ";}");
-//        }
         $metadata = json_decode(file_get_contents($pathToIM . $ds . "composer.json"));
         $this->generateAssignJS("INTERMediatorOnPage.metadata",
             "{version:{$q}{$metadata->version}{$q},releasedate:{$q}{$metadata->time}{$q}}");
@@ -382,6 +365,14 @@ class GenerateJSCode
         $sss = ServiceServerProxy::instance()->isActive();
         $this->generateAssignJS("INTERMediatorOnPage.serviceServerStatus", $sss ? "true" : "false");
 
+        $hasSyncControl = false;
+        foreach ($datasource as $contextDef) {
+            if (isset($contextDef['sync-control'])) {
+                $hasSyncControl = true;
+                break;
+            }
+        }
+        $activateClientService = $activateClientService && $hasSyncControl;
         $this->generateAssignJS("INTERMediatorOnPage.activateClientService", $activateClientService ? "true" : "false");
         $this->generateAssignJS("INTERMediatorOnPage.serviceServerPort", $serviceServerPort);
         $this->generateAssignJS("INTERMediatorOnPage.serviceServerHost", $q, $serviceServerHost, $q);
