@@ -16,26 +16,25 @@
     <title></title>
     <script type="text/javascript" src="def05.php"></script>
     <script type="text/javascript">
-        INTERMediatorOnPage.processingBeforePostOnlyContext = function (node) {
-            var dtString, nodeIds, idValue, aNode;
-            dtString = INTERMediatorLib.dateTimeStringISO();
-            nodeIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromNode(node, "message@postdt");
-            if (nodeIds.length > 0) {
-                document.getElementById(nodeIds[0]).value = dtString;
-            }
-            nodeIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromNode(node, "comment@message");
-            if (nodeIds.length > 0) {
-                aNode = node.parentNode.parentNode.parentNode;
-                nodeIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromNode(aNode, "message@id");
-                idValue = document.getElementById(nodeIds[0]).value;
-                INTERMediator.additionalFieldValueOnNewRecord = {};
-                INTERMediator.additionalFieldValueOnNewRecord['comment'] = [
-                    {field: "groupname", value: idValue},
-                    {field: "postdt", value: dtString}
-                ];
-            }
-            return true;
-        };
+      INTERMediatorOnPage.processingBeforePostOnlyContext = function (node) {
+        const dtString = INTERMediatorLib.dateTimeStringISO()
+        let nodeIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromNode(node, 'message@postdt')
+        if (nodeIds.length > 0) {
+          document.getElementById(nodeIds[0]).value = dtString
+        }
+        nodeIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromNode(node, 'comment@message')
+        if (nodeIds.length > 0) {
+          const aNode = node.parentNode.parentNode.parentNode
+          nodeIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromNode(aNode, 'message@id')
+          const idValue = document.getElementById(nodeIds[0]).value
+          INTERMediator.additionalFieldValueOnNewRecord = {}
+          INTERMediator.additionalFieldValueOnNewRecord['comment'] = [
+            {field: 'groupname', value: idValue},
+            {field: 'postdt', value: dtString}
+          ]
+        }
+        return true
+      }
     </script>
     <style>
         TEXTAREA {

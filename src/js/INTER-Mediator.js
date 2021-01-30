@@ -227,17 +227,16 @@ const INTERMediator = {
   propertyIETridentSetup: () => {
     'use strict'
     let ua = ''
-    let position, c, i
     try {
       ua = navigator.userAgent
     } catch (e) {
       //
     }
-    position = ua.toLocaleUpperCase().indexOf('MSIE')
+    let position = ua.toLocaleUpperCase().indexOf('MSIE')
     if (position >= 0) {
       INTERMediator.isIE = true
-      for (i = position + 4; i < ua.length; i++) {
-        c = ua.charAt(i)
+      for (let i = position + 4; i < ua.length; i++) {
+        const c = ua.charAt(i)
         if (!(c === ' ' || c === '.' || (c >= '0' && c <= '9'))) {
           INTERMediator.ieVersion = parseFloat(ua.substring(position + 4, i))
           break
@@ -247,8 +246,8 @@ const INTERMediator = {
     position = ua.indexOf('; Trident/')
     if (position >= 0) {
       INTERMediator.isTrident = true
-      for (i = position + 10; i < ua.length; i++) {
-        c = ua.charAt(i)
+      for (let i = position + 10; i < ua.length; i++) {
+        const c = ua.charAt(i)
         if (!(c === ' ' || c === '.' || (c >= '0' && c <= '9'))) {
           INTERMediator.ieVersion = parseFloat(ua.substring(position + 10, i)) + 4
           if (INTERMediator.ieVersion === 11) {
@@ -261,8 +260,8 @@ const INTERMediator = {
     position = ua.indexOf(' Edge/')
     if (position >= 0) {
       INTERMediator.isEdge = true
-      for (i = position + 6; i < ua.length; i++) {
-        c = ua.charAt(i)
+      for (let i = position + 6; i < ua.length; i++) {
+        const c = ua.charAt(i)
         if (!(c === ' ' || c === '.' || (c >= '0' && c <= '9')) || i === ua.length - 1) {
           INTERMediator.ieVersion = parseFloat(ua.substring(position + 6, i))
           break
@@ -419,14 +418,11 @@ const INTERMediator = {
    */
   constructMain: async (updateRequiredContext, recordset) => {
     'use strict'
-    let i, theNode
-    let postSetFields = []
+    let i
     let radioName = {}
     let nameSerial = 1
     let nameAttrCounter = 1
     let imPartsShouldFinished = []
-    let isAcceptNotify = false
-    let originalNodes, parentNode, sybilingNode
     INTERMediator.currentContext = updateRequiredContext
     INTERMediator.currentRecordset = recordset
 
@@ -458,12 +454,12 @@ const INTERMediator = {
         await pageConstruct()
       } else {
         INTERMediator.partialConstructing = true
-        postSetFields = []
+        const postSetFields = []
         try {
           if (!recordset) {
             updateRequiredContext.removeContext()
-            originalNodes = updateRequiredContext.original
-            for (i = 0; i < originalNodes.length; i++) {
+            const originalNodes = updateRequiredContext.original
+            for (let i = 0; i < originalNodes.length; i++) {
               updateRequiredContext.enclosureNode.appendChild(originalNodes[i].cloneNode(true))
             }
             await seekEnclosureNode(
@@ -486,7 +482,7 @@ const INTERMediator = {
           }
         }
 
-        for (i = 0; i < postSetFields.length; i++) {
+        for (let i = 0; i < postSetFields.length; i++) {
           if (postSetFields[i].id && document.getElementById(postSetFields[i].id)) {
             document.getElementById(postSetFields[i].id).value = postSetFields[i].value
           }
@@ -519,14 +515,14 @@ const INTERMediator = {
       }
     }
 
-    for (i = 0; i < imPartsShouldFinished.length; i++) {
+    for (let i = 0; i < imPartsShouldFinished.length; i++) {
       imPartsShouldFinished[i].finish()
     }
 
-    for (i = 0; i < INTERMediator.appendingNodesAtLast.length; i++) {
-      theNode = INTERMediator.appendingNodesAtLast[i].targetNode
-      parentNode = INTERMediator.appendingNodesAtLast[i].parentNode
-      sybilingNode = INTERMediator.appendingNodesAtLast[i].siblingNode
+    for (let i = 0; i < INTERMediator.appendingNodesAtLast.length; i++) {
+      const theNode = INTERMediator.appendingNodesAtLast[i].targetNode
+      const parentNode = INTERMediator.appendingNodesAtLast[i].parentNode
+      const sybilingNode = INTERMediator.appendingNodesAtLast[i].siblingNode
       if (theNode && parentNode) {
         if (sybilingNode) {
           parentNode.insertBefore(theNode, sybilingNode)
@@ -537,8 +533,8 @@ const INTERMediator = {
     }
 
     // Event listener should add after adding node to document.
-    for (i = 0; i < INTERMediator.eventListenerPostAdding.length; i++) {
-      theNode = document.getElementById(INTERMediator.eventListenerPostAdding[i].id)
+    for (let i = 0; i < INTERMediator.eventListenerPostAdding.length; i++) {
+      const theNode = document.getElementById(INTERMediator.eventListenerPostAdding[i].id)
       if (theNode) {
         INTERMediatorLib.addEvent(
           theNode,
@@ -565,20 +561,18 @@ const INTERMediator = {
      [1] INTERMediator.constructMain() or INTERMediator.constructMain(true)
      */
     async function pageConstruct() {
-      let i, bodyNode, emptyElement, node
-
       IMLibCalc.calculateRequiredObject = {}
       INTERMediator.currentEncNumber = 1
       INTERMediator.elementIds = []
 
       // Restoring original HTML Document from backup data.
-      bodyNode = document.getElementsByTagName('BODY')[0]
+      const bodyNode = document.getElementsByTagName('BODY')[0]
       if (INTERMediator.rootEnclosure === null) {
         INTERMediator.rootEnclosure = bodyNode.innerHTML
       } else {
         bodyNode.innerHTML = INTERMediator.rootEnclosure
       }
-      postSetFields = []
+      const postSetFields = []
       INTERMediatorOnPage.setReferenceToTheme()
       IMLibPageNavigation.initializeStepInfo(false)
 
@@ -595,11 +589,11 @@ const INTERMediator = {
       }
 
       // After work to set up popup menus.
-      for (i = 0; i < postSetFields.length; i++) {
-        node = document.getElementById(postSetFields[i].id)
+      for (let i = 0; i < postSetFields.length; i++) {
+        const node = document.getElementById(postSetFields[i].id)
         if (postSetFields[i].value === '' && node && node.tagName === 'SELECT') {
           // for compatibility with Firefox when the value of select tag is empty.
-          emptyElement = document.createElement('option')
+          const emptyElement = document.createElement('option')
           emptyElement.setAttribute('id', INTERMediator.nextIdValue())
           emptyElement.setAttribute('value', '')
           emptyElement.setAttribute('data-im-element', 'auto-generated')
@@ -620,12 +614,11 @@ const INTERMediator = {
      */
 
     async function seekEnclosureNode(node, currentRecord, parentObjectInfo, currentContextObj) {
-      let children, className, i, attr
       if (node.nodeType === 1) { // Work for an element
         try {
           if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
-            className = node.getAttribute('class')
-            attr = node.getAttribute('data-im-control')
+            const className = node.getAttribute('class')
+            const attr = node.getAttribute('data-im-control')
             if ((className && className.match(/_im_post/)) ||
               (attr && attr.indexOf('post') >= 0)) {
               setupPostOnlyEnclosure(node)
@@ -633,9 +626,9 @@ const INTERMediator = {
               await expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj)
             }
           } else {
-            children = node.childNodes // Check all child nodes.
+            const children = node.childNodes // Check all child nodes.
             if (children) {
-              for (i = 0; i < children.length; i++) {
+              for (let i = 0; i < children.length; i++) {
                 if (children[i].nodeType === 1) {
                   await seekEnclosureNode(children[i], currentRecord, parentObjectInfo, currentContextObj)
                 }
@@ -656,8 +649,7 @@ const INTERMediator = {
      Post only mode.
      */
     function setupPostOnlyEnclosure(node) {
-      let nodes, postNodes
-      postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, '_im_post')
+      const postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, '_im_post')
       for (i = 0; i < postNodes.length; i++) {
         if (postNodes[i].tagName === 'BUTTON' ||
           (postNodes[i].tagName === 'INPUT' &&
@@ -675,18 +667,16 @@ const INTERMediator = {
             })())
         }
       }
-      nodes = node.childNodes
-
+      const nodes = node.childNodes
       for (i = 0; i < nodes.length; i++) {
         seekEnclosureInPostOnly(nodes[i])
       }
 
       // -------------------------------------------
       async function seekEnclosureInPostOnly(node) {
-        let children, wInfo, i, target
         if (node.nodeType === 1) { // Work for an element
           try {
-            target = node.getAttribute('data-im')
+            const target = node.getAttribute('data-im')
             if (target) { // Linked element
               if (!node.id) {
                 node.id = 'IMPOST-' + INTERMediator.postOnlyNumber
@@ -706,7 +696,7 @@ const INTERMediator = {
             }
 
             if (INTERMediatorLib.isWidgetElement(node)) {
-              wInfo = INTERMediatorLib.getWidgetInfo(node)
+              const wInfo = INTERMediatorLib.getWidgetInfo(node)
               if (wInfo[0]) {
                 IMParts_Catalog[wInfo[0]].instanciate(node)
                 if (imPartsShouldFinished.indexOf(IMParts_Catalog[wInfo[0]]) < 0) {
@@ -716,8 +706,8 @@ const INTERMediator = {
             } else if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
               await expandEnclosure(node, null, null, null)
             } else {
-              children = node.childNodes // Check all child nodes.
-              for (i = 0; i < children.length; i++) {
+              const children = node.childNodes // Check all child nodes.
+              for (let i = 0; i < children.length; i++) {
                 seekEnclosureInPostOnly(children[i])
               }
             }
@@ -737,22 +727,21 @@ const INTERMediator = {
      */
 
     async function expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj) {
-      let recId, repNodeTag, repeatersOriginal
-      let imControl = node.getAttribute('data-im-control')
+      const imControl = node.getAttribute('data-im-control')
       if (currentContextObj &&
         currentContextObj.contextName &&
         currentRecord &&
         currentRecord[currentContextObj.contextName] &&
         currentRecord[currentContextObj.contextName][currentContextObj.contextName + '::' + INTERMediatorOnPage.defaultKeyName]) {
         // for FileMaker portal access mode
-        recId = currentRecord[currentContextObj.contextName][currentContextObj.contextName + '::' + INTERMediatorOnPage.defaultKeyName]
+        const recId = currentRecord[currentContextObj.contextName][currentContextObj.contextName + '::' + INTERMediatorOnPage.defaultKeyName]
         currentRecord = currentRecord[currentContextObj.contextName][recId]
       }
       if (imControl && imControl.match(/cross-table/)) { // Cross Table
         await expandCrossTableEnclosure(node, parentObjectInfo, currentContextObj)
       } else { // Enclosure Processing as usual.
-        repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(node.tagName)
-        repeatersOriginal = collectRepeatersOriginal(node, repNodeTag) // Collecting repeaters to this array.
+        const repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(node.tagName)
+        const repeatersOriginal = collectRepeatersOriginal(node, repNodeTag) // Collecting repeaters to this array.
         await enclosureProcessing(node, repeatersOriginal, currentRecord, parentObjectInfo, currentContextObj)
       }
       IMLibLocalContext.bindingDescendant(node)
@@ -760,21 +749,16 @@ const INTERMediator = {
       /** --------------------------------------------------------------------
        * Expanding enclosure as usual (means not 'cross tabole').
        */
-      async function enclosureProcessing(
-        enclosureNode, repeatersOriginal, currentRecord, parentObjectInfo,
-        currentContextObj, procBeforeRetrieve, customExpandRepeater) {
-        let linkedNodes, repeaters, linkDefs, voteResult, currentContextDef, fieldList, i, targetRecords,
-          newNode, keyValue, selectedNode, isExpanding, calcFields,
-          targetRecordset, keyingValue, footerNodes, headerNodes, nInfo
-        let contextObj = null
-        let tempObj = {}
+      async function enclosureProcessing(enclosureNode, repeatersOriginal, currentRecord, parentObjectInfo,
+                                         currentContextObj, procBeforeRetrieve, customExpandRepeater) {
+        let selectedNode = null, keyValue = null, targetRecords, contextObj = null, tempObj = {}
 
         try {
-          repeaters = collectRepeaters(repeatersOriginal) // Collecting repeaters to this array.
-          linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode
-          linkDefs = collectLinkDefinitions(linkedNodes)
-          voteResult = tableVoting(linkDefs)
-          currentContextDef = voteResult.targettable
+          const repeaters = collectRepeaters(repeatersOriginal) // Collecting repeaters to this array.
+          let linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode
+          const linkDefs = collectLinkDefinitions(linkedNodes)
+          const voteResult = tableVoting(linkDefs)
+          const currentContextDef = voteResult.targettable
           INTERMediator.currentEncNumber++
 
           if (!enclosureNode.getAttribute('id')) {
@@ -782,8 +766,8 @@ const INTERMediator = {
           }
 
           if (!currentContextDef) {
-            for (i = 0; i < repeatersOriginal.length; i++) {
-              newNode = enclosureNode.appendChild(repeatersOriginal[i])
+            for (let i = 0; i < repeatersOriginal.length; i++) {
+              const newNode = enclosureNode.appendChild(repeatersOriginal[i])
 
               // for compatibility with Firefox
               if (repeatersOriginal[i].getAttribute('selected')) {
@@ -795,11 +779,11 @@ const INTERMediator = {
               await seekEnclosureNode(newNode, null, enclosureNode, currentContextObj)
             }
           } else {
-            isExpanding = !IMLibPageNavigation.isNotExpandingContext(currentContextDef)
+            const isExpanding = !IMLibPageNavigation.isNotExpandingContext(currentContextDef)
             contextObj = IMLibContextPool.generateContextObject(
               currentContextDef, enclosureNode, repeaters, repeatersOriginal)
-            calcFields = contextObj.getCalculationFields()
-            fieldList = voteResult.fieldlist.map(function (elm) {
+            const calcFields = contextObj.getCalculationFields()
+            const fieldList = voteResult.fieldlist.map(function (elm) {
               if (!calcFields[elm]) {
                 calcFields.push(elm)
               }
@@ -816,7 +800,7 @@ const INTERMediator = {
                 if (targetRecords === undefined) {
                   targetRecords = retrieveDataForEnclosure(tempObj, fieldList, contextObj.foreignValue)
                 }
-                recId = targetRecords.recordset[0][INTERMediatorOnPage.defaultKeyName]
+                // const recId = targetRecords.recordset[0][INTERMediatorOnPage.defaultKeyName]
                 currentRecord = targetRecords.recordset[0]
               }
             }
@@ -848,7 +832,6 @@ const INTERMediator = {
             if (customExpandRepeater === undefined) {
               contextObj.registeredId = targetRecords.registeredId
               contextObj.nullAcceptable = targetRecords.nullAcceptable
-              isAcceptNotify |= !(INTERMediatorOnPage.notifySupport === false)
               await expandRepeaters(contextObj, enclosureNode, targetRecords)
               IMLibPageNavigation.setupInsertButton(contextObj, keyValue, enclosureNode, contextObj.foreignValue)
               IMLibPageNavigation.setupBackNaviButton(contextObj, enclosureNode)
@@ -859,14 +842,14 @@ const INTERMediator = {
             contextObj.sequencing = false
 
             if (enclosureNode.tagName === 'TBODY') {
-              footerNodes = enclosureNode.parentNode.getElementsByTagName('TFOOT')
+              const footerNodes = enclosureNode.parentNode.getElementsByTagName('TFOOT')
               linkedNodes = seekWithAttribute(footerNodes[0], 'data-im')
               if (linkedNodes) {
                 INTERMediator.setIdValue(footerNodes[0])
-                targetRecordset = {}
-                keyingValue = '_im_footer'
-                for (i = 0; i < linkedNodes.length; i++) {
-                  nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0])
+                const targetRecordset = {}
+                const keyingValue = '_im_footer'
+                for (let i = 0; i < linkedNodes.length; i++) {
+                  const nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0])
                   if (linkedNodes[i] && currentContextDef.name === nInfo.table) {
                     INTERMediator.setIdValue(linkedNodes[i])
                   }
@@ -876,14 +859,14 @@ const INTERMediator = {
                   }
                 }
               }
-              headerNodes = enclosureNode.parentNode.getElementsByTagName('THEAD')
+              const headerNodes = enclosureNode.parentNode.getElementsByTagName('THEAD')
               linkedNodes = seekWithAttribute(headerNodes[0], 'data-im')
               if (linkedNodes) {
                 INTERMediator.setIdValue(headerNodes[0])
-                targetRecordset = {}
-                keyingValue = '_im_header'
-                for (i = 0; i < linkedNodes.length; i++) {
-                  nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0])
+                const targetRecordset = {}
+                const keyingValue = '_im_header'
+                for (let i = 0; i < linkedNodes.length; i++) {
+                  const nInfo = INTERMediatorLib.getNodeInfoArray(INTERMediatorLib.getLinkedElementInfo(linkedNodes[i])[0])
                   if (linkedNodes[i] && currentContextDef.name === nInfo.table) {
                     INTERMediator.setIdValue(linkedNodes[i])
                   }
@@ -909,15 +892,14 @@ const INTERMediator = {
         }
 
         function seekWithAttributeImpl(node, attrName) {
-          let ix, adding
           let result = []
           if (node && node.nodeType === 1) {
             if (node.getAttribute(attrName)) {
               result.push(node)
             }
             if (node.childNodes) {
-              for (ix = 0; ix < node.childNodes.length; ix++) {
-                adding = seekWithAttributeImpl(node.childNodes[ix], attrName)
+              for (let ix = 0; ix < node.childNodes.length; ix++) {
+                const adding = seekWithAttributeImpl(node.childNodes[ix], attrName)
                 if (adding.length > 0) {
                   [].push.apply(result, adding)
                 }
@@ -932,10 +914,6 @@ const INTERMediator = {
        * expanding enclosure for cross table
        */
       async function expandCrossTableEnclosure(node, parentObjectInfo, currentContextObj) {
-        let i, j, colArray, rowArray, nodeForKeyValues, record, targetRepeater, lineNode, colContext,
-          rowContext, appendingNode, trNodes, repeaters, linkedNodes, linkDefs,
-          crossCellContext, labelKeyColumn, labelKeyRow
-
         // Collecting 4 parts of cross table.
         let ctComponentNodes = crossTableComponents(node)
         if (ctComponentNodes.length !== 4) {
@@ -947,43 +925,43 @@ const INTERMediator = {
         }
 
         // Decide the context for cross point cell
-        repeaters = collectRepeaters([ctComponentNodes[3].cloneNode(true)])
-        linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode
-        linkDefs = collectLinkDefinitions(linkedNodes)
-        crossCellContext = tableVoting(linkDefs).targettable
-        labelKeyColumn = crossCellContext.relation[0]['join-field']
-        labelKeyRow = crossCellContext.relation[1]['join-field']
+        const repeaters = collectRepeaters([ctComponentNodes[3].cloneNode(true)])
+        const linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode
+        const linkDefs = collectLinkDefinitions(linkedNodes)
+        const crossCellContext = tableVoting(linkDefs).targettable
+        const labelKeyColumn = crossCellContext.relation[0]['join-field']
+        const labelKeyRow = crossCellContext.relation[1]['join-field']
 
         // Create the first row
         INTERMediator.crossTableStage = 1
-        lineNode = document.createElement('TR')
-        targetRepeater = ctComponentNodes[0].cloneNode(true)
+        let lineNode = document.createElement('TR')
+        let targetRepeater = ctComponentNodes[0].cloneNode(true)
         lineNode.appendChild(targetRepeater)
         node.appendChild(lineNode)
 
         // Append the column context in the first row
         targetRepeater = ctComponentNodes[1].cloneNode(true)
-        colContext = await enclosureProcessing(
+        const colContext = await enclosureProcessing(
           lineNode, [targetRepeater], null, parentObjectInfo, currentContextObj)
-        colArray = colContext.indexingArray(labelKeyColumn)
+        const colArray = colContext.indexingArray(labelKeyColumn)
 
         // Create second and following rows, and the first columns are appended row context
         INTERMediator.crossTableStage = 2
         targetRepeater = ctComponentNodes[2].cloneNode(true)
         lineNode = document.createElement('TR')
         lineNode.appendChild(targetRepeater)
-        rowContext = await enclosureProcessing(
+        const rowContext = await enclosureProcessing(
           node, [lineNode], null, parentObjectInfo, currentContextObj)
-        rowArray = rowContext.indexingArray(labelKeyRow)
+        const rowArray = rowContext.indexingArray(labelKeyRow)
 
         // Create all cross point cell
         INTERMediator.crossTableStage = 3
         targetRepeater = ctComponentNodes[3].cloneNode(true)
-        nodeForKeyValues = {}
-        trNodes = node.getElementsByTagName('TR')
-        for (i = 1; i < trNodes.length; i += 1) {
-          for (j = 0; j < colArray.length; j += 1) {
-            appendingNode = targetRepeater.cloneNode(true)
+        const nodeForKeyValues = {}
+        const trNodes = node.getElementsByTagName('TR')
+        for (let i = 1; i < trNodes.length; i += 1) {
+          for (let j = 0; j < colArray.length; j += 1) {
+            const appendingNode = targetRepeater.cloneNode(true)
             trNodes[i].appendChild(appendingNode)
             INTERMediator.setIdValue(appendingNode)
             if (!nodeForKeyValues[colArray[j]]) {
@@ -1019,8 +997,8 @@ const INTERMediator = {
             dataKeyColumn = currentContextDef.relation[0]['foreign-key']
             dataKeyRow = currentContextDef.relation[1]['foreign-key']
             if (targetRecords.dbresult) {
-              for (ix = 0; ix < targetRecords.dbresult.length; ix++) { // for each record
-                record = targetRecords.dbresult[ix]
+              for (let ix = 0; ix < targetRecords.dbresult.length; ix++) { // for each record
+                const record = targetRecords.dbresult[ix]
                 if (nodeForKeyValues[record[dataKeyColumn]] &&
                   nodeForKeyValues[record[dataKeyColumn]][record[dataKeyRow]]) {
                   targetNode = nodeForKeyValues[record[dataKeyColumn]][record[dataKeyRow]]
@@ -1050,13 +1028,12 @@ const INTERMediator = {
         return components
 
         function repeatCTComponents(nodes) {
-          let childNodes, i
-          for (i = 0; i < nodes.length; i++) {
+          for (let i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType === 1 && (nodes[i].tagName === 'TH' || nodes[i].tagName === 'TD')) {
               components[count] = nodes[i]
               count += 1
             } else {
-              childNodes = nodes[i].childNodes
+              const childNodes = nodes[i].childNodes
               if (childNodes) {
                 repeatCTComponents(childNodes)
               }
@@ -1070,24 +1047,22 @@ const INTERMediator = {
      * Set the value to node and context.
      */
     function setupLinkedNode(linkedElements, contextObj, targetRecordset, ix, keyingValue) {
-      let nInfo, j, keyField, k, nodeId, linkInfoArray, nameTableKey, nameNumber, nameAttr, curTarget,
-        curVal, replacedNode, typeAttr, children, wInfo, nameTable
       let idValuesForFieldName = {}
       const currentContextDef = contextObj.getContextDef()
       const currentWidgetNodes = linkedElements.widgetNode
       const currentLinkedNodes = linkedElements.linkedNode
       try {
-        keyField = contextObj.getKeyField()
+        const keyField = contextObj.getKeyField()
         if (targetRecordset[ix] && (targetRecordset[ix][keyField] || targetRecordset[ix][keyField] === 0)) {
-          for (k = 0; k < currentLinkedNodes.length; k++) {
+          for (let k = 0; k < currentLinkedNodes.length; k++) {
             // for each linked element
-            nodeId = currentLinkedNodes[k].getAttribute('id')
-            replacedNode = INTERMediator.setIdValue(currentLinkedNodes[k])
+            const nodeId = currentLinkedNodes[k].getAttribute('id')
+            const replacedNode = INTERMediator.setIdValue(currentLinkedNodes[k])
             contextObj.setupLookup(currentLinkedNodes[k], targetRecordset[ix][keyField])
-            typeAttr = replacedNode.getAttribute('type')
+            const typeAttr = replacedNode.getAttribute('type')
             if (typeAttr === 'checkbox' || typeAttr === 'radio') {
-              children = replacedNode.parentNode.childNodes
-              for (i = 0; i < children.length; i++) {
+              const children = replacedNode.parentNode.childNodes
+              for (let i = 0; i < children.length; i++) {
                 if (children[i].nodeType === 1 && children[i].tagName === 'LABEL' &&
                   nodeId === children[i].getAttribute('for')) {
                   children[i].setAttribute('for', replacedNode.getAttribute('id'))
@@ -1096,8 +1071,8 @@ const INTERMediator = {
               }
             }
           }
-          for (k = 0; k < currentWidgetNodes.length; k++) {
-            wInfo = INTERMediatorLib.getWidgetInfo(currentWidgetNodes[k])
+          for (let k = 0; k < currentWidgetNodes.length; k++) {
+            const wInfo = INTERMediatorLib.getWidgetInfo(currentWidgetNodes[k])
             if (wInfo[0]) {
               IMParts_Catalog[wInfo[0]].instanciate(currentWidgetNodes[k])
               if (imPartsShouldFinished.indexOf(IMParts_Catalog[wInfo[0]]) < 0) {
@@ -1114,41 +1089,41 @@ const INTERMediator = {
         }
       }
 
-      nameTable = {}
-      for (k = 0; k < currentLinkedNodes.length; k++) {
+      const nameTable = {}
+      for (let k = 0; k < currentLinkedNodes.length; k++) {
         try {
-          nodeId = currentLinkedNodes[k].getAttribute('id')
+          let nodeId = currentLinkedNodes[k].getAttribute('id')
           if (INTERMediatorLib.isWidgetElement(currentLinkedNodes[k])) {
             nodeId = currentLinkedNodes[k]._im_getComponentId()
             // INTERMediator.widgetElementIds.push(nodeId)
           }
           // get the tag name of the element
-          typeAttr = currentLinkedNodes[k].getAttribute('type')// type attribute
-          linkInfoArray = INTERMediatorLib.getLinkedElementInfo(currentLinkedNodes[k])
+          const typeAttr = currentLinkedNodes[k].getAttribute('type')// type attribute
+          const linkInfoArray = INTERMediatorLib.getLinkedElementInfo(currentLinkedNodes[k])
           // info array for it  set the name attribute of radio button
           // should be different for each group
           if (typeAttr === 'radio') { // set the value to radio button
-            nameTableKey = linkInfoArray.join('|')
+            const nameTableKey = linkInfoArray.join('|')
             if (!nameTable[nameTableKey]) {
               nameTable[nameTableKey] = nameAttrCounter
               nameAttrCounter++
             }
-            nameNumber = nameTable[nameTableKey]
-            nameAttr = currentLinkedNodes[k].getAttribute('name')
+            const nameNumber = nameTable[nameTableKey]
+            const nameAttr = currentLinkedNodes[k].getAttribute('name')
             if (nameAttr) {
               currentLinkedNodes[k].setAttribute('name', nameAttr + '-' + nameNumber)
             } else {
               currentLinkedNodes[k].setAttribute('name', 'IM-R-' + nameNumber)
             }
           }
-          for (j = 0; j < linkInfoArray.length; j++) {
-            nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j])
-            curVal = targetRecordset[ix][nInfo.field]
+          for (let j = 0; j < linkInfoArray.length; j++) {
+            const nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j])
+            const curVal = targetRecordset[ix][nInfo.field]
             if (!INTERMediator.isDBDataPreferable || curVal) {
               IMLibCalc.updateCalculationInfo(contextObj, keyingValue, nodeId, nInfo, targetRecordset[ix])
             }
             if (nInfo.table === currentContextDef.name) {
-              curTarget = nInfo.target
+              const curTarget = nInfo.target
               if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal)) {
                 postSetFields.push({'id': nodeId, 'value': curVal})
               }
@@ -1174,36 +1149,29 @@ const INTERMediator = {
      * Expanding an repeater.
      */
     async function expandRepeaters(contextObj, node, targetRecords) {
-      let newNode, nodeClass, dataAttr, repeatersOneRec, newlyAddedNodes, encNodeTag, repNodeTag, ix,
-        repeatersOriginal, targetRecordset, targetTotalCount, i, currentContextDef, indexContext,
-        insertNode, countRecord, linkedElements, keyingValue, keyField, keyValue,
-        idValuesForFieldName
+      const encNodeTag = node.tagName
+      const repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag)
 
-      encNodeTag = node.tagName
-      repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag)
+      const repeatersOriginal = contextObj.original
+      const currentContextDef = contextObj.getContextDef()
+      const targetRecordset = currentContextDef.data ? targetRecords.recordset : targetRecords.dbresult
+      const targetTotalCount = targetRecords.totalCount
 
-      repeatersOriginal = contextObj.original
-      currentContextDef = contextObj.getContextDef()
-      targetRecordset = targetRecords.dbresult
-      targetTotalCount = targetRecords.totalCount
-
-      repeatersOneRec = cloneEveryNodes(repeatersOriginal)
+      let repeatersOneRec = cloneEveryNodes(repeatersOriginal)
       if (!INTERMediatorOnPage.notShowHeaderFooterOnNoResult || targetRecords.count !== 0) {
-        for (i = 0; i < repeatersOneRec.length; i++) {
-          newNode = repeatersOneRec[i]
-          dataAttr = newNode.getAttribute('data-im-control')
+        for (let i = 0; i < repeatersOneRec.length; i++) {
+          const newNode = repeatersOneRec[i]
+          const dataAttr = newNode.getAttribute('data-im-control')
           if (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0) {
-            if (!insertNode) {
-              node.appendChild(newNode)
-            }
+            node.appendChild(newNode)
           }
         }
       }
       if (targetRecords.count === 0) {
-        for (i = 0; i < repeatersOriginal.length; i++) {
-          newNode = repeatersOriginal[i].cloneNode(true)
-          nodeClass = newNode.getAttribute('class')
-          dataAttr = newNode.getAttribute('data-im-control')
+        for (let i = 0; i < repeatersOriginal.length; i++) {
+          const newNode = repeatersOriginal[i].cloneNode(true)
+          const nodeClass = newNode.getAttribute('class')
+          const dataAttr = newNode.getAttribute('data-im-control')
           if ((nodeClass && nodeClass.indexOf(INTERMediator.noRecordClassName) > -1) ||
             (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) > -1)) {
             node.appendChild(newNode)
@@ -1212,12 +1180,14 @@ const INTERMediator = {
         }
       }
 
-      countRecord = targetRecordset ? targetRecordset.length : 0
-      for (ix = 0; ix < countRecord; ix++) { // for each record
+      const countRecord = targetRecordset ? targetRecordset.length : 0
+      let keyValue = null
+      let keyingValue = null
+      for (let ix = 0; ix < countRecord; ix++) { // for each record
         repeatersOneRec = cloneEveryNodes(repeatersOriginal)
-        linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(repeatersOneRec, true)
-        keyField = contextObj.getKeyField()
-        for (i = 0; i < repeatersOneRec.length; i++) {
+        const linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(repeatersOneRec, true)
+        const keyField = contextObj.getKeyField()
+        for (let i = 0; i < repeatersOneRec.length; i++) {
           INTERMediator.setIdValue(repeatersOneRec[i])
         }
         if (targetRecordset[ix] && (targetRecordset[ix][keyField] || targetRecordset[ix][keyField] === 0)) {
@@ -1229,23 +1199,22 @@ const INTERMediator = {
           }
           keyingValue = keyField + '=' + keyValue
         }
-        idValuesForFieldName = setupLinkedNode(linkedElements, contextObj, targetRecordset, ix, keyingValue)
+        let idValuesForFieldName = setupLinkedNode(linkedElements, contextObj, targetRecordset, ix, keyingValue)
         IMLibPageNavigation.setupDeleteButton(encNodeTag, repeatersOneRec, contextObj, keyField, keyValue)
         IMLibPageNavigation.setupNavigationButton(encNodeTag, repeatersOneRec, currentContextDef, keyField, keyValue, contextObj)
         IMLibPageNavigation.setupCopyButton(encNodeTag, repNodeTag, repeatersOneRec, contextObj, targetRecordset[ix])
 
-        if (!currentContextDef.portal ||
-          (!!currentContextDef.portal && targetTotalCount > 0)) {
-          newlyAddedNodes = []
-          insertNode = null
+        if (!currentContextDef.portal || (!!currentContextDef.portal && targetTotalCount > 0)) {
+          const newlyAddedNodes = []
+          let insertNode = null
           if (!contextObj.sequencing) {
-            indexContext = contextObj.checkOrder(targetRecordset[ix])
+            const indexContext = contextObj.checkOrder(targetRecordset[ix])
             insertNode = contextObj.getRepeaterEndNode(indexContext + 1)
           }
-          for (i = 0; i < repeatersOneRec.length; i++) {
-            newNode = repeatersOneRec[i]
-            nodeClass = newNode.getAttribute('class')
-            dataAttr = newNode.getAttribute('data-im-control')
+          for (let i = 0; i < repeatersOneRec.length; i++) {
+            const newNode = repeatersOneRec[i]
+            const nodeClass = newNode.getAttribute('class')
+            const dataAttr = newNode.getAttribute('data-im-control')
             if (!(nodeClass && nodeClass.indexOf(INTERMediator.noRecordClassName) >= 0) &&
               !(dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) >= 0) &&
               !(dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0) &&
@@ -1266,9 +1235,9 @@ const INTERMediator = {
             }
           }
           if ((ix + 1) !== countRecord) {
-            for (i = 0; i < repeatersOneRec.length; i++) {
-              newNode = repeatersOneRec[i]
-              dataAttr = newNode.getAttribute('data-im-control')
+            for (let i = 0; i < repeatersOneRec.length; i++) {
+              const newNode = repeatersOneRec[i]
+              const dataAttr = newNode.getAttribute('data-im-control')
               if (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0) {
                 if (!insertNode) {
                   node.appendChild(newNode)
@@ -1287,13 +1256,11 @@ const INTERMediator = {
 
       repeatersOneRec = cloneEveryNodes(repeatersOriginal)
       if (!INTERMediatorOnPage.notShowHeaderFooterOnNoResult || targetRecords.count !== 0) {
-        for (i = 0; i < repeatersOneRec.length; i++) {
-          newNode = repeatersOneRec[i]
-          dataAttr = newNode.getAttribute('data-im-control')
+        for (let i = 0; i < repeatersOneRec.length; i++) {
+          const newNode = repeatersOneRec[i]
+          const dataAttr = newNode.getAttribute('data-im-control')
           if (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0) {
-            if (!insertNode) {
-              node.appendChild(newNode)
-            }
+            node.appendChild(newNode)
           }
         }
       }
@@ -1304,7 +1271,6 @@ const INTERMediator = {
      */
     async function retrieveDataForEnclosure(contextObj, fieldList, relationValue) {
       let targetRecords = {}
-      let recordNumber, useLimit, key
       let recordset = []
 
       if (Boolean(contextObj.contextDefinition.cache) === true) {
@@ -1314,7 +1280,7 @@ const INTERMediator = {
             targetRecords.count = result.count
           })
       } else if (contextObj.contextDefinition.data) {
-        for (key in contextObj.contextDefinition.data) {
+        for (const key in contextObj.contextDefinition.data) {
           if (contextObj.contextDefinition.data.hasOwnProperty(key)) {
             recordset.push(contextObj.contextDefinition.data[key])
           }
@@ -1329,8 +1295,8 @@ const INTERMediator = {
         try {
           targetRecords = contextObj.getPortalRecords()
           if (!targetRecords) {
-            useLimit = contextObj.isUseLimit()
-            recordNumber = contextObj.getRecordNumber()
+            const useLimit = contextObj.isUseLimit()
+            const recordNumber = contextObj.getRecordNumber()
             await INTERMediator_DBAdapter.db_query_async(
               {
                 'name': contextObj.contextDefinition.name,
@@ -1356,7 +1322,7 @@ const INTERMediator = {
         }
       }
       if (contextObj.contextDefinition['appending-data']) {
-        for (key in contextObj.contextDefinition['appending-data']) {
+        for (const key in contextObj.contextDefinition['appending-data']) {
           if (contextObj.contextDefinition['appending-data'].hasOwnProperty(key)) {
             targetRecords.dbresult.push(contextObj.contextDefinition['appending-data'][key])
           }
@@ -1370,7 +1336,6 @@ const INTERMediator = {
      */
     async function retrieveDataFromCache(currentContextDef, relationValue, completion) {
       let targetRecords = null
-      let pagingValue, counter, ix, oneRecord, isMatch, index, keyField, fieldName, recordsValue
       try {
         if (!INTERMediatorOnPage.dbCache[currentContextDef.name]) {
           await INTERMediator_DBAdapter.db_query_async(
@@ -1394,15 +1359,15 @@ const INTERMediator = {
           targetRecords = INTERMediatorOnPage.dbCache[currentContextDef.name]
         } else {
           targetRecords = {recordset: [], count: 0}
-          counter = 0
-          for (ix in INTERMediatorOnPage.dbCache[currentContextDef.name].dbresult) {
+          let counter = 0
+          for (let ix in INTERMediatorOnPage.dbCache[currentContextDef.name].dbresult) {
             if (INTERMediatorOnPage.dbCache[currentContextDef.name].dbresult.hasOwnProperty(ix)) {
-              oneRecord = INTERMediatorOnPage.dbCache[currentContextDef.name].dbresult[ix]
-              isMatch = true
-              index = 0
-              for (keyField in relationValue) {
+              const oneRecord = INTERMediatorOnPage.dbCache[currentContextDef.name].dbresult[ix]
+              let isMatch = true
+              let index = 0
+              for (const keyField in relationValue) {
                 if (relationValue.hasOwnProperty(keyField)) {
-                  fieldName = currentContextDef.relation[index]['foreign-key']
+                  const fieldName = currentContextDef.relation[index]['foreign-key']
                   if (oneRecord[fieldName] !== relationValue[keyField]) {
                     isMatch = false
                     break
@@ -1411,8 +1376,8 @@ const INTERMediator = {
                 }
               }
               if (isMatch) {
-                pagingValue = currentContextDef.paging ? currentContextDef.paging : false
-                recordsValue = currentContextDef.records ? currentContextDef.records : 10000000000
+                const pagingValue = currentContextDef.paging ? currentContextDef.paging : false
+                const recordsValue = currentContextDef.records ? currentContextDef.records : 10000000000
 
                 if (!pagingValue || (pagingValue && (counter >= INTERMediator.startFrom))) {
                   targetRecords.recordset.push(oneRecord)
@@ -1554,18 +1519,14 @@ const INTERMediator = {
 
      */
     function collectRepeatersOriginal(node, repNodeTag) {
-      let i
-      let repeatersOriginal = []
-      let children, imControl
-
-      children = node.childNodes // Check all child node of the enclosure.
-      for (i = 0; i < children.length; i++) {
+      const repeatersOriginal = []
+      const children = node.childNodes // Check all child node of the enclosure.
+      for (let i = 0; i < children.length; i++) {
         if (children[i].nodeType === 1) {
-          if (children[i].tagName === repNodeTag) {
-            // If the element is a repeater.
+          if (children[i].tagName === repNodeTag) { // If the element is a repeater.
             repeatersOriginal.push(children[i]) // Record it to the array.
           } else if (!repNodeTag && (children[i].getAttribute('data-im-control'))) {
-            imControl = children[i].getAttribute('data-im-control')
+            const imControl = children[i].getAttribute('data-im-control')
             if (imControl.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) > -1 ||
               imControl.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) > -1 ||
               imControl.indexOf(INTERMediatorLib.roleAsFooterDataControlName) > -1 ||
@@ -1576,7 +1537,7 @@ const INTERMediator = {
             }
           } else if (!repNodeTag && children[i].getAttribute('class') &&
             children[i].getAttribute('class').match(/_im_repeater/)) {
-            imControl = children[i].getAttribute('class')
+            const imControl = children[i].getAttribute('class')
             if (imControl.indexOf(INTERMediatorLib.roleAsRepeaterClassName) > -1) {
               repeatersOriginal.push(children[i])
             }
@@ -1590,13 +1551,11 @@ const INTERMediator = {
 
      */
     function collectRepeaters(repeatersOriginal) {
-      let i
-      let repeaters = []
-      let inDocNode, parentOfRep, cloneNode
-      for (i = 0; i < repeatersOriginal.length; i++) {
-        inDocNode = repeatersOriginal[i]
-        parentOfRep = repeatersOriginal[i].parentNode
-        cloneNode = repeatersOriginal[i].cloneNode(true)
+      const repeaters = []
+      for (let i = 0; i < repeatersOriginal.length; i++) {
+        const inDocNode = repeatersOriginal[i]
+        const parentOfRep = repeatersOriginal[i].parentNode
+        const cloneNode = repeatersOriginal[i].cloneNode(true)
         repeaters.push(cloneNode)
         cloneNode.setAttribute('id', INTERMediator.nextIdValue())
         if (parentOfRep) {
@@ -1610,12 +1569,11 @@ const INTERMediator = {
 
      */
     function collectLinkDefinitions(linkedNodes) {
-      let linkDefs = []
-      let nodeDefs, j, k
-      for (j = 0; j < linkedNodes.length; j++) {
-        nodeDefs = INTERMediatorLib.getLinkedElementInfo(linkedNodes[j])
+      const linkDefs = []
+      for (let j = 0; j < linkedNodes.length; j++) {
+        const nodeDefs = INTERMediatorLib.getLinkedElementInfo(linkedNodes[j])
         if (nodeDefs) {
-          for (k = 0; k < nodeDefs.length; k++) {
+          for (let k = 0; k < nodeDefs.length; k++) {
             linkDefs.push(nodeDefs[k])
           }
         }
@@ -1627,22 +1585,17 @@ const INTERMediator = {
 
      */
     function tableVoting(linkDefs) {
-      let j, nodeInfoArray, nodeInfoField, nodeInfoTable, maxVoted, maxTableName, tableName,
-        nodeInfoTableIndex, context
       let restDefs = []
       let tableVote = [] // Containing editable elements or not.
       let fieldList = [] // Create field list for database fetch.
 
-      for (j = 0; j < linkDefs.length; j++) {
-        nodeInfoArray = INTERMediatorLib.getNodeInfoArray(linkDefs[j])
-        nodeInfoField = nodeInfoArray.field
-        nodeInfoTable = nodeInfoArray.table
-        nodeInfoTableIndex = nodeInfoArray.tableindex // Table name added '_im_index_' as the prefix.
+      for (let j = 0; j < linkDefs.length; j++) {
+        const nodeInfoArray = INTERMediatorLib.getNodeInfoArray(linkDefs[j])
+        const nodeInfoField = nodeInfoArray.field
+        const nodeInfoTable = nodeInfoArray.table
+        const nodeInfoTableIndex = nodeInfoArray.tableindex // Table name added '_im_index_' as the prefix.
         if (nodeInfoTable !== IMLibLocalContext.contextName) {
-          if (nodeInfoField &&
-            nodeInfoField.length !== 0 &&
-            nodeInfoTable &&
-            nodeInfoTable.length !== 0) {
+          if (nodeInfoField && nodeInfoField.length !== 0 && nodeInfoTable && nodeInfoTable.length !== 0) {
             if (!fieldList[nodeInfoTableIndex]) {
               fieldList[nodeInfoTableIndex] = []
             }
@@ -1658,9 +1611,9 @@ const INTERMediator = {
           }
         }
       }
-      maxVoted = -1
-      maxTableName = '' // Which is the maximum voted table name.
-      for (tableName in tableVote) {
+      let maxVoted = -1
+      let maxTableName = '' // Which is the maximum voted table name.
+      for (const tableName in tableVote) {
         if (tableVote.hasOwnProperty(tableName)) {
           if (maxVoted < tableVote[tableName]) {
             maxVoted = tableVote[tableName]
@@ -1668,12 +1621,12 @@ const INTERMediator = {
           }
         }
       }
-      context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', maxTableName)
+      const context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', maxTableName)
       if (linkDefs.length > 0 && !context) {
         INTERMediatorLog.setErrorMessage(
           INTERMediatorLib.getInsertedStringFromErrorNumber(1046, [maxTableName]))
       }
-      for (j = 0; j < linkDefs.length; j++) {
+      for (let j = 0; j < linkDefs.length; j++) {
         if (linkDefs[j].indexOf(maxTableName) !== 0 && linkDefs[j].indexOf('_@') !== 0) {
           restDefs.push(linkDefs[j])
         }
@@ -1689,9 +1642,8 @@ const INTERMediator = {
 
      */
     function cloneEveryNodes(originalNodes) {
-      let i
-      let clonedNodes = []
-      for (i = 0; i < originalNodes.length; i++) {
+      const clonedNodes = []
+      for (let i = 0; i < originalNodes.length; i++) {
         clonedNodes.push(originalNodes[i].cloneNode(true))
       }
       return clonedNodes
@@ -1701,20 +1653,18 @@ const INTERMediator = {
 
      */
     function getEnclosedNode(rootNode, tableName, fieldName) {
-      let i, j, nodeInfo, nInfo, children, r
-
       if (rootNode.nodeType === 1) {
-        nodeInfo = INTERMediatorLib.getLinkedElementInfo(rootNode)
-        for (j = 0; j < nodeInfo.length; j++) {
-          nInfo = INTERMediatorLib.getNodeInfoArray(nodeInfo[j])
+        const nodeInfo = INTERMediatorLib.getLinkedElementInfo(rootNode)
+        for (let i = 0; i < nodeInfo.length; i++) {
+          const nInfo = INTERMediatorLib.getNodeInfoArray(nodeInfo[i])
           if (nInfo.table === tableName && nInfo.field === fieldName) {
             return rootNode
           }
         }
       }
-      children = rootNode.childNodes // Check all child node of the enclosure.
-      for (i = 0; i < children.length; i++) {
-        r = getEnclosedNode(children[i], tableName, fieldName)
+      const children = rootNode.childNodes // Check all child node of the enclosure.
+      for (let i = 0; i < children.length; i++) {
+        const r = getEnclosedNode(children[i], tableName, fieldName)
         if (r) {
           return r
         }
@@ -1726,22 +1676,17 @@ const INTERMediator = {
 
      */
     function appendCredit() {
-      let bodyNode, creditNode, cNode, spNode, aNode, versionString, markNode, mark, markSktNode
-
       if (document.getElementById('IM_CREDIT') === null) {
-        if (INTERMediatorOnPage.creditIncluding) {
-          bodyNode = document.getElementById(INTERMediatorOnPage.creditIncluding)
-        }
-        if (!bodyNode) {
-          bodyNode = document.getElementsByTagName('BODY')[0]
-        }
+        const bodyNode = INTERMediatorOnPage.creditIncluding
+          ? document.getElementById(INTERMediatorOnPage.creditIncluding)
+          : document.getElementsByTagName('BODY')[0]
 
-        creditNode = document.createElement('div')
+        const creditNode = document.createElement('div')
         bodyNode.appendChild(creditNode)
         creditNode.setAttribute('id', 'IM_CREDIT')
         creditNode.setAttribute('class', 'IM_CREDIT')
 
-        cNode = document.createElement('div')
+        let cNode = document.createElement('div')
         creditNode.appendChild(cNode)
         cNode.className = '_im_credit1'
         cNode = document.createElement('div')
@@ -1754,19 +1699,19 @@ const INTERMediator = {
         creditNode.appendChild(cNode)
         cNode.className = '_im_credit4'
 
-        spNode = document.createElement('span')
+        let spNode = document.createElement('span')
         spNode.className = '_im_credit_ssstatus'
         cNode.appendChild(spNode)
-        mark = document.createTextNode('Service Server Status:')
+        const mark = document.createTextNode('Service Server Status:')
         spNode.appendChild(mark)
-        markNode = document.createElement('span')
+        const markNode = document.createElement('span')
         markNode.className = '_im_credit_mark'
         markNode.setAttribute('title', 'Service Server is a server side helper for just validation on Ver.6.')
         spNode.appendChild(markNode)
         markNode.appendChild(document.createTextNode('◆'))
         markNode.style.color = INTERMediatorOnPage.serviceServerStatus ? 'green' : 'red'
         if (INTERMediatorOnPage.activateClientService) {
-          markSktNode = document.createElement('span')
+          const markSktNode = document.createElement('span')
           markSktNode.appendChild(document.createTextNode('➤'))
           markSktNode.className = '_im_socket_mark'
           spNode.appendChild(markSktNode)
@@ -1778,18 +1723,15 @@ const INTERMediator = {
         spNode = document.createElement('span')
         spNode.className = '_im_credit_vstring'
         cNode.appendChild(spNode)
-        aNode = document.createElement('a')
+        const aNode = document.createElement('a')
         aNode.appendChild(document.createTextNode('INTER-Mediator'))
         aNode.setAttribute('href', 'http://inter-mediator.com/')
         aNode.setAttribute('target', '_href')
         spNode.appendChild(document.createTextNode('Generated by '))
         spNode.appendChild(aNode)
-        if (INTERMediatorOnPage.metadata) {
-          versionString = ' Ver.' + INTERMediatorOnPage.metadata.version +
-            '(' + INTERMediatorOnPage.metadata.releasedate + ')'
-        } else {
-          versionString = ' Ver. Development Now!'
-        }
+        const versionString = INTERMediatorOnPage.metadata
+          ? (` Ver.${INTERMediatorOnPage.metadata.version}(${INTERMediatorOnPage.metadata.releasedate})`)
+          : ' Ver. Development Now!'
         spNode.appendChild(document.createTextNode(versionString))
       }
     }
@@ -1800,16 +1742,14 @@ const INTERMediator = {
    */
   setIdValue: (node) => {
     'use strict'
-    let i, elementInfo, comp
     let overwrite = true
-
     if (node.getAttribute('id') === null) {
       node.setAttribute('id', INTERMediator.nextIdValue())
     } else {
       if (INTERMediator.elementIds.indexOf(node.getAttribute('id')) >= 0) {
-        elementInfo = INTERMediatorLib.getLinkedElementInfo(node)
-        for (i = 0; i < elementInfo.length; i++) {
-          comp = elementInfo[i].split(INTERMediator.separator)
+        const elementInfo = INTERMediatorLib.getLinkedElementInfo(node)
+        for (let i = 0; i < elementInfo.length; i++) {
+          const comp = elementInfo[i].split(INTERMediator.separator)
           if (comp[2] === '#id') {
             overwrite = false
           }
@@ -1834,8 +1774,7 @@ const INTERMediator = {
 
   getLocalProperty: (localKey, defaultValue) => {
     'use strict'
-    let value
-    value = IMLibLocalContext.getValue(localKey)
+    const value = IMLibLocalContext.getValue(localKey)
     return value === null ? defaultValue : value
   },
 
@@ -1846,7 +1785,6 @@ const INTERMediator = {
 
   addCondition: (contextName, condition, notMatching, label) => {
     'use strict'
-    let value, i, hasIdentical
     if (notMatching) {
       condition.matching = !notMatching
     } else {
@@ -1856,7 +1794,7 @@ const INTERMediator = {
       condition.label = label
     }
     if (INTERMediator.additionalCondition) {
-      value = INTERMediator.additionalCondition
+      const value = INTERMediator.additionalCondition
       if (condition) {
         if (!value[contextName]) {
           value[contextName] = []
@@ -1864,8 +1802,8 @@ const INTERMediator = {
         if (!condition.matching) {
           value[contextName].push(condition)
         } else {
-          hasIdentical = false
-          for (i = 0; i < value[contextName].length; i++) {
+          let hasIdentical = false
+          for (let i = 0; i < value[contextName].length; i++) {
             if (value[contextName][i].field === condition.field &&
               value[contextName][i].operator === condition.operator) {
               hasIdentical = true
@@ -1885,8 +1823,7 @@ const INTERMediator = {
 
   clearCondition: (contextName, label) => {
     'use strict'
-    let i
-    let value = INTERMediator.additionalCondition
+    const value = INTERMediator.additionalCondition
     if (!value) {
       value = {}
     }
@@ -1898,7 +1835,7 @@ const INTERMediator = {
       }
     } else {
       if (value[contextName]) {
-        for (i = 0; i < value[contextName].length; i++) {
+        for (let i = 0; i < value[contextName].length; i++) {
           if (value[contextName][i].label === label) {
             value[contextName].splice(i, 1)
             i--
@@ -1912,7 +1849,7 @@ const INTERMediator = {
 
   addSortKey: (contextName, sortKey) => {
     'use strict'
-    let value = INTERMediator.additionalSortKey
+    const value = INTERMediator.additionalSortKey
     if (value[contextName]) {
       value[contextName].push(sortKey)
     } else {
@@ -1924,7 +1861,7 @@ const INTERMediator = {
 
   clearSortKey: (contextName) => {
     'use strict'
-    let value = INTERMediator.additionalSortKey
+    const value = INTERMediator.additionalSortKey
     if (value[contextName]) {
       delete value[contextName]
       INTERMediator.additionalSortKey = value
@@ -1934,7 +1871,7 @@ const INTERMediator = {
 
   setRecordLimit: (contextName, limit) => {
     'use strict'
-    var value = INTERMediator.recordLimit
+    const value = INTERMediator.recordLimit
     value[contextName] = limit
     INTERMediator.recordLimit = value
     IMLibLocalContext.archive()
@@ -1942,7 +1879,7 @@ const INTERMediator = {
 
   clearRecordLimit: (contextName) => {
     'use strict'
-    var value = INTERMediator.recordLimit
+    const value = INTERMediator.recordLimit
     if (value[contextName]) {
       delete value[contextName]
       INTERMediator.recordLimit = value

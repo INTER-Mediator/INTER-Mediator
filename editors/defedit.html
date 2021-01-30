@@ -18,41 +18,41 @@
     <title>INTER-Mediator - Definition File Editor</title>
     <script src="defedit.php"></script>
     <script type="text/javascript">
-        INTERMediatorOnPage.doBeforeConstruct = function () {
-            var params = INTERMediatorOnPage.getURLParametersAsArray();
-            var contextsArray = ['contexts', 'relation', 'query', 'sort', 'default-values', 'validation',
-                'script', 'global', 'file-upload', 'send-mail', 'options', 'aliases', 'browser-compatibility', 'calculation',
-                'formatter', 'dbsettings', 'external-db', 'debug', 'local-context'];
-            for (var i = 0; i < contextsArray.length; i++) {
-                INTERMediator.clearCondition(contextsArray[i]);
-                INTERMediator.addCondition(contextsArray[i], {field: 'target', value: params.target});
-                INTERMediator.additionalFieldValueOnNewRecord[contextsArray[i]]
-                    = {field: 'target', value: params.target};
-                INTERMediator.additionalFieldValueOnUpdate[contextsArray[i]]
-                    = {field: 'target', value: params.target};
-                INTERMediator.additionalFieldValueOnDelete[contextsArray[i]]
-                    = {field: 'target', value: params.target};
-            }
-            document.getElementById('deffile').appendChild(document.createTextNode(params.target));
-            INTERMediator.ignoreOptimisticLocking = true;
-        };
-        INTERMediatorOnPage.doAfterConstruct = function () {
-            var node = document.getElementById('container');
-            node.style.display = "block";
-            document.title = "Definition File Editor: " + document.getElementById('deffile').textContent;
-        };
-        function setDisplayLevel(level) {
-            var i, value, nodes, rootNode;
-            value = "none";
-            if (level == 1) {
-                value = "table-row";
-            }
-            rootNode = document.getElementsByTagName("BODY")[0];
-            nodes = INTERMediatorLib.getElementsByClassName(rootNode, "advanced");
-            for (i = 0; i < nodes.length; i++) {
-                nodes[i].style.display = value;
-            }
+      INTERMediatorOnPage.doBeforeConstruct = function () {
+        const params = INTERMediatorOnPage.getURLParametersAsArray()
+        const contextsArray = ['contexts', 'relation', 'query', 'sort', 'default-values', 'validation',
+          'script', 'global', 'file-upload', 'send-mail', 'options', 'aliases', 'browser-compatibility', 'calculation',
+          'formatter', 'dbsettings', 'external-db', 'debug', 'local-context']
+        for (let i = 0; i < contextsArray.length; i++) {
+          INTERMediator.clearCondition(contextsArray[i])
+          INTERMediator.addCondition(contextsArray[i], {field: 'target', value: params.target})
+          INTERMediator.additionalFieldValueOnNewRecord[contextsArray[i]]
+            = {field: 'target', value: params.target}
+          INTERMediator.additionalFieldValueOnUpdate[contextsArray[i]]
+            = {field: 'target', value: params.target}
+          INTERMediator.additionalFieldValueOnDelete[contextsArray[i]]
+            = {field: 'target', value: params.target}
         }
+        document.getElementById('deffile').appendChild(document.createTextNode(params.target))
+        INTERMediator.ignoreOptimisticLocking = true
+      }
+      INTERMediatorOnPage.doAfterConstruct = function () {
+        const node = document.getElementById('container')
+        node.style.display = 'block'
+        document.title = 'Definition File Editor: ' + document.getElementById('deffile').textContent
+      }
+
+      function setDisplayLevel(level) {
+        let value = 'none'
+        if (level == 1) {
+          value = 'table-row'
+        }
+        const rootNode = document.getElementsByTagName('BODY')[0]
+        const nodes = INTERMediatorLib.getElementsByClassName(rootNode, 'advanced')
+        for (let i = 0; i < nodes.length; i++) {
+          nodes[i].style.display = value
+        }
+      }
     </script>
     <style>
         INPUT {

@@ -562,8 +562,7 @@ class IMLibContext {
 
   getContextDef() {
     'use strict'
-    var contextDef
-    contextDef = INTERMediatorLib.getNamedObject(
+    const contextDef = INTERMediatorLib.getNamedObject(
       INTERMediatorOnPage.getDataSources(), 'name', this.contextName)
     return contextDef
   }

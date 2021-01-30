@@ -289,7 +289,7 @@ const INTERMediator_DBAdapter = {
   changePassword: async function (username, oldpassword, newpassword, doSucceed, doFail) {
     'use strict'
     let params
-    var encrypt = new JSEncrypt()
+    const encrypt = new JSEncrypt()
 
     return new Promise(async (resolve, reject) => {
       if (!username || !oldpassword) {
@@ -497,9 +497,9 @@ const INTERMediator_DBAdapter = {
           INTERMediator_DBAdapter.createExceptionFunc(
             1016,
             (function () {
-              var argsCapt = args
-              var succesProcCapt = successProc
-              var failedProcCapt = failedProc
+              const argsCapt = args
+              const  succesProcCapt = successProc
+              const  failedProcCapt = failedProc
               return function () {
                 INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
               }

@@ -531,7 +531,7 @@ const IMLibContextPool = {
 
   generateContextObject: function (contextDef, enclosure, repeaters, repeatersOriginal) {
     'use strict'
-    var contextObj = new IMLibContext(contextDef.name)
+    const contextObj = new IMLibContext(contextDef.name)
     contextObj.contextDefinition = contextDef
     contextObj.enclosureNode = enclosure
     contextObj.repeaterNodes = repeaters

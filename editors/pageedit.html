@@ -29,7 +29,7 @@
     <script type="text/javascript" src="../node_modules/inter-mediator-plugin-codemirror/index.js"></script>
     <script type="text/javascript">
         INTERMediatorOnPage.doBeforeConstruct = function () {
-            var params = INTERMediatorOnPage.getURLParametersAsArray();
+            const params = INTERMediatorOnPage.getURLParametersAsArray();
             INTERMediator.clearCondition('pagefile');
             INTERMediator.addCondition('pagefile', {field: 'target', value: params.target});
             INTERMediator.additionalFieldValueOnNewRecord['pagefile']

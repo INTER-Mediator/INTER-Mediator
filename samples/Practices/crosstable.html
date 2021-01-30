@@ -16,15 +16,14 @@
     <title data-im="_@pagetitle"></title>
     <script type="text/javascript" src="crosstable.php"></script>
     <script type="text/javascript">
-//        window.onload = function () {
-//            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(document.getElementById('nonsupport'))) {
-//                INTERMediator.construct(true);
-//            }
-//        };
-        INTERMediatorOnPage.doAfterConstruct = function () {
-            var node = document.getElementById('container');
-            node.style.display = "block"
-        };
+      //        window.onload = function () {
+      //            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(document.getElementById('nonsupport'))) {
+      //                INTERMediator.construct(true);
+      //            }
+      //        };
+      INTERMediatorOnPage.doAfterConstruct = function () {
+        document.getElementById('container').style.display = 'block'
+      }
     </script>
     <style>
         td {

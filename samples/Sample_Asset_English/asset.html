@@ -6,91 +6,112 @@
     <title>INTER-Mediator - Sample - Asset List/MySQL</title>
     <script src="asset_contexts.php"></script>
     <script>
-        function setBackDate(id) {
-            var context = IMLibContextPool.getContextFromName("rent")[0];
-            context.setDataAtLastRecord('backdate', generateToday());
-        }
+      function setBackDate(id) {
+        const context = IMLibContextPool.getContextFromName('rent')[0]
+        context.setDataAtLastRecord('backdate', generateToday())
+      }
 
-        function generateToday() {
-            var today = new Date();
-            var todayString = today.getFullYear() + "-"
-                    + ("0" + (today.getMonth() + 1)).substr(-2, 2) + "-"
-                    + ("0" + today.getDate()).substr(-2, 2);
-            return todayString;
-        }
+      function generateToday() {
+        const today = new Date()
+        const todayString = today.getFullYear() + '-'
+          + ('0' + (today.getMonth() + 1)).substr(-2, 2) + '-'
+          + ('0' + today.getDate()).substr(-2, 2)
+        return todayString
+      }
     </script>
 </head>
 <body>
 <header>
-  <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+    <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
 </header>
 <div id="wrapper">
-  <h1>Asset and Equipment Management (Sample)</h1>
-  <div id="IM_NAVIGATOR"></div>
-  <table>
-    <thead>
-      <tr>
-        <th></th><th>Category</th><th>Description</th><th>Manufacturer</th>
-        <th>Product#</th><th>Purchased</th><th>Disposed</th><th></th>
-      </tr>
-      </thead>
-    <tbody>
-      <tr>
-        <td></td>
-        <td data-im="asset@category"></td>
-        <td data-im="asset@name"></td>
-        <td data-im="asset@manifacture"></td>
-        <td data-im="asset@productinfo"></td>
-        <td data-im="asset@purchase"></td>
-        <td data-im="asset@discard"></td>
-        <td></td>
-      </tr>
-      </tbody>
-  </table>
-  
-  <table>
-    <tbody>
-      <tr>
-        <th>Description</th><td><input type="text" data-im="assetdetail@name"/></td>
-        <th>Category</th><td><input type="text" data-im="assetdetail@category"/></td>
-        <th>Memo</th>
-      </tr>
-      <tr><th>Manufacturer</th>
-        <td><input type="text" data-im="assetdetail@manifacture"/></td>
-        <th>Prodocut#</th><td><input type="text" data-im="assetdetail@productinfo"/></td>
-        <td rowspan="4" class="align_top">
-          <textarea rows="8" data-im="assetdetail@memo"></textarea>
-          <hr>
-          <button onclick="setBackDate($)" data-im="assetdetail@asset_id@$onclick">Return Today</button>
-          </td>
-      </tr>
-      <tr>
-        <th>Purchased</th><td><input type="text" data-im="assetdetail@purchase"/></td>
-        <th>Disposed</th><td><input type="text" data-im="assetdetail@discard"/></td>
-      </tr>
-      <tr><td colspan="4">
-        <table>
-          <thead><tr><th>Issued</th><th>Returned</th><th>Staff</th><th>Memo</th></tr></thead>
-          <tbody>
-            <tr>
-              <td data-im="rent@rentdate"></td>
-              <td data-im="rent@backdate"></td>
-              <td>
-                <select data-im="rent@staff_id">
-                  <option data-im="staff@staff_id@value staff@name"></option>
-                  </select>
-                </td>
-              <td><input type="text" data-im="rent@memo"/></td>
-              
-              </tr>
-            </tbody>
-          </table>
-      </td></tr>
-      </tbody>
-  </table>
+    <h1>Asset and Equipment Management (Sample)</h1>
+    <div id="IM_NAVIGATOR"></div>
+    <table>
+        <thead>
+        <tr>
+            <th></th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Manufacturer</th>
+            <th>Product#</th>
+            <th>Purchased</th>
+            <th>Disposed</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td></td>
+            <td data-im="asset@category"></td>
+            <td data-im="asset@name"></td>
+            <td data-im="asset@manifacture"></td>
+            <td data-im="asset@productinfo"></td>
+            <td data-im="asset@purchase"></td>
+            <td data-im="asset@discard"></td>
+            <td></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <table>
+        <tbody>
+        <tr>
+            <th>Description</th>
+            <td><input type="text" data-im="assetdetail@name"/></td>
+            <th>Category</th>
+            <td><input type="text" data-im="assetdetail@category"/></td>
+            <th>Memo</th>
+        </tr>
+        <tr>
+            <th>Manufacturer</th>
+            <td><input type="text" data-im="assetdetail@manifacture"/></td>
+            <th>Prodocut#</th>
+            <td><input type="text" data-im="assetdetail@productinfo"/></td>
+            <td rowspan="4" class="align_top">
+                <textarea rows="8" data-im="assetdetail@memo"></textarea>
+                <hr>
+                <button onclick="setBackDate($)" data-im="assetdetail@asset_id@$onclick">Return Today</button>
+            </td>
+        </tr>
+        <tr>
+            <th>Purchased</th>
+            <td><input type="text" data-im="assetdetail@purchase"/></td>
+            <th>Disposed</th>
+            <td><input type="text" data-im="assetdetail@discard"/></td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Issued</th>
+                        <th>Returned</th>
+                        <th>Staff</th>
+                        <th>Memo</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td data-im="rent@rentdate"></td>
+                        <td data-im="rent@backdate"></td>
+                        <td>
+                            <select data-im="rent@staff_id">
+                                <option data-im="staff@staff_id@value staff@name"></option>
+                            </select>
+                        </td>
+                        <td><input type="text" data-im="rent@memo"/></td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 <footer>
-<small>INTER-Mediator ©2021</small>
+    <small>INTER-Mediator ©2021</small>
 </footer>
 </body>
 </html>

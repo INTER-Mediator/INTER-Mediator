@@ -21,28 +21,28 @@
 
     <script type="text/javascript" src="masterdetail_FMS.php"></script>
     <script type="text/javascript">
-        INTERMediatorOnPage.doAfterConstruct = function () {
-            document.getElementById('container').style.display = "block"
-        };
+      INTERMediatorOnPage.doAfterConstruct = function () {
+        document.getElementById('container').style.display = 'block'
+      }
 
-        INTERMediatorOnPage.naviAfterMoveToMaster = function(masterContext, detailContext)  {
-            var node = document.getElementById('searchfield');
-            node.parentNode.style.display = "block"
-        };
+      INTERMediatorOnPage.naviAfterMoveToMaster = function (masterContext, detailContext) {
+        const node = document.getElementById('searchfield')
+        node.parentNode.style.display = 'block'
+      }
 
-        INTERMediatorOnPage.naviAfterMoveToDetail = function(masterContext, detailContext){
-            var node = document.getElementById('searchfield');
-            node.parentNode.style.display = "none"
-        };
+      INTERMediatorOnPage.naviAfterMoveToDetail = function (masterContext, detailContext) {
+        const node = document.getElementById('searchfield')
+        node.parentNode.style.display = 'none'
+      }
     </script>
     <style>
-        .IM_Button_BackNavi    {
+        .IM_Button_BackNavi {
             padding: 10px;
             marging: 0;
             border: solid 1px #BBBBBB;
             border-radius: 5px;
             background-color: #F7F7F7;
-            box-shadow: 0 2px 2px rgba( 0.0, 0.0, 0.0, 0.4);
+            box-shadow: 0 2px 2px rgba(0.0, 0.0, 0.0, 0.4);
             cursor: pointer;
             color: #333333;
             font-size: 10pt;
@@ -52,7 +52,8 @@
             vertical-align: middle;
             display: inline-block;
         }
-        .label  {
+
+        .label {
             font-weight: bold;
             font-size: 80%;
         }
