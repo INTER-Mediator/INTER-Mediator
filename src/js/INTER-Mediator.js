@@ -418,11 +418,11 @@ const INTERMediator = {
    */
   constructMain: async (updateRequiredContext, recordset) => {
     'use strict'
-    let i
     let radioName = {}
     let nameSerial = 1
     let nameAttrCounter = 1
     let imPartsShouldFinished = []
+    let postSetFields
     INTERMediator.currentContext = updateRequiredContext
     INTERMediator.currentRecordset = recordset
 
@@ -454,7 +454,7 @@ const INTERMediator = {
         await pageConstruct()
       } else {
         INTERMediator.partialConstructing = true
-        const postSetFields = []
+        postSetFields = []
         try {
           if (!recordset) {
             updateRequiredContext.removeContext()
@@ -572,7 +572,7 @@ const INTERMediator = {
       } else {
         bodyNode.innerHTML = INTERMediator.rootEnclosure
       }
-      const postSetFields = []
+      postSetFields = []
       INTERMediatorOnPage.setReferenceToTheme()
       IMLibPageNavigation.initializeStepInfo(false)
 
@@ -650,7 +650,7 @@ const INTERMediator = {
      */
     function setupPostOnlyEnclosure(node) {
       const postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, '_im_post')
-      for (i = 0; i < postNodes.length; i++) {
+      for (let i = 0; i < postNodes.length; i++) {
         if (postNodes[i].tagName === 'BUTTON' ||
           (postNodes[i].tagName === 'INPUT' &&
             (postNodes[i].getAttribute('type').toLowerCase() === 'button' ||
@@ -668,7 +668,7 @@ const INTERMediator = {
         }
       }
       const nodes = node.childNodes
-      for (i = 0; i < nodes.length; i++) {
+      for (let i = 0; i < nodes.length; i++) {
         seekEnclosureInPostOnly(nodes[i])
       }
 
@@ -773,7 +773,7 @@ const INTERMediator = {
               if (repeatersOriginal[i].getAttribute('selected')) {
                 selectedNode = newNode
               }
-              if (selectedNode !== undefined) {
+              if (selectedNode) {
                 selectedNode.selected = true
               }
               await seekEnclosureNode(newNode, null, enclosureNode, currentContextObj)
@@ -1677,10 +1677,13 @@ const INTERMediator = {
      */
     function appendCredit() {
       if (document.getElementById('IM_CREDIT') === null) {
-        const bodyNode = INTERMediatorOnPage.creditIncluding
-          ? document.getElementById(INTERMediatorOnPage.creditIncluding)
-          : document.getElementsByTagName('BODY')[0]
-
+        let bodyNode
+        if (INTERMediatorOnPage.creditIncluding) {
+          bodyNode = document.getElementById(INTERMediatorOnPage.creditIncluding)
+        }
+        if (!bodyNode) {
+          bodyNode = document.getElementsByTagName('BODY')[0]
+        }
         const creditNode = document.createElement('div')
         bodyNode.appendChild(creditNode)
         creditNode.setAttribute('id', 'IM_CREDIT')
