@@ -45,14 +45,14 @@ console.log(`Booted Service Server of INTER-Mediator: Version Code = ${verCode}`
    Server core
  */
 function handler(req, res) {
-  var reqParams = url.parse(req.url, true)
-  var ipaddr = cleanUpIPAddress(req.socket.remoteAddress)
+  const reqParams = url.parse(req.url, true)
+  const ipaddr = cleanUpIPAddress(req.socket.remoteAddress)
   if (!isIncludeIPAddress(ipaddr, acceptClient)) {
     console.log('client ip out of range: ' + ipaddr + '[' + new Date() + ']')
     res.end('ERROR')
     return
   }
-  var postData = ''
+  let postData = ''
   if (req.method == 'POST') {
     req.on('data', function (data) {
       postData += data
@@ -105,8 +105,8 @@ requestBroker['/eval'] = function (params, res, postData) {
 requestBroker['/trigger'] = function (params, res, postData) {
   res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
   let jsonData = JSON.parse(postData)
-  for(const id in watching) {
-    if(jsonData.clients.indexOf(id) > -1) {
+  for (const id in watching) {
+    if (jsonData.clients.indexOf(id) > -1) {
       console.log(`Emit to: ${id}`)
       io.to(watching[id].socketid).emit('notify', jsonData)
     }
@@ -168,31 +168,31 @@ function cleanUpIPAddress(str) {
 }
 
 function isIncludeIPAddress(ipaddr, range) {
-  var ipArray = ipaddr.split('.')
+  const ipArray = ipaddr.split('.')
   if ((ipaddr === '127.0.0.1') || (ipaddr === '::1')) {
     return true
   }
   if (ipArray.length !== 4) {
     return false
   }
-  var rangeArray = range.split('/')
+  const rangeArray = range.split('/')
   if (rangeArray.length !== 2) {
     return false
   }
-  var rangeIPArray = rangeArray[0].split('.')
+  const rangeIPArray = rangeArray[0].split('.')
   if (rangeIPArray.length !== 4) {
     return false
   }
-  var ipNum = ((Number(ipArray[0]) * 256 +
+  const ipNum = ((Number(ipArray[0]) * 256 +
     Number(ipArray[1])) * 256 +
     Number(ipArray[2])) * 256 +
     Number(ipArray[3])
-  var rangeIpNum = ((Number(rangeIPArray[0]) * 256 +
+  const rangeIpNum = ((Number(rangeIPArray[0]) * 256 +
     Number(rangeIPArray[1])) * 256 +
     Number(rangeIPArray[2])) * 256 +
     Number(rangeIPArray[3])
-  var digit = Math.pow(2, 32 - rangeArray[1])
-  var ipaddrNet = Math.floor(ipNum / digit) * digit
+  const digit = Math.pow(2, 32 - rangeArray[1])
+  const ipaddrNet = Math.floor(ipNum / digit) * digit
   if (ipaddrNet === rangeIpNum) {
     return true
   }

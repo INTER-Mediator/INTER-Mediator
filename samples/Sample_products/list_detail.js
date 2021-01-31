@@ -8,61 +8,73 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 window.onload = function () {
-    INTERMediator.construct(true);
-    showList();
-};
+  INTERMediator.construct(true)
+  showList()
+}
 
 function showList() {
-    if (INTERMediator.additionalCondition.productlist) {
-        INTERMediator.additionalCondition.productlist = null;
+  if (INTERMediator.additionalCondition.productlist) {
+    INTERMediator.additionalCondition.productlist = null
+  }
+  if (window.document.title.indexOf('FileMaker') == -1) {
+    INTERMediator.additionalCondition = {
+      'productdetail': [
+        {field: 'id', operator: '<', value: 0},
+      ]
     }
-    if (window.document.title.indexOf("FileMaker") == -1) {
-        INTERMediator.additionalCondition = {"productdetail": [
-                { field: "id", operator: "<", value: 0 },
-        ]};
-    } else {
-        INTERMediator.additionalCondition = {"productdetail": [
-                { field: "id", operator: "lt", value: 0 },
-        ]};
+  } else {
+    INTERMediator.additionalCondition = {
+      'productdetail': [
+        {field: 'id', operator: 'lt', value: 0},
+      ]
     }
-    INTERMediator.construct(true);
-    
-    INTERMediatorOnPage.doAfterConstruct = function () {
-        document.getElementById("listarea").className = "shown";
-        document.getElementById("detailarea").className = "hidden";
-    };
+  }
+  INTERMediator.construct(true)
+
+  INTERMediatorOnPage.doAfterConstruct = function () {
+    document.getElementById('listarea').className = 'shown'
+    document.getElementById('detailarea').className = 'hidden'
+  }
 }
 
 function showDetail(id) {
-    if (window.document.title.indexOf("FileMaker") == -1) {
-        INTERMediator.additionalCondition = {"productlist": [
-                { field: "id", operator: "<", value: 0 },
-        ]};
-        INTERMediator.additionalCondition = {"productdetail": [
-                { field: "id", operator: "=", value: id },
-        ]};
-    } else {
-        INTERMediator.additionalCondition = {"productlist": [
-                { field: "id", operator: "lt", value: 0 },
-        ]};
-        INTERMediator.additionalCondition = {"productdetail": [
-                { field: "id", operator: "eq", value: id },
-        ]};
+  if (window.document.title.indexOf('FileMaker') == -1) {
+    INTERMediator.additionalCondition = {
+      'productlist': [
+        {field: 'id', operator: '<', value: 0},
+      ]
     }
-    INTERMediator.construct(true);
-    INTERMediatorOnPage.doAfterConstruct = function () {
-        IMLibMouseEventDispatch.setExecute('showlist', function () {
-            showList();
-        });
-        document.getElementById("listarea").className = "hidden";
-        document.getElementById("detailarea").className = "shown";
-    };
+    INTERMediator.additionalCondition = {
+      'productdetail': [
+        {field: 'id', operator: '=', value: id},
+      ]
+    }
+  } else {
+    INTERMediator.additionalCondition = {
+      'productlist': [
+        {field: 'id', operator: 'lt', value: 0},
+      ]
+    }
+    INTERMediator.additionalCondition = {
+      'productdetail': [
+        {field: 'id', operator: 'eq', value: id},
+      ]
+    }
+  }
+  INTERMediator.construct(true)
+  INTERMediatorOnPage.doAfterConstruct = function () {
+    IMLibMouseEventDispatch.setExecute('showlist', function () {
+      showList()
+    })
+    document.getElementById('listarea').className = 'hidden'
+    document.getElementById('detailarea').className = 'shown'
+  }
 }
 
-INTERMediatorOnPage.move = function(repeaters) {
-    var buttonlist = repeaters[0].getElementsByTagName("button");
-    var id = buttonlist[0].id.replace("showdetail", "");
-    IMLibMouseEventDispatch.setExecute("showdetail" + id, function () {
-        showDetail(id);
-    });
-};
+INTERMediatorOnPage.move = function (repeaters) {
+  const buttonlist = repeaters[0].getElementsByTagName('button')
+  const id = buttonlist[0].id.replace('showdetail', '')
+  IMLibMouseEventDispatch.setExecute('showdetail' + id, function () {
+    showDetail(id)
+  })
+}

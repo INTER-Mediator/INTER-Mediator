@@ -133,22 +133,19 @@ const INTERMediatorLib = {
 
   generatePasswordHash: function (password) {
     'use strict'
-    var numToHex, salt, saltHex, code, lowCode, highCode, i
-    numToHex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']
-    salt = ''
-    saltHex = ''
-    for (i = 0; i < 4; i += 1) {
-      code = Math.floor(Math.random() * (128 - 32) + 32)
-      lowCode = code & 0xF
-      highCode = (code >> 4) & 0xF
+    const numToHex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']
+    let salt = ''
+    let saltHex = ''
+    for (let i = 0; i < 4; i += 1) {
+      const code = Math.floor(Math.random() * (128 - 32) + 32)
+      const lowCode = code & 0xF
+      const highCode = (code >> 4) & 0xF
       salt += String.fromCharCode(code)
       saltHex += numToHex[highCode] + numToHex[lowCode]
     }
-
     let shaObj = new jsSHA('SHA-1', 'TEXT')
     shaObj.update(password + salt)
     let hash = shaObj.getHash('HEX')
-
     return encodeURIComponent(hash + saltHex)
   },
 
@@ -156,7 +153,7 @@ const INTERMediatorLib = {
     'use strict'
     console.error('INTERMediatorLib.getParentRepeater method in INTER-Mediator-Lib.js will be removed in Ver.6.0. ' +
       'The alternative method is getParentRepeaters.')
-    var currentNode = node
+    let currentNode = node
     while (currentNode !== null) {
       if (INTERMediatorLib.isRepeater(currentNode, true)) {
         return currentNode
@@ -168,18 +165,17 @@ const INTERMediatorLib = {
 
   getParentRepeaters: function (node) {
     'use strict'
-    let i, target = '', linkInfo, result = [], linkComp, nInfos, repeaters = null
-
     if (!node) {
       return null
     }
-    linkInfo = INTERMediatorLib.getLinkedElementInfo(node)
+    let target = '', repeaters = null
+    const linkInfo = INTERMediatorLib.getLinkedElementInfo(node)
     if (linkInfo) {
-      linkComp = linkInfo[0].split('@')
+      const linkComp = linkInfo[0].split('@')
       if (linkComp.length > 2) {
         target = linkComp[2]
       }
-      nInfos = IMLibContextPool.getContextInfoFromId(node.id, target)
+      const nInfos = IMLibContextPool.getContextInfoFromId(node.id, target)
       if (nInfos) {
         repeaters = nInfos.context.binding[nInfos.record]._im_repeater
       }
@@ -187,26 +183,26 @@ const INTERMediatorLib = {
     if (!repeaters) {
       repeaters = seekFromContextPool(node)
     }
+    const result = []
     if (repeaters) {
-      for (i = 0; i < repeaters.length; i += 1) {
+      for (let i = 0; i < repeaters.length; i += 1) {
         result.push(document.getElementById(repeaters[i].id))
       }
     }
     return result
 
     function seekFromContextPool(node) {
-      let i, j, k, currentNode
       if (!node) {
         return null
       }
-      currentNode = node
+      let currentNode = node
       while (currentNode !== null) {
         if (INTERMediatorLib.isRepeater(currentNode, true)) {
-          for (i = 0; i < IMLibContextPool.poolingContexts.length; i++) {
-            for (j in IMLibContextPool.poolingContexts[i].binding) {
+          for (let i = 0; i < IMLibContextPool.poolingContexts.length; i++) {
+            for (let j in IMLibContextPool.poolingContexts[i].binding) {
               if (IMLibContextPool.poolingContexts[i].binding.hasOwnProperty(j) &&
                 IMLibContextPool.poolingContexts[i].binding[j].hasOwnProperty('_im_repeater')) {
-                for (k = 0; k < IMLibContextPool.poolingContexts[i].binding[j]._im_repeater.length; k++) {
+                for (let k = 0; k < IMLibContextPool.poolingContexts[i].binding[j]._im_repeater.length; k++) {
                   if (IMLibContextPool.poolingContexts[i].binding[j]._im_repeater[k].id === currentNode.id) {
                     return IMLibContextPool.poolingContexts[i].binding[j]._im_repeater
                   }
@@ -223,7 +219,7 @@ const INTERMediatorLib = {
 
   getParentEnclosure: function (node) {
     'use strict'
-    var currentNode = node
+    let currentNode = node
     while (currentNode !== null) {
       if (INTERMediatorLib.isEnclosure(currentNode, true)) {
         return currentNode
@@ -235,20 +231,18 @@ const INTERMediatorLib = {
 
   isEnclosure: function (node, nodeOnly) {
     'use strict'
-    var tagName, className, children, k, controlAttr
-
     if (!node || node.nodeType !== 1) {
       return false
     }
-    className = node.getAttribute('class')
+    const className = node.getAttribute('class')
     if (className && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0) {
       return false
     }
-    controlAttr = node.getAttribute('data-im-control')
+    const controlAttr = node.getAttribute('data-im-control')
     if (controlAttr && controlAttr.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterControlName) >= 0) {
       return false
     }
-    tagName = node.tagName
+    const tagName = node.tagName
     if ((tagName === 'TBODY') ||
       (tagName === 'UL') ||
       (tagName === 'OL') ||
@@ -261,8 +255,8 @@ const INTERMediatorLib = {
       if (nodeOnly) {
         return true
       } else {
-        children = node.childNodes
-        for (k = 0; k < children.length; k++) {
+        const children = node.childNodes
+        for (let k = 0; k < children.length; k++) {
           if (INTERMediatorLib.isRepeater(children[k], true)) {
             return true
           }
@@ -274,20 +268,18 @@ const INTERMediatorLib = {
 
   isRepeater: function (node, nodeOnly) {
     'use strict'
-    var tagName, className, children, k, controlAttr
-
     if (!node || node.nodeType !== 1) {
       return false
     }
-    className = node.getAttribute('class')
+    const className = node.getAttribute('class')
     if (className && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0) {
       return false
     }
-    controlAttr = node.getAttribute('data-im-control')
+    const controlAttr = node.getAttribute('data-im-control')
     if (controlAttr && controlAttr.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterControlName) >= 0) {
       return false
     }
-    tagName = node.tagName
+    const tagName = node.tagName
     if ((tagName === 'TR') || (tagName === 'LI') || (tagName === 'OPTION') ||
       (className && className.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0) ||
       (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0) ||
@@ -308,8 +300,8 @@ const INTERMediatorLib = {
       if (INTERMediatorLib.isLinkedElement(node)) {
         return true
       }
-      children = node.childNodes
-      for (k = 0; k < children.length; k++) {
+      const children = node.childNodes
+      for (let k = 0; k < children.length; k++) {
         if (children[k].nodeType === 1) { // Work for an element
           if (INTERMediatorLib.isLinkedElement(children[k])) {
             return true
@@ -328,10 +320,8 @@ const INTERMediatorLib = {
 
   isLinkedElement: function (node) {
     'use strict'
-    var classInfo, matched, attr
-
     if (node !== null && node.getAttribute) {
-      attr = node.getAttribute('data-im')
+      const attr = node.getAttribute('data-im')
       if (attr) {
         return true
       }
@@ -344,9 +334,9 @@ const INTERMediatorLib = {
         }
       }
       if (INTERMediator.classAsLinkInfo) {
-        classInfo = node.getAttribute('class')
+        const classInfo = node.getAttribute('class')
         if (classInfo !== null) {
-          matched = classInfo.match(/IM\[.*\]/)
+          const matched = classInfo.match(/IM\[.*\]/)
           if (matched) {
             return true
           }
@@ -358,33 +348,31 @@ const INTERMediatorLib = {
 
   isWidgetElement: function (node) {
     'use strict'
-    var classInfo, matched, attr, parentNode
-
     if (!node) {
       return false
     }
     if (INTERMediatorLib.getLinkedElementInfo(node)) {
-      attr = node.getAttribute('data-im-widget')
+      const attr = node.getAttribute('data-im-widget')
       if (attr) {
         return true
       }
-      classInfo = node.getAttribute('class')
+      const classInfo = node.getAttribute('class')
       if (classInfo !== null) {
-        matched = classInfo.match(/IM_WIDGET\[.*\]/)
+        const matched = classInfo.match(/IM_WIDGET\[.*\]/)
         if (matched) {
           return true
         }
       }
     } else {
-      parentNode = node.parentNode
+      const parentNode = node.parentNode
       if (!parentNode && INTERMediatorLib.getLinkedElementInfoImpl(parentNode)) {
-        attr = parentNode.getAttribute('data-im-widget')
+        const attr = parentNode.getAttribute('data-im-widget')
         if (attr) {
           return true
         }
-        classInfo = parentNode.getAttribute('class')
+        const classInfo = parentNode.getAttribute('class')
         if (classInfo !== null) {
-          matched = classInfo.match(/IM_WIDGET\[.*\]/)
+          const matched = classInfo.match(/IM_WIDGET\[.*\]/)
           if (matched) {
             return true
           }
@@ -396,16 +384,14 @@ const INTERMediatorLib = {
 
   isNamedElement: function (node) {
     'use strict'
-    var nameInfo, matched
-
     if (node !== null) {
-      nameInfo = node.getAttribute('data-im-group')
+      let nameInfo = node.getAttribute('data-im-group')
       if (nameInfo) {
         return true
       }
       nameInfo = node.getAttribute('name')
       if (nameInfo) {
-        matched = nameInfo.match(/Name-[\d]+/)
+        const matched = nameInfo.match(/Name-[\d]+/)
         if (matched) {
           return true
         }
@@ -424,9 +410,8 @@ const INTERMediatorLib = {
 
   getEnclosure: function (node) {
     'use strict'
-    var currentNode, detectedRepeater
-
-    currentNode = node
+    let detectedRepeater
+    let currentNode = node
     while (currentNode !== null) {
       if (INTERMediatorLib.isRepeater(currentNode, true)) {
         detectedRepeater = currentNode
@@ -443,25 +428,23 @@ const INTERMediatorLib = {
      */
 
     function isRepeaterOfEnclosure(repeater, enclosure) {
-      var repeaterTag, enclosureTag, enclosureClass, repeaterClass, enclosureDataAttr,
-        repeaterDataAttr, repeaterType
       if (!repeater || !enclosure) {
         return false
       }
-      repeaterTag = repeater.tagName
-      enclosureTag = enclosure.tagName
+      const repeaterTag = repeater.tagName
+      const enclosureTag = enclosure.tagName
       if ((repeaterTag === 'TR' && enclosureTag === 'TBODY') ||
         (repeaterTag === 'OPTION' && enclosureTag === 'SELECT') ||
         (repeaterTag === 'LI' && enclosureTag === 'OL') ||
         (repeaterTag === 'LI' && enclosureTag === 'UL')) {
         return true
       }
-      enclosureClass = enclosure.getAttribute('class')
-      enclosureDataAttr = enclosure.getAttribute('data-im-control')
+      const enclosureClass = enclosure.getAttribute('class')
+      const enclosureDataAttr = enclosure.getAttribute('data-im-control')
       if ((enclosureClass && enclosureClass.indexOf(INTERMediatorLib.roleAsEnclosureClassName) >= 0) ||
         (enclosureDataAttr && enclosureDataAttr.indexOf('enclosure') >= 0)) {
-        repeaterClass = repeater.getAttribute('class')
-        repeaterDataAttr = repeater.getAttribute('data-im-control')
+        const repeaterClass = repeater.getAttribute('class')
+        const repeaterDataAttr = repeater.getAttribute('data-im-control')
         if ((repeaterClass && repeaterClass.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0) ||
           (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0) ||
           (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0) ||
@@ -471,7 +454,7 @@ const INTERMediatorLib = {
         ) {
           return true
         } else if (repeaterTag === 'INPUT') {
-          repeaterType = repeater.getAttribute('type')
+          const repeaterType = repeater.getAttribute('type')
           if (repeaterType &&
             ((repeaterType.indexOf('radio') >= 0 || repeaterType.indexOf('check') >= 0))) {
             return true
@@ -489,7 +472,7 @@ const INTERMediatorLib = {
 
   getLinkedElementInfo: function (node) {
     'use strict'
-    var result = INTERMediatorLib.getLinkedElementInfoImpl(node)
+    const result = INTERMediatorLib.getLinkedElementInfoImpl(node)
     if (result !== false) {
       return result
     }
@@ -501,14 +484,13 @@ const INTERMediatorLib = {
 
   getLinkedElementInfoImpl: function (node) {
     'use strict'
-    var defs = []
-    let eachDefs, reg, i, attr, matched
+    let defs = []
     if (INTERMediatorLib.isLinkedElement(node)) {
-      attr = node.getAttribute('data-im')
+      let attr = node.getAttribute('data-im')
       if (attr !== null && attr.length > 0) {
-        reg = new RegExp('[\\s' + INTERMediator.defDivider + ']+')
-        eachDefs = attr.split(reg)
-        for (i = 0; i < eachDefs.length; i += 1) {
+        const reg = new RegExp('[\\s' + INTERMediator.defDivider + ']+')
+        const eachDefs = attr.split(reg)
+        for (let i = 0; i < eachDefs.length; i += 1) {
           if (eachDefs[i] && eachDefs[i].length > 0) {
             defs.push(resolveAlias(eachDefs[i]))
           }
@@ -516,8 +498,8 @@ const INTERMediatorLib = {
         return defs
       }
       if (INTERMediator.titleAsLinkInfo && node.getAttribute('TITLE')) {
-        eachDefs = node.getAttribute('TITLE').split(INTERMediator.defDivider)
-        for (i = 0; i < eachDefs.length; i += 1) {
+        const eachDefs = node.getAttribute('TITLE').split(INTERMediator.defDivider)
+        for (let i = 0; i < eachDefs.length; i += 1) {
           defs.push(resolveAlias(eachDefs[i]))
         }
         return defs
@@ -525,9 +507,9 @@ const INTERMediatorLib = {
       if (INTERMediator.classAsLinkInfo) {
         attr = node.getAttribute('class')
         if (attr !== null && attr.length > 0) {
-          matched = attr.match(/IM\[([^\]]*)\]/)
-          eachDefs = matched[1].split(INTERMediator.defDivider)
-          for (i = 0; i < eachDefs.length; i += 1) {
+          const matched = attr.match(/IM\[([^\]]*)\]/)
+          const eachDefs = matched[1].split(INTERMediator.defDivider)
+          for (let i = 0; i < eachDefs.length; i += 1) {
             defs.push(resolveAlias(eachDefs[i]))
           }
         }
@@ -537,7 +519,7 @@ const INTERMediatorLib = {
     return false
 
     function resolveAlias(def) {
-      var aliases = INTERMediatorOnPage.getOptionsAliases()
+      const aliases = INTERMediatorOnPage.getOptionsAliases()
       if (aliases && aliases[def]) {
         return aliases[def]
       }
@@ -547,14 +529,13 @@ const INTERMediatorLib = {
 
   getWidgetInfo: function (node) {
     'use strict'
-    var defs = []
-    let eachDefs, i, classAttr, matched, reg
+    const defs = []
     if (INTERMediatorLib.isWidgetElement(node)) {
-      classAttr = node.getAttribute('data-im-widget')
+      let classAttr = node.getAttribute('data-im-widget')
       if (classAttr && classAttr.length > 0) {
-        reg = new RegExp('[\\s' + INTERMediator.defDivider + ']+')
-        eachDefs = classAttr.split(reg)
-        for (i = 0; i < eachDefs.length; i += 1) {
+        const reg = new RegExp('[\\s' + INTERMediator.defDivider + ']+')
+        const eachDefs = classAttr.split(reg)
+        for (let i = 0; i < eachDefs.length; i += 1) {
           if (eachDefs[i] && eachDefs[i].length > 0) {
             defs.push(eachDefs[i])
           }
@@ -563,9 +544,9 @@ const INTERMediatorLib = {
       }
       classAttr = node.getAttribute('class')
       if (classAttr && classAttr.length > 0) {
-        matched = classAttr.match(/IM_WIDGET\[([^\]]*)\]/)
-        eachDefs = matched[1].split(INTERMediator.defDivider)
-        for (i = 0; i < eachDefs.length; i += 1) {
+        const matched = classAttr.match(/IM_WIDGET\[([^\]]*)\]/)
+        const eachDefs = matched[1].split(INTERMediator.defDivider)
+        for (let i = 0; i < eachDefs.length; i += 1) {
           defs.push(eachDefs[i])
         }
         return defs
@@ -576,14 +557,13 @@ const INTERMediatorLib = {
 
   getNamedInfo: function (node) {
     'use strict'
-    var defs = []
-    let eachDefs, i, nameAttr, matched, reg
+    const defs = []
     if (INTERMediatorLib.isNamedElement(node)) {
-      nameAttr = node.getAttribute('data-im-group')
+      let nameAttr = node.getAttribute('data-im-group')
       if (nameAttr && nameAttr.length > 0) {
-        reg = new RegExp('[\\s' + INTERMediator.defDivider + ']+')
-        eachDefs = nameAttr.split(reg)
-        for (i = 0; i < eachDefs.length; i += 1) {
+        const reg = new RegExp('[\\s' + INTERMediator.defDivider + ']+')
+        const eachDefs = nameAttr.split(reg)
+        for (let i = 0; i < eachDefs.length; i += 1) {
           if (eachDefs[i] && eachDefs[i].length > 0) {
             defs.push(eachDefs[i])
           }
@@ -592,9 +572,9 @@ const INTERMediatorLib = {
       }
       nameAttr = node.getAttribute('name')
       if (nameAttr && nameAttr.length > 0) {
-        matched = nameAttr.match(/Name-[\d]*/)
-        eachDefs = matched[1].split(INTERMediator.defDivider)
-        for (i = 0; i < eachDefs.length; i += 1) {
+        const matched = nameAttr.match(/Name-[\d]*/)
+        const eachDefs = matched[1].split(INTERMediator.defDivider)
+        for (let i = 0; i < eachDefs.length; i += 1) {
           defs.push(eachDefs[i])
         }
         return defs
@@ -625,8 +605,6 @@ const INTERMediatorLib = {
 
   getNodeInfoArray: function (nodeInfo) {
     'use strict'
-    var comps, tableName, fieldName, targetName
-
     if (!nodeInfo || !nodeInfo.split) {
       return {
         'table': null,
@@ -636,10 +614,10 @@ const INTERMediatorLib = {
         'crossTable': false
       }
     }
-    comps = nodeInfo.split(INTERMediator.separator)
-    tableName = ''
-    fieldName = ''
-    targetName = ''
+    const comps = nodeInfo.split(INTERMediator.separator)
+    let tableName = ''
+    let fieldName = ''
+    let targetName = ''
     if (comps.length === 3) {
       tableName = comps[0]
       fieldName = comps[1]
@@ -676,24 +654,21 @@ const INTERMediatorLib = {
     'use strict'
     console.error('INTERMediatorLib.getCalcNodeInfoArray method in INTER-Mediator-Page.js will be removed in Ver.6.0. ' +
       'Here is no alternative method.')
-
-    var comps, tableName, fieldName, targetName, node, attribute
-
     if (!idValue) {
       return null
     }
-    node = document.getElementById(idValue)
+    const node = document.getElementById(idValue)
     if (!node) {
       return null
     }
-    attribute = node.getAttribute('data-im')
+    const attribute = node.getAttribute('data-im')
     if (!attribute) {
       return null
     }
-    comps = attribute.split(INTERMediator.separator)
-    tableName = ''
-    fieldName = ''
-    targetName = ''
+    const comps = attribute.split(INTERMediator.separator)
+    let tableName = ''
+    let fieldName = ''
+    let targetName = ''
     if (comps.length === 3) {
       tableName = comps[0]
       fieldName = comps[1]
@@ -734,12 +709,11 @@ const INTERMediatorLib = {
 
   toNumber: function (str) {
     'use strict'
-    var s = ''
-    let i, c
-    var dp = (INTERMediatorLocale && INTERMediatorLocale.mon_decimal_point) ? INTERMediatorLocale.mon_decimal_point : '.'
+    let s = ''
+    let dp = (INTERMediatorLocale && INTERMediatorLocale.mon_decimal_point) ? INTERMediatorLocale.mon_decimal_point : '.'
     str = str.toString()
-    for (i = 0; i < str.length; i += 1) {
-      c = str.charAt(i)
+    for (let i = 0; i < str.length; i += 1) {
+      const c = str.charAt(i)
       if ((c >= '0' && c <= '9') || c === '.' || c === '-' ||
         c === dp) {
         s += c
@@ -763,16 +737,15 @@ const INTERMediatorLib = {
    */
   Round: function (value, digit) {
     'use strict'
-    var powers = Math.pow(10, digit)
+    const powers = Math.pow(10, digit)
     return Math.round(value * powers) / powers
   },
 
   normalizeNumerics: function (value) {
     'use strict'
-    var i
-    var punc = (INTERMediatorLocale && INTERMediatorLocale.decimal_point) ? INTERMediatorLocale.decimal_point : '.'
-    var mpunc = (INTERMediatorLocale && INTERMediatorLocale.mon_decimal_point) ? INTERMediatorLocale.mon_decimal_point : '.'
-    var rule = '0123456789'
+    const punc = (INTERMediatorLocale && INTERMediatorLocale.decimal_point) ? INTERMediatorLocale.decimal_point : '.'
+    const mpunc = (INTERMediatorLocale && INTERMediatorLocale.mon_decimal_point) ? INTERMediatorLocale.mon_decimal_point : '.'
+    let rule = '0123456789'
     if (punc) {
       rule += '\\' + punc
     }
@@ -782,7 +755,7 @@ const INTERMediatorLib = {
     rule = '[^' + rule + ']'
     value = String(value)
     if (value && value.match(/[０１２３４５６７８９]/)) {
-      for (i = 0; i < 10; i += 1) {
+      for (let i = 0; i < 10; i += 1) {
         value = value.split(String.fromCharCode(65296 + i)).join(String(i))
         // Full-width numeric characters start from 0xFF10(65296). This is convert to Full to ASCII char for numeric.
       }
@@ -793,21 +766,19 @@ const INTERMediatorLib = {
 
   objectToString: function (obj) {
     'use strict'
-    var str, i, key
-    let sq = String.fromCharCode(39)
-
     if (obj === null) {
       return 'null'
     }
+    const sq = String.fromCharCode(39)
     if (typeof obj === 'object') {
-      str = ''
+      let str = ''
       if (obj.constructor === Array) {
-        for (i = 0; i < obj.length; i += 1) {
+        for (let i = 0; i < obj.length; i += 1) {
           str += INTERMediatorLib.objectToString(obj[i]) + ', '
         }
         return '[' + str + ']'
       } else {
-        for (key in obj) {
+        for (const key in obj) {
           if (obj.hasOwnProperty(key)) {
             str += sq + key + sq + ':' + INTERMediatorLib.objectToString(obj[key]) + ', '
           }
@@ -837,11 +808,9 @@ const INTERMediatorLib = {
 
   getInsertedString: function (tmpStr, dataArray) {
     'use strict'
-    var resultStr, counter
-
-    resultStr = tmpStr
+    let resultStr = tmpStr
     if (dataArray !== null) {
-      for (counter = 1; counter <= dataArray.length; counter++) {
+      for (let counter = 1; counter <= dataArray.length; counter++) {
         resultStr = resultStr.replace('@' + counter + '@', dataArray[counter - 1])
       }
     }
@@ -850,12 +819,10 @@ const INTERMediatorLib = {
 
   getInsertedStringFromErrorNumber: function (errNum, dataArray) {
     'use strict'
-    var resultStr, counter, messageArray
-
-    messageArray = INTERMediatorOnPage.getMessages()
-    resultStr = messageArray ? messageArray[errNum] : 'Error:' + errNum
+    const messageArray = INTERMediatorOnPage.getMessages()
+    let resultStr = messageArray ? messageArray[errNum] : 'Error:' + errNum
     if (dataArray) {
-      for (counter = 1; counter <= dataArray.length; counter++) {
+      for (let counter = 1; counter <= dataArray.length; counter++) {
         resultStr = resultStr.replace('@' + counter + '@', dataArray[counter - 1])
       }
     }
@@ -864,8 +831,7 @@ const INTERMediatorLib = {
 
   getNamedObject: function (obj, key, named) {
     'use strict'
-    var index
-    for (index in obj) {
+    for (const index in obj) {
       if (obj[index][key] === named) {
         return obj[index]
       }
@@ -875,8 +841,7 @@ const INTERMediatorLib = {
 
   getNamedObjectInObjectArray: function (ar, key, named) {
     'use strict'
-    var i
-    for (i = 0; i < ar.length; i += 1) {
+    for (let i = 0; i < ar.length; i += 1) {
       if (ar[i][key] === named) {
         return ar[i]
       }
@@ -885,9 +850,8 @@ const INTERMediatorLib = {
   },
 
   getNamedValueInObject: function (ar, key, named, retrieveKey) {
-    var result = []
-    let index
-    for (index in ar) {
+    const result = []
+    for (const index in ar) {
       if (ar[index][key] === named) {
         result.push(ar[index][retrieveKey])
       }
@@ -912,9 +876,8 @@ const INTERMediatorLib = {
 
   getNamedValuesInObject: function (ar, key1, named1, key2, named2, retrieveKey) {
     'use strict'
-    var result = []
-    let index
-    for (index in ar) {
+    const result = []
+    for (const index in ar) {
       if (ar.hasOwnProperty(index) && ar[index][key1] === named1 && ar[index][key2] === named2) {
         result.push(ar[index][retrieveKey])
       }
@@ -930,9 +893,8 @@ const INTERMediatorLib = {
 
   getRecordsetFromFieldValueObject: function (obj) {
     'use strict'
-    var recordset = {}
-    let index
-    for (index in obj) {
+    const recordset = {}
+    for (const index in obj) {
       if (obj.hasOwnProperty(index)) {
         recordset[obj[index].field] = obj[index].value
       }
@@ -965,24 +927,21 @@ const INTERMediatorLib = {
    */
   getElementsByClassNameOrDataAttr: function (node, cName) {
     'use strict'
-    var nodes = []
-    let attrValue
-
-    attrValue = (cName.match(/^_im_/)) ? cName.substr(4) : cName
+    const nodes = []
+    const attrValue = (cName.match(/^_im_/)) ? cName.substr(4) : cName
     if (attrValue) {
       checkNode(node)
     }
     return nodes
 
     function checkNode(target) {
-      var value, i, items
       if (target === undefined || target.nodeType !== 1) {
         return
       }
-      value = target.getAttribute('class')
+      let value = target.getAttribute('class')
       if (value) {
-        items = value.split('|')
-        for (i = 0; i < items.length; i += 1) {
+        const items = value.split('|')
+        for (let i = 0; i < items.length; i += 1) {
           if (items[i] === attrValue) {
             nodes.push(target)
           }
@@ -990,8 +949,8 @@ const INTERMediatorLib = {
       }
       value = target.getAttribute('data-im-control')
       if (value) {
-        items = value.split(/[| ]/)
-        for (i = 0; i < items.length; i += 1) {
+        const items = value.split(/[| ]/)
+        for (let i = 0; i < items.length; i += 1) {
           if (items[i] === attrValue) {
             nodes.push(target)
           }
@@ -999,14 +958,14 @@ const INTERMediatorLib = {
       }
       value = target.getAttribute('data-im')
       if (value) {
-        items = value.split(/[| ]/)
-        for (i = 0; i < items.length; i += 1) {
+        const items = value.split(/[| ]/)
+        for (let i = 0; i < items.length; i += 1) {
           if (items[i] === attrValue) {
             nodes.push(target)
           }
         }
       }
-      for (i = 0; i < target.children.length; i += 1) {
+      for (let i = 0; i < target.children.length; i += 1) {
         checkNode(target.children[i])
       }
     }
@@ -1014,21 +973,20 @@ const INTERMediatorLib = {
 
   getElementsByAttributeValue: function (node, attribute, value) {
     'use strict'
-    var nodes = []
-    var reg = new RegExp(value)
+    const nodes = []
+    const reg = new RegExp(value)
     checkNode(node)
     return nodes
 
     function checkNode(target) {
-      var aValue, i
       if (target === undefined || target.nodeType !== 1) {
         return
       }
-      aValue = target.getAttribute(attribute)
+      const aValue = target.getAttribute(attribute)
       if (aValue && aValue.match(reg)) {
         nodes.push(target)
       }
-      for (i = 0; i < target.children.length; i += 1) {
+      for (let i = 0; i < target.children.length; i += 1) {
         checkNode(target.children[i])
       }
     }
@@ -1036,21 +994,20 @@ const INTERMediatorLib = {
 
   getElementsByClassName: function (node, cName) {
     'use strict'
-    var nodes = []
-    var reg = new RegExp(cName)
+    const nodes = []
+    const reg = new RegExp(cName)
     checkNode(node)
     return nodes
 
     function checkNode(target) {
-      var className, i
       if (target === undefined || target.nodeType !== 1) {
         return
       }
-      className = target.getAttribute('class')
+      const className = target.getAttribute('class')
       if (className && className.match(reg)) {
         nodes.push(target)
       }
-      for (i = 0; i < target.children.length; i += 1) {
+      for (let i = 0; i < target.children.length; i += 1) {
         checkNode(target.children[i])
       }
     }
@@ -1058,21 +1015,20 @@ const INTERMediatorLib = {
 
   getElementsByIMManaged: function (node) {
     'use strict'
-    var nodes = []
-    var reg = new RegExp(/^IM/)
+    const nodes = []
+    const reg = new RegExp(/^IM/)
     checkNode(node)
     return nodes
 
     function checkNode(target) {
-      var nodeId, i
       if (target === undefined || target.nodeType !== 1) {
         return
       }
-      nodeId = target.getAttribute('id')
+      const nodeId = target.getAttribute('id')
       if (nodeId && nodeId.match(reg)) {
         nodes.push(target)
       }
-      for (i = 0; i < target.children.length; i += 1) {
+      for (let i = 0; i < target.children.length; i += 1) {
         checkNode(target.children[i])
       }
     }
@@ -1080,26 +1036,22 @@ const INTERMediatorLib = {
 
   seekLinkedAndWidgetNodes: function (nodes, ignoreEnclosureCheck) {
     'use strict'
-    var linkedNodesCollection = [] // Collecting linked elements to this array.
-    var widgetNodesCollection = []
-    var i
+    const linkedNodesCollection = [] // Collecting linked elements to this array.
+    const widgetNodesCollection = []
     let doEncCheck = ignoreEnclosureCheck
-
     if (ignoreEnclosureCheck === undefined || ignoreEnclosureCheck === null) {
       doEncCheck = false
     }
-
-    for (i = 0; i < nodes.length; i += 1) {
+    for (let i = 0; i < nodes.length; i += 1) {
       seekLinkedElement(nodes[i])
     }
     return {linkedNode: linkedNodesCollection, widgetNode: widgetNodesCollection}
 
     function seekLinkedElement(node) {
-      var nType, currentEnclosure, children, i
-      nType = node.nodeType
+      const nType = node.nodeType
       if (nType === 1) {
         if (INTERMediatorLib.isLinkedElement(node)) {
-          currentEnclosure = doEncCheck ? INTERMediatorLib.getEnclosure(node) : null
+          const currentEnclosure = doEncCheck ? INTERMediatorLib.getEnclosure(node) : null
           if (currentEnclosure === null) {
             linkedNodesCollection.push(node)
           } else {
@@ -1107,15 +1059,15 @@ const INTERMediatorLib = {
           }
         }
         if (INTERMediatorLib.isWidgetElement(node)) {
-          currentEnclosure = doEncCheck ? INTERMediatorLib.getEnclosure(node) : null
+          const currentEnclosure = doEncCheck ? INTERMediatorLib.getEnclosure(node) : null
           if (currentEnclosure === null) {
             widgetNodesCollection.push(node)
           } else {
             return currentEnclosure
           }
         }
-        children = node.childNodes
-        for (i = 0; i < children.length; i += 1) {
+        const children = node.childNodes
+        for (let i = 0; i < children.length; i += 1) {
           seekLinkedElement(children[i])
         }
       }
@@ -1125,8 +1077,7 @@ const INTERMediatorLib = {
 
   createErrorMessageNode: function (tag, message) {
     'use strict'
-    var messageNode
-    messageNode = document.createElement(tag)
+    const messageNode = document.createElement(tag)
     messageNode.setAttribute('class', '_im_alertmessage')
     messageNode.appendChild(document.createTextNode(message))
     return messageNode
@@ -1143,10 +1094,9 @@ const INTERMediatorLib = {
 
   clearErrorMessage: function (node) {
     'use strict'
-    var errorMsgs, j
     if (node) {
-      errorMsgs = INTERMediatorLib.getElementsByClassName(node.parentNode, '_im_alertmessage')
-      for (j = 0; j < errorMsgs.length; j++) {
+      const errorMsgs = INTERMediatorLib.getElementsByClassName(node.parentNode, '_im_alertmessage')
+      for (let j = 0; j < errorMsgs.length; j++) {
         errorMsgs[j].parentNode.removeChild(errorMsgs[j])
       }
     }
@@ -1155,7 +1105,7 @@ const INTERMediatorLib = {
   dateTimeStringISO: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
-    if(INTERMediatorOnPage.isFollowingTimezone){
+    if (INTERMediatorOnPage.isFollowingTimezone) {
       return dt.getUTCFullYear() + '-' + ('0' + (dt.getUTCMonth() + 1)).substr(-2, 2) + '-' +
         ('0' + dt.getUTCDate()).substr(-2, 2) + ' ' + ('0' + dt.getUTCHours()).substr(-2, 2) + ':' +
         ('0' + dt.getUTCMinutes()).substr(-2, 2) + ':' + ('0' + dt.getUTCSeconds()).substr(-2, 2)
@@ -1168,7 +1118,7 @@ const INTERMediatorLib = {
   dateTimeStringFileMaker: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
-    if(INTERMediatorOnPage.isFollowingTimezone){
+    if (INTERMediatorOnPage.isFollowingTimezone) {
       return ('0' + (dt.getUTCMonth() + 1)).substr(-2, 2) + '/' + ('0' + dt.getUTCDate()).substr(-2, 2) + '/' +
         dt.getUTCFullYear() + ' ' + ('0' + dt.getUTCHours()).substr(-2, 2) + ':' +
         ('0' + dt.getUTCMinutes()).substr(-2, 2) + ':' + ('0' + dt.getUTCSeconds()).substr(-2, 2)
@@ -1181,7 +1131,7 @@ const INTERMediatorLib = {
   dateStringISO: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
-    if(INTERMediatorOnPage.isFollowingTimezone){
+    if (INTERMediatorOnPage.isFollowingTimezone) {
       return dt.getUTCFullYear() + '-' + ('0' + (dt.getUTCMonth() + 1)).substr(-2, 2) +
         '-' + ('0' + dt.getUTCDate()).substr(-2, 2)
     }
@@ -1192,7 +1142,7 @@ const INTERMediatorLib = {
   dateStringFileMaker: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
-    if(INTERMediatorOnPage.isFollowingTimezone){
+    if (INTERMediatorOnPage.isFollowingTimezone) {
       return ('0' + (dt.getUTCMonth() + 1)).substr(-2, 2) + '/' +
         ('0' + dt.getUTCDate()).substr(-2, 2) + '/' + dt.getUTCFullYear()
     }

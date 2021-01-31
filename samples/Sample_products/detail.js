@@ -8,10 +8,10 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 INTERMediatorOnPage.doBeforeConstruct = function() {
-    var param = location.search.split("&");
-    for (var i = 0; i < param.length; i++) {
+    const param = location.search.split("&");
+    for (let i = 0; i < param.length; i++) {
         if (param[i].match(/id=/)) {
-            var values = param[i].split("=");
+            const values = param[i].split("=");
             INTERMediator.additionalCondition = {"product": [
                     { field: "id", operator: "=", value: values[1] },
             ]};

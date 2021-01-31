@@ -11,8 +11,8 @@ use PHPUnit\Framework\TestCase;
 
 class SendMail_Test extends TestCase
 {
-    var $db_proxy = null;
-    var $context = [
+    private $db_proxy = null;
+    private $context = [
         [
             'records' => 1000,
             'paging' => true,
@@ -43,7 +43,7 @@ class SendMail_Test extends TestCase
             ],
         ],
     ];
-    var $option = [
+    private $option = [
         'smtp' => [
             'server' => 'msyk.sakura.ne.jp',
             'port' => 587,

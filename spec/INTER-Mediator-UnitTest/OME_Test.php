@@ -12,14 +12,15 @@ require_once(dirname(__FILE__) . '/../lib/mailsend/qdsmtp/qdsmtp.php');
 class OME_Test extends TestCase
 {
 
-    var $mailAddress = "msyk@msyk.net";
-    var $smtpSettings = array(
+    private $mailAddress = "msyk@msyk.net";
+    private $smtpSettings = array(
         'host' => 's98.coreserver.jp',
         'port' => 587,
         'protocol' => 'SMTP_AUTH',
         'user' => 'msyktest@msyk.net',
         'pass' => 'msyk27745test',
     );
+
     /*
       * This SMTP account won't access any time. Masayuki Nii has this account, and he will be activate it
       * just on his testing only. Usually this password might be wrong.
@@ -62,7 +63,7 @@ class OME_Test extends TestCase
         $ome->appendBody("\nINTER-Mediator Uni Test: testSendMailSMTP");
         $ome->appendBody("\nINTER-Mediator ユニットテスト: testSendMailSMTP");
         $ome->appendBody("\nINTER-Mediator Uni Test: testSendMailSMTP");
-        for ($i=0;$i<100;$i++)  {
+        for ($i = 0; $i < 100; $i++) {
             $ome->appendBody("日本語の「複雑な」構造を、持った文章(sentence)を、書いてみたら、こうなったですぞ。");
         }
         $ome->appendBody("\nこれが最後です。");

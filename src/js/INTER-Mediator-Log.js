@@ -149,8 +149,7 @@ const INTERMediatorLog = {
         clearButton.setAttribute('title', 'clear')
         clearButton.id = '_im_debug_panel_4873643897897_button'
         IMLibMouseEventDispatch.setExecute(clearButton.id, function () {
-          var target
-          target = document.getElementById('_im_debug_panel_4873643897897')
+          const target = document.getElementById('_im_debug_panel_4873643897897')
           target.parentNode.removeChild(target)
         })
         const tNode = document.createTextNode('clear')
@@ -172,7 +171,7 @@ const INTERMediatorLog = {
       debugNode.appendChild(document.createTextNode(
         '============DEBUG INFO on ' + new Date() + '============ '))
       if (INTERMediatorOnPage.getEditorPath()) {
-        var aLink = document.createElement('a')
+        const aLink = document.createElement('a')
         aLink.setAttribute('href', INTERMediatorOnPage.getEditorPath())
         aLink.appendChild(document.createTextNode('Definition File Editor'))
         debugNode.appendChild(aLink)

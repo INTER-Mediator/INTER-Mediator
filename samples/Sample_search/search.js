@@ -48,8 +48,8 @@ INTERMediatorOnPage.doAfterConstruct = function () {
 
 
 function doSearch() {
-    var criteria;
-    var c1 = IMLibLocalContext.getValue("placeCondition");
+    let criteria;
+    const c1 = IMLibLocalContext.getValue("placeCondition");
     if (c1 && c1.length > 0) {
         if (window.document.title.indexOf("FileMaker") == -1) {
             criteria = {field: 'f9', operator: 'LIKE', value: '%' + c1 + '%'};
@@ -57,7 +57,7 @@ function doSearch() {
             criteria = {field: 'f9', operator: 'cn', value: c1};
         }
     }
-    var c2 = IMLibLocalContext.getValue("zipCondition");
+    const c2 = IMLibLocalContext.getValue("zipCondition");
     if (c2 && c2.length > 0) {
         if (window.document.title.indexOf("FileMaker") == -1) {
             criteria = {field: 'f3', operator: 'LIKE', value: c2 + '%'};

@@ -9,7 +9,7 @@
     <script>
         INTERMediatorOnPage.doBeforeConstruct = function () {
             INTERMediator.clearCondition("assetdetail");
-            var param = INTERMediatorOnPage.getURLParametersAsArray();
+            const param = INTERMediatorOnPage.getURLParametersAsArray();
             if (param["id"]) {
                 INTERMediator.addCondition("assetdetail", {
                     field: 'asset_id',

@@ -5,45 +5,45 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <title>INTER-Mediator - Sample - Asset List/MySQL</title>
     <script>
-        function callAPI() {
-            var myRequest, jsonObject;
-            document.getElementById("result").value = "";
-            document.getElementById("log").value = "";
-            var id = document.getElementById("product_id").value;
-            try {
-                myRequest = new XMLHttpRequest();
-                myRequest.open("GET", "api.php?id=" + id, true);
-                myRequest.onreadystatechange = function () {
-                    switch (myRequest.readyState) {
-                        case 0: // Unsent
-                            break;
-                        case 1: // Opened
-                            break;
-                        case 2: // Headers Received
-                            break;
-                        case 3: // Loading
-                            break;
-                        case 4:
-                            try {
-                                jsonObject = JSON.parse(myRequest.responseText);
-                            } catch (e) {
-                                jsonObject = null
-                            }
-                            if (jsonObject.data) {
-                                document.getElementById("result").value = JSON.stringify(jsonObject.data);
-                                document.getElementById("log").value = JSON.stringify(jsonObject.log);
-                            } else {
-                                document.getElementById("log").value = myRequest.responseText;
-                            }
-                            break;
-                    }
-                };
-                myRequest.send();
-            } catch (e) {
-                document.getElementById("result").value = "Exception in commnication."
+      function callAPI() {
+        document.getElementById('result').value = ''
+        document.getElementById('log').value = ''
+        const id = document.getElementById('product_id').value
+        try {
+          const myRequest = new XMLHttpRequest()
+          myRequest.open('GET', 'api.php?id=' + id, true)
+          myRequest.onreadystatechange = function () {
+            switch (myRequest.readyState) {
+              case 0: // Unsent
+                break
+              case 1: // Opened
+                break
+              case 2: // Headers Received
+                break
+              case 3: // Loading
+                break
+              case 4:
+                let jsonObject
+                try {
+                  jsonObject = JSON.parse(myRequest.responseText)
+                } catch (e) {
+                  jsonObject = null
+                }
+                if (jsonObject.data) {
+                  document.getElementById('result').value = JSON.stringify(jsonObject.data)
+                  document.getElementById('log').value = JSON.stringify(jsonObject.log)
+                } else {
+                  document.getElementById('log').value = myRequest.responseText
+                }
+                break
             }
-
+          }
+          myRequest.send()
+        } catch (e) {
+          document.getElementById('result').value = 'Exception in commnication.'
         }
+
+      }
     </script>
 </head>
 <body>

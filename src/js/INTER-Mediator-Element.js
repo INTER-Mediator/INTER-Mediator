@@ -80,9 +80,9 @@ const IMLibElement = {
 
   appendObject: function (obj, adding) {
     'use strict'
-    var result = obj
+    const result = obj
     if (adding) {
-      for (var key in adding) {
+      for (let key in adding) {
         if (adding.hasOwnProperty(key)) {
           result[key] = adding[key]
         }
@@ -95,8 +95,7 @@ const IMLibElement = {
   //
   initilaizeFlags: function (element) {
     'use strict'
-    var flags, formatOption, negativeStyle, charStyle, kanjiSeparator
-    flags = {
+    let flags = {
       useSeparator: false,
       blankIfZero: false,
       negativeStyle: 0,
@@ -104,38 +103,34 @@ const IMLibElement = {
       kanjiSeparator: 0,
       upTo3Digits: 0
     }
-    formatOption = element.getAttribute('data-im-format-options')
+    const formatOption = element.getAttribute('data-im-format-options')
     if (formatOption) {
       for (const oneOption of formatOption.split(' ')) {
         flags = IMLibElement.appendObject(flags, IMLibElement.formatOptions[oneOption.toLowerCase()])
       }
     }
-    negativeStyle = element.getAttribute('data-im-format-negative-style')
+    const negativeStyle = element.getAttribute('data-im-format-negative-style')
     flags = IMLibElement.appendObject(flags, IMLibElement.formatNegativeStyle[negativeStyle])
-    charStyle = element.getAttribute('data-im-format-numeral-type')
+    const charStyle = element.getAttribute('data-im-format-numeral-type')
     flags = IMLibElement.appendObject(flags, IMLibElement.formatNumeralType[charStyle])
-    kanjiSeparator = element.getAttribute('data-im-format-kanji-separator')
+    const kanjiSeparator = element.getAttribute('data-im-format-kanji-separator')
     flags = IMLibElement.appendObject(flags, IMLibElement.formatKanjiSeparator[kanjiSeparator])
     return flags
   },
 
   getFormattedValue: function (element, curVal) {
     'use strict'
-    var flags, formatSpec, parsed
-    let formattedValue = null
-    let params, formatFunc, firstParen, lastParen
-
-    formatSpec = element.getAttribute('data-im-format')
+    const formatSpec = element.getAttribute('data-im-format')
     if (!formatSpec) {
       return null
     }
-    flags = IMLibElement.initilaizeFlags(element)
-    params = 0
-    formatFunc = IMLibElement.formatters[formatSpec.trim().toLocaleLowerCase()] // in case of no parameters in attribute
+    const flags = IMLibElement.initilaizeFlags(element)
+    let params = 0
+    let formatFunc = IMLibElement.formatters[formatSpec.trim().toLocaleLowerCase()] // in case of no parameters in attribute
     if (!formatFunc) {
-      firstParen = formatSpec.indexOf('(')
-      lastParen = formatSpec.lastIndexOf(')')
-      parsed = formatSpec.substr(0, firstParen).match(/[^a-zA-Z]*([a-zA-Z]+).*/)
+      const firstParen = formatSpec.indexOf('(')
+      const lastParen = formatSpec.lastIndexOf(')')
+      const parsed = formatSpec.substr(0, firstParen).match(/[^a-zA-Z]*([a-zA-Z]+).*/)
       formatFunc = IMLibElement.formatters[parsed[1].toLocaleLowerCase()]
       params = formatSpec.substring(firstParen + 1, lastParen)
       if (params.length === 0) { // in case of parameter is just ().
@@ -143,42 +138,39 @@ const IMLibElement = {
       }
     }
     if (formatFunc) {
-      formattedValue = formatFunc(curVal, params, flags)
+      return formatFunc(curVal, params, flags)
     }
-    return formattedValue
+    return null
   },
 
   getUnformattedValue: function (element, value) {
     'use strict'
-    var formatSpec, unformatFunc, parsed, params, convertedValue, flags, firstParen, lastParen
-    formatSpec = element.getAttribute('data-im-format')
+    const formatSpec = element.getAttribute('data-im-format')
     if (!formatSpec) {
       return null
     }
-    flags = IMLibElement.initilaizeFlags(element)
-    unformatFunc = IMLibElement.unformatters[formatSpec.trim().toLocaleLowerCase()] // in case of no parameters in attribute
+    let params = null
+    const flags = IMLibElement.initilaizeFlags(element)
+    let unformatFunc = IMLibElement.unformatters[formatSpec.trim().toLocaleLowerCase()] // in case of no parameters in attribute
     if (!unformatFunc) {
-      firstParen = formatSpec.indexOf('(')
-      lastParen = formatSpec.lastIndexOf(')')
+      const firstParen = formatSpec.indexOf('(')
+      const lastParen = formatSpec.lastIndexOf(')')
       if (firstParen >= 0 && lastParen >= 0) {
-        parsed = formatSpec.substr(0, firstParen).match(/[^a-zA-Z]*([a-zA-Z]+).*/)
+        const parsed = formatSpec.substr(0, firstParen).match(/[^a-zA-Z]*([a-zA-Z]+).*/)
         unformatFunc = IMLibElement.unformatters[parsed[1].toLocaleLowerCase()]
         params = formatSpec.substring(firstParen + 1, lastParen)
       }
     }
     if (unformatFunc) {
-      convertedValue = unformatFunc(value, params, flags)
+      return unformatFunc(value, params, flags)
     }
-    return convertedValue
+    return null
   },
 
   setValueToIMNode: function (element, curTarget, curVal, clearField) {
     'use strict'
-    var styleName, currentValue, scriptNode, typeAttr, valueAttr, textNode, formatSpec, formattedValue
     let needPostValueSet = false
-    let curValues, i
     let isReplaceOrAppend = false
-    let imControl, negativeColor, originalValue, negativeSign, negativeTailSign, flags
 
     // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
@@ -195,8 +187,7 @@ const IMLibElement = {
       curVal = curVal[0]
     }
 
-    imControl = element.getAttribute('data-im-control')
-
+    const imControl = element.getAttribute('data-im-control')
     if (clearField && curTarget === '') {
       switch (element.tagName) {
         case 'INPUT':
@@ -220,22 +211,23 @@ const IMLibElement = {
           break
       }
     }
-    formattedValue = IMLibElement.getFormattedValue(element, curVal)
+    const formattedValue = IMLibElement.getFormattedValue(element, curVal)
     if (element.getAttribute('data-im-format')) {
       if (formattedValue === null) {
         INTERMediatorLog.setErrorMessage(
-          'The \'data-im-format\' attribute is not valid: ' + formatSpec)
+          'The \'data-im-format\' attribute is not valid: ' + element.getAttribute('data-im-format'))
       } else {
         curVal = formattedValue
       }
     }
 
+    let currentValue
     curVal = String(curVal)
-    negativeColor = element.getAttribute('data-im-format-negative-color')
+    const negativeColor = element.getAttribute('data-im-format-negative-color')
     if (curTarget !== null && curTarget.length > 0) { // target is specified
       if (curTarget.charAt(0) === '#') { // Appending
         curTarget = curTarget.substring(1)
-        originalValue = element.getAttribute('data-im-original-' + curTarget)
+        const originalValue = element.getAttribute('data-im-original-' + curTarget)
         if (curTarget === 'innerHTML') {
           currentValue = originalValue ? originalValue : element.innerHTML
           element.innerHTML = currentValue + curVal
@@ -243,7 +235,7 @@ const IMLibElement = {
           currentValue = originalValue ? originalValue : element.textContent
           element.textContent = currentValue + curVal
         } else if (curTarget.indexOf('style.') === 0) {
-          styleName = curTarget.substring(6, curTarget.length)
+          const styleName = curTarget.substring(6, curTarget.length)
           currentValue = originalValue ? originalValue : element.style[styleName]
           if (curTarget !== 'style.color' ||
             (curTarget === 'style.color' && !negativeColor)) {
@@ -266,7 +258,7 @@ const IMLibElement = {
         }
       } else if (curTarget.charAt(0) === '$') { // Replacing
         curTarget = curTarget.substring(1)
-        originalValue = element.getAttribute('data-im-original-' + curTarget)
+        const originalValue = element.getAttribute('data-im-original-' + curTarget)
         if (curTarget === 'innerHTML') {
           currentValue = element.innerHTML
           if (currentValue) {
@@ -279,7 +271,7 @@ const IMLibElement = {
             element.textContent = currentValue.replace('$', curVal)
           }
         } else if (curTarget.indexOf('style.') === 0) {
-          styleName = curTarget.substring(6, curTarget.length)
+          const styleName = curTarget.substring(6, curTarget.length)
           currentValue = element.style[styleName]
           if (currentValue && (curTarget !== 'style.color' ||
             (curTarget === 'style.color' && !negativeColor))) {
@@ -310,20 +302,20 @@ const IMLibElement = {
         } else if (curTarget === 'innerHTML') { // Setting
           element.innerHTML = curVal
         } else if (curTarget === 'textNode') {
-          textNode = document.createTextNode(curVal)
+          const textNode = document.createTextNode(curVal)
           element.appendChild(textNode)
         } else if (curTarget === 'script') {
-          textNode = document.createTextNode(curVal)
+          const textNode = document.createTextNode(curVal)
           if (element.tagName === 'SCRIPT') {
             element.appendChild(textNode)
           } else {
-            scriptNode = document.createElement('script')
+            const scriptNode = document.createElement('script')
             scriptNode.type = 'text/javascript'
             scriptNode.appendChild(textNode)
             element.appendChild(scriptNode)
           }
         } else if (curTarget.indexOf('style.') === 0) {
-          styleName = curTarget.substring(6, curTarget.length)
+          const styleName = curTarget.substring(6, curTarget.length)
           if (curTarget !== 'style.color' ||
             (curTarget === 'style.color' && !negativeColor)) {
             element.style[styleName] = curVal
@@ -338,12 +330,12 @@ const IMLibElement = {
           element._im_setValue(curVal)
         }
       } else if (element.tagName === 'INPUT') {
-        typeAttr = element.getAttribute('type')
+        const typeAttr = element.getAttribute('type')
         if (typeAttr === 'checkbox' || typeAttr === 'radio') { // set the value
-          valueAttr = element.value
-          curValues = curVal.split(IMLib.nl_char)
+          const valueAttr = element.value
+          const curValues = curVal.split(IMLib.nl_char)
           if (typeAttr === 'checkbox' && curValues.length > 1) {
-            for (i = 0; i < curValues.length; i += 1) {
+            for (let i = 0; i < curValues.length; i += 1) {
               if (valueAttr === curValues[i] && !INTERMediator.dontSelectRadioCheck) {
                 // The above operator shuold be '==' not '==='
                 element.checked = true
@@ -383,10 +375,11 @@ const IMLibElement = {
         }
       }
     }
+    /* // formatSpec variable is not set anywhere.
     if (formatSpec && negativeColor) {
-      negativeSign = INTERMediatorLocale.negative_sign
-      negativeTailSign = ''
-      flags = IMLibElement.initilaizeFlags(element)
+      let negativeSign = INTERMediatorLocale.negative_sign
+      let negativeTailSign = ''
+      const flags = IMLibElement.initilaizeFlags(element)
       if (flags.negativeStyle === 0 || flags.negativeStyle === 1) {
         negativeSign = '-'
       } else if (flags.negativeStyle === 2) {
@@ -418,7 +411,7 @@ const IMLibElement = {
           }
         }
       }
-    }
+    } */
     if ((element.tagName === 'INPUT' || element.tagName === 'SELECT' || element.tagName === 'TEXTAREA') &&
       !isReplaceOrAppend &&
       (!imControl || imControl.indexOf('unbind') > 0 || imControl.indexOf('lookup') === 0)) {
@@ -468,15 +461,12 @@ const IMLibElement = {
 
   getValueFromIMNode: function (element) {
     'use strict'
-    var nodeTag, typeAttr, newValue, mergedValues, targetNodes, k, valueAttr, convertedValue
-
-    if (element) {
-      nodeTag = element.tagName
-      typeAttr = element.getAttribute('type')
-    } else {
+    if (!element) {
       return ''
     }
-
+    const nodeTag = element.tagName
+    const typeAttr = element.getAttribute('type')
+    let newValue
     if (INTERMediatorLib.isWidgetElement(element) ||
       (INTERMediatorLib.isWidgetElement(element.parentNode))) {
       newValue = element._im_getValue()
@@ -484,16 +474,16 @@ const IMLibElement = {
       if (typeAttr === 'checkbox') {
         if (INTERMediatorOnPage.dbClassName === 'FileMaker_FX' ||
           INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI') {
-          mergedValues = []
-          targetNodes = element.parentNode.getElementsByTagName('INPUT')
-          for (k = 0; k < targetNodes.length; k++) {
+          const mergedValues = []
+          const targetNodes = element.parentNode.getElementsByTagName('INPUT')
+          for (let k = 0; k < targetNodes.length; k++) {
             if (targetNodes[k].checked) {
               mergedValues.push(targetNodes[k].getAttribute('value'))
             }
           }
           newValue = mergedValues.join(IMLib.nl_char)
         } else {
-          valueAttr = element.getAttribute('value')
+          const valueAttr = element.getAttribute('value')
           if (element.checked) {
             newValue = valueAttr
           } else {
@@ -512,7 +502,7 @@ const IMLibElement = {
     } else {
       newValue = element.innerHTML
     }
-    convertedValue = IMLibElement.getUnformattedValue(element, newValue)
+    const convertedValue = IMLibElement.getUnformattedValue(element, newValue)
     newValue = convertedValue ? convertedValue : newValue
     return newValue
   },
@@ -534,31 +524,29 @@ const IMLibElement = {
 
   deleteNodes: function (removeNodes) {
     'use strict'
-    var removeNode, removingNodes, i, j, k, removeNodeId, nodeId, calcObject, referes, values, key
-
-    for (key = 0; key < removeNodes.length; key++) {
-      removeNode = document.getElementById(removeNodes[key])
+    for (let key = 0; key < removeNodes.length; key++) {
+      const removeNode = document.getElementById(removeNodes[key])
       if (removeNode) {
-        removingNodes = INTERMediatorLib.getElementsByIMManaged(removeNode)
+        const removingNodes = INTERMediatorLib.getElementsByIMManaged(removeNode)
         if (removingNodes) {
-          for (i = 0; i < removingNodes.length; i += 1) {
-            removeNodeId = removingNodes[i].id
+          for (let i = 0; i < removingNodes.length; i += 1) {
+            const removeNodeId = removingNodes[i].id
             if (removeNodeId in IMLibCalc.calculateRequiredObject) {
               delete IMLibCalc.calculateRequiredObject[removeNodeId]
             }
           }
-          for (i = 0; i < removingNodes.length; i += 1) {
-            removeNodeId = removingNodes[i].id
-            for (nodeId in IMLibCalc.calculateRequiredObject) {
+          for (let i = 0; i < removingNodes.length; i += 1) {
+            const removeNodeId = removingNodes[i].id
+            for (const nodeId in IMLibCalc.calculateRequiredObject) {
               if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
-                calcObject = IMLibCalc.calculateRequiredObject[nodeId]
-                referes = {}
-                values = {}
-                for (j in calcObject.referes) {
+                const calcObject = IMLibCalc.calculateRequiredObject[nodeId]
+                const referes = {}
+                const values = {}
+                for (let j in calcObject.referes) {
                   if (calcObject.referes.hasOwnProperty(j)) {
                     referes[j] = []
                     values[j] = []
-                    for (k = 0; k < calcObject.referes[j].length; k++) {
+                    for (let k = 0; k < calcObject.referes[j].length; k++) {
                       if (removeNodeId !== calcObject.referes[j][k]) {
                         referes[j].push(calcObject.referes[j][k])
                         values[j].push(calcObject.values[j][k])

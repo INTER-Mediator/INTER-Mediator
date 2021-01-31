@@ -159,8 +159,8 @@ class OAuthAuth
 
         $this->jsCode = '';
         $this->jsCode .= 'function setAnyStore(key, val) {';
-        $this->jsCode .= "var isSession = {$oAuthStoring}, realm = '{$oAuthRealm}';";
-        $this->jsCode .= 'var d, isFinish = false, ex = 3600, authKey;';
+        $this->jsCode .= "let isSession = {$oAuthStoring}, realm = '{$oAuthRealm}';";
+        $this->jsCode .= 'let d, isFinish = false, ex = 3600, authKey;';
         $this->jsCode .= 'd = new Date();d.setTime(d.getTime() + ex * 1000);';
         $this->jsCode .= 'authKey = key + ((realm.length > 0) ? ("_" + realm) : "");';
         $this->jsCode .= 'try {if (isSession){sessionStorage.setItem(authKey, val);isFinish = true;}}';

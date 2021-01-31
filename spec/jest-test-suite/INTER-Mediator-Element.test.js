@@ -45,14 +45,14 @@ beforeEach(() => {
 })
 
 test('IMLibElement.setValueToIMNode() should return false without TypeError (curVal.replace is not a function)', () => {
-  var tempElement = document.createElement('textarea')
+  let tempElement = document.createElement('textarea')
   expect(IMLibElement.setValueToIMNode(tempElement, 'textNode', null, true)).toBe(false)
   expect(IMLibElement.setValueToIMNode(tempElement, 'textNode', false, true)).toBe(false)
 })
 
 test('IMLibElement.setValueToIMNode() has to set the value to textarea', () => {
-  var value
-  var tempElement = document.createElement('textarea')
+  let value
+  let tempElement = document.createElement('textarea')
   value = 'abc'
   IMLibElement.setValueToIMNode(tempElement, '', value, true)
   expect(tempElement.value).toBe(value)
@@ -74,8 +74,8 @@ test('IMLibElement.setValueToIMNode() has to set the value to textarea', () => {
 })
 
 test('IMLibElement.setValueToIMNode() has to set the value to text field', () => {
-  var value
-  var tempElement = document.createElement('INPUT')
+  let value
+  let tempElement = document.createElement('INPUT')
   tempElement.type = 'text'
   value = 'abc'
   IMLibElement.setValueToIMNode(tempElement, '', value, true)
@@ -99,7 +99,7 @@ test('IMLibElement.setValueToIMNode() has to set the value to text field', () =>
 
 test('IMLibElement.setValueToIMNode() has to set the value to checkbox', () => {
   'use strict'
-  var tempElement = document.createElement('INPUT')
+  let tempElement = document.createElement('INPUT')
   tempElement.type = 'checkbox'
   tempElement.value = '1'
   IMLibElement.setValueToIMNode(tempElement, '', 1, true)
@@ -122,8 +122,8 @@ test('IMLibElement.setValueToIMNode() has to set the value to checkbox', () => {
 })
 
 test('IMLibElement.setValueToIMNode() with # target has to add the value to node', () => {
-  var value, value1, value2, value3, attr = 'href', tag = 'a'
-  var tempElement = document.createElement(tag)
+  let value, value1, value2, value3, attr = 'href', tag = 'a'
+  let tempElement = document.createElement(tag)
   value = 'abc'
   IMLibElement.setValueToIMNode(tempElement, attr, value, true)
   expect(tempElement.getAttribute(attr)).toBe(value)
@@ -164,8 +164,8 @@ test('IMLibElement.setValueToIMNode() with # target has to add the value to node
 
 test('IMLibElement.setValueToIMNode() with innerHTML target', () => {
   'use strict'
-  var value, value1, value2, attr = 'innerHTML', tag = 'div'
-  var tempElement = document.createElement(tag)
+  let value, value1, value2, attr = 'innerHTML', tag = 'div'
+  let tempElement = document.createElement(tag)
   value = 'abc'
   IMLibElement.setValueToIMNode(tempElement, attr, value, true)
   expect(tempElement.innerHTML).toBe(value)
@@ -210,7 +210,7 @@ test('IMLibElement.setValueToIMNode() with innerHTML target', () => {
 
 test('IMLibElement.setValueToIMNode() has to set the numeric value to div', () => {
   'use strict'
-  var tempElement = document.createElement('input')
+  let tempElement = document.createElement('input')
   tempElement.setAttribute('type', 'text')
 
   tempElement.setAttribute('data-im-format', 'number(0)')
@@ -242,7 +242,7 @@ test('IMLibElement.setValueToIMNode() has to set the numeric value to div', () =
 
 test('IMLibElement.setValueToIMNode() has to set the date/time value to div', () => {
   'use strict'
-  var tempElement = document.createElement('input')
+  let tempElement = document.createElement('input')
   tempElement.setAttribute('type', 'text')
 
   tempElement.setAttribute('data-im-format', 'date(<<%Y>>)')

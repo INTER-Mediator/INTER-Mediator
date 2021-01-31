@@ -100,7 +100,7 @@ header('Expires: 0');
         document.cookie = "pwresetmail=" + encodeURIComponent("<?php echo $mail; ?>");
         document.cookie = "pwresetaccount=" + encodeURIComponent("<?php echo $account; ?>");
         function leastChecking() {
-            var returnValue = true;
+            let returnValue = true;
             if (document.getElementById('ad1').value == '') {
                 document.getElementById('ad1err').innerHTML = '未入力です';
                 returnValue = false;
