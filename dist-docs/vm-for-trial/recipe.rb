@@ -518,6 +518,9 @@ if node[:platform] == 'alpine'
   package 'php7-tokenizer' do
     action :install
   end
+  package 'php-ldap' do
+    action :install
+  end
   package 'php7-simplexml' do
     action :install
   end
