@@ -1075,6 +1075,8 @@ cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
 $webServerName = [''];
+$activateClientService = true;  // Default is TRUE!!. (In case of debuging phase, it should be false.)
+$stopSSEveryQuit = false;
 $preventSSAutoBoot = true;
 $serviceServerPort = '11478';
 $serviceServerHost = 'localhost';
@@ -1137,6 +1139,7 @@ cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
 $webServerName = [''];
+$activateClientService = true;  // Default is TRUE!!. (In case of debuging phase, it should be false.)
 $preventSSAutoBoot = true;
 $serviceServerPort = '11478';
 $serviceServerHost = 'localhost';
