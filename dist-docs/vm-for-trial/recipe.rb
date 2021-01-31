@@ -592,8 +592,8 @@ elsif node[:platform] == 'redhat'
   execute 'yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm' do
     command 'yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm'
   end
-  execute 'yum install -y --enablerepo=epel,remi,remi-php73 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip' do
-    command 'yum install -y --enablerepo=epel,remi,remi-php73 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip'
+  execute 'yum install -y --enablerepo=epel,remi,remi-php73 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap' do
+    command 'yum install -y --enablerepo=epel,remi,remi-php73 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap'
   end
   if node[:platform_version].to_f < 6
     package 'php-mbstring' do
