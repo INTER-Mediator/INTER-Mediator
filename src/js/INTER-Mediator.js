@@ -1823,7 +1823,7 @@ const INTERMediator = {
 
   clearCondition: (contextName, label) => {
     'use strict'
-    const value = INTERMediator.additionalCondition
+    let value = INTERMediator.additionalCondition
     if (!value) {
       value = {}
     }
