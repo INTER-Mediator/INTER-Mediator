@@ -33,7 +33,7 @@
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-var IMLibCalc = {
+const IMLibCalc = {
   /**
    * This property stores IMType_CalculateFieldDefinition objects for each calculation required nodes.
    * The property name is the id attribute of the node which bond to the calculated property
@@ -342,13 +342,11 @@ var IMLibCalc = {
    */
   setUndefinedToAllValues: function () {
     'use strict'
-    var nodeId, calcObject, ix, targetNode, field, targetExp, targetIds, isContextName,
-      isRemoved, idValue, repeaterTop, checkRepeater, nodeInfo, linkInfos
-
+    let isRemoved
     do {
       isRemoved = false
-      for (nodeId in IMLibCalc.calculateRequiredObject) {
-        idValue = nodeId.match(IMLibCalc.regexpForSeparator) ? nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId
+      for (const nodeId in IMLibCalc.calculateRequiredObject) {
+        const idValue = nodeId.match(IMLibCalc.regexpForSeparator) ? nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId
         if (!document.getElementById(idValue)) {
           delete IMLibCalc.calculateRequiredObject[nodeId]
           isRemoved = true
@@ -357,17 +355,18 @@ var IMLibCalc = {
       }
     } while (isRemoved)
 
-    for (nodeId in IMLibCalc.calculateRequiredObject) {
-      calcObject = IMLibCalc.calculateRequiredObject[nodeId]
-      idValue = nodeId.match(IMLibCalc.regexpForSeparator) ? nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId
-      targetNode = document.getElementById(idValue)
-      linkInfos = INTERMediatorLib.getLinkedElementInfo(targetNode)
+    for (const nodeId in IMLibCalc.calculateRequiredObject) {
+      const calcObject = IMLibCalc.calculateRequiredObject[nodeId]
+      const idValue = nodeId.match(IMLibCalc.regexpForSeparator) ? nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId
+      const targetNode = document.getElementById(idValue)
+      let linkInfos = INTERMediatorLib.getLinkedElementInfo(targetNode)
       if (INTERMediatorLib.is_array(linkInfos)) {
         linkInfos = linkInfos[0]
       }
-      nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos)
+      const nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos)
 
-      for (field in calcObject.values) {
+      let targetExp, targetIds, isContextName
+      for (const field in calcObject.values) {
         if (field.indexOf(INTERMediator.separator) > -1) {
           targetExp = field
           isContextName = true
@@ -376,7 +375,7 @@ var IMLibCalc = {
           isContextName = false
         }
         if (nodeInfo && nodeInfo.crossTable) {
-          repeaterTop = targetNode
+          let repeaterTop = targetNode
           while (repeaterTop.tagName !== 'TD' && repeaterTop.tagName !== 'TH') {
             repeaterTop = repeaterTop.parentNode
           }
@@ -388,7 +387,7 @@ var IMLibCalc = {
             repeaterTop = getParentRepeater(INTERMediatorLib.getParentEnclosure(repeaterTop))
           } while (repeaterTop)
         } else {
-          checkRepeater = targetNode
+          let checkRepeater = targetNode
           do {
             targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromRepeater(checkRepeater, targetExp)
             if (targetIds && targetIds.length > 0) {
@@ -406,7 +405,7 @@ var IMLibCalc = {
         if (INTERMediatorLib.is_array(targetIds) && targetIds.length > 0) {
           calcObject.referes[field] = []
           calcObject.values[field] = []
-          for (ix = 0; ix < targetIds.length; ix++) {
+          for (let ix = 0; ix < targetIds.length; ix++) {
             if (typeof (targetIds[ix]) == 'string' || targetIds[ix] instanceof String) {
               calcObject.referes[field].push(targetIds[ix])
               calcObject.values[field].push(undefined)
@@ -420,7 +419,7 @@ var IMLibCalc = {
     }
 
     function getParentRepeater(node) {
-      var currentNode = node
+      let currentNode = node
       while (currentNode !== null) {
         if (INTERMediatorLib.isRepeater(currentNode, true)) {
           return currentNode

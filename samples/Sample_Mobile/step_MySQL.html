@@ -17,42 +17,42 @@
     <title>Step Operation Sample - INTER-Mediator</title>
     <script type="text/javascript" src="step_MySQL.php"></script>
     <script type="text/javascript">
-        INTERMediatorOnPage.doAfterConstruct = function () {
-            document.getElementById('container').style.display = "block";
-            adjastObjects();
-        };
+      INTERMediatorOnPage.doAfterConstruct = function () {
+        document.getElementById('container').style.display = 'block'
+        adjastObjects()
+      }
 
-        window.addEventListener("orientationchange", function () {
-            adjastObjects();
-        });
+      window.addEventListener('orientationchange', function () {
+        adjastObjects()
+      })
 
-        function adjastObjects() {
-            var headerNode = document.getElementById('header');
-            var footerNode = document.getElementById('IM_CREDIT');
-            var wHeight = screen.availHeight;
-            var stepBoxHeight = wHeight - headerNode.clientHeight - footerNode.clientHeight;
-            document.getElementById('content').style.height = stepBoxHeight + "px";
-        }
+      function adjastObjects() {
+        const headerNode = document.getElementById('header')
+        const footerNode = document.getElementById('IM_CREDIT')
+        const wHeight = screen.availHeight
+        const stepBoxHeight = wHeight - headerNode.clientHeight - footerNode.clientHeight
+        document.getElementById('content').style.height = stepBoxHeight + 'px'
+      }
 
-        INTERMediatorOnPage.doAfterPrefSelection = function () {
-            var lastSelection = IMLibPageNavigation.getStepLastSelectedRecord()['pref'];
-            INTERMediator.clearCondition('city');
-            INTERMediator.addCondition('city', {field: 'f7', operator: '=', value: lastSelection});
-        };
-        INTERMediatorOnPage.doAfterCitySelection = function () {
-            var lastSelection = IMLibPageNavigation.getStepLastSelectedRecord()['city'];
-            INTERMediator.clearCondition('town');
-            INTERMediator.addCondition('town', {field: 'f8', operator: '=', value: lastSelection});
-        };
-        INTERMediatorOnPage.doAfterTownSelection = function () {
-            var lastSelection = IMLibPageNavigation.getStepLastSelectedRecord()['town_id'];
-            INTERMediator.clearCondition('wrapup');
-            INTERMediator.addCondition('wrapup', {field: 'id', operator: '=', value: lastSelection});
-        };
-        INTERMediatorOnPage.doAfterLastSelection = function () {
-            console.log(IMLibPageNavigation.stepNavigation);
-            return false;
-        };
+      INTERMediatorOnPage.doAfterPrefSelection = function () {
+        const lastSelection = IMLibPageNavigation.getStepLastSelectedRecord()['pref']
+        INTERMediator.clearCondition('city')
+        INTERMediator.addCondition('city', {field: 'f7', operator: '=', value: lastSelection})
+      }
+      INTERMediatorOnPage.doAfterCitySelection = function () {
+        const lastSelection = IMLibPageNavigation.getStepLastSelectedRecord()['city']
+        INTERMediator.clearCondition('town')
+        INTERMediator.addCondition('town', {field: 'f8', operator: '=', value: lastSelection})
+      }
+      INTERMediatorOnPage.doAfterTownSelection = function () {
+        const lastSelection = IMLibPageNavigation.getStepLastSelectedRecord()['town_id']
+        INTERMediator.clearCondition('wrapup')
+        INTERMediator.addCondition('wrapup', {field: 'id', operator: '=', value: lastSelection})
+      }
+      INTERMediatorOnPage.doAfterLastSelection = function () {
+        console.log(IMLibPageNavigation.stepNavigation)
+        return false
+      }
     </script>
     <style>
         #container {

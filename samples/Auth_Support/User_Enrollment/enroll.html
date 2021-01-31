@@ -17,8 +17,8 @@
     <script type="text/javascript" src="context.php"></script>
     <script type="text/javascript">
       INTERMediatorOnPage.processingBeforePostOnlyContext = function (target) {
-        var email = document.getElementById('email').value;
-        var mailCount = checkExistsMailAddress(email);
+        const email = document.getElementById('email').value;
+        const mailCount = checkExistsMailAddress(email);
         if (mailCount.message != '') {
           alert(mailCount.message);
           return false;
@@ -26,10 +26,11 @@
         return true;
       };
       function checkExistsMailAddress(addr) {
-        var com = new XMLHttpRequest(), msg = '', cnt = 0;
+        const com = new XMLHttpRequest();
+        let msg = '';
         com.open('get', 'accountcheck.php?m=' + encodeURIComponent(addr), false);
         com.send(null);
-        cnt = parseInt(com.responseText);
+        let cnt = parseInt(com.responseText);
         if (com.status != 200) {
           msg = 'サーバエラーです：' + com.statusText;
           cnt = -2;

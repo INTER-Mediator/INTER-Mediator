@@ -35,26 +35,23 @@ const IMLibPageNavigation = {
 
   navigationSetup: function () {
     'use strict'
-    let navigation, i, insideNav, navLabel, node, start, pageSize, allCount, disableClass, c_node,
-      prevPageCount, nextPageCount, endPageCount, contextName, contextDef, buttonLabel, dataSource, allNavNodes, ix
-
-    allNavNodes = allNavigator()
-    for (ix = 0; ix < allNavNodes.length; ix++) {
-      navigation = allNavNodes[ix]
+    const allNavNodes = allNavigator()
+    for (let ix = 0; ix < allNavNodes.length; ix++) {
+      const navigation = allNavNodes[ix]
       if (!IMLibContextPool.getPagingContext()) {
         navigation.style.display = 'none'
         return
       }
-      insideNav = navigation.childNodes
-      for (i = 0; i < insideNav.length; i += 1) {
+      const insideNav = navigation.childNodes
+      for (let i = 0; i < insideNav.length; i += 1) {
         navigation.removeChild(insideNav[i])
       }
       navigation.innerHTML = ''
       navigation.setAttribute('class', navigation.getAttribute('class') + ' IM_NAV_panel')
-      navLabel = INTERMediator.navigationLabel
+      const navLabel = INTERMediator.navigationLabel
 
       if (navLabel === null || navLabel[8] !== false) {
-        node = document.createElement('SPAN')
+        const node = document.createElement('SPAN')
         navigation.appendChild(node)
         node.appendChild(document.createTextNode(
           ((navLabel === null || navLabel[8] === null) ? INTERMediatorOnPage.getMessages()[2] : navLabel[8])))
@@ -69,24 +66,26 @@ const IMLibPageNavigation = {
         })
       }
 
+      let node
+      const start = parseInt(INTERMediator.startFrom)
+      const pageSize = parseInt(INTERMediator.pagedSize)
+      const allCount = parseInt(INTERMediator.pagedAllCount)
+      const disableClass = ' IM_NAV_disabled'
       if (navLabel === null || navLabel[4] !== false) {
-        start = parseInt(INTERMediator.startFrom)
-
-        dataSource = IMLibContextPool.getPagingContext().getContextDef()
+        const dataSource = IMLibContextPool.getPagingContext().getContextDef()
         if (dataSource && dataSource.maxrecords &&
           dataSource.maxrecords < parseInt(INTERMediator.pagedSize)) {
           INTERMediator.pagedSize = dataSource.maxrecords
         }
-        pageSize = parseInt(INTERMediator.pagedSize)
-        allCount = parseInt(INTERMediator.pagedAllCount)
-        disableClass = ' IM_NAV_disabled'
         node = document.createElement('SPAN')
         navigation.appendChild(node)
-        node.appendChild(document.createTextNode(
-          ((navLabel === null || navLabel[4] === null) ? INTERMediatorOnPage.getMessages()[1] : navLabel[4]) +
-          (allCount === 0 ? 0 : start + 1) +
-          ((Math.min(start + pageSize, allCount) - start > 1) ? (((navLabel === null || navLabel[5] === null) ? '-' : navLabel[5]) +
-            Math.min(start + pageSize, allCount)) : '') +
+        node.appendChild(document.createTextNode(((navLabel === null || navLabel[4] === null)
+          ? INTERMediatorOnPage.getMessages()[1]
+          : navLabel[4]) + (allCount === 0 ? 0 : start + 1) +
+          ((Math.min(start + pageSize, allCount) - start > 1)
+            ? (((navLabel === null || navLabel[5] === null)
+              ? '-'
+              : navLabel[5]) + Math.min(start + pageSize, allCount)) : '') +
           ((navLabel === null || navLabel[6] === null) ? ' / ' : navLabel[6]) + (allCount) +
           ((navLabel === null || navLabel[7] === null) ? '' : navLabel[7])))
         node.setAttribute('class', 'IM_NAV_info')
@@ -110,12 +109,12 @@ const IMLibPageNavigation = {
         node.appendChild(document.createTextNode(
           (navLabel === null || navLabel[1] === null) ? '<' : navLabel[1]))
         node.setAttribute('class', 'IM_NAV_button' + (start === 0 ? disableClass : ''))
-        prevPageCount = (start - pageSize > 0) ? start - pageSize : 0
+        const prevPageCount = (start - pageSize > 0) ? start - pageSize : 0
         if (!node.id) {
           node.id = INTERMediator.nextIdValue()
         }
         IMLibMouseEventDispatch.setExecute(node.id, (function () {
-          var pageCount = prevPageCount
+          const pageCount = prevPageCount
           return function () {
             IMLibPageNavigation.moveRecordFromNavi('navimoving', pageCount)
           }
@@ -126,13 +125,12 @@ const IMLibPageNavigation = {
         node.appendChild(document.createTextNode(
           (navLabel === null || navLabel[2] === null) ? '>' : navLabel[2]))
         node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ''))
-        nextPageCount =
-          (start + pageSize < allCount) ? start + pageSize : ((allCount - pageSize > 0) ? start : 0)
+        const nextPageCount = (start + pageSize < allCount) ? start + pageSize : ((allCount - pageSize > 0) ? start : 0)
         if (!node.id) {
           node.id = INTERMediator.nextIdValue()
         }
         IMLibMouseEventDispatch.setExecute(node.id, (function () {
-          var pageCount = nextPageCount
+          const pageCount = nextPageCount
           return function () {
             IMLibPageNavigation.moveRecordFromNavi('navimoving', pageCount)
           }
@@ -143,16 +141,13 @@ const IMLibPageNavigation = {
         node.appendChild(document.createTextNode(
           (navLabel === null || navLabel[3] === null) ? '>>' : navLabel[3]))
         node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ''))
-        if (allCount % pageSize === 0) {
-          endPageCount = allCount - (allCount % pageSize) - pageSize
-        } else {
-          endPageCount = allCount - (allCount % pageSize)
-        }
+        const endPageCount = (allCount % pageSize === 0)
+          ? allCount - (allCount % pageSize) - pageSize : allCount - (allCount % pageSize)
         if (!node.id) {
           node.id = INTERMediator.nextIdValue()
         }
         IMLibMouseEventDispatch.setExecute(node.id, (function () {
-          var pageCount = endPageCount
+          const pageCount = endPageCount
           return function () {
             IMLibPageNavigation.moveRecordFromNavi('navimoving', (pageCount > 0) ? pageCount : 0)
           }
@@ -162,7 +157,7 @@ const IMLibPageNavigation = {
         node = document.createElement('SPAN')
         navigation.appendChild(node)
         node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[10]))
-        c_node = document.createElement('INPUT')
+        const c_node = document.createElement('INPUT')
         c_node.setAttribute('class', 'IM_NAV_JUMP')
         c_node.setAttribute('type', 'text')
         if (!c_node.id) {
@@ -173,14 +168,13 @@ const IMLibPageNavigation = {
         node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[11]))
         // ---------
         IMLibChangeEventDispatch.setExecute(c_node.id, (function () {
-          var targetNode = c_node
+          const targetNode = c_node
           return function () {
-            var moveTo, max_page
-            moveTo = parseInt(targetNode.value)
+            let moveTo = parseInt(targetNode.value)
             if (moveTo < 1) {
               moveTo = 1
             }
-            max_page = Math.ceil(allCount / pageSize)
+            const max_page = Math.ceil(allCount / pageSize)
             if (max_page < moveTo) {
               moveTo = max_page
             }
@@ -190,19 +184,19 @@ const IMLibPageNavigation = {
         })())
       }
 
+      let contextName
+      let contextDef
+      let buttonLabel
       if (navLabel === null || navLabel[9] !== false) {
-        for (i = 0; i < IMLibPageNavigation.deleteInsertOnNavi.length; i += 1) {
+        for (let i = 0; i < IMLibPageNavigation.deleteInsertOnNavi.length; i += 1) {
           switch (IMLibPageNavigation.deleteInsertOnNavi[i].kind) {
             case 'INSERT':
               node = document.createElement('SPAN')
               navigation.appendChild(node)
               contextName = IMLibPageNavigation.deleteInsertOnNavi[i].name
               contextDef = IMLibContextPool.getContextDef(contextName)
-              if (contextDef && contextDef['button-names'] && contextDef['button-names'].insert) {
-                buttonLabel = contextDef['button-names'].insert
-              } else {
-                buttonLabel = INTERMediatorOnPage.getMessages()[3] + ': ' + contextName
-              }
+              buttonLabel = (contextDef && contextDef['button-names'] && contextDef['button-names'].insert)
+                ? contextDef['button-names'].insert : INTERMediatorOnPage.getMessages()[3] + ': ' + contextName
               node.appendChild(document.createTextNode(buttonLabel))
               node.setAttribute('class', 'IM_NAV_button')
               if (!node.id) {
@@ -210,10 +204,10 @@ const IMLibPageNavigation = {
               }
               IMLibMouseEventDispatch.setExecute(node.id,
                 (function () {
-                  var obj = IMLibPageNavigation.deleteInsertOnNavi[i]
-                  let contextName = obj.name
-                  let keyValue = obj.key
-                  let confirming = obj.confirm
+                  const obj = IMLibPageNavigation.deleteInsertOnNavi[i]
+                  const contextName = obj.name
+                  const keyValue = obj.key
+                  const confirming = obj.confirm
                   return function () {
                     IMLibPageNavigation.insertRecordFromNavi(contextName, keyValue, confirming)
                   }
@@ -225,22 +219,19 @@ const IMLibPageNavigation = {
               navigation.appendChild(node)
               contextName = IMLibPageNavigation.deleteInsertOnNavi[i].name
               contextDef = IMLibContextPool.getContextDef(contextName)
-              if (contextDef && contextDef['button-names'] && contextDef['button-names'].delete) {
-                buttonLabel = contextDef['button-names'].delete
-              } else {
-                buttonLabel = INTERMediatorOnPage.getMessages()[4] + ': ' + contextName
-              }
+              buttonLabel = (contextDef && contextDef['button-names'] && contextDef['button-names'].delete)
+                ? contextDef['button-names'].delete : INTERMediatorOnPage.getMessages()[4] + ': ' + contextName
               node.appendChild(document.createTextNode(buttonLabel))
               node.setAttribute('class', 'IM_NAV_button')
               INTERMediatorLib.addEvent(
                 node,
                 'click',
                 (function () {
-                  var obj = IMLibPageNavigation.deleteInsertOnNavi[i]
-                  let contextName = obj.name
-                  let keyName = obj.key
-                  let keyValue = obj.value
-                  let confirming = obj.confirm
+                  const obj = IMLibPageNavigation.deleteInsertOnNavi[i]
+                  const contextName = obj.name
+                  const keyName = obj.key
+                  const keyValue = obj.value
+                  const confirming = obj.confirm
                   return function () {
                     IMLibPageNavigation.deleteRecordFromNavi(contextName, keyName, keyValue, confirming)
                   }
@@ -252,11 +243,8 @@ const IMLibPageNavigation = {
               navigation.appendChild(node)
               contextName = IMLibPageNavigation.deleteInsertOnNavi[i].name
               contextDef = IMLibContextPool.getContextDef(contextName)
-              if (contextDef && contextDef['button-names'] && contextDef['button-names'].copy) {
-                buttonLabel = contextDef['button-names'].copy
-              } else {
-                buttonLabel = INTERMediatorOnPage.getMessages()[15] + ': ' + contextName
-              }
+              buttonLabel = (contextDef && contextDef['button-names'] && contextDef['button-names'].copy)
+                ? contextDef['button-names'].copy : INTERMediatorOnPage.getMessages()[15] + ': ' + contextName
               node.appendChild(document.createTextNode(buttonLabel))
               node.setAttribute('class', 'IM_NAV_button')
               if (!node.id) {
@@ -264,9 +252,9 @@ const IMLibPageNavigation = {
               }
               IMLibMouseEventDispatch.setExecute(node.id,
                 (function () {
-                  var obj = IMLibPageNavigation.deleteInsertOnNavi[i]
-                  let contextDef = obj.contextDef
-                  let record = obj.keyValue
+                  const obj = IMLibPageNavigation.deleteInsertOnNavi[i]
+                  const contextDef = obj.contextDef
+                  const record = obj.keyValue
                   return function () {
                     IMLibPageNavigation.copyRecordFromNavi(contextDef, record)
                   }
@@ -312,15 +300,15 @@ const IMLibPageNavigation = {
     }
 
     function allNavigator() {
-      var naviIdElement, naviClassElements, nodes = [], ix
-      naviIdElement = document.getElementById('IM_NAVIGATOR')
+      const nodes = []
+      const naviIdElement = document.getElementById('IM_NAVIGATOR')
       if (naviIdElement) {
         //naviIdElement.removeAttribute('id')
         nodes.push(naviIdElement)
       }
-      naviClassElements = document.getElementsByClassName('IM_NAVIGATOR')
+      const naviClassElements = document.getElementsByClassName('IM_NAVIGATOR')
       if (naviClassElements) {
-        for (ix = 0; ix < naviClassElements.length; ix++) {
+        for (let ix = 0; ix < naviClassElements.length; ix++) {
           nodes.push(naviClassElements[ix])
         }
       }
@@ -337,15 +325,13 @@ const IMLibPageNavigation = {
 
   insertRecordFromNavi: function (targetName, keyField, isConfirm) {
     'use strict'
-    var contextDef
-
     if (isConfirm) {
       if (!window.confirm(INTERMediatorOnPage.getMessages()[1026])) {
         return
       }
     }
     INTERMediatorOnPage.showProgress()
-    contextDef = INTERMediatorLib.getNamedObject(
+    const contextDef = INTERMediatorLib.getNamedObject(
       INTERMediatorOnPage.getDataSources(), 'name', targetName)
     if (contextDef === null) {
       window.alert('no targetname :' + targetName)
@@ -354,25 +340,24 @@ const IMLibPageNavigation = {
     }
 
     IMLibQueue.setTask((function () {
-      var conditions, restore
-      var contextDefCapt = contextDef
-      var targetNameCapt = targetName
-      var keyFieldCapt = keyField
-      var isConfirmCapt = isConfirm
+      const contextDefCapt = contextDef
+      const targetNameCapt = targetName
+      const keyFieldCapt = keyField
+      const isConfirmCapt = isConfirm
       return function (completeTask) {
         try {
           // await INTERMediatorOnPage.retrieveAuthInfo()
           INTERMediator_DBAdapter.db_createRecord_async(
             {name: targetNameCapt, dataset: []},
             async function (response) {
-              var newId = response.newRecordKeyValue
+              const  newId = response.newRecordKeyValue
               INTERMediatorOnPage.newRecordId = newId
               if (newId > -1) {
-                restore = INTERMediator.additionalCondition
+                const restore = INTERMediator.additionalCondition
                 if (contextDefCapt.records <= 1) {
                   INTERMediator.startFrom = 0
                   INTERMediator.pagedAllCount = 1
-                  conditions = INTERMediator.additionalCondition
+                  const conditions = INTERMediator.additionalCondition
                   conditions[targetNameCapt] = {field: keyFieldCapt, value: newId}
                   INTERMediator.additionalCondition = conditions
                   IMLibLocalContext.archive()
@@ -417,13 +402,11 @@ const IMLibPageNavigation = {
 
   deleteRecordFromNavi: function (targetName, keyField, keyValue, isConfirm) {
     'use strict'
-    if (isConfirm) {
-      if (!window.confirm(INTERMediatorOnPage.getMessages()[1025])) {
-        return
-      }
+    if (isConfirm && !window.confirm(INTERMediatorOnPage.getMessages()[1025])) {
+      return
     }
     IMLibQueue.setTask((function () {
-      var deleteArgs = {
+      const deleteArgs = {
         name: targetName,
         conditions: [{field: keyField, operator: '=', value: keyValue}]
       }
@@ -461,35 +444,32 @@ const IMLibPageNavigation = {
 
   copyRecordFromNavi: function (contextDef, keyValue) {
     'use strict'
-    if (contextDef['repeat-control'].match(/confirm-copy/)) {
-      if (!window.confirm(INTERMediatorOnPage.getMessages()[1041])) {
-        return
-      }
+    if (contextDef['repeat-control'].match(/confirm-copy/) && !window.confirm(INTERMediatorOnPage.getMessages()[1041])) {
+      return
     }
     IMLibQueue.setTask((function () {
-      var contextDefCapt = contextDef
-      var keyValueCapt = keyValue
+      const contextDefCapt = contextDef
+      const keyValueCapt = keyValue
       return function (completeTask) {
-        var assocDef, i, def, assocContexts, pStart, copyTerm, index
         INTERMediatorOnPage.showProgress()
         try {
           if (contextDefCapt.relation) {
-            for (index in contextDefCapt.relation) {
+            for (let index in contextDefCapt.relation) {
               if (contextDefCapt.relation[index].portal === true) {
                 contextDefCapt.portal = true
               }
             }
           }
-          assocDef = []
+          const assocDef = []
           if (contextDefCapt['repeat-control'].match(/copy-/)) {
-            pStart = contextDefCapt['repeat-control'].indexOf('copy-')
-            copyTerm = contextDefCapt['repeat-control'].substr(pStart + 5)
+            let pStart = contextDefCapt['repeat-control'].indexOf('copy-')
+            let copyTerm = contextDefCapt['repeat-control'].substr(pStart + 5)
             if ((pStart = copyTerm.search(/\s/)) > -1) {
               copyTerm = copyTerm.substr(0, pStart)
             }
-            assocContexts = copyTerm.split(',')
-            for (i = 0; i < assocContexts.length; i += 1) {
-              def = IMLibContextPool.getContextDef(assocContexts[i])
+            const assocContexts = copyTerm.split(',')
+            for (let i = 0; i < assocContexts.length; i += 1) {
+              const def = IMLibContextPool.getContextDef(assocContexts[i])
               if (def.relation[0]['foreign-key']) {
                 assocDef.push({
                   name: def.name,
@@ -507,17 +487,16 @@ const IMLibPageNavigation = {
               associated: assocDef.length > 0 ? assocDef : null
             },
             (function () {
-              var contextDefCapt2 = contextDefCapt
+              const contextDefCapt2 = contextDefCapt
               return async function (result) {
-                var restore, conditions
-                var newId = result.newRecordKeyValue
+                const newId = result.newRecordKeyValue
                 INTERMediatorOnPage.newRecordId = newId
                 completeTask()
                 if (newId > -1) {
-                  restore = INTERMediator.additionalCondition
+                  const restore = INTERMediator.additionalCondition
                   INTERMediator.startFrom = 0
                   if (contextDefCapt2.records <= 1) {
-                    conditions = INTERMediator.additionalCondition
+                    const conditions = INTERMediator.additionalCondition
                     conditions[contextDefCapt2.name] = {field: contextDefCapt2.key, value: newId}
                     INTERMediator.additionalCondition = conditions
                     IMLibLocalContext.archive()
@@ -546,32 +525,28 @@ const IMLibPageNavigation = {
 
   saveRecordFromNavi: async function (dontUpdate) {
     'use strict'
-    var keying, field, keyingComp, keyingField, keyingValue, checkQueryParameter, i, initialValue,
-      currentVal, fieldArray, valueArray, difference
-    let needUpdate = true
-    let context, updateData, response
-
     INTERMediatorOnPage.showProgress()
     // await INTERMediatorOnPage.retrieveAuthInfo()
     for (let i = 0; i < IMLibContextPool.poolingContexts.length; i += 1) {
-      context = IMLibContextPool.poolingContexts[i]
-      updateData = context.getModified()
-      for (keying in updateData) {
+      const context = IMLibContextPool.poolingContexts[i]
+      const updateData = context.getModified()
+      for (const keying in updateData) {
         if (updateData.hasOwnProperty(keying)) {
-          fieldArray = []
-          valueArray = []
-          for (field in updateData[keying]) {
+          const fieldArray = []
+          const valueArray = []
+          for (const field in updateData[keying]) {
             if (updateData[keying].hasOwnProperty(field)) {
               fieldArray.push(field)
               valueArray.push({field: field, value: updateData[keying][field]})
             }
           }
-          keyingComp = keying.split('=')
-          keyingField = keyingComp[0]
+          const keyingComp = keying.split('=')
+          const keyingField = keyingComp[0]
           keyingComp.shift()
-          keyingValue = keyingComp.join('=')
+          const keyingValue = keyingComp.join('=')
+          let currentVal = null
           if (!INTERMediator.ignoreOptimisticLocking) {
-            checkQueryParameter = {
+            const checkQueryParameter = {
               name: context.contextName,
               records: 1,
               paging: false,
@@ -596,7 +571,7 @@ const IMLibPageNavigation = {
                   INTERMediatorOnPage.clearCredentials()
                   INTERMediatorOnPage.authenticating(
                     (function () {
-                      var qParam = checkQueryParameter
+                      const qParam = checkQueryParameter
                       return async function () {
                         await INTERMediator_DBAdapter.db_query_async(qParam, null, null)
                       }
@@ -616,16 +591,15 @@ const IMLibPageNavigation = {
               return
             }
             if (currentVal.count > 1) {
-              response = window.confirm(INTERMediatorOnPage.getMessages()[1024])
-              if (!response) {
+              if (!window.confirm(INTERMediatorOnPage.getMessages()[1024])) {
                 return
               }
             }
 
-            difference = false
-            for (field in updateData[keying]) {
+            let difference = false
+            for (const field in updateData[keying]) {
               if (updateData[keying].hasOwnProperty(field)) {
-                initialValue = context.getValue(keying, field)
+                const initialValue = context.getValue(keying, field)
                 if (initialValue !== currentVal.dbresult[0][field]) {
                   difference += INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[1035], [
@@ -672,19 +646,19 @@ const IMLibPageNavigation = {
         }
       }
     }
-    if (needUpdate && (dontUpdate !== true)) {
+    if (dontUpdate !== true) {
       await INTERMediator.constructMain(true)
     }
     INTERMediatorOnPage.hideProgress()
     INTERMediatorLog.flushMessage()
   },
 
+  /* --------------------------------------------------------------------
+     Handling Copy buttons
+     */
   setupCopyButton: function (encNodeTag, repNodeTag, repeaters, currentContext, currentRecord) {
-    // Handling Copy buttons
     'use strict'
-    var buttonNode, thisId, buttonName, currentContextDef
-
-    currentContextDef = currentContext.getContextDef()
+    const currentContextDef = currentContext.getContextDef()
     if (!currentContextDef['repeat-control'] || !currentContextDef['repeat-control'].match(/copy/i)) {
       return
     }
@@ -692,19 +666,19 @@ const IMLibPageNavigation = {
       currentContextDef.records === undefined ||
       !currentContextDef.paging ||
       (currentContextDef.records > 1 && parseInt(INTERMediator.pagedSize) !== 1)) {
-      buttonNode = document.createElement('BUTTON')
+      const buttonNode = document.createElement('BUTTON')
       buttonNode.setAttribute('class', 'IM_Button_Copy')
-      buttonName = INTERMediatorOnPage.getMessages()[14]
+      let buttonName = INTERMediatorOnPage.getMessages()[14]
       if (currentContextDef['button-names'] && currentContextDef['button-names'].copy) {
         buttonName = currentContextDef['button-names'].copy
       }
       buttonNode.appendChild(document.createTextNode(buttonName))
-      thisId = INTERMediator.nextIdValue('CopyButton') // 'IM_Button_' + INTERMediator.buttonIdNum
+      const thisId = INTERMediator.nextIdValue('CopyButton') // 'IM_Button_' + INTERMediator.buttonIdNum
       buttonNode.setAttribute('id', thisId)
       INTERMediator.buttonIdNum++
       IMLibMouseEventDispatch.setExecute(thisId, (function () {
-        var currentContextCapt = currentContext
-        let currentRecordCapt = currentRecord[currentContextDef.key]
+        const currentContextCapt = currentContext
+        const currentRecordCapt = currentRecord[currentContextDef.key]
         return function () {
           IMLibUI.copyButton(currentContextCapt, currentRecordCapt)
         }
@@ -721,14 +695,11 @@ const IMLibPageNavigation = {
   },
 
   /* --------------------------------------------------------------------
-
+     Handling Delete buttons
    */
   setupDeleteButton: function (encNodeTag, repeaters, currentContext, keyField, keyValue) {
-    // Handling Delete buttons
     'use strict'
-    var buttonNode, thisId, buttonName, currentContextDef
-
-    currentContextDef = currentContext.contextDefinition
+    const currentContextDef = currentContext.contextDefinition
     if (!currentContextDef['repeat-control'] ||
       !currentContextDef['repeat-control'].match(/delete/i)) {
       return
@@ -737,21 +708,21 @@ const IMLibPageNavigation = {
       currentContextDef.records === undefined ||
       !currentContextDef.paging ||
       (currentContextDef.records > 1 && parseInt(INTERMediator.pagedSize) !== 1)) {
-      buttonNode = document.createElement('BUTTON')
+      const buttonNode = document.createElement('BUTTON')
       buttonNode.setAttribute('class', 'IM_Button_Delete')
-      buttonName = INTERMediatorOnPage.getMessages()[6]
+      let buttonName = INTERMediatorOnPage.getMessages()[6]
       if (currentContextDef['button-names'] && currentContextDef['button-names'].delete) {
         buttonName = currentContextDef['button-names'].delete
       }
       buttonNode.appendChild(document.createTextNode(buttonName))
-      thisId = INTERMediator.nextIdValue('DeleteButton') // 'IM_Button_' + INTERMediator.buttonIdNum
+      const thisId = INTERMediator.nextIdValue('DeleteButton') // 'IM_Button_' + INTERMediator.buttonIdNum
       buttonNode.setAttribute('id', thisId)
       INTERMediator.buttonIdNum++
       IMLibMouseEventDispatch.setExecute(thisId, (function () {
-        var currentContextCapt = currentContext
-        let keyFieldCapt = keyField
-        let keyValueCapt = keyValue
-        let confirmingCapt = currentContextDef['repeat-control'].match(/confirm-delete/i)
+        const currentContextCapt = currentContext
+        const keyFieldCapt = keyField
+        const keyValueCapt = keyValue
+        const confirmingCapt = currentContextDef['repeat-control'].match(/confirm-delete/i)
         return function () {
           IMLibUI.deleteButton(currentContextCapt, keyFieldCapt, keyValueCapt, confirmingCapt)
         }
@@ -769,16 +740,16 @@ const IMLibPageNavigation = {
   },
 
   includeButtonInContext: function (encNodeTag, repeaters, buttonNode) {
-    var tdNodes, repeaterCtl, repeaterIx, ignoreTerms, repeaterIMCtrl
+    let repeaterCtl, repeaterIx
 
-    ignoreTerms = ['header', 'separator', 'footerheader', 'separator', 'footer']
+    const ignoreTerms = ['header', 'separator', 'footerheader', 'separator', 'footer']
     switch (encNodeTag) {
       case 'TBODY':
         repeaterIx = repeaters.length - 1
         while (repeaterIx >= 0) {
           repeaterCtl = repeaters[repeaterIx].getAttribute('data-im-control')
           if (!repeaterCtl || (repeaterCtl && ignoreTerms.indexOf(repeaterCtl.toLowerCase()) < 0)) {
-            tdNodes = repeaters[repeaterIx].getElementsByTagName('TD')
+            const tdNodes = repeaters[repeaterIx].getElementsByTagName('TD')
             tdNodes[tdNodes.length - 1].appendChild(buttonNode)
             break
           }
@@ -791,7 +762,8 @@ const IMLibPageNavigation = {
       default:
         repeaterIx = repeaters.length - 1
         while (repeaterIx >= 0) {
-          repeaterIMCtrl = repeaterCtl = repeaters[repeaterIx].getAttribute('data-im-control')
+          repeaterCtl = repeaters[repeaterIx].getAttribute('data-im-control')
+          const repeaterIMCtrl = repeaterCtl
           if (repeaterIMCtrl) {
             repeaterCtl = repeaterIMCtrl.toLowerCase()
             if (!repeaterCtl || (repeaterCtl && ignoreTerms.indexOf(repeaterCtl.toLowerCase()) < 0)) {
@@ -813,36 +785,33 @@ const IMLibPageNavigation = {
    */
   setupInsertButton: function (currentContext, keyValue, node, relationValue) {
     'use strict'
-    var buttonNode, enclosedNode, footNode, trNode, tdNode, liNode, divNode, i,
-      firstLevelNodes, targetNodeTag, existingButtons, keyField, thisId, encNodeTag,
-      buttonName, setTop, currentContextDef
-
-    encNodeTag = node.tagName
-    currentContextDef = currentContext.getContextDef()
+    const encNodeTag = node.tagName
+    const currentContextDef = currentContext.getContextDef()
     if (currentContextDef['repeat-control'] && currentContextDef['repeat-control'].match(/insert/i)) {
       if (relationValue.length > 0 || !currentContextDef.paging || currentContextDef.paging === false) {
-        buttonNode = document.createElement('BUTTON')
+        const buttonNode = document.createElement('BUTTON')
         buttonNode.setAttribute('class', 'IM_Button_Insert')
-        buttonName = INTERMediatorOnPage.getMessages()[5]
+        let buttonName = INTERMediatorOnPage.getMessages()[5]
         if (currentContextDef['button-names'] && currentContextDef['button-names'].insert) {
           buttonName = currentContextDef['button-names'].insert
         }
         buttonNode.appendChild(document.createTextNode(buttonName))
-        thisId = INTERMediator.nextIdValue('InsertButton') // 'IM_Button_' + INTERMediator.buttonIdNum
+        const thisId = INTERMediator.nextIdValue('InsertButton') // 'IM_Button_' + INTERMediator.buttonIdNum
         buttonNode.setAttribute('id', thisId)
         INTERMediator.buttonIdNum++
+        let existingButtons
         switch (encNodeTag) {
           case 'TBODY':
-            setTop = false
-            targetNodeTag = 'TFOOT'
+            let setTop = false
+            let targetNodeTag = 'TFOOT'
             if (currentContextDef['repeat-control'].match(/top/i)) {
               targetNodeTag = 'THEAD'
               setTop = true
             }
-            enclosedNode = node.parentNode
-            firstLevelNodes = enclosedNode.childNodes
-            footNode = null
-            for (i = 0; i < firstLevelNodes.length; i += 1) {
+            const enclosedNode = node.parentNode
+            const firstLevelNodes = enclosedNode.childNodes
+            let footNode = null
+            for (let i = 0; i < firstLevelNodes.length; i += 1) {
               if (firstLevelNodes[i].tagName === targetNodeTag) {
                 footNode = firstLevelNodes[i]
                 break
@@ -854,9 +823,9 @@ const IMLibPageNavigation = {
             }
             existingButtons = INTERMediatorLib.getElementsByClassName(footNode, 'IM_Button_Insert')
             if (existingButtons.length === 0) {
-              trNode = document.createElement('TR')
+              const trNode = document.createElement('TR')
               trNode.setAttribute('class', 'IM_Insert_TR')
-              tdNode = document.createElement('TD')
+              const tdNode = document.createElement('TD')
               tdNode.setAttribute('colspan', 100)
               tdNode.setAttribute('class', 'IM_Insert_TD')
               INTERMediator.setIdValue(trNode)
@@ -871,7 +840,7 @@ const IMLibPageNavigation = {
             break
           case 'UL':
           case 'OL':
-            liNode = document.createElement('LI')
+            const liNode = document.createElement('LI')
             existingButtons = INTERMediatorLib.getElementsByClassName(liNode, 'IM_Button_Insert')
             if (existingButtons.length === 0) {
               liNode.appendChild(buttonNode)
@@ -886,7 +855,7 @@ const IMLibPageNavigation = {
             // Select enclosure can't include Insert button.
             break
           default:
-            divNode = document.createElement('DIV')
+            const divNode = document.createElement('DIV')
             existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_Insert')
             if (existingButtons.length === 0) {
               divNode.appendChild(buttonNode)
@@ -899,16 +868,17 @@ const IMLibPageNavigation = {
             break
         }
         IMLibMouseEventDispatch.setExecute(buttonNode.id, (function () {
-          var context = currentContext
-          let keyValueCapt = keyValue
-          let relationValueCapt = relationValue
-          let nodeId = node.getAttribute('id')
-          let confirming = currentContextDef['repeat-control'].match(/confirm-insert/i)
+          const context = currentContext
+          const keyValueCapt = keyValue
+          const relationValueCapt = relationValue
+          const nodeId = node.getAttribute('id')
+          const confirming = currentContextDef['repeat-control'].match(/confirm-insert/i)
           return function () {
             IMLibUI.insertButton(context, keyValueCapt, relationValueCapt, nodeId, confirming)
           }
         })())
       } else {
+        let keyField
         if (INTERMediatorOnPage.dbClassName === 'FileMaker_FX' ||
           INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI') {
           keyField = currentContextDef.key ? currentContextDef.key : INTERMediatorOnPage.defaultKeyName
@@ -925,33 +895,28 @@ const IMLibPageNavigation = {
     }
   },
   /* --------------------------------------------------------------------
-
+     Handling Detail buttons
      */
   setupNavigationButton: function (encNodeTag, repeaters, currentContextDef, keyField, keyValue, contextObj) {
-    // Handling Detail buttons
     'use strict'
-    var buttonNode, thisId, tdNodes, tdNode, firstInNode, isMasterDetail, isStep, isHide, masterContext,
-      detailContext, showingNode, isHidePageNavi, buttonName, i, isTouchRepeater, moveToDetailFunc, isNoNavi, isFullNavi
-
-    if (!currentContextDef['navi-control'] ||
-      (!currentContextDef['navi-control'].match(/master/i) &&
-        !currentContextDef['navi-control'].match(/step/i)) ||
-      encNodeTag === 'SELECT') {
+    if (!currentContextDef['navi-control']
+      || (!currentContextDef['navi-control'].match(/master/i) && !currentContextDef['navi-control'].match(/step/i))
+      || encNodeTag === 'SELECT') {
       return
     }
 
-    isTouchRepeater = INTERMediator.isMobile || INTERMediator.isTablet
-    isHide = currentContextDef['navi-control'].match(/hide/i)
-    isHidePageNavi = isHide && !!currentContextDef.paging
-    isMasterDetail = currentContextDef['navi-control'].match(/master/i)
-    isStep = currentContextDef['navi-control'].match(/step/i)
-    isNoNavi = currentContextDef['navi-control'].match(/nonavi/i)
-    isFullNavi = currentContextDef['navi-control'].match(/fullnavi/i)
+    const isTouchRepeater = INTERMediator.isMobile || INTERMediator.isTablet
+    const isHide = currentContextDef['navi-control'].match(/hide/i)
+    const isHidePageNavi = isHide && !!currentContextDef.paging
+    const isMasterDetail = currentContextDef['navi-control'].match(/master/i)
+    const isStep = currentContextDef['navi-control'].match(/step/i)
+    const isNoNavi = currentContextDef['navi-control'].match(/nonavi/i)
+    const isFullNavi = currentContextDef['navi-control'].match(/fullnavi/i)
 
     if (isMasterDetail && INTERMediator.detailNodeOriginalDisplay) {
-      detailContext = IMLibContextPool.getDetailContext()
+      const detailContext = IMLibContextPool.getDetailContext()
       if (detailContext) {
-        showingNode = detailContext.enclosureNode
+        let showingNode = detailContext.enclosureNode
         if (showingNode.tagName === 'TBODY') {
           showingNode = showingNode.parentNode
         }
@@ -959,18 +924,19 @@ const IMLibPageNavigation = {
       }
     }
 
-    buttonNode = document.createElement('BUTTON')
+    const buttonNode = document.createElement('BUTTON')
     buttonNode.setAttribute('class', 'IM_Button_Master')
-    buttonName = INTERMediatorOnPage.getMessages()[12]
+    let buttonName = INTERMediatorOnPage.getMessages()[12]
     if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-detail']) {
       buttonName = currentContextDef['button-names']['navi-detail']
     }
     buttonNode.appendChild(document.createTextNode(buttonName))
-    thisId = INTERMediator.nextIdValue('MasterButton') // 'IM_Button_' + INTERMediator.buttonIdNum
+    const thisId = INTERMediator.nextIdValue('MasterButton') // 'IM_Button_' + INTERMediator.buttonIdNum
     buttonNode.setAttribute('id', thisId)
     INTERMediator.buttonIdNum++
+    let moveToDetailFunc = null
     if (isMasterDetail) {
-      masterContext = IMLibContextPool.getMasterContext()
+      const masterContext = IMLibContextPool.getMasterContext()
       masterContext.setValue(keyField + '=' + keyValue, '_im_button_master_id', thisId, thisId)
       moveToDetailFunc = IMLibPageNavigation.moveToDetail(keyField, keyValue, isHide, isHidePageNavi)
     }
@@ -978,7 +944,7 @@ const IMLibPageNavigation = {
       moveToDetailFunc = IMLibPageNavigation.moveToNextStep(contextObj, keyField, keyValue)
     }
     if ((isTouchRepeater && !isNoNavi) || isFullNavi) {
-      for (i = 0; i < repeaters.length; i += 1) {
+      for (let i = 0; i < repeaters.length; i += 1) {
         const originalColor = repeaters[i].style.backgroundColor
         repeaters[i].style.cursor = 'pointer'
         const css = '#' + repeaters[i].id + ':hover{background-color:' + IMLibUI.mobileSelectionColor + '}'
@@ -1034,10 +1000,11 @@ const IMLibPageNavigation = {
     } else {
       if (!isNoNavi) {
         IMLibMouseEventDispatch.setExecute(thisId, moveToDetailFunc)
+        let firstInNode = null
         switch (encNodeTag) {
           case 'TBODY':
-            tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD')
-            tdNode = tdNodes[0]
+            const tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD')
+            const tdNode = tdNodes[0]
             firstInNode = tdNode.childNodes[0]
             if (firstInNode) {
               tdNode.insertBefore(buttonNode, firstInNode)
@@ -1059,11 +1026,13 @@ const IMLibPageNavigation = {
       }
     }
   },
+
   getStepLastSelectedRecord: function () {
     'use strict'
-    var lastSelection = IMLibPageNavigation.stepNavigation[IMLibPageNavigation.stepNavigation.length - 1]
+    const lastSelection = IMLibPageNavigation.stepNavigation[IMLibPageNavigation.stepNavigation.length - 1]
     return lastSelection.context.store[lastSelection.key]
   },
+
   isNotExpandingContext: function (contextDef) {
     'use strict'
     if (contextDef['navi-control'] && contextDef['navi-control'].match(/step/i)) {
@@ -1071,25 +1040,26 @@ const IMLibPageNavigation = {
     }
     return false
   },
+
   startStep: function () {
     'use strict'
     IMLibPageNavigation.initializeStepInfo(true)
     INTERMediator.constructMain(IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName))
   },
+
   initializeStepInfo: function (includeHide) {
     'use strict'
-    var key, dataSrcs, cDef, judgeHide
-    let isDetected = false
     IMLibPageNavigation.stepNavigation = []
     IMLibPageNavigation.stepCurrentContextName = null
     IMLibPageNavigation.stepStartContextName = null
     IMLibPageNavigation.setupStepReturnButton('none')
+    let isDetected = false
     if (INTERMediatorOnPage.getDataSources) { // Avoid processing on unit test
-      dataSrcs = INTERMediatorOnPage.getDataSources()
-      for (key of Object.keys(dataSrcs)) {
-        cDef = dataSrcs[key]
+      const dataSrcs = INTERMediatorOnPage.getDataSources()
+      for (let key of Object.keys(dataSrcs)) {
+        const cDef = dataSrcs[key]
         if (cDef['navi-control']) {
-          judgeHide = includeHide || (!includeHide && !cDef['navi-control'].match(/hide/i))
+          const judgeHide = includeHide || (!includeHide && !cDef['navi-control'].match(/hide/i))
           if (cDef['navi-control'] && cDef['navi-control'].match(/step/i)) {
             if (judgeHide && !isDetected) {
               IMLibPageNavigation.stepCurrentContextName = cDef.name
@@ -1162,21 +1132,21 @@ const IMLibPageNavigation = {
     const context = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName)
     IMLibPageNavigation.moveToNextStepImpl(context, keying)
   },
+
   moveToNextStepImpl: async function (contextObj, keying) {
     'use strict'
-    let key, cDef, dataSrcs, contextDef, lastRecord, lastSelection = -1
+    let lastSelection = -1
     let isAfterCurrent = false
     let control = null
     let hasNextContext = false
     let hasBeforeMoveNext = false
-    let nextContext
-    contextDef = contextObj.getContextDef()
+    let contextDef = contextObj.getContextDef()
     IMLibPageNavigation.stepNavigation.push({context: contextObj, key: keying})
     if (INTERMediatorOnPage[contextDef['before-move-nextstep']]) {
       control = INTERMediatorOnPage[contextDef['before-move-nextstep']]()
       hasBeforeMoveNext = true
     } else {
-      lastRecord = IMLibPageNavigation.getStepLastSelectedRecord()
+      const lastRecord = IMLibPageNavigation.getStepLastSelectedRecord()
       lastSelection = lastRecord[contextDef['key']]
     }
     if (control === false) {
@@ -1185,9 +1155,9 @@ const IMLibPageNavigation = {
     } else if (control) {
       IMLibPageNavigation.stepCurrentContextName = control
     } else {
-      dataSrcs = INTERMediatorOnPage.getDataSources()
-      for (key of Object.keys(dataSrcs)) {
-        cDef = dataSrcs[key]
+      const dataSrcs = INTERMediatorOnPage.getDataSources()
+      for (let key of Object.keys(dataSrcs)) {
+        const cDef = dataSrcs[key]
         if (cDef.name === contextDef.name) {
           isAfterCurrent = true
         } else if (isAfterCurrent && cDef['navi-control'].match(/step/i)) {
@@ -1209,7 +1179,7 @@ const IMLibPageNavigation = {
     } else {
       contextObj.enclosureNode.style.display = 'none'
     }
-    nextContext = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName)
+    const nextContext = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName)
     contextDef = nextContext.getContextDef()
     if (nextContext.enclosureNode.tagName === 'TBODY') {
       nextContext.enclosureNode.parentNode.style.display = ''
@@ -1230,11 +1200,11 @@ const IMLibPageNavigation = {
       INTERMediatorOnPage[contextDef['just-move-thisstep']]()
     }
   },
+
   backToPreviousStep: async function () {
     'use strict'
-    var currentContext, prevInfo, contextDef
-    currentContext = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName)
-    prevInfo = IMLibPageNavigation.stepNavigation.pop()
+    const currentContext = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName)
+    const prevInfo = IMLibPageNavigation.stepNavigation.pop()
     IMLibPageNavigation.stepCurrentContextName = prevInfo.context.contextName
     if (prevInfo.context.enclosureNode.tagName === 'TBODY') {
       prevInfo.context.enclosureNode.parentNode.style.display = ''
@@ -1246,7 +1216,7 @@ const IMLibPageNavigation = {
     }
     await INTERMediator.constructMain(currentContext)
     await INTERMediator.constructMain(prevInfo.context)
-    contextDef = prevInfo.context.getContextDef()
+    const contextDef = prevInfo.context.getContextDef()
     if (contextDef['navi-title']) {
       IMLibLocalContext.setValue('navi_title', contextDef['navi-title'], !0)
     }
@@ -1269,21 +1239,20 @@ const IMLibPageNavigation = {
       IMLibPageNavigation.moveToDetail(field, value, isHide, isHidePageNavi)()
     }
   },
+
   moveToDetail: function (keyField, keyValue, isHide, isHidePageNavi) {
     'use strict'
-    var f = keyField
-    let v = keyValue
-    let mh = isHide
-    let pnh = isHidePageNavi
-
+    const f = keyField
+    const v = keyValue
+    const mh = isHide
+    const pnh = isHidePageNavi
     return function () {
       return IMLibPageNavigation.moveToDetailImpl(f, v, mh, pnh)
     }
   },
+
   moveToDetailImpl: async function (keyField, keyValue, isHide, isHidePageNavi) {
     'use strict'
-    var masterContext, detailContext, contextName, masterEnclosure, detailEnclosure, node, contextDef
-
     IMLibPageNavigation.previousModeDetail = {
       keyField: keyField,
       keyValue: keyValue,
@@ -1291,14 +1260,14 @@ const IMLibPageNavigation = {
       isHidePageNavi: isHidePageNavi
     }
 
-    masterContext = IMLibContextPool.getMasterContext()
-    detailContext = IMLibContextPool.getDetailContext()
+    let masterContext = IMLibContextPool.getMasterContext()
+    let detailContext = IMLibContextPool.getDetailContext()
     if (detailContext) {
       if (INTERMediatorOnPage.naviBeforeMoveToDetail) {
         INTERMediatorOnPage.naviBeforeMoveToDetail(masterContext, detailContext)
       }
-      contextDef = detailContext.getContextDef()
-      contextName = contextDef.name
+      const contextDef = detailContext.getContextDef()
+      const contextName = contextDef.name
       INTERMediator.clearCondition(contextName, '_imlabel_crosstable')
       INTERMediator.addCondition(contextName, {
         field: keyField,
@@ -1310,14 +1279,14 @@ const IMLibPageNavigation = {
       if (isHide) {
         INTERMediatorOnPage.masterScrollPosition = {x: window.scrollX, y: window.scrollY}
         window.scrollTo(0, 0)
-        masterEnclosure = masterContext.enclosureNode
+        let masterEnclosure = masterContext.enclosureNode
         if (masterEnclosure.tagName === 'TBODY') {
           masterEnclosure = masterEnclosure.parentNode
         }
         INTERMediator.masterNodeOriginalDisplay = masterEnclosure.style.display
         masterEnclosure.style.display = 'none'
 
-        detailEnclosure = detailContext.enclosureNode
+        let detailEnclosure = detailContext.enclosureNode
         if (detailEnclosure.tagName === 'TBODY') {
           detailEnclosure = detailEnclosure.parentNode
         }
@@ -1327,8 +1296,7 @@ const IMLibPageNavigation = {
         document.getElementById('IM_NAVIGATOR').style.display = 'none'
       }
       if (IMLibUI.mobileNaviBackButtonId) {
-        node = document.getElementById(IMLibUI.mobileNaviBackButtonId)
-        node.style.display = 'inline-block'
+        document.getElementById(IMLibUI.mobileNaviBackButtonId).style.display = 'inline-block'
       }
       if (INTERMediatorOnPage.naviAfterMoveToDetail) {
         masterContext = IMLibContextPool.getMasterContext()
@@ -1337,20 +1305,20 @@ const IMLibPageNavigation = {
       }
     }
   },
+
   setupDetailAreaToFirstRecord: function (currentContextDef, masterContext) {
     'use strict'
-    var i, comp
     if (currentContextDef['navi-control'] &&
       currentContextDef['navi-control'].match(/master/i)) {
-      var contextDefs = INTERMediatorOnPage.getDataSources()
-      for (i in contextDefs) {
+      const contextDefs = INTERMediatorOnPage.getDataSources()
+      for (let i in contextDefs) {
         if (contextDefs.hasOwnProperty(i) &&
           contextDefs[i] &&
           contextDefs[i].name &&
           contextDefs[i]['navi-control'] &&
           contextDefs[i]['navi-control'].match(/detail/i)) {
           if (Object.keys(masterContext.store).length > 0) {
-            comp = Object.keys(masterContext.store)[0].split('=')
+            const comp = Object.keys(masterContext.store)[0].split('=')
             if (comp.length > 1) {
               INTERMediator.clearCondition(contextDefs[i].name, '_imlabel_crosstable')
               INTERMediator.addCondition(contextDefs[i].name,
@@ -1365,7 +1333,7 @@ const IMLibPageNavigation = {
   },
   moveDetailOnceAgain: function () {
     'use strict'
-    var p = IMLibPageNavigation.previousModeDetail
+    const p = IMLibPageNavigation.previousModeDetail
     IMLibPageNavigation.moveToDetailImpl(
       p.encNodeTag, p.keyField, p.keyValue, p.isHide, p.isHidePageNavi)
   },
@@ -1374,18 +1342,15 @@ const IMLibPageNavigation = {
      */
   setupBackNaviButton: function (currentContext, node) {
     'use strict'
-    var buttonNode, divNode, i, masterContext, naviControlValue, currentContextDef, showingNode,
-      isHidePageNavi, isUpdateMaster, isTouchRepeater, aNode, nodes, isTop
-
-    currentContextDef = currentContext.getContextDef()
-
+    let divNode // Used in a private function
+    const currentContextDef = currentContext.getContextDef()
     if (!currentContextDef['navi-control'] ||
       !currentContextDef['navi-control'].match(/detail/i)) {
       return
     }
 
-    masterContext = IMLibContextPool.getMasterContext()
-    isHidePageNavi = !!masterContext.getContextDef().paging
+    const masterContext = IMLibContextPool.getMasterContext()
+    const isHidePageNavi = !!masterContext.getContextDef().paging
     if (masterContext.getContextDef().paging && currentContextDef.paging) {
       INTERMediatorLog.setErrorMessage(
         'The datail context definition has the "paging" key. ' +
@@ -1394,15 +1359,15 @@ const IMLibPageNavigation = {
       )
     }
 
-    naviControlValue = masterContext.getContextDef()['navi-control']
+    const naviControlValue = masterContext.getContextDef()['navi-control']
     if (!naviControlValue || (!naviControlValue.match(/hide/i))) {
       return
     }
-    isUpdateMaster = currentContextDef['navi-control'].match(/update/i)
-    isTouchRepeater = INTERMediator.isMobile || INTERMediator.isTablet
-    isTop = !(currentContextDef['navi-control'].match(/bottom/i))
+    const isUpdateMaster = currentContextDef['navi-control'].match(/update/i)
+    const isTouchRepeater = INTERMediator.isMobile || INTERMediator.isTablet
+    const isTop = !(currentContextDef['navi-control'].match(/bottom/i))
 
-    showingNode = currentContext.enclosureNode
+    let showingNode = currentContext.enclosureNode
     if (showingNode.tagName === 'TBODY') {
       showingNode = showingNode.parentNode
     }
@@ -1412,9 +1377,9 @@ const IMLibPageNavigation = {
     showingNode.style.display = 'none'
 
     if (isTouchRepeater) {
-      nodes = document.getElementsByClassName('IM_Button_BackNavi')
+      let nodes = document.getElementsByClassName('IM_Button_BackNavi')
       if (!nodes || nodes.length === 0) {
-        aNode = createBackButton('DIV', currentContextDef)
+        const aNode = createBackButton('DIV', currentContextDef)
         IMLibUI.mobileNaviBackButtonId = aNode.id
         aNode.style.display = 'none'
         nodes = INTERMediatorLib.getElementsByAttributeValue( // Check jQuery Mobile
@@ -1452,7 +1417,7 @@ const IMLibPageNavigation = {
         })
       }
     } else {
-      buttonNode = createBackButton('BUTTON', currentContextDef)
+      const buttonNode = createBackButton('BUTTON', currentContextDef)
       switch (node.tagName) {
         case 'TBODY':
           tbodyTargetNode(node, isTop, buttonNode)
@@ -1475,10 +1440,9 @@ const IMLibPageNavigation = {
     }
 
     function createBackButton(tagName, currentContextDef) {
-      var buttonNode, buttonName
-      buttonNode = document.createElement(tagName)
+      const buttonNode = document.createElement(tagName)
       buttonNode.setAttribute('class', 'IM_Button_BackNavi')
-      buttonName = INTERMediatorOnPage.getMessages()[13]
+      let buttonName = INTERMediatorOnPage.getMessages()[13]
       if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-back']) {
         buttonName = currentContextDef['button-names']['navi-back']
       }
@@ -1488,20 +1452,17 @@ const IMLibPageNavigation = {
     }
 
     function setIdForIMButtons(node) {
-      var thisId
-      thisId = INTERMediator.nextIdValue('BackButton') // 'IM_Button_' + INTERMediator.buttonIdNum
+      const thisId = INTERMediator.nextIdValue('BackButton') // 'IM_Button_' + INTERMediator.buttonIdNum
       node.setAttribute('id', thisId)
       INTERMediator.buttonIdNum++
     }
 
     function tbodyTargetNode(node, isTop, buttonNode) {
-      var targetNodeTag, enclosedNode, firstLevelNodes, targetNode, existingButtons, trNode, tdNode
-
-      targetNodeTag = isTop ? 'THEAD' : 'TFOOT'
-      enclosedNode = node.parentNode
-      firstLevelNodes = enclosedNode.childNodes
-      targetNode = null
-      for (i = 0; i < firstLevelNodes.length; i += 1) {
+      const targetNodeTag = isTop ? 'THEAD' : 'TFOOT'
+      const enclosedNode = node.parentNode
+      const firstLevelNodes = enclosedNode.childNodes
+      let targetNode = null
+      for (let i = 0; i < firstLevelNodes.length; i += 1) {
         if (firstLevelNodes[i].tagName === targetNodeTag) {
           targetNode = firstLevelNodes[i]
           break
@@ -1515,11 +1476,11 @@ const IMLibPageNavigation = {
           siblingNode: (targetNodeTag === 'THEAD') ? enclosedNode.firstChild : null
         })
       }
-      existingButtons = INTERMediatorLib.getElementsByClassName(targetNode, 'IM_Button_BackNavi')
+      const existingButtons = INTERMediatorLib.getElementsByClassName(targetNode, 'IM_Button_BackNavi')
       if (existingButtons.length === 0) {
-        trNode = document.createElement('TR')
+        const trNode = document.createElement('TR')
         trNode.setAttribute('class', 'IM_NaviBack_TR')
-        tdNode = document.createElement('TD')
+        const tdNode = document.createElement('TD')
         tdNode.setAttribute('colspan', 100)
         tdNode.setAttribute('class', 'IM_NaviBack_TD')
         INTERMediator.setIdValue(trNode)
@@ -1530,9 +1491,8 @@ const IMLibPageNavigation = {
     }
 
     function genericTargetNode(node, isTop, naviEncTag, buttonNode) {
-      var newNode, existingButtons
-      newNode = document.createElement(naviEncTag)
-      existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_BackNavi')
+      const newNode = document.createElement(naviEncTag)
+      const existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_BackNavi')
       if (existingButtons.length === 0) {
         newNode.appendChild(buttonNode)
         if (!isTop) {
@@ -1544,17 +1504,15 @@ const IMLibPageNavigation = {
     }
 
     function moveToMaster(a, b, c, d) {
-      var masterContextCL = a
+      let masterContextCL = a
       let detailContextCL = b
-      let pageNaviShow = c
-      let masterUpdate = d
-      let node
+      const pageNaviShow = c
+      const masterUpdate = d
       return async function () {
-        var showingNode
         if (INTERMediatorOnPage.naviBeforeMoveToMaster) {
           INTERMediatorOnPage.naviBeforeMoveToMaster(masterContextCL, detailContextCL)
         }
-        showingNode = detailContextCL.enclosureNode
+        let showingNode = detailContextCL.enclosureNode
         if (showingNode.tagName === 'TBODY') {
           showingNode = showingNode.parentNode
         }
@@ -1573,7 +1531,7 @@ const IMLibPageNavigation = {
           await INTERMediator.constructMain(masterContextCL)
         }
         if (IMLibUI.mobileNaviBackButtonId) {
-          node = document.getElementById(IMLibUI.mobileNaviBackButtonId)
+          const node = document.getElementById(IMLibUI.mobileNaviBackButtonId)
           node.style.display = 'none'
         }
         if (INTERMediatorOnPage.naviAfterMoveToMaster) {

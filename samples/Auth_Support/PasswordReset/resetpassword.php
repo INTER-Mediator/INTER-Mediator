@@ -91,7 +91,7 @@ header('Content-Type: text/html;charset="UTF-8"');
     <script src="resetcontext.php"></script>
     <title></title>
     <script type="text/javascript">
-      var returnValue = true;
+      let returnValue = true;
       function leastChecking() {
         returnValue = true;
         alertEmptyField('mail');
@@ -119,9 +119,8 @@ header('Content-Type: text/html;charset="UTF-8"');
         document.getElementById('mail').value = getCookie('pwresetmail');
       };
       function getCookie(key) {
-        var s, i;
-        s = document.cookie.split('; ');
-        for (i = 0; i < s.length; i += 1) {
+        const s = document.cookie.split('; ');
+        for (let i = 0; i < s.length; i += 1) {
           if (s[i].indexOf(key + '=') == 0) {
             return decodeURIComponent(s[i].substring(s[i].indexOf('=') + 1));
           }

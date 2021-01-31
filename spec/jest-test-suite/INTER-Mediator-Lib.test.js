@@ -51,7 +51,7 @@ test('INTERMediatorLib.Round() Test for positive value.', function () {
 })
 test('INTERMediatorLib.Round() Test  for negative value.', function () {
   'use strict'
-  var v = 45678
+  let v = 45678
   expect(INTERMediatorLib.Round(v, 0)).toBe(v)
   expect(INTERMediatorLib.Round(v, -1)).toBe(45680)
   expect(INTERMediatorLib.Round(v, -2)).toBe(45700)
@@ -64,27 +64,27 @@ test('INTERMediatorLib.Round() Test  for negative value.', function () {
 test(
   'dateTimeStringISO() should return the valid date time string.', function () {
     'use strict'
-    var dt = new Date(2015, 7, 25, 12, 43, 51)
+    let dt = new Date(2015, 7, 25, 12, 43, 51)
     expect(INTERMediatorLib.dateTimeStringISO(dt)).toBe('2015-08-25 12:43:51')
   })
 test('dateTimeStringFileMaker should return the valid date time.', function () {
   'use strict'
-  var dt = new Date(2015, 7, 25, 12, 43, 51)
+  let dt = new Date(2015, 7, 25, 12, 43, 51)
   expect(INTERMediatorLib.dateTimeStringFileMaker(dt)).toBe('08/25/2015 12:43:51')
 })
 test('dateStringISO should return the valid date.', function () {
   'use strict'
-  var dt = new Date(2015, 7, 25, 12, 43, 51)
+  let dt = new Date(2015, 7, 25, 12, 43, 51)
   expect(INTERMediatorLib.dateStringISO(dt)).toBe('2015-08-25')
 })
 test(' dateStringFileMakershould return the valid date.', function () {
   'use strict'
-  var dt = new Date(2015, 7, 25, 12, 43, 51)
+  let dt = new Date(2015, 7, 25, 12, 43, 51)
   expect(INTERMediatorLib.dateStringFileMaker(dt)).toBe('08/25/2015')
 })
 test('timeString should return the valid time.', function () {
   'use strict'
-  var dt = new Date(2015, 7, 25, 12, 43, 51)
+  let dt = new Date(2015, 7, 25, 12, 43, 51)
   expect(INTERMediatorLib.timeString(dt)).toBe('12:43:51')
 })
 

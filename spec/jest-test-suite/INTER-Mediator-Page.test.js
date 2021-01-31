@@ -25,8 +25,8 @@ test('INTERMediatorOnPage.getMessages() should return null', function () {
 
 test('INTERMediatorOnPage\'s password Policy assigned', function () {
   'use strict'
-  var policy = '', message
-  var authFunc = (new INTERMediatorOnPage.authenticating())
+  let policy = '', message
+  let authFunc = (new INTERMediatorOnPage.authenticating())
 
   // No policy returns no error.
   message = authFunc.checkPasswordPolicy('', 'username', policy, true)

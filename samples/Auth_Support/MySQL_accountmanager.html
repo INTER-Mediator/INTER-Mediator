@@ -15,12 +15,11 @@
     <title>INTER-Mediator - Account</title>
     <script src="MySQL_contexts.php"></script>
     <script type="text/javascript">
-      function setPassword (id) {
-        var passwd, hashvalue, context;
-        passwd = document.getElementById('inputpassword').value;
-        hashvalue = INTERMediatorLib.generatePasswordHash(passwd);
-        context = IMLibContextPool.contextFromName('authuser');
-        context.setDataWithKey(id, 'hashedpasswd', hashvalue);
+      function setPassword(id) {
+        const passwd = document.getElementById('inputpassword').value
+        const hashvalue = INTERMediatorLib.generatePasswordHash(passwd)
+        const context = IMLibContextPool.contextFromName('authuser')
+        context.setDataWithKey(id, 'hashedpasswd', hashvalue)
       }
     </script>
 </head>
