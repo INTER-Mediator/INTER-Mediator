@@ -6,10 +6,10 @@ services:
       - db
     ports:
       - 8080:80
-      - 11478:11478
+      - 127.0.0.1:11478:11478
 
   db:
-    image: mysql:5.7
+    image: mariadb:10.5
     restart: always
     volumes:
       - type: bind
@@ -22,4 +22,4 @@ services:
       MYSQL_PASSWORD: password
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
     ports:
-      - 3306:3306
+      - 127.0.0.1:3306:3306
