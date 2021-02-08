@@ -11,7 +11,8 @@ Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.5.12-dev (in development)
-
+[INFO] Drop support for PHP 5.2 and PHP 5.3.
+[INFO] Drop support for FileMaker Server 11, 12 and 13.
 
 Ver.5.11 (November 17, 2019)
 - Support FileMaker Data API of FileMaker Server 18 and FileMaker Cloud for AWS 1.18.

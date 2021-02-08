@@ -210,6 +210,10 @@ describe package('acl'), :if => os[:family] == 'alpine' || os[:family] == 'ubunt
   it { should be_installed }
 end
 
+describe package('python3'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.12 do
+  it { should be_installed }
+end
+
 describe package('php7'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
@@ -522,9 +526,6 @@ describe package('unifont'), :if => os[:family] == 'ubuntu' do
 end
 
 describe package('virtualbox-guest-additions'), :if => os[:family] == 'alpine' && host_inventory['virtualization'][:system] != 'docker' do
-  it { should be_installed }
-end
-describe package('virtualbox-guest-modules-vanilla'), :if => os[:family] == 'alpine' && host_inventory['virtualization'][:system] != 'docker' do
   it { should be_installed }
 end
 
