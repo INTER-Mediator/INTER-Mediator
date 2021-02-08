@@ -1,4 +1,4 @@
-# Recipe file of Itamae for Alpine Linux 3.12, Ubuntu Server 16.04/18.04, CentOS 6/7
+# Recipe file of Itamae for Alpine Linux 3.13, Ubuntu Server 16.04/18.04, CentOS 6/7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -46,12 +46,12 @@ iface eth1 inet static
 EOF
     end
   end
-  if node[:platform_version].to_f >= 3.12
+  if node[:platform_version].to_f >= 3.13
     file '/etc/apk/repositories' do
       content <<-EOF
 #/media/cdrom/apks
-http://dl-cdn.alpinelinux.org/alpine/v3.12/main
-http://dl-cdn.alpinelinux.org/alpine/v3.12/community
+http://dl-cdn.alpinelinux.org/alpine/v3.13/main
+http://dl-cdn.alpinelinux.org/alpine/v3.13/community
 #http://dl-cdn.alpinelinux.org/alpine/edge/main
 #http://dl-cdn.alpinelinux.org/alpine/edge/community
 #http://dl-cdn.alpinelinux.org/alpine/edge/testing
@@ -61,8 +61,8 @@ EOF
     file '/etc/apk/repositories' do
       content <<-EOF
 #/media/cdrom/apks
-http://dl-5.alpinelinux.org/alpine/v3.8/main
-http://dl-5.alpinelinux.org/alpine/v3.8/community
+http://dl-5.alpinelinux.org/alpine/v3.10/main
+http://dl-5.alpinelinux.org/alpine/v3.10/community
 #http://dl-5.alpinelinux.org/alpine/edge/main
 #http://dl-5.alpinelinux.org/alpine/edge/community
 #http://dl-5.alpinelinux.org/alpine/edge/testing
@@ -438,6 +438,18 @@ end
 
 package 'acl' do
   action :install
+end
+
+if node[:platform] == 'alpine'
+  if node[:platform_version].to_f >= 3.12
+    package 'python3' do
+      action :install
+    end
+  else
+    package 'python' do
+      action :install
+    end
+  end
 end
 
 if node[:platform] == 'alpine'
@@ -887,18 +899,6 @@ if node[:platform] == 'ubuntu'
   end
   package 'unifont' do
     action :install
-  end
-end
-
-if node[:platform] == 'alpine'
-  if node[:platform_version].to_f >= 3.12
-    package 'python3' do
-      action :install
-    end
-  else
-    package 'python' do
-      action :install
-    end
   end
 end
 
