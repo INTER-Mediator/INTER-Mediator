@@ -9,8 +9,6 @@ os:
   - linux
 
 php:
-  - nightly
-  - 8.0
   - 7.4
   - 7.3
   - 7.2
@@ -24,8 +22,16 @@ matrix:
   include:
     - php: nightly
       dist: bionic
+      services:
+        - mysql
+        - postgresql
+        - xvfb
     - php: 8.0
       dist: bionic
+      services:
+        - mysql
+        - postgresql
+        - xvfb
   allow_failures:
     - php: nightly
     - php: 8.0
