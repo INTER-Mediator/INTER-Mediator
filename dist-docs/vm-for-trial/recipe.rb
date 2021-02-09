@@ -1,4 +1,4 @@
-# Recipe file of Itamae for Alpine Linux 3.13, Ubuntu Server 16.04/18.04, CentOS 6/7
+# Recipe file of Itamae for Alpine Linux 3.13, Ubuntu Server 16.04/18.04, CentOS Linux 7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -198,7 +198,7 @@ if node[:platform] == 'alpine'
     command 'yes im4135dev | sudo passwd postgres'
   end
   if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
-    directory '/var/lib/postgresql/12/data' do
+    directory '/var/lib/postgresql/13/data' do
       action :create
       owner 'postgres'
       group 'postgres'
@@ -222,8 +222,8 @@ if node[:platform] == 'alpine'
     service 'postgresql' do
       action [ :enable ]
     end
-    execute 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/12/data -l /var/log/postgresql/postgresql.log"' do
-      command 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/12/data -l /var/log/postgresql/postgresql.log"'
+    execute 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/13/data -l /var/log/postgresql/postgresql.log"' do
+      command 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/13/data -l /var/log/postgresql/postgresql.log"'
     end  
   end
 else
