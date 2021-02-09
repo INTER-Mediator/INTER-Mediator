@@ -21,7 +21,12 @@ php:
   - 5.4
 
 matrix:
-  allow_failures:  
+  include:
+    - php: nightly
+      dist: bionic
+    - php: 8.0
+      dist: bionic
+  allow_failures:
     - php: nightly
     - php: 8.0
 
