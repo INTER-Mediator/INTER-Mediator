@@ -48,7 +48,7 @@ before_script:
   - if [[ $TRAVIS_PHP_VERSION == "5.4" || $TRAVIS_PHP_VERSION == "5.5" || $TRAVIS_PHP_VERSION == "5.6" || $TRAVIS_PHP_VERSION == "7.0" || $TRAVIS_PHP_VERSION == "7.1" || $TRAVIS_PHP_VERSION == "7.2" || $TRAVIS_PHP_VERSION == "7.3" || $TRAVIS_PHP_VERSION == "7.4" ]]; then sh -e /etc/init.d/xvfb start & fi
   - sleep 5
   - npm install
-  - if [[ $TRAVIS_PHP_VERSION == "5.4" || $TRAVIS_PHP_VERSION == "5.5" || $TRAVIS_PHP_VERSION == "5.6" || $TRAVIS_PHP_VERSION == "7.0" || $TRAVIS_PHP_VERSION == "7.1" || $TRAVIS_PHP_VERSION == "7.2" || $TRAVIS_PHP_VERSION == "7.3" || $TRAVIS_PHP_VERSION == "7.4" ]]; then node_modules/.bin/buster-server & fi
+  - node_modules/.bin/buster-server &
   - sleep 5
   - firefox http://localhost:1111/capture &
   - if [[ $TRAVIS_PHP_VERSION != "5.2" && $TRAVIS_PHP_VERSION != "5.3" ]]; then google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost:1111/capture & fi
