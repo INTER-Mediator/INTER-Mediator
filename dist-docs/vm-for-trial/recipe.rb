@@ -453,56 +453,110 @@ if node[:platform] == 'alpine'
 end
 
 if node[:platform] == 'alpine'
-  package 'php7' do
-    action :install
-  end
-  package 'php7-apache2' do
-    action :install
-  end
-  package 'php7-curl' do
-    action :install
-  end
-  package 'php7-pdo' do
-    action :install
-  end
-  package 'php7-pdo_mysql' do
-    action :install
-  end
-  package 'php7-pdo_pgsql' do
-    action :install
-  end
-  package 'php7-pdo_sqlite' do
-    action :install
-  end
-  package 'php7-openssl' do
-    action :install
-  end
-  package 'php7-dom' do
-    action :install
-  end
-  package 'php7-json' do
-    action :install
-  end
-  package 'php7-bcmath' do
-    action :install
-  end
-  package 'php7-phar' do
-    action :install
-  end
-  package 'php7-mbstring' do
-    action :install
-  end
-  package 'php7-xml' do
-    action :install
-  end
-  package 'php7-simplexml' do
-    action :install
-  end
-  package 'php7-session' do
-    action :install
-  end
-  package 'php7-mysqli' do
-    action :install
+  if node[:platform_version].to_f >= 3.13
+    package 'php8' do
+      action :install
+    end
+    package 'php8-apache2' do
+      action :install
+    end
+    package 'php8-curl' do
+      action :install
+    end
+    package 'php8-pdo' do
+      action :install
+    end
+    package 'php8-pdo_mysql' do
+      action :install
+    end
+    package 'php8-pdo_pgsql' do
+      action :install
+    end
+    package 'php8-pdo_sqlite' do
+      action :install
+    end
+    package 'php8-openssl' do
+      action :install
+    end
+    package 'php8-dom' do
+      action :install
+    end
+    package 'php8-json' do
+      action :install
+    end
+    package 'php8-bcmath' do
+      action :install
+    end
+    package 'php8-phar' do
+      action :install
+    end
+    package 'php8-mbstring' do
+      action :install
+    end
+    package 'php8-xml' do
+      action :install
+    end
+    package 'php8-simplexml' do
+      action :install
+    end
+    package 'php8-session' do
+      action :install
+    end
+    package 'php8-mysqli' do
+      action :install
+    end
+  else
+    package 'php7' do
+      action :install
+    end
+    package 'php7-apache2' do
+      action :install
+    end
+    package 'php7-curl' do
+      action :install
+    end
+    package 'php7-pdo' do
+      action :install
+    end
+    package 'php7-pdo_mysql' do
+      action :install
+    end
+    package 'php7-pdo_pgsql' do
+      action :install
+    end
+    package 'php7-pdo_sqlite' do
+      action :install
+    end
+    package 'php7-openssl' do
+      action :install
+    end
+    package 'php7-dom' do
+      action :install
+    end
+    package 'php7-json' do
+      action :install
+    end
+    package 'php7-bcmath' do
+      action :install
+    end
+    package 'php7-phar' do
+      action :install
+    end
+    package 'php7-mbstring' do
+      action :install
+    end
+    package 'php7-xml' do
+      action :install
+    end
+    package 'php7-simplexml' do
+      action :install
+    end
+    package 'php7-session' do
+      action :install
+    end
+    package 'php7-mysqli' do
+      action :install
+    end
   end
   package 'libbsd' do
     action :install
@@ -516,11 +570,11 @@ if node[:platform] == 'alpine'
   execute 'update-ca-certificates' do
     command 'update-ca-certificates'
   end
-  execute 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp' do
-    command 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp'
+  execute 'wget https://phar.phpunit.de/phpunit-8.phar -P /tmp' do
+    command 'wget https://phar.phpunit.de/phpunit-8.phar -P /tmp'
   end
-  execute 'mv /tmp/phpunit-6.phar /usr/local/bin/phpunit' do
-    command 'mv /tmp/phpunit-6.phar /usr/local/bin/phpunit'
+  execute 'mv /tmp/phpunit-8.phar /usr/local/bin/phpunit' do
+    command 'mv /tmp/phpunit-8.phar /usr/local/bin/phpunit'
   end
   execute 'chmod +x /usr/local/bin/phpunit' do
     command 'chmod +x /usr/local/bin/phpunit'
@@ -1457,8 +1511,14 @@ EOF
 end
   
 if node[:platform] == 'alpine'
-  execute 'cat /etc/php7/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php7/php.ini.tmp && mv /etc/php7/php.ini.tmp /etc/php7/php.ini' do
-    command 'cat /etc/php7/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php7/php.ini.tmp && mv /etc/php7/php.ini.tmp /etc/php7/php.ini'
+  if node[:platform_version].to_f >= 3.13
+    execute 'cat /etc/php8/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php8/php.ini.tmp && mv /etc/php8/php.ini.tmp /etc/php8/php.ini' do
+      command 'cat /etc/php8/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php8/php.ini.tmp && mv /etc/php8/php.ini.tmp /etc/php8/php.ini'
+    end
+  else
+    execute 'cat /etc/php7/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php7/php.ini.tmp && mv /etc/php7/php.ini.tmp /etc/php7/php.ini' do
+      command 'cat /etc/php7/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php7/php.ini.tmp && mv /etc/php7/php.ini.tmp /etc/php7/php.ini'
+    end
   end
 end
 if node[:platform] == 'ubuntu'

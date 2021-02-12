@@ -214,7 +214,10 @@ describe package('python3'), :if => os[:family] == 'alpine' && os[:release].to_f
   it { should be_installed }
 end
 
-describe package('php7'), :if => os[:family] == 'alpine' do
+describe package('php8'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
+  it { should be_installed }
+end
+describe package('php7'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
   it { should be_installed }
 end
 describe package('php7.0'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
@@ -229,7 +232,10 @@ end
 describe package('php-cli'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
-describe package('php7-apache2'), :if => os[:family] == 'alpine' do
+describe package('php8-apache2'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
+  it { should be_installed }
+end
+describe package('php7-apache2'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
   it { should be_installed }
 end
 describe package('libapache2-mod-php7.0'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
@@ -238,25 +244,46 @@ end
 describe package('libapache2-mod-php7.2'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
-describe package('php7-curl'), :if => os[:family] == 'alpine' do
+describe package('php8-curl'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
   it { should be_installed }
 end
-describe package('php7-pdo'), :if => os[:family] == 'alpine' do
+describe package('php7-curl'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
   it { should be_installed }
 end
-describe package('php7-pdo_mysql'), :if => os[:family] == 'alpine' do
+describe package('php8-pdo'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
   it { should be_installed }
 end
-describe package('php7-pdo_pgsql'), :if => os[:family] == 'alpine' do
+describe package('php7-pdo'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
   it { should be_installed }
 end
-describe package('php7-pdo_sqlite'), :if => os[:family] == 'alpine' do
+describe package('php8-pdo_mysql'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
   it { should be_installed }
 end
-describe package('php7-openssl'), :if => os[:family] == 'alpine' do
+describe package('php7-pdo_mysql'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
   it { should be_installed }
 end
-describe package('php7-dom'), :if => os[:family] == 'alpine' do
+describe package('php8-pdo_pgsql'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
+  it { should be_installed }
+end
+describe package('php7-pdo_pgsql'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
+  it { should be_installed }
+end
+describe package('php8-pdo_sqlite'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
+  it { should be_installed }
+end
+describe package('php7-pdo_sqlite'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
+  it { should be_installed }
+end
+describe package('php8-openssl'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
+  it { should be_installed }
+end
+describe package('php7-openssl'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
+  it { should be_installed }
+end
+describe package('php8-dom'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
+  it { should be_installed }
+end
+describe package('php7-dom'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
   it { should be_installed }
 end
 describe package('php7.0-dom'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
@@ -265,10 +292,16 @@ end
 describe package('php7.2-xml'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
-describe package('php7-json'), :if => os[:family] == 'alpine' do
+describe package('php8-json'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
   it { should be_installed }
 end
-describe package('php7-bcmath'), :if => os[:family] == 'alpine' do
+describe package('php7-json'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
+  it { should be_installed }
+end
+describe package('php8-bcmath'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
+  it { should be_installed }
+end
+describe package('php7-bcmath'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
   it { should be_installed }
 end
 describe package('php7.0-bcmath'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
@@ -277,7 +310,10 @@ end
 describe package('php-bcmath'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
-describe package('php7-phar'), :if => os[:family] == 'alpine' do
+describe package('php8-phar'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
+  it { should be_installed }
+end
+describe package('php7-phar'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
   it { should be_installed }
 end
 describe file('/usr/local/bin/phpunit'), :if => os[:family] == 'alpine' do
@@ -289,7 +325,10 @@ end
 describe package('php'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
-describe package('php7-mbstring'), :if => os[:family] == 'alpine' do
+describe package('php8-mbstring'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
+  it { should be_installed }
+end
+describe package('php7-mbstring'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
   it { should be_installed }
 end
 describe package('php7.0-mbstring'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
@@ -301,16 +340,28 @@ end
 describe package('php-mbstring'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
-describe package('php7-xml'), :if => os[:family] == 'alpine' do
+describe package('php8-xml'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
   it { should be_installed }
 end
-describe package('php7-simplexml'), :if => os[:family] == 'alpine' do
+describe package('php7-xml'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
   it { should be_installed }
 end
-describe package('php7-session'), :if => os[:family] == 'alpine' do
+describe package('php8-simplexml'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
   it { should be_installed }
 end
-describe package('php7-mysqli'), :if => os[:family] == 'alpine' do
+describe package('php7-simplexml'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
+  it { should be_installed }
+end
+describe package('php8-session'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
+  it { should be_installed }
+end
+describe package('php7-session'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
+  it { should be_installed }
+end
+describe package('php8-mysqli'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
+  it { should be_installed }
+end
+describe package('php7-mysqli'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
   it { should be_installed }
 end
 describe package('libbsd'), :if => os[:family] == 'alpine' do
@@ -732,7 +783,15 @@ describe file('/etc/apache2/conf.d/proxy.conf'), :if => os[:family] == 'alpine' 
   its(:content) { should match /^#LoadModule lbmethod_heartbeat_module modules\/mod_lbmethod_heartbeat.so/ }
 end
 
-describe file('/etc/php7/php.ini'), :if => os[:family] == 'alpine' do
+describe file('/etc/php8/php.ini'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
+  it { should be_file }
+  its(:content) { should match /max_execution_time = 120/ }
+  its(:content) { should match /max_input_time = 120/ }
+  its(:content) { should match /memory_limit = 256M/ }
+  its(:content) { should match /post_max_size = 100M/ }
+  its(:content) { should match /upload_max_filesize = 100M/ }
+end
+describe file('/etc/php7/php.ini'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
   it { should be_file }
   its(:content) { should match /max_execution_time = 120/ }
   its(:content) { should match /max_input_time = 120/ }
