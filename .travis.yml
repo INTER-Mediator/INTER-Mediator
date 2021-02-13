@@ -67,7 +67,7 @@ before_script:
   - if [[ $TRAVIS_PHP_VERSION == "7.2" ]]; then composer require 'phpunit/phpunit=8.5.x'; composer install; fi
   - if [[ $TRAVIS_PHP_VERSION == "7.3" ]]; then composer require 'phpunit/phpunit=8.5.x'; composer install; fi
   - if [[ $TRAVIS_PHP_VERSION == "7.4" || $TRAVIS_PHP_VERSION == "8.0" || $TRAVIS_PHP_VERSION == "nightly" ]]; then composer require 'phpunit/phpunit=9.5.x'; composer install; fi
-  # - if [[ ${TRAVIS_PHP_VERSION:0:1} != "5" && $TRAVIS_PHP_VERSION != "7.0" ]]; then find INTER-Mediator-UnitTest/*.php -type f -print0 | xargs -0 sed -i -e "s/function\ setUp()/function\ setUp():\ void/g"; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" || $TRAVIS_PHP_VERSION == "7.0" ]]; then find INTER-Mediator-UnitTest/*.php -type f -print0 | xargs -0 sed -i -e "s/function\ setUp():\ void/function\ setUp()/g"; fi
   - if [[ $TRAVIS_PHP_VERSION == "7.4" || $TRAVIS_PHP_VERSION == "8.0" || $TRAVIS_PHP_VERSION == "nightly" ]]; then find INTER-Mediator-UnitTest/*.php -type f -print0 | xargs -0 sed -i -e "s/assertContains/assertStringContainsStringIgnoringCase/g"; fi
   - if [[ $TRAVIS_PHP_VERSION == "7.4" || $TRAVIS_PHP_VERSION == "8.0" || $TRAVIS_PHP_VERSION == "nightly" ]]; then find INTER-Mediator-UnitTest/*.php -type f -print0 | xargs -0 sed -i -e "s/assertNotContains/assertStringNotContainsStringIgnoringCase/g"; fi
 
