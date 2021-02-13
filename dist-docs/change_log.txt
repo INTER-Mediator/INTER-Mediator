@@ -11,6 +11,8 @@ Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.5.12-dev (in development)
+- Support PHP 8.0.
+- [WIP] Update deploy.sh and Vagrantfile etc. for the INTER-Mediator-Server VM (Update to Alpine Linux 3.13).
 - [INFO] Drop support for PHP 5.2 and PHP 5.3.
 - [INFO] Drop support for FileMaker Server 11, 12 and 13.
 

@@ -664,7 +664,7 @@ if (file_exists('/etc/alpine-release')) {
 
 <p>VM上で下記のコマンドを実行すると、INTER-Mediatorのテストを実行できます。</p>
 <ul>
-    <li><?php if ($osName === 'Alpine Linux') { echo 'phpunit /var/www/localhost/htdocs/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php'; } else { echo 'phpunit /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php'; }; ?></li>
+    <li><?php if ($osName === 'Alpine Linux') { echo 'phpunit --globals-backup /var/www/localhost/htdocs/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php'; } else { echo 'phpunit --globals-backup /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php'; }; ?></li>
     <li><?php if ($osName === 'Alpine Linux') { echo 'buster-test -r specification -c /var/www/localhost/htdocs/INTER-Mediator/spec/buster.js'; } else { echo '/usr/local/bin/buster-test -r specification -c /var/www/html/INTER-Mediator/spec/buster.js'; }; ?></li>
 </ul>
 

@@ -15,6 +15,7 @@ class IMUtil_Test extends PHPUnit_Framework_TestCase {
     public function setUp()
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
+        $_SERVER['REQUEST_TIME_FLOAT'] = microtime(true);
         $this->util = new IMUtil();
     }
 

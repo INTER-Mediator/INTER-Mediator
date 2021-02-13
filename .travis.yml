@@ -34,7 +34,6 @@ matrix:
         - xvfb
   allow_failures:
     - php: nightly
-    - php: 8.0
 
 addons:
   chrome: stable
@@ -45,7 +44,7 @@ addons:
 
 before_script:
   - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
+  - if [[ $TRAVIS_PHP_VERSION == "5.4" || $TRAVIS_PHP_VERSION == "5.5" || $TRAVIS_PHP_VERSION == "5.6" || $TRAVIS_PHP_VERSION == "7.0" || $TRAVIS_PHP_VERSION == "7.1" || $TRAVIS_PHP_VERSION == "7.2" || $TRAVIS_PHP_VERSION == "7.3" || $TRAVIS_PHP_VERSION == "7.4" ]]; then sh -e /etc/init.d/xvfb start & fi
   - sleep 5
   - npm install
   - node_modules/.bin/buster-server &
