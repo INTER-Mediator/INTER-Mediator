@@ -34,7 +34,6 @@ matrix:
         - xvfb
   allow_failures:
     - php: nightly
-    - php: 8.0
 
 addons:
   chrome: stable
