@@ -30,7 +30,7 @@ spl_autoload_register('loadClass');
 
 class RSA_Test extends PHPUnit_Framework_TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');

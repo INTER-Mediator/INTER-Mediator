@@ -22,7 +22,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
 
     abstract function dbProxySetupForAggregation();
 
-    function setUp()
+    function setUp(): void
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');

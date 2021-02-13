@@ -11,7 +11,7 @@ if (!class_exists('PHPUnit_Framework_TestCase')) {
 
 class GenerateJSCode_Test extends PHPUnit_Framework_TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         $this->generater = new GenerateJSCode();

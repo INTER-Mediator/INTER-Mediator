@@ -9,7 +9,7 @@ if (!class_exists('PHPUnit_Framework_TestCase')) {
 
 class defedit_Test extends PHPUnit_Framework_TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';

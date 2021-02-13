@@ -11,12 +11,15 @@ require_once(dirname(__FILE__) . '/../LDAPAuth.php');
 class LDAPAuth_Test extends PHPUnit_Framework_TestCase {
 
     private $obj;
-    public function setUp()
+    public function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         $this->obj = new LDAPAuth();
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function test_valueForJSInsert()
     {
         $user = "test1";

@@ -12,7 +12,7 @@ if (!class_exists('PHPUnit_Framework_TestCase')) {
 class IMUtil_Test extends PHPUnit_Framework_TestCase {
 
     private $util;
-    public function setUp()
+    public function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         $_SERVER['REQUEST_TIME_FLOAT'] = microtime(true);
@@ -118,6 +118,7 @@ class IMUtil_Test extends PHPUnit_Framework_TestCase {
     /**
      * @runInSeparateProcess
      * @preserveGlobalState disabled
+     * @doesNotPerformAssertions
      */
     public function test_outputSecurityHeaders()
     {
