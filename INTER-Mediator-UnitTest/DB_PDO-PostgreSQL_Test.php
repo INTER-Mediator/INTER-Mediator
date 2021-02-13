@@ -12,13 +12,16 @@ require_once('DB_PDO_Test_Common.php');
 
 class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
 {
-    function setUp()
+    function setUp(): void
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
 
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testAggregation()
     {
         // The sample schema doesn't have a data to check this feature.

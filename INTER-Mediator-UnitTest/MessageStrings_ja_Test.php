@@ -8,7 +8,7 @@ require_once(dirname(__FILE__) . '/../MessageStrings_ja.php');
 
 class MessageStrings_ja_Test extends PHPUnit_Framework_TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->messagestrings = new MessageStrings_ja();
     }

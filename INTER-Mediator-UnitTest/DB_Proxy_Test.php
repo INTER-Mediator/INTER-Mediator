@@ -9,7 +9,7 @@ if (!class_exists('PHPUnit_Framework_TestCase')) {
 
 class DB_Proxy_Test extends PHPUnit_Framework_TestCase
 {
-    function setUp()
+    function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         mb_internal_encoding('UTF-8');
@@ -64,6 +64,7 @@ class DB_Proxy_Test extends PHPUnit_Framework_TestCase
     /**
      * @runInSeparateProcess
      * @preserveGlobalState disabled
+     * @doesNotPerformAssertions
      */
     function test___construct()
     {

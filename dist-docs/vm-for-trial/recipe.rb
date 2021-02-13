@@ -457,6 +457,9 @@ if node[:platform] == 'alpine'
     package 'php8' do
       action :install
     end
+    execute 'ln -s /usr/bin/php8 /usr/bin/php' do
+      command 'ln -s /usr/bin/php8 /usr/bin/php'
+    end
     package 'php8-apache2' do
       action :install
     end
@@ -578,6 +581,11 @@ if node[:platform] == 'alpine'
   end
   execute 'chmod +x /usr/local/bin/phpunit' do
     command 'chmod +x /usr/local/bin/phpunit'
+  end
+  file '/usr/local/bin/.phpunit.result.cache' do
+    owner 'developer'
+    group 'developer'
+    mode '660'
   end
 elsif node[:platform] == 'ubuntu'
   package 'libmysqlclient-dev' do

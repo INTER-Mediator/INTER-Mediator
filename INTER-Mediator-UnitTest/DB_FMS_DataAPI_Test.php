@@ -6,7 +6,7 @@ require_once('DB_FMS_Test_Common.php');
 
 class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
 {
-    function setUp()
+    function setUp(): void
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');

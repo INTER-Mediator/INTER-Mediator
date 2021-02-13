@@ -217,6 +217,9 @@ end
 describe package('php8'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
   it { should be_installed }
 end
+describe file('/usr/bin/php'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
+  it { should be_file }
+end
 describe package('php7'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
   it { should be_installed }
 end
@@ -318,6 +321,11 @@ describe package('php7-phar'), :if => os[:family] == 'alpine' && os[:release].to
 end
 describe file('/usr/local/bin/phpunit'), :if => os[:family] == 'alpine' do
   it { should be_file }
+end
+describe file('/usr/local/bin/.phpunit.result.cache'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
+  it { should be_file }
+  it { should be_owned_by 'developer' }
+  it { should be_grouped_into 'developer' }
 end
 describe package('libmysqlclient-dev'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
