@@ -95,6 +95,9 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
         );
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testNativeUser()
     {
         // SQLite doesn't have native users.
