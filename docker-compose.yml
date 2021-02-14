@@ -1,0 +1,41 @@
+version: '3.2'
+services:
+  web:
+    build: .
+    depends_on:
+      - mariadb
+      - postgresql
+    ports:
+      - 8080:80
+      - 127.0.0.1:11478:11478
+
+  mariadb:
+    image: mariadb:10.5
+    hostname: mariadb
+    restart: always
+    volumes:
+      - ./dist-docs/sample_schema_mysql.txt:/docker-entrypoint-initdb.d/sample_schema_mysql.sql
+    environment:
+      MYSQL_DATABASE: test_db
+      MYSQL_ROOT_PASSWORD: im4135dev
+      MYSQL_USER: web
+      MYSQL_PASSWORD: password
+      TZ: Asia/Tokyo
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+    ports:
+      - 127.0.0.1:3306:3306
+
+  postgresql:
+    image: postgres:13
+    hostname: postgresql
+    restart: always
+    volumes:
+      - ./dist-docs/sample_schema_pgsql.txt:/docker-entrypoint-initdb.d/sample_schema_pgsql.sql
+    environment:
+      POSTGRES_DB: test_db
+      POSTGRES_USER: web
+      POSTGRES_PASSWORD: password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+      TZ: Asia/Tokyo
+    ports:
+      - 127.0.0.1:5432:5432

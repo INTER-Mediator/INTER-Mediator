@@ -9,6 +9,7 @@ jobs:
       - setup_remote_docker
       - run: docker run --privileged -e "container=docker" --tmpfs /run -v /sys/fs/cgroup:/sys/fs/cgroup:ro -d --name ubuntu ubuntu:16.04 /sbin/init
       - run: docker exec -e DISPLAY=:99.0 -it ubuntu sh -c "apt-get update && apt-get -y install ruby git; git clone https://github.com/INTER-Mediator/INTER-Mediator; cd INTER-Mediator; git checkout 5.x; gem install itamae --no-doc; itamae local dist-docs/vm-for-trial/recipe.rb; echo y | sh /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh"
+      - run: docker exec -e DISPLAY=:99.0 -it ubuntu sh -c "find /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/*.php -type f -print0 | xargs -0 sed -i -e \"s/function\ setUp():\ void/function\ setUp()/g\""
       - run: docker exec -e DISPLAY=:99.0 -it ubuntu sh -c "locale -a; locale; phpunit --configuration /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
       - run: docker exec -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile -e DISPLAY=:99.0 -it ubuntu sh -c "/etc/rc.local; bundle; /usr/local/bin/buster-test -r specification -c /var/www/html/INTER-Mediator/spec/buster.js; rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec -f doc -c /var/www/html/INTER-Mediator/dist-docs/docker/spec/samples/samples_spec.rb"
       - run: docker stop ubuntu
