@@ -33,8 +33,8 @@ services:
       - ./dist-docs/sample_schema_pgsql.txt:/docker-entrypoint-initdb.d/sample_schema_pgsql.sql
     environment:
       POSTGRES_DB: test_db
-      POSTGRES_USER: web
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: im4135dev
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
       TZ: Asia/Tokyo
     ports:
