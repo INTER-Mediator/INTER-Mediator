@@ -64,6 +64,7 @@ RUN find /var/www/html/samples/ -type f -print0 | xargs -0 sed -i -e "s/pgsql:ho
 
 COPY INTER-Mediator-UnitTest /var/www/html/INTER-Mediator-UnitTest
 RUN curl -sS https://getcomposer.org/installer | php; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer
+RUN find /var/www/html/INTER-Mediator-UnitTest/ -type f -print0 | xargs -0 sed -i -e "s/mysql:dbname=test_db;host=127.0.0.1;charset=utf8/mysql:host=mariadb;dbname=test_db;charset=utf8mb4/g"
 RUN find /var/www/html/INTER-Mediator-UnitTest/*.php -type f -print0 | xargs -0 sed -i -e "s/assertContains/assertStringContainsStringIgnoringCase/g"
 RUN find /var/www/html/INTER-Mediator-UnitTest/*.php -type f -print0 | xargs -0 sed -i -e "s/assertNotContains/assertStringNotContainsStringIgnoringCase/g"
 RUN cd /var/www/html && composer require 'phpunit/phpunit=9.5.x'; composer install
@@ -74,4 +75,4 @@ RUN mkdir /var/db/im
 COPY dist-docs/sample_schema_sqlite.txt /tmp/sample_schema_sqlite.txt
 RUN sqlite3 /var/db/im/sample.sq3 < /tmp/sample_schema_sqlite.txt
 
-#RUN cd /var/www/html && vendor/bin/phpunit --globals-backup --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php
+#RUN cd /var/www/html && vendor/bin/phpunit --globals-backup ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php
