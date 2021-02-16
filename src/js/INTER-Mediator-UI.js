@@ -486,6 +486,9 @@ const IMLibUI = {
                 IMLibContextPool.removeRecordFromPool(targetRepeaters[i].id)
               }
               IMLibCalc.recalculation()
+              if (INTERMediatorOnPage.doAfterDeleteRecord) {
+                INTERMediatorOnPage.doAfterDeleteRecord(currentContextCapt2.name)
+              }
               INTERMediatorOnPage.hideProgress()
               completeTaskCapt()
               INTERMediatorLog.flushMessage()
@@ -696,23 +699,22 @@ const IMLibUI = {
           INTERMediator_DBAdapter.db_createRecord_async(
             {name: targetName, dataset: recordSet},
             (function () {
-              let targetNameCapt = targetName
-              let currentContextCapt = currentContext
-              let updateNodesCapt2 = updateNodesCapt
-              let foreignValuesCapt2 = foreignValuesCapt
-              let existRelatedCapt = existRelated
-              let keyValueCapt2 = keyValueCapt
+              const targetNameCapt = targetName
+              const currentContextCapt = currentContext
+              const updateNodesCapt2 = updateNodesCapt
+              const foreignValuesCapt2 = foreignValuesCapt
+              const existRelatedCapt = existRelated
+              const keyValueCapt2 = keyValueCapt
               return async function (result) {
-                let keyField, newRecordId, associatedContext, conditions, createdRecord, i, sameOriginContexts
-                newRecordId = result.newRecordKeyValue
+                const newRecordId = result.newRecordKeyValue
                 INTERMediatorOnPage.newRecordId = newRecordId
-                keyField = currentContextCapt.key ? currentContextCapt.key : INTERMediatorOnPage.defaultKeyName
-                associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodesCapt2)
+                const keyField = currentContextCapt.key ? currentContextCapt.key : INTERMediatorOnPage.defaultKeyName
+                const associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodesCapt2)
                 completeTask()
                 if (associatedContext) {
                   associatedContext.foreignValue = foreignValuesCapt2
                   if (currentContextCapt.portal === true && existRelatedCapt === false) {
-                    conditions = INTERMediator.additionalCondition
+                    const conditions = INTERMediator.additionalCondition
                     conditions[targetNameCapt] = {
                       field: keyField,
                       operator: '=',
@@ -720,30 +722,30 @@ const IMLibUI = {
                     }
                     INTERMediator.additionalCondition = conditions
                   }
-                  createdRecord = [{}]
+                  const createdRecord = [{}]
                   createdRecord[0][keyField] = newRecordId
                   await INTERMediator.constructMain(associatedContext, result.dbresult)
-                  sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(associatedContext)
-                  for (i = 0; i < sameOriginContexts.length; i++) {
+                  const sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(associatedContext)
+                  for (let i = 0; i < sameOriginContexts.length; i++) {
                     await INTERMediator.constructMain(sameOriginContexts[i], null)
                   }
                 }
                 // To work the looking-up feature
                 const contexts = IMLibContextPool.getContextFromName(associatedContext.contextName)
-                INTERMediatorLog.flushMessage()
                 for (const context of contexts) {
                   context.updateContextAfterInsertAsLookup(newRecordId)
                 }
+                INTERMediatorLog.flushMessage()
 
                 // reacalculation later
                 IMLibQueue.setTask((completeTask) => {
                   IMLibCalc.recalculation()
-                  INTERMediatorOnPage.hideProgress()
-                  INTERMediatorLog.flushMessage()
                   if (INTERMediatorOnPage.doAfterCreateRecord) {
                     INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId, targetNameCapt)
                   }
+                  INTERMediatorOnPage.hideProgress()
                   completeTask()
+                  INTERMediatorLog.flushMessage()
                 })
               }
             })(),
