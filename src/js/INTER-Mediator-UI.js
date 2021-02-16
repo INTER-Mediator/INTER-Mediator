@@ -487,7 +487,7 @@ const IMLibUI = {
               }
               IMLibCalc.recalculation()
               if (INTERMediatorOnPage.doAfterDeleteRecord) {
-                INTERMediatorOnPage.doAfterDeleteRecord(currentContextCapt2.name)
+                INTERMediatorOnPage.doAfterDeleteRecord(currentContextCapt2.contextDefinition.name)
               }
               INTERMediatorOnPage.hideProgress()
               completeTaskCapt()
