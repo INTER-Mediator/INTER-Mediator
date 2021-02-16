@@ -17,6 +17,7 @@ Ver.7 (in development)
 - If setting INTERMediator.alwaysAddOperationExchange to true, the local context criteria combine logical
   expressions with ADN operator.
 - The font-weight of the css * target changed from lighter to non description for adjusting the Android.
+- The method INTERMediatorOnPage.doAfterDeleteRecord can define. One parameter is going to pass the context name.
 - [BUG FIX] The variable name '$follwingTimezones' in the params.php file was typo at all! Change it to $followingTimezones.
 
 Ver.6 (November 21, 2020)
