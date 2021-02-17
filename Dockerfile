@@ -59,8 +59,8 @@ COPY themes /var/www/html/themes
 RUN docker-php-ext-install bcmath zip pdo pdo_mysql pdo_pgsql pdo_sqlite exif gd ldap
 RUN chown www-data /var/www
 RUN sed -i -e "s/mysql:host=localhost;dbname=test_db;charset=utf8/mysql:host=mariadb;dbname=test_db;charset=utf8mb4/g" /var/www/html/params.php
-RUN find /var/www/html/samples/Hands-on/Session1/ -type f -print0 | xargs -0 sed -i -e "s/mysql:host=localhost;dbname=test_db;charset=utf8mb4/mysql:host=mariadb;dbname=test_db;charset=utf8mb4/g"
-RUN find /var/www/html/samples/ -type f -print0 | xargs -0 sed -i -e "s/pgsql:host=localhost;port=5432;dbname=test_db/pgsql:host=postgresql;port=5432;dbname=test_db/g"
+RUN find /var/www/html/Samples/Hands-on/Session1/ -type f -print0 | xargs -0 sed -i -e "s/mysql:host=localhost;dbname=test_db;charset=utf8mb4/mysql:host=mariadb;dbname=test_db;charset=utf8mb4/g"
+RUN find /var/www/html/Samples/ -type f -print0 | xargs -0 sed -i -e "s/pgsql:host=localhost;port=5432;dbname=test_db/pgsql:host=postgresql;port=5432;dbname=test_db/g"
 
 COPY INTER-Mediator-UnitTest /var/www/html/INTER-Mediator-UnitTest
 RUN curl -sS https://getcomposer.org/installer | php; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer
