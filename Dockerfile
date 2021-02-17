@@ -54,7 +54,7 @@ COPY dist-docs /var/www/html/dist-docs
 COPY lib /var/www/html/lib
 COPY metadata.json /var/www/html/metadata.json
 COPY params.php /var/www/html/params.php
-COPY samples /var/www/html/samples
+COPY Samples /var/www/html/Samples
 COPY themes /var/www/html/themes
 RUN docker-php-ext-install bcmath zip pdo pdo_mysql pdo_pgsql pdo_sqlite exif gd ldap
 RUN chown www-data /var/www
