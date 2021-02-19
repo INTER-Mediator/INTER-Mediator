@@ -48,6 +48,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     private $accessLogLevel;
     private $result4Log = [];
     private $isStopNotifyAndMessaging = false;
+    private $suppressMediaToken = false;
 
     public static function defaultKey()
     {
@@ -917,6 +918,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 }
             }
         }
+        $this->suppressMediaToken = true;
         // Come here access=challenge or authenticated access
         switch ($access) {
             case 'describe':
@@ -943,6 +945,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->outputOfProcessing['dbresult'] = $result;
                 $this->outputOfProcessing['resultCount'] = $this->countQueryResult();
                 $this->outputOfProcessing['totalCount'] = $this->getTotalCount();
+                $this->suppressMediaToken = false;
                 break;
             case 'update':
                 $this->logger->setDebugMessage("[processingRequest] start update processing", 2);
@@ -1029,8 +1032,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 }
                 break;
-            case
-            'delete':
+            case 'delete':
                 $this->logger->setDebugMessage("[processingRequest] start delete processing", 2);
                 $this->deleteFromDB();
                 break;
@@ -1119,7 +1121,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $tableInfo = $this->dbSettings->getDataSourceTargetArray();
             if (isset($tableInfo['authentication']) &&
                 isset($tableInfo['authentication']['media-handling']) &&
-                $tableInfo['authentication']['media-handling'] === true
+                $tableInfo['authentication']['media-handling'] === true &&
+                !$this->suppressMediaToken
             ) {
                 $generatedChallenge = $this->generateChallenge();
                 $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");

@@ -162,7 +162,7 @@ class IMLibContext {
               errorProc()
               return
             }
-            if (result.resultCount > 1) {
+            if (result.dbresult.length > 1) { // the resultCount property returns 'view' result and might be wrong.
               if (!warnMultipleRecProc()) {
                 return
               }
