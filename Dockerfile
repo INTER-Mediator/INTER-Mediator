@@ -1,5 +1,20 @@
 FROM php:8.0-apache
-RUN apt-get update && apt install -y mariadb-client postgresql-client libpq-dev sqlite3 libsqlite3-dev git unzip libzip-dev sudo iputils-ping vim libpng-dev libldap2-dev
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    iputils-ping \
+    libldap2-dev \
+    libpng-dev \
+    libpq-dev \
+    libsqlite3-dev \
+    libzip-dev \
+    mariadb-client \
+    postgresql-client \
+    sqlite3 \
+    sudo \
+    unzip \
+    vim \
+ && apt-get -y clean \
+ && rm -rf /var/lib/apt/lists/*
 COPY Adapter_DBServer.js /var/www/html/Adapter_DBServer.js
 COPY Adapter_LocalDB.js /var/www/html/Adapter_LocalDB.js
 COPY DB_FileMaker_DataAPI.php /var/www/html/DB_FileMaker_DataAPI.php
@@ -70,9 +85,8 @@ RUN find /var/www/html/INTER-Mediator-UnitTest/*.php -type f -print0 | xargs -0 
 RUN cd /var/www/html && composer require 'phpunit/phpunit=9.5.x'; composer install
 ENV DOCKER true
 
-RUN mkdir /var/db
-RUN mkdir /var/db/im
 COPY dist-docs/sample_schema_sqlite.txt /tmp/sample_schema_sqlite.txt
-RUN sqlite3 /var/db/im/sample.sq3 < /tmp/sample_schema_sqlite.txt
+RUN mkdir -p /var/db/im
+RUN sqlite3 /var/db/im/sample.sq3 < /tmp/sample_schema_sqlite.txt && rm -f /tmp/sample_schema_sqlite.txt
 
 #RUN cd /var/www/html && vendor/bin/phpunit --globals-backup ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php
