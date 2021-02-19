@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# setup shell script for CentOS 7.8, Ubuntu Server 18.04 and Alpine Linux 3.10
+# setup shell script for CentOS Linux 7.8, Ubuntu Server 18.04 and Alpine Linux 3.10
 #
 # This file can get from the URL below.
 # https://raw.githubusercontent.com/INTER-Mediator/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh
@@ -14,5 +14,10 @@
 # - Run "rake spec" on the host of VM
 #
 
-curl -L https://github.com/itamae-kitchen/mitamae/releases/latest/download/mitamae-x86_64-linux.tar.gz | tar xvz
-./mitamae-x86_64-linux local ./recipe.rb
+if [ `uname -m` = "arm64" ]; then
+     curl -L https://github.com/itamae-kitchen/mitamae/releases/download/v1.12.0/mitamae-aarch64-linux.tar.gz | tar xvz
+    ./mitamae-aarch64-linux local ./recipe.rb
+else
+     curl -L https://github.com/itamae-kitchen/mitamae/releases/download/v1.12.0/mitamae-x86_64-linux.tar.gz | tar xvz
+    ./mitamae-x86_64-linux local ./recipe.rb
+fi
