@@ -188,6 +188,7 @@ let INTERMediatorOnPage = {
     INTERMediatorOnPage.authUserSalt = ''
     INTERMediatorOnPage.authChallenge = ''
     INTERMediatorOnPage.clientId = ''
+    INTERMediatorOnPage.mediaToken = ''
     INTERMediatorOnPage.removeCredencialsFromCookieOrStorage()
     INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_localcontext')
   },
@@ -242,12 +243,12 @@ let INTERMediatorOnPage = {
 
   removeCredencialsFromCookieOrStorage: function () {
     'use strict'
+    INTERMediatorOnPage.removeCookie('_im_username')
+    INTERMediatorOnPage.removeCookie('_im_mediatoken')
     switch (INTERMediatorOnPage.authStoring) {
       case 'cookie':
       case 'cookie-domainwide':
-        INTERMediatorOnPage.removeCookie('_im_username')
         INTERMediatorOnPage.removeCookie('_im_credential')
-        INTERMediatorOnPage.removeCookie('_im_mediatoken')
         INTERMediatorOnPage.removeCookie('_im_crypted')
         break
       case 'session-storage':
