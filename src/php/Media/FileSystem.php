@@ -38,7 +38,7 @@ class FileSystem implements UploadingSupport
 
             $targetFieldName = $field[$counter];
             if ($targetFieldName != "_im_csv_upload") {
-                if (!isset($options['media-root-dir'])) {
+                if (!isset($options['media-root-dir'])) { // Check the 'media-root-dir'.
                     if (!is_null($this->url)) {
                         header('Location: ' . $this->url);
                     } else {
@@ -169,102 +169,7 @@ class FileSystem implements UploadingSupport
                 $db->addOutputData('dbresult', $filePath);
 
             } else {    // CSV File uploading
-                $params = IMUtil::getFromParamsPHPFile(
-                    ["import1stLine", "importSkipLines", "importFormat", "useReplace",
-                        "convert2Number", "convert2Date", "convert2DateTime"], true);
-                $import1stLine = (isset($options['import']) && isset($options['import']['1st-line']))
-                    ? $options['import']['1st-line']
-                    : (isset($params["import1stLine"]) ? $params["import1stLine"] : true);
-                $importSkipLines = intval((isset($options['import']) && isset($options['import']['skip-lines']))
-                    ? $options['import']['skip-lines']
-                    : (isset($params["importSkipLines"]) ? $params["importSkipLines"] : 0));
-                $importFormat = (isset($options['import']) && isset($options['import']['format']))
-                    ? $options['import']['format']
-                    : (isset($params["importFormat"]) ? $params["importFormat"] : "CSV");
-                $separator = (strtolower($importFormat) == 'tsv') ? "\t" : ",";
-                $useReplace = boolval((isset($options['import']) && isset($options['import']['use-replace']))
-                    ? $options['import']['use-replace']
-                    : (isset($params["useReplace"]) ? $params["useReplace"] : false));
-                $convert2Number = (isset($options['import']) && isset($options['import']['convert-number']))
-                    ? $options['import']['convert-number']
-                    : (isset($params["convert2Number"]) ? $params["convert2Number"] : []);;
-                $convert2Number = is_array($convert2Number) ? $convert2Number : [];
-                $convert2Date = (isset($options['import']) && isset($options['import']['convert-date']))
-                    ? $options['import']['convert-date']
-                    : (isset($params["convert2Date"]) ? $params["convert2Date"] : []);;
-                $convert2Date = is_array($convert2Date) ? $convert2Date : [];
-                $convert2DateTime = (isset($options['import']) && isset($options['import']['convert-datetime']))
-                    ? $options['import']['convert-datetime']
-                    : (isset($params["convert2DateTime"]) ? $params["convert2DateTime"] : []);;
-                $convert2DateTime = is_array($convert2DateTime) ? $convert2DateTime : [];
-
-                $decimalPoint = ord(IMLocaleFormatTable::getCurrentLocaleFormat()['mon_decimal_point']);
-                $zeroCode = ord('0');
-                $nineCode = ord('9');
-
-                $db->ignoringPost();
-                $db->initialize($datasource, $options, $dbspec, $debug, $contextname);
-                $dbContext = $db->dbSettings->getDataSourceTargetArray();
-
-                $importingFields = [];
-                if (is_string($import1stLine)) {
-                    foreach (new FieldDivider($import1stLine, $separator) as $field) {
-                        $importingFields[] = trim($field);
-                    }
-                }
-                $is1stLine = true;
-                $createdKeys = [];
-                foreach (new LineDivider(file_get_contents(IMUtil::removeNull($fileInfoTemp))) as $line) {
-                    if ($importSkipLines > 0) {
-                        $importSkipLines -= 1;
-                    } else {
-                        if ($is1stLine && $import1stLine === true) {
-                            foreach (new FieldDivider($line, $separator) as $field) {
-                                $importingFields[] = trim($field);
-                            }
-                        } else {
-                            $db->dbSettings->setValue([]);
-                            $db->dbSettings->setFieldsRequired([]);
-                            foreach (new FieldDivider($line, $separator) as $index => $value) {
-                                if ($index < count($importingFields)) {
-                                    $field = $importingFields[$index];
-                                    if (array_search($field, $convert2Number) !== false) {
-                                        $original = $value;
-                                        $value = '';
-                                        for ($i = 0; $i < strlen($original); $i++) {
-                                            $c = ord(substr($original, $i, 1));
-                                            if (($c >= $zeroCode and $c <= $nineCode) || $c == $decimalPoint) {
-                                                $value .= chr($c);
-                                            }
-                                        }
-                                    }
-                                    if (array_search($field, $convert2Date) !== false) {
-                                        try {
-                                            $dt = new \DateTime($value);
-                                        } catch (\Exception $ex) {
-                                            $dt = new \DateTime("0001-01-01 00:00:00");
-                                        }
-                                        $value = $dt->format('Y-m-d');
-                                    }
-                                    if (array_search($field, $convert2DateTime) !== false) {
-                                        try {
-                                            $dt = new \DateTime($value);
-                                        } catch (\Exception $ex) {
-                                            $dt = new \DateTime("0001-01-01 00:00:00");
-                                        }
-                                        $value = $dt->format('Y-m-d H:i:s');
-                                    }
-                                    $db->dbSettings->addValueWithField($field, $value);
-                                }
-                            }
-                            $db->processingRequest($useReplace ? "replace" : "create", true, true);
-                            //$createdKeys[] = [$dbContext['key'] => ($db->getDatabaseResult()[0])[$dbContext['key']]];
-                        }
-                        $is1stLine = false;
-                    }
-                }
-                unlink(IMUtil::removeNull($fileInfoTemp));
-                $db->outputOfProcessing['dbresult'] = $createdKeys;
+                $this->csvImportOperation($db, $datasource, $options, $dbspec, $debug, $contextname, $fileInfoTemp);
             }
         }
     }
@@ -288,5 +193,116 @@ class FileSystem implements UploadingSupport
                 break;
         }
         return $jStr;
+    }
+
+    /**
+     * @param $db
+     * @param $datasource
+     * @param $options
+     * @param $dbspec
+     * @param $debug
+     * @param $contextname
+     * @param $fileInfoTemp
+     */
+    private function csvImportOperation($db, $datasource, $options, $dbspec, $debug, $contextname, $fileInfoTemp)
+    {
+        $params = IMUtil::getFromParamsPHPFile(
+            ["import1stLine", "importSkipLines", "importFormat", "useReplace",
+                "convert2Number", "convert2Date", "convert2DateTime"], true);
+        $import1stLine = (isset($options['import']) && isset($options['import']['1st-line']))
+            ? $options['import']['1st-line']
+            : (isset($params["import1stLine"]) ? $params["import1stLine"] : true);
+        $importSkipLines = intval((isset($options['import']) && isset($options['import']['skip-lines']))
+            ? $options['import']['skip-lines']
+            : (isset($params["importSkipLines"]) ? $params["importSkipLines"] : 0));
+        $importFormat = (isset($options['import']) && isset($options['import']['format']))
+            ? $options['import']['format']
+            : (isset($params["importFormat"]) ? $params["importFormat"] : "CSV");
+        $separator = (strtolower($importFormat) == 'tsv') ? "\t" : ",";
+        $useReplace = boolval((isset($options['import']) && isset($options['import']['use-replace']))
+            ? $options['import']['use-replace']
+            : (isset($params["useReplace"]) ? $params["useReplace"] : false));
+        $convert2Number = (isset($options['import']) && isset($options['import']['convert-number']))
+            ? $options['import']['convert-number']
+            : (isset($params["convert2Number"]) ? $params["convert2Number"] : []);;
+        $convert2Number = is_array($convert2Number) ? $convert2Number : [];
+        $convert2Date = (isset($options['import']) && isset($options['import']['convert-date']))
+            ? $options['import']['convert-date']
+            : (isset($params["convert2Date"]) ? $params["convert2Date"] : []);;
+        $convert2Date = is_array($convert2Date) ? $convert2Date : [];
+        $convert2DateTime = (isset($options['import']) && isset($options['import']['convert-datetime']))
+            ? $options['import']['convert-datetime']
+            : (isset($params["convert2DateTime"]) ? $params["convert2DateTime"] : []);;
+        $convert2DateTime = is_array($convert2DateTime) ? $convert2DateTime : [];
+
+        $decimalPoint = ord(IMLocaleFormatTable::getCurrentLocaleFormat()['mon_decimal_point']);
+        $zeroCode = ord('0');
+        $nineCode = ord('9');
+
+        $db->ignoringPost();
+        $db->initialize($datasource, $options, $dbspec, $debug, $contextname);
+        $dbContext = $db->dbSettings->getDataSourceTargetArray();
+
+        $importingFields = [];
+        if (is_string($import1stLine)) {
+            foreach (new FieldDivider($import1stLine, $separator) as $field) {
+                $importingFields[] = trim($field);
+            }
+        }
+        $is1stLine = true;
+        $createdKeys = [];
+        foreach (new LineDivider(file_get_contents(IMUtil::removeNull($fileInfoTemp))) as $line) {
+            if ($importSkipLines > 0) {
+                $importSkipLines -= 1;
+            } else {
+                if ($is1stLine && $import1stLine === true) {
+                    foreach (new FieldDivider($line, $separator) as $field) {
+                        $importingFields[] = trim($field);
+                    }
+                } else {
+                    $db->dbSettings->setValue([]);
+                    $db->dbSettings->setFieldsRequired([]);
+                    foreach (new FieldDivider($line, $separator) as $index => $value) {
+                        if ($index < count($importingFields)) {
+                            $field = $importingFields[$index];
+                            if ($field !== '_') { // The '_' field is gonna ignore.
+                                if (array_search($field, $convert2Number) !== false) {
+                                    $original = $value;
+                                    $value = '';
+                                    for ($i = 0; $i < strlen($original); $i++) {
+                                        $c = ord(substr($original, $i, 1));
+                                        if (($c >= $zeroCode and $c <= $nineCode) || $c == $decimalPoint) {
+                                            $value .= chr($c);
+                                        }
+                                    }
+                                }
+                                if (array_search($field, $convert2Date) !== false) {
+                                    try {
+                                        $dt = new \DateTime($value);
+                                    } catch (\Exception $ex) {
+                                        $dt = new \DateTime("0001-01-01 00:00:00");
+                                    }
+                                    $value = $dt->format('Y-m-d');
+                                }
+                                if (array_search($field, $convert2DateTime) !== false) {
+                                    try {
+                                        $dt = new \DateTime($value);
+                                    } catch (\Exception $ex) {
+                                        $dt = new \DateTime("0001-01-01 00:00:00");
+                                    }
+                                    $value = $dt->format('Y-m-d H:i:s');
+                                }
+                                $db->dbSettings->addValueWithField($field, $value);
+                            }
+                        }
+                    }
+                    $db->processingRequest($useReplace ? "replace" : "create", true, true);
+                    //$createdKeys[] = [$dbContext['key'] => ($db->getDatabaseResult()[0])[$dbContext['key']]];
+                }
+                $is1stLine = false;
+            }
+        }
+        unlink(IMUtil::removeNull($fileInfoTemp));
+        $db->outputOfProcessing['dbresult'] = $createdKeys;
     }
 }
