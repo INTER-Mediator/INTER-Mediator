@@ -120,6 +120,7 @@ class IMUtil_Test extends TestCase
     /**
      * @runInSeparateProcess
      * @preserveGlobalState disabled
+     * @doesNotPerformAssertions
      */
     public function test_outputSecurityHeaders()
     {
