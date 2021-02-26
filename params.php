@@ -232,14 +232,18 @@ $appLocale = "ja_JP";   // Locale for application has to be specified the langua
 $appCurrency = "JP";    // Locale for currency has to be specified the country code.
 
 // Port number and host name for service server
+$notUseServiceServer = false;  // Default is FALSE!. If it sets to false, every features with Service Server don't work.
 $activateClientService = true;  // Default is TRUE!!. (In case of debuging phase, it should be false.)
+$serviceServerProtocol = "ws";  // The Service Server url components to connect from client.
+$serviceServerHost = "";    // "" for public ip address.
 $serviceServerPort = "11478";
-$serviceServerHost = "";   // The Service Server host name to connect from client. "" for public ip address.
-$serviceServerConnect = "localhost";     // The Service Server host name to connect from the INTER-Mediator server
+$serviceServerKey = "";  // Path of Key file for wss protocol
+$serviceServerCert = ""; // Path of Cert file for wss protocol
+$serviceServerCA = ""; // Path of CA file for wss protocol
+$serviceServerConnect = "localhost"; // The Service Server host name to connect from the INTER-Mediator server
 $stopSSEveryQuit = false;
 $bootWithInstalledNode = false;
 $preventSSAutoBoot = false;
-$notUseServiceServer = false;
 $foreverLog = '/tmp/forever.log';
 
 // Altering messages, overwrite and/or adding new messages. The first index is a language, and the second is the error number.

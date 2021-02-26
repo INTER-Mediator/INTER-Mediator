@@ -561,27 +561,21 @@ const IMLibUI = {
     }
     INTERMediatorOnPage.newRecordId = null
     IMLibQueue.setTask((function () {
-      let currentContext, targetName, isPortal, parentContextName
-      let keyValueCapt = keyValue
-      let foreignValuesCapt = foreignValues
-      let updateNodesCapt = updateNodes
+      const keyValueCapt = keyValue
+      const foreignValuesCapt = foreignValues
+      const updateNodesCapt = updateNodes
 
-      targetName = currentObj.contextName
-      currentContext = currentObj.getContextDef()
-      isPortal = currentObj.isPortal
-      if (isPortal) {
-        parentContextName = currentObj.sourceName ? currentObj.sourceName : null
-      } else {
-        parentContextName = currentObj.parentContext ? currentObj.parentContext.contextName : null
-      }
+      const targetName = currentObj.contextName
+      const currentContext = currentObj.getContextDef()
+      const isPortal = currentObj.isPortal
+      const parentContextName = isPortal ? (currentObj.sourceName ? currentObj.sourceName : null)
+        : (currentObj.parentContext ? currentObj.parentContext.contextName : null)
+
       return async function (completeTask) {
-        let portalField, recordSet, index, targetPortalField, targetPortalValue, relatedRecordSet, existRelated = false
-
         INTERMediatorOnPage.showProgress()
-        recordSet = []
-        relatedRecordSet = []
+        const recordSet = []
         if (foreignValuesCapt) {
-          for (index in currentContext.relation) {
+          for (const index in currentContext.relation) {
             if (currentContext.relation.hasOwnProperty(index)) {
               recordSet.push({
                 field: currentContext.relation[index]['foreign-key'],
@@ -592,8 +586,9 @@ const IMLibUI = {
         }
         await INTERMediatorOnPage.retrieveAuthInfo()
         if (isPortal) {
-          relatedRecordSet = []
-          for (index in currentContext['default-values']) {
+          let targetPortalField, targetPortalValue, existRelated = false
+          const relatedRecordSet = []
+          for (const index in currentContext['default-values']) {
             if (currentContext['default-values'].hasOwnProperty(index)) {
               relatedRecordSet.push({
                 field: targetName + '::' + currentContext['default-values'][index].field + '.0',
@@ -617,7 +612,7 @@ const IMLibUI = {
               },
               async function (targetRecord) {
                 if (targetRecord.dbresult && targetRecord.dbresult[0] && targetRecord.dbresult[0][0]) {
-                  for (portalField in targetRecord.dbresult[0][0]) {
+                  for (const portalField in targetRecord.dbresult[0][0]) {
                     if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::' + INTERMediatorOnPage.defaultKeyName) {
                       existRelated = true
                       targetPortalField = portalField
@@ -645,7 +640,7 @@ const IMLibUI = {
                       ]
                     },
                     function (targetRecord) {
-                      for (portalField in targetRecord.dbresult) {
+                      for (const portalField in targetRecord.dbresult) {
                         if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::' + INTERMediatorOnPage.defaultKeyName) {
                           targetPortalField = portalField
                           if (portalField === targetName + '::' + recordSet[0].field) {
@@ -695,7 +690,7 @@ const IMLibUI = {
           } else {
             INTERMediatorLog.setErrorMessage('Insert Error (Portal Access Mode)', 'EXCEPTION-4')
           }
-        } else {
+        } else { // It's not Portal.
           INTERMediator_DBAdapter.db_createRecord_async(
             {name: targetName, dataset: recordSet},
             (function () {
@@ -703,7 +698,6 @@ const IMLibUI = {
               const currentContextCapt = currentContext
               const updateNodesCapt2 = updateNodesCapt
               const foreignValuesCapt2 = foreignValuesCapt
-              const existRelatedCapt = existRelated
               const keyValueCapt2 = keyValueCapt
               return async function (result) {
                 const newRecordId = result.newRecordKeyValue
@@ -713,7 +707,7 @@ const IMLibUI = {
                 completeTask()
                 if (associatedContext) {
                   associatedContext.foreignValue = foreignValuesCapt2
-                  if (currentContextCapt.portal === true && existRelatedCapt === false) {
+                  if (currentContextCapt.portal === true) {
                     const conditions = INTERMediator.additionalCondition
                     conditions[targetNameCapt] = {
                       field: keyField,
@@ -751,7 +745,9 @@ const IMLibUI = {
             })(),
             function () {
               INTERMediatorLog.setErrorMessage('Insert Error', 'EXCEPTION-4')
+              INTERMediatorOnPage.hideProgress()
               completeTask()
+              INTERMediatorLog.flushMessage()
             }
           )
         }

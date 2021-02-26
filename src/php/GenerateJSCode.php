@@ -68,7 +68,7 @@ class GenerateJSCode
             "oAuthProvider", "oAuthClientID", "oAuthRedirect", "passwordPolicy", "documentRootPrefix", "dbClass",
             "dbDSN", "nonSupportMessageId", "valuesForLocalContext", "themeName", "appLocale", "appCurrency",
             "resetPage", "enrollPage", "serviceServerPort", "serviceServerHost", "activateClientService",
-            "followingTimezones",
+            "followingTimezones", "notUseServiceServer",
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -101,6 +101,7 @@ class GenerateJSCode
         $serviceServerHost = $serviceServerHost ? $serviceServerHost
             : (isset($_SERVER['HTTP_HOST']) ? parse_url($_SERVER['HTTP_HOST'], PHP_URL_HOST) : false);
         $serviceServerHost = $serviceServerHost ? $serviceServerHost : 'localhost';
+        $notUseServiceServer = (isset($params['notUseServiceServer']) ? boolval($params["notUseServiceServer"]) : false);
 
         $activateClientService = isset($params['activateClientService']) ? boolval($params['activateClientService']) : false;
         $followingTimezones = isset($params['followingTimezones']) ? boolval($params['followingTimezones']) : false;
@@ -373,7 +374,8 @@ class GenerateJSCode
             }
         }
         $activateClientService = $activateClientService && $hasSyncControl;
-        $this->generateAssignJS("INTERMediatorOnPage.activateClientService", $activateClientService ? "true" : "false");
+        $this->generateAssignJS("INTERMediatorOnPage.activateClientService",
+            ($activateClientService && !$notUseServiceServer) ? "true" : "false");
         $this->generateAssignJS("INTERMediatorOnPage.serviceServerPort", $serviceServerPort);
         $this->generateAssignJS("INTERMediatorOnPage.serviceServerHost", $q, $serviceServerHost, $q);
         $this->generateAssignJS("INTERMediatorOnPage.serverDefaultTimezone", $q, date_default_timezone_get(), $q);

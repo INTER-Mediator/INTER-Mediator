@@ -311,7 +311,7 @@ const INTERMediator = {
     if (!INTERMediatorOnPage.serviceServerStatus || !INTERMediatorOnPage.activateClientService) {
       return
     }
-    $connectTo = `http://${INTERMediatorOnPage.serviceServerHost}:${INTERMediatorOnPage.serviceServerPort}`
+    $connectTo = `ws://${INTERMediatorOnPage.serviceServerHost}:${INTERMediatorOnPage.serviceServerPort}`
     INTERMediator.ssSocket = io($connectTo)
     INTERMediator.ssSocket.on('connected', INTERMediator.serviceServerConnected)
     // window.addEventListener('unload', INTERMediator.serviceServerShouldDisconnect)

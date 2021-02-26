@@ -232,8 +232,8 @@ class ServiceServerProxy
         $options = "-a -l {$logFile} --minUptime 5000 --spinSleepTime 5000";
         $cmd = "{$forever} start {$options} {$scriptPath} {$this->paramsPort}";
 
-        file_put_contents("/tmp/1", $cmd);
-        file_put_contents("/tmp/2", $this->foreverLog);
+//        file_put_contents("/tmp/1", $cmd);
+//        file_put_contents("/tmp/2", $this->foreverLog);
 
         $this->executeCommand($cmd);
     }

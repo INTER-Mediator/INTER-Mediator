@@ -1083,10 +1083,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $calcFields[] = $entry['field'];
                     }
                 }
+                $ignoringField = isset($this->dbSettings->getDataSourceTargetArray()['ignoring-field']) ?
+                    $this->dbSettings->getDataSourceTargetArray()['ignoring-field'] : [];
                 if ($access == 'read' || $access == 'select') {
                     foreach ($this->dbSettings->getFieldsRequired() as $fieldName) {
-                        if (!$this->dbClass->specHandler->isContainingFieldName($fieldName, $fInfo) &&
-                            !in_array($fieldName, $calcFields)) {
+                        if (!$this->dbClass->specHandler->isContainingFieldName($fieldName, $fInfo)
+                            && !in_array($fieldName, $calcFields)
+                            && !in_array($fieldName, $ignoringField)) {
                             $this->logger->setErrorMessage($messageClass->getMessageAs(1033, array($fieldName)));
                         }
                     }
