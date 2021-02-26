@@ -16,99 +16,76 @@
 require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 
 IM_Entry(
-    array(
-        array(
+    [
+        [
             'name' => 'invoice',
             'records' => 1,
             'paging' => true,
             'key' => 'id',
-            'query' => array( //    array('field' => 'issued', 'value' => '2012-01-01', 'operator' => '>=')
-            ),
-            'sort' => array(
-                array('field' => 'id', 'direction' => 'ASC'),
-            ),
+            'sort' => [['field' => 'id', 'direction' => 'asc'],],
             'repeat-control' => 'insert delete',
-//        'post-enclosure' => 'invoiceExpanded',
-            'calculation' => array(
-                array(
-                    'field' => 'total_calc',
-                    'expression' => 'format(sum(item@amount_calc) * (1 + _@taxRate ))',
-                ),
-            ),
-        ),
-        array(
+//            'post-enclosure' => 'invoiceExpanded',
+            'sync-control' => 'create-notify update delete',
+            'calculation' => [[
+                'field' => 'total_calc',
+                'expression' => 'format(sum(item@amount_calc) * (1 + _@taxRate ))',
+            ],],
+        ],
+        [
             'name' => 'item',
-            //  'table' => 'item',
-            //    'view' => 'item_display',
             'key' => 'id',
-            'relation' => array(
-                array('foreign-key' => 'invoice_id', 'join-field' => 'id', 'operator' => '=')
-            ),
+            'relation' => [['foreign-key' => 'invoice_id', 'join-field' => 'id', 'operator' => '='],],
             'repeat-control' => 'insert delete',
-            'default-values' => array(
-                array('field' => 'product_id', 'value' => 1),
-            ),
-            'validation' => array(
-                array(
-                    'field' => 'qty',
-                    'rule' => 'value>=0 && value < 100',
-                    'message' => 'Quantity should be between 1..99.',
-                    'notify' => 'inline'
-                ),
-                array(
-                    'field' => 'unitprice',
-                    'rule' => 'value>=0 && value<10000',
-                    'message' => 'Unit price should be between 1.. 9999.',
-                    'notify' => 'end-of-sibling'
-                ),
-            ),
-            'calculation' => array(
-                array(
-                    'field' => 'amount_calc',
-                    'expression' => "format(qty * if ( unitprice = '', product@unitprice, unitprice ))",
-                ),
-                array(
-                    'field' => 'qty_color',
-                    'expression' => "if (qty >= 10, 'red', 'black')",
-                ),
-            ),
-        ),
-        array(
+            'default-values' => [['field' => 'product_id', 'value' => 1],],
+            'sync-control' => 'create-notify update delete',
+            'validation' => [[
+                'field' => 'qty',
+                'rule' => 'value>=0 && value<100',
+                'message' => 'Quantity should be between 1..99.'
+            ], [
+                'field' => 'unitprice',
+                'rule' => 'value>=0 && value<10000',
+                'message' => 'Unit price should be between 1.. 9999.'
+            ],],
+            'calculation' => [[
+                'field' => 'amount_calc',
+                'expression' => "format(qty * if ( unitprice = '', product@unitprice, unitprice ))",
+            ], [
+                'field' => 'qty_color',
+                'expression' => "if(qty > 10, 'red', 'black')",
+            ],],
+//            'post-repeater' => 'itemsExpanded',
+        ],
+        [
             'name' => 'product',
             'key' => 'id',
-            'relation' => array(
-                array('foreign-key' => 'id', 'join-field' => 'product_id', 'operator' => '=')
-            ),
-        )
-    ),
-    array(
-        'formatter' => array(
-            array(
+            'relation' => [['foreign-key' => 'id', 'join-field' => 'product_id', 'operator' => '='],],
+        ],
+    ],
+    [
+        'formatter' => [
+            [
+                'field' => 'invoice@issued',
+                'converter-class' => 'FMDateTime',
+                'parameter' => '%Y-%m-%d'
+            ],
+            [
                 'field' => 'item@qty',
                 'converter-class' => 'NullZeroString',
                 'parameter' => '0'
-            ),
-            array(
+            ],
+            [
                 'field' => 'item@unitprice',
                 'converter-class' => 'NullZeroString',
                 'parameter' => '0'
-            ),
-            array(
+            ],
+            [
                 'field' => 'product@unitprice',
                 'converter-class' => 'Number',
                 'parameter' => '2'
-            ),
-        ),
-        /*
-         * The definitions for Pusher are required. But it should be set to the params.php file
-         * because some value is associated with each user.
-        'pusher' => array(
-            'app_id' => 'integer',
-            'key' => 'string',
-            'secret' => 'string',
-        ),
-        */
-    ),
-    array('db-class' => 'PDO'),
-    2
+            ],
+        ],
+    ],
+    ['db-class' => 'PDO'],
+    false
 );

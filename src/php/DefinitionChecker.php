@@ -424,6 +424,7 @@ class DefinitionChecker
                 'navi-back' => 'string',
                 'copy' => 'string',
             ),
+            'ignoring-field' => 'array',
         ), // There is additional definitions. See the constructor.
     ];
 }

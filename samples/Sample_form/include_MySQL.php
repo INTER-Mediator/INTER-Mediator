@@ -31,6 +31,7 @@ IM_Entry(
                 'delete' => 'レコード削除',
                 'copy' => 'レコード複製',
             ],
+            // => ['aaa'],
         ],
         [
             'name' => 'contact',

@@ -47,11 +47,6 @@
   "dependencies": {
     "flatpickr": ">=4.6.3",
     "forever": ">=3.0.0",
-    "tinymce": ">=5.4.1",
-    "jsencrypt": "*",
-    "jssha": ">=3.0.0",
-    "npm-platform-dependencies": "*",
-    "socket.io": ">=2.4.0",
     "inter-mediator-expressionparser": "1.0.15",
     "inter-mediator-formatter": "1.0.19",
     "inter-mediator-locale": "1.0.4",
@@ -64,7 +59,12 @@
     "inter-mediator-plugin-jsonformatter": "1.0.0",
     "inter-mediator-plugin-popupselector": "1.0.1",
     "inter-mediator-plugin-tinymce": "1.0.3",
-    "inter-mediator-queue": "1.0.8"
+    "inter-mediator-queue": "1.0.8",
+    "jsencrypt": "*",
+    "jssha": ">=3.0.0",
+    "npm-platform-dependencies": "*",
+    "socket.io": ">=2.4.0",
+    "tinymce": ">=5.4.1"
   },
   "win32Dependencies": {
     "forever-win": "*"

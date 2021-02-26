@@ -18,6 +18,8 @@ Ver.7 (in development)
   expressions with ADN operator.
 - The font-weight of the css * target changed from lighter to non description for adjusting the Android.
 - The method INTERMediatorOnPage.doAfterDeleteRecord can define. One parameter is going to pass the context name.
+- The 'ignoring-field' key can be defined in a context definition and it ignores any fields in the array value
+  to check to include the field in the result.
 - [BUG FIX] The variable name '$follwingTimezones' in the params.php file was typo at all! Change it to $followingTimezones.
 
 Ver.6 (November 21, 2020)
