@@ -233,11 +233,11 @@ $appCurrency = "JP";    // Locale for currency has to be specified the country c
 
 // Port number and host name for service server
 $notUseServiceServer = false;  // Default is FALSE!. If it sets to false, every features with Service Server don't work.
-$activateClientService = true;  // Default is TRUE!!. (In case of debuging phase, it should be false.)
+$activateClientService = true;  // Default is TRUE!!.
 $serviceServerProtocol = "ws";  // The Service Server url components to connect from client.
 $serviceServerHost = "";    // "" for public ip address.
 $serviceServerPort = "11478";
-$serviceServerKey = "";  // Path of Key file for wss protocol
+$serviceServerKey = "";  // Path of Key file for wss protocol **** wss protocol doesn't work so far.
 $serviceServerCert = ""; // Path of Cert file for wss protocol
 $serviceServerCA = ""; // Path of CA file for wss protocol
 $serviceServerConnect = "localhost"; // The Service Server host name to connect from the INTER-Mediator server

@@ -25,6 +25,9 @@ class ServiceServerProxy
     private $messageHead = "[ServiceServerProxy] ";
     private $dontAutoBoot;
     private $foreverLog;
+    private $serviceServerKey = "";  // Path of Key file for wss protocol
+    private $serviceServerCert = ""; // Path of Cert file for wss protocol
+    private $serviceServerCA = ""; // Path of CA file for wss protocol
 
     static public function instance(): ?ServiceServerProxy
     {
@@ -39,7 +42,8 @@ class ServiceServerProxy
     {
         $params = IMUtil::getFromParamsPHPFile([
             "serviceServerPort", "serviceServerConnect", "stopSSEveryQuit",
-            "bootWithInstalledNode", "preventSSAutoBoot", "notUseServiceServer", "foreverLog"], true);
+            "bootWithInstalledNode", "preventSSAutoBoot", "notUseServiceServer", "foreverLog",
+            "serviceServerKey", "serviceServerCert", "serviceServerCA",], true);
         $this->paramsHost = $params["serviceServerConnect"] ? $params["serviceServerConnect"] : "localhost";
         $this->paramsPort = $params["serviceServerPort"] ? intval($params["serviceServerPort"]) : 11478;
         $this->paramsQuit = is_null($params["stopSSEveryQuit"]) ? false : boolval($params["stopSSEveryQuit"]);
@@ -48,6 +52,9 @@ class ServiceServerProxy
         $this->dontUse = is_null($params["notUseServiceServer"]) ? false : boolval($params["notUseServiceServer"]);
         $this->foreverLog = is_null($params["foreverLog"]) ? "" : $params["foreverLog"];
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
+        $this->serviceServerKey = $params["serviceServerKey"] ? $params["serviceServerKey"] : "";
+        $this->serviceServerCert = $params["serviceServerCert"] ? $params["serviceServerCert"] : "";
+        $this->serviceServerCA = $params["serviceServerCA"] ? $params["serviceServerCA"] : "";
     }
 
     public function clearMessages()
@@ -287,7 +294,8 @@ class ServiceServerProxy
         return true;
     }
 
-    public function sync($channels,$operation,$data):bool{
+    public function sync($channels, $operation, $data): bool
+    {
         if (!$this->checkServiceServer()) {
             return false;
         }

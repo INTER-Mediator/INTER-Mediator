@@ -68,7 +68,7 @@ class GenerateJSCode
             "oAuthProvider", "oAuthClientID", "oAuthRedirect", "passwordPolicy", "documentRootPrefix", "dbClass",
             "dbDSN", "nonSupportMessageId", "valuesForLocalContext", "themeName", "appLocale", "appCurrency",
             "resetPage", "enrollPage", "serviceServerPort", "serviceServerHost", "activateClientService",
-            "followingTimezones", "notUseServiceServer",
+            "followingTimezones", "notUseServiceServer", "serviceServerProtocol",
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -101,6 +101,7 @@ class GenerateJSCode
         $serviceServerHost = $serviceServerHost ? $serviceServerHost
             : (isset($_SERVER['HTTP_HOST']) ? parse_url($_SERVER['HTTP_HOST'], PHP_URL_HOST) : false);
         $serviceServerHost = $serviceServerHost ? $serviceServerHost : 'localhost';
+        $serviceServerProtocol = isset($params['serviceServerProtocol']) ? $params['serviceServerProtocol'] : 'ws';
         $notUseServiceServer = (isset($params['notUseServiceServer']) ? boolval($params["notUseServiceServer"]) : false);
 
         $activateClientService = isset($params['activateClientService']) ? boolval($params['activateClientService']) : false;
@@ -116,7 +117,7 @@ class GenerateJSCode
               */
         $currentDir = "{$pathToIM}{$ds}src{$ds}js{$ds}";
         if (!file_exists($currentDir . 'INTER-Mediator.min.js')) {
-            echo $this->combineScripts();
+            echo $this->combineScripts($activateClientService);
         } else {
             readfile($currentDir . 'INTER-Mediator.min.js');
         }
@@ -376,13 +377,13 @@ class GenerateJSCode
         $activateClientService = $activateClientService && $hasSyncControl;
         $this->generateAssignJS("INTERMediatorOnPage.activateClientService",
             ($activateClientService && !$notUseServiceServer) ? "true" : "false");
-        $this->generateAssignJS("INTERMediatorOnPage.serviceServerPort", $serviceServerPort);
-        $this->generateAssignJS("INTERMediatorOnPage.serviceServerHost", $q, $serviceServerHost, $q);
+        $this->generateAssignJS("INTERMediatorOnPage.serviceServerURL",
+            "{$q}{$serviceServerProtocol}://{$serviceServerHost}:{$serviceServerPort}{$q}");
         $this->generateAssignJS("INTERMediatorOnPage.serverDefaultTimezone", $q, date_default_timezone_get(), $q);
         $this->generateAssignJS("INTERMediatorOnPage.isFollowingTimezone", $followingTimezones ? "true" : "false");
     }
 
-    private function combineScripts(): string
+    private function combineScripts($isSocketIO): string
     {
         $imPath = IMUtil::pathToINTERMediator();
         $jsCodeDir = $imPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
@@ -390,7 +391,9 @@ class GenerateJSCode
         $content = '';
         $content .= $this->readJSSource($nodeModuleDir . 'jsencrypt/bin/jsencrypt.js');
         $content .= $this->readJSSource($nodeModuleDir . 'jssha/dist/sha.js');
-        $content .= $this->readJSSource($nodeModuleDir . '/socket.io-client/dist/socket.io.js');
+        if($isSocketIO) {
+            $content .= $this->readJSSource($nodeModuleDir . '/socket.io-client/dist/socket.io.js');
+        }
         $content .= "\n";
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-formatter/index.js');
         //$content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-locale/index.js');
