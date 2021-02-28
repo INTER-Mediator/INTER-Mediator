@@ -49,7 +49,7 @@ IM_Entry(
             ],],
             'calculation' => [[
                 'field' => 'amount_calc',
-                'expression' => "format(qty * if ( product_unitprice='', product@unitprice, product_unitprice ))",
+                'expression' => "qty * if ( product_unitprice='', product@unitprice, product_unitprice )",
             ],],
 //            'post-repeater' => 'itemsExpanded',
         ],

@@ -107,7 +107,6 @@ const IMLibCalc = {
     'use strict'
     let nodeId, exp, nInfo, valuesArray, leafNodes, calcObject, ix, refersArray, key, fName, vArray
     let val, targetNode, field, valueSeries, targetElement, i, hasReferes, contextInfo, idValue, record
-    let expCName, context
 
     IMLibCalc.setUndefinedToAllValues()
     IMLibNodeGraph.clear()
@@ -156,18 +155,35 @@ const IMLibCalc = {
               if (field.indexOf('@') < 0) { // In same context
                 vArray.push((record && record[fName]) ? record[fName] : null)
               } else {  // Other context
-                expCName = field.substr(0, field.indexOf('@'))
-                context = IMLibContextPool.contextFromName(expCName)
-                if (context) {
-                  if (context instanceof IMLibContext) {
+                const expCName = field.substr(0, field.indexOf('@'))
+                if(expCName == '_'){ // Local Context
+                  if (IMLibLocalContext.store.hasOwnProperty(fName)) {
+                    vArray.push(IMLibLocalContext.store[fName])
+                  }
+                } else {
+                  let hasRelation = false
+                  const contexts = IMLibContextPool.getContextFromName(expCName)
+                  for (const context of contexts) {
+                    if (record && context.contextDefinition.relation && context.contextDefinition.relation[0]) {
+                      const fValue = record[context.contextDefinition.relation[0]['join-field']]
+                      const fField = context.contextDefinition.relation[0]['foreign-key']
+                      if (Object.keys(context.store).indexOf(`${fField}=${fValue}`) > -1) {
+                        for (key in context.store) {    // Collect field data from all records
+                          if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
+                            vArray.push(context.store[key][fName])
+                            hasRelation = true
+                          }
+                        }
+                      }
+                    }
+                  }
+                  if (!hasRelation) {
+                    const context = IMLibContextPool.contextFromName(expCName)
                     for (key in context.store) {    // Collect field data from all records
                       if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
                         vArray.push(context.store[key][fName])
+                        hasRelation = true
                       }
-                    }
-                  } else { // Local Context
-                    if (context.store.hasOwnProperty(fName)) {
-                      vArray.push(context.store[fName])
                     }
                   }
                 }
@@ -216,7 +232,6 @@ const IMLibCalc = {
     let nodeId, newValueAdded, leafNodes, calcObject, ix, updatedValue, isRecalcAll = false
     let newValue, field, i, updatedNodeIds, updateNodeValues, cachedIndex, nInfo, valuesArray
     let refersArray, valueSeries, targetElement, contextInfo, record, idValue, key, fName, vArray
-    let expCName, context
 
     if (updatedNodeId === undefined) {
       isRecalcAll = true
@@ -253,7 +268,7 @@ const IMLibCalc = {
           valuesArray = calcObject.values
           refersArray = calcObject.referes
           contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nInfo.target)
-          if (contextInfo && contextInfo.context ) {
+          if (contextInfo && contextInfo.context) {
             record = contextInfo.context.getContextRecord(idValue)
           } else {
             record = null
@@ -265,18 +280,35 @@ const IMLibCalc = {
               if (field.indexOf('@') < 0) { // In same context
                 vArray.push((record && record[fName]) ? record[fName] : null)
               } else {  // Other context
-                expCName = field.substr(0, field.indexOf('@'))
-                context = IMLibContextPool.contextFromName(expCName)
-                if (context) {
-                  if (context instanceof IMLibContext) {
+                const expCName = field.substr(0, field.indexOf('@'))
+                if(expCName == '_'){ // Local Context
+                  if (IMLibLocalContext.store.hasOwnProperty(fName)) {
+                    vArray.push(IMLibLocalContext.store[fName])
+                  }
+                } else {
+                  let hasRelation = false
+                  const contexts = IMLibContextPool.getContextFromName(expCName)
+                  for (const context of contexts) {
+                    if (record && context.contextDefinition.relation && context.contextDefinition.relation[0]) {
+                      const fValue = record[context.contextDefinition.relation[0]['join-field']]
+                      const fField = context.contextDefinition.relation[0]['foreign-key']
+                      if (Object.keys(context.store).indexOf(`${fField}=${fValue}`) > -1) {
+                        for (key in context.store) {    // Collect field data from all records
+                          if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
+                            vArray.push(context.store[key][fName])
+                            hasRelation = true
+                          }
+                        }
+                      }
+                    }
+                  }
+                  if (!hasRelation) {
+                    const context = IMLibContextPool.contextFromName(expCName)
                     for (key in context.store) {    // Collect field data from all records
                       if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
                         vArray.push(context.store[key][fName])
+                        hasRelation = true
                       }
-                    }
-                  } else { // Local Context
-                    if (context.store.hasOwnProperty(fName)) {
-                      vArray.push(context.store[fName])
                     }
                   }
                 }
