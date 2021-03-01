@@ -156,7 +156,7 @@ const IMLibCalc = {
                 vArray.push((record && record[fName]) ? record[fName] : null)
               } else {  // Other context
                 const expCName = field.substr(0, field.indexOf('@'))
-                if(expCName == '_'){ // Local Context
+                if (expCName == '_') { // Local Context
                   if (IMLibLocalContext.store.hasOwnProperty(fName)) {
                     vArray.push(IMLibLocalContext.store[fName])
                   }
@@ -167,7 +167,7 @@ const IMLibCalc = {
                     if (record && context.contextDefinition.relation && context.contextDefinition.relation[0]) {
                       const fValue = record[context.contextDefinition.relation[0]['join-field']]
                       const fField = context.contextDefinition.relation[0]['foreign-key']
-                      if (Object.keys(context.store).indexOf(`${fField}=${fValue}`) > -1) {
+                      if (IMLibCalc.isIncludeInRecord(context.store, fField, fValue)) {
                         for (key in context.store) {    // Collect field data from all records
                           if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
                             vArray.push(context.store[key][fName])
@@ -222,6 +222,19 @@ const IMLibCalc = {
           INTERMediatorOnPage.getMessages()[1037], []))
     }
   },
+
+  isIncludeInRecord: function (obj, key, value) {
+    if (value === '' || value == null || isNaN(value) || typeof value === 'undefined') {
+      return false
+    }
+    for (const index of Object.keys(obj)) {
+      if (obj[index] && obj[index] && obj[index][key] == value) {
+        return true
+      }
+    }
+    return false
+  },
+
   /**
    * On updating, the updatedNodeId should be set to the updating node id.
    * On deleting, parameter doesn't required.
@@ -281,7 +294,7 @@ const IMLibCalc = {
                 vArray.push((record && record[fName]) ? record[fName] : null)
               } else {  // Other context
                 const expCName = field.substr(0, field.indexOf('@'))
-                if(expCName == '_'){ // Local Context
+                if (expCName == '_') { // Local Context
                   if (IMLibLocalContext.store.hasOwnProperty(fName)) {
                     vArray.push(IMLibLocalContext.store[fName])
                   }
@@ -292,7 +305,7 @@ const IMLibCalc = {
                     if (record && context.contextDefinition.relation && context.contextDefinition.relation[0]) {
                       const fValue = record[context.contextDefinition.relation[0]['join-field']]
                       const fField = context.contextDefinition.relation[0]['foreign-key']
-                      if (Object.keys(context.store).indexOf(`${fField}=${fValue}`) > -1) {
+                      if (IMLibCalc.isIncludeInRecord(context.store, fField, fValue)) {
                         for (key in context.store) {    // Collect field data from all records
                           if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
                             vArray.push(context.store[key][fName])
