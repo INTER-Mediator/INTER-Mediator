@@ -25,7 +25,7 @@ IM_Entry(
             'sort' => [['field' => 'id', 'direction' => 'ascend'],],
             'repeat-control' => 'insert delete',
 //            'post-enclosure' => 'invoiceExpanded',
-            'sync-control' => 'create-notify update delete',
+            'sync-control' => 'create update delete',
             'calculation' => [[
                 'field' => 'total_calc',
                 'expression' => 'format(sum(item@amount_calc) * (1 + _@taxRate ))',
@@ -37,7 +37,7 @@ IM_Entry(
             'relation' => [['foreign-key' => 'invoice_id', 'join-field' => 'id', 'operator' => 'eq'],],
             'repeat-control' => 'insert delete',
             'default-values' => [['field' => 'product_id', 'value' => 1],],
-            'sync-control' => 'create-notify update delete',
+            'sync-control' => 'create update delete',
             'validation' => [[
                 'field' => 'qty',
                 'rule' => 'value>=0 && value<100',
@@ -49,10 +49,7 @@ IM_Entry(
             ],],
             'calculation' => [[
                 'field' => 'amount_calc',
-                'expression' => "format(qty * if ( unitprice = '', product@unitprice, unitprice ))",
-            ], [
-                'field' => 'qty_color',
-                'expression' => "if(qty > 10, 'red', 'black')",
+                'expression' => "qty * if ( product_unitprice='', product@unitprice, product_unitprice )",
             ],],
 //            'post-repeater' => 'itemsExpanded',
         ],
