@@ -20,7 +20,7 @@ IM_Entry(
         array(
             'name' => 'postalcode',
             'records' => 10,
-            'maxrecords' => 30,
+            'maxrecords' => 40,
             'paging' => true,
         ),
     ),
