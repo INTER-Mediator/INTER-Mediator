@@ -370,6 +370,9 @@ class IMLibContext {
           value.length > 0 &&
           keyParams[0].trim() === 'limitnumber') {
           recordNumber = parseInt(value)
+          if (value >= parseInt(this.contextDefinition.maxrecords)) {
+            recordNumber = parseInt(this.contextDefinition.maxrecords)
+          }
           INTERMediator.setLocalProperty('_im_pagedSize', recordNumber)
         }
       }
