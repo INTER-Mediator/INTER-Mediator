@@ -10,36 +10,74 @@
 const fs = require('fs')
 const crypto = require('crypto')
 
-let port = process.argv[2] ? process.argv[2] : 21000
-let acceptClient = '0.0.0.0/0'
+const port = process.argv[2] ? process.argv[2] : 21000
+const acceptClient = '0.0.0.0/0'
 const parser = require('../../node_modules/inter-mediator-expressionparser/index')
-const jsSHA = require('../../node_modules/jssha/dist/sha.js')
+// const jsSHA = require('../../node_modules/jssha/dist/sha.js')
 
 // const querystring = require('querystring')
 // console.log(parser.evaluate('a+b',{a:3,b:4}))
-let url = require('url')
-let http = require('http')
-let app = http.createServer(handler)
+const url = require('url')
+const http = require('http')
+const express = require('express')
+const cors = require('cors')
+let io = require("socket.io");
+//const app = http.createServer(handler)
+const app = express()
+const svr = http.createServer(app)
+svr.listen(port)
+app.use(cors())
+app.post('/info',function (req, res, next) {
+  handler(req, res)
+})
+app.post('/eval',function (req, res, next) {
+  handler(req, res)
+})
+app.post('/trigger',function (req, res, next) {
+  handler(req, res)
+})
+//app.listen(port)
+// if (!app.listening) {
+//   console.log('Failed to open the socket.io port. So quit the service server.')
+//   process.exit(1)
+// }
+
+let ioServer = null
+const requestBroker = {}
+const verCode = getVersionCode()
+console.log(`Booted Service Server of INTER-Mediator: Version Code = ${verCode}`)
 
 // For wss: setup, http://uorat.hatenablog.com/entry/2015/08/30/234757
-let io = require('socket.io')(app, {
+ioServer = io(svr, {
+  cors: {
+    origin: ["http://localhost:9000"],
+    methods: ["GET", "POST"]
+  },
   pingTimeout: 60000, // https://github.com/socketio/socket.io/issues/3259#issuecomment-448058937
 })
-let requestBroker = {}
+/*
+Socket processing
+*/
+ioServer.on('connection', (socket) => {
+  console.log(socket.id + '/connected')
+  socket.emit('connected')
+  socket.on('init', function (req) {
+    watching[req.clientid] = {startdt: new Date(), socketid: socket.id}
+    console.log('watching=', watching)
+  })
+  socket.on('disconnect', function () {
+    for (const oneClient of Object.keys(watching)) {
+      if (watching[oneClient].socketid == socket.id) {
+        delete watching[oneClient]
+        break
+      }
+    }
+    console.log('watching=', watching)
+  })
+})
 
-let shaObj = new jsSHA('SHA-256', 'TEXT')
-shaObj.setHMACKey('INTERMediatorOnPage.authChallenge', 'TEXT')
-shaObj.update('INTERMediatorOnPage.authHashedPassword')
-const serverKey = shaObj.getHMAC('HEX')
-
-app.listen(port)
-
-if (!app.listening) {
-  process.exit(1)
-}
-
-let verCode = getVersionCode()
-console.log(`Booted Service Server of INTER-Mediator: Version Code = ${verCode}`)
+ioServer.on('init', (socket) => {
+})
 
 /*
    Server core
@@ -71,6 +109,7 @@ function handler(req, res) {
 function requestProcessing(reqParams, res, postData) {
   if (reqParams.pathname in requestBroker) {
     console.log(postData)
+    //res.writeHead(200, {'Access-Control-Allow-Origin': 'http://localhost:*'});
     requestBroker[reqParams.pathname](reqParams.query, res, postData)
   } else {
     res.writeHead(403, {'Content-Type': 'text/html; charset=utf-8'})
@@ -80,7 +119,11 @@ function requestProcessing(reqParams, res, postData) {
 
 requestBroker['/info'] = function (params, res, postData) {
   const data = JSON.parse(postData)
-  res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
+
+  if(ioServer === null) {
+  }
+
+  //res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
   if (data.vcode != verCode) {
     res.write('Different version of Server Server requested, and Service Server should be shutdown.')
   } else {
@@ -108,7 +151,7 @@ requestBroker['/trigger'] = function (params, res, postData) {
   for (const id in watching) {
     if (jsonData.clients.indexOf(id) > -1) {
       console.log(`Emit to: ${id}`)
-      io.to(watching[id].socketid).emit('notify', jsonData)
+      ioServer.to(watching[id].socketid).emit('notify', jsonData)
     }
   }
   let result = true
@@ -133,29 +176,6 @@ function getVersionCode() {
 //}, 10000)
 
 const watching = {}
-/*
-  Socket processing
- */
-io.on('connection', (socket) => {
-  console.log(socket.id + '/connected')
-  socket.emit('connected')
-  socket.on('init', function (req) {
-    watching[req.clientid] = {startdt: new Date(), socketid: socket.id}
-    console.log('watching=', watching)
-  })
-  socket.on('disconnect', function () {
-    for (const oneClient of Object.keys(watching)) {
-      if (watching[oneClient].socketid == socket.id) {
-        delete watching[oneClient]
-        break
-      }
-    }
-    console.log('watching=', watching)
-  })
-})
-
-io.on('init', (socket) => {
-})
 
 /*
   Network Utility

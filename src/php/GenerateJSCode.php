@@ -111,13 +111,21 @@ class GenerateJSCode
         $documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : 'Not_on_web_server';
         $scriptName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
 
+        $hasSyncControl = false;
+        foreach ($datasource as $contextDef) {
+            if (isset($contextDef['sync-control'])) {
+                $hasSyncControl = true;
+                break;
+            }
+        }
+
         $pathToIM = IMUtil::pathToINTERMediator();
         /*
               * Read the JS programs regarding by the developing or deployed.
               */
         $currentDir = "{$pathToIM}{$ds}src{$ds}js{$ds}";
         if (!file_exists($currentDir . 'INTER-Mediator.min.js')) {
-            echo $this->combineScripts($activateClientService);
+            echo $this->combineScripts($activateClientService && $hasSyncControl);
         } else {
             readfile($currentDir . 'INTER-Mediator.min.js');
         }
@@ -367,13 +375,6 @@ class GenerateJSCode
         $sss = ServiceServerProxy::instance()->isActive();
         $this->generateAssignJS("INTERMediatorOnPage.serviceServerStatus", $sss ? "true" : "false");
 
-        $hasSyncControl = false;
-        foreach ($datasource as $contextDef) {
-            if (isset($contextDef['sync-control'])) {
-                $hasSyncControl = true;
-                break;
-            }
-        }
         $activateClientService = $activateClientService && $hasSyncControl;
         $this->generateAssignJS("INTERMediatorOnPage.activateClientService",
             ($activateClientService && !$notUseServiceServer) ? "true" : "false");
@@ -392,7 +393,7 @@ class GenerateJSCode
         $content .= $this->readJSSource($nodeModuleDir . 'jsencrypt/bin/jsencrypt.js');
         $content .= $this->readJSSource($nodeModuleDir . 'jssha/dist/sha.js');
         if($isSocketIO) {
-            $content .= $this->readJSSource($nodeModuleDir . '/socket.io-client/dist/socket.io.js');
+            $content .= $this->readJSSource($nodeModuleDir . 'socket.io-client/dist/socket.io.js');
         }
         $content .= "\n";
         $content .= $this->readJSSource($nodeModuleDir . 'inter-mediator-formatter/index.js');
