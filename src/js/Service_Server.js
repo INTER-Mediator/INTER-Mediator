@@ -7,26 +7,48 @@
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
+const acceptClient = '0.0.0.0/0'
+
+// Command line parameters
+const port = process.argv[2] ? process.argv[2] : 21000
+const origin = process.argv[3] ? process.argv[3] : '*'
+const keyPath = process.argv[4] ? process.argv[4] : ''
+const certPath = process.argv[5] ? process.argv[5] : ''
+const CAPath = process.argv[6] ? process.argv[6] : ''
+
+// Loading modules
 const fs = require('fs')
 const crypto = require('crypto')
-
-const port = process.argv[2] ? process.argv[2] : 21000
-const acceptClient = '0.0.0.0/0'
 const parser = require('../../node_modules/inter-mediator-expressionparser/index')
-// const jsSHA = require('../../node_modules/jssha/dist/sha.js')
-
-// const querystring = require('querystring')
-// console.log(parser.evaluate('a+b',{a:3,b:4}))
 const url = require('url')
-const http = require('http')
 const express = require('express')
 const cors = require('cors')
 let io = require("socket.io");
-//const app = http.createServer(handler)
 const app = express()
-const svr = http.createServer(app)
+const http = require('http')
+const https = require('https')
+
+// Create Server
+let svr = null
+if (keyPath && certPath) {
+  const options = {key: keyPath, cert: certPath}
+  if (CAPath) {
+    options['ca'] = CAPath
+  }
+  svr = https.createServer(options, app)
+} else {
+  svr = http.createServer(app)
+}
 svr.listen(port)
+/* Usually body parsing codes below is common pattern of express with json communications.
+   I met the trouble with use(cors()) and body parsing codes, so both can't work together.
+   I couldn't write codes for the native express way. 2021-3-8 by msyk.
+ */
+//const bodyParser = require('body-parser')
+//app.use(bodyParser.urlencoded({extended: true}))
+//app.use(bodyParser.json()) // This will be stop the CORS module's operation oops.
 app.use(cors())
+
 app.post('/info',function (req, res, next) {
   handler(req, res)
 })
@@ -36,21 +58,15 @@ app.post('/eval',function (req, res, next) {
 app.post('/trigger',function (req, res, next) {
   handler(req, res)
 })
-//app.listen(port)
-// if (!app.listening) {
-//   console.log('Failed to open the socket.io port. So quit the service server.')
-//   process.exit(1)
-// }
 
-let ioServer = null
 const requestBroker = {}
 const verCode = getVersionCode()
 console.log(`Booted Service Server of INTER-Mediator: Version Code = ${verCode}`)
 
 // For wss: setup, http://uorat.hatenablog.com/entry/2015/08/30/234757
-ioServer = io(svr, {
+let ioServer = io(svr, {
   cors: {
-    origin: ["http://localhost:9000"],
+    origin: [origin],
     methods: ["GET", "POST"]
   },
   pingTimeout: 60000, // https://github.com/socketio/socket.io/issues/3259#issuecomment-448058937
@@ -108,8 +124,7 @@ function handler(req, res) {
 
 function requestProcessing(reqParams, res, postData) {
   if (reqParams.pathname in requestBroker) {
-    console.log(postData)
-    //res.writeHead(200, {'Access-Control-Allow-Origin': 'http://localhost:*'});
+    //console.log(postData)
     requestBroker[reqParams.pathname](reqParams.query, res, postData)
   } else {
     res.writeHead(403, {'Content-Type': 'text/html; charset=utf-8'})

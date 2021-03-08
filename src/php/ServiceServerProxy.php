@@ -175,6 +175,8 @@ class ServiceServerProxy
             $postData['vcode'] = $this->getSSVersionCode();
             curl_setopt($ch, CURLOPT_POST, TRUE);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
         }
         $result = curl_exec($ch);
         $this->messages[] = $this->messageHead . "URL:$url, Result:$result";
@@ -185,6 +187,8 @@ class ServiceServerProxy
             return false;
         }
         return $result;
+
+        //
     }
 
     private function executeCommand($command)
@@ -213,6 +217,7 @@ class ServiceServerProxy
         $this->messages[] = $this->messageHead . "PWD = " . getcwd();
         exec($command, $result, $returnValue);
         $this->messages[] = $this->messageHead . "Returns: {$returnValue}, Output:" . implode("/", $result);
+        error_log("Service Server tried to boot: {$command}");
     }
 
     private function isServerStartable(): bool
@@ -228,6 +233,7 @@ class ServiceServerProxy
 
     private function startServer()
     {
+        $dq = '"';
         $this->messages[] = $this->messageHead . "startServer() called";
         $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
         $scriptPath = "src/js/Service_Server.js";
@@ -237,11 +243,13 @@ class ServiceServerProxy
 
         $logFile = $this->foreverLog ? $this->foreverLog : tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
         $options = "-a -l {$logFile} --minUptime 5000 --spinSleepTime 5000";
-        $cmd = "{$forever} start {$options} {$scriptPath} {$this->paramsPort}";
-
-//        file_put_contents("/tmp/1", $cmd);
-//        file_put_contents("/tmp/2", $this->foreverLog);
-
+        $originURL = (isset($_SERVER['HTTPS']) ? "https://" : "http://") . "{$_SERVER['HTTP_HOST']}";
+        $cmd = "{$forever} start {$options} {$scriptPath} {$this->paramsPort} {$dq}{$originURL}{$dq}";
+        if (!$this->serviceServerKey && !$this->serviceServerCert && !$this->serviceServerCA) {
+            $cmd .= " {$dq}{$this->serviceServerKey}{$dq} ";
+            $cmd .= " {$dq}{$this->serviceServerCert}{$dq}";
+            $cmd .= "  {$dq}{$this->serviceServerCA}{$dq}";
+        }
         $this->executeCommand($cmd);
     }
 
