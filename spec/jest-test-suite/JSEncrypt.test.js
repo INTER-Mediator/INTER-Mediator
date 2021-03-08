@@ -26,11 +26,11 @@ test('JSEncrypt Test: Check the collect encription with RSA key.', function () {
     'psLBYuApa66NcVHJpCECQQDTjI2AQhFc1yRnCU/YgDnSpJVm1nASoRUnU8Jfm3Oz' +
     'uku7JUXcVpt08DFSceCEX9unCuMcT72rAQlLpdZir876' +
     '-----END RSA PRIVATE KEY-----'
-  let encrypt = JSEncrypt()
+  let encrypt = new JSEncrypt()
   encrypt.setPublicKey(publicKey)
   const originalString = '1234OhmyGOD#'
   const encrypted = encrypt.encrypt(originalString)
-  const decrypt = new lib.JSEncrypt()
+  const decrypt = new JSEncrypt()
   decrypt.setPrivateKey(privateKey)
   const uncrypted = decrypt.decrypt(encrypted)
   expect(originalString).toBe(uncrypted)
