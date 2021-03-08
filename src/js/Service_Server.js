@@ -7,39 +7,93 @@
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
+const acceptClient = '0.0.0.0/0'
+
+// Command line parameters
+const port = process.argv[2] ? process.argv[2] : 21000
+const origin = process.argv[3] ? process.argv[3] : '*'
+const keyPath = process.argv[4] ? process.argv[4] : ''
+const certPath = process.argv[5] ? process.argv[5] : ''
+const CAPath = process.argv[6] ? process.argv[6] : ''
+
+// Loading modules
 const fs = require('fs')
 const crypto = require('crypto')
-
-let port = process.argv[2] ? process.argv[2] : 21000
-let acceptClient = '0.0.0.0/0'
 const parser = require('../../node_modules/inter-mediator-expressionparser/index')
-const jsSHA = require('../../node_modules/jssha/dist/sha.js')
+const url = require('url')
+const express = require('express')
+const cors = require('cors')
+let io = require("socket.io");
+const app = express()
+const http = require('http')
+const https = require('https')
 
-// const querystring = require('querystring')
-// console.log(parser.evaluate('a+b',{a:3,b:4}))
-let url = require('url')
-let http = require('http')
-let app = http.createServer(handler)
+// Create Server
+let svr = null
+if (keyPath && certPath) {
+  const options = {key: keyPath, cert: certPath}
+  if (CAPath) {
+    options['ca'] = CAPath
+  }
+  svr = https.createServer(options, app)
+} else {
+  svr = http.createServer(app)
+}
+svr.listen(port)
+/* Usually body parsing codes below is common pattern of express with json communications.
+   I met the trouble with use(cors()) and body parsing codes, so both can't work together.
+   I couldn't write codes for the native express way. 2021-3-8 by msyk.
+ */
+//const bodyParser = require('body-parser')
+//app.use(bodyParser.urlencoded({extended: true}))
+//app.use(bodyParser.json()) // This will be stop the CORS module's operation oops.
+app.use(cors())
+
+app.post('/info',function (req, res, next) {
+  handler(req, res)
+})
+app.post('/eval',function (req, res, next) {
+  handler(req, res)
+})
+app.post('/trigger',function (req, res, next) {
+  handler(req, res)
+})
+
+const requestBroker = {}
+const verCode = getVersionCode()
+console.log(`Booted Service Server of INTER-Mediator: Version Code = ${verCode}`)
 
 // For wss: setup, http://uorat.hatenablog.com/entry/2015/08/30/234757
-let io = require('socket.io')(app, {
+let ioServer = io(svr, {
+  cors: {
+    origin: [origin],
+    methods: ["GET", "POST"]
+  },
   pingTimeout: 60000, // https://github.com/socketio/socket.io/issues/3259#issuecomment-448058937
 })
-let requestBroker = {}
+/*
+Socket processing
+*/
+ioServer.on('connection', (socket) => {
+  console.log(socket.id + '/connected')
+  socket.emit('connected')
+  socket.on('init', function (req) {
+    watching[req.clientid] = {startdt: new Date(), socketid: socket.id}
+    console.log('watching=', watching)
+  })
+  socket.on('disconnect', function () {
+    for (const oneClient of Object.keys(watching)) {
+      if (watching[oneClient].socketid == socket.id) {
+        delete watching[oneClient]
+        break
+      }
+    }
+    console.log('watching=', watching)
+  })
+})
 
-let shaObj = new jsSHA('SHA-256', 'TEXT')
-shaObj.setHMACKey('INTERMediatorOnPage.authChallenge', 'TEXT')
-shaObj.update('INTERMediatorOnPage.authHashedPassword')
-const serverKey = shaObj.getHMAC('HEX')
-
-app.listen(port)
-
-if (!app.listening) {
-  process.exit(1)
-}
-
-let verCode = getVersionCode()
-console.log(`Booted Service Server of INTER-Mediator: Version Code = ${verCode}`)
+ioServer.on('init', (socket) => {
+})
 
 /*
    Server core
@@ -70,7 +124,7 @@ function handler(req, res) {
 
 function requestProcessing(reqParams, res, postData) {
   if (reqParams.pathname in requestBroker) {
-    console.log(postData)
+    //console.log(postData)
     requestBroker[reqParams.pathname](reqParams.query, res, postData)
   } else {
     res.writeHead(403, {'Content-Type': 'text/html; charset=utf-8'})
@@ -80,7 +134,11 @@ function requestProcessing(reqParams, res, postData) {
 
 requestBroker['/info'] = function (params, res, postData) {
   const data = JSON.parse(postData)
-  res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
+
+  if(ioServer === null) {
+  }
+
+  //res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
   if (data.vcode != verCode) {
     res.write('Different version of Server Server requested, and Service Server should be shutdown.')
   } else {
@@ -108,7 +166,7 @@ requestBroker['/trigger'] = function (params, res, postData) {
   for (const id in watching) {
     if (jsonData.clients.indexOf(id) > -1) {
       console.log(`Emit to: ${id}`)
-      io.to(watching[id].socketid).emit('notify', jsonData)
+      ioServer.to(watching[id].socketid).emit('notify', jsonData)
     }
   }
   let result = true
@@ -133,29 +191,6 @@ function getVersionCode() {
 //}, 10000)
 
 const watching = {}
-/*
-  Socket processing
- */
-io.on('connection', (socket) => {
-  console.log(socket.id + '/connected')
-  socket.emit('connected')
-  socket.on('init', function (req) {
-    watching[req.clientid] = {startdt: new Date(), socketid: socket.id}
-    console.log('watching=', watching)
-  })
-  socket.on('disconnect', function () {
-    for (const oneClient of Object.keys(watching)) {
-      if (watching[oneClient].socketid == socket.id) {
-        delete watching[oneClient]
-        break
-      }
-    }
-    console.log('watching=', watching)
-  })
-})
-
-io.on('init', (socket) => {
-})
 
 /*
   Network Utility
