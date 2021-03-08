@@ -1175,6 +1175,5 @@ let INTERMediatorOnPage = {
 
 // @@IM@@IgnoringRestOfFile
 module.exports = INTERMediatorOnPage
-const JSEncryptLib = require('../../node_modules/jsencrypt/bin/jsencrypt.js')
-const JSEncrypt = JSEncryptLib.JSEncrypt
+const JSEncrypt = require('../../node_modules/jsencrypt/bin/jsencrypt.js')
 const INTERMediatorLib = require('../../src/js/INTER-Mediator-Lib')

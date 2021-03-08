@@ -1,7 +1,7 @@
 // JSHint support
 /* global INTERMediator,buster,INTERMediatorLib,INTERMediatorOnPage,IMLibElement,jsencrypt */
 
-const lib = require('../../node_modules/jsencrypt/bin/jsencrypt.js')
+const JSEncrypt = require('../../node_modules/jsencrypt/bin/jsencrypt.js')
 
 test('JSEncrypt Test: Check the collect encription with RSA key.', function () {
   'use strict'
@@ -26,7 +26,7 @@ test('JSEncrypt Test: Check the collect encription with RSA key.', function () {
     'psLBYuApa66NcVHJpCECQQDTjI2AQhFc1yRnCU/YgDnSpJVm1nASoRUnU8Jfm3Oz' +
     'uku7JUXcVpt08DFSceCEX9unCuMcT72rAQlLpdZir876' +
     '-----END RSA PRIVATE KEY-----'
-  let encrypt = new lib.JSEncrypt()
+  let encrypt = JSEncrypt()
   encrypt.setPublicKey(publicKey)
   const originalString = '1234OhmyGOD#'
   const encrypted = encrypt.encrypt(originalString)
