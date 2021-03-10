@@ -20,7 +20,7 @@ test:
     - docker exec --privileged -i centos7 sh -c "yum install -y ruby && gem install --no-doc net-ssh -v 4.2.0 && gem install --no-doc rake -v 12.3.3 && gem install --no-doc serverspec"
     - docker exec --privileged -i centos7 sh -c "cd /INTER-Mediator/dist-docs/vm-for-trial/ && echo \"require 'serverspec'\" > spec/spec_helper.rb; echo \"\" >> spec/spec_helper; echo \"set :backend, :exec\" >> spec/spec_helper.rb; rspec /INTER-Mediator/dist-docs/vm-for-trial/spec/192.168.56.101/sample_spec.rb -f doc -c"
     - docker exec -e --privileged -i centos7 sh -c "php -v; curl -sS https://getcomposer.org/installer | php; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer; cd /INTER-Mediator/; /usr/local/bin/composer require --dev phpunit/phpunit ^9; /usr/local/bin/composer update --with-all-dependencies; localedef -f UTF-8 -i en_GB en_GB; ./vendor/bin/phpunit --bootstrap /INTER-Mediator/vendor/autoload.php --configuration /INTER-Mediator/spec/INTER-Mediator-UnitTest/phpunit.xml /INTER-Mediator/spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
-    - docker exec -e DISPLAY=:99.0 --privileged -i centos7 sh -c "cd /INTER-Mediator/ && npm test"
+    - docker exec -e DISPLAY=:99.0 --privileged -i centos7 sh -c "cd /INTER-Mediator/ && composer jest"
     - docker stop centos7
     - docker rm centos7
 
