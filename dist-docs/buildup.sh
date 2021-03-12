@@ -8,7 +8,7 @@
 # Please see the full license for details:
 # https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
 
-version="6-dev"
+version="7"
 
 # The file of minify <http://www.minifier.org> can be downloaded from below.
 # git clone https://github.com/matthiasmullie/minify
@@ -164,9 +164,8 @@ cp -prf "${originalPath}"/src/js/*.js "${buildPath}/src/js/"
 
 #### Compress INTER-Mediator.js
 if [ -e "${minifyjsDir}" ]; then
-    /bin/echo "MINIFYING."
+  /bin/echo "MINIFYING."
 	"${minifyjsBin}" "${buildPath}/src/js/temp.js" > "${buildPath}/src/js/INTER-Mediator.min.js"
-	#cat "${originalPath}/node_modules/jsencrypt/bin/jsencrypt.js" >> "${buildPath}/src/js/INTER-Mediator.min.js"
 	/bin/echo "" >> "${buildPath}/src/js/INTER-Mediator.min.js"
 fi
 rm  "${buildPath}/src/js/temp.js"
