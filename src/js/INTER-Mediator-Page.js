@@ -388,7 +388,6 @@ let INTERMediatorOnPage = {
       return
     }
 
-    const encrypt = new JSEncrypt()
     let userBox, passwordBox, authButton, oAuthButton, chgpwButton, breakLine
     const bodyNode = document.getElementsByTagName('BODY')[0]
     const backBox = document.createElement('div')
@@ -612,9 +611,11 @@ let INTERMediatorOnPage = {
         INTERMediatorOnPage.authHashedPassword = 'need-hash-pls' // Dummy Hash for getting a challenge
         await INTERMediator_DBAdapter.getChallenge()
       }
-      encrypt.setPublicKey(INTERMediatorOnPage.publickey)
-      INTERMediatorOnPage.authCryptedPassword = encrypt.encrypt(inputPassword)
-
+      if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
+        const encrypt = new JSEncrypt()
+        encrypt.setPublicKey(INTERMediatorOnPage.publickey)
+        INTERMediatorOnPage.authCryptedPassword = encrypt.encrypt(inputPassword)
+      }
       let shaObj = new jsSHA('SHA-1', 'TEXT')
       shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
       let hash = shaObj.getHash('HEX')
@@ -811,7 +812,7 @@ let INTERMediatorOnPage = {
         agentPos = navigator.appVersion.indexOf('WebKit/') + 7
       }
 
-      let dotPos,versionNum
+      let dotPos, versionNum
       if (agentPos > -1) {
         if (navigator.userAgent.indexOf('Firefox/') > -1) {
           dotPos = navigator.userAgent.indexOf('.', agentPos)
@@ -1103,7 +1104,7 @@ let INTERMediatorOnPage = {
     if (!INTERMediatorOnPage.isShowProgress) {
       return
     }
-    const  themeName = INTERMediatorOnPage.getTheme().toLowerCase()
+    const themeName = INTERMediatorOnPage.getTheme().toLowerCase()
     let frontPanel = document.getElementById('_im_progress')
     if (!frontPanel) {
       frontPanel = document.createElement('div')

@@ -19,7 +19,8 @@ You don't have to deploy the samples if you just want to see this at a glance.
 This demo page works on INTER-Mediator Ver.5.x (Stable version).
 - https://demo.inter-mediator.com/INTER-Mediator_stable/Samples/
 
-The demo with INTER-Mediator Ver.6 is as below, but it's experimental. Ver.6 is still under construction.
+The demo with INTER-Mediator Ver.7 is as below. After Ver.6, the head of repository is just under construction.
+If you have any question about deploying with your applications, ask to INTER-Mediator committers.
 - https://demo.inter-mediator.com/INTER-Mediator/samples/
 
 ## Documentation
