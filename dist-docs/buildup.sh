@@ -45,6 +45,9 @@ do
 		-d | --deploy)
 		    param=3
 			;;
+		-D | --deploy-less)
+		    param=4
+			;;
 		* )
 			echo "invalid option -- $opt"
 			exit 1
@@ -91,17 +94,18 @@ fi
 /bin/echo ' (1) Complete (everything contains)'
 /bin/echo ' (2) Core only (the least set to work web applications)'
 /bin/echo ' (3) Core only, and move it to 3-up directory (the ancestor of original INTER-Mediator)'
+/bin/echo ' (4) Core only without JSEncrypt, and move it to 3-up directory'
 #/bin/echo ' (4) Write just version and release date to metadata.json'
 choice=${param}
 if [ ${#param} = 0 ]; then
-    /bin/echo -n "Type 1, 2 or 3, and then type return----> "
+    /bin/echo -n "Type 1, 2, 3 or 4, and then type return----> "
     read choice
     /bin/echo ""
 else
     /bin/echo "Choice by command line parameter: $choice"
 fi
 
-if [ ${#choice} -lt 1 -o ${#choice} -gt 3 ]; then
+if [ ${#choice} -lt 1 -o ${#choice} -gt 4 ]; then
     /bin/echo "*** Do nothing at all. ***"
     exit 0;
 fi
@@ -131,7 +135,11 @@ cp  "${originalPath}/package-lock.json" "${buildPath}/"
 #### Merge js files
 /bin/echo "PROCESSING: Merging JS files"
 /bin/echo "/*! INTER-Mediator Ver.${version} https://inter-mediator.com/ */" > "${buildPath}/src/js/temp.js"
-readFileUntilMark "${originalPath}/node_modules/jsencrypt/bin/jsencrypt.js" "${buildPath}/src/js/temp.js"
+if [ ${#choice} -lt 4 ]; then
+  readFileUntilMark "${originalPath}/node_modules/jsencrypt/bin/jsencrypt.js" "${buildPath}/src/js/temp.js"
+  readFileUntilMark "${originalPath}/node_modules/socket.io-client/dist/socket.io.js" "${buildPath}/src/js/temp.js"
+  /bin/echo "" >> "${buildPath}/src/js/temp.js"
+fi
 readFileUntilMark "${originalPath}/node_modules/jssha/dist/sha.js" "${buildPath}/src/js/temp.js"
 readFileUntilMark "${originalPath}/node_modules/inter-mediator-formatter/index.js" "${buildPath}/src/js/temp.js"
 readFileUntilMark "${originalPath}/node_modules/inter-mediator-nodegraph/index.js" "${buildPath}/src/js/temp.js"

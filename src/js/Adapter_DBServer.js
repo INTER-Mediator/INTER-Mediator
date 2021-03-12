@@ -38,16 +38,15 @@ const INTERMediator_DBAdapter = {
   generate_authParams: function () {
     'use strict'
     let authParams = ''
-    let shaObj, hmacValue, encrypted
-    let encrypt = new JSEncrypt()
     if (INTERMediatorOnPage.authUser.length > 0) {
       authParams = '&clientid=' + encodeURIComponent(INTERMediatorOnPage.clientId)
       authParams += '&authuser=' + encodeURIComponent(INTERMediatorOnPage.authUser)
       if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
         if (INTERMediatorOnPage.authCryptedPassword && INTERMediatorOnPage.authChallenge) {
+          const encrypt = new JSEncrypt()
           // require 2048-bit key length at least
           encrypt.setPublicKey(INTERMediatorOnPage.publickey)
-          encrypted = encrypt.encrypt(
+          const encrypted = encrypt.encrypt(
             INTERMediatorOnPage.authCryptedPassword.substr(0, 220) +
             IMLib.nl_char + INTERMediatorOnPage.authChallenge
           )
@@ -64,10 +63,10 @@ const INTERMediator_DBAdapter = {
         }
       }
       if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
-        shaObj = new jsSHA('SHA-256', 'TEXT')
+        const shaObj = new jsSHA('SHA-256', 'TEXT')
         shaObj.setHMACKey(INTERMediatorOnPage.authChallenge, 'TEXT')
         shaObj.update(INTERMediatorOnPage.authHashedPassword)
-        hmacValue = shaObj.getHMAC('HEX')
+        const hmacValue = shaObj.getHMAC('HEX')
         authParams += '&response=' + encodeURIComponent(hmacValue)
         if (INTERMediator_DBAdapter.debugMessage) {
           INTERMediatorLog.setDebugMessage('generate_authParams/authHashedPassword=' +
@@ -289,7 +288,6 @@ const INTERMediator_DBAdapter = {
   changePassword: async function (username, oldpassword, newpassword, doSucceed, doFail) {
     'use strict'
     let params
-    const encrypt = new JSEncrypt()
 
     return new Promise(async (resolve, reject) => {
       if (!username || !oldpassword) {
@@ -316,8 +314,13 @@ const INTERMediator_DBAdapter = {
       this.server_access_async(params, 1029, 1030,
         (result) => {
           if (result.newPasswordResult) {
-            encrypt.setPublicKey(INTERMediatorOnPage.publickey)
-            INTERMediatorOnPage.authCryptedPassword = encrypt.encrypt(newpassword)
+            if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
+              const encrypt = new JSEncrypt()
+              encrypt.setPublicKey(INTERMediatorOnPage.publickey)
+              INTERMediatorOnPage.authCryptedPassword = encrypt.encrypt(newpassword)
+            } else {
+              INTERMediatorOnPage.authCryptedPassword = ''
+            }
             let shaObj = new jsSHA('SHA-1', 'TEXT')
             shaObj.update(newpassword + INTERMediatorOnPage.authUserSalt)
             let hash = shaObj.getHash('HEX')
@@ -498,8 +501,8 @@ const INTERMediator_DBAdapter = {
             1016,
             (function () {
               const argsCapt = args
-              const  succesProcCapt = successProc
-              const  failedProcCapt = failedProc
+              const succesProcCapt = successProc
+              const failedProcCapt = failedProc
               return function () {
                 INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
               }

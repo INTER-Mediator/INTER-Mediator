@@ -382,24 +382,6 @@ const INTERMediatorLib = {
     return false
   },
 
-  isNamedElement: function (node) {
-    'use strict'
-    if (node !== null) {
-      let nameInfo = node.getAttribute('data-im-group')
-      if (nameInfo) {
-        return true
-      }
-      nameInfo = node.getAttribute('name')
-      if (nameInfo) {
-        const matched = nameInfo.match(/Name-[\d]+/)
-        if (matched) {
-          return true
-        }
-      }
-    }
-    return false
-  },
-
   getEnclosureSimple: function (node) {
     'use strict'
     if (INTERMediatorLib.isEnclosure(node, true)) {
@@ -555,38 +537,9 @@ const INTERMediatorLib = {
     return false
   },
 
-  getNamedInfo: function (node) {
-    'use strict'
-    const defs = []
-    if (INTERMediatorLib.isNamedElement(node)) {
-      let nameAttr = node.getAttribute('data-im-group')
-      if (nameAttr && nameAttr.length > 0) {
-        const reg = new RegExp('[\\s' + INTERMediator.defDivider + ']+')
-        const eachDefs = nameAttr.split(reg)
-        for (let i = 0; i < eachDefs.length; i += 1) {
-          if (eachDefs[i] && eachDefs[i].length > 0) {
-            defs.push(eachDefs[i])
-          }
-        }
-        return defs
-      }
-      nameAttr = node.getAttribute('name')
-      if (nameAttr && nameAttr.length > 0) {
-        const matched = nameAttr.match(/Name-[\d]*/)
-        const eachDefs = matched[1].split(INTERMediator.defDivider)
-        for (let i = 0; i < eachDefs.length; i += 1) {
-          defs.push(eachDefs[i])
-        }
-        return defs
-      }
-    }
-    return false
-  },
-
   /**
    * Get the repeater tag from the enclosure tag.
    */
-
   repeaterTagFromEncTag: function (tag) {
     'use strict'
     if (tag === 'TBODY') {
