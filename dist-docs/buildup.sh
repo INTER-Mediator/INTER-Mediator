@@ -214,7 +214,7 @@ composer update --no-dev
 # /bin/echo "Clean up dot files."
 # find "${buildPath}" -name "\.*" -exec rm -rf {} \; -prune
 
-if [ $choice = 3 ]; then
+if [ ${choice} = 3 -o ${choice} = 4 ]; then
     targetDir=$(dirname "${topOfDir}")
     /bin/echo "Move ${imRootName} directory to: ${targetDir}"
     if [ -e "${targetDir}/${imRootName}" ]; then
