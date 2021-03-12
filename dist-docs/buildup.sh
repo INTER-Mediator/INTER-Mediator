@@ -105,7 +105,7 @@ else
     /bin/echo "Choice by command line parameter: $choice"
 fi
 
-if [ ${#choice} -lt 1 -o ${#choice} -gt 4 ]; then
+if [ ${choice} -lt 1 -o ${choice} -gt 4 ]; then
     /bin/echo "*** Do nothing at all. ***"
     exit 0;
 fi
@@ -135,7 +135,7 @@ cp  "${originalPath}/package-lock.json" "${buildPath}/"
 #### Merge js files
 /bin/echo "PROCESSING: Merging JS files"
 /bin/echo "/*! INTER-Mediator Ver.${version} https://inter-mediator.com/ */" > "${buildPath}/src/js/temp.js"
-if [ ${#choice} -lt 4 ]; then
+if [ ${choice} -lt 4 ]; then
   readFileUntilMark "${originalPath}/node_modules/jsencrypt/bin/jsencrypt.js" "${buildPath}/src/js/temp.js"
   readFileUntilMark "${originalPath}/node_modules/socket.io-client/dist/socket.io.js" "${buildPath}/src/js/temp.js"
   /bin/echo "" >> "${buildPath}/src/js/temp.js"
@@ -239,6 +239,8 @@ elif [ $choice = 2 ]; then
     /bin/echo 'Your Choice: (2) Core only (the least set to work web applications)' >> "${buildDir}/${receipt}"
 elif [ $choice = 3 ]; then
     /bin/echo 'Your Choice: (3) Core only, and move it to 3-up directory (the ancestor of original INTER-Mediator)' >> "${buildDir}/${receipt}"
+elif [ $choice = 4 ]; then
+    /bin/echo 'Your Choice: (4) Core only without JSEncrypt, and move it to 3-up directory' >> "${buildDir}/${receipt}"
 fi
 /bin/echo "" >> "${buildDir}/${receipt}"
 /bin/echo "You can deploy the 'INTER-Mediator' folder into your web applications. Enjoy!!" >> "${buildDir}/${receipt}"
