@@ -245,7 +245,7 @@ class ServiceServerProxy
         $options = "-a -l {$logFile} --minUptime 5000 --spinSleepTime 5000";
         $originURL = (isset($_SERVER['HTTPS']) ? "https://" : "http://") . "{$_SERVER['HTTP_HOST']}";
         $cmd = "{$forever} start {$options} {$scriptPath} {$this->paramsPort} {$dq}{$originURL}{$dq}";
-        if (!$this->serviceServerKey && !$this->serviceServerCert && !$this->serviceServerCA) {
+        if ($this->serviceServerKey && $this->serviceServerCert) {
             $cmd .= " {$dq}{$this->serviceServerKey}{$dq} ";
             $cmd .= " {$dq}{$this->serviceServerCert}{$dq}";
             $cmd .= "  {$dq}{$this->serviceServerCA}{$dq}";
