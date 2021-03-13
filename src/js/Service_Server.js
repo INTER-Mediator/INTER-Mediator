@@ -31,9 +31,9 @@ const https = require('https')
 // Create Server
 let svr = null
 if (keyPath && certPath) {
-  const options = {key: keyPath, cert: certPath}
+  const options = {key: fs.readFileSync(keyPath), cert: fs.readFileSync(certPath)}
   if (CAPath) {
-    options['ca'] = CAPath
+    options['ca'] = fs.readFileSync(CAPath)
   }
   svr = https.createServer(options, app)
 } else {
@@ -49,13 +49,13 @@ svr.listen(port)
 //app.use(bodyParser.json()) // This will be stop the CORS module's operation oops.
 app.use(cors())
 
-app.post('/info',function (req, res, next) {
+app.post('/info', function (req, res, next) {
   handler(req, res)
 })
-app.post('/eval',function (req, res, next) {
+app.post('/eval', function (req, res, next) {
   handler(req, res)
 })
-app.post('/trigger',function (req, res, next) {
+app.post('/trigger', function (req, res, next) {
   handler(req, res)
 })
 
@@ -135,7 +135,7 @@ function requestProcessing(reqParams, res, postData) {
 requestBroker['/info'] = function (params, res, postData) {
   const data = JSON.parse(postData)
 
-  if(ioServer === null) {
+  if (ioServer === null) {
   }
 
   //res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
