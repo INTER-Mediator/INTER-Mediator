@@ -44,7 +44,7 @@ class ServiceServerProxy
             "serviceServerPort", "serviceServerConnect", "stopSSEveryQuit",
             "bootWithInstalledNode", "preventSSAutoBoot", "notUseServiceServer", "foreverLog",
             "serviceServerKey", "serviceServerCert", "serviceServerCA",], true);
-        $this->paramsHost = $params["serviceServerConnect"] ? $params["serviceServerConnect"] : "localhost";
+        $this->paramsHost = $params["serviceServerConnect"] ? $params["serviceServerConnect"] : "http://localhost";
         $this->paramsPort = $params["serviceServerPort"] ? intval($params["serviceServerPort"]) : 11478;
         $this->paramsQuit = is_null($params["stopSSEveryQuit"]) ? false : boolval($params["stopSSEveryQuit"]);
         $this->paramsBoot = is_null($params["bootWithInstalledNode"]) ? false : boolval($params["bootWithInstalledNode"]);
@@ -164,7 +164,7 @@ class ServiceServerProxy
 
     private function callServer($path, $postData = false, $ignoreError = false)
     {
-        $url = "http://{$this->paramsHost}:{$this->paramsPort}/{$path}";
+        $url = "{$this->paramsHost}:{$this->paramsPort}/{$path}";
         $ch = curl_init($url);
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
