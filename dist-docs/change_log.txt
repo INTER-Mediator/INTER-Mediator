@@ -10,7 +10,7 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.7 (in development)
+Ver.7 (March 20, 2021)
 - The synchronizing with clients is back without Pusher.
 - The FileMaker_DataAPI class updated for API protocol ver.2. And also introduced the 'portals' key on context definitions.
 - CSV File uploading and add records for each line. I'd like to check the 'samples/Sample_webpage/fileuploadCSV_MySQL.html'
