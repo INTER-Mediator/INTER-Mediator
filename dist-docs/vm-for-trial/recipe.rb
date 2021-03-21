@@ -1918,11 +1918,26 @@ if node[:platform] == 'redhat' && node[:virtualization][:system] != 'docker'
   package 'libselinux-utils' do
     action :install
   end
+  package 'policycoreutils-python' do
+    action :install
+  end
   execute 'setsebool -P samba_export_all_rw 1' do
     command 'setsebool -P samba_export_all_rw 1'
   end
   execute "cd \"#{IMSELINUX}\" && semodule -i inter-mediator.pp" do
     command "cd \"#{IMSELINUX}\" && semodule -i inter-mediator.pp"
+  end
+  execute "semanage fcontext -a -t httpd_sys_rw_content_t \"/var/www/html/(.*).html\"" do
+    command "semanage fcontext -a -t httpd_sys_rw_content_t \"/var/www/html/(.*).html\""
+  end
+  execute "restorecon \"/var/www/html/*.html\"" do
+    command "restorecon \"/var/www/html/*.html\""
+  end
+  execute "semanage fcontext -a -t httpd_sys_rw_content_t \"/var/www/html/(.*).php\"" do
+    command "semanage fcontext -a -t httpd_sys_rw_content_t \"/var/www/html/(.*).php\""
+  end
+  execute "restorecon \"/var/www/html/*.php\"" do
+    command "restorecon \"/var/www/html/*.php\""
   end
 end
 
