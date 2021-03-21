@@ -1,7 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
-  "version": "7",
-  "time": "2021-03-20",
+  "version": "8",
+  "time": "2021-03-21",
   "repositories": [
     {
       "type": "git",
