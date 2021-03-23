@@ -11,6 +11,7 @@ Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.8 (in development)
+- [BUG FIX] IMLibPageNavigation.moveDetailOnceAgain() didn't work fine.
 
 Ver.7 (March 20, 2021)
 - The synchronizing with clients is back without Pusher.

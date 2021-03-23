@@ -186,10 +186,6 @@ const INTERMediator = {
   /**
    * @type {string}
    */
-  masterNodeOriginalDisplay: 'block',
-  /**
-   * @type {string}
-   */
   detailNodeOriginalDisplay: 'none',
   /**
    * @type {boolean}

@@ -28,6 +28,7 @@ const IMLibPageNavigation = {
   stepNavigation: [],
   stepCurrentContextName: null,
   stepStartContextName: null,
+  masterNodeOriginalDisplay: 'block',
 
   /**
    * Create Navigation Bar to move previous/next page
@@ -1283,8 +1284,10 @@ const IMLibPageNavigation = {
         if (masterEnclosure.tagName === 'TBODY') {
           masterEnclosure = masterEnclosure.parentNode
         }
-        INTERMediator.masterNodeOriginalDisplay = masterEnclosure.style.display
-        masterEnclosure.style.display = 'none'
+        if(masterEnclosure.style.display != 'none') {
+          IMLibPageNavigation.masterNodeOriginalDisplay = masterEnclosure.style.display
+          masterEnclosure.style.display = 'none'
+        }
 
         let detailEnclosure = detailContext.enclosureNode
         if (detailEnclosure.tagName === 'TBODY') {
@@ -1335,7 +1338,7 @@ const IMLibPageNavigation = {
     'use strict'
     const p = IMLibPageNavigation.previousModeDetail
     IMLibPageNavigation.moveToDetailImpl(
-      p.encNodeTag, p.keyField, p.keyValue, p.isHide, p.isHidePageNavi)
+      p.keyField, p.keyValue, p.isHide, p.isHidePageNavi)
   },
   /* --------------------------------------------------------------------
 
@@ -1522,7 +1525,7 @@ const IMLibPageNavigation = {
         if (showingNode.tagName === 'TBODY') {
           showingNode = showingNode.parentNode
         }
-        showingNode.style.display = INTERMediator.masterNodeOriginalDisplay
+        showingNode.style.display = IMLibPageNavigation.masterNodeOriginalDisplay
 
         if (pageNaviShow) {
           document.getElementById('IM_NAVIGATOR').style.display = 'block'

@@ -32,7 +32,7 @@ IM_Entry(
             'view' => 'product',
             'table' => 'product',
             'key' => 'id',
-            'navi-control' => 'detail-top',
+            'navi-control' => 'detail-top-update',
         ),
     ),
     array(
