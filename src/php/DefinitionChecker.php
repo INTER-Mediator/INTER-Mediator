@@ -300,7 +300,7 @@ class DefinitionChecker
                     'value' => 'scalar'
                 )
             ),
-            'repeat-control' => 'string(insert|delete|confirm-insert|confirm-delete|copy|copy-*)',
+            'repeat-control' => 'string(insert|delete|insert-confirm|confirm-insert|delete-confirm|confirm-delete|copy|copy-*)',
             'navi-control' => 'string(step|step-hide|step-nonavi|step-hide-nonavi|step-fullnavi|step-hide-fullnavi'
                 . '|detail|detail-top|detail-bottom|detail-update|detail-top-update|detail-bottom-update'
                 . '|master|master-nonavi|master-fullnavi|master-hide|master-hide-nonavi|master-hide-fullnavi)',

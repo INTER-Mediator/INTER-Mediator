@@ -723,7 +723,7 @@ const IMLibPageNavigation = {
         const currentContextCapt = currentContext
         const keyFieldCapt = keyField
         const keyValueCapt = keyValue
-        const confirmingCapt = currentContextDef['repeat-control'].match(/confirm-delete/i)
+        const confirmingCapt = currentContextDef['repeat-control'].match(/(confirm-delete|delete-confirm)/i)
         return function () {
           IMLibUI.deleteButton(currentContextCapt, keyFieldCapt, keyValueCapt, confirmingCapt)
         }
@@ -735,7 +735,7 @@ const IMLibPageNavigation = {
         name: currentContextDef.name,
         key: keyField,
         value: keyValue,
-        confirm: currentContextDef['repeat-control'].match(/confirm-delete/i)
+        confirm: currentContextDef['repeat-control'].match(/(confirm-delete|delete-confirm)/i)
       })
     }
   },
@@ -873,7 +873,7 @@ const IMLibPageNavigation = {
           const keyValueCapt = keyValue
           const relationValueCapt = relationValue
           const nodeId = node.getAttribute('id')
-          const confirming = currentContextDef['repeat-control'].match(/confirm-insert/i)
+          const confirming = currentContextDef['repeat-control'].match(/(confirm-insert|insert-confirm)/i)
           return function () {
             IMLibUI.insertButton(context, keyValueCapt, relationValueCapt, nodeId, confirming)
           }
@@ -890,7 +890,7 @@ const IMLibPageNavigation = {
           kind: 'INSERT',
           name: currentContextDef.name,
           key: keyField,
-          confirm: currentContextDef['repeat-control'].match(/confirm-insert/i)
+          confirm: currentContextDef['repeat-control'].match(/(confirm-insert|insert-confirm)/i)
         })
       }
     }
