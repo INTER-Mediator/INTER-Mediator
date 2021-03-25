@@ -1155,7 +1155,7 @@ this.lookingUpInfo
   }
 
   updateContextAfterInsertAsLookup(newRecordId) {
-    let nodes, value, binds
+    let nodes, binds
     const keyField = this.getContextDef().key
     this.updateLookupInfo(true)
     nodes = []
@@ -1169,9 +1169,12 @@ this.lookingUpInfo
         }
       }
       for (const node of nodes) {
-        value = document.getElementById(node).value
-        if (value) {
-          this.updateContextAsLookup(node, value)
+        const nodeRef = document.getElementById(node)
+        if(nodeRef) {
+          const value = nodeRef.value
+          if (value) {
+            this.updateContextAsLookup(node, value)
+          }
         }
       }
     }

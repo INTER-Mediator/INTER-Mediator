@@ -44,7 +44,7 @@ IM_Entry(
                 ],
             ],
             'sync-control' => 'create update delete',
-            'repeat-control' => 'insert delete copy',
+            'repeat-control' => 'insert-confirm delete-confirm copy',
 //        'query' =>
 //            [
 //                [

@@ -28,6 +28,7 @@ const IMLibPageNavigation = {
   stepNavigation: [],
   stepCurrentContextName: null,
   stepStartContextName: null,
+  masterNodeOriginalDisplay: 'block',
 
   /**
    * Create Navigation Bar to move previous/next page
@@ -722,7 +723,7 @@ const IMLibPageNavigation = {
         const currentContextCapt = currentContext
         const keyFieldCapt = keyField
         const keyValueCapt = keyValue
-        const confirmingCapt = currentContextDef['repeat-control'].match(/confirm-delete/i)
+        const confirmingCapt = currentContextDef['repeat-control'].match(/(confirm-delete|delete-confirm)/i)
         return function () {
           IMLibUI.deleteButton(currentContextCapt, keyFieldCapt, keyValueCapt, confirmingCapt)
         }
@@ -734,7 +735,7 @@ const IMLibPageNavigation = {
         name: currentContextDef.name,
         key: keyField,
         value: keyValue,
-        confirm: currentContextDef['repeat-control'].match(/confirm-delete/i)
+        confirm: currentContextDef['repeat-control'].match(/(confirm-delete|delete-confirm)/i)
       })
     }
   },
@@ -872,7 +873,7 @@ const IMLibPageNavigation = {
           const keyValueCapt = keyValue
           const relationValueCapt = relationValue
           const nodeId = node.getAttribute('id')
-          const confirming = currentContextDef['repeat-control'].match(/confirm-insert/i)
+          const confirming = currentContextDef['repeat-control'].match(/(confirm-insert|insert-confirm)/i)
           return function () {
             IMLibUI.insertButton(context, keyValueCapt, relationValueCapt, nodeId, confirming)
           }
@@ -889,7 +890,7 @@ const IMLibPageNavigation = {
           kind: 'INSERT',
           name: currentContextDef.name,
           key: keyField,
-          confirm: currentContextDef['repeat-control'].match(/confirm-insert/i)
+          confirm: currentContextDef['repeat-control'].match(/(confirm-insert|insert-confirm)/i)
         })
       }
     }
@@ -1283,8 +1284,10 @@ const IMLibPageNavigation = {
         if (masterEnclosure.tagName === 'TBODY') {
           masterEnclosure = masterEnclosure.parentNode
         }
-        INTERMediator.masterNodeOriginalDisplay = masterEnclosure.style.display
-        masterEnclosure.style.display = 'none'
+        if(masterEnclosure.style.display != 'none') {
+          IMLibPageNavigation.masterNodeOriginalDisplay = masterEnclosure.style.display
+          masterEnclosure.style.display = 'none'
+        }
 
         let detailEnclosure = detailContext.enclosureNode
         if (detailEnclosure.tagName === 'TBODY') {
@@ -1335,7 +1338,7 @@ const IMLibPageNavigation = {
     'use strict'
     const p = IMLibPageNavigation.previousModeDetail
     IMLibPageNavigation.moveToDetailImpl(
-      p.encNodeTag, p.keyField, p.keyValue, p.isHide, p.isHidePageNavi)
+      p.keyField, p.keyValue, p.isHide, p.isHidePageNavi)
   },
   /* --------------------------------------------------------------------
 
@@ -1522,7 +1525,7 @@ const IMLibPageNavigation = {
         if (showingNode.tagName === 'TBODY') {
           showingNode = showingNode.parentNode
         }
-        showingNode.style.display = INTERMediator.masterNodeOriginalDisplay
+        showingNode.style.display = IMLibPageNavigation.masterNodeOriginalDisplay
 
         if (pageNaviShow) {
           document.getElementById('IM_NAVIGATOR').style.display = 'block'
