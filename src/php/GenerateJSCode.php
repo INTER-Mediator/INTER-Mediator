@@ -68,7 +68,7 @@ class GenerateJSCode
             "oAuthProvider", "oAuthClientID", "oAuthRedirect", "passwordPolicy", "documentRootPrefix", "dbClass",
             "dbDSN", "nonSupportMessageId", "valuesForLocalContext", "themeName", "appLocale", "appCurrency",
             "resetPage", "enrollPage", "serviceServerPort", "serviceServerHost", "activateClientService",
-            "followingTimezones", "notUseServiceServer", "serviceServerProtocol",
+            "followingTimezones", "notUseServiceServer", "serviceServerProtocol", "passwordHash",
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -106,6 +106,9 @@ class GenerateJSCode
 
         $activateClientService = isset($params['activateClientService']) ? boolval($params['activateClientService']) : false;
         $followingTimezones = isset($params['followingTimezones']) ? boolval($params['followingTimezones']) : false;
+        $passwordHash = isset($params['passwordHash']) ? isset($params['passwordHash']) : 1;
+        $passwordHash = ($passwordHash == '2m')? 1.5 : $passwordHash;
+        $passwordHash = floatval($passwordHash);
 
         $serverName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
         $documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : 'Not_on_web_server';
@@ -382,6 +385,7 @@ class GenerateJSCode
             "{$q}{$serviceServerProtocol}://{$serviceServerHost}:{$serviceServerPort}{$q}");
         $this->generateAssignJS("INTERMediatorOnPage.serverDefaultTimezone", $q, date_default_timezone_get(), $q);
         $this->generateAssignJS("INTERMediatorOnPage.isFollowingTimezone", $followingTimezones ? "true" : "false");
+        $this->generateAssignJS("INTERMediatorOnPage.passwordHash", $passwordHash);
     }
 
     private function combineScripts($isSocketIO): string
@@ -392,7 +396,7 @@ class GenerateJSCode
         $content = '';
         $content .= $this->readJSSource($nodeModuleDir . 'jsencrypt/bin/jsencrypt.js');
         $content .= $this->readJSSource($nodeModuleDir . 'jssha/dist/sha.js');
-        if($isSocketIO) {
+        if ($isSocketIO) {
             $content .= $this->readJSSource($nodeModuleDir . 'socket.io-client/dist/socket.io.js');
         }
         $content .= "\n";

@@ -22,8 +22,8 @@ use INTERMediator\IMUtil;
 use INTERMediator\LDAPAuth;
 use INTERMediator\Locale\IMLocale;
 use INTERMediator\Messaging\MessagingProxy;
-use INTERMediator\ServiceServerProxy;
 use INTERMediator\NotifyServer;
+use INTERMediator\ServiceServerProxy;
 use phpseclib\Crypt\RSA;
 
 class Proxy extends UseSharedObjects implements Proxy_Interface
@@ -35,6 +35,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     public $paramAuthUser = null;
 
     public $paramResponse = null;
+    public $paramResponse2m = null;
+    public $paramResponse2 = null;
     public $paramCryptResponse = null;
     public $clientId;
     private $previousChallenge;
@@ -754,6 +756,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
         $this->paramAuthUser = isset($this->PostData['authuser']) ? $this->PostData['authuser'] : "";
         $this->paramResponse = isset($this->PostData['response']) ? $this->PostData['response'] : "";
+        $this->paramResponse2m = isset($this->PostData['response2m']) ? $this->PostData['response2m'] : "";
+        $this->paramResponse2 = isset($this->PostData['response2']) ? $this->PostData['response2'] : "";
         $this->paramCryptResponse = isset($this->PostData['cresponse']) ? $this->PostData['cresponse'] : "";
         $this->clientId = isset($this->PostData['clientid']) ? $this->PostData['clientid'] :
             (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "Non-browser-client");
