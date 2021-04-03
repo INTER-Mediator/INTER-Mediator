@@ -21,7 +21,7 @@ interface Auth_Interface_Communication
     public function generateClientId($prefix);
     public function generateChallenge();
     public function saveChallenge($username, $challenge, $clientId);
-    public function checkAuthorization($username, $hashedvalue, $clientId, $isLDAP = false);
+    public function checkAuthorization($username, $isLDAP = false);
     public function checkChallenge($challenge, $clientId);
     public function checkMediaToken($user, $token);
     public function addUser($username, $password);

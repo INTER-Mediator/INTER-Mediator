@@ -34,13 +34,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     public $outputOfProcessing = null;
     public $paramAuthUser = null;
 
-    public $paramResponse = null;
-    public $paramResponse2m = null;
-    public $paramResponse2 = null;
-    public $paramCryptResponse = null;
+    private $paramResponse = null;
+    private $paramResponse2m = null;
+    private $paramResponse2 = null;
+    private $paramCryptResponse = null;
     public $clientId;
-    private $previousChallenge;
-    private $previousClientid;
+//    private $previousChallenge;
+//    private $previousClientid;
+    private $passwordHash;
 
     private $clientSyncAvailable;
 
@@ -51,6 +52,22 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     private $result4Log = [];
     private $isStopNotifyAndMessaging = false;
     private $suppressMediaToken = false;
+
+    public function setClentId($cid)
+    {
+        $this->clientId = $cid;
+    }
+
+    public function setParamResponse($res)
+    {
+        if (is_array($res)) {
+            $this->paramResponse = $res[0];
+            $this->paramResponse2m = $res[1];
+            $this->paramResponsem = $res[2];
+        } else {
+            $this->paramResponse = $res;
+        }
+    }
 
     public static function defaultKey()
     {
@@ -538,10 +555,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $params = IMUtil::getFromParamsPHPFile(array(
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
             "dbOption", "dbDSN", "pusherParameters", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
-            "activateClientService", "accessLogLevel", "certVerifying",
+            "activateClientService", "accessLogLevel", "certVerifying", "passwordHash",
         ), true);
         $this->accessLogLevel = intval($params['accessLogLevel']);
         $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
+        $this->passwordHash = isset($params['passwordHash']) ? $params['passwordHash'] : "1";
+
         $this->dbSettings->setDataSource($datasource);
         $this->dbSettings->setOptions($options);
         IMLocale::$options = $options;
@@ -836,8 +855,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
 
         if (!$bypassAuth && $this->dbSettings->getRequireAuthorization()) { // Authentication required
-            if (strlen($this->paramAuthUser) == 0 || strlen($this->paramResponse) == 0) {
-                // No username or password
+            if (strlen($this->paramAuthUser) == 0 || (
+                    strlen($this->paramResponse) == 0
+                    && strlen($this->paramResponse2m) == 0
+                    && strlen($this->paramResponse2) == 0
+                )) { // No username or password
                 $access = "do nothing";
                 $this->dbSettings->setRequireAuthentication(true);
             }
@@ -894,7 +916,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $authSucceed = false;
                     $ldap = new LDAPAuth();
                     $ldap->setLogger($this->logger);
-                    if ($this->checkAuthorization($signedUser, $this->paramResponse, $this->clientId, $ldap->isActive)) {
+                    if ($this->checkAuthorization($signedUser, $ldap->isActive)) {
                         $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
                         $authSucceed = true;
                     } else {
@@ -904,7 +926,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                                 $this->logger->setDebugMessage("LDAP Authentication succeed.");
                                 $authSucceed = true;
                                 $this->addUser($signedUser, $password, true);
-                                if ($this->checkAuthorization($signedUser, $this->paramResponse, $this->clientId, $ldap->isActive)) {
+                                if ($this->checkAuthorization($signedUser, $ldap->isActive)) {
                                     $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
                                     $authSucceed = true;
                                 }
@@ -1118,8 +1140,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->logger->setDebugMessage("generatedChallenge = $generatedChallenge", 2);
             $userSalt = $this->saveChallenge(
                 $this->dbSettings->isDBNative() ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
-            $this->previousChallenge = "{$generatedChallenge}{$userSalt}";
-            $this->previousClientid = "{$generatedUID}";
+//            $this->previousChallenge = "{$generatedChallenge}{$userSalt}";
+//            $this->previousClientid = "{$generatedUID}";
             $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";
             $this->outputOfProcessing['clientid'] = $generatedUID;
             if ($this->dbSettings->getRequireAuthentication()) {
@@ -1230,7 +1252,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     function generateClientId($prefix)
     {
-        return sha1(uniqid($prefix, true));
+        if ($this->passwordHash == "1") {
+            return sha1(uniqid($prefix, true));
+        }
+        return hash("sha256", uniqid($prefix, true));
     }
 
     /**
@@ -1262,7 +1287,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     function convertHashedPassword($pw)
     {
         $salt = $this->generateSalt();
-        return sha1($pw . $salt) . bin2hex($salt);
+        if ($this->passwordHash == "1") {
+            return sha1($pw . $salt) . bin2hex($salt);
+        }
+        return hash("sha256", $pw . $salt) . bin2hex($salt);
     }
 
     function generateCredential($digit)
@@ -1305,18 +1333,21 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     /**
      * @param $username
-     * @param $hashedvalue
-     * @param $clientId
+     * @param $isLDAP
      * @return bool
      */
-    function checkAuthorization($username, $hashedvalue, $clientId, $isLDAP = false)
+    function checkAuthorization($username, $isLDAP = false): bool
     {
-        $this->logger->setDebugMessage(
-            "[checkAuthorization]user=${username}, paramResponse={$hashedvalue}, clientid={$clientId}", 2);
+        $falseHash = hash("sha256", uniqid("", true)); // for failing auth.
+        $hashedvalue = $this->paramResponse ? $this->paramResponse : $falseHash;
+        $hashedvalue2m = $this->paramResponse2m ? $this->paramResponse2m : $falseHash;
+        $hashedvalue2 = $this->paramResponse2 ? $this->paramResponse2 : $falseHash;
+        $clientId = $this->clientId;
+        $this->logger->setDebugMessage("[checkAuthorization]user=${username}, paramResponse={$hashedvalue}, "
+            . "paramResponse2m={$hashedvalue2m}, paramResponse2={$hashedvalue2}, clientid={$clientId}", 2);
+
         $returnValue = false;
-
         $this->authDbClass->authHandler->authSupportRemoveOutdatedChallenges();
-
         $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($username);
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($signedUser);
         $this->logger->setDebugMessage("[checkAuthorization]uid={$uid}", 2);
@@ -1328,14 +1359,17 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
         $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge($uid, $clientId);
         $this->logger->setDebugMessage("[checkAuthorization]storedChallenge={$storedChallenge}", 2);
-
         if (strlen($storedChallenge) == 24) { // ex.fc0d54312ce33c2fac19d758
             $hashedPassword = $this->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
             $hmacValue = hash_hmac('sha256', $hashedPassword, $storedChallenge);
-            $this->logger->setDebugMessage("[checkAuthorization]hashedPassword={$hashedPassword}", 2);
-            $this->logger->setDebugMessage("[checkAuthorization]hmac_value={$hmacValue}", 2);
+            $hmacValue2m = '_';
+            if ($this->passwordHash == "1" || $this->passwordHash == "2m") {
+                $hmacValue2m = hash_hmac('sha256', $hashedPassword, $storedChallenge);// Should be changed
+            }
+            $this->logger->setDebugMessage(
+                "[checkAuthorization]hashedPassword={$hashedPassword}/hmac_value={$hmacValue}", 2);
             if (strlen($hashedPassword) > 0) {
-                if ($hashedvalue == $hmacValue) {
+                if ($hashedvalue == $hmacValue || $hashedvalue2m == $hmacValue2m || $hashedvalue2 == $hmacValue) {
                     $returnValue = true;
                 } else {
                     $this->logger->setDebugMessage("[checkAuthorization]Built-in authorization fail.", 2);

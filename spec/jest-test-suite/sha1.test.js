@@ -36,3 +36,19 @@ test('The result of jssha should be SHA-1 based hash', () => {
   let hash = shaObj.getHash('HEX')
   assert(hash, 'a883dafc480d466ee04e0d6da986bd78eb1fdd2178d04693723da3a8f95d42f4')
 })
+
+test('Valid password hash should be generated using jssha\'', () => {
+  'use strict'
+  let shaObj = new jsSHA('SHA-256', 'TEXT')
+  shaObj.update('1234')
+  let hash = shaObj.getHash('HEX')
+  assert(hash.length, 64)
+})
+
+test('The result of jssha should be SHA-1 based hash', () => {
+  'use strict'
+  let shaObj = new jsSHA('SHA-256', 'TEXT')
+  shaObj.update('1234')
+  let hash = shaObj.getHash('HEX')
+  assert(hash, 'a883dafc480d466ee04e0d6da986bd78eb1fdd2178d04693723da3a8f95d42f4')
+})

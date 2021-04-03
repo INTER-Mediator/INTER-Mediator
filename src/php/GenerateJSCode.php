@@ -106,9 +106,8 @@ class GenerateJSCode
 
         $activateClientService = isset($params['activateClientService']) ? boolval($params['activateClientService']) : false;
         $followingTimezones = isset($params['followingTimezones']) ? boolval($params['followingTimezones']) : false;
-        $passwordHash = isset($params['passwordHash']) ? isset($params['passwordHash']) : 1;
-        $passwordHash = ($passwordHash == '2m')? 1.5 : $passwordHash;
-        $passwordHash = floatval($passwordHash);
+        $passwordHash = isset($params['passwordHash']) ? $params['passwordHash'] : 1;
+        $passwordHash = ($passwordHash === '2m')? 1.5 : floatval($passwordHash);
 
         $serverName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
         $documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : 'Not_on_web_server';

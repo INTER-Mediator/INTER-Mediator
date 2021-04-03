@@ -337,7 +337,7 @@ CREATE TABLE registeredpks (
 CREATE TABLE authuser (
 	id					INTEGER   DEFAULT nextval('serial'),
 	username			VARCHAR(64),
-	hashedpasswd		VARCHAR(48),
+	hashedpasswd		VARCHAR(72),
 	email               VARCHAR(100),
 	realname			VARCHAR(20),
 	limitdt             TIMESTAMP,
@@ -406,8 +406,8 @@ INSERT INTO authcor(group_id,dest_group_id) VALUES(1,3);
 CREATE TABLE issuedhash (
 	id				INTEGER   DEFAULT nextval('serial'),
 	user_id         INTEGER,
-	clienthost      VARCHAR(48),
-	hash            VARCHAR(48),
+	clienthost      VARCHAR(64),
+	hash            VARCHAR(64),
 	expired			TIMESTAMP,
 	PRIMARY KEY(id)
 );

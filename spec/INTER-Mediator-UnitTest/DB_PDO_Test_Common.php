@@ -41,7 +41,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 //        var_export($this->db_proxy->logger->getErrorMessages());
 //        var_export($this->db_proxy->logger->getDebugMessages());
 
-        $this->assertTrue(is_array($result) , "After the query, any array should be retrieved.");
+        $this->assertTrue(is_array($result), "After the query, any array should be retrieved.");
         $this->assertEquals(count($result), 10, "After the query, 10 records should be retrieved.");
         $this->assertEquals($recordCount, 10, "The aggregation didn't count real record, and should match with records key");
         $cStr = "Onion";
@@ -263,8 +263,10 @@ abstract class DB_PDO_Test_Common extends TestCase
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
         $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
 
+        $this->db_proxy->setParamReponse($calcuratedHash);
+        $this->db_proxy->setClientId("TEST");
         $this->assertTrue(
-            $this->db_proxy->checkAuthorization($username, $calcuratedHash, "TEST"), $testName);
+            $this->db_proxy->checkAuthorization($username), $testName);
     }
 
     public function testAuthByValidUser()
@@ -353,8 +355,10 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->db_proxy->saveChallenge($username, $challenge, $clientId);
 
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
+        $this->db_proxy->setParamReponse(hash_hmac('sha256', $hashedvalue, $challenge));
+        $this->db_proxy->setClientId($clientId);
         $this->assertTrue(
-            $this->db_proxy->checkAuthorization($username, hash_hmac('sha256', $hashedvalue, $challenge), $clientId),
+            $this->db_proxy->checkAuthorization($username),
             $testName);
     }
 

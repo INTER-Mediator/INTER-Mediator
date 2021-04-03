@@ -650,10 +650,13 @@ let INTERMediatorOnPage = {
         let shaObj = new jsSHA('SHA-1', 'TEXT')
         shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
         let hash = shaObj.getHash('HEX')
-        INTERMediatorOnPage.authHashedPassword2m = hash + INTERMediatorOnPage.authUserHexSalt
+        shaObj = new jsSHA('SHA-256', 'TEXT')
+        shaObj.update(hash + INTERMediatorOnPage.authUserSalt)
+        let hashNext = shaObj.getHash('HEX')
+        INTERMediatorOnPage.authHashedPassword2m = hashNext + INTERMediatorOnPage.authUserHexSalt
       }
       if (INTERMediatorOnPage.passwordHash < 2.1) {
-        let shaObj = new jsSHA('SHA-1', 'TEXT')
+        let shaObj = new jsSHA('SHA-256', 'TEXT')
         shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
         let hash = shaObj.getHash('HEX')
         INTERMediatorOnPage.authHashedPassword2 = hash + INTERMediatorOnPage.authUserHexSalt
