@@ -263,7 +263,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
         $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
 
-        $this->db_proxy->setParamReponse($calcuratedHash);
+        $this->db_proxy->setParamResponse([$calcuratedHash]);
         $this->db_proxy->setClientId("TEST");
         $this->assertTrue(
             $this->db_proxy->checkAuthorization($username), $testName);
@@ -288,8 +288,8 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->db_proxy->dbSettings->setCurrentUser($username);
         $this->db_proxy->dbSettings->setDataSourceName("person");
         $this->db_proxy->paramAuthUser = $username;
-        $this->db_proxy->clientId = $clientId;
-        $this->db_proxy->paramResponse = $calcuratedHash;
+        $this->db_proxy->setClientId($clientId);
+        $this->db_proxy->setParamResponse([$calcuratedHash]);
 
         $this->db_proxy->processingRequest("read");
         $result = $this->db_proxy->getDatabaseResult();
@@ -323,8 +323,8 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->db_proxy->dbSettings->setCurrentUser($username);
         $this->db_proxy->dbSettings->setDataSourceName("person");
         $this->db_proxy->paramAuthUser = $username;
-        $this->db_proxy->clientId = $clientId;
-        $this->db_proxy->paramResponse = $calcuratedHash;
+        $this->db_proxy->setClientId($clientId);
+        $this->db_proxy->setParamResponse([$calcuratedHash]);
 
         $this->db_proxy->processingRequest("read");
         $this->assertTrue(is_null($this->db_proxy->getDatabaseResult()), $testName);
@@ -355,7 +355,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->db_proxy->saveChallenge($username, $challenge, $clientId);
 
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
-        $this->db_proxy->setParamReponse(hash_hmac('sha256', $hashedvalue, $challenge));
+        $this->db_proxy->setParamResponse([hash_hmac('sha256', $hashedvalue, $challenge)]);
         $this->db_proxy->setClientId($clientId);
         $this->assertTrue(
             $this->db_proxy->checkAuthorization($username),

@@ -53,7 +53,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     private $isStopNotifyAndMessaging = false;
     private $suppressMediaToken = false;
 
-    public function setClentId($cid)
+    public function setClientId($cid)
     {
         $this->clientId = $cid;
     }
@@ -61,9 +61,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     public function setParamResponse($res)
     {
         if (is_array($res)) {
-            $this->paramResponse = $res[0];
-            $this->paramResponse2m = $res[1];
-            $this->paramResponsem = $res[2];
+            $this->paramResponse = isset($res[0]) ? $res[0] : null;
+            $this->paramResponse2m = isset($res[1]) ? $res[1] : null;
+            $this->paramResponsem = isset($res[2]) ? $res[2] : null;
         } else {
             $this->paramResponse = $res;
         }

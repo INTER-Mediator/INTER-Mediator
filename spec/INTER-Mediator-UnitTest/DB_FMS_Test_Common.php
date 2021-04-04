@@ -715,7 +715,7 @@ class DB_FMS_Test_Common extends TestCase
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
         $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
 
-        $this->db_proxy->setParamReponse($calcuratedHash);
+        $this->db_proxy->setParamResponse([$calcuratedHash]);
         $this->db_proxy->setClientId( "TEST");
         $this->assertTrue(
             $this->db_proxy->checkAuthorization($username), $testName);
@@ -832,7 +832,7 @@ class DB_FMS_Test_Common extends TestCase
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
         //echo $hashedvalue;
 
-        $this->db_proxy->setParamReponse(hash_hmac('sha256', $hashedvalue, $challenge));
+        $this->db_proxy->setParamResponse([hash_hmac('sha256', $hashedvalue, $challenge)]);
         $this->db_proxy->setClientId($clientId);
         $this->assertTrue(
             $this->db_proxy->checkAuthorization($username),
