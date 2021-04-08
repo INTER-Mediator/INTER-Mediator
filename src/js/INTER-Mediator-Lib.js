@@ -143,7 +143,12 @@ const INTERMediatorLib = {
       salt += String.fromCharCode(code)
       saltHex += numToHex[highCode] + numToHex[lowCode]
     }
-    let shaObj = new jsSHA('SHA-1', 'TEXT')
+    let shaObj = null
+    if (INTERMediatorOnPage.passwordHash < 1.1) {
+      shaObj = new jsSHA('SHA-1', 'TEXT')
+    } else {
+      shaObj = new jsSHA('SHA-256', 'TEXT')
+    }
     shaObj.update(password + salt)
     let hash = shaObj.getHash('HEX')
     return encodeURIComponent(hash + saltHex)
