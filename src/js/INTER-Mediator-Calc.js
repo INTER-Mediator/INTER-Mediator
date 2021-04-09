@@ -368,7 +368,9 @@ const IMLibCalc = {
             IMLibElement.setValueToIMNode(document.getElementById(idValue), nInfo.target, updatedValue, true)
             updatedNodeIds.push(idValue)
             updateNodeValues.push(updatedValue)
-            contextInfo.context.setValue(contextInfo.record, contextInfo.field, updatedValue, idValue, nInfo.target, false)
+            if (contextInfo && contextInfo.context && contextInfo.record && contextInfo.field) {
+              contextInfo.context.setValue(contextInfo.record, contextInfo.field, updatedValue, idValue, nInfo.target, false)
+            }
           }
         }
       }
