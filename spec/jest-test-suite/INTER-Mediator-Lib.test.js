@@ -39,7 +39,8 @@ test('repeaterTagFromEncTag() should return \'LI\' if parameter is "OL"', functi
 
 test('INTERMediatorLib.generatePasswordHash() should generate a valid password hash', function () {
   'use strict'
-  expect(INTERMediatorLib.generatePasswordHash('1234').length).toBe(72)
+  expect(INTERMediatorLib.generatePasswordHash('1234').length).toBe(48)
+  //expect(INTERMediatorLib.generatePasswordHash('1234').length).toBe(72)
 })
 
 test('INTERMediatorLib.Round() Test for positive value.', function () {
