@@ -334,7 +334,17 @@ const INTERMediator_DBAdapter = {
         shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
         let hash = shaObj.getHash('HEX')
         INTERMediatorOnPage.authHashedPassword = hash + INTERMediatorOnPage.authUserHexSalt
-      } else {
+      }
+      if (INTERMediatorOnPage.passwordHash < 1.6) {
+        let shaObj = new jsSHA('SHA-1', 'TEXT')
+        shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
+        let hash = shaObj.getHash('HEX')
+        shaObj = new jsSHA('SHA-256', 'TEXT')
+        shaObj.update(hash + INTERMediatorOnPage.authUserSalt)
+        let hashNext = shaObj.getHash('HEX')
+        INTERMediatorOnPage.authHashedPassword2m = hashNext + INTERMediatorOnPage.authUserHexSalt
+      }
+      if (INTERMediatorOnPage.passwordHash < 2.1) {
         let shaObj = new jsSHA('SHA-256', 'TEXT')
         shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
         let hash = shaObj.getHash('HEX')
@@ -357,15 +367,15 @@ const INTERMediator_DBAdapter = {
               let hash = shaObj.getHash('HEX')
               INTERMediatorOnPage.authHashedPassword = hash + INTERMediatorOnPage.authUserHexSalt
             }
-            if (INTERMediatorOnPage.passwordHash < 1.6) {
-              let shaObj = new jsSHA('SHA-1', 'TEXT')
-              shaObj.update(newpassword + INTERMediatorOnPage.authUserSalt)
-              let hash = shaObj.getHash('HEX')
-              shaObj = new jsSHA('SHA-256', 'TEXT')
-              shaObj.update(hash + INTERMediatorOnPage.authUserSalt)
-              let hashNext = shaObj.getHash('HEX')
-              INTERMediatorOnPage.authHashedPassword2m = hashNext + INTERMediatorOnPage.authUserHexSalt
-            }
+            // if (INTERMediatorOnPage.passwordHash < 1.6) {
+            //   let shaObj = new jsSHA('SHA-1', 'TEXT')
+            //   shaObj.update(newpassword + INTERMediatorOnPage.authUserSalt)
+            //   let hash = shaObj.getHash('HEX')
+            //   shaObj = new jsSHA('SHA-256', 'TEXT')
+            //   shaObj.update(hash + INTERMediatorOnPage.authUserSalt)
+            //   let hashNext = shaObj.getHash('HEX')
+            //   INTERMediatorOnPage.authHashedPassword2m = hashNext + INTERMediatorOnPage.authUserHexSalt
+            // }
             if (INTERMediatorOnPage.passwordHash < 2.1) {
               let shaObj = new jsSHA('SHA-256', 'TEXT')
               shaObj.update(newpassword + INTERMediatorOnPage.authUserSalt)

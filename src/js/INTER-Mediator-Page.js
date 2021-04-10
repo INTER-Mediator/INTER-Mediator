@@ -137,7 +137,9 @@ let INTERMediatorOnPage = {
   isComplementAuthData: function () {
     'use strict'
     return INTERMediatorOnPage.authUser !== null && INTERMediatorOnPage.authUser.length > 0 &&
-      INTERMediatorOnPage.authHashedPassword !== null && INTERMediatorOnPage.authHashedPassword.length > 0 &&
+      ((INTERMediatorOnPage.authHashedPassword !== null && INTERMediatorOnPage.authHashedPassword.length > 0)
+        || (INTERMediatorOnPage.authHashedPassword2m !== null && INTERMediatorOnPage.authHashedPassword2m.length > 0)
+        || (INTERMediatorOnPage.authHashedPassword2 !== null && INTERMediatorOnPage.authHashedPassword2.length > 0)) &&
       INTERMediatorOnPage.authUserSalt !== null && INTERMediatorOnPage.authUserSalt.length > 0 &&
       INTERMediatorOnPage.authChallenge !== null && INTERMediatorOnPage.authChallenge.length > 0
   },
@@ -306,6 +308,12 @@ let INTERMediatorOnPage = {
         if (INTERMediatorOnPage.authHashedPassword) {
           INTERMediatorOnPage.setCookieDomainWide('_im_credential', INTERMediatorOnPage.authHashedPassword)
         }
+        if (INTERMediatorOnPage.authHashedPassword2m) {
+          INTERMediatorOnPage.setCookieDomainWide('_im_credential2m', INTERMediatorOnPage.authHashedPassword2m)
+        }
+        if (INTERMediatorOnPage.authHashedPassword2) {
+          INTERMediatorOnPage.setCookieDomainWide('_im_credential2', INTERMediatorOnPage.authHashedPassword2)
+        }
         if (INTERMediatorOnPage.mediaToken) {
           INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken)
         }
@@ -319,6 +327,12 @@ let INTERMediatorOnPage = {
         }
         if (INTERMediatorOnPage.authHashedPassword) {
           INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_credential', INTERMediatorOnPage.authHashedPassword)
+        }
+        if (INTERMediatorOnPage.authHashedPassword2m) {
+          INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_credential2m', INTERMediatorOnPage.authHashedPassword2m)
+        }
+        if (INTERMediatorOnPage.authHashedPassword2) {
+          INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_credential2', INTERMediatorOnPage.authHashedPassword2)
         }
         if (INTERMediatorOnPage.mediaToken) {
           INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_mediatoken', INTERMediatorOnPage.mediaToken)

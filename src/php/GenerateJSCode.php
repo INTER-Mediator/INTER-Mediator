@@ -68,7 +68,7 @@ class GenerateJSCode
             "oAuthProvider", "oAuthClientID", "oAuthRedirect", "passwordPolicy", "documentRootPrefix", "dbClass",
             "dbDSN", "nonSupportMessageId", "valuesForLocalContext", "themeName", "appLocale", "appCurrency",
             "resetPage", "enrollPage", "serviceServerPort", "serviceServerHost", "activateClientService",
-            "followingTimezones", "notUseServiceServer", "serviceServerProtocol", "passwordHash",
+            "followingTimezones", "notUseServiceServer", "serviceServerProtocol", "passwordHash", "alwaysGenSHA2",
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -107,7 +107,8 @@ class GenerateJSCode
         $activateClientService = isset($params['activateClientService']) ? boolval($params['activateClientService']) : false;
         $followingTimezones = isset($params['followingTimezones']) ? boolval($params['followingTimezones']) : false;
         $passwordHash = isset($params['passwordHash']) ? $params['passwordHash'] : 1;
-        $passwordHash = ($passwordHash === '2m')? 1.5 : floatval($passwordHash);
+        $passwordHash = ($passwordHash === '2m') ? 1.5 : floatval($passwordHash);
+        $alwaysGenSHA2 = isset($params['alwaysGenSHA2']) ? boolval($params['alwaysGenSHA2']) : false;
 
         $serverName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
         $documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : 'Not_on_web_server';
@@ -385,6 +386,7 @@ class GenerateJSCode
         $this->generateAssignJS("INTERMediatorOnPage.serverDefaultTimezone", $q, date_default_timezone_get(), $q);
         $this->generateAssignJS("INTERMediatorOnPage.isFollowingTimezone", $followingTimezones ? "true" : "false");
         $this->generateAssignJS("INTERMediatorOnPage.passwordHash", $passwordHash);
+        $this->generateAssignJS("INTERMediatorOnPage.alwaysGenSHA2", $alwaysGenSHA2 ? "true" : "false");
     }
 
     private function combineScripts($isSocketIO): string
