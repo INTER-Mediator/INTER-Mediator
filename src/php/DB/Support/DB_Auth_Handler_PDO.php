@@ -886,8 +886,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "{$this->dbClass->handler->sqlUPDATECommand()}{
-                $userTable} SET hashedpasswd = " . $this->dbClass->link->quote($password)
+        $sql = "{$this->dbClass->handler->sqlUPDATECommand()}{$userTable} SET hashedpasswd = "
+            . $this->dbClass->link->quote($password)
             . (($rawPWField !== false) ? "," . $rawPWField . " = " . $this->dbClass->link->quote($rawPW) : "")
             . " WHERE id = " . $this->dbClass->link->quote($userID);
         $result = $this->dbClass->link->query($sql);

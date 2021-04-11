@@ -42,6 +42,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 //    private $previousChallenge;
 //    private $previousClientid;
     private $passwordHash;
+    private $alwaysGenSHA2;
 
     private $clientSyncAvailable;
 
@@ -555,11 +556,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $params = IMUtil::getFromParamsPHPFile(array(
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
             "dbOption", "dbDSN", "pusherParameters", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
-            "activateClientService", "accessLogLevel", "certVerifying", "passwordHash",
+            "activateClientService", "accessLogLevel", "certVerifying", "passwordHash", "alwaysGenSHA2"
         ), true);
         $this->accessLogLevel = intval($params['accessLogLevel']);
         $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
         $this->passwordHash = isset($params['passwordHash']) ? $params['passwordHash'] : "1";
+        $this->alwaysGenSHA2 = isset($params['alwaysGenSHA2']) ? boolval($params['alwaysGenSHA2']) : false;
 
         $this->dbSettings->setDataSource($datasource);
         $this->dbSettings->setOptions($options);
@@ -1287,7 +1289,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     function convertHashedPassword($pw)
     {
         $salt = $this->generateSalt();
-        if ($this->passwordHash == "1") {
+        if ($this->passwordHash == "1" && !$this->alwaysGenSHA2) {
             return sha1($pw . $salt) . bin2hex($salt);
         }
         return hash("sha256", $pw . $salt) . bin2hex($salt);

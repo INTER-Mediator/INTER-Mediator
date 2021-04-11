@@ -21,8 +21,8 @@ class EnrollStart extends UseSharedObjects implements BeforeCreate, AfterCreate
         $currentDTFormat = date('YmdHis', $currentDT);
 
         $dataFromClient = $this->dbSettings->getValuesWithFields();
-        $this->dbSettings->addValueWithField(
-            "username", $currentDTFormat . $dataFromClient['email']);
+        $this->dbSettings->addValueWithField("username", $currentDTFormat . $dataFromClient['email']);
+        // This username format is supposed to the email address can be as an username.
         $this->dbSettings->addValueWithField("hashedpasswd", "dummydummydummy");
     }
 
@@ -31,6 +31,6 @@ class EnrollStart extends UseSharedObjects implements BeforeCreate, AfterCreate
         $createdRecord = $this->dbClass->updatedRecord();
         $hash = $this->proxyObject->userEnrollmentStart($createdRecord[0]["id"]);
         $this->dbClass->setUpdatedRecord("hash", $hash);
-        return $result;
+        return $this->dbClass->updatedRecord();
     }
 }
