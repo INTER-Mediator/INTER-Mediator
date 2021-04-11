@@ -146,10 +146,10 @@ $defaultTimezone = 'Asia/Tokyo';
 //$passwordPolicy = "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName";
 
 $customLoginPanel = '';
-$passwordHash = '1';  // '2m' supports SHA-256 and Wrapping SHA-1 with SHA-256,
+//$passwordHash = '1';  // '2m' supports SHA-256 and Wrapping SHA-1 with SHA-256,
 // '2' supports SHA-256 password hash only,
 // No specification or other string support SHA-1, SHA-256, and wrapping.
-$alwaysGenSHA2 = false; // On the password changing, generate SHA-2 hash. The default is false.
+//$alwaysGenSHA2 = false; // On the password changing, generate SHA-2 hash. The default is false.
 
 // A enrollment page and a password reset page are going to show on login panel.
 //$resetPage = '...url...';
