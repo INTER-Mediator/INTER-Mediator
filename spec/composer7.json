@@ -24,7 +24,7 @@
     "ext-gd": "*",
     "ext-ldap": "*",
     "mouf/nodejs-installer": ">=1.0",
-    "phpseclib/phpseclib": "^2",
+    "phpseclib/phpseclib": "2.0.31",
     "paragonie/constant_time_encoding": "*",
     "inter-mediator/fxphp": "*",
     "inter-mediator/fmdataapi": "*",
