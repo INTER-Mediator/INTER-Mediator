@@ -1429,7 +1429,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $salt = $this->generateSalt();
         $hexSalt = bin2hex($salt);
         $returnValue = $this->dbClass->authHandler->authSupportCreateUser(
-            $username, sha1($password . $salt) . $hexSalt, $isLDAP, $password);
+            $username, hash("sha256", $password . $salt) . $hexSalt, $isLDAP, $password);
         $this->logger->setDebugMessage("[addUser] authSupportCreateUser returns: {$returnValue}", 2);
         return $returnValue;
     }

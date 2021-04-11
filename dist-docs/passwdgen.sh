@@ -39,7 +39,7 @@ generate_hash_passwd(){
     ST="echo chr(${CODE1}).chr(${CODE2}).chr(${CODE3}).chr(${CODE4});"
     SOLT=$(php -r "${ST}")
 
-    HASH=$(${ECHO} -n "$2${SOLT}" | openssl sha1 -sha1)
+    HASH=$(${ECHO} -n "$2${SOLT}" | openssl sha256 -sha256)
     SOLTHEX=$(${ECHO} -n "${SOLT}" | xxd -ps)
     if [ ${optSQL} -eq 1 ]
     then
