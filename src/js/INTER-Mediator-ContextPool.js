@@ -293,8 +293,8 @@ const IMLibContextPool = {
         }
       }
 
-      if (INTERMediatorOnPage.dbClassName === 'FileMaker_FX' ||
-        INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI') {
+      if (INTERMediatorOnPage.dbClassName.match(/FileMaker_FX/) ||
+        INTERMediatorOnPage.dbClassName.match(/FileMaker_DataAPI/)) {
         // for FileMaker portal access mode
         const parentKeying = Object.keys(contextAndKey.context.binding)[0]
         const relatedId = targetKeying.split('=')[1]
@@ -341,8 +341,8 @@ const IMLibContextPool = {
                   }
                 }
 
-                if (INTERMediatorOnPage.dbClassName === 'FileMaker_FX' ||
-                  INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI') {
+                if (INTERMediatorOnPage.dbClassName.match(/FileMaker_FX/) ||
+                  INTERMediatorOnPage.dbClassName.match(/FileMaker_DataAPI/)) {
                   // for FileMaker portal access mode
                   for (const foreignKey in IMLibContextPool.poolingContexts[i].binding[keying][field]) {
                     if (IMLibContextPool.poolingContexts[i].binding[keying][field].hasOwnProperty(foreignKey)) {
