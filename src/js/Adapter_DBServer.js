@@ -537,8 +537,8 @@ const INTERMediator_DBAdapter = {
       params = 'access=read&name=' + encodeURIComponent(args.name)
     } else {
       if (parseInt(args.records, 10) === 0 &&
-        (INTERMediatorOnPage.dbClassName === 'FileMaker_FX' ||
-          INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI')) {
+        (INTERMediatorOnPage.dbClassName.match(/FileMaker_FX/) ||
+          INTERMediatorOnPage.dbClassName.match(/FileMaker_DataAPI/))) {
         params = 'access=describe&name=' + encodeURIComponent(args.name)
       } else {
         params = 'access=read&name=' + encodeURIComponent(args.name)
