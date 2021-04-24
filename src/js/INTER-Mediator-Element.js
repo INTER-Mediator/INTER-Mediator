@@ -21,11 +21,6 @@
 const IMLibFormat = require('../../node_modules/inter-mediator-formatter/index')
 
 /**
- * @fileoverview INTERMediatorOnPage class is defined here.
- */
-const INTERMediatorOnPage = require('./INTER-Mediator-Page')
-
-/**
  *
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
@@ -597,7 +592,8 @@ const IMLibTextEditing = {
 
 // @@IM@@IgnoringRestOfFile
 module.exports = IMLibElement
-const IMLib = {nl_char: '\n'}
+const IMLib = {nl_char: '\n', cr_char: '\r'}
+const INTERMediatorOnPage = require('./INTER-Mediator-Page')
 const INTERMediatorLib = require('../../src/js/INTER-Mediator-Lib')
 const INTERMediator = require('../../src/js/INTER-Mediator')
 const IMLibChangeEventDispatch = require('../../src/js/INTER-Mediator-Events')
