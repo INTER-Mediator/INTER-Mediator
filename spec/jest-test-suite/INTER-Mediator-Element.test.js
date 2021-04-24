@@ -2,6 +2,7 @@
 /* global INTERMediator,buster,INTERMediatorLib,INTERMediatorOnPage,IMLibElement */
 
 const IMLibElement = require('../../src/js/INTER-Mediator-Element')
+const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
 
 beforeEach(() => {
   INTERMediatorLocale = {
