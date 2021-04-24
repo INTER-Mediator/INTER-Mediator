@@ -19,6 +19,12 @@
  */
 // @@IM@@IgnoringNextLine
 const IMLibFormat = require('../../node_modules/inter-mediator-formatter/index')
+
+/**
+ * @fileoverview INTERMediatorOnPage class is defined here.
+ */
+const INTERMediatorOnPage = require('./INTER-Mediator-Page')
+
 /**
  *
  * Usually you don't have to instanciate this class with new operator.
@@ -334,7 +340,7 @@ const IMLibElement = {
         if (typeAttr === 'checkbox' || typeAttr === 'radio') { // set the value
           const valueAttr = element.value
           let curValues
-          if (INTERMediatorOnPage.dbClassName.match(/FileMaker_DataAPI/)) {
+          if (INTERMediatorOnPage.dbClassName && INTERMediatorOnPage.dbClassName.match(/FileMaker_DataAPI/)) {
             curValues = curVal.split(IMLib.cr_char)
           } else {
             curValues = curVal.split(IMLib.nl_char)
