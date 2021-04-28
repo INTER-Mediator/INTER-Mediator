@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0245dd948356aec65d03caecb2374af7",
+    "content-hash": "1f5aefae7c15bf715820bdca53343188",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.178.7",
+            "version": "3.178.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "9443aecbf56eb43e0c7a409494ae4c09f4cebf5f"
+                "reference": "ae5590158d773402f09ddc79b82e0d9243d3e990"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/9443aecbf56eb43e0c7a409494ae4c09f4cebf5f",
-                "reference": "9443aecbf56eb43e0c7a409494ae4c09f4cebf5f",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ae5590158d773402f09ddc79b82e0d9243d3e990",
+                "reference": "ae5590158d773402f09ddc79b82e0d9243d3e990",
                 "shasum": ""
             },
             "require": {
@@ -92,9 +92,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.178.7"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.178.11"
             },
-            "time": "2021-04-21T18:37:31+00:00"
+            "time": "2021-04-27T18:16:30+00:00"
         },
         {
             "name": "doctrine/lexer",
@@ -550,16 +550,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "1.8.1",
+            "version": "1.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "35ea11d335fd638b5882ff1725228b3d35496ab1"
+                "reference": "dc960a912984efb74d0a90222870c72c87f10c91"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/35ea11d335fd638b5882ff1725228b3d35496ab1",
-                "reference": "35ea11d335fd638b5882ff1725228b3d35496ab1",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/dc960a912984efb74d0a90222870c72c87f10c91",
+                "reference": "dc960a912984efb74d0a90222870c72c87f10c91",
                 "shasum": ""
             },
             "require": {
@@ -619,9 +619,9 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/1.8.1"
+                "source": "https://github.com/guzzle/psr7/tree/1.8.2"
             },
-            "time": "2021-03-21T16:25:00+00:00"
+            "time": "2021-04-26T09:17:50+00:00"
         },
         {
             "name": "inter-mediator/fmdataapi",
@@ -1552,16 +1552,16 @@
         },
         {
             "name": "simplesamlphp/saml2",
-            "version": "v4.2.0",
+            "version": "v4.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/simplesamlphp/saml2.git",
-                "reference": "d4038b83be50ccd64ecdc0b7c68e66d63c899d2c"
+                "reference": "3bc980feb96ecf57898014c1bb5b26f0859f1316"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/simplesamlphp/saml2/zipball/d4038b83be50ccd64ecdc0b7c68e66d63c899d2c",
-                "reference": "d4038b83be50ccd64ecdc0b7c68e66d63c899d2c",
+                "url": "https://api.github.com/repos/simplesamlphp/saml2/zipball/3bc980feb96ecf57898014c1bb5b26f0859f1316",
+                "reference": "3bc980feb96ecf57898014c1bb5b26f0859f1316",
                 "shasum": ""
             },
             "require": {
@@ -1605,9 +1605,9 @@
             "description": "SAML2 PHP library from SimpleSAMLphp",
             "support": {
                 "issues": "https://github.com/simplesamlphp/saml2/issues",
-                "source": "https://github.com/simplesamlphp/saml2/tree/v4.2.0"
+                "source": "https://github.com/simplesamlphp/saml2/tree/v4.2.1"
             },
-            "time": "2021-01-28T21:35:22+00:00"
+            "time": "2021-04-26T14:40:29+00:00"
         },
         {
             "name": "simplesamlphp/simplesamlphp",
@@ -3080,16 +3080,16 @@
         },
         {
             "name": "simplesamlphp/simplesamlphp-module-sqlauth",
-            "version": "v0.9.1",
+            "version": "v0.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/simplesamlphp/simplesamlphp-module-sqlauth.git",
-                "reference": "31bce8763ad97f4b4473e4ad4a5a96ddc136ef6b"
+                "reference": "a53475236787630d7872ca97445f7e75f2609257"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/simplesamlphp/simplesamlphp-module-sqlauth/zipball/31bce8763ad97f4b4473e4ad4a5a96ddc136ef6b",
-                "reference": "31bce8763ad97f4b4473e4ad4a5a96ddc136ef6b",
+                "url": "https://api.github.com/repos/simplesamlphp/simplesamlphp-module-sqlauth/zipball/a53475236787630d7872ca97445f7e75f2609257",
+                "reference": "a53475236787630d7872ca97445f7e75f2609257",
                 "shasum": ""
             },
             "require": {
@@ -3099,7 +3099,7 @@
             "require-dev": {
                 "phpunit/phpunit": "~5.7",
                 "simplesamlphp/simplesamlphp": "^1.17",
-                "webmozart/assert": "^1.4"
+                "webmozart/assert": "^1.4 <1.7"
             },
             "type": "simplesamlphp-module",
             "autoload": {
@@ -3109,7 +3109,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "LGPL-3.0-or-later"
+                "LGPL-2.1-or-later"
             ],
             "authors": [
                 {
@@ -3126,7 +3126,7 @@
                 "issues": "https://github.com/tvdijen/simplesamlphp-module-sqlauth/issues",
                 "source": "https://github.com/tvdijen/simplesamlphp-module-sqlauth"
             },
-            "time": "2019-12-03T09:07:09+00:00"
+            "time": "2021-04-23T08:14:10+00:00"
         },
         {
             "name": "simplesamlphp/simplesamlphp-module-statistics",
@@ -7626,7 +7626,6 @@
         "ext-xml": "*",
         "ext-json": "*",
         "ext-libxml": "*",
-        "ext-posix": "*",
         "ext-exif": "*",
         "ext-gd": "*",
         "ext-ldap": "*"

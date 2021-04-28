@@ -19,7 +19,6 @@
     "ext-xml": "*",
     "ext-json": "*",
     "ext-libxml": "*",
-    "ext-posix": "*",
     "ext-exif": "*",
     "ext-gd": "*",
     "ext-ldap": "*",
