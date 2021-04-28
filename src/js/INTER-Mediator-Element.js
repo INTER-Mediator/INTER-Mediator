@@ -15,14 +15,15 @@
 /* jshint -W083 */ // Function within a loop
 
 /**
- * @fileoverview IMLibElement class is defined here.
+ * @fileoverview IMLibElement class is defined here for testing.
  */
 // @@IM@@IgnoringNextLine
 const IMLibFormat = require('../../node_modules/inter-mediator-formatter/index')
 
 /**
- * @fileoverview INTERMediatorOnPage class is defined here.
+ * @fileoverview INTERMediatorOnPage class is defined here for testing.
  */
+// @@IM@@IgnoringNextLine
 const INTERMediatorOnPage = require('./INTER-Mediator-Page')
 
 /**
