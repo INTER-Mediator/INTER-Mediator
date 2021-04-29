@@ -179,10 +179,12 @@ const IMLibCalc = {
                   }
                   if (!hasRelation) {
                     const context = IMLibContextPool.contextFromName(expCName)
-                    for (key in context.store) {    // Collect field data from all records
-                      if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
-                        vArray.push(context.store[key][fName])
-                        hasRelation = true
+                    if(context) {
+                      for (key in context.store) {    // Collect field data from all records
+                        if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
+                          vArray.push(context.store[key][fName])
+                          hasRelation = true
+                        }
                       }
                     }
                   }

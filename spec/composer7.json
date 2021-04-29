@@ -19,7 +19,6 @@
     "ext-xml": "*",
     "ext-json": "*",
     "ext-libxml": "*",
-    "ext-posix": "*",
     "ext-exif": "*",
     "ext-gd": "*",
     "ext-ldap": "*",
@@ -30,7 +29,8 @@
     "inter-mediator/fmdataapi": "*",
     "swiftmailer/swiftmailer": "*",
     "tecnickcom/tcpdf": "*",
-    "aws/aws-sdk-php": "*"
+    "aws/aws-sdk-php": "*",
+    "simplesamlphp/simplesamlphp": "*"
   },
   "extra": {
     "mouf": {
