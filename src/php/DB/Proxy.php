@@ -1438,7 +1438,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         $this->logger->setDebugMessage("[addUser] username={$username}, isLDAP={$isLDAP}", 2);
         $returnValue = $this->dbClass->authHandler->authSupportCreateUser(
-            $username, convertHashedPassword($password), $isLDAP, $password);
+            $username, $this->convertHashedPassword($password), $isLDAP, $password);
         $this->logger->setDebugMessage("[addUser] authSupportCreateUser returns: {$returnValue}", 2);
         return $returnValue;
     }
