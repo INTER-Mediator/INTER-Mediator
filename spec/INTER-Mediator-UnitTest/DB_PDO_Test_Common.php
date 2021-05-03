@@ -354,16 +354,24 @@ abstract class DB_PDO_Test_Common extends TestCase
         $challenge = $this->db_proxy->generateChallenge();
         $this->db_proxy->saveChallenge($username, $challenge, $clientId);
 
+        $hashedvalue = hash('sha1', $password . $retrievedSalt) . $retrievedHexSalt;
         $value = $password . $retrievedSalt;
         for ($i = 0; $i < 4999; $i++) {
-            $value = hash('sha256', $value, true);
+            $value = hash("sha256", $value, true);
         }
-        $hashedvalue = hash('sha256', $value) . bin2hex($retrievedSalt);
-        $this->db_proxy->setParamResponse([hash_hmac('sha256', $hashedvalue, $challenge)]);
+        $hashedvalue256 = hash("sha256", $value, false) . $retrievedHexSalt;
+        $this->db_proxy->setParamResponse([
+            hash_hmac('sha256', $hashedvalue, $challenge),
+            hash_hmac('sha256', $hashedvalue256, $challenge),
+            hash_hmac('sha256', $hashedvalue256, $challenge),
+        ]);
         $this->db_proxy->setClientId($clientId);
-        $this->assertTrue(
-            $this->db_proxy->checkAuthorization($username),
-            $testName);
+        $checkResult = $this->db_proxy->checkAuthorization($username);
+
+//        var_export($this->db_proxy->logger->getErrorMessages());
+//        var_export($this->db_proxy->logger->getDebugMessages());
+
+        $this->assertTrue($checkResult, $testName);
     }
 
     function testUserGroup()

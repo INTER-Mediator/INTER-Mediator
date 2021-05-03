@@ -64,7 +64,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         if (is_array($res)) {
             $this->paramResponse = isset($res[0]) ? $res[0] : null;
             $this->paramResponse2m = isset($res[1]) ? $res[1] : null;
-            $this->paramResponsem = isset($res[2]) ? $res[2] : null;
+            $this->paramResponse2 = isset($res[2]) ? $res[2] : null;
         } else {
             $this->paramResponse = $res;
         }
