@@ -3,9 +3,9 @@
 /**
  * Object-oriented class for the REST API in FileMaker Server 18/Cloud.
  *
- * @version 20.0
+ * @version 22.0
  * @author Masayuki Nii <nii@msyk.net>
- * @copyright 2017-2019 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
+ * @copyright 2017-2020 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
  */
 
 namespace INTERMediator\FileMakerServer\RESTAPI;
@@ -21,9 +21,9 @@ use Exception;
  * @link https://github.com/msyk/FMDataAPI GitHub Repository
  * @property-read FileMakerLayout $<<layout_name>> Returns the FileMakerLayout object from the layout named with the property.
  *    If the layout doesn't exist, no error arises here. Any errors might arise on methods of FileMakerLayout class.
- * @version 20
+ * @version 22
  * @author Masayuki Nii <nii@msyk.net>
- * @copyright 2017-2019 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
+ * @copyright 2017-2020 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
  * @source 1 100000 The source code.
  */
 class FMDataAPI
@@ -113,6 +113,14 @@ class FMDataAPI
     public function setDebug($value)
     {
         $this->provider->isDebug = $value;
+    }
+
+    /**
+     * Set the cURL communication timeout in seconds
+     * @param int $timeout
+     */
+    public function setTimeout($timeout) {
+        $this->provider->timeout = $timeout;
     }
 
     /**
@@ -363,9 +371,9 @@ use Exception;
  *
  * @package INTER-Mediator\FileMakerServer\RESTAPI
  * @link https://github.com/msyk/FMDataAPI GitHub Repository
- * @version 20
+ * @version 22
  * @author Masayuki Nii <nii@msyk.net>
- * @copyright 2017-2019 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
+ * @copyright 2017-2020 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
  */
 class FileMakerLayout
 {
@@ -651,23 +659,23 @@ class FileMakerLayout
      */
     public function duplicate($recordId, $script = null)
     {
-    	try {
-    		if ($this->restAPI->login()) {
-    			$request = "{}"; //FileMaker expects an empty object, so we have to set "{}" here
-    			$headers = ["Content-Type" => "application/json"];
-    			$params = ['layouts' => $this->layout, 'records' => $recordId];
-    			if (!is_null($script)) {
-    				$request = $this->buildScriptParameters($script);
-    			}
-    			$this->restAPI->callRestAPI($params, true, 'POST', $request, $headers);
-    			$this->restAPI->storeToProperties();
-    			$this->restAPI->logout();
-    		} else {
-    			return null;
-    		}
-    	} catch (\Exception $e) {
-    		throw $e;
-    	}
+        try {
+            if ($this->restAPI->login()) {
+                $request = "{}"; //FileMaker expects an empty object, so we have to set "{}" here
+                $headers = ["Content-Type" => "application/json"];
+                $params = ['layouts' => $this->layout, 'records' => $recordId];
+                if (!is_null($script)) {
+                    $request = $this->buildScriptParameters($script);
+                }
+                $this->restAPI->callRestAPI($params, true, 'POST', $request, $headers);
+                $this->restAPI->storeToProperties();
+                $this->restAPI->logout();
+            } else {
+                return null;
+            }
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     /**
@@ -961,9 +969,9 @@ class FileMakerLayout
  * @property string $<<field_name>> The field value named as the property name.
  * @property FileMakerRelation $<<portal_name>> FileMakerRelation object associated with the property name.
  *    The table occurrence name of the portal can be the 'portal_name,' and also the object name of the portal.
- * @version 02
+ * @version 22
  * @author Masayuki Nii <nii@msyk.net>
- * @copyright 2017-2019 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
+ * @copyright 2017-2020 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
  */
 class FileMakerRelation implements \Iterator
 {
@@ -1272,6 +1280,8 @@ class FileMakerRelation implements \Iterator
                             $this->data->portalData->$name,
                             property_exists($this->data, 'portalDataInfo') ? $this->data->portalDataInfo : null,
                             "PORTAL", 0, $name, $this->restAPI);
+                    } else if (isset($this->data->fieldData->$fieldName)){
+                        $value = $this->data->fieldData->$fieldName;
                     }
                     break;
                 case "PORTALRECORD":
@@ -1441,9 +1451,9 @@ class FileMakerRelation implements \Iterator
  *
  * @package INTER-Mediator\FileMakerServer\RESTAPI
  * @link https://github.com/msyk/FMDataAPI GitHub Repository
- * @version 20
+ * @version 22
  * @author Masayuki Nii <nii@msyk.net>
- * @copyright 2017-2019 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
+ * @copyright 2017-2020 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
  */
 class CommunicationProvider
 {
@@ -1634,6 +1644,11 @@ class CommunicationProvider
      * @ignore
      */
     public $scriptResultPresort;
+    /**
+     * @var
+     * @ignore
+     */
+    public $timeout;
 
     /**
      * CommunicationProvider constructor.
@@ -1677,11 +1692,15 @@ class CommunicationProvider
      * @return string
      * @ignore
      */
-    public function getURL($params, $request, $methodLower, $isSystem = false)
+    public function getURL($params, $request, $methodLower, $isSystem = false, $directPath = false)
     {
         $vStr = $this->vNum < 1 ? 'Latest' : strval($this->vNum);
-        $url = "{$this->protocol}://{$this->host}:{$this->port}/fmi/data/v{$vStr}" .
-            ((!$isSystem) ? "/databases/{$this->solution}" : "");
+        $url = "{$this->protocol}://{$this->host}:{$this->port}";
+        if ($directPath) {
+            $url .= $directPath;
+        } else {
+            $url .= "/fmi/data/v{$vStr}" . ((!$isSystem) ? "/databases/{$this->solution}" : "");
+        }
         foreach ($params as $key => $value) {
             $url .= "/{$key}" . (is_null($value) ? "" : "/{$value}");
         }
@@ -1949,21 +1968,58 @@ class CommunicationProvider
         }
     }
 
+    private function getSupportingProviders()
+    {
+        try {
+            $this->callRestAPI([], [], 'GET', [], [], false, "/fmws/oauthproviderinfo");
+            $result = [];
+            foreach ($this->responseBody as $key => $item) {
+
+            }
+            return $result;
+        } catch (\Exception $ex) {
+            return null;
+        }
+    }
+
+    private function getOAuthIdentifier($provider)
+    {
+        try {
+            $this->callRestAPI([], [
+                "trackingID" => rand(10000000,99999999),
+                "provider" => $provider,
+                "address" => "127.0.0.1",
+                "X-FMS-OAuth-AuthType" => 2
+            ], 'GET', [], [
+                "X-FMS-Application-Type" => 9,
+                "X-FMS-Application-Version" => 15,
+                "X-FMS-Return-URL" => "http://127.0.0.1/",
+            ], false, "/oauth/getoauthurl");
+            $result = [];
+            foreach ($this->responseBody as $key => $item) {
+
+            }
+            return $result;
+        } catch (\Exception $ex) {
+            return null;
+        }
+    }
+
     /**
      * @param $params
      * @param $layout
-     * @param $isAddToken
+     * @param boolean $isAddToken
      * @param string $method
-     * @param null $request
-     * @param null $recordId
-     * @param false $isSystem for Metadata
+     * @param array $request
+     * @param array $addHeader
+     * @param boolean $isSystem for Metadata
      * @throws Exception In case of any error, an exception arises.
      * @ignore
      */
-    public function callRestAPI($params, $isAddToken, $method = 'GET', $request = null, $addHeader = null, $isSystem = false)
+    public function callRestAPI($params, $isAddToken, $method = 'GET', $request = null, $addHeader = null, $isSystem = false, $directPath = false)
     {
         $methodLower = strtolower($method);
-        $url = $this->getURL($params, $request, $methodLower, $isSystem);
+        $url = $this->getURL($params, $request, $methodLower, $isSystem, $directPath);
         $header = $this->getHeaders($isAddToken, $addHeader);
         $jsonEncoding = true;
         if (is_string($request)) {
@@ -2010,6 +2066,9 @@ class CommunicationProvider
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
             }
         }
+        if (!is_null($this->timeout)) {
+            curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
+        }
         $response = curl_exec($ch);
         $this->curlInfo = curl_getinfo($ch);
         $this->curlErrorNumber = curl_errno($ch);
@@ -2049,7 +2108,7 @@ class CommunicationProvider
                 $description = date('Y-m-d H:i:s ') . "{$description}";
                 $description .= "[URL({$this->method}): {$this->url}]";
                 if ($errorCode !== 401) {
-                	throw new \Exception($description, $errorCode);
+                    throw new \Exception($description, $errorCode);
                 }
             }
         }
@@ -2078,6 +2137,9 @@ class CommunicationProvider
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         }
+        if (!is_null($this->timeout)) {
+            curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
+        }
         curl_exec($ch);
         if (curl_errno($ch) !== 0) {
             $errMsg = curl_error($ch);
@@ -2093,6 +2155,9 @@ class CommunicationProvider
         } else {
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        }
+        if (!is_null($this->timeout)) {
+            curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
         }
         $output = curl_exec($ch);
         if (curl_errno($ch) !== 0) {
