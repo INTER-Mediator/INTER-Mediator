@@ -354,7 +354,11 @@ abstract class DB_PDO_Test_Common extends TestCase
         $challenge = $this->db_proxy->generateChallenge();
         $this->db_proxy->saveChallenge($username, $challenge, $clientId);
 
-        $hashedvalue = hash('sha256', $password . $retrievedSalt) . bin2hex($retrievedSalt);
+        $value = $password . $retrievedSalt;
+        for ($i = 0; $i < 4999; $i++) {
+            $value = hash('sha256', $value, true);
+        }
+        $hashedvalue = hash('sha256', $value) . bin2hex($retrievedSalt);
         $this->db_proxy->setParamResponse([hash_hmac('sha256', $hashedvalue, $challenge)]);
         $this->db_proxy->setClientId($clientId);
         $this->assertTrue(

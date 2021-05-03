@@ -1429,6 +1429,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $returnValue;
     }
 
+
     /**
      * @param $username
      * @param $password
