@@ -8,35 +8,21 @@
 
 COUNT=20;
 
-while [ "${COUNT}" \> 0 ]
+while [ "${COUNT}" -gt 0 ]
 do
-    CODE1=`expr $RANDOM % 95 + 32`
-    CODE2=`expr $RANDOM % 95 + 32`
-    CODE3=`expr $RANDOM % 95 + 32`
-    CODE4=`expr $RANDOM % 95 + 32`
-    ST="echo chr(${CODE1}).chr(${CODE2}).chr(${CODE3}).chr(${CODE4});"
-    SOLT=`php -r "${ST}" `
-
-    CODE1=`expr $RANDOM % 26 + 65`
-    CODE2=`expr $RANDOM % 26 + 65`
-    CODE3=`expr $RANDOM % 10 + 48`
-    CODE4=`expr $RANDOM % 10 + 48`
-    CODE5=`expr $RANDOM % 26 + 97`
-    CODE6=`expr $RANDOM % 26 + 97`
-    CODE7=`expr $RANDOM % 10 + 48`
-    CODE8=`expr $RANDOM % 10 + 48`
-    ST="echo chr(${CODE1}).chr(${CODE2}).chr(${CODE3}).chr(${CODE4}).chr(${CODE5}).chr(${CODE6}).chr(${CODE7}).chr(${CODE8});"
-    PASS=`php -r "${ST}" `
-
-    HASH=`/bin/echo -n "${PASS}${SOLT}" | openssl sha1 -sha1`
-    SOLTHEX=`/bin/echo -n "${SOLT}" | xxd -ps`
+    SOLT=$(cat /dev/urandom | base64 | fold -w 4 | head -n 1)
+    PASS=$(cat /dev/urandom | base64 | fold -w 8 | head -n 1)
+    VALUE=$(/bin/echo -n "${PASS}${SOLT}" | openssl sha256 -sha256)
+    for i in {1..4999}
+    do
+      VALUE=$(/bin/echo -n "${VALUE}" | xxd -r -p | openssl sha256 -sha256)
+    done
+    SOLTHEX=$(/bin/echo -n "${SOLT}" | xxd -ps)
     UNUM=`expr 1000 + ${COUNT}`
 #    echo -n "INSERT INTO authuser(id,username,initialpass,hashedpasswd) "
 #    echo "VALUES(${UNUM},'ios${UNUM}', '${PASS}', '${HASH}${SOLTHEX}');"
 #    echo "INSERT INTO authcor(user_id,dest_group_id) VALUES(${UNUM},102);"
-
-echo "${PASS},${HASH}${SOLTHEX}"
-
+    echo "${PASS},${VALUE}${SOLTHEX}"
     COUNT=`expr ${COUNT} - 1`
 done
 

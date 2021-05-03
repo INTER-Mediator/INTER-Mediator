@@ -918,17 +918,22 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $authSucceed = false;
                     $ldap = new LDAPAuth();
                     $ldap->setLogger($this->logger);
-                    if ($this->checkAuthorization($signedUser, $ldap->isActive)) {
-                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
-                        $authSucceed = true;
-                    } else {
-                        if ($ldap->isActive) {
+                    if (!$ldap->isActive) { // Normal auth
+                        if ($this->checkAuthorization($signedUser, false)) {
+                            $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+                            $authSucceed = true;
+                        }
+                    } else { // Set up as LDAP
+                        if ($this->checkAuthorization($signedUser, true)) {
+                            $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+                            $authSucceed = true;
+                        } else { // Timeout with LDAP
                             list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
                             if ($ldap->bindCheck($signedUser, $password)) {
                                 $this->logger->setDebugMessage("LDAP Authentication succeed.");
                                 $authSucceed = true;
                                 $this->addUser($signedUser, $password, true);
-                                if ($this->checkAuthorization($signedUser, $ldap->isActive)) {
+                                if ($this->checkAuthorization($signedUser, true)) {
                                     $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
                                     $authSucceed = true;
                                 }
@@ -1292,7 +1297,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         if ($this->passwordHash == "1" && !$this->alwaysGenSHA2) {
             return sha1($pw . $salt) . bin2hex($salt);
         }
-        return hash("sha256", $pw . $salt) . bin2hex($salt);
+        $value = $pw . $salt;
+        for ($i = 0; $i < 5000; $i++) {
+            $value = hash("sha256", $value);
+        }
+        return $value . bin2hex($salt);
     }
 
     function generateCredential($digit)
@@ -1428,10 +1437,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     function addUser($username, $password, $isLDAP = false)
     {
         $this->logger->setDebugMessage("[addUser] username={$username}, isLDAP={$isLDAP}", 2);
-        $salt = $this->generateSalt();
-        $hexSalt = bin2hex($salt);
         $returnValue = $this->dbClass->authHandler->authSupportCreateUser(
-            $username, hash("sha256", $password . $salt) . $hexSalt, $isLDAP, $password);
+            $username, convertHashedPassword($password), $isLDAP, $password);
         $this->logger->setDebugMessage("[addUser] authSupportCreateUser returns: {$returnValue}", 2);
         return $returnValue;
     }

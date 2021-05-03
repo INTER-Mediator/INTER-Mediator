@@ -339,13 +339,13 @@ const INTERMediator_DBAdapter = {
         let shaObj = new jsSHA('SHA-1', 'TEXT')
         shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
         let hash = shaObj.getHash('HEX')
-        shaObj = new jsSHA('SHA-256', 'TEXT')
+        shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds" : 5000})
         shaObj.update(hash + INTERMediatorOnPage.authUserSalt)
         let hashNext = shaObj.getHash('HEX')
         INTERMediatorOnPage.authHashedPassword2m = hashNext + INTERMediatorOnPage.authUserHexSalt
       }
       if (INTERMediatorOnPage.passwordHash < 2.1) {
-        let shaObj = new jsSHA('SHA-256', 'TEXT')
+        let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds" : 5000})
         shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
         let hash = shaObj.getHash('HEX')
         INTERMediatorOnPage.authHashedPassword2 = hash + INTERMediatorOnPage.authUserHexSalt
@@ -377,7 +377,7 @@ const INTERMediator_DBAdapter = {
             //   INTERMediatorOnPage.authHashedPassword2m = hashNext + INTERMediatorOnPage.authUserHexSalt
             // }
             if (INTERMediatorOnPage.passwordHash < 2.1) {
-              let shaObj = new jsSHA('SHA-256', 'TEXT')
+              let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds" : 5000})
               shaObj.update(newpassword + INTERMediatorOnPage.authUserSalt)
               let hash = shaObj.getHash('HEX')
               INTERMediatorOnPage.authHashedPassword2 = hash + INTERMediatorOnPage.authUserHexSalt

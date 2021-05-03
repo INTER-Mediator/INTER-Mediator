@@ -447,8 +447,8 @@ INSERT authuser SET id=2,username='user2',hashedpasswd='5115aba773983066bcf4a865
 INSERT authuser SET id=3,username='user3',hashedpasswd='d1a7981108a73e9fbd570e23ecca87c2c5cb967554455354';
 INSERT authuser SET id=4,username='user4',hashedpasswd='8c1b394577d0191417e8d962c5f6e3ca15068f8254455354';
 INSERT authuser SET id=5,username='user5',hashedpasswd='ee403ef2642f2e63dca12af72856620e6a24102d54455354';
-INSERT authuser SET id=6,username='mig2m',hashedpasswd='cd01079fd3285dbc2b6549864e609edd0a9bacddbc8a9ba54fb9dab72b9c657948415348';
-INSERT authuser SET id=7,username='mig2',hashedpasswd='8c507f3a84f430b8e7f2c2953bdc8bc68b8043ca74e156995ead04755fbcdea048415348';
+INSERT authuser SET id=6,username='mig2m',hashedpasswd='cd85a299c154c4714b23ce4b63618527289296ba6642c2685651ad8b9f20ce02285d7b34';
+INSERT authuser SET id=7,username='mig2',hashedpasswd='fcc2ab4678963966614b5544a40f4b814ba3da41b3b69df6622e51b74818232864235970';
 
 # The user1 has the password 'user1'. It's salted with the string 'TEXT'.
 # All users have the password the same as user name. All are salted with 'TEXT'

@@ -145,7 +145,7 @@ const INTERMediatorLib = {
     }
     let shaObj = null
     if (INTERMediatorOnPage.passwordHash > 1.4 || INTERMediatorOnPage.alwaysGenSHA2) {
-      shaObj = new jsSHA('SHA-256', 'TEXT')
+      shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds" : 5000})
     } else {
       shaObj = new jsSHA('SHA-1', 'TEXT')
     }
