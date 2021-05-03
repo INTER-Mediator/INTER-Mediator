@@ -19,6 +19,7 @@
  */
 // @@IM@@IgnoringNextLine
 const IMLibFormat = require('../../node_modules/inter-mediator-formatter/index')
+
 /**
  *
  * Usually you don't have to instanciate this class with new operator.
@@ -333,7 +334,12 @@ const IMLibElement = {
         const typeAttr = element.getAttribute('type')
         if (typeAttr === 'checkbox' || typeAttr === 'radio') { // set the value
           const valueAttr = element.value
-          const curValues = curVal.split(IMLib.nl_char)
+          let curValues
+          if (INTERMediatorOnPage.dbClassName && INTERMediatorOnPage.dbClassName.match(/FileMaker_DataAPI/)) {
+            curValues = curVal.split(IMLib.cr_char)
+          } else {
+            curValues = curVal.split(IMLib.nl_char)
+          }
           if (typeAttr === 'checkbox' && curValues.length > 1) {
             for (let i = 0; i < curValues.length; i += 1) {
               if (valueAttr === curValues[i] && !INTERMediator.dontSelectRadioCheck) {
@@ -472,8 +478,8 @@ const IMLibElement = {
       newValue = element._im_getValue()
     } else if (nodeTag === 'INPUT') {
       if (typeAttr === 'checkbox') {
-        if (INTERMediatorOnPage.dbClassName === 'FileMaker_FX' ||
-          INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI') {
+        if (INTERMediatorOnPage.dbClassName.match(/FileMaker_FX/) ||
+          INTERMediatorOnPage.dbClassName.match(/FileMaker_DataAPI/)) {
           const mergedValues = []
           const targetNodes = element.parentNode.getElementsByTagName('INPUT')
           for (let k = 0; k < targetNodes.length; k++) {
@@ -481,7 +487,11 @@ const IMLibElement = {
               mergedValues.push(targetNodes[k].getAttribute('value'))
             }
           }
-          newValue = mergedValues.join(IMLib.nl_char)
+          if (INTERMediatorOnPage.dbClassName.match(/FileMaker_DataAPI/)) {
+            newValue = mergedValues.join(IMLib.cr_char)
+          } else {
+            newValue = mergedValues.join(IMLib.nl_char)
+          }
         } else {
           const valueAttr = element.getAttribute('value')
           if (element.checked) {
@@ -582,7 +592,8 @@ const IMLibTextEditing = {
 
 // @@IM@@IgnoringRestOfFile
 module.exports = IMLibElement
-const IMLib = {nl_char: '\n'}
+const IMLib = {nl_char: '\n', cr_char: '\r'}
+const INTERMediatorOnPage = require('./INTER-Mediator-Page')
 const INTERMediatorLib = require('../../src/js/INTER-Mediator-Lib')
 const INTERMediator = require('../../src/js/INTER-Mediator')
 const IMLibChangeEventDispatch = require('../../src/js/INTER-Mediator-Events')

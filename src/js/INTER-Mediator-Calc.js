@@ -179,10 +179,12 @@ const IMLibCalc = {
                   }
                   if (!hasRelation) {
                     const context = IMLibContextPool.contextFromName(expCName)
-                    for (key in context.store) {    // Collect field data from all records
-                      if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
-                        vArray.push(context.store[key][fName])
-                        hasRelation = true
+                    if(context) {
+                      for (key in context.store) {    // Collect field data from all records
+                        if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
+                          vArray.push(context.store[key][fName])
+                          hasRelation = true
+                        }
                       }
                     }
                   }
@@ -368,7 +370,9 @@ const IMLibCalc = {
             IMLibElement.setValueToIMNode(document.getElementById(idValue), nInfo.target, updatedValue, true)
             updatedNodeIds.push(idValue)
             updateNodeValues.push(updatedValue)
-            contextInfo.context.setValue(contextInfo.record, contextInfo.field, updatedValue, idValue, nInfo.target, false)
+            if (contextInfo && contextInfo.context && contextInfo.record && contextInfo.field) {
+              contextInfo.context.setValue(contextInfo.record, contextInfo.field, updatedValue, idValue, nInfo.target, false)
+            }
           }
         }
       }

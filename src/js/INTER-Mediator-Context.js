@@ -183,7 +183,7 @@ class IMLibContext {
               currentFieldVal = recordset[0][targetFieldCapt]
               initialvalue = targetContextCapt.getValue(contextInfoCapt.record, targetFieldCapt)
             }
-            if (INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI') {
+            if (INTERMediatorOnPage.dbClassName.match(/FileMaker_DataAPI/)) {
               if (typeof (initialvalue) === 'number' && typeof (currentFieldVal) === 'string') {
                 initialvalue = initialvalue.toString()
               }
@@ -268,8 +268,8 @@ class IMLibContext {
   getKeyField() {
     'use strict'
     let keyField
-    if (INTERMediatorOnPage.dbClassName === 'FileMaker_FX' ||
-      INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI') {
+    if (INTERMediatorOnPage.dbClassName.match(/FileMaker_FX/) ||
+      INTERMediatorOnPage.dbClassName.match(/FileMaker_DataAPI/)) {
       if (this.isPortal) {
         keyField = INTERMediatorOnPage.defaultKeyName
       } else {
