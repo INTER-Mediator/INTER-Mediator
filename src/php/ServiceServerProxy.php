@@ -87,9 +87,14 @@ class ServiceServerProxy
             return $ssStatus;
         } else {
             if (!$this->isServerStartable()) {
-                // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
-                // get_current_user doen't work on the ubuntu 18 of EC2. It returns the user logs in with ssh.
-                $uInfo = posix_getpwuid(posix_geteuid());
+                if (IMUtil::isPHPExecutingWindows()) {
+                    $uInfo = [];
+                    $uInfo['name'] = get_current_user();
+                } else {
+                    // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
+                    // get_current_user doen't work on the ubuntu 18 of EC2. It returns the user logs in with ssh.
+                    $uInfo = posix_getpwuid(posix_geteuid());
+                }
                 $this->errors[] = $this->messageHead . "Service Server can't boot because the root directory " .
                     "({$uInfo["dir"]}) of the web server user ({$uInfo['name']})  isn't writable.";
                 return false;
@@ -222,9 +227,13 @@ class ServiceServerProxy
 
     private function isServerStartable(): bool
     {
-        // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
-        // get_current_user doen't work on the ubuntu 18 of EC2. It returns the user logs in with ssh.
-        $homeDir = posix_getpwuid(posix_geteuid())["dir"];
+        if (IMUtil::isPHPExecutingWindows()) {
+            $homeDir = getenv("USERPROFILE");
+        }else {
+            // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
+            // get_current_user doen't work on the ubuntu 18 of EC2. It returns the user logs in with ssh.
+            $homeDir = posix_getpwuid(posix_geteuid())["dir"];
+        }
         if (file_exists($homeDir) && is_dir($homeDir) && is_writable($homeDir)) {
             return true;
         }

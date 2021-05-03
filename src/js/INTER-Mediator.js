@@ -1042,6 +1042,9 @@ const INTERMediator = {
      * Set the value to node and context.
      */
     function setupLinkedNode(linkedElements, contextObj, targetRecordset, ix, keyingValue) {
+      if (targetRecordset.length < 1 || targetRecordset[0] === null) {
+        return null;
+      }
       let idValuesForFieldName = {}
       const currentContextDef = contextObj.getContextDef()
       const currentWidgetNodes = linkedElements.widgetNode

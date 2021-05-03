@@ -510,7 +510,7 @@ const IMLibUI = {
                 ],
                 dataset: [
                   {
-                    field: INTERMediatorOnPage.dbClassName === 'FileMaker_DataAPI' ? 'deleteRelated' : '-delete.related',
+                    field: INTERMediatorOnPage.dbClassName.match(/FileMaker_DataAPI/) ? 'deleteRelated' : '-delete.related',
                     operator: '=',
                     value: currentContextCapt.contextName + '.' + keyValue
                   }
