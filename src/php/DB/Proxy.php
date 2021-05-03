@@ -1298,10 +1298,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             return sha1($pw . $salt) . bin2hex($salt);
         }
         $value = $pw . $salt;
-        for ($i = 0; $i < 5000; $i++) {
-            $value = hash("sha256", $value);
+        for ($i = 0; $i < 4999; $i++) {
+            $value = hash("sha256", $value, true);
         }
-        return $value . bin2hex($salt);
+        return hash("sha256", $value, false) . bin2hex($salt);
     }
 
     function generateCredential($digit)
