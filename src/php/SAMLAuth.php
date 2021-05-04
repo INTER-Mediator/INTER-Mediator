@@ -30,6 +30,7 @@ class SAMLAuth
     public function samlLoginCheck()
     {
         $this->authSimple->requireAuth();
+        return true;
 //        $name=$as->getAuthData("saml:sp:NameID");
 //        $attributes=$as->getAttributes();
 //        print_r($attributes);
