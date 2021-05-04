@@ -69,6 +69,7 @@ class GenerateJSCode
             "dbDSN", "nonSupportMessageId", "valuesForLocalContext", "themeName", "appLocale", "appCurrency",
             "resetPage", "enrollPage", "serviceServerPort", "serviceServerHost", "activateClientService",
             "followingTimezones", "notUseServiceServer", "serviceServerProtocol", "passwordHash", "alwaysGenSHA2",
+            "isSAML",
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -109,6 +110,7 @@ class GenerateJSCode
         $passwordHash = isset($params['passwordHash']) ? $params['passwordHash'] : 1;
         $passwordHash = ($passwordHash === '2m') ? 1.5 : floatval($passwordHash);
         $alwaysGenSHA2 = isset($params['alwaysGenSHA2']) ? boolval($params['alwaysGenSHA2']) : false;
+        $isSAML = isset($params['isSAML']) ? boolval($params['isSAML']) : false;
 
         $serverName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
         $documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : 'Not_on_web_server';
@@ -362,6 +364,9 @@ class GenerateJSCode
             $this->generateAssignJS(
                 "INTERMediatorOnPage.creditIncluding", $q, $options['credit-including'], $q);
         }
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.isSAML", $q, $isSAML ? 'true' : 'false', $q);
+
 
         // Initial values for local context
         if (!isset($valuesForLocalContext)) {

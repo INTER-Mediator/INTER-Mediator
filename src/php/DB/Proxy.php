@@ -556,7 +556,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $params = IMUtil::getFromParamsPHPFile(array(
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
             "dbOption", "dbDSN", "pusherParameters", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
-            "activateClientService", "accessLogLevel", "certVerifying", "passwordHash", "alwaysGenSHA2"
+            "activateClientService", "accessLogLevel", "certVerifying", "passwordHash", "alwaysGenSHA2",
+            "isSAML"
         ), true);
         $this->accessLogLevel = intval($params['accessLogLevel']);
         $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
@@ -631,14 +632,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         } else if (isset($options['pusher'])) {
             $pusherParams = $options['pusher'];
         }
-        if (!is_null($pusherParams)) {
-            $this->dbSettings->pusherAppId = $pusherParams['app_id'];
-            $this->dbSettings->pusherKey = $pusherParams['key'];
-            $this->dbSettings->pusherSecret = $pusherParams['secret'];
-            if (isset($pusherParams['channel'])) {
-                $this->dbSettings->pusherChannel = $pusherParams['channel'];
-            }
-        }
+//        if (!is_null($pusherParams)) {
+//            $this->dbSettings->pusherAppId = $pusherParams['app_id'];
+//            $this->dbSettings->pusherKey = $pusherParams['key'];
+//            $this->dbSettings->pusherSecret = $pusherParams['secret'];
+//            if (isset($pusherParams['channel'])) {
+//                $this->dbSettings->pusherChannel = $pusherParams['channel'];
+//            }
+//        }
 
         /* Setup Database Class's Object */
         $isDBClassNull = is_null($this->dbClass);
@@ -786,6 +787,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->dbSettings->setMediaRoot(isset($options['media-root-dir']) ? $options['media-root-dir'] : null);
 
         $this->logger->setDebugMessage("Server side locale: " . setlocale(LC_ALL, "0"), 2);
+
+        if (isset($params['isSAML'])) {
+            $this->dbSettings->setIsSAML($params['isSAML']);
+        }
         return true;
     }
 
@@ -923,23 +928,44 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                             $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
                             $authSucceed = true;
                         }
-                    } else { // Set up as LDAP
-                        if ($this->checkAuthorization($signedUser, true)) {
-                            $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
-                            $authSucceed = true;
-                        } else { // Timeout with LDAP
-                            list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
-                            if ($ldap->bindCheck($signedUser, $password)) {
-                                $this->logger->setDebugMessage("LDAP Authentication succeed.");
+                    } else
+                        if (!$this->dbSettings->getIsSAML()) { // Set up as LDAP
+                            if ($this->checkAuthorization($signedUser, true)) {
+                                $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
                                 $authSucceed = true;
-                                $this->addUser($signedUser, $password, true);
-                                if ($this->checkAuthorization($signedUser, true)) {
-                                    $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+                            } else { // Timeout with LDAP
+                                list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
+                                if ($ldap->bindCheck($signedUser, $password)) {
+                                    $this->logger->setDebugMessage("LDAP Authentication succeed.");
                                     $authSucceed = true;
+                                    $this->addUser($signedUser, $password, true);
+                                    // The following re-auth doesn't work. The salt of hashed password is
+                                    // different from the request. Here is after bind checking, so authentication
+                                    // is passed anyway.
+//                                    if ($this->checkAuthorization($signedUser, true)) {
+//                                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+//                                        $authSucceed = true;
+//                                    }
+                                }
+                            }
+                        } else { // Set up as SAML
+                            if ($this->checkAuthorization($signedUser, true)) {
+                                $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+                                $authSucceed = true;
+                            } else { // Timeout with SAML
+                                $SAMLAuth = new SAMLAuth();
+                                if ($SAMLAuth->samlLoginCheck()) {
+                                    $this->logger->setDebugMessage("SAML Authentication succeed.");
+                                    $authSucceed = true;
+                                    $password = "1234";
+                                    $this->addUser($signedUser, $password, true);
+//                                    if ($this->checkAuthorization($signedUser, true)) {
+//                                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+//                                        $authSucceed = true;
+//                                    }
                                 }
                             }
                         }
-                    }
 
                     if (!$authSucceed) {
                         $this->logger->setDebugMessage(
@@ -1139,8 +1165,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->logger->setDebugMessage(
             "[finishCommunication]getRequireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
         $this->outputOfProcessing['usenull'] = false;
-        $this->outputOfProcessing['notifySupport']
-            = is_null($this->dbSettings->notifyServer) ? false : $this->dbSettings->pusherKey;
+//        $this->outputOfProcessing['notifySupport']
+//            = is_null($this->dbSettings->notifyServer) ? false : $this->dbSettings->pusherKey;
         if (!$notFinish && $this->dbSettings->getRequireAuthorization()) {
             $generatedChallenge = $this->generateChallenge();
             $generatedUID = $this->generateClientId('');

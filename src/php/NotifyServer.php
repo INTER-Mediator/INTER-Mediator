@@ -38,9 +38,9 @@ class NotifyServer
         if (is_null($dbClass) || is_null($dbSettings) || is_null($clientId)
             || !is_subclass_of($dbClass, 'DB_Interface_Registering')
             || !$dbClass->notifyHandler->isExistRequiredTable()
-            || is_null($dbSettings->pusherAppId) || strlen($dbSettings->pusherAppId) < 1
-            || is_null($dbSettings->pusherKey) || strlen($dbSettings->pusherKey) < 1
-            || is_null($dbSettings->pusherSecret) || strlen($dbSettings->pusherSecret) < 1
+//            || is_null($dbSettings->pusherAppId) || strlen($dbSettings->pusherAppId) < 1
+//            || is_null($dbSettings->pusherKey) || strlen($dbSettings->pusherKey) < 1
+//            || is_null($dbSettings->pusherSecret) || strlen($dbSettings->pusherSecret) < 1
         ) {
             return false;
         }
