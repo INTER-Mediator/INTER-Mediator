@@ -41,7 +41,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 //        var_export($this->db_proxy->logger->getErrorMessages());
 //        var_export($this->db_proxy->logger->getDebugMessages());
 
-        $this->assertTrue(is_array($result) , "After the query, any array should be retrieved.");
+        $this->assertTrue(is_array($result), "After the query, any array should be retrieved.");
         $this->assertEquals(count($result), 10, "After the query, 10 records should be retrieved.");
         $this->assertEquals($recordCount, 10, "The aggregation didn't count real record, and should match with records key");
         $cStr = "Onion";
@@ -263,8 +263,10 @@ abstract class DB_PDO_Test_Common extends TestCase
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
         $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
 
+        $this->db_proxy->setParamResponse([$calcuratedHash]);
+        $this->db_proxy->setClientId("TEST");
         $this->assertTrue(
-            $this->db_proxy->checkAuthorization($username, $calcuratedHash, "TEST"), $testName);
+            $this->db_proxy->checkAuthorization($username), $testName);
     }
 
     public function testAuthByValidUser()
@@ -286,8 +288,8 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->db_proxy->dbSettings->setCurrentUser($username);
         $this->db_proxy->dbSettings->setDataSourceName("person");
         $this->db_proxy->paramAuthUser = $username;
-        $this->db_proxy->clientId = $clientId;
-        $this->db_proxy->paramResponse = $calcuratedHash;
+        $this->db_proxy->setClientId($clientId);
+        $this->db_proxy->setParamResponse([$calcuratedHash]);
 
         $this->db_proxy->processingRequest("read");
         $result = $this->db_proxy->getDatabaseResult();
@@ -321,8 +323,8 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->db_proxy->dbSettings->setCurrentUser($username);
         $this->db_proxy->dbSettings->setDataSourceName("person");
         $this->db_proxy->paramAuthUser = $username;
-        $this->db_proxy->clientId = $clientId;
-        $this->db_proxy->paramResponse = $calcuratedHash;
+        $this->db_proxy->setClientId($clientId);
+        $this->db_proxy->setParamResponse([$calcuratedHash]);
 
         $this->db_proxy->processingRequest("read");
         $this->assertTrue(is_null($this->db_proxy->getDatabaseResult()), $testName);
@@ -352,10 +354,24 @@ abstract class DB_PDO_Test_Common extends TestCase
         $challenge = $this->db_proxy->generateChallenge();
         $this->db_proxy->saveChallenge($username, $challenge, $clientId);
 
-        $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
-        $this->assertTrue(
-            $this->db_proxy->checkAuthorization($username, hash_hmac('sha256', $hashedvalue, $challenge), $clientId),
-            $testName);
+        $hashedvalue = hash('sha1', $password . $retrievedSalt) . $retrievedHexSalt;
+        $value = $password . $retrievedSalt;
+        for ($i = 0; $i < 4999; $i++) {
+            $value = hash("sha256", $value, true);
+        }
+        $hashedvalue256 = hash("sha256", $value, false) . $retrievedHexSalt;
+        $this->db_proxy->setParamResponse([
+            hash_hmac('sha256', $hashedvalue, $challenge),
+            hash_hmac('sha256', $hashedvalue256, $challenge),
+            hash_hmac('sha256', $hashedvalue256, $challenge),
+        ]);
+        $this->db_proxy->setClientId($clientId);
+        $checkResult = $this->db_proxy->checkAuthorization($username);
+
+//        var_export($this->db_proxy->logger->getErrorMessages());
+//        var_export($this->db_proxy->logger->getDebugMessages());
+
+        $this->assertTrue($checkResult, $testName);
     }
 
     function testUserGroup()

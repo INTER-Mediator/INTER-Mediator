@@ -26,6 +26,8 @@ let INTERMediatorOnPage = {
   authCount: 0,
   authUser: '',
   authHashedPassword: '',
+  authHashedPassword2m: '',
+  authHashedPassword2: '',
   authCryptedPassword: '',
   authUserSalt: '',
   authUserHexSalt: '',
@@ -93,6 +95,8 @@ let INTERMediatorOnPage = {
     'use strict'
     INTERMediatorOnPage.authChallenge = null
     INTERMediatorOnPage.authHashedPassword = null
+    INTERMediatorOnPage.authHashedPassword2m = null
+    INTERMediatorOnPage.authHashedPassword2 = null
     INTERMediatorOnPage.authCryptedPassword = null
   },
   /*
@@ -133,7 +137,9 @@ let INTERMediatorOnPage = {
   isComplementAuthData: function () {
     'use strict'
     return INTERMediatorOnPage.authUser !== null && INTERMediatorOnPage.authUser.length > 0 &&
-      INTERMediatorOnPage.authHashedPassword !== null && INTERMediatorOnPage.authHashedPassword.length > 0 &&
+      ((INTERMediatorOnPage.authHashedPassword !== null && INTERMediatorOnPage.authHashedPassword.length > 0)
+        || (INTERMediatorOnPage.authHashedPassword2m !== null && INTERMediatorOnPage.authHashedPassword2m.length > 0)
+        || (INTERMediatorOnPage.authHashedPassword2 !== null && INTERMediatorOnPage.authHashedPassword2.length > 0)) &&
       INTERMediatorOnPage.authUserSalt !== null && INTERMediatorOnPage.authUserSalt.length > 0 &&
       INTERMediatorOnPage.authChallenge !== null && INTERMediatorOnPage.authChallenge.length > 0
   },
@@ -149,6 +155,10 @@ let INTERMediatorOnPage = {
               INTERMediatorOnPage.getCookie('_im_username')
             INTERMediatorOnPage.authHashedPassword =
               INTERMediatorOnPage.getCookie('_im_credential')
+            INTERMediatorOnPage.authHashedPassword2m =
+              INTERMediatorOnPage.getCookie('_im_credential2m')
+            INTERMediatorOnPage.authHashedPassword2 =
+              INTERMediatorOnPage.getCookie('_im_credential2')
             INTERMediatorOnPage.mediaToken =
               INTERMediatorOnPage.getCookie('_im_mediatoken')
             INTERMediatorOnPage.authCryptedPassword =
@@ -159,6 +169,10 @@ let INTERMediatorOnPage = {
               INTERMediatorOnPage.getSessionStorageWithFallDown('_im_username')
             INTERMediatorOnPage.authHashedPassword =
               INTERMediatorOnPage.getSessionStorageWithFallDown('_im_credential')
+            INTERMediatorOnPage.authHashedPassword2m =
+              INTERMediatorOnPage.getSessionStorageWithFallDown('_im_credential2m')
+            INTERMediatorOnPage.authHashedPassword2 =
+              INTERMediatorOnPage.getSessionStorageWithFallDown('_im_credential2')
             INTERMediatorOnPage.mediaToken =
               INTERMediatorOnPage.getSessionStorageWithFallDown('_im_mediatoken')
             INTERMediatorOnPage.authCryptedPassword =
@@ -167,6 +181,8 @@ let INTERMediatorOnPage = {
           default:
             INTERMediatorOnPage.removeCookie('_im_username')
             INTERMediatorOnPage.removeCookie('_im_credential')
+            INTERMediatorOnPage.removeCookie('_im_credential2m')
+            INTERMediatorOnPage.removeCookie('_im_credential2')
             INTERMediatorOnPage.removeCookie('_im_mediatoken')
             INTERMediatorOnPage.removeCookie('_im_crypted')
             break
@@ -184,6 +200,8 @@ let INTERMediatorOnPage = {
     'use strict'
     INTERMediatorOnPage.authUser = ''
     INTERMediatorOnPage.authHashedPassword = ''
+    INTERMediatorOnPage.authHashedPassword2m = ''
+    INTERMediatorOnPage.authHashedPassword2 = ''
     INTERMediatorOnPage.authCryptedPassword = ''
     INTERMediatorOnPage.authUserSalt = ''
     INTERMediatorOnPage.authChallenge = ''
@@ -270,6 +288,12 @@ let INTERMediatorOnPage = {
         if (INTERMediatorOnPage.authHashedPassword) {
           INTERMediatorOnPage.setCookie('_im_credential', INTERMediatorOnPage.authHashedPassword)
         }
+        if (INTERMediatorOnPage.authHashedPassword2m) {
+          INTERMediatorOnPage.setCookie('_im_credential2m', INTERMediatorOnPage.authHashedPassword2m)
+        }
+        if (INTERMediatorOnPage.authHashedPassword2) {
+          INTERMediatorOnPage.setCookie('_im_credential2', INTERMediatorOnPage.authHashedPassword2)
+        }
         if (INTERMediatorOnPage.mediaToken) {
           INTERMediatorOnPage.setCookie('_im_mediatoken', INTERMediatorOnPage.mediaToken)
         }
@@ -284,6 +308,12 @@ let INTERMediatorOnPage = {
         if (INTERMediatorOnPage.authHashedPassword) {
           INTERMediatorOnPage.setCookieDomainWide('_im_credential', INTERMediatorOnPage.authHashedPassword)
         }
+        if (INTERMediatorOnPage.authHashedPassword2m) {
+          INTERMediatorOnPage.setCookieDomainWide('_im_credential2m', INTERMediatorOnPage.authHashedPassword2m)
+        }
+        if (INTERMediatorOnPage.authHashedPassword2) {
+          INTERMediatorOnPage.setCookieDomainWide('_im_credential2', INTERMediatorOnPage.authHashedPassword2)
+        }
         if (INTERMediatorOnPage.mediaToken) {
           INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken)
         }
@@ -297,6 +327,12 @@ let INTERMediatorOnPage = {
         }
         if (INTERMediatorOnPage.authHashedPassword) {
           INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_credential', INTERMediatorOnPage.authHashedPassword)
+        }
+        if (INTERMediatorOnPage.authHashedPassword2m) {
+          INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_credential2m', INTERMediatorOnPage.authHashedPassword2m)
+        }
+        if (INTERMediatorOnPage.authHashedPassword2) {
+          INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_credential2', INTERMediatorOnPage.authHashedPassword2)
         }
         if (INTERMediatorOnPage.mediaToken) {
           INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_mediatoken', INTERMediatorOnPage.mediaToken)
@@ -609,6 +645,8 @@ let INTERMediatorOnPage = {
       if (inputUsername !== '' && // No usename and no challenge, get a challenge.
         (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24)) {
         INTERMediatorOnPage.authHashedPassword = 'need-hash-pls' // Dummy Hash for getting a challenge
+        INTERMediatorOnPage.authHashedPassword2m = 'need-hash-pls' // Dummy Hash for getting a challenge
+        INTERMediatorOnPage.authHashedPassword2 = 'need-hash-pls' // Dummy Hash for getting a challenge
         await INTERMediator_DBAdapter.getChallenge()
       }
       if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
@@ -616,11 +654,27 @@ let INTERMediatorOnPage = {
         encrypt.setPublicKey(INTERMediatorOnPage.publickey)
         INTERMediatorOnPage.authCryptedPassword = encrypt.encrypt(inputPassword)
       }
-      let shaObj = new jsSHA('SHA-1', 'TEXT')
-      shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
-      let hash = shaObj.getHash('HEX')
-      INTERMediatorOnPage.authHashedPassword = hash + INTERMediatorOnPage.authUserHexSalt
-
+      if (INTERMediatorOnPage.passwordHash < 1.1) {
+        let shaObj = new jsSHA('SHA-1', 'TEXT')
+        shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
+        let hash = shaObj.getHash('HEX')
+        INTERMediatorOnPage.authHashedPassword = hash + INTERMediatorOnPage.authUserHexSalt
+      }
+      if (INTERMediatorOnPage.passwordHash < 1.6) {
+        let shaObj = new jsSHA('SHA-1', 'TEXT')
+        shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
+        let hash = shaObj.getHash('HEX')
+        shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds" : 5000})
+        shaObj.update(hash + INTERMediatorOnPage.authUserSalt)
+        let hashNext = shaObj.getHash('HEX')
+        INTERMediatorOnPage.authHashedPassword2m = hashNext + INTERMediatorOnPage.authUserHexSalt
+      }
+      if (INTERMediatorOnPage.passwordHash < 2.1) {
+        let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds" : 5000})
+        shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
+        let hash = shaObj.getHash('HEX')
+        INTERMediatorOnPage.authHashedPassword2 = hash + INTERMediatorOnPage.authUserHexSalt
+      }
       if (INTERMediatorOnPage.authUser.length > 0) { // Authentication succeed, Store coockies.
         INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
       }

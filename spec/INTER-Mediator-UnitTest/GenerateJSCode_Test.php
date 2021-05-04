@@ -39,7 +39,6 @@ class GenerateJSCode_Test extends TestCase
     /**
      * @runInSeparateProcess
      * @preserveGlobalState disabled
-     * @doesNotPerformAssertions
      */
     function test___construct()
     {

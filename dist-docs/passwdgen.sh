@@ -32,21 +32,19 @@ check_arg_exit(){
 
 # generate_hash_passwd username password
 generate_hash_passwd(){
-    CODE1=`expr $RANDOM % 95 + 32`
-    CODE2=`expr $RANDOM % 95 + 32`
-    CODE3=`expr $RANDOM % 95 + 32`
-    CODE4=`expr $RANDOM % 95 + 32`
-    ST="echo chr(${CODE1}).chr(${CODE2}).chr(${CODE3}).chr(${CODE4});"
-    SOLT=$(php -r "${ST}")
-
-    HASH=$(${ECHO} -n "$2${SOLT}" | openssl sha1 -sha1)
+    SOLT=$(cat /dev/urandom | base64 | fold -w 4 | head -n 1)
+    VALUE=$(${ECHO} -n "$2${SOLT}" | openssl sha256 -sha256)
+    for i in {1..4999}
+    do
+      VALUE=$(${ECHO} -n "${VALUE}" | xxd -r -p | openssl sha256 -sha256)
+    done
     SOLTHEX=$(${ECHO} -n "${SOLT}" | xxd -ps)
     if [ ${optSQL} -eq 1 ]
     then
         ${ECHO} -n "INSERT authuser(username,initialpass,hashedpasswd) VALUES("
-        ${ECHO}    "'$1','$2','${HASH}${SOLTHEX}');"
+        ${ECHO}    "'$1','$2','${VALUE}${SOLTHEX}');"
     else
-        ${ECHO} "'$1','$2','${HASH}${SOLTHEX}'"
+        ${ECHO} "'$1','$2','${VALUE}${SOLTHEX}'"
     fi
 }
 

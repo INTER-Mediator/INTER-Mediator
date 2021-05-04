@@ -317,7 +317,7 @@ GO
 CREATE TABLE authuser (
 	id					INTEGER   IDENTITY(1,1),
 	username			NVARCHAR(64),
-	hashedpasswd		NVARCHAR(48),
+	hashedpasswd		NVARCHAR(72),
 	email               NVARCHAR(100),
 	realname			NVARCHAR(20),
 	limitdt             DATETIME,
@@ -331,6 +331,8 @@ INSERT INTO authuser(username,hashedpasswd) VALUES('user2','5115aba773983066bcf4
 INSERT INTO authuser(username,hashedpasswd) VALUES('user3','d1a7981108a73e9fbd570e23ecca87c2c5cb967554455354');
 INSERT INTO authuser(username,hashedpasswd) VALUES('user4','8c1b394577d0191417e8d962c5f6e3ca15068f8254455354');
 INSERT INTO authuser(username,hashedpasswd) VALUES('user5','ee403ef2642f2e63dca12af72856620e6a24102d54455354');
+INSERT INTO authuser(username,hashedpasswd) VALUES('mig2m','cd85a299c154c4714b23ce4b63618527289296ba6642c2685651ad8b9f20ce02285d7b34');
+INSERT INTO authuser(username,hashedpasswd) VALUES('mig2','fcc2ab4678963966614b5544a40f4b814ba3da41b3b69df6622e51b74818232864235970');
 /*
 # The user1 has the password 'user1'. It's salted with the string 'NTEXT'.
 # All users have the password the same as user name. All are salted with 'NTEXT'
@@ -373,8 +375,8 @@ INSERT INTO authcor(group_id,dest_group_id) VALUES(1,3);
 CREATE TABLE issuedhash (
 	id				INTEGER   IDENTITY(1,1),
 	user_id         INTEGER,
-	clienthost      NVARCHAR(48),
-	hash            NVARCHAR(48),
+	clienthost      NVARCHAR(64),
+	hash            NVARCHAR(64),
 	expired			DATETIME,
 	PRIMARY KEY(id)
 );

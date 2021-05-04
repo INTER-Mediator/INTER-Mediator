@@ -17,9 +17,9 @@ Enter password:
 SET NAMES 'utf8mb4';
 # For Ver.5.7.5 or earlier. DROP USER statement should be activate on the first run.
 # DROP USER 'web'@'localhost';
-CREATE USER 'web'@'localhost' IDENTIFIED BY 'password'; # plugin caching_sha2_password
+# CREATE USER 'web'@'localhost' IDENTIFIED BY 'password'; # plugin caching_sha2_password
 # For Ver.5.7.6 or later.
-# CREATE USER IF NOT EXISTS 'web'@'localhost' IDENTIFIED BY 'password'; # plugin caching_sha2_password
+CREATE USER IF NOT EXISTS 'web'@'localhost' IDENTIFIED BY 'password'; # plugin caching_sha2_password
 
 ######### For MySQL v8, alter above block as follwing.
 # DROP USER IF EXISTS 'web'@'localhost';
@@ -426,7 +426,7 @@ CREATE TABLE registeredpks (
 CREATE TABLE authuser (
 	id					INT  AUTO_INCREMENT,
 	username			VARCHAR(64),
-	hashedpasswd		VARCHAR(48),
+	hashedpasswd		VARCHAR(72),
 	realname			VARCHAR(20),
 	email               VARCHAR(100),
 	limitdt             DATETIME,
@@ -447,6 +447,8 @@ INSERT authuser SET id=2,username='user2',hashedpasswd='5115aba773983066bcf4a865
 INSERT authuser SET id=3,username='user3',hashedpasswd='d1a7981108a73e9fbd570e23ecca87c2c5cb967554455354';
 INSERT authuser SET id=4,username='user4',hashedpasswd='8c1b394577d0191417e8d962c5f6e3ca15068f8254455354';
 INSERT authuser SET id=5,username='user5',hashedpasswd='ee403ef2642f2e63dca12af72856620e6a24102d54455354';
+INSERT authuser SET id=6,username='mig2m',hashedpasswd='cd85a299c154c4714b23ce4b63618527289296ba6642c2685651ad8b9f20ce02285d7b34';
+INSERT authuser SET id=7,username='mig2',hashedpasswd='fcc2ab4678963966614b5544a40f4b814ba3da41b3b69df6622e51b74818232864235970';
 
 # The user1 has the password 'user1'. It's salted with the string 'TEXT'.
 # All users have the password the same as user name. All are salted with 'TEXT'
@@ -458,6 +460,23 @@ INSERT authuser SET id=5,username='user5',hashedpasswd='ee403ef2642f2e63dca12af7
 #  54455354
 #  - combine above two results:
 #  d83eefa0a9bd7190c94e7911688503737a99db0154455354
+
+# The user mig2 has SHA-256 hashed password. The below shows how to calculate it from a password.
+#
+# % echo -n 'mig2HASH' | openssl sha256 -sha256
+# 8c507f3a84f430b8e7f2c2953bdc8bc68b8043ca74e156995ead04755fbcdea0
+# % echo -n 'HASH' | xxd -ps
+# 48415348
+
+# The user mig2m is originally SHA-1 hashed password with passowrd 'mig2m' and salt 'HASH' as like first line.
+# The SHA-1 hash value convert with same salt and re-hashed with SH2-256 as like third line.
+# This means SHA-1 based hash value can change to the SHA-256 based one, and INTER-Mediator support this style
+# hash too for migrate SHA-256 from SHA-1 account in the authuser table.
+#
+# % echo -n 'mig2mHASH' | openssl sha1 -sha1
+# 22d1f35b7d35766663c4c2eac7963733f98c94a3
+# % echo -n '22d1f35b7d35766663c4c2eac7963733f98c94a3HASH' | openssl sha256 -sha256
+# cd01079fd3285dbc2b6549864e609edd0a9bacddbc8a9ba54fb9dab72b9c6579
 
 CREATE TABLE authgroup (
 	id					INT  AUTO_INCREMENT,
@@ -492,6 +511,8 @@ CREATE INDEX authcor_dest_group_id
 INSERT authcor SET user_id=1,dest_group_id=1;
 INSERT authcor SET user_id=2,dest_group_id=1;
 INSERT authcor SET user_id=3,dest_group_id=1;
+INSERT authcor SET user_id=6,dest_group_id=1;
+INSERT authcor SET user_id=7,dest_group_id=1;
 INSERT authcor SET user_id=4,dest_group_id=2;
 INSERT authcor SET user_id=5,dest_group_id=2;
 INSERT authcor SET user_id=4,dest_group_id=3;
@@ -501,8 +522,8 @@ INSERT authcor SET group_id=1,dest_group_id=3;
 CREATE TABLE issuedhash (
 	id				INT  AUTO_INCREMENT,
 	user_id         INT,
-	clienthost      VARCHAR(48),
-	hash            VARCHAR(48),
+	clienthost      VARCHAR(64),
+	hash            VARCHAR(64),
 	expired			DateTime,
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8mb4,
