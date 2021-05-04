@@ -236,7 +236,7 @@ const INTERMediator_DBAdapter = {
                   requireAuth = true
                 }
               }
-              if (INTERMediatorOnPage.isSAML) {
+              if (INTERMediatorOnPage.isSAML && jsonObject.samluser) {
                 INTERMediatorOnPage.authUser =jsonObject.samluser
                 INTERMediatorOnPage.authHashedPassword = ''
                 INTERMediatorOnPage.authHashedPassword2m = ''
