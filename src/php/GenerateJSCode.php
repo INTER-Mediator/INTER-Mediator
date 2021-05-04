@@ -39,7 +39,7 @@ class GenerateJSCode
     {
         $q = '"';
         echo "INTERMediatorLog.setDebugMessage({$q}"
-            . str_replace("\n", " ", addslashes($message)) . "{$q});";
+            . str_replace("\n", " ", addslashes($message)) . "{$q});\n";
     }
 
     public function generateErrorMessageJS($message)
@@ -365,7 +365,7 @@ class GenerateJSCode
                 "INTERMediatorOnPage.creditIncluding", $q, $options['credit-including'], $q);
         }
         $this->generateAssignJS(
-            "INTERMediatorOnPage.isSAML", $q, $isSAML ? 'true' : 'false', $q);
+            "INTERMediatorOnPage.isSAML", $isSAML ? 'true' : 'false');
 
 
         // Initial values for local context

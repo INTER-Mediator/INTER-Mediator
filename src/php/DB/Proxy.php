@@ -954,6 +954,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                                 $authSucceed = true;
                             } else { // Timeout with SAML
                                 $SAMLAuth = new SAMLAuth();
+                                $this->logger->setDebugMessage(var_export($SAMLAuth, true));
                                 if ($SAMLAuth->samlLoginCheck()) {
                                     $this->logger->setDebugMessage("SAML Authentication succeed.");
                                     $authSucceed = true;
