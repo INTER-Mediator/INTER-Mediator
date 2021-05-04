@@ -906,8 +906,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] " . var_export($row, true));
-            $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] ldapLimit ={
-                $this->dbSettings->getLDAPExpiringSeconds()}");
+            $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] "
+                . "ldapLimit ={$this->dbSettings->getLDAPExpiringSeconds()}");
             if (isset($row['limitdt']) && !is_null($row['limitdt'])) {
                 if (time() - strtotime($row['limitdt']) > $this->dbSettings->getLDAPExpiringSeconds()) {
                     $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] returns false ");
