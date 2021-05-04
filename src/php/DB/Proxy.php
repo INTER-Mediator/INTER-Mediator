@@ -960,14 +960,16 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 //                                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
 //                                        $authSucceed = true;
 //                                    }
+                                $this->dbSettings->setRequireAuthentication(false);
                             }
                         }
-                    } else {
+                    } else { // Normal Login process
                         if ($this->checkAuthorization($signedUser, false)) {
                             $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
                             $authSucceed = true;
                         }
                     }
+
                     if (!$authSucceed) {
                         $this->logger->setDebugMessage(
                             "Authentication doesn't meet valid.{$signedUser}/{$this->paramResponse}/{$this->clientId}");
