@@ -923,51 +923,49 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $authSucceed = false;
                     $ldap = new LDAPAuth();
                     $ldap->setLogger($this->logger);
-                    if (!$ldap->isActive) { // Normal auth
+                    if ($ldap->isActive) { // LDAP auth
+                        if ($this->checkAuthorization($signedUser, true)) {
+                            $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+                            $authSucceed = true;
+                        } else { // Timeout with LDAP
+                            list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
+                            if ($ldap->bindCheck($signedUser, $password)) {
+                                $this->logger->setDebugMessage("LDAP Authentication succeed.");
+                                $authSucceed = true;
+                                $this->addUser($signedUser, $password, true);
+                                // The following re-auth doesn't work. The salt of hashed password is
+                                // different from the request. Here is after bind checking, so authentication
+                                // is passed anyway.
+//                                    if ($this->checkAuthorization($signedUser, true)) {
+//                                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+//                                        $authSucceed = true;
+//                                    }
+                            }
+                        }
+                    } else if ($this->dbSettings->getIsSAML()) { // Set up as SAML
+                        if ($this->checkAuthorization($signedUser, true)) {
+                            $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+                            $authSucceed = true;
+                        } else { // Timeout with SAML
+                            $SAMLAuth = new SAMLAuth();
+                            $this->logger->setDebugMessage(var_export($SAMLAuth, true));
+                            if ($SAMLAuth->samlLoginCheck()) {
+                                $this->logger->setDebugMessage("SAML Authentication succeed.");
+                                $authSucceed = true;
+                                $password = "1234";
+                                $this->addUser($signedUser, $password, true);
+//                                    if ($this->checkAuthorization($signedUser, true)) {
+//                                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+//                                        $authSucceed = true;
+//                                    }
+                            }
+                        }
+                    } else {
                         if ($this->checkAuthorization($signedUser, false)) {
                             $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
                             $authSucceed = true;
                         }
-                    } else
-                        if (!$this->dbSettings->getIsSAML()) { // Set up as LDAP
-                            if ($this->checkAuthorization($signedUser, true)) {
-                                $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
-                                $authSucceed = true;
-                            } else { // Timeout with LDAP
-                                list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
-                                if ($ldap->bindCheck($signedUser, $password)) {
-                                    $this->logger->setDebugMessage("LDAP Authentication succeed.");
-                                    $authSucceed = true;
-                                    $this->addUser($signedUser, $password, true);
-                                    // The following re-auth doesn't work. The salt of hashed password is
-                                    // different from the request. Here is after bind checking, so authentication
-                                    // is passed anyway.
-//                                    if ($this->checkAuthorization($signedUser, true)) {
-//                                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
-//                                        $authSucceed = true;
-//                                    }
-                                }
-                            }
-                        } else { // Set up as SAML
-                            if ($this->checkAuthorization($signedUser, true)) {
-                                $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
-                                $authSucceed = true;
-                            } else { // Timeout with SAML
-                                $SAMLAuth = new SAMLAuth();
-                                $this->logger->setDebugMessage(var_export($SAMLAuth, true));
-                                if ($SAMLAuth->samlLoginCheck()) {
-                                    $this->logger->setDebugMessage("SAML Authentication succeed.");
-                                    $authSucceed = true;
-                                    $password = "1234";
-                                    $this->addUser($signedUser, $password, true);
-//                                    if ($this->checkAuthorization($signedUser, true)) {
-//                                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
-//                                        $authSucceed = true;
-//                                    }
-                                }
-                            }
-                        }
-
+                    }
                     if (!$authSucceed) {
                         $this->logger->setDebugMessage(
                             "Authentication doesn't meet valid.{$signedUser}/{$this->paramResponse}/{$this->clientId}");
@@ -994,7 +992,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $result = $this->readFromDB();
                 if (isset($tableInfo['protect-reading']) && is_array($tableInfo['protect-reading'])) {
                     $recordCount = count($result);
-                    for ($index = 0; $index < $recordCount; $index++) {
+                    for ($index = 0;
+                         $index < $recordCount;
+                         $index++) {
                         foreach ($result[$index] as $field => $value) {
                             if (in_array($field, $tableInfo['protect-reading'])) {
                                 $result[$index][$field] = "[protected]";
@@ -1007,7 +1007,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->outputOfProcessing['totalCount'] = $this->getTotalCount();
                 $this->suppressMediaToken = false;
                 break;
-            case 'update':
+            case
+            'update':
                 $this->logger->setDebugMessage("[processingRequest] start update processing", 2);
                 if ($this->checkValidation()) {
                     if (isset($tableInfo['protect-writing']) && is_array($tableInfo['protect-writing'])) {
