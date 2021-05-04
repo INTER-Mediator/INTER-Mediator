@@ -20,6 +20,7 @@ use Exception;
 use INTERMediator\FileUploader;
 use INTERMediator\IMUtil;
 use INTERMediator\LDAPAuth;
+use INTERMediator\SAMLAuth;
 use INTERMediator\Locale\IMLocale;
 use INTERMediator\Messaging\MessagingProxy;
 use INTERMediator\NotifyServer;
