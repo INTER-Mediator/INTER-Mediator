@@ -933,7 +933,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                             if ($ldap->bindCheck($signedUser, $password)) {
                                 $this->logger->setDebugMessage("LDAP Authentication succeed.");
                                 $authSucceed = true;
-                                $this->addUser($signedUser, $password, true);
+                                [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
                                 // The following re-auth doesn't work. The salt of hashed password is
                                 // different from the request. Here is after bind checking, so authentication
                                 // is passed anyway.
@@ -949,19 +949,21 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                             $authSucceed = true;
                         } else { // Timeout with SAML
                             $SAMLAuth = new SAMLAuth();
-                            $this->logger->setDebugMessage(var_export($SAMLAuth, true));
                             $signedUser = $SAMLAuth->samlLoginCheck();
                             $this->paramAuthUser = $signedUser;
                             if ($signedUser) {
                                 $this->logger->setDebugMessage("SAML Authentication succeed.");
                                 $authSucceed = true;
                                 $password = "1234";
-                                $this->addUser($signedUser, $password, true);
+                                [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
 //                                    if ($this->checkAuthorization($signedUser, true)) {
 //                                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
 //                                        $authSucceed = true;
 //                                    }
                                 $this->dbSettings->setRequireAuthentication(false);
+                                $this->outputOfProcessing['samluser'] = $signedUser;
+                                $this->outputOfProcessing['temppw'] = $hashedpw;
+                                $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL();;
                             }
                         }
                     } else { // Normal Login process
@@ -1471,10 +1473,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     function addUser($username, $password, $isLDAP = false)
     {
         $this->logger->setDebugMessage("[addUser] username={$username}, isLDAP={$isLDAP}", 2);
-        $returnValue = $this->dbClass->authHandler->authSupportCreateUser(
-            $username, $this->convertHashedPassword($password), $isLDAP, $password);
+        $hashedPw = $this->convertHashedPassword($password);
+        $returnValue = $this->dbClass->authHandler->authSupportCreateUser($username, $hashedPw, $isLDAP, $password);
         $this->logger->setDebugMessage("[addUser] authSupportCreateUser returns: {$returnValue}", 2);
-        return $returnValue;
+        return [$returnValue, $hashedPw];
     }
 
     /**

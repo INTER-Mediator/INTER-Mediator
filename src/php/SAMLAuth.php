@@ -39,4 +39,8 @@ class SAMLAuth
 //        echo ($attributes["uid"][0]);
 
     }
+
+    public function samlLogoutURL(){
+        return $this->authSimple->getLogoutURL();
+    }
 }

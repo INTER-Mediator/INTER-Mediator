@@ -817,7 +817,7 @@ class DB_FMS_Test_Common extends TestCase
         $username = "testuser1";
         $password = "testuser1";
 
-        $addUserResult = $this->db_proxy->addUser($username, $password);
+        [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password);
         //var_export($this->db_proxy->logger->getAllErrorMessages());
         //var_export($this->db_proxy->logger->getDebugMessage());
         $this->assertTrue($addUserResult);

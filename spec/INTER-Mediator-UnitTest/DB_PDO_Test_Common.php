@@ -344,7 +344,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $username = "testuser1";
         $password = "testuser1";
 
-        $addUserResult = $this->db_proxy->addUser($username, $password);
+        [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password);
         $this->assertTrue($addUserResult);
 
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
