@@ -22,6 +22,7 @@ use SimpleSAML\Auth\Simple;
 class SAMLAuth
 {
     private $authSimple;
+
     public function __construct()
     {
         $this->authSimple = new Simple('default-sp');
@@ -30,7 +31,8 @@ class SAMLAuth
     public function samlLoginCheck()
     {
         $this->authSimple->requireAuth();
-        return true;
+        $attributes = $this->authSimple->getAttributes();
+        return $attributes["uid"][0];
 //        $name=$as->getAuthData("saml:sp:NameID");
 //        $attributes=$as->getAttributes();
 //        print_r($attributes);
