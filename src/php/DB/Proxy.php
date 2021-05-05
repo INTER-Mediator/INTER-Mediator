@@ -954,16 +954,18 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                             if ($signedUser) {
                                 $this->logger->setDebugMessage("SAML Authentication succeed.");
                                 $authSucceed = true;
-                                $password = "1234";
+                                $password = $this->generateRandomPW();
                                 [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
 //                                    if ($this->checkAuthorization($signedUser, true)) {
 //                                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
 //                                        $authSucceed = true;
 //                                    }
-                                $this->dbSettings->setRequireAuthentication(false);
-                                $this->outputOfProcessing['samluser'] = $signedUser;
-                                $this->outputOfProcessing['temppw'] = $hashedpw;
-                                $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL();;
+                                if($addResult) {
+                                    $this->dbSettings->setRequireAuthentication(false);
+                                    $this->outputOfProcessing['samluser'] = $signedUser;
+                                    $this->outputOfProcessing['temppw'] = $hashedpw;
+                                    $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL();
+                                }
                             }
                         }
                     } else { // Normal Login process
@@ -1320,6 +1322,18 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         $str = '';
         for ($i = 0; $i < 4; $i++) {
+            $n = rand(33, 126); // They should be an ASCII character for JS SHA1 lib.
+            $str .= chr($n);
+        }
+        return $str;
+    }
+    /**
+     * @return string
+     */
+    function generateRandomPW()
+    {
+        $str = '';
+        for ($i = 0; $i < rand(15, 20); $i++) {
             $n = rand(33, 126); // They should be an ASCII character for JS SHA1 lib.
             $str .= chr($n);
         }
