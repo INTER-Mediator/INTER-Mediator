@@ -76,6 +76,7 @@ class Settings
     private $params_ldapExpiringSeconds;
     private $params_mediaRoot;
     private $isSAML = false;
+    private $samlAuthSource = '';
 
     private $aggregation_select = null;
     private $aggregation_from = null;
@@ -84,6 +85,16 @@ class Settings
     private $attachedFiles = [];
     private $attachedFields = null;
     private $certVerifying = true;
+
+    public function setSAMLAuthSource($value)
+    {
+        $this->samlAuthSource = $value;
+    }
+
+    public function getSAMLAuthSource()
+    {
+        return $this->samlAuthSource;
+    }
 
     public function setIsSaml($value)
     {

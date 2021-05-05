@@ -193,6 +193,7 @@ $pusherParameters = array(
 /* SAML Support, also activate the variable $ldapExpiringSeconds.
    Information about setting up an SAML Service Provider exists in the samples/saml-config directory. */
 //$isSAML = true;
+//$samlAuthSource = 'default-sp';
 
 /* Initial values for local context with their keys. */
 //$valuesForLocalContext = array(

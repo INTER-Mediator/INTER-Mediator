@@ -556,7 +556,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
             "dbOption", "dbDSN", "pusherParameters", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
             "activateClientService", "accessLogLevel", "certVerifying", "passwordHash", "alwaysGenSHA2",
-            "isSAML"
+            "isSAML", "samlAuthSource",
         ), true);
         $this->accessLogLevel = intval($params['accessLogLevel']);
         $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
@@ -790,6 +790,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         if (isset($params['isSAML'])) {
             $this->dbSettings->setIsSAML($params['isSAML']);
         }
+        if (isset($params['samlAuthSource'])) {
+            $this->dbSettings->setSAMLAuthSource($params['samlAuthSource']);
+        }
         return true;
     }
 
@@ -948,7 +951,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                             $this->logger->setDebugMessage("IM-built-in Authentication for SAML user succeed.");
                             $authSucceed = true;
                         } else { // Timeout with SAML
-                            $SAMLAuth = new SAMLAuth();
+                            $SAMLAuth = new SAMLAuth($this->dbSettings->getSAMLAuthSource());
                             $signedUser = $SAMLAuth->samlLoginCheck();
                             $this->outputOfProcessing['samlloginurl'] = $SAMLAuth->samlLoginURL($_SERVER['HTTP_REFERER']);
                             $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
@@ -958,7 +961,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                                 $authSucceed = true;
                                 $password = $this->generateRandomPW();
                                 [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
-                                if($addResult) {
+                                if ($addResult) {
                                     $this->dbSettings->setRequireAuthentication(false);
                                     $this->dbSettings->setCurrentUser($signedUser);
                                     $access = $originalAccess;
@@ -1326,6 +1329,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
         return $str;
     }
+
     /**
      * @return string
      */

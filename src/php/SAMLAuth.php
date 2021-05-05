@@ -23,9 +23,9 @@ class SAMLAuth
 {
     private $authSimple;
 
-    public function __construct()
+    public function __construct($authSource)
     {
-        $this->authSimple = new Simple('default-sp');
+        $this->authSimple = new Simple($authSource);
     }
 
     public function samlLoginCheck()
