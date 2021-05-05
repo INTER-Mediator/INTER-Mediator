@@ -236,13 +236,19 @@ const INTERMediator_DBAdapter = {
                   requireAuth = true
                 }
               }
-              if (INTERMediatorOnPage.isSAML && jsonObject.samluser) {
-                INTERMediatorOnPage.authUser = jsonObject.samluser
-                INTERMediatorOnPage.authHashedPassword = jsonObject.temppw
-                INTERMediatorOnPage.authHashedPassword2m = jsonObject.temppw
-                INTERMediatorOnPage.authHashedPassword2 = jsonObject.temppw
-                INTERMediatorOnPage.loginURL = jsonObject.samlloginurl
-                INTERMediatorOnPage.logoutURL = jsonObject.samllogouturl
+              if (INTERMediatorOnPage.isSAML){
+                if(jsonObject.samluser) {
+                  INTERMediatorOnPage.authUser = jsonObject.samluser
+                  INTERMediatorOnPage.authHashedPassword = jsonObject.temppw
+                  INTERMediatorOnPage.authHashedPassword2m = jsonObject.temppw
+                  INTERMediatorOnPage.authHashedPassword2 = jsonObject.temppw
+                }
+                if(jsonObject.samlloginurl) {
+                  INTERMediatorOnPage.loginURL = jsonObject.samlloginurl
+                }
+                if(jsonObject.samllogouturl) {
+                  INTERMediatorOnPage.logoutURL = jsonObject.samllogouturl
+                }
               }
               if (accessURL.indexOf('access=changepassword&newpass=') === 0) {
                 if (successProc) {
