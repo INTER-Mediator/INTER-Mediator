@@ -860,6 +860,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
         }
 
+        $originalAccess = $access;
         if (!$bypassAuth && $this->dbSettings->getRequireAuthorization()) { // Authentication required
             if (strlen($this->paramAuthUser) == 0 || (
                     strlen($this->paramResponse) == 0
@@ -957,6 +958,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                                 [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
                                 if($addResult) {
                                     $this->dbSettings->setRequireAuthentication(false);
+                                    $access = $originalAccess;
                                     $this->outputOfProcessing['samluser'] = $signedUser;
                                     $this->outputOfProcessing['temppw'] = $hashedpw;
                                     $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL();
