@@ -347,13 +347,13 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             $currentDTFormat = IMUtil::currentDTString();
             if ($user_id > 0) {
                 $setClause = "limitdt = " . $this->dbClass->link->quote($currentDTFormat);
-                if ($timeUp) {
-                    $hexSalt = substr($hpw, -8, 8);
-                    $prevPwHash = sha1($ldapPassword . hex2bin($hexSalt)) . $hexSalt;
-                    if ($prevPwHash != $hpw) {
-                        $setClause .= ",hashedpasswd = " . $this->dbClass->link->quote($hashedpassword);
-                    }
+                //if ($timeUp) {
+                $hexSalt = substr($hpw, -8, 8);
+                $prevPwHash = sha1($ldapPassword . hex2bin($hexSalt)) . $hexSalt;
+                if ($prevPwHash != $hpw) {
+                    $setClause .= ",hashedpasswd = " . $this->dbClass->link->quote($hashedpassword);
                 }
+                //}
                 $sql = "{$this->dbClass->handler->sqlUPDATECommand()}{$userTable} SET {$setClause} WHERE id = {$user_id}";
                 $result = $this->dbClass->link->query($sql);
                 $this->logger->setDebugMessage("[authSupportCreateUser - LDAP] {$sql}");
