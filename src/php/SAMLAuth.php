@@ -30,14 +30,11 @@ class SAMLAuth
 
     public function samlLoginCheck()
     {
-        $this->authSimple->requireAuth();
-        $attributes = $this->authSimple->getAttributes();
-        return $attributes["uid"][0];
-//        $name=$as->getAuthData("saml:sp:NameID");
-//        $attributes=$as->getAttributes();
-//        print_r($attributes);
-//        echo ($attributes["uid"][0]);
-
+        if($this->authSimple->isAuthenticated()) {
+            $attributes = $this->authSimple->getAttributes();
+            return $attributes["uid"][0];
+        }
+        return false;
     }
 
     public function samlLogoutURL(){
