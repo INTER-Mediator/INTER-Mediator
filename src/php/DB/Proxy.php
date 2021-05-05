@@ -959,7 +959,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                             if ($signedUser) {
                                 $this->logger->setDebugMessage("SAML Authentication succeed.");
                                 $authSucceed = true;
-                                $password = $this->generateRandomPW();
+                                $password = IMUtil::generateRandomPW();
                                 [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
                                 if ($addResult) {
                                     $this->dbSettings->setRequireAuthentication(false);
@@ -1181,8 +1181,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 //        $this->outputOfProcessing['notifySupport']
 //            = is_null($this->dbSettings->notifyServer) ? false : $this->dbSettings->pusherKey;
         if (!$notFinish && $this->dbSettings->getRequireAuthorization()) {
-            $generatedChallenge = $this->generateChallenge();
-            $generatedUID = $this->generateClientId('');
+            $generatedChallenge = IMUtil::generateChallenge();
+            $generatedUID = IMUtil::generateClientId('', $this->passwordHash);
             $this->logger->setDebugMessage("generatedChallenge = $generatedChallenge", 2);
             $userSalt = $this->saveChallenge(
                 $this->dbSettings->isDBNative() ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
@@ -1199,7 +1199,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $tableInfo['authentication']['media-handling'] === true &&
                 !$this->suppressMediaToken
             ) {
-                $generatedChallenge = $this->generateChallenge();
+                $generatedChallenge = IMUtil::generateChallenge();
                 $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
                 $this->outputOfProcessing['mediatoken'] = $generatedChallenge;
                 $this->logger->setDebugMessage("mediatoken stored", 2);
@@ -1296,74 +1296,74 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $prefix
      * @return string
      */
-    function generateClientId($prefix)
-    {
-        if ($this->passwordHash == "1") {
-            return sha1(uniqid($prefix, true));
-        }
-        return hash("sha256", uniqid($prefix, true));
-    }
+//    function generateClientId($prefix)
+//    {
+//        if ($this->passwordHash == "1") {
+//            return sha1(uniqid($prefix, true));
+//        }
+//        return hash("sha256", uniqid($prefix, true));
+//    }
 
     /**
      * @return string
      */
-    function generateChallenge()
-    {
-        $str = '';
-        for ($i = 0; $i < 12; $i++) {
-            $n = random_int(1, 255);
-            $str .= ($n < 16 ? '0' : '') . dechex($n);
-        }
-        return $str;
-    }
+//    function generateChallenge()
+//    {
+//        $str = '';
+//        for ($i = 0; $i < 12; $i++) {
+//            $n = random_int(1, 255);
+//            $str .= ($n < 16 ? '0' : '') . dechex($n);
+//        }
+//        return $str;
+//    }
 
     /**
      * @return string
      */
-    function generateSalt()
-    {
-        $str = '';
-        for ($i = 0; $i < 4; $i++) {
-            $n = random_int(33, 126); // They should be an ASCII character for JS SHA1 lib.
-            $str .= chr($n);
-        }
-        return $str;
-    }
+//    function generateSalt()
+//    {
+//        $str = '';
+//        for ($i = 0; $i < 4; $i++) {
+//            $n = random_int(33, 126); // They should be an ASCII character for JS SHA1 lib.
+//            $str .= chr($n);
+//        }
+//        return $str;
+//    }
 
     /**
      * @return string
      */
-    function generateRandomPW()
-    {
-        $str = '';
-        for ($i = 0; $i < random_int(15, 20); $i++) {
-            $n = random_int(33, 126); // They should be an ASCII character for JS SHA1 lib.
-            $str .= chr($n);
-        }
-        return $str;
-    }
+//    function generateRandomPW()
+//    {
+//        $str = '';
+//        for ($i = 0; $i < random_int(15, 20); $i++) {
+//            $n = random_int(33, 126); // They should be an ASCII character for JS SHA1 lib.
+//            $str .= chr($n);
+//        }
+//        return $str;
+//    }
 
-    function convertHashedPassword($pw)
-    {
-        $salt = $this->generateSalt();
-        if ($this->passwordHash == "1" && !$this->alwaysGenSHA2) {
-            return sha1($pw . $salt) . bin2hex($salt);
-        }
-        $value = $pw . $salt;
-        for ($i = 0; $i < 4999; $i++) {
-            $value = hash("sha256", $value, true);
-        }
-        return hash("sha256", $value, false) . bin2hex($salt);
-    }
+//    function convertHashedPassword($pw)
+//    {
+//        $salt = $this->generateSalt();
+//        if ($this->passwordHash == "1" && !$this->alwaysGenSHA2) {
+//            return sha1($pw . $salt) . bin2hex($salt);
+//        }
+//        $value = $pw . $salt;
+//        for ($i = 0; $i < 4999; $i++) {
+//            $value = hash("sha256", $value, true);
+//        }
+//        return hash("sha256", $value, false) . bin2hex($salt);
+//    }
 
-    function generateCredential($digit)
-    {
-        $password = '';
-        for ($i = 0; $i < $digit; $i++) {
-            $password .= chr(random_int(32, 127));
-        }
-        return $this->convertHashedPassword($password);
-    }
+//    function generateCredential($digit)
+//    {
+//        $password = '';
+//        for ($i = 0; $i < $digit; $i++) {
+//            $password .= chr(random_int(32, 127));
+//        }
+//        return IMUtil::convertHashedPassword($password, $this->passwordHash, $this->alwaysGenSHA2);
+//    }
 
     /**
      * @param $username
@@ -1490,7 +1490,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     function addUser($username, $password, $isLDAP = false)
     {
         $this->logger->setDebugMessage("[addUser] username={$username}, isLDAP={$isLDAP}", 2);
-        $hashedPw = $this->convertHashedPassword($password);
+        $hashedPw = IMUtil::convertHashedPassword($password, $this->passwordHash, $this->alwaysGenSHA2);
         $returnValue = $this->dbClass->authHandler->authSupportCreateUser($username, $hashedPw, $isLDAP, $password);
         $this->logger->setDebugMessage("[addUser] authSupportCreateUser returns: {$returnValue}", 2);
         return [$returnValue, $hashedPw];
@@ -1521,7 +1521,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         if ($username === false || $username == '') {
             return false;
         }
-        $clienthost = $this->generateChallenge();
+        $clienthost = IMUtil::generateChallenge();
         $hash = sha1($clienthost . $email . $username);
         if ($this->authDbClass->authHandler->authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)) {
             return array('randdata' => $clienthost, 'username' => $username);
@@ -1559,7 +1559,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     function userEnrollmentStart($userID)
     {
-        $hash = $this->generateChallenge();
+        $hash = IMUtil::generateChallenge();
         $this->authDbClass->authHandler->authSupportUserEnrollmentStart($userID, $hash);
         return $hash;
     }
@@ -1572,7 +1572,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             return false;
         }
         $result = $this->dbClass->authHandler->authSupportUserEnrollmentActivateUser(
-            $userID, $this->convertHashedPassword($password), $rawPWField, $password);
+            $userID, IMUtil::convertHashedPassword($password, $this->passwordHash, $this->alwaysGenSHA2),
+            $rawPWField, $password);
 //        if ($userID !== false) {
 //            $hashednewpassword = $this->convertHashedPassword($password);
 //            $userInfo = authSupportUserEnrollmentCheckHash($userID, $hashednewpassword);

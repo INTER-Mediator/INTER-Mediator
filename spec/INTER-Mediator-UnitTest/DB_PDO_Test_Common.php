@@ -226,7 +226,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 
         $testName = "Generate Challenge and Retrieve it";
         $uid = 1;
-        $challenge = $this->db_proxy->generateChallenge();
+        $challenge = IMUtil::generateChallenge();
         $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
         $retrieved = $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($uid, "TEST");
 
@@ -235,11 +235,11 @@ abstract class DB_PDO_Test_Common extends TestCase
 
         $this->assertEquals($challenge, $retrieved, $testName);
 
-        $challenge = $this->db_proxy->generateChallenge();
+        $challenge = IMUtil::generateChallenge();
         $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
         $this->assertEquals($challenge, $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($uid, "TEST"), $testName);
 
-        $challenge = $this->db_proxy->generateChallenge();
+        $challenge = IMUtil::generateChallenge();
         $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
         $this->assertEquals($challenge, $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($uid, "TEST"), $testName);
     }
@@ -253,7 +253,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
         $uid = $this->db_proxy->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
 
-        $challenge = $this->db_proxy->generateChallenge();
+        $challenge = IMUtil::generateChallenge();
         $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
 
         //        $challenge = $this->db_pdo->authHandler->authSupportRetrieveChallenge($username, "TEST");
@@ -278,7 +278,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
         $clientId = 'test1234test1234';
 
-        $challenge = $this->db_proxy->generateChallenge();
+        $challenge = IMUtil::generateChallenge();
         $this->db_proxy->saveChallenge($username, $challenge, $clientId);
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
@@ -313,7 +313,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $password = 'user2';
         $clientId = 'test1234test1234';
 
-        $challenge = $this->db_proxy->generateChallenge();
+        $challenge = IMUtil::generateChallenge();
         $this->db_proxy->saveChallenge($username, $challenge, $clientId);
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
@@ -351,7 +351,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
 
         $clientId = "TEST";
-        $challenge = $this->db_proxy->generateChallenge();
+        $challenge = IMUtil::generateChallenge();
         $this->db_proxy->saveChallenge($username, $challenge, $clientId);
 
         $hashedvalue = hash('sha1', $password . $retrievedSalt) . $retrievedHexSalt;
@@ -391,7 +391,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $testName = "Native User Challenge Check";
         $cliendId = "12345";
 
-        $challenge = $this->db_proxy->generateChallenge();
+        $challenge = IMUtil::generateChallenge();
 //        echo "\ngenerated=", $challenge;
         $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge(0, $challenge, $cliendId);
 

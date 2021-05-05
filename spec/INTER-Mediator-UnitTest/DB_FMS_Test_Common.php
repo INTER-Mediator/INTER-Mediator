@@ -680,13 +680,13 @@ class DB_FMS_Test_Common extends TestCase
 
         $testName = "Generate Challenge and Retrieve it";
         $username = 'user1';
-        $challenge = $this->db_proxy->generateChallenge();
+        $challenge = IMUtil::generateChallenge();
         $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($username, $challenge, "TEST");
         $this->assertEquals($challenge, $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($username, "TEST"), $testName);
-        $challenge = $this->db_proxy->generateChallenge();
+        $challenge = IMUtil::generateChallenge();
         $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($username, $challenge, "TEST");
         $this->assertEquals($challenge, $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($username, "TEST"), $testName);
-        $challenge = $this->db_proxy->generateChallenge();
+        $challenge = IMUtil::generateChallenge();
         $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($username, $challenge, "TEST");
         $this->assertEquals($challenge, $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($username, "TEST"), $testName);
 
@@ -705,7 +705,7 @@ class DB_FMS_Test_Common extends TestCase
         $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
         $uid = $this->db_proxy->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
 
-        $challenge = $this->db_proxy->generateChallenge();
+        $challenge = IMUtil::generateChallenge();
         $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
 
         //        $challenge = $this->db_pdo->authHandler->authSupportRetrieveChallenge($username, "TEST");
@@ -733,7 +733,7 @@ class DB_FMS_Test_Common extends TestCase
         $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
         $clientId = 'test1234test1234';
 
-        $challenge = $this->db_proxy->generateChallenge();
+        $challenge = IMUtil::generateChallenge();
         $this->db_proxy->saveChallenge($username, $challenge, $clientId);
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
@@ -785,7 +785,7 @@ class DB_FMS_Test_Common extends TestCase
         $password = 'user2';
         $clientId = 'test1234test1234';
 
-        $challenge = $this->db_proxy->generateChallenge();
+        $challenge = IMUtil::generateChallenge();
         $this->db_proxy->saveChallenge($username, $challenge, $clientId);
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
@@ -826,7 +826,7 @@ class DB_FMS_Test_Common extends TestCase
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
 
         $clientId = "TEST";
-        $challenge = $this->db_proxy->generateChallenge();
+        $challenge = IMUtil::generateChallenge();
         $this->db_proxy->saveChallenge($username, $challenge, $clientId);
 
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
@@ -864,7 +864,7 @@ class DB_FMS_Test_Common extends TestCase
         $testName = "Native User Challenge Check";
         $cliendId = "12345";
 
-        $challenge = $this->db_proxy->generateChallenge();
+        $challenge = IMUtil::generateChallenge();
         //echo "\ngenerated=", $challenge;
         $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge(0, $challenge, $cliendId);
 
