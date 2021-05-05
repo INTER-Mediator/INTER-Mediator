@@ -30,18 +30,20 @@ class SAMLAuth
 
     public function samlLoginCheck()
     {
-        if($this->authSimple->isAuthenticated()) {
+        if ($this->authSimple->isAuthenticated()) {
             $attributes = $this->authSimple->getAttributes();
             return $attributes["uid"][0];
         }
         return false;
     }
 
-    public function samlLoginURL(){
-        return $this->authSimple->getLoginURL();
+    public function samlLoginURL($url = null)
+    {
+        return $this->authSimple->getLoginURL($url);
     }
 
-    public function samlLogoutURL(){
-        return $this->authSimple->getLogoutURL();
+    public function samlLogoutURL($url = null)
+    {
+        return $this->authSimple->getLogoutURL($url);
     }
 }
