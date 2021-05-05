@@ -37,6 +37,10 @@ class SAMLAuth
         return false;
     }
 
+    public function samlLoginURL(){
+        return $this->authSimple->getLoginURL();
+    }
+
     public function samlLogoutURL(){
         return $this->authSimple->getLogoutURL();
     }

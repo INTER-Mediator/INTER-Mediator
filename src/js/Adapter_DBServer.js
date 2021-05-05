@@ -241,6 +241,7 @@ const INTERMediator_DBAdapter = {
                 INTERMediatorOnPage.authHashedPassword = jsonObject.temppw
                 INTERMediatorOnPage.authHashedPassword2m = jsonObject.temppw
                 INTERMediatorOnPage.authHashedPassword2 = jsonObject.temppw
+                INTERMediatorOnPage.loginURL = jsonObject.samlloginurl
                 INTERMediatorOnPage.logoutURL = jsonObject.samllogouturl
               }
               if (accessURL.indexOf('access=changepassword&newpass=') === 0) {
@@ -260,6 +261,9 @@ const INTERMediator_DBAdapter = {
               if (requireAuth) {
                 INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
                 INTERMediatorOnPage.clearCredentials()
+                if (INTERMediatorOnPage.isSAML) {
+                  location.href = INTERMediatorOnPage.loginURL
+                }
                 if (authAgainProc) {
                   authAgainProc(myRequest)
                 }
