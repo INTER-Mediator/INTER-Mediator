@@ -238,8 +238,8 @@ const INTERMediator_DBAdapter = {
               }
               if (INTERMediatorOnPage.isSAML && jsonObject.samluser) {
                 INTERMediatorOnPage.authUser =jsonObject.samluser
-                INTERMediatorOnPage.authHashedPassword = ''
-                INTERMediatorOnPage.authHashedPassword2m = ''
+                INTERMediatorOnPage.authHashedPassword = jsonObject.temppw
+                INTERMediatorOnPage.authHashedPassword2m = jsonObject.temppw
                 INTERMediatorOnPage.authHashedPassword2 = jsonObject.temppw
                 INTERMediatorOnPage.logoutScript = function () {
                   location.href = jsonObject.samllogouturl
