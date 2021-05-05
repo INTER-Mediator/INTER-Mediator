@@ -66,7 +66,7 @@ class AWSS3 implements UploadingSupport
             $targetFieldName = $field[$counter];
             $dirPath = $contextname . DIRECTORY_SEPARATOR
                 . $keyfield . "=" . $keyvalue . DIRECTORY_SEPARATOR . $targetFieldName;
-            $rand4Digits = rand(1000, 9999);
+            $rand4Digits = random_int(1000, 9999);
             $objectKey = $dirPath . '/' . $filePathInfo['filename'] . '_' . $rand4Digits . '.' . $filePathInfo['extension'];
 
             $clientArgs = ['version' => 'latest', 'region' => $this->accessRegion];

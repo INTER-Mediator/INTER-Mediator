@@ -132,7 +132,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 //        var_export($this->db_proxy->logger->getErrorMessages());
 //        var_export($this->db_proxy->logger->getDebugMessages());
 
-        $parentId = $result[rand(0, $recordCount - 1)]["id"];
+        $parentId = $result[random_int(0, $recordCount - 1)]["id"];
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $parentId);
         $this->db_proxy->copyInDB();
 
@@ -153,7 +153,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $result = $this->db_proxy->readFromDB();
         $recordCountPerson = $this->db_proxy->countQueryResult();
 
-        $parentId = $result[rand(0, $recordCountPerson - 1)]["id"];
+        $parentId = $result[random_int(0, $recordCountPerson - 1)]["id"];
 
         $this->dbProxySetupForAccess("contact", 1000000);
         $result = $this->db_proxy->readFromDB();

@@ -22,7 +22,7 @@ if (count($_GET) > 0) {
         $seed = '234578ABDEFGHJLMNPRTUYadefghprty';
         $password = '';
         for ($i = 0; $i < 6; $i++) {
-            $n = rand(0, strlen($seed) - 1);
+            $n = random_int(0, strlen($seed) - 1);
             $password .= substr($seed, $n, 1);
         }
 

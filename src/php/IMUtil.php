@@ -514,7 +514,7 @@ class IMUtil
     {
         $resultStr = '';
         for ($i = 0; $i < $digit; $i++) {
-            $resultStr .= chr(rand(20, 126));
+            $resultStr .= chr(random_int(20, 126));
         }
         return $resultStr;
     }

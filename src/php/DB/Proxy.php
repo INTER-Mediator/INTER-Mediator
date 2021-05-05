@@ -1304,7 +1304,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         $str = '';
         for ($i = 0; $i < 12; $i++) {
-            $n = rand(1, 255);
+            $n = random_int(1, 255);
             $str .= ($n < 16 ? '0' : '') . dechex($n);
         }
         return $str;
@@ -1317,7 +1317,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         $str = '';
         for ($i = 0; $i < 4; $i++) {
-            $n = rand(33, 126); // They should be an ASCII character for JS SHA1 lib.
+            $n = random_int(33, 126); // They should be an ASCII character for JS SHA1 lib.
             $str .= chr($n);
         }
         return $str;
@@ -1328,8 +1328,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     function generateRandomPW()
     {
         $str = '';
-        for ($i = 0; $i < rand(15, 20); $i++) {
-            $n = rand(33, 126); // They should be an ASCII character for JS SHA1 lib.
+        for ($i = 0; $i < random_int(15, 20); $i++) {
+            $n = random_int(33, 126); // They should be an ASCII character for JS SHA1 lib.
             $str .= chr($n);
         }
         return $str;
@@ -1352,7 +1352,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         $password = '';
         for ($i = 0; $i < $digit; $i++) {
-            $password .= chr(rand(32, 127));
+            $password .= chr(random_int(32, 127));
         }
         return $this->convertHashedPassword($password);
     }
