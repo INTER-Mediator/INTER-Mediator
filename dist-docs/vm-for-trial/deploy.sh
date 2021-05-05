@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# setup shell script for Alpine Linux 3.13 or 3.10
+# setup shell script for Alpine Linux 3.13
 #
 # This file can get from the URL below.
 # https://raw.githubusercontent.com/INTER-Mediator/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh
@@ -15,6 +15,10 @@
 #
 
 apk add --no-cache curl
-curl -L https://github.com/itamae-kitchen/mitamae/releases/latest/download/mitamae-x86_64-linux.tar.gz | tar xvz
-ls -al
-./mitamae-x86_64-linux local ./recipe.rb*
+if [ `uname -m` = "arm64" ]; then
+     curl -L https://github.com/itamae-kitchen/mitamae/releases/download/v1.12.0/mitamae-aarch64-linux.tar.gz | tar xvz
+    ./mitamae-aarch64-linux local ./recipe.rb*
+else
+     curl -L https://github.com/itamae-kitchen/mitamae/releases/download/v1.12.0/mitamae-x86_64-linux.tar.gz | tar xvz
+    ./mitamae-x86_64-linux local ./recipe.rb*
+fi
