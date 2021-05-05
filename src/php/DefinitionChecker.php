@@ -215,12 +215,6 @@ class DefinitionChecker
             'username' => 'string',
             'password' => 'string',
         ),
-        'pusher' => array(
-            'app_id' => 'string',
-            'key' => 'integer',
-            'secret' => 'string',
-            'channel' => 'string',
-        ),
         'slack' => array(
             'token' => 'string',
             'channel' => 'string',

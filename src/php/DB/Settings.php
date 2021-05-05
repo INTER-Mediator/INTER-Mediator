@@ -63,11 +63,6 @@ class Settings
     public $registerTableName = "registeredcontext";
     public $registerPKTableName = "registeredpks";
 
-    //public $pusherAppId = null;
-    //public $pusherKey = null;
-    //public $pusherSecret = null;
-//    public $pusherChannel = "_im_pusher_default_channel";
-
     private $params_ldapServer;
     private $params_ldapPort;
     private $params_ldapBase;

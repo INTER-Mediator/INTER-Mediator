@@ -167,15 +167,6 @@ $sendMailSMTP = array(
 // Sending email features compatibility with INTER-Mediator v5 unless 'template-context' key isn't specified.
 $sendMailCompatibilityMode = true;  // default is true
 
-/*
- * If you want to specify the Pusher information, set them below.
-$pusherParameters = array(
-    'app_id' => '',
-    'key' => '',
-    'secret' => '',
-);
-*/
-
 /* LDAP Support */
 // $ldapServer = "ldap://homeserver.msyk.net";
 // $ldapPort = 389;

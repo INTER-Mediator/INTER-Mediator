@@ -300,11 +300,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         strpos(strtolower($currentDataSource['sync-control']), 'update-notify') !== false
                     );
                 } catch (Exception $ex) {
-                    if ($ex->getMessage() == '_im_no_pusher_exception') {
-                        $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
-                    } else {
-                        throw $ex;
-                    }
+                    throw $ex;
                 }
             }
             // Messaging
@@ -368,11 +364,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                             strpos(strtolower($currentDataSource['sync-control']), 'create-notify') !== false
                         );
                     } catch (Exception $ex) {
-                        if ($ex->getMessage() == '_im_no_pusher_exception') {
-                            $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
-                        } else {
-                            throw $ex;
-                        }
+                        throw $ex;
                     }
                 }
                 // Messaging
@@ -440,11 +432,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $this->dbClass->notifyHandler->queriedPrimaryKeys()
                     );
                 } catch (Exception $ex) {
-                    if ($ex->getMessage() == '_im_no_pusher_exception') {
-                        $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
-                    } else {
-                        throw $ex;
-                    }
+                    throw $ex;
                 }
             }
         } catch (Exception $e) {
@@ -487,11 +475,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         strpos(strtolower($currentDataSource['sync-control']), 'create-notify') !== false
                     );
                 } catch (Exception $ex) {
-                    if ($ex->getMessage() == '_im_no_pusher_exception') {
-                        $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
-                    } else {
-                        throw $ex;
-                    }
+                    throw $ex;
                 }
             }
         } catch (Exception $e) {
@@ -554,7 +538,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
         $params = IMUtil::getFromParamsPHPFile(array(
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
-            "dbOption", "dbDSN", "pusherParameters", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
+            "dbOption", "dbDSN", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
             "activateClientService", "accessLogLevel", "certVerifying", "passwordHash", "alwaysGenSHA2",
             "isSAML", "samlAuthSource",
         ), true);
@@ -624,21 +608,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     (isset($dbspec['dsn']) ? $dbspec['dsn'] :
                         (isset ($params['dbDSN']) ? $params['dbDSN'] : '')));
         }
-
-        $pusherParams = null;
-        if (isset($params['pusherParameters'])) {
-            $pusherParams = $params['pusherParameters'];
-        } else if (isset($options['pusher'])) {
-            $pusherParams = $options['pusher'];
-        }
-//        if (!is_null($pusherParams)) {
-//            $this->dbSettings->pusherAppId = $pusherParams['app_id'];
-//            $this->dbSettings->pusherKey = $pusherParams['key'];
-//            $this->dbSettings->pusherSecret = $pusherParams['secret'];
-//            if (isset($pusherParams['channel'])) {
-//                $this->dbSettings->pusherChannel = $pusherParams['channel'];
-//            }
-//        }
 
         /* Setup Database Class's Object */
         $isDBClassNull = is_null($this->dbClass);
@@ -1178,16 +1147,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->logger->setDebugMessage(
             "[finishCommunication]getRequireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
         $this->outputOfProcessing['usenull'] = false;
-//        $this->outputOfProcessing['notifySupport']
-//            = is_null($this->dbSettings->notifyServer) ? false : $this->dbSettings->pusherKey;
         if (!$notFinish && $this->dbSettings->getRequireAuthorization()) {
             $generatedChallenge = IMUtil::generateChallenge();
             $generatedUID = IMUtil::generateClientId('', $this->passwordHash);
             $this->logger->setDebugMessage("generatedChallenge = $generatedChallenge", 2);
             $userSalt = $this->saveChallenge(
                 $this->dbSettings->isDBNative() ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
-//            $this->previousChallenge = "{$generatedChallenge}{$userSalt}";
-//            $this->previousClientid = "{$generatedUID}";
             $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";
             $this->outputOfProcessing['clientid'] = $generatedUID;
             if ($this->dbSettings->getRequireAuthentication()) {
@@ -1291,79 +1256,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
         return array($password, $challenge);
     }
-
-    /**
-     * @param $prefix
-     * @return string
-     */
-//    function generateClientId($prefix)
-//    {
-//        if ($this->passwordHash == "1") {
-//            return sha1(uniqid($prefix, true));
-//        }
-//        return hash("sha256", uniqid($prefix, true));
-//    }
-
-    /**
-     * @return string
-     */
-//    function generateChallenge()
-//    {
-//        $str = '';
-//        for ($i = 0; $i < 12; $i++) {
-//            $n = random_int(1, 255);
-//            $str .= ($n < 16 ? '0' : '') . dechex($n);
-//        }
-//        return $str;
-//    }
-
-    /**
-     * @return string
-     */
-//    function generateSalt()
-//    {
-//        $str = '';
-//        for ($i = 0; $i < 4; $i++) {
-//            $n = random_int(33, 126); // They should be an ASCII character for JS SHA1 lib.
-//            $str .= chr($n);
-//        }
-//        return $str;
-//    }
-
-    /**
-     * @return string
-     */
-//    function generateRandomPW()
-//    {
-//        $str = '';
-//        for ($i = 0; $i < random_int(15, 20); $i++) {
-//            $n = random_int(33, 126); // They should be an ASCII character for JS SHA1 lib.
-//            $str .= chr($n);
-//        }
-//        return $str;
-//    }
-
-//    function convertHashedPassword($pw)
-//    {
-//        $salt = $this->generateSalt();
-//        if ($this->passwordHash == "1" && !$this->alwaysGenSHA2) {
-//            return sha1($pw . $salt) . bin2hex($salt);
-//        }
-//        $value = $pw . $salt;
-//        for ($i = 0; $i < 4999; $i++) {
-//            $value = hash("sha256", $value, true);
-//        }
-//        return hash("sha256", $value, false) . bin2hex($salt);
-//    }
-
-//    function generateCredential($digit)
-//    {
-//        $password = '';
-//        for ($i = 0; $i < $digit; $i++) {
-//            $password .= chr(random_int(32, 127));
-//        }
-//        return IMUtil::convertHashedPassword($password, $this->passwordHash, $this->alwaysGenSHA2);
-//    }
 
     /**
      * @param $username

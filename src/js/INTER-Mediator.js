@@ -11,7 +11,7 @@
 // JSHint support
 /* global IMLibContextPool, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibLocalContext, INTERMediatorLog,
  INTERMediatorLib, INTERMediator_DBAdapter, IMLibCalc, IMLibPageNavigation,
- IMLibEventResponder, IMLibElement, IMLibUI, INTERMediatorLog, Pusher, IMParts_Catalog */
+ IMLibEventResponder, IMLibElement, IMLibUI, INTERMediatorLog, IMParts_Catalog */
 /* jshint -W083 */ // Function within a loop
 
 /**
@@ -176,10 +176,6 @@ const INTERMediator = {
    */
   linkedElmCounter: 0,
   /**
-   * @type {object}
-   */
-  pusherObject: null,
-  /**
    * @type {int}
    */
   buttonIdNum: 0,
@@ -187,10 +183,6 @@ const INTERMediator = {
    * @type {string}
    */
   detailNodeOriginalDisplay: 'none',
-  /**
-   * @type {boolean}
-   */
-  pusherAvailable: false,
   /**
    * @type {boolean}
    */
