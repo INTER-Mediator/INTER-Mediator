@@ -91,10 +91,7 @@ let INTERMediatorOnPage = {
   syncBeforeDelete: null,
   syncAfterDelete: null,
 
-  logoutScript: function () {
-    INTERMediatorOnPage.logout()
-    location.reload()
-  },
+  logoutURL: null,
 
   clearCredentials: function () {
     'use strict'
@@ -212,6 +209,7 @@ let INTERMediatorOnPage = {
     INTERMediatorOnPage.authChallenge = ''
     INTERMediatorOnPage.clientId = ''
     INTERMediatorOnPage.mediaToken = ''
+    INTERMediatorOnPage.logoutURL = null
     INTERMediatorOnPage.removeCredencialsFromCookieOrStorage()
     INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_localcontext')
   },

@@ -40,8 +40,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     private $paramResponse2 = null;
     private $paramCryptResponse = null;
     public $clientId;
-//    private $previousChallenge;
-//    private $previousClientid;
     private $passwordHash;
     private $alwaysGenSHA2;
 
@@ -55,12 +53,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     private $isStopNotifyAndMessaging = false;
     private $suppressMediaToken = false;
 
-    public function setClientId($cid)
+    public function setClientId($cid) // For testing
     {
         $this->clientId = $cid;
     }
 
-    public function setParamResponse($res)
+    public function setParamResponse($res) // For testing
     {
         if (is_array($res)) {
             $this->paramResponse = isset($res[0]) ? $res[0] : null;
@@ -926,7 +924,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $ldap->setLogger($this->logger);
                     if ($ldap->isActive) { // LDAP auth
                         if ($this->checkAuthorization($signedUser, true)) {
-                            $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+                            $this->logger->setDebugMessage("IM-built-in Authentication for LDAP user succeed.");
                             $authSucceed = true;
                         } else { // Timeout with LDAP
                             list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
@@ -934,6 +932,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                                 $this->logger->setDebugMessage("LDAP Authentication succeed.");
                                 $authSucceed = true;
                                 [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
+                                $this->dbSettings->setRequireAuthentication(false);
                                 // The following re-auth doesn't work. The salt of hashed password is
                                 // different from the request. Here is after bind checking, so authentication
                                 // is passed anyway.
@@ -945,7 +944,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         }
                     } else if ($this->dbSettings->getIsSAML()) { // Set up as SAML
                         if ($this->checkAuthorization($signedUser, true)) {
-                            $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+                            $this->logger->setDebugMessage("IM-built-in Authentication for SAML user succeed.");
                             $authSucceed = true;
                         } else { // Timeout with SAML
                             $SAMLAuth = new SAMLAuth();
@@ -956,10 +955,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                                 $authSucceed = true;
                                 $password = $this->generateRandomPW();
                                 [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
-//                                    if ($this->checkAuthorization($signedUser, true)) {
-//                                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
-//                                        $authSucceed = true;
-//                                    }
                                 if($addResult) {
                                     $this->dbSettings->setRequireAuthentication(false);
                                     $this->outputOfProcessing['samluser'] = $signedUser;

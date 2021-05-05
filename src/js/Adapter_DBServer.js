@@ -241,12 +241,7 @@ const INTERMediator_DBAdapter = {
                 INTERMediatorOnPage.authHashedPassword = jsonObject.temppw
                 INTERMediatorOnPage.authHashedPassword2m = jsonObject.temppw
                 INTERMediatorOnPage.authHashedPassword2 = jsonObject.temppw
-                INTERMediatorOnPage.logoutScript = (function () {
-                  const captURL = jsonObject.samllogouturl
-                  return function () {
-                    location.href = captURL
-                  }
-                })()
+                INTERMediatorOnPage.logoutURL = jsonObject.samllogouturl
               }
               if (accessURL.indexOf('access=changepassword&newpass=') === 0) {
                 if (successProc) {

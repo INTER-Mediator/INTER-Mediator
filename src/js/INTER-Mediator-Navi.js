@@ -291,7 +291,14 @@ const IMLibPageNavigation = {
           if (!node.id) {
             node.id = INTERMediator.nextIdValue()
           }
-          IMLibMouseEventDispatch.setExecute(node.id, INTERMediatorOnPage.logoutScript)
+          IMLibMouseEventDispatch.setExecute(node.id, function () {
+            INTERMediatorOnPage.logout()
+            if (INTERMediatorOnPage.logoutURL) {
+              location.href = INTERMediatorOnPage.logoutURL
+            } else {
+              location.reload()
+            }
+          })
         }
       }
     }

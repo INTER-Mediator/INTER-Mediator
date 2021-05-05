@@ -190,7 +190,8 @@ $pusherParameters = array(
 // $oAuthClientSecret = '';
 // $oAuthRedirect = 'http://localhost:7001/Auth_Support/OAuthCatcher.php';
 
-/* SAML Support, also activate the variable $ldapExpiringSeconds. */
+/* SAML Support, also activate the variable $ldapExpiringSeconds.
+   Information about setting up an SAML Service Provider exists in the samples/saml-config directory. */
 //$isSAML = true;
 
 /* Initial values for local context with their keys. */
