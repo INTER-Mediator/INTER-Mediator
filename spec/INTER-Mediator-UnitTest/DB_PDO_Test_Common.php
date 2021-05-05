@@ -11,6 +11,7 @@
 use PHPUnit\Framework\TestCase;
 
 //use \DateTime;
+use INTERMediator\DB\IMUtil;
 
 abstract class DB_PDO_Test_Common extends TestCase
 {
