@@ -950,8 +950,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         } else { // Timeout with SAML
                             $SAMLAuth = new SAMLAuth();
                             $signedUser = $SAMLAuth->samlLoginCheck();
-                            $this->outputOfProcessing['samlloginurl'] = $SAMLAuth->samlLoginURL();
-                            $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL();
+                            $this->outputOfProcessing['samlloginurl'] = $SAMLAuth->samlLoginURL($_SERVER['HTTP_REFERER']);
+                            $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
                             $this->paramAuthUser = $signedUser;
                             if ($signedUser) {
                                 $this->logger->setDebugMessage("SAML Authentication succeed.");
