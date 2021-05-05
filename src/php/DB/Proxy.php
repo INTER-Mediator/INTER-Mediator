@@ -958,6 +958,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                                 [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
                                 if($addResult) {
                                     $this->dbSettings->setRequireAuthentication(false);
+                                    $this->dbSettings->setCurrentUser($signedUser);
                                     $access = $originalAccess;
                                     $this->outputOfProcessing['samluser'] = $signedUser;
                                     $this->outputOfProcessing['temppw'] = $hashedpw;
