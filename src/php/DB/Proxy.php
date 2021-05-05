@@ -961,7 +961,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 //                                        $authSucceed = true;
 //                                    }
                                 if($addResult) {
-                                    $this->dbSettings->setRequireAuthentication(false);
+//                                    $this->dbSettings->setRequireAuthentication(false);
                                     $this->outputOfProcessing['samluser'] = $signedUser;
                                     $this->outputOfProcessing['temppw'] = $hashedpw;
                                     $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL();
