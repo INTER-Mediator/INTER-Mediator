@@ -292,9 +292,10 @@ const IMLibPageNavigation = {
             node.id = INTERMediator.nextIdValue()
           }
           IMLibMouseEventDispatch.setExecute(node.id, function () {
+            const url = INTERMediatorOnPage.logoutURL
             INTERMediatorOnPage.logout()
             if (INTERMediatorOnPage.logoutURL) {
-              location.href = INTERMediatorOnPage.logoutURL
+              location.href = url
             } else {
               location.reload()
             }
