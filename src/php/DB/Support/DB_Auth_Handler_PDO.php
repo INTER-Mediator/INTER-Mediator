@@ -565,11 +565,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
 
         if ($this->firstLevel) {
             $sql = "{$this->dbClass->handler->sqlSELECTCommand()}* FROM {$corrTable} WHERE user_id = "
-                . $this->dbClass->link->quote($groupid);
+                . $this->dbClass->link->quote($groupid) . " ORDER BY id";
             $this->firstLevel = false;
         } else {
             $sql = "{$this->dbClass->handler->sqlSELECTCommand()}* FROM {$corrTable} WHERE group_id = "
-                . $this->dbClass->link->quote($groupid);
+                . $this->dbClass->link->quote($groupid) . " ORDER BY id";
             //    $this->belongGroups[] = $groupid;
         }
         $result = $this->dbClass->link->query($sql);
@@ -580,8 +580,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if ($result->columnCount() === 0) {
             return false;
         }
-        $this->logger->setDebugMessage("[resolveGroup] {
-                $sql}");
+        $this->logger->setDebugMessage("[resolveGroup] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             if (!in_array($row['dest_group_id'], $this->belongGroups)) {
                 $this->belongGroups[] = $row['dest_group_id'];
