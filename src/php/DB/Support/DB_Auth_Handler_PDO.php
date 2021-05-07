@@ -577,10 +577,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             $this->logger->setDebugMessage('Select:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[resolveGroup] {$sql}");
         if ($result->columnCount() === 0) {
             return false;
         }
-        $this->logger->setDebugMessage("[resolveGroup] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             if (!in_array($row['dest_group_id'], $this->belongGroups)) {
                 $this->belongGroups[] = $row['dest_group_id'];
