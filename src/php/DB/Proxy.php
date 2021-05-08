@@ -20,6 +20,7 @@ use Exception;
 use INTERMediator\FileUploader;
 use INTERMediator\IMUtil;
 use INTERMediator\LDAPAuth;
+use INTERMediator\SAMLAuth;
 use INTERMediator\Locale\IMLocale;
 use INTERMediator\Messaging\MessagingProxy;
 use INTERMediator\NotifyServer;
@@ -39,8 +40,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     private $paramResponse2 = null;
     private $paramCryptResponse = null;
     public $clientId;
-//    private $previousChallenge;
-//    private $previousClientid;
     private $passwordHash;
     private $alwaysGenSHA2;
 
@@ -54,12 +53,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     private $isStopNotifyAndMessaging = false;
     private $suppressMediaToken = false;
 
-    public function setClientId($cid)
+    public function setClientId($cid) // For testing
     {
         $this->clientId = $cid;
     }
 
-    public function setParamResponse($res)
+    public function setParamResponse($res) // For testing
     {
         if (is_array($res)) {
             $this->paramResponse = isset($res[0]) ? $res[0] : null;
@@ -301,11 +300,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         strpos(strtolower($currentDataSource['sync-control']), 'update-notify') !== false
                     );
                 } catch (Exception $ex) {
-                    if ($ex->getMessage() == '_im_no_pusher_exception') {
-                        $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
-                    } else {
-                        throw $ex;
-                    }
+                    throw $ex;
                 }
             }
             // Messaging
@@ -369,11 +364,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                             strpos(strtolower($currentDataSource['sync-control']), 'create-notify') !== false
                         );
                     } catch (Exception $ex) {
-                        if ($ex->getMessage() == '_im_no_pusher_exception') {
-                            $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
-                        } else {
-                            throw $ex;
-                        }
+                        throw $ex;
                     }
                 }
                 // Messaging
@@ -441,11 +432,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $this->dbClass->notifyHandler->queriedPrimaryKeys()
                     );
                 } catch (Exception $ex) {
-                    if ($ex->getMessage() == '_im_no_pusher_exception') {
-                        $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
-                    } else {
-                        throw $ex;
-                    }
+                    throw $ex;
                 }
             }
         } catch (Exception $e) {
@@ -488,11 +475,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         strpos(strtolower($currentDataSource['sync-control']), 'create-notify') !== false
                     );
                 } catch (Exception $ex) {
-                    if ($ex->getMessage() == '_im_no_pusher_exception') {
-                        $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
-                    } else {
-                        throw $ex;
-                    }
+                    throw $ex;
                 }
             }
         } catch (Exception $e) {
@@ -555,8 +538,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
         $params = IMUtil::getFromParamsPHPFile(array(
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
-            "dbOption", "dbDSN", "pusherParameters", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
-            "activateClientService", "accessLogLevel", "certVerifying", "passwordHash", "alwaysGenSHA2"
+            "dbOption", "dbDSN", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
+            "activateClientService", "accessLogLevel", "certVerifying", "passwordHash", "alwaysGenSHA2",
+            "isSAML", "samlAuthSource",
         ), true);
         $this->accessLogLevel = intval($params['accessLogLevel']);
         $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
@@ -623,21 +607,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 isset($context['dsn']) ? $context['dsn'] :
                     (isset($dbspec['dsn']) ? $dbspec['dsn'] :
                         (isset ($params['dbDSN']) ? $params['dbDSN'] : '')));
-        }
-
-        $pusherParams = null;
-        if (isset($params['pusherParameters'])) {
-            $pusherParams = $params['pusherParameters'];
-        } else if (isset($options['pusher'])) {
-            $pusherParams = $options['pusher'];
-        }
-        if (!is_null($pusherParams)) {
-            $this->dbSettings->pusherAppId = $pusherParams['app_id'];
-            $this->dbSettings->pusherKey = $pusherParams['key'];
-            $this->dbSettings->pusherSecret = $pusherParams['secret'];
-            if (isset($pusherParams['channel'])) {
-                $this->dbSettings->pusherChannel = $pusherParams['channel'];
-            }
         }
 
         /* Setup Database Class's Object */
@@ -786,6 +755,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->dbSettings->setMediaRoot(isset($options['media-root-dir']) ? $options['media-root-dir'] : null);
 
         $this->logger->setDebugMessage("Server side locale: " . setlocale(LC_ALL, "0"), 2);
+
+        if (isset($params['isSAML'])) {
+            $this->dbSettings->setIsSAML($params['isSAML']);
+        }
+        if (isset($params['samlAuthSource'])) {
+            $this->dbSettings->setSAMLAuthSource($params['samlAuthSource']);
+        }
         return true;
     }
 
@@ -856,6 +832,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
         }
 
+        $originalAccess = $access;
         if (!$bypassAuth && $this->dbSettings->getRequireAuthorization()) { // Authentication required
             if (strlen($this->paramAuthUser) == 0 || (
                     strlen($this->paramResponse) == 0
@@ -918,26 +895,54 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $authSucceed = false;
                     $ldap = new LDAPAuth();
                     $ldap->setLogger($this->logger);
-                    if (!$ldap->isActive) { // Normal auth
-                        if ($this->checkAuthorization($signedUser, false)) {
-                            $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
-                            $authSucceed = true;
-                        }
-                    } else { // Set up as LDAP
+                    if ($ldap->isActive) { // LDAP auth
                         if ($this->checkAuthorization($signedUser, true)) {
-                            $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+                            $this->logger->setDebugMessage("IM-built-in Authentication for LDAP user succeed.");
                             $authSucceed = true;
                         } else { // Timeout with LDAP
                             list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
                             if ($ldap->bindCheck($signedUser, $password)) {
                                 $this->logger->setDebugMessage("LDAP Authentication succeed.");
                                 $authSucceed = true;
-                                $this->addUser($signedUser, $password, true);
-                                if ($this->checkAuthorization($signedUser, true)) {
-                                    $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
-                                    $authSucceed = true;
+                                [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
+                                $this->dbSettings->setRequireAuthentication(false);
+                                // The following re-auth doesn't work. The salt of hashed password is
+                                // different from the request. Here is after bind checking, so authentication
+                                // is passed anyway.
+//                                    if ($this->checkAuthorization($signedUser, true)) {
+//                                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+//                                        $authSucceed = true;
+//                                    }
+                            }
+                        }
+                    } else if ($this->dbSettings->getIsSAML()) { // Set up as SAML
+                        if ($this->checkAuthorization($signedUser, true)) {
+                            $this->logger->setDebugMessage("IM-built-in Authentication for SAML user succeed.");
+                            $authSucceed = true;
+                        } else { // Timeout with SAML
+                            $SAMLAuth = new SAMLAuth($this->dbSettings->getSAMLAuthSource());
+                            $signedUser = $SAMLAuth->samlLoginCheck();
+                            $this->outputOfProcessing['samlloginurl'] = $SAMLAuth->samlLoginURL($_SERVER['HTTP_REFERER']);
+                            $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
+                            $this->paramAuthUser = $signedUser;
+                            if ($signedUser) {
+                                $this->logger->setDebugMessage("SAML Authentication succeed.");
+                                $authSucceed = true;
+                                $password = IMUtil::generateRandomPW();
+                                [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
+                                if ($addResult) {
+                                    $this->dbSettings->setRequireAuthentication(false);
+                                    $this->dbSettings->setCurrentUser($signedUser);
+                                    $access = $originalAccess;
+                                    $this->outputOfProcessing['samluser'] = $signedUser;
+                                    $this->outputOfProcessing['temppw'] = $hashedpw;
                                 }
                             }
+                        }
+                    } else { // Normal Login process
+                        if ($this->checkAuthorization($signedUser, false)) {
+                            $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+                            $authSucceed = true;
                         }
                     }
 
@@ -967,7 +972,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $result = $this->readFromDB();
                 if (isset($tableInfo['protect-reading']) && is_array($tableInfo['protect-reading'])) {
                     $recordCount = count($result);
-                    for ($index = 0; $index < $recordCount; $index++) {
+                    for ($index = 0;
+                         $index < $recordCount;
+                         $index++) {
                         foreach ($result[$index] as $field => $value) {
                             if (in_array($field, $tableInfo['protect-reading'])) {
                                 $result[$index][$field] = "[protected]";
@@ -980,7 +987,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->outputOfProcessing['totalCount'] = $this->getTotalCount();
                 $this->suppressMediaToken = false;
                 break;
-            case 'update':
+            case
+            'update':
                 $this->logger->setDebugMessage("[processingRequest] start update processing", 2);
                 if ($this->checkValidation()) {
                     if (isset($tableInfo['protect-writing']) && is_array($tableInfo['protect-writing'])) {
@@ -1139,16 +1147,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->logger->setDebugMessage(
             "[finishCommunication]getRequireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
         $this->outputOfProcessing['usenull'] = false;
-        $this->outputOfProcessing['notifySupport']
-            = is_null($this->dbSettings->notifyServer) ? false : $this->dbSettings->pusherKey;
         if (!$notFinish && $this->dbSettings->getRequireAuthorization()) {
-            $generatedChallenge = $this->generateChallenge();
-            $generatedUID = $this->generateClientId('');
+            $generatedChallenge = IMUtil::generateChallenge();
+            $generatedUID = IMUtil::generateClientId('', $this->passwordHash);
             $this->logger->setDebugMessage("generatedChallenge = $generatedChallenge", 2);
             $userSalt = $this->saveChallenge(
                 $this->dbSettings->isDBNative() ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
-//            $this->previousChallenge = "{$generatedChallenge}{$userSalt}";
-//            $this->previousClientid = "{$generatedUID}";
             $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";
             $this->outputOfProcessing['clientid'] = $generatedUID;
             if ($this->dbSettings->getRequireAuthentication()) {
@@ -1160,7 +1164,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $tableInfo['authentication']['media-handling'] === true &&
                 !$this->suppressMediaToken
             ) {
-                $generatedChallenge = $this->generateChallenge();
+                $generatedChallenge = IMUtil::generateChallenge();
                 $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
                 $this->outputOfProcessing['mediatoken'] = $generatedChallenge;
                 $this->logger->setDebugMessage("mediatoken stored", 2);
@@ -1251,66 +1255,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
 
         return array($password, $challenge);
-    }
-
-    /**
-     * @param $prefix
-     * @return string
-     */
-    function generateClientId($prefix)
-    {
-        if ($this->passwordHash == "1") {
-            return sha1(uniqid($prefix, true));
-        }
-        return hash("sha256", uniqid($prefix, true));
-    }
-
-    /**
-     * @return string
-     */
-    function generateChallenge()
-    {
-        $str = '';
-        for ($i = 0; $i < 12; $i++) {
-            $n = rand(1, 255);
-            $str .= ($n < 16 ? '0' : '') . dechex($n);
-        }
-        return $str;
-    }
-
-    /**
-     * @return string
-     */
-    function generateSalt()
-    {
-        $str = '';
-        for ($i = 0; $i < 4; $i++) {
-            $n = rand(33, 126); // They should be an ASCII character for JS SHA1 lib.
-            $str .= chr($n);
-        }
-        return $str;
-    }
-
-    function convertHashedPassword($pw)
-    {
-        $salt = $this->generateSalt();
-        if ($this->passwordHash == "1" && !$this->alwaysGenSHA2) {
-            return sha1($pw . $salt) . bin2hex($salt);
-        }
-        $value = $pw . $salt;
-        for ($i = 0; $i < 4999; $i++) {
-            $value = hash("sha256", $value, true);
-        }
-        return hash("sha256", $value, false) . bin2hex($salt);
-    }
-
-    function generateCredential($digit)
-    {
-        $password = '';
-        for ($i = 0; $i < $digit; $i++) {
-            $password .= chr(rand(32, 127));
-        }
-        return $this->convertHashedPassword($password);
     }
 
     /**
@@ -1438,10 +1382,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     function addUser($username, $password, $isLDAP = false)
     {
         $this->logger->setDebugMessage("[addUser] username={$username}, isLDAP={$isLDAP}", 2);
-        $returnValue = $this->dbClass->authHandler->authSupportCreateUser(
-            $username, $this->convertHashedPassword($password), $isLDAP, $password);
+        $hashedPw = IMUtil::convertHashedPassword($password, $this->passwordHash, $this->alwaysGenSHA2);
+        $returnValue = $this->dbClass->authHandler->authSupportCreateUser($username, $hashedPw, $isLDAP, $password);
         $this->logger->setDebugMessage("[addUser] authSupportCreateUser returns: {$returnValue}", 2);
-        return $returnValue;
+        return [$returnValue, $hashedPw];
     }
 
     /**
@@ -1469,7 +1413,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         if ($username === false || $username == '') {
             return false;
         }
-        $clienthost = $this->generateChallenge();
+        $clienthost = IMUtil::generateChallenge();
         $hash = sha1($clienthost . $email . $username);
         if ($this->authDbClass->authHandler->authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)) {
             return array('randdata' => $clienthost, 'username' => $username);
@@ -1507,7 +1451,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     function userEnrollmentStart($userID)
     {
-        $hash = $this->generateChallenge();
+        $hash = IMUtil::generateChallenge();
         $this->authDbClass->authHandler->authSupportUserEnrollmentStart($userID, $hash);
         return $hash;
     }
@@ -1520,7 +1464,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             return false;
         }
         $result = $this->dbClass->authHandler->authSupportUserEnrollmentActivateUser(
-            $userID, $this->convertHashedPassword($password), $rawPWField, $password);
+            $userID, IMUtil::convertHashedPassword($password, $this->passwordHash, $this->alwaysGenSHA2),
+            $rawPWField, $password);
 //        if ($userID !== false) {
 //            $hashednewpassword = $this->convertHashedPassword($password);
 //            $userInfo = authSupportUserEnrollmentCheckHash($userID, $hashednewpassword);

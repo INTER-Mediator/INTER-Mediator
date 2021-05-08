@@ -291,11 +291,15 @@ const IMLibPageNavigation = {
           if (!node.id) {
             node.id = INTERMediator.nextIdValue()
           }
-          IMLibMouseEventDispatch.setExecute(node.id,
-            function () {
-              INTERMediatorOnPage.logout()
+          IMLibMouseEventDispatch.setExecute(node.id, function () {
+            const url = INTERMediatorOnPage.logoutURL
+            INTERMediatorOnPage.logout()
+            if (INTERMediatorOnPage.logoutURL) {
+              location.href = url
+            } else {
               location.reload()
-            })
+            }
+          })
         }
       }
     }
@@ -351,7 +355,7 @@ const IMLibPageNavigation = {
           INTERMediator_DBAdapter.db_createRecord_async(
             {name: targetNameCapt, dataset: []},
             async function (response) {
-              const  newId = response.newRecordKeyValue
+              const newId = response.newRecordKeyValue
               INTERMediatorOnPage.newRecordId = newId
               if (newId > -1) {
                 const restore = INTERMediator.additionalCondition
@@ -1284,7 +1288,7 @@ const IMLibPageNavigation = {
         if (masterEnclosure.tagName === 'TBODY') {
           masterEnclosure = masterEnclosure.parentNode
         }
-        if(masterEnclosure.style.display != 'none') {
+        if (masterEnclosure.style.display != 'none') {
           IMLibPageNavigation.masterNodeOriginalDisplay = masterEnclosure.style.display
           masterEnclosure.style.display = 'none'
         }

@@ -13,6 +13,9 @@ Also the Migration Guide (Japanese) might be informative:
 Ver.8 (in development)
 - The password hash for authentication moves to SHA-256 based hash, and it has the interoperability with SHA-1 hash.
   (LDAP and self-service password reset are not checked so far.)
+- SAML is integrated with SimpleSAMLphp. The $isSAML variable in params.php has to be set true, also set $samlAuthSource,
+  and setting information exists in sample/saml-config directory.
+- Custom url for after clicking logout button of the page navigation can set to INTERMediatorOnPage.logoutURL.
 - [BUG FIX] IMLibPageNavigation.moveDetailOnceAgain() didn't work fine.
 - [BUG FIX] On the navi-control key, confirm-delete works but delete-confirm didn't (also insert).
 - [BUG FIX] Fix compatibility with Claris FileMaker Server. The affected version is Ver.7.

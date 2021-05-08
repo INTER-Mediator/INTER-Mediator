@@ -91,6 +91,9 @@ let INTERMediatorOnPage = {
   syncBeforeDelete: null,
   syncAfterDelete: null,
 
+  logoutURL: null,
+  loginURL: null,
+
   clearCredentials: function () {
     'use strict'
     INTERMediatorOnPage.authChallenge = null
@@ -207,6 +210,8 @@ let INTERMediatorOnPage = {
     INTERMediatorOnPage.authChallenge = ''
     INTERMediatorOnPage.clientId = ''
     INTERMediatorOnPage.mediaToken = ''
+    INTERMediatorOnPage.loginURL = null
+    INTERMediatorOnPage.logoutURL = null
     INTERMediatorOnPage.removeCredencialsFromCookieOrStorage()
     INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_localcontext')
   },
@@ -664,13 +669,13 @@ let INTERMediatorOnPage = {
         let shaObj = new jsSHA('SHA-1', 'TEXT')
         shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
         let hash = shaObj.getHash('HEX')
-        shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds" : 5000})
+        shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
         shaObj.update(hash + INTERMediatorOnPage.authUserSalt)
         let hashNext = shaObj.getHash('HEX')
         INTERMediatorOnPage.authHashedPassword2m = hashNext + INTERMediatorOnPage.authUserHexSalt
       }
       if (INTERMediatorOnPage.passwordHash < 2.1) {
-        let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds" : 5000})
+        let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
         shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
         let hash = shaObj.getHash('HEX')
         INTERMediatorOnPage.authHashedPassword2 = hash + INTERMediatorOnPage.authUserHexSalt

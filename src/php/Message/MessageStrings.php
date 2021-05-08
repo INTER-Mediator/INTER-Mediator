@@ -107,8 +107,6 @@ class MessageStrings
         1035 => "field=@1@, initial value=@2@, current value=@3@\n",
         1036 => "field=@1@, expression=@2@ happens a parse error.",
         1037 => "A cyclic referencing is detected.",
-        1038 => "Preparing the Pusher, although the settings in the server side is available, the client library isn't included.",
-        1039 => "Preparing the Pusher, although the client library is included, the settings in the server side is not available.",
         1040 => "The field '@2@' in the context '@1@' does not exist in the table.",
         1041 => "Are you sure to copy this record?",
         1042 => "The database class doesn't support aggregation-select/from/group-by.",

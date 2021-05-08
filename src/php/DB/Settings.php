@@ -63,11 +63,6 @@ class Settings
     public $registerTableName = "registeredcontext";
     public $registerPKTableName = "registeredpks";
 
-    public $pusherAppId = null;
-    public $pusherKey = null;
-    public $pusherSecret = null;
-    public $pusherChannel = "_im_pusher_default_channel";
-
     private $params_ldapServer;
     private $params_ldapPort;
     private $params_ldapBase;
@@ -75,6 +70,8 @@ class Settings
     private $params_ldapAccountKey;
     private $params_ldapExpiringSeconds;
     private $params_mediaRoot;
+    private $isSAML = false;
+    private $samlAuthSource = '';
 
     private $aggregation_select = null;
     private $aggregation_from = null;
@@ -83,6 +80,26 @@ class Settings
     private $attachedFiles = [];
     private $attachedFields = null;
     private $certVerifying = true;
+
+    public function setSAMLAuthSource($value)
+    {
+        $this->samlAuthSource = $value;
+    }
+
+    public function getSAMLAuthSource()
+    {
+        return $this->samlAuthSource;
+    }
+
+    public function setIsSaml($value)
+    {
+        $this->isSAML = boolval($value);
+    }
+
+    public function getIsSaml()
+    {
+        return $this->isSAML;
+    }
 
     public function setCertVerifying($value)
     {

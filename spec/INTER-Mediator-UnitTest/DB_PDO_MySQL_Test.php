@@ -10,7 +10,7 @@
 
 require_once('DB_PDO_Test_Common.php');
 
-use \INTERMediator\DB\Proxy;
+use INTERMediator\DB\Proxy;
 
 class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
 {

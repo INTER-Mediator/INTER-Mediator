@@ -100,7 +100,6 @@ const INTERMediator_DBAdapter = {
 
     authParams += '&notifyid='
     authParams += encodeURIComponent(INTERMediatorOnPage.clientNotificationIdentifier())
-    // authParams += ('&pusher=' + (INTERMediator.pusherAvailable ? 'yes' : ''))
     return authParams
   },
 
@@ -156,11 +155,11 @@ const INTERMediator_DBAdapter = {
     // 'use strict'
     let newRecordKeyValue = '', dbresult = '', resultCount = 0, totalCount = null, challenge = null, clientid = null,
       requireAuth = false, myRequest = null, changePasswordResult = null, mediatoken = null, appPath, authParams,
-      jsonObject, i, notifySupport = false, useNull = false, registeredID = '', alertBackup
+      jsonObject, i, /*notifySupport = false, */useNull = false, registeredID = '', alertBackup
     appPath = INTERMediatorOnPage.getEntryPath()
     authParams = INTERMediator_DBAdapter.generate_authParams()
     INTERMediator_DBAdapter.logging_comAction(debugMessageNumber, appPath, accessURL, authParams)
-    INTERMediatorOnPage.notifySupport = notifySupport
+    // INTERMediatorOnPage.notifySupport = notifySupport
     const promise = new Promise((resolve, reject) => {
       try {
         myRequest = new XMLHttpRequest()
@@ -198,7 +197,7 @@ const INTERMediator_DBAdapter = {
               newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : ''
               changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null
               mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null
-              notifySupport = jsonObject.notifySupport
+              //notifySupport = jsonObject.notifySupport
               alertBackup = INTERMediatorLog.errorMessageByAlert
               INTERMediatorLog.errorMessageByAlert = false
               for (i = 0; i < jsonObject.errorMessages.length; i++) {
@@ -236,6 +235,20 @@ const INTERMediator_DBAdapter = {
                   requireAuth = true
                 }
               }
+              if (INTERMediatorOnPage.isSAML){
+                if(jsonObject.samluser) {
+                  INTERMediatorOnPage.authUser = jsonObject.samluser
+                  INTERMediatorOnPage.authHashedPassword = jsonObject.temppw
+                  INTERMediatorOnPage.authHashedPassword2m = jsonObject.temppw
+                  INTERMediatorOnPage.authHashedPassword2 = jsonObject.temppw
+                }
+                if(jsonObject.samlloginurl) {
+                  INTERMediatorOnPage.loginURL = jsonObject.samlloginurl
+                }
+                if(jsonObject.samllogouturl) {
+                  INTERMediatorOnPage.logoutURL = jsonObject.samllogouturl
+                }
+              }
               if (accessURL.indexOf('access=changepassword&newpass=') === 0) {
                 if (successProc) {
                   successProc({
@@ -253,6 +266,9 @@ const INTERMediator_DBAdapter = {
               if (requireAuth) {
                 INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
                 INTERMediatorOnPage.clearCredentials()
+                if (INTERMediatorOnPage.isSAML) {
+                  location.href = INTERMediatorOnPage.loginURL
+                }
                 if (authAgainProc) {
                   authAgainProc(myRequest)
                 }
@@ -262,7 +278,7 @@ const INTERMediator_DBAdapter = {
                 INTERMediatorOnPage.authCount = 0
               }
               INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
-              INTERMediatorOnPage.notifySupport = notifySupport
+              //INTERMediatorOnPage.notifySupport = notifySupport
               if (successProc) {
                 successProc({
                   dbresult: dbresult,
@@ -339,13 +355,13 @@ const INTERMediator_DBAdapter = {
         let shaObj = new jsSHA('SHA-1', 'TEXT')
         shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
         let hash = shaObj.getHash('HEX')
-        shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds" : 5000})
+        shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
         shaObj.update(hash + INTERMediatorOnPage.authUserSalt)
         let hashNext = shaObj.getHash('HEX')
         INTERMediatorOnPage.authHashedPassword2m = hashNext + INTERMediatorOnPage.authUserHexSalt
       }
       if (INTERMediatorOnPage.passwordHash < 2.1) {
-        let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds" : 5000})
+        let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
         shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
         let hash = shaObj.getHash('HEX')
         INTERMediatorOnPage.authHashedPassword2 = hash + INTERMediatorOnPage.authUserHexSalt
@@ -377,7 +393,7 @@ const INTERMediator_DBAdapter = {
             //   INTERMediatorOnPage.authHashedPassword2m = hashNext + INTERMediatorOnPage.authUserHexSalt
             // }
             if (INTERMediatorOnPage.passwordHash < 2.1) {
-              let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds" : 5000})
+              let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
               shaObj.update(newpassword + INTERMediatorOnPage.authUserSalt)
               let hash = shaObj.getHash('HEX')
               INTERMediatorOnPage.authHashedPassword2 = hash + INTERMediatorOnPage.authUserHexSalt

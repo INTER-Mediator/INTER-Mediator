@@ -253,12 +253,6 @@ IM_Entry(
             'username' => 'string',
             'password' => 'string',
         ),
-        'pusher' => array(
-            'app_id' => 'string',
-            'key' => 'integer',
-            'secret' => 'string',
-            'channel' => 'string',
-        )
     ),
     array(
         'db-class' => 'string',

@@ -18,14 +18,11 @@ namespace INTERMediator\DB;
 interface Auth_Interface_Communication
 {
     // The followings are used in Proxy::processingRequest.
-    public function generateClientId($prefix);
-    public function generateChallenge();
     public function saveChallenge($username, $challenge, $clientId);
     public function checkAuthorization($username, $isLDAP = false);
     public function checkChallenge($challenge, $clientId);
     public function checkMediaToken($user, $token);
     public function addUser($username, $password);
     public function authSupportGetSalt($username);
-    public function generateSalt();    // Use inside addUser
     public function changePassword($username, $newpassword);
 }

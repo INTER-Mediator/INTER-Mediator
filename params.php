@@ -167,15 +167,6 @@ $sendMailSMTP = array(
 // Sending email features compatibility with INTER-Mediator v5 unless 'template-context' key isn't specified.
 $sendMailCompatibilityMode = true;  // default is true
 
-/*
- * If you want to specify the Pusher information, set them below.
-$pusherParameters = array(
-    'app_id' => '',
-    'key' => '',
-    'secret' => '',
-);
-*/
-
 /* LDAP Support */
 // $ldapServer = "ldap://homeserver.msyk.net";
 // $ldapPort = 389;
@@ -189,6 +180,11 @@ $pusherParameters = array(
 // $oAuthClientID = '';
 // $oAuthClientSecret = '';
 // $oAuthRedirect = 'http://localhost:7001/Auth_Support/OAuthCatcher.php';
+
+/* SAML Support, also activate the variable $ldapExpiringSeconds.
+   Information about setting up an SAML Service Provider exists in the samples/saml-config directory. */
+//$isSAML = true;
+//$samlAuthSource = 'default-sp';
 
 /* Initial values for local context with their keys. */
 //$valuesForLocalContext = array(

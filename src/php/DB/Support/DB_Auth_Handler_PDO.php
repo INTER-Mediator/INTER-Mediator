@@ -347,13 +347,13 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             $currentDTFormat = IMUtil::currentDTString();
             if ($user_id > 0) {
                 $setClause = "limitdt = " . $this->dbClass->link->quote($currentDTFormat);
-                if ($timeUp) {
-                    $hexSalt = substr($hpw, -8, 8);
-                    $prevPwHash = sha1($ldapPassword . hex2bin($hexSalt)) . $hexSalt;
-                    if ($prevPwHash != $hpw) {
-                        $setClause .= ",hashedpasswd = " . $this->dbClass->link->quote($hashedpassword);
-                    }
+                //if ($timeUp) {
+                $hexSalt = substr($hpw, -8, 8);
+                $prevPwHash = sha1($ldapPassword . hex2bin($hexSalt)) . $hexSalt;
+                if ($prevPwHash != $hpw) {
+                    $setClause .= ",hashedpasswd = " . $this->dbClass->link->quote($hashedpassword);
                 }
+                //}
                 $sql = "{$this->dbClass->handler->sqlUPDATECommand()}{$userTable} SET {$setClause} WHERE id = {$user_id}";
                 $result = $this->dbClass->link->query($sql);
                 $this->logger->setDebugMessage("[authSupportCreateUser - LDAP] {$sql}");
@@ -565,11 +565,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
 
         if ($this->firstLevel) {
             $sql = "{$this->dbClass->handler->sqlSELECTCommand()}* FROM {$corrTable} WHERE user_id = "
-                . $this->dbClass->link->quote($groupid);
+                . $this->dbClass->link->quote($groupid) . " ORDER BY id";
             $this->firstLevel = false;
         } else {
             $sql = "{$this->dbClass->handler->sqlSELECTCommand()}* FROM {$corrTable} WHERE group_id = "
-                . $this->dbClass->link->quote($groupid);
+                . $this->dbClass->link->quote($groupid) . " ORDER BY id";
             //    $this->belongGroups[] = $groupid;
         }
         $result = $this->dbClass->link->query($sql);
@@ -577,11 +577,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             $this->logger->setDebugMessage('Select:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[resolveGroup] {$sql}");
         if ($result->columnCount() === 0) {
             return false;
         }
-        $this->logger->setDebugMessage("[resolveGroup] {
-                $sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             if (!in_array($row['dest_group_id'], $this->belongGroups)) {
                 $this->belongGroups[] = $row['dest_group_id'];
@@ -897,8 +896,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "{$this->dbClass->handler->sqlSELECTCommand()}* FROM {
-                $userTable} WHERE id = " . $userID;
+        $sql = "{$this->dbClass->handler->sqlSELECTCommand()}* FROM {$userTable} WHERE id = " . $userID;
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Select:' . $sql);
@@ -907,8 +905,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] " . var_export($row, true));
-            $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] ldapLimit ={
-                $this->dbSettings->getLDAPExpiringSeconds()}");
+            $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] "
+                . "ldapLimit ={$this->dbSettings->getLDAPExpiringSeconds()}");
             if (isset($row['limitdt']) && !is_null($row['limitdt'])) {
                 if (time() - strtotime($row['limitdt']) > $this->dbSettings->getLDAPExpiringSeconds()) {
                     $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] returns false ");

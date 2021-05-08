@@ -125,7 +125,7 @@ class OAuthAuth
         $tokenID = $this->decodeIDToken($_REQUEST['code']);
         if ($tokenID === false || strlen($tokenID["username"]) < 1 || strlen($tokenID["email"]) < 1) {
             $this->errorMessage[] = "Nothing to get from the authenticating server. tokenID="
-            .var_export($tokenID, true);
+                . var_export($tokenID, true);
             return false;
         }
 
@@ -138,7 +138,7 @@ class OAuthAuth
         $dbProxy = new Proxy();
         $dbProxy->initialize(null, null, null, false);
         $dbProxy->dbSettings->setLDAPExpiringSeconds(3600 * 24);
-        $credential = $dbProxy->generateCredential(30);
+        $credential = IMUtil::generateCredential(30, $this->passwordHash, $this->alwaysGenSHA2);
         $param = array(
             "username" => $tokenID["username"],
             "hashedpasswd" => $credential,
@@ -146,9 +146,9 @@ class OAuthAuth
             "email" => $tokenID["email"]
         );
         $this->isCreate = $dbProxy->dbClass->authHandler->authSupportOAuthUserHandling($param);
-        if ($this->debugMode)   {
+        if ($this->debugMode) {
             $this->errorMessage[] = "authSupportOAuthUserHandling sends "
-            . var_export($param, true) . ", returns {$this->isCreate}.";
+                . var_export($param, true) . ", returns {$this->isCreate}.";
             $this->errorMessage = array_merge($this->errorMessage, $dbProxy->logger->getDebugMessages());
         }
         $this->errorMessage = array_merge($this->errorMessage, $dbProxy->logger->getErrorMessages());
@@ -232,7 +232,7 @@ class OAuthAuth
             $this->errorMessage[] = "Error: {$response->error}<br/>Description: {$response->error_description}";
             return false;
         }
-        if (strlen($response->access_token) < 1)    {
+        if (strlen($response->access_token) < 1) {
             $this->errorMessage[] = "Error: Access token didn't get from: {$this->getTokenURL}.";
         }
         if ($this->debugMode) {
@@ -303,7 +303,7 @@ class OAuthAuth
         $realname = $userInfo->name;
         if (strlen($username) < 2) {
             $username = $userInfo->sub . "@" . $userInfo->hd;
-            if (strlen($username) < 2)    {
+            if (strlen($username) < 2) {
                 $this->errorMessage[] = "Error: User subject didn't get from: {$this->getTokenURL}.";
             }
         }

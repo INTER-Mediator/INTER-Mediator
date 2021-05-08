@@ -514,9 +514,81 @@ class IMUtil
     {
         $resultStr = '';
         for ($i = 0; $i < $digit; $i++) {
-            $resultStr .= chr(rand(20, 126));
+            $resultStr .= chr(random_int(33, 126));
         }
         return $resultStr;
+    }
+
+    /**
+     * @param $prefix
+     * @return string
+     */
+    public static function generateClientId($prefix, $passwordHash)
+    {
+        if ($passwordHash == "1") {
+            return sha1(uniqid($prefix, true));
+        }
+        return hash("sha256", uniqid($prefix, true));
+    }
+
+    /**
+     * @return string
+     */
+    public static function generateChallenge()
+    {
+        $str = '';
+        for ($i = 0; $i < 12; $i++) {
+            $n = rand(1, 255);
+            $str .= ($n < 16 ? '0' : '') . dechex($n);
+        }
+        return $str;
+    }
+
+    /**
+     * @return string
+     */
+    public static function generateSalt()
+    {
+        $str = '';
+        for ($i = 0; $i < 4; $i++) {
+            $n = rand(33, 126); // They should be an ASCII character for JS SHA1 lib.
+            $str .= chr($n);
+        }
+        return $str;
+    }
+
+    public static function convertHashedPassword($pw, $passwordHash, $alwaysGenSHA2, $salt = false)
+    {
+        if ($salt === false) {
+            $salt = IMUtil::generateSalt();
+        }
+        if ($passwordHash == "1" && !$alwaysGenSHA2) {
+            return sha1($pw . $salt) . bin2hex($salt);
+        }
+        $value = $pw . $salt;
+        for ($i = 0; $i < 4999; $i++) {
+            $value = hash("sha256", $value, true);
+        }
+        return hash("sha256", $value, false) . bin2hex($salt);
+    }
+
+    public static function generateCredential($digit, $passwordHash, $alwaysGenSHA2)
+    {
+        $password = '';
+        for ($i = 0; $i < $digit; $i++) {
+            $password .= chr(rand(32, 127));
+        }
+        return IMUtil::convertHashedPassword($password, $passwordHash, $alwaysGenSHA2);
+    }
+
+    public static function generateRandomPW()
+    {
+        $str = '';
+        for ($i = 0; $i < random_int(15, 20); $i++) {
+            $n = random_int(33, 126); // They should be an ASCII character for JS SHA1 lib.
+            $str .= chr($n);
+        }
+        return $str;
     }
 
 }
