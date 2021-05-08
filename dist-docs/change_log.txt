@@ -16,6 +16,7 @@ Ver.8 (in development)
 - SAML is integrated with SimpleSAMLphp. The $isSAML variable in params.php has to be set true, also set $samlAuthSource,
   and setting information exists in sample/saml-config directory.
 - Custom url for after clicking logout button of the page navigation can set to INTERMediatorOnPage.logoutURL.
+- Update sample schema files and recipe.rb for the INTER-Mediator-Server virtual machine and CI.
 - [BUG FIX] IMLibPageNavigation.moveDetailOnceAgain() didn't work fine.
 - [BUG FIX] On the navi-control key, confirm-delete works but delete-confirm didn't (also insert).
 - [BUG FIX] Fix compatibility with Claris FileMaker Server. The affected version is Ver.7.
@@ -35,6 +36,7 @@ Ver.7 (March 20, 2021)
 - The processing for 'data-im-group' attributes was eliminated in updating to Ver.6.
   Some method handling these attributes removed.
 - The script 'dist-docs/buildup.sh' can exclude JSEncrypt and Socket.io in the generated js file.
+- Update deploy.sh and Vagrantfile etc. for the INTER-Mediator-Server VM (Change to CentOS Linux 7).
 - [BUG FIX] The variable name '$follwingTimezones' in the params.php file was typo at all!
   Change it to $followingTimezones.
 - [BUG FIX] A calculation which refers to other context as like 'product@unitprice' detected wrong record.
