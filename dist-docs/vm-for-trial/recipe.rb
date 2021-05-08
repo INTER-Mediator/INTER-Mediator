@@ -374,7 +374,10 @@ default-character-set=utf8
 EOF
     end
   else
-    package 'mariadb-server' do
+    execute 'curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash' do
+      command 'curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash'
+    end
+    package 'MariaDB-server' do
       action :install
     end
     service 'mariadb' do
