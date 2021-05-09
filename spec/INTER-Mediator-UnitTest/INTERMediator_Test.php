@@ -76,13 +76,13 @@ class INTERMediator_Test extends TestCase
 //        $this->assertEquals($assertValue, $params[$key], $message);
 
         $key = 'serviceServerConnect';
-//        if (getenv('CIRCLECI') === 'true') {
-//            $assertValue = 'localhost';
-//            $assertStr = 'localhost';
-//        } else {
+        if (getenv('CIRCLECI')/* === 'true'*/) {
+            $assertValue = 'localhost';
+            $assertStr = 'localhost';
+        } else {
             $assertValue = 'http://localhost';
             $assertStr = 'http://localhost';
-//        }
+        }
         $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
         $this->assertEquals($assertValue, $params[$key], $message);
 
