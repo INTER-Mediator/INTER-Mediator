@@ -1,16 +1,16 @@
 <?php
 /**
  * INTER-Mediator
- * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * Copyright (c) INTER-Mediator Directive Committee (https://inter-mediator.org)
  * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
  * INTER-Mediator is supplied under MIT License.
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  *
- * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (https://inter-mediator.org)
  * @link          https://inter-mediator.com/
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 namespace INTERMediator\DB;
@@ -90,22 +90,13 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
 
     private function setupFX_Impl($layoutName, $recordCount, $user, $password)
     {
-//        $fxPath = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .
-//            '..' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'FX';
-//        $fxFiles = array(
-//            'FX.php',
-//            'lib/datasource_classes' . DIRECTORY_SEPARATOR . 'RetrieveFM7Data.class.php',
-//        );
-//        foreach ($fxFiles as $fxFile) {
-//            $path = $fxPath . DIRECTORY_SEPARATOR . $fxFile;
-//            if (is_file($path) && is_readable($path)) {
-//                require_once($path);
-//            } else {
-//                // If FX.php isn't installed in valid directories, it shows error message and finishes.
-//                throw new \Exception('Data Access Class "FileMaker_FX" of INTER-Mediator requires ' .
-//                    basename($fxFile) . ' on any right directory.');
-//            }
-//        }
+        $path = __DIR__ . '/../../../vendor/inter-mediator/fxphp' .
+            '/lib/datasource_classes/RetrieveFM7Data.class.php';
+        if (is_file($path) && is_readable($path)) {
+            require_once($path);
+        } else {
+            throw new \Exception('Data Access Class "FileMaker_FX" of INTER-Mediator requires "RetrieveFM7Data" class.');
+        }
 
         $fxObj = new FX(
             $this->dbSettings->getDbSpecServer(),
