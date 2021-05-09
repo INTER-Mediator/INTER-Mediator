@@ -86,6 +86,9 @@ IM_Entry(
                 ],
             ],
             'repeat-control' => 'insert delete',
+            'calculation' => [
+                ['field' => 'description2', 'expression' => "description +'XX' "]
+            ],
         ],
     ],
     [
