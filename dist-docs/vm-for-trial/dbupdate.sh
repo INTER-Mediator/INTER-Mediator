@@ -16,7 +16,7 @@ if [ $OS = 'centos' ] ; then
     WWWUSERNAME="apache"
 fi
 IMROOT="${WEBROOT}/INTER-Mediator"
-IMVMFORTRIAL=`dirname $0`
+IMVMFORTRIAL="${IMROOT}/dist-docs/vm-for-trial"
 if [ $IMVMFORTRIAL = '.' ] ; then
     IMDISTDOC=".."
 else
