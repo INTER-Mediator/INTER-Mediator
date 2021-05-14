@@ -185,6 +185,7 @@ $sendMailCompatibilityMode = true;  // default is true
    Information about setting up an SAML Service Provider exists in the samples/saml-config directory. */
 //$isSAML = true;
 //$samlAuthSource = 'default-sp';
+//$samlWithBuiltInAuth = true;
 
 /* Initial values for local context with their keys. */
 //$valuesForLocalContext = array(

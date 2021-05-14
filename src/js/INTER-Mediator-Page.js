@@ -429,7 +429,7 @@ let INTERMediatorOnPage = {
       return
     }
 
-    let userBox, passwordBox, authButton, oAuthButton, chgpwButton, breakLine
+    let userBox, passwordBox, authButton, oAuthButton, chgpwButton, breakLine, samlButton
     const bodyNode = document.getElementsByTagName('BODY')[0]
     const backBox = document.createElement('div')
     backBox.id = '_im_authpback'
@@ -453,6 +453,7 @@ let INTERMediatorOnPage = {
       authButton = document.getElementById('_im_authbutton')
       chgpwButton = document.getElementById('_im_changebutton')
       oAuthButton = document.getElementById('_im_oauthbutton')
+      samlButton = document.getElementById('_im_samlbutton')
     } else {
       const frontPanel = document.createElement('div')
       if (INTERMediatorOnPage.isSetDefaultStyle) {
@@ -587,6 +588,15 @@ let INTERMediatorOnPage = {
         oAuthButton.appendChild(document.createTextNode(
           INTERMediatorLib.getInsertedStringFromErrorNumber(2014)))
         frontPanel.appendChild(oAuthButton)
+      }
+      if (INTERMediatorOnPage.isSAML && INTERMediatorOnPage.samlWithBuiltInAuth) {
+        breakLine = document.createElement('HR')
+        frontPanel.appendChild(breakLine)
+        samlButton = document.createElement('BUTTON')
+        samlButton.id = '_im_samlbutton'
+        samlButton.appendChild(document.createTextNode(
+          INTERMediatorLib.getInsertedStringFromErrorNumber(2026)))
+        frontPanel.appendChild(samlButton)
       }
       if (INTERMediatorOnPage.enrollPageURL) {
         breakLine = document.createElement('HR')
@@ -738,6 +748,11 @@ let INTERMediatorOnPage = {
           '&redirect_uri=' + encodeURIComponent(INTERMediatorOnPage.oAuthRedirect) +
           '&response_type=code' +
           '&client_id=' + encodeURIComponent(INTERMediatorOnPage.oAuthClientID)
+      }
+    }
+    if (INTERMediatorOnPage.isSAML && samlButton) {
+      samlButton.onclick = function () {
+        location.href = INTERMediatorOnPage.loginURL
       }
     }
 
