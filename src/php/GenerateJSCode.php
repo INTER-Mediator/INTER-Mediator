@@ -368,7 +368,7 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.isSAML", $isSAML ? 'true' : 'false');
         $this->generateAssignJS(
-            "INTERMediatorOnPage.samlWithBuiltInAuth", samlWithBuiltInAuth ? 'true' : 'false');
+            "INTERMediatorOnPage.samlWithBuiltInAuth", $samlWithBuiltInAuth ? 'true' : 'false');
 
         // Initial values for local context
         if (!isset($valuesForLocalContext)) {
