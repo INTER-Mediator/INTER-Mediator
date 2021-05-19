@@ -77,8 +77,8 @@ class INTERMediator_Test extends TestCase
 
         $key = 'serviceServerConnect';
         if (getenv('CIRCLECI') === 'true') {
-            $assertValue = 'http://localhost';
-            $assertStr = 'http://localhost';
+            $assertValue = 'localhost';
+            $assertStr = 'localhost';
         } else {
             $assertValue = 'http://localhost';
             $assertStr = 'http://localhost';
