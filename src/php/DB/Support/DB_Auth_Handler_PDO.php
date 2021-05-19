@@ -362,8 +362,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
                     return false;
                 }
                 if ($timeUp) {
-                    $this->logger->setDebugMessage("LDAP cached account time over.");
-                    return false;
+                    $this->logger->setDebugMessage("LDAP cached account time over, but it's updated.");
+                    return true; // This case should be handled as succeed.
                 }
             } else {
                 $tableRef = "{$userTable} (username, hashedpasswd,limitdt)";
