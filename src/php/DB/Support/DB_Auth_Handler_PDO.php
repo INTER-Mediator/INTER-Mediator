@@ -915,6 +915,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
                     $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] returns true ");
                     return true;
                 }
+            } else {
+                $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] returns true for limitdt is null");
+                return true;
             }
         }
         return false;

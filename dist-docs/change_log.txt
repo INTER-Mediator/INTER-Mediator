@@ -15,6 +15,7 @@ Ver.8 (in development)
   (LDAP and self-service password reset are not checked so far.)
 - SAML is integrated with SimpleSAMLphp. The $isSAML variable in params.php has to be set true, also set $samlAuthSource,
   and setting information exists in sample/saml-config directory.
+- If the variable $samlWithBuiltInAuth in params.php set true, the built-in authentication works first and moves to SAML.
 - Custom url for after clicking logout button of the page navigation can set to INTERMediatorOnPage.logoutURL.
 - Update sample schema files and recipe.rb for the INTER-Mediator-Server virtual machine and CI.
 - [BUG FIX] Fix compatibility with Claris FileMaker Server. The affected version is Ver.7.
