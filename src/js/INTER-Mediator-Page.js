@@ -93,6 +93,7 @@ let INTERMediatorOnPage = {
 
   logoutURL: null,
   loginURL: null,
+  doAfterLoginPanel: null,
 
   clearCredentials: function () {
     'use strict'
@@ -773,6 +774,9 @@ let INTERMediatorOnPage = {
     window.scrollTo(0, 0)
     userBox.focus()
     INTERMediatorOnPage.authCount++
+    if (INTERMediatorOnPage.doAfterLoginPanel) {
+      INTERMediatorOnPage.doAfterLoginPanel()
+    }
   },
 
   authenticationError: function () {
