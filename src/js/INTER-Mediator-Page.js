@@ -673,23 +673,19 @@ let INTERMediatorOnPage = {
       if (INTERMediatorOnPage.passwordHash < 1.1) {
         let shaObj = new jsSHA('SHA-1', 'TEXT')
         shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
-        let hash = shaObj.getHash('HEX')
-        INTERMediatorOnPage.authHashedPassword = hash + INTERMediatorOnPage.authUserHexSalt
+        INTERMediatorOnPage.authHashedPassword = shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt
       }
       if (INTERMediatorOnPage.passwordHash < 1.6) {
         let shaObj = new jsSHA('SHA-1', 'TEXT')
+        let shaObjMore = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
         shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
-        let hash = shaObj.getHash('HEX')
-        shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
-        shaObj.update(hash + INTERMediatorOnPage.authUserSalt)
-        let hashNext = shaObj.getHash('HEX')
-        INTERMediatorOnPage.authHashedPassword2m = hashNext + INTERMediatorOnPage.authUserHexSalt
+        shaObjMore.update(shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt + INTERMediatorOnPage.authUserSalt)
+        INTERMediatorOnPage.authHashedPassword2m = shaObjMore.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt
       }
       if (INTERMediatorOnPage.passwordHash < 2.1) {
         let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
         shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
-        let hash = shaObj.getHash('HEX')
-        INTERMediatorOnPage.authHashedPassword2 = hash + INTERMediatorOnPage.authUserHexSalt
+        INTERMediatorOnPage.authHashedPassword2 = shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt
       }
       if (INTERMediatorOnPage.authUser.length > 0) { // Authentication succeed, Store coockies.
         INTERMediatorOnPage.storeCredentialsToCookieOrStorage()

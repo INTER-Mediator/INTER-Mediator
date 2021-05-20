@@ -12,7 +12,7 @@ Also the Migration Guide (Japanese) might be informative:
 
 Ver.8 (in development)
 - The password hash for authentication moves to SHA-256 based hash, and it has the interoperability with SHA-1 hash.
-  (LDAP and self-service password reset are not checked so far.)
+- The $migrateSHA1to2 variable can moved to SHA-256 hash from SHA-1 hash without changing the password.
 - SAML is integrated with SimpleSAMLphp. The $isSAML variable in params.php has to be set true, also set $samlAuthSource,
   and setting information exists in sample/saml-config directory.
 - If the variable $samlWithBuiltInAuth in params.php set true, the built-in authentication works first and moves to SAML.
