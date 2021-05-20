@@ -111,7 +111,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
     private $fieldNameForField = 'name';
     private $fieldNameForType = 'type';
 
-    public function getTableInfo($tableName)
+    protected function getTableInfo($tableName)
     {
         if (!isset($this->tableInfo[$tableName])) {
             $sql = "PRAGMA table_info({$tableName})";
@@ -188,6 +188,51 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 
     public function optionalOperationInSetup()
     {
+    }
+
+
+    public function authSupportCanMigrateSHA256Hash($userTable, $hashTable)  // authuser, issuedhash
+    {
+        $checkFieldDefinition = function ($type, $min) {
+            $fDef = strtolower($type);
+            if ($fDef != 'text' && strpos($fDef, 'varchar') !== false) {
+                $openParen = strpos($fDef, '(');
+                $closeParen = strpos($fDef, ')');
+                $len = intval(substr($fDef, $openParen + 1, $closeParen - $openParen - 1));
+                if ($len < $min) {
+                    return false;
+                }
+            }
+            return true;
+        };
+
+        $infoAuthUser = $this->getTableInfo($userTable);
+        $infoIssuedHash = $this->getTableInfo($hashTable);
+        $returnValue = [];
+        if ($infoAuthUser) {
+            foreach ($infoAuthUser as $fieldInfo) {
+                if (isset($fieldInfo['name'])
+                    && $fieldInfo['name'] == 'hashedpasswd'
+                    && !$checkFieldDefinition($fieldInfo['type'], 72)) {
+                    $returnValue[] = "The hashedpassword field of the authuser table has to be longer than 72 characters.";
+                }
+            }
+        }
+        if ($infoIssuedHash) {
+            foreach ($infoIssuedHash as $fieldInfo) {
+                if (isset($fieldInfo['name'])
+                    && $fieldInfo['name'] == 'clienthost'
+                    && !$checkFieldDefinition($fieldInfo['type'], 64)) {
+                    $returnValue[] = "The clienthost field of the issuedhash table has to be longer than 64 characters.";
+                }
+                if (isset($fieldInfo['name'])
+                    && $fieldInfo['name'] == 'hash'
+                    && !$checkFieldDefinition($fieldInfo['type'], 64)) {
+                    $returnValue[] = "The hash field of the issuedhash table has to be longer than 64 characters.";
+                }
+            }
+        }
+        return $returnValue;
     }
 
 }

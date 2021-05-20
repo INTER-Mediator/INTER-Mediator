@@ -101,8 +101,10 @@ abstract class DB_PDO_Handler
 
     public abstract function optionalOperationInSetup();
 
-    public abstract function getTableInfo($tableName);
+    protected abstract function getTableInfo($tableName);
 
     protected abstract function getFieldListsForCopy(
         $tableName, $keyField, $assocField, $assocValue, $defaultValues);
+
+    public abstract function authSupportCanMigrateSHA256Hash($userTable,$hashTable);
 }

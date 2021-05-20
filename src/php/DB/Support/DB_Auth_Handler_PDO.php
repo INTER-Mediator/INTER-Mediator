@@ -925,19 +925,6 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
 
     public function authSupportCanMigrateSHA256Hash()  // authuser, issuedhash
     {
-        $checkFieldDefinition = function ($type, $min) {
-            $fDef = strtolower($type);
-            if ($fDef != 'text' && strpos($fDef, 'varchar') !== false) {
-                $openParen = strpos($fDef, '(');
-                $closeParen = strpos($fDef, ')');
-                $len = intval(substr($fDef, $openParen + 1, $closeParen - $openParen - 1));
-                if ($len < $min) {
-                    return false;
-                }
-            }
-            return true;
-        };
-
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
             return false;
@@ -946,42 +933,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         if ($hashTable == null) {
             return false;
         }
-
-        if (!$this->dbClass->setupConnection()) { //Establish the connection
+        $messages = $this->dbClass->handler->authSupportCanMigrateSHA256Hash($userTable, $hashTable);
+        if (count($messages) > 0) {
+            $this->logger->setErrorMessages($messages);
             return false;
         }
-        $infoAuthUser = $this->dbClass->handler->getTableInfo($userTable);
-        $infoIssuedHash = $this->dbClass->handler->getTableInfo($hashTable);
-        $returnValue = true;
-        if ($infoAuthUser) {
-            foreach ($infoAuthUser as $fieldInfo) {
-                if (isset($fieldInfo['Field'])
-                    && $fieldInfo['Field'] == 'hashedpasswd'
-                    && !$checkFieldDefinition($fieldInfo['Type'], 72)) {
-                    $this->logger->setErrorMessage(
-                        "The hashedpassword field of the authuser table has to be longer than 72 characters.");
-                    $returnValue = false;
-                }
-            }
-        }
-        if ($infoIssuedHash) {
-            foreach ($infoIssuedHash as $fieldInfo) {
-                if (isset($fieldInfo['Field'])
-                    && $fieldInfo['Field'] == 'clienthost'
-                    && !$checkFieldDefinition($fieldInfo['Type'], 64)) {
-                    $this->logger->setErrorMessage(
-                        "The clienthost field of the issuedhash table has to be longer than 64 characters.");
-                    $returnValue = false;
-                }
-                if (isset($fieldInfo['Field'])
-                    && $fieldInfo['Field'] == 'hash'
-                    && !$checkFieldDefinition($fieldInfo['Type'], 64)) {
-                    $this->logger->setErrorMessage(
-                        "The hash field of the issuedhash table has to be longer than 64 characters.");
-                    $returnValue = false;
-                }
-            }
-        }
-        return $returnValue;
+        return true;
     }
 }
