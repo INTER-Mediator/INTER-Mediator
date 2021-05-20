@@ -955,7 +955,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $returnValue = true;
         if ($infoAuthUser) {
             foreach ($infoAuthUser as $fieldInfo) {
-                if ($fieldInfo['Field'] == 'hashedpasswd' && !$checkFieldDefinition($fieldInfo['Type'], 72)) {
+                if (isset($fieldInfo['Field'])
+                    && $fieldInfo['Field'] == 'hashedpasswd'
+                    && !$checkFieldDefinition($fieldInfo['Type'], 72)) {
                     $this->logger->setErrorMessage(
                         "The hashedpassword field of the authuser table has to be longer than 72 characters.");
                     $returnValue = false;
@@ -964,12 +966,16 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         }
         if ($infoIssuedHash) {
             foreach ($infoIssuedHash as $fieldInfo) {
-                if ($fieldInfo['Field'] == 'clienthost' && !$checkFieldDefinition($fieldInfo['Type'], 64)) {
+                if (isset($fieldInfo['Field'])
+                    && $fieldInfo['Field'] == 'clienthost'
+                    && !$checkFieldDefinition($fieldInfo['Type'], 64)) {
                     $this->logger->setErrorMessage(
                         "The clienthost field of the issuedhash table has to be longer than 64 characters.");
                     $returnValue = false;
                 }
-                if ($fieldInfo['Field'] == 'hash' && !$checkFieldDefinition($fieldInfo['Type'], 64)) {
+                if (isset($fieldInfo['Field'])
+                    && $fieldInfo['Field'] == 'hash'
+                    && !$checkFieldDefinition($fieldInfo['Type'], 64)) {
                     $this->logger->setErrorMessage(
                         "The hash field of the issuedhash table has to be longer than 64 characters.");
                     $returnValue = false;
