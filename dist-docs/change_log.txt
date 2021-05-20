@@ -23,6 +23,7 @@ Ver.8 (in development)
 - [BUG FIX] IMLibPageNavigation.moveDetailOnceAgain() didn't work fine.
 - [BUG FIX] On the navi-control key, confirm-delete works but delete-confirm didn't (also insert).
 - [BUG FIX] Fix handling Claris FileMaker's checkbox set feature when using DB_FileMaker_DataAPI class.
+- [BUG FIX] The $customLoginPanel variable in the params.php file didn't handle for anything. It removed.
 
 Ver.7 (March 20, 2021)
 - The synchronizing with clients is back without Pusher.
