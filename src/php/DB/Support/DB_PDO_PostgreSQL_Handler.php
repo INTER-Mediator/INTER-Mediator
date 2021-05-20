@@ -103,7 +103,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     private $fieldNameForField = 'column_name';
     private $fieldNameForType = 'data_type';
 
-    protected function getTableInfo($tableName)
+    public function getTableInfo($tableName)
     {
         if (! isset($this->tableInfo[$tableName])) {
             if (strpos($tableName, ".") !== false) {

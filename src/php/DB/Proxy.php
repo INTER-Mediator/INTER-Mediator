@@ -825,6 +825,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             || (isset($tableInfo['authentication'])
                 && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$access])))
         ) {
+            if ($this->logger->getDebugLevel()) {
+                $this->dbClass->authHandler->authSupportCanMigrateSHA256Hash();
+            }
             $this->dbSettings->setRequireAuthorization(true);
             $this->dbSettings->setDBNative(false);
             if (isset($options['user'])

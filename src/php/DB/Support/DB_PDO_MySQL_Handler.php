@@ -110,7 +110,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
     private $fieldNameForField = 'Field';
     private $fieldNameForType = 'Type';
 
-    protected function getTableInfo($tableName)
+    public function getTableInfo($tableName)
     {
         $infoResult = [];
         if (!isset($this->tableInfo[$tableName])) {

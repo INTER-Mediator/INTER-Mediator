@@ -110,7 +110,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
     private $fieldNameForField = 'name';
     private $fieldNameForType = 'type';
 
-    protected function getTableInfo($tableName)
+    public function getTableInfo($tableName)
     {
         if (!isset($this->tableInfo[$tableName])) {
             $fields = "c.name, t.name type, c.max_length, c.precision, c.scale, c.is_nullable, " .

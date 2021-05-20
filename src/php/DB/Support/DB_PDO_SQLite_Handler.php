@@ -111,7 +111,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
     private $fieldNameForField = 'name';
     private $fieldNameForType = 'type';
 
-    protected function getTableInfo($tableName)
+    public function getTableInfo($tableName)
     {
         if (!isset($this->tableInfo[$tableName])) {
             $sql = "PRAGMA table_info({$tableName})";
