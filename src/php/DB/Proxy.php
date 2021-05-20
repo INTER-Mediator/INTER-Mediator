@@ -905,7 +905,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                                 $this->logger->setDebugMessage("LDAP Authentication succeed.");
                                 $authSucceed = true;
                                 [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
-                                $this->dbSettings->setRequireAuthentication(false);
+                                if ($addResult) {
+                                    $this->dbSettings->setRequireAuthentication(false);
+                                    $this->dbSettings->setCurrentUser($signedUser);
+                                    $access = $originalAccess;
+                                }
                                 // The following re-auth doesn't work. The salt of hashed password is
                                 // different from the request. Here is after bind checking, so authentication
                                 // is passed anyway.
