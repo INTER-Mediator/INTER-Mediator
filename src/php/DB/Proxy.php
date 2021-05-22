@@ -546,7 +546,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->accessLogLevel = intval($params['accessLogLevel']);
         $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
         $this->passwordHash = isset($params['passwordHash']) ? $params['passwordHash'] : "1";
-        $this->alwaysGenSHA2 = isset($params[≈]) ? boolval($params['alwaysGenSHA2']) : false;
+        $this->alwaysGenSHA2 = isset($params['alwaysGenSHA2']) ? boolval($params['alwaysGenSHA2']) : false;
         $this->migrateSHA1to2 = isset($params['migrateSHA1to2']) ? boolval($params['migrateSHA1to2']) : false;
 
         $this->dbSettings->setDataSource($datasource);
