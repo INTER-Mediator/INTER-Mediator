@@ -1089,6 +1089,11 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             $field = $requiredFields[$i];
             $value = $fieldValues[$i];
             if ($field != $keyFieldName) {
+                if (isset($recordData[$field]) && !empty($recordData[$field])) {
+                    // for handling checkbox on Post Only mode
+                    $value = $recordData[$field] . "\r" . $value;
+                    unset($recordData[$field]);
+                }
                 $recordData += array(
                     $field =>
                     $this->formatter->formatterToDB(
