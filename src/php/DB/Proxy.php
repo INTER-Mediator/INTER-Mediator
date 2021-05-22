@@ -546,7 +546,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->accessLogLevel = intval($params['accessLogLevel']);
         $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
         $this->passwordHash = isset($params['passwordHash']) ? $params['passwordHash'] : "1";
-        $this->alwaysGenSHA2 = isset($params['alwaysGenSHA2']) ? boolval($params['alwaysGenSHA2']) : false;
+        $this->alwaysGenSHA2 = isset($params[≈]) ? boolval($params['alwaysGenSHA2']) : false;
         $this->migrateSHA1to2 = isset($params['migrateSHA1to2']) ? boolval($params['migrateSHA1to2']) : false;
 
         $this->dbSettings->setDataSource($datasource);
@@ -825,11 +825,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             || (isset($tableInfo['authentication'])
                 && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$access])))
         ) {
-            if ($this->logger->getDebugLevel()) {
+            if ($this->logger->getDebugLevel()
+                && ($this->passwordHash != '1' || $this->alwaysGenSHA2)) {
                 $this->dbClass->authHandler->authSupportCanMigrateSHA256Hash();
             }
             $this->dbSettings->setRequireAuthorization(true);
-            $this->dbSettings->setDBNative(false);
             if (isset($options['user'])
                 && $options['user'][0] == 'database_native'
             ) {
@@ -1327,7 +1327,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $hashedPassword = $this->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
             $hmacValue = hash_hmac('sha256', $hashedPassword, $storedChallenge);
             $hmacValue2m = '_';
-            //if ($this->passwordHash == "1" || $this->passwordHash == "2m") {
+            //if (≈ {
             $hmacValue2m = hash_hmac('sha256', $hashedPassword, $storedChallenge);
             //}
             $this->logger->setDebugMessage(
