@@ -12,6 +12,7 @@ Also the Migration Guide (Japanese) might be informative:
 
 Ver.5.12-dev (in development)
 - Support PHP 8.0.
+- Support handling Claris FileMaker's checkbox set feature on Post Only mode when using DB_FileMaker_DataAPI class or DB_FileMaker_FX class.
 - Update FMDataAPI.php (Ver.22) for Claris FileMaker Data API.
 - Update deploy.sh and Vagrantfile etc. for the INTER-Mediator-Server VM (Update to Alpine Linux 3.13).
 - [INFO] Drop support for PHP 5.2 and PHP 5.3.
