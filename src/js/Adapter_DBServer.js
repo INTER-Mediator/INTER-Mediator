@@ -235,17 +235,17 @@ const INTERMediator_DBAdapter = {
                   requireAuth = true
                 }
               }
-              if (INTERMediatorOnPage.isSAML){
-                if(jsonObject.samluser) {
+              if (INTERMediatorOnPage.isSAML) {
+                if (jsonObject.samluser) {
                   INTERMediatorOnPage.authUser = jsonObject.samluser
                   INTERMediatorOnPage.authHashedPassword = jsonObject.temppw
                   INTERMediatorOnPage.authHashedPassword2m = jsonObject.temppw
                   INTERMediatorOnPage.authHashedPassword2 = jsonObject.temppw
                 }
-                if(jsonObject.samlloginurl) {
+                if (jsonObject.samlloginurl) {
                   INTERMediatorOnPage.loginURL = jsonObject.samlloginurl
                 }
-                if(jsonObject.samllogouturl) {
+                if (jsonObject.samllogouturl) {
                   INTERMediatorOnPage.logoutURL = jsonObject.samllogouturl
                 }
               }
@@ -266,7 +266,7 @@ const INTERMediator_DBAdapter = {
               if (requireAuth) {
                 INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
                 INTERMediatorOnPage.clearCredentials()
-                if (INTERMediatorOnPage.isSAML) {
+                if (INTERMediatorOnPage.isSAML && !INTERMediatorOnPage.samlWithBuiltInAuth) {
                   location.href = INTERMediatorOnPage.loginURL
                 }
                 if (authAgainProc) {

@@ -145,11 +145,11 @@ $defaultTimezone = 'Asia/Tokyo';
 //$emailAsAliasOfUserName = true;
 //$passwordPolicy = "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName";
 
-$customLoginPanel = '';
 //$passwordHash = '1';  // '2m' supports SHA-256 and Wrapping SHA-1 with SHA-256,
 // '2' supports SHA-256 password hash only,
 // No specification or other string support SHA-1, SHA-256, and wrapping.
 //$alwaysGenSHA2 = true; // On the password changing, generate SHA-2 hash. The default is false.
+//$migrateSHA1to2 = true;// If the login account relays on SHA-a, exchange it with 2m style SHA-2 hash. The default is false.
 
 // A enrollment page and a password reset page are going to show on login panel.
 //$resetPage = '...url...';
@@ -185,6 +185,7 @@ $sendMailCompatibilityMode = true;  // default is true
    Information about setting up an SAML Service Provider exists in the samples/saml-config directory. */
 //$isSAML = true;
 //$samlAuthSource = 'default-sp';
+//$samlWithBuiltInAuth = true;
 
 /* Initial values for local context with their keys. */
 //$valuesForLocalContext = array(

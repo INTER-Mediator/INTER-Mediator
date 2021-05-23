@@ -105,4 +105,6 @@ abstract class DB_PDO_Handler
 
     protected abstract function getFieldListsForCopy(
         $tableName, $keyField, $assocField, $assocValue, $defaultValues);
+
+    public abstract function authSupportCanMigrateSHA256Hash($userTable,$hashTable);
 }

@@ -93,6 +93,7 @@ let INTERMediatorOnPage = {
 
   logoutURL: null,
   loginURL: null,
+  doAfterLoginPanel: null,
 
   clearCredentials: function () {
     'use strict'
@@ -429,7 +430,7 @@ let INTERMediatorOnPage = {
       return
     }
 
-    let userBox, passwordBox, authButton, oAuthButton, chgpwButton, breakLine
+    let userBox, passwordBox, authButton, oAuthButton, chgpwButton, breakLine, samlButton
     const bodyNode = document.getElementsByTagName('BODY')[0]
     const backBox = document.createElement('div')
     backBox.id = '_im_authpback'
@@ -453,6 +454,7 @@ let INTERMediatorOnPage = {
       authButton = document.getElementById('_im_authbutton')
       chgpwButton = document.getElementById('_im_changebutton')
       oAuthButton = document.getElementById('_im_oauthbutton')
+      samlButton = document.getElementById('_im_samlbutton')
     } else {
       const frontPanel = document.createElement('div')
       if (INTERMediatorOnPage.isSetDefaultStyle) {
@@ -588,6 +590,15 @@ let INTERMediatorOnPage = {
           INTERMediatorLib.getInsertedStringFromErrorNumber(2014)))
         frontPanel.appendChild(oAuthButton)
       }
+      if (INTERMediatorOnPage.isSAML && INTERMediatorOnPage.samlWithBuiltInAuth) {
+        breakLine = document.createElement('HR')
+        frontPanel.appendChild(breakLine)
+        samlButton = document.createElement('BUTTON')
+        samlButton.id = '_im_samlbutton'
+        samlButton.appendChild(document.createTextNode(
+          INTERMediatorLib.getInsertedStringFromErrorNumber(2026)))
+        frontPanel.appendChild(samlButton)
+      }
       if (INTERMediatorOnPage.enrollPageURL) {
         breakLine = document.createElement('HR')
         frontPanel.appendChild(breakLine)
@@ -662,23 +673,19 @@ let INTERMediatorOnPage = {
       if (INTERMediatorOnPage.passwordHash < 1.1) {
         let shaObj = new jsSHA('SHA-1', 'TEXT')
         shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
-        let hash = shaObj.getHash('HEX')
-        INTERMediatorOnPage.authHashedPassword = hash + INTERMediatorOnPage.authUserHexSalt
+        INTERMediatorOnPage.authHashedPassword = shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt
       }
       if (INTERMediatorOnPage.passwordHash < 1.6) {
         let shaObj = new jsSHA('SHA-1', 'TEXT')
+        let shaObjMore = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
         shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
-        let hash = shaObj.getHash('HEX')
-        shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
-        shaObj.update(hash + INTERMediatorOnPage.authUserSalt)
-        let hashNext = shaObj.getHash('HEX')
-        INTERMediatorOnPage.authHashedPassword2m = hashNext + INTERMediatorOnPage.authUserHexSalt
+        shaObjMore.update(shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt + INTERMediatorOnPage.authUserSalt)
+        INTERMediatorOnPage.authHashedPassword2m = shaObjMore.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt
       }
       if (INTERMediatorOnPage.passwordHash < 2.1) {
         let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
         shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
-        let hash = shaObj.getHash('HEX')
-        INTERMediatorOnPage.authHashedPassword2 = hash + INTERMediatorOnPage.authUserHexSalt
+        INTERMediatorOnPage.authHashedPassword2 = shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt
       }
       if (INTERMediatorOnPage.authUser.length > 0) { // Authentication succeed, Store coockies.
         INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
@@ -740,6 +747,11 @@ let INTERMediatorOnPage = {
           '&client_id=' + encodeURIComponent(INTERMediatorOnPage.oAuthClientID)
       }
     }
+    if (INTERMediatorOnPage.isSAML && samlButton) {
+      samlButton.onclick = function () {
+        location.href = INTERMediatorOnPage.loginURL
+      }
+    }
 
     if (INTERMediatorOnPage.publickeysize < 2048) {
       const messageNode = document.getElementById('_im_login_message')
@@ -758,6 +770,9 @@ let INTERMediatorOnPage = {
     window.scrollTo(0, 0)
     userBox.focus()
     INTERMediatorOnPage.authCount++
+    if (INTERMediatorOnPage.doAfterLoginPanel) {
+      INTERMediatorOnPage.doAfterLoginPanel()
+    }
   },
 
   authenticationError: function () {

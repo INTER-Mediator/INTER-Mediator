@@ -839,4 +839,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
     {
         // TODO: Implement authSupportIsWithinLDAPLimit() method.
     }
+
+    public function authSupportCanMigrateSHA256Hash()  // authuser, issuedhash
+    {
+        return true;
+    }
 }

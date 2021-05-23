@@ -69,7 +69,7 @@ class GenerateJSCode
             "dbDSN", "nonSupportMessageId", "valuesForLocalContext", "themeName", "appLocale", "appCurrency",
             "resetPage", "enrollPage", "serviceServerPort", "serviceServerHost", "activateClientService",
             "followingTimezones", "notUseServiceServer", "serviceServerProtocol", "passwordHash", "alwaysGenSHA2",
-            "isSAML",
+            "isSAML","samlWithBuiltInAuth"
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -111,6 +111,7 @@ class GenerateJSCode
         $passwordHash = ($passwordHash === '2m') ? 1.5 : floatval($passwordHash);
         $alwaysGenSHA2 = isset($params['alwaysGenSHA2']) ? boolval($params['alwaysGenSHA2']) : false;
         $isSAML = isset($params['isSAML']) ? boolval($params['isSAML']) : false;
+        $samlWithBuiltInAuth = isset($params['samlWithBuiltInAuth']) ? boolval($params['samlWithBuiltInAuth']) : false;
 
         $serverName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
         $documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : 'Not_on_web_server';
@@ -366,7 +367,8 @@ class GenerateJSCode
         }
         $this->generateAssignJS(
             "INTERMediatorOnPage.isSAML", $isSAML ? 'true' : 'false');
-
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.samlWithBuiltInAuth", $samlWithBuiltInAuth ? 'true' : 'false');
 
         // Initial values for local context
         if (!isset($valuesForLocalContext)) {
