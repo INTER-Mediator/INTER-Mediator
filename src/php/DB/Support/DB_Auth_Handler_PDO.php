@@ -362,8 +362,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
                     return false;
                 }
                 if ($timeUp) {
-                    $this->logger->setDebugMessage("LDAP cached account time over.");
-                    return false;
+                    $this->logger->setDebugMessage("LDAP cached account time over, but it's updated.");
+                    return true; // This case should be handled as succeed.
                 }
             } else {
                 $tableRef = "{$userTable} (username, hashedpasswd,limitdt)";
@@ -921,5 +921,23 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             }
         }
         return false;
+    }
+
+    public function authSupportCanMigrateSHA256Hash()  // authuser, issuedhash
+    {
+        $userTable = $this->dbSettings->getUserTable();
+        if ($userTable == null) {
+            return false;
+        }
+        $hashTable = $this->dbSettings->getHashTable();
+        if ($hashTable == null) {
+            return false;
+        }
+        $messages = $this->dbClass->handler->authSupportCanMigrateSHA256Hash($userTable, $hashTable);
+        if (count($messages) > 0) {
+            $this->logger->setErrorMessages($messages);
+            return false;
+        }
+        return true;
     }
 }

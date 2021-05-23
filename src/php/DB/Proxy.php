@@ -52,6 +52,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     private $result4Log = [];
     private $isStopNotifyAndMessaging = false;
     private $suppressMediaToken = false;
+    private $migrateSHA1to2;
 
     public function setClientId($cid) // For testing
     {
@@ -540,12 +541,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
             "dbOption", "dbDSN", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
             "activateClientService", "accessLogLevel", "certVerifying", "passwordHash", "alwaysGenSHA2",
-            "isSAML", "samlAuthSource",
+            "isSAML", "samlAuthSource", "migrateSHA1to2",
         ), true);
         $this->accessLogLevel = intval($params['accessLogLevel']);
         $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
         $this->passwordHash = isset($params['passwordHash']) ? $params['passwordHash'] : "1";
         $this->alwaysGenSHA2 = isset($params['alwaysGenSHA2']) ? boolval($params['alwaysGenSHA2']) : false;
+        $this->migrateSHA1to2 = isset($params['migrateSHA1to2']) ? boolval($params['migrateSHA1to2']) : false;
 
         $this->dbSettings->setDataSource($datasource);
         $this->dbSettings->setOptions($options);
@@ -823,8 +825,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             || (isset($tableInfo['authentication'])
                 && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$access])))
         ) {
+            if ($this->logger->getDebugLevel()
+                && ($this->passwordHash != '1' || $this->alwaysGenSHA2)) {
+                $this->dbClass->authHandler->authSupportCanMigrateSHA256Hash();
+            }
             $this->dbSettings->setRequireAuthorization(true);
-            $this->dbSettings->setDBNative(false);
             if (isset($options['user'])
                 && $options['user'][0] == 'database_native'
             ) {
@@ -905,7 +910,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                                 $this->logger->setDebugMessage("LDAP Authentication succeed.");
                                 $authSucceed = true;
                                 [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
-                                $this->dbSettings->setRequireAuthentication(false);
+                                if ($addResult) {
+                                    $this->dbSettings->setRequireAuthentication(false);
+                                    $this->dbSettings->setCurrentUser($signedUser);
+                                    $access = $originalAccess;
+                                }
                                 // The following re-auth doesn't work. The salt of hashed password is
                                 // different from the request. Here is after bind checking, so authentication
                                 // is passed anyway.
@@ -1318,13 +1327,25 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $hashedPassword = $this->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
             $hmacValue = hash_hmac('sha256', $hashedPassword, $storedChallenge);
             $hmacValue2m = '_';
-            if ($this->passwordHash == "1" || $this->passwordHash == "2m") {
-                $hmacValue2m = hash_hmac('sha256', $hashedPassword, $storedChallenge);// Should be changed
-            }
+            //if (≈ {
+            $hmacValue2m = hash_hmac('sha256', $hashedPassword, $storedChallenge);
+            //}
             $this->logger->setDebugMessage(
                 "[checkAuthorization]hashedPassword={$hashedPassword}/hmac_value={$hmacValue}", 2);
             if (strlen($hashedPassword) > 0) {
-                if ($hashedvalue == $hmacValue || $hashedvalue2m == $hmacValue2m || $hashedvalue2 == $hmacValue) {
+                if ($hashedvalue == $hmacValue) {
+                    $returnValue = true;
+                    if ($this->migrateSHA1to2) {
+                        $salt = hex2bin(substr($hashedPassword, -8));
+                        $hashedPw = IMUtil::convertHashedPassword($hashedPassword, $this->passwordHash, true, $salt);
+                        $result = $this->dbClass->authHandler->authSupportChangePassword($signedUser, $hashedPw);
+                        $this->logger->setDebugMessage("[checkAuthorization]sha1 hash used.", 2);
+                    }
+                } else if ($hashedvalue2m == $hmacValue2m) {
+                    $this->logger->setDebugMessage("[checkAuthorization]sha2 hash from sha1 hash used.", 2);
+                    $returnValue = true;
+                } else if ($hashedvalue2 == $hmacValue) {
+                    $this->logger->setDebugMessage("[checkAuthorization]sha2 hash used.", 2);
                     $returnValue = true;
                 } else {
                     $this->logger->setDebugMessage("[checkAuthorization]Built-in authorization fail.", 2);

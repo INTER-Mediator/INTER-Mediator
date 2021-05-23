@@ -37,4 +37,5 @@ interface Auth_Interface_DB					// with using table for authentication/authoriza
     public function authSupportUserEnrollmentEnrollingUser($hash);                     // issuedhash
     public function authSupportUserEnrollmentActivateUser($userID, $password, $rawPWField, $rawPW);  // authuser
     public function authSupportIsWithinLDAPLimit($userID);  // authuser
+    public function authSupportCanMigrateSHA256Hash();  // authuser, issuedhash
 }

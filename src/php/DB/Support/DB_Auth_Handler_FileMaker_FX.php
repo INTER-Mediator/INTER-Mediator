@@ -594,4 +594,9 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
     {
         // TODO: Implement authSupportIsWithinLDAPLimit() method.
     }
+
+    public function authSupportCanMigrateSHA256Hash()  // authuser, issuedhash
+    {
+        return true;
+    }
 }

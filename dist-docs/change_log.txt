@@ -12,7 +12,8 @@ Also the Migration Guide (Japanese) might be informative:
 
 Ver.8 (in development)
 - The password hash for authentication moves to SHA-256 based hash, and it has the interoperability with SHA-1 hash.
-  (LDAP and self-service password reset are not checked so far.)
+- The $migrateSHA1to2 variable can moved to SHA-256 hash from SHA-1 hash without changing the password.
+- Check the DB schema for authentication in case of debug mode. It checks character length of fields.
 - SAML is integrated with SimpleSAMLphp. The $isSAML variable in params.php has to be set true, also set $samlAuthSource,
   and setting information exists in sample/saml-config directory.
 - If the variable $samlWithBuiltInAuth in params.php set true, the built-in authentication works first and moves to SAML.
@@ -22,6 +23,7 @@ Ver.8 (in development)
 - [BUG FIX] IMLibPageNavigation.moveDetailOnceAgain() didn't work fine.
 - [BUG FIX] On the navi-control key, confirm-delete works but delete-confirm didn't (also insert).
 - [BUG FIX] Fix handling Claris FileMaker's checkbox set feature when using DB_FileMaker_DataAPI class.
+- [BUG FIX] The $customLoginPanel variable in the params.php file didn't handle for anything. It removed.
 
 Ver.7 (March 20, 2021)
 - The synchronizing with clients is back without Pusher.

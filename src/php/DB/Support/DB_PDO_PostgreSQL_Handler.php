@@ -13,7 +13,9 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\DB\Support;
+
 use Exception;
 use PDO;
 
@@ -69,7 +71,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         $fieldArray = array();
         $numericFieldTypes = array('smallint', 'integer', 'bigint', 'decimal', 'numeric',
             'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money',
-            'timestamp', 'date', 'time', 'interval', );
+            'timestamp', 'date', 'time', 'interval',);
         $matches = array();
         foreach ($result as $row) {
             preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
@@ -105,15 +107,17 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
 
     protected function getTableInfo($tableName)
     {
-        if (! isset($this->tableInfo[$tableName])) {
+        if (!isset($this->tableInfo[$tableName])) {
             if (strpos($tableName, ".") !== false) {
                 $tName = substr($tableName, strpos($tableName, ".") + 1);
                 $schemaName = substr($tableName, 0, strpos($tableName, "."));
-                $sql = "SELECT column_name, column_default, is_nullable, data_type FROM information_schema.columns "
+                $sql = "SELECT column_name, column_default, is_nullable, data_type, character_maximum_length, "
+                    . "numeric_precision, numeric_scale FROM information_schema.columns "
                     . "WHERE table_schema=" . $this->dbClassObj->link->quote($schemaName)
                     . " AND table_name=" . $this->dbClassObj->link->quote($tName);
             } else {
-                $sql = "SELECT column_name, column_default, is_nullable, data_type FROM information_schema.columns "
+                $sql = "SELECT column_name, column_default, is_nullable, data_type, character_maximum_length, "
+                    . "numeric_precision, numeric_scale FROM information_schema.columns "
                     . "WHERE table_name=" . $this->dbClassObj->link->quote($tableName);
             }
             $this->dbClassObj->logger->setDebugMessage($sql);
@@ -131,6 +135,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         }
         return $infoResult;
     }
+
     /*
 # select table_catalog,table_schema,table_name,column_name,column_default from information_schema.columns where table_name='person';
 table_catalog | table_schema | table_name | column_name |                column_default
@@ -172,7 +177,7 @@ test_db       | im_sample    | person     | memo        |
         return array(implode(',', $fieldArray), implode(',', $listArray));
     }
 
-  public function quotedEntityName($entityName)
+    public function quotedEntityName($entityName)
     {
         $q = '"';
         if (strpos($entityName, ".") !== false) {
@@ -191,4 +196,45 @@ test_db       | im_sample    | person     | memo        |
     {
     }
 
+
+    public function authSupportCanMigrateSHA256Hash($userTable, $hashTable)  // authuser, issuedhash
+    {
+        $checkFieldDefinition = function ($type, $len, $min) {
+            $fDef = strtolower($type);
+            if ($fDef != 'text' && $fDef == 'character varying') {
+                if ($len < $min) {
+                    return false;
+                }
+            }
+            return true;
+        };
+
+        $infoAuthUser = $this->getTableInfo($userTable);
+        $infoIssuedHash = $this->getTableInfo($hashTable);
+        $returnValue = [];
+        if ($infoAuthUser) {
+            foreach ($infoAuthUser as $fieldInfo) {
+                if (isset($fieldInfo['column_name'])
+                    && $fieldInfo['column_name'] == 'hashedpasswd'
+                    && !$checkFieldDefinition($fieldInfo['data_type'], $fieldInfo['character_maximum_length'], 72)) {
+                    $returnValue[] = "The hashedpassword field of the authuser table has to be longer than 72 characters.";
+                }
+            }
+        }
+        if ($infoIssuedHash) {
+            foreach ($infoIssuedHash as $fieldInfo) {
+                if (isset($fieldInfo['column_name'])
+                    && $fieldInfo['column_name'] == 'clienthost'
+                    && !$checkFieldDefinition($fieldInfo['data_type'], $fieldInfo['character_maximum_length'], 64)) {
+                    $returnValue[] = "The clienthost field of the issuedhash table has to be longer than 64 characters.";
+                }
+                if (isset($fieldInfo['column_name'])
+                    && $fieldInfo['column_name'] == 'hash'
+                    && !$checkFieldDefinition($fieldInfo['data_type'], $fieldInfo['character_maximum_length'], 64)) {
+                    $returnValue[] = "The hash field of the issuedhash table has to be longer than 64 characters.";
+                }
+            }
+        }
+        return $returnValue;
+    }
 }
