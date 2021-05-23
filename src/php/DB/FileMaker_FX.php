@@ -1208,6 +1208,8 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
 
         $keyFieldName = isset($context['key']) ? $context['key'] : $this->specHandler->getDefaultKey();
 
+        $recordData = array();
+
         $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
         $requiredFields = $this->dbSettings->getFieldsRequired();
         $countFields = count($requiredFields);
@@ -1216,6 +1218,18 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
             $field = $requiredFields[$i];
             $value = $fieldValues[$i];
             if ($field != $keyFieldName) {
+                // for handling checkbox on Post Only mode
+                if (isset($recordData[$field]) && !empty($recordData[$field])) {
+                    $value = $recordData[$field] . "\r" . $value;
+                    unset($recordData[$field]);
+                }
+                $recordData += array(
+                    $field =>
+                    $this->formatter->formatterToDB(
+                        "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}",
+                        $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value))
+                );
+
                 $this->fx->AddDBParam(
                     $field,
                     $this->formatter->formatterToDB(

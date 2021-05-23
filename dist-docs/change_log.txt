@@ -18,6 +18,7 @@ Ver.8 (in development)
   and setting information exists in sample/saml-config directory.
 - If the variable $samlWithBuiltInAuth in params.php set true, the built-in authentication works first and moves to SAML.
 - Custom url for after clicking logout button of the page navigation can set to INTERMediatorOnPage.logoutURL.
+- Support handling Claris FileMaker's checkbox set feature on Post Only mode when using DB_FileMaker_DataAPI class or DB_FileMaker_FX class.
 - Update sample schema files and recipe.rb for the INTER-Mediator-Server virtual machine and CI.
 - [BUG FIX] Fix compatibility with Claris FileMaker Server. The affected version is Ver.7.
 - [BUG FIX] IMLibPageNavigation.moveDetailOnceAgain() didn't work fine.
