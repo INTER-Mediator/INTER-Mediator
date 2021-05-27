@@ -1,5 +1,5 @@
 # INTER-Mediator [![Build Status](https://travis-ci.org/INTER-Mediator/INTER-Mediator.svg?branch=master)](https://travis-ci.org/INTER-Mediator/INTER-Mediator) [![Build Status](https://circleci.com/gh/INTER-Mediator/INTER-Mediator/tree/master.svg?style=shield)](https://circleci.com/gh/INTER-Mediator/INTER-Mediator) [![pipeline status](https://gitlab.com/INTER-Mediator/INTER-Mediator/badges/master/pipeline.svg)](https://gitlab.com/INTER-Mediator/INTER-Mediator/pipelines)
-by INTER-Mediator Directive Committee (http://inter-mediator.org)
+by INTER-Mediator Directive Committee (https://inter-mediator.org)
 
 This is the root of the INTER-Mediator source repository.
 
@@ -25,9 +25,9 @@ If you have any question about deploying with your applications, ask to INTER-Me
 
 ## Documentation
 
-+ [Manual](http://inter-mediator.info/)
-	+ [Virtual Machine for Test and Evaluation / Japanese](http://inter-mediator.info/ja/for-novices/vm.html)
-	+ [Reference of Definition File / Japanese](http://inter-mediator.info/ja/for-developers/index.html)
++ [Manual](https://inter-mediator.info/)
+	+ [Virtual Machine for Test and Evaluation / Japanese](https://inter-mediator.info/ja/for-novices/vm.html)
+	+ [Reference of Definition File / Japanese](https://inter-mediator.info/ja/for-developers/index.html)
 + [change_log](https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/change_log.txt)
 + [In a future (Direction of Developement)](https://github.com/INTER-Mediator/INTER-Mediator/wiki/Direction-of-INTER-Mediator-Development)
 
@@ -46,6 +46,7 @@ If you have any question about deploying with your applications, ask to INTER-Me
 - Candy
 - Katsunori Eda
 - Naomi Hamaji
+- Masakatsu Inamoto
 - Yukihiko Kobayashi
 - Akinori Mizoguchi
 - Hiromi Morita
@@ -69,7 +70,7 @@ If you have any question about deploying with your applications, ask to INTER-Me
 - Miyuki Imaizumi
 
 The information about INTER-Mediator Directive Committee is below:
-- http://inter-mediator.org/
+- https://inter-mediator.org/
 
 ## Contributing
 
