@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 // JSHint support
 /* global INTERMediator,buster,IMLibLocalContext,IMLibContext,IMLibContextPool */
 

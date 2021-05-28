@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 // JSHint support
 /* global SHA1,buster */
 
