@@ -12,13 +12,20 @@ require_once('DB_PDO_Test_Common.php');
 
 class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
 {
-    function setUp()
+    function setUp(): void
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
 
+        $this->dsn = 'pgsql:host=localhost;port=5432;dbname=test_db';
+        if (getenv('DOCKER') === 'true' && getenv('TRAVIS') !== 'true' && getenv('CIRCLECI') !== 'true' && getenv('GITLAB_CI') !== 'true') {
+            $this->dsn = 'pgsql:host=postgresql;port=5432;dbname=test_db';
+        }
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testAggregation()
     {
         // The sample schema doesn't have a data to check this feature.
@@ -57,7 +64,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $options = null;
         $dbSettings = array(
             'db-class' => 'PDO',
-            'dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db',
+            'dsn' => $this->dsn,
             'user' => 'web',
             'password' => 'password',
         );
@@ -95,7 +102,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
             ),
             array(
                 'db-class' => 'PDO',
-                'dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db',
+                'dsn' => $this->dsn,
                 'user' => 'web',
                 'password' => 'password',
             ),
@@ -127,7 +134,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
             null,
             array(
                 'db-class' => 'PDO',
-                'dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db',
+                'dsn' => $this->dsn,
                 'user' => 'web',
                 'password' => 'password',
             ),

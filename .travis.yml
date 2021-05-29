@@ -9,27 +9,32 @@ os:
   - linux
 
 php:
-  - nightly
-  - 7.4
-  - 7.3
-  - 7.2
-  - 7.1
-  - 7.0
-  - 5.6
-  - 5.5
   - 5.4
+  - 5.5
+  - 5.6
+  - 7.0
+  - 7.1
+  - 7.2
+  - 7.3
+  - 7.4
 
 matrix:
   include:
-    - php: 5.3
-      dist: precise
-    - php: 5.2
-      dist: precise
+    - php: nightly
+      dist: bionic
+      services:
+        - mysql
+        - postgresql
+        - xvfb
+    - php: 8.0
+      dist: bionic
+      services:
+        - mysql
+        - postgresql
+        - xvfb
   allow_failures:
     - php: nightly
-    - php: 7.4
 
-## for Headless Chrome and trusty (Headless Chrome is available on trusty)
 addons:
   chrome: stable
   firefox: "latest-esr"
@@ -39,7 +44,7 @@ addons:
 
 before_script:
   - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
+  - if [[ $TRAVIS_PHP_VERSION == "5.4" || $TRAVIS_PHP_VERSION == "5.5" || $TRAVIS_PHP_VERSION == "5.6" || $TRAVIS_PHP_VERSION == "7.0" || $TRAVIS_PHP_VERSION == "7.1" || $TRAVIS_PHP_VERSION == "7.2" || $TRAVIS_PHP_VERSION == "7.3" || $TRAVIS_PHP_VERSION == "7.4" ]]; then sh -e /etc/init.d/xvfb start & fi
   - sleep 5
   - npm install
   - node_modules/.bin/buster-server &
@@ -57,13 +62,19 @@ before_script:
   - psql -U postgres -f ./dist-docs/sample_schema_pgsql.txt test_db
   - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" && $TRAVIS_PHP_VERSION != "5.2" && $TRAVIS_PHP_VERSION != "5.6" ]]; then composer require 'phpunit/phpunit=4.8.x'; composer install; fi
   - if [[ $TRAVIS_PHP_VERSION == "5.6" ]]; then composer require 'phpunit/phpunit=5.7.x'; composer install; fi
-  - if [[ $TRAVIS_PHP_VERSION == "7.0" || $TRAVIS_PHP_VERSION == "7.1" || $TRAVIS_PHP_VERSION == "7.2" ]]; then composer require 'phpunit/phpunit=6.5.x'; composer install; fi
-  - if [[ $TRAVIS_PHP_VERSION == "7.3" || $TRAVIS_PHP_VERSION == "nightly" ]]; then composer require 'phpunit/phpunit=7.3.x'; composer install; fi
+  - if [[ $TRAVIS_PHP_VERSION == "7.0" ]]; then composer require 'phpunit/phpunit=6.5.x'; composer install; fi
+  - if [[ $TRAVIS_PHP_VERSION == "7.1" ]]; then composer require 'phpunit/phpunit=7.5.x'; composer install; fi
+  - if [[ $TRAVIS_PHP_VERSION == "7.2" ]]; then composer require 'phpunit/phpunit=8.5.x'; composer install; fi
+  - if [[ $TRAVIS_PHP_VERSION == "7.3" ]]; then composer require 'phpunit/phpunit=8.5.x'; composer install; fi
+  - if [[ $TRAVIS_PHP_VERSION == "7.4" || $TRAVIS_PHP_VERSION == "8.0" || $TRAVIS_PHP_VERSION == "nightly" ]]; then composer require 'phpunit/phpunit=9.5.x'; composer install; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" || $TRAVIS_PHP_VERSION == "7.0" ]]; then find INTER-Mediator-UnitTest/*.php -type f -print0 | xargs -0 sed -i -e "s/function\ setUp():\ void/function\ setUp()/g"; fi
+  - if [[ $TRAVIS_PHP_VERSION == "7.4" || $TRAVIS_PHP_VERSION == "8.0" || $TRAVIS_PHP_VERSION == "nightly" ]]; then find INTER-Mediator-UnitTest/*.php -type f -print0 | xargs -0 sed -i -e "s/assertContains/assertStringContainsStringIgnoringCase/g"; fi
+  - if [[ $TRAVIS_PHP_VERSION == "7.4" || $TRAVIS_PHP_VERSION == "8.0" || $TRAVIS_PHP_VERSION == "nightly" ]]; then find INTER-Mediator-UnitTest/*.php -type f -print0 | xargs -0 sed -i -e "s/assertNotContains/assertStringNotContainsStringIgnoringCase/g"; fi
 
 script:
   - if [[ $TRAVIS_PHP_VERSION == "5.2" ]]; then phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi
   - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" && $TRAVIS_PHP_VERSION != "5.2" ]]; then vendor/bin/phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi
-  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" || $TRAVIS_PHP_VERSION == "nightly" ]]; then vendor/bin/phpunit --globals-backup --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi  
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} != "5" ]]; then vendor/bin/phpunit --globals-backup --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi
   - npm test
 
 notifications:

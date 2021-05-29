@@ -12,9 +12,10 @@ if (!class_exists('PHPUnit_Framework_TestCase')) {
 class IMUtil_Test extends PHPUnit_Framework_TestCase {
 
     private $util;
-    public function setUp()
+    public function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
+        $_SERVER['REQUEST_TIME_FLOAT'] = microtime(true);
         $this->util = new IMUtil();
     }
 
@@ -117,6 +118,7 @@ class IMUtil_Test extends PHPUnit_Framework_TestCase {
     /**
      * @runInSeparateProcess
      * @preserveGlobalState disabled
+     * @doesNotPerformAssertions
      */
     public function test_outputSecurityHeaders()
     {
@@ -128,9 +130,15 @@ class IMUtil_Test extends PHPUnit_Framework_TestCase {
             $headers = xdebug_get_headers();
             header_remove();
             ob_clean();
-            $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
-            $this->assertNotContains('Content-Security-Policy: ', $headers);
-            $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
+            if (((float)phpversion()) >= 5.3) {
+                $this->assertNotFalse(array_search('X-Frame-Options: SAMEORIGIN', $headers));
+                $this->assertFalse(array_search('Content-Security-Policy: ', $headers));
+                $this->assertNotFalse(array_search('X-XSS-Protection: 1; mode=block', $headers));
+            } else {
+                $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
+                $this->assertNotContains('Content-Security-Policy: ', $headers);
+                $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
+            }
 
             $params['xFrameOptions'] = '';
             $params['contentSecurityPolicy'] = '';
@@ -140,9 +148,15 @@ class IMUtil_Test extends PHPUnit_Framework_TestCase {
             $headers = xdebug_get_headers();
             header_remove();
             ob_clean();
-            $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
-            $this->assertNotContains('Content-Security-Policy:', $headers);
-            $this->assertNotContains('Access-Control-Allow-Origin:', $headers);
+            if (((float)phpversion()) >= 5.3) {
+                $this->assertNotFalse(array_search('X-Frame-Options: SAMEORIGIN', $headers));
+                $this->assertFalse(array_search('Content-Security-Policy:', $headers));
+                $this->assertFalse(array_search('Access-Control-Allow-Origin:', $headers));
+            } else {
+                $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
+                $this->assertNotContains('Content-Security-Policy:', $headers);
+                $this->assertNotContains('Access-Control-Allow-Origin:', $headers);
+            }
 
             $params["xFrameOptions"] = 'DENY';
             $params["contentSecurityPolicy"] = '';
@@ -152,9 +166,15 @@ class IMUtil_Test extends PHPUnit_Framework_TestCase {
             $headers = xdebug_get_headers();
             header_remove();
             ob_clean();
-            $this->assertContains('X-Frame-Options: DENY', $headers);
-            $this->assertNotContains('Content-Security-Policy:', $headers);
-            $this->assertNotContains('Access-Control-Allow-Origin:', $headers);
+            if (((float)phpversion()) >= 5.3) {
+                $this->assertNotFalse(array_search('X-Frame-Options: DENY', $headers));
+                $this->assertFalse(array_search('Content-Security-Policy:', $headers));
+                $this->assertFalse(array_search('Access-Control-Allow-Origin:', $headers));
+            } else {
+                $this->assertContains('X-Frame-Options: DENY', $headers);
+                $this->assertNotContains('Content-Security-Policy:', $headers);
+                $this->assertNotContains('Access-Control-Allow-Origin:', $headers);
+            }
 
             $params["xFrameOptions"] = 'ALLOW-FROM http://inter-mediator.com/';
             $params["contentSecurityPolicy"] = 'frame-ancestors https://inter-mediator.com http://inter-mediator.info';
@@ -164,9 +184,15 @@ class IMUtil_Test extends PHPUnit_Framework_TestCase {
             $headers = xdebug_get_headers();
             header_remove();
             ob_clean();
-            $this->assertContains('X-Frame-Options: ALLOW-FROM http://inter-mediator.com/', $headers);
-            $this->assertContains('Content-Security-Policy: frame-ancestors https://inter-mediator.com http://inter-mediator.info', $headers);
-            $this->assertNotContains('Access-Control-Allow-Origin:', $headers);
+            if (((float)phpversion()) >= 5.3) {
+                $this->assertNotFalse(array_search('X-Frame-Options: ALLOW-FROM http://inter-mediator.com/', $headers));
+                $this->assertNotFalse(array_search('Content-Security-Policy: frame-ancestors https://inter-mediator.com http://inter-mediator.info', $headers));
+                $this->assertFalse(array_search('Access-Control-Allow-Origin:', $headers));
+            } else {
+                $this->assertContains('X-Frame-Options: ALLOW-FROM http://inter-mediator.com/', $headers);
+                $this->assertContains('Content-Security-Policy: frame-ancestors https://inter-mediator.com http://inter-mediator.info', $headers);
+                $this->assertNotContains('Access-Control-Allow-Origin:', $headers);
+            }
 
             $params["xFrameOptions"] = "ALLOW-FROM\n http://inter-mediator.com/";
             $params["contentSecurityPolicy"] = "frame-ancestors\n https://inter-mediator.com http://inter-mediator.info";
@@ -176,9 +202,15 @@ class IMUtil_Test extends PHPUnit_Framework_TestCase {
             $headers = xdebug_get_headers();
             header_remove();
             ob_clean();
-            $this->assertContains('X-Frame-Options: ALLOW-FROM http://inter-mediator.com/', $headers);
-            $this->assertContains('Content-Security-Policy: frame-ancestors https://inter-mediator.com http://inter-mediator.info', $headers);
-            $this->assertContains('Access-Control-Allow-Origin: *', $headers);
+            if (((float)phpversion()) >= 5.3) {
+                $this->assertNotFalse(array_search('X-Frame-Options: ALLOW-FROM http://inter-mediator.com/', $headers));
+                $this->assertNotFalse(array_search('Content-Security-Policy: frame-ancestors https://inter-mediator.com http://inter-mediator.info', $headers));
+                $this->assertNotFalse(array_search('Access-Control-Allow-Origin: *', $headers));
+            } else {
+                $this->assertContains('X-Frame-Options: ALLOW-FROM http://inter-mediator.com/', $headers);
+                $this->assertContains('Content-Security-Policy: frame-ancestors https://inter-mediator.com http://inter-mediator.info', $headers);
+                $this->assertContains('Access-Control-Allow-Origin: *', $headers);
+            }
         }
     }
 }

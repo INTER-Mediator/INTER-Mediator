@@ -6,7 +6,7 @@ require_once(dirname(__FILE__) . '/../MediaAccess.php');
 
 class MediaAccess_Test extends PHPUnit_Framework_TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->mediaaccess = new MediaAccess();
     }

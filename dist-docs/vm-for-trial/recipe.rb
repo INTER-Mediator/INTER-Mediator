@@ -1,4 +1,4 @@
-# Recipe file of Itamae for Alpine Linux 3.10, Ubuntu Server 16.04/18.04, CentOS 6/7
+# Recipe file of Itamae for Alpine Linux 3.13, Ubuntu Server 16.04/18.04, CentOS Linux 7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -46,12 +46,12 @@ iface eth1 inet static
 EOF
     end
   end
-  if node[:platform_version].to_f >= 3.10
+  if node[:platform_version].to_f >= 3.13
     file '/etc/apk/repositories' do
       content <<-EOF
 #/media/cdrom/apks
-http://dl-cdn.alpinelinux.org/alpine/v3.10/main
-http://dl-cdn.alpinelinux.org/alpine/v3.10/community
+http://dl-cdn.alpinelinux.org/alpine/v3.13/main
+http://dl-cdn.alpinelinux.org/alpine/v3.13/community
 #http://dl-cdn.alpinelinux.org/alpine/edge/main
 #http://dl-cdn.alpinelinux.org/alpine/edge/community
 #http://dl-cdn.alpinelinux.org/alpine/edge/testing
@@ -61,8 +61,8 @@ EOF
     file '/etc/apk/repositories' do
       content <<-EOF
 #/media/cdrom/apks
-http://dl-5.alpinelinux.org/alpine/v3.8/main
-http://dl-5.alpinelinux.org/alpine/v3.8/community
+http://dl-5.alpinelinux.org/alpine/v3.10/main
+http://dl-5.alpinelinux.org/alpine/v3.10/community
 #http://dl-5.alpinelinux.org/alpine/edge/main
 #http://dl-5.alpinelinux.org/alpine/edge/community
 #http://dl-5.alpinelinux.org/alpine/edge/testing
@@ -183,17 +183,29 @@ elsif node[:platform] == 'redhat'
       command 'sudo su - postgres -c "initdb --encoding=UTF8 --no-locale"'
     end
   else
-    execute 'service postgresql initdb' do
-      command 'service postgresql initdb'
+    execute 'postgresql-setup initdb' do
+      command 'postgresql-setup initdb'
     end
   end
 end
 if node[:platform] == 'alpine'
+  if node[:virtualization][:system] == 'docker'
+    user "postgres" do
+      action :create
+    end  
+  end
   execute 'yes ********* | sudo passwd postgres' do
     command 'yes im4135dev | sudo passwd postgres'
   end
-  execute 'echo "*********" | sudo /etc/init.d/postgresql setup' do
-    command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
+  if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
+    directory '/var/lib/postgresql/13/data' do
+      action :create
+      owner 'postgres'
+      group 'postgres'
+    end
+  end
+  execute 'echo "*********" | /etc/init.d/postgresql setup' do
+    command 'echo "im4135dev" | /etc/init.d/postgresql setup'
   end
   if node[:virtualization][:system] != 'docker'
     service 'postgresql' do
@@ -210,8 +222,8 @@ if node[:platform] == 'alpine'
     service 'postgresql' do
       action [ :enable ]
     end
-    execute 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/11/data -l /var/log/postgresql/postgresql.log"' do
-      command 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/11/data -l /var/log/postgresql/postgresql.log"'
+    execute 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/13/data -l /var/log/postgresql/postgresql.log"' do
+      command 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/13/data -l /var/log/postgresql/postgresql.log"'
     end  
   end
 else
@@ -429,56 +441,125 @@ package 'acl' do
 end
 
 if node[:platform] == 'alpine'
-  package 'php7' do
-    action :install
+  if node[:platform_version].to_f >= 3.12
+    package 'python3' do
+      action :install
+    end
+  else
+    package 'python' do
+      action :install
+    end
   end
-  package 'php7-apache2' do
-    action :install
-  end
-  package 'php7-curl' do
-    action :install
-  end
-  package 'php7-pdo' do
-    action :install
-  end
-  package 'php7-pdo_mysql' do
-    action :install
-  end
-  package 'php7-pdo_pgsql' do
-    action :install
-  end
-  package 'php7-pdo_sqlite' do
-    action :install
-  end
-  package 'php7-openssl' do
-    action :install
-  end
-  package 'php7-dom' do
-    action :install
-  end
-  package 'php7-json' do
-    action :install
-  end
-  package 'php7-bcmath' do
-    action :install
-  end
-  package 'php7-phar' do
-    action :install
-  end
-  package 'php7-mbstring' do
-    action :install
-  end
-  package 'php7-xml' do
-    action :install
-  end
-  package 'php7-simplexml' do
-    action :install
-  end
-  package 'php7-session' do
-    action :install
-  end
-  package 'php7-mysqli' do
-    action :install
+end
+
+if node[:platform] == 'alpine'
+  if node[:platform_version].to_f >= 3.13
+    package 'php8' do
+      action :install
+    end
+    execute 'ln -s /usr/bin/php8 /usr/bin/php' do
+      command 'ln -s /usr/bin/php8 /usr/bin/php'
+    end
+    package 'php8-apache2' do
+      action :install
+    end
+    package 'php8-curl' do
+      action :install
+    end
+    package 'php8-pdo' do
+      action :install
+    end
+    package 'php8-pdo_mysql' do
+      action :install
+    end
+    package 'php8-pdo_pgsql' do
+      action :install
+    end
+    package 'php8-pdo_sqlite' do
+      action :install
+    end
+    package 'php8-openssl' do
+      action :install
+    end
+    package 'php8-dom' do
+      action :install
+    end
+    package 'php8-json' do
+      action :install
+    end
+    package 'php8-bcmath' do
+      action :install
+    end
+    package 'php8-phar' do
+      action :install
+    end
+    package 'php8-mbstring' do
+      action :install
+    end
+    package 'php8-xml' do
+      action :install
+    end
+    package 'php8-simplexml' do
+      action :install
+    end
+    package 'php8-session' do
+      action :install
+    end
+    package 'php8-mysqli' do
+      action :install
+    end
+  else
+    package 'php7' do
+      action :install
+    end
+    package 'php7-apache2' do
+      action :install
+    end
+    package 'php7-curl' do
+      action :install
+    end
+    package 'php7-pdo' do
+      action :install
+    end
+    package 'php7-pdo_mysql' do
+      action :install
+    end
+    package 'php7-pdo_pgsql' do
+      action :install
+    end
+    package 'php7-pdo_sqlite' do
+      action :install
+    end
+    package 'php7-openssl' do
+      action :install
+    end
+    package 'php7-dom' do
+      action :install
+    end
+    package 'php7-json' do
+      action :install
+    end
+    package 'php7-bcmath' do
+      action :install
+    end
+    package 'php7-phar' do
+      action :install
+    end
+    package 'php7-mbstring' do
+      action :install
+    end
+    package 'php7-xml' do
+      action :install
+    end
+    package 'php7-simplexml' do
+      action :install
+    end
+    package 'php7-session' do
+      action :install
+    end
+    package 'php7-mysqli' do
+      action :install
+    end
   end
   package 'libbsd' do
     action :install
@@ -492,14 +573,19 @@ if node[:platform] == 'alpine'
   execute 'update-ca-certificates' do
     command 'update-ca-certificates'
   end
-  execute 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp' do
-    command 'wget https://phar.phpunit.de/phpunit-6.phar -P /tmp'
+  execute 'wget https://phar.phpunit.de/phpunit-8.phar -P /tmp' do
+    command 'wget https://phar.phpunit.de/phpunit-8.phar -P /tmp'
   end
-  execute 'mv /tmp/phpunit-6.phar /usr/local/bin/phpunit' do
-    command 'mv /tmp/phpunit-6.phar /usr/local/bin/phpunit'
+  execute 'mv /tmp/phpunit-8.phar /usr/local/bin/phpunit' do
+    command 'mv /tmp/phpunit-8.phar /usr/local/bin/phpunit'
   end
   execute 'chmod +x /usr/local/bin/phpunit' do
     command 'chmod +x /usr/local/bin/phpunit'
+  end
+  file '/usr/local/bin/.phpunit.result.cache' do
+    owner 'developer'
+    group 'developer'
+    mode '660'
   end
 elsif node[:platform] == 'ubuntu'
   package 'libmysqlclient-dev' do
@@ -878,12 +964,6 @@ if node[:platform] == 'ubuntu'
   end
 end
 
-if node[:platform] == 'alpine'
-  package 'python' do
-    action :install
-  end
-end
-
 package 'git' do
   action :install
 end
@@ -915,8 +995,12 @@ if node[:platform] == 'ubuntu'
   end
 end
 
-execute "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout 5.x && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git" do
-  command "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout 5.x && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git"
+#execute "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout 5.x && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git" do
+#  command "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout 5.x && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git"
+#end
+
+execute "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout stable && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git" do
+  command "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout stable && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git"
 end
 
 if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
@@ -1439,8 +1523,14 @@ EOF
 end
   
 if node[:platform] == 'alpine'
-  execute 'cat /etc/php7/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php7/php.ini.tmp && mv /etc/php7/php.ini.tmp /etc/php7/php.ini' do
-    command 'cat /etc/php7/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php7/php.ini.tmp && mv /etc/php7/php.ini.tmp /etc/php7/php.ini'
+  if node[:platform_version].to_f >= 3.13
+    execute 'cat /etc/php8/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php8/php.ini.tmp && mv /etc/php8/php.ini.tmp /etc/php8/php.ini' do
+      command 'cat /etc/php8/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php8/php.ini.tmp && mv /etc/php8/php.ini.tmp /etc/php8/php.ini'
+    end
+  else
+    execute 'cat /etc/php7/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php7/php.ini.tmp && mv /etc/php7/php.ini.tmp /etc/php7/php.ini' do
+      command 'cat /etc/php7/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php7/php.ini.tmp && mv /etc/php7/php.ini.tmp /etc/php7/php.ini'
+    end
   end
 end
 if node[:platform] == 'ubuntu'

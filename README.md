@@ -1,5 +1,5 @@
-# INTER-Mediator [![Build Status](https://travis-ci.org/INTER-Mediator/INTER-Mediator.svg?branch=master)](https://travis-ci.org/INTER-Mediator/INTER-Mediator) [![Build Status](https://circleci.com/gh/INTER-Mediator/INTER-Mediator/tree/master.svg?style=shield)](https://circleci.com/gh/INTER-Mediator/INTER-Mediator) [![pipeline status](https://gitlab.com/INTER-Mediator/INTER-Mediator/badges/master/pipeline.svg)](https://gitlab.com/INTER-Mediator/INTER-Mediator/commits/master)
-by INTER-Mediator Directive Committee (http://inter-mediator.org)
+# INTER-Mediator [![Build Status](https://travis-ci.org/INTER-Mediator/INTER-Mediator.svg?branch=5.x)](https://travis-ci.org/INTER-Mediator/INTER-Mediator) [![Build Status](https://circleci.com/gh/INTER-Mediator/INTER-Mediator/tree/5.x.svg?style=shield)](https://circleci.com/gh/INTER-Mediator/INTER-Mediator) [![pipeline status](https://gitlab.com/INTER-Mediator/INTER-Mediator/badges/5.x/pipeline.svg)](https://gitlab.com/INTER-Mediator/INTER-Mediator/commits/5.x)
+by INTER-Mediator Directive Committee (https://inter-mediator.org)
 
 This is the root of the INTER-Mediator source repository.
 
@@ -11,23 +11,24 @@ If you want to implement more complex logic, you can write programs both client 
 
 All information can be available at:
 - https://inter-mediator.com/
-- http://inter-mediator.info/
+- https://inter-mediator.info/
 
 Sample pages within this repository are published at below,
 and anyone can see sample pages working with database.
 You don't have to deploy the samples if you just want to see this at a glance.
 This demo page works on INTER-Mediator Ver.5.x (Stable version).
-- http://demo.inter-mediator.com:8080/INTER-Mediator_stable/Samples/
+- https://demo.inter-mediator.com/INTER-Mediator_stable/Samples/
 
-The demo with INTER-Mediator Ver.6 is as below, but it's experimental. Ver.6 is still under construction.
-- http://demo.inter-mediator.com:8080/INTER-Mediator/samples/
+The demo with INTER-Mediator Ver.7 is as below. After Ver.6, the head of repository is just under construction.
+If you have any question about deploying with your applications, ask to INTER-Mediator committers.
+- https://demo.inter-mediator.com/INTER-Mediator/samples/
 
 ## Documentation
 
-+ [Manual](http://inter-mediator.info/)
-	+ [Virtual Machine for Test and Evaluation / Japanese](http://inter-mediator.info/ja/for-novices/vm.html)
-	+ [Reference of Definition File / Japanese](http://inter-mediator.info/ja/for-developers/index.html)
-+ [change_log](https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/change_log.txt)
++ [Manual](https://inter-mediator.info/)
+	+ [Virtual Machine for Test and Evaluation / Japanese](https://inter-mediator.info/ja/for-novices/vm.html)
+	+ [Reference of Definition File / Japanese](https://inter-mediator.info/ja/for-developers/index.html)
++ [change_log](https://github.com/INTER-Mediator/INTER-Mediator/blob/5.x/dist-docs/change_log.txt)
 + [In a future (Direction of Developement)](https://github.com/INTER-Mediator/INTER-Mediator/wiki/Direction-of-INTER-Mediator-Development)
 
 ## Contributors:
@@ -45,6 +46,7 @@ The demo with INTER-Mediator Ver.6 is as below, but it's experimental. Ver.6 is 
 - Candy
 - Katsunori Eda
 - Naomi Hamaji
+- Masakatsu Inamoto
 - Yukihiko Kobayashi
 - Akinori Mizoguchi
 - Hiromi Morita
@@ -68,7 +70,7 @@ The demo with INTER-Mediator Ver.6 is as below, but it's experimental. Ver.6 is 
 - Miyuki Imaizumi
 
 The information about INTER-Mediator Directive Committee is below:
-- http://inter-mediator.org/
+- https://inter-mediator.org/
 
 ## Contributing
 

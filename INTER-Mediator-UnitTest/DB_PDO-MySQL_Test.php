@@ -13,7 +13,7 @@ require_once('DB_PDO_Test_Common.php');
 class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
 {
     protected $dsn;
-    function setUp()
+    function setUp(): void
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
@@ -21,6 +21,8 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
         $this->dsn = 'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=test_db;charset=utf8mb4';
         if (getenv('TRAVIS') === 'true') {
             $this->dsn = 'mysql:dbname=test_db;host=127.0.0.1';
+        } else if (getenv('DOCKER') === 'true' && getenv('CIRCLECI') !== 'true' && getenv('GITLAB_CI') !== 'true') {
+            $this->dsn = 'mysql:host=mariadb;dbname=test_db;charset=utf8mb4';
         } else if (file_exists('/etc/alpine-release')) {
             $this->dsn = 'mysql:unix_socket=/run/mysqld/mysqld.sock;dbname=test_db;charset=utf8mb4';
         } else if (file_exists('/etc/redhat-release')) {

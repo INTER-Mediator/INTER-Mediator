@@ -8,7 +8,7 @@
 # Please see the full license for details:
 # https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
 
-version="5.11"
+version="5.12"
 
 # The file of minify <http://www.minifier.org> can be downloaded from below.
 # git clone https://github.com/matthiasmullie/minify

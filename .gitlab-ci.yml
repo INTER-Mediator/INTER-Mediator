@@ -2,7 +2,7 @@ stages:
   - test
   - deploy
 
-image: docker:17.12.1-ce
+image: docker:latest
 
 variables:
   DOCKER_DRIVER: overlay2
@@ -16,7 +16,7 @@ before_script:
 test:
   script:
     - docker run --privileged -e "container=docker" --tmpfs /run -v /sys/fs/cgroup:/sys/fs/cgroup:ro -d --name alpine alpine:latest /sbin/init
-    - docker exec -e BUNDLE_GEMFILE=/INTER-Mediator/dist-docs/docker/Gemfile -e DISPLAY=:99.0 -i alpine sh -c "apk add --no-cache sudo curl ruby ruby-json ruby-io-console ruby-etc git && git clone https://github.com/INTER-Mediator/INTER-Mediator && cd INTER-Mediator && git checkout 5.x && gem install itamae --no-doc && itamae local dist-docs/vm-for-trial/recipe.rb; phpunit --configuration /INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php; /usr/bin/buster-test -r specification -c /INTER-Mediator/spec/buster.js"
+    - docker exec --privileged -e BUNDLE_GEMFILE=/INTER-Mediator/dist-docs/docker/Gemfile -e DISPLAY=:99.0 -i alpine sh -c "apk add --no-cache sudo curl ruby ruby-json ruby-io-console ruby-etc git && git clone https://github.com/INTER-Mediator/INTER-Mediator && cd INTER-Mediator && git checkout 5.x && gem install itamae --no-doc && itamae local dist-docs/vm-for-trial/recipe.rb; phpunit --configuration /INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php; /usr/bin/buster-test -r specification -c /INTER-Mediator/spec/buster.js"
     - docker stop alpine
     - docker rm alpine
 

@@ -325,7 +325,11 @@ var IMLibElement = {
                 typeAttr = element.getAttribute('type');
                 if (typeAttr === 'checkbox' || typeAttr === 'radio') { // set the value
                     valueAttr = element.value;
-                    curValues = curVal.split(IMLib.nl_char);
+                    if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI') {
+                        curValues = curVal.split(IMLib.cr_char);
+                    } else {
+                        curValues = curVal.split(IMLib.nl_char);
+                    }
                     if (typeAttr === 'checkbox' && curValues.length > 1) {
                         for (i = 0; i < curValues.length; i++) {
                             if (valueAttr === curValues[i] && !INTERMediator.dontSelectRadioCheck) {
@@ -480,7 +484,11 @@ var IMLibElement = {
                             mergedValues.push(targetNodes[k].getAttribute('value'));
                         }
                     }
-                    newValue = mergedValues.join(IMLib.nl_char);
+                    if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI') {
+                        newValue = mergedValues.join(IMLib.cr_char);
+                    } else {
+                        newValue = mergedValues.join(IMLib.nl_char);
+                    }
                 } else {
                     valueAttr = element.getAttribute('value');
                     if (element.checked) {

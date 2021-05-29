@@ -11,7 +11,7 @@ if (!class_exists('PHPUnit_Framework_TestCase')) {
 
 class GenerateJSCode_Test extends PHPUnit_Framework_TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         $this->generater = new GenerateJSCode();
@@ -40,6 +40,7 @@ class GenerateJSCode_Test extends PHPUnit_Framework_TestCase
     /**
      * @runInSeparateProcess
      * @preserveGlobalState disabled
+     * @doesNotPerformAssertions
      */
     function test___construct()
     {
@@ -50,9 +51,15 @@ class GenerateJSCode_Test extends PHPUnit_Framework_TestCase
             header_remove();
             ob_clean();
             
-            $this->assertContains('Content-Type: text/javascript;charset="UTF-8"', $headers);
-            $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
-            $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
+            if (((float)phpversion()) >= 5.3) {
+                $this->assertNotFalse(array_search('Content-Type: text/javascript;charset="UTF-8"', $headers));
+                $this->assertNotFalse(array_search('X-XSS-Protection: 1; mode=block', $headers));
+                $this->assertNotFalse(array_search('X-Frame-Options: SAMEORIGIN', $headers));
+            } else {
+                $this->assertContains('Content-Type: text/javascript;charset="UTF-8"', $headers);
+                $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
+                $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
+            }
         }
     }
 

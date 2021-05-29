@@ -6,7 +6,7 @@ require_once(dirname(__FILE__) . '/../DB_Settings.php');
 
 class DB_Settings_Test extends PHPUnit_Framework_TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->settings = new DB_Settings();
     }

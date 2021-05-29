@@ -6,7 +6,7 @@ require_once('DB_PDO_Test_Common.php');
 
 class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
 {
-    function setUp()
+    function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         mb_internal_encoding('UTF-8');
@@ -14,6 +14,9 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
 
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testAggregation()
     {
         // The sample schema doesn't have a data to check this feature.
@@ -92,6 +95,9 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
         );
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testNativeUser()
     {
         // SQLite doesn't have native users.
