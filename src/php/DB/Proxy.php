@@ -1028,7 +1028,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("[processingRequest] start create processing", 2);
                 $attachedFields = $this->dbSettings->getAttachedFields();
                 if (!$ignoreFiles && isset($attachedFields) && $attachedFields[0] == '_im_csv_upload') {
-                    $this->logger->setDebugMessage("File importing operation gets stated.", 2);
+                    $this->logger->setDebugMessage("CSV File importing operation gets stated.", 2);
                     $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
                     if ($uploadFiles && count($tableInfo) > 0) {
                         $fileUploader = new FileUploader();
@@ -1078,7 +1078,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                                             $this->dbSettings->getDbSpec(),
                                             $this->logger->getDebugLevel(),
                                             $tableInfo['name'], $tableInfo['key'], $result,
-                                            $this->dbSettings->getAttachedFields(), $oneFile, true
+                                            $this->dbSettings->getAttachedFields(), [$oneFile], true
                                         );
                                     }
                                     $this->outputOfProcessing['dbresult'] = $dbresult;

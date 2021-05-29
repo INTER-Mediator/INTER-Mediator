@@ -39,7 +39,7 @@ IM_Entry(
         ),
         'media-root-dir' => '/tmp',
         'authentication' => [
-            'user' => ['user1', 'user2'],
+            'user' => ['user1', 'user2','mig2'],
             'authexpired' => '3600',
             'storing' => 'session-storage',
         ],
