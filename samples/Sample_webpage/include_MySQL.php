@@ -29,6 +29,14 @@ IM_Entry(
             'post-reconstruct' => true,
             'repeat-control' => 'insert delete',
             'default-values' => [['field' => 'dt1', 'value' => date('Y-m-d H:i:s'),],],
+            'import' => [
+                '1st-line' => true,
+                'skip-lines' => 0,
+                'use-replace' => true,
+                'convert-number' => ['num1', 'num2', 'num3'],
+                'convert-date' => ['dt1'],
+//            'convert-datetime' => [],
+            ]
         ],
         [
             'name' => 'fileupload',
@@ -44,14 +52,6 @@ IM_Entry(
     [
         'formatter' => [['field' => 'chat@postdt', 'converter-class' => 'MySQLDateTime'],],
         'media-root-dir' => '/tmp',
-        'import' => [
-            '1st-line' => true,
-            'skip-lines' => 0,
-            'use-replace' => true,
-            'convert-number' => ['num1', 'num2', 'num3'],
-            'convert-date' => ['dt1'],
-//            'convert-datetime' => [],
-        ]
     ],
     ['db-class' => 'PDO'],
     false
