@@ -65,8 +65,8 @@ const IMLibUI = {
       return true
     }
 
-    IMLibQueue.setTask(function (completeTask) {
-      returnValue = valueChangeImpl(idValue, completeTask)
+    IMLibQueue.setTask(async function (completeTask) {
+      returnValue = await valueChangeImpl(idValue, completeTask)
     })
     return returnValue
 

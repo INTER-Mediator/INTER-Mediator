@@ -38,7 +38,15 @@ const INTERMediator_DBAdapter = {
   generate_authParams: function () {
     'use strict'
     let authParams = ''
-    if (INTERMediatorOnPage.authUser.length > 0) {
+    if (!INTERMediatorOnPage.authHashedPassword()
+      && !INTERMediatorOnPage.authHashedPassword2m()
+      && !INTERMediatorOnPage.authHashedPassword2()) {
+      INTERMediatorOnPage.authUser = null
+      INTERMediatorOnPage.authChallenge = null
+      INTERMediatorOnPage.clientId = null
+    }
+
+    if (INTERMediatorOnPage.authUser && INTERMediatorOnPage.authUser.length > 0) {
       authParams = '&clientid=' + encodeURIComponent(INTERMediatorOnPage.clientId)
       authParams += '&authuser=' + encodeURIComponent(INTERMediatorOnPage.authUser)
       if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
@@ -47,14 +55,14 @@ const INTERMediator_DBAdapter = {
           // require 2048-bit key length at least
           encrypt.setPublicKey(INTERMediatorOnPage.publickey)
           const encrypted = encrypt.encrypt(
-            INTERMediatorOnPage.authCryptedPassword.substr(0, 220) +
+            INTERMediatorOnPage.authCryptedPassword().substr(0, 220) +
             IMLib.nl_char + INTERMediatorOnPage.authChallenge
           )
           authParams += '&cresponse=' + encodeURIComponent(encrypted +
-            IMLib.nl_char + INTERMediatorOnPage.authCryptedPassword.substr(220))
+            IMLib.nl_char + INTERMediatorOnPage.authCryptedPassword().substr(220))
           if (INTERMediator_DBAdapter.debugMessage) {
             INTERMediatorLog.setDebugMessage('generate_authParams/authCryptedPassword=' +
-              INTERMediatorOnPage.authCryptedPassword)
+              INTERMediatorOnPage.authCryptedPassword())
             INTERMediatorLog.setDebugMessage('generate_authParams/authChallenge=' +
               INTERMediatorOnPage.authChallenge)
           }
@@ -62,34 +70,34 @@ const INTERMediator_DBAdapter = {
           authParams += '&cresponse=dummy'
         }
       }
-      if ((INTERMediatorOnPage.authHashedPassword
-        || INTERMediatorOnPage.authHashedPassword2m
-        || INTERMediatorOnPage.authHashedPassword2)
+      if ((INTERMediatorOnPage.authHashedPassword()
+        || INTERMediatorOnPage.authHashedPassword2m()
+        || INTERMediatorOnPage.authHashedPassword2())
         && INTERMediatorOnPage.authChallenge) {
-        if (INTERMediatorOnPage.passwordHash < 1.1 && INTERMediatorOnPage.authHashedPassword) {
+        if (INTERMediatorOnPage.passwordHash < 1.1 && INTERMediatorOnPage.authHashedPassword()) {
           const shaObj = new jsSHA('SHA-256', 'TEXT')
           shaObj.setHMACKey(INTERMediatorOnPage.authChallenge, 'TEXT')
-          shaObj.update(INTERMediatorOnPage.authHashedPassword)
+          shaObj.update(INTERMediatorOnPage.authHashedPassword())
           const hmacValue = shaObj.getHMAC('HEX')
           authParams += '&response=' + encodeURIComponent(hmacValue)
         }
-        if (INTERMediatorOnPage.passwordHash < 1.6 && INTERMediatorOnPage.authHashedPassword2m) {
+        if (INTERMediatorOnPage.passwordHash < 1.6 && INTERMediatorOnPage.authHashedPassword2m()) {
           const shaObj = new jsSHA('SHA-256', 'TEXT')
           shaObj.setHMACKey(INTERMediatorOnPage.authChallenge, 'TEXT')
-          shaObj.update(INTERMediatorOnPage.authHashedPassword2m)
+          shaObj.update(INTERMediatorOnPage.authHashedPassword2m())
           const hmacValue = shaObj.getHMAC('HEX')
           authParams += '&response2m=' + encodeURIComponent(hmacValue)
         }
-        if (INTERMediatorOnPage.passwordHash < 2.1 && INTERMediatorOnPage.authHashedPassword2) {
+        if (INTERMediatorOnPage.passwordHash < 2.1 && INTERMediatorOnPage.authHashedPassword2()) {
           const shaObj = new jsSHA('SHA-256', 'TEXT')
           shaObj.setHMACKey(INTERMediatorOnPage.authChallenge, 'TEXT')
-          shaObj.update(INTERMediatorOnPage.authHashedPassword2)
+          shaObj.update(INTERMediatorOnPage.authHashedPassword2())
           const hmacValue = shaObj.getHMAC('HEX')
           authParams += '&response2=' + encodeURIComponent(hmacValue)
         }
         if (INTERMediator_DBAdapter.debugMessage) {
           INTERMediatorLog.setDebugMessage('generate_authParams/authHashedPassword=' +
-            INTERMediatorOnPage.authHashedPassword)
+            INTERMediatorOnPage.authHashedPassword())
           INTERMediatorLog.setDebugMessage('generate_authParams/authChallenge=' +
             INTERMediatorOnPage.authChallenge)
         }
@@ -230,7 +238,7 @@ const INTERMediator_DBAdapter = {
               }
               // This is forced fail-over for the password was changed in LDAP auth.
               if (INTERMediatorOnPage.isLDAP === true &&
-                INTERMediatorOnPage.authUserHexSalt !== INTERMediatorOnPage.authHashedPassword.substr(-8, 8)) {
+                INTERMediatorOnPage.authUserHexSalt !== INTERMediatorOnPage.authHashedPassword().substr(-8, 8)) {
                 if (accessURL !== 'access=challenge') {
                   requireAuth = true
                 }
@@ -238,9 +246,9 @@ const INTERMediator_DBAdapter = {
               if (INTERMediatorOnPage.isSAML) {
                 if (jsonObject.samluser) {
                   INTERMediatorOnPage.authUser = jsonObject.samluser
-                  INTERMediatorOnPage.authHashedPassword = jsonObject.temppw
-                  INTERMediatorOnPage.authHashedPassword2m = jsonObject.temppw
-                  INTERMediatorOnPage.authHashedPassword2 = jsonObject.temppw
+                  INTERMediatorOnPage.authHashedPassword(jsonObject.temppw)
+                  INTERMediatorOnPage.authHashedPassword2m(jsonObject.temppw)
+                  INTERMediatorOnPage.authHashedPassword2(jsonObject.temppw)
                 }
                 if (jsonObject.samlloginurl) {
                   INTERMediatorOnPage.loginURL = jsonObject.samlloginurl
@@ -332,9 +340,9 @@ const INTERMediator_DBAdapter = {
       INTERMediatorOnPage.authUser = username
       if (username !== '' && // No usename and no challenge, get a challenge.
         (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24)) {
-        INTERMediatorOnPage.authHashedPassword = 'need-hash-pls' // Dummy Hash for getting a challenge
-        INTERMediatorOnPage.authHashedPassword2m = 'need-hash-pls' // Dummy Hash for getting a challenge
-        INTERMediatorOnPage.authHashedPassword2 = 'need-hash-pls' // Dummy Hash for getting a challenge
+        INTERMediatorOnPage.authHashedPassword('need-hash-pls') // Dummy Hash for getting a challenge
+        INTERMediatorOnPage.authHashedPassword2m('need-hash-pls') // Dummy Hash for getting a challenge
+        INTERMediatorOnPage.authHashedPassword2('need-hash-pls') // Dummy Hash for getting a challenge
         try {
           await INTERMediator_DBAdapter.getChallenge()
         } catch (er) {
@@ -342,14 +350,14 @@ const INTERMediator_DBAdapter = {
           return
         }
       }
-      INTERMediatorOnPage.authHashedPassword = null
-      INTERMediatorOnPage.authHashedPassword2m = null
-      INTERMediatorOnPage.authHashedPassword2 = null
+      INTERMediatorOnPage.authHashedPassword('')
+      INTERMediatorOnPage.authHashedPassword2m('')
+      INTERMediatorOnPage.authHashedPassword2('')
       if (INTERMediatorOnPage.passwordHash < 1.1) {
         let shaObj = new jsSHA('SHA-1', 'TEXT')
         shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
         let hash = shaObj.getHash('HEX')
-        INTERMediatorOnPage.authHashedPassword = hash + INTERMediatorOnPage.authUserHexSalt
+        INTERMediatorOnPage.authHashedPassword(hash + INTERMediatorOnPage.authUserHexSalt)
       }
       if (INTERMediatorOnPage.passwordHash < 1.6) {
         let shaObj = new jsSHA('SHA-1', 'TEXT')
@@ -358,13 +366,13 @@ const INTERMediator_DBAdapter = {
         shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
         shaObj.update(hash + INTERMediatorOnPage.authUserSalt)
         let hashNext = shaObj.getHash('HEX')
-        INTERMediatorOnPage.authHashedPassword2m = hashNext + INTERMediatorOnPage.authUserHexSalt
+        INTERMediatorOnPage.authHashedPassword2m(hashNext + INTERMediatorOnPage.authUserHexSalt)
       }
       if (INTERMediatorOnPage.passwordHash < 2.1) {
         let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
         shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
         let hash = shaObj.getHash('HEX')
-        INTERMediatorOnPage.authHashedPassword2 = hash + INTERMediatorOnPage.authUserHexSalt
+        INTERMediatorOnPage.authHashedPassword2(hash + INTERMediatorOnPage.authUserHexSalt)
       }
       params = 'access=changepassword&newpass=' + INTERMediatorLib.generatePasswordHash(newpassword)
       this.server_access_async(params, 1029, 1030,
@@ -373,30 +381,21 @@ const INTERMediator_DBAdapter = {
             if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
               const encrypt = new JSEncrypt()
               encrypt.setPublicKey(INTERMediatorOnPage.publickey)
-              INTERMediatorOnPage.authCryptedPassword = encrypt.encrypt(newpassword)
+              INTERMediatorOnPage.authCryptedPassword(encrypt.encrypt(newpassword))
             } else {
-              INTERMediatorOnPage.authCryptedPassword = ''
+              INTERMediatorOnPage.authCryptedPassword('')
             }
             if (INTERMediatorOnPage.passwordHash < 1.1) {
               let shaObj = new jsSHA('SHA-1', 'TEXT')
               shaObj.update(newpassword + INTERMediatorOnPage.authUserSalt)
               let hash = shaObj.getHash('HEX')
-              INTERMediatorOnPage.authHashedPassword = hash + INTERMediatorOnPage.authUserHexSalt
+              INTERMediatorOnPage.authHashedPassword(hash + INTERMediatorOnPage.authUserHexSalt)
             }
-            // if (INTERMediatorOnPage.passwordHash < 1.6) {
-            //   let shaObj = new jsSHA('SHA-1', 'TEXT')
-            //   shaObj.update(newpassword + INTERMediatorOnPage.authUserSalt)
-            //   let hash = shaObj.getHash('HEX')
-            //   shaObj = new jsSHA('SHA-256', 'TEXT')
-            //   shaObj.update(hash + INTERMediatorOnPage.authUserSalt)
-            //   let hashNext = shaObj.getHash('HEX')
-            //   INTERMediatorOnPage.authHashedPassword2m = hashNext + INTERMediatorOnPage.authUserHexSalt
-            // }
             if (INTERMediatorOnPage.passwordHash < 2.1) {
               let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
               shaObj.update(newpassword + INTERMediatorOnPage.authUserSalt)
               let hash = shaObj.getHash('HEX')
-              INTERMediatorOnPage.authHashedPassword2 = hash + INTERMediatorOnPage.authUserHexSalt
+              INTERMediatorOnPage.authHashedPassword2(hash + INTERMediatorOnPage.authUserHexSalt)
             }
             INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
             doSucceed()
@@ -577,7 +576,11 @@ const INTERMediator_DBAdapter = {
               const succesProcCapt = successProc
               const failedProcCapt = failedProc
               return function () {
-                INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+                if (INTERMediator.currentContext === true) {
+                  location.reload()
+                } else {
+                  INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+                }
               }
             })()
           )
@@ -869,7 +872,11 @@ const INTERMediator_DBAdapter = {
             let succesProcCapt = successProc
             let failedProcCapt = failedProc
             return function () {
-              INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+              if (INTERMediator.currentContext === true) {
+                location.reload()
+              } else {
+                INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+              }
             }
           })()
         )
@@ -957,7 +964,11 @@ const INTERMediator_DBAdapter = {
             let succesProcCapt = successProc
             let failedProcCapt = failedProc
             return function () {
-              INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+              if (INTERMediator.currentContext === true) {
+                location.reload()
+              } else {
+                INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+              }
             }
           })()
         )
@@ -999,7 +1010,11 @@ const INTERMediator_DBAdapter = {
           let succesProcCapt = successProc
           let failedProcCapt = failedProc
           return function () {
-            INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+            if (INTERMediator.currentContext === true) {
+              location.reload()
+            } else {
+              INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+            }
           }
         })()),
         paramsFD
@@ -1121,7 +1136,11 @@ const INTERMediator_DBAdapter = {
             let succesProcCapt = successProc
             let failedProcCapt = failedProc
             return function () {
-              INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+              if (INTERMediator.currentContext === true) {
+                location.reload()
+              } else {
+                INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+              }
             }
           })()
         )

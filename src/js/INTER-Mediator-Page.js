@@ -25,10 +25,10 @@ let INTERMediatorOnPage = {
   authCountLimit: 4,
   authCount: 0,
   authUser: '',
-  authHashedPassword: '',
-  authHashedPassword2m: '',
-  authHashedPassword2: '',
-  authCryptedPassword: '',
+  // authHashedPassword: '',
+  // authHashedPassword2m: '',
+  // authHashedPassword2: '',
+  // authCryptedPassword: '',
   authUserSalt: '',
   authUserHexSalt: '',
   authChallenge: '',
@@ -52,7 +52,7 @@ let INTERMediatorOnPage = {
   nonSupportMessageId: 'nonsupportmessage',
   isFinishToConstruct: false,
   isAutoConstruct: true,
-
+  loginPanelHTML: null,
   isShowChangePassword: true,
   isSetDefaultStyle: false,
   authPanelTitle: null,
@@ -62,10 +62,8 @@ let INTERMediatorOnPage = {
   oAuthBaseURL: null, // @Private
   oAuthRedirect: null, // @Private
   oAuthScope: null, // @Private
-
   additionalExpandingEnclosureFinish: {},
   additionalExpandingRecordFinish: {},
-
   getEditorPath: null,
   getEntryPath: null,
   getDataSources: null,
@@ -80,28 +78,74 @@ let INTERMediatorOnPage = {
   appLocale: null,
   appCurrency: null,
   isShowProgress: true,
-
   notShowHeaderFooterOnNoResult: false,
   newRecordId: null,
-
   syncBeforeUpdate: null,
   syncAfterUpdate: null,
   syncBeforeCreate: null,
   syncAfterCreate: null,
   syncBeforeDelete: null,
   syncAfterDelete: null,
-
   logoutURL: null,
   loginURL: null,
   doAfterLoginPanel: null,
 
+  authHashedPasswordWorker: function (key, value = false) {
+    let returnVal = null
+    if (INTERMediatorOnPage.requireAuthentication) {
+      if (value === false) { // getter
+        switch (INTERMediatorOnPage.authStoring) {
+          case 'cookie':
+          case 'cookie-domainwide':
+            returnVal = INTERMediatorOnPage.getCookie(key)
+            break
+          case 'session-storage':
+            returnVal = INTERMediatorOnPage.getSessionStorageWithFallDown(key)
+            break
+          default:
+            INTERMediatorOnPage.removeCookie(key)
+            break
+        }
+      } else { // setter
+        switch (INTERMediatorOnPage.authStoring) {
+          case 'cookie':
+            INTERMediatorOnPage.setCookie(key, value)
+            break
+          case 'cookie-domainwide':
+            INTERMediatorOnPage.setCookieDomainWide(key, value)
+            break
+          case 'session-storage':
+            INTERMediatorOnPage.storeSessionStorageWithFallDown(key, value)
+            break
+        }
+      }
+    }
+    return returnVal
+  },
+
+  authHashedPassword: function (value = false) {
+    return INTERMediatorOnPage.authHashedPasswordWorker('_im_credential', value)
+  },
+
+  authHashedPassword2m: function (value = false) {
+    return INTERMediatorOnPage.authHashedPasswordWorker('_im_credential2m', value)
+  },
+
+  authHashedPassword2: function (value = false) {
+    return INTERMediatorOnPage.authHashedPasswordWorker('_im_credential2', value)
+  },
+
+  authCryptedPassword: function (value = false) {
+    return INTERMediatorOnPage.authHashedPasswordWorker('_im_crypted', value)
+  },
+
   clearCredentials: function () {
     'use strict'
-    INTERMediatorOnPage.authChallenge = null
-    INTERMediatorOnPage.authHashedPassword = null
-    INTERMediatorOnPage.authHashedPassword2m = null
-    INTERMediatorOnPage.authHashedPassword2 = null
-    INTERMediatorOnPage.authCryptedPassword = null
+    INTERMediatorOnPage.authChallenge = ''
+    INTERMediatorOnPage.authHashedPassword('')
+    INTERMediatorOnPage.authHashedPassword2m('')
+    INTERMediatorOnPage.authHashedPassword2('')
+    INTERMediatorOnPage.authCryptedPassword('')
   },
   /*
    This method 'getMessages' is going to be replaced valid one with the browser's language.
@@ -141,9 +185,9 @@ let INTERMediatorOnPage = {
   isComplementAuthData: function () {
     'use strict'
     return INTERMediatorOnPage.authUser !== null && INTERMediatorOnPage.authUser.length > 0 &&
-      ((INTERMediatorOnPage.authHashedPassword !== null && INTERMediatorOnPage.authHashedPassword.length > 0)
-        || (INTERMediatorOnPage.authHashedPassword2m !== null && INTERMediatorOnPage.authHashedPassword2m.length > 0)
-        || (INTERMediatorOnPage.authHashedPassword2 !== null && INTERMediatorOnPage.authHashedPassword2.length > 0)) &&
+      ((INTERMediatorOnPage.authHashedPassword() !== null && INTERMediatorOnPage.authHashedPassword().length > 0)
+        || (INTERMediatorOnPage.authHashedPassword2m() !== null && INTERMediatorOnPage.authHashedPassword2m().length > 0)
+        || (INTERMediatorOnPage.authHashedPassword2() !== null && INTERMediatorOnPage.authHashedPassword2().length > 0)) &&
       INTERMediatorOnPage.authUserSalt !== null && INTERMediatorOnPage.authUserSalt.length > 0 &&
       INTERMediatorOnPage.authChallenge !== null && INTERMediatorOnPage.authChallenge.length > 0
   },
@@ -155,32 +199,12 @@ let INTERMediatorOnPage = {
         switch (INTERMediatorOnPage.authStoring) {
           case 'cookie':
           case 'cookie-domainwide':
-            INTERMediatorOnPage.authUser =
-              INTERMediatorOnPage.getCookie('_im_username')
-            INTERMediatorOnPage.authHashedPassword =
-              INTERMediatorOnPage.getCookie('_im_credential')
-            INTERMediatorOnPage.authHashedPassword2m =
-              INTERMediatorOnPage.getCookie('_im_credential2m')
-            INTERMediatorOnPage.authHashedPassword2 =
-              INTERMediatorOnPage.getCookie('_im_credential2')
-            INTERMediatorOnPage.mediaToken =
-              INTERMediatorOnPage.getCookie('_im_mediatoken')
-            INTERMediatorOnPage.authCryptedPassword =
-              INTERMediatorOnPage.getCookie('_im_crypted')
+            INTERMediatorOnPage.authUser = INTERMediatorOnPage.getCookie('_im_username')
+            INTERMediatorOnPage.mediaToken = INTERMediatorOnPage.getCookie('_im_mediatoken')
             break
           case 'session-storage':
-            INTERMediatorOnPage.authUser =
-              INTERMediatorOnPage.getSessionStorageWithFallDown('_im_username')
-            INTERMediatorOnPage.authHashedPassword =
-              INTERMediatorOnPage.getSessionStorageWithFallDown('_im_credential')
-            INTERMediatorOnPage.authHashedPassword2m =
-              INTERMediatorOnPage.getSessionStorageWithFallDown('_im_credential2m')
-            INTERMediatorOnPage.authHashedPassword2 =
-              INTERMediatorOnPage.getSessionStorageWithFallDown('_im_credential2')
-            INTERMediatorOnPage.mediaToken =
-              INTERMediatorOnPage.getSessionStorageWithFallDown('_im_mediatoken')
-            INTERMediatorOnPage.authCryptedPassword =
-              INTERMediatorOnPage.getSessionStorageWithFallDown('_im_crypted')
+            INTERMediatorOnPage.authUser = INTERMediatorOnPage.getSessionStorageWithFallDown('_im_username')
+            INTERMediatorOnPage.mediaToken = INTERMediatorOnPage.getSessionStorageWithFallDown('_im_mediatoken')
             break
           default:
             INTERMediatorOnPage.removeCookie('_im_username')
@@ -203,10 +227,10 @@ let INTERMediatorOnPage = {
   logout: function () {
     'use strict'
     INTERMediatorOnPage.authUser = ''
-    INTERMediatorOnPage.authHashedPassword = ''
-    INTERMediatorOnPage.authHashedPassword2m = ''
-    INTERMediatorOnPage.authHashedPassword2 = ''
-    INTERMediatorOnPage.authCryptedPassword = ''
+    INTERMediatorOnPage.authHashedPassword('')
+    INTERMediatorOnPage.authHashedPassword2m('')
+    INTERMediatorOnPage.authHashedPassword2('')
+    INTERMediatorOnPage.authCryptedPassword('')
     INTERMediatorOnPage.authUserSalt = ''
     INTERMediatorOnPage.authChallenge = ''
     INTERMediatorOnPage.clientId = ''
@@ -219,10 +243,14 @@ let INTERMediatorOnPage = {
 
   storeSessionStorageWithFallDown: function (key, value) {
     'use strict'
-    if (INTERMediator.useSessionStorage === true &&
-      typeof sessionStorage !== 'undefined' &&
-      sessionStorage !== null) {
+    if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
       try {
+        const expired = sessionStorage.getItem(INTERMediatorOnPage.getKeyWithRealm('_im_session_exp'))
+        if(!expired||((new Date()).toUTCString() >= (new Date(expired)).toUTCString())) {
+          const d = new Date()
+          d.setTime(d.getTime() + INTERMediatorOnPage.authExpired * 1000)
+          sessionStorage.setItem(INTERMediatorOnPage.getKeyWithRealm('_im_session_exp'), d.toUTCString())
+        }
         sessionStorage.setItem(INTERMediatorOnPage.getKeyWithRealm(key), value)
       } catch (ex) {
         INTERMediatorOnPage.setCookie(key, value)
@@ -234,12 +262,16 @@ let INTERMediatorOnPage = {
 
   getSessionStorageWithFallDown: function (key) {
     'use strict'
-    let value
-    if (INTERMediator.useSessionStorage === true &&
-      typeof sessionStorage !== 'undefined' &&
-      sessionStorage !== null) {
+    let value = ''
+    if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
       try {
-        value = sessionStorage.getItem(INTERMediatorOnPage.getKeyWithRealm(key))
+        const expired = sessionStorage.getItem(INTERMediatorOnPage.getKeyWithRealm('_im_session_exp'))
+        if((new Date()).toUTCString() < (new Date(expired)).toUTCString()) {
+          value = sessionStorage.getItem(INTERMediatorOnPage.getKeyWithRealm(key))
+        } else {
+          sessionStorage.removeItem(INTERMediatorOnPage.getKeyWithRealm('_im_session_exp'))
+          sessionStorage.removeItem(INTERMediatorOnPage.getKeyWithRealm(key))
+        }
         value = value ? value : ''
       } catch (ex) {
         value = INTERMediatorOnPage.getCookie(key)
@@ -273,11 +305,15 @@ let INTERMediatorOnPage = {
       case 'cookie':
       case 'cookie-domainwide':
         INTERMediatorOnPage.removeCookie('_im_credential')
+        INTERMediatorOnPage.removeCookie('_im_credential2m')
+        INTERMediatorOnPage.removeCookie('_im_credential2')
         INTERMediatorOnPage.removeCookie('_im_crypted')
         break
       case 'session-storage':
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_username')
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_credential')
+        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_credential2m')
+        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_credential2')
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_mediatoken')
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_crypted')
         break
@@ -291,60 +327,24 @@ let INTERMediatorOnPage = {
         if (INTERMediatorOnPage.authUser) {
           INTERMediatorOnPage.setCookie('_im_username', INTERMediatorOnPage.authUser)
         }
-        if (INTERMediatorOnPage.authHashedPassword) {
-          INTERMediatorOnPage.setCookie('_im_credential', INTERMediatorOnPage.authHashedPassword)
-        }
-        if (INTERMediatorOnPage.authHashedPassword2m) {
-          INTERMediatorOnPage.setCookie('_im_credential2m', INTERMediatorOnPage.authHashedPassword2m)
-        }
-        if (INTERMediatorOnPage.authHashedPassword2) {
-          INTERMediatorOnPage.setCookie('_im_credential2', INTERMediatorOnPage.authHashedPassword2)
-        }
-        if (INTERMediatorOnPage.mediaToken) {
+         if (INTERMediatorOnPage.mediaToken) {
           INTERMediatorOnPage.setCookie('_im_mediatoken', INTERMediatorOnPage.mediaToken)
-        }
-        if (INTERMediatorOnPage.authCryptedPassword) {
-          INTERMediatorOnPage.setCookie('_im_crypted', INTERMediatorOnPage.authCryptedPassword)
         }
         break
       case 'cookie-domainwide':
         if (INTERMediatorOnPage.authUser) {
           INTERMediatorOnPage.setCookieDomainWide('_im_username', INTERMediatorOnPage.authUser)
         }
-        if (INTERMediatorOnPage.authHashedPassword) {
-          INTERMediatorOnPage.setCookieDomainWide('_im_credential', INTERMediatorOnPage.authHashedPassword)
-        }
-        if (INTERMediatorOnPage.authHashedPassword2m) {
-          INTERMediatorOnPage.setCookieDomainWide('_im_credential2m', INTERMediatorOnPage.authHashedPassword2m)
-        }
-        if (INTERMediatorOnPage.authHashedPassword2) {
-          INTERMediatorOnPage.setCookieDomainWide('_im_credential2', INTERMediatorOnPage.authHashedPassword2)
-        }
         if (INTERMediatorOnPage.mediaToken) {
           INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken)
-        }
-        if (INTERMediatorOnPage.authCryptedPassword) {
-          INTERMediatorOnPage.setCookieDomainWide('_im_crypted', INTERMediatorOnPage.authCryptedPassword)
         }
         break
       case 'session-storage':
         if (INTERMediatorOnPage.authUser) {
           INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_username', INTERMediatorOnPage.authUser)
         }
-        if (INTERMediatorOnPage.authHashedPassword) {
-          INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_credential', INTERMediatorOnPage.authHashedPassword)
-        }
-        if (INTERMediatorOnPage.authHashedPassword2m) {
-          INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_credential2m', INTERMediatorOnPage.authHashedPassword2m)
-        }
-        if (INTERMediatorOnPage.authHashedPassword2) {
-          INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_credential2', INTERMediatorOnPage.authHashedPassword2)
-        }
         if (INTERMediatorOnPage.mediaToken) {
           INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_mediatoken', INTERMediatorOnPage.mediaToken)
-        }
-        if (INTERMediatorOnPage.authCryptedPassword) {
-          INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_crypted', INTERMediatorOnPage.authCryptedPassword)
         }
         break
     }
@@ -354,19 +354,67 @@ let INTERMediatorOnPage = {
     if (INTERMediatorOnPage.authUser) {
       INTERMediatorOnPage.setCookieDomainWide('_im_username', INTERMediatorOnPage.authUser)
     }
-    if (INTERMediatorOnPage.authHashedPassword) {
-    }
     if (INTERMediatorOnPage.mediaToken) {
       INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken)
     }
-    if (INTERMediatorOnPage.authCryptedPassword) {
-      INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_crypted', INTERMediatorOnPage.authCryptedPassword)
+  },
+  /* Cookies support */
+  getKeyWithRealm: function (str) {
+    'use strict'
+    if (INTERMediatorOnPage.realm.length > 0) {
+      return str + '_' + INTERMediatorOnPage.realm
+    }
+    return str
+  },
+
+  getCookie: function (key) {
+    'use strict'
+    let s = ''
+    try {
+      s = document.cookie.split('; ')
+    } catch (e) {
+    }
+    const targetKey = this.getKeyWithRealm(key)
+    for (let i = 0; i < s.length; i++) {
+      if (s[i].indexOf(targetKey + '=') === 0) {
+        return decodeURIComponent(s[i].substring(s[i].indexOf('=') + 1))
+      }
+    }
+    return ''
+  },
+
+  removeCookie: function (key) {
+    'use strict'
+    if (document && document.cookie) {
+      document.cookie = this.getKeyWithRealm(key) + '=; path=/; max-age=0; expires=Thu, 1-Jan-1900 00:00:00 GMT;'
+      document.cookie = this.getKeyWithRealm(key) + '=; max-age=0;  expires=Thu, 1-Jan-1900 00:00:00 GMT;'
     }
   },
 
-  // defaultBackgroundImage: null, // Removed on Ver.5.6
-  // defaultBackgroundColor: null, // Removed on Ver.5.6
-  loginPanelHTML: null,
+  setCookie: function (key, val) {
+    'use strict'
+    this.setCookieWorker(this.getKeyWithRealm(key), val, false, INTERMediatorOnPage.authExpired)
+  },
+
+  setCookieDomainWide: function (key, val, noRealm) {
+    'use strict'
+    const realKey = (noRealm === true) ? key : this.getKeyWithRealm(key)
+    this.setCookieWorker(realKey, val, true, INTERMediatorOnPage.authExpired)
+  },
+
+  setCookieWorker: function (key, val, isDomain, expired) {
+    'use strict'
+    const d = new Date()
+    d.setTime(d.getTime() + expired * 1000)
+    let cookieString = key + '=' + encodeURIComponent(val) + (isDomain ? ';path=/' : '') + ';'
+    if (expired > 0) {
+      cookieString += 'max-age=' + expired + ';expires=' + d.toUTCString() + ';'
+    }
+    if (document.URL.substring(0, 8) === 'https://') {
+      cookieString += 'secure;'
+    }
+    document.cookie = cookieString
+  },
 
   authenticating: function (doAfterAuth, doTest) {
     'use strict'
@@ -660,32 +708,32 @@ let INTERMediatorOnPage = {
       bodyNode.removeChild(backBox)
       if (inputUsername !== '' && // No usename and no challenge, get a challenge.
         (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24)) {
-        INTERMediatorOnPage.authHashedPassword = 'need-hash-pls' // Dummy Hash for getting a challenge
-        INTERMediatorOnPage.authHashedPassword2m = 'need-hash-pls' // Dummy Hash for getting a challenge
-        INTERMediatorOnPage.authHashedPassword2 = 'need-hash-pls' // Dummy Hash for getting a challenge
+        INTERMediatorOnPage.authHashedPassword('need-hash-pls') // Dummy Hash for getting a challenge
+        INTERMediatorOnPage.authHashedPassword2m('need-hash-pls') // Dummy Hash for getting a challenge
+        INTERMediatorOnPage.authHashedPassword2('need-hash-pls') // Dummy Hash for getting a challenge
         await INTERMediator_DBAdapter.getChallenge()
       }
       if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
         const encrypt = new JSEncrypt()
         encrypt.setPublicKey(INTERMediatorOnPage.publickey)
-        INTERMediatorOnPage.authCryptedPassword = encrypt.encrypt(inputPassword)
+        INTERMediatorOnPage.authCryptedPassword(encrypt.encrypt(inputPassword))
       }
       if (INTERMediatorOnPage.passwordHash < 1.1) {
         let shaObj = new jsSHA('SHA-1', 'TEXT')
         shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
-        INTERMediatorOnPage.authHashedPassword = shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt
+        INTERMediatorOnPage.authHashedPassword(shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt)
       }
       if (INTERMediatorOnPage.passwordHash < 1.6) {
         let shaObj = new jsSHA('SHA-1', 'TEXT')
         let shaObjMore = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
         shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
         shaObjMore.update(shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt + INTERMediatorOnPage.authUserSalt)
-        INTERMediatorOnPage.authHashedPassword2m = shaObjMore.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt
+        INTERMediatorOnPage.authHashedPassword2m(shaObjMore.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt)
       }
       if (INTERMediatorOnPage.passwordHash < 2.1) {
         let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
         shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
-        INTERMediatorOnPage.authHashedPassword2 = shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt
+        INTERMediatorOnPage.authHashedPassword2(shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt)
       }
       if (INTERMediatorOnPage.authUser.length > 0) { // Authentication succeed, Store coockies.
         INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
@@ -1086,64 +1134,6 @@ let INTERMediatorOnPage = {
     return INTERMediatorOnPage.getNodeIdsFromIMDefinition(imDefinition, fromNode, false)
   },
 
-  /* Cookies support */
-  getKeyWithRealm: function (str) {
-    'use strict'
-    if (INTERMediatorOnPage.realm.length > 0) {
-      return str + '_' + INTERMediatorOnPage.realm
-    }
-    return str
-  },
-
-  getCookie: function (key) {
-    'use strict'
-    let s = ''
-    try {
-      s = document.cookie.split('; ')
-    } catch (e) {
-    }
-    const targetKey = this.getKeyWithRealm(key)
-    for (let i = 0; i < s.length; i++) {
-      if (s[i].indexOf(targetKey + '=') === 0) {
-        return decodeURIComponent(s[i].substring(s[i].indexOf('=') + 1))
-      }
-    }
-    return ''
-  },
-
-  removeCookie: function (key) {
-    'use strict'
-    if (document && document.cookie) {
-      document.cookie = this.getKeyWithRealm(key) + '=; path=/; max-age=0; expires=Thu, 1-Jan-1900 00:00:00 GMT;'
-      document.cookie = this.getKeyWithRealm(key) + '=; max-age=0;  expires=Thu, 1-Jan-1900 00:00:00 GMT;'
-    }
-  },
-
-  setCookie: function (key, val) {
-    'use strict'
-    this.setCookieWorker(this.getKeyWithRealm(key), val, false, INTERMediatorOnPage.authExpired)
-  },
-
-  setCookieDomainWide: function (key, val, noRealm) {
-    'use strict'
-    const realKey = (noRealm === true) ? key : this.getKeyWithRealm(key)
-    this.setCookieWorker(realKey, val, true, INTERMediatorOnPage.authExpired)
-  },
-
-  setCookieWorker: function (key, val, isDomain, expired) {
-    'use strict'
-    const d = new Date()
-    d.setTime(d.getTime() + expired * 1000)
-    let cookieString = key + '=' + encodeURIComponent(val) + (isDomain ? ';path=/' : '') + ';'
-    if (expired > 0) {
-      cookieString += 'max-age=' + expired + ';expires=' + d.toUTCString() + ';'
-    }
-    if (document.URL.substring(0, 8) === 'https://') {
-      cookieString += 'secure;'
-    }
-    document.cookie = cookieString
-  },
-
   /*
    * The hiding process is realized by _im_progress's div elements, but it's quite sensitive.
    * I've tried to set the CSS amimations but it seems to be a reson to stay the progress panel.
@@ -1220,7 +1210,7 @@ let INTERMediatorOnPage = {
     }
   },
 
-  // Gear SVG was generated on http://loading.io/.
+// Gear SVG was generated on http://loading.io/.
 
   setReferenceToTheme: function () {
     'use strict'
