@@ -1028,7 +1028,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("[processingRequest] start create processing", 2);
                 $attachedFields = $this->dbSettings->getAttachedFields();
                 if (!$ignoreFiles && isset($attachedFields) && $attachedFields[0] == '_im_csv_upload') {
-                    $this->logger->setDebugMessage("File importing operation gets stated.", 2);
+                    $this->logger->setDebugMessage("CSV File importing operation gets stated.", 2);
                     $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
                     if ($uploadFiles && count($tableInfo) > 0) {
                         $fileUploader = new FileUploader();
@@ -1052,28 +1052,36 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 } else {
                     if ($this->checkValidation()) {
-                        $result = $this->createInDB($access == 'replace');
-                        $this->outputOfProcessing['newRecordKeyValue'] = $result;
-                        $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
-                        if (!$ignoreFiles && $result !== false) {
-                            $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
-                            if ($uploadFiles && count($tableInfo) > 0) {
-                                $fileUploader = new FileUploader();
-                                if (IMUtil::guessFileUploadError()) {
-                                    $fileUploader->processingAsError(
-                                        $this->dbSettings->getDataSource(),
-                                        $this->dbSettings->getOptions(),
-                                        $this->dbSettings->getDbSpec(), true,
-                                        $this->dbSettings->getDataSourceName(), true);
-                                } else {
-                                    $fileUploader->processingWithParameters(
-                                        $this->dbSettings->getDataSource(),
-                                        $this->dbSettings->getOptions(),
-                                        $this->dbSettings->getDbSpec(),
-                                        $this->logger->getDebugLevel(),
-                                        $tableInfo['name'], $tableInfo['key'], $result,
-                                        $this->dbSettings->getAttachedFields(), $uploadFiles, true
-                                    );
+                        $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
+                        if ($ignoreFiles || !$uploadFiles || count($tableInfo) < 1) { // No attached file.
+                            $result = $this->createInDB($access == 'replace');
+                            $this->outputOfProcessing['newRecordKeyValue'] = $result;
+                            $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
+                        } else { // Some files are attached.
+                            $fileUploader = new FileUploader();
+                            if (IMUtil::guessFileUploadError()) { // Detect file upload error.
+                                $fileUploader->processingAsError(
+                                    $this->dbSettings->getDataSource(),
+                                    $this->dbSettings->getOptions(),
+                                    $this->dbSettings->getDbSpec(), true,
+                                    $this->dbSettings->getDataSourceName(), true);
+                            } else { // No file upload error.
+                                foreach ($uploadFiles as $oneFile) {
+                                    $dbresult = [];
+                                    $result = $this->createInDB($access == 'replace');
+                                    $this->outputOfProcessing['newRecordKeyValue'] = $result;
+                                    $dbresult[] = $this->dbClass->updatedRecord()[0];
+                                    if ($result !== false) {
+                                        $fileUploader->processingWithParameters(
+                                            $this->dbSettings->getDataSource(),
+                                            $this->dbSettings->getOptions(),
+                                            $this->dbSettings->getDbSpec(),
+                                            $this->logger->getDebugLevel(),
+                                            $tableInfo['name'], $tableInfo['key'], $result,
+                                            $this->dbSettings->getAttachedFields(), [$oneFile], true
+                                        );
+                                    }
+                                    $this->outputOfProcessing['dbresult'] = $dbresult;
                                 }
                             }
                         }

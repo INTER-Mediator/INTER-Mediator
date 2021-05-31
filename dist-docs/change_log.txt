@@ -20,6 +20,8 @@ Ver.8 (in development)
 - Custom url for after clicking logout button of the page navigation can set to INTERMediatorOnPage.logoutURL.
 - Support handling Claris FileMaker's checkbox set feature on Post Only mode when using DB_FileMaker_DataAPI class or DB_FileMaker_FX class (Thanks to Mr. Masakatsu Inamoto).
 - Update sample schema files and recipe.rb for the INTER-Mediator-Server virtual machine and CI.
+- jQuery-FileUpload plug-in can upload multiple files. Set IMParts_Catalog.jquery_fileupload.multiFileInPostOnly to true.
+  This feature can activate on the post only mode. The sample is Sample_webpage/fileuploadMulti_MySQL.html.
 - [BUG FIX] Fix compatibility with Claris FileMaker Server. The affected version is Ver.7.
 - [BUG FIX] IMLibPageNavigation.moveDetailOnceAgain() didn't work fine.
 - [BUG FIX] On the navi-control key, confirm-delete works but delete-confirm didn't (also insert).

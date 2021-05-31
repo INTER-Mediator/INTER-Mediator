@@ -26,7 +26,7 @@ IM_Entry(
                 ['field' => 'vc2', 'context' => 'fileupload',],
 //                ['container' => 'S3',],
             ],
-            'post-reconstruct' => true,
+//            'post-reconstruct' => true,
             'repeat-control' => 'insert delete',
             'default-values' => [['field' => 'dt1', 'value' => date('Y-m-d H:i:s'),],],
         ],
@@ -54,5 +54,5 @@ IM_Entry(
         ]
     ],
     ['db-class' => 'PDO'],
-    false
+    2
 );
