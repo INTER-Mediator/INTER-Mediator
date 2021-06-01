@@ -229,8 +229,10 @@ let INTERMediatorOnPage = {
       INTERMediatorOnPage.isOnceAtStarting = false
     }
     if (INTERMediatorOnPage.authUser() && INTERMediatorOnPage.authUser().length > 0) {
-      //await INTERMediator_DBAdapter.getChallenge()
-      INTERMediatorLog.flushMessage()
+      if(INTERMediatorOnPage.authStoring!='credential') {
+        await INTERMediator_DBAdapter.getChallenge()
+        INTERMediatorLog.flushMessage()
+      }
     }
     // }
   },
@@ -310,18 +312,23 @@ let INTERMediatorOnPage = {
 
   removeCredencialsFromCookieOrStorage: function () {
     'use strict'
-    INTERMediatorOnPage.removeCookie('_im_username')
-    INTERMediatorOnPage.removeCookie('_im_mediatoken')
     switch (INTERMediatorOnPage.authStoring) {
       case 'cookie':
       case 'cookie-domainwide':
       case 'credential':
+        INTERMediatorOnPage.removeCookie('_im_clientid')
+        INTERMediatorOnPage.removeCookie('_im_session_exp')
+        INTERMediatorOnPage.removeCookie('_im_username')
         INTERMediatorOnPage.removeCookie('_im_credential')
         INTERMediatorOnPage.removeCookie('_im_credential2m')
         INTERMediatorOnPage.removeCookie('_im_credential2')
+        INTERMediatorOnPage.removeCookie('_im_mediatoken')
         INTERMediatorOnPage.removeCookie('_im_crypted')
         break
       case 'session-storage':
+        INTERMediatorOnPage.removeCookie('_im_mediatoken')
+        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_clientid')
+        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_session_exp')
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_username')
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_credential')
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_credential2m')
@@ -353,9 +360,9 @@ let INTERMediatorOnPage = {
         }
         break
       case 'session-storage':
-        if (INTERMediatorOnPage.authUser()) {
-          INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_username', INTERMediatorOnPage.authUser)
-        }
+        // if (INTERMediatorOnPage.authUser()) {
+        //   INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_username', INTERMediatorOnPage.authUser)
+        // }
         if (INTERMediatorOnPage.mediaToken) {
           INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_mediatoken', INTERMediatorOnPage.mediaToken)
         }
@@ -364,9 +371,9 @@ let INTERMediatorOnPage = {
   },
   storeMediaCredentialsToCookie: function () {
     'use strict'
-    if (INTERMediatorOnPage.authUser()) {
-      INTERMediatorOnPage.setCookieDomainWide('_im_username', INTERMediatorOnPage.authUser)
-    }
+    // if (INTERMediatorOnPage.authUser()) {
+    //   INTERMediatorOnPage.setCookieDomainWide('_im_username', INTERMediatorOnPage.authUser)
+    // }
     if (INTERMediatorOnPage.mediaToken) {
       INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken)
     }
@@ -751,8 +758,9 @@ let INTERMediatorOnPage = {
       if (INTERMediatorOnPage.authUser() && INTERMediatorOnPage.authUser().length > 0) { // Authentication succeed, Store cookies.
         INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
       }
-      await INTERMediator_DBAdapter.getCredential()
-
+      if (INTERMediatorOnPage.authStoring == 'credential') {
+        await INTERMediator_DBAdapter.getCredential()
+      }
       doAfterAuth() // Retry.
       INTERMediatorLog.flushMessage()
     }
