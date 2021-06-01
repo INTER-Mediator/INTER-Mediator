@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ */  -->
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>INTER-Mediator - Sample - Uploading a file / MySQL</title>
+    <!-- jQuery File Upload -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.28.0/css/jquery.fileupload.min.css"/>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.28.0/js/jquery.fileupload.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.28.0/js/jquery.fileupload-jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.28.0/js/jquery.fileupload-process.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.28.0/js/jquery.fileupload-image.min.js"></script>
+    <!-- Loading INTER-Mediator -->
+    <script type="text/javascript" src="include_MySQL.php"></script>
+    <script src="../../node_modules/inter-mediator-plugin-jqueryfileupload/index.js"></script>
+    <script type="text/javascript">
+      INTERMediatorLog.suppressDebugMessageOnPage = true
+      //INTERMediatorLog.errorMessageByAlert = true
+      IMParts_Catalog.jquery_fileupload.isShowPreview = false
+      IMParts_Catalog.jquery_fileupload.multiFileInPostOnly = true
+    </script>
+    <style>
+        .jquery-fileupload-container {
+            text-align: center;
+            border: 1px gray solid;
+            padding: 8px;
+            margin: 2px 2px 2px 0;
+        }
+
+        .fileinput-button {
+            background-color: #209f44;
+            border-radius: 4px;
+            padding: 4px 8px;
+            color: white;
+            display: inline-block;
+        }
+
+        .filesend-button {
+            background-color: #1e98ca;
+            border-radius: 4px;
+            padding: 4px 8px;
+            color: white;
+            display: inline-block;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+</header>
+<div id="wrapper">
+    <div class="container">
+        <h1>JavaScript Component Test for jQuery File Upload</h1>
+        <p>This sample requires jQuery File Upload.</p>
+
+        <div data-im-control="post enclosure" style="padding: 10px;margin: 10px 0; border:gray 2px solid">
+            <div data-im-control="repeater">
+                <div>Here is the post only mode area with the context named 'testtable'.</div>
+                <div>After sending files, this page redraws for checking.</div>
+                <div>Sample CSV file is <a href="sample.csv">here</a>.</div>
+                <div style="display: flex">
+                    <span data-im="testtable@text1" data-im-widget="jquery_fileupload"></span>
+                </div>
+                <button data-im-control="post">送信</button>
+            </div>
+        </div>
+        <table style="width: 100%;max-width: 100%">
+            <thead>
+            <tr>
+                <th>id</th>
+                <th>num1</th>
+                <th>num2</th>
+                <th>num3</th>
+                <th>dt1</th>
+                <th>vc1</th>
+                <th>vc2</th>
+                <th>vc3</th>
+                <th>text1</th>
+                <th>text2</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td data-im="testtable@id"></td>
+                <td data-im="testtable@num1"></td>
+                <td data-im="testtable@num2"></td>
+                <td data-im="testtable@num3"></td>
+                <td data-im="testtable@dt1"></td>
+                <td data-im="testtable@vc1"></td>
+                <td data-im="testtable@vc2"></td>
+                <td data-im="testtable@vc3"></td>
+                <td data-im="testtable@text1"></td>
+                <td data-im="testtable@text2"></td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<footer>
+    <small>INTER-Mediator ©2020</small>
+</footer>
+</body>
+</html>

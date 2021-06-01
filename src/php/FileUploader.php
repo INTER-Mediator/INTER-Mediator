@@ -112,7 +112,7 @@ class FileUploader
         $this->db = new DB\Proxy();
         $this->db->initialize($datasource, $options, $dbspec, $debug, $contextname);
 
-        $this->db->logger->setDebugMessage("FileUploader class's processing starts");
+        $this->db->logger->setDebugMessage("FileUploader class's processing starts: files=".var_export($files,true));
 
         $className = "FileSystem";
         $dbProxyContext = $this->db->dbSettings->getDataSourceTargetArray();
