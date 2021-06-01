@@ -293,7 +293,7 @@ const INTERMediator_DBAdapter = {
               if (!accessURL.match(/access=challenge/)) {
                 INTERMediatorOnPage.authCount = 0
               }
-              INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
+              // INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
               //INTERMediatorOnPage.notifySupport = notifySupport
               if (successProc) {
                 successProc({
@@ -406,7 +406,7 @@ const INTERMediator_DBAdapter = {
               let hash = shaObj.getHash('HEX')
               INTERMediatorOnPage.authHashedPassword2(hash + INTERMediatorOnPage.authUserHexSalt)
             }
-            INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
+            // INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
             doSucceed()
           } else {
             doFail()
@@ -550,7 +550,7 @@ const INTERMediator_DBAdapter = {
       exceptionProc()
     }
     INTERMediatorOnPage.authCount = 0
-    INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
+    // INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
     doItOnFinish(dbresult)
     return returnValue
   },
