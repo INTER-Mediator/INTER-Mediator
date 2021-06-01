@@ -127,7 +127,7 @@ const INTERMediator_DBAdapter = {
         INTERMediatorLog.setDebugMessage('store_challenge/authUserSalt=' + INTERMediatorOnPage.authUserSalt)
       }
     }
-    if(!isChallange && INTERMediatorOnPage.authStoring=='credential'){
+    if (!isChallange && INTERMediatorOnPage.authStoring == 'credential') {
       INTERMediatorOnPage.authChallenge = ''
     }
   },
@@ -446,7 +446,7 @@ const INTERMediator_DBAdapter = {
         1016,
         (function () {
           return function () {
-            // INTERMediator.constructMain()
+            INTERMediator.constructMain()
           }
         })()
       ))
