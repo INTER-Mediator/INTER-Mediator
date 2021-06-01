@@ -207,7 +207,7 @@ const INTERMediator_DBAdapter = {
               clientid = jsonObject.clientid ? jsonObject.clientid : null
               newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : ''
               changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null
-              mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null
+              //mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null
               //notifySupport = jsonObject.notifySupport
               alertBackup = INTERMediatorLog.errorMessageByAlert
               INTERMediatorLog.errorMessageByAlert = false
@@ -235,10 +235,10 @@ const INTERMediator_DBAdapter = {
               if (clientid !== null) {
                 INTERMediatorOnPage.clientId(clientid)
               }
-              if (mediatoken !== null) {
-                INTERMediatorOnPage.mediaToken = mediatoken
-                INTERMediatorOnPage.storeMediaCredentialsToCookie()
-              }
+              // if (mediatoken !== null) {
+              //   INTERMediatorOnPage.mediaToken = mediatoken
+              //   INTERMediatorOnPage.storeMediaCredentialsToCookie()
+              // }
               // This is forced fail-over for the password was changed in LDAP auth.
               if (INTERMediatorOnPage.isLDAP === true &&
                 INTERMediatorOnPage.authUserHexSalt !== INTERMediatorOnPage.authHashedPassword().substr(-8, 8)) {
@@ -285,8 +285,9 @@ const INTERMediator_DBAdapter = {
                 if (authAgainProc) {
                   authAgainProc(myRequest)
                 } else if (!accessURL.match(/access=challenge/)) {
-                  //INTERMediator.constructMain()
+                  INTERMediator.constructMain()
                 }
+                resolve()
                 return
               }
               if (!accessURL.match(/access=challenge/)) {
@@ -422,7 +423,6 @@ const INTERMediator_DBAdapter = {
 
   getChallenge: async function () {
     'use strict'
-    console.log("###### GET CHALLANGE #######")
     await INTERMediator_DBAdapter.server_access_async(
       'access=challenge', 1027, 1028,
       null, null, null)
@@ -521,7 +521,7 @@ const INTERMediator_DBAdapter = {
     clientid = jsonObject.clientid ? jsonObject.clientid : null
     newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : ''
     changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null
-    mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null
+    //mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null
     for (i = 0; i < jsonObject.errorMessages.length; i++) {
       if (isErrorDialog) {
         window.alert(jsonObject.errorMessages[i])
@@ -540,9 +540,9 @@ const INTERMediator_DBAdapter = {
     if (clientid !== null) {
       INTERMediatorOnPage.clientId(clientid)
     }
-    if (mediatoken !== null) {
-      INTERMediatorOnPage.mediaToken = mediatoken
-    }
+    // if (mediatoken !== null) {
+    //   INTERMediatorOnPage.mediaToken = mediatoken
+    // }
     if (requireAuth) {
       INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
       INTERMediatorOnPage.clearCredentials()

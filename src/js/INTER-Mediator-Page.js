@@ -211,11 +211,11 @@ let INTERMediatorOnPage = {
         case 'cookie-domainwide':
         case 'credential':
           // INTERMediatorOnPage.authUser = INTERMediatorOnPage.getCookie('_im_username')
-          INTERMediatorOnPage.mediaToken = INTERMediatorOnPage.getCookie('_im_mediatoken')
+          // INTERMediatorOnPage.mediaToken = INTERMediatorOnPage.getCookie('_im_mediatoken')
           break
         case 'session-storage':
           // INTERMediatorOnPage.authUser = INTERMediatorOnPage.getSessionStorageWithFallDown('_im_username')
-          INTERMediatorOnPage.mediaToken = INTERMediatorOnPage.getSessionStorageWithFallDown('_im_mediatoken')
+          // INTERMediatorOnPage.mediaToken = INTERMediatorOnPage.getSessionStorageWithFallDown('_im_mediatoken')
           break
         default:
           INTERMediatorOnPage.removeCookie('_im_username')
@@ -247,7 +247,7 @@ let INTERMediatorOnPage = {
     INTERMediatorOnPage.authUserSalt = ''
     INTERMediatorOnPage.authChallenge = ''
     INTERMediatorOnPage.clientId('')
-    INTERMediatorOnPage.mediaToken = ''
+    // INTERMediatorOnPage.mediaToken = ''
     INTERMediatorOnPage.loginURL = null
     INTERMediatorOnPage.logoutURL = null
     INTERMediatorOnPage.removeCredencialsFromCookieOrStorage()
@@ -346,26 +346,26 @@ let INTERMediatorOnPage = {
         // if (INTERMediatorOnPage.authUser()) {
         //   INTERMediatorOnPage.setCookie('_im_username', INTERMediatorOnPage.authUser)
         // }
-        if (INTERMediatorOnPage.mediaToken) {
-          INTERMediatorOnPage.setCookie('_im_mediatoken', INTERMediatorOnPage.mediaToken)
-        }
+        // if (INTERMediatorOnPage.mediaToken) {
+        //   INTERMediatorOnPage.setCookie('_im_mediatoken', INTERMediatorOnPage.mediaToken)
+        // }
         break
       case 'cookie-domainwide':
       case 'credential':
         // if (INTERMediatorOnPage.authUser()) {
         //   INTERMediatorOnPage.setCookieDomainWide('_im_username', INTERMediatorOnPage.authUser)
         // }
-        if (INTERMediatorOnPage.mediaToken) {
-          INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken)
-        }
+        // if (INTERMediatorOnPage.mediaToken) {
+        //   INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken)
+        // }
         break
       case 'session-storage':
         // if (INTERMediatorOnPage.authUser()) {
         //   INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_username', INTERMediatorOnPage.authUser)
         // }
-        if (INTERMediatorOnPage.mediaToken) {
-          INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_mediatoken', INTERMediatorOnPage.mediaToken)
-        }
+        // if (INTERMediatorOnPage.mediaToken) {
+        //   INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_mediatoken', INTERMediatorOnPage.mediaToken)
+        // }
         break
     }
   },
@@ -374,9 +374,9 @@ let INTERMediatorOnPage = {
     // if (INTERMediatorOnPage.authUser()) {
     //   INTERMediatorOnPage.setCookieDomainWide('_im_username', INTERMediatorOnPage.authUser)
     // }
-    if (INTERMediatorOnPage.mediaToken) {
-      INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken)
-    }
+    // if (INTERMediatorOnPage.mediaToken) {
+    //   INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken)
+    // }
   },
   /* Cookies support */
   getKeyWithRealm: function (str) {

@@ -753,7 +753,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->paramResponse2m = isset($this->PostData['response2m']) ? $this->PostData['response2m'] : "";
         $this->paramResponse2 = isset($this->PostData['response2']) ? $this->PostData['response2'] : "";
         $this->paramCryptResponse = isset($this->PostData['cresponse']) ? $this->PostData['cresponse'] : "";
-        $this->credential = isset($_COOKIE['_im_credential']) ? $_COOKIE['_im_credential'] : "";
+        $this->credential = isset($_COOKIE['_im_credential_token']) ? $_COOKIE['_im_credential_token'] : "";
         $this->clientId = isset($this->PostData['clientid']) ? $this->PostData['clientid'] :
             (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "Non-browser-client");
 
@@ -832,7 +832,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 && ($this->passwordHash != '1' || $this->alwaysGenSHA2)) {
                 $this->dbClass->authHandler->authSupportCanMigrateSHA256Hash();
             }
-            $this->dbSettings->setRequireAuthorization(true);
+//            $authStoring = $this->dbSettings->getAuthenticationItem('storing');
+//            if ($authStoring != 'credential'||$access != 'challenge') {
+                $this->dbSettings->setRequireAuthorization(true);
+//            }
             if (isset($authOptions['user'])
                 && $authOptions['user'][0] == 'database_native'
             ) {
@@ -1167,15 +1170,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $userSalt = $this->saveChallenge(
                 $this->dbSettings->isDBNative() ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
             $authStoring = $this->dbSettings->getAuthenticationItem('storing');
-
             if ($authStoring == 'credential') {
                 if ($this->authSucceed) {
-                    setcookie('_im_credential',
+                    setcookie('_im_credential_token',
                         $this->generateCredential($generatedChallenge, $generatedUID),
                         time() + $this->dbSettings->getAuthenticationItem('authexpired'),
                         '/', $_SERVER['SERVER_NAME'], false, true);
                 } else {
-                    setcookie("_im_credential", "", time() - 3600);
+                    setcookie("_im_credential_token", "", time() - 3600);
                 }
                 if ($this->originalAccess == 'challenge') {
                     $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";
@@ -1195,7 +1197,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             ) {
                 $generatedChallenge = IMUtil::generateChallenge();
                 $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
-                $this->outputOfProcessing['mediatoken'] = $generatedChallenge;
+                //$this->outputOfProcessing['mediatoken'] = $generatedChallenge;
+                setcookie('_im_mediatoken', $generatedChallenge,
+                    time() + $this->dbSettings->getAuthenticationItem('authexpired'),
+                    '/', $_SERVER['SERVER_NAME'], false, true);
+                setcookie('_im_username', $this->paramAuthUser,
+                    time() + $this->dbSettings->getAuthenticationItem('authexpired'),
+                    '/', $_SERVER['SERVER_NAME'], false, false);
                 $this->logger->setDebugMessage("mediatoken stored", 2);
             }
         }

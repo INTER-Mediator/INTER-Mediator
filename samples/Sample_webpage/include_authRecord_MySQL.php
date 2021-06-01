@@ -46,9 +46,9 @@ IM_Entry(
         'media-root-dir' => '/tmp',
         'authentication' => [
             'authexpired' => '3600',
-            'storing' => 'session-storage',
+            'storing' => 'credential',
         ],
     ),
     array('db-class' => 'PDO'),
-    false
+    2
 );
