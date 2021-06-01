@@ -231,7 +231,7 @@ const INTERMediator_DBAdapter = {
 
               INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
                 challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken)
-              INTERMediator_DBAdapter.store_challenge(challenge, accessURL == 'access=challenge')
+              INTERMediator_DBAdapter.store_challenge(challenge, accessURL.match(/access=challenge/))
               if (clientid !== null) {
                 INTERMediatorOnPage.clientId(clientid)
               }
@@ -242,16 +242,18 @@ const INTERMediator_DBAdapter = {
               // This is forced fail-over for the password was changed in LDAP auth.
               if (INTERMediatorOnPage.isLDAP === true &&
                 INTERMediatorOnPage.authUserHexSalt !== INTERMediatorOnPage.authHashedPassword().substr(-8, 8)) {
-                if (accessURL !== 'access=challenge') {
+                if (accessURL.match(/access=challenge/)) {
                   requireAuth = true
                 }
               }
               if (INTERMediatorOnPage.isSAML) {
                 if (jsonObject.samluser) {
                   INTERMediatorOnPage.authUser(jsonObject.samluser)
-                  INTERMediatorOnPage.authHashedPassword(jsonObject.temppw)
-                  INTERMediatorOnPage.authHashedPassword2m(jsonObject.temppw)
-                  INTERMediatorOnPage.authHashedPassword2(jsonObject.temppw)
+                  if (INTERMediatorOnPage.authStoring != 'credential') {
+                    INTERMediatorOnPage.authHashedPassword(jsonObject.temppw)
+                    INTERMediatorOnPage.authHashedPassword2m(jsonObject.temppw)
+                    INTERMediatorOnPage.authHashedPassword2(jsonObject.temppw)
+                  }
                 }
                 if (jsonObject.samlloginurl) {
                   INTERMediatorOnPage.loginURL = jsonObject.samlloginurl

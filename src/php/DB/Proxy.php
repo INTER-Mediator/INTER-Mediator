@@ -41,11 +41,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     private $paramCryptResponse = null;
     private $credential = null;
     private $authSucceed = false;
-    public $clientId;
+    private $clientId;
     private $passwordHash;
     private $alwaysGenSHA2;
     private $originalAccess;
-
     private $clientSyncAvailable;
 
     private $ignorePost = false;
@@ -1168,15 +1167,17 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $userSalt = $this->saveChallenge(
                 $this->dbSettings->isDBNative() ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
             $authStoring = $this->dbSettings->getAuthenticationItem('storing');
+
             if ($authStoring == 'credential') {
                 if ($this->authSucceed) {
                     setcookie('_im_credential',
                         $this->generateCredential($generatedChallenge, $generatedUID),
-                        0, '/', $_SERVER['SERVER_NAME'], false, true);
+                        time() + $this->dbSettings->getAuthenticationItem('authexpired'),
+                        '/', $_SERVER['SERVER_NAME'], false, true);
                 } else {
                     setcookie("_im_credential", "", time() - 3600);
                 }
-                if($this->originalAccess == 'challenge'){
+                if ($this->originalAccess == 'challenge') {
                     $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";
                 }
             } else {
