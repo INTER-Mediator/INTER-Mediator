@@ -114,13 +114,14 @@ const INTERMediator_DBAdapter = {
   store_challenge: function (challenge, isChallange) {
     'use strict'
     if (challenge !== null) {
-      INTERMediatorOnPage.authChallenge = challenge.substr(0, 24)
-      INTERMediatorOnPage.authUserHexSalt = challenge.substr(24, 32)
+      const len = 48
+      INTERMediatorOnPage.authChallenge = challenge.substr(0, len)
+      INTERMediatorOnPage.authUserHexSalt = challenge.substr(len, len + 8)
       INTERMediatorOnPage.authUserSalt = String.fromCharCode(
-        parseInt(challenge.substr(24, 2), 16),
-        parseInt(challenge.substr(26, 2), 16),
-        parseInt(challenge.substr(28, 2), 16),
-        parseInt(challenge.substr(30, 2), 16))
+        parseInt(challenge.substr(len, 2), 16),
+        parseInt(challenge.substr(len + 2, 2), 16),
+        parseInt(challenge.substr(len + 4, 2), 16),
+        parseInt(challenge.substr(len + 6, 2), 16))
       if (INTERMediator_DBAdapter.debugMessage) {
         INTERMediatorLog.setDebugMessage('store_challenge/authChallenge=' + INTERMediatorOnPage.authChallenge)
         INTERMediatorLog.setDebugMessage('store_challenge/authUserHexSalt=' + INTERMediatorOnPage.authUserHexSalt)
@@ -274,6 +275,7 @@ const INTERMediator_DBAdapter = {
                     nullAcceptable: useNull
                   })
                 }
+                resolve()
                 return
               }
               if (requireAuth) {
@@ -347,7 +349,7 @@ const INTERMediator_DBAdapter = {
       }
       INTERMediatorOnPage.authUser(username)
       if (username !== '' && // No usename and no challenge, get a challenge.
-        (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24)) {
+        (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 48)) {
         INTERMediatorOnPage.authHashedPassword('need-hash-pls') // Dummy Hash for getting a challenge
         INTERMediatorOnPage.authHashedPassword2m('need-hash-pls') // Dummy Hash for getting a challenge
         INTERMediatorOnPage.authHashedPassword2('need-hash-pls') // Dummy Hash for getting a challenge

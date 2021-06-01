@@ -1363,7 +1363,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
         $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge($uid, $this->clientId);
         $this->logger->setDebugMessage("[checkAuthorization]storedChallenge={$storedChallenge}/{$this->credential}", 2);
-        if (strlen($storedChallenge) == 24) { // ex.fc0d54312ce33c2fac19d758
+        if (strlen($storedChallenge) == 48) { // ex.fc0d54312ce33c2fac19d758
             if ($this->credential == $this->generateCredential($storedChallenge, $this->clientId)) { // Credential Auth passed
                 $this->logger->setDebugMessage("[checkAuthorization]Credential auth passed.", 2);
                 $returnValue = true;

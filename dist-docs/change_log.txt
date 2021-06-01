@@ -12,7 +12,10 @@ Also the Migration Guide (Japanese) might be informative:
 
 Ver.8 (in development)
 - The password hash for authentication moves to SHA-256 based hash, and it has the interoperability with SHA-1 hash.
+- The 'storing' key in 'authentication' key can have the value 'credential', and it stores critical information
+  in the http-only cookie and any information about authentication can't read from JavaScript.
 - The $migrateSHA1to2 variable can moved to SHA-256 hash from SHA-1 hash without changing the password.
+- The length of the challenge doubled to 24 byte from 12.
 - Check the DB schema for authentication in case of debug mode. It checks character length of fields.
 - SAML is integrated with SimpleSAMLphp. The $isSAML variable in params.php has to be set true, also set $samlAuthSource,
   and setting information exists in sample/saml-config directory.

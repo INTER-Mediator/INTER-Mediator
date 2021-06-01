@@ -225,7 +225,7 @@ let INTERMediatorOnPage = {
     INTERMediatorOnPage.clientId('')
     INTERMediatorOnPage.loginURL = null
     INTERMediatorOnPage.logoutURL = null
-    INTERMediatorOnPage.removeCredencialsFromCookieOrStorage()
+    INTERMediatorOnPage.removeCredentialsFromCookieOrStorage()
     INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_localcontext')
   },
 
@@ -285,7 +285,7 @@ let INTERMediatorOnPage = {
     }
   },
 
-  removeCredencialsFromCookieOrStorage: function () {
+  removeCredentialsFromCookieOrStorage: function () {
     'use strict'
     switch (INTERMediatorOnPage.authStoring) {
       case 'cookie':
@@ -663,7 +663,7 @@ let INTERMediatorOnPage = {
       INTERMediatorOnPage.authUser(inputUsername)
       bodyNode.removeChild(backBox)
       if (inputUsername !== '' && // No usename and no challenge, get a challenge.
-        (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24)) {
+        (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 48)) {
         INTERMediatorOnPage.authHashedPassword('need-hash-pls') // Dummy Hash for getting a challenge
         INTERMediatorOnPage.authHashedPassword2m('need-hash-pls') // Dummy Hash for getting a challenge
         INTERMediatorOnPage.authHashedPassword2('need-hash-pls') // Dummy Hash for getting a challenge
