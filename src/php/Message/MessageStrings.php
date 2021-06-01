@@ -115,6 +115,8 @@ class MessageStrings
         1045 => "The 'key' is required in the context definition if writing operations apply to the context '@1@'.",
         1046 => "The context definition of the name '@1@' in target specifications of the page file is undefined in the definition file.",
         1047 => "The context '@1@' was chosen for this context, and ignored target specifications were: @2@",
+        1048 => "Get Credential for Auth: ",
+        1049 => "Connection Error in getCredential=@1@/@2@",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',

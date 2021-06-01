@@ -38,17 +38,17 @@ const INTERMediator_DBAdapter = {
   generate_authParams: function () {
     'use strict'
     let authParams = ''
-    if (!INTERMediatorOnPage.authHashedPassword()
-      && !INTERMediatorOnPage.authHashedPassword2m()
-      && !INTERMediatorOnPage.authHashedPassword2()) {
-      INTERMediatorOnPage.authUser = null
-      INTERMediatorOnPage.authChallenge = null
-      INTERMediatorOnPage.clientId = null
-    }
+    // if (!INTERMediatorOnPage.authHashedPassword()
+    //   && !INTERMediatorOnPage.authHashedPassword2m()
+    //   && !INTERMediatorOnPage.authHashedPassword2()) {
+    //   INTERMediatorOnPage.authUser (null)
+    //   INTERMediatorOnPage.authChallenge = null
+    //   INTERMediatorOnPage.clientId = null
+    // }
 
-    if (INTERMediatorOnPage.authUser && INTERMediatorOnPage.authUser.length > 0) {
-      authParams = '&clientid=' + encodeURIComponent(INTERMediatorOnPage.clientId)
-      authParams += '&authuser=' + encodeURIComponent(INTERMediatorOnPage.authUser)
+    if (INTERMediatorOnPage.authUser() && INTERMediatorOnPage.authUser().length > 0) {
+      authParams = '&clientid=' + encodeURIComponent(INTERMediatorOnPage.clientId())
+      authParams += '&authuser=' + encodeURIComponent(INTERMediatorOnPage.authUser())
       if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
         if (INTERMediatorOnPage.authCryptedPassword && INTERMediatorOnPage.authChallenge) {
           const encrypt = new JSEncrypt()
@@ -111,7 +111,7 @@ const INTERMediator_DBAdapter = {
     return authParams
   },
 
-  store_challenge: function (challenge) {
+  store_challenge: function (challenge, isChallange) {
     'use strict'
     if (challenge !== null) {
       INTERMediatorOnPage.authChallenge = challenge.substr(0, 24)
@@ -126,6 +126,9 @@ const INTERMediator_DBAdapter = {
         INTERMediatorLog.setDebugMessage('store_challenge/authUserHexSalt=' + INTERMediatorOnPage.authUserHexSalt)
         INTERMediatorLog.setDebugMessage('store_challenge/authUserSalt=' + INTERMediatorOnPage.authUserSalt)
       }
+    }
+    if(!isChallange && INTERMediatorOnPage.authStoring=='credential'){
+      INTERMediatorOnPage.authChallenge = ''
     }
   },
 
@@ -228,9 +231,9 @@ const INTERMediator_DBAdapter = {
 
               INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
                 challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken)
-              INTERMediator_DBAdapter.store_challenge(challenge)
+              INTERMediator_DBAdapter.store_challenge(challenge, accessURL == 'access=challenge')
               if (clientid !== null) {
-                INTERMediatorOnPage.clientId = clientid
+                INTERMediatorOnPage.clientId(clientid)
               }
               if (mediatoken !== null) {
                 INTERMediatorOnPage.mediaToken = mediatoken
@@ -245,7 +248,7 @@ const INTERMediator_DBAdapter = {
               }
               if (INTERMediatorOnPage.isSAML) {
                 if (jsonObject.samluser) {
-                  INTERMediatorOnPage.authUser = jsonObject.samluser
+                  INTERMediatorOnPage.authUser(jsonObject.samluser)
                   INTERMediatorOnPage.authHashedPassword(jsonObject.temppw)
                   INTERMediatorOnPage.authHashedPassword2m(jsonObject.temppw)
                   INTERMediatorOnPage.authHashedPassword2(jsonObject.temppw)
@@ -279,6 +282,8 @@ const INTERMediator_DBAdapter = {
                 }
                 if (authAgainProc) {
                   authAgainProc(myRequest)
+                } else if (!accessURL.match(/access=challenge/)) {
+                  //INTERMediator.constructMain()
                 }
                 return
               }
@@ -337,7 +342,7 @@ const INTERMediator_DBAdapter = {
         reject(new Error('_im_changepw_noparams'))
         return
       }
-      INTERMediatorOnPage.authUser = username
+      INTERMediatorOnPage.authUser(username)
       if (username !== '' && // No usename and no challenge, get a challenge.
         (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24)) {
         INTERMediatorOnPage.authHashedPassword('need-hash-pls') // Dummy Hash for getting a challenge
@@ -345,6 +350,7 @@ const INTERMediator_DBAdapter = {
         INTERMediatorOnPage.authHashedPassword2('need-hash-pls') // Dummy Hash for getting a challenge
         try {
           await INTERMediator_DBAdapter.getChallenge()
+//          await INTERMediator_DBAdapter.getCredential()
         } catch (er) {
           reject(er)
           return
@@ -414,7 +420,36 @@ const INTERMediator_DBAdapter = {
 
   getChallenge: async function () {
     'use strict'
-    await INTERMediator_DBAdapter.server_access_async('access=challenge', 1027, 1028, null, null, null)
+    console.log("###### GET CHALLANGE #######")
+    await INTERMediator_DBAdapter.server_access_async(
+      'access=challenge', 1027, 1028,
+      null, null, null)
+  },
+
+  getCredential: async function () {
+    'use strict'
+    await INTERMediator_DBAdapter.server_access_async(
+      'access=credential', 1048, 1049,
+      function () {
+        INTERMediatorOnPage.authHashedPassword('')
+        INTERMediatorOnPage.authHashedPassword2m('')
+        INTERMediatorOnPage.authHashedPassword2('')
+        INTERMediatorOnPage.authCryptedPassword('')
+        INTERMediatorOnPage.authChallenge = null
+      }, function () {
+        INTERMediatorOnPage.authHashedPassword('')
+        INTERMediatorOnPage.authHashedPassword2m('')
+        INTERMediatorOnPage.authHashedPassword2('')
+        INTERMediatorOnPage.authCryptedPassword('')
+      },
+      INTERMediator_DBAdapter.createExceptionFunc(
+        1016,
+        (function () {
+          return function () {
+            // INTERMediator.constructMain()
+          }
+        })()
+      ))
   },
 
   uploadFile: function (parameters, uploadingFile, doItOnFinish, exceptionProc) {
@@ -499,9 +534,9 @@ const INTERMediator_DBAdapter = {
 
     INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
       challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken)
-    INTERMediator_DBAdapter.store_challenge(challenge)
+    INTERMediator_DBAdapter.store_challenge(challenge, false)
     if (clientid !== null) {
-      INTERMediatorOnPage.clientId = clientid
+      INTERMediatorOnPage.clientId(clientid)
     }
     if (mediatoken !== null) {
       INTERMediatorOnPage.mediaToken = mediatoken

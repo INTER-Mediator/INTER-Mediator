@@ -24,7 +24,7 @@
 let INTERMediatorOnPage = {
   authCountLimit: 4,
   authCount: 0,
-  authUser: '',
+  //authUser: '',
   // authHashedPassword: '',
   // authHashedPassword2m: '',
   // authHashedPassword2: '',
@@ -33,7 +33,7 @@ let INTERMediatorOnPage = {
   authUserHexSalt: '',
   authChallenge: '',
   requireAuthentication: false,
-  clientId: null,
+  // clientId: null,
   authRequiredContext: null,
   authStoring: 'cookie',
   authExpired: 3600,
@@ -97,6 +97,7 @@ let INTERMediatorOnPage = {
         switch (INTERMediatorOnPage.authStoring) {
           case 'cookie':
           case 'cookie-domainwide':
+          case 'credential':
             returnVal = INTERMediatorOnPage.getCookie(key)
             break
           case 'session-storage':
@@ -112,6 +113,7 @@ let INTERMediatorOnPage = {
             INTERMediatorOnPage.setCookie(key, value)
             break
           case 'cookie-domainwide':
+          case 'credential':
             INTERMediatorOnPage.setCookieDomainWide(key, value)
             break
           case 'session-storage':
@@ -121,6 +123,14 @@ let INTERMediatorOnPage = {
       }
     }
     return returnVal
+  },
+
+  clientId: function (value = false) {
+    return INTERMediatorOnPage.authHashedPasswordWorker('_im_clientid', value)
+  },
+
+  authUser: function (value = false) {
+    return INTERMediatorOnPage.authHashedPasswordWorker('_im_username', value)
   },
 
   authHashedPassword: function (value = false) {
@@ -184,7 +194,7 @@ let INTERMediatorOnPage = {
 
   isComplementAuthData: function () {
     'use strict'
-    return INTERMediatorOnPage.authUser !== null && INTERMediatorOnPage.authUser.length > 0 &&
+    return INTERMediatorOnPage.authUser() !== null && INTERMediatorOnPage.authUser().length > 0 &&
       ((INTERMediatorOnPage.authHashedPassword() !== null && INTERMediatorOnPage.authHashedPassword().length > 0)
         || (INTERMediatorOnPage.authHashedPassword2m() !== null && INTERMediatorOnPage.authHashedPassword2m().length > 0)
         || (INTERMediatorOnPage.authHashedPassword2() !== null && INTERMediatorOnPage.authHashedPassword2().length > 0)) &&
@@ -195,45 +205,46 @@ let INTERMediatorOnPage = {
   retrieveAuthInfo: async function () {
     'use strict'
     if (INTERMediatorOnPage.requireAuthentication) {
-      if (INTERMediatorOnPage.isOnceAtStarting) {
-        switch (INTERMediatorOnPage.authStoring) {
-          case 'cookie':
-          case 'cookie-domainwide':
-            INTERMediatorOnPage.authUser = INTERMediatorOnPage.getCookie('_im_username')
-            INTERMediatorOnPage.mediaToken = INTERMediatorOnPage.getCookie('_im_mediatoken')
-            break
-          case 'session-storage':
-            INTERMediatorOnPage.authUser = INTERMediatorOnPage.getSessionStorageWithFallDown('_im_username')
-            INTERMediatorOnPage.mediaToken = INTERMediatorOnPage.getSessionStorageWithFallDown('_im_mediatoken')
-            break
-          default:
-            INTERMediatorOnPage.removeCookie('_im_username')
-            INTERMediatorOnPage.removeCookie('_im_credential')
-            INTERMediatorOnPage.removeCookie('_im_credential2m')
-            INTERMediatorOnPage.removeCookie('_im_credential2')
-            INTERMediatorOnPage.removeCookie('_im_mediatoken')
-            INTERMediatorOnPage.removeCookie('_im_crypted')
-            break
-        }
-        INTERMediatorOnPage.isOnceAtStarting = false
+      // if (INTERMediatorOnPage.isOnceAtStarting) {
+      switch (INTERMediatorOnPage.authStoring) {
+        case 'cookie':
+        case 'cookie-domainwide':
+        case 'credential':
+          // INTERMediatorOnPage.authUser = INTERMediatorOnPage.getCookie('_im_username')
+          INTERMediatorOnPage.mediaToken = INTERMediatorOnPage.getCookie('_im_mediatoken')
+          break
+        case 'session-storage':
+          // INTERMediatorOnPage.authUser = INTERMediatorOnPage.getSessionStorageWithFallDown('_im_username')
+          INTERMediatorOnPage.mediaToken = INTERMediatorOnPage.getSessionStorageWithFallDown('_im_mediatoken')
+          break
+        default:
+          INTERMediatorOnPage.removeCookie('_im_username')
+          INTERMediatorOnPage.removeCookie('_im_credential')
+          INTERMediatorOnPage.removeCookie('_im_credential2m')
+          INTERMediatorOnPage.removeCookie('_im_credential2')
+          INTERMediatorOnPage.removeCookie('_im_mediatoken')
+          INTERMediatorOnPage.removeCookie('_im_crypted')
+          break
       }
-      if (INTERMediatorOnPage.authUser.length > 0) {
-        await INTERMediator_DBAdapter.getChallenge()
-        INTERMediatorLog.flushMessage()
-      }
+      INTERMediatorOnPage.isOnceAtStarting = false
     }
+    if (INTERMediatorOnPage.authUser() && INTERMediatorOnPage.authUser().length > 0) {
+      //await INTERMediator_DBAdapter.getChallenge()
+      INTERMediatorLog.flushMessage()
+    }
+    // }
   },
 
   logout: function () {
     'use strict'
-    INTERMediatorOnPage.authUser = ''
+    INTERMediatorOnPage.authUser('')
     INTERMediatorOnPage.authHashedPassword('')
     INTERMediatorOnPage.authHashedPassword2m('')
     INTERMediatorOnPage.authHashedPassword2('')
     INTERMediatorOnPage.authCryptedPassword('')
     INTERMediatorOnPage.authUserSalt = ''
     INTERMediatorOnPage.authChallenge = ''
-    INTERMediatorOnPage.clientId = ''
+    INTERMediatorOnPage.clientId('')
     INTERMediatorOnPage.mediaToken = ''
     INTERMediatorOnPage.loginURL = null
     INTERMediatorOnPage.logoutURL = null
@@ -246,7 +257,7 @@ let INTERMediatorOnPage = {
     if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
       try {
         const expired = sessionStorage.getItem(INTERMediatorOnPage.getKeyWithRealm('_im_session_exp'))
-        if(!expired||((new Date()).toUTCString() >= (new Date(expired)).toUTCString())) {
+        if (!expired || ((new Date()).toUTCString() >= (new Date(expired)).toUTCString())) {
           const d = new Date()
           d.setTime(d.getTime() + INTERMediatorOnPage.authExpired * 1000)
           sessionStorage.setItem(INTERMediatorOnPage.getKeyWithRealm('_im_session_exp'), d.toUTCString())
@@ -266,7 +277,7 @@ let INTERMediatorOnPage = {
     if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
       try {
         const expired = sessionStorage.getItem(INTERMediatorOnPage.getKeyWithRealm('_im_session_exp'))
-        if((new Date()).toUTCString() < (new Date(expired)).toUTCString()) {
+        if ((new Date()).toUTCString() < (new Date(expired)).toUTCString()) {
           value = sessionStorage.getItem(INTERMediatorOnPage.getKeyWithRealm(key))
         } else {
           sessionStorage.removeItem(INTERMediatorOnPage.getKeyWithRealm('_im_session_exp'))
@@ -304,6 +315,7 @@ let INTERMediatorOnPage = {
     switch (INTERMediatorOnPage.authStoring) {
       case 'cookie':
       case 'cookie-domainwide':
+      case 'credential':
         INTERMediatorOnPage.removeCookie('_im_credential')
         INTERMediatorOnPage.removeCookie('_im_credential2m')
         INTERMediatorOnPage.removeCookie('_im_credential2')
@@ -324,23 +336,24 @@ let INTERMediatorOnPage = {
     'use strict'
     switch (INTERMediatorOnPage.authStoring) {
       case 'cookie':
-        if (INTERMediatorOnPage.authUser) {
-          INTERMediatorOnPage.setCookie('_im_username', INTERMediatorOnPage.authUser)
-        }
-         if (INTERMediatorOnPage.mediaToken) {
+        // if (INTERMediatorOnPage.authUser()) {
+        //   INTERMediatorOnPage.setCookie('_im_username', INTERMediatorOnPage.authUser)
+        // }
+        if (INTERMediatorOnPage.mediaToken) {
           INTERMediatorOnPage.setCookie('_im_mediatoken', INTERMediatorOnPage.mediaToken)
         }
         break
       case 'cookie-domainwide':
-        if (INTERMediatorOnPage.authUser) {
-          INTERMediatorOnPage.setCookieDomainWide('_im_username', INTERMediatorOnPage.authUser)
-        }
+      case 'credential':
+        // if (INTERMediatorOnPage.authUser()) {
+        //   INTERMediatorOnPage.setCookieDomainWide('_im_username', INTERMediatorOnPage.authUser)
+        // }
         if (INTERMediatorOnPage.mediaToken) {
           INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken)
         }
         break
       case 'session-storage':
-        if (INTERMediatorOnPage.authUser) {
+        if (INTERMediatorOnPage.authUser()) {
           INTERMediatorOnPage.storeSessionStorageWithFallDown('_im_username', INTERMediatorOnPage.authUser)
         }
         if (INTERMediatorOnPage.mediaToken) {
@@ -351,7 +364,7 @@ let INTERMediatorOnPage = {
   },
   storeMediaCredentialsToCookie: function () {
     'use strict'
-    if (INTERMediatorOnPage.authUser) {
+    if (INTERMediatorOnPage.authUser()) {
       INTERMediatorOnPage.setCookieDomainWide('_im_username', INTERMediatorOnPage.authUser)
     }
     if (INTERMediatorOnPage.mediaToken) {
@@ -681,7 +694,7 @@ let INTERMediatorOnPage = {
         authButton.onclick()
       }
     }
-    userBox.value = INTERMediatorOnPage.authUser
+    userBox.value = INTERMediatorOnPage.authUser()
     userBox.onkeydown = function (event) {
       if (event.code === 'Enter') {
         passwordBox.focus()
@@ -704,7 +717,7 @@ let INTERMediatorOnPage = {
             INTERMediatorLib.getInsertedStringFromErrorNumber(2013)))
         return
       }
-      INTERMediatorOnPage.authUser = inputUsername
+      INTERMediatorOnPage.authUser(inputUsername)
       bodyNode.removeChild(backBox)
       if (inputUsername !== '' && // No usename and no challenge, get a challenge.
         (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24)) {
@@ -735,9 +748,10 @@ let INTERMediatorOnPage = {
         shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
         INTERMediatorOnPage.authHashedPassword2(shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt)
       }
-      if (INTERMediatorOnPage.authUser.length > 0) { // Authentication succeed, Store coockies.
+      if (INTERMediatorOnPage.authUser() && INTERMediatorOnPage.authUser().length > 0) { // Authentication succeed, Store cookies.
         INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
       }
+      await INTERMediator_DBAdapter.getCredential()
 
       doAfterAuth() // Retry.
       INTERMediatorLog.flushMessage()
