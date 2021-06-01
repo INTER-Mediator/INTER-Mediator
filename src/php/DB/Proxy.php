@@ -1410,7 +1410,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->authDbClass->authHandler->authSupportRemoveOutdatedChallenges();
         // Database user mode is user_id=0
         $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge(0, $clientId);
-        if (strlen($storedChallenge) == 24 && $storedChallenge == $challenge) { // ex.fc0d54312ce33c2fac19d758
+        if (strlen($storedChallenge) == 48 && $storedChallenge == $challenge) { // ex.fc0d54312ce33c2fac19d758
             $returnValue = true;
         }
         return $returnValue;
@@ -1430,7 +1430,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $user = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($user);
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($user);
         $storedChallenge = $this->authDbClass->authHandler->authSupportCheckMediaToken($uid);
-        if (strlen($storedChallenge) == 24 && $storedChallenge == $token) { // ex.fc0d54312ce33c2fac19d758
+        if (strlen($storedChallenge) == 48 && $storedChallenge == $token) { // ex.fc0d54312ce33c2fac19d758
             $returnValue = true;
         }
         return $returnValue;
