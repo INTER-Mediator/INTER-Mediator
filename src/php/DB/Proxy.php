@@ -832,10 +832,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 && ($this->passwordHash != '1' || $this->alwaysGenSHA2)) {
                 $this->dbClass->authHandler->authSupportCanMigrateSHA256Hash();
             }
-//            $authStoring = $this->dbSettings->getAuthenticationItem('storing');
-//            if ($authStoring != 'credential'||$access != 'challenge') {
-                $this->dbSettings->setRequireAuthorization(true);
-//            }
+            $this->dbSettings->setRequireAuthorization(true);
             if (isset($authOptions['user'])
                 && $authOptions['user'][0] == 'database_native'
             ) {
@@ -1217,8 +1214,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
         $this->addOutputData('errorMessages', $this->logger->getErrorMessages());
         $this->addOutputData('debugMessages', $this->logger->getDebugMessages());
-        //$this->outputOfProcessing['errorMessages'] = $this->logger->getErrorMessages();
-        //$this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
     }
 
     private function generateCredential($generatedChallenge, $generatedUID)
@@ -1568,7 +1563,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
         return !$inValid;
     }
-
 
     public
     function setupConnection()

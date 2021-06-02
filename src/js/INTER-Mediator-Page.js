@@ -90,6 +90,41 @@ let INTERMediatorOnPage = {
   loginURL: null,
   doAfterLoginPanel: null,
 
+  /*
+  This method 'getMessages' is going to be replaced valid one with the browser's language.
+  Here is defined to prevent the warning of static check.
+  */
+  getMessages: function () {
+    'use strict'
+    return null
+  },
+
+  getURLParametersAsArray: function () {
+    'use strict'
+    const result = {}
+    const params = location.search.substring(1).split('&')
+    for (let i = 0; i < params.length; i++) {
+      const eqPos = params[i].indexOf('=')
+      if (eqPos > 0) {
+        const key = params[i].substring(0, eqPos)
+        const value = params[i].substring(eqPos + 1)
+        result[key] = decodeURIComponent(value)
+      }
+    }
+    return result
+  },
+
+  getContextInfo: function (contextName) {
+    'use strict'
+    const dataSources = INTERMediatorOnPage.getDataSources()
+    for (const index in dataSources) {
+      if (dataSources.hasOwnProperty(index) && dataSources[index].name === contextName) {
+        return dataSources[index]
+      }
+    }
+    return null
+  },
+
   authHashedPasswordWorker: function (key, value = false) {
     let returnVal = null
     if (INTERMediatorOnPage.requireAuthentication) {
@@ -165,40 +200,6 @@ let INTERMediatorOnPage = {
     INTERMediatorOnPage.authHashedPassword2('')
     INTERMediatorOnPage.authCryptedPassword('')
   },
-  /*
-   This method 'getMessages' is going to be replaced valid one with the browser's language.
-   Here is defined to prevent the warning of static check.
-   */
-  getMessages: function () {
-    'use strict'
-    return null
-  },
-
-  getURLParametersAsArray: function () {
-    'use strict'
-    const result = {}
-    const params = location.search.substring(1).split('&')
-    for (let i = 0; i < params.length; i++) {
-      const eqPos = params[i].indexOf('=')
-      if (eqPos > 0) {
-        const key = params[i].substring(0, eqPos)
-        const value = params[i].substring(eqPos + 1)
-        result[key] = decodeURIComponent(value)
-      }
-    }
-    return result
-  },
-
-  getContextInfo: function (contextName) {
-    'use strict'
-    const dataSources = INTERMediatorOnPage.getDataSources()
-    for (const index in dataSources) {
-      if (dataSources.hasOwnProperty(index) && dataSources[index].name === contextName) {
-        return dataSources[index]
-      }
-    }
-    return null
-  },
 
   isComplementAuthData: function () {
     'use strict'
@@ -218,23 +219,38 @@ let INTERMediatorOnPage = {
         INTERMediatorLog.flushMessage()
       }
     }
-    // }
   },
 
   logout: function () {
     'use strict'
-    INTERMediatorOnPage.authUser('')
-    INTERMediatorOnPage.authHashedPassword('')
-    INTERMediatorOnPage.authHashedPassword2m('')
-    INTERMediatorOnPage.authHashedPassword2('')
-    INTERMediatorOnPage.authCryptedPassword('')
     INTERMediatorOnPage.authUserSalt = ''
     INTERMediatorOnPage.authChallenge = ''
-    INTERMediatorOnPage.clientId('')
     INTERMediatorOnPage.loginURL = null
     INTERMediatorOnPage.logoutURL = null
-    INTERMediatorOnPage.removeCredentialsFromCookieOrStorage()
     INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_localcontext')
+    switch (INTERMediatorOnPage.authStoring) {
+      case 'cookie':
+      case 'cookie-domainwide':
+      case 'credential':
+        INTERMediatorOnPage.removeCookie('_im_clientid')
+        INTERMediatorOnPage.removeCookie('_im_session_exp')
+        INTERMediatorOnPage.removeCookie('_im_username')
+        INTERMediatorOnPage.removeCookie('_im_credential')
+        INTERMediatorOnPage.removeCookie('_im_credential2m')
+        INTERMediatorOnPage.removeCookie('_im_credential2')
+        INTERMediatorOnPage.removeCookie('_im_crypted')
+        break
+      case 'session-storage':
+        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_clientid')
+        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_session_exp')
+        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_username')
+        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_credential')
+        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_credential2m')
+        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_credential2')
+        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_mediatoken')
+        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_crypted')
+        break
+    }
   },
 
   storeSessionStorageWithFallDown: function (key, value) {
@@ -290,33 +306,6 @@ let INTERMediatorOnPage = {
       }
     } else {
       INTERMediatorOnPage.removeCookie(key)
-    }
-  },
-
-  removeCredentialsFromCookieOrStorage: function () {
-    'use strict'
-    switch (INTERMediatorOnPage.authStoring) {
-      case 'cookie':
-      case 'cookie-domainwide':
-      case 'credential':
-        INTERMediatorOnPage.removeCookie('_im_clientid')
-        INTERMediatorOnPage.removeCookie('_im_session_exp')
-        INTERMediatorOnPage.removeCookie('_im_username')
-        INTERMediatorOnPage.removeCookie('_im_credential')
-        INTERMediatorOnPage.removeCookie('_im_credential2m')
-        INTERMediatorOnPage.removeCookie('_im_credential2')
-        INTERMediatorOnPage.removeCookie('_im_crypted')
-        break
-      case 'session-storage':
-        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_clientid')
-        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_session_exp')
-        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_username')
-        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_credential')
-        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_credential2m')
-        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_credential2')
-        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_mediatoken')
-        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_crypted')
-        break
     }
   },
 

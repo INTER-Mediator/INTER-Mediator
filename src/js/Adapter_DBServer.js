@@ -435,24 +435,14 @@ const INTERMediator_DBAdapter = {
     await INTERMediator_DBAdapter.server_access_async(
       'access=credential', 1048, 1049,
       function () {
-        INTERMediatorOnPage.authHashedPassword('')
-        INTERMediatorOnPage.authHashedPassword2m('')
-        INTERMediatorOnPage.authHashedPassword2('')
-        INTERMediatorOnPage.authCryptedPassword('')
-        INTERMediatorOnPage.authChallenge = null
+        INTERMediatorOnPage.clearCredentials()
       }, function () {
-        INTERMediatorOnPage.authHashedPassword('')
-        INTERMediatorOnPage.authHashedPassword2m('')
-        INTERMediatorOnPage.authHashedPassword2('')
-        INTERMediatorOnPage.authCryptedPassword('')
+        INTERMediatorOnPage.clearCredentials()
       },
       INTERMediator_DBAdapter.createExceptionFunc(
-        1016,
-        (function () {
-          return function () {
-            INTERMediator.constructMain()
-          }
-        })()
+        1016, function () {
+          INTERMediator.constructMain()
+        }
       ))
   },
 
