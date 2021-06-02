@@ -103,8 +103,16 @@ let INTERMediatorOnPage = {
           case 'session-storage':
             returnVal = INTERMediatorOnPage.getSessionStorageWithFallDown(key)
             break
-          default:
+        }
+      } else if(value == ''){ // remover
+        switch (INTERMediatorOnPage.authStoring) {
+          case 'cookie':
+          case 'cookie-domainwide':
+          case 'credential':
             INTERMediatorOnPage.removeCookie(key)
+            break
+          case 'session-storage':
+            INTERMediatorOnPage.removeFromSessionStorageWithFallDown(key)
             break
         }
       } else { // setter
@@ -297,11 +305,9 @@ let INTERMediatorOnPage = {
         INTERMediatorOnPage.removeCookie('_im_credential')
         INTERMediatorOnPage.removeCookie('_im_credential2m')
         INTERMediatorOnPage.removeCookie('_im_credential2')
-        INTERMediatorOnPage.removeCookie('_im_mediatoken')
         INTERMediatorOnPage.removeCookie('_im_crypted')
         break
       case 'session-storage':
-        INTERMediatorOnPage.removeCookie('_im_mediatoken')
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_clientid')
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_session_exp')
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_username')
