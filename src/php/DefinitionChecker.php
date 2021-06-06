@@ -419,6 +419,15 @@ class DefinitionChecker
                 'copy' => 'string',
             ),
             'ignoring-field' => 'array',
+            'import' => [
+                '1st-line' => 'boolean|string',
+                'skip-lines' => 'integer',
+                'format' => 'string(CSV|TSV)',
+                'use-replace' => 'boolean',
+                'convert-number' => array('*' => 'string'),
+                'convert-date' => array('*' => 'string'),
+                'convert-datetime' => array('*' => 'string'),
+            ],
         ), // There is additional definitions. See the constructor.
     ];
 }
