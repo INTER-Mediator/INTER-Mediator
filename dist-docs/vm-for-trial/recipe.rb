@@ -1562,6 +1562,10 @@ execute "chmod 775 \"#{IMVMROOT}/dbupdate.sh\"" do
   command "chmod 775 \"#{IMVMROOT}/dbupdate.sh\""
 end
 
+execute "chmod 755 \"#{IMVMROOT}/index.php\"" do
+  command "chmod 755 \"#{IMVMROOT}/index.php\""
+end
+
 directory '/home/developer' do
   action :create
   owner 'developer'
