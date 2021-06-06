@@ -12,7 +12,10 @@ Also the Migration Guide (Japanese) might be informative:
 
 Ver.8 (in development)
 - The password hash for authentication moves to SHA-256 based hash, and it has the interoperability with SHA-1 hash.
+- The 'storing' key in 'authentication' key can have the value 'credential', and it stores critical information
+  in the http-only cookie and any information about authentication can't read from JavaScript.
 - The $migrateSHA1to2 variable can moved to SHA-256 hash from SHA-1 hash without changing the password.
+- The length of the challenge doubled to 24 byte from 12.
 - Check the DB schema for authentication in case of debug mode. It checks character length of fields.
 - SAML is integrated with SimpleSAMLphp. The $isSAML variable in params.php has to be set true, also set $samlAuthSource,
   and setting information exists in sample/saml-config directory.
@@ -20,6 +23,7 @@ Ver.8 (in development)
 - Custom url for after clicking logout button of the page navigation can set to INTERMediatorOnPage.logoutURL.
 - Support handling Claris FileMaker's checkbox set feature on Post Only mode when using DB_FileMaker_DataAPI class or DB_FileMaker_FX class (Thanks to Mr. Masakatsu Inamoto).
 - Update sample schema files and recipe.rb for the INTER-Mediator-Server virtual machine and CI.
+- Credential info don't store in global variables. These are stored in just only cookies or session storage or just http-only cookies.
 - jQuery-FileUpload plug-in can upload multiple files. Set IMParts_Catalog.jquery_fileupload.multiFileInPostOnly to true.
   This feature can activate on the post only mode. The sample is Sample_webpage/fileuploadMulti_MySQL.html.
 - [BUG FIX] Fix compatibility with Claris FileMaker Server. The affected version is Ver.7.
@@ -29,6 +33,7 @@ Ver.8 (in development)
 - [BUG FIX] The $customLoginPanel variable in the params.php file didn't handle for anything. It removed.
 - [INFO] The inter-mediator-plugin-fileupload is deprecated. The inter-mediator-plugin-jqueryfileupload is a replacement.
   We are going to maintain the jqueryfileupload so far and hope it forever.
+- [BUG FIX] Authentication with session storage didn't expire. Now it follows the value of the 'expired' key.
 
 Ver.7 (March 20, 2021)
 - The synchronizing with clients is back without Pusher.

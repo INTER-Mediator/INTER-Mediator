@@ -18,7 +18,7 @@
         "inter-mediator-plugin-codemirror": "1.0.1",
         "inter-mediator-plugin-flatpickr": "1.0.0",
         "inter-mediator-plugin-jquerydatepicker": "1.0.2",
-        "inter-mediator-plugin-jqueryfileupload": "1.2.1",
+        "inter-mediator-plugin-jqueryfileupload": "1.2.3",
         "inter-mediator-plugin-jsonformatter": "1.0.0",
         "inter-mediator-plugin-popupselector": "1.0.1",
         "inter-mediator-plugin-tinymce": "1.0.3",
@@ -3498,9 +3498,9 @@
       "integrity": "sha512-0+riC+qmBG4B4WuFXQ64gA6fepj3+aRCvROumN00ZZ7wX49EShxCUhMwag14zm95Xhd5dB5S9O+SpQwfLkrnZw=="
     },
     "node_modules/inter-mediator-plugin-jqueryfileupload": {
-      "version": "1.2.1",
-      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-jqueryfileupload/-/inter-mediator-plugin-jqueryfileupload-1.2.1.tgz",
-      "integrity": "sha512-FybaYN5UQKNPI87vEzYH74mymNVbjTwS4bi7hGWpOEy7YbmC9QVLU2e/WVxAk7DM6QXlpKT3OoVgBDVxATtwwg=="
+      "version": "1.2.3",
+      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-jqueryfileupload/-/inter-mediator-plugin-jqueryfileupload-1.2.3.tgz",
+      "integrity": "sha512-vQEa/IWQmsmDX6lLuXm4tdxpxCa4mlnYyDfPiy548ugguPHwy5FO5AHmPVWu+OZ7fHA3hHnyNwF+/K5VQsb2Iw=="
     },
     "node_modules/inter-mediator-plugin-jsonformatter": {
       "version": "1.0.0",
@@ -10614,9 +10614,9 @@
       "integrity": "sha512-0+riC+qmBG4B4WuFXQ64gA6fepj3+aRCvROumN00ZZ7wX49EShxCUhMwag14zm95Xhd5dB5S9O+SpQwfLkrnZw=="
     },
     "inter-mediator-plugin-jqueryfileupload": {
-      "version": "1.2.1",
-      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-jqueryfileupload/-/inter-mediator-plugin-jqueryfileupload-1.2.1.tgz",
-      "integrity": "sha512-FybaYN5UQKNPI87vEzYH74mymNVbjTwS4bi7hGWpOEy7YbmC9QVLU2e/WVxAk7DM6QXlpKT3OoVgBDVxATtwwg=="
+      "version": "1.2.3",
+      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-jqueryfileupload/-/inter-mediator-plugin-jqueryfileupload-1.2.3.tgz",
+      "integrity": "sha512-vQEa/IWQmsmDX6lLuXm4tdxpxCa4mlnYyDfPiy548ugguPHwy5FO5AHmPVWu+OZ7fHA3hHnyNwF+/K5VQsb2Iw=="
     },
     "inter-mediator-plugin-jsonformatter": {
       "version": "1.0.0",

@@ -393,11 +393,12 @@ abstract class DB_PDO_Test_Common extends TestCase
         $cliendId = "12345";
 
         $challenge = IMUtil::generateChallenge();
-//        echo "\ngenerated=", $challenge;
+        //echo "\ngenerated=", $challenge;
         $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge(0, $challenge, $cliendId);
 
-        $this->assertTrue(
-            $this->db_proxy->checkChallenge($challenge, $cliendId), $testName);
+        $result = $this->db_proxy->checkChallenge($challenge, $cliendId);
+        $this->assertTrue($result, $testName);
+
     }
 
     public function testDefaultKey()

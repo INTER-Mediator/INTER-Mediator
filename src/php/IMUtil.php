@@ -537,7 +537,7 @@ class IMUtil
     public static function generateChallenge()
     {
         $str = '';
-        for ($i = 0; $i < 12; $i++) {
+        for ($i = 0; $i < 24; $i++) {
             $n = rand(1, 255);
             $str .= ($n < 16 ? '0' : '') . dechex($n);
         }
