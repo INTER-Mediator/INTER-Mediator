@@ -375,15 +375,12 @@ class MediaAccess
     private function checkAuthentication($dbProxyInstance, $options): ?string
     {
         $contextDef = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
-
         $isContextAuth = (isset($contextDef['authentication']) && (isset($contextDef['authentication']['all'])
                 || isset($contextDef['authentication']['load']) || isset($contextDef['authentication']['read'])));
         $isOptionAuth = isset($options['authentication']);
-
         if (!$isContextAuth && !$isOptionAuth) { // No authentication
             return 'no_auth';
         }
-
         // Check the authentication credential on cookie
         $cookieNameUser = "_im_username";
         $cookieNameToken = "_im_mediatoken";

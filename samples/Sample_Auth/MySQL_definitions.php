@@ -114,8 +114,8 @@ IM_Entry(
 //            'group-table' => 'authgroup',
 //            'corresponding-table' => 'authcor',
 //            'challenge-table' => 'issuedhash',
-            'authexpired' => '10', // Set as seconds.
-            'storing' => 'session-storage', // session-storage, 'cookie'(default), 'cookie-domainwide', 'none'
+            'authexpired' => '100', // Set as seconds.
+            'storing' => 'credential', // session-storage, 'cookie'(default), 'cookie-domainwide', 'none', credential
             'realm' => 'Sample_Auth/MySQL_definitions', //
 //            'email-as-username' => true,
 //        'password-policy' => "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName",

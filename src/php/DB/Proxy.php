@@ -39,10 +39,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     private $paramResponse2m = null;
     private $paramResponse2 = null;
     private $paramCryptResponse = null;
-    public $clientId;
+    private $credential = null;
+    private $authSucceed = false;
+    private $clientId;
     private $passwordHash;
     private $alwaysGenSHA2;
-
+    private $originalAccess;
     private $clientSyncAvailable;
 
     private $ignorePost = false;
@@ -751,6 +753,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->paramResponse2m = isset($this->PostData['response2m']) ? $this->PostData['response2m'] : "";
         $this->paramResponse2 = isset($this->PostData['response2']) ? $this->PostData['response2'] : "";
         $this->paramCryptResponse = isset($this->PostData['cresponse']) ? $this->PostData['cresponse'] : "";
+        $this->credential = isset($_COOKIE['_im_credential_token']) ? $_COOKIE['_im_credential_token'] : "";
         $this->clientId = isset($this->PostData['clientid']) ? $this->PostData['clientid'] :
             (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "Non-browser-client");
 
@@ -789,7 +792,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     function processingRequest($access = null, $bypassAuth = false, $ignoreFiles = false)
     {
         $this->logger->setDebugMessage("[processingRequest]", 2);
-        $options = $this->dbSettings->getAuthentication();
+        $authOptions = $this->dbSettings->getAuthentication();
         $messageClass = IMUtil::getMessageClassInstance();
         /* Aggregation Judgement */
         $isSelect = $this->dbSettings->getAggregationSelect();
@@ -820,8 +823,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->dbSettings->setRequireAuthentication(false);
         $this->dbSettings->setRequireAuthorization(false);
         $this->dbSettings->setDBNative(false);
-        if (!is_null($options)
-            || $access == 'challenge' || $access == 'changepassword'
+        if (!is_null($authOptions)
+            || $access == 'challenge' || $access == 'changepassword' || $access == 'credential'
             || (isset($tableInfo['authentication'])
                 && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$access])))
         ) {
@@ -830,20 +833,22 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->dbClass->authHandler->authSupportCanMigrateSHA256Hash();
             }
             $this->dbSettings->setRequireAuthorization(true);
-            if (isset($options['user'])
-                && $options['user'][0] == 'database_native'
+            if (isset($authOptions['user'])
+                && $authOptions['user'][0] == 'database_native'
             ) {
                 $this->dbSettings->setDBNative(true);
             }
         }
 
-        $originalAccess = $access;
+        $this->originalAccess = $access;
+        $this->authSucceed = false;
         if (!$bypassAuth && $this->dbSettings->getRequireAuthorization()) { // Authentication required
-            if (strlen($this->paramAuthUser) == 0 || (
-                    strlen($this->paramResponse) == 0
+            if (strlen($this->paramAuthUser) == 0
+                || (strlen($this->paramResponse) == 0
                     && strlen($this->paramResponse2m) == 0
                     && strlen($this->paramResponse2) == 0
-                )) { // No username or password
+                    && strlen($this->credential) == 0)
+            ) { // No username or password
                 $access = "do nothing";
                 $this->dbSettings->setRequireAuthentication(true);
             }
@@ -864,7 +869,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $access = "do nothing";
                         $this->dbSettings->setRequireAuthentication(true);
                     }
-                } else {
+                } else { // Other than native authentication
                     $noAuthorization = true;
                     $authorizedGroups = $this->dbClass->authHandler->getAuthorizedGroups($access);
                     $authorizedUsers = $this->dbClass->authHandler->getAuthorizedUsers($access);
@@ -897,37 +902,36 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                     $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($this->paramAuthUser);
 
-                    $authSucceed = false;
                     $ldap = new LDAPAuth();
                     $ldap->setLogger($this->logger);
                     if ($ldap->isActive) { // LDAP auth
                         if ($this->checkAuthorization($signedUser, true)) {
                             $this->logger->setDebugMessage("IM-built-in Authentication for LDAP user succeed.");
-                            $authSucceed = true;
+                            $this->authSucceed = true;
                         } else { // Timeout with LDAP
                             list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
                             if ($ldap->bindCheck($signedUser, $password)) {
                                 $this->logger->setDebugMessage("LDAP Authentication succeed.");
-                                $authSucceed = true;
+                                $this->authSucceed = true;
                                 [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
                                 if ($addResult) {
                                     $this->dbSettings->setRequireAuthentication(false);
                                     $this->dbSettings->setCurrentUser($signedUser);
-                                    $access = $originalAccess;
+                                    $access = $this->originalAccess;
                                 }
                                 // The following re-auth doesn't work. The salt of hashed password is
                                 // different from the request. Here is after bind checking, so authentication
                                 // is passed anyway.
 //                                    if ($this->checkAuthorization($signedUser, true)) {
 //                                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
-//                                        $authSucceed = true;
+//                                        $this->authSucceed = true;
 //                                    }
                             }
                         }
                     } else if ($this->dbSettings->getIsSAML()) { // Set up as SAML
                         if ($this->checkAuthorization($signedUser, true)) {
                             $this->logger->setDebugMessage("IM-built-in Authentication for SAML user succeed.");
-                            $authSucceed = true;
+                            $this->authSucceed = true;
                         } else { // Timeout with SAML
                             $SAMLAuth = new SAMLAuth($this->dbSettings->getSAMLAuthSource());
                             $signedUser = $SAMLAuth->samlLoginCheck();
@@ -936,13 +940,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                             $this->paramAuthUser = $signedUser;
                             if ($signedUser) {
                                 $this->logger->setDebugMessage("SAML Authentication succeed.");
-                                $authSucceed = true;
+                                $this->authSucceed = true;
                                 $password = IMUtil::generateRandomPW();
                                 [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
                                 if ($addResult) {
                                     $this->dbSettings->setRequireAuthentication(false);
                                     $this->dbSettings->setCurrentUser($signedUser);
-                                    $access = $originalAccess;
+                                    $access = $this->originalAccess;
                                     $this->outputOfProcessing['samluser'] = $signedUser;
                                     $this->outputOfProcessing['temppw'] = $hashedpw;
                                 }
@@ -951,11 +955,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     } else { // Normal Login process
                         if ($this->checkAuthorization($signedUser, false)) {
                             $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
-                            $authSucceed = true;
+                            $this->authSucceed = true;
                         }
                     }
 
-                    if (!$authSucceed) {
+                    if (!$this->authSucceed) {
                         $this->logger->setDebugMessage(
                             "Authentication doesn't meet valid.{$signedUser}/{$this->paramResponse}/{$this->clientId}");
                         // Not Authenticated!
@@ -1028,7 +1032,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("[processingRequest] start create processing", 2);
                 $attachedFields = $this->dbSettings->getAttachedFields();
                 if (!$ignoreFiles && isset($attachedFields) && $attachedFields[0] == '_im_csv_upload') {
-                    $this->logger->setDebugMessage("File importing operation gets stated.", 2);
+                    $this->logger->setDebugMessage("CSV File importing operation gets stated.", 2);
                     $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
                     if ($uploadFiles && count($tableInfo) > 0) {
                         $fileUploader = new FileUploader();
@@ -1052,28 +1056,36 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 } else {
                     if ($this->checkValidation()) {
-                        $result = $this->createInDB($access == 'replace');
-                        $this->outputOfProcessing['newRecordKeyValue'] = $result;
-                        $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
-                        if (!$ignoreFiles && $result !== false) {
-                            $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
-                            if ($uploadFiles && count($tableInfo) > 0) {
-                                $fileUploader = new FileUploader();
-                                if (IMUtil::guessFileUploadError()) {
-                                    $fileUploader->processingAsError(
-                                        $this->dbSettings->getDataSource(),
-                                        $this->dbSettings->getOptions(),
-                                        $this->dbSettings->getDbSpec(), true,
-                                        $this->dbSettings->getDataSourceName(), true);
-                                } else {
-                                    $fileUploader->processingWithParameters(
-                                        $this->dbSettings->getDataSource(),
-                                        $this->dbSettings->getOptions(),
-                                        $this->dbSettings->getDbSpec(),
-                                        $this->logger->getDebugLevel(),
-                                        $tableInfo['name'], $tableInfo['key'], $result,
-                                        $this->dbSettings->getAttachedFields(), $uploadFiles, true
-                                    );
+                        $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
+                        if ($ignoreFiles || !$uploadFiles || count($tableInfo) < 1) { // No attached file.
+                            $result = $this->createInDB($access == 'replace');
+                            $this->outputOfProcessing['newRecordKeyValue'] = $result;
+                            $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
+                        } else { // Some files are attached.
+                            $fileUploader = new FileUploader();
+                            if (IMUtil::guessFileUploadError()) { // Detect file upload error.
+                                $fileUploader->processingAsError(
+                                    $this->dbSettings->getDataSource(),
+                                    $this->dbSettings->getOptions(),
+                                    $this->dbSettings->getDbSpec(), true,
+                                    $this->dbSettings->getDataSourceName(), true);
+                            } else { // No file upload error.
+                                foreach ($uploadFiles as $oneFile) {
+                                    $dbresult = [];
+                                    $result = $this->createInDB($access == 'replace');
+                                    $this->outputOfProcessing['newRecordKeyValue'] = $result;
+                                    $dbresult[] = $this->dbClass->updatedRecord()[0];
+                                    if ($result !== false) {
+                                        $fileUploader->processingWithParameters(
+                                            $this->dbSettings->getDataSource(),
+                                            $this->dbSettings->getOptions(),
+                                            $this->dbSettings->getDbSpec(),
+                                            $this->logger->getDebugLevel(),
+                                            $tableInfo['name'], $tableInfo['key'], $result,
+                                            $this->dbSettings->getAttachedFields(), [$oneFile], true
+                                        );
+                                    }
+                                    $this->outputOfProcessing['dbresult'] = $dbresult;
                                 }
                             }
                         }
@@ -1162,7 +1174,22 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->logger->setDebugMessage("generatedChallenge = $generatedChallenge", 2);
             $userSalt = $this->saveChallenge(
                 $this->dbSettings->isDBNative() ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
-            $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";
+            $authStoring = $this->dbSettings->getAuthenticationItem('storing');
+            if ($authStoring == 'credential') {
+                if ($this->authSucceed) {
+                    setcookie('_im_credential_token',
+                        $this->generateCredential($generatedChallenge, $generatedUID),
+                        time() + $this->dbSettings->getAuthenticationItem('authexpired'),
+                        '/', $_SERVER['SERVER_NAME'], false, true);
+                } else {
+                    setcookie("_im_credential_token", "", time() - 3600);
+                }
+                if ($this->originalAccess == 'challenge') {
+                    $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";
+                }
+            } else {
+                $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";
+            }
             $this->outputOfProcessing['clientid'] = $generatedUID;
             if ($this->dbSettings->getRequireAuthentication()) {
                 $this->outputOfProcessing['requireAuth'] = true;
@@ -1175,14 +1202,23 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             ) {
                 $generatedChallenge = IMUtil::generateChallenge();
                 $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
-                $this->outputOfProcessing['mediatoken'] = $generatedChallenge;
+                //$this->outputOfProcessing['mediatoken'] = $generatedChallenge;
+                setcookie('_im_mediatoken', $generatedChallenge,
+                    time() + $this->dbSettings->getAuthenticationItem('authexpired'),
+                    '/', $_SERVER['SERVER_NAME'], false, true);
+                setcookie('_im_username', $this->paramAuthUser,
+                    time() + $this->dbSettings->getAuthenticationItem('authexpired'),
+                    '/', $_SERVER['SERVER_NAME'], false, false);
                 $this->logger->setDebugMessage("mediatoken stored", 2);
             }
         }
         $this->addOutputData('errorMessages', $this->logger->getErrorMessages());
         $this->addOutputData('debugMessages', $this->logger->getDebugMessages());
-        //$this->outputOfProcessing['errorMessages'] = $this->logger->getErrorMessages();
-        //$this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
+    }
+
+    private function generateCredential($generatedChallenge, $generatedUID)
+    {
+        return hash("sha256", $generatedChallenge . $generatedUID);
     }
 
     public
@@ -1306,9 +1342,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $hashedvalue = $this->paramResponse ? $this->paramResponse : $falseHash;
         $hashedvalue2m = $this->paramResponse2m ? $this->paramResponse2m : $falseHash;
         $hashedvalue2 = $this->paramResponse2 ? $this->paramResponse2 : $falseHash;
-        $clientId = $this->clientId;
         $this->logger->setDebugMessage("[checkAuthorization]user=${username}, paramResponse={$hashedvalue}, "
-            . "paramResponse2m={$hashedvalue2m}, paramResponse2={$hashedvalue2}, clientid={$clientId}", 2);
+            . "paramResponse2m={$hashedvalue2m}, paramResponse2={$hashedvalue2}, clientid={$this->clientId}", 2);
 
         $returnValue = false;
         $this->authDbClass->authHandler->authSupportRemoveOutdatedChallenges();
@@ -1321,34 +1356,36 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         if ($isLDAP && !$this->dbClass->authHandler->authSupportIsWithinLDAPLimit($uid)) {
             return $returnValue;
         }
-        $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge($uid, $clientId);
-        $this->logger->setDebugMessage("[checkAuthorization]storedChallenge={$storedChallenge}", 2);
-        if (strlen($storedChallenge) == 24) { // ex.fc0d54312ce33c2fac19d758
-            $hashedPassword = $this->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
-            $hmacValue = hash_hmac('sha256', $hashedPassword, $storedChallenge);
-            $hmacValue2m = '_';
-            //if (≈ {
-            $hmacValue2m = hash_hmac('sha256', $hashedPassword, $storedChallenge);
-            //}
-            $this->logger->setDebugMessage(
-                "[checkAuthorization]hashedPassword={$hashedPassword}/hmac_value={$hmacValue}", 2);
-            if (strlen($hashedPassword) > 0) {
-                if ($hashedvalue == $hmacValue) {
-                    $returnValue = true;
-                    if ($this->migrateSHA1to2) {
-                        $salt = hex2bin(substr($hashedPassword, -8));
-                        $hashedPw = IMUtil::convertHashedPassword($hashedPassword, $this->passwordHash, true, $salt);
-                        $result = $this->dbClass->authHandler->authSupportChangePassword($signedUser, $hashedPw);
+        $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge($uid, $this->clientId);
+        $this->logger->setDebugMessage("[checkAuthorization]storedChallenge={$storedChallenge}/{$this->credential}", 2);
+        if (strlen($storedChallenge) == 48) { // ex.fc0d54312ce33c2fac19d758
+            if ($this->credential == $this->generateCredential($storedChallenge, $this->clientId)) { // Credential Auth passed
+                $this->logger->setDebugMessage("[checkAuthorization]Credential auth passed.", 2);
+                $returnValue = true;
+            } else { // Hash Auth checking
+                $hashedPassword = $this->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
+                $hmacValue = hash_hmac('sha256', $hashedPassword, $storedChallenge);
+                $hmacValue2m = hash_hmac('sha256', $hashedPassword, $storedChallenge);
+                $this->logger->setDebugMessage(
+                    "[checkAuthorization]hashedPassword={$hashedPassword}/hmac_value={$hmacValue}", 2);
+                if (strlen($hashedPassword) > 0) {
+                    if ($hashedvalue == $hmacValue) {
                         $this->logger->setDebugMessage("[checkAuthorization]sha1 hash used.", 2);
+                        $returnValue = true;
+                        if ($this->migrateSHA1to2) {
+                            $salt = hex2bin(substr($hashedPassword, -8));
+                            $hashedPw = IMUtil::convertHashedPassword($hashedPassword, $this->passwordHash, true, $salt);
+                            $result = $this->dbClass->authHandler->authSupportChangePassword($signedUser, $hashedPw);
+                        }
+                    } else if ($hashedvalue2m == $hmacValue2m) {
+                        $this->logger->setDebugMessage("[checkAuthorization]sha2 hash from sha1 hash used.", 2);
+                        $returnValue = true;
+                    } else if ($hashedvalue2 == $hmacValue) {
+                        $this->logger->setDebugMessage("[checkAuthorization]sha2 hash used.", 2);
+                        $returnValue = true;
+                    } else {
+                        $this->logger->setDebugMessage("[checkAuthorization]Built-in authorization fail.", 2);
                     }
-                } else if ($hashedvalue2m == $hmacValue2m) {
-                    $this->logger->setDebugMessage("[checkAuthorization]sha2 hash from sha1 hash used.", 2);
-                    $returnValue = true;
-                } else if ($hashedvalue2 == $hmacValue) {
-                    $this->logger->setDebugMessage("[checkAuthorization]sha2 hash used.", 2);
-                    $returnValue = true;
-                } else {
-                    $this->logger->setDebugMessage("[checkAuthorization]Built-in authorization fail.", 2);
                 }
             }
         }
@@ -1368,7 +1405,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->authDbClass->authHandler->authSupportRemoveOutdatedChallenges();
         // Database user mode is user_id=0
         $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge(0, $clientId);
-        if (strlen($storedChallenge) == 24 && $storedChallenge == $challenge) { // ex.fc0d54312ce33c2fac19d758
+        if (strlen($storedChallenge) == 48 && $storedChallenge == $challenge) { // ex.fc0d54312ce33c2fac19d758
             $returnValue = true;
         }
         return $returnValue;
@@ -1388,7 +1425,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $user = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($user);
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($user);
         $storedChallenge = $this->authDbClass->authHandler->authSupportCheckMediaToken($uid);
-        if (strlen($storedChallenge) == 24 && $storedChallenge == $token) { // ex.fc0d54312ce33c2fac19d758
+        if (strlen($storedChallenge) == 48 && $storedChallenge == $token) { // ex.fc0d54312ce33c2fac19d758
             $returnValue = true;
         }
         return $returnValue;
@@ -1526,7 +1563,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
         return !$inValid;
     }
-
 
     public
     function setupConnection()

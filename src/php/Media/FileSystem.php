@@ -22,92 +22,99 @@ use INTERMediator\Locale\IMLocaleFormatTable;
 
 class FileSystem implements UploadingSupport
 {
-    public function processing($db, $url, $options, $files, $noOutput, $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug)
+    private function getFileNames($info)
+    {
+        if (is_array($info['name'])) {   // JQuery File Upload Style
+            $fileInfoName = $info['name'][0];
+            $fileInfoTemp = $info['tmp_name'][0];
+        } else {
+            $fileInfoName = $info['name'];
+            $fileInfoTemp = $info['tmp_name'];
+        }
+        return [$fileInfoName, $fileInfoTemp];
+    }
+
+    private function prepareErrorOut($db, $noOutput, $errorMsg)
+    {
+        $db->logger->setErrorMessage($errorMsg);
+        $db->processingRequest("noop");
+        if (!$noOutput) {
+            $db->finishCommunication();
+            $db->exportOutputDataAsJSON();
+        }
+    }
+
+    private function decideFilePath($db, $noOutput, $options,
+                                    $contextname, $keyfield, $keyvalue, $targetFieldName, $filePathInfo)
+    {
+        $result = true;
+        $fileRoot = $options['media-root-dir'];
+        if (substr($fileRoot, strlen($fileRoot) - 1, 1) != '/') {
+            $fileRoot .= '/';
+        }
+        $uploadFilePathMode = null;
+        $params = IMUtil::getFromParamsPHPFile(array("uploadFilePathMode",), true);
+        $uploadFilePathMode = $params["uploadFilePathMode"];
+
+        $dirPath = $this->justfyPathComponent($contextname, $uploadFilePathMode) . DIRECTORY_SEPARATOR
+            . $this->justfyPathComponent($keyfield, $uploadFilePathMode) . "="
+            . $this->justfyPathComponent($keyvalue, $uploadFilePathMode) . DIRECTORY_SEPARATOR
+            . $this->justfyPathComponent($targetFieldName, $uploadFilePathMode);
+        $rand4Digits = random_int(1000, 9999);
+        $filePartialPath = $dirPath . '/' . $filePathInfo['filename'] . '_'
+            . $rand4Digits . '.' . $filePathInfo['extension'];
+        $filePath = $fileRoot . $filePartialPath;
+        if (strpos($filePath, $fileRoot) !== 0) {
+            $this->prepareErrorOut($db, $noOutput, "Invalid Path Error.");
+            $result = false;
+        }
+
+        if (!file_exists($fileRoot . $dirPath)) {
+            $result = mkdir($fileRoot . $dirPath, 0755, true);
+            if (!$result) {
+                $this->prepareErrorOut($db, $noOutput, "Can't make directory. [{$dirPath}]");
+                $result = false;
+            }
+        }
+        //exec("chmod -R o+x " . escapeshellcmd($fileRoot));
+        return [$result, $filePath, $filePartialPath];
+    }
+
+    public function processing($db, $url, $options, $files, $noOutput,
+                               $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug)
     {
         $counter = -1;
         foreach ($files as $fn => $fileInfo) {
             $counter += 1;
-            if (is_array($fileInfo['name'])) {   // JQuery File Upload Style
-                $fileInfoName = $fileInfo['name'][0];
-                $fileInfoTemp = $fileInfo['tmp_name'][0];
-            } else {
-                $fileInfoName = $fileInfo['name'];
-                $fileInfoTemp = $fileInfo['tmp_name'];
-            }
+            list($fileInfoName, $fileInfoTemp) = $this->getFileNames($fileInfo);
             $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
-
             $targetFieldName = $field[$counter];
-            if ($targetFieldName != "_im_csv_upload") {
+
+            if  ($targetFieldName == "_im_csv_upload") {    // CSV File uploading
+                $this->csvImportOperation($db, $datasource, $options, $dbspec, $debug, $contextname, $fileInfoTemp);
+            } else {
                 if (!isset($options['media-root-dir'])) { // Check the 'media-root-dir'.
-                    if (!is_null($this->url)) {
-                        header('Location: ' . $this->url);
+                    if (!is_null($url)) {
+                        header('Location: ' . $url);
                     } else {
-                        $this->db->logger->setErrorMessage("'media-root-dir' isn't specified");
-                        $this->db->processingRequest("noop");
-                        if (!$noOutput) {
-                            $this->db->finishCommunication();
-                            $this->db->exportOutputDataAsJSON();
-                        }
+                        $this->prepareErrorOut($db, $noOutput, "'media-root-dir' isn't specified");
                     }
                     return;
                 }
-                $fileRoot = $options['media-root-dir'];
-                if (substr($fileRoot, strlen($fileRoot) - 1, 1) != '/') {
-                    $fileRoot .= '/';
-                }
-
-                $uploadFilePathMode = null;
-                $params = IMUtil::getFromParamsPHPFile(array("uploadFilePathMode",), true);
-                $uploadFilePathMode = $params["uploadFilePathMode"];
-
-                $dirPath =
-                    $this->justfyPathComponent($contextname, $uploadFilePathMode) . DIRECTORY_SEPARATOR
-                    . $this->justfyPathComponent($keyfield, $uploadFilePathMode) . "="
-                    . $this->justfyPathComponent($keyvalue, $uploadFilePathMode) . DIRECTORY_SEPARATOR
-                    . $this->justfyPathComponent($targetFieldName, $uploadFilePathMode);
-                $rand4Digits = random_int(1000, 9999);
-                $filePartialPath = $dirPath . '/' . $filePathInfo['filename'] . '_'
-                    . $rand4Digits . '.' . $filePathInfo['extension'];
-                $filePath = $fileRoot . $filePartialPath;
-                if (strpos($filePath, $fileRoot) !== 0) {
-                    $db->logger->setErrorMessage("Invalid Path Error.");
-                    $db->processingRequest("noop");
-                    if (!$noOutput) {
-                        $db->finishCommunication();
-                        $db->exportOutputDataAsJSON();
-                    }
+                list($result, $filePath, $filePartialPath) = $this->decideFilePath($db, $noOutput, $options,
+                    $contextname, $keyfield, $keyvalue, $targetFieldName, $filePathInfo);
+                if ($result === false) {
                     return;
                 }
-
-                if (!file_exists($fileRoot . $dirPath)) {
-                    $result = mkdir($fileRoot . $dirPath, 0755, true);
-                    if (!$result) {
-                        $db->logger->setErrorMessage("Can't make directory. [{$dirPath}]");
-                        $db->processingRequest("noop");
-                        if (!$noOutput) {
-                            $db->finishCommunication();
-                            $db->exportOutputDataAsJSON();
-                        }
-                        return;
-                    }
-                }
-                //exec("chmod -R o+x " . escapeshellcmd($fileRoot));
-
                 $result = move_uploaded_file(IMUtil::removeNull($fileInfoTemp), $filePath);
                 if (!$result) {
                     if (!is_null($url)) {
                         header('Location: ' . $url);
                     } else {
-                        $db->logger->setErrorMessage("Fail to move the uploaded file in the media folder.");
-                        $db->processingRequest("noop");
-                        if (!$noOutput) {
-                            $db->finishCommunication();
-                            $db->exportOutputDataAsJSON();
-                        }
+                        $this->prepareErrorOut($db, $noOutput, "Fail to move the uploaded file in the media folder.");
                     }
                     return;
                 }
-
                 $dbProxyContext = $db->dbSettings->getDataSourceTargetArray();
                 if (isset($dbProxyContext['file-upload'])) {
                     foreach ($dbProxyContext['file-upload'] as $item) {
@@ -121,13 +128,9 @@ class FileSystem implements UploadingSupport
                 $db->initialize($datasource, $options, $dbspec, $debug, $contextname);
                 $db->dbSettings->addExtraCriteria($keyfield, "=", $keyvalue);
                 $db->dbSettings->setFieldsRequired(array($targetFieldName));
-
                 $db->dbSettings->setValue(array($filePartialPath));
-
                 $db->processingRequest("update", true);
                 $dbProxyRecord = $db->getDatabaseResult();
-
-                $relatedContext = null;
                 if (isset($dbProxyContext['file-upload'])) {
                     foreach ($dbProxyContext['file-upload'] as $item) {
                         if ($item['field'] == $targetFieldName) {
@@ -167,14 +170,13 @@ class FileSystem implements UploadingSupport
                     }
                 }
                 $db->addOutputData('dbresult', $filePath);
-
-            } else {    // CSV File uploading
-                $this->csvImportOperation($db, $datasource, $options, $dbspec, $debug, $contextname, $fileInfoTemp);
             }
+            return; // Stop this loop just once.
         }
     }
 
-    private function justfyPathComponent($str, $mode = "default")
+    private
+    function justfyPathComponent($str, $mode = "default")
     {
         $jStr = $str;
         switch ($mode) {
@@ -204,7 +206,8 @@ class FileSystem implements UploadingSupport
      * @param $contextname
      * @param $fileInfoTemp
      */
-    private function csvImportOperation($db, $datasource, $options, $dbspec, $debug, $contextname, $fileInfoTemp)
+    private
+    function csvImportOperation($db, $datasource, $options, $dbspec, $debug, $contextname, $fileInfoTemp)
     {
         $dbContext = $db->dbSettings->getDataSourceTargetArray();
         $params = IMUtil::getFromParamsPHPFile(

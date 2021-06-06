@@ -199,7 +199,7 @@ class DefinitionChecker
             'corresponding-table' => 'string',
             'challenge-table' => 'string',
             'authexpired' => 'string|integer',
-            'storing' => 'string(cookie|cookie-domainwide|session-storage)',
+            'storing' => 'string(cookie|cookie-domainwide|session-storage|credential)',
             'realm' => 'string',
             'email-as-username' => 'boolean',
             'issuedhash-dsn' => 'string',

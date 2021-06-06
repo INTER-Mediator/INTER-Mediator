@@ -409,7 +409,7 @@ const INTERMediator = {
     let nameSerial = 1
     let nameAttrCounter = 1
     let imPartsShouldFinished = []
-    let postSetFields
+    let postSetFields = []
     INTERMediator.currentContext = updateRequiredContext
     INTERMediator.currentRecordset = recordset
 
@@ -441,7 +441,6 @@ const INTERMediator = {
         await pageConstruct()
       } else {
         INTERMediator.partialConstructing = true
-        postSetFields = []
         try {
           if (!recordset) {
             updateRequiredContext.removeContext()

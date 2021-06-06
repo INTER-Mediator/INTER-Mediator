@@ -65,8 +65,8 @@ const IMLibUI = {
       return true
     }
 
-    IMLibQueue.setTask(function (completeTask) {
-      returnValue = valueChangeImpl(idValue, completeTask)
+    IMLibQueue.setTask(async function (completeTask) {
+      returnValue = await valueChangeImpl(idValue, completeTask)
     })
     return returnValue
 
@@ -876,7 +876,13 @@ const IMLibUI = {
           if (INTERMediatorLib.isWidgetElement(linkedNodes[i])) {
             widgetValue = linkedNodes[i]._im_getValue()
             if (widgetValue) {
-              fieldData.push({field: comp[1], value: widgetValue})
+              if(Array.isArray(widgetValue)){
+                for(let val of widgetValue) {
+                  fieldData.push({field: comp[1], value: val})
+                }
+              }else{
+                fieldData.push({field: comp[1], value: widgetValue})
+              }
             }
           } else if (linkedNodes[i].tagName === 'SELECT') {
             fieldData.push({field: comp[1], value: linkedNodes[i].value})

@@ -280,7 +280,7 @@ const IMLibPageNavigation = {
           node = document.createElement('SPAN')
           navigation.appendChild(node)
           node.appendChild(document.createTextNode(
-            INTERMediatorOnPage.getMessages()[8] + INTERMediatorOnPage.authUser))
+            INTERMediatorOnPage.getMessages()[8] + INTERMediatorOnPage.authUser()))
           node.setAttribute('class', 'IM_NAV_info')
 
           node = document.createElement('SPAN')
