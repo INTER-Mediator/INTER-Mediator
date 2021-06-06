@@ -65,7 +65,7 @@ class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
                 'corresponding-table' => 'authcor',
                 'challenge-table' => 'issuedhash',
                 'authexpired' => '300', // Set as seconds.
-                'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
+                'storing' => 'credential', // 'cookie'(default), 'cookie-domainwide', 'none'
                 ),
             ),
             array(

@@ -70,7 +70,7 @@ IM_Entry(
 //            'group-table' => '', //'authgroup',
 //            'challenge-table' => 'issuedhash',
             'authexpired' => '3600', // Set as seconds.
-            'storing' => 'session-storage', // session-storage, 'cookie'(default), 'cookie-domainwide', 'none'
+            'storing' => 'credential', // session-storage, 'cookie'(default), 'cookie-domainwide', 'none'
 //            'email-as-username' => true,
         ),
     ),

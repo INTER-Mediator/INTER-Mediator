@@ -26,7 +26,7 @@ IM_Entry(
     array(
 //        'authentication' => array( // table only, for all operations
 //            'authexpired' => '300', // Set as seconds.
-//            'storing' => 'none', // 'cookie', 'cookie-domainwide', 'none', 'session-storage'
+//            'storing' => 'credential', // 'cookie', 'cookie-domainwide', 'none', 'session-storage'
 //        ),
     ),
     array(

@@ -94,7 +94,7 @@ IM_Entry(
             'corresponding-table' => 'authcor',
             'challenge-table' => 'issuedhash',
             'authexpired' => '100000', // Set as seconds.
-            'storing' => 'session-storage', // session-storage, 'cookie'(default), 'cookie-domainwide', 'none'
+            'storing' => 'credential', // session-storage, 'cookie'(default), 'cookie-domainwide', 'none'
         ),
     ),
     array('db-class' => 'PDO'),
