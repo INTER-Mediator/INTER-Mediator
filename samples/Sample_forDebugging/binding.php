@@ -16,7 +16,7 @@ IM_Entry(array(
     array(
 //        'authentication' =>
 //            array(
-//                'storing' => 'session-storage',
+//                'storing' => 'credential',
 //                'realm' => 'Sample',
 //                'authexpired' => '3600',
 //            ),

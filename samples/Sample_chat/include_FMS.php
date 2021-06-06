@@ -44,7 +44,7 @@ IM_Entry(
             'corresponding-table' => 'authcor',
             'challenge-table' => 'issuedhash',
             'authexpired' => '300', // Set as seconds.
-            'storing' => 'session-storage',
+            'storing' => 'credential',
         ),
     ),
     array('db-class' => 'FileMaker_FX'),

@@ -91,7 +91,7 @@ IM_Entry(
 //            'challenge-table' => 'issuedhash',
             'authexpired' => '3600', // Set as seconds.
             'email-as-username' => true,
-            'storing' => 'session-storage', // session-storage, 'cookie'(default), 'cookie-domainwide', 'none'
+            'storing' => 'credential', // session-storage, 'cookie'(default), 'cookie-domainwide', 'none'
             'realm' => 'Sample_Auth/FMS_definitions', //
 //            'issuedhash-dsn' => 'sqlite:/var/db/im/sample.sq3',
         ),

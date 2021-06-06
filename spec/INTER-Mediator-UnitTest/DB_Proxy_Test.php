@@ -46,7 +46,7 @@ class DB_Proxy_Test extends TestCase
                     'corresponding-table' => 'authcor',
                     'challenge-table' => 'issuedhash',
                     'authexpired' => '300', // Set as seconds.
-                    'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
+                    'storing' => 'credential', // 'cookie'(default), 'cookie-domainwide', 'none'
                 ),
             ),
             array(
