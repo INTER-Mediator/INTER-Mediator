@@ -209,33 +209,48 @@ class FileSystem implements UploadingSupport
     private
     function csvImportOperation($db, $datasource, $options, $dbspec, $debug, $contextname, $fileInfoTemp)
     {
+        $dbContext = $db->dbSettings->getDataSourceTargetArray();
         $params = IMUtil::getFromParamsPHPFile(
             ["import1stLine", "importSkipLines", "importFormat", "useReplace",
                 "convert2Number", "convert2Date", "convert2DateTime"], true);
-        $import1stLine = (isset($options['import']) && isset($options['import']['1st-line']))
-            ? $options['import']['1st-line']
-            : (isset($params["import1stLine"]) ? $params["import1stLine"] : true);
-        $importSkipLines = intval((isset($options['import']) && isset($options['import']['skip-lines']))
-            ? $options['import']['skip-lines']
-            : (isset($params["importSkipLines"]) ? $params["importSkipLines"] : 0));
-        $importFormat = (isset($options['import']) && isset($options['import']['format']))
-            ? $options['import']['format']
-            : (isset($params["importFormat"]) ? $params["importFormat"] : "CSV");
+        $import1stLine = (isset($dbContext['import']) && isset($dbContext['import']['1st-line']))
+            ? $dbContext['import']['1st-line']
+            : ((isset($options['import']) && isset($options['import']['1st-line']))
+                ? $options['import']['1st-line']
+                : (isset($params["import1stLine"]) ? $params["import1stLine"] : true));
+        $importSkipLines = (isset($dbContext['import']) && isset($dbContext['import']['skip-lines']))
+            ? $dbContext['import']['skip-lines']
+            : (intval((isset($options['import']) && isset($options['import']['skip-lines']))
+                ? $options['import']['skip-lines']
+                : (isset($params["importSkipLines"]) ? $params["importSkipLines"] : 0)));
+        $importFormat = (isset($dbContext['import']) && isset($dbContext['import']['format']))
+            ? $dbContext['import']['format']
+            : ((isset($options['import']) && isset($options['import']['format']))
+                ? $options['import']['format']
+                : (isset($params["importFormat"]) ? $params["importFormat"] : "CSV"));
         $separator = (strtolower($importFormat) == 'tsv') ? "\t" : ",";
-        $useReplace = boolval((isset($options['import']) && isset($options['import']['use-replace']))
-            ? $options['import']['use-replace']
-            : (isset($params["useReplace"]) ? $params["useReplace"] : false));
-        $convert2Number = (isset($options['import']) && isset($options['import']['convert-number']))
-            ? $options['import']['convert-number']
-            : (isset($params["convert2Number"]) ? $params["convert2Number"] : []);;
+        $useReplace = boolval((isset($dbContext['import']) && isset($dbContext['import']['use-replace']))
+            ? $dbContext['import']['use-replace']
+            : ((isset($options['import']) && isset($options['import']['use-replace']))
+                ? $options['import']['use-replace']
+                : (isset($params["useReplace"]) ? $params["useReplace"] : false)));
+        $convert2Number = (isset($dbContext['import']) && isset($dbContext['import']['convert-number']))
+            ? $dbContext['import']['convert-number']
+            : ((isset($options['import']) && isset($options['import']['convert-number']))
+                ? $options['import']['convert-number']
+                : (isset($params["convert2Number"]) ? $params["convert2Number"] : []));
         $convert2Number = is_array($convert2Number) ? $convert2Number : [];
-        $convert2Date = (isset($options['import']) && isset($options['import']['convert-date']))
-            ? $options['import']['convert-date']
-            : (isset($params["convert2Date"]) ? $params["convert2Date"] : []);;
+        $convert2Date = (isset($dbContext['import']) && isset($dbContext['import']['convert-date']))
+            ? $dbContext['import']['convert-date']
+            : ((isset($options['import']) && isset($options['import']['convert-date']))
+                ? $options['import']['convert-date']
+                : (isset($params["convert2Date"]) ? $params["convert2Date"] : []));
         $convert2Date = is_array($convert2Date) ? $convert2Date : [];
-        $convert2DateTime = (isset($options['import']) && isset($options['import']['convert-datetime']))
-            ? $options['import']['convert-datetime']
-            : (isset($params["convert2DateTime"]) ? $params["convert2DateTime"] : []);;
+        $convert2DateTime = (isset($dbContext['import']) && isset($dbContext['import']['convert-datetime']))
+            ? $dbContext['import']['convert-datetime']
+            : ((isset($options['import']) && isset($options['import']['convert-datetime']))
+                ? $options['import']['convert-datetime']
+                : (isset($params["convert2DateTime"]) ? $params["convert2DateTime"] : []));
         $convert2DateTime = is_array($convert2DateTime) ? $convert2DateTime : [];
 
         $decimalPoint = ord(IMLocaleFormatTable::getCurrentLocaleFormat()['mon_decimal_point']);
@@ -244,7 +259,6 @@ class FileSystem implements UploadingSupport
 
         $db->ignoringPost();
         $db->initialize($datasource, $options, $dbspec, $debug, $contextname);
-        $dbContext = $db->dbSettings->getDataSourceTargetArray();
 
         $importingFields = [];
         if (is_string($import1stLine)) {
