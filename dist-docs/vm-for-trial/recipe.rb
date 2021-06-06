@@ -995,13 +995,13 @@ if node[:platform] == 'ubuntu'
   end
 end
 
-#execute "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout 5.x && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git" do
-#  command "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout 5.x && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git"
-#end
-
-execute "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout stable && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git" do
-  command "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout stable && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git"
+execute "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout 5.x && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git" do
+  command "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout 5.x && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git"
 end
+
+#execute "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout stable && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git" do
+#  command "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout stable && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git"
+#end
 
 if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   execute "rm -f \"#{WEBROOT}/index.html\"" do
@@ -1489,6 +1489,10 @@ end
 
 execute "chmod 664 \"#{IMVMROOT}/dbupdate.sh\"" do
   command "chmod 664 \"#{IMVMROOT}/dbupdate.sh\""
+end
+
+execute "chmod 755 \"#{IMVMROOT}/index.php\"" do
+  command "chmod 755 \"#{IMVMROOT}/index.php\""
 end
 
 directory '/home/developer' do
@@ -2089,6 +2093,12 @@ end
 
 
 if node[:platform] == 'alpine'
+  execute "rm -f /home/developer/mitamae-x86_64-linux" do
+    command "rm -f /home/developer/mitamae-x86_64-linux"
+  end
+  execute "rm -f /home/developer/recipe.rb*" do
+    command "rm -f /home/developer/recipe.rb*"
+  end
   execute 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd' do
     command 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd'
   end
