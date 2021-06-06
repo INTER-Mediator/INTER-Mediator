@@ -16,7 +16,6 @@
         "inter-mediator-locale": "1.0.4",
         "inter-mediator-nodegraph": "1.0.6",
         "inter-mediator-plugin-codemirror": "1.0.1",
-        "inter-mediator-plugin-fileupload": "1.0.3",
         "inter-mediator-plugin-flatpickr": "1.0.0",
         "inter-mediator-plugin-jquerydatepicker": "1.0.2",
         "inter-mediator-plugin-jqueryfileupload": "1.2.1",
@@ -3484,11 +3483,6 @@
       "dependencies": {
         "codemirror": "*"
       }
-    },
-    "node_modules/inter-mediator-plugin-fileupload": {
-      "version": "1.0.3",
-      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-fileupload/-/inter-mediator-plugin-fileupload-1.0.3.tgz",
-      "integrity": "sha512-FYt9JIC1RdqLL28FvlB3LspvkNCNgQdYq2p0sOiXvQjcrGdp5pwk3TnM2nogxhduzTe5ndTs7sG6n3tAzLsSQQ=="
     },
     "node_modules/inter-mediator-plugin-flatpickr": {
       "version": "1.0.0",
@@ -10605,11 +10599,6 @@
       "requires": {
         "codemirror": "*"
       }
-    },
-    "inter-mediator-plugin-fileupload": {
-      "version": "1.0.3",
-      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-fileupload/-/inter-mediator-plugin-fileupload-1.0.3.tgz",
-      "integrity": "sha512-FYt9JIC1RdqLL28FvlB3LspvkNCNgQdYq2p0sOiXvQjcrGdp5pwk3TnM2nogxhduzTe5ndTs7sG6n3tAzLsSQQ=="
     },
     "inter-mediator-plugin-flatpickr": {
       "version": "1.0.0",
