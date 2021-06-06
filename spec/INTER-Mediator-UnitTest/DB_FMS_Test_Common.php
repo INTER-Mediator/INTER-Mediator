@@ -402,7 +402,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->dbProxySetupForAccess('postalcode', 1000000);
         $this->db_proxy->dbSettings->addExtraCriteria('f3', 'cn', '167');
         $result = $this->db_proxy->readFromDB();
-        $totalCount = $this->db_proxy-> getTotalCount();
+        $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals(15, count($result));
         $this->assertEquals(3654, $totalCount);
     }
@@ -417,7 +417,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'records' => $limit)));
         $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
         $result = $this->db_proxy->readFromDB();
-        $totalCount = $this->db_proxy-> getTotalCount();
+        $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals($limit, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1000000', $result[0]['f3']);
@@ -432,7 +432,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'query' => array(array('field' => 'f3', 'value' => '167', 'operator' => 'bw')))));
         $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
         $result = $this->db_proxy->readFromDB();
-        $totalCount = $this->db_proxy-> getTotalCount();
+        $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals(15, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1670032', $result[0]['f3']);
@@ -441,7 +441,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'query' => array(array('field' => 'f3', 'value' => '167', 'operator' => 'bw'), array('field' => 'f9', 'value' => '天沼', 'operator' => 'neq')))));
         $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
         $result = $this->db_proxy->readFromDB();
-        $totalCount = $this->db_proxy-> getTotalCount();
+        $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals(14, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1670021', $result[0]['f3']);
@@ -457,7 +457,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
         $this->db_proxy->dbSettings->addExtraCriteria('f9', 'cn', '井草');
         $result = $this->db_proxy->readFromDB();
-        $totalCount = $this->db_proxy-> getTotalCount();
+        $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals(1, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1670022', $result[0]['f3']);
@@ -474,7 +474,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
         $this->db_proxy->dbSettings->addExtraCriteria('f3', 'cn', '167');
         $result = $this->db_proxy->readFromDB();
-        $totalCount = $this->db_proxy-> getTotalCount();
+        $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals($limit, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1670032', $result[0]['f3']);
@@ -489,7 +489,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->addExtraCriteria('f3', 'cn', '167');
         $this->db_proxy->dbSettings->addExtraSortKey('f3', 'desc');
         $result = $this->db_proxy->readFromDB();
-        $totalCount = $this->db_proxy-> getTotalCount();
+        $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals(15, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1670032', $result[0]['f3']);
@@ -504,7 +504,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->addExtraCriteria('f3', 'bw', '167');
         $this->db_proxy->dbSettings->addExtraCriteria('f9', 'cn', '荻窪');
         $result = $this->db_proxy->readFromDB();
-        $totalCount = $this->db_proxy-> getTotalCount();
+        $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals(2, count($result));
         $this->assertEquals(3654, $totalCount);
     }
@@ -519,7 +519,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->addExtraCriteria('f9', 'ew', '荻窪');
         $this->db_proxy->dbSettings->addExtraCriteria('__operation__', 'ex', '');
         $result = $this->db_proxy->readFromDB();
-        $totalCount = $this->db_proxy-> getTotalCount();
+        $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals(15, count($result));
         $this->assertEquals(3654, $totalCount);
     }
@@ -531,7 +531,7 @@ class DB_FMS_Test_Common extends TestCase
     {
         $this->dbProxySetupForAccess('postalcode', 1);
         $result = $this->db_proxy->readFromDB();
-        $totalCount = $this->db_proxy-> getTotalCount();
+        $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals(1, count($result));
         $this->assertEquals(3654, $totalCount);
 
@@ -547,7 +547,7 @@ class DB_FMS_Test_Common extends TestCase
             }
         }
         $result = $this->db_proxy->readFromDB();
-        $totalCount = $this->db_proxy-> getTotalCount();
+        $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals(1, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1000000', $result[0]['f3']);
@@ -563,7 +563,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->addExtraCriteria('f3', 'ew', '32');
         $this->db_proxy->dbSettings->addExtraCriteria('__operation__', 'ex', '');
         $result = $this->db_proxy->readFromDB();
-        $totalCount = $this->db_proxy-> getTotalCount();
+        $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals(93, count($result));
         $this->assertEquals(3654, $totalCount);
     }
@@ -716,7 +716,7 @@ class DB_FMS_Test_Common extends TestCase
         $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
 
         $this->db_proxy->setParamResponse([$calcuratedHash]);
-        $this->db_proxy->setClientId( "TEST");
+        $this->db_proxy->setClientId("TEST");
         $this->assertTrue(
             $this->db_proxy->checkAuthorization($username), $testName);
     }
@@ -743,7 +743,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->setCurrentUser($username);
         $this->db_proxy->dbSettings->setDataSourceName('person');
         $this->db_proxy->paramAuthUser = $username;
-        $this->db_proxy->clientId = $clientId;
+        $this->db_proxy->setClientId($clientId);
         $this->db_proxy->paramResponse = $calcuratedHash;
 
         $this->db_proxy->processingRequest('read');
@@ -795,7 +795,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->setCurrentUser($username);
         $this->db_proxy->dbSettings->setDataSourceName("person");
         $this->db_proxy->paramAuthUser = $username;
-        $this->db_proxy->clientId = $clientId;
+        $this->db_proxy->setClientId($clientId);
         $this->db_proxy->paramResponse = $calcuratedHash;
 
         $this->db_proxy->processingRequest("read");
@@ -805,6 +805,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertTrue(is_null($this->db_proxy->getDatabaseResult()), $testName);
         $this->assertTrue($this->db_proxy->dbSettings->getRequireAuthentication(), $testName);
     }
+
     /**
      * @runInSeparateProcess
      * @preserveGlobalState disabled
@@ -922,13 +923,13 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertTrue($registResult !== false, "Register table1");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
-            array("clientid"=>$clientId, "entity"=>$entity));
+            array("clientid" => $clientId, "entity" => $entity));
         $this->assertTrue(count($recSet) == 1, "Count table1");
         $this->assertTrue($recSet[0]["conditions"] == $condition, "the 'clientId' value in table1");
         $regId = $recSet[0]["id"];
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredpks",
-            array("context_id"=>$regId));
+            array("context_id" => $regId));
         $this->assertTrue(count($recSet) == 4, "Count pk values");
         $this->assertTrue(count(array_diff(
                 $pkArray,
@@ -940,13 +941,13 @@ class DB_FMS_Test_Common extends TestCase
             "Register table2");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
-            array("clientid"=>$clientId, "entity"=>$entity));
+            array("clientid" => $clientId, "entity" => $entity));
         $this->assertTrue(count($recSet) == 1, "Count table1");
         $this->assertTrue($recSet[0]["conditions"] == $condition, "tha 'clientId' value in table1");
         $regId = $recSet[0]["id"];
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredpks",
-            array("context_id"=>$regId));
+            array("context_id" => $regId));
         $this->assertTrue(count($recSet) == 4, "Count pk values");
         $this->assertTrue(count(array_diff(
                 $pkArray,
@@ -958,13 +959,13 @@ class DB_FMS_Test_Common extends TestCase
             "Register table3");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
-            array("clientid"=>$clientId, "entity"=>$entity));
+            array("clientid" => $clientId, "entity" => $entity));
         $this->assertTrue(count($recSet) == 1, "Count table1");
         $this->assertTrue($recSet[0]["conditions"] == $condition, "tha 'clientId' value in table1");
         $regId = $recSet[0]["id"];
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredpks",
-            array("context_id"=>$regId));
+            array("context_id" => $regId));
         $this->assertTrue(count($recSet) == 4, "Count pk values");
         $this->assertTrue(count(array_diff(
                 $pkArray,
@@ -998,11 +999,11 @@ class DB_FMS_Test_Common extends TestCase
         //var_export($this->db_proxy->logger->getDebugMessage());
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
-            array("clientid"=>$clientId, "entity"=>$entity));
+            array("clientid" => $clientId, "entity" => $entity));
         $this->assertTrue(count($recSet) == 3, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredpks",
-            array("context_id"=>$registResult1));
+            array("context_id" => $registResult1));
         $this->assertTrue(count($recSet) == 4, "Count pk values");
         $this->assertTrue(count(array_diff(
                 $pkArray,
@@ -1012,11 +1013,11 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId, array($registResult2)), $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
-            array("clientid"=>$clientId, "entity"=>$entity));
+            array("clientid" => $clientId, "entity" => $entity));
         $this->assertTrue(count($recSet) == 2, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredpks",
-            array("context_id"=>$registResult2));
+            array("context_id" => $registResult2));
         $this->assertTrue(count($recSet) == 0, "Count pk values");
 
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId, null), $testName);
@@ -1090,18 +1091,18 @@ class DB_FMS_Test_Common extends TestCase
 
         $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId1, $entity, array(101));
         $this->assertTrue($result[0] == $clientId2, $testName);
-        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk"=>101));
-        $this->assertTrue(count($recSet) == 2 , $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 101));
+        $this->assertTrue(count($recSet) == 2, $testName);
 
         $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId2, $entity, array(102));
         $this->assertTrue($result[0] == $clientId1, $testName);
-        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk"=>102));
-        $this->assertTrue(count($recSet) == 2 , $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 102));
+        $this->assertTrue(count($recSet) == 2, $testName);
 
         $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId3, "table2", array(103));
         $this->assertTrue(count($result) == 0, $testName);
-        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk"=>103));
-        $this->assertTrue(count($recSet) == 1 , $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 103));
+        $this->assertTrue(count($recSet) == 1, $testName);
 
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId1, null) !== false, $testName);
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId2, null) !== false, $testName);
@@ -1117,7 +1118,8 @@ class DB_FMS_Test_Common extends TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testMultiClientSyncRemove()    {
+    public function testMultiClientSyncRemove()
+    {
         $testName = "Remove Sync Info.";
         $this->dbProxySetupForAuth();
         //$this->db_proxy->dbClass->deleteForTest("registeredcontext");
@@ -1136,8 +1138,8 @@ class DB_FMS_Test_Common extends TestCase
         $result = $this->db_proxy->dbClass->notifyHandler->removeFromRegistered($clientId1, $entity, array(3003));
         $this->assertTrue($result[0] == $clientId2, $testName);
 
-        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk"=>3003));
-        $this->assertTrue(count($recSet) == 0 , $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 3003));
+        $this->assertTrue(count($recSet) == 0, $testName);
 
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId1, null), $testName);
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId2, null), $testName);
