@@ -1,6 +1,6 @@
 /*
  * INTER-Mediator
- * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * Copyright (c) INTER-Mediator Directive Committee (https://inter-mediator.org)
  * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
  * INTER-Mediator is supplied under MIT License.
@@ -177,7 +177,7 @@ class IMLibContext {
               initialvalue = targetContextCapt.getValue(
                 Object.keys(parentContext.store)[0],
                 targetFieldCapt,
-                INTERMediatorOnPage.defaultKeyName + '=' + recordset[i][INTERMediatorOnPage.defaultKeyName]
+                INTERMediatorOnPage.defaultKeyName + '=' + recordset[0][INTERMediatorOnPage.defaultKeyName]
               )
             } else {
               currentFieldVal = recordset[0][targetFieldCapt]
@@ -332,7 +332,7 @@ class IMLibContext {
       }
       if (store[0][contextName]) {
         result = store[0][contextName]
-        for (recId of result) {
+        for (recId of Object.keys(result)) {
           if (isFinite(recId)) {
             recordset.push(result[recId])
           }
