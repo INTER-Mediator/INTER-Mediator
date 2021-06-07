@@ -1,6 +1,6 @@
 /*
  * INTER-Mediator
- * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * Copyright (c) INTER-Mediator Directive Committee (https://inter-mediator.org)
  * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
  * INTER-Mediator is supplied under MIT License.
@@ -776,9 +776,7 @@ const INTERMediator = {
               return elm
             })
 
-            if (currentContextDef.relation && currentContextDef.relation[0] &&
-              Boolean(currentContextDef.relation[0].portal) === true) {
-              // for FileMaker portal access mode
+            if (isPortalAccessMode(currentContextDef)) {
               contextObj.isPortal = true
               if (!currentRecord) {
                 tempObj = IMLibContextPool.generateContextObject(
@@ -1143,8 +1141,12 @@ const INTERMediator = {
 
       const repeatersOriginal = contextObj.original
       const currentContextDef = contextObj.getContextDef()
-      const targetRecordset = currentContextDef.data ? targetRecords.recordset : targetRecords.dbresult
       const targetTotalCount = targetRecords.totalCount
+
+      let targetRecordset = currentContextDef.data ? targetRecords.recordset : targetRecords.dbresult
+      if (isPortalAccessMode(currentContextDef)) {
+        targetRecordset = targetRecords.recordset
+      }
 
       let repeatersOneRec = cloneEveryNodes(repeatersOriginal)
       if (!INTERMediatorOnPage.notShowHeaderFooterOnNoResult || targetRecords.count !== 0) {
@@ -1725,6 +1727,19 @@ const INTERMediator = {
           ? (` Ver.${INTERMediatorOnPage.metadata.version}(${INTERMediatorOnPage.metadata.releasedate})`)
           : ' Ver. Development Now!'
         spNode.appendChild(document.createTextNode(versionString))
+      }
+    }
+
+    /* --------------------------------------------------------------------
+     * detect FileMaker portal access mode
+     */
+    function isPortalAccessMode(currentContextDef) {
+      'use strict'
+      if (currentContextDef.relation && currentContextDef.relation[0] &&
+        Boolean(currentContextDef.relation[0].portal) === true) {
+        return true
+      } else {
+        return false
       }
     }
   },
