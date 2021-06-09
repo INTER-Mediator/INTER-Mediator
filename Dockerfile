@@ -1,4 +1,4 @@
-FROM php:8.0-apache
+FROM --platform=linux/amd64 php:8.0-apache
 RUN apt-get update && apt-get install -y mariadb-client git unzip libzip-dev sudo iputils-ping vim libpng-dev libldap2-dev
 COPY composer.json /var/www/html/composer.json
 COPY package.json /var/www/html/package.json
