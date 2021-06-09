@@ -49,11 +49,11 @@ IM_Entry(
             ),
         ),
         'authentication' => array(
-            'storing' => 'session-storage',
+            'storing' => 'credential',
             'realm' => 'Sample_products_auth',
         ),
         'media-root-dir' => $_SERVER['DOCUMENT_ROOT'] . '/samples/Sample_products/images',
     ),
     array('db-class' => 'PDO'),
-    false
+    2
 );

@@ -1203,10 +1203,18 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $generatedChallenge = IMUtil::generateChallenge();
                 $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
                 //$this->outputOfProcessing['mediatoken'] = $generatedChallenge;
-                setcookie('_im_mediatoken', $generatedChallenge,
+                $cookieNameUser = '_im_username';
+                $cookieNameToken = '_im_mediatoken';
+                $realm = $this->dbSettings->getAuthenticationItem('realm');
+                if ($realm) {
+                    $realm = str_replace(" ", "_", str_replace(".", "_", $realm));
+                    $cookieNameUser .= ('_' . $realm);
+                    $cookieNameToken .= ('_' . $realm);
+                }
+                setcookie($cookieNameToken, $generatedChallenge,
                     time() + $this->dbSettings->getAuthenticationItem('authexpired'),
                     '/', $_SERVER['SERVER_NAME'], false, true);
-                setcookie('_im_username', $this->paramAuthUser,
+                setcookie($cookieNameUser, $this->paramAuthUser,
                     time() + $this->dbSettings->getAuthenticationItem('authexpired'),
                     '/', $_SERVER['SERVER_NAME'], false, false);
                 $this->logger->setDebugMessage("mediatoken stored", 2);

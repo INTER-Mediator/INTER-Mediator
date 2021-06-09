@@ -42,7 +42,7 @@ IM_Entry(
     array(
         'authentication' => [
             'authexpired' => '3600', // Set as seconds.
-            'storing' => 'session-storage', // 'session-storage', 'cookie'(default), 'cookie-domainwide', 'none'
+            'storing' => 'credential', // 'session-storage', 'cookie'(default), 'cookie-domainwide', 'none'
         ],
         'formatter' => array(
             array('field' => 'product@unitprice', 'converter-class' => 'Number', 'parameter' => '0'),

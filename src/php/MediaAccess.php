@@ -127,8 +127,8 @@ class MediaAccess
             }
 
             $isClass = (stripos($target, 'class://') === 0);
-            $isNoRec = (count($contextRecord) === 0);
-            $isOneRec = (count($contextRecord) === 1);
+            $isNoRec = !is_array($contextRecord) || (count($contextRecord) === 0);
+            $isOneRec = is_array($contextRecord) && (count($contextRecord) === 1);
             if (!$isOneRec && (!$isClass || ($isClass && $isNoRec))) {
                 // In case of the "class:" schema, the record set can have 1 or more than 1 records.
                 // In case of non class: schema, the record set has to have just 1 record.
@@ -423,6 +423,12 @@ class MediaAccess
             }
             return 'context_auth';
         }
+
+//        file_put_contents('/tmp/1', var_export($dbProxyInstance->logger->getDebugMessages(), true));
+//        file_put_contents('/tmp/2', var_export($cValueUser, true));
+//        file_put_contents('/tmp/3', var_export($cValueToken, true));
+//        file_put_contents('/tmp/4', var_export($cookieNameToken, true));
+
         return null;
     }
 

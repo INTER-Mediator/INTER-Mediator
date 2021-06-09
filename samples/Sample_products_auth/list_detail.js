@@ -10,3 +10,7 @@
 // window.onload = function () {
 //     INTERMediator.construct(true);
 // };
+INTERMediatorOnPage.doBeforeConstruct = function(){
+  INTERMediatorLog.suppressDebugMessageOnPage = true
+  //INTERMediatorLog.errorMessageByAlert = true
+}

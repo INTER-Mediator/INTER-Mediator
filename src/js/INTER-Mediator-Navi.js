@@ -1534,23 +1534,26 @@ const IMLibPageNavigation = {
         if (pageNaviShow) {
           document.getElementById('IM_NAVIGATOR').style.display = 'block'
         }
-        if (masterUpdate) {
-          await INTERMediator.constructMain(masterContextCL)
-        }
-        if (IMLibUI.mobileNaviBackButtonId) {
-          const node = document.getElementById(IMLibUI.mobileNaviBackButtonId)
-          node.style.display = 'none'
-        }
-        if (INTERMediatorOnPage.naviAfterMoveToMaster) {
-          masterContextCL = IMLibContextPool.getMasterContext()
-          detailContextCL = IMLibContextPool.getDetailContext()
-          INTERMediatorOnPage.naviAfterMoveToMaster(masterContextCL, detailContextCL)
-        }
-        if (INTERMediatorOnPage.masterScrollPosition) {
-          window.scrollTo(
-            INTERMediatorOnPage.masterScrollPosition.x,
-            INTERMediatorOnPage.masterScrollPosition.y)
-        }
+        IMLibQueue.setTask((complete) => {
+          complete()
+          if (masterUpdate) {
+             INTERMediator.constructMain(masterContextCL)
+          }
+          if (IMLibUI.mobileNaviBackButtonId) {
+            const node = document.getElementById(IMLibUI.mobileNaviBackButtonId)
+            node.style.display = 'none'
+          }
+          if (INTERMediatorOnPage.naviAfterMoveToMaster) {
+            masterContextCL = IMLibContextPool.getMasterContext()
+            detailContextCL = IMLibContextPool.getDetailContext()
+            INTERMediatorOnPage.naviAfterMoveToMaster(masterContextCL, detailContextCL)
+          }
+          if (INTERMediatorOnPage.masterScrollPosition) {
+            window.scrollTo(
+              INTERMediatorOnPage.masterScrollPosition.x,
+              INTERMediatorOnPage.masterScrollPosition.y)
+          }
+        })
       }
     }
   }
