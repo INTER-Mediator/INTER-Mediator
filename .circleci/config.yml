@@ -2,16 +2,19 @@ version: 2
 jobs:
   test:
     docker:
-      - image: circleci/php:7.4.9-apache
+      - image: circleci/php:7.4.20-apache
     working_directory: ~/INTER-Mediator
     steps:
       - checkout
       - setup_remote_docker
-      - run: docker run --privileged -e "container=docker" --tmpfs /run -v /sys/fs/cgroup:/sys/fs/cgroup:ro -d --name ubuntu ubuntu:16.04 /sbin/init
-      - run: docker exec -it ubuntu sh -c "apt-get update"
-      - run: docker exec -it ubuntu sh -c "apt-get -y install ruby git"
+      - run: pwd
+      - run: ls -al
+      - run: cd .circleci
+      - run: docker build -t inter-mediator-ubuntu .
+      - run: docker run --privileged -d --name ubuntu --rm inter-mediator-ubuntu
       - run: docker exec -it ubuntu sh -c "git clone https://github.com/$CIRCLE_USERNAME/INTER-Mediator"
       - run: docker exec -it ubuntu sh -c "cd INTER-Mediator; git checkout $CIRCLE_BRANCH"
+      - run: docker exec -it ubuntu sh -c "apt-get update"
       - run: docker exec -it ubuntu sh -c "cd INTER-Mediator; gem install itamae --no-doc; itamae local dist-docs/vm-for-trial/recipe.rb; echo y | sh /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh"
       - run: docker exec -it ubuntu sh -c "php -v; php -m; locale -a; locale"
       - run: docker exec -it ubuntu sh -c "chown -R www-data /var/www"
@@ -19,7 +22,7 @@ jobs:
       - run: docker exec -it ubuntu sh -c "cd /var/www/html/INTER-Mediator; composer update --with-dependencies"
       - run: docker exec -e CIRCLECI=true -it ubuntu sh -c "cd /var/www/html/INTER-Mediator; ./vendor/bin/phpunit --bootstrap ./vendor/autoload.php --configuration /var/www/html/INTER-Mediator/spec/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
       - run: docker exec -it ubuntu sh -c "cd /var/www/html/INTER-Mediator && composer jest"
-      - run: docker exec -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile -e DISPLAY=:99.0 -it ubuntu sh -c "/etc/rc.local; apt-get -y install ruby-dev firefox xvfb; gem install bundler --no-doc; bundle; curl -L https://github.com/mozilla/geckodriver/releases/download/v0.29.0/geckodriver-v0.29.0-linux64.tar.gz > /tmp/geckodriver-v0.29.0-linux64.tar.gz; cd /usr/bin/; sudo tar xzvf /tmp/geckodriver-v0.29.0-linux64.tar.gz; xvfb-run rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec -f doc -c /var/www/html/INTER-Mediator/dist-docs/docker/spec/samples/samples_spec.rb"
+      - run: docker exec -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile -e DISPLAY=:99.0 -it ubuntu sh -c "/etc/rc.local; apt-get -y install ruby-dev firefox xvfb; gem install bundler --no-doc; bundle; curl -L https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-linux64.tar.gz > /tmp/geckodriver-v0.29.1-linux64.tar.gz; cd /usr/bin/; sudo tar xzvf /tmp/geckodriver-v0.29.1-linux64.tar.gz; xvfb-run rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec -f doc -c /var/www/html/INTER-Mediator/dist-docs/docker/spec/samples/samples_spec.rb"
       - run: docker stop ubuntu
       - run: docker rm ubuntu
 
