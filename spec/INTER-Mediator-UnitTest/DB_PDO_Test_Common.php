@@ -34,7 +34,7 @@ abstract class DB_PDO_Test_Common extends TestCase
     {
         $this->dbProxySetupForAggregation();
 
-//        $this->db_proxy->logger->clearLogs();
+        //$this->db_proxy->logger->clearLogs();
 
         $result = $this->db_proxy->readFromDB();
         $recordCount = $this->db_proxy->countQueryResult();
@@ -305,7 +305,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         }
     }
 
-    public function testAuthByInvalidUsder()
+    public function testAuthByInvalidUser()
     {
         $this->dbProxySetupForAuth();
 
@@ -381,8 +381,12 @@ abstract class DB_PDO_Test_Common extends TestCase
 
         $testName = "Resolve containing group";
         $groupArray = $this->db_proxy->dbClass->authHandler->authSupportGetGroupsOfUser('user1');
-//        echo var_export($groupArray);
+//        var_export($this->db_proxy->logger->getErrorMessages());
+//        var_export($this->db_proxy->logger->getDebugMessages());
         $this->assertTrue(count($groupArray) > 0, $testName);
+        $this->assertTrue(in_array("group1", $groupArray), $testName);
+        $this->assertFalse(in_array("group2", $groupArray), $testName);
+        $this->assertTrue(in_array("group3", $groupArray), $testName);
     }
 
     public function testNativeUser()

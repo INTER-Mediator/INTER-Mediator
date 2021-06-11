@@ -87,9 +87,28 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         try {
             $result = $this->getTableInfo($tableName);
         } catch (Exception $ex) {
-            throw $ex;
+            return [];
         }
         $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+        $fieldArray = [];
+        $matches = [];
+        foreach ($result as $row) {
+            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if (in_array($matches[0], $timeFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
+
+    public function getBooleanFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            return [];
+        }
+        $timeFieldTypes = ['boolean'];
         $fieldArray = [];
         $matches = [];
         foreach ($result as $row) {

@@ -37,7 +37,7 @@ IM_Entry(
         'authentication' => [
             'user' => ['user1', 'user2'],
             'authexpired' => '3600',
-            'storing' => 'session-storage',
+            'storing' => 'credential',
         ],
         'formatter' => array(
             array('field' => 'product@unitprice', 'converter-class' => 'Number', 'parameter' => '0'),

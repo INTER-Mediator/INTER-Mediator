@@ -561,6 +561,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      */
     private function resolveGroup($groupid)
     {
+        if (strlen($groupid) < 1) {
+            return;
+        }
         $corrTable = $this->dbSettings->getCorrTable();
 
         if ($this->firstLevel) {

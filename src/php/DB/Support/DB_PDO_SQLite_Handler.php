@@ -107,6 +107,11 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return $fieldArray;
     }
 
+    public function getBooleanFields($tableName)
+    {
+        return [];
+    }
+
     private $tableInfo = array();
     private $fieldNameForField = 'name';
     private $fieldNameForType = 'type';

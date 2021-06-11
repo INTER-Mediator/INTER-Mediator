@@ -92,9 +92,28 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         try {
             $result = $this->getTableInfo($tableName);
         } catch (Exception $ex) {
-            throw $ex;
+            return [];
         }
         $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+        $fieldArray = [];
+        $matches = [];
+        foreach ($result as $row) {
+            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if (in_array($matches[0], $timeFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
+
+    public function getBooleanFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            return [];
+        }
+        $timeFieldTypes = ['boolean', 'bool'];
         $fieldArray = [];
         $matches = [];
         foreach ($result as $row) {
@@ -117,13 +136,13 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
             $sql = "SHOW COLUMNS FROM " . $this->quotedEntityName($tableName);
             $this->dbClassObj->logger->setDebugMessage($sql);
             $result = $this->dbClassObj->link->query($sql);
+            if (!$result) {
+                throw new Exception('Inspection Error:' . $sql);
+            }
             foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
                 $infoResult[] = $row;
             }
             $this->tableInfo[$tableName] = $infoResult;
-            if (!$result) {
-                throw new Exception('INSERT Error:' . $sql);
-            }
         } else {
             $infoResult = $this->tableInfo[$tableName];
         }

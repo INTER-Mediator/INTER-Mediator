@@ -97,6 +97,8 @@ abstract class DB_PDO_Handler
 
     public abstract function getTimeFields($tableName);
 
+    public abstract function getBooleanFields($tableName);
+
     public abstract function quotedEntityName($entityName);
 
     public abstract function optionalOperationInSetup();

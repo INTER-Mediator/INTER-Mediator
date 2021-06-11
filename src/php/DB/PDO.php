@@ -346,6 +346,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $this->mainTableTotalCount = 0;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+        $boolFields = $this->handler->getBooleanFields($this->dbSettings->getEntityForUpdate());
 
         if (!$this->setupConnection()) { //Establish the connection
             return false;
@@ -396,7 +397,6 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 $limitParam = $this->dbSettings->getRecordCount();
             }
         }
-
         $isPaging = (isset($tableInfo['paging']) and $tableInfo['paging'] === true);
         $skipParam = 0;
         if ($isPaging) {
@@ -470,6 +470,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $rowArray[$field]);
                     $dt->setTimezone(new DateTimeZone('UTC'));
                     $rowArray[$field] = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+                } else if (in_array($field, $boolFields)) {
+                    $rowArray[$field] = $this->isTrue($rowArray[$field]);
                 }
             }
             $sqlResult[] = $rowArray;
@@ -528,6 +530,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
         $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
+        $boolFields = $this->handler->getBooleanFields($this->dbSettings->getEntityForUpdate());
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
@@ -558,6 +561,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
             if (in_array($field, $fieldInfos) && $convertedValue === "") {
                 $setClause[] = $this->handler->quotedEntityName($field) . "=NULL";
+            } else if (in_array($field, $boolFields)) {
+                $setClause[] = $this->handler->quotedEntityName($field)
+                    . "=" . ($this->isTrue($convertedValue) ? "TRUE" : "FALSE");
             } else {
                 $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                 $convertedValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
@@ -658,6 +664,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
         $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
+        $boolFields = $this->handler->getBooleanFields($this->dbSettings->getEntityForUpdate());
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $viewName = $this->handler->quotedEntityName($this->dbSettings->getEntityForRetrieve());
@@ -695,6 +702,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $value = $fieldValues[$i];
             if (in_array($field, $fieldInfos) && $value === "") {
                 $setValues[] = "NULL";
+            } else if (in_array($field, $boolFields)) {
+                $setValues[] = $this->isTrue($value) ? "TRUE" : "FALSE";
             } else {
                 $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                 $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
@@ -751,7 +760,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $this->errorMessageStore('Insert:' . $sql);
             return false;
         }
-        $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence'] : $tableName;
+        $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence']
+            : "{$this->dbSettings->getEntityForUpdate()}_{$keyField}_seq";
         $lastKeyValue = $this->link->lastInsertId($seqObject);
 
         $this->notifyHandler->setQueriedPrimaryKeys(array($lastKeyValue));
@@ -1028,6 +1038,16 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     function getFieldInfo($dataSourceName)
     {
         return $this->fieldInfo;
+    }
+
+    private function isTrue($d)
+    {
+        if (strtolower($d) == 'true' || strtolower($d) == 't') {
+            return true;
+        } else if (intval($d) > 0) {
+            return true;
+        }
+        return false;
     }
 
     public function queryForTest($table, $conditions = null)
