@@ -34,7 +34,7 @@ abstract class DB_PDO_Test_Common extends TestCase
     {
         $this->dbProxySetupForAggregation();
 
-//        $this->db_proxy->logger->clearLogs();
+        //$this->db_proxy->logger->clearLogs();
 
         $result = $this->db_proxy->readFromDB();
         $recordCount = $this->db_proxy->countQueryResult();

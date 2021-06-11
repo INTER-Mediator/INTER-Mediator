@@ -397,7 +397,6 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 $limitParam = $this->dbSettings->getRecordCount();
             }
         }
-
         $isPaging = (isset($tableInfo['paging']) and $tableInfo['paging'] === true);
         $skipParam = 0;
         if ($isPaging) {

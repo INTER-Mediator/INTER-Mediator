@@ -92,7 +92,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         try {
             $result = $this->getTableInfo($tableName);
         } catch (Exception $ex) {
-            throw $ex;
+            return [];
         }
         $timeFieldTypes = ['datetime', 'time', 'timestamp'];
         $fieldArray = [];
@@ -111,7 +111,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         try {
             $result = $this->getTableInfo($tableName);
         } catch (Exception $ex) {
-            throw $ex;
+            return [];
         }
         $timeFieldTypes = ['boolean', 'bool'];
         $fieldArray = [];
