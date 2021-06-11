@@ -7,9 +7,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: pwd
-      - run: ls -al
-      - run: cd .circleci
+      - run: cp -p .circleci/Dockerfile .
       - run: docker build -t inter-mediator-ubuntu .
       - run: docker run --privileged -d --name ubuntu --rm inter-mediator-ubuntu
       - run: docker exec -it ubuntu sh -c "git clone https://github.com/$CIRCLE_USERNAME/INTER-Mediator"
