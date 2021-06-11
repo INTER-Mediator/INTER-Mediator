@@ -457,6 +457,9 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16 && node[:pl
 end
 
 if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
+  package 'software-properties-common' do
+    action :install
+  end
   execute 'LC_ALL=C.UTF-8 sudo add-apt-repository ppa:ondrej/php -y' do
     command 'LC_ALL=C.UTF-8 sudo add-apt-repository ppa:ondrej/php -y'
   end
