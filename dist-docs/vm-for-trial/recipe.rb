@@ -424,8 +424,7 @@ else
   end
 end
 
-#if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16 && node[:platform_version].to_f < 18
-if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
+if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16 && node[:platform_version].to_f < 18
   execute 'curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -' do
     command 'curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -'
   end
@@ -455,7 +454,12 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
       action [ :enable, :start ]
     end
   end
+end
 
+if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
+  package 'software-properties-common' do
+    action :install
+  end
   execute 'LC_ALL=C.UTF-8 sudo add-apt-repository ppa:ondrej/php -y' do
     command 'LC_ALL=C.UTF-8 sudo add-apt-repository ppa:ondrej/php -y'
   end
@@ -550,10 +554,10 @@ elsif node[:platform] == 'ubuntu'
     package 'php-cli' do
       action :install
     end
-    package 'libapache2-mod-php7.2' do
+    package 'libapache2-mod-php' do
       action :install
     end
-    package 'php7.2-xml' do
+    package 'php-xml' do
       action :install
     end
     package 'php-mbstring' do
