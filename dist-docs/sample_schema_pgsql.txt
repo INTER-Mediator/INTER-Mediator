@@ -10,18 +10,16 @@
 This schema file is for the sample of INTER-Mediator using PostgreSQL, encoded by UTF-8.
 
 Example:
-$ psql -c 'create database test_db;' -U postgres -h localhost
-$ psql -U postgres -f sample_schema_pgsql.txt -h localhost test_db
-Password for user postgres:
+$ psql -c 'create database test_db;' -h localhost postgres
+$ psql -f sample_schema_pgsql.txt -h localhost test_db
 
 */
 
 /***************************** ATTENTION *****************************
  * If you execute this schema twice or more, remove /* */ of the following lines.
  *********************************************************************/
-/*
-DROP USER 'web'@'localhost';
-*/
+
+-- DROP USER web;
 CREATE USER web PASSWORD 'password';
 /*
 DROP DATABASE IF EXISTS test_db;
@@ -427,7 +425,7 @@ CREATE INDEX issuedhash_user_id_clienthost
 CREATE TABLE operationlog (
 	id				INTEGER DEFAULT nextval('serial'),
 	dt          	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	user            VARCHAR(48),
+	"user"            VARCHAR(48),
 	client_id_in    VARCHAR(48),
 	client_id_out   VARCHAR(48),
 	require_auth    BIT(1),
@@ -445,6 +443,7 @@ CREATE TABLE operationlog (
 /* In case of real deployment, some indices are required for quick operations. */
 
 /* Grant to All operations for all objects with web account */
+
 GRANT ALL PRIVILEGES ON SCHEMA im_sample TO web;
 GRANT ALL PRIVILEGES ON im_sample.authcor TO web;
 GRANT ALL PRIVILEGES ON im_sample.authgroup TO web;
