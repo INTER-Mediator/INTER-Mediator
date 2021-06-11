@@ -554,10 +554,10 @@ elsif node[:platform] == 'ubuntu'
     package 'php-cli' do
       action :install
     end
-    package 'libapache2-mod-php7.2' do
+    package 'libapache2-mod-php' do
       action :install
     end
-    package 'php7.2-xml' do
+    package 'php-xml' do
       action :install
     end
     package 'php-mbstring' do
