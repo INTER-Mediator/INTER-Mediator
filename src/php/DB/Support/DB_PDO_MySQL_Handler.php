@@ -106,6 +106,25 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return $fieldArray;
     }
 
+    public function getBooleanFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $timeFieldTypes = ['boolean', 'bool'];
+        $fieldArray = [];
+        $matches = [];
+        foreach ($result as $row) {
+            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if (in_array($matches[0], $timeFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
+
     private $tableInfo = array();
     private $fieldNameForField = 'Field';
     private $fieldNameForType = 'Type';

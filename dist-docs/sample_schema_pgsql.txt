@@ -42,7 +42,7 @@ CREATE TABLE person	(
 	address		VARCHAR(40),
 	mail			VARCHAR(40),
 	category		INTEGER,
-	checking		INTEGER,
+	checking		BOOLEAN,
 	location		INTEGER,
 	memo		TEXT
 );

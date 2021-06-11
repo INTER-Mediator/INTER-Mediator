@@ -48,7 +48,7 @@ CREATE TABLE person	(
 	address		VARCHAR(40),
 	mail			VARCHAR(40),
 	category		INT,
-	checking		INT,
+	checking		BOOLEAN,
 	location		INT,
 	memo		TEXT,
 	PRIMARY KEY(id)
