@@ -847,9 +847,6 @@ if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 20) || (node[:
   execute 'n stable' do
     command 'n stable'
   end
-  execute 'npm install -g npm' do
-    command 'npm install -g npm'
-  end
   execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
     command 'ln -sf /usr/local/bin/node /usr/bin/node'
   end
