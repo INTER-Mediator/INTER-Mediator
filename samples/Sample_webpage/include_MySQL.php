@@ -54,5 +54,5 @@ IM_Entry(
         'media-root-dir' => '/tmp',
     ],
     ['db-class' => 'PDO'],
-    2
+    false
 );
