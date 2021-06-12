@@ -377,7 +377,7 @@ end
 describe package('php7.2-sqlite3'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
   it { should be_installed }
 end
-describe package('php7.2-sqlite3'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
+describe package('php-sqlite3'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
 describe package('php-pdo'), :if => os[:family] == 'redhat' do

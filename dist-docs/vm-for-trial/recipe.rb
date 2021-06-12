@@ -707,7 +707,7 @@ if node[:platform] == 'ubuntu'
       action :install
     end
   else
-    package 'php7.2-sqlite3' do
+    package 'php-sqlite3' do
       action :install
     end
   end
@@ -840,12 +840,15 @@ if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform
     action :install
   end
 end
-if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 18) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
+if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 20) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   execute 'npm install -g n' do
     command 'npm install -g n'
   end
   execute 'n stable' do
     command 'n stable'
+  end
+  execute 'npm install -g npm' do
+    command 'npm install -g npm'
   end
   execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
     command 'ln -sf /usr/local/bin/node /usr/bin/node'
@@ -1616,8 +1619,8 @@ if node[:platform] == 'ubuntu'
       command 'cat /etc/php/7.2/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/7.2/apache2/php.ini.tmp && mv /etc/php/7.2/apache2/php.ini.tmp /etc/php/7.2/apache2/php.ini'
     end
   else
-    execute 'cat /etc/php/7.2/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/7.2/apache2/php.ini.tmp && mv /etc/php/7.2/apache2/php.ini.tmp /etc/php/7.2/apache2/php.ini' do
-      command 'cat /etc/php/7.2/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/7.2/apache2/php.ini.tmp && mv /etc/php/7.2/apache2/php.ini.tmp /etc/php/7.2/apache2/php.ini'
+    execute 'cat /etc/php/8.0/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/8.0/apache2/php.ini.tmp && mv /etc/php/8.0/apache2/php.ini.tmp /etc/php/8.0/apache2/php.ini' do
+      command 'cat /etc/php/8.0/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/8.0/apache2/php.ini.tmp && mv /etc/php/8.0/apache2/php.ini.tmp /etc/php/8.0/apache2/php.ini'
     end
   end
 end
