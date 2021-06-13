@@ -206,6 +206,8 @@ class DefinitionChecker
             'password-policy' => 'string',
             'enroll-page' => 'string',
             'reset-page' => 'string',
+            'is-saml' => 'boolean',
+            'saml-builtin-auth' => 'boolean',
         ),
         'media-root-dir' => 'string',
         'media-context' => 'string',

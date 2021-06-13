@@ -485,9 +485,19 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         return false;
     }
 
-    public function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue)
+    public function authSupportCheckMediaPrivilege($tableName, $targeting, $userField, $user, $keyField, $keyValue)
     {
         $user = $this->authSupportUnifyUsernameAndEmail($user);
+
+        switch ($targeting) {
+            case  'field_user':
+                break;
+            case  'field_group':
+                throw new Exception('The authSupportCheckMediaPrivilege method has to modify for field-group targeting.');
+                break;
+            default: // 'context_auth' or 'no_auth'
+                throw new Exception('Unexpected authSupportCheckMediaPrivilege method usage.');
+        }
 
         $this->dbClass->setupFXforAuth($tableName, 1);
         $this->dbClass->fxAuth->AddDBParam($userField, $user, 'eq');

@@ -699,9 +699,19 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return false;
     }
 
-    public function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue)
+    public function authSupportCheckMediaPrivilege($tableName, $targeting, $userField, $user, $keyField, $keyValue)
     {
         $user = $this->authSupportUnifyUsernameAndEmail($user);
+
+        switch ($targeting) {
+            case  'field_user':
+                break;
+            case  'field_group':
+                throw new Exception('The authSupportCheckMediaPrivilege method has to modify for field-group targeting.');
+                break;
+            default: // 'context_auth' or 'no_auth'
+                throw new Exception('Unexpected authSupportCheckMediaPrivilege method usage.');
+        }
 
         $this->dbClass->setupFMDataAPIforAuth($tableName, 1);
         $conditions = array(array($userField => $user), array($keyField => $keyValue));
