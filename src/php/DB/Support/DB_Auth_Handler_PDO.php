@@ -602,17 +602,41 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using any table.
      */
-    public function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue)
+    public function authSupportCheckMediaPrivilege($tableName, $targeting, $userField, $user, $keyField, $keyValue)
     {
+        if (strlen($user) == 0) {
+            return false;
+        }
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
+
         $user = $this->authSupportUnifyUsernameAndEmail($user);
-        $sql = "{$this->dbClass->handler->sqlSELECTCommand()}* FROM {$tableName} WHERE {$userField}="
-            . $this->dbClass->link->quote($user) . " and {$keyField}=" . $this->dbClass->link->quote($keyValue);
+        switch ($targeting) {
+            case  'field_user':
+                $queryClause = "{$userField}=" . $this->dbClass->link->quote($user)
+                    . " AND {$keyField}=" . $this->dbClass->link->quote($keyValue);
+                break;
+            case  'field_group':
+                $belongGroups = $this->authSupportGetGroupsOfUser($user);
+                $groupCriteria = array();
+                foreach ($belongGroups as $oneGroup) {
+                    $groupCriteria[] = "{$userField}=" . $this->dbClass->link->quote($oneGroup);
+                }
+                if (count($groupCriteria) == 0) {
+                    $queryClause = 'FALSE';
+                } else {
+                    $queryClause = "(" . implode(' OR ', $groupCriteria) . ")"
+                        . " AND {$keyField}=" . $this->dbClass->link->quote($keyValue);
+                }
+                break;
+            default: // 'context_auth' or 'no_auth'
+                throw new Exception('Unexpected authSupportCheckMediaPrivilege method usage.');
+        }
+        $sql = "{$this->dbClass->handler->sqlSELECTCommand()}* FROM {$tableName} WHERE {$queryClause}";
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
-            $this->dbClass->errorMessageStore('Select:' . $sql);
+            $this->dbClass->errorMessageStore("[authSupportCheckMediaPrivilege] {$sql}");
             return false;
         }
         $this->logger->setDebugMessage("[authSupportCheckMediaPrivilege] {$sql}");

@@ -111,6 +111,8 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         }
         $mediaHandler->processing($dbProxyInstance, $options, $_GET['media']);
         $resultLog = $mediaHandler->getResultForLog();
+//        file_put_contents('/tmp/1', var_export($dbProxyInstance->logger->getDebugMessages(),true));
+//        file_put_contents('/tmp/2', var_export($dbProxyInstance->logger->getErrorMessages(),true));
     } else if ((isset($_POST['access']) && $_POST['access'] == 'uploadfile')
         || (isset($_GET['access']) && $_GET['access'] == 'uploadfile')
     ) {     // File uploading

@@ -69,7 +69,7 @@ class GenerateJSCode
             "dbDSN", "nonSupportMessageId", "valuesForLocalContext", "themeName", "appLocale", "appCurrency",
             "resetPage", "enrollPage", "serviceServerPort", "serviceServerHost", "activateClientService",
             "followingTimezones", "notUseServiceServer", "serviceServerProtocol", "passwordHash", "alwaysGenSHA2",
-            "isSAML","samlWithBuiltInAuth"
+            "isSAML", "samlWithBuiltInAuth"
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -110,8 +110,10 @@ class GenerateJSCode
         $passwordHash = isset($params['passwordHash']) ? $params['passwordHash'] : 1;
         $passwordHash = ($passwordHash === '2m') ? 1.5 : floatval($passwordHash);
         $alwaysGenSHA2 = isset($params['alwaysGenSHA2']) ? boolval($params['alwaysGenSHA2']) : false;
-        $isSAML = isset($params['isSAML']) ? boolval($params['isSAML']) : false;
-        $samlWithBuiltInAuth = isset($params['samlWithBuiltInAuth']) ? boolval($params['samlWithBuiltInAuth']) : false;
+        $isSAML = isset($options['authentication']['is-saml']) ? $options['authentication']['is-saml']
+            : (isset($params['isSAML']) ? boolval($params['isSAML']) : false);
+        $samlWithBuiltInAuth = isset($options['authentication']['saml-builtin-auth']) ? $options['authentication']['saml-builtin-auth']
+            : (isset($params['samlWithBuiltInAuth']) ? boolval($params['samlWithBuiltInAuth']) : false);
 
         $serverName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
         $documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : 'Not_on_web_server';

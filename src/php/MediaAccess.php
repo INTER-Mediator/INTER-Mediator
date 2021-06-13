@@ -103,18 +103,16 @@ class MediaAccess
             if ($analyzeResult) { // Get the relevant relation to the context.
                 switch ($authResult) {
                     case  'field_user':
+                    case  'field_group':
                         $authInfoField = $dbProxyInstance->dbClass->authHandler->getFieldForAuthorization("load");
                         $tableName = $dbProxyInstance->dbSettings->getEntityForRetrieve();
                         $contextRecord = $dbProxyInstance->dbClass->authHandler->authSupportCheckMediaPrivilege(
-                            $tableName, $authInfoField, $this->cookieUser, $this->targetKeyField, $this->targetKeyValue);
+                            $tableName, $authResult, $authInfoField, $this->cookieUser, $this->targetKeyField, $this->targetKeyValue);
                         if ($contextRecord === false) {
                             $this->exitAsError(401);
                         }
                         $contextRecord = [$contextRecord];
                         break;
-                    case  'field_group':
-                        // Not implemented
-                        throw new Exception('The field-group is not supported so far on the MediaAccess class.');
                     default: // 'context_auth' or 'no_auth'
                         if ($this->targetContextName) {
                             if ($this->targetKeyField && $this->targetKeyValue) {
@@ -423,12 +421,9 @@ class MediaAccess
             }
             return 'context_auth';
         }
-
-//        file_put_contents('/tmp/1', var_export($dbProxyInstance->logger->getDebugMessages(), true));
 //        file_put_contents('/tmp/2', var_export($cValueUser, true));
 //        file_put_contents('/tmp/3', var_export($cValueToken, true));
 //        file_put_contents('/tmp/4', var_export($cookieNameToken, true));
-
         return null;
     }
 

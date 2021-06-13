@@ -27,6 +27,8 @@ Ver.8 (in development)
 - Credential info don't store in global variables. These are stored in just only cookies or session storage or just http-only cookies.
 - jQuery-FileUpload plug-in can upload multiple files. Set IMParts_Catalog.jquery_fileupload.multiFileInPostOnly to true.
   This feature can activate on the post only mode. The sample is Sample_webpage/fileuploadMulti_MySQL.html.
+- MediaAccess class can handle the target=group-field authentication.
+- The second parameter of IM_Entry function can have authentication/is-saml and saml-builtin-auth key.
 - [INFO] The inter-mediator-plugin-fileupload is deprecated. The inter-mediator-plugin-jqueryfileupload is a replacement.
   We are going to maintain the jqueryfileupload so far and hope it forever.
 - [BUG FIX] Fix compatibility with Claris FileMaker Server. The affected version is Ver.7.

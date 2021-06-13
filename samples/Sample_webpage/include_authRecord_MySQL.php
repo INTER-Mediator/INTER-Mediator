@@ -33,7 +33,8 @@ IM_Entry(
             'authentication' => [
                 'media-handling' => true,
                 'all'=>[
-                    'target'=>'field-user',
+                    //'target'=>'field-user',
+                    'target'=>'field-group',
                     'field'=>'vc3',
                 ]
             ],
