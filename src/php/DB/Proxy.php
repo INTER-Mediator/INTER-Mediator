@@ -940,7 +940,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                             $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
                             $this->paramAuthUser = $signedUser;
                             if ($signedUser) {
-                                $this->logger->setDebugMessage("SAML Authentication succeed.");
+                                $attrs = $SAMLAuth->getAttributes();
+                                $this->logger->setDebugMessage(
+                                    "SAML Authentication succeed. Attributes=" . var_export($attrs, true));
                                 $this->authSucceed = true;
                                 $password = IMUtil::generateRandomPW();
                                 [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);

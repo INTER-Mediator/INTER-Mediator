@@ -21,7 +21,7 @@
         "inter-mediator-plugin-jqueryfileupload": "1.2.4",
         "inter-mediator-plugin-jsonformatter": "1.0.0",
         "inter-mediator-plugin-popupselector": "1.0.1",
-        "inter-mediator-plugin-tinymce": "1.0.3",
+        "inter-mediator-plugin-tinymce": "1.0.4",
         "inter-mediator-queue": "1.0.8",
         "jsencrypt": "*",
         "jssha": ">=3.0.0",
@@ -3513,9 +3513,9 @@
       "integrity": "sha512-OK8gTjneNJm9Ghfm7C+IAmFRqE/Ydx7P+hmW5pdmMkkD5dMQSnCmRfZUAWrRJ+Yn14zn7dD7B8IvKaXWdWTA9A=="
     },
     "node_modules/inter-mediator-plugin-tinymce": {
-      "version": "1.0.3",
-      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-tinymce/-/inter-mediator-plugin-tinymce-1.0.3.tgz",
-      "integrity": "sha512-PZ1nQ7vUm+X1gg/41fUK/yGh5VaVSiFIW3s4tFhBCD7JH3JCORm8QJOtFk1BJ4Tn4NrvG40I1kf47L3oOYoqtQ==",
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-tinymce/-/inter-mediator-plugin-tinymce-1.0.4.tgz",
+      "integrity": "sha512-qHPsCzGvqgy5fNkC772e3As/kikiUrs1tSH80r5ms98NafTDtFr4IkJ5wrz0lqI31RGwBCLDsOmSPrO74lmGtg==",
       "dependencies": {
         "tinymce": ">5.3.0"
       }
@@ -10629,9 +10629,9 @@
       "integrity": "sha512-OK8gTjneNJm9Ghfm7C+IAmFRqE/Ydx7P+hmW5pdmMkkD5dMQSnCmRfZUAWrRJ+Yn14zn7dD7B8IvKaXWdWTA9A=="
     },
     "inter-mediator-plugin-tinymce": {
-      "version": "1.0.3",
-      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-tinymce/-/inter-mediator-plugin-tinymce-1.0.3.tgz",
-      "integrity": "sha512-PZ1nQ7vUm+X1gg/41fUK/yGh5VaVSiFIW3s4tFhBCD7JH3JCORm8QJOtFk1BJ4Tn4NrvG40I1kf47L3oOYoqtQ==",
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/inter-mediator-plugin-tinymce/-/inter-mediator-plugin-tinymce-1.0.4.tgz",
+      "integrity": "sha512-qHPsCzGvqgy5fNkC772e3As/kikiUrs1tSH80r5ms98NafTDtFr4IkJ5wrz0lqI31RGwBCLDsOmSPrO74lmGtg==",
       "requires": {
         "tinymce": ">5.3.0"
       }
