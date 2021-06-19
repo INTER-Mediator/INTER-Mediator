@@ -14,8 +14,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate --strict
+#    - name: Validate composer.json and composer.lock
+#      run: composer validate --strict
 
     - name: Cache Composer packages
       id: composer-cache
@@ -27,9 +27,15 @@ jobs:
           ${{ runner.os }}-php-
 
     - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
+        run: composer install --prefer-dist --no-progress
 
-    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
+    - name: Test of PHP Code
+        run: composer test
+
+    - name: Test of JavaScript Code
+        run: composer jest
+
+        # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
 
     # - name: Run test suite
