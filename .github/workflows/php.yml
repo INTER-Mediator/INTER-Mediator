@@ -27,13 +27,13 @@ jobs:
           ${{ runner.os }}-php-
 
     - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+      run: composer install --prefer-dist --no-progress
 
     - name: Test of PHP Code
-        run: composer test
+      run: composer test
 
     - name: Test of JavaScript Code
-        run: composer jest
+      run: composer jest
 
         # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
