@@ -224,7 +224,7 @@ $uploadFilePathMode = "";
  *
  * This header will be appended other server url than the origin.
  */
-$accessControlAllowOrigin = "http://localhost:9000,http://localhost:11478";
+//$accessControlAllowOrigin = "http://localhost:9000";
 
 //$altThemePath = "/var/www/theme";    //Your original theme directory.
 //$themeName = "blackbird";      //Default theme name.
