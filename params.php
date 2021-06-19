@@ -186,6 +186,7 @@ $sendMailCompatibilityMode = true;  // default is true
 //$isSAML = true;
 //$samlAuthSource = 'default-sp';
 //$samlWithBuiltInAuth = true;
+$samlAttrRules = ['username'=>'uid|0','realname'=>'eduPersonAffiliation|0'];
 
 /* Initial values for local context with their keys. */
 //$valuesForLocalContext = array(
