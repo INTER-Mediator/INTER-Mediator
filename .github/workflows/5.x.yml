@@ -1,4 +1,4 @@
-name: test
+name: build
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
         shell: bash
         run: |
           docker-compose up -d
-          sleep 120
+          sleep 60
           docker-compose exec -T web sh -c "cd /var/www/html && vendor/bin/phpunit --globals-backup ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
 
   test-with-php74:
@@ -29,7 +29,7 @@ jobs:
         run: |
           cp .github/workflows/Dockerfile-for-php-7.4 Dockerfile
           docker-compose up -d
-          sleep 120
+          sleep 60
           docker-compose exec -T web sh -c "cd /var/www/html && vendor/bin/phpunit --globals-backup ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
 
   test-with-php55:
@@ -41,8 +41,8 @@ jobs:
         run: |
           cp .github/workflows/Dockerfile-for-php-5.5 Dockerfile
           docker-compose up -d
-          sleep 120
-          docker-compose exec -T web sh -c "cd /var/www/html && vendor/bin/phpunit --globals-backup ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+          sleep 60
+          docker-compose exec -T web sh -c "cd /var/www/html && vendor/bin/phpunit ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
 
   test-with-php54:
     runs-on: ubuntu-latest
@@ -53,5 +53,5 @@ jobs:
         run: |
           cp .github/workflows/Dockerfile-for-php-5.4 Dockerfile
           docker-compose up -d
-          sleep 120
-          docker-compose exec -T web sh -c "cd /var/www/html && vendor/bin/phpunit --globals-backup ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+          sleep 60
+          docker-compose exec -T web sh -c "cd /var/www/html && vendor/bin/phpunit ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
