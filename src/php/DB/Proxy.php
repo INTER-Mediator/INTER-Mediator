@@ -543,7 +543,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
             "dbOption", "dbDSN", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
             "activateClientService", "accessLogLevel", "certVerifying", "passwordHash", "alwaysGenSHA2",
-            "isSAML", "samlAuthSource", "migrateSHA1to2",
+            "isSAML", "samlAuthSource", "migrateSHA1to2", "samlAttrRules",
         ), true);
         $this->accessLogLevel = intval($params['accessLogLevel']);
         $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
@@ -768,6 +768,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         if (isset($params['samlAuthSource'])) {
             $this->dbSettings->setSAMLAuthSource($params['samlAuthSource']);
         }
+        $this->dbSettings->setSAMLAttrRules(isset($params["samlAttrRules"]) ? $params["samlAttrRules"] : false);
         return true;
     }
 
@@ -935,15 +936,18 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                             $this->authSucceed = true;
                         } else { // Timeout with SAML
                             $SAMLAuth = new SAMLAuth($this->dbSettings->getSAMLAuthSource());
+                            $SAMLAuth->setSAMLAttrRules($this->dbSettings->getSAMLAttrRules());
                             $signedUser = $SAMLAuth->samlLoginCheck();
                             $this->outputOfProcessing['samlloginurl'] = $SAMLAuth->samlLoginURL($_SERVER['HTTP_REFERER']);
                             $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
                             $this->paramAuthUser = $signedUser;
                             if ($signedUser) {
-                                $this->logger->setDebugMessage("SAML Authentication succeed.");
+                                $attrs = $SAMLAuth->getValuesFromAttributes();
+                                $this->logger->setDebugMessage(
+                                    "SAML Authentication succeed. Attributes=" . var_export($attrs, true));
                                 $this->authSucceed = true;
                                 $password = IMUtil::generateRandomPW();
-                                [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
+                                [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true, $attrs);
                                 if ($addResult) {
                                     $this->dbSettings->setRequireAuthentication(false);
                                     $this->dbSettings->setCurrentUser($signedUser);
@@ -1446,11 +1450,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $password
      * @return mixed
      */
-    function addUser($username, $password, $isLDAP = false)
+    function addUser($username, $password, $isLDAP = false, $attrs = null)
     {
         $this->logger->setDebugMessage("[addUser] username={$username}, isLDAP={$isLDAP}", 2);
         $hashedPw = IMUtil::convertHashedPassword($password, $this->passwordHash, $this->alwaysGenSHA2);
-        $returnValue = $this->dbClass->authHandler->authSupportCreateUser($username, $hashedPw, $isLDAP, $password);
+        $returnValue = $this->dbClass->authHandler->authSupportCreateUser($username, $hashedPw, $isLDAP, $password, $attrs);
         $this->logger->setDebugMessage("[addUser] authSupportCreateUser returns: {$returnValue}", 2);
         return [$returnValue, $hashedPw];
     }
