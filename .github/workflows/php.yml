@@ -37,8 +37,6 @@ jobs:
       #    - name: Validate composer.json and composer.lock
       #      run: composer validate --strict
 
-      - name: Show Current Directory
-        run: pwd
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2

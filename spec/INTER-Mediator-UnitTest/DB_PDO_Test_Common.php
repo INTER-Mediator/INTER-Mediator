@@ -39,8 +39,8 @@ abstract class DB_PDO_Test_Common extends TestCase
         $result = $this->db_proxy->readFromDB();
         $recordCount = $this->db_proxy->countQueryResult();
 
-//        var_export($this->db_proxy->logger->getErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessages());
+        var_export($this->db_proxy->logger->getErrorMessages());
+        var_export($this->db_proxy->logger->getDebugMessages());
 
         $this->assertTrue(is_array($result), "After the query, any array should be retrieved.");
         $this->assertEquals(count($result), 10, "After the query, 10 records should be retrieved.");
