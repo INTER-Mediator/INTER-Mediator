@@ -55,7 +55,7 @@ jobs:
         run: mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.txt
 
       - name: Setup PostgreSQL
-        run: psql -h 127.0.0.1 -p 5432 --username=postgres --no-password test_db < ./dist-docs/sample_schema_pgsql.txt
+        run: psql postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./dist-docs/sample_schema_pgsql.txt
 
       - name: Setup SQLite
         run: |
