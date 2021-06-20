@@ -69,7 +69,7 @@ jobs:
       - name: Setup SQLite
         run: |
           touch sample.sq3
-          sqlite3 sample.sq3 < ./dist-docs・sample_schema_sqlite.txt
+          sqlite3 sample.sq3 < ./dist-docs/sample_schema_sqlite.txt
           chmod 777 sample.sq3
 #          chown www-data sample.sq3
 
