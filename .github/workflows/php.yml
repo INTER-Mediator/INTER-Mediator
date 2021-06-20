@@ -8,9 +8,12 @@ on:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest, windows-latest, macOS-latest]
+        php-versions: ['7.2', '7.3', '7.4', '8.0']
+    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
     services:
       mysql: # https://qiita.com/sayama0402/items/e863ffb597ce87bf2e2f
         image: mysql:5.7
