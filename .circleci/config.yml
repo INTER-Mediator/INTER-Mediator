@@ -11,7 +11,7 @@ jobs:
       - run: docker build -t inter-mediator-ubuntu .
       - run: docker run --privileged -d --name ubuntu --rm inter-mediator-ubuntu
       - run: docker exec -it ubuntu sh -c "git clone https://github.com/$CIRCLE_USERNAME/INTER-Mediator"
-      - run: docker exec -it ubuntu sh -c "cd INTER-Mediator; git fetch; git checkout $CIRCLE_BRANCH"
+      - run: docker exec -it ubuntu sh -c "cd INTER-Mediator; git fetch --all; git checkout $CIRCLE_BRANCH"
       - run: docker exec -it ubuntu sh -c "apt-get update"
       - run: docker exec -it ubuntu sh -c "cd INTER-Mediator; gem install itamae --no-doc; itamae local dist-docs/vm-for-trial/recipe.rb; echo y | sh /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh"
       - run: docker exec -it ubuntu sh -c "php -v; php -m; locale -a; locale"
