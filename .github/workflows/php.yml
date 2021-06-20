@@ -11,6 +11,15 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: EeLeBui7%Eesa4oto
+        options: --health-cmd "mysqladmin ping -h localhost" --health-interval 20s --health-timeout 10s --health-retries 10
+
     steps:
     - uses: actions/checkout@v2
 
@@ -28,6 +37,10 @@ jobs:
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
+
+  - name: exec hoge.sql
+      run: |
+        mysql -h 127.0.0.1 --port 3306 -u root -EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.txt
 
     - name: Test of PHP Code
       run: composer test
