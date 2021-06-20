@@ -67,6 +67,7 @@ jobs:
           pwd
           touch sample.sq3
           sqlite3 sample.sq3 < ./dist-docs/sample_schema_sqlite.txt
+          chmod 777 sample.sq3
 #          chown www-data sample.sq3
 
       - name: Test of PHP Code
