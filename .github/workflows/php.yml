@@ -19,6 +19,15 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: EeLeBui7%Eesa4oto
         options: --health-cmd "mysqladmin ping -h localhost" --health-interval 20s --health-timeout 10s --health-retries 10
+      postgres:
+        image: postgres:12
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: web
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_db
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - uses: actions/checkout@v2
@@ -40,7 +49,11 @@ jobs:
 
       - name: Setup MySQL
         run: |
-            mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.txt
+          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.txt
+
+      - name: Setup PostgreSQL
+        run: |
+          sudo -u postgres psql -h 127.0.0.1 -p 5432 < ./dist-docs/sample_schema_pgsql.txt
 
       - name: Setup SQLite
         run:　|
