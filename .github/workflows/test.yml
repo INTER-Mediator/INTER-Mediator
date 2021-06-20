@@ -1,0 +1,21 @@
+name: test
+
+on:
+  push:
+    branches:
+      - 5.x
+  pull_request:
+    branches:
+      - 5.x
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: docker-compose-run
+        shell: bash
+        run: |
+          docker-compose up -d
+          sleep 60
+          docker-compose exec -T web sh -c "cd /var/www/html && vendor/bin/phpunit --globals-backup ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
