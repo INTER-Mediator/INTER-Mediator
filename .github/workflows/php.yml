@@ -37,6 +37,8 @@ jobs:
       #    - name: Validate composer.json and composer.lock
       #      run: composer validate --strict
 
+      - name: Print Env Varialbles
+        run: printenv
       - name: PHP Module Checking
         run: php -m
       - name: Cache Composer packages
@@ -66,9 +68,9 @@ jobs:
 
       - name: Setup SQLite
         run: |
-          mkdir -p /var/db/im
-          sqlite3 /var/db/im/sample.sq3 < ./dist-docs・sample_schema_sqlite.txt
-          chmod 777 /var/db/im/sample.sq3
+          touch sample.sq3
+          sqlite3 sample.sq3 < ./dist-docs・sample_schema_sqlite.txt
+          chmod 777 sample.sq3
 #          chown www-data sample.sq3
 
       - name: Test of PHP Code
