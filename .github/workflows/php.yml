@@ -1,8 +1,9 @@
-name: INTER-Mediator Unit Test
+name: build
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - "*"
   pull_request:
     branches: [ master ]
 
