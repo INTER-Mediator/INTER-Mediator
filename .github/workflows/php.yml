@@ -66,7 +66,7 @@ jobs:
 
       - name: Setup SQLite
         run: |
-          mkdir /var/db/im
+          mkdir -p /var/db/im
           sqlite3 /var/db/im/sample.sq3 < ./dist-docs・sample_schema_sqlite.txt
           chmod 777 /var/db/im/sample.sq3
 #          chown www-data sample.sq3
