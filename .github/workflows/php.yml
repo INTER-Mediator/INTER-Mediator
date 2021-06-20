@@ -24,8 +24,8 @@ jobs:
         ports:
           - 5432:5432
         env:
-          POSTGRES_USER: web
-          POSTGRES_PASSWORD: password
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: EeLeBui7%Eesa4oto
           POSTGRES_DB: test_db
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
@@ -53,7 +53,7 @@ jobs:
 
       - name: Setup PostgreSQL
         run: |
-          sudo -u postgres psql -h 127.0.0.1 -p 5432 < ./dist-docs/sample_schema_pgsql.txt
+          psql -h 127.0.0.1 -p 5432 --username=postgres --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_pgsql.txt
 
       - name: Setup SQLite
         run: |
