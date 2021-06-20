@@ -55,6 +55,9 @@ jobs:
       - name: Setup PostgreSQL
         run: psql postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./dist-docs/sample_schema_pgsql.txt
 
+      - name: Check MySQL
+        run: mysql -h 127.0.0.1 --port 3306 -u web --password=password -e "select * from person;"
+
       - name: Setup SQLite
         run: |
           pwd
