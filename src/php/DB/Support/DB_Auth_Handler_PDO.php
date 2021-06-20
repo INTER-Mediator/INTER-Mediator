@@ -291,7 +291,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'authuser'
      */
-    public function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null)
+    public function authSupportCreateUser(
+        $username, $hashedpassword, $isLDAP = false, $ldapPassword = null, $attrs = null)
     {
         $this->logger->setDebugMessage("[authSupportCreateUser] username ={$username}, isLDAP ={$isLDAP}", 2);
 
@@ -304,10 +305,20 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             if (!$this->dbClass->setupConnection()) { //Establish the connection
                 return false;
             }
-            $tableRef = "{$userTable} (username, hashedpasswd)";
+            $fieldArray = ['username', 'hashedpasswd'];
+            $valueArray = [$username, $hashedpassword];
+            if (is_array($attrs)) {
+                foreach ($attrs as $field => $value) {
+                    if (!in_array($field, $fieldArray)) {
+                        $fieldArray[] = $field;
+                        $valueArray[] = $value;
+                    }
+                }
+            }
+            $tableRef = "{$userTable} (" . implode(',', $fieldArray) . ")";
             $setArray = implode(',', array_map(function ($e) {
                 return $this->dbClass->link->quote($e);
-            }, [$username, $hashedpassword]));
+            }, $valueArray));
             $sql = $this->dbClass->handler->sqlINSERTCommand($tableRef, "VALUES({$setArray})");
             $result = $this->dbClass->link->query($sql);
             if ($result === false) {
@@ -366,10 +377,20 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
                     return true; // This case should be handled as succeed.
                 }
             } else {
-                $tableRef = "{$userTable} (username, hashedpasswd,limitdt)";
+                $fieldArray = ['username', 'hashedpasswd', 'limitdt'];
+                $valueArray = [$username, $hashedpassword, $currentDTFormat];
+                if (is_array($attrs)) {
+                    foreach ($attrs as $field => $value) {
+                        if (!in_array($field, $fieldArray)) {
+                            $fieldArray[] = $field;
+                            $valueArray[] = $value;
+                        }
+                    }
+                }
+                $tableRef = "{$userTable} (" . implode(',', $fieldArray) . ")";
                 $setArray = implode(',', array_map(function ($e) {
                     return $this->dbClass->link->quote($e);
-                }, [$username, $hashedpassword, $currentDTFormat]));
+                }, $valueArray));
                 $sql = $this->dbClass->handler->sqlINSERTCommand($tableRef, "VALUES({$setArray})");
                 $result = $this->dbClass->link->query($sql);
                 if ($result === false) {
@@ -389,7 +410,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'authuser'
      */
-    public function authSupportChangePassword($username, $hashednewpassword)
+    public
+    function authSupportChangePassword($username, $hashednewpassword)
     {
         $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
 
@@ -412,19 +434,23 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return true;
     }
 
-    public function authTableGetUserIdFromUsername($username)
+    public
+    function authTableGetUserIdFromUsername($username)
     {
         return $this->privateGetUserIdFromUsername($username, false);
     }
 
-    public function authSupportGetUserIdFromUsername($username)
+    public
+    function authSupportGetUserIdFromUsername($username)
     {
         return $this->privateGetUserIdFromUsername($username, true);
     }
 
-    private $overLimitDTUser;
+    private
+        $overLimitDTUser;
 
-    private function privateGetUserIdFromUsername($username, $isCheckLimit)
+    private
+    function privateGetUserIdFromUsername($username, $isCheckLimit)
     {
         $this->logger->setDebugMessage("[authSupportGetUserIdFromUsername]username ={$username}", 2);
 
@@ -465,7 +491,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'authgroup'
      */
-    public function authSupportGetGroupNameFromGroupId($groupid)
+    public
+    function authSupportGetGroupNameFromGroupId($groupid)
     {
         $groupTable = $this->dbSettings->getGroupTable();
         if ($groupTable === null) {
@@ -496,7 +523,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'authcor'
      */
-    public function authSupportGetGroupsOfUser($user)
+    public
+    function authSupportGetGroupsOfUser($user)
     {
         $ldap = new LDAPAuth();
         $oAuth = new OAuthAuth();
@@ -507,12 +535,14 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         }
     }
 
-    public function authTableGetGroupsOfUser($user)
+    public
+    function authTableGetGroupsOfUser($user)
     {
         return $this->privateGetGroupsOfUser($user, false);
     }
 
-    private function privateGetGroupsOfUser($user, $isCheckLimit)
+    private
+    function privateGetGroupsOfUser($user, $isCheckLimit)
     {
         $corrTable = $this->dbSettings->getCorrTable();
         if ($corrTable == null) {
@@ -543,15 +573,18 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
     /**
      * @var
      */
-    private $candidateGroups;
+    private
+        $candidateGroups;
     /**
      * @var
      */
-    private $belongGroups;
+    private
+        $belongGroups;
     /**
      * @var
      */
-    private $firstLevel;
+    private
+        $firstLevel;
 
     /**
      * @param $groupid
@@ -559,7 +592,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'authcor'
      */
-    private function resolveGroup($groupid)
+    private
+    function resolveGroup($groupid)
     {
         if (strlen($groupid) < 1) {
             return;
@@ -602,7 +636,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using any table.
      */
-    public function authSupportCheckMediaPrivilege($tableName, $targeting, $userField, $user, $keyField, $keyValue)
+    public
+    function authSupportCheckMediaPrivilege($tableName, $targeting, $userField, $user, $keyField, $keyValue)
     {
         if (strlen($user) == 0) {
             return false;
@@ -652,7 +687,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'authuser'
      */
-    public function authSupportGetUserIdFromEmail($email)
+    public
+    function authSupportGetUserIdFromEmail($email)
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -684,7 +720,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'authuser'
      */
-    public function authSupportGetUsernameFromUserId($userid)
+    public
+    function authSupportGetUsernameFromUserId($userid)
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -716,7 +753,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'authuser'
      */
-    public function authSupportUnifyUsernameAndEmail($username)
+    public
+    function authSupportUnifyUsernameAndEmail($username)
     {
         if (!$this->dbSettings->getEmailAsAccount() || strlen($username) == 0) {
             return $username;
@@ -761,7 +799,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'issuedhash'
      */
-    public function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)
+    public
+    function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -794,7 +833,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'issuedhash'
      */
-    public function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
+    public
+    function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -824,7 +864,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return false;
     }
 
-    public function authSupportUserEnrollmentStart($userid, $hash)
+    public
+    function authSupportUserEnrollmentStart($userid, $hash)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -848,7 +889,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return true;
     }
 
-    public function authSupportUserEnrollmentEnrollingUser($hash)
+    public
+    function authSupportUserEnrollmentEnrollingUser($hash)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -877,7 +919,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return false;
     }
 
-    public function authSupportUserEnrollmentActivateUser($userID, $password, $rawPWField, $rawPW)
+    public
+    function authSupportUserEnrollmentActivateUser($userID, $password, $rawPWField, $rawPW)
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -914,7 +957,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return $userID;
     }
 
-    public function authSupportIsWithinLDAPLimit($userID)
+    public
+    function authSupportIsWithinLDAPLimit($userID)
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -950,7 +994,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return false;
     }
 
-    public function authSupportCanMigrateSHA256Hash()  // authuser, issuedhash
+    public
+    function authSupportCanMigrateSHA256Hash()  // authuser, issuedhash
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {

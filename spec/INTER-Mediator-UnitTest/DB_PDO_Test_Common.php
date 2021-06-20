@@ -337,7 +337,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertTrue($this->db_proxy->dbSettings->getRequireAuthentication(), $testName);
     }
 
-    public function testAuthUser6()
+    public function testAddUser1()
     {
         $this->dbProxySetupForAuth();
 
@@ -373,6 +373,57 @@ abstract class DB_PDO_Test_Common extends TestCase
 //        var_export($this->db_proxy->logger->getDebugMessages());
 
         $this->assertTrue($checkResult, $testName);
+    }
+
+    public function testAddUser2()
+    {
+        $this->dbProxySetupForAuth();
+
+        $testName = "Create New User and Authenticate";
+        $username = "testuser2";
+        $password = "testuser2";
+
+        [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password, false, ['realname'=>'test123']);
+        $this->assertTrue($addUserResult);
+
+        $db = new Proxy();
+        $db->ignoringPost();
+
+        // ユーザー名からユーザidを取得
+        $db->initialize([['name' => 'authuser', 'record' => 1, 'key' => 'id']],
+            [], ['db-class' => 'PDO',], 2, 'authuser');
+        $db->dbSettings->addExtraCriteria("username", "=", $username);
+        $db->processingRequest('read', true);
+        $userResult = $db->getDatabaseResult();
+
+        $this->assertEquals('test123', $userResult[0]['realname'],'The realname is supplied with parameter.');
+        $this->assertEquals($username, $userResult[0]['username'], 'The username has to be keep.');
+    }
+
+    public function testAddUser3()
+    {
+        $this->dbProxySetupForAuth();
+
+        $testName = "Create New User and Authenticate";
+        $username = "testuser3";
+        $password = "testuser3";
+
+        [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password, false,
+            ['username'=>'mycat','realname'=>'test123']);
+        $this->assertTrue($addUserResult);
+
+        $db = new Proxy();
+        $db->ignoringPost();
+
+        // ユーザー名からユーザidを取得
+        $db->initialize([['name' => 'authuser', 'record' => 1, 'key' => 'id']],
+            [], ['db-class' => 'PDO',], 2, 'authuser');
+        $db->dbSettings->addExtraCriteria("username", "=", $username);
+        $db->processingRequest('read', true);
+        $userResult = $db->getDatabaseResult();
+
+        $this->assertEquals('test123', $userResult[0]['realname'],'The realname is supplied with parameter.');
+        $this->assertEquals($username, $userResult[0]['username'], 'The username has to be keep.');
     }
 
     function testUserGroup()

@@ -72,6 +72,7 @@ class Settings
     private $params_mediaRoot;
     private $isSAML = false;
     private $samlAuthSource = '';
+    private $samlAttrRules = false;
 
     private $aggregation_select = null;
     private $aggregation_from = null;
@@ -80,6 +81,16 @@ class Settings
     private $attachedFiles = [];
     private $attachedFields = null;
     private $certVerifying = true;
+
+    public function setSAMLAttrRules($value)
+    {
+        $this->samlAttrRules = $value;
+    }
+
+    public function getSAMLAttrRules()
+    {
+        return $this->samlAttrRules;
+    }
 
     public function setSAMLAuthSource($value)
     {
