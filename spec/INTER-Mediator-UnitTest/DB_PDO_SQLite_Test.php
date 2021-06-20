@@ -8,11 +8,16 @@ use INTERMediator\DB\Proxy;
 
 class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
 {
+    private $dsn = 'sqlite:/var/db/im/sample.sq3';
+
     function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
+        if (getenv('GITHUB_ACTIONS') === 'true') {
+            $this->dsn = 'sqlite:/home/runner/work/INTER-Mediator/INTER-Mediator/sample.sq3';
+        }
     }
 
     /**
@@ -54,7 +59,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
         $options = null;
         $dbSettings = array(
             'db-class' => 'PDO',
-            'dsn' => 'sqlite:/var/db/im/sample.sq3',
+            'dsn' => $this->dsn,
         );
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
@@ -90,7 +95,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
             ),
             array(
                 'db-class' => 'PDO',
-                'dsn' => 'sqlite:/var/db/im/sample.sq3',
+                'dsn' => $this->dsn,
             ),
             false
         );
@@ -128,7 +133,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
             null,
             array(
                 'db-class' => 'PDO',
-                'dsn' => 'sqlite:/var/db/im/sample.sq3',
+                'dsn' => $this->dsn,
             ),
             2,
             "summary"

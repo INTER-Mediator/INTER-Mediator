@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 //use \DateTime;
 use INTERMediator\IMUtil;
+use INTERMediator\DB\Proxy;
 
 abstract class DB_PDO_Test_Common extends TestCase
 {
@@ -39,8 +40,8 @@ abstract class DB_PDO_Test_Common extends TestCase
         $result = $this->db_proxy->readFromDB();
         $recordCount = $this->db_proxy->countQueryResult();
 
-//        var_export($this->db_proxy->logger->getErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessages());
+        var_export($this->db_proxy->logger->getErrorMessages());
+        var_export($this->db_proxy->logger->getDebugMessages());
 
         $this->assertTrue(is_array($result), "After the query, any array should be retrieved.");
         $this->assertEquals(count($result), 10, "After the query, 10 records should be retrieved.");
@@ -386,7 +387,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password, false, ['realname'=>'test123']);
         $this->assertTrue($addUserResult);
 
-        $db = new Proxy();
+        $db = new Proxy(true);
         $db->ignoringPost();
 
         // ユーザー名からユーザidを取得
@@ -412,7 +413,7 @@ abstract class DB_PDO_Test_Common extends TestCase
             ['username'=>'mycat','realname'=>'test123']);
         $this->assertTrue($addUserResult);
 
-        $db = new Proxy();
+        $db = new Proxy(true);
         $db->ignoringPost();
 
         // ユーザー名からユーザidを取得

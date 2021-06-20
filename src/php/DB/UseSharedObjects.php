@@ -30,7 +30,7 @@ abstract class UseSharedObjects
 
     public function setUpSharedObjects($obj = null)
     {
-        if ($obj === null) {
+        if (is_null($obj)) {
             $this->setSettings(new Settings());
             $this->setLogger(Logger::getInstance());
             $this->setFormatter(new Formatters());
