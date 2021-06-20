@@ -38,9 +38,16 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
-      - name: exec hoge.sql
+      - name: Setup MySQL
         run: |
             mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.txt
+
+      - name: Setup SQLite
+        run:　|
+            pwd
+            touch sample.sq3
+            sqlite3 sample.sq3 < ./dist-docs/sample_schema_sqlite.txt
+            chown www-data sample.sq3
 
       - name: Test of PHP Code
         run: composer test
