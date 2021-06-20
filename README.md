@@ -1,4 +1,4 @@
-# INTER-Mediator [![Build Status](https://travis-ci.org/INTER-Mediator/INTER-Mediator.svg?branch=5.x)](https://travis-ci.org/INTER-Mediator/INTER-Mediator) [![Build Status](https://circleci.com/gh/INTER-Mediator/INTER-Mediator/tree/5.x.svg?style=shield)](https://circleci.com/gh/INTER-Mediator/INTER-Mediator) [![pipeline status](https://gitlab.com/INTER-Mediator/INTER-Mediator/badges/5.x/pipeline.svg)](https://gitlab.com/INTER-Mediator/INTER-Mediator/commits/5.x)
+# INTER-Mediator [![Build Status](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/5.x.yml/badge.svg)](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/5.x.yml) [![Build Status](https://circleci.com/gh/INTER-Mediator/INTER-Mediator/tree/5.x.svg?style=shield)](https://circleci.com/gh/INTER-Mediator/INTER-Mediator) [![pipeline status](https://gitlab.com/INTER-Mediator/INTER-Mediator/badges/5.x/pipeline.svg)](https://gitlab.com/INTER-Mediator/INTER-Mediator/commits/5.x)
 by INTER-Mediator Directive Committee (https://inter-mediator.org)
 
 This is the root of the INTER-Mediator source repository.

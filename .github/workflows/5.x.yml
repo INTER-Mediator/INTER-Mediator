@@ -1,0 +1,57 @@
+name: build
+
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - 5.x
+
+jobs:
+  test-with-php80:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: docker-compose-run
+        shell: bash
+        run: |
+          docker-compose up -d
+          sleep 60
+          docker-compose exec -T web sh -c "cd /var/www/html && vendor/bin/phpunit --globals-backup ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+
+  test-with-php74:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: docker-compose-run
+        shell: bash
+        run: |
+          cp .github/workflows/Dockerfile-for-php-7.4 Dockerfile
+          docker-compose up -d
+          sleep 60
+          docker-compose exec -T web sh -c "cd /var/www/html && vendor/bin/phpunit --globals-backup ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+
+  test-with-php55:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: docker-compose-run
+        shell: bash
+        run: |
+          cp .github/workflows/Dockerfile-for-php-5.5 Dockerfile
+          docker-compose up -d
+          sleep 60
+          docker-compose exec -T web sh -c "cd /var/www/html && vendor/bin/phpunit ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+
+  test-with-php54:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: docker-compose-run
+        shell: bash
+        run: |
+          cp .github/workflows/Dockerfile-for-php-5.4 Dockerfile
+          docker-compose up -d
+          sleep 60
+          docker-compose exec -T web sh -c "cd /var/www/html && vendor/bin/phpunit ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
