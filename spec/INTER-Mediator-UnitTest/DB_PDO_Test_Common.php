@@ -387,7 +387,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password, false, ['realname'=>'test123']);
         $this->assertTrue($addUserResult);
 
-        $db = new Proxy();
+        $db = new Proxy(true);
         $db->ignoringPost();
 
         // ユーザー名からユーザidを取得
@@ -413,7 +413,7 @@ abstract class DB_PDO_Test_Common extends TestCase
             ['username'=>'mycat','realname'=>'test123']);
         $this->assertTrue($addUserResult);
 
-        $db = new Proxy();
+        $db = new Proxy(true);
         $db->ignoringPost();
 
         // ユーザー名からユーザidを取得
