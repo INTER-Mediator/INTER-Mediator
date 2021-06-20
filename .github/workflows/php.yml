@@ -40,7 +40,7 @@ jobs:
 
       - name: exec hoge.sql
         run: |
-            mysql -h 127.0.0.1 --port 3306 -u root -EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.txt
+            mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.txt
 
       - name: Test of PHP Code
         run: composer test
