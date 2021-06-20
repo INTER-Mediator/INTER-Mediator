@@ -50,13 +50,17 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: Setup MySQL
-        run: mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.txt
+        run: |
+          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.txt
+          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "CREATE USER IF NOT EXISTS 'web'@'*' IDENTIFIED BY 'password';" test_db
+          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO 'web'@'*';" test_db
+          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "GRANT SHOW VIEW ON TABLE test_db.* TO 'web'@'*';" test_db
 
       - name: Setup PostgreSQL
         run: psql postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./dist-docs/sample_schema_pgsql.txt
 
       - name: Check MySQL
-        run: mysql -h 127.0.0.1 --port 3306 -u web --password=password -e "select * from person;"
+        run: mysql -h 127.0.0.1 --port 3306 -u web --password=password -e "select * from person;" test_db
 
       - name: Setup SQLite
         run: |
