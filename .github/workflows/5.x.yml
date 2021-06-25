@@ -44,6 +44,42 @@ jobs:
           sleep 60
           docker-compose exec -T web sh -c "cd /var/www/html && vendor/bin/phpunit --globals-backup ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
 
+  test-with-php72:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: docker-compose-run
+        shell: bash
+        run: |
+          cp .github/workflows/Dockerfile-for-php-7.2 Dockerfile
+          docker-compose up -d
+          sleep 60
+          docker-compose exec -T web sh -c "cd /var/www/html && vendor/bin/phpunit --globals-backup ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+
+  test-with-php71:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: docker-compose-run
+        shell: bash
+        run: |
+          cp .github/workflows/Dockerfile-for-php-7.1 Dockerfile
+          docker-compose up -d
+          sleep 60
+          docker-compose exec -T web sh -c "cd /var/www/html && vendor/bin/phpunit --globals-backup ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+
+  test-with-php70:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: docker-compose-run
+        shell: bash
+        run: |
+          cp .github/workflows/Dockerfile-for-php-7.0 Dockerfile
+          docker-compose up -d
+          sleep 60
+          docker-compose exec -T web sh -c "cd /var/www/html && vendor/bin/phpunit ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+
   test-with-php56:
     runs-on: ubuntu-latest
     steps:
