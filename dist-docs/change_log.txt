@@ -11,7 +11,9 @@ Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.5.13-dev (in development)
-
+- Our CI operations moved to GitHub Actions from Travis CI.
+- [BUG FIX] If nodes bond to the local context exist in enclosure/repeater (ex. within table tag), Some error (1046)
+  rose up. So far the error doesn't rise, but these nodes should exist out side of enclosure/repeater. (Thanks to Mr. Hayashi)
 
 Ver.5.12 (May 29, 2021)
 - Support PHP 8.0.
