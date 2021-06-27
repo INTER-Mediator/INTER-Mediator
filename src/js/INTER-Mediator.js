@@ -1613,7 +1613,7 @@ const INTERMediator = {
         }
       }
       const context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', maxTableName)
-      if (linkDefs.length > 0 && !context) {
+      if (linkDefs.length > 0 && !context && maxTableName) {
         INTERMediatorLog.setErrorMessage(
           INTERMediatorLib.getInsertedStringFromErrorNumber(1046, [maxTableName]))
       }

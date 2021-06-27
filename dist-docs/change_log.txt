@@ -29,6 +29,7 @@ Ver.8 (in development)
   This feature can activate on the post only mode. The sample is Sample_webpage/fileuploadMulti_MySQL.html.
 - MediaAccess class can handle the target=group-field authentication.
 - The second parameter of IM_Entry function can have authentication/is-saml and saml-builtin-auth key.
+- Our CI operations moved to GitHub Actions from TravisCI.
 - [INFO] The inter-mediator-plugin-fileupload is deprecated. The inter-mediator-plugin-jqueryfileupload is a replacement.
   We are going to maintain the jqueryfileupload so far and hope it forever.
 - [BUG FIX] Fix compatibility with Claris FileMaker Server. The affected version is Ver.7.
@@ -38,6 +39,8 @@ Ver.8 (in development)
 - [BUG FIX] The $customLoginPanel variable in the params.php file didn't handle for anything. It removed.
 - [BUG FIX] Authentication with session storage didn't expire. Now it follows the value of the 'expired' key.
 - [BUG FIX] Fix portal access mode for FileMaker_FX class. The affected version is Ver.7.
+- [BUG FIX] If nodes bond to the local context exist in enclosure/repeater (ex. within table tag), Some error (1046)
+  rose up. So far the error doesn't rise, but these nodes should exist out side of enclosure/repeater. (Thanks to Mr. Hayashi)
 
 Ver.7 (March 20, 2021)
 - The synchronizing with clients is back without Pusher.
@@ -45,7 +48,7 @@ Ver.7 (March 20, 2021)
 - CSV File uploading and add records for each line. I'd like to check the 'samples/Sample_webpage/fileuploadCSV_MySQL.html'
   file or the Sample page > JS Components > jQuery FileUploader > CSV file upload with jQuery_File_Upload.
 - If setting INTERMediator.alwaysAddOperationExchange to true, the local context criteria combine logical
-  expressions with ADN operator.
+  expressions with AND operator.
 - The font-weight of the css * target changed from lighter to non description for adjusting the Android.
 - The method INTERMediatorOnPage.doAfterDeleteRecord can define. One parameter is going to pass the context name.
 - The 'ignoring-field' key can be defined in a context definition and it ignores any fields in the array value
