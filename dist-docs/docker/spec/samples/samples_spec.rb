@@ -114,21 +114,21 @@ describe "INTER-Mediator-Server VM" do
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(4)
       element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
-      expect(element.text).to eq("Record #1-4 / 3654")
+      expect(element.text).to include("1-4 / 3654")
 
       Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@limitnumber:postalcode']")).select_by(:value, "10")
       sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(10)
       element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
-      expect(element.text).to eq("Record #1-10 / 3654")
+      expect(element.text).to include("1-10 / 3654")
 
       Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@limitnumber:postalcode']")).select_by(:value, "40")
       sleep 1
       elements = @driver.find_elements(:xpath, "//div[@data-im='postalcode@f3']")
       expect(elements.size).to eq(30)
       element = @driver.find_element(:xpath, "//span[@class='IM_NAV_info']")
-      expect(element.text).to eq("Record #1-30 / 3654")
+      expect(element.text).to include("1-30 / 3654")
     }
   end
 
