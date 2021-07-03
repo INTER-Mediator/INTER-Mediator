@@ -6,11 +6,11 @@
 # $ gem install itamae
 
 Vagrant.configure(2) do |config|
-  config.vm.box = "INTER-Mediator-Server-CentOS7-2003"
-  config.vm.box_url = "https://inter-mediator.com/archives/INTER-Mediator-Server-CentOS-7.8.box"
-  #config.vm.box_url = "https://inter-mediator.com/archives/INTER-Mediator-Server-Alpine-Linux-3.10.2.box"
-  #config.vm.box_url = "https://inter-mediator.com/archives/INTER-Mediator-Server-Ubuntu-14.04.3.box"
-  #config.vm.box_url = "file://./INTER-Mediator-Server-CentOS-7.8.box"
+  config.vm.box = "INTER-Mediator-Server-Ubuntu-18.04"
+  config.vm.box_url = "https://inter-mediator.com/archives/INTER-Mediator-Server-Ubuntu-18.04.5.box"
+  #config.vm.box_url = "https://inter-mediator.com/archives/INTER-Mediator-Server-CentOS-7.8.box"
+  #config.vm.box_url = "https://inter-mediator.com/archives/INTER-Mediator-Server-Alpine-Linux-3.13.5.box"
+  #config.vm.box_url ="file://./INTER-Mediator-Server-Ubuntu-18.04.5.box"
   #config.vm.network "private_network", ip: "192.168.56.101", auto_config: false
   config.vm.network "private_network", ip: "192.168.56.101"
   config.vm.synced_folder '.', '/vagrant', disabled: true
