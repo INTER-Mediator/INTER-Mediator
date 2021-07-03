@@ -1,6 +1,6 @@
 # coding: utf-8
 
-# Recipe file of Itamae for Alpine Linux 3.10, Ubuntu Server 16.04/18.04, CentOS Linux 7
+# Recipe file of Itamae for Alpine Linux 3.13, Ubuntu Server 18.04 LTS, CentOS Linux 7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -130,6 +130,7 @@ if node[:platform] == 'alpine'
   end
 else
   execute 'groupadd im-developer' do
+    not_if 'getent group im-developer | grep developer'
     command 'groupadd im-developer'
   end
   execute 'usermod -a -G im-developer developer' do
@@ -144,13 +145,15 @@ if node[:platform] == 'ubuntu'
     end
   end
 
-  if node[:platform_version].to_f >= 16
+  if node[:platform_version].to_f < 18
     execute 'sed -i -e "s/security.ubuntu.com/archive.ubuntu.com/g" /etc/apt/sources.list' do
       command 'sed -i -e "s/security.ubuntu.com/archive.ubuntu.com/g" /etc/apt/sources.list'
     end
     execute 'sed -i -e "s/jp.archive.ubuntu.com/archive.ubuntu.com/g" /etc/apt/sources.list' do
       command 'sed -i -e "s/jp.archive.ubuntu.com/archive.ubuntu.com/g" /etc/apt/sources.list'
     end
+  end
+  if node[:platform_version].to_f >= 16
     execute 'rm -rf /var/lib/apt/lists/*' do
       command 'rm -rf /var/lib/apt/lists/*'
     end
@@ -825,7 +828,7 @@ package 'nodejs' do
   action :install
 end
 
-if node[:platform] == 'redhat' || node[:platform] == 'ubuntu'
+if node[:platform] == 'redhat'
   execute 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10' do
     command 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10'
   end
@@ -853,7 +856,7 @@ if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 20) || (node[:
   execute 'ln -sf /usr/local/bin/npm /usr/bin/npm' do
     command 'ln -sf /usr/local/bin/npm /usr/bin/npm'
   end
-  if node[:platform] == 'ubuntu'
+  if node[:platform] == 'ubuntu' && node[:platform_version].to_f < 18
     execute 'apt-get purge -y nodejs npm' do
       command 'apt-get purge -y nodejs npm'
     end
@@ -894,11 +897,11 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
       command 'mv /tmp/phpunit-6.phar /usr/local/bin/phpunit'
     end
   else
-    execute 'wget https://phar.phpunit.de/phpunit-7.phar -P /tmp' do
-      command 'wget https://phar.phpunit.de/phpunit-7.phar -P /tmp'
+    execute 'wget https://phar.phpunit.de/phpunit-9.phar -P /tmp' do
+      command 'wget https://phar.phpunit.de/phpunit-9.phar -P /tmp'
     end
-    execute 'mv /tmp/phpunit-7.phar /usr/local/bin/phpunit' do
-      command 'mv /tmp/phpunit-7.phar /usr/local/bin/phpunit'
+    execute 'mv /tmp/phpunit-9.phar /usr/local/bin/phpunit' do
+      command 'mv /tmp/phpunit-9.phar /usr/local/bin/phpunit'
     end
   end
   execute 'chmod +x /usr/local/bin/phpunit' do
@@ -1228,7 +1231,7 @@ EOF
   end
 end
 
-if node[:platform] == 'redhat'
+if node[:platform] == 'ubuntu'
   user "fmserver" do
     action :create
   end
@@ -1238,7 +1241,10 @@ if node[:platform] == 'redhat'
   execute 'usermod -a -G fmsadmin fmserver' do
     command 'usermod -a -G fmsadmin fmserver'
   end
-  file '/etc/httpd/conf.d/filemaker.conf' do
+  execute 'a2enmod rewrite' do
+    command 'a2enmod rewrite'
+  end
+  file '/etc/apache2/sites-enabled/filemaker.conf' do
     content <<-EOF
 RewriteEngine on
 RewriteRule ^/admin-console(.*) http://127.0.0.1:16001/admin-console$1 [P,L]
@@ -1266,8 +1272,7 @@ EOF
   package 'unzip' do
     action :install
   end
-
-  service 'httpd' do
+  service 'apache2' do
     action [ :restart ]
   end
 end
@@ -2233,13 +2238,13 @@ if node[:platform] == 'alpine'
     command "chmod 755 \"#{WEBROOT}\"/INTER-Mediator/node_modules/jest/bin/jest.js"
   end
 end
-if node[:platform] == 'ubuntu'
+if node[:platform] == 'ubuntu' && node[:virtualization][:system] == 'docker'
   execute 'sudo /etc/rc.local &' do
       command 'sudo /etc/rc.local &'
   end
 end
 if node[:virtualization][:system] != 'docker'
-  if node[:platform] == 'redhat'
+  if node[:platform] == 'redhat' || node[:platform] == 'ubuntu'
     service 'smb' do
       action [ :stop ]
     end
@@ -2249,7 +2254,13 @@ if node[:virtualization][:system] != 'docker'
     service 'mariadb' do
       action [ :stop ]
     end
+  end
+  if node[:platform] == 'redhat'
     service 'httpd' do
+      action [ :stop ]
+    end
+  elsif node[:platform] == 'ubuntu'
+    service 'apache2' do
       action [ :stop ]
     end
   end
