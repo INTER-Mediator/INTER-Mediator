@@ -29,7 +29,8 @@ Ver.8 (in development)
   This feature can activate on the post only mode. The sample is Sample_webpage/fileuploadMulti_MySQL.html.
 - MediaAccess class can handle the target=group-field authentication.
 - The second parameter of IM_Entry function can have authentication/is-saml and saml-builtin-auth key.
-- Our CI operations moved to GitHub Actions from TravisCI.
+- Update recipe.rb and Vagrantfile etc. for the INTER-Mediator-Server VM (Change to Ubuntu Server 18.04 LTS).
+- Our CI operations moved to GitHub Actions from Travis CI.
 - [INFO] The inter-mediator-plugin-fileupload is deprecated. The inter-mediator-plugin-jqueryfileupload is a replacement.
   We are going to maintain the jqueryfileupload so far and hope it forever.
 - [BUG FIX] Fix compatibility with Claris FileMaker Server. The affected version is Ver.7.
