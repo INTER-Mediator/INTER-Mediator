@@ -671,7 +671,7 @@ describe command('mysql -u root --password=im4135dev test_db -e \'SHOW TABLES\''
   its(:stdout) { should match /cor_way_kind/ }
 end
 
-describe command('mysql -u root --password=im4135dev test_db -e "SHOW VARIABLES LIKE \'validate_password_policy\'"') do
+describe command('mysql -u root --password=im4135dev test_db -e "SHOW VARIABLES LIKE \'validate_password_policy\'"'), :if => os[:family] == 'ubuntu' do
   its(:stdout) { should match /MEDIUM/ }
 end
 
