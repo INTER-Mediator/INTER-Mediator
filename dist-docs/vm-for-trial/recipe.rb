@@ -1037,7 +1037,7 @@ if node[:platform] == 'alpine'
 elsif node[:platform] == 'ubuntu'
   MYSQLSOCKPATH = "/var/run/mysqld/mysqld.sock"
 end
-if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
+if node[:platform] == 'ubuntu'
   file "#{WEBROOT}/params.php" do
     content <<-EOF
 <?php
@@ -1046,11 +1046,9 @@ $dbPassword = 'password';
 $dbDSN = 'mysql:unix_socket=#{MYSQLSOCKPATH};dbname=test_db;charset=utf8mb4';
 $dbOption = [];
 $browserCompatibility = array(
-    'Chrome' => '1+',
-    'FireFox' => '2+',
-    'msie' => '9+',
-    'Opera' => '1+',
-    'Safari' => '4+',
+    'Chrome' => '71+',
+    'FireFox' => '69+',
+    'Safari' => '11+',
     'Trident' => '5+',
 );
 $dbServer = '192.168.56.1';
@@ -1087,36 +1085,32 @@ UeplZBKmxW3+wQ5gVWIguqisfvi9/m07Z/3+uwCLSryHU6Kgg7Md9ezU9Obx+jxp
 cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
-$webServerName = [''];
+$webServerName = ['192.168.56.101'];
 $activateClientService = true;  // Default is TRUE!!. (In case of debuging phase, it should be false.)
-$stopSSEveryQuit = false;
-$preventSSAutoBoot = true;
-$serviceServerPort = '11478';
-$serviceServerHost = 'localhost';
-$serviceServerConnect = 'http://localhost';
-$stopSSEveryQuit = false;
 $preventSSAutoBoot = false;
+$serviceServerPort = '11478';
+$serviceServerHost = '192.168.56.101';
+$serviceServerConnect = 'http://192.168.56.101';
+$stopSSEveryQuit = false;
 $notUseServiceServer = false;
 $messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any other major browsers.';
 $messages['ja'][1022] = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
 $activateClientService = true;
 EOF
   end
-elsif node[:platform] == 'redhat' && node[:platform_version].to_f < 7
+elsif node[:platform] == 'alpine'
   file "#{WEBROOT}/params.php" do
     content <<-EOF
 <?php
 $dbUser = 'web';
 $dbPassword = 'password';
-$dbDSN = 'mysql:unix_socket=/var/lib/mysql/mysql.sock;dbname=test_db;charset=utf8';
+$dbDSN = 'mysql:unix_socket=#{MYSQLSOCKPATH};dbname=test_db;charset=utf8mb4';
 $dbOption = [];
 $browserCompatibility = array(
-    'Chrome' => '1+',
-    'FireFox' => '2+',
-    'msie' => '9+',
-    'Opera' => '1+',
-    'Safari' => '4+',
-    'Trident' => '5+',
+  'Chrome' => '71+',
+  'FireFox' => '69+',
+  'Safari' => '11+',
+  'Trident' => '5+',
 );
 $dbServer = '192.168.56.1';
 $dbPort = '80';
@@ -1152,14 +1146,13 @@ UeplZBKmxW3+wQ5gVWIguqisfvi9/m07Z/3+uwCLSryHU6Kgg7Md9ezU9Obx+jxp
 cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
-$webServerName = [''];
+$webServerName = ['192.168.56.101'];
 $activateClientService = true;  // Default is TRUE!!. (In case of debuging phase, it should be false.)
-$preventSSAutoBoot = true;
-$serviceServerPort = '11478';
-$serviceServerHost = 'localhost';
-$serviceServerConnect = 'http://localhost';
-$stopSSEveryQuit = false;
 $preventSSAutoBoot = false;
+$serviceServerPort = '11478';
+$serviceServerHost = '192.168.56.101';
+$serviceServerConnect = 'http://192.168.56.101';
+$stopSSEveryQuit = false;
 $notUseServiceServer = false;
 $messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any other major browsers.';
 $messages['ja'][1022] = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
@@ -1175,12 +1168,10 @@ $dbPassword = 'password';
 $dbDSN = 'mysql:unix_socket=/var/lib/mysql/mysql.sock;dbname=test_db;charset=utf8mb4';
 $dbOption = [];
 $browserCompatibility = array(
-    'Chrome' => '1+',
-    'FireFox' => '2+',
-    'msie' => '9+',
-    'Opera' => '1+',
-    'Safari' => '4+',
-    'Trident' => '5+',
+  'Chrome' => '71+',
+  'FireFox' => '69+',
+  'Safari' => '11+',
+  'Trident' => '5+',
 );
 $dbServer = '192.168.56.1';
 $dbPort = '80';
@@ -1216,13 +1207,12 @@ UeplZBKmxW3+wQ5gVWIguqisfvi9/m07Z/3+uwCLSryHU6Kgg7Md9ezU9Obx+jxp
 cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
-$webServerName = [''];
-$preventSSAutoBoot = true;
-$serviceServerPort = '11478';
-$serviceServerHost = 'localhost';
-$serviceServerConnect = 'http://localhost';
-$stopSSEveryQuit = false;
+$webServerName = ['192.168.56.101'];
 $preventSSAutoBoot = false;
+$serviceServerPort = '11478';
+$serviceServerHost = '192.168.56.101';
+$serviceServerConnect = 'http://192.168.56.101';
+$stopSSEveryQuit = false;
 $notUseServiceServer = false;
 $messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any other major browsers.';
 $messages['ja'][1022] = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
