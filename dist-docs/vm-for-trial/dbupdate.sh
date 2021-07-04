@@ -38,8 +38,14 @@ if [ "$INPUT" = "y" -o "$INPUT" = "Y" ]; then
     if [ -e "/etc/alpine-release" ]; then
         mysql -u root --password="${VMPASSWORD}" test_db -e "DROP USER IF EXISTS 'web'@'localhost';"
     fi
+    if [ $OS = 'ubuntu' ] ; then
+        mysql -u root --password="${VMPASSWORD}" -e "set global validate_password_policy=LOW;"
+    fi
     mysql -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.txt"
     # mysql -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.txt" > /dev/null 2>&1
+    if [ $OS = 'ubuntu' ] ; then
+        mysql -u root --password="${VMPASSWORD}" -e "set global validate_password_policy=MEDIUM;"
+    fi
     if [ $? -gt 0 ]; then
         if [ -e '/.dockerenv' ]; then
             mysql -h db -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.txt"
