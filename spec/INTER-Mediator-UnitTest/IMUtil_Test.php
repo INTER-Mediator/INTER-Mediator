@@ -54,7 +54,12 @@ class IMUtil_Test extends TestCase
     public function test_getFromParamsPHPFile()
     {
         $result = $this->util->getFromParamsPHPFile(array('webServerName'), true);
-        $this->assertEquals($result['webServerName'], array(''));
+        $result = $this->util->getFromParamsPHPFile(array('webServerName'), true);
+        if (php_uname('n') === 'inter-mediator-server') {
+            $this->assertEquals($result['webServerName'], array('192.168.56.101'));
+        } else {
+            $this->assertEquals($result['webServerName'], array(''));
+        }
     }
 
     public function test_protectCSRF()

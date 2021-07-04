@@ -1085,12 +1085,9 @@ UeplZBKmxW3+wQ5gVWIguqisfvi9/m07Z/3+uwCLSryHU6Kgg7Md9ezU9Obx+jxp
 cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
-$webServerName = ['192.168.56.101'];
 $activateClientService = true;  // Default is TRUE!!. (In case of debuging phase, it should be false.)
 $preventSSAutoBoot = false;
 $serviceServerPort = '11478';
-$serviceServerHost = '192.168.56.101';
-$serviceServerConnect = 'http://192.168.56.101';
 $stopSSEveryQuit = false;
 $notUseServiceServer = false;
 $messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any other major browsers.';
@@ -1146,12 +1143,9 @@ UeplZBKmxW3+wQ5gVWIguqisfvi9/m07Z/3+uwCLSryHU6Kgg7Md9ezU9Obx+jxp
 cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
-$webServerName = ['192.168.56.101'];
 $activateClientService = true;  // Default is TRUE!!. (In case of debuging phase, it should be false.)
 $preventSSAutoBoot = false;
 $serviceServerPort = '11478';
-$serviceServerHost = '192.168.56.101';
-$serviceServerConnect = 'http://192.168.56.101';
 $stopSSEveryQuit = false;
 $notUseServiceServer = false;
 $messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any other major browsers.';
@@ -1207,11 +1201,8 @@ UeplZBKmxW3+wQ5gVWIguqisfvi9/m07Z/3+uwCLSryHU6Kgg7Md9ezU9Obx+jxp
 cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
-$webServerName = ['192.168.56.101'];
 $preventSSAutoBoot = false;
 $serviceServerPort = '11478';
-$serviceServerHost = '192.168.56.101';
-$serviceServerConnect = 'http://192.168.56.101';
 $stopSSEveryQuit = false;
 $notUseServiceServer = false;
 $messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any other major browsers.';
@@ -1220,6 +1211,27 @@ $activateClientService = true;
 EOF
   end
 end
+
+if node[:virtualization][:system] != 'docker'
+  file "#{WEBROOT}/params.php" do
+    action :edit
+    block do |content|
+      content << "$webServerName = ['192.168.56.101'];\n"
+      content << "$serviceServerHost = '192.168.56.101';\n"
+      content << "$serviceServerConnect = 'http://192.168.56.101';\n"
+    end
+  end
+else
+  file "#{WEBROOT}/params.php" do
+    action :edit
+    block do |content|
+      content << "$webServerName = [''];\n"
+      content << "$serviceServerHost = 'localhost';\n"
+      content << "$serviceServerConnect = 'http://localhost';\n"
+    end
+  end
+end
+
 
 if node[:platform] == 'ubuntu'
   user "fmserver" do
@@ -1947,6 +1959,19 @@ if node[:platform] == 'redhat' && node[:virtualization][:system] != 'docker'
   end
   execute "restorecon \"/var/www/html/*.php\"" do
     command "restorecon \"/var/www/html/*.php\""
+  end
+end
+
+
+if node[:platform] == 'ubuntu'
+  execute 'mysql -e "install plugin validate_password soname \'validate_password.so\';"' do
+    command 'mysql -e "install plugin validate_password soname \'validate_password.so\';"'
+  end
+  execute 'mysql -e "set global validate_password_policy=LOW;"' do
+    command 'mysql -e "set global validate_password_policy=LOW;"'
+  end
+  execute 'mysql -e "ALTER USER \'root\'@\'localhost\' IDENTIFIED WITH mysql_native_password BY \'*********\';"' do
+    command 'mysql -e "ALTER USER \'root\'@\'localhost\' IDENTIFIED WITH mysql_native_password BY \'im4135dev\';"'
   end
 end
 
