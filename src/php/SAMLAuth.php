@@ -46,7 +46,7 @@ class SAMLAuth
         $user = null;
         if ($this->authSimple->isAuthenticated()) {
             $additional = true;
-            if ($this->samlAdditionalRules) {
+            if (is_array($this->samlAdditionalRules)) {
                 $totalJudge = true;
                 $attrs = $this->getValuesFromAttributes();
                 foreach ($this->samlAdditionalRules as $key => $rule) {
