@@ -73,6 +73,7 @@ class Settings
     private $isSAML = false;
     private $samlAuthSource = '';
     private $samlAttrRules = false;
+    private $samlAdditionalRules = false;
 
     private $aggregation_select = null;
     private $aggregation_from = null;
@@ -81,6 +82,14 @@ class Settings
     private $attachedFiles = [];
     private $attachedFields = null;
     private $certVerifying = true;
+
+    public function setSAMLAdditionalRules($value){
+        $this->samlAdditionalRules = $value;
+    }
+
+    public function getSAMLAdditionalRules($value){
+        return $this->samlAdditionalRules;
+    }
 
     public function setSAMLAttrRules($value)
     {

@@ -23,6 +23,16 @@
   * baseurlpathは、ドメイン名を入れてもいいのですが、Webルートから、simplesamlphp/wwwまでの相対パスを記述します。lib以前は実際のサーバ側のディレクトリ構成に合わせます。本来は、Alias等でwwwを短いパスで参照できる方が望ましいと思われます。
   * secretsaltは、config.phpに生成方法のコマンドがあるので、それを参考にしてください。
 
+- authsource.phpで、default-spキーに対する連想配列で、certificateとprivatekeyキーと値を追加してください。これらは、Webサイトの証明書と秘密鍵のファイルを指定します。この指定により、メタデータに公開鍵情報が付加されます。
+
+```
+'default-sp' => [
+  'saml:SP',
+  'certificate' => 'path_to_cert_file',
+  'privatekey' => 'path_to_key_file',
+   :
+```
+
 - copyconfig.shを実行すると、設定ファイルがSimpleSAMLphpのディレクトリにコピーされます。
 - ここで、SPの管理ページに以下のURLでアクセスできます。IdPのメタデータがXMLの場合、「連携」タブにある「XMLをSimpleSMLphpメタデータに変換」を使って、PHPの配列コードに直しておきます。
 ```
@@ -37,4 +47,3 @@ https://demo.inter-mediator.com/saml-trial/lib/src/INTER-Mediator/vendor/simples
 その他
 
 - lib以下にINTER-Mediatorの最小化コピーを作っている場合は、copyconfig.shスクリプトを修正して、そちらのINTER-Mediator内部のsimplesamlphp側に設定ファイルをコピーしてください。
-- 現状、metadataディレクトリに入れるべきファイルのうち、copyconfig.shが対応しているのは、saml20-idp-remote.phpのみです。他のファイルをコピーしたい場合は、スクリプトを修正してください。

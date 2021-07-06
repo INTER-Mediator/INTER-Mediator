@@ -543,7 +543,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
             "dbOption", "dbDSN", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
             "activateClientService", "accessLogLevel", "certVerifying", "passwordHash", "alwaysGenSHA2",
-            "isSAML", "samlAuthSource", "migrateSHA1to2", "samlAttrRules",
+            "isSAML", "samlAuthSource", "migrateSHA1to2", "samlAttrRules", "samlAdditionalRules",
         ), true);
         $this->accessLogLevel = intval($params['accessLogLevel']);
         $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
@@ -769,6 +769,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->dbSettings->setSAMLAuthSource($params['samlAuthSource']);
         }
         $this->dbSettings->setSAMLAttrRules(isset($params["samlAttrRules"]) ? $params["samlAttrRules"] : false);
+        $this->dbSettings->setSAMLAdditionalRules(isset($params["samlAdditionalRules"]) ? $params["samlAdditionalRules"] : false);
         return true;
     }
 
@@ -937,7 +938,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         } else { // Timeout with SAML
                             $SAMLAuth = new SAMLAuth($this->dbSettings->getSAMLAuthSource());
                             $SAMLAuth->setSAMLAttrRules($this->dbSettings->getSAMLAttrRules());
+                            $SAMLAuth->setSAMLAdditionalRules($this->dbSettings->getSAMLAdditionalRules());
                             $signedUser = $SAMLAuth->samlLoginCheck();
+                            $this->logger->setDebugMessage("SAML Auth result: user={$signedUser}, attributes="
+                                . var_export($SAMLAuth->getAttributes(), true));
                             $this->outputOfProcessing['samlloginurl'] = $SAMLAuth->samlLoginURL($_SERVER['HTTP_REFERER']);
                             $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
                             $this->paramAuthUser = $signedUser;
