@@ -247,6 +247,7 @@ const INTERMediator_DBAdapter = {
                   requireAuth = true
                 }
               }
+              let additionalFail = false
               if (INTERMediatorOnPage.isSAML) {
                 if (jsonObject.samluser) {
                   INTERMediatorOnPage.authUser(jsonObject.samluser)
@@ -261,6 +262,9 @@ const INTERMediator_DBAdapter = {
                 }
                 if (jsonObject.samllogouturl) {
                   INTERMediatorOnPage.logoutURL = jsonObject.samllogouturl
+                }
+                if (jsonObject.samladditionalfail) {
+                  additionalFail = true
                 }
               }
               if (accessURL.indexOf('access=changepassword&newpass=') === 0) {
@@ -281,7 +285,7 @@ const INTERMediator_DBAdapter = {
               if (requireAuth) {
                 INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
                 INTERMediatorOnPage.clearCredentials()
-                if (INTERMediatorOnPage.isSAML && !INTERMediatorOnPage.samlWithBuiltInAuth/* && !jsonObject.samladditionalfail*/) {
+                if (INTERMediatorOnPage.isSAML && !INTERMediatorOnPage.samlWithBuiltInAuth && !additionalFail) {
                   location.href = INTERMediatorOnPage.loginURL
                 }
                 if (authAgainProc) {
