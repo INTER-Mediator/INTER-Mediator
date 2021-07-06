@@ -265,7 +265,7 @@ const INTERMediator_DBAdapter = {
                 if (jsonObject.samladditionalfail) {
                   IMLibQueue.setTask((complete)=>{
                     complete()
-                    if(confirm('ログインできないユーザです。')) {
+                    if(confirm(INTERMediatorLib.getInsertedStringFromErrorNumber(2027))) {
                       location.href = jsonObject.samladditionalfail
                     }
                   },false,true)
