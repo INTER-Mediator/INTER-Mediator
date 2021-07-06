@@ -42,8 +42,10 @@ class SAMLAuth
 
     public function samlLoginCheck()
     {
-        $user = false;
+        $additional = false;
+        $user = null;
         if ($this->authSimple->isAuthenticated()) {
+            $additional = true;
             if ($this->samlAdditionalRules) {
                 $totalJudge = true;
                 $attrs = $this->getValuesFromAttributes();
@@ -53,19 +55,14 @@ class SAMLAuth
                     }
                 }
                 if (!$totalJudge) {
-                    $logoutURL = $this->samlLogoutURL($_SERVER['HTTP_REFERER']);
-                    $loginURL = $this->samlLoginURL($_SERVER['HTTP_REFERER']);
-//                    header("Location: error.html");
-//                    $session = \SimpleSAML\Session::getSessionFromRequest();
-//                    $session->cleanup();
-                    $this->authSimple->logout();
-                    return false;
+                    $additional = false;
+                    return [$additional, $user];
                 }
             }
             $rule = isset($this->samlAttrRules['username']) ? $this->samlAttrRules['username'] : 'uid|0';
             $user = $this->getValuesWithRule($rule);
         }
-        return $user;
+        return [$additional, $user];
     }
 
     public function getAttributes()

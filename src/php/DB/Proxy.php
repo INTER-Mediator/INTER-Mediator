@@ -939,11 +939,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                             $SAMLAuth = new SAMLAuth($this->dbSettings->getSAMLAuthSource());
                             $SAMLAuth->setSAMLAttrRules($this->dbSettings->getSAMLAttrRules());
                             $SAMLAuth->setSAMLAdditionalRules($this->dbSettings->getSAMLAdditionalRules());
-                            $signedUser = $SAMLAuth->samlLoginCheck();
+                            [$additional, $signedUser] = $SAMLAuth->samlLoginCheck();
                             $this->logger->setDebugMessage("SAML Auth result: user={$signedUser}, attributes="
                                 . var_export($SAMLAuth->getAttributes(), true));
                             $this->outputOfProcessing['samlloginurl'] = $SAMLAuth->samlLoginURL($_SERVER['HTTP_REFERER']);
                             $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
+                            if(!$additional){
+                                $this->outputOfProcessing['samladditionalfail'] = 'error.html';
+                            }
                             $this->paramAuthUser = $signedUser;
                             if ($signedUser) {
                                 $attrs = $SAMLAuth->getValuesFromAttributes();
