@@ -265,6 +265,7 @@ const INTERMediator_DBAdapter = {
                 }
                 if (jsonObject.samladditionalfail) {
                   additionalFail = true
+                  location.href = "error.html"
                 }
               }
               if (accessURL.indexOf('access=changepassword&newpass=') === 0) {
@@ -285,7 +286,7 @@ const INTERMediator_DBAdapter = {
               if (requireAuth) {
                 INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
                 INTERMediatorOnPage.clearCredentials()
-                if (INTERMediatorOnPage.isSAML && !INTERMediatorOnPage.samlWithBuiltInAuth && !additionalFail) {
+                if (INTERMediatorOnPage.isSAML && !INTERMediatorOnPage.samlWithBuiltInAuth) {
                   location.href = INTERMediatorOnPage.loginURL
                 }
                 if (authAgainProc) {
