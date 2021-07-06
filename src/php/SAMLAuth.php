@@ -42,7 +42,7 @@ class SAMLAuth
 
     public function samlLoginCheck()
     {
-        $additional = false;
+        $additional = true;
         $user = null;
         if ($this->authSimple->isAuthenticated()) {
             $additional = true;
