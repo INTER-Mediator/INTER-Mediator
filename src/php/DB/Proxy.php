@@ -945,7 +945,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                             $this->outputOfProcessing['samlloginurl'] = $SAMLAuth->samlLoginURL($_SERVER['HTTP_REFERER']);
                             $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
                             if(!$additional){
-                                $this->outputOfProcessing['samladditionalfail'] = $SAMLAuth->samlLoginURL($_SERVER['HTTP_REFERER']);
+                                $this->outputOfProcessing['samladditionalfail'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
                             }
                             $this->paramAuthUser = $signedUser;
                             if ($signedUser) {
