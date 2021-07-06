@@ -58,7 +58,7 @@ class SAMLAuth
 //                    header("Location: {$logoutURL}");
 //                    $session = \SimpleSAML\Session::getSessionFromRequest();
 //                    $session->cleanup();
-                    $this->authSimple->logout($loginURL);
+                    $this->authSimple->logout("error.html");
                     return false;
                 }
             }
