@@ -265,9 +265,9 @@ const INTERMediator_DBAdapter = {
                 if (jsonObject.samladditionalfail) {
                   IMLibQueue.setTask((complete)=>{
                     complete()
-                    if(confirm('test')) {
+                    //if(confirm('test')) {
                       location.href = "error.html"
-                    }
+                    //}
                   },false,true)
 
                 }
