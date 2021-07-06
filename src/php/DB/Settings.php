@@ -87,7 +87,7 @@ class Settings
         $this->samlAdditionalRules = $value;
     }
 
-    public function getSAMLAdditionalRules($value){
+    public function getSAMLAdditionalRules(){
         return $this->samlAdditionalRules;
     }
 
