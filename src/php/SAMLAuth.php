@@ -53,6 +53,8 @@ class SAMLAuth
                     }
                 }
                 if (!$totalJudge) {
+                    $logoutURL = $this->samlLogoutURL($_SERVER['HTTP_REFERER']);
+                    header("Location: {$logoutURL}");
                     return false;
                 }
             }
