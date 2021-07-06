@@ -247,7 +247,6 @@ const INTERMediator_DBAdapter = {
                   requireAuth = true
                 }
               }
-              let additionalFail = false
               if (INTERMediatorOnPage.isSAML) {
                 if (jsonObject.samluser) {
                   INTERMediatorOnPage.authUser(jsonObject.samluser)
@@ -264,8 +263,11 @@ const INTERMediator_DBAdapter = {
                   INTERMediatorOnPage.logoutURL = jsonObject.samllogouturl
                 }
                 if (jsonObject.samladditionalfail) {
-                  additionalFail = true
-                  location.href = "error.html"
+                  IMLibQueue.setTask((complete)=>{
+                    complete()
+                    location.href = "error.html"
+                  },false,true)
+
                 }
               }
               if (accessURL.indexOf('access=changepassword&newpass=') === 0) {
