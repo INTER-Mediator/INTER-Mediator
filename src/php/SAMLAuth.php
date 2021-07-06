@@ -53,10 +53,12 @@ class SAMLAuth
                     }
                 }
                 if (!$totalJudge) {
-//                    $logoutURL = $this->samlLogoutURL($_SERVER['HTTP_REFERER']);
+                    $logoutURL = $this->samlLogoutURL($_SERVER['HTTP_REFERER']);
+                    $loginURL = $this->samlLoginURL($_SERVER['HTTP_REFERER']);
 //                    header("Location: {$logoutURL}");
-                    $session = \SimpleSAML\Session::getSessionFromRequest();
-                    $session->cleanup();
+//                    $session = \SimpleSAML\Session::getSessionFromRequest();
+//                    $session->cleanup();
+                    $this->authSimple->logout($loginURL);
                     return false;
                 }
             }
