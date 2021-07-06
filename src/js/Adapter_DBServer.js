@@ -281,7 +281,7 @@ const INTERMediator_DBAdapter = {
               if (requireAuth) {
                 INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
                 INTERMediatorOnPage.clearCredentials()
-                if (INTERMediatorOnPage.isSAML && !INTERMediatorOnPage.samlWithBuiltInAuth && !jsonObject.samladditionalfail) {
+                if (INTERMediatorOnPage.isSAML && !INTERMediatorOnPage.samlWithBuiltInAuth/* && !jsonObject.samladditionalfail*/) {
                   location.href = INTERMediatorOnPage.loginURL
                 }
                 if (authAgainProc) {
