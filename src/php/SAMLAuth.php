@@ -55,10 +55,10 @@ class SAMLAuth
                 if (!$totalJudge) {
                     $logoutURL = $this->samlLogoutURL($_SERVER['HTTP_REFERER']);
                     $loginURL = $this->samlLoginURL($_SERVER['HTTP_REFERER']);
-                    header("Location: error.html");
+//                    header("Location: error.html");
 //                    $session = \SimpleSAML\Session::getSessionFromRequest();
 //                    $session->cleanup();
-//                    $this->authSimple->logout("error.html");
+                    $this->authSimple->logout();
                     return false;
                 }
             }
