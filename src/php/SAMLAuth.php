@@ -23,6 +23,7 @@ class SAMLAuth
 {
     private $authSimple;
     private $samlAttrRules = false;
+    private $samlAdditionalRules = false;
 
     public function __construct($authSource)
     {
@@ -34,14 +35,34 @@ class SAMLAuth
         $this->samlAttrRules = $value;
     }
 
+    public function setSAMLAdditionalRules($value)
+    {
+        $this->samlAdditionalRules = $value;
+    }
+
     public function samlLoginCheck()
     {
-        $user = false;
+        $additional = true;
+        $user = null;
         if ($this->authSimple->isAuthenticated()) {
+            $additional = true;
+            if (is_array($this->samlAdditionalRules)) {
+                $totalJudge = true;
+                $attrs = $this->getValuesFromAttributes();
+                foreach ($this->samlAdditionalRules as $key => $rule) {
+                    if (!preg_match($rule, $attrs[$key])) {
+                        $totalJudge = false;
+                    }
+                }
+                if (!$totalJudge) {
+                    $additional = false;
+                    return [$additional, $user];
+                }
+            }
             $rule = isset($this->samlAttrRules['username']) ? $this->samlAttrRules['username'] : 'uid|0';
             $user = $this->getValuesWithRule($rule);
         }
-        return $user;
+        return [$additional, $user];
     }
 
     public function getAttributes()

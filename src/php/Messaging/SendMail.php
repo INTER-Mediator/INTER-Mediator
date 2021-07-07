@@ -25,7 +25,8 @@ class SendMail extends MessagingProvider
     public function __construct()
     {
         $params = IMUtil::getFromParamsPHPFile(["sendMailCompatibilityMode"], true);
-        $this->isCompatible = $params['sendMailCompatibilityMode'] ? $params['sendMailCompatibilityMode'] : true;
+        $this->isCompatible = isset($params['sendMailCompatibilityMode'])
+            ? boolval($params['sendMailCompatibilityMode']) : true;
     }
 
     public function processing($dbProxy, $sendMailParam, $result)
@@ -158,7 +159,7 @@ class SendMail extends MessagingProvider
                             $storeContext->dbSettings->addExtraCriteria($idParam[0], "=", $idParam[1]);
                             $storeContext->processingRequest("read", true);
                             $templateRecords = $storeContext->getDatabaseResult();
-                            if(count($templateRecords)>0) {
+                            if (count($templateRecords) > 0) {
                                 $dbProxy->logger->setDebugMessage("[Messaging\SendMail] Acquired mail template: "
                                     . $sendMailParam['template-context'], 2);
                             }
