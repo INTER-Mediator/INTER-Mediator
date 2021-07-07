@@ -230,7 +230,7 @@ end
 describe package('libapache2-mod-php7.2'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
   it { should be_installed }
 end
-describe package('libapache2-mod-php7.2'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
+describe package('libapache2-mod-php8.0'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
 describe package('php7-curl'), :if => os[:family] == 'alpine' do
@@ -254,7 +254,7 @@ end
 describe package('php7-dom'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php7.2-xml'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
+describe package('php8.0-xml'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_installed }
 end
 describe package('php7-json'), :if => os[:family] == 'alpine' do
@@ -275,7 +275,7 @@ end
 describe package('php7-phar'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('libmysqlclient-dev'), :if => os[:family] == 'ubuntu' do
+describe package('libmysqlclient-dev'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 && os[:release].to_f < 18 do
   it { should be_installed }
 end
 describe package('php'), :if => os[:family] == 'redhat' do
@@ -671,6 +671,10 @@ describe command('mysql -u root --password=im4135dev test_db -e \'SHOW TABLES\''
   its(:stdout) { should match /cor_way_kind/ }
 end
 
+describe command('mysql -u root --password=im4135dev test_db -e "SHOW VARIABLES LIKE \'validate_password_policy\'"'), :if => os[:family] == 'ubuntu' do
+  its(:stdout) { should match /MEDIUM/ }
+end
+
 describe command('echo "im4135dev" | sudo -u postgres -S psql -c \'\\l\'') do
   its(:stdout) { should match /test_db/ }
 end
@@ -776,7 +780,7 @@ describe file('/etc/php/7.2/apache2/php.ini'), :if => os[:family] == 'ubuntu' &&
   its(:content) { should match /post_max_size = 100M/ }
   its(:content) { should match /upload_max_filesize = 100M/ }
 end
-describe file('/etc/php/7.2/apache2/php.ini'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
+describe file('/etc/php/8.0/apache2/php.ini'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
   it { should be_file }
   its(:content) { should match /max_execution_time = 120/ }
   its(:content) { should match /max_input_time = 120/ }
@@ -871,23 +875,23 @@ end
 describe package('unzip'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
-describe user('fmserver') do
+describe user('fmserver'), :if => os[:family] == 'ubuntu' do
   it { should exist }
   it { should belong_to_group 'fmsadmin' }
 end
-describe group('fmsadmin') do
+describe group('fmsadmin'), :if => os[:family] == 'ubuntu' do
   it { should exist }
 end
-describe file('/etc/httpd/conf.d/filemaker.conf'), :if => os[:family] == 'redhat' do
+describe file('/etc/apache2/sites-enabled/filemaker.conf'), :if => os[:family] == 'ubuntu' do
   it { should be_file }
   its(:content) { should match /RewriteRule \^\/admin-console\(\.\*\)/ }
 end
-describe file('/opt/FileMaker/FileMaker Server/Data/Databases') do
+describe file('/opt/FileMaker/FileMaker Server/Data/Databases'), :if => os[:family] == 'ubuntu' do
   it { should be_directory }
   it { should be_owned_by 'fmserver' }
   it { should be_grouped_into 'fmsadmin' }
 end
-describe file('/opt/FileMaker/FileMaker Server/Data/Databases/TestDB.fmp12') do
+describe file('/opt/FileMaker/FileMaker Server/Data/Databases/TestDB.fmp12'), :if => os[:family] == 'ubuntu' do
   it { should be_file }
   it { should be_owned_by 'fmserver' }
   it { should be_grouped_into 'fmsadmin' }

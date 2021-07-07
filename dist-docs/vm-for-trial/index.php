@@ -3,7 +3,7 @@
 /*
  * INTER-Mediator Server VM for Trial
  *
- *   Copyright (c) 2010-2020 INTER-Mediator Directive Committee
+ *   Copyright (c) 2010-2021 INTER-Mediator Directive Committee
  *
  *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
  *   INTER-Mediator is supplied under MIT License.
@@ -43,7 +43,7 @@ $fmModDate = (new DateTime($modDate))->format('Y年m月d日');
 $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
 
 $osName = 'Ubuntu Server';
-$osVersion = '14.04';
+$osVersion = '18.04 LTS';
 $wwwRoot = '/var/www/html';
 if (file_exists('/etc/alpine-release')) {
     $osName = 'Alpine Linux';
@@ -630,7 +630,7 @@ if (file_exists('/etc/redhat-release')) {
             <td>プロセスの稼働ユーザーはpostgres</td>
         </tr>
         <tr>
-            <td>Apache2</td>
+            <td>Apache HTTP Server</td>
             <td></td>
             <td></td>
             <td>プロセスの稼働ユーザーはwww-data</td>
@@ -672,6 +672,9 @@ if (file_exists('/etc/redhat-release')) {
 <ul>
     <li><?php echo 'cd ' . htmlspecialchars($wwwRoot, ENT_QUOTES, 'UTF-8') . '/INTER-Mediator; composer test'; ?></li>
     <li><?php echo 'cd ' . htmlspecialchars($wwwRoot, ENT_QUOTES, 'UTF-8') . '/INTER-Mediator; composer jest'; ?></li>
+    <?php if ($osName === 'Ubuntu Server') { ?>
+    <li><?php echo 'cd ' . htmlspecialchars($wwwRoot, ENT_QUOTES, 'UTF-8') . '/INTER-Mediator; BROWSER=chrome rspec --default-path=dist-docs/docker/spec -f doc -c dist-docs/docker/spec/samples/samples_spec.rb'; ?></li>
+    <?php } ?>
 </ul>
 
 </body>
