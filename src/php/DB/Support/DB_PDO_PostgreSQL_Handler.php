@@ -266,8 +266,8 @@ test_db       | im_sample    | person     | memo        |
             $tableRef = "{$tableName} ({$fieldList})";
             $setClause = "{$this->sqlSELECTCommand()}{$listList} FROM {$tableName} WHERE {$queryClause}";
             $sql = $this->sqlINSERTCommand($tableRef, $setClause);
-            $this->dbClassObj->logger->setDebugMessage($sql);
-            $result = $this->dbClassObj->link->prepare($sql)->execute();
+            $this->dbClassObj->logger->setDebugMessage("[copyRecords PostgreSQL]" . $sql);
+            $result = $this->dbClassObj->link->query($sql);
             if (!$result) {
                 throw new Exception('INSERT Error:' . $sql);
             }
@@ -278,8 +278,8 @@ test_db       | im_sample    | person     | memo        |
         $keyField = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
         $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence'] : "{$tableName}_{$keyField}_seq";
         $query = "SELECT MAX({$keyField}) AS last_value FROM {$tableName}";
-        $this->dbClassObj->logger->setDebugMessage("[copyRecords]" .$sql);
-        $temp_q_id = $this->dbClassObj->link->prepare( $query);
+        $this->dbClassObj->logger->setDebugMessage("[copyRecords PostgreSQL]" . $sql);
+        $temp_q_id = $this->dbClassObj->link->prepare($query);
         $temp_q_id->execute();
         if ($temp_q_id) {
             $temp_result = $temp_q_id->fetch(PDO::FETCH_ASSOC);
