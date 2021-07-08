@@ -256,35 +256,4 @@ test_db       | im_sample    | person     | memo        |
         }
         return $returnValue;
     }
-
-//    public function copyRecords($tableInfo, $queryClause, $assocField, $assocValue, $defaultValues)
-//    {
-//        $tableName = isset($tableInfo["table"]) ? $tableInfo["table"] : $tableInfo["name"];
-//        try {
-//            list($fieldList, $listList) = $this->getFieldListsForCopy(
-//                $tableName, $tableInfo['key'], $assocField, $assocValue, $defaultValues);
-//            $tableRef = "{$tableName} ({$fieldList})";
-//            $setClause = "{$this->sqlSELECTCommand()}{$listList} FROM {$tableName} WHERE {$queryClause}";
-//            $sql = $this->sqlINSERTCommand($tableRef, $setClause);
-//            $this->dbClassObj->logger->setDebugMessage("[copyRecords PostgreSQL]" . $sql);
-//            $result = $this->dbClassObj->link->query($sql);
-//            if (!$result) {
-//                throw new Exception('INSERT Error:' . $sql);
-//            }
-//        } catch (Exception $ex) {
-//            $this->dbClassObj->errorMessageStore($ex->getMessage());
-//            return false;
-//        }
-//        $keyField = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
-//        $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence'] : "{$tableName}_{$keyField}_seq";
-//        $query = "SELECT MAX({$keyField}) AS last_value FROM {$tableName}";
-//        $this->dbClassObj->logger->setDebugMessage("[copyRecords PostgreSQL]" . $query);
-//        $temp_q_id = $this->dbClassObj->link->prepare($query);
-//        $temp_q_id->execute();
-//        if ($temp_q_id) {
-//            $temp_result = $temp_q_id->fetch(PDO::FETCH_ASSOC);
-//            return ($temp_result) ? $temp_result['last_value'] : null;
-//        }
-//        return null; // $this->dbClassObj->link->lastInsertId(/*$seqObject*/);
-//    }
 }

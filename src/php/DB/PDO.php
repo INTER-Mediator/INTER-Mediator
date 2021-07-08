@@ -756,7 +756,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
         $this->logger->setDebugMessage($sql);
         $result = $this->link->exec($sql);
-        if ($result === false) {
+        if ($result === false || is_null($result)) {
             $this->errorMessageStore('Insert:' . $sql);
             return false;
         }
@@ -914,7 +914,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             }
         }
         $lastKeyValue = $this->handler->copyRecords($tableInfo, $queryClause, null, null, $defaultValues);
-        if ($lastKeyValue === false) {
+        if ($lastKeyValue === false || is_null($lastKeyValue)) {
             return false;
         }
         $this->notifyHandler->setQueriedPrimaryKeys(array($lastKeyValue));
