@@ -47,7 +47,7 @@ describe package('mysql-server'), :if => os[:family] == 'ubuntu' || (os[:family]
   it { should be_installed }
 end
 describe file('/etc/yum.repos.d/mariadb.repo'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
-  its(:content) { should match /baseurl = https:\/\/downloads.mariadb.com\/MariaDB\/mariadb-10.5\/yum\/rhel\/7\/x86_64/ }
+  its(:content) { should match /baseurl = https:\/\/downloads.mariadb.com\/MariaDB\/mariadb-10.6\/yum\/rhel\/7\/x86_64/ }
 end
 describe package('MariaDB-server'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
   it { should be_installed }
