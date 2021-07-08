@@ -80,7 +80,7 @@ abstract class DB_PDO_Handler
             $setClause = "{$this->sqlSELECTCommand()}{$listList} FROM {$tableName} WHERE {$queryClause}";
             $sql = $this->sqlINSERTCommand($tableRef, $setClause);
             $this->dbClassObj->logger->setDebugMessage($sql);
-            $result = $this->dbClassObj->link->exec($sql);
+            $result = $this->dbClassObj->link->query($sql);
             if (!$result) {
                 throw new Exception('INSERT Error:' . $sql);
             }
@@ -90,7 +90,7 @@ abstract class DB_PDO_Handler
         }
         $keyField = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
         $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence'] : "{$tableName}_{$keyField}_seq";
-        return $this->dbClassObj->link->lastInsertId($seqObject);
+        return $this->dbClassObj->link->lastInsertId(/*$seqObject*/);
     }
 
     public abstract function getNullableNumericFields($tableName);
