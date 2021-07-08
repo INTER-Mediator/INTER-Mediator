@@ -33,6 +33,9 @@ Ver.8 (in development)
 - The second parameter of IM_Entry function can have authentication/is-saml and saml-builtin-auth key.
 - Update recipe.rb and Vagrantfile etc. for the INTER-Mediator-Server VM (Change to Ubuntu Server 18.04 LTS).
 - Our CI operations moved to GitHub Actions from Travis CI.
+- The doBefore* method can return any values. If it returns false, operation stops and show error.
+  If custom message requires, return the string for the message. But "" means just stop the operation.
+- DBProxy detect the error in db operations, and stop the operation intermediately and rises exception.
 - [INFO] The inter-mediator-plugin-fileupload is deprecated. The inter-mediator-plugin-jqueryfileupload is a replacement.
   We are going to maintain the jqueryfileupload so far and hope it forever.
 - [BUG FIX] Fix compatibility with Claris FileMaker Server. The affected version is Ver.7.
@@ -44,6 +47,8 @@ Ver.8 (in development)
 - [BUG FIX] Fix portal access mode for FileMaker_FX class. The affected version is Ver.7.
 - [BUG FIX] If nodes bond to the local context exist in enclosure/repeater (ex. within table tag), Some error (1046)
   rose up. So far the error doesn't rise, but these nodes should exist out side of enclosure/repeater. (Thanks to Mr. Hayashi)
+- [BUG FIX] When the doAfterCopyInDB method calls, copied record information didn't pass to it.
+- [BUG FIX] The $sendMailCompatibilityMode variable didn't affected.
 
 Ver.7 (March 20, 2021)
 - The synchronizing with clients is back without Pusher.

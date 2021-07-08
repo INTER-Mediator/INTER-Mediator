@@ -179,7 +179,17 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $className = is_null($this->userExpanded) ? null : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeReadFromDB")) {
                 $this->logger->setDebugMessage("The method 'doBeforeReadFromDB' of the class '{$className}' is calling.", 2);
-                $this->userExpanded->doBeforeReadFromDB();
+                $returnBefore = $this->userExpanded->doBeforeReadFromDB();
+                if ($returnBefore === false) {
+                    throw new Exception("[Proxy::readFromDB] The method 'doBeforeReadFromDB' reports an error.");
+                } else if (is_null($returnBefore)) {
+                    // Pass through for 'return' doesn't exist.
+                } else if (is_string($returnBefore)) {
+                    if (strlen($returnBefore) === 0) {
+                        return false; // Silent stop
+                    }
+                    throw new Exception($returnBefore); // Just message as error.
+                }
             }
 
             if ($this->dbClass) {
@@ -194,6 +204,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         "The soft-delete applies to this query with '{$delFlagField}' field.", 2);
                 }
                 $result = $this->dbClass->readFromDB();
+                if ($result === false) {
+                    throw new Exception('[Proxy::readFromDB] Read operation failed.');
+                }
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterReadFromDB")) {
                 $this->logger->setDebugMessage("The method 'doAfterReadFromDB' of the class '{$className}' is calling.", 2);
@@ -278,15 +291,30 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         try {
             $className = is_null($this->userExpanded) ? "" : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeUpdateDB")) {
-                $this->logger->setDebugMessage("The method 'doBeforeUpdateDB' of the class '{$className}' is calling.", 2);
-                $this->userExpanded->doBeforeUpdateDB(false);
+                $this->logger->setDebugMessage(
+                    "[Proxy::updateDB] The method 'doBeforeUpdateDB' of the class '{$className}' is calling.", 2);
+                $returnBefore = $this->userExpanded->doBeforeUpdateDB(false);
+                if ($returnBefore === false) {
+                    throw new Exception("[Proxy::updateDB] The method 'doBeforeUpdateDB' reports an error.");
+                } else if (is_null($returnBefore)) {
+                    // Pass through for 'return' doesn't exist.
+                } else if (is_string($returnBefore)) {
+                    if (strlen($returnBefore) === 0) {
+                        return false; // Silent stop
+                    }
+                    throw new Exception($returnBefore); // Just message as error.
+                }
             }
             if ($this->dbClass) {
                 $this->dbClass->requireUpdatedRecord(true); // Always Get Updated Record
                 $result = $this->dbClass->updateDB($bypassAuth);
+                if (!$result) {
+                    throw new Exception('[Proxy::updateDB] Update operation failed.');
+                }
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterUpdateToDB")) {
-                $this->logger->setDebugMessage("The method 'doAfterUpdateToDB' of the class '{$className}' is calling.", 2);
+                $this->logger->setDebugMessage(
+                    "[Proxy::updateDB] The method 'doAfterUpdateToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterUpdateToDB($result);
             }
             if ($this->dbSettings->notifyServer
@@ -341,16 +369,31 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         try {
             $className = is_null($this->userExpanded) ? "" : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeCreateToDB")) {
-                $this->logger->setDebugMessage("The method 'doBeforeCreateToDB' of the class '{$className}' is calling.", 2);
-                $this->userExpanded->doBeforeCreateToDB();
+                $this->logger->setDebugMessage(
+                    "[Proxy::createInDB] The method 'doBeforeCreateToDB' of the class '{$className}' is calling.", 2);
+                $returnBefore = $this->userExpanded->doBeforeCreateToDB();
+                if ($returnBefore === false) {
+                    throw new Exception("[Proxy::createInDB] The method 'doBeforeCreateToDB' reports an error.");
+                } else if (is_null($returnBefore)) {
+                    // Pass through for 'return' doesn't exist.
+                } else if (is_string($returnBefore)) {
+                    if (strlen($returnBefore) === 0) {
+                        return false; // Silent stop
+                    }
+                    throw new Exception($returnBefore); // Just message as error.
+                }
             }
             if ($this->dbClass) {
                 $this->dbClass->requireUpdatedRecord(true); // Always Requred Created Record
                 $resultOfCreate = $this->dbClass->createInDB($isReplace);
+                if (!$resultOfCreate) {
+                    throw new Exception('[Proxy::createInDB] Create operation failed.');
+                }
                 $result = $this->dbClass->updatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterCreateToDB")) {
-                $this->logger->setDebugMessage("The method 'doAfterCreateToDB' of the class '{$className}' is calling.", 2);
+                $this->logger->setDebugMessage(
+                    "[Proxy::createInDB] The method 'doAfterCreateToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterCreateToDB($result);
             }
             if (!$this->isStopNotifyAndMessaging) {
@@ -404,23 +447,36 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         try {
             $className = is_null($this->userExpanded) ? "" : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeDeleteFromDB")) {
-                $this->logger->setDebugMessage("The method 'doBeforeDeleteFromDB' of the class '{$className}' is calling.", 2);
-                $this->userExpanded->doBeforeDeleteFromDB();
+                $this->logger->setDebugMessage("[Proxy::deleteFromDB] The method 'doBeforeDeleteFromDB' of the class '{$className}' is calling.", 2);
+                $returnBefore = $this->userExpanded->doBeforeDeleteFromDB();
+                if ($returnBefore === false) {
+                    throw new Exception("[Proxy::deleteFromDB] The method 'doBeforeDeleteFromDB' reports an error.");
+                } else if (is_null($returnBefore)) {
+                    // Pass through for 'return' doesn't exist.
+                } else if (is_string($returnBefore)) {
+                    if (strlen($returnBefore) === 0) {
+                        return false; // Silent stop
+                    }
+                    throw new Exception($returnBefore); // Just message as error.
+                }
             }
             if ($this->dbClass) {
                 $tableInfo = $this->dbSettings->getDataSourceTargetArray();
                 if (isset($tableInfo['soft-delete'])) {
                     $delFlagField = is_string($tableInfo['soft-delete']) ? $tableInfo['soft-delete'] : 'delete';
                     $this->logger->setDebugMessage(
-                        "The soft-delete applies to this delete operation with '{$delFlagField}' field.", 2);
+                        "[Proxy::deleteFromDB] The soft-delete applies to this delete operation with '{$delFlagField}' field.", 2);
                     $this->dbSettings->addValueWithField($delFlagField, 1);
                     $result = $this->dbClass->updateDB(false);
                 } else {
                     $result = $this->dbClass->deleteFromDB();
                 }
+                if (!$result) {
+                    throw new Exception('[Proxy::deleteFromDB] Delete operation failed.');
+                }
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterDeleteFromDB")) {
-                $this->logger->setDebugMessage("The method 'doAfterDeleteFromDB' of the class '{$className}' is calling.", 2);
+                $this->logger->setDebugMessage("[Proxy::deleteFromDB] The method 'doAfterDeleteFromDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterDeleteFromDB($result);
             }
             $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
@@ -455,14 +511,29 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         try {
             $className = is_null($this->userExpanded) ? "" : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeCopyInDB")) {
-                $this->logger->setDebugMessage("The method 'doBeforeCopyInDB' of the class '{$className}' is calling.", 2);
-                $this->userExpanded->doBeforeCopyInDB();
+                $this->logger->setDebugMessage("[Proxy::copyInDB] The method 'doBeforeCopyInDB' of the class '{$className}' is calling.", 2);
+                $returnBefore = $this->userExpanded->doBeforeCopyInDB();
+                if ($returnBefore === false) {
+                    throw new Exception("[Proxy::copyInDB] The method 'doBeforeCopyInDB' reports an error.");
+                } else if (is_null($returnBefore)) {
+                    // Pass through for 'return' doesn't exist.
+                } else if (is_string($returnBefore)) {
+                    if (strlen($returnBefore) === 0) {
+                        return false; // Silent stop
+                    }
+                    throw new Exception($returnBefore); // Just message as error.
+                }
             }
             if ($this->dbClass) {
-                $result = $this->dbClass->copyInDB();
+                $this->dbClass->requireUpdatedRecord(true); // Always Requred Copied Record
+                $resultOfCopy = $this->dbClass->copyInDB();
+                if (!$resultOfCopy) {
+                    throw new Exception('[Proxy::copyInDB] Copy operation failed.');
+                }
+                $result = $this->dbClass->updatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterCopyInDB")) {
-                $this->logger->setDebugMessage("The method 'doAfterCopyInDB' of the class '{$className}' is calling.", 2);
+                $this->logger->setDebugMessage("[Proxy::copyInDB] The method 'doAfterCopyInDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterCopyInDB($result);
             }
             if ($this->dbSettings->notifyServer
@@ -485,7 +556,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->logger->setErrorMessage("Exception:[5] {$e->getMessage()}");
             return false;
         }
-        return $result;
+        return $resultOfCopy;
     }
 
     /**
@@ -944,7 +1015,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                                 . var_export($SAMLAuth->getAttributes(), true));
                             $this->outputOfProcessing['samlloginurl'] = $SAMLAuth->samlLoginURL($_SERVER['HTTP_REFERER']);
                             $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
-                            if(!$additional){
+                            if (!$additional) {
                                 $this->outputOfProcessing['samladditionalfail'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
                             }
                             $this->paramAuthUser = $signedUser;
