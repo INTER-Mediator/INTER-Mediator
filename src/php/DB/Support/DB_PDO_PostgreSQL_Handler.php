@@ -278,12 +278,12 @@ test_db       | im_sample    | person     | memo        |
         $keyField = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
         $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence'] : "{$tableName}_{$keyField}_seq";
         $query = "SELECT MAX({$keyField}) AS last_value FROM {$tableName}";
-        $this->dbClassObj->logger->setDebugMessage("[copyRecords PostgreSQL]" . $sql);
+        $this->dbClassObj->logger->setDebugMessage("[copyRecords PostgreSQL]" . $query);
         $temp_q_id = $this->dbClassObj->link->prepare($query);
         $temp_q_id->execute();
         if ($temp_q_id) {
             $temp_result = $temp_q_id->fetch(PDO::FETCH_ASSOC);
-            return ($temp_result) ? $temp_result['last_value'] : false;
+            return ($temp_result) ? $temp_result['last_value'] : null;
         }
         return null; // $this->dbClassObj->link->lastInsertId(/*$seqObject*/);
     }
