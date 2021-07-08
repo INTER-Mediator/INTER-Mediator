@@ -44,6 +44,8 @@ Ver.8 (in development)
 - [BUG FIX] Fix portal access mode for FileMaker_FX class. The affected version is Ver.7.
 - [BUG FIX] If nodes bond to the local context exist in enclosure/repeater (ex. within table tag), Some error (1046)
   rose up. So far the error doesn't rise, but these nodes should exist out side of enclosure/repeater. (Thanks to Mr. Hayashi)
+- [BUG FIX] When the doAfterCopyInDB method calls, copied record information didn't pass to it.
+- [BUG FIX] The $sendMailCompatibilityMode variable didn't affected.
 
 Ver.7 (March 20, 2021)
 - The synchronizing with clients is back without Pusher.
