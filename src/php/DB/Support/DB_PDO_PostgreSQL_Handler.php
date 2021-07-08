@@ -267,7 +267,7 @@ test_db       | im_sample    | person     | memo        |
             $setClause = "{$this->sqlSELECTCommand()}{$listList} FROM {$tableName} WHERE {$queryClause}";
             $sql = $this->sqlINSERTCommand($tableRef, $setClause);
             $this->dbClassObj->logger->setDebugMessage($sql);
-            $result = $this->dbClassObj->link->query($sql);
+            $result = $this->dbClassObj->link->prepare($sql)->execute();
             if (!$result) {
                 throw new Exception('INSERT Error:' . $sql);
             }
