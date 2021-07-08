@@ -80,7 +80,7 @@ abstract class DB_PDO_Handler
             $setClause = "{$this->sqlSELECTCommand()}{$listList} FROM {$tableName} WHERE {$queryClause}";
             $sql = $this->sqlINSERTCommand($tableRef, $setClause);
             $this->dbClassObj->logger->setDebugMessage($sql);
-            $result = $this->dbClassObj->link->query($sql);
+            $result = $this->dbClassObj->link->exec($sql);
             if (!$result) {
                 throw new Exception('INSERT Error:' . $sql);
             }
