@@ -418,7 +418,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $result = $this->link->query($sql);
             if ($result === false) {
                 $this->errorMessageStore('Select:' . $sql);
-                return array();
+                return false;
             }
             $this->mainTableCount = $isAggregate ? $result->rowCount() : $result->fetchColumn(0);
 
@@ -431,7 +431,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 $result = $this->link->query($sql);
                 if ($result === false) {
                     $this->errorMessageStore('Select:' . $sql);
-                    return array();
+                    return false;
                 }
                 $this->mainTableTotalCount = $isAggregate ? $result->rowCount() : $result->fetchColumn(0);
             }
@@ -448,7 +448,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
 
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
-            return array();
+            return false;
         }
         $this->notifyHandler->setQueriedPrimaryKeys(array());
         $keyField = $this->getKeyFieldOfContext($tableInfo);
@@ -493,6 +493,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                         $result = $this->link->query($sql);
                         if ($result === false) {
                             $this->errorMessageStore('Post-script:' . $sql);
+                            return false;
                         }
                     }
                 }
