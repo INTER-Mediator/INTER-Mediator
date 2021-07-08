@@ -88,10 +88,10 @@ abstract class DB_PDO_Handler
             $this->dbClassObj->errorMessageStore($ex->getMessage());
             return false;
         }
-        $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence'] : $tableName;
+        $keyField = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
+        $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence'] : "{$tableName}_{$keyField}_seq";
         return $this->dbClassObj->link->lastInsertId($seqObject);
     }
-
 
     public abstract function getNullableNumericFields($tableName);
 
