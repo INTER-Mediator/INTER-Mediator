@@ -455,16 +455,19 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         try {
             $className = is_null($this->userExpanded) ? "" : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeCopyInDB")) {
-                $this->logger->setDebugMessage("The method 'doBeforeCopyInDB' of the class '{$className}' is calling.", 2);
+                $this->logger->setDebugMessage("[Proxy::copyInDB] The method 'doBeforeCopyInDB' of the class '{$className}' is calling.", 2);
                 $this->userExpanded->doBeforeCopyInDB();
             }
             if ($this->dbClass) {
                 $this->dbClass->requireUpdatedRecord(true); // Always Requred Copied Record
                 $resultOfCopy = $this->dbClass->copyInDB();
+                if(!$resultOfCopy) {
+                    throw new Exception('[Proxy::copyInDB] Copy operation failed.');
+                }
                 $result = $this->dbClass->updatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterCopyInDB")) {
-                $this->logger->setDebugMessage("The method 'doAfterCopyInDB' of the class '{$className}' is calling.", 2);
+                $this->logger->setDebugMessage("[Proxy::copyInDB] The method 'doAfterCopyInDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterCopyInDB($result);
             }
             if ($this->dbSettings->notifyServer
