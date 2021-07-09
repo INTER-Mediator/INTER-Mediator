@@ -64,9 +64,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     public function setParamResponse($res) // For testing
     {
         if (is_array($res)) {
-            $this->paramResponse = isset($res[0]) ? $res[0] : null;
-            $this->paramResponse2m = isset($res[1]) ? $res[1] : null;
-            $this->paramResponse2 = isset($res[2]) ? $res[2] : null;
+            $this->paramResponse = $res[0] ?? null;
+            $this->paramResponse2m = $res[1] ?? null;
+            $this->paramResponse2 = $res[2] ?? null;
         } else {
             $this->paramResponse = $res;
         }
@@ -222,14 +222,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 );
             }
             // Messaging
-            $msgEntry = isset($currentDataSource['send-mail']) ? $currentDataSource['send-mail'] :
-                (isset($currentDataSource['messaging']) ? $currentDataSource['messaging'] : null);
+            $msgEntry = $currentDataSource['send-mail'] ?? ($currentDataSource['messaging'] ?? null);
             if ($msgEntry) {
-                $msgArray = isset($msgEntry['load']) ? $msgEntry['load'] :
-                    (isset($msgEntry['read']) ? $msgEntry['read'] : null);
+                $msgArray = $msgEntry['load'] ?? ($msgEntry['read'] ?? null);
                 if ($msgArray) {
                     $this->logger->setDebugMessage("Try to send a message.", 2);
-                    $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
+                    $driver = $msgEntry['driver'] ?? "mail";
                     $msgProxy = new MessagingProxy($driver);
                     $msgResult = $msgProxy->processing($this, $msgArray, $result);
                     if ($msgResult !== true) {
@@ -332,14 +330,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 }
             }
             // Messaging
-            $msgEntry = isset($currentDataSource['send-mail']) ? $currentDataSource['send-mail'] :
-                (isset($currentDataSource['messaging']) ? $currentDataSource['messaging'] : null);
+            $msgEntry = $currentDataSource['send-mail'] ?? ($currentDataSource['messaging'] ?? null);
             if ($msgEntry) {
-                $msgArray = isset($msgEntry['edit']) ? $msgEntry['edit'] :
-                    (isset($msgEntry['update']) ? $msgEntry['update'] : null);
+                $msgArray = $msgEntry['edit'] ?? ($msgEntry['update'] ?? null);
                 if ($msgArray) {
                     $this->logger->setDebugMessage("Try to send a message.", 2);
-                    $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
+                    $driver = $msgEntry['driver'] ?? "mail";
                     $msgProxy = new MessagingProxy($driver);
                     $msgResult = $msgProxy->processing($this, $msgArray, $this->dbClass->updatedRecord());
                     if ($msgResult !== true) {
@@ -410,14 +406,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 }
                 // Messaging
-                $msgEntry = isset($currentDataSource['send-mail']) ? $currentDataSource['send-mail'] :
-                    (isset($currentDataSource['messaging']) ? $currentDataSource['messaging'] : null);
+                $msgEntry = $currentDataSource['send-mail'] ?? ($currentDataSource['messaging'] ?? null);
                 if ($msgEntry) {
-                    $msgArray = isset($msgEntry['new']) ? $msgEntry['new'] :
-                        (isset($msgEntry['create']) ? $msgEntry['create'] : null);
+                    $msgArray = $msgEntry['new'] ?? ($msgEntry['create'] ?? null);
                     if ($msgArray) {
                         $this->logger->setDebugMessage("Try to send a message.", 2);
-                        $driver = isset($msgEntry['driver']) ? $msgEntry['driver'] : "mail";
+                        $driver = $msgEntry['driver'] ?? "mail";
                         $msgProxy = new MessagingProxy($driver);
                         $msgResult = $msgProxy->processing($this, $msgArray, $result);
                         if ($msgResult !== true) {
@@ -612,17 +606,17 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         ), true);
         $this->accessLogLevel = intval($params['accessLogLevel']);
         $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
-        $this->passwordHash = isset($params['passwordHash']) ? $params['passwordHash'] : "1";
-        $this->alwaysGenSHA2 = isset($params['alwaysGenSHA2']) ? boolval($params['alwaysGenSHA2']) : false;
-        $this->migrateSHA1to2 = isset($params['migrateSHA1to2']) ? boolval($params['migrateSHA1to2']) : false;
+        $this->passwordHash = $params['passwordHash'] ?? "1";
+        $this->alwaysGenSHA2 = isset($params['alwaysGenSHA2']) && boolval($params['alwaysGenSHA2']);
+        $this->migrateSHA1to2 = isset($params['migrateSHA1to2']) && boolval($params['migrateSHA1to2']);
 
         $this->dbSettings->setDataSource($datasource);
         $this->dbSettings->setOptions($options);
         IMLocale::$options = $options;
         $this->dbSettings->setDbSpec($dbspec);
 
-        $this->dbSettings->setSeparator(isset($options['separator']) ? $options['separator'] : '@');
-        $this->formatter->setFormatter(isset($options['formatter']) ? $options['formatter'] : null);
+        $this->dbSettings->setSeparator($options['separator'] ?? '@');
+        $this->formatter->setFormatter($options['formatter'] ?? null);
         $this->dbSettings->setDataSourceName(!is_null($target) ? $target : (isset($this->PostData['name']) ? $this->PostData['name'] : "_im_auth"));
         $context = $this->dbSettings->getDataSourceTargetArray();
         if (count($_FILES) > 0) {
@@ -630,52 +624,30 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
 
         $dbClassName = '\\INTERMediator\\DB\\' .
-            (isset($context['db-class']) ? $context['db-class'] :
-                (isset($dbspec['db-class']) ? $dbspec['db-class'] :
-                    (isset ($params['dbClass']) ? $params['$dbClass'] : '')));
+            ($context['db-class'] ?? ($dbspec['db-class'] ?? ($params['$dbClass'] ?? '')));
         $this->dbSettings->setDbSpecServer(
-            isset($context['server']) ? $context['server'] :
-                (isset($dbspec['server']) ? $dbspec['server'] :
-                    (isset ($params['dbServer']) ? $params['dbServer'] : '')));
+            $context['server'] ?? ($dbspec['server'] ?? ($params['dbServer'] ?? '')));
         $this->dbSettings->setDbSpecPort(
-            isset($context['port']) ? $context['port'] :
-                (isset($dbspec['port']) ? $dbspec['port'] :
-                    (isset ($params['dbPort']) ? $params['dbPort'] : '')));
+            $context['port'] ?? ($dbspec['port'] ?? ($params['dbPort'] ?? '')));
         $this->dbSettings->setDbSpecUser(
-            isset($context['user']) ? $context['user'] :
-                (isset($dbspec['user']) ? $dbspec['user'] :
-                    (isset ($params['dbUser']) ? $params['dbUser'] : '')));
+            $context['user'] ?? ($dbspec['user'] ?? ($params['dbUser'] ?? '')));
         $this->dbSettings->setDbSpecPassword(
-            isset($context['password']) ? $context['password'] :
-                (isset($dbspec['password']) ? $dbspec['password'] :
-                    (isset ($params['dbPassword']) ? $params['dbPassword'] : '')));
+            $context['password'] ?? ($dbspec['password'] ?? ($params['dbPassword'] ?? '')));
         $this->dbSettings->setDbSpecDataType(
-            isset($context['datatype']) ? $context['datatype'] :
-                (isset($dbspec['datatype']) ? $dbspec['datatype'] :
-                    (isset ($params['dbDataType']) ? $params['dbDataType'] : '')));
+            $context['datatype'] ?? ($dbspec['datatype'] ?? ($params['dbDataType'] ?? '')));
         $this->dbSettings->setDbSpecDatabase(
-            isset($context['database']) ? $context['database'] :
-                (isset($dbspec['database']) ? $dbspec['database'] :
-                    (isset ($params['dbDatabase']) ? $params['dbDatabase'] : '')));
+            $context['database'] ?? ($dbspec['database'] ?? (isset ($params['dbDatabase']) ? $params['dbDatabase'] : '')));
         $this->dbSettings->setDbSpecProtocol(
-            isset($context['protocol']) ? $context['protocol'] :
-                (isset($dbspec['protocol']) ? $dbspec['protocol'] :
-                    (isset ($params['dbProtocol']) ? $params['dbProtocol'] : '')));
+            $context['protocol'] ?? ($dbspec['protocol'] ?? ($params['dbProtocol'] ?? '')));
         $this->dbSettings->setDbSpecOption(
-            isset($context['option']) ? $context['option'] :
-                (isset($dbspec['option']) ? $dbspec['option'] :
-                    (isset ($params['dbOption']) ? $params['dbOption'] : '')));
+            $context['option'] ?? ($dbspec['option'] ?? ($params['dbOption'] ?? '')));
         $this->dbSettings->setCertVerifying(
-            isset($context['cert-verifying']) ? $context['cert-verifying'] :
-                (isset($dbspec['cert-verifying']) ? $dbspec['cert-verifying'] :
-                    (isset ($params['certVerifying']) ? $params['certVerifying'] : true)));
+            $context['cert-verifying'] ?? ($dbspec['cert-verifying'] ?? ($params['certVerifying'] ?? true)));
         if (isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn'])) {
             $this->dbSettings->setDbSpecDSN($options['authentication']['issuedhash-dsn']);
         } else {
             $this->dbSettings->setDbSpecDSN(
-                isset($context['dsn']) ? $context['dsn'] :
-                    (isset($dbspec['dsn']) ? $dbspec['dsn'] :
-                        (isset ($params['dbDSN']) ? $params['dbDSN'] : '')));
+                $context['dsn'] ?? ($dbspec['dsn'] ?? ($params['dbDSN'] ?? '')));
         }
 
         /* Setup Database Class's Object */
