@@ -169,7 +169,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /**
-     * @param $dataSourceName
      * @return mixed
      */
     function readFromDB()
@@ -246,7 +245,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /**
-     * @param $dataSourceName
      * @return mixed
      */
     function countQueryResult()
@@ -264,7 +262,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /**
-     * @param $dataSourceName
      * @return mixed
      */
     function getTotalCount()
@@ -282,7 +279,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /**
-     * @param $dataSourceName
+     * @param $bypassAuth
      * @return mixed
      */
     function updateDB($bypassAuth)
@@ -359,8 +356,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /**
-     * @param $dataSourceName
-     * @param $bypassAuth
+     * @param $isReplace
      * @return mixed
      */
     public function createInDB($isReplace = false)
@@ -439,7 +435,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /**
-     * @param $dataSourceName
      * @return mixed
      */
     function deleteFromDB()
@@ -503,7 +498,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /**
-     * @param $dataSourceName
      * @return mixed
      */
     function copyInDB()
