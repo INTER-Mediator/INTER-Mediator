@@ -59,12 +59,12 @@ class DefinitionChecker
         $endPoint = $this->currentProhibit;
         $currentPath = '';
         foreach ($this->path as $value) {
-            $nextEndPoint = isset($endPoint[$value]) ? $endPoint[$value] : null;
+            $nextEndPoint = $endPoint[$value] ?? null;
             if ($nextEndPoint === null && is_integer($value)) {
-                $nextEndPoint = isset($endPoint['*']) ? $endPoint['*'] : null;
+                $nextEndPoint = $endPoint['*'] ?? null;
             }
             if ($nextEndPoint === null && is_string($value)) {
-                $nextEndPoint = isset($endPoint['#']) ? $endPoint['#'] : null;
+                $nextEndPoint = $endPoint['#'] ?? null;
             }
             $endPoint = $nextEndPoint;
             $currentPath .= "[{$value}]";

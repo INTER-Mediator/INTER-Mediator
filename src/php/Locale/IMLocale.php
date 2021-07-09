@@ -54,8 +54,8 @@ class IMLocale
         $appLocale = null;
         $appCurrency = null;
         $params = IMUtil::getFromParamsPHPFile(array("appLocale", "appCurrency",), true);
-        $appLocale = isset(IMLocale::$options['app-locale']) ? IMLocale::$options['app-locale'] : $params["appLocale"];
-        $appCurrency = isset(IMLocale::$options['app-currency']) ? IMLocale::$options['app-currency'] : $params["appCurrency"];
+        $appLocale = IMLocale::$options['app-locale'] ?? $params["appLocale"];
+        $appCurrency = IMLocale::$options['app-currency'] ?? $params["appCurrency"];
 
         if (IMLocale::$localForTest != '') {
             IMLocale::$choosenLocale = IMLocale::$localForTest;

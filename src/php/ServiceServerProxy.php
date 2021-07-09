@@ -46,15 +46,15 @@ class ServiceServerProxy
             "serviceServerKey", "serviceServerCert", "serviceServerCA",], true);
         $this->paramsHost = $params["serviceServerConnect"] ? $params["serviceServerConnect"] : "http://localhost";
         $this->paramsPort = $params["serviceServerPort"] ? intval($params["serviceServerPort"]) : 11478;
-        $this->paramsQuit = is_null($params["stopSSEveryQuit"]) ? false : boolval($params["stopSSEveryQuit"]);
-        $this->paramsBoot = is_null($params["bootWithInstalledNode"]) ? false : boolval($params["bootWithInstalledNode"]);
-        $this->dontAutoBoot = is_null($params["preventSSAutoBoot"]) ? false : boolval($params["preventSSAutoBoot"]);
-        $this->dontUse = is_null($params["notUseServiceServer"]) ? false : boolval($params["notUseServiceServer"]);
+        $this->paramsQuit = !is_null($params["stopSSEveryQuit"]) && boolval($params["stopSSEveryQuit"]);
+        $this->paramsBoot = !is_null($params["bootWithInstalledNode"]) && boolval($params["bootWithInstalledNode"]);
+        $this->dontAutoBoot = !is_null($params["preventSSAutoBoot"]) && boolval($params["preventSSAutoBoot"]);
+        $this->dontUse = !is_null($params["notUseServiceServer"]) && boolval($params["notUseServiceServer"]);
         $this->foreverLog = is_null($params["foreverLog"]) ? "" : $params["foreverLog"];
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
-        $this->serviceServerKey = $params["serviceServerKey"] ? $params["serviceServerKey"] : "";
-        $this->serviceServerCert = $params["serviceServerCert"] ? $params["serviceServerCert"] : "";
-        $this->serviceServerCA = $params["serviceServerCA"] ? $params["serviceServerCA"] : "";
+        $this->serviceServerKey = $params["serviceServerKey"] ?? "";
+        $this->serviceServerCert = $params["serviceServerCert"] ?? "";
+        $this->serviceServerCA = $params["serviceServerCA"] ?? "";
     }
 
     public function clearMessages()
@@ -250,7 +250,7 @@ class ServiceServerProxy
             $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath);
         }
 
-        $logFile = $this->foreverLog ? $this->foreverLog : tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
+        $logFile = $this->foreverLog ?? tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
         $options = "-a -l {$logFile} --minUptime 5000 --spinSleepTime 5000";
         $originURL = (isset($_SERVER['HTTPS']) ? "https://" : "http://") . "{$_SERVER['HTTP_HOST']}";
         $cmd = "{$forever} start {$options} {$scriptPath} {$this->paramsPort} {$dq}{$originURL}{$dq}";

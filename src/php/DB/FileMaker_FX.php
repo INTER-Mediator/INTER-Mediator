@@ -351,7 +351,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
             $parentTable = $this->dbSettings->getDataSourceTargetArray();
             if (isset($parentTable['paging']) && $parentTable['paging'] === true) {
                 $this->fx->FMSkipRecords($this->dbSettings->getStart());
-                $portalParentKeyField = isset($parentTable['key']) ? $parentTable['key'] : '';
+                $portalParentKeyField = $parentTable['key'] ?? '';
             }
             if (isset($parentTable['query'])) {
                 foreach ($parentTable['query'] as $condition) {
@@ -404,7 +404,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                     }
 
                     $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-                    $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : $this->specHandler->getDefaultKey();
+                    $primaryKey = $tableInfo['key'] ?? $this->specHandler->getDefaultKey();
                     if ($condition['field'] == $primaryKey && isset($condition['value'])) {
                         $this->notifyHandler->setQueriedPrimaryKeys(array($condition['value']));
                     }
@@ -441,7 +441,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                         $foreignField = $relDef['foreign-key'];
                         $foreignValue = $foreignDef['value'];
                         $relDef = $this->normalizedCondition($relDef);
-                        $foreignOperator = isset($relDef['operator']) ? $relDef['operator'] : 'eq';
+                        $foreignOperator = $relDef['operator'] ?? 'eq';
                         $formattedValue = $this->formatter->formatterToDB(
                             "{$tableName}{$this->dbSettings->getSeparator()}{$foreignField}", $foreignValue);
                         if (!$usePortal) {
@@ -722,7 +722,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
 
         $recordArray = array();
         $this->notifyHandler->setQueriedPrimaryKeys(array());
-        $keyField = isset($context['key']) ? $context['key'] : $this->specHandler->getDefaultKey();
+        $keyField = $context['key'] ?? $this->specHandler->getDefaultKey();
         try {
             $parsedData = $cwpkit->query($queryString);
             if ($parsedData === false) {
@@ -1001,7 +1001,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
             $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
         }
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : $this->specHandler->getDefaultKey();
+        $primaryKey = $tableInfo['key'] ?? $this->specHandler->getDefaultKey();
 
         $fxUtility = new RetrieveFM7Data($this->fx);
         $config = array(
@@ -1105,7 +1105,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
         }
         if ($result['foundCount'] == 1) {
             $this->notifyHandler->setQueriedPrimaryKeys(array());
-            $keyField = isset($context['key']) ? $context['key'] : $this->specHandler->getDefaultKey();
+            $keyField = $context['key'] ?? $this->specHandler->getDefaultKey();
             foreach ($result['data'] as $key => $row) {
                 $recId = substr($key, 0, strpos($key, '.'));
                 if ($keyField == $this->specHandler->getDefaultKey()) {
@@ -1206,7 +1206,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
             }
         }
 
-        $keyFieldName = isset($context['key']) ? $context['key'] : $this->specHandler->getDefaultKey();
+        $keyFieldName = $context['key'] ?? $this->specHandler->getDefaultKey();
 
         $recordData = array();
 
@@ -1419,7 +1419,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
             return false;
         }
         if ($result['foundCount'] != 0) {
-            $keyField = isset($context['key']) ? $context['key'] : $this->specHandler->getDefaultKey();
+            $keyField = $context['key'] ?? $this->specHandler->getDefaultKey();
             foreach ($result['data'] as $key => $row) {
                 $recId = substr($key, 0, strpos($key, '.'));
                 if ($keyField == $this->specHandler->getDefaultKey()) {

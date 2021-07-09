@@ -39,10 +39,10 @@ class SendSlack extends MessagingProvider
     {
         $options = $dbProxy->dbSettings->getOptions();
         if (isset($options['slack'])) {
-            $this->token = isset($options['slack']['token']) ? $options['slack']['token'] : $this->token;
-            $this->channel = isset($options['slack']['channel']) ? $options['slack']['channel'] : $this->channel;
+            $this->token = $options['slack']['token'] ?? $this->token;
+            $this->channel = $options['slack']['channel'] ?? $this->channel;
         }
-        $this->channel = isset($contextDef['subject-constant']) ? $contextDef['subject-constant'] : $this->channel;
+        $this->channel = $contextDef['subject-constant'] ?? $this->channel;
 
         $isError = false;
         $errorMsg = "";

@@ -33,7 +33,7 @@ abstract class MessagingProvider
     protected function modernTemplating($record, $tempStr, $ignoreField = false)
     {
         $bodyStr = $tempStr;
-        if(!$ignoreField && isset($record[$tempStr])){
+        if (!$ignoreField && isset($record[$tempStr])) {
             $bodyStr = $record[$tempStr];
         }
         if (strlen($tempStr) > 5) {
@@ -41,10 +41,8 @@ abstract class MessagingProvider
             $endPos = strpos($bodyStr, '@@', $startPos + 2);
             while ($startPos !== false && $endPos !== false) {
                 $fieldName = trim(substr($bodyStr, $startPos + 2, $endPos - $startPos - 2));
-                $bodyStr = substr($bodyStr, 0, $startPos) .
-                    (isset($record[$fieldName]) ? $record[$fieldName] :
-                        (($record[$fieldName] == NULL) ? '' : '=field not exist=')) .
-                    substr($bodyStr, $endPos + 2);
+                $bodyStr = substr($bodyStr, 0, $startPos)
+                    . ($record[$fieldName] ?? '') . substr($bodyStr, $endPos + 2);
                 $startPos = strpos($bodyStr, '@@');
                 $endPos = strpos($bodyStr, '@@', $startPos + 2);
             }

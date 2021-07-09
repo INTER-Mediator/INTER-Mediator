@@ -144,7 +144,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $queryClause = '';
-        $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
+        $primaryKey = $tableInfo['key'] ?? 'id';
 
         $queryClauseArray = array();
         if ($includeContext && isset($tableInfo['query'][0])) {
@@ -238,7 +238,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     if ($relDef['join-field'] == $foreignDef['field']) {
                         $escapedField = $this->handler->quotedEntityName($relDef['foreign-key']);
                         $escapedValue = $this->link->quote($foreignDef['value']);
-                        $op = isset($relDef['operator']) ? $relDef['operator'] : '=';
+                        $op = $relDef['operator'] ?? '=';
                         if (!$this->specHandler->isPossibleOperator($op)) {
                             throw new Exception("Invalid Operator.");
                         }
@@ -328,7 +328,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     throw new Exception("Invalid Sort Specifier.");
                 }
                 $escapedField = $this->handler->quotedEntityName($condition['field']);
-                $direction = isset($condition['direction']) ? $condition['direction'] : "";
+                $direction = $condition['direction'] ?? "";
                 $sortClause[] = "{$escapedField} {$direction}";
             }
         }

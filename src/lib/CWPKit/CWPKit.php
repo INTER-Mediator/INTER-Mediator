@@ -55,7 +55,7 @@ class CWPKit
         foreach ($query as $condition) {
             $val = explode('=', $condition);
             if (!isset($conditions[$val[0]])) {
-                $conditions[$val[0]] = isset($val[1]) ? $val[1] : '';
+                $conditions[$val[0]] = $val[1] ?? '';
             }
         }
 
