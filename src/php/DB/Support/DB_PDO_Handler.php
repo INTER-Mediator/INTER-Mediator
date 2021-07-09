@@ -73,7 +73,7 @@ abstract class DB_PDO_Handler
     public function copyRecords($tableInfo, $queryClause, $assocField, $assocValue, $defaultValues)
     {
         $returnValue = null;
-        $tableName = isset($tableInfo["table"]) ? $tableInfo["table"] : $tableInfo["name"];
+        $tableName = $tableInfo["table"] ?? $tableInfo["name"];
         try {
             list($fieldList, $listList) = $this->getFieldListsForCopy(
                 $tableName, $tableInfo['key'], $assocField, $assocValue, $defaultValues);
@@ -85,8 +85,8 @@ abstract class DB_PDO_Handler
             if (!$result) {
                 throw new Exception('INSERT Error:' . $sql);
             }
-            $keyField = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
-            $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence'] : "{$tableName}_{$keyField}_seq";
+            $keyField = $tableInfo['key'] ?? 'id';
+            $seqObject = $tableInfo['sequence'] ?? "{$tableName}_{$keyField}_seq";
             $returnValue = $this->dbClassObj->link->lastInsertId($seqObject);
         } catch (Exception $ex) {
             $this->dbClassObj->errorMessageStore($ex->getMessage());

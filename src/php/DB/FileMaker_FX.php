@@ -1419,7 +1419,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
             return false;
         }
         if ($result['foundCount'] != 0) {
-            $keyField = isset($context['key']) ? $context['key'] : $this->specHandler->getDefaultKey();
+            $keyField = $context['key'] ?? $this->specHandler->getDefaultKey();
             foreach ($result['data'] as $key => $row) {
                 $recId = substr($key, 0, strpos($key, '.'));
                 if ($keyField == $this->specHandler->getDefaultKey()) {

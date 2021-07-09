@@ -81,43 +81,34 @@ class GenerateJSCode
         $oAuthRedirect = $params["oAuthRedirect"];
         $passwordPolicy = $params["passwordPolicy"];
         $dbClass = $params["dbClass"];
-        $dbDSN = isset($options['dsn']) ? $options['dsn']
-            : (isset($params['dbDSN']) ? $params["dbDSN"] : '');
+        $dbDSN = $options['dsn'] ?? $params["dbDSN"] ?? '';
         $nonSupportMessageId = $params["nonSupportMessageId"];
         $valuesForLocalContext = $params["valuesForLocalContext"];
         $themeName = is_null($params["themeName"]) ? $themeName : $params["themeName"];
-        $appLocale = isset($options['app-locale']) ? $options['app-locale']
-            : (isset($params['appLocale']) ? $params["appLocale"] : 'ja_JP');
-        $appCurrency = isset($options['app-currency']) ? $options['app-currency']
-            : (isset($params['appCurrency']) ? $params["appCurrency"] : 'JP');
-        $resetPage = isset($options['authentication']['reset-page']) ? $options['authentication']['reset-page']
-            : (isset($params['resetPage']) ? $params["resetPage"] : null);
-        $enrollPage = isset($options['authentication']['enroll-page']) ? $options['authentication']['enroll-page']
-            : (isset($params['enrollPage']) ? $params["enrollPage"] : null);
-        $serviceServerPort = isset($params['serviceServerPort']) ? $params['serviceServerPort'] : "11479";
-        $serviceServerHost = (isset($params['serviceServerHost']) && $params['serviceServerHost'])
-            ? $params['serviceServerHost'] : false;
-        $serviceServerHost = $serviceServerHost ? $serviceServerHost
-            : (isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : false);
-        $serviceServerHost = $serviceServerHost ? $serviceServerHost
-            : (isset($_SERVER['HTTP_HOST']) ? parse_url($_SERVER['HTTP_HOST'], PHP_URL_HOST) : false);
-        $serviceServerHost = $serviceServerHost ? $serviceServerHost : 'localhost';
-        $serviceServerProtocol = isset($params['serviceServerProtocol']) ? $params['serviceServerProtocol'] : 'ws';
-        $notUseServiceServer = (isset($params['notUseServiceServer']) ? boolval($params["notUseServiceServer"]) : false);
+        $appLocale = $options['app-locale'] ?? $params["appLocale"] ?? 'ja_JP';
+        $appCurrency = $options['app-currency'] ?? $params["appCurrency"] ?? 'JP';
+        $resetPage = $options['authentication']['reset-page'] ?? $params["resetPage"] ?? null;
+        $enrollPage = $options['authentication']['enroll-page'] ?? $params["enrollPage"] ?? null;
+        $serviceServerPort = $params['serviceServerPort'] ?? "11479";
+        $serviceServerHost = $params['serviceServerHost'] ?? false;
+        $serviceServerHost = $serviceServerHost ?? $_SERVER['SERVER_ADDR'] ?? false;
+        $serviceServerHost = $serviceServerHost ?? parse_url($_SERVER['HTTP_HOST'], PHP_URL_HOST) ?? false;
+        $serviceServerHost = $serviceServerHost ?? 'localhost';
+        $serviceServerProtocol = $params['serviceServerProtocol'] ?? 'ws';
+        $notUseServiceServer = boolval($params["notUseServiceServer"] ?? false);
 
-        $activateClientService = isset($params['activateClientService']) ? boolval($params['activateClientService']) : false;
-        $followingTimezones = isset($params['followingTimezones']) ? boolval($params['followingTimezones']) : false;
-        $passwordHash = isset($params['passwordHash']) ? $params['passwordHash'] : 1;
+        $activateClientService = boolval($params['activateClientService'] ?? false);
+        $followingTimezones = boolval($params['followingTimezones'] ?? false);
+        $passwordHash = $params['passwordHash'] ?? 1;
         $passwordHash = ($passwordHash === '2m') ? 1.5 : floatval($passwordHash);
-        $alwaysGenSHA2 = isset($params['alwaysGenSHA2']) ? boolval($params['alwaysGenSHA2']) : false;
-        $isSAML = isset($options['authentication']['is-saml']) ? $options['authentication']['is-saml']
-            : (isset($params['isSAML']) ? boolval($params['isSAML']) : false);
-        $samlWithBuiltInAuth = isset($options['authentication']['saml-builtin-auth']) ? $options['authentication']['saml-builtin-auth']
-            : (isset($params['samlWithBuiltInAuth']) ? boolval($params['samlWithBuiltInAuth']) : false);
+        $alwaysGenSHA2 = boolval($params['alwaysGenSHA2'] ?? false);
+        $isSAML = $options['authentication']['is-saml'] ?? $params['isSAML'] ?? false;
+        $samlWithBuiltInAuth = $options['authentication']['saml-builtin-auth']
+            ?? (isset($params['samlWithBuiltInAuth']) && boolval($params['samlWithBuiltInAuth']));
 
-        $serverName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
-        $documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : 'Not_on_web_server';
-        $scriptName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'Not_on_web_server';
+        $serverName = $_SERVER['SCRIPT_NAME'] ?? 'Not_on_web_server';
+        $documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? 'Not_on_web_server';
+        $scriptName = $_SERVER['SCRIPT_NAME'] ?? 'Not_on_web_server';
 
         $hasSyncControl = false;
         foreach ($datasource as $contextDef) {
@@ -169,8 +160,7 @@ class GenerateJSCode
          * from db-class, determine the default key field string
          */
         $defaultKey = null;
-        $classBaseName = (isset($dbspecification['db-class']) ? $dbspecification['db-class'] :
-            (!is_null($dbClass) ? $dbClass : ''));
+        $classBaseName = $dbspecification['db-class'] ?? $dbClass ?? '';
         $dbClassName = 'INTERMediator\\DB\\' . $classBaseName;
         $dbInstance = new $dbClassName();
         $dbInstance->setupHandlers($dbDSN);
@@ -194,7 +184,7 @@ class GenerateJSCode
         if (isset($callURL)) {
             $pathToMySelf = $callURL;
         } else if (isset($scriptPathPrefix) || isset($scriptPathSuffix)) {
-            $pathToMySelf = (isset($scriptPathPrefix) ? $scriptPathPrefix : '')
+            $pathToMySelf = ($scriptPathPrefix ?? '')
                 . filter_var($scriptName)
                 . (isset($scriptPathSufix) ? $scriptPathSuffix : '');
         } else {
@@ -205,16 +195,16 @@ class GenerateJSCode
             "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getTheme", "function(){return {$q}",
-            isset($options['theme']) ? $options['theme'] : $themeName, "{$q};}");
+            $options['theme'] ?? $themeName, "{$q};}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getDataSources", "function(){return ",
             IMUtil::arrayToJSExcluding($datasource, '', array('password')), ";}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getOptionsAliases",
-            "function(){return ", IMUtil::arrayToJS(isset($options['aliases']) ? $options['aliases'] : array()), ";}");
+            "function(){return ", IMUtil::arrayToJS($options['aliases'] ?? array()), ";}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getOptionsTransaction",
-            "function(){return ", IMUtil::arrayToJS(isset($options['transaction']) ? $options['transaction'] : ''), ";}");
+            "function(){return ", IMUtil::arrayToJS($options['transaction'] ?? ''), ";}");
         $this->generateAssignJS("INTERMediatorOnPage.dbClassName", "{$q}{$dbClassName}{$q}");
         $this->generateAssignJS("INTERMediatorOnPage.defaultKeyName", "{$q}{$defaultKey}{$q}");
 
@@ -233,7 +223,7 @@ class GenerateJSCode
         }
         foreach ($browserCompatibility as $browser => $browserInfo) {
             if (strtolower($browser) !== $browser) {
-                $browserCompatibility[strtolower($browser)] = $browserCompatibility[$browser];
+                $browserCompatibility[strtolower($browser)] = $browserInfo;
                 unset($browserCompatibility[$browser]);
             }
         }

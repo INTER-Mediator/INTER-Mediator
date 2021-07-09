@@ -25,8 +25,7 @@ class SendMail extends MessagingProvider
     public function __construct()
     {
         $params = IMUtil::getFromParamsPHPFile(["sendMailCompatibilityMode"], true);
-        $this->isCompatible = isset($params['sendMailCompatibilityMode'])
-            ? boolval($params['sendMailCompatibilityMode']) : true;
+        $this->isCompatible = boolval($params['sendMailCompatibilityMode'] ?? true);
     }
 
     public function processing($dbProxy, $sendMailParam, $result)
@@ -59,7 +58,7 @@ class SendMail extends MessagingProvider
                         'protocol' => 'SMTP_AUTH',
                         'user' => $smtpConfig['username'],
                         'pass' => $smtpConfig['password'],
-                        'encryption' => isset($smtpConfig['encryption']) ? $smtpConfig['encryption'] : null,
+                        'encryption' => $smtpConfig['encryption'] ?? null,
                     ));
                 } else {
                     $ome->setSmtpInfo(array(
@@ -140,7 +139,7 @@ class SendMail extends MessagingProvider
                 $labels = ['to', 'cc', 'bcc', 'from', 'subject', 'body'];
                 $mailSeed = [];
                 foreach ($labels as $label) {
-                    $mailSeed[$label] = isset($sendMailParam[$label]) ? $sendMailParam[$label] : '';
+                    $mailSeed[$label] = $sendMailParam[$label] ?? '';
                 }
                 if (isset($sendMailParam['template-context'])) {
                     $cParam = explode('@', $sendMailParam['template-context']);
