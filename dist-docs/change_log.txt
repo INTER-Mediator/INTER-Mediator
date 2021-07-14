@@ -38,7 +38,7 @@ Ver.8 (in development)
 - DBProxy detect the error in db operations, and stop the operation intermediately and rises exception.
 - Each part of the pagination control have specific class name, ex. the insert button has the IM_NAV_button
   and the IM_NAV_insert_button class. Additional class names are IM_NAV_update_button, IM_NAV_move_button,
-  IM_NAV_insert_button, IM_NAV_delete_button, IM_NAV_copy_button and IM_NAV_save_button.
+  IM_NAV_insert_button, IM_NAV_delete_button, IM_NAV_copy_button, IM_NAV_logout_button and IM_NAV_save_button.
 - [INFO] The inter-mediator-plugin-fileupload is deprecated. The inter-mediator-plugin-jqueryfileupload is a replacement.
   We are going to maintain the jqueryfileupload so far and hope it forever.
 - [BUG FIX] Fix compatibility with Claris FileMaker Server. The affected version is Ver.7.

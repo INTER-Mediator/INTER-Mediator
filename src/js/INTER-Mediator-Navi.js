@@ -56,7 +56,7 @@ const IMLibPageNavigation = {
         navigation.appendChild(node)
         node.appendChild(document.createTextNode(
           ((navLabel === null || navLabel[8] === null) ? INTERMediatorOnPage.getMessages()[2] : navLabel[8])))
-        node.setAttribute('class', 'IM_NAV_button IM_NAV_update_button')
+        node.setAttribute('class', 'IM_NAV_update_button IM_NAV_button')
         if (!node.id) {
           node.id = INTERMediator.nextIdValue()
         }
@@ -97,7 +97,7 @@ const IMLibPageNavigation = {
         navigation.appendChild(node)
         node.appendChild(document.createTextNode(
           (navLabel === null || navLabel[0] === null) ? '<<' : navLabel[0]))
-        node.setAttribute('class', 'IM_NAV_button IM_NAV_move_button' + (start === 0 ? disableClass : ''))
+        node.setAttribute('class', 'IM_NAV_move_button IM_NAV_button' + (start === 0 ? disableClass : ''))
         if (!node.id) {
           node.id = INTERMediator.nextIdValue()
         }
@@ -109,7 +109,7 @@ const IMLibPageNavigation = {
         navigation.appendChild(node)
         node.appendChild(document.createTextNode(
           (navLabel === null || navLabel[1] === null) ? '<' : navLabel[1]))
-        node.setAttribute('class', 'IM_NAV_button IM_NAV_move_button' + (start === 0 ? disableClass : ''))
+        node.setAttribute('class', 'IM_NAV_move_button IM_NAV_button' + (start === 0 ? disableClass : ''))
         const prevPageCount = (start - pageSize > 0) ? start - pageSize : 0
         if (!node.id) {
           node.id = INTERMediator.nextIdValue()
@@ -125,7 +125,7 @@ const IMLibPageNavigation = {
         navigation.appendChild(node)
         node.appendChild(document.createTextNode(
           (navLabel === null || navLabel[2] === null) ? '>' : navLabel[2]))
-        node.setAttribute('class', 'IM_NAV_button IM_NAV_move_button' + (start + pageSize >= allCount ? disableClass : ''))
+        node.setAttribute('class', 'IM_NAV_move_button IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ''))
         const nextPageCount = (start + pageSize < allCount) ? start + pageSize : ((allCount - pageSize > 0) ? start : 0)
         if (!node.id) {
           node.id = INTERMediator.nextIdValue()
@@ -141,7 +141,7 @@ const IMLibPageNavigation = {
         navigation.appendChild(node)
         node.appendChild(document.createTextNode(
           (navLabel === null || navLabel[3] === null) ? '>>' : navLabel[3]))
-        node.setAttribute('class', 'IM_NAV_button IM_NAV_move_button' + (start + pageSize >= allCount ? disableClass : ''))
+        node.setAttribute('class', 'IM_NAV_move_button IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ''))
         const endPageCount = (allCount % pageSize === 0)
           ? allCount - (allCount % pageSize) - pageSize : allCount - (allCount % pageSize)
         if (!node.id) {
@@ -199,7 +199,7 @@ const IMLibPageNavigation = {
               buttonLabel = (contextDef && contextDef['button-names'] && contextDef['button-names'].insert)
                 ? contextDef['button-names'].insert : INTERMediatorOnPage.getMessages()[3] + ': ' + contextName
               node.appendChild(document.createTextNode(buttonLabel))
-              node.setAttribute('class', 'IM_NAV_button IM_NAV_insert_button')
+              node.setAttribute('class', 'IM_NAV_insert_button IM_NAV_button')
               if (!node.id) {
                 node.id = INTERMediator.nextIdValue()
               }
@@ -223,7 +223,7 @@ const IMLibPageNavigation = {
               buttonLabel = (contextDef && contextDef['button-names'] && contextDef['button-names'].delete)
                 ? contextDef['button-names'].delete : INTERMediatorOnPage.getMessages()[4] + ': ' + contextName
               node.appendChild(document.createTextNode(buttonLabel))
-              node.setAttribute('class', 'IM_NAV_button IM_NAV_delete_button')
+              node.setAttribute('class', 'IM_NAV_delete_button IM_NAV_button')
               INTERMediatorLib.addEvent(
                 node,
                 'click',
@@ -247,7 +247,7 @@ const IMLibPageNavigation = {
               buttonLabel = (contextDef && contextDef['button-names'] && contextDef['button-names'].copy)
                 ? contextDef['button-names'].copy : INTERMediatorOnPage.getMessages()[15] + ': ' + contextName
               node.appendChild(document.createTextNode(buttonLabel))
-              node.setAttribute('class', 'IM_NAV_button IM_NAV_copy_button')
+              node.setAttribute('class', 'IM_NAV_copy_button IM_NAV_button')
               if (!node.id) {
                 node.id = INTERMediator.nextIdValue()
               }
@@ -271,7 +271,7 @@ const IMLibPageNavigation = {
           navigation.appendChild(node)
           node.appendChild(document.createTextNode(
             (navLabel === null || navLabel[10] === null) ? INTERMediatorOnPage.getMessages()[7] : navLabel[10]))
-          node.setAttribute('class', 'IM_NAV_button IM_NAV_save_button')
+          node.setAttribute('class', 'IM_NAV_save_button IM_NAV_button')
           INTERMediatorLib.addEvent(node, 'click', IMLibPageNavigation.saveRecordFromNavi)
         }
       }
@@ -287,7 +287,7 @@ const IMLibPageNavigation = {
           navigation.appendChild(node)
           node.appendChild(document.createTextNode(
             (navLabel === null || navLabel[11] === null) ? INTERMediatorOnPage.getMessages()[9] : navLabel[11]))
-          node.setAttribute('class', 'IM_NAV_button IM_NAV_logout_button')
+          node.setAttribute('class', 'IM_NAV_logout_button IM_NAV_button')
           if (!node.id) {
             node.id = INTERMediator.nextIdValue()
           }
