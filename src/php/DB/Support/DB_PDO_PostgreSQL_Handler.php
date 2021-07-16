@@ -187,7 +187,7 @@ test_db       | im_sample    | person     | memo        |
                 $listArray[] = $this->dbClassObj->link->quote($assocValue);
             } else if (isset($defaultValues[$row['column_name']])) {
                 $fieldArray[] = $this->quotedEntityName($row['column_name']);
-                $listArray[] = $this->dbClassObj->link->quote($defaultValues[$row['Field']]);
+                $listArray[] = $this->dbClassObj->link->quote($defaultValues[$row['column_name']]);
             } else {
                 $fieldArray[] = $this->quotedEntityName($row['column_name']);
                 $listArray[] = $this->quotedEntityName($row['column_name']);

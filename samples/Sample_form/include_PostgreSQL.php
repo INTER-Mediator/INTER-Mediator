@@ -44,6 +44,7 @@ IM_Entry(
             ),
             'repeat-control' => 'insert delete copy',
             'sequence' => 'im_sample.serial',
+            'default-values'=>[['field'=>'summary','value'=>'test']],
         ),
         array(
             'name' => 'contact_way',
