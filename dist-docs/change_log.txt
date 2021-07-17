@@ -53,6 +53,7 @@ Ver.8 (in development)
 - [BUG FIX] When the doAfterCopyInDB method calls, copied record information didn't pass to it.
 - [BUG FIX] The $sendMailCompatibilityMode variable didn't affected.
 - [BUG FIX] The templating feature uses in email arose an error about array index and stop the processing in some case.
+- [BUG FIX] For PostgreSQL, the default-values with the copy operation generated error, but it corrected.
 
 Ver.7 (March 20, 2021)
 - The synchronizing with clients is back without Pusher.
