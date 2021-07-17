@@ -10,7 +10,7 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.8 (in development)
+Ver.8 (July 17, 2021)
 - The password hash for authentication moves to SHA-256 based hash, and it has the interoperability with SHA-1 hash.
 - The 'storing' key in 'authentication' key can have the value 'credential', and it stores critical information
   in the http-only cookie and any information about authentication can't read from JavaScript.
