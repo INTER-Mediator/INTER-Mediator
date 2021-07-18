@@ -10,7 +10,10 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.8 (in development)
+Ver.8 (July 18, 2021)
+- [Important] If you see the message which tells the ServiceServer couldn't boot just after installation,
+  the best practice is install the Node.js on your operating system.
+
 - The password hash for authentication moves to SHA-256 based hash, and it has the interoperability with SHA-1 hash.
 - The 'storing' key in 'authentication' key can have the value 'credential', and it stores critical information
   in the http-only cookie and any information about authentication can't read from JavaScript.
@@ -54,6 +57,11 @@ Ver.8 (in development)
 - [BUG FIX] The $sendMailCompatibilityMode variable didn't affected.
 - [BUG FIX] The templating feature uses in email arose an error about array index and stop the processing in some case.
 - [BUG FIX] For PostgreSQL, the default-values with the copy operation generated error, but it corrected.
+
+- [Limitation] /INTER-Mediator/samples/Sample_form/form_FMS_DataAPI.html shows the error message whichi is
+  "The Data Sources of the Definition: [0][portals][1] includes an undefined keyword."
+- [Limitation] /INTER-Mediator/samples/Sample_form/form_FMS_DataAPI2.html is a sample using the portal access mode,
+  and it has to show the related records on page, but it can't.
 
 Ver.7 (March 20, 2021)
 - The synchronizing with clients is back without Pusher.
