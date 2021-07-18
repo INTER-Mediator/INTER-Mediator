@@ -184,16 +184,24 @@ test_db       | im_sample    | person     | memo        |
 
             } else if ($assocField === $row['column_name']) {
                 $fieldArray[] = $this->quotedEntityName($row['column_name']);
-                $listArray[] = $this->dbClassObj->link->quote($assocValue);
+                $listArray[] = $this->setValue($assocValue, $row);
             } else if (isset($defaultValues[$row['column_name']])) {
                 $fieldArray[] = $this->quotedEntityName($row['column_name']);
-                $listArray[] = $this->dbClassObj->link->quote($defaultValues[$row['column_name']]);
+                $listArray[] = $this->setValue($defaultValues[$row['column_name']], $row);
             } else {
                 $fieldArray[] = $this->quotedEntityName($row['column_name']);
                 $listArray[] = $this->quotedEntityName($row['column_name']);
             }
         }
         return array(implode(',', $fieldArray), implode(',', $listArray));
+    }
+
+    protected function setValue($value, $row)
+    {
+        if ($row['is_nullable'] && $value == '') {
+            return 'NULL';
+        }
+        return $this->dbClassObj->link->quote($value);
     }
 
     public function quotedEntityName($entityName)
