@@ -50,7 +50,7 @@ class ServiceServerProxy
         $this->paramsBoot = !is_null($params["bootWithInstalledNode"]) && boolval($params["bootWithInstalledNode"]);
         $this->dontAutoBoot = !is_null($params["preventSSAutoBoot"]) && boolval($params["preventSSAutoBoot"]);
         $this->dontUse = !is_null($params["notUseServiceServer"]) && boolval($params["notUseServiceServer"]);
-        $this->foreverLog = is_null($params["foreverLog"]) ? "" : $params["foreverLog"];
+        $this->foreverLog = (!boolval($params["foreverLog"])) ? $params["foreverLog"] : null;
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
         $this->serviceServerKey = $params["serviceServerKey"] ?? "";
         $this->serviceServerCert = $params["serviceServerCert"] ?? "";
@@ -250,7 +250,7 @@ class ServiceServerProxy
             $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath);
         }
 
-        $logFile = $this->foreverLog ?? tempnam(sys_get_temp_dir(), 'IMSS-') . ".log";
+        $logFile = $this->foreverLog ?? (tempnam(sys_get_temp_dir(), 'IMSS-') . ".log");
         $options = "-a -l {$logFile} --minUptime 5000 --spinSleepTime 5000";
         $originURL = (isset($_SERVER['HTTPS']) ? "https://" : "http://") . "{$_SERVER['HTTP_HOST']}";
         $cmd = "{$forever} start {$options} {$scriptPath} {$this->paramsPort} {$dq}{$originURL}{$dq}";
