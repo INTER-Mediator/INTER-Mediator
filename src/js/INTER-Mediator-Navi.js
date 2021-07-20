@@ -61,9 +61,12 @@ const IMLibPageNavigation = {
           node.id = INTERMediator.nextIdValue()
         }
         IMLibMouseEventDispatch.setExecute(node.id, function () {
-          INTERMediator.initialize()
-          IMLibLocalContext.archive()
-          location.reload()
+          IMLibQueue.setTask((complete) => {
+            complete()
+            INTERMediator.initialize()
+            IMLibLocalContext.archive()
+            location.reload()
+          }, false, true)
         })
       }
 
@@ -102,7 +105,10 @@ const IMLibPageNavigation = {
           node.id = INTERMediator.nextIdValue()
         }
         IMLibMouseEventDispatch.setExecute(node.id, function () {
-          IMLibPageNavigation.moveRecordFromNavi('navimoving', 0)
+          IMLibQueue.setTask((complete) => {
+            complete()
+            IMLibPageNavigation.moveRecordFromNavi('navimoving', 0)
+          })
         })
 
         node = document.createElement('SPAN')
@@ -117,7 +123,10 @@ const IMLibPageNavigation = {
         IMLibMouseEventDispatch.setExecute(node.id, (function () {
           const pageCount = prevPageCount
           return function () {
-            IMLibPageNavigation.moveRecordFromNavi('navimoving', pageCount)
+            IMLibQueue.setTask((complete) => {
+              complete()
+              IMLibPageNavigation.moveRecordFromNavi('navimoving', pageCount)
+            })
           }
         })())
 
@@ -133,7 +142,10 @@ const IMLibPageNavigation = {
         IMLibMouseEventDispatch.setExecute(node.id, (function () {
           const pageCount = nextPageCount
           return function () {
-            IMLibPageNavigation.moveRecordFromNavi('navimoving', pageCount)
+            IMLibQueue.setTask((complete) => {
+              complete()
+              IMLibPageNavigation.moveRecordFromNavi('navimoving', pageCount)
+            })
           }
         })())
 
@@ -150,7 +162,10 @@ const IMLibPageNavigation = {
         IMLibMouseEventDispatch.setExecute(node.id, (function () {
           const pageCount = endPageCount
           return function () {
-            IMLibPageNavigation.moveRecordFromNavi('navimoving', (pageCount > 0) ? pageCount : 0)
+            IMLibQueue.setTask((complete) => {
+              complete()
+              IMLibPageNavigation.moveRecordFromNavi('navimoving', (pageCount > 0) ? pageCount : 0)
+            })
           }
         })())
 
@@ -171,16 +186,19 @@ const IMLibPageNavigation = {
         IMLibChangeEventDispatch.setExecute(c_node.id, (function () {
           const targetNode = c_node
           return function () {
-            let moveTo = parseInt(targetNode.value)
-            if (moveTo < 1) {
-              moveTo = 1
-            }
-            const max_page = Math.ceil(allCount / pageSize)
-            if (max_page < moveTo) {
-              moveTo = max_page
-            }
-            INTERMediator.startFrom = (moveTo - 1) * pageSize
-            INTERMediator.constructMain(true)
+            IMLibQueue.setTask((complete) => {
+              complete()
+              let moveTo = parseInt(targetNode.value)
+              if (moveTo < 1) {
+                moveTo = 1
+              }
+              const max_page = Math.ceil(allCount / pageSize)
+              if (max_page < moveTo) {
+                moveTo = max_page
+              }
+              INTERMediator.startFrom = (moveTo - 1) * pageSize
+              INTERMediator.constructMain(true)
+            }, false, true)
           }
         })())
       }
@@ -292,13 +310,16 @@ const IMLibPageNavigation = {
             node.id = INTERMediator.nextIdValue()
           }
           IMLibMouseEventDispatch.setExecute(node.id, function () {
-            const url = INTERMediatorOnPage.logoutURL
-            INTERMediatorOnPage.logout()
-            if (INTERMediatorOnPage.logoutURL) {
-              location.href = url
-            } else {
-              location.reload()
-            }
+            IMLibQueue.setTask((complete) => {
+              complete()
+              const url = INTERMediatorOnPage.logoutURL
+              INTERMediatorOnPage.logout()
+              if (INTERMediatorOnPage.logoutURL) {
+                location.href = url
+              } else {
+                location.reload()
+              }
+            }, false, true)
           })
         }
       }
@@ -1536,7 +1557,7 @@ const IMLibPageNavigation = {
         IMLibQueue.setTask((complete) => {
           complete()
           if (masterUpdate) {
-             INTERMediator.constructMain(masterContextCL)
+            INTERMediator.constructMain(masterContextCL)
           }
           if (IMLibUI.mobileNaviBackButtonId) {
             const node = document.getElementById(IMLibUI.mobileNaviBackButtonId)
