@@ -915,42 +915,46 @@ const IMLibUI = {
     if (INTERMediatorOnPage.modifyPostOnlyContext) {
       contextInfo = INTERMediatorOnPage.modifyPostOnlyContext(contextInfo)
     }
-    INTERMediator_DBAdapter.db_createRecord_async(
-      {name: selectedContext, dataset: fieldData},
-      function (result) {
-        let newNode, parentOfTarget
-        let targetNode = node
-        let thisContext = contextInfo
-        let isSetMsg = false
-        INTERMediatorLog.flushMessage()
-        if (INTERMediatorOnPage.processingAfterPostOnlyContext) {
-          INTERMediatorOnPage.processingAfterPostOnlyContext(targetNode, result.newRecordKeyValue)
-        }
-        if (thisContext['post-dismiss-message']) {
-          parentOfTarget = targetNode.parentNode
-          parentOfTarget.removeChild(targetNode)
-          newNode = document.createElement('SPAN')
-          newNode.className = 'IM_POSTMESSAGE'
-          newNode.appendChild(document.createTextNode(thisContext['post-dismiss-message']))
-          parentOfTarget.appendChild(newNode)
-          isSetMsg = true
-        }
-        INTERMediatorOnPage.hideProgress()
-        if (thisContext['post-reconstruct']) {
-          setTimeout(function () {
-            INTERMediator.construct(true)
-          }, isSetMsg ? INTERMediator.waitSecondsAfterPostMessage * 1000 : 0)
-        }
-        if (thisContext['post-move-url']) {
-          setTimeout(function () {
-            location.href = thisContext['post-move-url']
-          }, isSetMsg ? INTERMediator.waitSecondsAfterPostMessage * 1000 : 0)
-        }
-      },
-      function () {
-        INTERMediatorLog.flushMessage()
-        INTERMediatorOnPage.hideProgress()
-      })
+    IMLibQueue.setTask(function (completeTask) {
+      INTERMediator_DBAdapter.db_createRecord_async(
+        {name: selectedContext, dataset: fieldData},
+        function (result) {
+          let newNode, parentOfTarget
+          let targetNode = node
+          let thisContext = contextInfo
+          let isSetMsg = false
+          completeTask()
+          INTERMediatorLog.flushMessage()
+          if (INTERMediatorOnPage.processingAfterPostOnlyContext) {
+            INTERMediatorOnPage.processingAfterPostOnlyContext(targetNode, result.newRecordKeyValue)
+          }
+          if (thisContext['post-dismiss-message']) {
+            parentOfTarget = targetNode.parentNode
+            parentOfTarget.removeChild(targetNode)
+            newNode = document.createElement('SPAN')
+            newNode.className = 'IM_POSTMESSAGE'
+            newNode.appendChild(document.createTextNode(thisContext['post-dismiss-message']))
+            parentOfTarget.appendChild(newNode)
+            isSetMsg = true
+          }
+          INTERMediatorOnPage.hideProgress()
+          if (thisContext['post-reconstruct']) {
+            setTimeout(function () {
+              INTERMediator.construct(true)
+            }, isSetMsg ? INTERMediator.waitSecondsAfterPostMessage * 1000 : 0)
+          }
+          if (thisContext['post-move-url']) {
+            setTimeout(function () {
+              location.href = thisContext['post-move-url']
+            }, isSetMsg ? INTERMediator.waitSecondsAfterPostMessage * 1000 : 0)
+          }
+        },
+        function () {
+          completeTask()
+          INTERMediatorLog.flushMessage()
+          INTERMediatorOnPage.hideProgress()
+        })
+    })
 
     function seekLinkedElementInThisContext(node) { // Just seek out side of inner enclosure
       let children, i
