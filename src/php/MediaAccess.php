@@ -143,6 +143,7 @@ class MediaAccess
 
             if (!$isURL) { // File path.
                 if (!empty($file) && !file_exists($target)) {
+                    error_log("[INTER-Mediator] The file does't exist: {$target}.");
                     $this->exitAsError(500);
                 }
                 $content = file_get_contents($target);

@@ -372,7 +372,7 @@ const IMLibPageNavigation = {
       return function (completeTask) {
         try {
           // await INTERMediatorOnPage.retrieveAuthInfo()
-          INTERMediator_DBAdapter.db_createRecord_async(
+            INTERMediator_DBAdapter.db_createRecord_async(
             {name: targetNameCapt, dataset: []},
             async function (response) {
               const newId = response.newRecordKeyValue
