@@ -29,6 +29,7 @@ const IMLibUI = {
   mergedFieldSeparator: '\n', // @Private
 
   recalculationOnValueChange: true,
+  revertOnValicationError: true,
   /*
    valueChange
    Parameters: It the validationOnly parameter is set to true, this method should return the boolean value
@@ -52,7 +53,7 @@ const IMLibUI = {
         let originalObj = changedObj
         let originalContextInfo = contextInfo
         return function () {
-          if (originalContextInfo) {
+          if (IMLibUI.revertOnValicationError && originalContextInfo) {
             originalObj.value = originalContextInfo.context.getValue(
               originalContextInfo.record, originalContextInfo.field)
           }
