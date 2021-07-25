@@ -11,7 +11,7 @@ Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.9 (in development)
-- IMLibUI.revertOnValicationError can control to retrieve the original value or not, after validation error.
+- IMLibUI.revertOnValidationError can control to retrieve the original value or not, after validation error.
   The default value is true, and it means retrieve it.
 
 Ver.8 (July 22, 2021)
