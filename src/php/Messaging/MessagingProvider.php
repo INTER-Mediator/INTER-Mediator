@@ -44,7 +44,11 @@ abstract class MessagingProvider
                 $bodyStr = substr($bodyStr, 0, $startPos)
                     . ($record[$fieldName] ?? '') . substr($bodyStr, $endPos + 2);
                 $startPos = strpos($bodyStr, '@@');
-                $endPos = strpos($bodyStr, '@@', $startPos + 2);
+                if (strlen($bodyStr) <= ($startPos + 2)) {
+                    $endPos = false;
+                } else {
+                    $endPos = strpos($bodyStr, '@@', $startPos + 2);
+                }
             }
         }
         return $bodyStr;
