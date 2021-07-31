@@ -230,6 +230,10 @@ const INTERMediator_DBAdapter = {
                 throw 'Communication Error'
               }
 
+              if (jsonObject.warningMessages.length > 0) {
+                INTERMediatorLog.setWarningMessage(jsonObject.warningMessages)
+              }
+
               INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
                 challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken)
               INTERMediator_DBAdapter.store_challenge(challenge, accessURL.match(/access=challenge/))

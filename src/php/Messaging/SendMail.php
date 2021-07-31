@@ -245,7 +245,7 @@ class SendMail extends MessagingProvider
                 $dbProxy->logger->setDebugMessage("[Messaging\SendMail] !!! Fail to send mail. "
                     . $ome->getErrorMessage(), 2);
                 $isError = true;
-                $errorMsg .= (strlen($errorMsg) > 0) ? " / {$ome->getErrorMessage()}" : '';
+                $errorMsg .= ((strlen($errorMsg) > 0) ? " / " : '') . $ome->getErrorMessage();
             }
         }
         if ($isError) {

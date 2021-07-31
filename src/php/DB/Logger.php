@@ -21,6 +21,7 @@ class Logger
     /* Debug and Messages */
     private $debugLevel = false;
     private $errorMessage = array();
+    private $warningMessage = array();
     private $debugMessage = array();
 
     private static $instance = null;
@@ -59,6 +60,18 @@ class Logger
         }
     }
 
+    public function setWarningMessage($str)
+    {
+        $this->warningMessage[] = $str;
+    }
+
+    public function setWarningMessages($msgs)
+    {
+        foreach($msgs as $msg) {
+            $this->warningMessage[] = $msg;
+        }
+    }
+
     public function setErrorMessage($str)
     {
         $this->errorMessage[] = $str;
@@ -79,6 +92,10 @@ class Logger
             $returnData[] = "INTERMediatorLog.setErrorMessage({$q}"
                 . str_replace("\n", " ", addslashes($oneError)) . "{$q});";
         }
+        foreach ($this->warningMessage as $oneError) {
+            $returnData[] = "INTERMediatorLog.setWarningMessage({$q}"
+                . str_replace("\n", " ", addslashes($oneError)) . "{$q});";
+        }
         foreach ($this->debugMessage as $oneError) {
             $returnData[] = "INTERMediatorLog.setDebugMessage({$q}"
                 . str_replace("\n", " ", addslashes($oneError)) . "{$q});";
@@ -89,6 +106,11 @@ class Logger
     public function getErrorMessages()
     {
         return $this->errorMessage;
+    }
+
+    public function getWarningMessages()
+    {
+        return $this->warningMessage;
     }
 
     public function getDebugMessages()

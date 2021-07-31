@@ -59,6 +59,10 @@ const INTERMediatorLog = {
    * @type {boolean}
    */
   errorMessageOnAlert: null,
+  /**
+   * @type {boolean}
+   */
+  warningMessagePrevent: false,
 
   /**
    * Add a debug message with the specified level.
@@ -75,6 +79,19 @@ const INTERMediatorLog = {
       if (typeof console !== 'undefined') {
         console.log('INTER-Mediator[DEBUG:%s]: %s', new Date(), message)
       }
+    }
+  },
+
+  setWarningMessage: function (ex) {
+    'use strict'
+    if (!INTERMediatorLog.warningMessagePrevent) {
+      IMLibQueue.setTask((complete) => {
+        complete()
+        window.alert(ex.join(', '))
+      })
+    }
+    if (typeof console !== 'undefined') {
+      console.info('INTER-Mediator[WARNING]:', ex)
     }
   },
 
