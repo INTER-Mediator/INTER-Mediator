@@ -603,7 +603,7 @@ class OME
                 foreach ($this->attachments as $path) {
                     $message->attach(Swift_Attachment::fromPath($path)->setFilename(basename($path)));
                 }
-                if($this->bodyType == 'text/html') {
+                if ($this->bodyType == 'text/html') {
                     $message->setBody($bodyString, $this->bodyType);
                 } else {
                     $message->setBody($bodyString); // In case of 'text/plain', the mime code shouldn't set.
@@ -612,7 +612,7 @@ class OME
 
             $resultMail = $mailer->send($message, $failures);
             if (!$resultMail) {
-                $this->errorMessage = 'Unsent recipients: ' . var_export($failures, true) . '\n';
+                $this->errorMessage = 'Unsent recipients: "' . implode('", "', $failures) . '"\n';
             }
         }
         return $resultMail;
