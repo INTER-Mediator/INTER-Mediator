@@ -609,7 +609,7 @@ class OME
                     $message->setBody($bodyString); // In case of 'text/plain', the mime code shouldn't set.
                 }
             }
-
+            $failures = [];
             $resultMail = $mailer->send($message, $failures);
             if (!$resultMail) {
                 $this->errorMessage = 'Unsent recipients: "' . implode('", "', $failures) . '"\n';
