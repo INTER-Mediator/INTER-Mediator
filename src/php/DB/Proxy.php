@@ -231,7 +231,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $msgProxy = new MessagingProxy($driver);
                     $msgResult = $msgProxy->processing($this, $msgArray, $result);
                     if ($msgResult !== true) {
-                        $this->logger->setWarningMessage("Mail sending error: $msgResult");
+                        $messageClass = IMUtil::getMessageClassInstance();
+                        $headMsg = $messageClass->getMessageAs(1051);
+                        $this->logger->setWarningMessage("{$headMsg}{$msgResult}");
                     }
                 }
             }
@@ -339,7 +341,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $msgProxy = new MessagingProxy($driver);
                     $msgResult = $msgProxy->processing($this, $msgArray, $this->dbClass->updatedRecord());
                     if ($msgResult !== true) {
-                        $this->logger->setWarningMessage("Mail sending error: $msgResult");
+                        $messageClass = IMUtil::getMessageClassInstance();
+                        $headMsg = $messageClass->getMessageAs(1051);
+                        $this->logger->setWarningMessage("{$headMsg}{$msgResult}");
                     }
                 }
             }
@@ -415,7 +419,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $msgProxy = new MessagingProxy($driver);
                         $msgResult = $msgProxy->processing($this, $msgArray, $result);
                         if ($msgResult !== true) {
-                            $this->logger->setWarningMessage("Mail sending error: $msgResult");
+                            $messageClass = IMUtil::getMessageClassInstance();
+                            $headMsg = $messageClass->getMessageAs(1051);
+                            $this->logger->setWarningMessage("{$headMsg}{$msgResult}");
                         }
                     }
                 }

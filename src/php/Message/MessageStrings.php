@@ -117,6 +117,8 @@ class MessageStrings
         1047 => "The context '@1@' was chosen for this context, and ignored target specifications were: @2@",
         1048 => "Get Credential for Auth: ",
         1049 => "Connection Error in getCredential=@1@/@2@",
+        1050 => "Unsent recipients: ",
+        1051 => "Mail sending error: ",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',

@@ -42,6 +42,7 @@
 
 namespace INTERMediator\Messaging;
 
+use INTERMediator\IMUtil;
 use Swift_Attachment;
 use Swift_Image;
 use Swift_Mailer;
@@ -571,17 +572,21 @@ class OME
                     $message->setFrom($addArray);
                 }
             }
+            $recipientsInfo = '';
             $addArray = $this->recepientsArray(explode(',', $this->toField));
             if (strlen($this->toField) > 0 && count($addArray) > 0) {
                 $message->setTo($addArray);
+                $recipientsInfo = "[To]{$this->toField}";
             }
             $addArray = $this->recepientsArray(explode(',', $this->ccField));
             if (strlen($this->ccField) > 0 && count($addArray) > 0) {
                 $message->setCc($addArray);
+                $recipientsInfo = "[CC]{$this->ccField}";
             }
             $addArray = $this->recepientsArray(explode(',', $this->bccField));
             if (strlen($this->bccField) > 0 && strlen($this->toField) > 0 && count($addArray) > 0) {
                 $message->setBcc($addArray);
+                $recipientsInfo = "[BCC]{$this->bccField}";
             }
             $message->setSubject($this->subject);
 
@@ -612,7 +617,13 @@ class OME
             $failures = [];
             $resultMail = $mailer->send($message, $failures);
             if (!$resultMail) {
-                $this->errorMessage = 'Unsent recipients: "' . implode('", "', $failures) . '"\n';
+                $messageClass = IMUtil::getMessageClassInstance();
+                $headMsg = $messageClass->getMessageAs(1050);
+                if (is_array($failures) && count($failures) > 0) {
+                    $this->errorMessage = $headMsg . '"' . implode('", "', $failures) . '"\n';
+                } else {
+                    $this->errorMessage = $headMsg . $recipientsInfo . '\n';
+                }
             }
         }
         return $resultMail;
