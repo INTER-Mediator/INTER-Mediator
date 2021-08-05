@@ -41,6 +41,7 @@ class Logger
     public function clearLogs()
     {
         $this->errorMessage = array();
+        $this->warningMessage = array();
         $this->debugMessage = array();
     }
 

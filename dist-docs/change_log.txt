@@ -16,6 +16,8 @@ Ver.9 (in development)
 - DB\Logger class accept the setWarningMessage() method, and it shows the message with the alert() on client.
   Also INTERMediatorLog.warningMessagePrevent can stop the alert box with setting to true, and the default is false.
 - In case of Messaging errors, the Warining Messages are set instead of error messages.
+- On the post only mode, if there is no data to send, the communication is going to prevent.
+  If IMLibUI.postOnlyNoRecordPrevent set to false, it doesn't prevent in case of no data.
 
 Ver.8 (July 22, 2021)
 - [Important] If you see the message which tells the ServiceServer couldn't boot just after installation,
