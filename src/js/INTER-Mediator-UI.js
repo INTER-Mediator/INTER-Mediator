@@ -30,6 +30,7 @@ const IMLibUI = {
 
   recalculationOnValueChange: true,
   revertOnValidationError: true,
+  postOnlyNoRecordPrevent: true,
   /*
    valueChange
    Parameters: It the validationOnly parameter is set to true, this method should return the boolean value
@@ -908,6 +909,10 @@ const IMLibUI = {
       return
     }
     if (hasInvalid) {
+      INTERMediatorOnPage.hideProgress()
+      return
+    }
+    if (IMLibUI.postOnlyNoRecordPrevent && fieldData.length == 0) {
       INTERMediatorOnPage.hideProgress()
       return
     }
