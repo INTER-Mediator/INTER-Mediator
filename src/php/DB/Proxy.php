@@ -803,10 +803,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
         $this->logger->setDebugMessage("Server side locale: " . setlocale(LC_ALL, "0"), 2);
 
-        if (isset($params['isSAML'])
-            || (isset($options['authentication']) && isset($options['authentication']['is-saml']))) {
+        if (isset($params['isSAML'])) {
             $this->dbSettings->setIsSAML($params['isSAML']);
+        } else if (isset($options['authentication']) && isset($options['authentication']['is-saml'])) {
+            $this->dbSettings->setIsSAML($options['authentication']['is-saml']);
         }
+
         if (isset($params['samlAuthSource'])) {
             $this->dbSettings->setSAMLAuthSource($params['samlAuthSource']);
         }
