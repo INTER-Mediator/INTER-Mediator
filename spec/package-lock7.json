@@ -11,7 +11,7 @@
         "express": "*",
         "flatpickr": ">=4.6.3",
         "forever": ">=3.0.0",
-        "inter-mediator-expressionparser": "1.0.15",
+        "inter-mediator-expressionparser": "1.0.17",
         "inter-mediator-formatter": "1.0.19",
         "inter-mediator-locale": "1.0.4",
         "inter-mediator-nodegraph": "1.0.6",
@@ -3453,11 +3453,11 @@
       "integrity": "sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew=="
     },
     "node_modules/inter-mediator-expressionparser": {
-      "version": "1.0.15",
-      "resolved": "https://registry.npmjs.org/inter-mediator-expressionparser/-/inter-mediator-expressionparser-1.0.15.tgz",
-      "integrity": "sha512-vmXH/3iRikoRpltzfD1aLaFsRQvISyxfeDOwTcKs9D+iwtty4G+JLhFNJyxmRxcCP8QC0nkv4nKJztHi261FSQ==",
+      "version": "1.0.17",
+      "resolved": "https://registry.npmjs.org/inter-mediator-expressionparser/-/inter-mediator-expressionparser-1.0.17.tgz",
+      "integrity": "sha512-JiA9XNLdVHidY1ZhUjIPDOKxIbgtcVYeirbHVTHzIQoDw89C6+ng5TkgGKvcJ24Ah8mXyooMulL4sUXRYFds/g==",
       "dependencies": {
-        "inter-mediator-formatter": "^1.0.18",
+        "inter-mediator-formatter": "^1.0.19",
         "inter-mediator-locale": "^1.0.4"
       }
     },
@@ -10569,11 +10569,11 @@
       "integrity": "sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew=="
     },
     "inter-mediator-expressionparser": {
-      "version": "1.0.15",
-      "resolved": "https://registry.npmjs.org/inter-mediator-expressionparser/-/inter-mediator-expressionparser-1.0.15.tgz",
-      "integrity": "sha512-vmXH/3iRikoRpltzfD1aLaFsRQvISyxfeDOwTcKs9D+iwtty4G+JLhFNJyxmRxcCP8QC0nkv4nKJztHi261FSQ==",
+      "version": "1.0.17",
+      "resolved": "https://registry.npmjs.org/inter-mediator-expressionparser/-/inter-mediator-expressionparser-1.0.17.tgz",
+      "integrity": "sha512-JiA9XNLdVHidY1ZhUjIPDOKxIbgtcVYeirbHVTHzIQoDw89C6+ng5TkgGKvcJ24Ah8mXyooMulL4sUXRYFds/g==",
       "requires": {
-        "inter-mediator-formatter": "^1.0.18",
+        "inter-mediator-formatter": "^1.0.19",
         "inter-mediator-locale": "^1.0.4"
       }
     },
