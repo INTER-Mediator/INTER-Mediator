@@ -106,14 +106,16 @@ class GenerateJSCode
          */
         $relativeToDefFile = '';
         $editorPath = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator-Support');
-        $defFilePath = realpath($_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME']);
-        while (strpos($defFilePath, $editorPath) !== 0 && strlen($editorPath) > 1) {
-            $editorPath = dirname($editorPath);
-            $relativeToDefFile .= '..' . DIRECTORY_SEPARATOR;
+        if ($editorPath !== false) {  // In case of core only build.
+            $defFilePath = realpath($_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME']);
+            while (strpos($defFilePath, $editorPath) !== 0 && strlen($editorPath) > 1) {
+                $editorPath = dirname($editorPath);
+                $relativeToDefFile .= '..' . DIRECTORY_SEPARATOR;
+            }
+            $relativeToDefFile .= substr($defFilePath, strlen($editorPath) + 1);
+            $editorPath = dirname(__FILE__) . DIRECTORY_SEPARATOR
+                . 'INTER-Mediator-Support' . DIRECTORY_SEPARATOR . 'defedit.html';
         }
-        $relativeToDefFile .= substr($defFilePath, strlen($editorPath) + 1);
-        $editorPath = dirname(__FILE__) . DIRECTORY_SEPARATOR
-            . 'INTER-Mediator-Support' . DIRECTORY_SEPARATOR . 'defedit.html';
         if (file_exists($editorPath)) {
             $relativeToEditor = substr($editorPath, strlen($_SERVER['DOCUMENT_ROOT']));
             $this->generateAssignJS("INTERMediatorOnPage.getEditorPath",
@@ -133,7 +135,9 @@ class GenerateJSCode
         if ($dbClassName !== 'DB_DefEditor' && $dbClassName !== 'DB_PageEditor') {
             require_once("{$dbClassName}.php");
         } else {
-            require_once(dirname(__FILE__) . "/INTER-Mediator-Support/{$dbClassName}.php");
+            if (file_exists(dirname(__FILE__) . "/INTER-Mediator-Support/{$dbClassName}.php")) {
+                require_once(dirname(__FILE__) . "/INTER-Mediator-Support/{$dbClassName}.php");
+            }
         }
         $dbInstance = new $dbClassName();
         $dbInstance->setupHandlers($dbDSN);
