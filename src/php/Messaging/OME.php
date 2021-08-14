@@ -576,20 +576,19 @@ class OME
             $addArray = $this->recepientsArray(explode(',', $this->toField));
             if (strlen($this->toField) > 0 && count($addArray) > 0) {
                 $message->setTo($addArray);
-                $recipientsInfo = "[To]{$this->toField}";
+                $recipientsInfo .= "[To]{$this->toField}";
             }
             $addArray = $this->recepientsArray(explode(',', $this->ccField));
             if (strlen($this->ccField) > 0 && count($addArray) > 0) {
                 $message->setCc($addArray);
-                $recipientsInfo = "[CC]{$this->ccField}";
+                $recipientsInfo .= "[CC]{$this->ccField}";
             }
             $addArray = $this->recepientsArray(explode(',', $this->bccField));
             if (strlen($this->bccField) > 0 && strlen($this->toField) > 0 && count($addArray) > 0) {
                 $message->setBcc($addArray);
-                $recipientsInfo = "[BCC]{$this->bccField}";
+                $recipientsInfo .= "[BCC]{$this->bccField}";
             }
             $message->setSubject($this->subject);
-
             $this->bodyType = ($this->bodyType === false) ? 'text/plain' : $this->bodyType;
             $targetTerm = "##image##";
             if (strpos($this->body, $targetTerm) !== false && $this->bodyType == 'text/html') {
@@ -620,9 +619,9 @@ class OME
                 $messageClass = IMUtil::getMessageClassInstance();
                 $headMsg = $messageClass->getMessageAs(1050);
                 if (is_array($failures) && count($failures) > 0) {
-                    $this->errorMessage = $headMsg . '"' . implode('", "', $failures) . '"\n';
+                    $this->errorMessage = $headMsg . '"' . implode('", "', $failures) . "\"\n";
                 } else {
-                    $this->errorMessage = $headMsg . $recipientsInfo . '\n';
+                    $this->errorMessage = "{$headMsg}{$recipientsInfo}\n";
                 }
             }
         }
