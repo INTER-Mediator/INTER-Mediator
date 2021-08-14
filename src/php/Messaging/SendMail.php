@@ -41,6 +41,7 @@ class SendMail extends MessagingProvider
         $isError = false;
         $errorMsg = "";
         for ($i = 0; $i < (is_array($result) ? count($result) : 0); $i++) {
+            $isErrorThisRecord = false;
             $ome = new OME();
 
             if (isset($sendMailParam['f-option']) && $sendMailParam['f-option'] === true) {
@@ -70,6 +71,7 @@ class SendMail extends MessagingProvider
             }
 
             if ($this->isCompatible) {// ================================== Old send main architecture
+                $dbProxy->logger->setDebugMessage("[Messaging\SendMail] SendMail old architecture", 2);
                 if (isset($sendMailParam['to-constant'])) {
                     $items = explode(",", $sendMailParam['to-constant']);
                     foreach ($items as $item) {
@@ -136,6 +138,7 @@ class SendMail extends MessagingProvider
                     $ome->setBody($result[$i][$sendMailParam['body']]);
                 }
             } else { // ==================================================== New send main architecture
+                $dbProxy->logger->setDebugMessage("[Messaging\SendMail] SendMail new architecture", 2);
                 $labels = ['to', 'cc', 'bcc', 'from', 'subject', 'body'];
                 $mailSeed = [];
                 foreach ($labels as $label) {
@@ -177,17 +180,37 @@ class SendMail extends MessagingProvider
                     }
                 }
 
+                $dbProxy->logger->setDebugMessage("[Messaging\SendMail] mailSeed = " . var_export($mailSeed, true), 2);
+
+                $unsentAddrs = [];
                 $items = explode(",", $this->modernTemplating($result[$i], $mailSeed['to']));
                 foreach ($items as $item) {
-                    $ome->appendToField(trim($item));
+                    $addr = trim($item);
+                    if ($addr != '' && !$ome->appendToField($addr)) {
+                        $unsentAddrs[] = $addr;
+                    };
                 }
                 $items = explode(",", $this->modernTemplating($result[$i], $mailSeed['cc']));
                 foreach ($items as $item) {
-                    $ome->appendCcField(trim($item));
+                    $addr = trim($item);
+                    if ($addr != '' && !$ome->appendCcField(trim($item))) {
+                        $unsentAddrs[] = $addr;
+                    };
                 }
                 $items = explode(",", $this->modernTemplating($result[$i], $mailSeed['bcc']));
                 foreach ($items as $item) {
-                    $ome->appendBccField(trim($item));
+                    $addr = trim($item);
+                    if ($addr != '' && !$ome->appendBccField(trim($item))) {
+                        $unsentAddrs[] = $addr;
+                    };
+                }
+                if (count($unsentAddrs) > 0) {
+                    $messageClass = IMUtil::getMessageClassInstance();
+                    $headMsg = $messageClass->getMessageAs(1050);
+                    $errorMsg .= "{$headMsg}" . implode(', ', $unsentAddrs) . "\n";
+                    $isErrorThisRecord = true;
+                    $isError = true;
+                    $dbProxy->logger->setDebugMessage("[Messaging\SendMail] Cancel to send for bad address: " . implode(', ', $unsentAddrs), 2);
                 }
                 $ome->setFromField(trim($this->modernTemplating($result[$i], $mailSeed['from'])));
                 $ome->setSubject($this->modernTemplating($result[$i], $mailSeed['subject']));
@@ -204,48 +227,50 @@ class SendMail extends MessagingProvider
                 $ome->addAttachment($fpath);
                 $dbProxy->logger->setDebugMessage("[Messaging\SendMail] Attachment: {$fpath}", 2);
             }
-            if ($ome->send()) {
-                $dbProxy->logger->setDebugMessage("[Messaging\SendMail] !!! Succeed to send mail.", 2);
-                if (isset($sendMailParam['store'])) {
-                    $storeContext = new Proxy();
-                    $storeContext->ignoringPost();
-                    $storeContext->initialize(
-                        $dbProxy->dbSettings->getDataSource(),
-                        $dbProxy->dbSettings->getOptions(),
-                        $dbProxy->dbSettings->getDbSpec(),
-                        2, $sendMailParam['store'], null);
-                    $storeContext->logger->setDebugMessage("Proxy with the {$sendMailParam['store']} context.", 2);
-                    $storeContext->dbSettings->setCurrentUser($dbProxy->dbSettings->getCurrentUser());
-                    $storeContextInfo = $storeContext->dbSettings->getDataSourceTargetArray();
-                    $storeContext->dbSettings->addValueWithField("errors", $ome->getErrorMessage());
-                    $storeContext->dbSettings->addValueWithField("to_field", $ome->getToField());
-                    $storeContext->dbSettings->addValueWithField("bcc_field", $ome->getBccField());
-                    $storeContext->dbSettings->addValueWithField("cc_field", $ome->getCcField());
-                    $storeContext->dbSettings->addValueWithField("from_field", $ome->getFromField());
-                    $storeContext->dbSettings->addValueWithField("subject", $ome->getSubject());
-                    $storeContext->dbSettings->addValueWithField("body", $ome->getBody());
-                    if (isset($storeContextInfo["query"])) {
-                        foreach ($storeContextInfo["query"] as $cItem) {
-                            if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
-                                $storeContext->dbSettings->addValueWithField($cItem['field'], $cItem['value']);
+            if (!$isErrorThisRecord) {
+                if ($ome->send()) {
+                    $dbProxy->logger->setDebugMessage("[Messaging\SendMail] !!! Succeed to send mail.", 2);
+                    if (isset($sendMailParam['store'])) {
+                        $storeContext = new Proxy();
+                        $storeContext->ignoringPost();
+                        $storeContext->initialize(
+                            $dbProxy->dbSettings->getDataSource(),
+                            $dbProxy->dbSettings->getOptions(),
+                            $dbProxy->dbSettings->getDbSpec(),
+                            2, $sendMailParam['store'], null);
+                        $storeContext->logger->setDebugMessage("Proxy with the {$sendMailParam['store']} context.", 2);
+                        $storeContext->dbSettings->setCurrentUser($dbProxy->dbSettings->getCurrentUser());
+                        $storeContextInfo = $storeContext->dbSettings->getDataSourceTargetArray();
+                        $storeContext->dbSettings->addValueWithField("errors", $ome->getErrorMessage());
+                        $storeContext->dbSettings->addValueWithField("to_field", $ome->getToField());
+                        $storeContext->dbSettings->addValueWithField("bcc_field", $ome->getBccField());
+                        $storeContext->dbSettings->addValueWithField("cc_field", $ome->getCcField());
+                        $storeContext->dbSettings->addValueWithField("from_field", $ome->getFromField());
+                        $storeContext->dbSettings->addValueWithField("subject", $ome->getSubject());
+                        $storeContext->dbSettings->addValueWithField("body", $ome->getBody());
+                        if (isset($storeContextInfo["query"])) {
+                            foreach ($storeContextInfo["query"] as $cItem) {
+                                if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
+                                    $storeContext->dbSettings->addValueWithField($cItem['field'], $cItem['value']);
+                                }
                             }
                         }
-                    }
-                    if (isset($storeContextInfo["relation"])) {
-                        foreach ($storeContextInfo["relation"] as $cItem) {
-                            if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
-                                $storeContext->dbSettings->addValueWithField(
-                                    $cItem['foreign-key'], $result[0][$cItem['join-field']]);
+                        if (isset($storeContextInfo["relation"])) {
+                            foreach ($storeContextInfo["relation"] as $cItem) {
+                                if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
+                                    $storeContext->dbSettings->addValueWithField(
+                                        $cItem['foreign-key'], $result[0][$cItem['join-field']]);
+                                }
                             }
                         }
+                        $storeContext->processingRequest("create", true);
                     }
-                    $storeContext->processingRequest("create", true);
+                } else {
+                    $dbProxy->logger->setDebugMessage("[Messaging\SendMail] !!! Fail to send mail. "
+                        . $ome->getErrorMessage(), 2);
+                    $isError = true;
+                    $errorMsg .= ((strlen($errorMsg) > 0) ? " / " : '') . $ome->getErrorMessage();
                 }
-            } else {
-                $dbProxy->logger->setDebugMessage("[Messaging\SendMail] !!! Fail to send mail. "
-                    . $ome->getErrorMessage(), 2);
-                $isError = true;
-                $errorMsg .= ((strlen($errorMsg) > 0) ? " / " : '') . $ome->getErrorMessage();
             }
         }
         if ($isError) {

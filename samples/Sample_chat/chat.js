@@ -11,6 +11,9 @@
 //     INTERMediator.construct(true);
 // };
 
+INTERMediatorOnPage.doBeforeConstruct = function () {
+  INTERMediatorLog.suppressDebugMessageOnPage = true
+}
 let doAfter = false
 // The flag to prevent executing the INTERMediatorOnPage.doAfterConstruct method more than once.
 
@@ -34,6 +37,23 @@ INTERMediatorOnPage.doAfterConstruct = function () {
           function () {
             INTERMediator.constructMain(IMLibContextPool.contextFromName('chat'))
             document.getElementById('message').value = ''
+            INTERMediatorLog.flushMessage()
+            completeTask()
+          },
+          function () {
+            alert('Error')
+            INTERMediatorLog.flushMessage()
+            completeTask()
+          })
+      })
+    })
+    IMLibMouseEventDispatch.setExecute('sendbutton', function () {
+      IMLibQueue.setTask(function (completeTask) {
+        INTERMediator_DBAdapter.db_query_async({
+            name: 'chat-send',
+            records: 100,
+          },
+          function () {
             INTERMediatorLog.flushMessage()
             completeTask()
           },

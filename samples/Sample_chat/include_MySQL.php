@@ -42,13 +42,51 @@ IM_Entry(
 //                    'body-constant' => 'INTER-Mediator Sample.',
 //                ]
 //            ],
+//            'messaging' => [
+//                'driver' => 'mail',
+//                'read' => [
+//                    'from' => 'msyk@msyk.net',
+//                    'to' => 'message',
+//                    'cc' => 'msyk@msyk.net',
+//                    'subject' => 'Mail From INTER-Mediator',
+//                    'body' => 'INTER-Mediator Sample.',
+//                ]
+//            ],
+//            'messaging' => [
+//                'driver' => 'slack',
+//                'create' => [
+//                    'subject-constant' => 'message-posting-test',
+//                    'body' => 'message',
+//                ]
+//            ]
+        ),
+        array(
+            'records' => 100000000,
+            'name' => 'chat-send',
+            'view' => 'chat',
+            'key' => 'id',
+            'sort' => array(
+                array('field' => 'postdt', 'direction' => 'desc'),
+            ),
+            'default-values' => array(
+                array('field' => 'postdt', 'value' => date("Y-m-d H:i:s")),
+            ),
+            'authentication' => array(
+                'all' => array( // load, update, new, delete
+                    'target' => 'field-user',
+                    'field' => 'user',
+                ),
+            ),
             'messaging' => [
-                'driver' => 'slack',
-                'create' => [
-                    'subject-constant' => 'message-posting-test',
-                    'body' => 'message',
+                'driver' => 'mail',
+                'read' => [
+                    'from' => 'msyk@msyk.net',
+                    'to' => '@@message@@',
+                    'cc' => 'msyk@msyk.net',
+                    'subject' => 'Mail From INTER-Mediator',
+                    'body' => 'INTER-Mediator Sample.',
                 ]
-            ]
+            ],
         ),
     ),
     array(
@@ -59,10 +97,10 @@ IM_Entry(
             'group-table' => 'authgroup',
             'corresponding-table' => 'authcor',
             'challenge-table' => 'issuedhash',
-            'authexpired' => '10', // Set as seconds.
+            'authexpired' => '1000', // Set as seconds.
             'storing' => 'credential', // session-storage, 'cookie'(default), 'cookie-domainwide', 'none'
         ),
     ),
     array('db-class' => 'PDO'),
-    false
+    2
 );

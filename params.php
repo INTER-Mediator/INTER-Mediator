@@ -155,15 +155,14 @@ $defaultTimezone = 'Asia/Tokyo';
 //$resetPage = '...url...';
 //$enrollPage = '...url...';
 
-/*
- * If you want to specify the smtp server info, set them below.
-$sendMailSMTP = array(
-    'server' => 'string',
-    'port' => 'integer',
-    'username' => 'string',
-    'password' => 'string',
-);
-*/
+// If you want to specify the smtp server info, set them below.
+//$sendMailSMTP = array(
+//    'server' => 'anyserver',
+//    'port' => 587,
+//    'username' => 'username',
+//    'password' => 'password',
+//);
+
 // Sending email features compatibility with INTER-Mediator v5 unless 'template-context' key isn't specified.
 $sendMailCompatibilityMode = true;  // default is true
 
