@@ -78,6 +78,8 @@ class DB_Proxy_Test extends TestCase
             $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
             $this->assertContains('X-Content-Type-Options: nosniff', $headers);
             $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
+        } else {
+            $this->assertTrue(true, "Preventing Risky warning.");
         }
     }
 

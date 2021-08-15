@@ -191,23 +191,6 @@ class INTERMediator_Test extends TestCase
         $this->assertSame(IMUtil::arrayToJSExcluding($ar, $prefix, $exarray), $resultString, $testName);
     }
 
-    public function test_randomString()
-    {
-        $testName = "Check randamString function in INTER-Mediator.php.";
-        $str = IMUtil::randomString(10);
-        $this->assertTrue(is_string($str), $testName);
-        $this->assertTrue(strlen($str) == 10, $testName);
-        $str = IMUtil::randomString(100);
-        $this->assertTrue(is_string($str), $testName);
-        $this->assertTrue(strlen($str) == 100, $testName);
-        $str = IMUtil::randomString(1000);
-        $this->assertTrue(is_string($str), $testName);
-        $this->assertTrue(strlen($str) == 1000, $testName);
-        $str = IMUtil::randomString(0);
-        $this->assertTrue(is_string($str), $testName);
-        $this->assertTrue(strlen($str) == 0, $testName);
-    }
-
     public function test_getLocaleFromBrowser()
     {
         $testName = "Check getLocaleFromBrowser function in INTER-Mediator.php.";

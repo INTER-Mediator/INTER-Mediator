@@ -6,12 +6,12 @@
  * Time: 15:40
  */
 
-require_once(dirname(__FILE__) . '/../lib/mailsend/OME.php');
-require_once(dirname(__FILE__) . '/../lib/mailsend/qdsmtp/qdsmtp.php');
+use \PHPUnit\Framework\TestCase;
+use INTERMediator\Messaging\OME;
+//require_once(dirname(__FILE__) . '/../../src/php/Messaging/OME.php');
 
 class OME_Test extends TestCase
 {
-
     private $mailAddress = "msyk@msyk.net";
     private $smtpSettings = array(
         'host' => 's98.coreserver.jp',
@@ -33,7 +33,76 @@ class OME_Test extends TestCase
         $ome->setToField($addrString);
         $this->assertEquals($ome->getToField() === $addrString, true, "[ERROR] in parse mail address string.");
     }
+    public function testAddressCheck()
+    {
+        $addrString = "Masayuki Nii <msyk@msyk.net>";
+        $ome = new OME();
+        $result = $ome->checkEmail($addrString);
+        $this->assertFalse($result, "[ERROR] in checking mail address.");
 
+        $addrString = "msyk@msyk.net";
+        $ome = new OME();
+        $result = $ome->checkEmail($addrString);
+        $this->assertTrue($result, "[ERROR] in checking mail address.");
+
+        $addrString = "Masayuki Nii";
+        $ome = new OME();
+        $result = $ome->checkEmail($addrString);
+        $this->assertFalse($result, "[ERROR] in checking mail address.");
+
+        $addrString = "";
+        $ome = new OME();
+        $result = $ome->checkEmail($addrString);
+        $this->assertFalse($result, "[ERROR] in checking mail address.");
+    }
+    public function testAddressAppend()
+    {
+        $addrString = "Masayuki Nii <msyk@msyk.net>";
+        $ome = new OME();
+        $result = $ome->appendToField($addrString);
+        $this->assertTrue($result, "[ERROR] in appending mail address.");
+        $this->assertTrue($ome->getToField() === $addrString,
+            "[ERROR] in appending mail address string. Compare [{$ome->getToField()}] [{$addrString}]");
+
+        $addrString = "";
+        $ome = new OME();
+        $prevToField = $ome->getToField();
+        $result = $ome->appendToField($addrString);
+        $this->assertFalse($result, "[ERROR] in appending mail address.");
+        $this->assertTrue($ome->getToField() === $prevToField,
+            "[ERROR] in appending mail address string. Compare [{$ome->getToField()}] [{$prevToField}]");
+
+        $addrString = "Masayuki Nii <msyk@msyk.net>";
+        $ome = new OME();
+        $result = $ome->appendCcField($addrString);
+        $this->assertTrue($result, "[ERROR] in appending mail address.");
+        $this->assertTrue($ome->getCcField() === $addrString,
+            "[ERROR] in appending mail address string. Compare [{$ome->getCcField()}] [{$addrString}]");
+
+        $addrString = "";
+        $ome = new OME();
+        $prevToField = $ome->getCcField();
+        $result = $ome->appendCcField($addrString);
+        $this->assertFalse($result, "[ERROR] in appending mail address.");
+        $this->assertTrue($ome->getCcField() === $prevToField,
+            "[ERROR] in appending mail address string. Compare [{$ome->getCcField()}] [{$prevToField}]");
+
+        $addrString = "Masayuki Nii <msyk@msyk.net>";
+        $ome = new OME();
+        $result = $ome->appendBccField($addrString);
+        $this->assertTrue($result, "[ERROR] in appending mail address.");
+        $this->assertTrue($ome->getBccField() === $addrString,
+            "[ERROR] in appending mail address string. Compare [{$ome->getBccField()}] [{$addrString}]");
+
+        $addrString = "";
+        $ome = new OME();
+        $prevToField = $ome->getBccField();
+        $result = $ome->appendBccField($addrString);
+        $this->assertFalse($result, "[ERROR] in appending mail address.");
+        $this->assertTrue($ome->getBccField() === $prevToField,
+            "[ERROR] in appending mail address string. Compare [{$ome->getBccField()}] [{$prevToField}]");
+    }
+/*
     public function testSendSimpleMail()
     {
         $ome = new OME();
@@ -70,5 +139,6 @@ class OME_Test extends TestCase
         $result = $ome->send();
         $this->assertEquals($result, true, "[ERROR] in sending mail");
     }
+*/
 }
  
