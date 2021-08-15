@@ -53,6 +53,8 @@ class GenerateJSCode_Test extends TestCase
             $this->assertStringContainsString('Content-Type: text/javascript;charset="UTF-8"', implode("\n", $headers));
             $this->assertStringContainsString('X-XSS-Protection: 1; mode=block', implode("\n", $headers));
             $this->assertStringContainsString('X-Frame-Options: SAMEORIGIN', implode("\n", $headers));
+        } else {
+            $this->assertTrue(true, "Preventing Risky warning.");
         }
     }
 

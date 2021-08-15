@@ -30,7 +30,7 @@ abstract class MessagingProvider
      */
     public abstract function processing($dbProxy, $contextDef, $result);
 
-    protected function modernTemplating($record, $tempStr, $ignoreField = false)
+    public function modernTemplating($record, $tempStr, $ignoreField = false)
     {
         $bodyStr = $tempStr;
         if (!$ignoreField && isset($record[$tempStr])) {
