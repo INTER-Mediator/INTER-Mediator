@@ -8,6 +8,7 @@
  */
 
 namespace INTERMediator\Media;
+
 use \Iterator;
 
 class LineDivider implements Iterator
@@ -49,7 +50,7 @@ class LineDivider implements Iterator
         }
     }
 
-    public function current()
+    public function current(): mixed
     {
         list($prevCRLF, $nextPos) = $this->getNextLinePosition();
         if ($prevCRLF > 0) {
@@ -59,26 +60,26 @@ class LineDivider implements Iterator
         }
     }
 
-    public function next()
+    public function next(): void
     {
         $this->key++;
         list($prevCRLF, $this->pos) = $this->getNextLinePosition();
     }
 
-    public function key()
+    public function key(): mixed
     {
         return $this->key;
     }
 
-    public function valid()
+    public function valid(): bool
     {
-        if ($this->pos<0)   {
+        if ($this->pos < 0) {
             return false;
         }
         return strlen($this->data) > $this->pos;
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->pos = 0;
         $this->key = 0;

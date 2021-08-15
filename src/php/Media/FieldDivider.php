@@ -60,7 +60,7 @@ class FieldDivider implements Iterator
                 break;
             }
         }
-        if ( $i == strlen($this->data)) {
+        if ($i == strlen($this->data)) {
             $gotSep = true;
         }
         if ($outOfQuote && $gotSep) {
@@ -88,7 +88,7 @@ class FieldDivider implements Iterator
         return $result;
     }
 
-    public function current()
+    public function current(): mixed
     {
         list($startPos, $endPos, $nextPos) = $this->getNextLinePosition();
         if ($nextPos > 0) {
@@ -99,18 +99,18 @@ class FieldDivider implements Iterator
         return null;
     }
 
-    public function next()
+    public function next(): void
     {
         $this->key++;
         list($startPos, $endPos, $this->pos) = $this->getNextLinePosition();
     }
 
-    public function key()
+    public function key(): mixed
     {
         return $this->key;
     }
 
-    public function valid()
+    public function valid(): bool
     {
         if ($this->pos < 0) {
             return false;
@@ -118,7 +118,7 @@ class FieldDivider implements Iterator
         return strlen($this->data) > $this->pos;
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->pos = 0;
         $this->key = 0;
