@@ -30,6 +30,7 @@
     "swiftmailer/swiftmailer": "*",
     "tecnickcom/tcpdf": "*",
     "setasign/fpdi": "*",
+    "smalot/pdfparser": "*",
     "aws/aws-sdk-php": "*",
     "simplesamlphp/simplesamlphp": "*"
   },
