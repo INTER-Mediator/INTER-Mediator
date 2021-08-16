@@ -29,6 +29,7 @@
     "inter-mediator/fmdataapi": "*",
     "swiftmailer/swiftmailer": "*",
     "tecnickcom/tcpdf": "*",
+    "setasign/fpdi": "*",
     "aws/aws-sdk-php": "*",
     "simplesamlphp/simplesamlphp": "*"
   },
