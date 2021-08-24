@@ -321,7 +321,7 @@ class FileSystem implements UploadingSupport
             if (count($db->logger->getErrorMessages()) > 0) {
                 $db->logger->setWarningMessage(
                     "Can't read line: " . substr($line, 0, min(12, strlen($line))) . "...\n");
-                $db->logger->clearErrorMessages();
+                $db->logger->clearErrorLog();
             }
         }
         unlink(IMUtil::removeNull($fileInfoTemp));
