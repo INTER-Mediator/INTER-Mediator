@@ -45,6 +45,11 @@ class Logger
         $this->debugMessage = array();
     }
 
+    public function clearErrorLog()
+    {
+        $this->errorMessage = array();
+    }
+
     public function setDebugMessage($str, $level = 1)
     {
         if ($this->debugLevel !== false && $this->debugLevel >= $level) {
