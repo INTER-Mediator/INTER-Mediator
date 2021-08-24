@@ -320,7 +320,7 @@ class FileSystem implements UploadingSupport
             }
             if (count($db->logger->getErrorMessages()) > 0) {
                 $db->logger->setWarningMessage(
-                    "Can't read line: " . substr($line, 0, min(12, strlen($line))) . "...\n");
+                    "\nCan't read line: " . substr($line, 0, min(20, strlen($line))) . "...");
                 $db->logger->clearErrorLog();
             }
         }
