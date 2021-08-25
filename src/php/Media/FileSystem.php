@@ -90,7 +90,7 @@ class FileSystem implements UploadingSupport
             $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
             $targetFieldName = $field[$counter];
 
-            if  ($targetFieldName == "_im_csv_upload") {    // CSV File uploading
+            if ($targetFieldName == "_im_csv_upload") {    // CSV File uploading
                 $this->csvImportOperation($db, $datasource, $options, $dbspec, $debug, $contextname, $fileInfoTemp);
             } else {
                 if (!isset($options['media-root-dir'])) { // Check the 'media-root-dir'.
@@ -317,6 +317,11 @@ class FileSystem implements UploadingSupport
                     //$createdKeys[] = [$dbContext['key'] => ($db->getDatabaseResult()[0])[$dbContext['key']]];
                 }
                 $is1stLine = false;
+            }
+            if (count($db->logger->getErrorMessages()) > 0) {
+                $db->logger->setWarningMessage(
+                    "\nCan't read line: " . substr($line, 0, min(20, strlen($line))) . "...");
+                $db->logger->clearErrorLog();
             }
         }
         unlink(IMUtil::removeNull($fileInfoTemp));
