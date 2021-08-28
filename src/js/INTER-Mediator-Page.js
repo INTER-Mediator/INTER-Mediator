@@ -443,7 +443,7 @@ let INTERMediatorOnPage = {
       backBox.style.padding = ' 50px 0 0 0'
       backBox.style.top = '0'
       backBox.style.left = '0'
-      backBox.style.zIndex = '999998'
+      backBox.style.zIndex = '777777'
     }
 
     if (INTERMediatorOnPage.loginPanelHTML) {

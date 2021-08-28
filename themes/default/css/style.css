@@ -330,7 +330,7 @@ span.IM_POSTMESSAGE {
     top: 0;
     left: 0;
     padding: 50px 0 0 0;
-    z-index: 999998;
+    z-index: 777777;
     background-image: url(background.gif);
 }
 
@@ -342,7 +342,7 @@ span.IM_POSTMESSAGE {
     padding: 50px 0 0 0;
     top: 0;
     left: 0;
-    z-index: 999999;
+    z-index: 777777;
 }
 
 #_im_autherrormessage {
