@@ -443,7 +443,7 @@ let INTERMediatorOnPage = {
       backBox.style.padding = ' 50px 0 0 0'
       backBox.style.top = '0'
       backBox.style.left = '0'
-      backBox.style.zIndex = '999998'
+      backBox.style.zIndex = '777777'
     }
 
     if (INTERMediatorOnPage.loginPanelHTML) {
@@ -795,7 +795,7 @@ let INTERMediatorOnPage = {
       backBox.style.padding = ' 50px 0 0 0'
       backBox.style.top = '0'
       backBox.style.left = '0'
-      backBox.style.zIndex = '999999'
+      backBox.style.zIndex = '555555'
     }
     const frontPanel = document.createElement('div')
     frontPanel.id = '_im_autherrormessage'
@@ -1158,8 +1158,7 @@ let INTERMediatorOnPage = {
     if (themeName !== 'least' && themeName !== 'thosedays') {
       frontPanel.style.transitionDuration = '0'
       frontPanel.style.opacity = 1.0
-      frontPanel.style.display = 'flex'
-      frontPanel.style.zIndex = 9999
+      frontPanel.style.zIndex = 555555
     }
   },
 
