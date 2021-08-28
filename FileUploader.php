@@ -335,7 +335,7 @@ class FileUploader
             } else if ($dbspec['db-class'] === 'FileMaker_DataAPI') {
                 $layout = $datasource[0]['name'];
                 $dbProxyInstance->dbClass->setupFMDataAPIforDB($layout, urlencode($targetFieldName));
-                $result = $dbProxyInstance->dbClass->fmData->{$layout}->query(NULL, NULL, 1, 1);
+                $result = $dbProxyInstance->dbClass->fmData->{$layout}->getRecord(intval($_POST['_im_keyvalue']));
                 $path = '';
                 $host = filter_input(INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_URL);
                 if ($host === NULL || $host === FALSE) {
