@@ -107,7 +107,7 @@ describe "INTER-Mediator-Server VM" do
       expect(elements[3].text).to eq("1010032")
 
       element = @driver.find_element(:id, "_im_progress")
-      expect(element.attribute("style")).to eq("opacity: 0; display: flex; z-index: -9999; transition-duration: 0.3s;")
+      expect(element.attribute("style")).to eq("opacity: 0; z-index: -9999; transition-duration: 0.3s;")
 
       Selenium::WebDriver::Support::Select.new(@driver.find_element(:xpath, "//select[@data-im='_@limitnumber:postalcode']")).select_by(:value, "4")
       sleep 1
