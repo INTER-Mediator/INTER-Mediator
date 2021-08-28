@@ -299,8 +299,7 @@ span.IM_POSTMESSAGE {
     z-index: 999999;
     /*transition-property: opacity;*/
     /*transition-duration: 0.2s;*/
-    pointer-events: none;
-
+    /*pointer-events: none;*/
 }
 
 /* INTER-Mediator specific style definitions === Authentication Panel and background */

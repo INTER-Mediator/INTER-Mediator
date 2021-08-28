@@ -16,6 +16,23 @@
     <!--<link rel="stylesheet" type="text/css" hrtable_with_calculation.php.php?themes=default&type=css">-->
     <title>INTER-Mediator - Sample - Search for Debugging/MySQL</title>
     <script type="text/javascript" src="datatest.php"></script>
+    <style>
+        #_im_progress {
+            /*transition-property: opacity;*/
+            /*transition-duration: 0.2s;*/
+            /*pointer-events: none;*/
+        }
+
+    </style>
+    <script>
+      function show() {
+        INTERMediatorOnPage.showProgress();
+      }
+
+      function hide() {
+        INTERMediatorOnPage.hideProgress();
+      }
+    </script>
 </head>
 <body>
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
@@ -42,6 +59,7 @@
     </tr>
     </tbody>
 </table>
-
+<button onclick="show()">表示</button>
+<button onclick="hide()">非表示</button>
 </body>
 </html>

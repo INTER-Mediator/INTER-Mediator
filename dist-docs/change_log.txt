@@ -18,6 +18,8 @@ Ver.9 (in development)
 - In case of Messaging errors, the Warning Messages are set instead of error messages.
 - On the post only mode, if there is no data to send, the communication is going to prevent.
   If IMLibUI.postOnlyNoRecordPrevent set to false, it doesn't prevent in case of no data.
+- [INFO] The progress displaying which shows a rounding gear can't operate any elements on the page. Previously it could.
+  If you want to operate on the 'gear' display, you could define CSS as like: #_im_progress {pointer-events: none;}.
 
 Ver.8 (July 22, 2021)
 - [Important] If you see the message which tells the ServiceServer couldn't boot just after installation,

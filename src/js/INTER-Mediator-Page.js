@@ -1158,8 +1158,7 @@ let INTERMediatorOnPage = {
     if (themeName !== 'least' && themeName !== 'thosedays') {
       frontPanel.style.transitionDuration = '0'
       frontPanel.style.opacity = 1.0
-      frontPanel.style.display = 'flex'
-      frontPanel.style.zIndex = 9999
+      frontPanel.style.zIndex = 999999
     }
   },
 
