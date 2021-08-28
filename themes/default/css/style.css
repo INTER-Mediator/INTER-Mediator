@@ -296,7 +296,7 @@ span.IM_POSTMESSAGE {
     left: 0;
     top: 0;
     color: #9b9bcc;
-    z-index: 999999;
+    z-index: 555555;
     /*transition-property: opacity;*/
     /*transition-duration: 0.2s;*/
     /*pointer-events: none;*/
@@ -312,6 +312,7 @@ span.IM_POSTMESSAGE {
     border-radius: 10px;
     position: relative;
     font-weight: bold;
+    z-index: 777777;
 }
 
 #_im_authpanel INPUT {
