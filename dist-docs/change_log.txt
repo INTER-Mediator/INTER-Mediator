@@ -11,10 +11,12 @@ Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.5.13-dev (in development)
+- Support retrieving image files in container fields when using DB_FileMaker_DataAPI class, a separate web server and Claris FileMaker Server 19.3.1 or later.
 - Our CI operations moved to GitHub Actions from Travis CI.
 - [BUG FIX] If nodes bond to the local context exist in enclosure/repeater (ex. within table tag), Some error (1046)
   rose up. So far the error doesn't rise, but these nodes should exist out side of enclosure/repeater. (Thanks to Mr. Hayashi)
 - [BUG FIX] Fix GenerateJSCode.php to consider when "INTER-Mediator-Support" directory doesn't exist (Thanks to Tomomitsu Baba).
+- [BUG FIX] Fix retrieving a image file in container fields after uploading when using DB_FileMaker_DataAPI class.
 
 Ver.5.12 (May 29, 2021)
 - Support PHP 8.0.

@@ -2,16 +2,16 @@
 
 /**
  * INTER-Mediator
- * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * Copyright (c) INTER-Mediator Directive Committee (https://inter-mediator.org)
  * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
  * INTER-Mediator is supplied under MIT License.
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  *
- * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (https://inter-mediator.org)
  * @link          https://inter-mediator.com/
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 class MediaAccess
 {
@@ -74,9 +74,23 @@ class MediaAccess
             } else if (stripos($target, 'http://') === 0 || stripos($target, 'https://') === 0) { // http or https
                 $parsedUrl = parse_url($target);
                 if (get_class($dbProxyInstance->dbClass) === 'DB_FileMaker_DataAPI' &&
-                    isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver') {
+                    (isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver' ||
+                    isset($parsedUrl['scheme']) && $parsedUrl['scheme'] === 'https')
+                    ) {
                     // for FileMaker Data API
-                    $target = 'http://' . $parsedUrl['user'] . ':' . $parsedUrl['pass'] . '@127.0.0.1:1895' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
+                    $target = $parsedUrl['scheme'] . '://';
+                    if (isset($parsedUrl['user']) && isset($parsedUrl['pass'])) {
+                        $target .= $parsedUrl['user'] . ':' . $parsedUrl['pass'] . '@';
+                    }
+                    if ($parsedUrl['scheme'] === 'https') {
+                        $target .= $parsedUrl['host'];
+                        if (isset($parsedUrl['port'])) {
+                            $target .= ':' . $parsedUrl['port'];
+                        }
+                    } else {
+                        $target .= '127.0.0.1:1895';
+                    }
+                    $target .= $parsedUrl['path'] . '?' . $parsedUrl['query'];
                     if (function_exists('curl_init')) {
                         $session = curl_init($target);
                         curl_setopt($session, CURLOPT_HEADER, true);
@@ -85,6 +99,7 @@ class MediaAccess
                         $headerSize = curl_getinfo($session, CURLINFO_HEADER_SIZE);
                         $headers = substr($content, 0, $headerSize);
                         curl_close($session);
+
                         $sessionKey = '';
                         if ($header = explode("\r\n", $headers)) {
                             foreach ($header as $line) {
@@ -98,8 +113,6 @@ class MediaAccess
                                 }
                             }
                         }
-
-                        $target = 'http://127.0.0.1:1895' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
                         $headers = array('X-FMS-Session-Key: ' . $sessionKey);
                         $session = curl_init($target);
                         curl_setopt($session, CURLOPT_HEADER, false);
