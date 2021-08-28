@@ -1,16 +1,16 @@
 <?php
 /**
  * INTER-Mediator
- * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * Copyright (c) INTER-Mediator Directive Committee (https://inter-mediator.org)
  * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
  * INTER-Mediator is supplied under MIT License.
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  *
- * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (https://inter-mediator.org)
  * @link          https://inter-mediator.com/
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'FMDataAPI.php');
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'DB_Support' . DIRECTORY_SEPARATOR . 'DB_Spec_Handler_FileMaker_DataAPI.php');
@@ -735,6 +735,34 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         } else {
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
                 $_SESSION['X-FM-Data-Access-Token'] = $token;
+            }
+        }
+
+        // for handling container field for a separate web server
+        // in case of using Claris FileMaker Server 19.3.1 or later
+        $httpHost = filter_input(INPUT_SERVER, 'HTTP_HOST', FILTER_VALIDATE_DOMAIN);
+        if ($productVersion >= 19 && $this->dbSettings->getDbSpecServer() !== $httpHost) {
+            $i = 0;
+            foreach ($recordArray as $recordData) {
+                foreach ($recordData as $fieldName => $fieldData) {
+                    if (isset($context['file-upload'])) {
+                        foreach ($context['file-upload'] as $item) {
+                            if (isset($item['field']) &&
+                                $item['field'] === $fieldName &&
+                                isset($item['container']) &&
+                                (boolean)$item['container'] === TRUE) {
+                                $urlInfo = parse_url($recordArray[$i][$fieldName]);
+                                if ($urlInfo && isset($urlInfo['scheme'])) {
+                                    $util = new IMUtil();
+                                    $mimeType = $util->getMIMEType($urlInfo['path']);
+                                    $tmpRecord = $this->fmData->{$layout}->getRecord($recordArray[$i]['recordId']);
+                                    $recordArray[$i][$fieldName] = 'data:' . $mimeType . ';base64,' . $tmpRecord->getContainerData($fieldName);
+                                }
+                            }
+                        }
+                    }
+                }
+                $i++;
             }
         }
 
