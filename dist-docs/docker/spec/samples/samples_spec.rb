@@ -62,6 +62,7 @@ describe "INTER-Mediator-Server VM" do
         element = @driver.find_element(:xpath, "//a[contains(@href, 'pageedit.html?target=../../page" + "%02d" % num + ".html')]")
         script = "return arguments[0].removeAttribute('target')"
         @driver.execute_script(script, element) 
+        sleep 2
         element.click
         sleep 2
         #expect(@driver.title).to eq("Page File Editor: ../../page" + "%02d" % num + ".html")
