@@ -78,6 +78,7 @@ describe "INTER-Mediator-Server VM" do
         element = @driver.find_element(:xpath, "//a[contains(@href, 'defedit.html?target=../../def" + "%02d" % num + ".php')]")
         script = "return arguments[0].target = ''"
         @driver.execute_script(script, element)
+        sleep 2
         element.click
         sleep 2
         #expect(@driver.title).to eq("Definition File Editor: ../../def" + "%02d" % num + ".php")
