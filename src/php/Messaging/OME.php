@@ -624,6 +624,7 @@ class OME
                     $this->errorMessage = "{$headMsg}{$recipientsInfo}\n";
                 }
             }
+            usleep(20 * 1000);
         }
         return $resultMail;
     }
