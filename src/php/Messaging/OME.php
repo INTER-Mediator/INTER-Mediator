@@ -72,9 +72,14 @@ class OME
     private $isSetCurrentDateToHead = false;
     private $isUseSendmailParam = false;
 
+    private $waitMS = 0;
+
     function __construct()
     {
         mb_internal_encoding('UTF-8');
+
+        $params = IMUtil::getFromParamsPHPFile(["waitAfterMail"], true);
+        $this->waitMS = $params['waitAfterMail'] ?? 20;
     }
 
     /**    エラーメッセージを取得する。
@@ -624,6 +629,7 @@ class OME
                     $this->errorMessage = "{$headMsg}{$recipientsInfo}\n";
                 }
             }
+            usleep($this->waitMS * 1000);
         }
         return $resultMail;
     }
