@@ -173,7 +173,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         $listArray = array();
         foreach ($result as $row) {
             if ($keyField === $row['Field'] || !is_null($row['Default'])) {
-                // skip key field to asing value.
+                // skip key field to assign value.
             } else if ($assocField === $row['Field']) {
                 $fieldArray[] = $this->quotedEntityName($row['Field']);
                 $listArray[] = $this->dbClassObj->link->quote($assocValue);

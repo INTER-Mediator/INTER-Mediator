@@ -36,11 +36,15 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     private $softDeleteField = null;
     private $softDeleteValue = null;
     private $isFollowingTimezones;
+    private $isSuppressDVOnCopy;
+    private $isSuppressDVOnCopyAssoc;
 
     public function __construct()
     {
-        $params = IMUtil::getFromParamsPHPFile(["followingTimezones",], true);
-        $this->isFollowingTimezones = isset($params["followingTimezones"]) ? $params["followingTimezones"] : false;
+        $params = IMUtil::getFromParamsPHPFile(["followingTimezones", "suppressDefaultValuesOnCopy", "suppressDefaultValuesOnCopyAssoc",], true);
+        $this->isFollowingTimezones = $params["followingTimezones"] ?? false;
+        $this->isSuppressDVOnCopy = $params["suppressDefaultValuesOnCopy"] ?? false;
+        $this->isSuppressDVOnCopyAssoc = $params["suppressDefaultValuesOnCopyAssoc"] ?? false;
     }
 
     public function updatedRecord()
@@ -909,7 +913,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             return false;
         }
         $defaultValues = array();
-        if (isset($tableInfo['default-values'])) {
+        if (!$this->isSuppressDVOnCopy && isset($tableInfo['default-values'])) {
             foreach ($tableInfo['default-values'] as $itemDef) {
                 $defaultValues[$itemDef['field']] = $itemDef['value'];
             }
@@ -928,7 +932,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 $queryClause = $this->handler->quotedEntityName($assocInfo["field"]) . "=" .
                     $this->link->quote($assocInfo["value"]);
                 $defaultValues = array();
-                if (isset($assocContextDef['default-values'])) {
+                if (!$this->isSuppressDVOnCopyAssoc && isset($assocContextDef['default-values'])) {
                     foreach ($assocContextDef['default-values'] as $itemDef) {
                         $defaultValues[$itemDef['field']] = $itemDef['value'];
                     }
