@@ -22,6 +22,8 @@ Ver.9 (in development)
   If you want to operate on the 'gear' display, you could define CSS as like: #_im_progress {pointer-events: none;}.
 - Add dist-docs/container-for-trial directory and files for container.
 - The variable $waitAfterMail in params.php sets the waiting milliseconds every after sending.
+- The variable $suppressDefaultValuesOnCopy in params.php prevents to set default values on copying records. Also,
+  the variable $suppressDefaultValuesOnCopyAssoc does for the copying associated records. Both default value are false.
 
 Ver.8 (July 22, 2021)
 - [Important] If you see the message which tells the ServiceServer couldn't boot just after installation,

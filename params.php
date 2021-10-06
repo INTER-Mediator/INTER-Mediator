@@ -296,3 +296,6 @@ $s3urlCustomize = true; // The default value is TRUE.
 //$convert2Number = ['num1','num2','num3'];
 //$convert2Date = ['dt1'];
 //$convert2DateTime = [];
+
+$suppressDefaultValuesOnCopy = false; // If you don't want to set default values on copying records, set this true
+$suppressDefaultValuesOnCopyAssoc = false; // If you don't want to set default values on copying records of the associated records, set this true
