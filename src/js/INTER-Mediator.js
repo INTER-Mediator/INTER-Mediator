@@ -943,6 +943,11 @@ const INTERMediator = {
         targetRepeater = ctComponentNodes[3].cloneNode(true)
         const nodeForKeyValues = {}
         const trNodes = node.getElementsByTagName('TR')
+        if (!trNodes || trNodes.length == 0 || colArray.length == 0) {
+          const tableNode = node.parentNode
+          tableNode.parentNode.removeChild(tableNode)
+          return
+        }
         for (let i = 1; i < trNodes.length; i += 1) {
           for (let j = 0; j < colArray.length; j += 1) {
             const appendingNode = targetRepeater.cloneNode(true)
@@ -974,7 +979,7 @@ const INTERMediator = {
             }, undefined, '_imlabel_crosstable')
           },
           function (contextObj, targetRecords) {
-            let dataKeyColumn, dataKeyRow, currentContextDef, ix,
+            let dataKeyColumn, dataKeyRow, currentContextDef,
               linkedElements, targetNode, keyField, keyValue, keyingValue
             currentContextDef = contextObj.getContextDef()
             keyField = contextObj.getKeyField()
