@@ -940,6 +940,11 @@ const INTERMediator = {
 
         // Create all cross point cell
         INTERMediator.crossTableStage = 3
+        if (trNodes.length == 0 || colArray.length == 0) {
+          const tableNode = node.parentNode
+          tableNode.parentNode.removeChild(tableNode)
+          return
+        }
         targetRepeater = ctComponentNodes[3].cloneNode(true)
         const nodeForKeyValues = {}
         const trNodes = node.getElementsByTagName('TR')
@@ -974,7 +979,7 @@ const INTERMediator = {
             }, undefined, '_imlabel_crosstable')
           },
           function (contextObj, targetRecords) {
-            let dataKeyColumn, dataKeyRow, currentContextDef, ix,
+            let dataKeyColumn, dataKeyRow, currentContextDef,
               linkedElements, targetNode, keyField, keyValue, keyingValue
             currentContextDef = contextObj.getContextDef()
             keyField = contextObj.getKeyField()
