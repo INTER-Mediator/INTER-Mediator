@@ -940,7 +940,7 @@ const INTERMediator = {
 
         // Create all cross point cell
         INTERMediator.crossTableStage = 3
-        if (trNodes.length == 0 || colArray.length == 0) {
+        if (!trNodes || trNodes.length == 0 || colArray.length == 0) {
           const tableNode = node.parentNode
           tableNode.parentNode.removeChild(tableNode)
           return
