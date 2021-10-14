@@ -960,6 +960,7 @@ const INTERMediator = {
           }
         }
         INTERMediator.setIdValue(node)
+        let expandContextObj = null
         await enclosureProcessing(
           node, [targetRepeater], null, parentObjectInfo, currentContextObj,
           function (context) {
@@ -979,6 +980,7 @@ const INTERMediator = {
             }, undefined, '_imlabel_crosstable')
           },
           function (contextObj, targetRecords) {
+            expandContextObj = contextObj
             let dataKeyColumn, dataKeyRow, currentContextDef,
               linkedElements, targetNode, keyField, keyValue, keyingValue
             currentContextDef = contextObj.getContextDef()
@@ -992,21 +994,88 @@ const INTERMediator = {
                   nodeForKeyValues[record[dataKeyColumn]][record[dataKeyRow]]) {
                   targetNode = nodeForKeyValues[record[dataKeyColumn]][record[dataKeyRow]]
                   if (targetNode) {
-                    linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(
-                      [targetNode], false)
                     keyValue = record[keyField]
                     if (keyField && !keyValue && keyValue !== 0) {
                       keyValue = ix
                     }
                     keyingValue = keyField + '=' + keyValue
                   }
-                  setupLinkedNode(
-                    linkedElements, contextObj, targetRecords.dbresult, ix, keyingValue)
+                  setupLinkedNode([targetNode], contextObj, targetRecords.dbresult, ix, keyingValue)
                 }
               }
             }
           }
         )
+        if (node.getAttribute("data-im-control").match(/cross-table-sum/)) {
+          const lineNodes = node.getElementsByTagName("TR")
+          const colSum = {}
+          let rowSum = {id: -1}
+          let colCount = 0
+          for (let n = 0; n < lineNodes.length; n += 1) {
+            const cellNodes = lineNodes[n].getElementsByTagName("TD")
+            colCount = cellNodes.length
+            rowSum = {id: -1}
+            for (let m = 0; m < colCount; m += 1) {
+              if (!colSum[m]) {
+                colSum[m] = {id: -1}
+              }
+              const targetNodes = INTERMediatorLib.seekLinkedAndWidgetNodes([cellNodes[m]], false).linkedNode
+              for (let p = 0; p < targetNodes.length; p += 1) {
+                const target = targetNodes[p].getAttribute("data-im").split("@")[1]
+                const value = parseFloat(targetNodes[p].value ? targetNodes[p].value : targetNodes[p].innerHTML)
+                if (value) {
+                  if (!rowSum[target]) {
+                    rowSum[target] = value
+                  } else {
+                    rowSum[target] += value
+                  }
+                  if (!colSum[m][target]) {
+                    colSum[m][target] = value
+                  } else {
+                    colSum[m][target] += value
+                  }
+                }
+              }
+            }
+            const sumCell = ctComponentNodes[(n == 0) ? 1 : 3].cloneNode(true)
+            lineNodes[n].appendChild(sumCell)
+            sumCell.className = (sumCell.className ? (sumCell.className + ' ') : '') + '_im_cross_summary'
+            if (n == 0) {
+              sumCell.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[1052]))
+            } else {
+              setupLinkedNode([sumCell], expandContextObj, [rowSum], 0, "id=-1")
+            }
+          }
+          const lastLine = lineNodes[1].cloneNode(false)
+          node.appendChild(lastLine)
+          let sumCell = ctComponentNodes[2].cloneNode(true)
+          lastLine.appendChild(sumCell)
+          sumCell.className = (sumCell.className ? (sumCell.className + ' ') : '') + '_im_cross_summary'
+          sumCell.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[1052]))
+          rowSum = {id: -1}
+          for (let m = 0; m < colCount; m += 1) {
+            sumCell = ctComponentNodes[3].cloneNode(true)
+            lastLine.appendChild(sumCell)
+            sumCell.className = (sumCell.className ? (sumCell.className + ' ') : '') + '_im_cross_summary'
+            setupLinkedNode([sumCell], expandContextObj, [colSum[m]], 0, "id=-1")
+            const targetNodes = INTERMediatorLib.seekLinkedAndWidgetNodes([sumCell], false).linkedNode
+            for (let p = 0; p < targetNodes.length; p += 1) {
+              const target = targetNodes[p].getAttribute("data-im").split("@")[1]
+              const value = parseFloat(targetNodes[p].value ? targetNodes[p].value : targetNodes[p].innerHTML)
+              if (value) {
+                if (!rowSum[target]) {
+                  rowSum[target] = value
+                } else {
+                  rowSum[target] += value
+                }
+              }
+            }
+          }
+          sumCell = ctComponentNodes[3].cloneNode(true)
+          lastLine.appendChild(sumCell)
+          sumCell.className = (sumCell.className ? (sumCell.className + ' ') : '') + '_im_cross_summary'
+          setupLinkedNode([sumCell], expandContextObj, [rowSum], 0, "id=-1")
+        }
       } // The end of function expandCrossTableEnclosure().
 
       // Detect cross table components in a tbody enclosure.
@@ -1035,12 +1104,14 @@ const INTERMediator = {
     /** --------------------------------------------------------------------
      * Set the value to node and context.
      */
-    function setupLinkedNode(linkedElements, contextObj, targetRecordset, ix, keyingValue) {
+    function setupLinkedNode(nodes, contextObj, targetRecordset, ix, keyingValue) {
+      console.log(nodes, contextObj, targetRecordset, ix, keyingValue)
       if (targetRecordset.length < 1 || targetRecordset[0] === null) {
         return null;
       }
       let idValuesForFieldName = {}
       const currentContextDef = contextObj.getContextDef()
+      const linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(nodes, INTERMediator.crossTableStage == 0)
       const currentWidgetNodes = linkedElements.widgetNode
       const currentLinkedNodes = linkedElements.linkedNode
       try {
@@ -1181,7 +1252,6 @@ const INTERMediator = {
       let keyingValue = null
       for (let ix = 0; ix < countRecord; ix++) { // for each record
         repeatersOneRec = cloneEveryNodes(repeatersOriginal)
-        const linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(repeatersOneRec, true)
         const keyField = contextObj.getKeyField()
         for (let i = 0; i < repeatersOneRec.length; i++) {
           INTERMediator.setIdValue(repeatersOneRec[i])
@@ -1195,7 +1265,7 @@ const INTERMediator = {
           }
           keyingValue = keyField + '=' + keyValue
         }
-        let idValuesForFieldName = setupLinkedNode(linkedElements, contextObj, targetRecordset, ix, keyingValue)
+        let idValuesForFieldName = setupLinkedNode(repeatersOneRec, contextObj, targetRecordset, ix, keyingValue)
         IMLibPageNavigation.setupDeleteButton(encNodeTag, repeatersOneRec, contextObj, keyField, keyValue)
         IMLibPageNavigation.setupNavigationButton(encNodeTag, repeatersOneRec, currentContextDef, keyField, keyValue, contextObj)
         IMLibPageNavigation.setupCopyButton(encNodeTag, repNodeTag, repeatersOneRec, contextObj, targetRecordset[ix])
