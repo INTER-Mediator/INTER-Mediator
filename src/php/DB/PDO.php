@@ -768,8 +768,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence']
             : "{$this->dbSettings->getEntityForUpdate()}_{$keyField}_seq";
         $lastKeyValue = $this->link->lastInsertId($seqObject);
-        if ($isReplace && $lastKeyValue == 0) {
-            $lastKeyValue = -999;
+        if ($isReplace && $lastKeyValue == 0) { // lastInsertId returns 0 after replace command.
+            $lastKeyValue = -999; // This means kind of error, so avoid to set non zero value.
         }
 
         $this->notifyHandler->setQueriedPrimaryKeys(array($lastKeyValue));
