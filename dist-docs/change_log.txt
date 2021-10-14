@@ -24,6 +24,8 @@ Ver.9 (in development)
 - The variable $waitAfterMail in params.php sets the waiting milliseconds every after sending.
 - The variable $suppressDefaultValuesOnCopy in params.php prevents to set default values on copying records. Also,
   the variable $suppressDefaultValuesOnCopyAssoc does for the copying associated records. Both default value are false.
+- The cross table can add summary cells right and bottom areas with data-im-control="cross-table-sum." Also the summary
+  cells have the class attribute value "_im_cross_summary."
 
 Ver.8 (July 22, 2021)
 - [Important] If you see the message which tells the ServiceServer couldn't boot just after installation,
