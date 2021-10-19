@@ -1105,7 +1105,6 @@ const INTERMediator = {
      * Set the value to node and context.
      */
     function setupLinkedNode(nodes, contextObj, targetRecordset, ix, keyingValue) {
-      console.log(nodes, contextObj, targetRecordset, ix, keyingValue)
       if (targetRecordset.length < 1 || targetRecordset[0] === null) {
         return null;
       }
