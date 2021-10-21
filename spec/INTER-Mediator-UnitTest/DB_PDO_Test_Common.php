@@ -749,7 +749,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 
     public function testTransactionWithCommit()
     {
-        $this->dbProxySetupForAccess("person", 1);
+        $this->dbProxySetupForAccess("person", 2);
         $result = $this->db_proxy->readFromDB();
         $id1 = $result[0]['id'];
         $name1 = $result[0]['name'];
@@ -790,7 +790,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 
     public function testTransactionWithRollback()
     {
-        $this->dbProxySetupForAccess("person", 1);
+        $this->dbProxySetupForAccess("person", 2);
         $result = $this->db_proxy->readFromDB();
         $id1 = $result[0]['id'];
         $name1 = $result[0]['name'];
