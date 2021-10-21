@@ -1670,4 +1670,32 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         // TODO: Implement deleteForTest() method.
     }
+
+    /*
+     * Transaction
+     */
+    public function hasTransaction()
+    {
+        return $this->dbClass->hasTransaction();
+    }
+
+    public function inTransaction()
+    {
+        return $this->dbClass->inTransaction();
+    }
+
+    public function beginTransaction()
+    {
+        $this->dbClass->beginTransaction();
+    }
+
+    public function commitTransaction()
+    {
+        $this->dbClass->commitTransaction();
+    }
+
+    public function rollbackTransaction()
+    {
+        $this->dbClass->rollbackTransaction();
+    }
 }

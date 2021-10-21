@@ -1225,9 +1225,9 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                 }
                 $recordData += array(
                     $field =>
-                    $this->formatter->formatterToDB(
-                        "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}",
-                        $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value))
+                        $this->formatter->formatterToDB(
+                            "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}",
+                            $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value))
                 );
 
                 $this->fx->AddDBParam(
@@ -1639,4 +1639,30 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
     {
         // TODO: Implement deleteForTest() method.
     }
+
+    /*
+ * Transaction
+ */
+    public function inTransaction()
+    {
+        return false;
+    }
+
+    public function hasTransaction()
+    {
+        return false;
+    }
+
+    public function beginTransaction()
+    {
+    }
+
+    public function commitTransaction()
+    {
+    }
+
+    public function rollbackTransaction()
+    {
+    }
+
 }

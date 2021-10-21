@@ -384,7 +384,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $username = "testuser2";
         $password = "testuser2";
 
-        [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password, false, ['realname'=>'test123']);
+        [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password, false, ['realname' => 'test123']);
         $this->assertTrue($addUserResult);
 
         $db = new Proxy(true);
@@ -397,7 +397,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $db->processingRequest('read', true);
         $userResult = $db->getDatabaseResult();
 
-        $this->assertEquals('test123', $userResult[0]['realname'],'The realname is supplied with parameter.');
+        $this->assertEquals('test123', $userResult[0]['realname'], 'The realname is supplied with parameter.');
         $this->assertEquals($username, $userResult[0]['username'], 'The username has to be keep.');
     }
 
@@ -410,7 +410,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $password = "testuser3";
 
         [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password, false,
-            ['username'=>'mycat','realname'=>'test123']);
+            ['username' => 'mycat', 'realname' => 'test123']);
         $this->assertTrue($addUserResult);
 
         $db = new Proxy(true);
@@ -423,7 +423,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $db->processingRequest('read', true);
         $userResult = $db->getDatabaseResult();
 
-        $this->assertEquals('test123', $userResult[0]['realname'],'The realname is supplied with parameter.');
+        $this->assertEquals('test123', $userResult[0]['realname'], 'The realname is supplied with parameter.');
         $this->assertEquals($username, $userResult[0]['username'], 'The username has to be keep.');
     }
 
@@ -738,5 +738,94 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertEquals(is_array($result), true, "The retrieved data has to be array.");
         $this->assertEquals(count($result), 1, "Just 1 records should be retrieved.");
         $this->assertEquals($result[0]['name'], $aName, "Same record should be retrieved.");
+    }
+
+    public function testTransactionFeature()
+    {
+        $this->dbProxySetupForAccess("person", 1);
+        $result = $this->db_proxy->hasTransaction();
+        $this->assertIsBool($result, "Proxy class has to respond whether it can do transaction.");
+    }
+
+    public function testTransactionWithCommit()
+    {
+        $this->dbProxySetupForAccess("person", 1);
+        $result = $this->db_proxy->readFromDB();
+        $id1 = $result[0]['id'];
+        $name1 = $result[0]['name'];
+        $id2 = $result[1]['id'];
+        $name2 = $result[1]['name'];
+
+        $this->dbProxySetupForAccess("person", 1);
+        $this->db_proxy->beginTransaction();
+        $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id1);
+        $randNum = random_int(100, 999);
+        $modifiedStr1 = "{$name1}-{$randNum}";
+        $this->db_proxy->dbSettings->addValueWithField('name', $modifiedStr1);
+        $this->db_proxy->requireUpdatedRecord(true);
+        $this->db_proxy->processingRequest('update', true);
+        $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id2);
+        $randNum = random_int(100, 999);
+        $modifiedStr2 = "{$name2}-{$randNum}";
+        $this->db_proxy->dbSettings->addValueWithField('name', $modifiedStr2);
+        $this->db_proxy->requireUpdatedRecord(true);
+        $this->db_proxy->processingRequest('update', true);
+        $this->db_proxy->commit();
+
+        $this->dbProxySetupForAccess("person", 1);
+        $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id1);
+        $this->db_proxy->requireUpdatedRecord(true);
+        $result = $this->db_proxy->processingRequest('read', true);
+        $createdRecord = $this->db_proxy->updatedRecord();
+        $this->assertEquals($modifiedStr1, $createdRecord[0]['name'], "The updated data has to be modified.");
+
+        $this->dbProxySetupForAccess("person", 1);
+        $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id2);
+        $this->db_proxy->requireUpdatedRecord(true);
+        $result = $this->db_proxy->processingRequest('read', true);
+        $createdRecord = $this->db_proxy->updatedRecord();
+        $this->assertEquals($modifiedStr2, $createdRecord[0]['name'], "The updated data has to be modified.");
+
+    }
+
+    public function testTransactionWithRollback()
+    {
+        $this->dbProxySetupForAccess("person", 1);
+        $result = $this->db_proxy->readFromDB();
+        $id1 = $result[0]['id'];
+        $name1 = $result[0]['name'];
+        $id2 = $result[1]['id'];
+        $name2 = $result[1]['name'];
+
+        $this->dbProxySetupForAccess("person", 1);
+        $this->db_proxy->beginTransaction();
+        $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id1);
+        $randNum = random_int(100, 999);
+        $modifiedStr1 = "{$name1}-{$randNum}";
+        $this->db_proxy->dbSettings->addValueWithField('name', $modifiedStr1);
+        $this->db_proxy->requireUpdatedRecord(true);
+        $this->db_proxy->processingRequest('update', true);
+        $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id2);
+        $randNum = random_int(100, 999);
+        $modifiedStr2 = "{$name2}-{$randNum}";
+        $this->db_proxy->dbSettings->addValueWithField('name', $modifiedStr2);
+        $this->db_proxy->requireUpdatedRecord(true);
+        $this->db_proxy->processingRequest('update', true);
+        $this->db_proxy->rollback();
+
+        $this->dbProxySetupForAccess("person", 1);
+        $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id1);
+        $this->db_proxy->requireUpdatedRecord(true);
+        $result = $this->db_proxy->processingRequest('read', true);
+        $createdRecord = $this->db_proxy->updatedRecord();
+        $this->assertEquals($name1, $createdRecord[0]['name'], "The rollbacked data has not to be modified.");
+
+        $this->dbProxySetupForAccess("person", 1);
+        $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id2);
+        $this->db_proxy->requireUpdatedRecord(true);
+        $result = $this->db_proxy->processingRequest('read', true);
+        $createdRecord = $this->db_proxy->updatedRecord();
+        $this->assertEquals($name, $createdRecord[0]['name'], "The rollbacked data has not to be modified.");
+
     }
 }

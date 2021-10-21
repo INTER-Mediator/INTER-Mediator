@@ -1127,4 +1127,32 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $this->logger->setDebugMessage("[deleteForTest] {$sql}");
         return true;
     }
+
+    /*
+     * Transaction
+     */
+    public function hasTransaction()
+    {
+        return true;
+    }
+
+    public function inTransaction()
+    {
+        return $this->link->inTransaction();
+    }
+
+    public function beginTransaction()
+    {
+        $this->link->beginTransaction();
+    }
+
+    public function commitTransaction()
+    {
+        $this->link->commit();
+    }
+
+    public function rollbackTransaction()
+    {
+        $this->link->rollBack();
+    }
 }
