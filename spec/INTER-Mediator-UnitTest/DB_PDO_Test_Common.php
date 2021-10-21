@@ -770,7 +770,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->db_proxy->dbSettings->addValueWithField('name', $modifiedStr2);
         $this->db_proxy->requireUpdatedRecord(true);
         $this->db_proxy->processingRequest('update', true);
-        $this->db_proxy->commit();
+        $this->db_proxy->commitTransaction();
 
         $this->dbProxySetupForAccess("person", 1);
         $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id1);
@@ -811,7 +811,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->db_proxy->dbSettings->addValueWithField('name', $modifiedStr2);
         $this->db_proxy->requireUpdatedRecord(true);
         $this->db_proxy->processingRequest('update', true);
-        $this->db_proxy->rollback();
+        $this->db_proxy->rollbackTransaction();
 
         $this->dbProxySetupForAccess("person", 1);
         $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id1);
@@ -825,7 +825,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->db_proxy->requireUpdatedRecord(true);
         $result = $this->db_proxy->processingRequest('read', true);
         $createdRecord = $this->db_proxy->updatedRecord();
-        $this->assertEquals($name, $createdRecord[0]['name'], "The rollbacked data has not to be modified.");
+        $this->assertEquals($name2, $createdRecord[0]['name'], "The rollbacked data has not to be modified.");
 
     }
 }
