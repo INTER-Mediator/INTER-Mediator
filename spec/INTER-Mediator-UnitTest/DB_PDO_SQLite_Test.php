@@ -8,7 +8,7 @@ use INTERMediator\DB\Proxy;
 
 class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
 {
-    private $dsn = 'sqlite:/var/db/im/sample.sq3';
+    public $dsn = 'sqlite:/var/db/im/sample.sq3';
 
     function setUp(): void
     {

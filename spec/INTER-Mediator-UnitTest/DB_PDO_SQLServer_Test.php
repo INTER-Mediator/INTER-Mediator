@@ -14,7 +14,7 @@ use INTERMediator\DB\Proxy;
 
 class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
 {
-    protected $dsn;
+    public $dsn;
 
     function setUp(): void
     {

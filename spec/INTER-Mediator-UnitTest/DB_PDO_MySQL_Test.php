@@ -14,7 +14,7 @@ use INTERMediator\DB\Proxy;
 
 class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
 {
-    protected $dsn;
+    public $dsn;
     function setUp(): void
     {
         mb_internal_encoding('UTF-8');
@@ -63,12 +63,6 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
             );
         }
         $options = null;
-        $dbSettings = array(
-            'db-class' => 'PDO',
-            'dsn' => $this->dsn,
-            'user' => 'web',
-            'password' => 'password',
-        );
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
     }
