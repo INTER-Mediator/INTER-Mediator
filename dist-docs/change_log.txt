@@ -26,6 +26,7 @@ Ver.9 (in development)
   the variable $suppressDefaultValuesOnCopyAssoc does for the copying associated records. Both default value are false.
 - The cross table can add summary cells right and bottom areas with data-im-control="cross-table-sum." Also the summary
   cells have the class attribute value "_im_cross_summary."
+- DB\Proxy, DB\PDO classes support the transaction as using PDO methods.
 
 Ver.8 (July 22, 2021)
 - [Important] If you see the message which tells the ServiceServer couldn't boot just after installation,
