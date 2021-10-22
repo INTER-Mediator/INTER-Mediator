@@ -756,21 +756,30 @@ abstract class DB_PDO_Test_Common extends TestCase
         $id2 = $result[1]['id'];
         $name2 = $result[1]['name'];
 
-        $this->dbProxySetupForAccess("person", 1);
-        $this->db_proxy->beginTransaction();
-        $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id1);
+        $dbSettings = array(
+            'db-class' => 'PDO',
+            'dsn' => $this->dsn,
+            'user' => 'web',
+            'password' => 'password',
+        );
+
+        $db = new Proxy(true);
+        $db->initialize([['name' => 'person', 'key' => 'id', 'records' => 1]],
+            null, $dbSettings, 2, "person");
+        $db->beginTransaction();
+        $db->dbSettings->addExtraCriteria('id', "=", $id1);
         $randNum = random_int(100, 999);
         $modifiedStr1 = "{$name1}-{$randNum}";
-        $this->db_proxy->dbSettings->addValueWithField('name', $modifiedStr1);
-        $this->db_proxy->requireUpdatedRecord(true);
-        $this->db_proxy->processingRequest('update', true);
-        $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id2);
+        $db->dbSettings->addValueWithField('name', $modifiedStr1);
+        $db->processingRequest('update', true);
+        $db->initialize([['name' => 'person', 'key' => 'id', 'records' => 1]],
+            null, $dbSettings, 2, "person");
+        $db->dbSettings->addExtraCriteria('id', "=", $id2);
         $randNum = random_int(100, 999);
         $modifiedStr2 = "{$name2}-{$randNum}";
-        $this->db_proxy->dbSettings->addValueWithField('name', $modifiedStr2);
-        $this->db_proxy->requireUpdatedRecord(true);
-        $this->db_proxy->processingRequest('update', true);
-        $this->db_proxy->commitTransaction();
+        $db->dbSettings->addValueWithField('name', $modifiedStr2);
+        $db->processingRequest('update', true);
+        $db->commitTransaction();
 
         $this->dbProxySetupForAccess("person", 1);
         $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id1);
@@ -797,21 +806,30 @@ abstract class DB_PDO_Test_Common extends TestCase
         $id2 = $result[1]['id'];
         $name2 = $result[1]['name'];
 
-        $this->dbProxySetupForAccess("person", 1);
-        $this->db_proxy->beginTransaction();
-        $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id1);
+        $dbSettings = array(
+            'db-class' => 'PDO',
+            'dsn' => $this->dsn,
+            'user' => 'web',
+            'password' => 'password',
+        );
+
+        $db = new Proxy(true);
+        $db->initialize([['name' => 'person', 'key' => 'id', 'records' => 1]],
+            null, $dbSettings, 2, "person");
+        $db->beginTransaction();
+        $db->dbSettings->addExtraCriteria('id', "=", $id1);
         $randNum = random_int(100, 999);
         $modifiedStr1 = "{$name1}-{$randNum}";
-        $this->db_proxy->dbSettings->addValueWithField('name', $modifiedStr1);
-        $this->db_proxy->requireUpdatedRecord(true);
-        $this->db_proxy->processingRequest('update', true);
-        $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id2);
+        $db->dbSettings->addValueWithField('name', $modifiedStr1);
+        $db->processingRequest('update', true);
+        $db->initialize([['name' => 'person', 'key' => 'id', 'records' => 1]],
+            null, $dbSettings, 2, "person");
+        $db->dbSettings->addExtraCriteria('id', "=", $id2);
         $randNum = random_int(100, 999);
         $modifiedStr2 = "{$name2}-{$randNum}";
-        $this->db_proxy->dbSettings->addValueWithField('name', $modifiedStr2);
-        $this->db_proxy->requireUpdatedRecord(true);
-        $this->db_proxy->processingRequest('update', true);
-        $this->db_proxy->rollbackTransaction();
+        $db->dbSettings->addValueWithField('name', $modifiedStr2);
+        $db->processingRequest('update', true);
+        $db->rollbackTransaction();
 
         $this->dbProxySetupForAccess("person", 1);
         $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id1);
