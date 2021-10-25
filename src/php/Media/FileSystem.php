@@ -254,6 +254,12 @@ class FileSystem implements UploadingSupport
         $convert2DateTime = is_array($convert2DateTime) ? $convert2DateTime : [];
 
         $decimalPoint = ord(IMLocaleFormatTable::getCurrentLocaleFormat()['mon_decimal_point']);
+        if(!$decimalPoint){
+            $decimalPoint = ord(IMLocaleFormatTable::getCurrentLocaleFormat()['decimal_point']);
+            if(!$decimalPoint){
+                $decimalPoint = ord('.');
+            }
+        }
         $zeroCode = ord('0');
         $nineCode = ord('9');
 
