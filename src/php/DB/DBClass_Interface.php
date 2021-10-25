@@ -34,4 +34,11 @@ interface DBClass_Interface
     public function setUpdatedRecord($field, $value, $index = 0);
     public function queryForTest($table, $conditions = null);
     public function deleteForTest($table, $conditions = null);
+
+    public function hasTransaction();
+    public function inTransaction();
+    public function beginTransaction();
+    public function commitTransaction();
+    public function rollbackTransaction();
+
 }

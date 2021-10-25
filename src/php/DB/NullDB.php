@@ -102,4 +102,29 @@ class NullDB extends UseSharedObjects implements DBClass_Interface
     {
 
     }
+    /*
+* Transaction
+*/
+    public function hasTransaction()
+    {
+        return false;
+    }
+
+    public function inTransaction()
+    {
+        return false;
+    }
+
+    public function beginTransaction()
+    {
+    }
+
+    public function commitTransaction()
+    {
+    }
+
+    public function rollbackTransaction()
+    {
+    }
+
 }

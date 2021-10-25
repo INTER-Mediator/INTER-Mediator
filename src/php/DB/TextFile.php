@@ -307,4 +307,30 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
     {
         // TODO: Implement deleteForTest() method.
     }
+
+    /*
+* Transaction
+*/
+    public function hasTransaction()
+    {
+        return false;
+    }
+
+    public function inTransaction()
+    {
+        return false;
+    }
+
+    public function beginTransaction()
+    {
+    }
+
+    public function commitTransaction()
+    {
+    }
+
+    public function rollbackTransaction()
+    {
+    }
+
 }
