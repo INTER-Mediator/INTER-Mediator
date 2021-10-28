@@ -25,5 +25,19 @@ interface Proxy_Interface extends DBClass_Interface, Auth_Interface_Communicatio
     public function processingRequest($access = null, $bypassAuth = false, $ignoreFiles = false);
 
     public function finishCommunication();
+
+    /* Easy DB Programming Support */
+    public function dbInit($datasource, $options = null, $dbspec = null, $debug = null);
+
+    public function dbRead($target, $spec=null, $query = null, $sort = null);
+
+    public function dbUpdate($target, $spec=null, $query = null, $data = null);
+
+    public function dbCreate($target, $spec=null,  $data = null);
+
+    public function dbDelete($target, $spec=null, $query = null);
+
+    public function dbCopy($target, $spec=null,  $query = null, $sort = null);
+
 }
 
