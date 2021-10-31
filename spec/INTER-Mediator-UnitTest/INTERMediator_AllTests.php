@@ -53,8 +53,11 @@ class INTERMediator_AllTests extends TestCase
                 $suite->addTestFile($folder . 'DB_FMS_DataAPI_Test.php');
                 $suite->addTestFile($folder . 'DB_FMS_FX_Test.php');
             }
-            $suite->addTestFile($folder . 'DB_Proxy_Test.php');
+            $suite->addTestFile($folder . 'DB_Proxy_MySQL_Test.php');
+            $suite->addTestFile($folder . 'DB_Proxy_PostgreSQL_Test.php');
+            $suite->addTestFile($folder . 'DB_Proxy_SQLite_Test.php');
             $suite->addTestFile($folder . 'DB_Settings_Test.php');
+            $suite->addTestFile($folder . 'DB_ExtSupport_Test.php');
         }
         $suite->addTestFile($folder . 'GenerateJSCode_Test.php');
         $suite->addTestFile($folder . 'IMUtil_Test.php');

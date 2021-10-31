@@ -1699,33 +1699,4 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->dbClass->rollbackTransaction();
     }
 
-    public function dbInit($datasource, $options = null, $dbspec = null, $debug = null)
-    {
-        // TODO: Implement dbInit() method.
-    }
-
-    public function dbRead($target, $spec = null, $query = null, $sort = null)
-    {
-        // TODO: Implement dbRead() method.
-    }
-
-    public function dbUpdate($target, $spec = null, $query = null, $data = null)
-    {
-        // TODO: Implement dbUpdate() method.
-    }
-
-    public function dbCreate($target, $spec = null, $data = null)
-    {
-        // TODO: Implement dbCreate() method.
-    }
-
-    public function dbDelete($target, $spec = null, $query = null)
-    {
-        // TODO: Implement dbDelete() method.
-    }
-
-    public function dbCopy($target, $spec = null, $query = null, $sort = null)
-    {
-        // TODO: Implement dbCopy() method.
-    }
 }

@@ -420,6 +420,27 @@ CREATE TABLE operationlog (
 );
 /* In case of real deployment, some indices are required for quick operations. */
 
+CREATE TABLE testtable (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    num1 INT,
+	num2 INT,
+	num3 INT,
+	dt1 DateTime,
+	dt2 DateTime,
+	dt3 DateTime,
+	date1 Date,
+	date2 Date,
+	time1 Time,
+	time2 Time,
+	ts1 Timestamp DEFAULT CURRENT_TIMESTAMP,
+	ts2 Timestamp DEFAULT '2001-01-01 00:00:00',
+	vc1 VARCHAR(100),
+	vc2 VARCHAR(100),
+	vc3 VARCHAR(100),
+	text1 TEXT,
+	text2 TEXT
+);
+
 /* # Sample Data */
 INSERT INTO product(name,id,category_id,unitprice,photofile,acknowledgement,ack_link)
     VALUES("Apple",1,1,340,'mela-verde.png','Image: djcodrin / FreeDigitalPhotos.net',

@@ -27,6 +27,7 @@ Ver.9 (in development)
 - The cross table can add summary cells right and bottom areas with data-im-control="cross-table-sum." Also the summary
   cells have the class attribute value "_im_cross_summary."
 - DB\Proxy, DB\PDO classes support the transaction as using PDO methods.
+- DB\Proxy_ExtSupport class implemented by trait supports easier db operation with PHP.
 
 Ver.8 (July 22, 2021)
 - [Important] If you see the message which tells the ServiceServer couldn't boot just after installation,

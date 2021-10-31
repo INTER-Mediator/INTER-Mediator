@@ -442,6 +442,28 @@ CREATE TABLE operationlog (
 );
 /* In case of real deployment, some indices are required for quick operations. */
 
+CREATE TABLE testtable (
+    id  INTEGER DEFAULT nextval('serial'),
+    num1 INTEGER,
+	num2 INTEGER,
+	num3 INTEGER,
+	dt1 Timestamp,
+	dt2 Timestamp,
+	dt3 Timestamp,
+	date1 Date,
+	date2 Date,
+	time1 Time,
+	time2 Time,
+	ts1 Timestamp DEFAULT CURRENT_TIMESTAMP,
+	ts2 Timestamp DEFAULT '2001-01-01 00:00:00',
+	vc1 VARCHAR(100),
+	vc2 VARCHAR(100),
+	vc3 VARCHAR(100),
+	text1 TEXT,
+	text2 TEXT,
+	PRIMARY KEY(id)
+);
+
 /* Grant to All operations for all objects with web account */
 
 GRANT ALL PRIVILEGES ON SCHEMA im_sample TO web;
@@ -467,6 +489,7 @@ GRANT ALL PRIVILEGES ON im_sample.asset TO web;
 GRANT ALL PRIVILEGES ON im_sample.rent TO web;
 GRANT ALL PRIVILEGES ON im_sample.staff TO web;
 GRANT ALL PRIVILEGES ON im_sample.category TO web;
+GRANT ALL PRIVILEGES ON im_sample.testtable TO web;
 GRANT ALL PRIVILEGES ON im_sample.registeredcontext TO web;
 GRANT ALL PRIVILEGES ON im_sample.registeredpks TO web;
 /* This sequence is automatically generated with SERIAL type.*/
