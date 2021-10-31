@@ -35,6 +35,7 @@ abstract class DB_Proxy_Test_Common extends TestCase
      */
     function test___construct()
     {
+        $this->dbProxySetupForAuthAccess("person", 1);
         $testName = "Check __construct function in Proxyp.";
         if (function_exists('xdebug_get_headers')) {
             ob_start();
