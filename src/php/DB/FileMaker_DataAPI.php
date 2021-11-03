@@ -57,9 +57,16 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         return $this->updatedRecord;
     }
 
-    public function setUpdatedRecord($record)
+    /* Usually a setter method has just one parameter, but the same named method existed on previous version
+      and possibly calling it from user program. So if it has more than one parameter, it might call old
+      method and redirect to previous one. (msyk, 2021-11-03) */
+    public function setUpdatedRecord($record, $value=false, $index = 0)
     {
-        $this->updatedRecord = $record;
+        if($value === false) {
+            $this->updatedRecord = $record;
+        } else { // Previous use of this method redirect to setDataToUpdatedRecord
+            $this->setDataToUpdatedRecord($record, $value, $index);
+        }
     }
 
     public function setDataToUpdatedRecord($field, $value, $index = 0)

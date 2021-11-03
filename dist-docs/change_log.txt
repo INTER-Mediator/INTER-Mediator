@@ -28,6 +28,14 @@ Ver.9 (in development)
   cells have the class attribute value "_im_cross_summary."
 - DB\Proxy, DB\PDO classes support the transaction as using PDO methods.
 - DB\Proxy_ExtSupport class implemented by trait supports easier db operation with PHP.
+- The updatedRecord method in database and proxy classes renamed to getUpdatedRecord.
+- The setUpdatedRecord method in database classes renamed to setDataToUpdatedRecord. For the compatibility, calling the
+  setUpdateRecord method more than one parameter redirect to setDataToUpdatedRecord method. The setUpdatedRecord with
+  one parameter works as the setter of updatedRecord property.
+- In extending-class, the AfterUpdateMod interface let us implement the doAfterUpdateToDBMod method and it is passed
+  the updated record to parameter, and can return the updated record as an array. The AfterUpdate interface's
+  doAfterUpdateToDB method is passed the boolean that shows db operation is succeed. For keeping compatibility of
+  AfterUpdate class's behaviour, new AfterUpdateMod interface is defined.
 
 Ver.8 (July 22, 2021)
 - [Important] If you see the message which tells the ServiceServer couldn't boot just after installation,
