@@ -31,7 +31,7 @@ interface DBClass_Interface
     public function requireUpdatedRecord($value);
     public function getFieldInfo($dataSourceName);
     public function getUpdatedRecord();
-    public function setUpdatedRecord($record);
+    public function setUpdatedRecord($record, $value=false, $index = 0);
     public function setDataToUpdatedRecord($field, $value, $index = 0);
     public function queryForTest($table, $conditions = null);
     public function deleteForTest($table, $conditions = null);

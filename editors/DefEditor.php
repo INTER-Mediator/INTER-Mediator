@@ -1249,4 +1249,31 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
     {
         // TODO: Implement deleteForTest() method.
     }
+
+    public function setUpdatedRecord($record, $value = false, $index = 0)
+    {
+        $this->updatedRecord=$record;
+    }
+
+    public function hasTransaction()
+    {
+        return false;
+    }
+
+    public function inTransaction()
+    {
+        return false;
+    }
+
+    public function beginTransaction()
+    {
+    }
+
+    public function commitTransaction()
+    {
+    }
+
+    public function rollbackTransaction()
+    {
+    }
 }

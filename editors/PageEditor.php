@@ -136,4 +136,34 @@ class PageEditor extends UseSharedObjects implements DBClass_Interface
     {
         // TODO: Implement deleteForTest() method.
     }
+
+    public function setUpdatedRecord($record, $value = false, $index = 0)
+    {
+        // TODO: Implement setUpdatedRecord() method.
+    }
+
+    public function hasTransaction()
+    {
+        // TODO: Implement hasTransaction() method.
+    }
+
+    public function inTransaction()
+    {
+        // TODO: Implement inTransaction() method.
+    }
+
+    public function beginTransaction()
+    {
+        // TODO: Implement beginTransaction() method.
+    }
+
+    public function commitTransaction()
+    {
+        // TODO: Implement commitTransaction() method.
+    }
+
+    public function rollbackTransaction()
+    {
+        // TODO: Implement rollbackTransaction() method.
+    }
 }

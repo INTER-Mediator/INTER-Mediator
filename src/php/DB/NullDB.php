@@ -68,7 +68,7 @@ class NullDB extends UseSharedObjects implements DBClass_Interface
         return null;
     }
 
-    public function setUpdatedRecord($record)
+    public function setUpdatedRecord($record, $value=false, $index = 0)
     {
     }
 
