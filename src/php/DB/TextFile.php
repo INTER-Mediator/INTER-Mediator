@@ -258,9 +258,14 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
         // TODO: Implement requireUpdatedRecord() method.
     }
 
-    public function updatedRecord()
+    public function getUpdatedRecord()
     {
-        // TODO: Implement updatedRecord() method.
+        // TODO: Implement getUpdatedRecord() method.
+    }
+
+    public function setUpdatedRecord($record)
+    {
+        // TODO: Implement getUpdatedRecord() method.
     }
 
     public function createInDB($isReplace = false)
@@ -293,9 +298,9 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
         // TODO: Implement normalizedCondition() method.
     }
 
-    public function setUpdatedRecord($field, $value, $index = 0)
+    public function setDataToUpdatedRecord($field, $value, $index = 0)
     {
-        // TODO: Implement setUpdatedRecord() method.
+        // TODO: Implement setDataToUpdatedRecord() method.
     }
 
     public function queryForTest($table, $conditions = null)

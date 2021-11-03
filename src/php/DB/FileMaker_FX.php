@@ -52,12 +52,17 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
         // always can get the new record for FileMaker Server.
     }
 
-    public function updatedRecord()
+    public function getUpdatedRecord()
     {
         return $this->updatedRecord;
     }
 
-    public function setUpdatedRecord($field, $value, $index = 0)
+    public function setUpdatedRecord($record)
+    {
+        $this->updatedRecord = $record;
+    }
+
+    public function setDataToUpdatedRecord($field, $value, $index = 0)
     {
         $this->updatedRecord[$index][$field] = $value;
     }

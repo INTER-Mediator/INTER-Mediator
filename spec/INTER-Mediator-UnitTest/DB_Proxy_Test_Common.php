@@ -5,6 +5,7 @@ use \INTERMediator\DB\Proxy;
 use \INTERMediator\DB\UseSharedObjects;
 use \INTERMediator\DB\Extending\AfterRead;
 use \INTERMediator\DB\Extending\AfterUpdate;
+use \INTERMediator\DB\Extending\AfterUpdateMod;
 use \INTERMediator\DB\Proxy_ExtSupport;
 
 abstract class DB_Proxy_Test_Common extends TestCase
@@ -89,7 +90,7 @@ abstract class DB_Proxy_Test_Common extends TestCase
         $this->assertTrue($result[0]["id"] == 3, "Field value is not same as the definition.");
         $this->assertFalse(isset($result[0]["adding"]), "Field adding doesn't exist.");
 
-        $this->dbProxySetupForAccess("person", 3, true);
+        $this->dbProxySetupForAccess("person", 3, 1);
         $result = $this->db_proxy->readFromDB();
         $recordCount = $this->db_proxy->countQueryResult();
         $this->assertTrue(is_array($result) && count($result) == 1, "After the query, just one should be retrieved.");
@@ -105,7 +106,7 @@ abstract class DB_Proxy_Test_Common extends TestCase
         $dataSrcPgsql = [['name' => "testtable",
             'view' => "{$this->schemaName}testtable",
             'table' => "{$this->schemaName}testtable",
-            'key' => 'id','sequence' => 'im_sample.serial']];
+            'key' => 'id', 'sequence' => 'im_sample.serial']];
 
 //        $this->dbProxySetupForAccess("person", 1, true);
 //        $msg = $this->db_proxy->logger->clearLogs();
@@ -125,7 +126,7 @@ abstract class DB_Proxy_Test_Common extends TestCase
         $nameValue = random_int(10000000, 99999999);
         $addressValue = random_int(10000000, 99999999);
         $pkValue = 2;
-        $this->dbProxySetupForAccess("person", 1, true);
+        $this->dbProxySetupForAccess("person", 1, 1);
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $pkValue);
         $this->db_proxy->dbSettings->addTargetField("name");
         $this->db_proxy->dbSettings->addValue($nameValue);
@@ -136,7 +137,77 @@ abstract class DB_Proxy_Test_Common extends TestCase
 //        $msg = $this->db_proxy->logger->clearLogs();
 
         $result = $this->db_proxy->updateDB(false);
-        $updatedResult = $this->db_proxy->updatedRecord();
+        $updatedResult = $this->db_proxy->getUpdatedRecord();
+        var_dump($updatedResult);
+        $this->assertTrue($updatedResult != null, "Update record should be exists.");
+        $this->assertTrue(count($updatedResult) == 1, "It should be just one record.");
+        $this->assertTrue($updatedResult[0]["name"] == $nameValue, "Field value is not same as the definition.");
+        $this->assertTrue($updatedResult[0]["address"] == $addressValue, "Field value is not same as the definition.");
+        $this->assertTrue($updatedResult[0]["mail"] > 0, "Mail field has a value.");
+
+        if ($isPgsql) {
+            $testResult = $this->dbRead("{$this->schemaName}testtable", null, null, $dataSrcPgsql);
+        } else {
+            $testResult = $this->dbRead("testtable");
+        }
+        $countTTAfter = count($testResult);
+        $this->assertTrue(($countTTAfter - $countTTBefore) == 1, "The testtable has one more record.");
+
+        if ($isPgsql) {
+            $testResult = $this->dbRead("{$this->schemaName}testtable", ['id' => $updatedResult[0]["mail"]], null, $dataSrcPgsql);
+        } else {
+            $testResult = $this->dbRead("testtable", ['id' => $updatedResult[0]["mail"]]);
+        }
+
+        //var_dump($updatedResult);
+//        $msg = $this->db_proxy->logger->getErrorMessages();
+//        var_dump($msg);
+//        $msg = $this->db_proxy->logger->getDebugMessages();
+//        var_dump($msg);
+
+        $this->assertTrue(count($testResult) == 1, "The testtable has one more record.");
+        $this->assertTrue($testResult[0]['vc1'] == $nameValue, "The testtable has one more record.");
+        $this->assertTrue($testResult[0]['vc2'] == $addressValue, "The testtable has one more record.");
+    }
+
+    function testAdvisorClassOnUpdateNew()
+    {
+        $isPgsql = (strpos($this->dbSpec['dsn'], 'pgsql') === 0);
+        $dataSrcPgsql = [['name' => "testtable",
+            'view' => "{$this->schemaName}testtable",
+            'table' => "{$this->schemaName}testtable",
+            'key' => 'id', 'sequence' => 'im_sample.serial']];
+
+//        $this->dbProxySetupForAccess("person", 1, true);
+//        $msg = $this->db_proxy->logger->clearLogs();
+
+        $this->setTestMode();
+        $this->setFixedKey('id');
+        $this->dbInit(null, null, $this->dbSpec);
+        if ($isPgsql) {
+            $testResult = $this->dbRead("{$this->schemaName}testtable", null, null, $dataSrcPgsql);
+        } else {
+            $testResult = $this->dbRead("testtable");
+        }
+
+        $countTTBefore = count($testResult);
+        $this->assertTrue($countTTBefore >= 0, "Exist test table.");
+
+        $nameValue = random_int(10000000, 99999999);
+        $addressValue = random_int(10000000, 99999999);
+        $pkValue = 2;
+        $this->dbProxySetupForAccess("person", 1, 2);
+        $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $pkValue);
+        $this->db_proxy->dbSettings->addTargetField("name");
+        $this->db_proxy->dbSettings->addValue($nameValue);
+        $this->db_proxy->dbSettings->addTargetField("address");
+        $this->db_proxy->dbSettings->addValue($addressValue);
+        $this->db_proxy->requireUpdatedRecord(true);
+
+//        $msg = $this->db_proxy->logger->clearLogs();
+
+        $result = $this->db_proxy->updateDB(false);
+        $updatedResult = $this->db_proxy->getUpdatedRecord();
         $this->assertTrue($updatedResult != null, "Update record should be exists.");
         $this->assertTrue(count($updatedResult) == 1, "It should be just one record.");
         $this->assertTrue($updatedResult[0]["name"] == $nameValue, "Field value is not same as the definition.");
@@ -185,7 +256,7 @@ class AdvisorSample extends UseSharedObjects implements AfterRead, AfterUpdate
 
     public function doAfterUpdateToDB($output)
     {
-        $result = $this->dbClass->updatedRecord();
+        $result = $this->dbClass->getUpdatedRecord();
         $nameValue = $result[0]["name"];
         $addressValue = $result[0]["address"];
         $this->setTestMode();
@@ -195,11 +266,45 @@ class AdvisorSample extends UseSharedObjects implements AfterRead, AfterUpdate
         if (strpos($dbSpec['dsn'], 'pgsql') === 0) { // In case of PostgreSQL
             $result = $this->dbCreate("testtable",
                 ['vc1' => $nameValue, 'vc2' => $addressValue],
-                [['name' => "testtable", 'view' => "im_sample.testtable", 'table' => "im_sample.testtable", 'key' => 'id','sequence' => 'im_sample.serial',]]);
+                [['name' => "testtable", 'view' => "im_sample.testtable", 'table' => "im_sample.testtable", 'key' => 'id', 'sequence' => 'im_sample.serial',]]);
         } else {
             $result = $this->dbCreate("testtable", ['vc1' => $nameValue, 'vc2' => $addressValue]);
         }
-        $this->dbClass->setUpdatedRecord('mail', $result[0]['id'], 0);
+        $this->dbClass->setDataToUpdatedRecord('mail', $result[0]['id'], 0);
         return $output;
+    }
+}
+
+class AdvisorSampleNew extends UseSharedObjects implements AfterRead, AfterUpdateMod
+{
+    use Proxy_ExtSupport;
+
+    public function doAfterReadFromDB($result)
+    {
+        $modResult = [];
+        foreach ($result as $record) {
+            $record['adding'] = 999;
+            $modResult[] = $record;
+        }
+        return $modResult;
+    }
+
+    public function doAfterUpdateToDBMod($result)
+    {
+        $nameValue = $result[0]["name"];
+        $addressValue = $result[0]["address"];
+        $this->setTestMode();
+        $this->setFixedKey('id');
+        $dbSpec = $this->dbSettings->getDbSpec();
+        $this->dbInit(null, null, $dbSpec, 2);
+        if (strpos($dbSpec['dsn'], 'pgsql') === 0) { // In case of PostgreSQL
+            $resultCreate = $this->dbCreate("testtable",
+                ['vc1' => $nameValue, 'vc2' => $addressValue],
+                [['name' => "testtable", 'view' => "im_sample.testtable", 'table' => "im_sample.testtable", 'key' => 'id', 'sequence' => 'im_sample.serial',]]);
+        } else {
+            $resultCreate = $this->dbCreate("testtable", ['vc1' => $nameValue, 'vc2' => $addressValue]);
+        }
+        $result[0]["mail"] = $resultCreate[0]['id'];
+        return $result;
     }
 }

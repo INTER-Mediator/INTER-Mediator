@@ -41,8 +41,10 @@ class DB_Proxy_SQLite_Test extends DB_Proxy_Test_Common
                 'sort' => [['field' => 'id', 'direction' => 'asc'],],
             ],
         ];
-        if ($hasExtend) {
+        if ($hasExtend == 1) {
             $this->dataSource[0]['extending-class'] = 'AdvisorSample';
+        } else if ($hasExtend == 2) {
+            $this->dataSource[0]['extending-class'] = 'AdvisorSampleNew';
         }
         $this->options = null;
         $this->db_proxy = new Proxy(true);

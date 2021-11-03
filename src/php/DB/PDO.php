@@ -47,12 +47,17 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $this->isSuppressDVOnCopyAssoc = $params["suppressDefaultValuesOnCopyAssoc"] ?? false;
     }
 
-    public function updatedRecord()
+    public function getUpdatedRecord()
     {
         return $this->updatedRecord;
     }
 
-    public function setUpdatedRecord($field, $value, $index = 0)
+    public function setUpdatedRecord($record)
+    {
+        $this->updatedRecord = $record;
+    }
+
+    public function setDataToUpdatedRecord($field, $value, $index = 0)
     {
         $this->updatedRecord[$index][$field] = $value;
     }

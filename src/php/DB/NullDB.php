@@ -63,9 +63,13 @@ class NullDB extends UseSharedObjects implements DBClass_Interface
         return null;
     }
 
-    public function updatedRecord()
+    public function getUpdatedRecord()
     {
         return null;
+    }
+
+    public function setUpdatedRecord($record)
+    {
     }
 
     public function softDeleteActivate($field, $value)
@@ -88,7 +92,7 @@ class NullDB extends UseSharedObjects implements DBClass_Interface
 
     }
 
-    public function setUpdatedRecord($field, $value, $index = 0)
+    public function setDataToUpdatedRecord($field, $value, $index = 0)
     {
 
     }

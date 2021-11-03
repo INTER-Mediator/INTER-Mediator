@@ -97,7 +97,7 @@ class PageEditor extends UseSharedObjects implements DBClass_Interface
         $this->isRequiredUpdated = $value;
     }
 
-    public function updatedRecord()
+    public function getUpdatedRecord()
     {
         return $this->updatedRecord;
     }
@@ -122,9 +122,9 @@ class PageEditor extends UseSharedObjects implements DBClass_Interface
         // TODO: Implement normalizedCondition() method.
     }
 
-    public function setUpdatedRecord($field, $value, $index = 0)
+    public function setDataToUpdatedRecord($field, $value, $index = 0)
     {
-        // TODO: Implement setUpdatedRecord() method.
+        // TODO: Implement setDataToUpdatedRecord() method.
     }
 
     public function queryForTest($table, $conditions = null)

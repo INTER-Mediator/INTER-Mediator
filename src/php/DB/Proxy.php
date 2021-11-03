@@ -304,15 +304,22 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
             if ($this->dbClass) {
                 $this->dbClass->requireUpdatedRecord(true); // Always Get Updated Record
-                $result = $this->dbClass->updateDB($bypassAuth);
-                if (!$result) {
+                $resultOfUpdate = $this->dbClass->updateDB($bypassAuth);
+                if (!$resultOfUpdate) {
                     throw new Exception('[Proxy::updateDB] Update operation failed.');
                 }
+                $result = $this->getUpdatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterUpdateToDB")) {
                 $this->logger->setDebugMessage(
                     "[Proxy::updateDB] The method 'doAfterUpdateToDB' of the class '{$className}' is calling.", 2);
-                $result = $this->userExpanded->doAfterUpdateToDB($result);
+                $resultOfUpdate = $this->userExpanded->doAfterUpdateToDB($resultOfUpdate);
+            }
+            if ($this->userExpanded && method_exists($this->userExpanded, "doAfterUpdateToDBMod")) {
+                $this->logger->setDebugMessage(
+                    "[Proxy::updateDB] The method 'doAfterUpdateToDBMod' of the class '{$className}' is calling.", 2);
+                $result = $this->userExpanded->doAfterUpdateToDBMod($result);
+                $this->setUpdatedRecord($result);
             }
             if ($this->dbSettings->notifyServer
                 && $this->clientSyncAvailable
@@ -339,7 +346,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $this->logger->setDebugMessage("Try to send a message.", 2);
                     $driver = $msgEntry['driver'] ?? "mail";
                     $msgProxy = new MessagingProxy($driver);
-                    $msgResult = $msgProxy->processing($this, $msgArray, $this->dbClass->updatedRecord());
+                    $msgResult = $msgProxy->processing($this, $msgArray, $result);
                     if ($msgResult !== true) {
                         $messageClass = IMUtil::getMessageClassInstance();
                         $headMsg = $messageClass->getMessageAs(1051);
@@ -352,7 +359,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->logger->setErrorMessage("Exception:[2] {$e->getMessage()}");
             return false;
         }
-        return $result;
+        return $resultOfUpdate;
     }
 
     /**
@@ -385,12 +392,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 if (!$resultOfCreate) {
                     throw new Exception('[Proxy::createInDB] Create operation failed.');
                 }
-                $result = $this->dbClass->updatedRecord();
+                $result = $this->getUpdatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterCreateToDB")) {
                 $this->logger->setDebugMessage(
                     "[Proxy::createInDB] The method 'doAfterCreateToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterCreateToDB($result);
+                $this->setUpdatedRecord($result);
             }
             if (!$this->isStopNotifyAndMessaging) {
                 if ($this->dbSettings->notifyServer
@@ -524,7 +532,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 if (!$resultOfCopy) {
                     throw new Exception('[Proxy::copyInDB] Copy operation failed.');
                 }
-                $result = $this->dbClass->updatedRecord();
+                $result = $this->getUpdatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterCopyInDB")) {
                 $this->logger->setDebugMessage("[Proxy::copyInDB] The method 'doAfterCopyInDB' of the class '{$className}' is calling.", 2);
@@ -539,7 +547,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $this->PostData['notifyid'],
                         $this->dbClass->notifyHandler->queriedEntity(),
                         $this->dbClass->notifyHandler->queriedPrimaryKeys(),
-                        $this->dbClass->updatedRecord(),
+                        $this->getUpdatedRecord(),
                         strpos(strtolower($currentDataSource['sync-control']), 'create-notify') !== false
                     );
                 } catch (Exception $ex) {
@@ -572,12 +580,19 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
     }
 
-    public function updatedRecord()
+    public function getUpdatedRecord()
     {
         if ($this->dbClass) {
-            return $this->dbClass->updatedRecord();
+            return $this->dbClass->getUpdatedRecord();
         }
         return null;
+    }
+
+    public function setUpdatedRecord($record)
+    {
+        if ($this->dbClass) {
+            $this->dbClass->setUpdatedRecord($record);
+        }
     }
 
     public function ignoringPost()
@@ -1077,7 +1092,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                     $this->dbClass->requireUpdatedRecord(true);
                     $this->updateDB($bypassAuth);
-                    $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
+                    $this->outputOfProcessing['dbresult'] = $this->getUpdatedRecord();
                 } else {
                     $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
                 }
@@ -1116,7 +1131,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         if ($ignoreFiles || !$uploadFiles || count($tableInfo) < 1) { // No attached file.
                             $result = $this->createInDB($access == 'replace');
                             $this->outputOfProcessing['newRecordKeyValue'] = $result;
-                            $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
+                            $this->outputOfProcessing['dbresult'] = $this->getUpdatedRecord();
                         } else { // Some files are attached.
                             $fileUploader = new FileUploader();
                             if (IMUtil::guessFileUploadError()) { // Detect file upload error.
@@ -1130,7 +1145,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                                     $dbresult = [];
                                     $result = $this->createInDB($access == 'replace');
                                     $this->outputOfProcessing['newRecordKeyValue'] = $result;
-                                    $dbresult[] = $this->dbClass->updatedRecord()[0];
+                                    $dbresult[] = $this->getUpdatedRecord()[0];
                                     if ($result !== false) {
                                         $fileUploader->processingWithParameters(
                                             $this->dbSettings->getDataSource(),
@@ -1159,7 +1174,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 if ($this->checkValidation()) {
                     $result = $this->copyInDB();
                     $this->outputOfProcessing['newRecordKeyValue'] = $result;
-                    $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
+                    $this->outputOfProcessing['dbresult'] = $this->getUpdatedRecord();
                 } else {
                     $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
                 }
@@ -1654,9 +1669,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     public
-    function setUpdatedRecord($field, $value, $index = 0)
+    function setDataToUpdatedRecord($field, $value, $index = 0)
     {
-        // TODO: Implement setUpdatedRecord() method.
+        // TODO: Implement setDataToUpdatedRecord() method.
     }
 
     public
