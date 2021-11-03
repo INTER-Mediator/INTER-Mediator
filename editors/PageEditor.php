@@ -144,26 +144,23 @@ class PageEditor extends UseSharedObjects implements DBClass_Interface
 
     public function hasTransaction()
     {
-        // TODO: Implement hasTransaction() method.
+        return false;
     }
 
     public function inTransaction()
     {
-        // TODO: Implement inTransaction() method.
+        return false;
     }
 
     public function beginTransaction()
     {
-        // TODO: Implement beginTransaction() method.
     }
 
     public function commitTransaction()
     {
-        // TODO: Implement commitTransaction() method.
     }
 
     public function rollbackTransaction()
     {
-        // TODO: Implement rollbackTransaction() method.
     }
 }
