@@ -88,6 +88,7 @@
     ],
     "post-update-cmd": [
       "./vendor/bin/npm install",
+      "./vendor/bin/npm update",
       "rm -f __Did_you_run_composer_update.txt"
     ],
     "post-install-cmd": [
