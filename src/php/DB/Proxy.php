@@ -313,14 +313,18 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterUpdateToDB")) {
                 $this->logger->setDebugMessage(
                     "[Proxy::updateDB] The method 'doAfterUpdateToDB' of the class '{$className}' is calling.", 2);
-                $resultOfUpdate = $this->userExpanded->doAfterUpdateToDB($resultOfUpdate);
+                $this->dbClass->clearUseSetDataToUpdatedRecord();
+                $result = $this->userExpanded->doAfterUpdateToDB($result);
+                if (!$this->dbClass->getUseSetDataToUpdatedRecord()) {
+                    $this->setUpdatedRecord($result);
+                }
             }
-            if ($this->userExpanded && method_exists($this->userExpanded, "doAfterUpdateToDBMod")) {
-                $this->logger->setDebugMessage(
-                    "[Proxy::updateDB] The method 'doAfterUpdateToDBMod' of the class '{$className}' is calling.", 2);
-                $result = $this->userExpanded->doAfterUpdateToDBMod($result);
-                $this->setUpdatedRecord($result);
-            }
+//            if ($this->userExpanded && method_exists($this->userExpanded, "doAfterUpdateToDBMod")) {
+//                $this->logger->setDebugMessage(
+//                    "[Proxy::updateDB] The method 'doAfterUpdateToDBMod' of the class '{$className}' is calling.", 2);
+//                $result = $this->userExpanded->doAfterUpdateToDBMod($result);
+//                $this->setUpdatedRecord($result);
+//            }
             if ($this->dbSettings->notifyServer
                 && $this->clientSyncAvailable
                 && isset($currentDataSource['sync-control'])
@@ -397,8 +401,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterCreateToDB")) {
                 $this->logger->setDebugMessage(
                     "[Proxy::createInDB] The method 'doAfterCreateToDB' of the class '{$className}' is calling.", 2);
+                $this->dbClass->clearUseSetDataToUpdatedRecord();
                 $result = $this->userExpanded->doAfterCreateToDB($result);
-                $this->setUpdatedRecord($result);
+                if (!$this->dbClass->getUseSetDataToUpdatedRecord()) {
+                    $this->setUpdatedRecord($result);
+                }
             }
             if (!$this->isStopNotifyAndMessaging) {
                 if ($this->dbSettings->notifyServer
@@ -547,7 +554,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $this->PostData['notifyid'],
                         $this->dbClass->notifyHandler->queriedEntity(),
                         $this->dbClass->notifyHandler->queriedPrimaryKeys(),
-                        $this->getUpdatedRecord(),
+                        $result,
                         strpos(strtolower($currentDataSource['sync-control']), 'create-notify') !== false
                     );
                 } catch (Exception $ex) {
@@ -571,28 +578,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $result = $this->dbClass->getFieldInfo($dataSourceName);
         }
         return $result;
-    }
-
-    public function requireUpdatedRecord($value)
-    {
-        if ($this->dbClass) {
-            $this->dbClass->requireUpdatedRecord($value);
-        }
-    }
-
-    public function getUpdatedRecord()
-    {
-        if ($this->dbClass) {
-            return $this->dbClass->getUpdatedRecord();
-        }
-        return null;
-    }
-
-    public function setUpdatedRecord($record, $value=false, $index = 0)
-    {
-        if ($this->dbClass) {
-            $this->dbClass->setUpdatedRecord($record);
-        }
     }
 
     public function ignoringPost()
@@ -1301,8 +1286,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return hash("sha256", $generatedChallenge . $generatedUID);
     }
 
-    public
-    function getDatabaseResult()
+    public function getDatabaseResult()
     {
         if (isset($this->outputOfProcessing['dbresult'])) {
             return $this->outputOfProcessing['dbresult'];
@@ -1310,8 +1294,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return null;
     }
 
-    public
-    function getDatabaseResultCount()
+    public function getDatabaseResultCount()
     {
         if (isset($this->outputOfProcessing['resultCount'])) {
             return $this->outputOfProcessing['resultCount'];
@@ -1319,8 +1302,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return null;
     }
 
-    public
-    function getDatabaseTotalCount()
+    public function getDatabaseTotalCount()
     {
         if (isset($this->outputOfProcessing['totalCount'])) {
             return $this->outputOfProcessing['totalCount'];
@@ -1328,8 +1310,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return null;
     }
 
-    public
-    function getDatabaseNewRecordKey()
+    public function getDatabaseNewRecordKey()
     {
         if (isset($this->outputOfProcessing['newRecordKeyValue'])) {
             return $this->outputOfProcessing['newRecordKeyValue'];
@@ -1644,44 +1625,76 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return !$inValid;
     }
 
-    public
-    function setupConnection()
+    public function setupConnection()
     {
         // TODO: Implement setupConnection() method.
     }
 
-    public
-    function setupHandlers($dsn = false)
+    public function setupHandlers($dsn = false)
     {
         // TODO: Implement setupHandlers() method.
     }
 
-    public
-    function normalizedCondition($condition)
+    public function normalizedCondition($condition)
     {
         // TODO: Implement normalizedCondition() method.
     }
 
-    public
-    function softDeleteActivate($field, $value)
+    public function softDeleteActivate($field, $value)
     {
         // TODO: Implement softDeleteActivate() method.
     }
 
-    public
-    function setDataToUpdatedRecord($field, $value, $index = 0)
+    public function requireUpdatedRecord($value)
     {
-        // TODO: Implement setDataToUpdatedRecord() method.
+        if ($this->dbClass) {
+            $this->dbClass->requireUpdatedRecord($value);
+        }
     }
 
-    public
-    function queryForTest($table, $conditions = null)
+    public function getUpdatedRecord()
+    {
+        if ($this->dbClass) {
+            return $this->dbClass->getUpdatedRecord();
+        }
+        return null;
+    }
+
+    public function updatedRecord()
+    {
+        return $this->getUpdatedRecord();
+    }
+
+    public function setUpdatedRecord($record, $value = false, $index = 0)
+    {
+        if ($value === false) {
+            $this->dbClass->setUpdatedRecord($record);
+        } else { // Previous use of this method redirect to setDataToUpdatedRecord
+            $this->setDataToUpdatedRecord($record, $value, $index);
+        }
+    }
+
+    public function setDataToUpdatedRecord($field, $value, $index = 0)
+    {
+        $this->dbClass->setDataToUpdatedRecord($field, $value, $index);
+    }
+
+    public function getUseSetDataToUpdatedRecord()
+    {
+        return $this->dbClass->getUseSetDataToUpdatedRecord();
+    }
+
+    public function clearUseSetDataToUpdatedRecord()
+    {
+        $this->dbClass->clearUseSetDataToUpdatedRecord();
+    }
+
+    public function queryForTest($table, $conditions = null)
     {
         // TODO: Implement queryForTest() method.
     }
 
-    public
-    function deleteForTest($table, $conditions = null)
+    public function deleteForTest($table, $conditions = null)
     {
         // TODO: Implement deleteForTest() method.
     }

@@ -57,6 +57,10 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
         return $this->updatedRecord;
     }
 
+    public function updatedRecord(){
+        return $this->updatedRecord;
+    }
+
     /* Usually a setter method has just one parameter, but the same named method existed on previous version
        and possibly calling it from user program. So if it has more than one parameter, it might call old
        method and redirect to previous one. (msyk, 2021-11-03) */
@@ -72,7 +76,21 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
     public function setDataToUpdatedRecord($field, $value, $index = 0)
     {
         $this->updatedRecord[$index][$field] = $value;
+        $this->useSetDataToUpdatedRecord = true;
     }
+
+    private $useSetDataToUpdatedRecord = false;
+
+    public function getUseSetDataToUpdatedRecord()
+    {
+        return $this->useSetDataToUpdatedRecord;
+    }
+
+    public function clearUseSetDataToUpdatedRecord()
+    {
+        $this->useSetDataToUpdatedRecord = false;
+    }
+
 
     public function softDeleteActivate($field, $value)
     {

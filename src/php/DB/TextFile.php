@@ -263,6 +263,10 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
         // TODO: Implement getUpdatedRecord() method.
     }
 
+    public function updatedRecord(){
+        // TODO: Implement getUpdatedRecord() method.
+    }
+
     public function setUpdatedRecord($record, $value=false, $index = 0)
     {
         // TODO: Implement getUpdatedRecord() method.
@@ -338,4 +342,13 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
     {
     }
 
+    public function getUseSetDataToUpdatedRecord()
+    {
+        // TODO: Implement getUseSetDataToUpdatedRecord() method.
+    }
+
+    public function clearUseSetDataToUpdatedRecord()
+    {
+        // TODO: Implement clearUseSetDataToUpdatedRecord() method.
+    }
 }

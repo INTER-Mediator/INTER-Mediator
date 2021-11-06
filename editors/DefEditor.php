@@ -1205,6 +1205,11 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
         return $this->updatedRecord;
     }
 
+
+    public function updatedRecord(){
+        return $this->updatedRecord;
+    }
+
     public function softDeleteActivate($field, $value)
     {
         // TODO: Implement softDeleteActivate() method.
@@ -1275,5 +1280,15 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
 
     public function rollbackTransaction()
     {
+    }
+
+    public function getUseSetDataToUpdatedRecord()
+    {
+        // TODO: Implement getUseSetDataToUpdatedRecord() method.
+    }
+
+    public function clearUseSetDataToUpdatedRecord()
+    {
+        // TODO: Implement clearUseSetDataToUpdatedRecord() method.
     }
 }
