@@ -17,7 +17,16 @@ namespace INTERMediator;
 
 // Setup autoloader
 $imRoot = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR;
-require($imRoot . '/vendor/autoload.php');
+$autoLoad = $imRoot . 'vendor/autoload.php';
+if(file_exists($autoLoad)) { // If vendor is inside of INTER-Mediator
+    require($autoLoad);
+} else { // If INTER-Mediator is installed with composer.json
+    $vendorRoot = dirname(dirname($imRoot)) . DIRECTORY_SEPARATOR;
+    $autoLoad = $vendorRoot . 'autoload.php';
+    if(file_exists($autoLoad)) {
+        require($autoLoad);
+    }
+}
 
 spl_autoload_register(function ($className) {
     $comps = explode('\\', $className);
