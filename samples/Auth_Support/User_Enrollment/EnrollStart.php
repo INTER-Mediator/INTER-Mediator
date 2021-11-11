@@ -28,9 +28,9 @@ class EnrollStart extends UseSharedObjects implements BeforeCreate, AfterCreate
 
     public function doAfterCreateToDB($result)
     {
-        $createdRecord = $this->dbClass->updatedRecord();
+        $createdRecord = $this->dbClass->getUpdatedRecord();
         $hash = $this->proxyObject->userEnrollmentStart($createdRecord[0]["id"]);
-        $this->dbClass->setUpdatedRecord("hash", $hash);
-        return $this->dbClass->updatedRecord();
+        $this->dbClass->setDataToUpdatedRecord("hash", $hash);
+        return $this->dbClass->getUpdatedRecord();
     }
 }

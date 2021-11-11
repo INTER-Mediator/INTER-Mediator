@@ -27,6 +27,12 @@ Ver.9 (in development)
 - The cross table can add summary cells right and bottom areas with data-im-control="cross-table-sum." Also the summary
   cells have the class attribute value "_im_cross_summary."
 - DB\Proxy, DB\PDO classes support the transaction as using PDO methods.
+- DB\Proxy_ExtSupport class implemented by trait supports easier db operation with PHP.
+- The updatedRecord method in database and proxy classes renamed to getUpdatedRecord.
+- The setUpdatedRecord method in database classes renamed to setDataToUpdatedRecord. For the compatibility, calling the
+  setUpdateRecord method more than one parameter redirect to setDataToUpdatedRecord method. The setUpdatedRecord with
+  one parameter works as the setter of updatedRecord property.
+- INTER-Mediator can work as the one of libraries that installed by composer.
 
 Ver.8 (July 22, 2021)
 - [Important] If you see the message which tells the ServiceServer couldn't boot just after installation,
@@ -529,7 +535,7 @@ Ver.5.5 (October 13, 2016)
   This behavior requires to set blank in case of updating text field with no string.
 - The record to merge an e-mail is retrieved from the database class's instance. This means
   if you want to add/modify fields for e-mail, you can describe codes in adviser classes, but
-  you have to use the setUpdatedRecord method to send values you modified to mail processor.
+  you have to use the setDataToUpdatedRecord method to send values you modified to mail processor.
 - [BUG FIX] In case of the '#' target specification was placed on second or later item in data-im
   attribute, the field value wasn't shown in the node (Thanks to Tomomitsu Baba). The affected
   version is 5.4 only.
@@ -1049,7 +1055,7 @@ Ver.4.1 (February 7, 2014)
         class="_im_post" -> data-im-control="post" (added this line after release)
         class="IM_WIDGET[...]" -> data-im-widget="..."
         name="IM[survey@q4]" -> data-im-group="...."
-- Database class and DB_Proxy support requireUpdatedRecord($value) and updatedRecord() method.
+- Database class and DB_Proxy support requireUpdatedRecord($value) and getUpdatedRecord() method.
   For DB_PDO class, call the requireUpdatedRecord(true) and updateRecord() returns updated and newly created record.
   For DB_FileMaker_FX class, just call updateRecord() and it returns updated and newly created record.
 - Delete buttons have the class "IM_Button_Delete".

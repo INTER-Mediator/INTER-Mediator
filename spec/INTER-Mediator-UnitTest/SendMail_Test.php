@@ -80,7 +80,7 @@ class SendMail_Test extends TestCase
         $this->db_proxy->dbSettings->addValue("Modified Name");
         $this->db_proxy->requireUpdatedRecord(true);
         $result = $this->db_proxy->updateDB(false);
-        $result = $this->db_proxy->updatedRecord();
+        $result = $this->db_proxy->getUpdatedRecord();
 
 
 //        var_export($result);
@@ -96,7 +96,7 @@ class SendMail_Test extends TestCase
         $this->db_proxy->initialize($this->context, $this->option, ['db-class' => 'PDO',], 2, 'person');
         $this->db_proxy->requireUpdatedRecord(true);
         $newKeyValue = $this->db_proxy->createInDB();
-        $result = $this->db_proxy->updatedRecord();
+        $result = $this->db_proxy->getUpdatedRecord();
 
 //        var_export($result);
 //        var_export($this->db_proxy->logger->getDebugMessages());

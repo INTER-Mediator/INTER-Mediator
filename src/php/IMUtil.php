@@ -274,12 +274,14 @@ class IMUtil
         }
 
         $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
-        $currentDirParam = $imRootDir . 'params.php';
-        $parentDirParam = dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php';
-        if (file_exists($parentDirParam)) {
-            include($parentDirParam);
-        } else if (file_exists($currentDirParam)) {
-            include($currentDirParam);
+        if (basename($imRootDir) == 'inter-mediator'
+            && basename(dirname($imRootDir)) == 'inter-mediator'
+            && basename(dirname(dirname($imRootDir))) == 'vendor') { // This means IM is installed by Composer.
+            include(dirname(dirname($imRootDir)) . DIRECTORY_SEPARATOR . 'params.php');
+        } else if (file_exists(dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php')) {
+            include(dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php');
+        } else if (file_exists($imRootDir . 'params.php')) {
+            include($imRootDir . 'params.php');
         }
 
         // The recovering of misspelling a global variable

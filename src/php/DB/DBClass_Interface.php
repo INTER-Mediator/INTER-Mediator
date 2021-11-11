@@ -18,27 +18,55 @@ namespace INTERMediator\DB;
 interface DBClass_Interface
 {
     public function setupConnection();
+
     public function setupHandlers($dsn = false);
+
     public function readFromDB();         // former getFromDB
+
     public function countQueryResult();
+
     public function getTotalCount();
+
     public function updateDB($bypassAuth);           // former setToDB
+
     public function createInDB($isReplace = false);  // former newToDB
+
     public function deleteFromDB();
+
     public function copyInDB();
+
     public function normalizedCondition($condition);
+
     public function softDeleteActivate($field, $value);
-    public function requireUpdatedRecord($value);
+
     public function getFieldInfo($dataSourceName);
-    public function updatedRecord();
-    public function setUpdatedRecord($field, $value, $index = 0);
+
+    public function requireUpdatedRecord($value);
+
+    public function getUpdatedRecord();
+
+    public function updatedRecord(); // Same as getUpdatedRecord for compatibiliy
+
+    public function setUpdatedRecord($record, $value = false, $index = 0);
+
+    public function setDataToUpdatedRecord($field, $value, $index = 0);
+
+    public function getUseSetDataToUpdatedRecord();
+
+    public function clearUseSetDataToUpdatedRecord();
+
     public function queryForTest($table, $conditions = null);
+
     public function deleteForTest($table, $conditions = null);
 
     public function hasTransaction();
+
     public function inTransaction();
+
     public function beginTransaction();
+
     public function commitTransaction();
+
     public function rollbackTransaction();
 
 }

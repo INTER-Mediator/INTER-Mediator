@@ -1200,8 +1200,13 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
         $this->isRequiredUpdated = $value;
     }
 
-    public function updatedRecord()
+    public function getUpdatedRecord()
     {
+        return $this->updatedRecord;
+    }
+
+
+    public function updatedRecord(){
         return $this->updatedRecord;
     }
 
@@ -1235,9 +1240,9 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
         // TODO: Implement normalizedCondition() method.
     }
 
-    public function setUpdatedRecord($field, $value, $index = 0)
+    public function setDataToUpdatedRecord($field, $value, $index = 0)
     {
-        // TODO: Implement setUpdatedRecord() method.
+        // TODO: Implement setDataToUpdatedRecord() method.
     }
 
     public function queryForTest($table, $conditions = null)
@@ -1248,5 +1253,42 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
     public function deleteForTest($table, $conditions = null)
     {
         // TODO: Implement deleteForTest() method.
+    }
+
+    public function setUpdatedRecord($record, $value = false, $index = 0)
+    {
+        $this->updatedRecord=$record;
+    }
+
+    public function hasTransaction()
+    {
+        return false;
+    }
+
+    public function inTransaction()
+    {
+        return false;
+    }
+
+    public function beginTransaction()
+    {
+    }
+
+    public function commitTransaction()
+    {
+    }
+
+    public function rollbackTransaction()
+    {
+    }
+
+    public function getUseSetDataToUpdatedRecord()
+    {
+        // TODO: Implement getUseSetDataToUpdatedRecord() method.
+    }
+
+    public function clearUseSetDataToUpdatedRecord()
+    {
+        // TODO: Implement clearUseSetDataToUpdatedRecord() method.
     }
 }
