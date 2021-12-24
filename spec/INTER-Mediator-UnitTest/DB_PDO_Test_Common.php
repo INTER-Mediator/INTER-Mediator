@@ -846,4 +846,112 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertEquals($name2, $createdRecord[0]['name'], "The rollbacked data has not to be modified.");
 
     }
+
+    protected $condition1expected;
+    protected $condition1expected1 = '(`f1` = \'100\')';
+    protected $condition1expected2 = '("f1" = \'100\')';
+
+    public function testCondition1()
+    {
+        $this->dbProxySetupForCondition([['field' => 'f1', 'operator' => '=', 'value' => 100]]);
+        $this->db_proxy->dbClass->setupHandlers();
+        $clause = $this->db_proxy->dbClass->getWhereClauseForTest('read');
+        $this->assertEquals($this->condition1expected, $clause, "Condition must be followed settings.");
+    }
+
+    protected $condition2expected;
+    protected $condition2expected1 = '(`f1` = \'100\' AND `f2` < \'300\')';
+    protected $condition2expected2 = '("f1" = \'100\' AND "f2" < \'300\')';
+
+    public function testCondition2()
+    {
+        $query = [
+            ['field' => 'f1', 'operator' => '=', 'value' => 100],
+            ['field' => 'f2', 'operator' => '<', 'value' => 300],
+        ];
+        $this->dbProxySetupForCondition($query);
+        $this->db_proxy->dbClass->setupHandlers();
+        $clause = $this->db_proxy->dbClass->getWhereClauseForTest('read');
+        $this->assertEquals($this->condition2expected, $clause, "Condition must be followed settings.");
+    }
+
+    protected $condition3expected;
+    protected $condition3expected1 = '(`f1` = \'100\' AND `f2` < \'300\') OR (`f3` > \'500\')';
+    protected $condition3expected2 = '("f1" = \'100\' AND "f2" < \'300\') OR ("f3" > \'500\')';
+
+    public function testCondition3()
+    {
+        $query = [
+            ['field' => 'f1', 'operator' => '=', 'value' => 100],
+            ['field' => 'f2', 'operator' => '<', 'value' => 300],
+            ['field' => '__operation__',],
+            ['field' => 'f3', 'operator' => '>', 'value' => 500],
+        ];
+        $this->dbProxySetupForCondition($query);
+        $this->db_proxy->dbClass->setupHandlers();
+        $clause = $this->db_proxy->dbClass->getWhereClauseForTest('read');
+        $this->assertEquals($this->condition3expected, $clause, "Condition must be followed settings.");
+    }
+
+    protected $condition4expected;
+    protected $condition4expected1 = '(`f1` = \'100\') OR (`f2` < \'300\' AND `f3` > \'500\')';
+    protected $condition4expected2 = '("f1" = \'100\') OR ("f2" < \'300\' AND "f3" > \'500\')';
+
+    public function testCondition4()
+    {
+        $query = [
+            ['field' => 'f1', 'operator' => '=', 'value' => 100],
+            ['field' => '__operation__',],
+            ['field' => 'f2', 'operator' => '<', 'value' => 300],
+            ['field' => 'f3', 'operator' => '>', 'value' => 500],
+        ];
+        $this->dbProxySetupForCondition($query);
+        $this->db_proxy->dbClass->setupHandlers();
+        $clause = $this->db_proxy->dbClass->getWhereClauseForTest('read');
+        $this->assertEquals($this->condition4expected, $clause, "Condition must be followed settings.");
+    }
+
+    protected $condition5expected;
+    protected $condition5expected1 = '((`f1` = \'100\') OR (`f2` < \'300\' AND `f3` > \'500\'))';
+    protected $condition5expected2 = '(("f1" = \'100\') OR ("f2" < \'300\' AND "f3" > \'500\'))';
+
+    public function testCondition5()
+    {
+        $query = [
+            ['field' => 'f1', 'operator' => '=', 'value' => 100],
+            ['field' => '__operation__',],
+            ['field' => 'f2', 'operator' => '<', 'value' => 300],
+            ['field' => 'f3', 'operator' => '>', 'value' => 500],
+        ];
+        $this->dbProxySetupForCondition(null);
+        foreach ($query as $item) {
+            $this->db_proxy->dbSettings->addExtraCriteria($item['field'],
+                $item['operator'] ?? "=", $item['value'] ?? null);
+        }
+        $this->db_proxy->dbClass->setupHandlers();
+        $clause = $this->db_proxy->dbClass->getWhereClauseForTest('read');
+        $this->assertEquals($this->condition5expected, $clause, "Condition must be followed settings.");
+    }
+
+    protected $condition6expected;
+    protected $condition6expected1 = '((`f1` = \'100\') AND (`f2` < \'300\' OR `f3` > \'500\'))';
+    protected $condition6expected2 = '(("f1" = \'100\') AND ("f2" < \'300\' OR "f3" > \'500\'))';
+
+    public function testCondition6()
+    {
+        $query = [
+            ['field' => 'f1', 'operator' => '=', 'value' => 100],
+            ['field' => '__operation__', 'operator' => 'ex',],
+            ['field' => 'f2', 'operator' => '<', 'value' => 300],
+            ['field' => 'f3', 'operator' => '>', 'value' => 500],
+        ];
+        $this->dbProxySetupForCondition(null);
+        foreach ($query as $item) {
+            $this->db_proxy->dbSettings->addExtraCriteria($item['field'],
+                $item['operator'] ?? "=", $item['value'] ?? null);
+        }
+        $this->db_proxy->dbClass->setupHandlers();
+        $clause = $this->db_proxy->dbClass->getWhereClauseForTest('read');
+        $this->assertEquals($this->condition6expected, $clause, "Condition must be followed settings.");
+    }
 }

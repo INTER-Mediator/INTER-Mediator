@@ -15,6 +15,7 @@ use INTERMediator\DB\Proxy;
 class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
 {
     public $dsn;
+
     function setUp(): void
     {
         mb_internal_encoding('UTF-8');
@@ -142,4 +143,37 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
             "summary"
         );
     }
+
+    function dbProxySetupForCondition($queryArray)
+    {
+        $this->schemaName = "";
+        $contextName = 'testContext';
+        $contexts = array(
+            array(
+                'records' => 10000000,
+                'name' => $contextName,
+                'key' => 'id',
+            )
+        );
+        if (!is_null($queryArray)) {
+            $contexts[0]['query'] = $queryArray;
+        }
+        $options = null;
+        $dbSettings = array(
+            'db-class' => 'PDO',
+            'dsn' => $this->dsn,
+            'user' => 'web',
+            'password' => 'password',
+        );
+        $this->db_proxy = new Proxy(true);
+        $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+
+        $this->condition1expected = $this->condition1expected1;
+        $this->condition2expected = $this->condition2expected1;
+        $this->condition3expected = $this->condition3expected1;
+        $this->condition4expected = $this->condition4expected1;
+        $this->condition5expected = $this->condition5expected1;
+        $this->condition6expected = $this->condition6expected1;
+    }
+
 }
