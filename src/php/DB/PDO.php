@@ -165,6 +165,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     /*
      * Generate SQL style WHERE clause.
      */
+    public function getWhereClauseForTest($currentOperation){
+        return $this->getWhereClause($currentOperation);
+    }
     /**
      * @param $currentOperation
      * @param bool $includeContext

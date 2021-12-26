@@ -143,4 +143,36 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
             "summary"
         );
     }
+
+    function dbProxySetupForCondition($queryArray)
+    {
+        $this->schemaName = "im_sample.";
+        $contextName = 'testContext';
+        $contexts = array(
+            array(
+                'records' => 10000000,
+                'name' => $contextName,
+                'key' => 'id',
+            )
+        );
+        if (!is_null($queryArray)) {
+            $contexts[0]['query'] = $queryArray;
+        }
+        $options = null;
+        $dbSettings = array(
+            'db-class' => 'PDO',
+            'dsn' => $this->dsn,
+            'user' => 'web',
+            'password' => 'password',
+        );
+        $this->db_proxy = new Proxy(true);
+        $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+
+        $this->condition1expected = $this->condition1expected2;
+        $this->condition2expected = $this->condition2expected2;
+        $this->condition3expected = $this->condition3expected2;
+        $this->condition4expected = $this->condition4expected2;
+        $this->condition5expected = $this->condition5expected2;
+        $this->condition6expected = $this->condition6expected2;
+    }
 }
