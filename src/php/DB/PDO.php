@@ -775,15 +775,17 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         if (isset($tableInfo['authentication']) && ! $this->isSuppressAuthTargetFillingOnCreate) {
             $authInfoField = $this->authHandler->getFieldForAuthorization("create");
             $authInfoTarget = $this->authHandler->getTargetForAuthorization("create");
-            if ($authInfoTarget == 'field-user') {
-                $setColumnNames[] = $authInfoField;
-                $setValues[] = $this->link->quote(
-                    strlen($signedUser) == 0 ? IMUtil::randomString(10) : $signedUser);
-            } else if ($authInfoTarget == 'field-group') {
-                $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($signedUser);
-                $setColumnNames[] = $authInfoField;
-                $setValues[] = $this->link->quote(
-                    strlen($belongGroups[0]) == 0 ? IMUtil::randomString(10) : $belongGroups[0]);
+            if(!$this->authHandler->getNoSetForAuthorization("create")) {
+                if ($authInfoTarget == 'field-user') {
+                    $setColumnNames[] = $authInfoField;
+                    $setValues[] = $this->link->quote(
+                        strlen($signedUser) == 0 ? IMUtil::randomString(10) : $signedUser);
+                } else if ($authInfoTarget == 'field-group') {
+                    $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($signedUser);
+                    $setColumnNames[] = $authInfoField;
+                    $setValues[] = $this->link->quote(
+                        strlen($belongGroups[0]) == 0 ? IMUtil::randomString(10) : $belongGroups[0]);
+                }
             }
         }
 
