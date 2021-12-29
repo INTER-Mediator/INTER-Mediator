@@ -33,6 +33,9 @@ Ver.9 (in development)
   setUpdateRecord method more than one parameter redirect to setDataToUpdatedRecord method. The setUpdatedRecord with
   one parameter works as the setter of updatedRecord property.
 - INTER-Mediator can work as the one of libraries that installed by composer.
+- The variable $suppressAuthTargetFillingOnCreate in params.php prevents to set the target field of authentication
+  on carete operation.
+
 
 Ver.8 (July 22, 2021)
 - [Important] If you see the message which tells the ServiceServer couldn't boot just after installation,

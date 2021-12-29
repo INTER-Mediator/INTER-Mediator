@@ -13,13 +13,24 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-namespace INTERMediator\DB\Support;
+require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 
-interface Auth_Interface_CommonDB
-{
-    public function getFieldForAuthorization($operation);
-    public function getTargetForAuthorization($operation);
-    public function getNoSetForAuthorization($operation);
-    public function getAuthorizedUsers($operation = null);
-    public function getAuthorizedGroups($operation = null);
-}
+IM_Entry(
+    array(
+        array(
+            'name' => 'postalcode',
+            'view' => 'postalcode',
+            'table' => 'postalcode',
+            'key' => 'id',
+            'records' => 10,
+            'paging' => true,
+            'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
+            'sort' => array(
+                array('field' => 'id', 'direction' => 'asc'),
+            ),
+        ),
+    ),
+    array(),
+    array('db-class' => 'PDO'),
+    2
+);

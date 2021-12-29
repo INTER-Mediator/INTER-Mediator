@@ -337,43 +337,50 @@ class DefinitionChecker
                     'user' => 'array',
                     'group' => 'array',
                     'target' => 'string(table|field-user|field-group)',
-                    'field' => 'string'
+                    'field' => 'string',
+                    'noset' => 'boolean',
                 ),
                 'load' => array(
                     'user' => 'array',
                     'group' => 'array',
                     'target' => 'string(table|field-user|field-group)',
-                    'field' => 'string'
+                    'field' => 'string',
+                    'noset' => 'boolean',
                 ),
                 'read' => array(
                     'user' => 'array',
                     'group' => 'array',
                     'target' => 'string(table|field-user|field-group)',
-                    'field' => 'string'
+                    'field' => 'string',
+                    'noset' => 'boolean',
                 ),
                 'update' => array(
                     'user' => 'array',
                     'group' => 'array',
                     'target' => 'string(table|field-user|field-group)',
-                    'field' => 'string'
+                    'field' => 'string',
+                    'noset' => 'boolean',
                 ),
                 'new' => array(
                     'user' => 'array',
                     'group' => 'array',
                     'target' => 'string(table|field-user|field-group)',
-                    'field' => 'string'
+                    'field' => 'string',
+                    'noset' => 'boolean',
                 ),
                 'create' => array(
                     'user' => 'array',
                     'group' => 'array',
                     'target' => 'string(table|field-user|field-group)',
-                    'field' => 'string'
+                    'field' => 'string',
+                    'noset' => 'boolean',
                 ),
                 'delete' => array(
                     'user' => 'array',
                     'group' => 'array',
                     'target' => 'string(table|field-user|field-group)',
-                    'field' => 'string'
+                    'field' => 'string',
+                    'noset' => 'boolean',
                 )
             ),
             'extending-class' => 'string',

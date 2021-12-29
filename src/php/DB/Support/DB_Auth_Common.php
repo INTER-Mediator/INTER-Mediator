@@ -82,6 +82,23 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return $authInfoTarget;
     }
 
+    function getNoSetForAuthorization($operation)
+    {
+        $operations = $this->getOperationSeries($operation);
+        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
+        $authInfoNoSet = null;
+        if (isset($tableInfo['authentication']['all']['noset'])) {
+            $authInfoNoSet = $tableInfo['authentication']['all']['noset'];
+        }
+        foreach ($operations as $op) {
+            if (isset($tableInfo['authentication'][$op]['noset'])) {
+                $authInfoNoSet = $tableInfo['authentication'][$op]['noset'];
+                break;
+            }
+        }
+        return $authInfoNoSet;
+    }
+
     function getAuthorizedUsers($operation = null)
     {
         $operations = $this->getOperationSeries($operation);
