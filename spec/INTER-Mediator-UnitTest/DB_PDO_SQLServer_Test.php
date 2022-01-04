@@ -170,9 +170,14 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
         $this->condition4expected = $this->condition4expected2;
         $this->condition5expected = $this->condition5expected2;
         $this->condition6expected = $this->condition6expected2;
+        $this->condition7expected = $this->condition7expected2;
+        $this->condition8expected = $this->condition8expected2;
+        $this->condition9expected = $this->condition9expected2;
+        $this->condition10expected = $this->condition10expected2;
     }
 
-    protected function getSampleComdition() {
+    protected function getSampleComdition()
+    {
         return "WHERE id=1001 ORDER BY xdate OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY";;
     }
 }
