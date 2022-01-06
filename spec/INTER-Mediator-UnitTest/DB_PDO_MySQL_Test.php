@@ -174,6 +174,10 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
         $this->condition4expected = $this->condition4expected1;
         $this->condition5expected = $this->condition5expected1;
         $this->condition6expected = $this->condition6expected1;
+        $this->condition7expected = $this->condition7expected1;
+        $this->condition8expected = $this->condition8expected1;
+        $this->condition9expected = $this->condition9expected1;
+        $this->condition10expected = $this->condition10expected1;
     }
 
 }
