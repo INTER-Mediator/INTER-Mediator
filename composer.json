@@ -1,7 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
   "version": "9",
-  "time": "2021-11-06",
+  "time": "2022-01-07",
   "repositories": [
     {
       "type": "git",
@@ -120,5 +120,11 @@
     "forever-stopall": [
       "./node_modules/.bin/forever stopall"
     ]
+  },
+  "config": {
+    "allow-plugins": {
+      "simplesamlphp/composer-module-installer": true,
+      "mouf/nodejs-installer": true
+    }
   }
 }
