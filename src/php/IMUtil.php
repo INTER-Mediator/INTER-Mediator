@@ -280,8 +280,8 @@ class IMUtil
             $appRootDir = dirname(dirname(dirname($imRootDir)));
             if (file_exists($appRootDir . DIRECTORY_SEPARATOR . 'params.php')) {
                 include($appRootDir . DIRECTORY_SEPARATOR . 'params.php');
-            } else if (file_exists($imRootDir . 'lib/params.php')) {
-                include($imRootDir . 'lib/params.php');
+            } else if (file_exists($appRootDir . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'params.php')) {
+                include($appRootDir . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'params.php');
             }
         } else if (file_exists(dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php')) {
             include(dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php');
