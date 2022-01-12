@@ -277,7 +277,12 @@ class IMUtil
         if (basename($imRootDir) == 'inter-mediator'
             && basename(dirname($imRootDir)) == 'inter-mediator'
             && basename(dirname(dirname($imRootDir))) == 'vendor') { // This means IM is installed by Composer.
-            include(dirname(dirname($imRootDir)) . DIRECTORY_SEPARATOR . 'params.php');
+            $appRootDir = dirname(dirname(dirname($imRootDir)));
+            if (file_exists($appRootDir . DIRECTORY_SEPARATOR . 'params.php')) {
+                include($appRootDir . DIRECTORY_SEPARATOR . 'params.php');
+            } else if (file_exists($imRootDir . 'lib/params.php')) {
+                include($imRootDir . 'lib/params.php');
+            }
         } else if (file_exists(dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php')) {
             include(dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php');
         } else if (file_exists($imRootDir . 'params.php')) {
