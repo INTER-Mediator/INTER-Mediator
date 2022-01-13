@@ -32,7 +32,8 @@ Ver.9 (in development)
 - The setUpdatedRecord method in database classes renamed to setDataToUpdatedRecord. For the compatibility, calling the
   setUpdateRecord method more than one parameter redirect to setDataToUpdatedRecord method. The setUpdatedRecord with
   one parameter works as the setter of updatedRecord property.
-- INTER-Mediator can work as the one of libraries that installed by composer.
+- INTER-Mediator can work as the one of libraries that installed by composer. You can place the params.php file at the
+  root of application or just under lib directory.
 - The variable $suppressAuthTargetFillingOnCreate in params.php prevents to set the target field of authentication
   on carete operation.
 
