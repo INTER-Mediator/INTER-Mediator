@@ -508,6 +508,16 @@ if node[:platform] == 'alpine'
     package 'php8-mysqli' do
       action :install
     end
+
+    # for PHPUnit
+    package 'php8-tokenizer' do
+      action :install
+    end
+
+    # for PHPUnit
+    package 'php8-xmlwriter' do
+      action :install
+    end
   else
     package 'php7' do
       action :install
