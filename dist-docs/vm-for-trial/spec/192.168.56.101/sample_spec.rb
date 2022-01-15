@@ -319,6 +319,14 @@ end
 describe package('php7-phar'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.13 do
   it { should be_installed }
 end
+describe package('php8-tokenizer'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
+  # for PHPUnit
+  it { should be_installed }
+end
+describe package('php8-xmlwriter'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.13 do
+  # for PHPUnit
+  it { should be_installed }
+end
 describe file('/usr/local/bin/phpunit'), :if => os[:family] == 'alpine' do
   it { should be_file }
 end
