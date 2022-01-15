@@ -46,7 +46,18 @@ iface eth1 inet static
 EOF
     end
   end
-  if node[:platform_version].to_f >= 3.13
+  if node[:platform_version].to_f >= 3.15
+    file '/etc/apk/repositories' do
+      content <<-EOF
+#/media/cdrom/apks
+http://dl-cdn.alpinelinux.org/alpine/v3.15/main
+http://dl-cdn.alpinelinux.org/alpine/v3.15/community
+#http://dl-cdn.alpinelinux.org/alpine/edge/main
+#http://dl-cdn.alpinelinux.org/alpine/edge/community
+#http://dl-cdn.alpinelinux.org/alpine/edge/testing
+EOF
+    end
+  elsif node[:platform_version].to_f >= 3.13
     file '/etc/apk/repositories' do
       content <<-EOF
 #/media/cdrom/apks
