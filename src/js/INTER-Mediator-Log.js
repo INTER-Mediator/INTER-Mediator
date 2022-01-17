@@ -71,7 +71,7 @@ const INTERMediatorLog = {
    */
   setDebugMessage: function (message, level) {
     'use strict'
-    if (level === undefined) {
+    if (typeof level === 'undefined') {
       level = 1
     }
     if (INTERMediatorLog.debugMode >= level) {
@@ -97,7 +97,7 @@ const INTERMediatorLog = {
 
   setErrorMessage: function (ex, moreMessage) {
     'use strict'
-    moreMessage = moreMessage === undefined ? '' : (' - ' + moreMessage)
+    moreMessage = (typeof moreMessage === 'undefined') ? '' : (' - ' + moreMessage)
 
     if (INTERMediatorLog.errorMessageByAlert) {
       window.alert(INTERMediatorLog.errorMessageOnAlert === null ? (ex + moreMessage) : INTERMediatorLog.errorMessageOnAlert)

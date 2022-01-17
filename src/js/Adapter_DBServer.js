@@ -71,8 +71,8 @@ const INTERMediator_DBAdapter = {
         }
       }
       if ((INTERMediatorOnPage.authHashedPassword()
-        || INTERMediatorOnPage.authHashedPassword2m()
-        || INTERMediatorOnPage.authHashedPassword2())
+          || INTERMediatorOnPage.authHashedPassword2m()
+          || INTERMediatorOnPage.authHashedPassword2())
         && INTERMediatorOnPage.authChallenge) {
         if (INTERMediatorOnPage.passwordHash < 1.1 && INTERMediatorOnPage.authHashedPassword()) {
           const shaObj = new jsSHA('SHA-256', 'TEXT')
@@ -267,12 +267,12 @@ const INTERMediator_DBAdapter = {
                   INTERMediatorOnPage.logoutURL = jsonObject.samllogouturl
                 }
                 if (jsonObject.samladditionalfail) {
-                  IMLibQueue.setTask((complete)=>{
+                  IMLibQueue.setTask((complete) => {
                     complete()
-                    if(confirm(INTERMediatorLib.getInsertedStringFromErrorNumber(2027))) {
+                    if (confirm(INTERMediatorLib.getInsertedStringFromErrorNumber(2027))) {
                       location.href = jsonObject.samladditionalfail
                     }
-                  },false,true)
+                  }, false, true)
 
                 }
               }
@@ -723,32 +723,32 @@ const INTERMediator_DBAdapter = {
       }
       for (index = 0; index < criteriaObject.length; index++) {
         if (criteriaObject[index] && criteriaObject[index].field) {
-          if (criteriaObject[index].value || criteriaObject[index].field === '__operation__') {
-            conditionSign =
-              criteriaObject[index].field + '#' +
-              ((criteriaObject[index].operator !== undefined) ? criteriaObject[index].operator : '') + '#' +
-              ((criteriaObject[index].value !== undefined) ? criteriaObject[index].value : '')
-            if (!INTERMediator_DBAdapter.eliminateDuplicatedConditions || conditions.indexOf(conditionSign) < 0) {
+          //if (criteriaObject[index].value || criteriaObject[index].field === '__operation__') {
+          conditionSign =
+            criteriaObject[index].field + '#' +
+            ((typeof (criteriaObject[index].operator) !== 'undefined') ? criteriaObject[index].operator : '') + '#' +
+            ((typeof (criteriaObject[index].value) !== 'undefined') ? criteriaObject[index].value : '')
+          if (!INTERMediator_DBAdapter.eliminateDuplicatedConditions || conditions.indexOf(conditionSign) < 0) {
+            params += '&condition' + extCount
+            params += 'field=' + encodeURIComponent(criteriaObject[index].field)
+            if (typeof (criteriaObject[index].operator) !== 'undefined') {
               params += '&condition' + extCount
-              params += 'field=' + encodeURIComponent(criteriaObject[index].field)
-              if (criteriaObject[index].operator !== undefined) {
-                params += '&condition' + extCount
-                params += 'operator=' + encodeURIComponent(criteriaObject[index].operator)
-              }
-              if (criteriaObject[index].value !== undefined) {
-                params += '&condition' + extCount
-                value = criteriaObject[index].value
-                if (Array.isArray(value)) {
-                  value = JSON.stringify(value)
-                }
-                params += 'value=' + encodeURIComponent(value)
-              }
-              if (criteriaObject[index].field !== '__operation__') {
-                conditions.push(conditionSign)
-              }
+              params += 'operator=' + encodeURIComponent(criteriaObject[index].operator)
             }
-            extCount++
+            if (typeof (criteriaObject[index].value) !== 'undefined') {
+              params += '&condition' + extCount
+              value = criteriaObject[index].value
+              if (Array.isArray(value)) {
+                value = JSON.stringify(value)
+              }
+              params += 'value=' + encodeURIComponent(value)
+            }
+            if (criteriaObject[index].field !== '__operation__') {
+              conditions.push(conditionSign)
+            }
           }
+          extCount++
+          //}
         }
         if (criteriaObject[index] && criteriaObject[index].onetime) {
           removeIndice.push = index

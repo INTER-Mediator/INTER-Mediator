@@ -197,7 +197,7 @@ const IMLibCalc = {
             if (valuesArray.hasOwnProperty(field)) {
               valueSeries = []
               for (ix = 0; ix < valuesArray[field].length; ix++) {
-                if (valuesArray[field][ix] === undefined) {
+                if (typeof(valuesArray[field][ix]) === 'undefined') {
                   if (record[field]) {
                     valueSeries.push(record[field])
                   } else if (refersArray[field][ix]) {
@@ -248,7 +248,7 @@ const IMLibCalc = {
     let newValue, field, i, updatedNodeIds, updateNodeValues, cachedIndex, nInfo, valuesArray
     let refersArray, valueSeries, targetElement, contextInfo, record, idValue, key, fName, vArray
 
-    if (updatedNodeId === undefined) {
+    if (typeof updatedNodeId === 'undefined') {
       isRecalcAll = true
       updatedNodeIds = []
       updateNodeValues = []
@@ -335,7 +335,7 @@ const IMLibCalc = {
             if (valuesArray.hasOwnProperty(field)) {
               valueSeries = []
               for (ix = 0; ix < valuesArray[field].length; ix++) {
-                if (valuesArray[field][ix] === undefined) {
+                if (typeof(valuesArray[field][ix]) === 'undefined') {
                   if (record[field]) {
                     valueSeries.push(record[field])
                   } else if (refersArray[field][ix]) {

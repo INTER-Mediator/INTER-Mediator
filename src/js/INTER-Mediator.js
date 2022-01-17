@@ -370,7 +370,7 @@ const INTERMediator = {
    */
   construct: (indexOfKeyFieldObject) => {
     'use strict'
-    if (indexOfKeyFieldObject === true || indexOfKeyFieldObject === undefined) {
+    if (indexOfKeyFieldObject === true || typeof indexOfKeyFieldObject === 'undefined') {
       if (INTERMediatorOnPage.isFinishToConstruct) {
         return
       }
@@ -424,7 +424,7 @@ const INTERMediator = {
 
     INTERMediator.crossTableStage = 0
     INTERMediator.appendingNodesAtLast = []
-    if (updateRequiredContext !== true && updateRequiredContext !== undefined && updateRequiredContext &&
+    if (updateRequiredContext !== true && typeof updateRequiredContext !== 'undefined' && updateRequiredContext &&
       INTERMediatorOnPage.doBeforePartialConstruct) {
       INTERMediatorOnPage.doBeforePartialConstruct(updateRequiredContext)
     }
@@ -434,7 +434,7 @@ const INTERMediator = {
 
     IMLibPageNavigation.deleteInsertOnNavi = []
     try {
-      if (updateRequiredContext === true || updateRequiredContext === undefined) {
+      if (updateRequiredContext === true || typeof updateRequiredContext === 'undefined') {
         INTERMediator.partialConstructing = false
         INTERMediator.buttonIdNum = 1
         IMLibContextPool.clearAll()
@@ -529,7 +529,7 @@ const INTERMediator = {
       }
     }
 
-    if (updateRequiredContext !== true && updateRequiredContext !== undefined
+    if (updateRequiredContext !== true && typeof updateRequiredContext !== 'undefined'
       && updateRequiredContext && INTERMediatorOnPage.doAfterPartialConstruct) {
       INTERMediatorOnPage.doAfterPartialConstruct(updateRequiredContext)
     }
@@ -781,7 +781,7 @@ const INTERMediator = {
               if (!currentRecord) {
                 tempObj = IMLibContextPool.generateContextObject(
                   {'name': contextObj.sourceName}, enclosureNode, repeaters, repeatersOriginal)
-                if (targetRecords === undefined) {
+                if (typeof targetRecords === 'undefined') {
                   targetRecords = retrieveDataForEnclosure(tempObj, fieldList, contextObj.foreignValue)
                 }
                 // const recId = targetRecords.recordset[0][INTERMediatorOnPage.defaultKeyName]
@@ -813,7 +813,7 @@ const INTERMediator = {
             contextObj.storeRecords(targetRecords)
 
             callbackForAfterQueryStored(currentContextDef, contextObj)
-            if (customExpandRepeater === undefined) {
+            if (typeof customExpandRepeater === 'undefined') {
               contextObj.registeredId = targetRecords.registeredId
               contextObj.nullAcceptable = targetRecords.nullAcceptable
               await expandRepeaters(contextObj, enclosureNode, targetRecords)
@@ -1190,7 +1190,7 @@ const INTERMediator = {
                 postSetFields.push({'id': nodeId, 'value': curVal})
               }
               contextObj.setValue(keyingValue, nInfo.field, curVal, nodeId, curTarget)
-              if (idValuesForFieldName[nInfo.field] === undefined) {
+              if (typeof(idValuesForFieldName[nInfo.field]) === 'undefined') {
                 idValuesForFieldName[nInfo.field] = []
               }
               idValuesForFieldName[nInfo.field].push(nodeId)
@@ -1908,7 +1908,7 @@ const INTERMediator = {
     if (!value) {
       value = {}
     }
-    if (label === undefined) {
+    if (typeof label === 'undefined') {
       if (value[contextName]) {
         delete value[contextName]
         INTERMediator.additionalCondition = value
