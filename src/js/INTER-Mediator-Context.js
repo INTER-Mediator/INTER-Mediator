@@ -158,7 +158,7 @@ class IMLibContext {
               recordset = result.dbresult
             }
             if (!recordset || !recordset[0] || // This value could be null or undefined
-              recordset[0][targetFieldCapt] === undefined) {
+              typeof(recordset[0][targetFieldCapt]) === 'undefined') {
               errorProc()
               return
             }
@@ -547,7 +547,7 @@ class IMLibContext {
 
   setModified(recKey, key, value) {
     'use strict'
-    if (this.modified[recKey] === undefined) {
+    if (typeof(this.modified[recKey]) === 'undefined') {
       this.modified[recKey] = {}
     }
     this.modified[recKey][key] = value
@@ -800,13 +800,13 @@ class IMLibContext {
       console.error('Using the portal parameter in IMLibContext.setValue')
     }
     if (recKey) {
-      if (this.store[recKey] === undefined) {
+      if (typeof(this.store[recKey]) === 'undefined') {
         this.store[recKey] = {}
       }
-      if (portal && this.store[recKey][key] === undefined) {
+      if (portal && typeof(this.store[recKey][key]) === 'undefined') {
         this.store[recKey][key] = {}
       }
-      if (this.binding[recKey] === undefined) {
+      if (typeof(this.binding[recKey]) === 'undefined') {
         this.binding[recKey] = {}
         if (this.sequencing) {
           this.recordOrder.push(recKey)
@@ -814,10 +814,10 @@ class IMLibContext {
           this.pendingOrder.push(recKey)
         }
       }
-      if (this.binding[recKey][key] === undefined) {
+      if (typeof(this.binding[recKey][key]) === 'undefined') {
         this.binding[recKey][key] = []
       }
-      if (portal && this.binding[recKey][key][portal] === undefined) {
+      if (portal && typeof(this.binding[recKey][key][portal]) === 'undefined') {
         if (this.binding[recKey][key].length < 1) {
           this.binding[recKey][key] = {}
         }
@@ -837,7 +837,7 @@ class IMLibContext {
           } else {
             this.binding[recKey][key].push({id: nodeId, target: target})
           }
-          if (this.contextInfo[nodeId] === undefined) {
+          if (typeof(this.contextInfo[nodeId]) === 'undefined') {
             this.contextInfo[nodeId] = {}
           }
           this.contextInfo[nodeId][target ? target : '_im_no_target'] =
@@ -866,7 +866,7 @@ class IMLibContext {
       if (Array.isArray(value)) {
         value = value.join()
       }
-      return value === undefined ? null : value
+      return (typeof value === 'undefined') ? null : value
     } catch (ex) {
       return null
     }
@@ -883,7 +883,7 @@ class IMLibContext {
       } else {
         value = this.store[recKey][key]
       }
-      return value === undefined ? true : false
+      return (typeof value === 'undefined') ? true : false
     } catch (ex) {
       return null
     }
@@ -893,7 +893,7 @@ class IMLibContext {
     'use strict'
     try {
       let info = this.contextInfo[nodeId][target ? target : '_im_no_target']
-      return info === undefined ? null : info
+      return (typeof info === 'undefined') ? null : info
     } catch (ex) {
       return null
     }
@@ -904,7 +904,7 @@ class IMLibContext {
     try {
       let info = this.contextInfo[nodeId][target ? target : '_im_no_target']
       let value = info.context.getValue(info.record, info.field)
-      return value === undefined ? null : value
+      return (typeof value === 'undefined') ? null : value
     } catch (ex) {
       return null
     }

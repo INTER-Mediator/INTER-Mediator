@@ -688,7 +688,7 @@ const IMLibPageNavigation = {
       return
     }
     if (currentContextDef.relation ||
-      currentContextDef.records === undefined ||
+      typeof(currentContextDef.records) === 'undefined' ||
       !currentContextDef.paging ||
       (currentContextDef.records > 1 && parseInt(INTERMediator.pagedSize) !== 1)) {
       const buttonNode = document.createElement('BUTTON')
@@ -730,7 +730,7 @@ const IMLibPageNavigation = {
       return
     }
     if (currentContextDef.relation ||
-      currentContextDef.records === undefined ||
+      typeof(currentContextDef.records) === 'undefined' ||
       !currentContextDef.paging ||
       (currentContextDef.records > 1 && parseInt(INTERMediator.pagedSize) !== 1)) {
       const buttonNode = document.createElement('BUTTON')

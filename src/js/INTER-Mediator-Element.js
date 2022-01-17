@@ -175,7 +175,7 @@ const IMLibElement = {
 
     // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
-    if (curVal === undefined) {
+    if (typeof curVal === 'undefined') {
       return false // Or should be an error?
     }
     if (!element) {

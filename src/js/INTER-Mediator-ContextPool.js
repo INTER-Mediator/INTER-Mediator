@@ -52,12 +52,12 @@ const IMLibContextPool = {
     if (portal) {
       for (let i = 0; i < this.poolingContexts.length; i += 1) {
         if (this.poolingContexts[i].viewName === viewName &&
-          this.poolingContexts[i].binding[recKey] !== undefined &&
-          this.poolingContexts[i].binding[recKey][key] !== undefined &&
-          this.poolingContexts[i].binding[recKey][key][portal] !== undefined &&
-          this.poolingContexts[i].store[recKey] !== undefined &&
-          this.poolingContexts[i].store[recKey][key] !== undefined &&
-          this.poolingContexts[i].store[recKey][key][portal] !== undefined) {
+          typeof (this.poolingContexts[i].binding[recKey]) !== 'undefined' &&
+          typeof (this.poolingContexts[i].binding[recKey][key]) !== 'undefined' &&
+          typeof (this.poolingContexts[i].binding[recKey][key][portal]) !== 'undefined' &&
+          typeof (this.poolingContexts[i].store[recKey]) !== 'undefined' &&
+          typeof (this.poolingContexts[i].store[recKey][key]) !== 'undefined' &&
+          typeof (this.poolingContexts[i].store[recKey][key][portal]) !== 'undefined') {
           this.poolingContexts[i].store[recKey][key][portal] = value
           const targetNodes = this.poolingContexts[i].binding[recKey][key][portal]
           for (let j = 0; j < targetNodes.length; j++) {
@@ -72,10 +72,10 @@ const IMLibContextPool = {
     } else {
       for (let i = 0; i < this.poolingContexts.length; i += 1) {
         if (this.poolingContexts[i].viewName === viewName &&
-          this.poolingContexts[i].binding[recKey] !== undefined &&
-          this.poolingContexts[i].binding[recKey][key] !== undefined &&
-          this.poolingContexts[i].store[recKey] !== undefined &&
-          this.poolingContexts[i].store[recKey][key] !== undefined) {
+          typeof (this.poolingContexts[i].binding[recKey]) !== 'undefined' &&
+          typeof (this.poolingContexts[i].binding[recKey][key]) !== 'undefined' &&
+          typeof (this.poolingContexts[i].store[recKey]) !== 'undefined' &&
+          typeof (this.poolingContexts[i].store[recKey][key]) !== 'undefined') {
           this.poolingContexts[i].store[recKey][key] = value
           const targetNodes = this.poolingContexts[i].binding[recKey][key]
           for (let j = 0; j < targetNodes.length; j++) {

@@ -38,7 +38,7 @@ const IMLibLocalContext = {
 
     hasUpdated = false
     if (key) {
-      if (value === undefined || value === null) {
+      if (typeof value === 'undefined' || value === null) {
         delete this.store[key]
       } else {
         this.store[key] = value
@@ -60,7 +60,7 @@ const IMLibLocalContext = {
   getValue: function (key) {
     'use strict'
     let value = this.store[key]
-    return value === undefined ? null : value
+    return (typeof value === 'undefined') ? null : value
   },
 
   getHostNameForKey: function () {

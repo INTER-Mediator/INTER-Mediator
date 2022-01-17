@@ -893,7 +893,7 @@ const INTERMediatorLib = {
     return nodes
 
     function checkNode(target) {
-      if (target === undefined || target.nodeType !== 1) {
+      if (typeof target === 'undefined' || target.nodeType !== 1) {
         return
       }
       let value = target.getAttribute('class')
@@ -937,7 +937,7 @@ const INTERMediatorLib = {
     return nodes
 
     function checkNode(target) {
-      if (target === undefined || target.nodeType !== 1) {
+      if (typeof target === 'undefined' || target.nodeType !== 1) {
         return
       }
       const aValue = target.getAttribute(attribute)
@@ -958,7 +958,7 @@ const INTERMediatorLib = {
     return nodes
 
     function checkNode(target) {
-      if (target === undefined || target.nodeType !== 1) {
+      if (typeof target === 'undefined' || target.nodeType !== 1) {
         return
       }
       const className = target.getAttribute('class')
@@ -979,7 +979,7 @@ const INTERMediatorLib = {
     return nodes
 
     function checkNode(target) {
-      if (target === undefined || target.nodeType !== 1) {
+      if (typeof target === 'undefined' || target.nodeType !== 1) {
         return
       }
       const nodeId = target.getAttribute('id')
@@ -997,7 +997,7 @@ const INTERMediatorLib = {
     const linkedNodesCollection = [] // Collecting linked elements to this array.
     const widgetNodesCollection = []
     let doEncCheck = ignoreEnclosureCheck
-    if (ignoreEnclosureCheck === undefined || ignoreEnclosureCheck === null) {
+    if (typeof ignoreEnclosureCheck === 'undefined' || ignoreEnclosureCheck === null) {
       doEncCheck = false
     }
     for (let i = 0; i < nodes.length; i += 1) {
