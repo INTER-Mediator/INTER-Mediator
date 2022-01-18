@@ -19,6 +19,7 @@ Ver.5.13-dev (in development)
   rose up. So far the error doesn't rise, but these nodes should exist out side of enclosure/repeater. (Thanks to Mr. Hayashi)
 - [BUG FIX] Fix GenerateJSCode.php to consider when "INTER-Mediator-Support" directory doesn't exist (Thanks to Tomomitsu Baba).
 - [BUG FIX] Fix retrieving a image file in container fields after uploading when using DB_FileMaker_DataAPI class.
+- [BUG FIX] Update FMDataAPI.php for Claris FileMaker Data API to fix handling of portal offset and limit parameters.
 
 Ver.5.12 (May 29, 2021)
 - Support PHP 8.0.
