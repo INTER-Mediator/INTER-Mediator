@@ -32,7 +32,8 @@
     "setasign/fpdi": "*",
     "smalot/pdfparser": "*",
     "aws/aws-sdk-php": "*",
-    "simplesamlphp/simplesamlphp": "*"
+    "simplesamlphp/simplesamlphp": "*",
+    "matthiasmullie/minify": "*"
   },
   "extra": {
     "mouf": {
@@ -43,7 +44,6 @@
     }
   },
   "require-dev": {
-    "matthiasmullie/minify": "*",
     "phpunit/phpunit": "*"
   },
   "autoload": {

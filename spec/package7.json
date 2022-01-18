@@ -48,7 +48,7 @@
     "cors": "*",
     "express": "*",
     "flatpickr": ">=4.6.3",
-    "forever": ">=3.0.0",
+    "forever": ">=4.0.2",
     "inter-mediator-expressionparser": "1.0.18",
     "inter-mediator-formatter": "1.0.19",
     "inter-mediator-locale": "1.0.4",
