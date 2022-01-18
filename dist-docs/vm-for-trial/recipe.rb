@@ -209,7 +209,7 @@ if node[:platform] == 'alpine'
     command 'yes im4135dev | sudo passwd postgres'
   end
   if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
-    directory '/var/lib/postgresql/13/data' do
+    directory '/var/lib/postgresql/14/data' do
       action :create
       owner 'postgres'
       group 'postgres'
@@ -233,8 +233,8 @@ if node[:platform] == 'alpine'
     service 'postgresql' do
       action [ :enable ]
     end
-    execute 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/13/data -l /var/log/postgresql/postgresql.log"' do
-      command 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/13/data -l /var/log/postgresql/postgresql.log"'
+    execute 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/14/data -l /var/log/postgresql/postgresql.log"' do
+      command 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/14/data -l /var/log/postgresql/postgresql.log"'
     end  
   end
 else
