@@ -36,6 +36,7 @@ Ver.9 (in development)
   root of application or just under lib directory.
 - The variable $suppressAuthTargetFillingOnCreate in params.php prevents to set the target field of authentication
   on carete operation.
+- The dist-docs/generateminifyjshere.sh file is the shell script generating the minified js file on composer installed.
 - [BUG FIX] The addCondition() api of INTERMediator class ignore conditions in some case (value: 0, or without value).
   This was over checking the object describing a condition, and modified to easier.
 
