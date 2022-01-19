@@ -33,14 +33,14 @@ if [ $(basename "${imRootOver}") != "inter-mediator" ]; then
   exit -1
 fi
 vendorDir=$(dirname "${imRootOver}")
-if [ $(basename "${imRoot}") != "vendor" ]; then
+if [ $(basename "${vendorDir}") != "vendor" ]; then
   /bin/echo "This command works on just composer installed inter-mediator."
   exit -1
 fi
 
 MINIFYJS="minify"
-minifyjsDir="${vendorDir}/vendor/matthiasmullie/${MINIFYJS}"
-minifyjsBin="${vendorDir}/vendor/bin/${MINIFYJS}js"
+minifyjsDir="${vendorDir}/matthiasmullie/${MINIFYJS}"
+minifyjsBin="${vendorDir}/bin/${MINIFYJS}js"
 if [ -e "${minifyjsDir}" -a -e "${minifyjsBin}" ]; then
   /bin/echo " Path of minifyer (installed by composer): ${minifyjsDir}"
 else
