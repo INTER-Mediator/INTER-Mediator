@@ -4,7 +4,7 @@
 // JSHint support
 /* global INTERMediator,buster,INTERMediatorLib,INTERMediatorOnPage,IMLibElement,jsencrypt */
 
-const JSEncrypt = require('../../node_modules/jsencrypt/bin/jsencrypt.js')
+//const JSEncrypt = require('../../node_modules/jsencrypt/bin/jsencrypt.js')
 
 test('JSEncrypt Test: Check the collect encription with RSA key.', function () {
   'use strict'
