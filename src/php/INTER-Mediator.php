@@ -63,19 +63,19 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     $requiredFunctions = array(
         'mbstring' => 'mb_internal_encoding',
     );
-    if (isset($options) && is_array($options)) {
-        foreach ($options as $key => $option) {
-            if ($key == 'authentication'
-                && isset($option['user'])
-                && is_array($option['user'])
-                && array_search('database_native', $option['user']) !== false
-            ) {
-                // Native Authentication requires BC Math functions
-                $requiredFunctions = array_merge($requiredFunctions, array('bcmath' => 'bcadd'));
-                break;
-            }
-        }
-    }
+//    if (isset($options) && is_array($options)) {
+//        foreach ($options as $key => $option) {
+//            if ($key == 'authentication'
+//                && isset($option['user'])
+//                && is_array($option['user'])
+//                && array_search('database_native', $option['user']) !== false
+//            ) {
+//                // Native Authentication requires BC Math functions
+//                $requiredFunctions = array_merge($requiredFunctions, array('bcmath' => 'bcadd'));
+//                break;
+//            }
+//        }
+//    }
     foreach ($requiredFunctions as $key => $value) {
         if (!function_exists($value)) {
             $generator = new GenerateJSCode();

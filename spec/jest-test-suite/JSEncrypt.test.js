@@ -8,6 +8,9 @@ const JSEncrypt = require('../../node_modules/jsencrypt/bin/jsencrypt.js')
 
 test('JSEncrypt Test: Check the collect encription with RSA key.', function () {
   'use strict'
+
+  return // JSEncrypt doesn't use anymore. 2022-01-23 by msyk
+
   const publicKey = '-----BEGIN PUBLIC KEY-----' +
     'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDlOJu6TyygqxfWT7eLtGDwajtN' +
     'FOb9I5XRb6khyfD1Yt3YiCgQWMNW649887VGJiGr/L5i2osbl8C9+WJTeucF+S76' +

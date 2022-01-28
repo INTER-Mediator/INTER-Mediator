@@ -61,7 +61,6 @@
     "inter-mediator-plugin-popupselector": "1.0.1",
     "inter-mediator-plugin-tinymce": "1.0.4",
     "inter-mediator-queue": "1.0.8",
-    "jsencrypt": "*",
     "jssha": ">=3.0.0",
     "npm-platform-dependencies": "*",
     "socket.io": ">=3.1.0",
