@@ -26,7 +26,7 @@ class MediaAccess
     private $disposition = "inline";    // default disposition.
     private $targetKeyField;    // set with the analyzeTarget method.
     private $targetKeyValue;  // set with the analyzeTarget method.
-    private $targetContextName;  // set with the analyzeTarget method.
+    private $targetContextName = null;  // set with the analyzeTarget method.
     private $cookieUser;    // set with the checkAuthentication method.
     private $accessLogLevel = 0;
     private $outputMessage = ['apology' => 'Logging messages are not implemented so far.'];
@@ -127,9 +127,14 @@ class MediaAccess
             $isClass = (stripos($target, 'class://') === 0);
             $isNoRec = !is_array($contextRecord) || (count($contextRecord) === 0);
             $isOneRec = is_array($contextRecord) && (count($contextRecord) === 1);
-            if (!$isOneRec && (!$isClass || ($isClass && $isNoRec))) {
-                // In case of the "class:" schema, the record set can have 1 or more than 1 records.
-                // In case of non class: schema, the record set has to have just 1 record.
+            // $condition = !$isOneRec && (!$isClass || ($isClass && $isNoRec));
+            // In case of the "class:" schema, the record set can have 1 or more than 1 records.
+            // In case of non class: schema, the record set has to have just 1 record.
+            $isNoTarget = !$this->targetContextName;
+            $condition = ($isClass && !$isNoRec && !$isNoTarget)
+                || (!$isClass && ((!$isNoRec && $isOneRec && !$isNoTarget) || ($isNoRec && !$isOneRec && $isNoTarget)));
+//              if (!$isOneRec && (!$isClass || ($isClass && $isNoRec))) {
+            if (!$condition) {
                 $erMessage = "[INTER-Mediator] No record which is associated with the parameters in the url({$target}).";
                 echo $erMessage;
                 error_log($erMessage);
@@ -303,40 +308,40 @@ class MediaAccess
         if (strpos($file, '/fmi/xml/cnt/') === 0 ||
             strpos($file, '/Streaming_SSL/MainDB') === 0) {
             // FileMaker's container field storing an image.
-            if (isset($options['authentication']['user'][0])
-                && $options['authentication']['user'][0] == 'database_native'
-            ) {
-                $passPhrase = '';
-                $generatedPrivateKey = ''; // avoid errors for defined in params.php.
-
-                $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
-                $currentDirParam = $imRootDir . 'params.php';
-                $parentDirParam = dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php';
-                if (file_exists($parentDirParam)) {
-                    include($parentDirParam);
-                } else if (file_exists($currentDirParam)) {
-                    include($currentDirParam);
-                }
-                $rsa = new RSA();
-                $rsa->setPassword($passPhrase);
-                $rsa->loadKey($generatedPrivateKey);
-                $rsa->setEncryptionMode(RSA::ENCRYPTION_PKCS1);
-                $cookieNameUser = '_im_username';
-                $cookieNamePassword = '_im_crypted';
-                $credential = isset($_COOKIE[$cookieNameUser]) ? urlencode($_COOKIE[$cookieNameUser]) : '';
-                if (isset($_COOKIE[$cookieNamePassword]) && strlen($_COOKIE[$cookieNamePassword]) > 0) {
-                    $credential .= ':' . urlencode($rsa->decrypt(base64_decode($_COOKIE[$cookieNamePassword])));
-                }
-                $urlHost = $dbProxyInstance->dbSettings->getDbSpecProtocol() . '://' . $credential . '@'
-                    . $dbProxyInstance->dbSettings->getDbSpecServer() . ':'
-                    . $dbProxyInstance->dbSettings->getDbSpecPort();
-            } else {
-                $urlHost = $dbProxyInstance->dbSettings->getDbSpecProtocol() . "://"
-                    . urlencode($dbProxyInstance->dbSettings->getDbSpecUser()) . ":"
-                    . urlencode($dbProxyInstance->dbSettings->getDbSpecPassword()) . "@"
-                    . $dbProxyInstance->dbSettings->getDbSpecServer() . ":"
-                    . $dbProxyInstance->dbSettings->getDbSpecPort();
-            }
+//            if (isset($options['authentication']['user'][0])
+//                && $options['authentication']['user'][0] == 'database_native'
+//            ) {
+//                $passPhrase = '';
+//                $generatedPrivateKey = ''; // avoid errors for defined in params.php.
+//
+//                $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
+//                $currentDirParam = $imRootDir . 'params.php';
+//                $parentDirParam = dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php';
+//                if (file_exists($parentDirParam)) {
+//                    include($parentDirParam);
+//                } else if (file_exists($currentDirParam)) {
+//                    include($currentDirParam);
+//                }
+//                $rsa = new RSA();
+//                $rsa->setPassword($passPhrase);
+//                $rsa->loadKey($generatedPrivateKey);
+//                $rsa->setEncryptionMode(RSA::ENCRYPTION_PKCS1);
+//                $cookieNameUser = '_im_username';
+//                $cookieNamePassword = '_im_crypted';
+//                $credential = isset($_COOKIE[$cookieNameUser]) ? urlencode($_COOKIE[$cookieNameUser]) : '';
+//                if (isset($_COOKIE[$cookieNamePassword]) && strlen($_COOKIE[$cookieNamePassword]) > 0) {
+//                    $credential .= ':' . urlencode($rsa->decrypt(base64_decode($_COOKIE[$cookieNamePassword])));
+//                }
+//                $urlHost = $dbProxyInstance->dbSettings->getDbSpecProtocol() . '://' . $credential . '@'
+//                    . $dbProxyInstance->dbSettings->getDbSpecServer() . ':'
+//                    . $dbProxyInstance->dbSettings->getDbSpecPort();
+//            } else {
+            $urlHost = $dbProxyInstance->dbSettings->getDbSpecProtocol() . "://"
+                . urlencode($dbProxyInstance->dbSettings->getDbSpecUser()) . ":"
+                . urlencode($dbProxyInstance->dbSettings->getDbSpecPassword()) . "@"
+                . $dbProxyInstance->dbSettings->getDbSpecServer() . ":"
+                . $dbProxyInstance->dbSettings->getDbSpecPort();
+//            }
             $file = $urlHost . $file;
             $oldLocale = setlocale(LC_CTYPE, 0);
             setlocale(LC_CTYPE, 'C');

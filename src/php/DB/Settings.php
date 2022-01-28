@@ -63,12 +63,12 @@ class Settings
     public $registerTableName = "registeredcontext";
     public $registerPKTableName = "registeredpks";
 
-    private $params_ldapServer;
-    private $params_ldapPort;
-    private $params_ldapBase;
-    private $params_ldapContainer;
-    private $params_ldapAccountKey;
-    private $params_ldapExpiringSeconds;
+//    private $params_ldapServer;
+//    private $params_ldapPort;
+//    private $params_ldapBase;
+//    private $params_ldapContainer;
+//    private $params_ldapAccountKey;
+    private $params_samlExpiringSeconds;
     private $params_mediaRoot;
     private $isSAML = false;
     private $samlAuthSource = '';
@@ -156,20 +156,20 @@ class Settings
 
     function __construct()
     {
-        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-        $currentDirParam = $currentDir . 'params.php';
-        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
-        if (file_exists($parentDirParam)) {
-            include($parentDirParam);
-        } else if (file_exists($currentDirParam)) {
-            include($currentDirParam);
-        }
-        $this->params_ldapServer = isset($ldapServer) ? $ldapServer : null;
-        $this->params_ldapPort = isset($ldapPort) ? $ldapPort : null;
-        $this->params_ldapBase = isset($ldapBase) ? $ldapBase : null;
-        $this->params_ldapContainer = isset($ldapContainer) ? $ldapContainer : null;
-        $this->params_ldapAccountKey = isset($ldapAccountKey) ? $ldapAccountKey : null;
-        $this->params_ldapExpiringSeconds = isset($ldapExpiringSeconds) ? $ldapExpiringSeconds : 600;
+//        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+//        $currentDirParam = $currentDir . 'params.php';
+//        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
+//        if (file_exists($parentDirParam)) {
+//            include($parentDirParam);
+//        } else if (file_exists($currentDirParam)) {
+//            include($currentDirParam);
+//        }
+//        $this->params_ldapServer = isset($ldapServer) ? $ldapServer : null;
+//        $this->params_ldapPort = isset($ldapPort) ? $ldapPort : null;
+//        $this->params_ldapBase = isset($ldapBase) ? $ldapBase : null;
+//        $this->params_ldapContainer = isset($ldapContainer) ? $ldapContainer : null;
+//        $this->params_ldapAccountKey = isset($ldapAccountKey) ? $ldapAccountKey : null;
+//        $this->params_samlExpiringSeconds = isset($samlExpiringSeconds) ? $samlExpiringSeconds : 600;
     }
 
     public function getAggregationSelect()
@@ -202,17 +202,17 @@ class Settings
         $this->aggregation_group_by = $value;
     }
 
-    public function getLDAPSettings()
-    {
-        return array(
-            $this->params_ldapServer,
-            $this->params_ldapPort,
-            $this->params_ldapBase,
-            $this->params_ldapContainer,
-            $this->params_ldapAccountKey,
-        );
-    }
-
+//    public function getLDAPSettings()
+//    {
+//        return array(
+//            $this->params_ldapServer,
+//            $this->params_ldapPort,
+//            $this->params_ldapBase,
+//            $this->params_ldapContainer,
+//            $this->params_ldapAccountKey,
+//        );
+//    }
+//
     public function addAssociated($name, $field, $value)
     {
         if (!$this->associated) {
@@ -582,14 +582,14 @@ class Settings
         return $this->getAuthenticationItem('authexpired');
     }
 
-    public function setLDAPExpiringSeconds($sec)
+    public function setSAMLExpiringSeconds($sec)
     {
-        $this->params_ldapExpiringSeconds = (int)$sec;
+        $this->params_samlExpiringSeconds = (int)$sec;
     }
 
-    public function getLDAPExpiringSeconds()
+    public function getSAMLExpiringSeconds()
     {
-        return $this->params_ldapExpiringSeconds;
+        return $this->params_samlExpiringSeconds;
     }
 
     public function setCurrentUser($str)

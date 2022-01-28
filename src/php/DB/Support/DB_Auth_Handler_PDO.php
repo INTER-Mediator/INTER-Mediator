@@ -272,7 +272,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         }
         $this->logger->setDebugMessage("[authSupportRetrieveHashedPassword] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            $limitSeconds = $this->dbSettings->getLDAPExpiringSeconds();
+            $limitSeconds = $this->dbSettings->getSAMLExpiringSeconds();
             if (isset($row['limitdt']) && !is_null($row['limitdt'])
                 && IMUtil::secondsFromNow($row['limitdt']) < $limitSeconds
             ) {
@@ -342,10 +342,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
                 return false;
             }
             $this->logger->setDebugMessage(
-                "[authSupportCreateUser - LDAP] {$sql}, LDAP expiring ={$this->dbSettings->getLDAPExpiringSeconds()}");
+                "[authSupportCreateUser - LDAP] {$sql}, LDAP expiring ={$this->dbSettings->getSAMLExpiringSeconds()}");
             foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
                 if (isset($row['limitdt']) && !is_null($row['limitdt'])) {
-                    if (IMUtil::secondsFromNow($row['limitdt']) > $this->dbSettings->getLDAPExpiringSeconds()) {
+                    if (IMUtil::secondsFromNow($row['limitdt']) > $this->dbSettings->getSAMLExpiringSeconds()) {
                         $this->logger->setDebugMessage("[authSupportCreateUser - LDAP] Over Limit Datetime . ");
                         $timeUp = true;
                         $hpw = $row['hashedpasswd'];
@@ -476,7 +476,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $this->logger->setDebugMessage("[privateGetUserIdFromUsername] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             if ($isCheckLimit && isset($row['limitdt']) && !is_null($row['limitdt'])) {
-                if (time() - strtotime($row['limitdt']) > $this->dbSettings->getLDAPExpiringSeconds()) {
+                if (time() - strtotime($row['limitdt']) > $this->dbSettings->getSAMLExpiringSeconds()) {
                     $this->overLimitDTUser = false;
                 }
             }
@@ -526,9 +526,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
     public
     function authSupportGetGroupsOfUser($user)
     {
-        $ldap = new LDAPAuth();
+        //$ldap = new LDAPAuth();
         $oAuth = new OAuthAuth();
-        if ($ldap->isActive || $oAuth->isActive) {
+        if (/* $ldap->isActive || */ $oAuth->isActive) {
             return $this->privateGetGroupsOfUser($user, true);
         } else {
             return $this->privateGetGroupsOfUser($user, false);
@@ -782,7 +782,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             if ($row['email'] == $username) {
                 $usernameCandidate = $row['username'];
             }
-//            $limitSeconds = $this->dbSettings->getLDAPExpiringSeconds();
+//            $limitSeconds = $this->dbSettings->getSAMLExpiringSeconds();
 //            if (isset($row['limitdt']) && !is_null($row['limitdt'])
 //                && IMUtil::secondsFromNow($row['limitdt']) < $limitSeconds) {
 //                return "_im_auth_failed_";
@@ -977,9 +977,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] " . var_export($row, true));
             $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] "
-                . "ldapLimit ={$this->dbSettings->getLDAPExpiringSeconds()}");
+                . "ldapLimit ={$this->dbSettings->getSAMLExpiringSeconds()}");
             if (isset($row['limitdt']) && !is_null($row['limitdt'])) {
-                if (time() - strtotime($row['limitdt']) > $this->dbSettings->getLDAPExpiringSeconds()) {
+                if (time() - strtotime($row['limitdt']) > $this->dbSettings->getSAMLExpiringSeconds()) {
                     $this->logger->setDebugMessage("[authSupportIsWithinLDAPLimit] returns false ");
                     return false;
                 } else {

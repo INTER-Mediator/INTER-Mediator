@@ -291,9 +291,9 @@ class GenerateJSCode
             $this->generateAssignJS("INTERMediatorOnPage.resetPageURL", $q, $resetPage, $q);
         }
 
-        $ldap = new LDAPAuth(); // for PHP 5.2, 5.3
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.isLDAP", $ldap->isActive ? "true" : "false");
+//        $ldap = new LDAPAuth(); // for PHP 5.2, 5.3
+//        $this->generateAssignJS(
+//            "INTERMediatorOnPage.isLDAP", $ldap->isActive ? "true" : "false");
         $this->generateAssignJS(
             "INTERMediatorOnPage.isOAuthAvailable", isset($oAuthProvider) ? "true" : "false");
         $authObj = new OAuthAuth();
@@ -307,11 +307,11 @@ class GenerateJSCode
             $this->generateAssignJS("INTERMediatorOnPage.oAuthScope",
                 $q, implode(' ', $authObj->infoScope()), $q);
         }
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.isNativeAuth",
-            (isset($options['authentication'])
-                && isset($options['authentication']['user'])
-                && ($options['authentication']['user'][0] === 'database_native')) ? "true" : "false");
+//        $this->generateAssignJS(
+//            "INTERMediatorOnPage.isNativeAuth",
+//            (isset($options['authentication'])
+//                && isset($options['authentication']['user'])
+//                && ($options['authentication']['user'][0] === 'database_native')) ? "true" : "false");
         $this->generateAssignJS(
             "INTERMediatorOnPage.authStoring",
             $q, (isset($options['authentication']) && isset($options['authentication']['storing'])) ?
@@ -324,26 +324,26 @@ class GenerateJSCode
             "INTERMediatorOnPage.realm", $q,
             (isset($options['authentication']) && isset($options['authentication']['realm'])) ?
                 $options['authentication']['realm'] : '', $q);
-        if (isset($generatedPrivateKey)) {
-            $rsaClass = IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
-            $rsa = new $rsaClass;
-            $rsa->setPassword($passPhrase);
-            $rsa->loadKey($generatedPrivateKey);
-            $rsa->setPassword();
-            $publickey = $rsa->getPublicKey();
-
-            $this->generateAssignJS(
-                "INTERMediatorOnPage.publickey",
-                "'" . str_replace(array("\r\n", "\r", "\n"), '', $publickey) . "'");
-            $this->generateAssignJS("INTERMediatorOnPage.publickeysize", $rsa->getSize());
-            if (in_array(sha1($generatedPrivateKey), array(
-                    '413351603fa756ecd8270147d1a84e9a2de2a3f9',  // Ver. 5.2
-                    '094f61a9db51e0159fb0bf7d02a321d37f29a715',  // Ver. 5.3
-                )) && isset($_SERVER['SERVER_ADDR']) && $_SERVER['SERVER_ADDR'] !== '192.168.56.101'
-            ) {
-                $this->generateDebugMessageJS('Please change the value of $generatedPrivateKey in params.php.');
-            }
-        }
+//        if (isset($generatedPrivateKey)) {
+//            $rsaClass = IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
+//            $rsa = new $rsaClass;
+//            $rsa->setPassword($passPhrase);
+//            $rsa->loadKey($generatedPrivateKey);
+//            $rsa->setPassword();
+//            $publickey = $rsa->getPublicKey();
+//
+//            $this->generateAssignJS(
+//                "INTERMediatorOnPage.publickey",
+//                "'" . str_replace(array("\r\n", "\r", "\n"), '', $publickey) . "'");
+//            $this->generateAssignJS("INTERMediatorOnPage.publickeysize", $rsa->getSize());
+//            if (in_array(sha1($generatedPrivateKey), array(
+//                    '413351603fa756ecd8270147d1a84e9a2de2a3f9',  // Ver. 5.2
+//                    '094f61a9db51e0159fb0bf7d02a321d37f29a715',  // Ver. 5.3
+//                )) && isset($_SERVER['SERVER_ADDR']) && $_SERVER['SERVER_ADDR'] !== '192.168.56.101'
+//            ) {
+//                $this->generateDebugMessageJS('Please change the value of $generatedPrivateKey in params.php.');
+//            }
+//        }
         if (isset($passwordPolicy)) {
             $this->generateAssignJS(
                 "INTERMediatorOnPage.passwordPolicy", $q, $passwordPolicy, $q);
@@ -394,7 +394,7 @@ class GenerateJSCode
         $jsCodeDir = $imPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
         $nodeModuleDir = $imPath . DIRECTORY_SEPARATOR . 'node_modules' . DIRECTORY_SEPARATOR;
         $content = '';
-        $content .= $this->readJSSource($nodeModuleDir . 'jsencrypt/bin/jsencrypt.js');
+        // $content .= $this->readJSSource($nodeModuleDir . 'jsencrypt/bin/jsencrypt.js');
         $content .= $this->readJSSource($nodeModuleDir . 'jssha/dist/sha.js');
         if ($isSocketIO) {
             $content .= $this->readJSSource($nodeModuleDir . 'socket.io-client/dist/socket.io.js');

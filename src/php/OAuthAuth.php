@@ -137,7 +137,7 @@ class OAuthAuth
 
         $dbProxy = new Proxy();
         $dbProxy->initialize(null, null, null, false);
-        $dbProxy->dbSettings->setLDAPExpiringSeconds(3600 * 24);
+        $dbProxy->dbSettings->setSAMLExpiringSeconds(3600 * 24);
         $credential = IMUtil::generateCredential(30, $this->passwordHash, $this->alwaysGenSHA2);
         $param = array(
             "username" => $tokenID["username"],

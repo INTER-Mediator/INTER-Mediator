@@ -188,9 +188,9 @@ let INTERMediatorOnPage = {
     return INTERMediatorOnPage.authHashedPasswordWorker('_im_credential2', value)
   },
 
-  authCryptedPassword: function (value = false) {
-    return INTERMediatorOnPage.authHashedPasswordWorker('_im_crypted', value)
-  },
+  // authCryptedPassword: function (value = false) {
+  //   return INTERMediatorOnPage.authHashedPasswordWorker('_im_crypted', value)
+  // },
 
   clearCredentials: function () {
     'use strict'
@@ -198,7 +198,7 @@ let INTERMediatorOnPage = {
     INTERMediatorOnPage.authHashedPassword('')
     INTERMediatorOnPage.authHashedPassword2m('')
     INTERMediatorOnPage.authHashedPassword2('')
-    INTERMediatorOnPage.authCryptedPassword('')
+    // INTERMediatorOnPage.authCryptedPassword('')
   },
 
   isComplementAuthData: function () {
@@ -238,7 +238,7 @@ let INTERMediatorOnPage = {
         INTERMediatorOnPage.removeCookie('_im_credential')
         INTERMediatorOnPage.removeCookie('_im_credential2m')
         INTERMediatorOnPage.removeCookie('_im_credential2')
-        INTERMediatorOnPage.removeCookie('_im_crypted')
+        // INTERMediatorOnPage.removeCookie('_im_crypted')
         break
       case 'session-storage':
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_clientid')
@@ -248,7 +248,7 @@ let INTERMediatorOnPage = {
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_credential2m')
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_credential2')
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_mediatoken')
-        INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_crypted')
+        // INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_crypted')
         break
     }
   },
@@ -543,7 +543,7 @@ let INTERMediatorOnPage = {
       newPasswordMessage.id = '_im_login_message'
       frontPanel.appendChild(newPasswordMessage)
 
-      if (this.isShowChangePassword && !INTERMediatorOnPage.isNativeAuth) {
+      if (this.isShowChangePassword /* && !INTERMediatorOnPage.isNativeAuth */) {
         breakLine = document.createElement('HR')
         frontPanel.appendChild(breakLine)
 
@@ -664,11 +664,11 @@ let INTERMediatorOnPage = {
         INTERMediatorOnPage.authHashedPassword2('need-hash-pls') // Dummy Hash for getting a challenge
         await INTERMediator_DBAdapter.getChallenge()
       }
-      if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
-        const encrypt = new JSEncrypt()
-        encrypt.setPublicKey(INTERMediatorOnPage.publickey)
-        INTERMediatorOnPage.authCryptedPassword(encrypt.encrypt(inputPassword))
-      }
+      // if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
+      //   const encrypt = new JSEncrypt()
+      //   encrypt.setPublicKey(INTERMediatorOnPage.publickey)
+      //   INTERMediatorOnPage.authCryptedPassword(encrypt.encrypt(inputPassword))
+      // }
       if (INTERMediatorOnPage.passwordHash < 1.1) {
         let shaObj = new jsSHA('SHA-1', 'TEXT')
         shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
@@ -1192,5 +1192,5 @@ let INTERMediatorOnPage = {
 
 // @@IM@@IgnoringRestOfFile
 module.exports = INTERMediatorOnPage
-const JSEncrypt = require('../../node_modules/jsencrypt/bin/jsencrypt.js')
+// const JSEncrypt = require('../../node_modules/jsencrypt/bin/jsencrypt.js')
 const INTERMediatorLib = require('../../src/js/INTER-Mediator-Lib')

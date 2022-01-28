@@ -608,8 +608,15 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
             "dbOption", "dbDSN", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
             "activateClientService", "accessLogLevel", "certVerifying", "passwordHash", "alwaysGenSHA2",
-            "isSAML", "samlAuthSource", "migrateSHA1to2", "samlAttrRules", "samlAdditionalRules",
+            "isSAML", "samlAuthSource", "migrateSHA1to2", "samlAttrRules", "samlAdditionalRules", "samlExpiringSeconds",
+            "ldapExpiringSeconds"
         ), true);
+
+        $this->dbSettings->setSAMLExpiringSeconds($params['samlExpiringSeconds'] ?? 600);
+        if (isset($params['ldapExpiringSeconds'])) {
+            $this->dbSettings->setSAMLExpiringSeconds($params['ldapExpiringSeconds']);
+        }
+
         $this->accessLogLevel = intval($params['accessLogLevel']);
         $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
         $this->passwordHash = $params['passwordHash'] ?? "1";
@@ -880,11 +887,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->dbClass->authHandler->authSupportCanMigrateSHA256Hash();
             }
             $this->dbSettings->setRequireAuthorization(true);
-            if (isset($authOptions['user'])
-                && $authOptions['user'][0] == 'database_native'
-            ) {
-                $this->dbSettings->setDBNative(true);
-            }
+//            if (isset($authOptions['user'])
+//                && $authOptions['user'][0] == 'database_native'
+//            ) {
+//                $this->dbSettings->setDBNative(true);
+//            }
         }
 
         $this->originalAccess = $access;
@@ -901,22 +908,22 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
             // User and Password are suppried but...
             if ($access != 'challenge') { // Not accessing getting a challenge.
-                if ($this->dbSettings->isDBNative()) {
-                    list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
-                    if ($password !== false) {
-                        if (!$this->checkChallenge($challenge, $this->clientId)) {
-                            $access = "do nothing";
-                            $this->dbSettings->setRequireAuthentication(true);
-                        } else {
-                            $this->dbSettings->setUserAndPasswordForAccess($this->paramAuthUser, $password);
-                            $this->logger->setDebugMessage("[checkChallenge] returns true.", 2);
-                        }
-                    } else {
-                        $this->logger->setDebugMessage("Can't decrypt.");
-                        $access = "do nothing";
-                        $this->dbSettings->setRequireAuthentication(true);
-                    }
-                } else { // Other than native authentication
+//                if ($this->dbSettings->isDBNative()) {
+//                    list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
+//                    if ($password !== false) {
+//                        if (!$this->checkChallenge($challenge, $this->clientId)) {
+//                            $access = "do nothing";
+//                            $this->dbSettings->setRequireAuthentication(true);
+//                        } else {
+//                            $this->dbSettings->setUserAndPasswordForAccess($this->paramAuthUser, $password);
+//                            $this->logger->setDebugMessage("[checkChallenge] returns true.", 2);
+//                        }
+//                    } else {
+//                        $this->logger->setDebugMessage("Can't decrypt.");
+//                        $access = "do nothing";
+//                        $this->dbSettings->setRequireAuthentication(true);
+//                    }
+//                } else { // Other than native authentication
                     $noAuthorization = true;
                     $authorizedGroups = $this->dbClass->authHandler->getAuthorizedGroups($access);
                     $authorizedUsers = $this->dbClass->authHandler->getAuthorizedUsers($access);
@@ -949,33 +956,34 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                     $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($this->paramAuthUser);
 
-                    $ldap = new LDAPAuth();
-                    $ldap->setLogger($this->logger);
-                    if ($ldap->isActive) { // LDAP auth
-                        if ($this->checkAuthorization($signedUser, true)) {
-                            $this->logger->setDebugMessage("IM-built-in Authentication for LDAP user succeed.");
-                            $this->authSucceed = true;
-                        } else { // Timeout with LDAP
-                            list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
-                            if ($ldap->bindCheck($signedUser, $password)) {
-                                $this->logger->setDebugMessage("LDAP Authentication succeed.");
-                                $this->authSucceed = true;
-                                [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
-                                if ($addResult) {
-                                    $this->dbSettings->setRequireAuthentication(false);
-                                    $this->dbSettings->setCurrentUser($signedUser);
-                                    $access = $this->originalAccess;
-                                }
-                                // The following re-auth doesn't work. The salt of hashed password is
-                                // different from the request. Here is after bind checking, so authentication
-                                // is passed anyway.
-//                                    if ($this->checkAuthorization($signedUser, true)) {
-//                                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
-//                                        $this->authSucceed = true;
-//                                    }
-                            }
-                        }
-                    } else if ($this->dbSettings->getIsSAML()) { // Set up as SAML
+//                    $ldap = new LDAPAuth();
+//                    $ldap->setLogger($this->logger);
+//                    if ($ldap->isActive) { // LDAP auth
+//                        if ($this->checkAuthorization($signedUser, true)) {
+//                            $this->logger->setDebugMessage("IM-built-in Authentication for LDAP user succeed.");
+//                            $this->authSucceed = true;
+//                        } else { // Timeout with LDAP
+//                            list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
+//                            if ($ldap->bindCheck($signedUser, $password)) {
+//                                $this->logger->setDebugMessage("LDAP Authentication succeed.");
+//                                $this->authSucceed = true;
+//                                [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
+//                                if ($addResult) {
+//                                    $this->dbSettings->setRequireAuthentication(false);
+//                                    $this->dbSettings->setCurrentUser($signedUser);
+//                                    $access = $this->originalAccess;
+//                                }
+//                                // The following re-auth doesn't work. The salt of hashed password is
+//                                // different from the request. Here is after bind checking, so authentication
+//                                // is passed anyway.
+////                                    if ($this->checkAuthorization($signedUser, true)) {
+////                                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+////                                        $this->authSucceed = true;
+////                                    }
+//                            }
+//                        }
+//                    } else
+                    if ($this->dbSettings->getIsSAML()) { // Set up as SAML
                         if ($this->checkAuthorization($signedUser, true)) {
                             $this->logger->setDebugMessage("IM-built-in Authentication for SAML user succeed.");
                             $this->authSucceed = true;
@@ -1022,7 +1030,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $access = "do nothing";
                         $this->dbSettings->setRequireAuthentication(true);
                     }
-                }
+//                }
             }
         }
         $this->suppressMediaToken = true;
@@ -1126,10 +1134,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                                     $this->dbSettings->getDbSpec(), true,
                                     $this->dbSettings->getDataSourceName(), true);
                             } else { // No file upload error.
+                                $dbresult = [];
+                                $result = $this->createInDB($access == 'replace');
+                                $this->outputOfProcessing['newRecordKeyValue'] = $result;
+                                $counter = 0;
                                 foreach ($uploadFiles as $oneFile) {
-                                    $dbresult = [];
-                                    $result = $this->createInDB($access == 'replace');
-                                    $this->outputOfProcessing['newRecordKeyValue'] = $result;
                                     $dbresult[] = $this->getUpdatedRecord()[0];
                                     if ($result !== false) {
                                         $fileUploader->processingWithParameters(
@@ -1138,10 +1147,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                                             $this->dbSettings->getDbSpec(),
                                             $this->logger->getDebugLevel(),
                                             $tableInfo['name'], $tableInfo['key'], $result,
-                                            $this->dbSettings->getAttachedFields(), [$oneFile], true
+                                            [$attachedFields[$counter]], [$oneFile], true
                                         );
                                     }
                                     $this->outputOfProcessing['dbresult'] = $dbresult;
+                                    $counter += 1;
                                 }
                             }
                         }
@@ -1319,49 +1329,49 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /* Authentication support */
-    function decrypting($paramCryptResponse)
-    {
-        $password = FALSE;
-        $challenge = FALSE;
-
-        $generatedPrivateKey = '';
-        $passPhrase = '';
-
-        $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
-        $currentDirParam = $imRootDir . 'params.php';
-        $parentDirParam = dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php';
-        if (file_exists($parentDirParam)) {
-            include($parentDirParam);
-        } else if (file_exists($currentDirParam)) {
-            include($currentDirParam);
-        }
-
-        /* cf.) encrypted in generate_authParams() of Adapter_DBServer.js */
-        $rsa = new RSA();
-        $rsa->setPassword($passPhrase);
-        $rsa->loadKey($generatedPrivateKey);
-        $rsa->setEncryptionMode(RSA::ENCRYPTION_PKCS1);
-        $token = $_SESSION['FM-Data-token'] ?? '';
-        $array = explode("\n", $paramCryptResponse);
-        if (strlen($array[0]) > 0 && isset($array[1]) && strlen($array[1]) > 0) {
-            $encryptedArray = explode("\n", $rsa->decrypt(base64_decode($array[0])));
-            if (isset($encryptedArray[1])) {
-                $challenge = $encryptedArray[1];
-            }
-            $encryptedPassword = $encryptedArray[0] . $array[1];
-            if (strlen($encryptedPassword) > 0) {
-                if (strlen($token) > 0 && get_class($this->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
-                    $password = '';
-                } else {
-                    $password = $rsa->decrypt(base64_decode($encryptedPassword));
-                }
-            } else {
-                return array(FALSE, FALSE);
-            }
-        }
-
-        return array($password, $challenge);
-    }
+//    function decrypting($paramCryptResponse)
+//    {
+//        $password = FALSE;
+//        $challenge = FALSE;
+//
+//        $generatedPrivateKey = '';
+//        $passPhrase = '';
+//
+//        $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
+//        $currentDirParam = $imRootDir . 'params.php';
+//        $parentDirParam = dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php';
+//        if (file_exists($parentDirParam)) {
+//            include($parentDirParam);
+//        } else if (file_exists($currentDirParam)) {
+//            include($currentDirParam);
+//        }
+//
+//        /* cf.) encrypted in generate_authParams() of Adapter_DBServer.js */
+//        $rsa = new RSA();
+//        $rsa->setPassword($passPhrase);
+//        $rsa->loadKey($generatedPrivateKey);
+//        $rsa->setEncryptionMode(RSA::ENCRYPTION_PKCS1);
+//        $token = $_SESSION['FM-Data-token'] ?? '';
+//        $array = explode("\n", $paramCryptResponse);
+//        if (strlen($array[0]) > 0 && isset($array[1]) && strlen($array[1]) > 0) {
+//            $encryptedArray = explode("\n", $rsa->decrypt(base64_decode($array[0])));
+//            if (isset($encryptedArray[1])) {
+//                $challenge = $encryptedArray[1];
+//            }
+//            $encryptedPassword = $encryptedArray[0] . $array[1];
+//            if (strlen($encryptedPassword) > 0) {
+//                if (strlen($token) > 0 && get_class($this->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+//                    $password = '';
+//                } else {
+//                    $password = $rsa->decrypt(base64_decode($encryptedPassword));
+//                }
+//            } else {
+//                return array(FALSE, FALSE);
+//            }
+//        }
+//
+//        return array($password, $challenge);
+//    }
 
     /**
      * @param $username
@@ -1397,7 +1407,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $isLDAP
      * @return bool
      */
-    function checkAuthorization($username, $isLDAP = false): bool
+    function checkAuthorization($username, $isSAML = false): bool
     {
         $falseHash = hash("sha256", uniqid("", true)); // for failing auth.
         $hashedvalue = $this->paramResponse ?? $falseHash;
@@ -1414,7 +1424,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         if ($uid <= 0) {
             return $returnValue;
         }
-        if ($isLDAP && !$this->dbClass->authHandler->authSupportIsWithinLDAPLimit($uid)) {
+        if ($isSAML && !$this->dbClass->authHandler->authSupportIsWithinLDAPLimit($uid)) {
             return $returnValue;
         }
         $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge($uid, $this->clientId);

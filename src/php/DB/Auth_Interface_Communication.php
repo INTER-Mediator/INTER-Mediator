@@ -20,7 +20,7 @@ interface Auth_Interface_Communication
     // The followings are used in Proxy::processingRequest.
     public function saveChallenge($username, $challenge, $clientId);
 
-    public function checkAuthorization($username, $isLDAP = false);
+    public function checkAuthorization($username, $isSAML = false);
 
     public function checkChallenge($challenge, $clientId);
 
