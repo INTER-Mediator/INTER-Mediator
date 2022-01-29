@@ -19,7 +19,6 @@ namespace INTERMediator\DB;
 use Exception;
 use INTERMediator\FileUploader;
 use INTERMediator\IMUtil;
-use INTERMediator\LDAPAuth;
 use INTERMediator\SAMLAuth;
 use INTERMediator\Locale\IMLocale;
 use INTERMediator\Messaging\MessagingProxy;
@@ -924,113 +923,84 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 //                        $this->dbSettings->setRequireAuthentication(true);
 //                    }
 //                } else { // Other than native authentication
-                    $noAuthorization = true;
-                    $authorizedGroups = $this->dbClass->authHandler->getAuthorizedGroups($access);
-                    $authorizedUsers = $this->dbClass->authHandler->getAuthorizedUsers($access);
+                $noAuthorization = true;
+                $authorizedGroups = $this->dbClass->authHandler->getAuthorizedGroups($access);
+                $authorizedUsers = $this->dbClass->authHandler->getAuthorizedUsers($access);
 
-                    $this->logger->setDebugMessage(str_replace("\n", "",
-                            "contextName={$this->dbSettings->getDataSourceName()}/access={$access}/"
-                            . "authorizedUsers=" . var_export($authorizedUsers, true)
-                            . "/authorizedGroups=" . var_export($authorizedGroups, true))
-                        , 2);
-                    if ((count($authorizedUsers) == 0 && count($authorizedGroups) == 0)) {
+                $this->logger->setDebugMessage(str_replace("\n", "",
+                        "contextName={$this->dbSettings->getDataSourceName()}/access={$access}/"
+                        . "authorizedUsers=" . var_export($authorizedUsers, true)
+                        . "/authorizedGroups=" . var_export($authorizedGroups, true))
+                    , 2);
+                if ((count($authorizedUsers) == 0 && count($authorizedGroups) == 0)) {
+                    $noAuthorization = false;
+                } else {
+                    $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+                    if (in_array($signedUser, $authorizedUsers)) {
                         $noAuthorization = false;
                     } else {
-                        $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
-                        if (in_array($signedUser, $authorizedUsers)) {
-                            $noAuthorization = false;
-                        } else {
-                            if (count($authorizedGroups) > 0) {
-                                $belongGroups = $this->dbClass->authHandler->authSupportGetGroupsOfUser($signedUser);
-                                $this->logger->setDebugMessage($signedUser . "=belongGroups=" . var_export($belongGroups, true), 2);
-                                if (count(array_intersect($belongGroups, $authorizedGroups)) != 0) {
-                                    $noAuthorization = false;
-                                }
+                        if (count($authorizedGroups) > 0) {
+                            $belongGroups = $this->dbClass->authHandler->authSupportGetGroupsOfUser($signedUser);
+                            $this->logger->setDebugMessage($signedUser . "=belongGroups=" . var_export($belongGroups, true), 2);
+                            if (count(array_intersect($belongGroups, $authorizedGroups)) != 0) {
+                                $noAuthorization = false;
                             }
                         }
                     }
-                    if ($noAuthorization) {
-                        $this->logger->setDebugMessage("Authorization doesn't meet the settings.");
-                        $access = "do nothing";
-                        $this->dbSettings->setRequireAuthentication(true);
-                    }
-                    $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($this->paramAuthUser);
-
-//                    $ldap = new LDAPAuth();
-//                    $ldap->setLogger($this->logger);
-//                    if ($ldap->isActive) { // LDAP auth
-//                        if ($this->checkAuthorization($signedUser, true)) {
-//                            $this->logger->setDebugMessage("IM-built-in Authentication for LDAP user succeed.");
-//                            $this->authSucceed = true;
-//                        } else { // Timeout with LDAP
-//                            list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
-//                            if ($ldap->bindCheck($signedUser, $password)) {
-//                                $this->logger->setDebugMessage("LDAP Authentication succeed.");
-//                                $this->authSucceed = true;
-//                                [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true);
-//                                if ($addResult) {
-//                                    $this->dbSettings->setRequireAuthentication(false);
-//                                    $this->dbSettings->setCurrentUser($signedUser);
-//                                    $access = $this->originalAccess;
-//                                }
-//                                // The following re-auth doesn't work. The salt of hashed password is
-//                                // different from the request. Here is after bind checking, so authentication
-//                                // is passed anyway.
-////                                    if ($this->checkAuthorization($signedUser, true)) {
-////                                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
-////                                        $this->authSucceed = true;
-////                                    }
-//                            }
-//                        }
-//                    } else
-                    if ($this->dbSettings->getIsSAML()) { // Set up as SAML
-                        if ($this->checkAuthorization($signedUser, true)) {
-                            $this->logger->setDebugMessage("IM-built-in Authentication for SAML user succeed.");
+                }
+                if ($noAuthorization) {
+                    $this->logger->setDebugMessage("Authorization doesn't meet the settings.");
+                    $access = "do nothing";
+                    $this->dbSettings->setRequireAuthentication(true);
+                }
+                $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($this->paramAuthUser);
+                if ($this->dbSettings->getIsSAML()) { // Set up as SAML
+                    if ($this->checkAuthorization($signedUser, true)) {
+                        $this->logger->setDebugMessage("IM-built-in Authentication for SAML user succeed.");
+                        $this->authSucceed = true;
+                    } else { // Timeout with SAML
+                        $SAMLAuth = new SAMLAuth($this->dbSettings->getSAMLAuthSource());
+                        $SAMLAuth->setSAMLAttrRules($this->dbSettings->getSAMLAttrRules());
+                        $SAMLAuth->setSAMLAdditionalRules($this->dbSettings->getSAMLAdditionalRules());
+                        [$additional, $signedUser] = $SAMLAuth->samlLoginCheck();
+                        $this->logger->setDebugMessage("SAML Auth result: user={$signedUser}, additional={$additional}, attributes="
+                            . var_export($SAMLAuth->getAttributes(), true));
+                        $this->outputOfProcessing['samlloginurl'] = $SAMLAuth->samlLoginURL($_SERVER['HTTP_REFERER']);
+                        $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
+                        if (!$additional) {
+                            $this->outputOfProcessing['samladditionalfail'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
+                        }
+                        $this->paramAuthUser = $signedUser;
+                        if ($signedUser) {
+                            $attrs = $SAMLAuth->getValuesFromAttributes();
+                            $this->logger->setDebugMessage(
+                                "SAML Authentication succeed. Attributes=" . var_export($attrs, true));
                             $this->authSucceed = true;
-                        } else { // Timeout with SAML
-                            $SAMLAuth = new SAMLAuth($this->dbSettings->getSAMLAuthSource());
-                            $SAMLAuth->setSAMLAttrRules($this->dbSettings->getSAMLAttrRules());
-                            $SAMLAuth->setSAMLAdditionalRules($this->dbSettings->getSAMLAdditionalRules());
-                            [$additional, $signedUser] = $SAMLAuth->samlLoginCheck();
-                            $this->logger->setDebugMessage("SAML Auth result: user={$signedUser}, additional={$additional}, attributes="
-                                . var_export($SAMLAuth->getAttributes(), true));
-                            $this->outputOfProcessing['samlloginurl'] = $SAMLAuth->samlLoginURL($_SERVER['HTTP_REFERER']);
-                            $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
-                            if (!$additional) {
-                                $this->outputOfProcessing['samladditionalfail'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
+                            $password = IMUtil::generateRandomPW();
+                            [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true, $attrs);
+                            if ($addResult) {
+                                $this->dbSettings->setRequireAuthentication(false);
+                                $this->dbSettings->setCurrentUser($signedUser);
+                                $access = $this->originalAccess;
+                                $this->outputOfProcessing['samluser'] = $signedUser;
+                                $this->outputOfProcessing['temppw'] = $hashedpw;
                             }
-                            $this->paramAuthUser = $signedUser;
-                            if ($signedUser) {
-                                $attrs = $SAMLAuth->getValuesFromAttributes();
-                                $this->logger->setDebugMessage(
-                                    "SAML Authentication succeed. Attributes=" . var_export($attrs, true));
-                                $this->authSucceed = true;
-                                $password = IMUtil::generateRandomPW();
-                                [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true, $attrs);
-                                if ($addResult) {
-                                    $this->dbSettings->setRequireAuthentication(false);
-                                    $this->dbSettings->setCurrentUser($signedUser);
-                                    $access = $this->originalAccess;
-                                    $this->outputOfProcessing['samluser'] = $signedUser;
-                                    $this->outputOfProcessing['temppw'] = $hashedpw;
-                                }
-                            }
-                        }
-                    } else { // Normal Login process
-                        if ($this->checkAuthorization($signedUser, false)) {
-                            $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
-                            $this->authSucceed = true;
                         }
                     }
+                } else { // Normal Login process
+                    if ($this->checkAuthorization($signedUser, false)) {
+                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
+                        $this->authSucceed = true;
+                    }
+                }
 
-                    if (!$this->authSucceed) {
-                        $this->logger->setDebugMessage(
-                            "Authentication doesn't meet valid.{$signedUser}/{$this->paramResponse}/{$this->clientId}");
-                        // Not Authenticated!
-                        $access = "do nothing";
-                        $this->dbSettings->setRequireAuthentication(true);
-                    }
-//                }
+                if (!$this->authSucceed) {
+                    $this->logger->setDebugMessage(
+                        "Authentication doesn't meet valid.{$signedUser}/{$this->paramResponse}/{$this->clientId}");
+                    // Not Authenticated!
+                    $access = "do nothing";
+                    $this->dbSettings->setRequireAuthentication(true);
+                }
             }
         }
         $this->suppressMediaToken = true;
@@ -1392,10 +1362,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $clientId
      * @return string
      */
-    function saveChallenge($username, $challenge, $clientId, $isLDAP = false)
+    function saveChallenge($username, $challenge, $clientId, $isSAML = false)
     {
         $this->logger->setDebugMessage(
-            "[saveChallenge]user=${username}, challenge={$challenge}, clientid={$clientId}, isLDAP={$isLDAP}", 2);
+            "[saveChallenge]user=${username}, challenge={$challenge}, clientid={$clientId}, isSAML={$isSAML}", 2);
         $username = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($username);
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
         $this->authDbClass->authHandler->authSupportStoreChallenge($uid, $challenge, $clientId);
@@ -1404,7 +1374,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     /**
      * @param $username
-     * @param $isLDAP
+     * @param $isSAML
      * @return bool
      */
     function checkAuthorization($username, $isSAML = false): bool
@@ -1424,7 +1394,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         if ($uid <= 0) {
             return $returnValue;
         }
-        if ($isSAML && !$this->dbClass->authHandler->authSupportIsWithinLDAPLimit($uid)) {
+        if ($isSAML && !$this->dbClass->authHandler->authSupportIsWithinSAMLLimit($uid)) {
             return $returnValue;
         }
         $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge($uid, $this->clientId);
@@ -1508,11 +1478,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $password
      * @return mixed
      */
-    function addUser($username, $password, $isLDAP = false, $attrs = null)
+    function addUser($username, $password, $isSAML = false, $attrs = null)
     {
-        $this->logger->setDebugMessage("[addUser] username={$username}, isLDAP={$isLDAP}", 2);
+        $this->logger->setDebugMessage("[addUser] username={$username}, isSAML={$isSAML}", 2);
         $hashedPw = IMUtil::convertHashedPassword($password, $this->passwordHash, $this->alwaysGenSHA2);
-        $returnValue = $this->dbClass->authHandler->authSupportCreateUser($username, $hashedPw, $isLDAP, $password, $attrs);
+        $returnValue = $this->dbClass->authHandler->authSupportCreateUser($username, $hashedPw, $isSAML, $password, $attrs);
         $this->logger->setDebugMessage("[addUser] authSupportCreateUser returns: {$returnValue}", 2);
         return [$returnValue, $hashedPw];
     }

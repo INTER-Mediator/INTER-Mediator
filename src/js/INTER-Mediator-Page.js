@@ -39,7 +39,6 @@ let INTERMediatorOnPage = {
   authExpired: 3600,
   //isOnceAtStarting: true,
   publickey: null,
-  isNativeAuth: false,
   httpuser: null,
   httppasswd: null,
   mediaToken: null,
@@ -74,7 +73,6 @@ let INTERMediatorOnPage = {
   browserCompatibility: null,
   clientNotificationIdentifier: null, // @Private
   metadata: null,
-  isLDAP: null,
   appLocale: null,
   appCurrency: null,
   isShowProgress: true,
@@ -543,7 +541,7 @@ let INTERMediatorOnPage = {
       newPasswordMessage.id = '_im_login_message'
       frontPanel.appendChild(newPasswordMessage)
 
-      if (this.isShowChangePassword /* && !INTERMediatorOnPage.isNativeAuth */) {
+      if (this.isShowChangePassword) {
         breakLine = document.createElement('HR')
         frontPanel.appendChild(breakLine)
 
@@ -664,11 +662,6 @@ let INTERMediatorOnPage = {
         INTERMediatorOnPage.authHashedPassword2('need-hash-pls') // Dummy Hash for getting a challenge
         await INTERMediator_DBAdapter.getChallenge()
       }
-      // if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
-      //   const encrypt = new JSEncrypt()
-      //   encrypt.setPublicKey(INTERMediatorOnPage.publickey)
-      //   INTERMediatorOnPage.authCryptedPassword(encrypt.encrypt(inputPassword))
-      // }
       if (INTERMediatorOnPage.passwordHash < 1.1) {
         let shaObj = new jsSHA('SHA-1', 'TEXT')
         shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)

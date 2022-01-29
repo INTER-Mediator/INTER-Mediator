@@ -22,7 +22,7 @@ interface Auth_Interface_DB					// with using table for authentication/authoriza
     public function authSupportRetrieveChallenge($uid, $clientId, $isDelete = true);	// issuedhash
     public function authSupportCheckMediaToken($uid);								// issuedhash
     public function authSupportRetrieveHashedPassword($username);					// authuser
-    public function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null, $attrs=null);	// authuser
+    public function authSupportCreateUser($username, $hashedpassword, $isSAML = false, $ldapPassword = null, $attrs=null);	// authuser
     public function authSupportChangePassword($username, $hashednewpassword);		// authuser
     public function authSupportCheckMediaPrivilege($tableName, $targeting, $userField, $user, $keyField, $keyValue);	// (any table)
     public function authSupportGetUserIdFromEmail($email);							// authuser
@@ -36,6 +36,6 @@ interface Auth_Interface_DB					// with using table for authentication/authoriza
     public function authSupportUserEnrollmentStart($userid, $hash);             // issuedhash
     public function authSupportUserEnrollmentEnrollingUser($hash);                     // issuedhash
     public function authSupportUserEnrollmentActivateUser($userID, $password, $rawPWField, $rawPW);  // authuser
-    public function authSupportIsWithinLDAPLimit($userID);  // authuser
+    public function authSupportIsWithinSAMLLimit($userID);  // authuser
     public function authSupportCanMigrateSHA256Hash();  // authuser, issuedhash
 }

@@ -92,7 +92,6 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
                 'authentication' => array( // table only, for all operations
                     'user' => array('user1'), // Itemize permitted users
                     'group' => array('group2'), // Itemize permitted groups
-                    'privilege' => array(), // Itemize permitted privileges
                     'user-table' => 'im_sample.authuser', // Default value
                     'group-table' => 'im_sample.authgroup',
                     'corresponding-table' => 'im_sample.authcor',

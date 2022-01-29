@@ -24,7 +24,6 @@ class INTERMediator_Test extends TestCase
                 'authentication' => array( // table only, for all operations
                     'user' => array('user1'), // Itemize permitted users
                     'group' => array('group2'), // Itemize permitted groups
-                    'privilege' => array(), // Itemize permitted privileges
                     'user-table' => 'authuser', // Default value
                     'group-table' => 'authgroup',
                     'corresponding-table' => 'authcor',
@@ -47,11 +46,11 @@ class INTERMediator_Test extends TestCase
         $testName = "Check parameters in params.php.";
 
         $params = IMUtil::getFromParamsPHPFile(
-            ["issuedHashDSN", "scriptPathPrefix", "ldapServer", "oAuthClientSecret"], true);
+            ["issuedHashDSN", "scriptPathPrefix", "isSAML", "oAuthClientSecret"], true);
 
         $this->assertFalse(isset($params['issuedHashDSN']), $testName);
         $this->assertFalse(isset($params['scriptPathPrefix']), $testName);
-        $this->assertFalse(isset($params['ldapServer']), $testName);
+        $this->assertFalse(isset($params['isSAML']), $testName);
         $this->assertFalse(isset($params['oAuthClientSecret']), $testName);
     }
 
