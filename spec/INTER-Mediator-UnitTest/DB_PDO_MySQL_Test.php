@@ -92,7 +92,6 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
                 'authentication' => array( // table only, for all operations
                     'user' => array('user1'), // Itemize permitted users
                     'group' => array('group2'), // gropu2 contain user4 and user5
-                    'privilege' => array(), // Itemize permitted privileges
                     'user-table' => 'authuser', // Default value
                     'group-table' => 'authgroup',
                     'corresponding-table' => 'authcor',

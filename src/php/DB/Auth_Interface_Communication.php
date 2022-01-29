@@ -26,7 +26,7 @@ interface Auth_Interface_Communication
 
     public function checkMediaToken($user, $token);
 
-    public function addUser($username, $password, $isLDAP = false, $attrs = null);
+    public function addUser($username, $password, $isSAML = false, $attrs = null);
 
     public function authSupportGetSalt($username);
 

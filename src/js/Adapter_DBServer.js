@@ -49,27 +49,6 @@ const INTERMediator_DBAdapter = {
     if (INTERMediatorOnPage.authUser() && INTERMediatorOnPage.authUser().length > 0) {
       authParams = '&clientid=' + encodeURIComponent(INTERMediatorOnPage.clientId())
       authParams += '&authuser=' + encodeURIComponent(INTERMediatorOnPage.authUser())
-      // if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
-      //   if (INTERMediatorOnPage.authCryptedPassword && INTERMediatorOnPage.authChallenge) {
-      //     const encrypt = new JSEncrypt()
-      //     // require 2048-bit key length at least
-      //     encrypt.setPublicKey(INTERMediatorOnPage.publickey)
-      //     const encrypted = encrypt.encrypt(
-      //       INTERMediatorOnPage.authCryptedPassword().substr(0, 220) +
-      //       IMLib.nl_char + INTERMediatorOnPage.authChallenge
-      //     )
-      //     authParams += '&cresponse=' + encodeURIComponent(encrypted +
-      //       IMLib.nl_char + INTERMediatorOnPage.authCryptedPassword().substr(220))
-      //     if (INTERMediator_DBAdapter.debugMessage) {
-      //       INTERMediatorLog.setDebugMessage('generate_authParams/authCryptedPassword=' +
-      //         INTERMediatorOnPage.authCryptedPassword())
-      //       INTERMediatorLog.setDebugMessage('generate_authParams/authChallenge=' +
-      //         INTERMediatorOnPage.authChallenge)
-      //     }
-      //   } else {
-      //     authParams += '&cresponse=dummy'
-      //   }
-      // }
       if ((INTERMediatorOnPage.authHashedPassword()
           || INTERMediatorOnPage.authHashedPassword2m()
           || INTERMediatorOnPage.authHashedPassword2())
@@ -240,17 +219,6 @@ const INTERMediator_DBAdapter = {
               if (clientid !== null) {
                 INTERMediatorOnPage.clientId(clientid)
               }
-              // if (mediatoken !== null) {
-              //   INTERMediatorOnPage.mediaToken = mediatoken
-              //   INTERMediatorOnPage.storeMediaCredentialsToCookie()
-              // }
-              // This is forced fail-over for the password was changed in LDAP auth.
-              // if (INTERMediatorOnPage.isLDAP === true &&
-              //   INTERMediatorOnPage.authUserHexSalt !== INTERMediatorOnPage.authHashedPassword().substr(-8, 8)) {
-              //   if (accessURL.match(/access=challenge/)) {
-              //     requireAuth = true
-              //   }
-              // }
               if (INTERMediatorOnPage.isSAML) {
                 if (jsonObject.samluser) {
                   INTERMediatorOnPage.authUser(jsonObject.samluser)
@@ -404,13 +372,6 @@ const INTERMediator_DBAdapter = {
       this.server_access_async(params, 1029, 1030,
         (result) => {
           if (result.newPasswordResult) {
-            // if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
-            //   const encrypt = new JSEncrypt()
-            //   encrypt.setPublicKey(INTERMediatorOnPage.publickey)
-            //   INTERMediatorOnPage.authCryptedPassword(encrypt.encrypt(newpassword))
-            // } else {
-            //  INTERMediatorOnPage.authCryptedPassword('')
-            // }
             if (INTERMediatorOnPage.passwordHash < 1.1) {
               let shaObj = new jsSHA('SHA-1', 'TEXT')
               shaObj.update(newpassword + INTERMediatorOnPage.authUserSalt)

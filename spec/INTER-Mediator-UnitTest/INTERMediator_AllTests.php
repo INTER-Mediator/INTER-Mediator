@@ -62,7 +62,7 @@ class INTERMediator_AllTests extends TestCase
         $suite->addTestFile($folder . 'GenerateJSCode_Test.php');
         $suite->addTestFile($folder . 'IMUtil_Test.php');
         $suite->addTestFile($folder . 'INTERMediator_Test.php');
-        $suite->addTestFile($folder . 'LDAPAuth_Test.php');
+        // $suite->addTestFile($folder . 'LDAPAuth_Test.php');
         $suite->addTestFile($folder . 'MediaAccess_Test.php');
         $suite->addTestFile($folder . 'MessageStrings_Test.php');
         $suite->addTestFile($folder . 'MessageStrings_ja_Test.php');
