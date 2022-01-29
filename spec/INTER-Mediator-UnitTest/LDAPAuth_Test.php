@@ -7,9 +7,6 @@
  */
 
 use \PHPUnit\Framework\TestCase;
-use \INTERMediator\LDAPAuth;
-
-//require_once(dirname(__FILE__) . '/../LDAPAuth.php');
 
 class LDAPAuth_Test extends TestCase
 {

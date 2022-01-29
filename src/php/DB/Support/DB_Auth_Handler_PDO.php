@@ -17,7 +17,6 @@
 namespace INTERMediator\DB\Support;
 
 use INTERMediator\IMUtil;
-use INTERMediator\LDAPAuth;
 use INTERMediator\OAuthAuth;
 use PDO;
 
@@ -526,9 +525,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
     public
     function authSupportGetGroupsOfUser($user)
     {
-        //$ldap = new LDAPAuth();
         $oAuth = new OAuthAuth();
-        if (/* $ldap->isActive || */ $oAuth->isActive) {
+        if ($oAuth->isActive) {
             return $this->privateGetGroupsOfUser($user, true);
         } else {
             return $this->privateGetGroupsOfUser($user, false);
