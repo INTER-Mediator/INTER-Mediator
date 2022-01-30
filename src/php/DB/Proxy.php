@@ -1362,10 +1362,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $clientId
      * @return string
      */
-    function saveChallenge($username, $challenge, $clientId, $isSAML = false)
+    function saveChallenge($username, $challenge, $clientId)
     {
         $this->logger->setDebugMessage(
-            "[saveChallenge]user=${username}, challenge={$challenge}, clientid={$clientId}, isSAML={$isSAML}", 2);
+            "[saveChallenge]user=${username}, challenge={$challenge}, clientid={$clientId}", 2);
         $username = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($username);
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
         $this->authDbClass->authHandler->authSupportStoreChallenge($uid, $challenge, $clientId);
