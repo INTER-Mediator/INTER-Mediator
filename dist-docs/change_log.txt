@@ -81,6 +81,8 @@ Ver.8 (July 22, 2021)
   IM_NAV_insert_button, IM_NAV_delete_button, IM_NAV_copy_button, IM_NAV_logout_button and IM_NAV_save_button.
 - [INFO] The inter-mediator-plugin-fileupload is deprecated. The inter-mediator-plugin-jqueryfileupload is a replacement.
   We are going to maintain the jqueryfileupload so far and hope it forever.
+- [INFO] The /spec/Manual-Test directory is created on this repository. The SAML-Test.md file show the result of the
+  manual test with SAML features.
 - [BUG FIX] Fix compatibility with Claris FileMaker Server. The affected version is Ver.7.
 - [BUG FIX] IMLibPageNavigation.moveDetailOnceAgain() didn't work fine.
 - [BUG FIX] On the navi-control key, confirm-delete works but delete-confirm didn't (also insert).
