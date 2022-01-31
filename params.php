@@ -14,17 +14,14 @@
  */
 
 /* Database connection (PDO or FileMaker_FX)
- * ===================
- */
+ * =================== */
 $dbClass = 'PDO';
 
-/* Common settings for FileMaker_FX and PDO:
- */
+// Common settings for FileMaker_FX and PDO:
 $dbUser = 'web';
 $dbPassword = 'password';
 
-/* FileMaker_FX aware below:
- */
+// FileMaker_FX/DataAPI are aware of below:
 $dbServer = '127.0.0.1';
 $dbPort = '80';
 //$dbDataType = 'FMPro12';
@@ -32,16 +29,14 @@ $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
 //$certVerifying = false;
 
-/* PDO awares below:
- */
+// PDO is aware of below:
 $dbDSN = 'mysql:host=127.0.0.1;dbname=test_db;charset=utf8mb4';
 //$dbDSN = 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;charset=utf8mb4';
 $dbOption = array();
 
 /* Security
  * ===================
- * Please change the value of $webServerName and $generatedPrivateKey.
- * FQDN or domain name of your web server for protecting CSRF
+ * Please change the value of $webServerName. FQDN or domain name of your web server for protecting CSRF
  * Example:
  *  $webServerName = array('www.inter-mediator.com');
  *  $webServerName = array('inter-mediator.com', 'example.jp');
