@@ -10,8 +10,6 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.10 (in development)
-
 Ver.9 (January 31, 2022)
 - [Important] Native upser authentication and LDAP direct supporting was dropped. If you want to LDAP server
   to authenticate user, the SAML is the replacement. SAML IdP can integrate with LDAP server as a identifying users.
