@@ -41,6 +41,8 @@ Ver.9 (in development)
 - The variable $suppressAuthTargetFillingOnCreate in params.php prevents to set the target field of authentication
   on carete operation.
 - The dist-docs/generateminifyjshere.sh file is the shell script generating the minified js file on composer installed.
+- [INFO] The /spec/Manual-Test directory is created on this repository. The SAML-Test.md file show the result of the
+  manual test with SAML features.
 - [BUG FIX] The addCondition() api of INTERMediator class ignore conditions in some case (value: 0, or without value).
   This was over checking the object describing a condition, and modified to easier.
 - [BUG FIX] The MediaAccess class with a context level authentication couldn't show images in some cases.
