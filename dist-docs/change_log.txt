@@ -10,7 +10,7 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.10　(In Development)
+Ver.10 (In Development)
 
 Ver.9 (January 31, 2022)
 - [Important] Native upser authentication and LDAP direct supporting was dropped. If you want to LDAP server
