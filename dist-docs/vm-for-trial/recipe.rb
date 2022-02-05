@@ -891,8 +891,14 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 18
   end
 end
 if node[:platform] == 'alpine'
-  package 'nodejs-npm' do
-    action :install
+  if node[:platform_version].to_f >= 3.15
+    package 'npm' do
+      action :install
+    end
+  else
+    package 'nodejs-npm' do
+      action :install
+    end
   end
 end
 if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)

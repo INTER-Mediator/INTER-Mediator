@@ -514,7 +514,10 @@ describe package('nodejs-legacy'), :if => os[:family] == 'ubuntu' && os[:release
   it { should be_installed }
 end
 
-describe package('nodejs-npm'), :if => os[:family] == 'alpine' do
+describe package('npm'), :if => os[:family] == 'alpine' && os[:release].to_f >= 3.15 do
+  it { should be_installed }
+end
+describe package('nodejs-npm'), :if => os[:family] == 'alpine' && os[:release].to_f < 3.15 do
   it { should be_installed }
 end
 describe package('npm'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
