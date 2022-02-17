@@ -50,6 +50,7 @@ class LineDivider implements Iterator
         }
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         list($prevCRLF, $nextPos) = $this->getNextLinePosition();
@@ -66,6 +67,7 @@ class LineDivider implements Iterator
         list($prevCRLF, $this->pos) = $this->getNextLinePosition();
     }
 
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->key;
