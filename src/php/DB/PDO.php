@@ -633,7 +633,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityForUpdate());
 
         $this->logger->setDebugMessage(
-            $prepSQL->queryString . " with " . str_replace("\n", " ", var_export($setParameter, true)));
+            $prepSQL->queryString . " with " . str_replace("\n", " ", var_export($setParameter, true) ?? ""));
 
         $result = $prepSQL->execute($setParameter);
         if ($result === false) {
@@ -1087,6 +1087,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
 
     private function isTrue($d)
     {
+        if (is_null($d)) {
+            return false;
+        }
         if (strtolower($d) == 'true' || strtolower($d) == 't') {
             return true;
         } else if (intval($d) > 0) {

@@ -928,9 +928,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $authorizedUsers = $this->dbClass->authHandler->getAuthorizedUsers($access);
 
                 $this->logger->setDebugMessage(str_replace("\n", "",
-                        "contextName={$this->dbSettings->getDataSourceName()}/access={$access}/"
+                    ("contextName={$this->dbSettings->getDataSourceName()}/access={$access}/"
                         . "authorizedUsers=" . var_export($authorizedUsers, true)
-                        . "/authorizedGroups=" . var_export($authorizedGroups, true))
+                        . "/authorizedGroups=" . var_export($authorizedGroups, true)) ?? "")
                     , 2);
                 if ((count($authorizedUsers) == 0 && count($authorizedGroups) == 0)) {
                     $noAuthorization = false;
@@ -1243,7 +1243,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $cookieNameToken = '_im_mediatoken';
                 $realm = $this->dbSettings->getAuthenticationItem('realm');
                 if ($realm) {
-                    $realm = str_replace(" ", "_", str_replace(".", "_", $realm));
+                    $realm = str_replace(" ", "_", str_replace(".", "_", $realm ?? ""));
                     $cookieNameUser .= ('_' . $realm);
                     $cookieNameToken .= ('_' . $realm);
                 }

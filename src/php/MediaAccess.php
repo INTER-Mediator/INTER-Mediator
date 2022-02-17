@@ -184,7 +184,7 @@ class MediaAccess
                                     $h = explode(': ', $line);
                                     if (isset($h[0]) && isset($h[1]) && $h[0] == 'Set-Cookie') {
                                         $sessionKey = str_replace(
-                                            '; HttpOnly', '', str_replace('X-FMS-Session-Key=', '', $h[1])
+                                            '; HttpOnly', '', str_replace('X-FMS-Session-Key=', '', $h[1] ?? "")
                                         );
                                     }
                                 }
@@ -217,12 +217,12 @@ class MediaAccess
                 $fileName = basename($file);
                 $qPos = strpos($fileName, "?");
                 if ($qPos !== false) {
-                    $fileName = str_replace("%20", " ", substr($fileName, 0, $qPos));
+                    $fileName = str_replace("%20", " ", substr($fileName, 0, $qPos) ?? "");
                 }
                 header("Content-Type: " . IMUtil::getMimeType($fileName));
                 header("Content-Length: " . strlen($content));
                 header("Content-Disposition: {$this->disposition}; filename={$dq}"
-                    . str_replace("+", "%20", urlencode($fileName)) . $dq);
+                    . str_replace("+", "%20", urlencode($fileName) ?? "") . $dq);
                 $util = new IMUtil();
                 $util->outputSecurityHeaders();
                 $this->outputImage($content);
@@ -265,7 +265,7 @@ class MediaAccess
                 header("Content-Type: " . IMUtil::getMimeType($fileName));
                 header("Content-Length: " . strlen($content));
                 header("Content-Disposition: {$this->disposition}; filename={$dq}"
-                    . str_replace("+", "%20", urlencode($fileName)) . $dq);
+                    . str_replace("+", "%20", urlencode($fileName) ?? "") . $dq);
                 $util = new IMUtil();
                 $util->outputSecurityHeaders();
                 $this->outputImage($content);
@@ -390,7 +390,7 @@ class MediaAccess
         $cookieNameToken = "_im_mediatoken";
         if (isset($options['authentication']['realm'])) {
             $realm = str_replace(" ", "_",
-                str_replace(".", "_", $options['authentication']['realm']));
+                str_replace(".", "_", $options['authentication']['realm'] ?? ""));
             $cookieNameUser .= ('_' . $realm);
             $cookieNameToken .= ('_' . $realm);
         }
@@ -477,7 +477,7 @@ class MediaAccess
                 $tmpDir = sys_get_temp_dir();
             }
             $temp = 'IM_TEMP_' .
-                str_replace(DIRECTORY_SEPARATOR, '-', base64_encode(IMUtil::randomString(12))) .
+                str_replace(DIRECTORY_SEPARATOR, '-', base64_encode(IMUtil::randomString(12)) ?? "") .
                 '.jpg';
             if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
                 $tempPath = $tmpDir . $temp;

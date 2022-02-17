@@ -51,7 +51,7 @@ class OAuthAuth
         $this->isActive = false;
         $this->provider = "unspecified";
 
-        switch (strtolower($params["oAuthProvider"])) {
+        switch (strtolower($params["oAuthProvider"] ?? "")) {
             case "google":
                 $this->baseURL = 'https://accounts.google.com/o/oauth2/auth';
                 //    $this->getTokenURL = 'https://accounts.google.com/o/oauth2/token';

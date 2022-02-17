@@ -88,6 +88,7 @@ class FieldDivider implements Iterator
         return $result;
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         list($startPos, $endPos, $nextPos) = $this->getNextLinePosition();
@@ -105,6 +106,7 @@ class FieldDivider implements Iterator
         list($startPos, $endPos, $this->pos) = $this->getNextLinePosition();
     }
 
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->key;

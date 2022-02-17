@@ -27,7 +27,7 @@ class DataConverter_FMDateTime_Test extends TestCase
         if (getenv('TRAVIS') === 'true') {
             $expected = '05/01/00 12:34:56';  // for Travis CI
         } else {
-            $expected = strftime('%x %H:%M:%S', strtotime('01/05/00 12:34:56'));
+            $expected = date('Y-m-d H:i:s', strtotime('01/05/00 12:34:56'));
         }
         $datetimeString = '01/05/2000 12:34:56';
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($datetimeString));
@@ -35,7 +35,7 @@ class DataConverter_FMDateTime_Test extends TestCase
         if (getenv('TRAVIS') === 'true') {
             $expected = '05/01/00';  // for Travis CI
         } else {
-            $expected = strftime('%x', strtotime('01/05/00'));
+            $expected = date('Y-m-d', strtotime('01/05/00'));
         }
         $dateString = '01/05/2000';
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($dateString));

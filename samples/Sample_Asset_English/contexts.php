@@ -28,7 +28,7 @@ IM_Entry(
                 array('field' => 'purchase', 'direction' => 'ASC'),
             ),
             'default-values'=>array(
-                array('field'=>'purchase', 'value'=> strftime('%Y-%m-%d')),
+                array('field'=>'purchase', 'value'=> date('Y-m-d')),
             )
         ),
         // Modification 2: Modification for contexts
@@ -65,7 +65,7 @@ IM_Entry(
             ),
             'repeat-control'=>'insert delete',
             'default-values'=>array(
-                array('field'=>'rentdate', 'value'=> strftime('%Y-%m-%d')),
+                array('field'=>'rentdate', 'value'=> date('Y-m-d')),
             )
         ),
         array(

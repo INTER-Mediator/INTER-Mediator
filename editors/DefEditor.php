@@ -96,7 +96,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                     changeIncludeIMPath(
                         $fileContent,
                         "require_once('../INTER-Mediator.php');"
-                    ))));
+                    ) ?? "")));
         eval($convert);
 
         $seq = 0;
@@ -508,7 +508,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                     changeIncludeIMPath(
                         $fileContent,
                         "require_once('../INTER-Mediator.php');"
-                    ))));
+                    ) ?? "")));
         eval($convert);
 
         $allKeys = array(
@@ -581,7 +581,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                     }
                     $setValue = $this->dbSettings->getValueOfField($theKey);
                     if (array_search($theKey, $keysShouldArray) !== false) {
-                        $setValue = explode(",", str_replace(" ", "", $setValue));
+                        $setValue = explode(",", str_replace(" ", "", $setValue ?? ""));
                     }
                     if ((is_array($setValue) && count($setValue) > 0 && strlen($setValue[0]) > 0)
                         || strlen($setValue) > 0
@@ -599,7 +599,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                 } else if (strpos($theKey, "protect-") === 0) {
                     $setValue = $this->dbSettings->getValueOfField($theKey);
                     if (array_search($theKey, $keysShouldArray) !== false) {
-                        $setValue = explode(",", str_replace(" ", "", $setValue));
+                        $setValue = explode(",", str_replace(" ", "", $setValue ?? ""));
                     }
                     if ((is_array($setValue) && count($setValue) > 0 && strlen($setValue[0]) > 0)
                         || strlen($setValue) > 0
@@ -729,7 +729,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                             unset($globalOptions["authentication"]["email-as-username"]);
                         }
                     } else if ($authKey === "user" || $authKey === "group") {
-                        $setValue = explode(",", str_replace(" ", "", $setValue));
+                        $setValue = explode(",", str_replace(" ", "", $setValue ?? ""));
                         if ((is_array($setValue) && count($setValue) > 0 && strlen($setValue[0]) > 0)
                             || strlen($setValue) > 0
                         ) {
@@ -889,7 +889,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
 
         $sq = "'";
         foreach ($this->spacialValue as $term) {
-            $newFileContent = str_replace($sq . $term . $sq, $term, $newFileContent);
+            $newFileContent = str_replace($sq . $term . $sq, $term, $newFileContent ?? "");
             $fileWriteResult = file_put_contents($filePath, $newFileContent);
             if ($fileWriteResult === false) {
                 $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
@@ -922,7 +922,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                     changeIncludeIMPath(
                         $fileContent,
                         "require_once('../INTER-Mediator.php');"
-                    ))));
+                    ) ?? "")));
         eval($convert);
 
         switch ($dataSourceName) {
@@ -1107,7 +1107,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                     changeIncludeIMPath(
                         $fileContent,
                         "require_once('../INTER-Mediator.php');"
-                    ))));
+                    ) ?? "")));
         eval($convert);
 
         switch ($dataSourceName) {

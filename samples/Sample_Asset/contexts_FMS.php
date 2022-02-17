@@ -28,7 +28,7 @@ IM_Entry(
                 array('field' => 'purchase', 'direction' => 'ascend'),
             ),
             'default-values'=>array(
-                array('field'=>'purchase', 'value'=> strftime('%Y-%m-%d')),
+                array('field'=>'purchase', 'value'=> date('Y-m-d')),
             )
         ),
         array(
@@ -62,7 +62,7 @@ IM_Entry(
             ),
             'repeat-control'=>'insert delete',
             'default-values'=>array(
-                array('field'=>'rentdate', 'value'=> strftime('%Y-%m-%d')),
+                array('field'=>'rentdate', 'value'=> date('Y-m-d')),
             )
         ),
         array(

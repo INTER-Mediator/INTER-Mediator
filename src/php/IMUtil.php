@@ -185,7 +185,7 @@ class IMUtil
 
     public static function removeNull($str)
     {
-        return str_replace("\x00", '', $str);
+        return str_replace("\x00", '', $str ?? "");
     }
 
     // Message Class Detection
@@ -404,9 +404,9 @@ class IMUtil
             $params = IMUtil::getFromParamsPHPFile(
                 array('xFrameOptions', 'contentSecurityPolicy', 'accessControlAllowOrigin'), true);
         }
-        $xFrameOptions = str_replace("\r", '', str_replace("\n", '', $params['xFrameOptions']));
-        $contentSecurityPolicy = str_replace("\r", '', str_replace("\n", '', $params['contentSecurityPolicy']));
-        $accessControlAllowOrigin = str_replace("\r", '', str_replace("\n", '', $params['accessControlAllowOrigin']));
+        $xFrameOptions = str_replace("\r", '', str_replace("\n", '', $params['xFrameOptions'] ?? ""));
+        $contentSecurityPolicy = str_replace("\r", '', str_replace("\n", '', $params['contentSecurityPolicy'] ?? ""));
+        $accessControlAllowOrigin = str_replace("\r", '', str_replace("\n", '', $params['accessControlAllowOrigin'] ?? ""));
 
         if (is_null($xFrameOptions) || empty($xFrameOptions)) {
             $xFrameOptions = 'SAMEORIGIN';
@@ -443,7 +443,7 @@ class IMUtil
                                 str_replace("\r", "\\r",
                                     str_replace("\xe2\x80\xa8", "\\n",      // U+2028
                                         str_replace("\xe2\x80\xa9", "\\n",  // U+2029
-                                            str_replace("\\", "\\\\", $str))))))))));
+                                            str_replace("\\", "\\\\", $str ?? ""))))))))));
     }
 
     /**
