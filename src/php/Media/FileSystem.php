@@ -183,15 +183,15 @@ class FileSystem implements UploadingSupport
             case "assjis":
                 $jStr = mb_convert_encoding($jStr, "SJIS", "UTF-8");
                 $jStr = mb_convert_encoding($jStr, "UTF-8", "SJIS");
-                $jStr = str_replace(DIRECTORY_SEPARATOR, '_', str_replace('.', '_', $jStr));
+                $jStr = str_replace(DIRECTORY_SEPARATOR, '_', str_replace('.', '_', $jStr ?? ""));
                 break;
             case "asucs4":
                 $jStr = mb_convert_encoding($jStr, "UCS-4", "UTF-8");
                 $jStr = mb_convert_encoding($jStr, "UTF-8", "UCS-4");
-                $jStr = str_replace(DIRECTORY_SEPARATOR, '_', str_replace('.', '_', $jStr));
+                $jStr = str_replace(DIRECTORY_SEPARATOR, '_', str_replace('.', '_', $jStr ?? ""));
                 break;
             default:
-                $jStr = str_replace('.', '_', urlencode($jStr));
+                $jStr = str_replace('.', '_', urlencode($jStr) ?? "");
                 break;
         }
         return $jStr;

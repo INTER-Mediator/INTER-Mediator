@@ -247,7 +247,7 @@ class ServiceServerProxy
         $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
         $scriptPath = "src/js/Service_Server.js";
         if (IMUtil::isPHPExecutingWindows()) {
-            $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath);
+            $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath ?? "");
         }
 
         $logFile = $this->foreverLog ?? (tempnam(sys_get_temp_dir(), 'IMSS-') . ".log");
@@ -267,7 +267,7 @@ class ServiceServerProxy
         $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
         $scriptPath = "src/js/Service_Server.js";
         if (IMUtil::isPHPExecutingWindows()) {
-            $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath);
+            $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath ?? "");
         }
         $cmd = "{$forever} restart {$scriptPath}";
         $this->executeCommand($cmd);

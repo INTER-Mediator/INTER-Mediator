@@ -52,7 +52,7 @@ if (file_exists('/etc/alpine-release')) {
 }
 if (file_exists('/etc/redhat-release')) {
     $osName = 'CentOS Linux';
-    $osVersion = str_replace('CentOS Linux ', '', file_get_contents('/etc/redhat-release'));
+    $osVersion = str_replace('CentOS Linux ', '', file_get_contents('/etc/redhat-release') ?? "");
 }
 ?>
 <html lang="ja">

@@ -50,7 +50,7 @@ class LineDivider implements Iterator
         }
     }
 
-    public function current()
+    public function current(): mixed
     {
         list($prevCRLF, $nextPos) = $this->getNextLinePosition();
         if ($prevCRLF > 0) {
@@ -66,7 +66,7 @@ class LineDivider implements Iterator
         list($prevCRLF, $this->pos) = $this->getNextLinePosition();
     }
 
-    public function key()
+    public function key(): mixed
     {
         return $this->key;
     }

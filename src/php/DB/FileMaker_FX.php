@@ -150,22 +150,22 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
     public function stringWithoutCredential($str)
     {
         if (is_null($this->fx)) {
-            $str = str_replace($this->dbSettings->getDbSpecUser(), "********", $str);
-            return str_replace($this->dbSettings->getDbSpecPassword(), "********", $str);
+            $str = str_replace($this->dbSettings->getDbSpecUser(), "********", $str ?? "");
+            return str_replace($this->dbSettings->getDbSpecPassword(), "********", $str ?? "");
         } else {
-            $str = str_replace($this->dbSettings->getAccessUser(), "********", $str);
-            return str_replace($this->dbSettings->getAccessPassword(), "********", $str);
+            $str = str_replace($this->dbSettings->getAccessUser(), "********", $str ?? "");
+            return str_replace($this->dbSettings->getAccessPassword(), "********", $str ?? "");
         }
     }
 
     private function stringReturnOnly($str)
     {
-        return str_replace("\n\r", "\r", str_replace("\n", "\r", $str));
+        return str_replace("\n\r", "\r", str_replace("\n", "\r", $str ?? ""));
     }
 
     private function unifyCRLF($str)
     {
-        return str_replace("\n", "\r", str_replace("\r\n", "\r", $str));
+        return str_replace("\n", "\r", str_replace("\r\n", "\r", $str ?? ""));
     }
 
     private function setSearchConditionsForCompoundFound($field, $value, $operator = NULL)
@@ -201,10 +201,10 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                 if (isset($condition['situation']) &&
                     isset($condition['definition']) && !empty($condition['definition'])
                 ) {
-                    $scriptName = str_replace('&', '', $condition['definition']);
+                    $scriptName = str_replace('&', '', $condition['definition'] ?? "");
                     $parameter = '';
                     if (isset($condition['parameter']) && !empty($condition['parameter'])) {
-                        $parameter = str_replace('&', '', $condition['parameter']);
+                        $parameter = str_replace('&', '', $condition['parameter'] ?? "");
                     }
                     switch ($condition['situation']) {
                         case 'post':
@@ -267,7 +267,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
         $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), '');
         $this->dbSettings->setDbSpecDataType(
             str_replace('fmpro', 'fmalt',
-                strtolower($this->dbSettings->getDbSpecDataType())));
+                strtolower($this->dbSettings->getDbSpecDataType()) ?? ""));
         $result = $this->fx->FMView();
 
         if (!is_array($result)) {
@@ -306,14 +306,14 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                     $context['records'] = 1;
                     $context['paging'] = true;
                     $this->dbSettings->setDbSpecDataType(
-                        str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+                        str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType()) ?? ""));
                 }
             }
         }
         if ($this->dbSettings->getPrimaryKeyOnly()) {
             $this->dbSettings->setDbSpecDataType(
                 str_replace('fmpro', 'fmalt',
-                    strtolower($this->dbSettings->getDbSpecDataType())));
+                    strtolower($this->dbSettings->getDbSpecDataType()) ?? ""));
         }
 
         $limitParam = 100000000;
@@ -1020,7 +1020,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                     $usePortal = true;
                     $context['paging'] = true;
                     $this->dbSettings->setDbSpecDataType(
-                        str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+                        str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType()) ?? ""));
                 }
             }
         }
@@ -1231,7 +1231,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                     $context['paging'] = true;
                     $this->dbSettings->setDbSpecDataType(
                         str_replace('fmpro', 'fmalt',
-                            strtolower($this->dbSettings->getDbSpecDataType())));
+                            strtolower($this->dbSettings->getDbSpecDataType()) ?? ""));
                 }
             }
         }
@@ -1374,7 +1374,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                     $context['paging'] = true;
                     $this->dbSettings->setDbSpecDataType(
                         str_replace('fmpro', 'fmalt',
-                            strtolower($this->dbSettings->getDbSpecDataType())));
+                            strtolower($this->dbSettings->getDbSpecDataType()) ?? ""));
                 }
             }
         }

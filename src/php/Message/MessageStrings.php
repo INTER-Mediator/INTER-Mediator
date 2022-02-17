@@ -47,7 +47,7 @@ class MessageStrings
         $index = 1;
         if (!is_null($appending)) {
             foreach ($appending as $keyword) {
-                $msg = str_replace("@{$index}@", $keyword, $msg);
+                $msg = str_replace("@{$index}@", $keyword, $msg ?? "");
                 $index++;
             }
         }

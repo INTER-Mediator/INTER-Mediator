@@ -173,22 +173,22 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
     public function stringWithoutCredential($str)
     {
         if (is_null($this->fmData)) {
-            $str = str_replace($this->dbSettings->getDbSpecUser(), "********", $str);
-            return str_replace($this->dbSettings->getDbSpecPassword(), "********", $str);
+            $str = str_replace($this->dbSettings->getDbSpecUser(), "********", $str ?? "");
+            return str_replace($this->dbSettings->getDbSpecPassword(), "********", $str ?? "");
         } else {
-            $str = str_replace($this->dbSettings->getAccessUser(), "********", $str);
-            return str_replace($this->dbSettings->getAccessPassword(), "********", $str);
+            $str = str_replace($this->dbSettings->getAccessUser(), "********", $str ?? "");
+            return str_replace($this->dbSettings->getAccessPassword(), "********", $str ?? "");
         }
     }
 
     private function stringReturnOnly($str)
     {
-        return str_replace("\n\r", "\r", str_replace("\n", "\r", $str));
+        return str_replace("\n\r", "\r", str_replace("\n", "\r", $str ?? ""));
     }
 
     private function unifyCRLF($str)
     {
-        return str_replace("\n", "\r", str_replace("\r\n", "\r", $str));
+        return str_replace("\n", "\r", str_replace("\r\n", "\r", $str ?? ""));
     }
 
 
@@ -224,10 +224,10 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 if (isset($condition['situation']) &&
                     isset($condition['definition']) && !empty($condition['definition'])
                 ) {
-                    $scriptName = str_replace('&', '', $condition['definition']);
+                    $scriptName = str_replace('&', '', $condition['definition'] ?? "");
                     $parameter = '';
                     if (isset($condition['parameter']) && !empty($condition['parameter'])) {
-                        $parameter = str_replace('&', '', $condition['parameter']);
+                        $parameter = str_replace('&', '', $condition['parameter'] ?? "");
                     }
                     switch ($condition['situation']) {
                         case 'post':
@@ -600,7 +600,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
 
             $result = null;
             if ($conditions && count($conditions) === 1 && isset($conditions[0]['recordId'])) {
-                $recordId = str_replace('=', '', $conditions[0]['recordId']);
+                $recordId = str_replace('=', '', $conditions[0]['recordId'] ?? "");
                 if (is_numeric($recordId)) {
                     $conditions[0]['recordId'] = $recordId;
                     $result = $this->fmData->{$layout}->getRecord($recordId);
@@ -859,7 +859,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         $data = array();
         $portal = array();
         if (count($condition) === 1 && isset($condition[0]) && isset($condition[0]['recordId'])) {
-            $recordId = str_replace('=', '', $condition[0]['recordId']);
+            $recordId = str_replace('=', '', $condition[0]['recordId'] ?? "");
             if (is_numeric($recordId)) {
                 $result = $this->fmData->{$layout}->getRecord($recordId);
             }
@@ -973,7 +973,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 }
 
                 if ($useContainer === TRUE) {
-                    $data[$fieldName] = str_replace(array("\r\n", "\r", "\n"), "\r", $data[$fieldName]);
+                    $data[$fieldName] = str_replace(array("\r\n", "\r", "\n"), "\r", $data[$fieldName] ?? "");
                     $meta = explode("\r", $data[$fieldName]);
                     $fileName = $meta[0];
                     $contaierData = $meta[1];
@@ -983,7 +983,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                         $tmpDir = sys_get_temp_dir();
                     }
                     $temp = 'IM_TEMP_' . str_replace(DIRECTORY_SEPARATOR, '-',
-                            base64_encode(IMUtil::randomString(12))) . '.jpg';
+                            base64_encode(IMUtil::randomString(12)) ?? "") . '.jpg';
                     if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
                         $tempPath = $tmpDir . $temp;
                     } else {

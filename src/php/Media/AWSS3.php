@@ -102,7 +102,7 @@ class AWSS3 implements UploadingSupport
 
             $schemaInUrl = "https://";
             if ($this->s3urlCustomize && strpos($result['ObjectURL'], $schemaInUrl) === 0) {
-                $storedURL = str_replace($schemaInUrl, "s3://", $result['ObjectURL']);
+                $storedURL = str_replace($schemaInUrl, "s3://", $result['ObjectURL'] ?? "");
             } else {
                 $storedURL = $result['ObjectURL'];
             }

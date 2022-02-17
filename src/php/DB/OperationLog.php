@@ -95,7 +95,7 @@ class OperationLog
                 $cookieNameUser = "_im_username";
                 if (isset($this->contextOptions['authentication']['realm'])) {
                     $cookieNameUser .= ('_' . str_replace(" ", "_",
-                            str_replace(".", "_", $this->contextOptions['authentication']['realm'])));
+                            str_replace(".", "_", $this->contextOptions['authentication']['realm']) ?? ""));
                 }
                 $userValue = isset($_COOKIE[$cookieNameUser]) ? $_COOKIE[$cookieNameUser] : '';
             }
@@ -143,7 +143,7 @@ class OperationLog
                 && preg_match("/'(value_[0-9]+)' =>/", $v, $matches)) {
                 $v = "'{$matches[1]}' => '***',";
             }
-            return trim(str_replace(['array (', ')', "\n", "\r", "\t"], ['[', ']', '', '', ''], $v));
+            return trim(str_replace(['array (', ')', "\n", "\r", "\t"], ['[', ']', '', '', ''], $v ?? ""));
         };
         return implode('', array_filter(array_map($convert,
             explode("\n", var_export($ar, true)))));

@@ -48,7 +48,7 @@ spl_autoload_register(function ($className) {
 });
 
 // Define constant
-define("IM_TODAY", strftime('%Y-%m-%d'));
+define("IM_TODAY", date('Y-m-d'));
 
 /**
  * INTER-Mediator entry point

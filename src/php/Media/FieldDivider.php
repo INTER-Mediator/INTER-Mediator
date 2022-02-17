@@ -88,7 +88,7 @@ class FieldDivider implements Iterator
         return $result;
     }
 
-    public function current()
+    public function current(): mixed
     {
         list($startPos, $endPos, $nextPos) = $this->getNextLinePosition();
         if ($nextPos > 0) {
@@ -105,7 +105,7 @@ class FieldDivider implements Iterator
         list($startPos, $endPos, $this->pos) = $this->getNextLinePosition();
     }
 
-    public function key()
+    public function key(): mixed
     {
         return $this->key;
     }

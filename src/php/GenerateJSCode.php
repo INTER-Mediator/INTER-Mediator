@@ -39,14 +39,14 @@ class GenerateJSCode
     {
         $q = '"';
         echo "INTERMediatorLog.setDebugMessage({$q}"
-            . str_replace("\n", " ", addslashes($message)) . "{$q});\n";
+            . str_replace("\n", " ", addslashes($message) ?? "") . "{$q});\n";
     }
 
     public function generateErrorMessageJS($message)
     {
         $q = '"';
         echo "INTERMediatorLog.setErrorMessage({$q}"
-            . str_replace("\n", " ", addslashes($message)) . "{$q});";
+            . str_replace("\n", " ", addslashes($message) ?? "") . "{$q});";
     }
 
     public function generateInitialJSCode($datasource, $options, $dbspecification, $debug)

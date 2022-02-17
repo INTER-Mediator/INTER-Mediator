@@ -37,14 +37,14 @@ class DataConverter_MySQLDateTime_Test extends TestCase
         $string = ' ';
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($string));
 
-        $expected = strftime('%x %H:%M:%S', strtotime('01/05/00 12:34:56'));
+        $expected = date('Y-m-d H:i:s', strtotime('01/05/00 12:34:56'));
         if (getenv('TRAVIS') === 'true') {
             //$expected = '05/01/00 12:34:56';  // for Travis CI
         }
         $datetimeString = '2000-01-05 12:34:56';
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($datetimeString));
 
-        $expected = strftime('%x', strtotime('01/05/00'));
+        $expected = date('Y-m-d', strtotime('01/05/00'));
         if (getenv('TRAVIS') === 'true') {
             //$expected = '05/01/00';  // for Travis CI
         }

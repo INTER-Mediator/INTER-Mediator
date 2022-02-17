@@ -53,19 +53,19 @@ class FMDateTime
             $sep = explode(' ', $str);
             $comp = explode('/', $sep[0]);
             $dtObj = new DateTime($comp[2] . '-' . $comp[0] . '-' . $comp[1] . ' ' . $sep[1]);
-            $fmt = '%x %H:%M:%S';
+            $fmt = 'Y-m-d H:i:s';
         } elseif (($sp === FALSE) && ($slash === 2) && ($colon === 0)) {
             $comp = explode('/', $str);
             $dtObj = new DateTime($comp[2] . '-' . $comp[0] . '-' . $comp[1]);
-            $fmt = '%x';
+            $fmt = 'Y-m-d';
         } elseif (($sp === FALSE) && ($slash === 0) && ($colon === 2)) {
             $dtObj = new DateTime($str);
-            $fmt = '%H:%M:%S';
+            $fmt = 'H:i:s';
         }
         if ($dtObj === false) {
             return $str;
         }
-        return strftime(($this->fmt == '') ? $fmt : $this->fmt, $dtObj->format('U'));
+        return date(($this->fmt == '') ? $fmt : $this->fmt, $dtObj->format('U'));
     }
 
     public function converterFromUserToDB($str)

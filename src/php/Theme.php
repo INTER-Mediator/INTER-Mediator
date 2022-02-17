@@ -46,7 +46,7 @@ class Theme
         $themeNameInRequest = $_GET['theme'];
         $selfInRequest = $_SERVER["SCRIPT_NAME"];
 
-        $tType = str_replace('..', '', $_GET['type']);
+        $tType = str_replace('..', '', $_GET['type'] ?? "");
         if (strtolower($tType) == "css" && !isset($_GET['name'])) {
             $fpath = $this->pathToTheme($_GET['theme']) . "/{$tType}/";
             $cssFiles = glob("{$fpath}*.css");
@@ -58,7 +58,7 @@ class Theme
                 "url({$selfInRequest}?theme={$themeNameInRequest}" . '&type=images&name=$1)', $fContent);
             $fpath = "something.css";
         } else {
-            $fName = str_replace('..', '', $_GET['name']);
+            $fName = str_replace('..', '', $_GET['name'] ?? "");
             $fpath = $this->pathToTheme($_GET['theme']) . "/{$tType}/{$fName}";
             $fContent = file_get_contents($fpath);
         }
@@ -72,7 +72,7 @@ class Theme
     private function pathToTheme($themeName): ?string
     {
         $imPath = IMUtil::pathToINTERMediator();
-        $themeName = str_replace('..', '', $themeName);
+        $themeName = str_replace('..', '', $themeName ?? "");
         $candidateDirs = is_null($this->altThemePath) ? array() : array($this->altThemePath . "/{$themeName}");
         $candidateDirs[] = $imPath . "/themes/{$themeName}";
         if (is_null($this->altThemePath)) {
