@@ -32,7 +32,7 @@ test('Valid password hash should be generated using jssha\'', () => {
   assert(hash.length, 64)
 })
 
-test('The result of jssha should be SHA-1 based hash', () => {
+test('The result of jssha should be SHA-256 based hash', () => {
   'use strict'
   let shaObj = new jsSHA('SHA-256', 'TEXT')
   shaObj.update('1234')
@@ -48,7 +48,7 @@ test('Valid password hash should be generated using jssha\'', () => {
   assert(hash.length, 64)
 })
 
-test('The result of jssha should be SHA-1 based hash', () => {
+test('The result of jssha should be SHA-256 based hash', () => {
   'use strict'
   let shaObj = new jsSHA('SHA-256', 'TEXT')
   shaObj.update('1234')

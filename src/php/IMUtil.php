@@ -168,6 +168,28 @@ class IMUtil
         return $osName == "Windows NT";
     }
 
+    public static function getServerUserHome(): string
+    {
+        if (IMUtil::isPHPExecutingWindows()) {
+            $homeDir = getenv("USERPROFILE");
+        }else {
+            $homeDir = posix_getpwuid(posix_geteuid())["dir"];
+        }
+        return $homeDir;
+    }
+
+    public static function getServerUserName(): string
+    {
+        if (IMUtil::isPHPExecutingWindows()) {
+            $homeDir = get_current_user();
+        }else {
+            // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
+            // get_current_user doen't work on the ubuntu 18 of EC2. It returns the user logs in with ssh.
+            $homeDir = posix_getpwuid(posix_geteuid())["name"];
+        }
+        return $homeDir;
+    }
+
     public static function isPHPExecutingUNIX(): bool
     {
         $osName = php_uname("s");
