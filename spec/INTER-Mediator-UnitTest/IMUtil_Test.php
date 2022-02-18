@@ -273,4 +273,14 @@ class IMUtil_Test extends TestCase
             $this->assertEquals($expected, IMUtil::getMimeType($path));
         }
     }
+
+    public function test_UserNameHome()
+    {
+        $user = IMUtil::getServerUserName();
+        $home = IMUtil::getServerUserHome();
+
+        $this->assertNotNull($user, "IMUtil::getServerUserName has to return any strings.");
+        $this->assertNotNull($home, "IMUtil::getServerUserHome has to return any strings.");
+    }
+
 }

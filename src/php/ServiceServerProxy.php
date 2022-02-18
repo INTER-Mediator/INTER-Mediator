@@ -87,16 +87,10 @@ class ServiceServerProxy
             return $ssStatus;
         } else {
             if (!$this->isServerStartable()) {
-                if (IMUtil::isPHPExecutingWindows()) {
-                    $uInfo = [];
-                    $uInfo['name'] = get_current_user();
-                } else {
-                    // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
-                    // get_current_user doen't work on the ubuntu 18 of EC2. It returns the user logs in with ssh.
-                    $uInfo = posix_getpwuid(posix_geteuid());
-                }
+                $userName = IMUtil::getServerUserName();
+                $userHome = IMUtil::getServerUserHome();
                 $this->errors[] = $this->messageHead . "Service Server can't boot because the root directory " .
-                    "({$uInfo["dir"]}) of the web server user ({$uInfo['name']})  isn't writable.";
+                    "({$userHome}) of the web server user ({$userName})  isn't writable.";
                 return false;
             }
             $waitSec = 3;
@@ -199,13 +193,7 @@ class ServiceServerProxy
     private function executeCommand($command)
     {
         $imPath = IMUtil::pathToINTERMediator();
-        if (IMUtil::isPHPExecutingWindows()) {
-            $home = getenv("USERPROFILE");
-            putenv('FOREVER_ROOT=' . $home);
-        } else {
-            $user = posix_getpwuid(posix_getuid());
-            putenv('FOREVER_ROOT=' . $user['dir']);
-        }
+        putenv('FOREVER_ROOT=' . IMUtil::getServerUserHome());
         if ($this->paramsBoot) {
             putenv('PATH=' . realpath($imPath . "/node_modules/.bin") .
                 (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
@@ -227,13 +215,7 @@ class ServiceServerProxy
 
     private function isServerStartable(): bool
     {
-        if (IMUtil::isPHPExecutingWindows()) {
-            $homeDir = getenv("USERPROFILE");
-        }else {
-            // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
-            // get_current_user doen't work on the ubuntu 18 of EC2. It returns the user logs in with ssh.
-            $homeDir = posix_getpwuid(posix_geteuid())["dir"];
-        }
+        $homeDir = IMUtil::getServerUserHome();
         if (file_exists($homeDir) && is_dir($homeDir) && is_writable($homeDir)) {
             return true;
         }
