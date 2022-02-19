@@ -1190,7 +1190,7 @@ const INTERMediator = {
                 postSetFields.push({'id': nodeId, 'value': curVal})
               }
               contextObj.setValue(keyingValue, nInfo.field, curVal, nodeId, curTarget)
-              if (typeof(idValuesForFieldName[nInfo.field]) === 'undefined') {
+              if (typeof (idValuesForFieldName[nInfo.field]) === 'undefined') {
                 idValuesForFieldName[nInfo.field] = []
               }
               idValuesForFieldName[nInfo.field].push(nodeId)
@@ -1265,6 +1265,8 @@ const INTERMediator = {
           keyingValue = keyField + '=' + keyValue
         }
         let idValuesForFieldName = setupLinkedNode(repeatersOneRec, contextObj, targetRecordset, ix, keyingValue)
+        contextObj.setValue(keyingValue, "_im_seq", ix + 1);
+        contextObj.setValue(keyingValue, "_im_count",countRecord);
         IMLibPageNavigation.setupDeleteButton(encNodeTag, repeatersOneRec, contextObj, keyField, keyValue)
         IMLibPageNavigation.setupNavigationButton(encNodeTag, repeatersOneRec, currentContextDef, keyField, keyValue, contextObj)
         IMLibPageNavigation.setupCopyButton(encNodeTag, repNodeTag, repeatersOneRec, contextObj, targetRecordset[ix])
@@ -1295,7 +1297,7 @@ const INTERMediator = {
               if (!newNode.id) {
                 INTERMediator.setIdValue(newNode)
               }
-              contextObj.setValue(keyingValue, '_im_repeater', '', newNode.id, '', currentContextDef.portal)
+              //contextObj.setValue(keyingValue, '_im_repeater', newNode, newNode.id, '', currentContextDef.portal)
               await seekEnclosureNode(newNode, targetRecordset[ix], idValuesForFieldName, contextObj)
             }
           }
