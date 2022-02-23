@@ -1250,8 +1250,9 @@ this.lookingUpInfo
         IMLibQueue.setTask((() => {
           const targetContext = newContext
           const cDef = contextDef
-          const pKey = cDef.relation[0]['join-field'];
           const pValue = value
+          const parentObj = {}
+          parentObj[cDef.relation[0]['join-field']] = pValue
           const lookingUpInfoObj = this.lookingUpInfo[contextInfo.record]
           const thisObj = this
           let fields = []
@@ -1263,8 +1264,6 @@ this.lookingUpInfo
           }
           return (completeTask) => {
             try {
-              const parentObj = {}
-              parentObj[pKey] = pValue
               INTERMediator_DBAdapter.db_query_async(
                 {
                   'name': cDef.name,
