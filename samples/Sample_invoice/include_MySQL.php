@@ -56,7 +56,8 @@ IM_Entry(
         [
             'name' => 'product',
             'key' => 'id',
-            'relation' => [['foreign-key' => 'id', 'join-field' => 'product_id', 'operator' => '=',]]
+            'relation' => [['foreign-key' => 'id', 'join-field' => 'product_id', 'operator' => '=',]],
+            'records' => 1000,
         ],
         [
             'name' => 'productlist',
@@ -67,5 +68,5 @@ IM_Entry(
     ],
     [],
     ['db-class' => 'PDO'],
-    false
+    2
 );

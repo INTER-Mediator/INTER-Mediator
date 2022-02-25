@@ -158,7 +158,7 @@ class IMLibContext {
               recordset = result.dbresult
             }
             if (!recordset || !recordset[0] || // This value could be null or undefined
-              typeof(recordset[0][targetFieldCapt]) === 'undefined') {
+              typeof (recordset[0][targetFieldCapt]) === 'undefined') {
               errorProc()
               return
             }
@@ -547,7 +547,7 @@ class IMLibContext {
 
   setModified(recKey, key, value) {
     'use strict'
-    if (typeof(this.modified[recKey]) === 'undefined') {
+    if (typeof (this.modified[recKey]) === 'undefined') {
       this.modified[recKey] = {}
     }
     this.modified[recKey][key] = value
@@ -800,13 +800,13 @@ class IMLibContext {
       console.error('Using the portal parameter in IMLibContext.setValue')
     }
     if (recKey) {
-      if (typeof(this.store[recKey]) === 'undefined') {
+      if (typeof (this.store[recKey]) === 'undefined') {
         this.store[recKey] = {}
       }
-      if (portal && typeof(this.store[recKey][key]) === 'undefined') {
+      if (portal && typeof (this.store[recKey][key]) === 'undefined') {
         this.store[recKey][key] = {}
       }
-      if (typeof(this.binding[recKey]) === 'undefined') {
+      if (typeof (this.binding[recKey]) === 'undefined') {
         this.binding[recKey] = {}
         if (this.sequencing) {
           this.recordOrder.push(recKey)
@@ -814,10 +814,10 @@ class IMLibContext {
           this.pendingOrder.push(recKey)
         }
       }
-      if (typeof(this.binding[recKey][key]) === 'undefined') {
+      if (typeof (this.binding[recKey][key]) === 'undefined') {
         this.binding[recKey][key] = []
       }
-      if (portal && typeof(this.binding[recKey][key][portal]) === 'undefined') {
+      if (portal && typeof (this.binding[recKey][key][portal]) === 'undefined') {
         if (this.binding[recKey][key].length < 1) {
           this.binding[recKey][key] = {}
         }
@@ -837,7 +837,7 @@ class IMLibContext {
           } else {
             this.binding[recKey][key].push({id: nodeId, target: target})
           }
-          if (typeof(this.contextInfo[nodeId]) === 'undefined') {
+          if (typeof (this.contextInfo[nodeId]) === 'undefined') {
             this.contextInfo[nodeId] = {}
           }
           this.contextInfo[nodeId][target ? target : '_im_no_target'] =
@@ -1170,7 +1170,7 @@ this.lookingUpInfo
       }
       for (const node of nodes) {
         const nodeRef = document.getElementById(node)
-        if(nodeRef) {
+        if (nodeRef) {
           const value = nodeRef.value
           if (value) {
             this.updateContextAsLookup(node, value)
@@ -1232,7 +1232,7 @@ this.lookingUpInfo
               }
             }
             if (isModified) {
-              IMLibQueue.setTask((completeTask)=>{
+              IMLibQueue.setTask((completeTask) => {
                 IMLibCalc.recalculation()
                 completeTask()
               })
@@ -1251,6 +1251,8 @@ this.lookingUpInfo
           const targetContext = newContext
           const cDef = contextDef
           const pValue = value
+          const parentObj = {}
+          parentObj[cDef.relation[0]['join-field']] = pValue
           const lookingUpInfoObj = this.lookingUpInfo[contextInfo.record]
           const thisObj = this
           let fields = []
@@ -1266,12 +1268,12 @@ this.lookingUpInfo
                 {
                   'name': cDef.name,
                   'records': 1,
-                  'paging': cDef.paging,
+                  'paging': false,
                   'fields': fields,
-                  'parentkeyvalue': pValue,
+                  'parentkeyvalue': parentObj,
                   'conditions': null,
-                  'useoffset': true,
-                  'uselimit': targetContext.isUseLimit()
+                  'useoffset': false,
+                  'uselimit': false
                 },
                 (result) => {
                   let imTarget, fromValue, aRecord
@@ -1288,7 +1290,7 @@ this.lookingUpInfo
                       }
                     }
                   }
-                  IMLibQueue.setTask((completeTask)=>{
+                  IMLibQueue.setTask((completeTask) => {
                     IMLibCalc.recalculation()
                     completeTask()
                   })
