@@ -24,20 +24,13 @@
 let INTERMediatorOnPage = {
   authCountLimit: 4,
   authCount: 0,
-  //authUser: '',
-  // authHashedPassword: '',
-  // authHashedPassword2m: '',
-  // authHashedPassword2: '',
-  // authCryptedPassword: '',
   authUserSalt: '',
   authUserHexSalt: '',
   authChallenge: '',
   requireAuthentication: false,
-  // clientId: null,
   authRequiredContext: null,
   authStoring: 'cookie',
   authExpired: 3600,
-  //isOnceAtStarting: true,
   publickey: null,
   httpuser: null,
   httppasswd: null,
@@ -87,6 +80,11 @@ let INTERMediatorOnPage = {
   logoutURL: null,
   loginURL: null,
   doAfterLoginPanel: null,
+  buttonClassCopy: null,
+  buttonClassDelete: null,
+  buttonClassInsert: null,
+  buttonClassMaster: null,
+  buttonClassBackNavi: null,
 
   /*
   This method 'getMessages' is going to be replaced valid one with the browser's language.

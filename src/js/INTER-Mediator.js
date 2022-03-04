@@ -1297,7 +1297,7 @@ const INTERMediator = {
               if (!newNode.id) {
                 INTERMediator.setIdValue(newNode)
               }
-              //contextObj.setValue(keyingValue, '_im_repeater', newNode, newNode.id, '', currentContextDef.portal)
+              contextObj.setValue(keyingValue, '_im_repeater', newNode, newNode.id, '', currentContextDef.portal)
               await seekEnclosureNode(newNode, targetRecordset[ix], idValuesForFieldName, contextObj)
             }
           }
