@@ -14,6 +14,7 @@ Ver.10 (In Development)
 - The _im_seq pesudo field appears in context. It shows the sequential number in the context records from 1.
 - The _im_count pesudo field appears in context. It shows how many records in the context.
 - [BUG FIX] The lookup feature was not fully efficient, and refactored them.
+- [BUG FIX] When checkbox set to off, the message which someone modified showed unexpectedly.
 
 Ver.9 (January 31, 2022)
 - [Important] Native upser authentication and LDAP direct supporting was dropped. If you want to LDAP server

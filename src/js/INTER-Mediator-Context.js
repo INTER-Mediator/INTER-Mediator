@@ -195,8 +195,8 @@ class IMLibContext {
                 isOthersModified = false
               } else if (!parseInt(currentFieldVal)) {
                 isOthersModified = false
-              } else {
-                isOthersModified = true
+              //} else {
+                //isOthersModified = true
               }
             }
             if (isOthersModified) {
