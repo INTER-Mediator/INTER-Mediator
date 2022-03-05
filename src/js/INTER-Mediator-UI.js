@@ -484,8 +484,10 @@ const IMLibUI = {
               }
               IMLibPageNavigation.navigationSetup()
               targetRepeaters = currentContextCapt2.binding[keying]._im_repeater
-              for (i = 0; i < targetRepeaters.length; i++) {
-                IMLibContextPool.removeRecordFromPool(targetRepeaters[i].id)
+              if(targetRepeaters) {
+                for (i = 0; i < targetRepeaters.length; i++) {
+                  IMLibContextPool.removeRecordFromPool(targetRepeaters[i].id)
+                }
               }
               IMLibCalc.recalculation()
               if (INTERMediatorOnPage.doAfterDeleteRecord) {

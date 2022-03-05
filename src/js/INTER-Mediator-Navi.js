@@ -84,8 +84,8 @@ const IMLibPageNavigation = {
         node = document.createElement('SPAN')
         navigation.appendChild(node)
         node.appendChild(document.createTextNode(((navLabel === null || navLabel[4] === null)
-          ? INTERMediatorOnPage.getMessages()[1]
-          : navLabel[4]) + (allCount === 0 ? 0 : start + 1) +
+            ? INTERMediatorOnPage.getMessages()[1]
+            : navLabel[4]) + (allCount === 0 ? 0 : start + 1) +
           ((Math.min(start + pageSize, allCount) - start > 1)
             ? (((navLabel === null || navLabel[5] === null)
               ? '-'
@@ -372,7 +372,7 @@ const IMLibPageNavigation = {
       return function (completeTask) {
         try {
           // await INTERMediatorOnPage.retrieveAuthInfo()
-            INTERMediator_DBAdapter.db_createRecord_async(
+          INTERMediator_DBAdapter.db_createRecord_async(
             {name: targetNameCapt, dataset: []},
             async function (response) {
               const newId = response.newRecordKeyValue
@@ -688,11 +688,12 @@ const IMLibPageNavigation = {
       return
     }
     if (currentContextDef.relation ||
-      typeof(currentContextDef.records) === 'undefined' ||
+      typeof (currentContextDef.records) === 'undefined' ||
       !currentContextDef.paging ||
       (currentContextDef.records > 1 && parseInt(INTERMediator.pagedSize) !== 1)) {
       const buttonNode = document.createElement('BUTTON')
-      buttonNode.setAttribute('class', 'IM_Button_Copy')
+      buttonNode.setAttribute('class',
+        'IM_Button_Copy' + (INTERMediatorOnPage.buttonClassCopy ? (' ' + INTERMediatorOnPage.buttonClassCopy) : ''))
       let buttonName = INTERMediatorOnPage.getMessages()[14]
       if (currentContextDef['button-names'] && currentContextDef['button-names'].copy) {
         buttonName = currentContextDef['button-names'].copy
@@ -730,11 +731,12 @@ const IMLibPageNavigation = {
       return
     }
     if (currentContextDef.relation ||
-      typeof(currentContextDef.records) === 'undefined' ||
+      typeof (currentContextDef.records) === 'undefined' ||
       !currentContextDef.paging ||
       (currentContextDef.records > 1 && parseInt(INTERMediator.pagedSize) !== 1)) {
       const buttonNode = document.createElement('BUTTON')
-      buttonNode.setAttribute('class', 'IM_Button_Delete')
+      buttonNode.setAttribute('class',
+        'IM_Button_Delete' + (INTERMediatorOnPage.buttonClassDelete ? (' ' + INTERMediatorOnPage.buttonClassDelete) : ''))
       let buttonName = INTERMediatorOnPage.getMessages()[6]
       if (currentContextDef['button-names'] && currentContextDef['button-names'].delete) {
         buttonName = currentContextDef['button-names'].delete
@@ -815,7 +817,8 @@ const IMLibPageNavigation = {
     if (currentContextDef['repeat-control'] && currentContextDef['repeat-control'].match(/insert/i)) {
       if (relationValue.length > 0 || !currentContextDef.paging || currentContextDef.paging === false) {
         const buttonNode = document.createElement('BUTTON')
-        buttonNode.setAttribute('class', 'IM_Button_Insert')
+        buttonNode.setAttribute('class',
+          'IM_Button_Insert' + (INTERMediatorOnPage.buttonClassInsert ? (' ' + INTERMediatorOnPage.buttonClassInsert) : ''))
         let buttonName = INTERMediatorOnPage.getMessages()[5]
         if (currentContextDef['button-names'] && currentContextDef['button-names'].insert) {
           buttonName = currentContextDef['button-names'].insert
@@ -950,7 +953,8 @@ const IMLibPageNavigation = {
     }
 
     const buttonNode = document.createElement('BUTTON')
-    buttonNode.setAttribute('class', 'IM_Button_Master')
+    buttonNode.setAttribute('class',
+      'IM_Button_Master' + (INTERMediatorOnPage.buttonClassMaster ? (' ' + INTERMediatorOnPage.buttonClassMaster) : ''))
     let buttonName = INTERMediatorOnPage.getMessages()[12]
     if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-detail']) {
       buttonName = currentContextDef['button-names']['navi-detail']
@@ -1468,7 +1472,8 @@ const IMLibPageNavigation = {
 
     function createBackButton(tagName, currentContextDef) {
       const buttonNode = document.createElement(tagName)
-      buttonNode.setAttribute('class', 'IM_Button_BackNavi')
+      buttonNode.setAttribute('class',
+        'IM_Button_BackNavi' + (INTERMediatorOnPage.buttonClassBackNavi ? (' ' + INTERMediatorOnPage.buttonClassBackNavi) : ''))
       let buttonName = INTERMediatorOnPage.getMessages()[13]
       if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-back']) {
         buttonName = currentContextDef['button-names']['navi-back']
