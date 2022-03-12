@@ -446,7 +446,7 @@ CREATE TABLE testContext (
 	f1  INTEGER,
 	f2  INTEGER,
 	f3  INTEGER
-)
+);
 
 /* # Sample Data */
 INSERT INTO product(name,id,category_id,unitprice,photofile,acknowledgement,ack_link)
