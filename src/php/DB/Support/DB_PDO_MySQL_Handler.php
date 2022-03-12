@@ -65,6 +65,27 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValues) . ')';
     }
 
+    public function getNumericFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
+            'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision',
+            'date', 'datetime', 'timestamp', 'time', 'year',];
+        $fieldArray = [];
+        $matches = [];
+        foreach ($result as $row) {
+            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if (in_array($matches[0], $numericFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
+
     public function getNullableNumericFields($tableName)
     {
         try {

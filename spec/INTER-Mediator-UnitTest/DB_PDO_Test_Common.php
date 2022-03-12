@@ -65,6 +65,28 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
     }
 
+    public function testQuery1_withConditionStr_singleRecord()
+    {
+        $this->dbProxySetupForAccess("person", 100);
+        $this->db_proxy->dbSettings->addExtraCriteria("id", "=", "1");
+        $result = $this->db_proxy->readFromDB();
+        $recordCount = $this->db_proxy->countQueryResult();
+        $this->assertTrue((is_array($result) ? count($result) : -1) == 1, "After the query, just one should be retrieved.");
+        $this->assertTrue($recordCount == 1, "This table contanins 3 records");
+        $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
+    }
+
+    public function testQuery1_withConditionInt_singleRecord()
+    {
+        $this->dbProxySetupForAccess("person", 100);
+        $this->db_proxy->dbSettings->addExtraCriteria("id", "=", 1);
+        $result = $this->db_proxy->readFromDB();
+        $recordCount = $this->db_proxy->countQueryResult();
+        $this->assertTrue((is_array($result) ? count($result) : -1) == 1, "After the query, just one should be retrieved.");
+        $this->assertTrue($recordCount == 1, "This table contanins 3 records");
+        $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
+    }
+
     public function testQuery2_multipleRecord()
     {
         $this->dbProxySetupForAccess("person", 1000000);

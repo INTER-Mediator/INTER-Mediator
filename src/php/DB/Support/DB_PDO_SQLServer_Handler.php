@@ -26,6 +26,16 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return "SELECT ";
     }
 
+    public function sqlLimitCommand($param)
+    {
+        return "LIMIT {$param}";
+    }
+
+    public function sqlOffsetCommand($param)
+    {
+        return "OFFSET {$param}";
+    }
+
     public function sqlOrderByCommand($sortClause, $limit, $offset)
     {
         if ($sortClause == '') {
@@ -82,6 +92,27 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         foreach ($result as $row) {
             preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
             if ($row[$fieldNameForNullable] && in_array($matches[0], $numericFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
+
+    public function getNumericFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $fieldArray = array();
+        $numericFieldTypes = array('bigint', 'bit', 'date', 'datetime', 'datetime2', 'decimal',
+            'float', 'hierarchyid', 'int', 'money', 'numeric', 'real', 'smalldatetime', 'smallint',
+            'smallmoney', 'time', 'timestamp', 'tinyint',);
+        $matches = array();
+        foreach ($result as $row) {
+            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if (in_array($matches[0], $numericFieldTypes)) {
                 $fieldArray[] = $row[$this->fieldNameForField];
             }
         }
