@@ -99,6 +99,8 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
                 $fieldArray[] = $row[$this->fieldNameForField];
             }
         }
+        var_dump($tableName);
+        var_dump($fieldArray);
         return $fieldArray;
     }
 
