@@ -584,6 +584,16 @@ CREATE TABLE testtable (
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8mb4, COLLATE utf8mb4_unicode_ci ENGINE=InnoDB;
 
+CREATE TABLE testContext (
+	id  INT  AUTO_INCREMENT,
+	f1  INT,
+	f2  INT
+	f3  INT
+	PRIMARY KEY(id)
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
+		ENGINE=InnoDB;
+
 CREATE TABLE information (
 	id		  INT  AUTO_INCREMENT,
 	lastupdated	  DATE,

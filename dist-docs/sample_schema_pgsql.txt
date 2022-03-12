@@ -464,6 +464,13 @@ CREATE TABLE testtable (
 	PRIMARY KEY(id)
 );
 
+CREATE TABLE testContext (
+	id  INTEGER DEFAULT nextval('serial'),
+	f1  INTEGER,
+	f2  INTEGER,
+	f3  INTEGER,
+	PRIMARY KEY(id)
+)
 /* Grant to All operations for all objects with web account */
 
 GRANT ALL PRIVILEGES ON SCHEMA im_sample TO web;
