@@ -68,9 +68,10 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
             throw $ex;
         }
         $fieldNameForNullable = 'is_nullable';
-        $fieldArray = array();
         $numericFieldTypes = array('smallint', 'integer', 'bigint', 'decimal', 'numeric',
-            'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money', 'interval',);
+            'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money',
+            'timestamp', 'date', 'time', 'interval',);
+        $fieldArray = array();
         $matches = array();
         foreach ($result as $row) {
             preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
@@ -90,17 +91,14 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         }
         $fieldArray = array();
         $numericFieldTypes = array('smallint', 'integer', 'bigint', 'decimal', 'numeric',
-            'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money',
-            'timestamp', 'date', 'time', 'interval',);
-        $matches = array();
+            'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money', 'interval',);
+       $matches = array();
         foreach ($result as $row) {
             preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
             if (in_array($matches[0], $numericFieldTypes)) {
                 $fieldArray[] = $row[$this->fieldNameForField];
             }
         }
-        var_dump($tableName);
-        var_dump($fieldArray);
         return $fieldArray;
     }
 

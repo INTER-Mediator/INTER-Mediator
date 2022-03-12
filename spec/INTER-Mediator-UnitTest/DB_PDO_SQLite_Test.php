@@ -142,7 +142,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
     function dbProxySetupForCondition($queryArray)
     {
         $this->schemaName = "";
-        $contextName = 'testContext';
+        $contextName = 'testtable';
         $contexts = array(
             array(
                 'records' => 10000000,

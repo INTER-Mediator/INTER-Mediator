@@ -441,13 +441,6 @@ CREATE TABLE testtable (
 	text2 TEXT
 );
 
-CREATE TABLE testContext (
-	id  INTEGER PRIMARY KEY AUTOINCREMENT,
-	f1  INTEGER,
-	f2  INTEGER,
-	f3  INTEGER
-);
-
 /* # Sample Data */
 INSERT INTO product(name,id,category_id,unitprice,photofile,acknowledgement,ack_link)
     VALUES("Apple",1,1,340,'mela-verde.png','Image: djcodrin / FreeDigitalPhotos.net',
