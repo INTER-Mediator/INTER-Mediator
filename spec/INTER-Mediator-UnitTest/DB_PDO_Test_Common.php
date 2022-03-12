@@ -870,8 +870,8 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition1expected;
-    protected $condition1expected1 = '(`f1` = \'100\')';
-    protected $condition1expected2 = '("f1" = \'100\')';
+    protected $condition1expected1 = '(`f1` = 100)';
+    protected $condition1expected2 = '("f1" = 100)';
 
     public function testCondition1()
     {
@@ -882,8 +882,8 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition2expected;
-    protected $condition2expected1 = '(`f1` = \'100\' AND `f2` < \'300\')';
-    protected $condition2expected2 = '("f1" = \'100\' AND "f2" < \'300\')';
+    protected $condition2expected1 = '(`f1` = 100 AND `f2` < 300)';
+    protected $condition2expected2 = '("f1" = 100 AND "f2" < 300)';
 
     public function testCondition2()
     {
@@ -898,8 +898,8 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition3expected;
-    protected $condition3expected1 = '(`f1` = \'100\' AND `f2` < \'300\') OR (`f3` > \'500\')';
-    protected $condition3expected2 = '("f1" = \'100\' AND "f2" < \'300\') OR ("f3" > \'500\')';
+    protected $condition3expected1 = '(`f1` = 100 AND `f2` < 300) OR (`f3` > 500)';
+    protected $condition3expected2 = '("f1" = 100 AND "f2" < 300) OR ("f3" > 500)';
 
     public function testCondition3()
     {
@@ -916,8 +916,8 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition4expected;
-    protected $condition4expected1 = '(`f1` = \'100\') OR (`f2` < \'300\' AND `f3` > \'500\')';
-    protected $condition4expected2 = '("f1" = \'100\') OR ("f2" < \'300\' AND "f3" > \'500\')';
+    protected $condition4expected1 = '(`f1` = 100) OR (`f2` < 300 AND `f3` > 500)';
+    protected $condition4expected2 = '("f1" = 100) OR ("f2" < 300 AND "f3" > 500)';
 
     public function testCondition4()
     {
@@ -934,8 +934,8 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition5expected;
-    protected $condition5expected1 = '((`f1` = \'100\') OR (`f2` < \'300\' AND `f3` > \'500\'))';
-    protected $condition5expected2 = '(("f1" = \'100\') OR ("f2" < \'300\' AND "f3" > \'500\'))';
+    protected $condition5expected1 = '((`f1` = 100) OR (`f2` < 300 AND `f3` > 500))';
+    protected $condition5expected2 = '(("f1" = 100) OR ("f2" < 300 AND "f3" > 500))';
 
     public function testCondition5()
     {
@@ -956,8 +956,8 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition6expected;
-    protected $condition6expected1 = '((`f1` = \'100\') AND (`f2` < \'300\' OR `f3` > \'500\'))';
-    protected $condition6expected2 = '(("f1" = \'100\') AND ("f2" < \'300\' OR "f3" > \'500\'))';
+    protected $condition6expected1 = '((`f1` = 100) AND (`f2` < 300 OR `f3` > 500))';
+    protected $condition6expected2 = '(("f1" = 100) AND ("f2" < 300 OR "f3" > 500))';
 
     public function testCondition6()
     {
@@ -978,8 +978,8 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition7expected;
-    protected $condition7expected1 = '((`f1` = \'100\' AND `f2` < \'300\') OR (`f2` < \'300\' AND `f3` > \'500\') OR (`f2` < \'300\' AND `f3` > \'500\'))';
-    protected $condition7expected2 = '(("f1" = \'100\' AND "f2" < \'300\') OR ("f2" < \'300\' AND "f3" > \'500\') OR ("f2" < \'300\' AND "f3" > \'500\'))';
+    protected $condition7expected1 = '((`f1` = 100 AND `f2` < 300) OR (`f2` < 300 AND `f3` > 500) OR (`f2` < 300 AND `f3` > 500))';
+    protected $condition7expected2 = '(("f1" = 100 AND "f2" < 300) OR ("f2" < 300 AND "f3" > 500) OR ("f2" < 300 AND "f3" > 500))';
 
     public function testCondition7()
     {
@@ -1004,8 +1004,8 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition8expected;
-    protected $condition8expected1 = '((`f1` = \'100\' OR `f2` < \'300\') AND (`f2` < \'300\' OR `f3` > \'500\') AND (`f2` < \'300\' OR `f3` > \'500\'))';
-    protected $condition8expected2 = '(("f1" = \'100\' OR "f2" < \'300\') AND ("f2" < \'300\' OR "f3" > \'500\') AND ("f2" < \'300\' OR "f3" > \'500\'))';
+    protected $condition8expected1 = '((`f1` = 100 OR `f2` < 300) AND (`f2` < 300 OR `f3` > 500) AND (`f2` < 300 OR `f3` > 500))';
+    protected $condition8expected2 = '(("f1" = 100 OR "f2" < 300) AND ("f2" < 300 OR "f3" > 500) AND ("f2" < 300 OR "f3" > 500))';
 
     public function testCondition8()
     {
@@ -1030,8 +1030,8 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition9expected;
-    protected $condition9expected1 = '((`f1` = \'100\' OR `f2` < \'300\') AND (`f2` < \'300\' OR `f3` > \'500\') AND (`f2` < \'300\' OR `f3` > \'500\'))';
-    protected $condition9expected2 = '(("f1" = \'100\' OR "f2" < \'300\') AND ("f2" < \'300\' OR "f3" > \'500\') AND ("f2" < \'300\' OR "f3" > \'500\'))';
+    protected $condition9expected1 = '((`f1` = 100 OR `f2` < 300) AND (`f2` < 300 OR `f3` > 500) AND (`f2` < 300 OR `f3` > 500))';
+    protected $condition9expected2 = '(("f1" = 100 OR "f2" < 300) AND ("f2" < 300 OR "f3" > 500) AND ("f2" < 300 OR "f3" > 500))';
 
     public function testCondition9()
     {
@@ -1056,8 +1056,8 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition10expected;
-    protected $condition10expected1 = '((`f1` = \'100\' OR `f2` < \'300\') AND (`f2` < \'300\' OR `f3` > \'500\') AND (`f2` < \'300\' OR `f3` > \'500\'))';
-    protected $condition10expected2 = '(("f1" = \'100\' OR "f2" < \'300\') AND ("f2" < \'300\' OR "f3" > \'500\') AND ("f2" < \'300\' OR "f3" > \'500\'))';
+    protected $condition10expected1 = '((`f1` = 100 OR `f2` < 300) AND (`f2` < 300 OR `f3` > 500) AND (`f2` < 300 OR `f3` > 500))';
+    protected $condition10expected2 = '(("f1" = 100 OR "f2" < 300) AND ("f2" < 300 OR "f3" > 500) AND ("f2" < 300 OR "f3" > 500))';
 
     public function testCondition10()
     {
