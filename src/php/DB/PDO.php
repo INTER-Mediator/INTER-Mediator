@@ -217,7 +217,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
                             $queryClauseArray[$chunkCount][]
-                                = isset($numericFields[$condition['field']])
+                                = !in_array($condition['field'], $numericFields)
                                 ? "{$escapedField} {$condition['operator']} {$escapedValue}"
                                 : ("{$escapedField} {$condition['operator']} " . floatval($condition['value']));
                         }
@@ -268,7 +268,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                             $escapedValue .= ")";
                         }
                         $queryClauseArray[$chunkCount][]
-                            = isset($numericFields[$condition['field']])
+                            = !in_array($condition['field'], $numericFields)
                             ? "{$escapedField} {$condition['operator']} {$escapedValue}"
                             : ("{$escapedField} {$condition['operator']} " . floatval($condition['value']));
                     } else {
@@ -295,7 +295,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                             throw new Exception("Invalid Operator.");
                         }
                         $queryClause = (($queryClause != '') ? "({$queryClause}) AND " : '')
-                            . (isset($numericFields[$relDef['foreign-key']])
+                            . (!in_array($relDef['foreign-key'], $numericFields)
                                 ? "{$escapedField}{$op}{$escapedValue}"
                                 : ("{$escapedField}{$op}" . floatval($condition['value'])));
 

@@ -73,8 +73,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
             throw $ex;
         }
         $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
-            'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision',
-            'date', 'datetime', 'timestamp', 'time', 'year',];
+            'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision', 'year',];
         $fieldArray = [];
         $matches = [];
         foreach ($result as $row) {

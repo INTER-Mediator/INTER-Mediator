@@ -85,9 +85,8 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         }
         $fieldNameForNullable = 'is_nullable';
         $fieldArray = array();
-        $numericFieldTypes = array('bigint', 'bit', 'date', 'datetime', 'datetime2', 'decimal',
-            'float', 'hierarchyid', 'int', 'money', 'numeric', 'real', 'smalldatetime', 'smallint',
-            'smallmoney', 'time', 'timestamp', 'tinyint',);
+        $numericFieldTypes = array('bigint', 'bit', 'decimal', 'float', 'hierarchyid', 'int', 'money', 'numeric',
+            'real', 'smallint', 'smallmoney', 'tinyint',);
         $matches = array();
         foreach ($result as $row) {
             preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);

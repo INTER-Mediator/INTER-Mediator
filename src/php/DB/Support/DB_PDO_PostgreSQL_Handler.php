@@ -70,8 +70,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         $fieldNameForNullable = 'is_nullable';
         $fieldArray = array();
         $numericFieldTypes = array('smallint', 'integer', 'bigint', 'decimal', 'numeric',
-            'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money',
-            'timestamp', 'date', 'time', 'interval',);
+            'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money', 'interval',);
         $matches = array();
         foreach ($result as $row) {
             preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);

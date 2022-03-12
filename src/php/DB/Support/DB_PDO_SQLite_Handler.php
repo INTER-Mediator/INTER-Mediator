@@ -95,9 +95,8 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
             throw $ex;
         }
         $fieldArray = array();
-        $numericFieldTypes = array('integer', 'real', 'numeric',
-            'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2', 'int8',
-            'double', 'double precision', 'float', 'decimal', 'boolean', 'date', 'datetime',);
+        $numericFieldTypes = array('integer', 'real', 'numeric', 'tinyint', 'smallint', 'mediumint', 'bigint',
+            'unsigned big int', 'int2', 'int8', 'double', 'double precision', 'float', 'decimal', 'boolean',);
         $matches = array();
         foreach ($result as $row) {
             preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
