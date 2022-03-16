@@ -15,6 +15,8 @@ Ver.10 (In Development)
 - The _im_count pesudo field appears in context. It shows how many records in the context.
 - In the INTERMediatorOnPage class buttonClassCopy, buttonClassDelete, buttonClassInsert, buttonClassMaster and
   buttonClassBackNavi properties are defined. These can be set the additional class values to relevant buttons.
+- In where clause of generated sql, the values for numeric fields express by numeric not string.
+- IMLibLocalContext has the method clearAllConditions for being convenient to define 'clear' button in search functions.
 - [BUG FIX] The lookup feature was not fully efficient, and refactored them.
 - [BUG FIX] When checkbox set to off, the message which someone modified showed unexpectedly.
 

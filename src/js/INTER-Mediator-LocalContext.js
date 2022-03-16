@@ -32,6 +32,14 @@ const IMLibLocalContext = {
     this.store = {}
   },
 
+  clearAllConditions: function () {
+    for (const key in this.store) {
+      if (key.indexOf('condition:') === 0) {
+        this.setValue(key, '')
+      }
+    }
+  },
+
   setValue: function (key, value, withoutArchive) {
     'use strict'
     let i, hasUpdated, refIds, node
