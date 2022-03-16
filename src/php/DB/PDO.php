@@ -43,7 +43,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     public function __construct()
     {
         $params = IMUtil::getFromParamsPHPFile(["followingTimezones", "suppressDefaultValuesOnCopy",
-            "suppressDefaultValuesOnCopyAssoc","suppressAuthTargetFillingOnCreate",], true);
+            "suppressDefaultValuesOnCopyAssoc", "suppressAuthTargetFillingOnCreate",], true);
         $this->isFollowingTimezones = $params["followingTimezones"] ?? false;
         $this->isSuppressDVOnCopy = $params["suppressDefaultValuesOnCopy"] ?? false;
         $this->isSuppressDVOnCopyAssoc = $params["suppressDefaultValuesOnCopyAssoc"] ?? false;
@@ -55,16 +55,17 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         return $this->updatedRecord;
     }
 
-    public function updatedRecord(){
+    public function updatedRecord()
+    {
         return $this->updatedRecord;
     }
 
     /* Usually a setter method has just one parameter, but the same named method existed on previous version
        and possibly calling it from user program. So if it has more than one parameter, it might call old
        method and redirect to previous one. (msyk, 2021-11-03) */
-    public function setUpdatedRecord($record, $value=false, $index = 0)
+    public function setUpdatedRecord($record, $value = false, $index = 0)
     {
-        if($value === false) {
+        if ($value === false) {
             $this->updatedRecord = $record;
         } else { // Previous use of this method redirect to setDataToUpdatedRecord
             $this->setDataToUpdatedRecord($record, $value, $index);
@@ -168,9 +169,11 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     /*
      * Generate SQL style WHERE clause.
      */
-    public function getWhereClauseForTest($currentOperation){
+    public function getWhereClauseForTest($currentOperation)
+    {
         return $this->getWhereClause($currentOperation);
     }
+
     /**
      * @param $currentOperation
      * @param bool $includeContext
@@ -184,6 +187,12 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $queryClause = '';
         $primaryKey = $tableInfo['key'] ?? 'id';
+        if ($currentOperation == 'read' || $currentOperation == 'query') {
+            $targetEntity = $this->dbSettings->getEntityForRetrieve();
+        } else {
+            $targetEntity = $this->dbSettings->getEntityForUpdate();
+        }
+        $numericFields = $this->handler->getNumericFields($targetEntity);
 
         $queryClauseArray = array();
         if ($includeContext && isset($tableInfo['query'][0])) {
@@ -208,7 +217,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
                             $queryClauseArray[$chunkCount][]
-                                = "{$escapedField} {$condition['operator']} {$escapedValue}";
+                                = !in_array($condition['field'], $numericFields)
+                                ? "{$escapedField} {$condition['operator']} {$escapedValue}"
+                                : ("{$escapedField} {$condition['operator']} " . floatval($condition['value']));
                         }
                     } else {
                         $queryClauseArray[$chunkCount][]
@@ -257,7 +268,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                             $escapedValue .= ")";
                         }
                         $queryClauseArray[$chunkCount][]
-                            = "{$escapedField} {$condition['operator']} {$escapedValue}";
+                            = !in_array($condition['field'], $numericFields)
+                            ? "{$escapedField} {$condition['operator']} {$escapedValue}"
+                            : ("{$escapedField} {$condition['operator']} " . floatval($condition['value']));
                     } else {
                         $queryClauseArray[$chunkCount][]
                             = "{$escapedField} {$condition['operator']}";
@@ -282,7 +295,10 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                             throw new Exception("Invalid Operator.");
                         }
                         $queryClause = (($queryClause != '') ? "({$queryClause}) AND " : '')
-                            . "({$escapedField}{$op}{$escapedValue})";
+                            . (!in_array($relDef['foreign-key'], $numericFields)
+                                ? "{$escapedField}{$op}{$escapedValue}"
+                                : ("{$escapedField}{$op}" . floatval($condition['value'])));
+
                     }
                 }
             }
@@ -772,10 +788,10 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 }
             }
         }
-        if (isset($tableInfo['authentication']) && ! $this->isSuppressAuthTargetFillingOnCreate) {
+        if (isset($tableInfo['authentication']) && !$this->isSuppressAuthTargetFillingOnCreate) {
             $authInfoField = $this->authHandler->getFieldForAuthorization("create");
             $authInfoTarget = $this->authHandler->getTargetForAuthorization("create");
-            if(!$this->authHandler->getNoSetForAuthorization("create")) {
+            if (!$this->authHandler->getNoSetForAuthorization("create")) {
                 if ($authInfoTarget == 'field-user') {
                     $setColumnNames[] = $authInfoField;
                     $setValues[] = $this->link->quote(

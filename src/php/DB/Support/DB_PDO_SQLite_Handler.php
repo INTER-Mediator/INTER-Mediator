@@ -87,6 +87,26 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return $fieldArray;
     }
 
+    public function getNumericFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $fieldArray = array();
+        $numericFieldTypes = array('integer', 'int', 'real', 'numeric', 'tinyint', 'smallint', 'mediumint', 'bigint',
+            'unsigned big int', 'int2', 'int8', 'double', 'double precision', 'float', 'decimal', 'boolean',);
+        $matches = array();
+        foreach ($result as $row) {
+            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if (in_array($matches[0], $numericFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
+
     public function getTimeFields($tableName)
     {
         /* This isn't work because SQLite doesn't have any Date/Time type. It uses the text or numeric field. */

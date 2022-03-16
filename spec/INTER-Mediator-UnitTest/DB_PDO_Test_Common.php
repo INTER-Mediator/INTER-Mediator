@@ -40,8 +40,8 @@ abstract class DB_PDO_Test_Common extends TestCase
         $result = $this->db_proxy->readFromDB();
         $recordCount = $this->db_proxy->countQueryResult();
 
-//        var_export($this->db_proxy->logger->getErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessages());
+        //var_export($this->db_proxy->logger->getErrorMessages());
+        //var_export($this->db_proxy->logger->getDebugMessages());
 
         $this->assertTrue(is_array($result), "After the query, any array should be retrieved.");
         $this->assertEquals(count($result), 10, "After the query, 10 records should be retrieved.");
@@ -62,6 +62,28 @@ abstract class DB_PDO_Test_Common extends TestCase
         $recordCount = $this->db_proxy->countQueryResult();
         $this->assertTrue((is_array($result) ? count($result) : -1) == 1, "After the query, just one should be retrieved.");
         $this->assertTrue($recordCount == 3, "This table contanins 3 records");
+        $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
+    }
+
+    public function testQuery1_withConditionStr_singleRecord()
+    {
+        $this->dbProxySetupForAccess("person", 100);
+        $this->db_proxy->dbSettings->addExtraCriteria("id", "=", "1");
+        $result = $this->db_proxy->readFromDB();
+        $recordCount = $this->db_proxy->countQueryResult();
+        $this->assertTrue((is_array($result) ? count($result) : -1) == 1, "After the query, just one should be retrieved.");
+        $this->assertTrue($recordCount == 1, "This table contanins 3 records");
+        $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
+    }
+
+    public function testQuery1_withConditionInt_singleRecord()
+    {
+        $this->dbProxySetupForAccess("person", 100);
+        $this->db_proxy->dbSettings->addExtraCriteria("id", "=", 1);
+        $result = $this->db_proxy->readFromDB();
+        $recordCount = $this->db_proxy->countQueryResult();
+        $this->assertTrue((is_array($result) ? count($result) : -1) == 1, "After the query, just one should be retrieved.");
+        $this->assertTrue($recordCount == 1, "This table contanins 3 records");
         $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
     }
 
@@ -848,26 +870,26 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition1expected;
-    protected $condition1expected1 = '(`f1` = \'100\')';
-    protected $condition1expected2 = '("f1" = \'100\')';
+    protected $condition1expected1 = '(`num1` = 100)';
+    protected $condition1expected2 = '("num1" = 100)';
 
     public function testCondition1()
     {
-        $this->dbProxySetupForCondition([['field' => 'f1', 'operator' => '=', 'value' => 100]]);
+        $this->dbProxySetupForCondition([['field' => 'num1', 'operator' => '=', 'value' => 100]]);
         $this->db_proxy->dbClass->setupHandlers();
         $clause = $this->db_proxy->dbClass->getWhereClauseForTest('read');
         $this->assertEquals($this->condition1expected, $clause, "Condition must be followed settings.");
     }
 
     protected $condition2expected;
-    protected $condition2expected1 = '(`f1` = \'100\' AND `f2` < \'300\')';
-    protected $condition2expected2 = '("f1" = \'100\' AND "f2" < \'300\')';
+    protected $condition2expected1 = '(`num1` = 100 AND `num1` < 300)';
+    protected $condition2expected2 = '("num1" = 100 AND "num1" < 300)';
 
     public function testCondition2()
     {
         $query = [
-            ['field' => 'f1', 'operator' => '=', 'value' => 100],
-            ['field' => 'f2', 'operator' => '<', 'value' => 300],
+            ['field' => 'num1', 'operator' => '=', 'value' => 100],
+            ['field' => 'num1', 'operator' => '<', 'value' => 300],
         ];
         $this->dbProxySetupForCondition($query);
         $this->db_proxy->dbClass->setupHandlers();
@@ -876,16 +898,16 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition3expected;
-    protected $condition3expected1 = '(`f1` = \'100\' AND `f2` < \'300\') OR (`f3` > \'500\')';
-    protected $condition3expected2 = '("f1" = \'100\' AND "f2" < \'300\') OR ("f3" > \'500\')';
+    protected $condition3expected1 = '(`num1` = 100 AND `num1` < 300) OR (`num1` > 500)';
+    protected $condition3expected2 = '("num1" = 100 AND "num1" < 300) OR ("num1" > 500)';
 
     public function testCondition3()
     {
         $query = [
-            ['field' => 'f1', 'operator' => '=', 'value' => 100],
-            ['field' => 'f2', 'operator' => '<', 'value' => 300],
+            ['field' => 'num1', 'operator' => '=', 'value' => 100],
+            ['field' => 'num1', 'operator' => '<', 'value' => 300],
             ['field' => '__operation__',],
-            ['field' => 'f3', 'operator' => '>', 'value' => 500],
+            ['field' => 'num1', 'operator' => '>', 'value' => 500],
         ];
         $this->dbProxySetupForCondition($query);
         $this->db_proxy->dbClass->setupHandlers();
@@ -894,16 +916,16 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition4expected;
-    protected $condition4expected1 = '(`f1` = \'100\') OR (`f2` < \'300\' AND `f3` > \'500\')';
-    protected $condition4expected2 = '("f1" = \'100\') OR ("f2" < \'300\' AND "f3" > \'500\')';
+    protected $condition4expected1 = '(`num1` = 100) OR (`num1` < 300 AND `num1` > 500)';
+    protected $condition4expected2 = '("num1" = 100) OR ("num1" < 300 AND "num1" > 500)';
 
     public function testCondition4()
     {
         $query = [
-            ['field' => 'f1', 'operator' => '=', 'value' => 100],
+            ['field' => 'num1', 'operator' => '=', 'value' => 100],
             ['field' => '__operation__',],
-            ['field' => 'f2', 'operator' => '<', 'value' => 300],
-            ['field' => 'f3', 'operator' => '>', 'value' => 500],
+            ['field' => 'num1', 'operator' => '<', 'value' => 300],
+            ['field' => 'num1', 'operator' => '>', 'value' => 500],
         ];
         $this->dbProxySetupForCondition($query);
         $this->db_proxy->dbClass->setupHandlers();
@@ -912,16 +934,16 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition5expected;
-    protected $condition5expected1 = '((`f1` = \'100\') OR (`f2` < \'300\' AND `f3` > \'500\'))';
-    protected $condition5expected2 = '(("f1" = \'100\') OR ("f2" < \'300\' AND "f3" > \'500\'))';
+    protected $condition5expected1 = '((`num1` = 100) OR (`num1` < 300 AND `num1` > 500))';
+    protected $condition5expected2 = '(("num1" = 100) OR ("num1" < 300 AND "num1" > 500))';
 
     public function testCondition5()
     {
         $query = [
-            ['field' => 'f1', 'operator' => '=', 'value' => 100],
+            ['field' => 'num1', 'operator' => '=', 'value' => 100],
             ['field' => '__operation__',],
-            ['field' => 'f2', 'operator' => '<', 'value' => 300],
-            ['field' => 'f3', 'operator' => '>', 'value' => 500],
+            ['field' => 'num1', 'operator' => '<', 'value' => 300],
+            ['field' => 'num1', 'operator' => '>', 'value' => 500],
         ];
         $this->dbProxySetupForCondition(null);
         foreach ($query as $item) {
@@ -934,16 +956,16 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition6expected;
-    protected $condition6expected1 = '((`f1` = \'100\') AND (`f2` < \'300\' OR `f3` > \'500\'))';
-    protected $condition6expected2 = '(("f1" = \'100\') AND ("f2" < \'300\' OR "f3" > \'500\'))';
+    protected $condition6expected1 = '((`num1` = 100) AND (`num1` < 300 OR `num1` > 500))';
+    protected $condition6expected2 = '(("num1" = 100) AND ("num1" < 300 OR "num1" > 500))';
 
     public function testCondition6()
     {
         $query = [
-            ['field' => 'f1', 'operator' => '=', 'value' => 100],
+            ['field' => 'num1', 'operator' => '=', 'value' => 100],
             ['field' => '__operation__', 'operator' => 'ex',],
-            ['field' => 'f2', 'operator' => '<', 'value' => 300],
-            ['field' => 'f3', 'operator' => '>', 'value' => 500],
+            ['field' => 'num1', 'operator' => '<', 'value' => 300],
+            ['field' => 'num1', 'operator' => '>', 'value' => 500],
         ];
         $this->dbProxySetupForCondition(null);
         foreach ($query as $item) {
@@ -956,20 +978,20 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition7expected;
-    protected $condition7expected1 = '((`f1` = \'100\' AND `f2` < \'300\') OR (`f2` < \'300\' AND `f3` > \'500\') OR (`f2` < \'300\' AND `f3` > \'500\'))';
-    protected $condition7expected2 = '(("f1" = \'100\' AND "f2" < \'300\') OR ("f2" < \'300\' AND "f3" > \'500\') OR ("f2" < \'300\' AND "f3" > \'500\'))';
+    protected $condition7expected1 = '((`num1` = 100 AND `num1` < 300) OR (`num1` < 300 AND `num1` > 500) OR (`num1` < 300 AND `num1` > 500))';
+    protected $condition7expected2 = '(("num1" = 100 AND "num1" < 300) OR ("num1" < 300 AND "num1" > 500) OR ("num1" < 300 AND "num1" > 500))';
 
     public function testCondition7()
     {
         $query = [
-            ['field' => 'f1', 'operator' => '=', 'value' => 100],
-            ['field' => 'f2', 'operator' => '<', 'value' => 300],
+            ['field' => 'num1', 'operator' => '=', 'value' => 100],
+            ['field' => 'num1', 'operator' => '<', 'value' => 300],
             ['field' => '__operation__',],
-            ['field' => 'f2', 'operator' => '<', 'value' => 300],
-            ['field' => 'f3', 'operator' => '>', 'value' => 500],
+            ['field' => 'num1', 'operator' => '<', 'value' => 300],
+            ['field' => 'num1', 'operator' => '>', 'value' => 500],
             ['field' => '__operation__',],
-            ['field' => 'f2', 'operator' => '<', 'value' => 300],
-            ['field' => 'f3', 'operator' => '>', 'value' => 500],
+            ['field' => 'num1', 'operator' => '<', 'value' => 300],
+            ['field' => 'num1', 'operator' => '>', 'value' => 500],
         ];
         $this->dbProxySetupForCondition(null);
         foreach ($query as $item) {
@@ -982,20 +1004,20 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition8expected;
-    protected $condition8expected1 = '((`f1` = \'100\' OR `f2` < \'300\') AND (`f2` < \'300\' OR `f3` > \'500\') AND (`f2` < \'300\' OR `f3` > \'500\'))';
-    protected $condition8expected2 = '(("f1" = \'100\' OR "f2" < \'300\') AND ("f2" < \'300\' OR "f3" > \'500\') AND ("f2" < \'300\' OR "f3" > \'500\'))';
+    protected $condition8expected1 = '((`num1` = 100 OR `num1` < 300) AND (`num1` < 300 OR `num1` > 500) AND (`num1` < 300 OR `num1` > 500))';
+    protected $condition8expected2 = '(("num1" = 100 OR "num1" < 300) AND ("num1" < 300 OR "num1" > 500) AND ("num1" < 300 OR "num1" > 500))';
 
     public function testCondition8()
     {
         $query = [
-            ['field' => 'f1', 'operator' => '=', 'value' => 100],
-            ['field' => 'f2', 'operator' => '<', 'value' => 300],
+            ['field' => 'num1', 'operator' => '=', 'value' => 100],
+            ['field' => 'num1', 'operator' => '<', 'value' => 300],
             ['field' => '__operation__', 'operator' => 'ex',],
-            ['field' => 'f2', 'operator' => '<', 'value' => 300],
-            ['field' => 'f3', 'operator' => '>', 'value' => 500],
+            ['field' => 'num1', 'operator' => '<', 'value' => 300],
+            ['field' => 'num1', 'operator' => '>', 'value' => 500],
             ['field' => '__operation__',],
-            ['field' => 'f2', 'operator' => '<', 'value' => 300],
-            ['field' => 'f3', 'operator' => '>', 'value' => 500],
+            ['field' => 'num1', 'operator' => '<', 'value' => 300],
+            ['field' => 'num1', 'operator' => '>', 'value' => 500],
         ];
         $this->dbProxySetupForCondition(null);
         foreach ($query as $item) {
@@ -1008,20 +1030,20 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition9expected;
-    protected $condition9expected1 = '((`f1` = \'100\' OR `f2` < \'300\') AND (`f2` < \'300\' OR `f3` > \'500\') AND (`f2` < \'300\' OR `f3` > \'500\'))';
-    protected $condition9expected2 = '(("f1" = \'100\' OR "f2" < \'300\') AND ("f2" < \'300\' OR "f3" > \'500\') AND ("f2" < \'300\' OR "f3" > \'500\'))';
+    protected $condition9expected1 = '((`num1` = 100 OR `num1` < 300) AND (`num1` < 300 OR `num1` > 500) AND (`num1` < 300 OR `num1` > 500))';
+    protected $condition9expected2 = '(("num1" = 100 OR "num1" < 300) AND ("num1" < 300 OR "num1" > 500) AND ("num1" < 300 OR "num1" > 500))';
 
     public function testCondition9()
     {
         $query = [
-            ['field' => 'f1', 'operator' => '=', 'value' => 100],
-            ['field' => 'f2', 'operator' => '<', 'value' => 300],
+            ['field' => 'num1', 'operator' => '=', 'value' => 100],
+            ['field' => 'num1', 'operator' => '<', 'value' => 300],
             ['field' => '__operation__',],
-            ['field' => 'f2', 'operator' => '<', 'value' => 300],
-            ['field' => 'f3', 'operator' => '>', 'value' => 500],
+            ['field' => 'num1', 'operator' => '<', 'value' => 300],
+            ['field' => 'num1', 'operator' => '>', 'value' => 500],
             ['field' => '__operation__', 'operator' => 'ex',],
-            ['field' => 'f2', 'operator' => '<', 'value' => 300],
-            ['field' => 'f3', 'operator' => '>', 'value' => 500],
+            ['field' => 'num1', 'operator' => '<', 'value' => 300],
+            ['field' => 'num1', 'operator' => '>', 'value' => 500],
         ];
         $this->dbProxySetupForCondition(null);
         foreach ($query as $item) {
@@ -1034,20 +1056,20 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     protected $condition10expected;
-    protected $condition10expected1 = '((`f1` = \'100\' OR `f2` < \'300\') AND (`f2` < \'300\' OR `f3` > \'500\') AND (`f2` < \'300\' OR `f3` > \'500\'))';
-    protected $condition10expected2 = '(("f1" = \'100\' OR "f2" < \'300\') AND ("f2" < \'300\' OR "f3" > \'500\') AND ("f2" < \'300\' OR "f3" > \'500\'))';
+    protected $condition10expected1 = '((`num1` = 100 OR `num1` < 300) AND (`num1` < 300 OR `num1` > 500) AND (`num1` < 300 OR `num1` > 500))';
+    protected $condition10expected2 = '(("num1" = 100 OR "num1" < 300) AND ("num1" < 300 OR "num1" > 500) AND ("num1" < 300 OR "num1" > 500))';
 
     public function testCondition10()
     {
         $query = [
-            ['field' => 'f1', 'operator' => '=', 'value' => 100],
-            ['field' => 'f2', 'operator' => '<', 'value' => 300],
+            ['field' => 'num1', 'operator' => '=', 'value' => 100],
+            ['field' => 'num1', 'operator' => '<', 'value' => 300],
             ['field' => '__operation__', 'operator' => 'ex',],
-            ['field' => 'f2', 'operator' => '<', 'value' => 300],
-            ['field' => 'f3', 'operator' => '>', 'value' => 500],
+            ['field' => 'num1', 'operator' => '<', 'value' => 300],
+            ['field' => 'num1', 'operator' => '>', 'value' => 500],
             ['field' => '__operation__', 'operator' => 'ex',],
-            ['field' => 'f2', 'operator' => '<', 'value' => 300],
-            ['field' => 'f3', 'operator' => '>', 'value' => 500],
+            ['field' => 'num1', 'operator' => '<', 'value' => 300],
+            ['field' => 'num1', 'operator' => '>', 'value' => 500],
         ];
         $this->dbProxySetupForCondition(null);
         foreach ($query as $item) {

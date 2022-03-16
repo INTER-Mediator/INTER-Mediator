@@ -49,6 +49,10 @@ abstract class DB_PDO_Handler
 
     public abstract function sqlSELECTCommand();
 
+    public abstract function sqlLimitCommand($param);
+
+    public abstract function sqlOffsetCommand($param);
+
     public function sqlOrderByCommand($sortClause, $limit, $offset)
     {
         return
@@ -94,6 +98,8 @@ abstract class DB_PDO_Handler
         }
         return $returnValue;
     }
+
+    public abstract function getNumericFields($tableName);
 
     public abstract function getNullableNumericFields($tableName);
 
