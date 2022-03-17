@@ -297,7 +297,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                         $queryClause = (($queryClause != '') ? "({$queryClause}) AND " : '')
                             . (!in_array($relDef['foreign-key'], $numericFields)
                                 ? "{$escapedField}{$op}{$escapedValue}"
-                                : ("{$escapedField}{$op}" . floatval($condition['value'])));
+                                : ("{$escapedField}{$op}" . floatval($foreignDef['value'])));
 
                     }
                 }

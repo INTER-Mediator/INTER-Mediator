@@ -80,7 +80,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         $matches = array();
         foreach ($result as $row) {
             preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (!$row[$fieldNameForNullable] && in_array($matches[0], $numericFieldTypes)) {
+            if (isset($matches[0]) && !$row[$fieldNameForNullable] && in_array($matches[0], $numericFieldTypes)) {
                 $fieldArray[] = $row[$this->fieldNameForField];
             }
         }
@@ -100,7 +100,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         $matches = array();
         foreach ($result as $row) {
             preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (in_array($matches[0], $numericFieldTypes)) {
+            if (isset($matches[0]) && in_array($matches[0], $numericFieldTypes)) {
                 $fieldArray[] = $row[$this->fieldNameForField];
             }
         }
@@ -115,12 +115,12 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         } catch (Exception $ex) {
             throw $ex;
         }
-        $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+        $fieldTypes = ['datetime', 'time', 'timestamp'];
         $fieldArray = [];
         $matches = [];
         foreach ($result as $row) {
             preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (in_array($matches[0], $timeFieldTypes)) {
+            if (isset($matches[0]) && in_array($matches[0], $fieldTypes)) {
                 $fieldArray[] = $row[$this->fieldNameForField];
             }
         }
