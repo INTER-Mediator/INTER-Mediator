@@ -133,7 +133,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         } catch (Exception $ex) {
             return [];
         }
-        $ieldTypes = ['boolean', 'bool'];
+        $fieldTypes = ['boolean', 'bool'];
         $fieldArray = [];
         $matches = [];
         foreach ($result as $row) {
