@@ -193,6 +193,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $targetEntity = $this->dbSettings->getEntityForUpdate();
         }
         $numericFields = $this->handler->getNumericFields($targetEntity);
+        if (isset($tableInfo['numeric-fields']) && is_array($tableInfo['numeric-fields'])) {
+            $numericFields = array_merge($numericFields, $tableInfo['numeric-fields']);
+        }
 
         $queryClauseArray = array();
         if ($includeContext && isset($tableInfo['query'][0])) {
@@ -509,6 +512,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $keyField = $this->getKeyFieldOfContext($tableInfo);
         $timeFields = ($this->isFollowingTimezones && !$this->dbSettings->getAggregationFrom())
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForRetrieve()) : [];
+        if (isset($tableInfo['time-fields']) && is_array($tableInfo['time-fields'])) {
+            $timeFields = array_merge($timeFields, $tableInfo['time-fields']);
+        }
         $sqlResult = array();
         $isFirstRow = true;
         foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
@@ -582,12 +588,18 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     function updateDB($bypassAuth)
     {
         $this->fieldInfo = null;
+        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
+        if (isset($tableInfo['numeric-fields']) && is_array($tableInfo['numeric-fields'])) {
+            $fieldInfos = array_merge($fieldInfos, $tableInfo['numeric-fields']);
+        }
         $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
+        if (isset($tableInfo['time-fields']) && is_array($tableInfo['time-fields'])) {
+            $timeFields = array_merge($timeFields, $tableInfo['time-fields']);
+        }
         $boolFields = $this->handler->getBooleanFields($this->dbSettings->getEntityForUpdate());
-        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         if (!$this->setupConnection()) { //Establish the connection
@@ -717,11 +729,17 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     public function createInDB($isReplace = false)
     {
         $this->fieldInfo = null;
+        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
+        if (isset($tableInfo['numeric-fields']) && is_array($tableInfo['numeric-fields'])) {
+            $fieldInfos = array_merge($fieldInfos, $tableInfo['numeric-fields']);
+        }
         $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
+        if (isset($tableInfo['time-fields']) && is_array($tableInfo['time-fields'])) {
+            $timeFields = array_merge($timeFields, $tableInfo['time-fields']);
+        }
         $boolFields = $this->handler->getBooleanFields($this->dbSettings->getEntityForUpdate());
-        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $viewName = $this->handler->quotedEntityName($this->dbSettings->getEntityForRetrieve());
 
@@ -944,6 +962,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
         $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
+        if (isset($tableInfo['time-fields']) && is_array($tableInfo['time-fields'])) {
+            $timeFields = array_merge($timeFields, $tableInfo['time-fields']);
+        }
 
         if (!$this->setupConnection()) { //Establish the connection
             return false;
