@@ -592,6 +592,7 @@ const INTERMediator = {
       }
       IMLibCalc.updateCalculationFields()
       IMLibPageNavigation.navigationSetup()
+      IMLibLocalContext.archive()
       appendCredit()
     }
 

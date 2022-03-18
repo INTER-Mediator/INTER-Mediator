@@ -83,18 +83,11 @@ const IMLibLocalContext = {
 
   archive: function () {
     'use strict'
-    let jsonString
+    const x = INTERMediator.getLocalProperty('_im_startFrom', 0)
     INTERMediatorOnPage.removeCookie('_im_localcontext')
-    jsonString = JSON.stringify(this.store)
-    if (INTERMediator.useSessionStorage === true &&
-      typeof sessionStorage !== 'undefined' &&
-      sessionStorage !== null) {
+    let jsonString = JSON.stringify(this.store)
+    if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
       try {
-        // searchLen = location.search ? location.search.length : 0
-        // hashLen = location.hash ? location.hash.length : 0
-        // trailLen = searchLen + hashLen
-        // key = '_im_localcontext' + document.URL.toString()
-        // key = (trailLen > 0) ? key.slice(0, -trailLen) : key
         sessionStorage.setItem(IMLibLocalContext.getHostNameForKey(), jsonString)
       } catch (ex) {
         INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0)
@@ -106,16 +99,10 @@ const IMLibLocalContext = {
 
   unarchive: function () {
     'use strict'
+    const x = INTERMediator.getLocalProperty('_im_startFrom', 0)
     let localContext
-    if (INTERMediator.useSessionStorage === true &&
-      typeof sessionStorage !== 'undefined' &&
-      sessionStorage !== null) {
+    if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
       try {
-        // searchLen = location.search ? location.search.length : 0
-        // hashLen = location.hash ? location.hash.length : 0
-        // trailLen = searchLen + hashLen
-        // key = '_im_localcontext' + document.URL.toString()
-        // key = (trailLen > 0) ? key.slice(0, -trailLen) : key
         localContext = sessionStorage.getItem(IMLibLocalContext.getHostNameForKey())
       } catch (ex) {
         localContext = INTERMediatorOnPage.getCookie('_im_localcontext')
