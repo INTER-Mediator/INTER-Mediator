@@ -16,6 +16,10 @@
 
 namespace INTERMediator\DB;
 
+use INTERMediator\IMUtil;
+use DateTime;
+use ReflectionClass;
+
 class Logger
 {
     /* Debug and Messages */
@@ -23,6 +27,9 @@ class Logger
     private $errorMessage = array();
     private $warningMessage = array();
     private $debugMessage = array();
+    private $errorMessageLogging = false;
+    private $warningMessageLogging = false;
+    private $debugMessageLogging = false;
 
     private static $instance = null;
 
@@ -36,6 +43,11 @@ class Logger
 
     private function __construct()
     {
+        $params = IMUtil::getFromParamsPHPFile(["errorMessageLogging", "warningMessageLogging",
+            "debugMessageLogging",], true);
+        $this->errorMessageLogging = $params["errorMessageLogging"] ?? false;;
+        $this->warningMessageLogging = $params["warningMessageLogging"] ?? false;;
+        $this->debugMessageLogging = $params["debugMessageLogging"] ?? false;;
     }
 
     public function clearLogs()
@@ -50,18 +62,46 @@ class Logger
         $this->errorMessage = array();
     }
 
+    private function getCallersNamespace($setting)
+    {
+        if ($setting === true || $setting === "*") {
+            return true;
+        }
+        $returnValue = false;
+        try {
+            $bt = debug_backtrace();
+            if (count($bt) >= 2 && isset($bt[2]['object'])) {
+                $obj = $bt[2]['object'];
+                if ($obj) {
+                    $ref = new ReflectionClass($obj);
+                    $returnValue = strpos($ref->getNamespaceName(), $setting) === 0;
+                }
+            }
+        } catch (\ReflectionException $e) {
+        }
+        return $returnValue;
+    }
+
     public function setDebugMessage($str, $level = 1)
     {
         if ($this->debugLevel !== false && $this->debugLevel >= $level) {
             $this->debugMessage[] = $str;
+            if ($this->debugMessageLogging && $this->getCallersNamespace($this->debugMessageLogging)) {
+                $dt = (new DateTime())->format("y:m:d h:i:s.v");
+                error_log("[INTER-Mediator DEBUG] {$dt} {$str}");
+            }
         }
     }
 
     public function setDebugMessages($msgs, $level = 1)
     {
         if ($this->debugLevel !== false && $this->debugLevel >= $level && is_array($msgs)) {
-            foreach($msgs as $msg) {
+            $dt = (new DateTime())->format("y:m:d h:i:s.v");
+            foreach ($msgs as $msg) {
                 $this->debugMessage[] = $msg;
+                if ($this->debugMessageLogging && $this->getCallersNamespace($this->debugMessageLogging)) {
+                    error_log("[INTER-Mediator DEBUG] {$dt} {$msg}");
+                }
             }
         }
     }
@@ -69,24 +109,40 @@ class Logger
     public function setWarningMessage($str)
     {
         $this->warningMessage[] = $str;
+        if ($this->warningMessageLogging) {
+            $dt = (new DateTime())->format("y:m:d h:i:s.v");
+            error_log("[INTER-Mediator WARNING] {$dt} {$str}");
+        }
     }
 
     public function setWarningMessages($msgs)
     {
-        foreach($msgs as $msg) {
+        $dt = (new DateTime())->format("y:m:d h:i:s.v");
+        foreach ($msgs as $msg) {
             $this->warningMessage[] = $msg;
+            if ($this->warningMessageLogging) {
+                error_log("[INTER-Mediator WARNING] {$dt} {$msg}");
+            }
         }
     }
 
     public function setErrorMessage($str)
     {
         $this->errorMessage[] = $str;
+        if ($this->errorMessageLogging) {
+            $dt = (new DateTime())->format("y:m:d h:i:s.v");
+            error_log("[INTER-Mediator ERROR] {$dt} {$str}");
+        }
     }
 
     public function setErrorMessages($msgs)
     {
-        foreach($msgs as $msg) {
+        $dt = (new DateTime())->format("y:m:d h:i:s.v");
+        foreach ($msgs as $msg) {
             $this->errorMessage[] = $msg;
+            if ($this->errorMessageLogging) {
+                error_log("[INTER-Mediator ERROR] {$dt} {$msg}");
+            }
         }
     }
 

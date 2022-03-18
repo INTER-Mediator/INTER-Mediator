@@ -98,6 +98,11 @@ $browserCompatibility = array(
 // Sending email features compatibility with INTER-Mediator v5 unless 'template-context' key isn't specified.
 $sendMailCompatibilityMode = true;  // default is true
 
+// Error/Warning/Debug messages can write to the PHP's error log. The default values are false
+//$errorMessageLogging = false;
+//$warningMessageLogging = true; // All messages are going to write error log.
+//$debugMessageLogging = 'INTERMediator\DB'; // Messages from specified namespace are going to write error log.
+
 // Slack posting token and channel. You must create the Slack App permitting 'chat:write:bot' and generate OAuth2 token.
 $slackParameters = [
     "token" => 'xoxp-XXXXXXXXXXX-XXXXXXXXXXX-XXXXXXXXXXXX-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',

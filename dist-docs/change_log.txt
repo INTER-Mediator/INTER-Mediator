@@ -19,6 +19,8 @@ Ver.10 (In Development)
 - IMLibLocalContext has the method clearAllConditions for being convenient to define 'clear' button in search functions.
 - 'numeric-fields' and 'time-fields' can be defined in context definition with an array of field names. Calculation
   field of the SQLite view doesn't have a type and condition with numeric field have to numeric value.
+- Error/Warning/Debug messages can write to the PHP's error log with params.php's variables $errorMessageLogging,
+  $warningMessageLogging and $debugMessageLogging.
 - [BUG FIX] The lookup feature was not fully efficient, and refactored them.
 - [BUG FIX] When checkbox set to off, the message which someone modified showed unexpectedly.
 - [BUG FIX] After moving from list to detail and back to list page, paging position wasn't retrieve and show the
