@@ -171,7 +171,7 @@ const IMLibContextPool = {
     }
     for (let i = 0; i < this.poolingContexts.length; i += 1) {
       const enclosure = this.poolingContexts[i].enclosureNode
-      if (enclosure.getAttribute('id') === idValue) {
+      if (enclosure && enclosure.getAttribute('id') === idValue) {
         return this.poolingContexts[i]
       }
     }
