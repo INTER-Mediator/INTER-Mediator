@@ -384,6 +384,8 @@ class DefinitionChecker
                 )
             ),
             'extending-class' => 'string',
+            'numeric-fields' => 'array',
+            'time-fields' => 'array',
             'protect-writing' => 'array',
             'protect-reading' => 'array',
             'db-class' => 'string',

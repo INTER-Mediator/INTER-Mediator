@@ -17,6 +17,8 @@ Ver.10 (In Development)
   buttonClassBackNavi properties are defined. These can be set the additional class values to relevant buttons.
 - In where clause of generated sql, the values for numeric fields express by numeric not string.
 - IMLibLocalContext has the method clearAllConditions for being convenient to define 'clear' button in search functions.
+- 'numeric-fields' and 'time-fields' can be defined in context definition with an array of field names. Calculation
+  field of the SQLite view doesn't have a type and condition with numeric field have to numeric value.
 - [BUG FIX] The lookup feature was not fully efficient, and refactored them.
 - [BUG FIX] When checkbox set to off, the message which someone modified showed unexpectedly.
 
