@@ -16,41 +16,47 @@
     <title>INTER-Mediator - Sample - Form Style/MySQL</title>
     <script type="text/javascript" src="products_MySQL_include.php"></script>
     <script type="text/javascript" src="products.js"></script>
+    <script>
+      INTERMediatorOnPage.doBeforeConstruct = function () {
+        INTERMediatorLog.suppressDebugMessageOnPage = true;
+      };
+    </script>
 </head>
 <body>
 <header>
-  <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+    <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
 </header>
 <div id="wrapper">
-  <h1>Product List</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>id's</th>
-        <th>name</th>
-        <th>unitprice</th>
-        <th>photo</th>
-      </tr>
-      </thead>
-    <tbody>
-      <tr>
-        <td><a href="detail_MySQL.html?id=" data-im="product@id@#href">Detail</a></td>
-        <td>
-          <div data-im="product@name"></div>
-          </td>
-        <td align="right">
-          <div data-im="product@unitprice"></div>
-          </td>
-        <td>
-          <img width="30" src="images/" data-im="product@photofile@#src"/>
-          <a data-im="product@ack_link@href|product@acknowledgement"></a>
-          </td>
-      </tr>
-      </tbody>
-  </table>
+    <h1>Product List</h1>
+    <div id="IM_NAVIGATOR"></div>
+    <table>
+        <thead>
+        <tr>
+            <th>id's</th>
+            <th>name</th>
+            <th>unitprice</th>
+            <th>photo</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><a href="detail_MySQL.html?id=" data-im="product@id@#href">Detail</a></td>
+            <td>
+                <div data-im="product@name"></div>
+            </td>
+            <td align="right">
+                <div data-im="product@unitprice"></div>
+            </td>
+            <td>
+                <img width="30" src="images/" data-im="product@photofile@#src"/>
+                <a data-im="product@ack_link@href|product@acknowledgement"></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 <footer>
-<small>INTER-Mediator ©2022</small>
+    <small>INTER-Mediator ©2022</small>
 </footer>
 </body>
 </html>

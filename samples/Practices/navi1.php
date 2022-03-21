@@ -18,7 +18,8 @@ require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 IM_Entry(
     array(
         array(
-            'records' => 10,
+            'records' => 3,
+            'maxrecords' => 3,
             'name' => 'productlist',
             'view' => 'product',
             'key' => 'id',
@@ -41,5 +42,5 @@ IM_Entry(
 //        ),
     ),
     array('db-class' => 'PDO'),
-    false
+    2
 );

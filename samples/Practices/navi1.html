@@ -15,6 +15,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator - Sample - List-Detail Style Navigation/MySQL</title>
     <script type="text/javascript" src="navi1.php"></script>
+    <script>
+      INTERMediatorOnPage.doBeforeConstruct = function () {
+        INTERMediatorLog.suppressDebugMessageOnPage = true;
+      };
+    </script>
 </head>
 <body>
 <header>
