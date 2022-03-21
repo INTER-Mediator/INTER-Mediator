@@ -610,9 +610,7 @@ const INTERMediator_DBAdapter = {
     'use strict'
     let i, index, params, counter, extCount, criteriaObject, sortkeyObject, extCountSort
     let recordLimit = 10000000
-    let conditions, conditionSign, modifyConditions, orderFields, key,
-      keyParams, value, fields, operator, orderedKeys
-    let addExLimit = 1
+    let conditions, conditionSign, modifyConditions, value
     let removeIndice = []
     if (args.records === null) {
       params = 'access=read&name=' + encodeURIComponent(args.name)
@@ -649,10 +647,8 @@ const INTERMediator_DBAdapter = {
       // noinspection JSDuplicatedDeclaration
       for (index in args.parentkeyvalue) {
         if (args.parentkeyvalue.hasOwnProperty(index)) {
-          params += '&foreign' + counter +
-            'field=' + encodeURIComponent(index)
-          params += '&foreign' + counter +
-            'value=' + encodeURIComponent(args.parentkeyvalue[index])
+          params += '&foreign' + counter + 'field=' + encodeURIComponent(index)
+          params += '&foreign' + counter + 'value=' + encodeURIComponent(args.parentkeyvalue[index])
           counter++
         }
       }
@@ -684,7 +680,6 @@ const INTERMediator_DBAdapter = {
       }
       for (index = 0; index < criteriaObject.length; index++) {
         if (criteriaObject[index] && criteriaObject[index].field) {
-          //if (criteriaObject[index].value || criteriaObject[index].field === '__operation__') {
           conditionSign =
             criteriaObject[index].field + '#' +
             ((typeof (criteriaObject[index].operator) !== 'undefined') ? criteriaObject[index].operator : '') + '#' +
@@ -709,7 +704,6 @@ const INTERMediator_DBAdapter = {
             }
           }
           extCount++
-          //}
         }
         if (criteriaObject[index] && criteriaObject[index].onetime) {
           removeIndice.push = index
@@ -741,25 +735,30 @@ const INTERMediator_DBAdapter = {
         extCountSort++
       }
     }
+    params = INTERMediator_DBAdapter.parseLocalContext(args, params, conditions, extCount, extCountSort)[0]
+    params += '&records=' + encodeURIComponent(recordLimit)
+    return params
+  },
 
-    orderFields = {}
-    addExLimit = INTERMediator.alwaysAddOperationExchange ? 0 : addExLimit
-    for (key in IMLibLocalContext.store) {
+  // Private method for the db_queryParameters method
+  parseLocalContext: function (args, params, conditions, extCount, extCountSort) {
+    const orderFields = {}
+    const addExLimit = INTERMediator.alwaysAddOperationExchange ? 0 : 1
+    for (const key in IMLibLocalContext.store) {
       if (IMLibLocalContext.store.hasOwnProperty(key)) {
-        value = String(IMLibLocalContext.store[key])
-        keyParams = key.split(':')
+        const value = String(IMLibLocalContext.store[key])
+        const keyParams = key.split(':')
         if (keyParams && keyParams.length > 1 && keyParams[1].trim() === args.name && value.length > 0) {
           if (keyParams[0].trim() === 'condition' && keyParams.length >= 4) {
-            fields = keyParams[2].split(',')
-            operator = keyParams[3].trim()
+            const fields = keyParams[2].split(',')
+            const operator = keyParams[3].trim()
             if (fields.length > addExLimit) {
               params += '&condition' + extCount + 'field=__operation__'
               params += '&condition' + extCount + 'operator=ex'
               extCount++
-              // conditions = []
             }
             for (index = 0; index < fields.length; index++) {
-              conditionSign = fields[index].trim() + '#' + operator + '#' + value
+              const conditionSign = fields[index].trim() + '#' + operator + '#' + value
               if (!INTERMediator_DBAdapter.eliminateDuplicatedConditions || conditions.indexOf(conditionSign) < 0) {
                 params += '&condition' + extCount +
                   'field=' + encodeURIComponent(fields[index].replace(';;', '::').trim())
@@ -775,16 +774,14 @@ const INTERMediator_DBAdapter = {
         }
       }
     }
-    params += '&records=' + encodeURIComponent(recordLimit)
-    orderedKeys = Object.keys(orderFields)
+    const orderedKeys = Object.keys(orderFields)
     for (i = 0; i < orderedKeys.length; i++) {
       params += '&sortkey' + extCountSort + 'field=' + encodeURIComponent(orderFields[orderedKeys[i]][0])
       params += '&sortkey' + extCountSort + 'direction=' + encodeURIComponent(orderFields[orderedKeys[i]][1])
       extCountSort++
     }
-    return params
+    return [params, conditions, extCount, extCountSort];
   },
-
   /*
    db_update
    Update the database. The parameter of this function should be the object as below:
@@ -1220,3 +1217,5 @@ const INTERMediator_DBAdapter = {
 
 // @@IM@@IgnoringRestOfFile
 module.exports = INTERMediator_DBAdapter
+const INTERMediator = require('../../src/js/INTER-Mediator')
+const IMLibLocalContext = require('../../src/js/INTER-Mediator-LocalContext')

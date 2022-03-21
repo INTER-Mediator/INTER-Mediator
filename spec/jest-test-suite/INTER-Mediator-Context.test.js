@@ -45,8 +45,8 @@ test('Remote Context Test', () => {
   expect(context1.getValue('1', 'test2')).toBe('value2')
   expect(context1.getValue('1', 'test3')).toBe('value3')
   expect(context1.getValue('1', 'test4')).toBe('value4')
-
 })
+
 test('Remote-Context-Test2', () => {
   let i, j
   IMLibContextPool.clearAll()
