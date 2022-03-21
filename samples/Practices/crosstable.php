@@ -108,5 +108,5 @@ IM_Entry(array(
     array(
         'db-class' => 'PDO',
     ),
-    false
+    2
 );
