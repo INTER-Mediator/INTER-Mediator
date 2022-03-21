@@ -577,9 +577,6 @@ const INTERMediator_DBAdapter = {
           INTERMediator_DBAdapter.createExceptionFunc(
             1016,
             (function () {
-              const argsCapt = args
-              const succesProcCapt = successProc
-              const failedProcCapt = failedProc
               return function () {
                 if (INTERMediator.currentContext === true) {
                   location.reload()
@@ -608,10 +605,8 @@ const INTERMediator_DBAdapter = {
 
   db_queryParameters: function (args) {
     'use strict'
-    let i, index, params, counter, extCount, criteriaObject, sortkeyObject, extCountSort
+    let index, params, counter, extCount, extCountSort, conditions, conditionSign
     let recordLimit = 10000000
-    let conditions, conditionSign, modifyConditions, value
-    let removeIndice = []
     if (args.records === null) {
       params = 'access=read&name=' + encodeURIComponent(args.name)
     } else {
@@ -657,6 +652,7 @@ const INTERMediator_DBAdapter = {
       params += '&start=' + encodeURIComponent(INTERMediator.startFrom)
     }
     extCount = 0
+    extCountSort = 0;
     conditions = []
     while (args.conditions && args.conditions[extCount]) {
       conditionSign = args.conditions[extCount].field + '#' +
@@ -673,14 +669,26 @@ const INTERMediator_DBAdapter = {
       }
       extCount++
     }
-    criteriaObject = INTERMediator.additionalCondition[args.name]
+    params += '&records=' + encodeURIComponent(recordLimit);
+
+    [params, conditions, extCount] = INTERMediator_DBAdapter.parseAdditionalCriteria(
+      params, INTERMediator.additionalCondition[args.name], conditions, extCount);
+    [params, extCountSort] = INTERMediator_DBAdapter.parseAdditionalSortParameter(
+      params, INTERMediator.additionalSortKey[args.name], extCountSort);
+    params = INTERMediator_DBAdapter.parseLocalContext(args, params, conditions, extCount, extCountSort)[0]
+    return params
+  },
+
+  // Private method for the db_queryParameters method
+  parseAdditionalCriteria: function (params, criteriaObject, conditions, extCount) {
+    const removeIndice = []
     if (criteriaObject) {
       if (criteriaObject.field) {
         criteriaObject = [criteriaObject]
       }
-      for (index = 0; index < criteriaObject.length; index++) {
+      for (let index = 0; index < criteriaObject.length; index++) {
         if (criteriaObject[index] && criteriaObject[index].field) {
-          conditionSign =
+          const conditionSign =
             criteriaObject[index].field + '#' +
             ((typeof (criteriaObject[index].operator) !== 'undefined') ? criteriaObject[index].operator : '') + '#' +
             ((typeof (criteriaObject[index].value) !== 'undefined') ? criteriaObject[index].value : '')
@@ -693,7 +701,7 @@ const INTERMediator_DBAdapter = {
             }
             if (typeof (criteriaObject[index].value) !== 'undefined') {
               params += '&condition' + extCount
-              value = criteriaObject[index].value
+              let value = criteriaObject[index].value
               if (Array.isArray(value)) {
                 value = JSON.stringify(value)
               }
@@ -710,8 +718,8 @@ const INTERMediator_DBAdapter = {
         }
       }
       if (removeIndice.length > 0) {
-        modifyConditions = []
-        for (index = 0; index < criteriaObject.length; index++) {
+        const modifyConditions = []
+        for (let index = 0; index < criteriaObject.length; index++) {
           if (!(index in removeIndice)) {
             modifyConditions.push(criteriaObject[index])
           }
@@ -720,14 +728,16 @@ const INTERMediator_DBAdapter = {
         IMLibLocalContext.archive()
       }
     }
+    return [params, conditions, extCount]
+  },
 
-    extCountSort = 0
-    sortkeyObject = INTERMediator.additionalSortKey[args.name]
+  // Private method for the db_queryParameters method
+  parseAdditionalSortParameter: function (params, sortkeyObject, extCountSort) {
     if (sortkeyObject) {
       if (sortkeyObject.field) {
         sortkeyObject = [sortkeyObject]
       }
-      for (index = 0; index < sortkeyObject.length; index++) {
+      for (let index = 0; index < sortkeyObject.length; index++) {
         params += '&sortkey' + extCountSort
         params += 'field=' + encodeURIComponent(sortkeyObject[index].field)
         params += '&sortkey' + extCountSort
@@ -735,9 +745,7 @@ const INTERMediator_DBAdapter = {
         extCountSort++
       }
     }
-    params = INTERMediator_DBAdapter.parseLocalContext(args, params, conditions, extCount, extCountSort)[0]
-    params += '&records=' + encodeURIComponent(recordLimit)
-    return params
+    return [params, extCountSort]
   },
 
   // Private method for the db_queryParameters method
@@ -870,9 +878,6 @@ const INTERMediator_DBAdapter = {
         INTERMediator_DBAdapter.createExceptionFunc(
           1016,
           (function () {
-            let argsCapt = args
-            let succesProcCapt = successProc
-            let failedProcCapt = failedProc
             return function () {
               if (INTERMediator.currentContext === true) {
                 location.reload()
@@ -962,9 +967,6 @@ const INTERMediator_DBAdapter = {
         INTERMediator_DBAdapter.createExceptionFunc(
           1016,
           (function () {
-            let argsCapt = args
-            let succesProcCapt = successProc
-            let failedProcCapt = failedProc
             return function () {
               if (INTERMediator.currentContext === true) {
                 location.reload()
@@ -1008,9 +1010,6 @@ const INTERMediator_DBAdapter = {
         successProc,
         failedProc,
         INTERMediator_DBAdapter.createExceptionFunc(1016, (function () {
-          let argsCapt = args
-          let succesProcCapt = successProc
-          let failedProcCapt = failedProc
           return function () {
             if (INTERMediator.currentContext === true) {
               location.reload()
@@ -1134,9 +1133,6 @@ const INTERMediator_DBAdapter = {
         INTERMediator_DBAdapter.createExceptionFunc(
           1016,
           (function () {
-            let argsCapt = args
-            let succesProcCapt = successProc
-            let failedProcCapt = failedProc
             return function () {
               if (INTERMediator.currentContext === true) {
                 location.reload()

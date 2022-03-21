@@ -8,6 +8,7 @@
 const INTERMediator_DBAdapter = require('../../src/js/Adapter_DBServer')
 const IMLibContextPool = require("../../src/js/INTER-Mediator-ContextPool");
 const IMLibLocalContext = require("../../src/js/INTER-Mediator-LocalContext");
+const INTERMediator = require("../../src/js/INTER-Mediator");
 
 beforeEach(() => {
 })
@@ -15,7 +16,7 @@ beforeEach(() => {
 afterEach(() => {
 })
 
-test('Service method for array checking', function () {
+test('Service method parseLocalContext checking', function () {
   'use strict'
   const args = {
     name: 'account_list'
@@ -74,5 +75,84 @@ sortkey200field=issued_date&
 sortkey200direction=desc&
 sortkey201field=issued_date&
 sortkey201direction=asc`.replace(/\n/g, "")
+  expect(params).toBe(expectParams)
+})
+
+test('Service method parseAdditionalSortParameter checking', function () {
+  'use strict'
+  Object.defineProperty(INTERMediator, 'additionalSortKey', {
+    get: function () {
+      'use strict'
+      return INTERMediator.getLocalProperty('_im_additionalSortKey', {})
+    },
+    set: function (value) {
+      'use strict'
+      INTERMediator.setLocalProperty('_im_additionalSortKey', value)
+    }
+  })
+
+  const contextName = 'account_list'
+  INTERMediator.addSortKey(contextName, {field: "issued_date", direction: "asc"})
+  INTERMediator.addSortKey(contextName, {field: "item_total", direction: "desc"})
+  let params = "START"
+  let sortkeyObject = INTERMediator.additionalSortKey[contextName]
+  let extCountSort = 200;
+
+  [params, extCountSort]
+    = INTERMediator_DBAdapter.parseAdditionalSortParameter(params, sortkeyObject, extCountSort)
+  expect(extCountSort).toBe(202)
+  const expectParams = `START&
+sortkey200field=issued_date&
+sortkey200direction=asc&
+sortkey201field=item_total&
+sortkey201direction=desc`.replace(/\n/g, "")
+  expect(params).toBe(expectParams)
+})
+
+test('Service method parseAdditionalCriteria checking', function () {
+  'use strict'
+  Object.defineProperty(INTERMediator, 'additionalCondition', {
+    get: function () {
+      'use strict'
+      return INTERMediator.getLocalProperty('_im_additionalCondition', {})
+    },
+    set: function (value) {
+      'use strict'
+      INTERMediator.setLocalProperty('_im_additionalCondition', value)
+    }
+  })
+
+  const contextName = 'account_list'
+  INTERMediator.addCondition(contextName, {field: "issued_date", operator: ">=", value: "val1"})
+  INTERMediator.addCondition(contextName, {field: "issued_date", operator: "<=", value: "val2"})
+  INTERMediator.addCondition(contextName, {field: "issued_date", operator: "=", value: "val3"})
+  INTERMediator.addCondition(contextName, {field: "issued_date", operator: "IS NOT NULL"})
+  INTERMediator.addCondition(contextName, {field: "total_price", operator: ">", value: "0"})
+  let params = "START"
+  let conditions = ['first']
+  let extCount = 100;
+
+  [params, conditions, extCount] = INTERMediator_DBAdapter.parseAdditionalCriteria(
+    params, INTERMediator.additionalCondition[contextName], conditions, extCount)
+  expect(extCount).toBe(105)
+  expect(conditions.length).toBe(6)
+  expect(conditions[0]).toBe('first')
+  expect(conditions[1]).toBe('issued_date#>=#val1')
+  expect(conditions[4]).toBe('issued_date#IS NOT NULL#')
+  const expectParams = `START&
+condition100field=issued_date&
+condition100operator=%3E%3D&
+condition100value=val1&
+condition101field=issued_date&
+condition101operator=%3C%3D&
+condition101value=val2&
+condition102field=issued_date&
+condition102operator=%3D&
+condition102value=val3&
+condition103field=issued_date&
+condition103operator=IS%20NOT%20NULL&
+condition104field=total_price&
+condition104operator=%3E&
+condition104value=0`.replace(/\n/g, "")
   expect(params).toBe(expectParams)
 })
