@@ -12,49 +12,57 @@
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <title>INTER-Mediator - Sample - Authorized Chat / MySQL</title>
     <script src="include_MySQL.php"></script>
     <script src="../../node_modules/tinymce/tinymce.min.js"></script>
     <script src="../../node_modules/inter-mediator-plugin-tinymce/index.js"></script>
+    <script>
+      INTERMediatorOnPage.doBeforeConstruct = function () {
+        INTERMediatorLog.suppressDebugMessageOnPage = true;
+      };
+    </script>
 </head>
 <body>
 <header>
-  <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+    <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
 </header>
 <div id="wrapper">
-<h1>JavaScript Component Test (TinyMCE)</h1>
-<table>
-    <tbody data-im-control="post">
-    <tr>
-        <td>
-            <div data-im="testtable@text1" id="html1" data-im-widget="tinymce"></div>
-        </td>
-        <td>
-            <button data-im-control="post">追加</button>
-        </td>
-    </tr>
-    </tbody>
-</table>
-<table>
-    <thead>
-    <tr>
-        <th>Date and Time</th>
-        <th>Message</th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td><div data-im="testtable@dt1"></div><div  data-im="testtable@text1@innerHTML"></div></td>
-        <td data-im="testtable@text1" data-im-widget="tinymce"></td>
-        <td></td>
-    </tr>
-    </tbody>
-</table>
+    <h1>JavaScript Component Test (TinyMCE)</h1>
+    <table>
+        <tbody data-im-control="post">
+        <tr>
+            <td>
+                <div data-im="testtable@text1" id="html1" data-im-widget="tinymce"></div>
+            </td>
+            <td>
+                <button data-im-control="post">追加</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table>
+        <thead>
+        <tr>
+            <th>Date and Time</th>
+            <th>Message</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <div data-im="testtable@dt1"></div>
+                <div data-im="testtable@text1@innerHTML"></div>
+            </td>
+            <td data-im="testtable@text1" data-im-widget="tinymce"></td>
+            <td></td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 <footer>
-<small>INTER-Mediator ©2020</small>
+    <small>INTER-Mediator ©2020</small>
 </footer>
 </body>
 </html>

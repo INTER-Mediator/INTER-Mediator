@@ -16,6 +16,11 @@
     <title>INTER-Mediator - Sample - Plugin/popupselector</title>
     <script src="include_MySQL.php"></script>
     <script type="text/javascript" src="../../node_modules/inter-mediator-plugin-popupselector/index.js"></script>
+    <script>
+      INTERMediatorOnPage.doBeforeConstruct = function () {
+        INTERMediatorLog.suppressDebugMessageOnPage = true;
+      };
+    </script>
 </head>
 <body>
 <header>

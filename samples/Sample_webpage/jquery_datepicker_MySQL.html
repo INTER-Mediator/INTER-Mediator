@@ -20,6 +20,11 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/i18n/jquery.ui.datepicker-ja.min.js"></script>
     <script src="include_MySQL.php"></script>
     <script src="../../node_modules/inter-mediator-plugin-jquerydatepicker/index.js"></script>
+    <script>
+      INTERMediatorOnPage.doBeforeConstruct = function () {
+        INTERMediatorLog.suppressDebugMessageOnPage = true;
+      };
+    </script>
 </head>
 <body>
 <header>
