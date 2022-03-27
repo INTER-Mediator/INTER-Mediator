@@ -55,6 +55,7 @@ If you have any question about deploying with your applications, ask to INTER-Me
 - Shin Ninagawa
 - Osamu Noda
 - Tomoyuki Sugihara
+- Paul Takemura
 - Hiroyasu Tanaka
 - Takanori Taniguchi
 - Kozue Uriu
