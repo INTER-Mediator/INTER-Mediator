@@ -1502,10 +1502,14 @@ const IMLibPageNavigation = {
       }
       if (targetNode === null) {
         targetNode = document.createElement(targetNodeTag)
+        let sibiling = null
+        if (isTop) {
+          sibiling = enclosedNode.getElementsByTagName('TBODY')[0]
+        }
         INTERMediator.appendingNodesAtLast.push({
           targetNode: targetNode,
           parentNode: enclosedNode,
-          siblingNode: (targetNodeTag === 'THEAD') ? enclosedNode.firstChild : null
+          siblingNode: sibiling
         })
       }
       const existingButtons = INTERMediatorLib.getElementsByClassName(targetNode, 'IM_Button_BackNavi')
@@ -1516,7 +1520,11 @@ const IMLibPageNavigation = {
         tdNode.setAttribute('colspan', 100)
         tdNode.setAttribute('class', 'IM_NaviBack_TD')
         INTERMediator.setIdValue(trNode)
-        targetNode.appendChild(trNode)
+        if(isTop){
+          targetNode.insertBefore(trNode,targetNode.getElementsByTagName('TR')[0])
+        } else {
+          targetNode.appendChild(trNode)
+        }
         trNode.appendChild(tdNode)
         tdNode.appendChild(buttonNode)
       }
