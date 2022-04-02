@@ -103,10 +103,10 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->dbProxySetupForAccess("contact", 1000000);
         $this->db_proxy->requireUpdatedRecord(true);
         $newKeyValue = $this->db_proxy->createInDB();
-//        $msg = $this->db_proxy->logger->getErrorMessages();
-//        var_dump($msg);
-//        $msg = $this->db_proxy->logger->getDebugMessages();
-//        var_dump($msg);
+        $msg = $this->db_proxy->logger->getErrorMessages();
+        var_dump($msg);
+        $msg = $this->db_proxy->logger->getDebugMessages();
+        var_dump($msg);
         $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
         $createdRecord = $this->db_proxy->getUpdatedRecord();
         $this->assertTrue($createdRecord != null, "Created record should be exists.");
