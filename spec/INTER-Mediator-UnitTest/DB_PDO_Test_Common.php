@@ -103,6 +103,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->dbProxySetupForAccess("contact", 1000000);
         $this->db_proxy->requireUpdatedRecord(true);
         $newKeyValue = $this->db_proxy->createInDB();
+        $this->db_proxy->logger->clearLogs();
         $msg = $this->db_proxy->logger->getErrorMessages();
         var_dump($msg);
         $msg = $this->db_proxy->logger->getDebugMessages();
