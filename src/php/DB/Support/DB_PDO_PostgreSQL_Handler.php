@@ -73,7 +73,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         } catch (Exception $ex) {
             throw $ex;
         }
-        $fieldNameForNullable = 'notnull';
+        $fieldNameForNullable = 'is_nullable';
         $fieldArray = [];
         foreach ($result as $row) {
             if ($row[$fieldNameForNullable]) {
