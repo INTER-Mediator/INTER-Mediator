@@ -740,7 +740,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $timeFields = array_merge($timeFields, $tableInfo['time-fields']);
         }
         $boolFields = $this->handler->getBooleanFields($this->dbSettings->getEntityForUpdate());
-        $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
+        $tableNameRow = $this->dbSettings->getEntityForUpdate();
+        $tableName = $this->handler->quotedEntityName($tableNameRow);
         $viewName = $this->handler->quotedEntityName($this->dbSettings->getEntityForRetrieve());
 
         if (isset($tableInfo['authentication'])) {
@@ -789,7 +790,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $convertedValue = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
                 }
                 $fValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
-                $setValues[] = !$fValue ?? $this->link->quote($fValue);
+                $setValues[] = $fValue ? $this->link->quote($fValue) : $fValue;
             }
             $setColumnNames[] = $field;
         }
@@ -801,7 +802,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                     $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
                     $fValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
-                    $setValues[] = !$fValue ?? $this->link->quote($fValue);
+                    $setValues[] = $fValue ? $this->link->quote($fValue) : $fValue;
                     $setColumnNames[] = $field;
                 }
             }
@@ -824,7 +825,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
 
         $keyField = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
-        $setClause = $this->handler->sqlSETClause($setColumnNames, $keyField, $setValues);
+        $setClause = $this->handler->sqlSETClause($tableNameRow, $setColumnNames, $keyField, $setValues);
         if ($isReplace) {
             $sql = $this->handler->sqlREPLACECommand($tableName, $setClause);
         } else {

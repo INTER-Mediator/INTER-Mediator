@@ -56,13 +56,36 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return "REPLACE INTO {$tableRef} {$setClause}";
     }
 
-    public function sqlSETClause($setColumnNames, $keyField, $setValues)
+    public function sqlSETClause($tableName,$setColumnNames, $keyField, $setValues)
     {
-        $setNames = array_map(function ($value) {
-            return $this->quotedEntityName($value);
-        }, $setColumnNames);
+        $nullableFields = $this->getNullableFields($tableName);
+        $setNames = [];
+        $setValuesConv = [];
+        $count = 0;
+        foreach ($setColumnNames as $fName) {
+            $setNames[] = $this->quotedEntityName($fName);
+            $setValuesConv[] = $setValues[$count] ?? (in_array($fName, $nullableFields) ? 'NULL' : "''");
+            $count = +1;
+        }
         return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
-            '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValues) . ')';
+            '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
+    }
+
+    public function getNullableFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $fieldNameForNullable = 'notnull';
+        $fieldArray = [];
+        foreach ($result as $row) {
+            if ($row[$fieldNameForNullable]) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
     }
 
     public function getNullableNumericFields($tableName)

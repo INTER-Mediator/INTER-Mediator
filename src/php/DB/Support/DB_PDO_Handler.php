@@ -72,7 +72,7 @@ abstract class DB_PDO_Handler
         return $this->sqlINSERTCommand($tableRef, $setClause);
     }
 
-    public abstract function sqlSETClause($setColumnNames, $keyField, $setValues);
+    public abstract function sqlSETClause($tableName,$setColumnNames, $keyField, $setValues);
 
     public function copyRecords($tableInfo, $queryClause, $assocField, $assocValue, $defaultValues)
     {
@@ -100,6 +100,8 @@ abstract class DB_PDO_Handler
     }
 
     public abstract function getNumericFields($tableName);
+
+    public abstract function getNullableFields($tableName);
 
     public abstract function getNullableNumericFields($tableName);
 
