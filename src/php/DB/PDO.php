@@ -788,8 +788,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $dt->setTimezone(new DateTimeZone(date_default_timezone_get()));
                     $convertedValue = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
                 }
-                $setValues[] = $this->link->quote(
-                    $this->formatter->formatterToDB($filedInForm, $convertedValue));
+                $fValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
+                $setValues[] = !$fValue ?? $this->link->quote($fValue);
             }
             $setColumnNames[] = $field;
         }
@@ -800,8 +800,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 if (!in_array($field, $setColumnNames)) {
                     $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                     $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-                    $setValues[] = $this->link->quote(
-                        $this->formatter->formatterToDB($filedInForm, $convertedValue));
+                    $fValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
+                    $setValues[] = !$fValue ?? $this->link->quote($fValue);
                     $setColumnNames[] = $field;
                 }
             }
