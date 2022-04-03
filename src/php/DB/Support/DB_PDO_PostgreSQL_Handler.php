@@ -60,9 +60,8 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
 
     protected $fieldNameForNullable = 'is_nullable';
     protected $numericFieldTypes = array('smallint', 'integer', 'bigint', 'decimal', 'numeric',
-        'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money',
-        'timestamp', 'date', 'time', 'interval',);
-protected           $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+        'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money',);
+    protected $timeFieldTypes = ['datetime', 'time', 'timestamp'];
 
 //    public function getNullableFields($tableName)
 //    {

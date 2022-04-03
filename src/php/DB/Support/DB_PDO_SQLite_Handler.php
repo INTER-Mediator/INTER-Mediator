@@ -56,7 +56,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return "REPLACE INTO {$tableRef} {$setClause}";
     }
 
-    public function sqlSETClause($tableName,$setColumnNames, $keyField, $setValues)
+    public function sqlSETClause($tableName, $setColumnNames, $keyField, $setValues)
     {
         [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $keyField, $setValues);
         return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
@@ -67,7 +67,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
     protected $numericFieldTypes = array('integer', 'int', 'real', 'numeric',
         'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2', 'int8',
         'double', 'double precision', 'float', 'decimal', 'boolean');
-protected         $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+    protected $timeFieldTypes = ['datetime', 'time', 'timestamp'];
 //        $numericFieldTypes = array('integer', 'int', 'real', 'numeric', 'tinyint', 'smallint', 'mediumint', 'bigint',
 //            'unsigned big int', 'int2', 'int8', 'double', 'double precision', 'float', 'decimal', 'boolean',);
 

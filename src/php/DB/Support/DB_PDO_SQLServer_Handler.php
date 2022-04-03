@@ -67,7 +67,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return "INSERT INTO {$tableRef} {$setClause}";
     }
 
-    public function sqlSETClause($tableName,$setColumnNames, $keyField, $setValues)
+    public function sqlSETClause($tableName, $setColumnNames, $keyField, $setValues)
     {
         [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $keyField, $setValues);
         return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
@@ -77,7 +77,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
     protected $fieldNameForNullable = 'is_nullable';
     protected $numericFieldTypes = array('bigint', 'bit', 'decimal', 'float', 'hierarchyid', 'int', 'money', 'numeric',
         'real', 'smallint', 'smallmoney', 'tinyint',);
-    protected         $timeFieldTypes = ['datetime', 'datetime2', 'datetimeoffset', 'time', 'smaldatetime'];
+    protected $timeFieldTypes = ['datetime', 'datetime2', 'datetimeoffset', 'time', 'smaldatetime'];
 
 
 //    public function getNullableFields($tableName)

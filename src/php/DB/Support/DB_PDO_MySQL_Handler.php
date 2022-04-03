@@ -83,11 +83,10 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 //        return $fieldArray;
 //    }
 
-    protected         $fieldNameForNullable = 'Null';
-    protected        $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
-        'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision',
-        'date', 'datetime', 'timestamp', 'time', 'year',];
-protected         $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+    protected $fieldNameForNullable = 'Null';
+    protected $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
+        'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision', 'year',];
+    protected $timeFieldTypes = ['datetime', 'time', 'timestamp'];
 
 //    public function getNullableFields($tableName)
 //    {
