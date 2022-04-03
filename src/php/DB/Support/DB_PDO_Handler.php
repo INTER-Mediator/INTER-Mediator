@@ -16,7 +16,8 @@
 
 namespace INTERMediator\DB\Support;
 
-use \Exception;
+use Exception;
+use PDO;
 
 abstract class DB_PDO_Handler
 {
@@ -175,13 +176,48 @@ abstract class DB_PDO_Handler
         return $fieldArray;
     }
 
-    public abstract function getBooleanFields($tableName);
+    public function getBooleanFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            return [];
+        }
+        $fieldArray = [];
+        $matches = [];
+        foreach ($result as $row) {
+            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if (in_array($matches[0], $this->booleanFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
 
     public abstract function quotedEntityName($entityName);
 
     public abstract function optionalOperationInSetup();
 
-    protected abstract function getTableInfo($tableName);
+    protected function getTableInfo($tableName){
+        if (!isset($this->tableInfo[$tableName])) {
+            $sql = $this->getTalbeInfoSQL($tableName);
+            $this->dbClassObj->logger->setDebugMessage($sql);
+            $result = $this->dbClassObj->link->query($sql);
+            if (!$result) {
+                throw new Exception('Inspection SQL Error:' . $sql);
+            }
+            $infoResult = [];
+            foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $infoResult[] = $row;
+            }
+            $this->tableInfo[$tableName] = $infoResult;
+        } else {
+            $infoResult = $this->tableInfo[$tableName];
+        }
+        return $infoResult;
+    }
+
+    protected abstract function getTalbeInfoSQL($tableName);
 
     protected abstract function getFieldListsForCopy(
         $tableName, $keyField, $assocField, $assocValue, $defaultValues);

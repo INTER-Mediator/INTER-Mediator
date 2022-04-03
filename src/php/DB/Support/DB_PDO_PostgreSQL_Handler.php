@@ -21,6 +21,15 @@ use PDO;
 
 class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
 {
+    protected $tableInfo = array();
+    protected $fieldNameForField = 'column_name';
+    protected $fieldNameForType = 'data_type';
+    protected $fieldNameForNullable = 'is_nullable';
+    protected $numericFieldTypes = array('smallint', 'integer', 'bigint', 'decimal', 'numeric',
+        'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money',);
+    protected $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+    protected $booleanFieldTypes = ['boolean'];
+
     public function sqlSELECTCommand()
     {
         return "SELECT ";
@@ -58,143 +67,22 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
-    protected $fieldNameForNullable = 'is_nullable';
-    protected $numericFieldTypes = array('smallint', 'integer', 'bigint', 'decimal', 'numeric',
-        'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money',);
-    protected $timeFieldTypes = ['datetime', 'time', 'timestamp'];
-
-//    public function getNullableFields($tableName)
-//    {
-//        try {
-//            $result = $this->getTableInfo($tableName);
-//        } catch (Exception $ex) {
-//            throw $ex;
-//        }
-//        $fieldNameForNullable = 'is_nullable';
-//        $fieldArray = [];
-//        foreach ($result as $row) {
-//            if ($row[$fieldNameForNullable]) {
-//                $fieldArray[] = $row[$this->fieldNameForField];
-//            }
-//        }
-//        return $fieldArray;
-//    }
-
-//    public function getNullableNumericFields($tableName)
-//    {
-//        try {
-//            $result = $this->getTableInfo($tableName);
-//        } catch (Exception $ex) {
-//            throw $ex;
-//        }
-//        $fieldNameForNullable = 'is_nullable';
-//        $numericFieldTypes = array('smallint', 'integer', 'bigint', 'decimal', 'numeric',
-//            'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money',
-//            'timestamp', 'date', 'time', 'interval',);
-//        $fieldArray = array();
-//        $matches = array();
-//        foreach ($result as $row) {
-//            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
-//            if ($row[$fieldNameForNullable] && in_array($matches[0], $numericFieldTypes)) {
-//                $fieldArray[] = $row[$this->fieldNameForField];
-//            }
-//        }
-//        return $fieldArray;
-//    }
-//
-//    public function getNumericFields($tableName)
-//    {
-//        try {
-//            $result = $this->getTableInfo($tableName);
-//        } catch (Exception $ex) {
-//            throw $ex;
-//        }
-//        $fieldArray = array();
-//        $numericFieldTypes = array('smallint', 'integer', 'bigint', 'decimal', 'numeric',
-//            'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money', 'interval',);
-//        $matches = array();
-//        foreach ($result as $row) {
-//            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
-//            if (in_array($matches[0], $numericFieldTypes)) {
-//                $fieldArray[] = $row[$this->fieldNameForField];
-//            }
-//        }
-//        return $fieldArray;
-//    }
-
-//    public function getTimeFields($tableName)
-//    {
-//        try {
-//            $result = $this->getTableInfo($tableName);
-//        } catch (Exception $ex) {
-//            return [];
-//        }
-//        $timeFieldTypes = ['datetime', 'time', 'timestamp'];
-//        $fieldArray = [];
-//        $matches = [];
-//        foreach ($result as $row) {
-//            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
-//            if (in_array($matches[0], $timeFieldTypes)) {
-//                $fieldArray[] = $row[$this->fieldNameForField];
-//            }
-//        }
-//        return $fieldArray;
-//    }
-
-    public function getBooleanFields($tableName)
+    protected function getTalbeInfoSQL($tableName)
     {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            return [];
-        }
-        $timeFieldTypes = ['boolean'];
-        $fieldArray = [];
-        $matches = [];
-        foreach ($result as $row) {
-            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (in_array($matches[0], $timeFieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
-
-    protected $tableInfo = array();
-    protected $fieldNameForField = 'column_name';
-    protected $fieldNameForType = 'data_type';
-
-    protected function getTableInfo($tableName)
-    {
-        if (!isset($this->tableInfo[$tableName])) {
-            if (strpos($tableName, ".") !== false) {
-                $tName = substr($tableName, strpos($tableName, ".") + 1);
-                $schemaName = substr($tableName, 0, strpos($tableName, "."));
-                $sql = "SELECT column_name, column_default, is_nullable, data_type, character_maximum_length, "
-                    . "numeric_precision, numeric_scale FROM information_schema.columns "
-                    . "WHERE table_schema=" . $this->dbClassObj->link->quote($schemaName)
-                    . " AND table_name=" . $this->dbClassObj->link->quote($tName);
-            } else {
-                $sql = "SELECT column_name, column_default, is_nullable, data_type, character_maximum_length, "
-                    . "numeric_precision, numeric_scale FROM information_schema.columns "
-                    . "WHERE table_name=" . $this->dbClassObj->link->quote($tableName);
-            }
-            $this->dbClassObj->logger->setDebugMessage($sql);
-            $result = $this->dbClassObj->link->query($sql);
-            if (!$result) {
-                throw new Exception('INSERT Error:' . $sql);
-            }
-            $infoResult = [];
-            foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                $infoResult[] = $row;
-            }
-            $this->tableInfo[$tableName] = $infoResult;
+        if (strpos($tableName, ".") !== false) {
+            $tName = substr($tableName, strpos($tableName, ".") + 1);
+            $schemaName = substr($tableName, 0, strpos($tableName, "."));
+            $sql = "SELECT column_name, column_default, is_nullable, data_type, character_maximum_length, "
+                . "numeric_precision, numeric_scale FROM information_schema.columns "
+                . "WHERE table_schema=" . $this->dbClassObj->link->quote($schemaName)
+                . " AND table_name=" . $this->dbClassObj->link->quote($tName);
         } else {
-            $infoResult = $this->tableInfo[$tableName];
+            $sql = "SELECT column_name, column_default, is_nullable, data_type, character_maximum_length, "
+                . "numeric_precision, numeric_scale FROM information_schema.columns "
+                . "WHERE table_name=" . $this->dbClassObj->link->quote($tableName);
         }
-        return $infoResult;
+        return $sql;
     }
-
     /*
 # select table_catalog,table_schema,table_name,column_name,column_default from information_schema.columns where table_name='person';
 table_catalog | table_schema | table_name | column_name |                column_default
