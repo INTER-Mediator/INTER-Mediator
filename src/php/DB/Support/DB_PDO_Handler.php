@@ -154,15 +154,9 @@ abstract class DB_PDO_Handler
         } catch (Exception $ex) {
             throw $ex;
         }
-        $fieldArray = [];
-        $matches = [];
-        foreach ($result as $row) {
-            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if ($row[$this->fieldNameForNullable] && in_array($matches[0], $this->numericFieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
+        $nullableFields = $this->getNullableFields($tableName);
+        $numericFields = $this->getNumericFields($tableName);
+        return array_intersect($nullableFields, $numericFields);
     }
 
     public function getTimeFields($tableName)
