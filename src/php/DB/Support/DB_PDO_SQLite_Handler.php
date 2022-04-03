@@ -58,106 +58,106 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 
     public function sqlSETClause($tableName,$setColumnNames, $keyField, $setValues)
     {
-        $nullableFields = $this->getNullableFields($tableName);
-        $setNames = [];
-        $setValuesConv = [];
-        $count = 0;
-        foreach ($setColumnNames as $fName) {
-            $setNames[] = $this->quotedEntityName($fName);
-            $setValuesConv[] = $setValues[$count] ?? (in_array($fName, $nullableFields) ? 'NULL' : "''");
-            $count = +1;
-        }
+        [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $keyField, $setValues);
         return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
-    public function getNullableFields($tableName)
-    {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $fieldNameForNullable = 'notnull';
-        $fieldArray = [];
-        foreach ($result as $row) {
-            if ($row[$fieldNameForNullable]) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
+    protected $fieldNameForNullable = 'notnull';
+    protected $numericFieldTypes = array('integer', 'int', 'real', 'numeric',
+        'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2', 'int8',
+        'double', 'double precision', 'float', 'decimal', 'boolean');
+protected         $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+//        $numericFieldTypes = array('integer', 'int', 'real', 'numeric', 'tinyint', 'smallint', 'mediumint', 'bigint',
+//            'unsigned big int', 'int2', 'int8', 'double', 'double precision', 'float', 'decimal', 'boolean',);
 
-    public function getNullableNumericFields($tableName)
-    {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $fieldNameForNullable = 'notnull';
-        $fieldArray = array();
-        $numericFieldTypes = array('integer', 'real', 'numeric',
-            'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2', 'int8',
-            'double', 'double precision', 'float', 'decimal', 'boolean', 'date', 'datetime',);
-        $matches = array();
-        foreach ($result as $row) {
-            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (isset($matches[0]) && !$row[$fieldNameForNullable] && in_array($matches[0], $numericFieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
+//    public function getNullableFields($tableName)
+//    {
+//        try {
+//            $result = $this->getTableInfo($tableName);
+//        } catch (Exception $ex) {
+//            throw $ex;
+//        }
+//        $fieldNameForNullable = 'notnull';
+//        $fieldArray = [];
+//        foreach ($result as $row) {
+//            if ($row[$fieldNameForNullable]) {
+//                $fieldArray[] = $row[$this->fieldNameForField];
+//            }
+//        }
+//        return $fieldArray;
+//    }
 
-    public function getNumericFields($tableName)
-    {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $fieldArray = array();
-        $numericFieldTypes = array('integer', 'int', 'real', 'numeric', 'tinyint', 'smallint', 'mediumint', 'bigint',
-            'unsigned big int', 'int2', 'int8', 'double', 'double precision', 'float', 'decimal', 'boolean',);
-        $matches = array();
-        foreach ($result as $row) {
-            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (isset($matches[0]) && in_array($matches[0], $numericFieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
+//    public function getNullableNumericFields($tableName)
+//    {
+//        try {
+//            $result = $this->getTableInfo($tableName);
+//        } catch (Exception $ex) {
+//            throw $ex;
+//        }
+//        $fieldNameForNullable = 'notnull';
+//        $fieldArray = array();
+//        $numericFieldTypes = array('integer', 'real', 'numeric',
+//            'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2', 'int8',
+//            'double', 'double precision', 'float', 'decimal', 'boolean', 'date', 'datetime',);
+//        $matches = array();
+//        foreach ($result as $row) {
+//            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
+//            if (isset($matches[0]) && !$row[$fieldNameForNullable] && in_array($matches[0], $numericFieldTypes)) {
+//                $fieldArray[] = $row[$this->fieldNameForField];
+//            }
+//        }
+//        return $fieldArray;
+//    }
 
-    public function getTimeFields($tableName)
-    {
-        /* This isn't work because SQLite doesn't have any Date/Time type. It uses the text or numeric field. */
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $fieldTypes = ['datetime', 'time', 'timestamp'];
-        $fieldArray = [];
-        $matches = [];
-        foreach ($result as $row) {
-            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (isset($matches[0]) && in_array($matches[0], $fieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
+//    public function getNumericFields($tableName)
+//    {
+//        try {
+//            $result = $this->getTableInfo($tableName);
+//        } catch (Exception $ex) {
+//            throw $ex;
+//        }
+//        $fieldArray = array();
+//        $numericFieldTypes = array('integer', 'int', 'real', 'numeric', 'tinyint', 'smallint', 'mediumint', 'bigint',
+//            'unsigned big int', 'int2', 'int8', 'double', 'double precision', 'float', 'decimal', 'boolean',);
+//        $matches = array();
+//        foreach ($result as $row) {
+//            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
+//            if (isset($matches[0]) && in_array($matches[0], $numericFieldTypes)) {
+//                $fieldArray[] = $row[$this->fieldNameForField];
+//            }
+//        }
+//        return $fieldArray;
+//    }
+
+//    public function getTimeFields($tableName)
+//    {
+//        /* This isn't work because SQLite doesn't have any Date/Time type. It uses the text or numeric field. */
+//        try {
+//            $result = $this->getTableInfo($tableName);
+//        } catch (Exception $ex) {
+//            throw $ex;
+//        }
+//        $fieldTypes = ['datetime', 'time', 'timestamp'];
+//        $fieldArray = [];
+//        $matches = [];
+//        foreach ($result as $row) {
+//            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
+//            if (isset($matches[0]) && in_array($matches[0], $fieldTypes)) {
+//                $fieldArray[] = $row[$this->fieldNameForField];
+//            }
+//        }
+//        return $fieldArray;
+//    }
 
     public function getBooleanFields($tableName)
     {
         return [];
     }
 
-    private $tableInfo = array();
-    private $fieldNameForField = 'name';
-    private $fieldNameForType = 'type';
+    protected $tableInfo = array();
+    protected $fieldNameForField = 'name';
+    protected $fieldNameForType = 'type';
 
     protected function getTableInfo($tableName)
     {

@@ -58,96 +58,94 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 
     public function sqlSETClause($tableName, $setColumnNames, $keyField, $setValues)
     {
-        $nullableFields = $this->getNullableFields($tableName);
-        $setNames = [];
-        $setValuesConv = [];
-        $count = 0;
-        foreach ($setColumnNames as $fName) {
-            $setNames[] = $this->quotedEntityName($fName);
-            $setValuesConv[] = $setValues[$count] ?? (in_array($fName, $nullableFields) ? 'NULL' : "''");
-            $count = +1;
-        }
+        [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $keyField, $setValues);
         return (count($setColumnNames) == 0) ? "SET {$keyField}=DEFAULT" :
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
-    public function getNumericFields($tableName)
-    {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
-            'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision', 'year',];
-        $fieldArray = [];
-        $matches = [];
-        foreach ($result as $row) {
-            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (in_array($matches[0], $numericFieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
+//    public function getNumericFields($tableName)
+//    {
+//        try {
+//            $result = $this->getTableInfo($tableName);
+//        } catch (Exception $ex) {
+//            throw $ex;
+//        }
+//        $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
+//            'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision', 'year',];
+//        $fieldArray = [];
+//        $matches = [];
+//        foreach ($result as $row) {
+//            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
+//            if (in_array($matches[0], $numericFieldTypes)) {
+//                $fieldArray[] = $row[$this->fieldNameForField];
+//            }
+//        }
+//        return $fieldArray;
+//    }
 
-    public function getNullableFields($tableName)
-    {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $fieldNameForNullable = 'Null';
-        $fieldArray = [];
-        foreach ($result as $row) {
-            if ($row[$fieldNameForNullable]) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
+    protected         $fieldNameForNullable = 'Null';
+    protected        $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
+        'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision',
+        'date', 'datetime', 'timestamp', 'time', 'year',];
+protected         $timeFieldTypes = ['datetime', 'time', 'timestamp'];
 
-    public function getNullableNumericFields($tableName)
-    {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
-            'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision',
-            'date', 'datetime', 'timestamp', 'time', 'year',];
-        $fieldNameForNullable = 'Null';
-        $fieldArray = [];
-        $matches = [];
-        foreach ($result as $row) {
-            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if ($row[$fieldNameForNullable] && in_array($matches[0], $numericFieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
+//    public function getNullableFields($tableName)
+//    {
+//        try {
+//            $result = $this->getTableInfo($tableName);
+//        } catch (Exception $ex) {
+//            throw $ex;
+//        }
+//        $fieldNameForNullable = 'Null';
+//        $fieldArray = [];
+//        foreach ($result as $row) {
+//            if ($row[$fieldNameForNullable]) {
+//                $fieldArray[] = $row[$this->fieldNameForField];
+//            }
+//        }
+//        return $fieldArray;
+//    }
 
-    public function getTimeFields($tableName)
-    {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            return [];
-        }
-        $fieldTypes = ['datetime', 'time', 'timestamp'];
-        $fieldArray = [];
-        $matches = [];
-        foreach ($result as $row) {
-            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (in_array($matches[0], $fieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
+//    public function getNullableNumericFields($tableName)
+//    {
+//        try {
+//            $result = $this->getTableInfo($tableName);
+//        } catch (Exception $ex) {
+//            throw $ex;
+//        }
+//        $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
+//            'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision',
+//            'date', 'datetime', 'timestamp', 'time', 'year',];
+//        $fieldNameForNullable = 'Null';
+//        $fieldArray = [];
+//        $matches = [];
+//        foreach ($result as $row) {
+//            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
+//            if ($row[$fieldNameForNullable] && in_array($matches[0], $numericFieldTypes)) {
+//                $fieldArray[] = $row[$this->fieldNameForField];
+//            }
+//        }
+//        return $fieldArray;
+//    }
+
+//    public function getTimeFields($tableName)
+//    {
+//        try {
+//            $result = $this->getTableInfo($tableName);
+//        } catch (Exception $ex) {
+//            return [];
+//        }
+//        $fieldTypes = ['datetime', 'time', 'timestamp'];
+//        $fieldArray = [];
+//        $matches = [];
+//        foreach ($result as $row) {
+//            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
+//            if (in_array($matches[0], $fieldTypes)) {
+//                $fieldArray[] = $row[$this->fieldNameForField];
+//            }
+//        }
+//        return $fieldArray;
+//    }
 
     public function getBooleanFields($tableName)
     {
@@ -168,9 +166,9 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return $fieldArray;
     }
 
-    private $tableInfo = array();
-    private $fieldNameForField = 'Field';
-    private $fieldNameForType = 'Type';
+    protected $tableInfo = array();
+    protected $fieldNameForField = 'Field';
+    protected $fieldNameForType = 'Type';
 
     protected function getTableInfo($tableName)
     {

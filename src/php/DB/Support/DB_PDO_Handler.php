@@ -72,7 +72,21 @@ abstract class DB_PDO_Handler
         return $this->sqlINSERTCommand($tableRef, $setClause);
     }
 
-    public abstract function sqlSETClause($tableName,$setColumnNames, $keyField, $setValues);
+    public abstract function sqlSETClause($tableName, $setColumnNames, $keyField, $setValues);
+
+    protected function sqlSETClauseData($tableName, $setColumnNames, $keyField, $setValues)
+    {
+        $nullableFields = $this->getNullableFields($tableName);
+        $setNames = [];
+        $setValuesConv = [];
+        $count = 0;
+        foreach ($setColumnNames as $fName) {
+            $setNames[] = $this->quotedEntityName($fName);
+            $setValuesConv[] = $setValues[$count] ?? (in_array($fName, $nullableFields) ? 'NULL' : "''");
+            $count = +1;
+        }
+        return [$setNames, $setValuesConv];
+    }
 
     public function copyRecords($tableInfo, $queryClause, $assocField, $assocValue, $defaultValues)
     {
@@ -99,13 +113,73 @@ abstract class DB_PDO_Handler
         return $returnValue;
     }
 
-    public abstract function getNumericFields($tableName);
+    public function getNumericFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $fieldArray = [];
+        $matches = [];
+        foreach ($result as $row) {
+            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if (in_array($matches[0], $this->numericFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
 
-    public abstract function getNullableFields($tableName);
+    public function getNullableFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $fieldArray = [];
+        foreach ($result as $row) {
+            if ($row[$this->fieldNameForNullable]) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
 
-    public abstract function getNullableNumericFields($tableName);
+    public function getNullableNumericFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $fieldArray = [];
+        $matches = [];
+        foreach ($result as $row) {
+            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if ($row[$this->fieldNameForNullable] && in_array($matches[0], $this->numericFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
 
-    public abstract function getTimeFields($tableName);
+    public function getTimeFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $fieldArray = [];
+        foreach ($result as $row) {
+            if (in_array(strtolower($row[$this->fieldNameForType]), $this->timeFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
 
     public abstract function getBooleanFields($tableName);
 
