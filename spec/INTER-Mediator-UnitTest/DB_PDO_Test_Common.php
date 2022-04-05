@@ -35,13 +35,13 @@ abstract class DB_PDO_Test_Common extends TestCase
     {
         $this->dbProxySetupForAggregation();
 
-        //$this->db_proxy->logger->clearLogs();
+//        $this->db_proxy->logger->clearLogs();
 
         $result = $this->db_proxy->readFromDB();
         $recordCount = $this->db_proxy->countQueryResult();
 
-        //var_export($this->db_proxy->logger->getErrorMessages());
-        //var_export($this->db_proxy->logger->getDebugMessages());
+//        var_export($this->db_proxy->logger->getErrorMessages());
+//        var_export($this->db_proxy->logger->getDebugMessages());
 
         $this->assertTrue(is_array($result), "After the query, any array should be retrieved.");
         $this->assertEquals(count($result), 10, "After the query, 10 records should be retrieved.");
@@ -103,6 +103,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->dbProxySetupForAccess("contact", 1000000);
         $this->db_proxy->requireUpdatedRecord(true);
         $newKeyValue = $this->db_proxy->createInDB();
+        $this->db_proxy->logger->clearLogs();
 //        $msg = $this->db_proxy->logger->getErrorMessages();
 //        var_dump($msg);
 //        $msg = $this->db_proxy->logger->getDebugMessages();

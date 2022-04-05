@@ -21,6 +21,15 @@ use PDO;
 
 class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 {
+    protected $tableInfo = array();
+    protected $fieldNameForField = 'Field';
+    protected $fieldNameForType = 'Type';
+    protected $fieldNameForNullable = 'Null';
+    protected $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
+        'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision', 'year',];
+    protected $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+    protected $booleanFieldTypes = ['boolean', 'bool'];
+
     public function sqlSELECTCommand()
     {
         return "SELECT ";
@@ -56,119 +65,17 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "REPLACE INTO {$tableRef} {$setClause}";
     }
 
-    public function sqlSETClause($setColumnNames, $keyField, $setValues)
+    public function sqlSETClause($tableName, $setColumnNames, $keyField, $setValues)
     {
-        $setNames = array_map(function ($value) {
-            return $this->quotedEntityName($value);
-        }, $setColumnNames);
+        [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $keyField, $setValues);
         return (count($setColumnNames) == 0) ? "SET {$keyField}=DEFAULT" :
-            '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValues) . ')';
+            '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
-    public function getNumericFields($tableName)
+    protected function getTalbeInfoSQL($tableName)
     {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
-            'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision', 'year',];
-        $fieldArray = [];
-        $matches = [];
-        foreach ($result as $row) {
-            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (in_array($matches[0], $numericFieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
+        return "SHOW COLUMNS FROM " . $this->quotedEntityName($tableName);
     }
-
-    public function getNullableNumericFields($tableName)
-    {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
-            'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision',
-            'date', 'datetime', 'timestamp', 'time', 'year',];
-        $fieldNameForNullable = 'Null';
-        $fieldArray = [];
-        $matches = [];
-        foreach ($result as $row) {
-            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if ($row[$fieldNameForNullable] && in_array($matches[0], $numericFieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
-
-    public function getTimeFields($tableName)
-    {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            return [];
-        }
-        $fieldTypes = ['datetime', 'time', 'timestamp'];
-        $fieldArray = [];
-        $matches = [];
-        foreach ($result as $row) {
-            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (in_array($matches[0], $fieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
-
-    public function getBooleanFields($tableName)
-    {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            return [];
-        }
-        $fieldTypes = ['boolean', 'bool'];
-        $fieldArray = [];
-        $matches = [];
-        foreach ($result as $row) {
-            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (in_array($matches[0], $fieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
-
-    private $tableInfo = array();
-    private $fieldNameForField = 'Field';
-    private $fieldNameForType = 'Type';
-
-    protected function getTableInfo($tableName)
-    {
-        $infoResult = [];
-        if (!isset($this->tableInfo[$tableName])) {
-            $sql = "SHOW COLUMNS FROM " . $this->quotedEntityName($tableName);
-            $this->dbClassObj->logger->setDebugMessage($sql);
-            $result = $this->dbClassObj->link->query($sql);
-            if (!$result) {
-                throw new Exception('Inspection Error:' . $sql);
-            }
-            foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                $infoResult[] = $row;
-            }
-            $this->tableInfo[$tableName] = $infoResult;
-        } else {
-            $infoResult = $this->tableInfo[$tableName];
-        }
-        return $infoResult;
-    }
-
     /*
       * mysql> show columns from func;
 +-------+------------------------------+------+-----+---------+-------+

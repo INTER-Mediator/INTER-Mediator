@@ -25,17 +25,17 @@ distDocDir=$(
 imRoot=$(dirname "${distDocDir}")
 if [ $(basename "${imRoot}") != "inter-mediator" ]; then
   /bin/echo "This command works on just composer installed inter-mediator."
-  exit -1
+  exit 1
 fi
 imRootOver=$(dirname "${imRoot}")
 if [ $(basename "${imRootOver}") != "inter-mediator" ]; then
   /bin/echo "This command works on just composer installed inter-mediator."
-  exit -1
+  exit 1
 fi
 vendorDir=$(dirname "${imRootOver}")
 if [ $(basename "${vendorDir}") != "vendor" ]; then
   /bin/echo "This command works on just composer installed inter-mediator."
-  exit -1
+  exit 1
 fi
 
 MINIFYJS="minify"
@@ -45,7 +45,7 @@ if [ -e "${minifyjsDir}" -a -e "${minifyjsBin}" ]; then
   /bin/echo " Path of minifyer (installed by composer): ${minifyjsDir}"
 else
   /bin/echo "*** Minifyer isn't exist. ***"
-  exit -1
+  exit 1
 fi
 
 #### Merge js files

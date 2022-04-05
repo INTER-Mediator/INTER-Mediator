@@ -16,7 +16,8 @@
 
 namespace INTERMediator\DB\Support;
 
-use \Exception;
+use Exception;
+use PDO;
 
 abstract class DB_PDO_Handler
 {
@@ -72,7 +73,21 @@ abstract class DB_PDO_Handler
         return $this->sqlINSERTCommand($tableRef, $setClause);
     }
 
-    public abstract function sqlSETClause($setColumnNames, $keyField, $setValues);
+    public abstract function sqlSETClause($tableName, $setColumnNames, $keyField, $setValues);
+
+    protected function sqlSETClauseData($tableName, $setColumnNames, $keyField, $setValues)
+    {
+        $nullableFields = $this->getNullableFields($tableName);
+        $setNames = [];
+        $setValuesConv = [];
+        $count = 0;
+        foreach ($setColumnNames as $fName) {
+            $setNames[] = $this->quotedEntityName($fName);
+            $setValuesConv[] = $setValues[$count] ?? (in_array($fName, $nullableFields) ? 'NULL' : "''");
+            $count = +1;
+        }
+        return [$setNames, $setValuesConv];
+    }
 
     public function copyRecords($tableInfo, $queryClause, $assocField, $assocValue, $defaultValues)
     {
@@ -99,19 +114,110 @@ abstract class DB_PDO_Handler
         return $returnValue;
     }
 
-    public abstract function getNumericFields($tableName);
+    public function getNumericFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $fieldArray = [];
+        $matches = [];
+        foreach ($result as $row) {
+            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if (in_array($matches[0], $this->numericFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
 
-    public abstract function getNullableNumericFields($tableName);
+    public function getNullableFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $fieldArray = [];
+        foreach ($result as $row) {
+            if ($row[$this->fieldNameForNullable]) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
 
-    public abstract function getTimeFields($tableName);
+    public function getNullableNumericFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $nullableFields = $this->getNullableFields($tableName);
+        $numericFields = $this->getNumericFields($tableName);
+        return array_intersect($nullableFields, $numericFields);
+    }
 
-    public abstract function getBooleanFields($tableName);
+    public function getTimeFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $fieldArray = [];
+        foreach ($result as $row) {
+            if (in_array(strtolower($row[$this->fieldNameForType]), $this->timeFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
+
+    public function getBooleanFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            return [];
+        }
+        $fieldArray = [];
+        $matches = [];
+        foreach ($result as $row) {
+            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
+            if (in_array($matches[0], $this->booleanFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
 
     public abstract function quotedEntityName($entityName);
 
     public abstract function optionalOperationInSetup();
 
-    protected abstract function getTableInfo($tableName);
+    protected function getTableInfo($tableName){
+        if (!isset($this->tableInfo[$tableName])) {
+            $sql = $this->getTalbeInfoSQL($tableName);
+            $this->dbClassObj->logger->setDebugMessage($sql);
+            $result = $this->dbClassObj->link->query($sql);
+            if (!$result) {
+                throw new Exception('Inspection SQL Error:' . $sql);
+            }
+            $infoResult = [];
+            foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $infoResult[] = $row;
+            }
+            $this->tableInfo[$tableName] = $infoResult;
+        } else {
+            $infoResult = $this->tableInfo[$tableName];
+        }
+        return $infoResult;
+    }
+
+    protected abstract function getTalbeInfoSQL($tableName);
 
     protected abstract function getFieldListsForCopy(
         $tableName, $keyField, $assocField, $assocValue, $defaultValues);

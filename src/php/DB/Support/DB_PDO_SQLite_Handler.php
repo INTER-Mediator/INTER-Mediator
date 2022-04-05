@@ -21,6 +21,16 @@ use PDO;
 
 class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 {
+    protected $tableInfo = array();
+    protected $fieldNameForField = 'name';
+    protected $fieldNameForType = 'type';
+    protected $fieldNameForNullable = 'notnull';
+    protected $numericFieldTypes = array('integer', 'int', 'real', 'numeric',
+        'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2', 'int8',
+        'double', 'double precision', 'float', 'decimal', 'boolean');
+    protected $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+    protected $booleanFieldTypes = [];
+
     public function sqlSELECTCommand()
     {
         return "SELECT ";
@@ -56,104 +66,16 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return "REPLACE INTO {$tableRef} {$setClause}";
     }
 
-    public function sqlSETClause($setColumnNames, $keyField, $setValues)
+    public function sqlSETClause($tableName, $setColumnNames, $keyField, $setValues)
     {
-        $setNames = array_map(function ($value) {
-            return $this->quotedEntityName($value);
-        }, $setColumnNames);
+        [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $keyField, $setValues);
         return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
-            '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValues) . ')';
+            '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
-    public function getNullableNumericFields($tableName)
+    protected function getTalbeInfoSQL($tableName)
     {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $fieldNameForNullable = 'notnull';
-        $fieldArray = array();
-        $numericFieldTypes = array('integer', 'real', 'numeric',
-            'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2', 'int8',
-            'double', 'double precision', 'float', 'decimal', 'boolean', 'date', 'datetime',);
-        $matches = array();
-        foreach ($result as $row) {
-            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (isset($matches[0]) && !$row[$fieldNameForNullable] && in_array($matches[0], $numericFieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
-
-    public function getNumericFields($tableName)
-    {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $fieldArray = array();
-        $numericFieldTypes = array('integer', 'int', 'real', 'numeric', 'tinyint', 'smallint', 'mediumint', 'bigint',
-            'unsigned big int', 'int2', 'int8', 'double', 'double precision', 'float', 'decimal', 'boolean',);
-        $matches = array();
-        foreach ($result as $row) {
-            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (isset($matches[0]) && in_array($matches[0], $numericFieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
-
-    public function getTimeFields($tableName)
-    {
-        /* This isn't work because SQLite doesn't have any Date/Time type. It uses the text or numeric field. */
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $fieldTypes = ['datetime', 'time', 'timestamp'];
-        $fieldArray = [];
-        $matches = [];
-        foreach ($result as $row) {
-            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (isset($matches[0]) && in_array($matches[0], $fieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
-
-    public function getBooleanFields($tableName)
-    {
-        return [];
-    }
-
-    private $tableInfo = array();
-    private $fieldNameForField = 'name';
-    private $fieldNameForType = 'type';
-
-    protected function getTableInfo($tableName)
-    {
-        if (!isset($this->tableInfo[$tableName])) {
-            $sql = "PRAGMA table_info({$tableName})";
-            $this->dbClassObj->logger->setDebugMessage($sql);
-            $result = $this->dbClassObj->link->query($sql);
-            if (!$result) {
-                throw new Exception('INSERT Error:' . $sql);
-            }
-            $infoResult = [];
-            foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                $infoResult[] = $row;
-            }
-            $this->tableInfo[$tableName] = $infoResult;
-        } else {
-            $infoResult = $this->tableInfo[$tableName];
-        }
-        return $infoResult;
+        return "PRAGMA table_info({$tableName})";
     }
 
     /*

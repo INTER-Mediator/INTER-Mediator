@@ -21,6 +21,15 @@ use PDO;
 
 class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
 {
+    protected $tableInfo = array();
+    protected $fieldNameForField = 'name';
+    protected $fieldNameForType = 'type';
+    protected $fieldNameForNullable = 'is_nullable';
+    protected $numericFieldTypes = array('bigint', 'bit', 'decimal', 'float', 'hierarchyid', 'int', 'money', 'numeric',
+        'real', 'smallint', 'smallmoney', 'tinyint',);
+    protected $timeFieldTypes = ['datetime', 'datetime2', 'datetimeoffset', 'time', 'smaldatetime'];
+    protected $booleanFieldTypes = [];
+
     public function sqlSELECTCommand()
     {
         return "SELECT ";
@@ -67,105 +76,20 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return "INSERT INTO {$tableRef} {$setClause}";
     }
 
-    public function sqlSETClause($setColumnNames, $keyField, $setValues)
+    public function sqlSETClause($tableName, $setColumnNames, $keyField, $setValues)
     {
-        $setNames = array_map(function ($value) {
-            return $this->quotedEntityName($value);
-        }, $setColumnNames);
+        [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $keyField, $setValues);
         return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
-            '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValues) . ')';
+            '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
-    public function getNullableNumericFields($tableName)
+    protected function getTalbeInfoSQL($tableName)
     {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $fieldNameForNullable = 'is_nullable';
-        $fieldArray = array();
-        $numericFieldTypes = array('bigint', 'bit', 'decimal', 'float', 'hierarchyid', 'int', 'money', 'numeric',
-            'real', 'smallint', 'smallmoney', 'tinyint',);
-        $matches = array();
-        foreach ($result as $row) {
-            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if ($row[$fieldNameForNullable] && in_array($matches[0], $numericFieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
-
-    public function getNumericFields($tableName)
-    {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $fieldArray = array();
-        $numericFieldTypes = array('bigint', 'bit', 'date', 'datetime', 'datetime2', 'decimal',
-            'float', 'hierarchyid', 'int', 'money', 'numeric', 'real', 'smalldatetime', 'smallint',
-            'smallmoney', 'time', 'timestamp', 'tinyint',);
-        $matches = array();
-        foreach ($result as $row) {
-            preg_match("/[a-z]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (in_array($matches[0], $numericFieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
-
-    public function getTimeFields($tableName)
-    {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $timeFieldTypes = ['datetime', 'datetime2', 'datetimeoffset', 'time', 'smaldatetime'];
-        $fieldArray = [];
-        foreach ($result as $row) {
-            if (in_array(strtolower($row[$this->fieldNameForType]), $timeFieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
-
-    public function getBooleanFields($tableName)
-    {
-        return [];
-    }
-
-    private $tableInfo = array();
-    private $fieldNameForField = 'name';
-    private $fieldNameForType = 'type';
-
-    protected function getTableInfo($tableName)
-    {
-        if (!isset($this->tableInfo[$tableName])) {
-            $fields = "c.name, t.name type, c.max_length, c.precision, c.scale, c.is_nullable, " .
-                "c.is_identity, c.default_object_id, c.is_computed, c.collation_name";
-            $sql = "SELECT {$fields} FROM sys.columns c INNER JOIN sys.types t ON c. system_type_id = t. system_type_id " .
-                "WHERE object_id = object_id('{$this->quotedEntityName($tableName)}')";
-            $this->dbClassObj->logger->setDebugMessage($sql);
-            $result = $this->dbClassObj->link->query($sql);
-            $this->tableInfo[$tableName] = $result;
-            if (!$result) {
-                throw new Exception('INSERT Error:' . $sql);
-            }
-            $infoResult = [];
-            foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                $infoResult[] = $row;
-            }
-            $this->tableInfo[$tableName] = $infoResult;
-        } else {
-            $infoResult = $this->tableInfo[$tableName];
-        }
-        return $infoResult;
+        $fields = "c.name, t.name type, c.max_length, c.precision, c.scale, c.is_nullable, " .
+            "c.is_identity, c.default_object_id, c.is_computed, c.collation_name";
+        $sql = "SELECT {$fields} FROM sys.columns c INNER JOIN sys.types t ON c. system_type_id = t. system_type_id " .
+            "WHERE object_id = object_id('{$this->quotedEntityName($tableName)}')";
+        return $sql;
     }
 
     /*
