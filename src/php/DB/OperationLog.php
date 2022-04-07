@@ -138,14 +138,18 @@ class OperationLog
         if (is_null($ar) || count($ar) === 0) {
             return null;
         }
-        $convert = function ($v) {
-            if ($this->accessLogLevel < 2
-                && preg_match("/'(value_[0-9]+)' =>/", $v, $matches)) {
-                $v = "'{$matches[1]}' => '***',";
+        $result = [];
+        foreach ($ar as $k => $v) {
+            if (is_array($k)) {
+                $v = $this->arrayToString($v);
             }
-            return trim(str_replace(['array (', ')', "\n", "\r", "\t"], ['[', ']', '', '', ''], $v ?? ""));
-        };
-        return implode('', array_filter(array_map($convert,
-            explode("\n", var_export($ar, true)))));
+            if ($this->accessLogLevel < 2 && preg_match("/(value_[0-9]+)/", $k, $matches)) {
+                if (is_array($matches) && count($matches) > 1) {
+                    $v = '***';
+                }
+            }
+            $result[] = str_replace(["\n", "\r", "\t"], ['', '', ''], "{$k} => {$v}");
+        }
+        return '[' . implode(',', $result) . ']';
     }
 }

@@ -84,7 +84,7 @@ abstract class DB_PDO_Handler
         foreach ($setColumnNames as $fName) {
             $setNames[] = $this->quotedEntityName($fName);
             $setValuesConv[] = $setValues[$count] ?? (in_array($fName, $nullableFields) ? 'NULL' : "''");
-            $count = +1;
+            $count += 1;
         }
         return [$setNames, $setValuesConv];
     }
