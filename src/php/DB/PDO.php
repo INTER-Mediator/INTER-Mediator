@@ -591,9 +591,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $nullableFields = $this->handler->getNullableFields($this->dbSettings->getEntityForUpdate());
-        $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
+        $fieldInfosNN = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
         if (isset($tableInfo['numeric-fields']) && is_array($tableInfo['numeric-fields'])) {
-            $fieldInfos = array_merge($fieldInfos, $tableInfo['numeric-fields']);
+            $fieldInfosNN = array_merge($fieldInfosNN, $tableInfo['numeric-fields']);
         }
         $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
@@ -629,7 +629,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $counter++;
             $setClause[] = $this->handler->quotedEntityName($field) . "=?";
             $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-            if (in_array($field, $boolFields)) {
+            if (in_array($field, $fieldInfosNN) && $value === "") {
+                $convertedValue = NULL;
+            } else if (in_array($field, $boolFields)) {
                 $convertedValue = $this->isTrue($convertedValue);
             } else {
                 $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
