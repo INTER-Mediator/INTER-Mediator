@@ -590,6 +590,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
+        $nullableFields = $this->handler->getNullableFields($this->dbSettings->getEntityForUpdate());
         $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
         if (isset($tableInfo['numeric-fields']) && is_array($tableInfo['numeric-fields'])) {
             $fieldInfos = array_merge($fieldInfos, $tableInfo['numeric-fields']);
@@ -626,12 +627,10 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         foreach ($this->dbSettings->getFieldsRequired() as $field) {
             $value = $fieldValues[$counter];
             $counter++;
+            $setClause[] = $this->handler->quotedEntityName($field) . "=?";
             $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-            if (in_array($field, $fieldInfos) && $convertedValue === "") {
-                $setClause[] = $this->handler->quotedEntityName($field) . "=NULL";
-            } else if (in_array($field, $boolFields)) {
-                $setClause[] = $this->handler->quotedEntityName($field)
-                    . "=" . ($this->isTrue($convertedValue) ? "TRUE" : "FALSE");
+            if (in_array($field, $boolFields)) {
+                $convertedValue = $this->isTrue($convertedValue);
             } else {
                 $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                 $convertedValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
@@ -641,10 +640,11 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $convertedValue);
                     $dt->setTimezone(new DateTimeZone(date_default_timezone_get()));
                     $convertedValue = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+                } else if (in_array($field, $nullableFields)) {
+                    $convertedValue = $convertedValue ?? NULL;
                 }
-                $setClause[] = $this->handler->quotedEntityName($field) . "=?";
-                $setParameter[] = $convertedValue;
             }
+            $setParameter[] = $convertedValue;
         }
         if (count($setClause) < 1) {
             $this->logger->setErrorMessage('No data to update.');
