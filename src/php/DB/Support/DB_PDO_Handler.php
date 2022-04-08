@@ -75,7 +75,7 @@ abstract class DB_PDO_Handler
 
     public abstract function sqlSETClause($tableName, $setColumnNames, $keyField, $setValues);
 
-    protected function sqlSETClauseData($tableName, $setColumnNames, $keyField, $setValues)
+    protected function sqlSETClauseData($tableName, $setColumnNames, $setValues)
     {
         $nullableFields = $this->getNullableFields($tableName);
         $numericFields = $this->getNumericFields($tableName);
