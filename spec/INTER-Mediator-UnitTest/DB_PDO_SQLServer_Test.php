@@ -180,8 +180,11 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
         return "WHERE id=1001 ORDER BY xdate OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY";;
     }
 
-    protected $sqlSETClause1 = "(\"num1\",\"date1\",\"vc1\") VALUES(100,'2022-04-01','TEST')";
-    protected $sqlSETClause2 = "(\"num1\",\"date1\",\"vc1\") VALUES(0,NULL,NULL)";
-    protected $sqlSETClause3 = "(\"num1\",\"date1\",\"vc1\") VALUES(0,NULL,'')";
+    protected $sqlSETClause1 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
+    . "VALUES(100,200,'2022-04-01','2022-04-01','10:21:31','10:21:31','2022-04-01 10:21:31','2022-04-01 10:21:31','TEST','TEST','TEST','TEST')";
+    protected $sqlSETClause2 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
+    . "VALUES(0,NULL,'',NULL,'',NULL,'',NULL,'',NULL,'',NULL)";
+    protected $sqlSETClause3 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
+    . "VALUES(0,0,'','','','','','','','','','')";
 
 }
