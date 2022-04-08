@@ -26,11 +26,13 @@ class OperationLog
     private $dbPasswordLog;
     private $dbDSNLog;
     private $recordingContexts;
+    private $recordingOperations;
     private $contextOptions;
     private $dontRecordTheme;
     private $dontRecordChallenge;
     private $dontRecordDownload;
     private $dontRecordDownloadNoGet;
+    private $accessLogExtensionClass;
 
     public function __construct($options)
     {
@@ -38,7 +40,7 @@ class OperationLog
         // Read from params.php
         $paramKeys = ["accessLogLevel", "dbClassLog", "dbUserLog", "dbPasswordLog", "dbDSNLog",
             "recordingContexts", "dontRecordTheme", "dontRecordChallenge", "dontRecordDownload",
-            "dontRecordDownloadNoGet"];
+            "dontRecordDownloadNoGet", "recordingOperations", "accessLogExtensionClass"];
         $params = IMUtil::getFromParamsPHPFile($paramKeys, true);
         $this->accessLogLevel = intval($params['accessLogLevel']);    // false: No logging, 1: without data, 2: with data
         $this->isWithData = ($this->accessLogLevel === 2);
@@ -47,10 +49,12 @@ class OperationLog
         $this->dbPasswordLog = isset($params['dbPasswordLog']) ? $params['dbPasswordLog'] : '';
         $this->dbDSNLog = isset($params['dbDSNLog']) ? $params['dbDSNLog'] : '';
         $this->recordingContexts = isset($params['recordingContexts']) ? $params['recordingContexts'] : false;
+        $this->recordingOperations = isset($params['recordingOperations']) ? $params['recordingOperations'] : false;
         $this->dontRecordTheme = isset($params['dontRecordTheme']) ? $params['dontRecordTheme'] : false;
         $this->dontRecordChallenge = isset($params['dontRecordChallenge']) ? $params['dontRecordChallenge'] : false;
         $this->dontRecordDownload = isset($params['dontRecordDownload']) ? $params['dontRecordDownload'] : false;
         $this->dontRecordDownloadNoGet = isset($params['dontRecordDownloadNoGet']) ? $params['dontRecordDownloadNoGet'] : false;
+        $this->accessLogExtensionClass = isset($params['accessLogExtensionClass']) ? $params['accessLogExtensionClass'] : false;
     }
 
     public function setEntry($result)
@@ -58,16 +62,19 @@ class OperationLog
         $access = isset($_GET['access']) ? $_GET['access']
             : (isset($_POST['access']) ? $_POST['access']
                 : (isset($_GET['theme']) ? 'theme' : 'download'));
-        $targetContext = isset($_GET['name']) ? $_GET['name']
-            : (isset($_POST['name']) ? $_POST['name']
-                : (isset($_GET['theme']) ? (isset($_GET['css']) ? $_GET['css'] : '') : ''));
         if (
-            ($this->recordingContexts !== false && !in_array($targetContext, $this->recordingContexts))
+            ($this->recordingOperations !== false && !in_array($access, $this->recordingOperations))
             || ($this->dontRecordTheme && $access == 'theme')
             || ($this->dontRecordChallenge && $access == 'challenge')
             || ($this->dontRecordDownload && $access == 'download')
             || ($this->dontRecordDownloadNoGet && $access == 'download' && (!is_array($_GET) || count($_GET) == 0))
         ) {
+            return;
+        }
+        $targetContext = isset($_GET['name']) ? $_GET['name']
+            : (isset($_POST['name']) ? $_POST['name']
+                : (isset($_GET['theme']) ? (isset($_GET['css']) ? $_GET['css'] : '') : ''));
+        if ($this->recordingContexts !== false && !in_array($targetContext, $this->recordingContexts)) {
             return;
         }
 
@@ -128,6 +135,14 @@ class OperationLog
             $dbInstance->dbSettings->addValueWithField("result", $this->arrayToString($result));
             $dbInstance->dbSettings->addValueWithField("error",
                 $this->arrayToString($dbInstance->logger->getErrorMessages()));
+
+            if($this->accessLogExtensionClass !== false && class_exists($this->accessLogExtensionClass)){
+                $extInstance = new ($this->accessLogExtensionClass)($dbInstance);
+                $fields = $extInstance->extendingFields();
+                foreach($fields as $field) {
+                    $dbInstance->dbSettings->addValueWithField($field, $extInstance->valueForField($field));
+                }
+            }
             $dbInstance->setStopNotifyAndMessaging();
             $dbInstance->processingRequest("create", true, true);
         }

@@ -416,6 +416,21 @@ CREATE TABLE operationlog (
 	get_data        TEXT,
 	post_data       TEXT,
 	result          TEXT,
+	condition0      VARCHAR(50),
+	condition1      VARCHAR(50),
+	condition2      VARCHAR(50),
+	condition3      VARCHAR(50),
+	condition4      VARCHAR(50),
+	field0          TEXT,
+	field1          TEXT,
+	field2          TEXT,
+	field3          TEXT,
+	field4          TEXT,
+	field5          TEXT,
+	field6          TEXT,
+	field7          TEXT,
+	field8          TEXT,
+	field9          TEXT,
 	error           TEXT
 );
 /* In case of real deployment, some indices are required for quick operations. */
