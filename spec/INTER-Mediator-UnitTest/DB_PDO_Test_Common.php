@@ -1081,4 +1081,26 @@ abstract class DB_PDO_Test_Common extends TestCase
         $clause = $this->db_proxy->dbClass->getWhereClauseForTest('read');
         $this->assertEquals($this->condition10expected, $clause, "Condition must be followed settings.");
     }
+
+    public function testHandlersqlSETClause()
+    {
+        $tableName = "testtable";
+        $keyField = "id";
+        $setColumnNames = ['num1','date1','vc1'];
+
+        $this->dbProxySetupForCondition($tableName);
+        $setValues = [100, $this->db_proxy->dbClass->quote('2022-04-01'), $this->db_proxy->dbClass->quote('TEST')];
+        $sql = $this->db_proxy->dbClass->handler->sqlSETClause($tableName, $setColumnNames, $keyField, $setValues);
+        $this->assertEquals($this->sqlSETClause1, $sql, "INSERT's SET clause has to follow the rules 1.");
+
+        $this->dbProxySetupForCondition($tableName);
+        $setValues = [NULL, 'NULL', 'NULL'];
+        $sql = $this->db_proxy->dbClass->handler->sqlSETClause($tableName, $setColumnNames, $keyField, $setValues);
+        $this->assertEquals($this->sqlSETClause2, $sql, "INSERT's SET clause has to follow the rules 2.");
+
+        $this->dbProxySetupForCondition($tableName);
+        $setValues = [NULL, 'NULL', ''];
+        $sql = $this->db_proxy->dbClass->handler->sqlSETClause($tableName, $setColumnNames, $keyField, $setValues);
+        $this->assertEquals($this->sqlSETClause3, $sql, "INSERT's SET clause has to follow the rules 3.");
+    }
 }

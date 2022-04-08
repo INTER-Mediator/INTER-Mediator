@@ -178,4 +178,9 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $this->condition9expected = $this->condition9expected2;
         $this->condition10expected = $this->condition10expected2;
     }
+
+    protected $sqlSETClause1 = "(`num1`,`date1`,`vc1`) VALUES(100,'2022-04-01','TEST')";
+    protected $sqlSETClause2 = "(`num1`,`date1`,`vc1`) VALUES(100,NULL,NULL)";
+    protected $sqlSETClause3 = "(`num1`,`date1`,`vc1`) VALUES(100,NULL,'')";
+
 }

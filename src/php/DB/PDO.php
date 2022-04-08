@@ -730,9 +730,11 @@ class PDO extends UseSharedObjects implements DBClass_Interface
      */
     public function createInDB($isReplace = false)
     {
+        $sq = "'";
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $nullableFields = $this->handler->getNullableFields($this->dbSettings->getEntityForUpdate());
+        $numericFields = $this->handler->getNumericFields($this->dbSettings->getEntityForUpdate());
         $fieldInfosNN = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
         if (isset($tableInfo['numeric-fields']) && is_array($tableInfo['numeric-fields'])) {
             $fieldInfosNN = array_merge($fieldInfosNN, $tableInfo['numeric-fields']);
@@ -792,8 +794,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $dt->setTimezone(new DateTimeZone(date_default_timezone_get()));
                     $convertedValue = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
                 }
-                $fValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
-                $setValues[] = $fValue ? $this->link->quote($fValue) : $fValue;
+                $setValues[] = $this->link->quote($this->formatter->formatterToDB($filedInForm, $convertedValue));
             }
             $setColumnNames[] = $field;
         }
@@ -804,8 +805,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 if (!in_array($field, $setColumnNames)) {
                     $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                     $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-                    $fValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
-                    $setValues[] = $fValue ? $this->link->quote($fValue) : $fValue;
+                    $setValues[] = $this->link->quote($this->formatter->formatterToDB($filedInForm, $convertedValue));
                     $setColumnNames[] = $field;
                 }
             }
