@@ -67,6 +67,22 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
+    public function getNullableFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $fieldArray = [];
+        foreach ($result as $row) {
+            if ($row[$this->fieldNameForNullable] == "YES") {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
+
     protected function getTalbeInfoSQL($tableName)
     {
         if (strpos($tableName, ".") !== false) {
