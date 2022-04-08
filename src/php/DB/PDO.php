@@ -781,7 +781,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $field = $requiredFields[$i];
             $value = $fieldValues[$i];
             if (is_null($value) || $value === "" || is_bool($value)) {
-                $setValues[] = in_array($field, $nullableFields) ? "NULL" : (in_array($field, $fieldInfosNN) ? "0" : "''");
+                $setValues[] = in_array($field, $nullableFields) ? "NULL"
+                    : (in_array($field, $fieldInfosNN) ? "0" : $this->link->quote(''));
             } else if (in_array($field, $boolFields)) {
                 $setValues[] = $this->isTrue($value) ? "TRUE" : "FALSE";
             } else {

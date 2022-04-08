@@ -1089,17 +1089,17 @@ abstract class DB_PDO_Test_Common extends TestCase
         $setColumnNames = ['num1','date1','vc1'];
 
         $this->dbProxySetupForCondition($tableName);
-        $setValues = [100, $this->db_proxy->dbClass->quote('2022-04-01'), $this->db_proxy->dbClass->quote('TEST')];
+        $setValues = [100, $this->db_proxy->dbClass->link->quote('2022-04-01'), $this->db_proxy->dbClass->link->quote('TEST')];
         $sql = $this->db_proxy->dbClass->handler->sqlSETClause($tableName, $setColumnNames, $keyField, $setValues);
         $this->assertEquals($this->sqlSETClause1, $sql, "INSERT's SET clause has to follow the rules 1.");
 
         $this->dbProxySetupForCondition($tableName);
-        $setValues = [NULL, 'NULL', 'NULL'];
+        $setValues = [0, 'NULL', 'NULL'];
         $sql = $this->db_proxy->dbClass->handler->sqlSETClause($tableName, $setColumnNames, $keyField, $setValues);
         $this->assertEquals($this->sqlSETClause2, $sql, "INSERT's SET clause has to follow the rules 2.");
 
         $this->dbProxySetupForCondition($tableName);
-        $setValues = [NULL, 'NULL', ''];
+        $setValues = [0, 'NULL', $this->db_proxy->dbClass->link->quote('')];
         $sql = $this->db_proxy->dbClass->handler->sqlSETClause($tableName, $setColumnNames, $keyField, $setValues);
         $this->assertEquals($this->sqlSETClause3, $sql, "INSERT's SET clause has to follow the rules 3.");
     }

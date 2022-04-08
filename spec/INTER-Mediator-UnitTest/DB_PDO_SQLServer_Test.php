@@ -180,8 +180,8 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
         return "WHERE id=1001 ORDER BY xdate OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY";;
     }
 
-    protected $sqlSETClause1 = "(`num1`,`date1`,`vc1`) VALUES(100,'2022-04-01','TEST')";
-    protected $sqlSETClause2 = "(`num1`,`date1`,`vc1`) VALUES(100,NULL,NULL)";
-    protected $sqlSETClause3 = "(`num1`,`date1`,`vc1`) VALUES(100,NULL,'')";
+    protected $sqlSETClause1 = "(\"num1\",\"date1\",\"vc1\") VALUES(100,'2022-04-01','TEST')";
+    protected $sqlSETClause2 = "(\"num1\",\"date1\",\"vc1\") VALUES(0,NULL,NULL)";
+    protected $sqlSETClause3 = "(\"num1\",\"date1\",\"vc1\") VALUES(0,NULL,'')";
 
 }
