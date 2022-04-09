@@ -84,7 +84,7 @@ abstract class DB_PDO_Handler
         foreach ($setColumnNames as $fName) {
             $setNames[] = $this->quotedEntityName($fName);
             $setValuesConv[] = $setValues[$count] ?? (in_array($fName, $nullableFields) ? 'NULL' : "''");
-            $count = +1;
+            $count += 1;
         }
         return [$setNames, $setValuesConv];
     }
@@ -125,7 +125,7 @@ abstract class DB_PDO_Handler
         $matches = [];
         foreach ($result as $row) {
             preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (in_array($matches[0], $this->numericFieldTypes)) {
+            if (count($matches) > 0 && in_array($matches[0], $this->numericFieldTypes)) {
                 $fieldArray[] = $row[$this->fieldNameForField];
             }
         }
@@ -198,7 +198,8 @@ abstract class DB_PDO_Handler
 
     public abstract function optionalOperationInSetup();
 
-    protected function getTableInfo($tableName){
+    protected function getTableInfo($tableName)
+    {
         if (!isset($this->tableInfo[$tableName])) {
             $sql = $this->getTalbeInfoSQL($tableName);
             $this->dbClassObj->logger->setDebugMessage($sql);
