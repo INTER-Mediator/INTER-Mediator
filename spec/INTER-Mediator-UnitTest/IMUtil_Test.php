@@ -54,8 +54,6 @@ class IMUtil_Test extends TestCase
 
     public function test_getFromParamsPHPFile()
     {
-//        $result = $this->util->getFromParamsPHPFile(array('webServerName'), true);
-//        $result = $this->util->getFromParamsPHPFile(array('webServerName'), true);
         $webServerName = Params::getParameterValue('webServerName','');
         if (php_uname('n') === 'inter-mediator-server') {
             $this->assertEquals($webServerName, '192.168.56.101');

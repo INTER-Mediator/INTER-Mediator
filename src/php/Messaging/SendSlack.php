@@ -25,8 +25,7 @@ class SendSlack extends MessagingProvider
 
     public function __construct()
     {
-//        $params = IMUtil::getFromParamsPHPFile(["slackParameters"], true);
-        $slackParameters = $this->isCompatible = Params::getParameterValue("slackParameters", null);
+        $slackParameters = Params::getParameterValue("slackParameters", null);
         if (is_array($slackParameters)) {
             $this->token = $slackParameters['token'];
             $this->channle = $slackParameters['channel'];

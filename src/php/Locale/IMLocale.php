@@ -52,9 +52,6 @@ class IMLocale
     {
         $isSetLocale = false;
         $isSetCurrency = false;
-//        $appLocale = null;
-//        $appCurrency = null;
-//        $params = IMUtil::getFromParamsPHPFile(array("appLocale", "appCurrency",), true);
         [$appLocale, $appCurrency] = Params::getParameterValue(["appLocale", "appCurrency"], ['ja_JP', 'JP']);
         $appLocale = IMLocale::$options['app-locale'] ?? $appLocale;
         $appCurrency = IMLocale::$options['app-currency'] ?? $appCurrency;

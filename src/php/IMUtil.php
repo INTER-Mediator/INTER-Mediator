@@ -336,8 +336,6 @@ class IMUtil
          * Prevent CSRF Attack with XMLHttpRequest
          * http://d.hatena.ne.jp/hasegawayosuke/20130302/p1
          */
-//        $params = IMUtil::getFromParamsPHPFile(array('webServerName'), true);
-//        $webServerName = $params['webServerName'];
         $webServerName = Params::getParameterValue('webServerName', null);
         if ($webServerName === '' ||
             $webServerName === array() || $webServerName === array('')
@@ -427,8 +425,6 @@ class IMUtil
     public function outputSecurityHeaders($params = NULL)
     {
         if (is_null($params)) {
-//            $params = IMUtil::getFromParamsPHPFile(
-//                array('xFrameOptions', 'contentSecurityPolicy', 'accessControlAllowOrigin'), true);
             [$xFrameOptions, $contentSecurityPolicy, $accessControlAllowOrigin]
                 = Params::getParameterValue(['xFrameOptions', 'contentSecurityPolicy', 'accessControlAllowOrigin'], "");
         } else {

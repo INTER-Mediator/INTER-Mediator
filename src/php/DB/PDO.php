@@ -43,13 +43,6 @@ class PDO extends UseSharedObjects implements DBClass_Interface
 
     public function __construct()
     {
-//        $params = IMUtil::getFromParamsPHPFile(["followingTimezones", "suppressDefaultValuesOnCopy",
-//            "suppressDefaultValuesOnCopyAssoc", "suppressAuthTargetFillingOnCreate",], true);
-//        $this->isFollowingTimezones = $params["followingTimezones"] ?? false;
-//        $this->isSuppressDVOnCopy = $params["suppressDefaultValuesOnCopy"] ?? false;
-//        $this->isSuppressDVOnCopyAssoc = $params["suppressDefaultValuesOnCopyAssoc"] ?? false;
-//        $this->isSuppressAuthTargetFillingOnCreate = $params["suppressAuthTargetFillingOnCreate"] ?? false;
-//
         [$this->isFollowingTimezones, $this->isSuppressDVOnCopy,
             $this->isSuppressDVOnCopyAssoc, $this->isSuppressAuthTargetFillingOnCreate]
             = Params::getParameterValue(["followingTimezones", "suppressDefaultValuesOnCopy",

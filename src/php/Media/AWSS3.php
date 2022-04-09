@@ -36,17 +36,6 @@ class AWSS3 implements UploadingSupport
 
     public function __construct()
     {
-//        $params = IMUtil::getFromParamsPHPFile(["accessRegion", "rootBucket", "applyingACL", "s3urlCustomize",
-//            "s3AccessKey", "s3AccessSecret", "s3AccessProfile"], true);
-//        $this->accessRegion = $params["accessRegion"];
-//        $this->rootBucket = $params["rootBucket"];
-//        $this->applyingACL = $params["applyingACL"];
-//        $this->s3AccessProfile = $params["s3AccessProfile"];
-//        $this->s3AccessKey = $params["s3AccessKey"];
-//        $this->s3AccessSecret = $params["s3AccessSecret"];
-//        $this->s3urlCustomize = $params["s3urlCustomize"] ? boolval($params["s3urlCustomize"]) : true;
-//        $this->isSuppliedSecret = $this->s3AccessKey && $this->s3AccessSecret;
-
         [$this->accessRegion, $this->rootBucket, $this->applyingACL, $this->s3AccessProfile,
             $this->s3AccessKey, $this->s3AccessSecret, $this->s3urlCustomize]
             = Params::getParameterValue(["accessRegion", "rootBucket", "applyingACL",  "s3AccessProfile",

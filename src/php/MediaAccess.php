@@ -232,14 +232,6 @@ class MediaAccess
                 $processingObject = new $className();
                 $processingObject->processing($contextRecord, $options);
             } else if (stripos($target, 's3://') === 0) {
-//                $params = IMUtil::getFromParamsPHPFile(["accessRegion", "rootBucket",
-//                    "s3AccessKey", "s3AccessSecret", "s3AccessProfile"], true);
-//                $accessRegion = $params["accessRegion"];
-//                $rootBucket = $params["rootBucket"];
-//                $s3AccessProfile = $params["s3AccessProfile"];
-//                $s3AccessKey = $params["s3AccessKey"];
-//                $s3AccessSecret = $params["s3AccessSecret"];
-
                 [$accessRegion, $rootBucket, $s3AccessKey, $s3AccessSecret, $s3AccessProfile]
                     = Params::getParameterValue(
                     ["accessRegion", "rootBucket", "s3AccessKey", "s3AccessSecret", "s3AccessProfile"], null);

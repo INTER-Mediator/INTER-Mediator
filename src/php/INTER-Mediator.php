@@ -86,7 +86,6 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     }
 
     // Read from params.php
-//    $params = IMUtil::getFromParamsPHPFile(array("defaultTimezone","accessLogLevel"), true);
     [$defaultTimezone, $accessLogLevel] = Params::getParameterValue(["defaultTimezone", "accessLogLevel"], ["UTC", false]);
     // Setup Timezone
     if ($defaultTimezone) {
