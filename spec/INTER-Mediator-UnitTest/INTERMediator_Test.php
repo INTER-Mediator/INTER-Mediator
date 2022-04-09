@@ -61,7 +61,7 @@ class INTERMediator_Test extends TestCase
             "activateClientService", "serviceServerPort", "serviceServerHost", "serviceServerConnect",
             "stopSSEveryQuit", "bootWithInstalledNode", "preventSSAutoBoot", "notUseServiceServer", "foreverLog"
         ], false);
-        $this->assertSame(9, count($params), "IMUtil::getFromParamsPHPFile should return any values.");
+        $this->assertSame(9, count($params), "Params::getParameterValue should return any values.");
 
         $key = 'activateClientService';
         $assertValue = true;

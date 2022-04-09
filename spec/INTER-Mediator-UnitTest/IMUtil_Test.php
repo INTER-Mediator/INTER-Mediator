@@ -52,7 +52,7 @@ class IMUtil_Test extends TestCase
         $this->assertEquals($str, "INTER-Mediator");
     }
 
-    public function test_getFromParamsPHPFile()
+    public function test_getParameterValue()
     {
         $webServerName = Params::getParameterValue('webServerName','');
         if (php_uname('n') === 'inter-mediator-server') {
