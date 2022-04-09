@@ -18,6 +18,7 @@ namespace INTERMediator\Locale;
 
 use Exception;
 use INTERMediator\IMUtil;
+use INTERMediator\Params;
 
 class IMLocale
 {
@@ -51,11 +52,12 @@ class IMLocale
     {
         $isSetLocale = false;
         $isSetCurrency = false;
-        $appLocale = null;
-        $appCurrency = null;
-        $params = IMUtil::getFromParamsPHPFile(array("appLocale", "appCurrency",), true);
-        $appLocale = IMLocale::$options['app-locale'] ?? $params["appLocale"];
-        $appCurrency = IMLocale::$options['app-currency'] ?? $params["appCurrency"];
+//        $appLocale = null;
+//        $appCurrency = null;
+//        $params = IMUtil::getFromParamsPHPFile(array("appLocale", "appCurrency",), true);
+        [$appLocale, $appCurrency] = Params::getParameterValue(["appLocale", "appCurrency"], ['ja_JP', 'JP']);
+        $appLocale = IMLocale::$options['app-locale'] ?? $appLocale;
+        $appCurrency = IMLocale::$options['app-currency'] ?? $appCurrency;
 
         if (IMLocale::$localForTest != '') {
             IMLocale::$choosenLocale = IMLocale::$localForTest;
@@ -77,7 +79,7 @@ class IMLocale
         }
 
         // Locale Convert Talble. Chrome requests "ja"
-        IMLocale::$choosenLocale = array_key_exists(IMLocale::$choosenLocale,IMLocale::$localeConvertTable) ?
+        IMLocale::$choosenLocale = array_key_exists(IMLocale::$choosenLocale, IMLocale::$localeConvertTable) ?
             IMLocale::$localeConvertTable[IMLocale::$choosenLocale] : IMLocale::$choosenLocale;
 
         // Detect server platform, Windows or Unix

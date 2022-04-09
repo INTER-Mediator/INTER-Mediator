@@ -43,6 +43,7 @@
 namespace INTERMediator\Messaging;
 
 use INTERMediator\IMUtil;
+use INTERMediator\Params;
 use Swift_Attachment;
 use Swift_Image;
 use Swift_Mailer;
@@ -78,8 +79,9 @@ class OME
     {
         mb_internal_encoding('UTF-8');
 
-        $params = IMUtil::getFromParamsPHPFile(["waitAfterMail"], true);
-        $this->waitMS = $params['waitAfterMail'] ?? 20;
+//        $params = IMUtil::getFromParamsPHPFile(["waitAfterMail"], true);
+//        $this->waitMS = $params['waitAfterMail'] ?? 20;
+        $this->waitMS = Params::getParameterValue("waitAfterMail", 20);
     }
 
     /**    エラーメッセージを取得する。

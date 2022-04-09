@@ -5,6 +5,7 @@
 
 use INTERMediator\DB\Proxy;
 use INTERMediator\IMUtil;
+use INTERMediator\Params;
 use INTERMediator\Locale\IMLocale;
 use PHPUnit\Framework\TestCase;
 
@@ -45,28 +46,32 @@ class INTERMediator_Test extends TestCase
     {
         $testName = "Check parameters in params.php.";
 
-        $params = IMUtil::getFromParamsPHPFile(
-            ["issuedHashDSN", "scriptPathPrefix", "isSAML", "oAuthClientSecret"], true);
+        [$issuedHashDSN, $scriptPathPrefix, $isSAML, $oAuthClientSecret] = Params::getParameterValue(
+            ["issuedHashDSN", "scriptPathPrefix", "isSAML", "oAuthClientSecret"], false);
 
-        $this->assertFalse(isset($params['issuedHashDSN']), $testName);
-        $this->assertFalse(isset($params['scriptPathPrefix']), $testName);
-        $this->assertFalse(isset($params['isSAML']), $testName);
-        $this->assertFalse(isset($params['oAuthClientSecret']), $testName);
+        $this->assertFalse($issuedHashDSN, $testName);
+        $this->assertFalse($scriptPathPrefix, $testName);
+        $this->assertFalse($isSAML, $testName);
+        $this->assertFalse($oAuthClientSecret, $testName);
     }
 
     public function test_checkParamsFileDefault()
     {
-        $params = IMUtil::getFromParamsPHPFile([
+//        $params = IMUtil::getFromParamsPHPFile([
+//            "activateClientService", "serviceServerPort", "serviceServerHost", "serviceServerConnect",
+//            "stopSSEveryQuit", "bootWithInstalledNode", "preventSSAutoBoot", "notUseServiceServer", "foreverLog"
+//        ], true);
+        $params = Params::getParameterValue([
             "activateClientService", "serviceServerPort", "serviceServerHost", "serviceServerConnect",
             "stopSSEveryQuit", "bootWithInstalledNode", "preventSSAutoBoot", "notUseServiceServer", "foreverLog"
-        ], true);
+        ], false);
         $this->assertSame(9, count($params), "IMUtil::getFromParamsPHPFile should return any values.");
 
         $key = 'activateClientService';
         $assertValue = true;
         $assertStr = 'true';
         $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
-        $this->assertEquals($assertValue, $params[$key], $message);
+        $this->assertEquals($assertValue, Params::getParameterValue($key, false), $message);
 
 //        $key = 'serviceServerHost';
 //        $assertValue = 'localhost';
@@ -79,38 +84,38 @@ class INTERMediator_Test extends TestCase
             $assertValue = 'http://192.168.56.101';
             $assertStr = 'http://192.168.56.101';
             $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
-            $this->assertEquals($assertValue, $params[$key], $message);
+            $this->assertEquals($assertValue, Params::getParameterValue($key, false), $message);
         } else if (getenv('CIRCLECI') !== 'true') {
             $key = 'serviceServerConnect';
             $assertValue = 'http://localhost';
             $assertStr = 'http://localhost';
             $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
-            $this->assertEquals($assertValue, $params[$key], $message);
+            $this->assertEquals($assertValue, Params::getParameterValue($key, false), $message);
         }
 
         $key = 'stopSSEveryQuit';
         $assertValue = false;
         $assertStr = 'false';
         $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
-        $this->assertEquals($assertValue, $params[$key], $message);
+        $this->assertEquals($assertValue, Params::getParameterValue($key, false), $message);
 
         $key = 'bootWithInstalledNode';
         $assertValue = false;
         $assertStr = 'false';
         $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
-        $this->assertEquals($assertValue, $params[$key], $message);
+        $this->assertEquals($assertValue, Params::getParameterValue($key, false), $message);
 
         $key = 'preventSSAutoBoot';
         $assertValue = false;
         $assertStr = 'false';
         $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
-        $this->assertEquals($assertValue, $params[$key], $message);
+        $this->assertEquals($assertValue, Params::getParameterValue($key, false), $message);
 
         $key = 'notUseServiceServer';
         $assertValue = false;
         $assertStr = 'false';
         $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
-        $this->assertEquals($assertValue, $params[$key], $message);
+        $this->assertEquals($assertValue, Params::getParameterValue($key, false), $message);
 
 //        $key = 'foreverLog';
 //        $assertValue = false;

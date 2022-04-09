@@ -20,6 +20,7 @@ use DateTimeZone;
 use Exception;
 use INTERMediator\IMUtil;
 use PDOException;
+use INTERMediator\Params;
 
 /**
  * Class PDO
@@ -42,12 +43,17 @@ class PDO extends UseSharedObjects implements DBClass_Interface
 
     public function __construct()
     {
-        $params = IMUtil::getFromParamsPHPFile(["followingTimezones", "suppressDefaultValuesOnCopy",
-            "suppressDefaultValuesOnCopyAssoc", "suppressAuthTargetFillingOnCreate",], true);
-        $this->isFollowingTimezones = $params["followingTimezones"] ?? false;
-        $this->isSuppressDVOnCopy = $params["suppressDefaultValuesOnCopy"] ?? false;
-        $this->isSuppressDVOnCopyAssoc = $params["suppressDefaultValuesOnCopyAssoc"] ?? false;
-        $this->isSuppressAuthTargetFillingOnCreate = $params["suppressAuthTargetFillingOnCreate"] ?? false;
+//        $params = IMUtil::getFromParamsPHPFile(["followingTimezones", "suppressDefaultValuesOnCopy",
+//            "suppressDefaultValuesOnCopyAssoc", "suppressAuthTargetFillingOnCreate",], true);
+//        $this->isFollowingTimezones = $params["followingTimezones"] ?? false;
+//        $this->isSuppressDVOnCopy = $params["suppressDefaultValuesOnCopy"] ?? false;
+//        $this->isSuppressDVOnCopyAssoc = $params["suppressDefaultValuesOnCopyAssoc"] ?? false;
+//        $this->isSuppressAuthTargetFillingOnCreate = $params["suppressAuthTargetFillingOnCreate"] ?? false;
+//
+        [$this->isFollowingTimezones, $this->isSuppressDVOnCopy,
+            $this->isSuppressDVOnCopyAssoc, $this->isSuppressAuthTargetFillingOnCreate]
+            = Params::getParameterValue(["followingTimezones", "suppressDefaultValuesOnCopy",
+            "suppressDefaultValuesOnCopyAssoc", "suppressAuthTargetFillingOnCreate",], false);
     }
 
     public function getUpdatedRecord()
@@ -773,15 +779,15 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $field = $requiredFields[$i];
             $setColumnNames[] = $field;
             $value = $fieldValues[$i];
-                $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
-                $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-                // Convert the time explanation from UTC to server setup timezone
-                if (in_array($field, $timeFields) && !is_null($convertedValue) && $convertedValue !== '') {
-                    $dt = new DateTime($convertedValue, new DateTimeZone('UTC'));
-                    $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $convertedValue);
-                    $dt->setTimezone(new DateTimeZone(date_default_timezone_get()));
-                    $convertedValue = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
-                }
+            $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
+            $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
+            // Convert the time explanation from UTC to server setup timezone
+            if (in_array($field, $timeFields) && !is_null($convertedValue) && $convertedValue !== '') {
+                $dt = new DateTime($convertedValue, new DateTimeZone('UTC'));
+                $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $convertedValue);
+                $dt->setTimezone(new DateTimeZone(date_default_timezone_get()));
+                $convertedValue = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+            }
             $setValues[] = $this->formatter->formatterToDB($filedInForm, $convertedValue);
         }
         if (isset($tableInfo['default-values'])) {

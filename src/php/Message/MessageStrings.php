@@ -17,15 +17,16 @@
 namespace INTERMediator\Message;
 
 use INTERMediator\IMUtil;
+use INTERMediator\Params;
 
 class MessageStrings
 {
 
     public function getMessages()
     {
-        $params = IMUtil::getFromParamsPHPFile(["messages"], true);
-        $altMessages = $params["messages"];
-
+//        $params = IMUtil::getFromParamsPHPFile(["messages"], true);
+//        $altMessages = $params["messages"];
+        $altMessages = Params::getParameterValue("messages", null);
         $className = get_class($this);
         $underLine = strpos($className, '_');
         $thisLang = ($underLine === false) ? 'default' : substr($className, $underLine + 1);

@@ -172,7 +172,7 @@ class IMUtil
     {
         if (IMUtil::isPHPExecutingWindows()) {
             $homeDir = getenv("USERPROFILE");
-        }else {
+        } else {
             $homeDir = posix_getpwuid(posix_geteuid())["dir"];
         }
         return $homeDir;
@@ -182,7 +182,7 @@ class IMUtil
     {
         if (IMUtil::isPHPExecutingWindows()) {
             $homeDir = get_current_user();
-        }else {
+        } else {
             // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
             // get_current_user doen't work on the ubuntu 18 of EC2. It returns the user logs in with ssh.
             $homeDir = posix_getpwuid(posix_geteuid())["name"];
@@ -336,8 +336,9 @@ class IMUtil
          * Prevent CSRF Attack with XMLHttpRequest
          * http://d.hatena.ne.jp/hasegawayosuke/20130302/p1
          */
-        $params = IMUtil::getFromParamsPHPFile(array('webServerName'), true);
-        $webServerName = $params['webServerName'];
+//        $params = IMUtil::getFromParamsPHPFile(array('webServerName'), true);
+//        $webServerName = $params['webServerName'];
+        $webServerName = Params::getParameterValue('webServerName', null);
         if ($webServerName === '' ||
             $webServerName === array() || $webServerName === array('')
         ) {
@@ -420,15 +421,24 @@ class IMUtil
         return FALSE;
     }
 
+    /**
+     * @param array for testing only
+     */
     public function outputSecurityHeaders($params = NULL)
     {
         if (is_null($params)) {
-            $params = IMUtil::getFromParamsPHPFile(
-                array('xFrameOptions', 'contentSecurityPolicy', 'accessControlAllowOrigin'), true);
+//            $params = IMUtil::getFromParamsPHPFile(
+//                array('xFrameOptions', 'contentSecurityPolicy', 'accessControlAllowOrigin'), true);
+            [$xFrameOptions, $contentSecurityPolicy, $accessControlAllowOrigin]
+                = Params::getParameterValue(['xFrameOptions', 'contentSecurityPolicy', 'accessControlAllowOrigin'], "");
+        } else {
+            $xFrameOptions = $params['xFrameOptions'];
+            $contentSecurityPolicy = $params['contentSecurityPolicy'];
+            $accessControlAllowOrigin = $params['accessControlAllowOrigin'];
         }
-        $xFrameOptions = str_replace("\r", '', str_replace("\n", '', $params['xFrameOptions'] ?? ""));
-        $contentSecurityPolicy = str_replace("\r", '', str_replace("\n", '', $params['contentSecurityPolicy'] ?? ""));
-        $accessControlAllowOrigin = str_replace("\r", '', str_replace("\n", '', $params['accessControlAllowOrigin'] ?? ""));
+        $xFrameOptions = str_replace("\r", '', str_replace("\n", '', $xFrameOptions));
+        $contentSecurityPolicy = str_replace("\r", '', str_replace("\n", '', $contentSecurityPolicy));
+        $accessControlAllowOrigin = str_replace("\r", '', str_replace("\n", '', $accessControlAllowOrigin));
 
         if (is_null($xFrameOptions) || empty($xFrameOptions)) {
             $xFrameOptions = 'SAMEORIGIN';

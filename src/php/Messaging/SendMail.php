@@ -17,6 +17,7 @@ namespace INTERMediator\Messaging;
 
 use INTERMediator\DB\Proxy;
 use INTERMediator\IMUtil;
+use INTERMediator\Params;
 
 class SendMail extends MessagingProvider
 {
@@ -24,8 +25,9 @@ class SendMail extends MessagingProvider
 
     public function __construct()
     {
-        $params = IMUtil::getFromParamsPHPFile(["sendMailCompatibilityMode"], true);
-        $this->isCompatible = boolval($params['sendMailCompatibilityMode'] ?? true);
+//        $params = IMUtil::getFromParamsPHPFile(["sendMailCompatibilityMode"], true);
+//        $this->isCompatible = boolval($params['sendMailCompatibilityMode'] ?? true);
+        $this->isCompatible = Params::getParameterValue("sendMailCompatibilityMode", true);
     }
 
     public function processing($dbProxy, $sendMailParam, $result)
