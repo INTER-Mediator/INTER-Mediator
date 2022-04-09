@@ -57,27 +57,17 @@ class INTERMediator_Test extends TestCase
 
     public function test_checkParamsFileDefault()
     {
-//        $params = IMUtil::getFromParamsPHPFile([
-//            "activateClientService", "serviceServerPort", "serviceServerHost", "serviceServerConnect",
-//            "stopSSEveryQuit", "bootWithInstalledNode", "preventSSAutoBoot", "notUseServiceServer", "foreverLog"
-//        ], true);
         $params = Params::getParameterValue([
             "activateClientService", "serviceServerPort", "serviceServerHost", "serviceServerConnect",
             "stopSSEveryQuit", "bootWithInstalledNode", "preventSSAutoBoot", "notUseServiceServer", "foreverLog"
         ], false);
-        $this->assertSame(9, count($params), "IMUtil::getFromParamsPHPFile should return any values.");
+        $this->assertSame(9, count($params), "Params::getParameterValue should return any values.");
 
         $key = 'activateClientService';
         $assertValue = true;
         $assertStr = 'true';
         $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
         $this->assertEquals($assertValue, Params::getParameterValue($key, false), $message);
-
-//        $key = 'serviceServerHost';
-//        $assertValue = 'localhost';
-//        $assertStr = 'localhost';
-//        $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
-//        $this->assertEquals($assertValue, $params[$key], $message);
 
         if (php_uname('n') === 'inter-mediator-server') {
             $key = 'serviceServerConnect';

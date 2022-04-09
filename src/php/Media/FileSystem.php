@@ -53,9 +53,6 @@ class FileSystem implements UploadingSupport
         if (substr($fileRoot, strlen($fileRoot) - 1, 1) != '/') {
             $fileRoot .= '/';
         }
-//        $uploadFilePathMode = null;
-//        $params = IMUtil::getFromParamsPHPFile(array("uploadFilePathMode",), true);
-//        $uploadFilePathMode = $params["uploadFilePathMode"];
         $uploadFilePathMode = Params::getParameterValue("uploadFilePathMode", null);
 
         $dirPath = $this->justfyPathComponent($contextname, $uploadFilePathMode) . DIRECTORY_SEPARATOR
@@ -215,9 +212,6 @@ class FileSystem implements UploadingSupport
         [$import1stLine, $importSkipLines, $importFormat, $useReplace, $convert2Number, $convert2Date, $convert2DateTime]
             = Params::getParameterValue(["import1stLine", "importSkipLines", "importFormat", "useReplace",
             "convert2Number", "convert2Date", "convert2DateTime"], [true, 0, 'CSV', false, [], [], [],]);
-//        $params = IMUtil::getFromParamsPHPFile(
-//            ["import1stLine", "importSkipLines", "importFormat", "useReplace",
-//                "convert2Number", "convert2Date", "convert2DateTime"], true);
         $import1stLine = (isset($dbContext['import']) && isset($dbContext['import']['1st-line']))
             ? $dbContext['import']['1st-line']
             : ((isset($options['import']) && isset($options['import']['1st-line']))

@@ -24,8 +24,6 @@ class MessageStrings
 
     public function getMessages()
     {
-//        $params = IMUtil::getFromParamsPHPFile(["messages"], true);
-//        $altMessages = $params["messages"];
         $altMessages = Params::getParameterValue("messages", null);
         $className = get_class($this);
         $underLine = strpos($className, '_');

@@ -25,8 +25,6 @@ class SendMail extends MessagingProvider
 
     public function __construct()
     {
-//        $params = IMUtil::getFromParamsPHPFile(["sendMailCompatibilityMode"], true);
-//        $this->isCompatible = boolval($params['sendMailCompatibilityMode'] ?? true);
         $this->isCompatible = Params::getParameterValue("sendMailCompatibilityMode", true);
     }
 

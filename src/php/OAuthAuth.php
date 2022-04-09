@@ -41,19 +41,8 @@ class OAuthAuth
 
     public function __construct()
     {
-//        $params = IMUtil::getFromParamsPHPFile(
-//            array("oAuthClientID", "oAuthClientSecret", "oAuthRedirect", "oAuthProvider"), true);
-
         [$this->clientId, $this->clientSecret, $this->redirectURL, $this->provider]
             = Params::getParameterValue(["oAuthClientID", "oAuthClientSecret", "oAuthRedirect", "oAuthProvider"], false);
-//        if ($params === false) {
-//            $this->errorMessage[] = "Wrong Paramters";
-//            $this->isActive = false;
-//            return;
-//        }
-//        $this->isActive = false;
-//        $this->provider = "unspecified";
-//
         switch (strtolower($this->provider ?? "")) {
             case "google":
                 $this->baseURL = 'https://accounts.google.com/o/oauth2/auth';

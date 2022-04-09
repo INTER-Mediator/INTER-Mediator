@@ -78,9 +78,6 @@ class OME
     function __construct()
     {
         mb_internal_encoding('UTF-8');
-
-//        $params = IMUtil::getFromParamsPHPFile(["waitAfterMail"], true);
-//        $this->waitMS = $params['waitAfterMail'] ?? 20;
         $this->waitMS = Params::getParameterValue("waitAfterMail", 20);
     }
 

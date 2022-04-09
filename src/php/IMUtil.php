@@ -286,58 +286,12 @@ class IMUtil
         return $val;
     }
 
-    public static function getFromParamsPHPFile($vars, $permitUndef = false)
-    {
-        // The recovering of misspelling a global variable
-        $pos = array_search("follwingTimezones", $vars);
-        if ($pos !== false) {
-            $vars = array_slice($vars, $pos, 1);
-            $vars[] = "followingTimezones";
-        }
-
-        $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
-        if (basename($imRootDir) == 'inter-mediator'
-            && basename(dirname($imRootDir)) == 'inter-mediator'
-            && basename(dirname(dirname($imRootDir))) == 'vendor') { // This means IM is installed by Composer.
-            $appRootDir = dirname(dirname(dirname($imRootDir)));
-            if (file_exists($appRootDir . DIRECTORY_SEPARATOR . 'params.php')) {
-                include($appRootDir . DIRECTORY_SEPARATOR . 'params.php');
-            } else if (file_exists($appRootDir . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'params.php')) {
-                include($appRootDir . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'params.php');
-            }
-        } else if (file_exists(dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php')) {
-            include(dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php');
-        } else if (file_exists($imRootDir . 'params.php')) {
-            include($imRootDir . 'params.php');
-        }
-
-        // The recovering of misspelling a global variable
-        if (isset($follwingTimezones)) {
-            $followingTimezones = $follwingTimezones;
-        }
-
-        $result = array();
-        foreach ($vars as $var) {
-            if (isset($$var)) {
-                $result[$var] = $$var;
-            } else {
-                if (!$permitUndef) {
-                    return false;
-                }
-                $result[$var] = null;
-            }
-        }
-        return $result;
-    }
-
     public function protectCSRF(): bool
     {
         /*
          * Prevent CSRF Attack with XMLHttpRequest
          * http://d.hatena.ne.jp/hasegawayosuke/20130302/p1
          */
-//        $params = IMUtil::getFromParamsPHPFile(array('webServerName'), true);
-//        $webServerName = $params['webServerName'];
         $webServerName = Params::getParameterValue('webServerName', null);
         if ($webServerName === '' ||
             $webServerName === array() || $webServerName === array('')
@@ -427,8 +381,6 @@ class IMUtil
     public function outputSecurityHeaders($params = NULL)
     {
         if (is_null($params)) {
-//            $params = IMUtil::getFromParamsPHPFile(
-//                array('xFrameOptions', 'contentSecurityPolicy', 'accessControlAllowOrigin'), true);
             [$xFrameOptions, $contentSecurityPolicy, $accessControlAllowOrigin]
                 = Params::getParameterValue(['xFrameOptions', 'contentSecurityPolicy', 'accessControlAllowOrigin'], "");
         } else {
