@@ -663,7 +663,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         /* Setup Database Class's Object */
         $isDBClassNull = is_null($this->dbClass);
         if ($isDBClassNull) {
-            $this->dbClass = new ($dbClassName)();
+            $this->dbClass = new $dbClassName();
             if ($this->dbClass == null) {
                 $this->logger->setErrorMessage("The database class [{$dbClassName}] that you specify is not valid.");
                 echo implode('', $this->logger->getMessagesForJS());
