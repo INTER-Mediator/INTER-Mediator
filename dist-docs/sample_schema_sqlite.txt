@@ -437,22 +437,22 @@ CREATE TABLE operationlog (
 
 CREATE TABLE testtable (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    num1 INT,
+    num1 INT NOT NULL,
 	num2 INT,
 	num3 INT,
-	dt1 DateTime,
+	dt1 DateTime NOT NULL,
 	dt2 DateTime,
 	dt3 DateTime,
-	date1 Date,
+	date1 Date NOT NULL,
 	date2 Date,
-	time1 Time,
+	time1 Time NOT NULL,
 	time2 Time,
-	ts1 Timestamp DEFAULT CURRENT_TIMESTAMP,
+	ts1 Timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	ts2 Timestamp DEFAULT '2001-01-01 00:00:00',
-	vc1 VARCHAR(100),
+	vc1 VARCHAR(100) NOT NULL,
 	vc2 VARCHAR(100),
 	vc3 VARCHAR(100),
-	text1 TEXT,
+	text1 TEXT NOT NULL,
 	text2 TEXT
 );
 

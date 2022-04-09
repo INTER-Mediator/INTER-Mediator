@@ -26,16 +26,19 @@ class Theme
     public function __construct()
     {
         // Read from params.php
-        $paramKeys = ["accessLogLevel", "altThemePath", "themeName"];
-        $params = IMUtil::getFromParamsPHPFile($paramKeys, true);
-        $this->accessLogLevel = intval($params['accessLogLevel']);    // false: No logging, 1: without data, 2: with data
-        $this->altThemePath = $params["altThemePath"];
-        $this->themeName = $params["themeName"];
+//        $paramKeys = ["accessLogLevel", "altThemePath", "themeName"];
+//        $params = IMUtil::getFromParamsPHPFile($paramKeys, true);
+//        $this->accessLogLevel = intval($params['accessLogLevel']);    // false: No logging, 1: without data, 2: with data
+//        $this->altThemePath = $params["altThemePath"];
+//        $this->themeName = $params["themeName"];
+
+        [$this->accessLogLevel, $this->altThemePath, $this->themeName] = Params::getParameterValue(
+            ["accessLogLevel", "altThemePath", "themeName"],[false, null, "default"]);
     }
 
     public function getResultForLog(): array
     {
-        if($this->accessLogLevel < 1) {
+        if ($this->accessLogLevel < 1) {
             return [];
         }
         return $this->outputMessage;

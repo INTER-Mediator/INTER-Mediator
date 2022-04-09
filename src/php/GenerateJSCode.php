@@ -53,58 +53,84 @@ class GenerateJSCode
     {
         $q = '"';
         $ds = DIRECTORY_SEPARATOR;
-        $generatedPrivateKey = null;
-        $passPhrase = null;
-        $browserCompatibility = null;
-        $scriptPathPrefix = null;
-        $scriptPathSuffix = null;
-        $oAuthProvider = null;
-        $oAuthClientID = null;
-        $oAuthRedirect = null;
-        $themeName = "default";
-        $dbClass = null;
-        $params = IMUtil::getFromParamsPHPFile(array(
-            "generatedPrivateKey", "passPhrase", "browserCompatibility", "scriptPathPrefix", "scriptPathSuffix",
-            "oAuthProvider", "oAuthClientID", "oAuthRedirect", "passwordPolicy", "documentRootPrefix", "dbClass",
-            "dbDSN", "nonSupportMessageId", "valuesForLocalContext", "themeName", "appLocale", "appCurrency",
-            "resetPage", "enrollPage", "serviceServerPort", "serviceServerHost", "activateClientService",
-            "followingTimezones", "notUseServiceServer", "serviceServerProtocol", "passwordHash", "alwaysGenSHA2",
+//        $generatedPrivateKey = null;
+//        $passPhrase = null;
+//        $browserCompatibility = null;
+//        $scriptPathPrefix = null;
+//        $scriptPathSuffix = null;
+//        $oAuthProvider = null;
+//        $oAuthClientID = null;
+//        $oAuthRedirect = null;
+//        $themeName = "default";
+//        $dbClass = null;
+//        $params = IMUtil::getFromParamsPHPFile(array(
+//            "generatedPrivateKey", "passPhrase", "browserCompatibility", "scriptPathPrefix", "scriptPathSuffix",
+//            "oAuthProvider", "oAuthClientID", "oAuthRedirect", "passwordPolicy", "documentRootPrefix", "dbClass",
+//            "dbDSN", "nonSupportMessageId", "valuesForLocalContext", "themeName", "appLocale", "appCurrency",
+//            "resetPage", "enrollPage", "serviceServerPort", "serviceServerHost", "activateClientService",
+//            "followingTimezones", "notUseServiceServer", "serviceServerProtocol", "passwordHash", "alwaysGenSHA2",
+//            "isSAML", "samlWithBuiltInAuth"
+//        ), true);
+
+        [
+            $browserCompatibility, $scriptPathPrefix, $scriptPathSuffix, $oAuthProvider,
+            $oAuthClientID, $oAuthRedirect, $passwordPolicy, $dbClass,
+            $dbDSN, $nonSupportMessageId, $valuesForLocalContext, $themeName,
+            $appLocale, $appCurrency, $resetPage, $enrollPage,
+            $serviceServerPort, $serviceServerHost, $serviceServerProtocol, $notUseServiceServer,
+            $activateClientService, $followingTimezones, $passwordHash, $alwaysGenSHA2,
+            $isSAML, $samlWithBuiltInAuth
+        ] = Params::getParameterValue([
+            "browserCompatibility", "scriptPathPrefix", "scriptPathSuffix", "oAuthProvider",
+            "oAuthClientID", "oAuthRedirect", "passwordPolicy", "dbClass",
+            "dbDSN", "nonSupportMessageId", "valuesForLocalContext", "themeName",
+            "appLocale", "appCurrency", "resetPage", "enrollPage",
+            "serviceServerPort", "serviceServerHost", "serviceServerProtocol", "notUseServiceServer",
+            "activateClientService", "followingTimezones", "passwordHash", "alwaysGenSHA2",
             "isSAML", "samlWithBuiltInAuth"
-        ), true);
-        $generatedPrivateKey = $params["generatedPrivateKey"];
-        $passPhrase = $params["passPhrase"];
-        $browserCompatibility = $params["browserCompatibility"];
-        $scriptPathPrefix = $params["scriptPathPrefix"];
-        $scriptPathSuffix = $params["scriptPathSuffix"];
-        $oAuthProvider = $params["oAuthProvider"];
-        $oAuthClientID = $params["oAuthClientID"];
-        $oAuthRedirect = $params["oAuthRedirect"];
-        $passwordPolicy = $params["passwordPolicy"];
-        $dbClass = $params["dbClass"];
-        $dbDSN = $options['dsn'] ?? $params["dbDSN"] ?? '';
-        $nonSupportMessageId = $params["nonSupportMessageId"];
-        $valuesForLocalContext = $params["valuesForLocalContext"];
-        $themeName = is_null($params["themeName"]) ? $themeName : $params["themeName"];
-        $appLocale = $options['app-locale'] ?? $params["appLocale"] ?? 'ja_JP';
-        $appCurrency = $options['app-currency'] ?? $params["appCurrency"] ?? 'JP';
-        $resetPage = $options['authentication']['reset-page'] ?? $params["resetPage"] ?? null;
-        $enrollPage = $options['authentication']['enroll-page'] ?? $params["enrollPage"] ?? null;
-        $serviceServerPort = $params['serviceServerPort'] ?? "11479";
-        $serviceServerHost = $params['serviceServerHost'] ?? false;
+        ], [
+            null, null, null, null,
+            null, null, null, null,
+            '', null, null, "default",
+            'ja_JP', 'JP', null, null,
+            "11479", false, 'ws', false,
+            false, false, 1, false,
+            false, false
+        ]);
+
+//        $generatedPrivateKey = $params["generatedPrivateKey"];
+//        $passPhrase = $params["passPhrase"];
+//        $browserCompatibility = $params["browserCompatibility"];
+//        $scriptPathPrefix = $params["scriptPathPrefix"];
+//        $scriptPathSuffix = $params["scriptPathSuffix"];
+//        $oAuthProvider = $params["oAuthProvider"];
+//        $oAuthClientID = $params["oAuthClientID"];
+//        $oAuthRedirect = $params["oAuthRedirect"];
+//        $passwordPolicy = $params["passwordPolicy"];
+//        $dbClass = $params["dbClass"];
+//        $dbDSN = $options['dsn'] ?? $params["dbDSN"] ?? '';
+//        $nonSupportMessageId = $params["nonSupportMessageId"];
+//        $valuesForLocalContext = $params["valuesForLocalContext"];
+//        $themeName = is_null($params["themeName"]) ? $themeName : $params["themeName"];
+//        $appLocale = $options['app-locale'] ?? $params["appLocale"] ?? 'ja_JP';
+//        $appCurrency = $options['app-currency'] ?? $params["appCurrency"] ?? 'JP';
+        $resetPage = $options['authentication']['reset-page'] ?? $resetPage ?? null;
+        $enrollPage = $options['authentication']['enroll-page'] ?? $enrollPage ?? null;
+//        $serviceServerPort = $params['serviceServerPort'] ?? "11479";
+//        $serviceServerHost = $params['serviceServerHost'] ?? false;
         $serviceServerHost = $serviceServerHost ?? $_SERVER['SERVER_ADDR'] ?? false;
         $serviceServerHost = $serviceServerHost ?? parse_url($_SERVER['HTTP_HOST'], PHP_URL_HOST) ?? false;
         $serviceServerHost = $serviceServerHost ?? 'localhost';
-        $serviceServerProtocol = $params['serviceServerProtocol'] ?? 'ws';
-        $notUseServiceServer = boolval($params["notUseServiceServer"] ?? false);
+//        $serviceServerProtocol = $params['serviceServerProtocol'] ?? 'ws';
+//        $notUseServiceServer = boolval($params["notUseServiceServer"] ?? false);
 
-        $activateClientService = boolval($params['activateClientService'] ?? false);
-        $followingTimezones = boolval($params['followingTimezones'] ?? false);
-        $passwordHash = $params['passwordHash'] ?? 1;
+//        $activateClientService = boolval($params['activateClientService'] ?? false);
+//        $followingTimezones = boolval($params['followingTimezones'] ?? false);
+//        $passwordHash = $params['passwordHash'] ?? 1;
         $passwordHash = ($passwordHash === '2m') ? 1.5 : floatval($passwordHash);
-        $alwaysGenSHA2 = boolval($params['alwaysGenSHA2'] ?? false);
-        $isSAML = $options['authentication']['is-saml'] ?? $params['isSAML'] ?? false;
-        $samlWithBuiltInAuth = $options['authentication']['saml-builtin-auth']
-            ?? (isset($params['samlWithBuiltInAuth']) && boolval($params['samlWithBuiltInAuth']));
+//        $alwaysGenSHA2 = boolval($params['alwaysGenSHA2'] ?? false);
+        $isSAML = $options['authentication']['is-saml'] ?? $isSAML ?? false;
+        $samlWithBuiltInAuth = $options['authentication']['saml-builtin-auth'] ?? $samlWithBuiltInAuth ?? false;
 
         $serverName = $_SERVER['SCRIPT_NAME'] ?? 'Not_on_web_server';
         $documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? 'Not_on_web_server';

@@ -20,6 +20,7 @@ use DateTimeZone;
 use Exception;
 use INTERMediator\IMUtil;
 use PDOException;
+use INTERMediator\Params;
 
 /**
  * Class PDO
@@ -42,12 +43,17 @@ class PDO extends UseSharedObjects implements DBClass_Interface
 
     public function __construct()
     {
-        $params = IMUtil::getFromParamsPHPFile(["followingTimezones", "suppressDefaultValuesOnCopy",
-            "suppressDefaultValuesOnCopyAssoc", "suppressAuthTargetFillingOnCreate",], true);
-        $this->isFollowingTimezones = $params["followingTimezones"] ?? false;
-        $this->isSuppressDVOnCopy = $params["suppressDefaultValuesOnCopy"] ?? false;
-        $this->isSuppressDVOnCopyAssoc = $params["suppressDefaultValuesOnCopyAssoc"] ?? false;
-        $this->isSuppressAuthTargetFillingOnCreate = $params["suppressAuthTargetFillingOnCreate"] ?? false;
+//        $params = IMUtil::getFromParamsPHPFile(["followingTimezones", "suppressDefaultValuesOnCopy",
+//            "suppressDefaultValuesOnCopyAssoc", "suppressAuthTargetFillingOnCreate",], true);
+//        $this->isFollowingTimezones = $params["followingTimezones"] ?? false;
+//        $this->isSuppressDVOnCopy = $params["suppressDefaultValuesOnCopy"] ?? false;
+//        $this->isSuppressDVOnCopyAssoc = $params["suppressDefaultValuesOnCopyAssoc"] ?? false;
+//        $this->isSuppressAuthTargetFillingOnCreate = $params["suppressAuthTargetFillingOnCreate"] ?? false;
+//
+        [$this->isFollowingTimezones, $this->isSuppressDVOnCopy,
+            $this->isSuppressDVOnCopyAssoc, $this->isSuppressAuthTargetFillingOnCreate]
+            = Params::getParameterValue(["followingTimezones", "suppressDefaultValuesOnCopy",
+            "suppressDefaultValuesOnCopyAssoc", "suppressAuthTargetFillingOnCreate",], false);
     }
 
     public function getUpdatedRecord()
@@ -732,17 +738,11 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     {
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $nullableFields = $this->handler->getNullableFields($this->dbSettings->getEntityForUpdate());
-        $fieldInfosNN = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
-        if (isset($tableInfo['numeric-fields']) && is_array($tableInfo['numeric-fields'])) {
-            $fieldInfosNN = array_merge($fieldInfosNN, $tableInfo['numeric-fields']);
-        }
         $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
         if (isset($tableInfo['time-fields']) && is_array($tableInfo['time-fields'])) {
             $timeFields = array_merge($timeFields, $tableInfo['time-fields']);
         }
-        $boolFields = $this->handler->getBooleanFields($this->dbSettings->getEntityForUpdate());
         $tableNameRow = $this->dbSettings->getEntityForUpdate();
         $tableName = $this->handler->quotedEntityName($tableNameRow);
         $viewName = $this->handler->quotedEntityName($this->dbSettings->getEntityForRetrieve());
@@ -777,25 +777,18 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $fieldValues = $this->dbSettings->getValue();
         for ($i = 0; $i < $countFields; $i++) {
             $field = $requiredFields[$i];
-            $value = $fieldValues[$i];
-            if (is_null($value) || $value === "" || is_bool($value)) {
-                $setValues[] = in_array($field, $nullableFields) ? "NULL" : (in_array($field, $fieldInfosNN) ? "0" : "''");
-            } else if (in_array($field, $boolFields)) {
-                $setValues[] = $this->isTrue($value) ? "TRUE" : "FALSE";
-            } else {
-                $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
-                $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-                // Convert the time explanation from UTC to server setup timezone
-                if (in_array($field, $timeFields) && !is_null($convertedValue) && $convertedValue !== '') {
-                    $dt = new DateTime($convertedValue, new DateTimeZone('UTC'));
-                    $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $convertedValue);
-                    $dt->setTimezone(new DateTimeZone(date_default_timezone_get()));
-                    $convertedValue = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
-                }
-                $fValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
-                $setValues[] = $fValue ? $this->link->quote($fValue) : $fValue;
-            }
             $setColumnNames[] = $field;
+            $value = $fieldValues[$i];
+            $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
+            $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
+            // Convert the time explanation from UTC to server setup timezone
+            if (in_array($field, $timeFields) && !is_null($convertedValue) && $convertedValue !== '') {
+                $dt = new DateTime($convertedValue, new DateTimeZone('UTC'));
+                $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $convertedValue);
+                $dt->setTimezone(new DateTimeZone(date_default_timezone_get()));
+                $convertedValue = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+            }
+            $setValues[] = $this->formatter->formatterToDB($filedInForm, $convertedValue);
         }
         if (isset($tableInfo['default-values'])) {
             foreach ($tableInfo['default-values'] as $itemDef) {
@@ -804,8 +797,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 if (!in_array($field, $setColumnNames)) {
                     $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                     $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-                    $fValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
-                    $setValues[] = $fValue ? $this->link->quote($fValue) : $fValue;
+                    $setValues[] = $this->formatter->formatterToDB($filedInForm, $convertedValue);
                     $setColumnNames[] = $field;
                 }
             }
@@ -816,13 +808,11 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             if (!$this->authHandler->getNoSetForAuthorization("create")) {
                 if ($authInfoTarget == 'field-user') {
                     $setColumnNames[] = $authInfoField;
-                    $setValues[] = $this->link->quote(
-                        strlen($signedUser) == 0 ? IMUtil::randomString(10) : $signedUser);
+                    $setValues[] = strlen($signedUser) == 0 ? IMUtil::randomString(10) : $signedUser;
                 } else if ($authInfoTarget == 'field-group') {
                     $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($signedUser);
                     $setColumnNames[] = $authInfoField;
-                    $setValues[] = $this->link->quote(
-                        strlen($belongGroups[0]) == 0 ? IMUtil::randomString(10) : $belongGroups[0]);
+                    $setValues[] = strlen($belongGroups[0]) == 0 ? IMUtil::randomString(10) : $belongGroups[0];
                 }
             }
         }

@@ -3,6 +3,7 @@
  * IMUtil_Test file
  */
 
+use INTERMediator\Params;
 use \PHPUnit\Framework\TestCase;
 use \INTERMediator\IMUtil;
 
@@ -53,12 +54,13 @@ class IMUtil_Test extends TestCase
 
     public function test_getFromParamsPHPFile()
     {
-        $result = $this->util->getFromParamsPHPFile(array('webServerName'), true);
-        $result = $this->util->getFromParamsPHPFile(array('webServerName'), true);
+//        $result = $this->util->getFromParamsPHPFile(array('webServerName'), true);
+//        $result = $this->util->getFromParamsPHPFile(array('webServerName'), true);
+        $webServerName = Params::getParameterValue('webServerName','');
         if (php_uname('n') === 'inter-mediator-server') {
-            $this->assertEquals($result['webServerName'], array('192.168.56.101'));
+            $this->assertEquals($webServerName, '192.168.56.101');
         } else {
-            $this->assertEquals($result['webServerName'], array(''));
+            $this->assertEquals(is_array($webServerName), true);
         }
     }
 

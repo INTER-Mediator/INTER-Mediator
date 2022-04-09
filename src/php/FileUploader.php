@@ -213,8 +213,9 @@ class FileUploader
             return $url;
         }
 
-        $params = IMUtil::getFromParamsPHPFile(array('webServerName'), true);
-        $webServerName = $params['webServerName'];
+//        $params = IMUtil::getFromParamsPHPFile(array('webServerName'), true);
+//        $webServerName = $params['webServerName'];
+        $webServerName = Params::getParameterValue('webServerName',null);
         if (!is_null($webServerName)) {
             if (is_array($webServerName)) {
                 foreach ($webServerName as $name) {

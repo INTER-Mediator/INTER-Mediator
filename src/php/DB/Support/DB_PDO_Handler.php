@@ -75,15 +75,26 @@ abstract class DB_PDO_Handler
 
     public abstract function sqlSETClause($tableName, $setColumnNames, $keyField, $setValues);
 
-    protected function sqlSETClauseData($tableName, $setColumnNames, $keyField, $setValues)
+    protected function sqlSETClauseData($tableName, $setColumnNames, $setValues)
     {
         $nullableFields = $this->getNullableFields($tableName);
+        $numericFields = $this->getNumericFields($tableName);
+        $boolFields = $this->getBooleanFields($tableName);
         $setNames = [];
         $setValuesConv = [];
         $count = 0;
         foreach ($setColumnNames as $fName) {
             $setNames[] = $this->quotedEntityName($fName);
-            $setValuesConv[] = $setValues[$count] ?? (in_array($fName, $nullableFields) ? 'NULL' : "''");
+            $value = $setValues[$count];
+            if (is_null($value)) {
+                $setValuesConv[] = in_array($fName, $nullableFields)
+                    ? "NULL" : (in_array($fName, $numericFields) ? "0" : $this->dbClassObj->link->quote(''));
+            } else if (in_array($fName, $boolFields)) {
+                $setValuesConv[] = $this->isTrue($value) ? "TRUE" : "FALSE";
+            } else {
+                $setValuesConv[] = (in_array($fName, $numericFields)
+                    ? floatval($value) : $this->dbClassObj->link->quote($value));
+            }
             $count += 1;
         }
         return [$setNames, $setValuesConv];
@@ -141,7 +152,7 @@ abstract class DB_PDO_Handler
         }
         $fieldArray = [];
         foreach ($result as $row) {
-            if ($row[$this->fieldNameForNullable]) {
+            if (!$row[$this->fieldNameForNullable]) {
                 $fieldArray[] = $row[$this->fieldNameForField];
             }
         }
@@ -224,4 +235,18 @@ abstract class DB_PDO_Handler
         $tableName, $keyField, $assocField, $assocValue, $defaultValues);
 
     public abstract function authSupportCanMigrateSHA256Hash($userTable, $hashTable);
+
+    private function isTrue($d)
+    {
+        if (is_null($d)) {
+            return false;
+        }
+        if (strtolower($d) == 'true' || strtolower($d) == 't') {
+            return true;
+        } else if (intval($d) > 0) {
+            return true;
+        }
+        return false;
+    }
+
 }

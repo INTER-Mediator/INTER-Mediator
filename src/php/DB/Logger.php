@@ -16,7 +16,7 @@
 
 namespace INTERMediator\DB;
 
-use INTERMediator\IMUtil;
+use INTERMediator\Params;
 use DateTime;
 use ReflectionClass;
 
@@ -43,11 +43,13 @@ class Logger
 
     private function __construct()
     {
-        $params = IMUtil::getFromParamsPHPFile(["errorMessageLogging", "warningMessageLogging",
-            "debugMessageLogging",], true);
-        $this->errorMessageLogging = $params["errorMessageLogging"] ?? false;;
-        $this->warningMessageLogging = $params["warningMessageLogging"] ?? false;;
-        $this->debugMessageLogging = $params["debugMessageLogging"] ?? false;;
+//        $params = IMUtil::getFromParamsPHPFile(["errorMessageLogging", "warningMessageLogging",
+//            "debugMessageLogging",], true);
+//        $this->errorMessageLogging = $params["errorMessageLogging"] ?? false;;
+//        $this->warningMessageLogging = $params["warningMessageLogging"] ?? false;;
+//        $this->debugMessageLogging = $params["debugMessageLogging"] ?? false;;
+        [$this->errorMessageLogging, $this->warningMessageLogging, $this->debugMessageLogging]
+            = Params::getParameterValue(["errorMessageLogging", "warningMessageLogging", "debugMessageLogging",], false);
     }
 
     public function clearLogs()
