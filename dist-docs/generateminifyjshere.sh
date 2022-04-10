@@ -16,7 +16,7 @@ function readFileUntilMark() {
   rm "__temp1" "__temp2"
 }
 
-version="9"
+version="10"
 
 distDocDir=$(
   cd $(dirname "$0")
