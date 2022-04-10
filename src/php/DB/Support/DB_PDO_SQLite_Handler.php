@@ -68,7 +68,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 
     public function sqlSETClause($tableName, $setColumnNames, $keyField, $setValues)
     {
-        [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $keyField, $setValues);
+        [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $setValues);
         return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }

@@ -20,7 +20,7 @@ use INTERMediator\DB\Proxy;
 
 class OAuthAuth
 {
-    public $isActive;
+    public $isActive = false;
 
     private $baseURL;
     private $getTokenURL;
@@ -32,7 +32,7 @@ class OAuthAuth
     private $errorMessage = array();
     private $jsCode = '';
     private $id_token;
-    private $provider;
+    private $provider = "unspecified";
     private $doRedirect = true;
     private $isCreate = null;
     private $userInfo = null;
@@ -41,17 +41,9 @@ class OAuthAuth
 
     public function __construct()
     {
-        $params = IMUtil::getFromParamsPHPFile(
-            array("oAuthClientID", "oAuthClientSecret", "oAuthRedirect", "oAuthProvider"), true);
-        if ($params === false) {
-            $this->errorMessage[] = "Wrong Paramters";
-            $this->isActive = false;
-            return;
-        }
-        $this->isActive = false;
-        $this->provider = "unspecified";
-
-        switch (strtolower($params["oAuthProvider"] ?? "")) {
+        [$this->clientId, $this->clientSecret, $this->redirectURL, $this->provider]
+            = Params::getParameterValue(["oAuthClientID", "oAuthClientSecret", "oAuthRedirect", "oAuthProvider"], false);
+        switch (strtolower($this->provider ?? "")) {
             case "google":
                 $this->baseURL = 'https://accounts.google.com/o/oauth2/auth';
                 //    $this->getTokenURL = 'https://accounts.google.com/o/oauth2/token';
@@ -70,9 +62,9 @@ class OAuthAuth
             default:
                 break;
         }
-        $this->clientId = $params["oAuthClientID"];
-        $this->clientSecret = $params["oAuthClientSecret"];
-        $this->redirectURL = $params["oAuthRedirect"];
+//        $this->clientId = $params["oAuthClientID"];
+//        $this->clientSecret = $params["oAuthClientSecret"];
+//        $this->redirectURL = $params["oAuthRedirect"];
     }
 
     public function oAuthBaseURL()

@@ -174,10 +174,12 @@ $dbDSNLog = $dbDSN;
 $dbUserLog = $dbUser;
 $dbPasswordLog = $dbPassword;
 $recordingContexts = false; // false or no-definition: record all context, or an array of context names you want to record.
+$recordingOperations = false; // false or no-definition: record all operation, or an array of operation names you want to record.
 $dontRecordTheme = false;
 $dontRecordChallenge = false;
 $dontRecordDownload = false;
 $dontRecordDownloadNoGet = false;
+$accessLogExtensionClass = 'LoggingExt'; // Processing for some extending fields.
 
 /* S3 Support
  * =================== */

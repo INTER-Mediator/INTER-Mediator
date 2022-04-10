@@ -40,21 +40,15 @@ class ServiceServerProxy
 
     private function __construct()
     {
-        $params = IMUtil::getFromParamsPHPFile([
-            "serviceServerPort", "serviceServerConnect", "stopSSEveryQuit",
-            "bootWithInstalledNode", "preventSSAutoBoot", "notUseServiceServer", "foreverLog",
-            "serviceServerKey", "serviceServerCert", "serviceServerCA",], true);
-        $this->paramsHost = $params["serviceServerConnect"] ? $params["serviceServerConnect"] : "http://localhost";
-        $this->paramsPort = $params["serviceServerPort"] ? intval($params["serviceServerPort"]) : 11478;
-        $this->paramsQuit = !is_null($params["stopSSEveryQuit"]) && boolval($params["stopSSEveryQuit"]);
-        $this->paramsBoot = !is_null($params["bootWithInstalledNode"]) && boolval($params["bootWithInstalledNode"]);
-        $this->dontAutoBoot = !is_null($params["preventSSAutoBoot"]) && boolval($params["preventSSAutoBoot"]);
-        $this->dontUse = !is_null($params["notUseServiceServer"]) && boolval($params["notUseServiceServer"]);
-        $this->foreverLog = (!boolval($params["foreverLog"])) ? $params["foreverLog"] : null;
+        [$this->paramsHost, $this->paramsPort, $this->paramsQuit, $this->paramsBoot,
+            $this->dontAutoBoot, $this->dontUse, $this->foreverLog, $this->serviceServerKey,
+            $this->serviceServerCert, $this->serviceServerCA]
+            = Params::getParameterValue([
+            "serviceServerConnect", "serviceServerPort", "stopSSEveryQuit", "bootWithInstalledNode",
+            "preventSSAutoBoot", "notUseServiceServer", "foreverLog", "serviceServerKey",
+            "serviceServerCert", "serviceServerCA",],
+            ["http://localhost", 11478, false, false, false, false, null, '', '', '']);
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
-        $this->serviceServerKey = $params["serviceServerKey"] ?? "";
-        $this->serviceServerCert = $params["serviceServerCert"] ?? "";
-        $this->serviceServerCA = $params["serviceServerCA"] ?? "";
     }
 
     public function clearMessages()

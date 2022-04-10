@@ -67,15 +67,32 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 
     public function sqlSETClause($tableName, $setColumnNames, $keyField, $setValues)
     {
-        [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $keyField, $setValues);
+        [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $setValues);
         return (count($setColumnNames) == 0) ? "SET {$keyField}=DEFAULT" :
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
+    }
+
+    public function getNullableFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $fieldArray = [];
+        foreach ($result as $row) {
+            if ($row[$this->fieldNameForNullable] == "YES") {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
     }
 
     protected function getTalbeInfoSQL($tableName)
     {
         return "SHOW COLUMNS FROM " . $this->quotedEntityName($tableName);
     }
+
     /*
       * mysql> show columns from func;
 +-------+------------------------------+------+-----+---------+-------+

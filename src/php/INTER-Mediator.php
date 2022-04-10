@@ -18,12 +18,12 @@ namespace INTERMediator;
 // Setup autoloader
 $imRoot = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR;
 $autoLoad = $imRoot . 'vendor/autoload.php';
-if(file_exists($autoLoad)) { // If vendor is inside of INTER-Mediator
+if (file_exists($autoLoad)) { // If vendor is inside of INTER-Mediator
     require($autoLoad);
 } else { // If INTER-Mediator is installed with composer.json
     $vendorRoot = dirname(dirname($imRoot)) . DIRECTORY_SEPARATOR;
     $autoLoad = $vendorRoot . 'autoload.php';
-    if(file_exists($autoLoad)) {
+    if (file_exists($autoLoad)) {
         require($autoLoad);
     }
 }
@@ -86,11 +86,10 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     }
 
     // Read from params.php
-    $params = IMUtil::getFromParamsPHPFile(array("defaultTimezone","accessLogLevel"), true);
-
+    [$defaultTimezone, $accessLogLevel] = Params::getParameterValue(["defaultTimezone", "accessLogLevel"], ["UTC", false]);
     // Setup Timezone
-    if (isset($params['defaultTimezone'])) {
-        date_default_timezone_set($params['defaultTimezone']);
+    if ($defaultTimezone) {
+        date_default_timezone_set($defaultTimezone);
     } else if (ini_get('date.timezone') == null) {
         date_default_timezone_set('UTC');
     }
@@ -134,7 +133,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         }
         $resultLog = $fileUploader->getResultForLog();
     } else if (!isset($_POST['access']) && !isset($_GET['media'])) {    // Download JS module to client
-        if($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $db = new DB\Proxy();
             $db->initialize($datasource, $options, $dbspecification, $debug, '');
             $messages = IMUtil::getMessageClassInstance();
@@ -187,7 +186,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         $resultLog = $dbInstance->getResultForLog();
         ServiceServerProxy::instance()->stopServer();
     }
-    if($params['accessLogLevel']){
+    if ($accessLogLevel) {
         $logging = new DB\OperationLog($options);
         $logging->setEntry($resultLog);
     }

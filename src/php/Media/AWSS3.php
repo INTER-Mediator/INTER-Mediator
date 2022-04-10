@@ -21,6 +21,7 @@ use Aws\S3\Exception\S3Exception;
 use Aws\Credentials\Credentials;
 use INTERMediator\DB\Proxy;
 use INTERMediator\IMUtil;
+use INTERMediator\Params;
 
 class AWSS3 implements UploadingSupport
 {
@@ -35,15 +36,10 @@ class AWSS3 implements UploadingSupport
 
     public function __construct()
     {
-        $params = IMUtil::getFromParamsPHPFile(["accessRegion", "rootBucket", "applyingACL", "s3urlCustomize",
-            "s3AccessKey", "s3AccessSecret", "s3AccessProfile"], true);
-        $this->accessRegion = $params["accessRegion"];
-        $this->rootBucket = $params["rootBucket"];
-        $this->applyingACL = $params["applyingACL"];
-        $this->s3AccessProfile = $params["s3AccessProfile"];
-        $this->s3AccessKey = $params["s3AccessKey"];
-        $this->s3AccessSecret = $params["s3AccessSecret"];
-        $this->s3urlCustomize = $params["s3urlCustomize"] ? boolval($params["s3urlCustomize"]) : true;
+        [$this->accessRegion, $this->rootBucket, $this->applyingACL, $this->s3AccessProfile,
+            $this->s3AccessKey, $this->s3AccessSecret, $this->s3urlCustomize]
+            = Params::getParameterValue(["accessRegion", "rootBucket", "applyingACL",  "s3AccessProfile",
+            "s3AccessKey", "s3AccessSecret", "s3urlCustomize",], [false,false,false,false,false,false,true,]);
         $this->isSuppliedSecret = $this->s3AccessKey && $this->s3AccessSecret;
     }
 
@@ -59,7 +55,7 @@ class AWSS3 implements UploadingSupport
                 $fileInfoName = $fileInfo['name'];
                 $fileInfoTemp = $fileInfo['tmp_name'];
             }
-            if(!is_uploaded_file($fileInfoTemp)){ // Security check
+            if (!is_uploaded_file($fileInfoTemp)) { // Security check
                 return;
             }
             $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));

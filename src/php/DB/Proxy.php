@@ -24,7 +24,7 @@ use INTERMediator\Locale\IMLocale;
 use INTERMediator\Messaging\MessagingProxy;
 use INTERMediator\NotifyServer;
 use INTERMediator\ServiceServerProxy;
-use phpseclib\Crypt\RSA;
+use INTERMediator\Params;
 
 class Proxy extends UseSharedObjects implements Proxy_Interface
 {
@@ -602,25 +602,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->PostData = $this->ignorePost ? array() : $_POST;
         $this->setUpSharedObjects();
         $this->logger->setDebugMessage("Start to initialize the DB\Proxy class instance.", 2);
+        $this->dbSettings->setSAMLExpiringSeconds(Params::getParameterValue('ldapExpiringSeconds', 600));
+        $this->dbSettings->setSAMLExpiringSeconds(Params::getParameterValue('samlExpiringSeconds', 600));
 
-        $params = IMUtil::getFromParamsPHPFile(array(
-            "dbClass", "dbServer", "dbPort", "dbUser", "dbPassword", "dbDataType", "dbDatabase", "dbProtocol",
-            "dbOption", "dbDSN", "prohibitDebugMode", "issuedHashDSN", "sendMailSMTP",
-            "activateClientService", "accessLogLevel", "certVerifying", "passwordHash", "alwaysGenSHA2",
-            "isSAML", "samlAuthSource", "migrateSHA1to2", "samlAttrRules", "samlAdditionalRules", "samlExpiringSeconds",
-            "ldapExpiringSeconds"
-        ), true);
-
-        $this->dbSettings->setSAMLExpiringSeconds($params['samlExpiringSeconds'] ?? 600);
-        if (isset($params['ldapExpiringSeconds'])) {
-            $this->dbSettings->setSAMLExpiringSeconds($params['ldapExpiringSeconds']);
-        }
-
-        $this->accessLogLevel = intval($params['accessLogLevel']);
-        $this->clientSyncAvailable = (isset($params["activateClientService"]) && $params["activateClientService"]);
-        $this->passwordHash = $params['passwordHash'] ?? "1";
-        $this->alwaysGenSHA2 = isset($params['alwaysGenSHA2']) && boolval($params['alwaysGenSHA2']);
-        $this->migrateSHA1to2 = isset($params['migrateSHA1to2']) && boolval($params['migrateSHA1to2']);
+        $this->accessLogLevel = intval(Params::getParameterValue('accessLogLevel', false));
+        $this->clientSyncAvailable = boolval(Params::getParameterValue("activateClientService", false));
+        $this->passwordHash = Params::getParameterValue('passwordHash', 1);
+        $this->alwaysGenSHA2 = boolval(Params::getParameterValue('alwaysGenSHA2', false));
+        $this->migrateSHA1to2 = boolval(Params::getParameterValue('migrateSHA1to2', false));
 
         $this->dbSettings->setDataSource($datasource);
         $this->dbSettings->setOptions($options);
@@ -636,30 +625,30 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
 
         $dbClassName = '\\INTERMediator\\DB\\' .
-            ($context['db-class'] ?? ($dbspec['db-class'] ?? ($params['$dbClass'] ?? '')));
+            ($context['db-class'] ?? ($dbspec['db-class'] ?? Params::getParameterValue('dbClass', '')));
         $this->dbSettings->setDbSpecServer(
-            $context['server'] ?? ($dbspec['server'] ?? ($params['dbServer'] ?? '')));
+            $context['server'] ?? ($dbspec['server'] ?? Params::getParameterValue('dbServer', '')));
         $this->dbSettings->setDbSpecPort(
-            $context['port'] ?? ($dbspec['port'] ?? ($params['dbPort'] ?? '')));
+            $context['port'] ?? ($dbspec['port'] ?? Params::getParameterValue('dbPort', '')));
         $this->dbSettings->setDbSpecUser(
-            $context['user'] ?? ($dbspec['user'] ?? ($params['dbUser'] ?? '')));
+            $context['user'] ?? ($dbspec['user'] ?? Params::getParameterValue('dbUser', '')));
         $this->dbSettings->setDbSpecPassword(
-            $context['password'] ?? ($dbspec['password'] ?? ($params['dbPassword'] ?? '')));
+            $context['password'] ?? ($dbspec['password'] ?? Params::getParameterValue('dbPassword', '')));
         $this->dbSettings->setDbSpecDataType(
-            $context['datatype'] ?? ($dbspec['datatype'] ?? ($params['dbDataType'] ?? '')));
+            $context['datatype'] ?? ($dbspec['datatype'] ?? Params::getParameterValue('dbDataType', '')));
         $this->dbSettings->setDbSpecDatabase(
-            $context['database'] ?? ($dbspec['database'] ?? ($params['dbDatabase'] ?? '')));
+            $context['database'] ?? ($dbspec['database'] ?? Params::getParameterValue('dbDatabase', '')));
         $this->dbSettings->setDbSpecProtocol(
-            $context['protocol'] ?? ($dbspec['protocol'] ?? ($params['dbProtocol'] ?? '')));
+            $context['protocol'] ?? ($dbspec['protocol'] ?? Params::getParameterValue('dbProtocol', '')));
         $this->dbSettings->setDbSpecOption(
-            $context['option'] ?? ($dbspec['option'] ?? ($params['dbOption'] ?? '')));
+            $context['option'] ?? ($dbspec['option'] ?? Params::getParameterValue('dbOption', '')));
         $this->dbSettings->setCertVerifying(
-            $context['cert-verifying'] ?? ($dbspec['cert-verifying'] ?? ($params['certVerifying'] ?? true)));
+            $context['cert-verifying'] ?? ($dbspec['cert-verifying'] ?? Params::getParameterValue('certVerifying', true)));
         if (isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn'])) {
             $this->dbSettings->setDbSpecDSN($options['authentication']['issuedhash-dsn']);
         } else {
             $this->dbSettings->setDbSpecDSN(
-                $context['dsn'] ?? ($dbspec['dsn'] ?? ($params['dbDSN'] ?? '')));
+                $context['dsn'] ?? ($dbspec['dsn'] ?? Params::getParameterValue('dbDSN', '')));
         }
 
         /* Setup Database Class's Object */
@@ -680,7 +669,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
             $this->dbClass->setupHandlers();
         }
-        if ((!isset($params['prohibitDebugMode']) || !$params['prohibitDebugMode']) && $debug) {
+        if (!Params::getParameterValue('prohibitDebugMode', false) && $debug) {
             $this->logger->setDebugMode($debug);
         }
         $this->dbSettings->setAggregationSelect(
@@ -694,8 +683,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $challengeDSN = null;
         if (isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn'])) {
             $challengeDSN = $options['authentication']['issuedhash-dsn'];
-        } else if (isset($params['issuedHashDSN'])) {
-            $challengeDSN = $params['issuedHashDSN'];
+        } else {
+            $challengeDSN = Params::getParameterValue('issuedHashDSN', null);
         }
         if (!is_null($challengeDSN)) {
             $this->authDbClass = new PDO();
@@ -793,8 +782,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
         if (isset($options['smtp'])) {
             $this->dbSettings->setSmtpConfiguration($options['smtp']);
-        } else if (isset($params['sendMailSMTP'])) {
-            $this->dbSettings->setSmtpConfiguration($params['sendMailSMTP']);
+        } else {
+            $this->dbSettings->setSmtpConfiguration(Params::getParameterValue('sendMailSMTP', null));
         }
 
         $this->paramAuthUser = $this->PostData['authuser'] ?? "";
@@ -811,15 +800,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
         if (isset($options['authentication']) && isset($options['authentication']['is-saml'])) {
             $this->dbSettings->setIsSAML($options['authentication']['is-saml']);
-        } else if (isset($params['isSAML'])) {
-            $this->dbSettings->setIsSAML($params['isSAML']);
+        } else {
+            $this->dbSettings->setIsSAML(Params::getParameterValue('isSAML', false));
         }
 
-        if (isset($params['samlAuthSource'])) {
-            $this->dbSettings->setSAMLAuthSource($params['samlAuthSource']);
-        }
-        $this->dbSettings->setSAMLAttrRules($params["samlAttrRules"] ?? false);
-        $this->dbSettings->setSAMLAdditionalRules($params["samlAdditionalRules"] ?? false);
+        $this->dbSettings->setSAMLAuthSource(Params::getParameterValue('samlAuthSource', null));
+        $this->dbSettings->setSAMLAttrRules(Params::getParameterValue("samlAttrRules", false));
+        $this->dbSettings->setSAMLAdditionalRules(Params::getParameterValue("samlAdditionalRules", false));
         return true;
     }
 
@@ -886,11 +873,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->dbClass->authHandler->authSupportCanMigrateSHA256Hash();
             }
             $this->dbSettings->setRequireAuthorization(true);
-//            if (isset($authOptions['user'])
-//                && $authOptions['user'][0] == 'database_native'
-//            ) {
-//                $this->dbSettings->setDBNative(true);
-//            }
         }
 
         $this->originalAccess = $access;
@@ -907,30 +889,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
             // User and Password are suppried but...
             if ($access != 'challenge') { // Not accessing getting a challenge.
-//                if ($this->dbSettings->isDBNative()) {
-//                    list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
-//                    if ($password !== false) {
-//                        if (!$this->checkChallenge($challenge, $this->clientId)) {
-//                            $access = "do nothing";
-//                            $this->dbSettings->setRequireAuthentication(true);
-//                        } else {
-//                            $this->dbSettings->setUserAndPasswordForAccess($this->paramAuthUser, $password);
-//                            $this->logger->setDebugMessage("[checkChallenge] returns true.", 2);
-//                        }
-//                    } else {
-//                        $this->logger->setDebugMessage("Can't decrypt.");
-//                        $access = "do nothing";
-//                        $this->dbSettings->setRequireAuthentication(true);
-//                    }
-//                } else { // Other than native authentication
                 $noAuthorization = true;
                 $authorizedGroups = $this->dbClass->authHandler->getAuthorizedGroups($access);
                 $authorizedUsers = $this->dbClass->authHandler->getAuthorizedUsers($access);
 
                 $this->logger->setDebugMessage(str_replace("\n", "",
-                    ("contextName={$this->dbSettings->getDataSourceName()}/access={$access}/"
-                        . "authorizedUsers=" . var_export($authorizedUsers, true)
-                        . "/authorizedGroups=" . var_export($authorizedGroups, true)) ?? "")
+                        ("contextName={$this->dbSettings->getDataSourceName()}/access={$access}/"
+                            . "authorizedUsers=" . var_export($authorizedUsers, true)
+                            . "/authorizedGroups=" . var_export($authorizedGroups, true)) ?? "")
                     , 2);
                 if ((count($authorizedUsers) == 0 && count($authorizedGroups) == 0)) {
                     $noAuthorization = false;
@@ -1299,50 +1265,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /* Authentication support */
-//    function decrypting($paramCryptResponse)
-//    {
-//        $password = FALSE;
-//        $challenge = FALSE;
-//
-//        $generatedPrivateKey = '';
-//        $passPhrase = '';
-//
-//        $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
-//        $currentDirParam = $imRootDir . 'params.php';
-//        $parentDirParam = dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php';
-//        if (file_exists($parentDirParam)) {
-//            include($parentDirParam);
-//        } else if (file_exists($currentDirParam)) {
-//            include($currentDirParam);
-//        }
-//
-//        /* cf.) encrypted in generate_authParams() of Adapter_DBServer.js */
-//        $rsa = new RSA();
-//        $rsa->setPassword($passPhrase);
-//        $rsa->loadKey($generatedPrivateKey);
-//        $rsa->setEncryptionMode(RSA::ENCRYPTION_PKCS1);
-//        $token = $_SESSION['FM-Data-token'] ?? '';
-//        $array = explode("\n", $paramCryptResponse);
-//        if (strlen($array[0]) > 0 && isset($array[1]) && strlen($array[1]) > 0) {
-//            $encryptedArray = explode("\n", $rsa->decrypt(base64_decode($array[0])));
-//            if (isset($encryptedArray[1])) {
-//                $challenge = $encryptedArray[1];
-//            }
-//            $encryptedPassword = $encryptedArray[0] . $array[1];
-//            if (strlen($encryptedPassword) > 0) {
-//                if (strlen($token) > 0 && get_class($this->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
-//                    $password = '';
-//                } else {
-//                    $password = $rsa->decrypt(base64_decode($encryptedPassword));
-//                }
-//            } else {
-//                return array(FALSE, FALSE);
-//            }
-//        }
-//
-//        return array($password, $challenge);
-//    }
-
     /**
      * @param $username
      * @return string
@@ -1353,9 +1275,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return substr($hashedpw, -8);
     }
 
-    /* returns user's hash salt.
-
-    */
+    /* returns user's hash salt.*/
     /**
      * @param $username
      * @param $challenge
@@ -1557,7 +1477,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     function userEnrollmentActivateUser($challenge, $password, $rawPWField = false)
     {
-        $userInfo = null;
         $userID = $this->authDbClass->authHandler->authSupportUserEnrollmentEnrollingUser($challenge);
         if ($userID < 1) {
             return false;
@@ -1565,10 +1484,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $result = $this->dbClass->authHandler->authSupportUserEnrollmentActivateUser(
             $userID, IMUtil::convertHashedPassword($password, $this->passwordHash, $this->alwaysGenSHA2),
             $rawPWField, $password);
-//        if ($userID !== false) {
-//            $hashednewpassword = $this->convertHashedPassword($password);
-//            $userInfo = authSupportUserEnrollmentCheckHash($userID, $hashednewpassword);
-//        }
         return $result;
     }
 
@@ -1588,7 +1503,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
 
             $serviceServer = ServiceServerProxy::instance();
-            $inValid = false;
             foreach ($tableInfo['validation'] as $entry) {
                 if (array_key_exists($entry['field'], $requestedFieldValue)) {
                     $this->logger->setDebugMessage("Validation: field={$entry['field']}, rule={$entry['rule']}:", 2);

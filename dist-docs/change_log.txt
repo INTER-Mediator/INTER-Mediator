@@ -21,6 +21,8 @@ Ver.10 (In Development)
   field of the SQLite view doesn't have a type and condition with numeric field have to numeric value.
 - Error/Warning/Debug messages can write to the PHP's error log with params.php's variables $errorMessageLogging,
   $warningMessageLogging and $debugMessageLogging.
+- The operation logging feature can customize for extending fields with INTERMediator\DB\Support\OperationLogExtension.
+  Also $recordingOperations and $accessLogExtensionClass can be defined in params.php file.
 - [BUG FIX] The lookup feature was not fully efficient, and refactored them.
 - [BUG FIX] When checkbox set to off, the message which someone modified showed unexpectedly.
 - [BUG FIX] After moving from list to detail and back to list page, paging position wasn't retrieve and show the

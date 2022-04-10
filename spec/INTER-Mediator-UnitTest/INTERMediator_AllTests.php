@@ -69,6 +69,7 @@ class INTERMediator_AllTests extends TestCase
         $suite->addTestFile($folder . 'Messaging_Test.php');
         $suite->addTestFile($folder . 'Line_Field_Divider_Test.php');
         $suite->addTestFile($folder . 'OME_Test.php');
+        $suite->addTestFile($folder . 'Params_Test.php');
         /*
          * CI envirionment can't test the SMTP communication. Is that no wander?
          * The test case OME_Test.php has tests to send mail but they are commented.

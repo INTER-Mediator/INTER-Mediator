@@ -16,17 +16,20 @@
 namespace INTERMediator\Messaging;
 
 use INTERMediator\IMUtil;
+use INTERMediator\Params;
 
 class SendSlack extends MessagingProvider
 {
-    private $token;
-    private $channel;
+    private $token = null;
+    private $channel = null;
 
     public function __construct()
     {
-        $params = IMUtil::getFromParamsPHPFile(["slackParameters"], true);
-        $this->token = $params['slackParameters'] ? $params['slackParameters']['token'] : null;
-        $this->channle = $params['slackParameters'] ? $params['slackParameters']['channel'] : null;
+        $slackParameters = Params::getParameterValue("slackParameters", null);
+        if (is_array($slackParameters)) {
+            $this->token = $slackParameters['token'];
+            $this->channle = $slackParameters['channel'];
+        }
     }
 
     /**
