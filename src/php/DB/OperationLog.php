@@ -15,7 +15,7 @@
 
 namespace INTERMediator\DB;
 
-use INTERMediator\IMUtil;
+use INTERMediator\Params;
 
 class OperationLog
 {
