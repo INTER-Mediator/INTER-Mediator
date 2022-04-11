@@ -1,6 +1,6 @@
 <?php
 /**
- * MediaAccess_Test file
+ * Params_Test file
  */
 
 use INTERMediator\Params;

@@ -196,15 +196,6 @@ class IMUtil
         return $osName == "Linux" || $osName == "FreeBSD";
     }
 
-    public static function phpSecLibClass($aClass): string
-    {
-        $comp = explode("\\", $aClass);
-        if (count($comp) >= 2) {
-            return $aClass;
-        }
-        return "Invalid_Class_Specification";
-    }
-
     public static function removeNull($str)
     {
         return str_replace("\x00", '', $str ?? "");
