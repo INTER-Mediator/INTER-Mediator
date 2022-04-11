@@ -3,8 +3,8 @@
  * DB_Settings_Test file
  */
 
-use \PHPUnit\Framework\TestCase;
-use \INTERMediator\DB\Settings;
+use PHPUnit\Framework\TestCase;
+use INTERMediator\DB\Settings;
 
 class DB_Settings_Test extends TestCase
 {

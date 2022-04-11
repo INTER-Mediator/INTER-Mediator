@@ -2,8 +2,8 @@
 /**
  * DataConverter_AppendPrefix_Test file
  */
-use \PHPUnit\Framework\TestCase;
-use \INTERMediator\Data_Converter\AppendPrefix;
+use PHPUnit\Framework\TestCase;
+use INTERMediator\Data_Converter\AppendPrefix;
 
 class DataConverter_AppendPrefix_Test extends TestCase
 {

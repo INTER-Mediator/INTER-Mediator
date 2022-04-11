@@ -3,8 +3,8 @@
  * DataConverter_MySQLDateTime_Test file
  */
 
-use \PHPUnit\Framework\TestCase;
-use \INTERMediator\Data_Converter\MySQLDateTime;
+use PHPUnit\Framework\TestCase;
+use INTERMediator\Data_Converter\MySQLDateTime;
 
 class DataConverter_MySQLDateTime_Test extends TestCase
 {

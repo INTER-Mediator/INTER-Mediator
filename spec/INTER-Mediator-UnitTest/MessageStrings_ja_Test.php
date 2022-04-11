@@ -2,12 +2,9 @@
 /**
  * MessageStrings_ja_Test file
  */
-use \PHPUnit\Framework\TestCase;
-use \INTERMediator\Message\MessageStrings;
-use \INTERMediator\Message\MessageStrings_ja;
-//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-//require_once(dirname(__FILE__) . '/../MessageStrings.php');
-//require_once(dirname(__FILE__) . '/../MessageStrings_ja.php');
+use PHPUnit\Framework\TestCase;
+use INTERMediator\Message\MessageStrings;
+use INTERMediator\Message\MessageStrings_ja;
 
 class MessageStrings_ja_Test extends TestCase
 {

@@ -2,8 +2,8 @@
 /**
  * DataConverter_AppendSuffix_Test file
  */
-use \PHPUnit\Framework\TestCase;
-use \INTERMediator\Data_Converter\AppendSuffix;
+use PHPUnit\Framework\TestCase;
+use INTERMediator\Data_Converter\AppendSuffix;
 
 class DataConverter_AppendSuffix_Test extends TestCase
 {

@@ -15,11 +15,8 @@
 
 error_reporting(E_ALL);
 
-use \PHPUnit\Framework\TestCase;
-use \PHPUnit\Framework\TestSuite;
-
-//$imRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
-//require "{$imRoot}" . DIRECTORY_SEPARATOR .'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\TestSuite;
 
 class INTERMediator_AllTests extends TestCase
 {
@@ -75,7 +72,6 @@ class INTERMediator_AllTests extends TestCase
          * The test case OME_Test.php has tests to send mail but they are commented.
          * If you require to check to send mail, I'd like you to run on the your own environment.
          */
-        $suite->addTestFile($folder . 'RSA_Test.php');
         $suite->addTestFile($folder . 'VM_Test.php');
         if (php_uname('n') !== 'inter-mediator-server') {
             $suite->addTestFile($folder . 'defedit_Test.php');

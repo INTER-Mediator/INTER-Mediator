@@ -2,7 +2,7 @@
 /**
  * pageedit_Test file
  */
-use \PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class pageedit_Test extends TestCase
 {

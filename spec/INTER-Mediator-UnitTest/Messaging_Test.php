@@ -3,11 +3,8 @@
  * MessageStrings_Test file
  */
 
-use \PHPUnit\Framework\TestCase;
-use \INTERMediator\Messaging\SendMail;
-
-//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-//require_once(dirname(__FILE__) . '/../MessageStrings.php');
+use PHPUnit\Framework\TestCase;
+use INTERMediator\Messaging\SendMail;
 
 class Messaging_Test extends TestCase
 {

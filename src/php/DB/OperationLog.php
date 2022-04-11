@@ -15,7 +15,7 @@
 
 namespace INTERMediator\DB;
 
-use INTERMediator\IMUtil;
+use INTERMediator\Params;
 
 class OperationLog
 {
@@ -48,9 +48,7 @@ class OperationLog
 
     public function setEntry($result)
     {
-        $access = isset($_GET['access']) ? $_GET['access']
-            : (isset($_POST['access']) ? $_POST['access']
-                : (isset($_GET['theme']) ? 'theme' : 'download'));
+        $access = $_GET['access'] ?? ($_POST['access'] ?? (isset($_GET['theme']) ? 'theme' : 'download'));
         if (
             ($this->recordingOperations !== false && !in_array($access, $this->recordingOperations))
             || ($this->dontRecordTheme && $access == 'theme')
@@ -60,9 +58,7 @@ class OperationLog
         ) {
             return;
         }
-        $targetContext = isset($_GET['name']) ? $_GET['name']
-            : (isset($_POST['name']) ? $_POST['name']
-                : (isset($_GET['theme']) ? (isset($_GET['css']) ? $_GET['css'] : '') : ''));
+        $targetContext = $_GET['name'] ?? ($_POST['name'] ?? (isset($_GET['theme']) ? ($_GET['css'] ?? '') : ''));
         if ($this->recordingContexts !== false && !in_array($targetContext, $this->recordingContexts)) {
             return;
         }

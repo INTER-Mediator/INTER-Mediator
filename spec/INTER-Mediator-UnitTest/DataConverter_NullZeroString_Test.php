@@ -2,8 +2,8 @@
 /**
  * DataConverter_NullZeroString_Test file
  */
-use \PHPUnit\Framework\TestCase;
-use \INTERMediator\Data_Converter\NullZeroString;
+use PHPUnit\Framework\TestCase;
+use INTERMediator\Data_Converter\NullZeroString;
 
 class DataConverter_NullZeroString_Test extends TestCase
 {

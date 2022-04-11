@@ -1,10 +1,10 @@
 <?php
 
-use \PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class DB_ExtSupport_Test extends TestCase
 {
-    use \INTERMediator\DB\Proxy_ExtSupport;
+    use INTERMediator\DB\Proxy_ExtSupport;
 
     protected $dbSpec;
 
