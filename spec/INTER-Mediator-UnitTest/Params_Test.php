@@ -20,31 +20,31 @@ class Params_Test extends TestCase
 
     public function testgetParameterValue1()
     {
-        $this->assertEquals('PDO', Params::getParameterValue('dbClass', 'omg!'), "Can't read the variable dbClass.");
+        $this->assertEquals('Asia/Tokyo', Params::getParameterValue('defaultTimezone', 'omg!'), "Can't read the variable dbClass.");
         $this->assertEquals('omg!', Params::getParameterValue('notExist', 'omg!'), "The variable notExist has to be a default value.");
     }
 
     public function testgetParameterValue2()
     {
-        $vars = ['dbClass', 'dbUser', 'dbPassword', 'notExist'];
+        $vars = ['defaultTimezone', 'dbUser', 'dbPassword', 'notExist'];
         $defs = ['omg!', 'omg!', 'omg!', 'omg!'];
-        $expected = ['PDO', 'web', 'password', 'omg!'];
+        $expected = ['Asia/Tokyo', 'web', 'password', 'omg!'];
         $this->assertEquals($expected, Params::getParameterValue($vars, $defs), "Params class has to handle with Array parameter.");
     }
 
     public function testgetParameterValue3()
     {
-        $vars = ['dbClass', 'dbUser', 'dbPassword', 'notExist'];
+        $vars = ['defaultTimezone', 'dbUser', 'dbPassword', 'notExist'];
         $defs = 'omg!';
-        $expected = ['PDO', 'web', 'password', 'omg!'];
+        $expected = ['Asia/Tokyo', 'web', 'password', 'omg!'];
         $this->assertEquals($expected, Params::getParameterValue($vars, $defs), "Params class has to handle with Array parameter.");
     }
 
     public function testgetParameterValue4()
     {
-        $vars = 'dbClass';
+        $vars = 'defaultTimezone';
         $defs = ['omg1!', 'omg!', 'omg!', 'omg!'];
-        $expected = 'PDO';
+        $expected = 'Asia/Tokyo';
         $this->assertEquals($expected, Params::getParameterValue($vars, $defs), "Params class has to handle with Array parameter.");
     }
 
