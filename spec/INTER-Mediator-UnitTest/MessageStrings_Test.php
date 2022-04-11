@@ -2,10 +2,8 @@
 /**
  * MessageStrings_Test file
  */
-use \PHPUnit\Framework\TestCase;
-use \INTERMediator\Message\MessageStrings;
-//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-//require_once(dirname(__FILE__) . '/../MessageStrings.php');
+use PHPUnit\Framework\TestCase;
+use INTERMediator\Message\MessageStrings;
 
 class MessageStrings_Test extends TestCase
 {

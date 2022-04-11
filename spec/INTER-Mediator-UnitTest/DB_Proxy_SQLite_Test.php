@@ -1,10 +1,10 @@
 <?php
 
-use \PHPUnit\Framework\TestCase;
-use \INTERMediator\DB\Proxy;
-use \INTERMediator\DB\UseSharedObjects;
-use \INTERMediator\DB\Extending\AfterRead;
-use \INTERMediator\DB\Proxy_ExtSupport;
+use PHPUnit\Framework\TestCase;
+use INTERMediator\DB\Proxy;
+use INTERMediator\DB\UseSharedObjects;
+use INTERMediator\DB\Extending\AfterRead;
+use INTERMediator\DB\Proxy_ExtSupport;
 
 require_once('DB_Proxy_Test_Common.php');
 

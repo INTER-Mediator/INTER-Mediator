@@ -4,8 +4,8 @@
  */
 
 use INTERMediator\Params;
-use \PHPUnit\Framework\TestCase;
-use \INTERMediator\IMUtil;
+use PHPUnit\Framework\TestCase;
+use INTERMediator\IMUtil;
 
 //$imRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
 //require "{$imRoot}" . DIRECTORY_SEPARATOR .'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';

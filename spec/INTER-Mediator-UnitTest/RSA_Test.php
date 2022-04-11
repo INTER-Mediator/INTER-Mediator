@@ -7,8 +7,8 @@
  * To change this template use File | Settings | File Templates.
  */
 
-use \PHPUnit\Framework\TestCase;
-use \phpseclib\Crypt\RSA;
+use PHPUnit\Framework\TestCase;
+use phpseclib\Crypt\RSA;
 
 //if ((float)phpversion() >= 7.0) {
 ////    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/RSA.php');

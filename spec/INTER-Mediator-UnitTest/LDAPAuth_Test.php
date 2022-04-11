@@ -6,7 +6,7 @@
  * Time: 23:49
  */
 
-use \PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class LDAPAuth_Test extends TestCase
 {

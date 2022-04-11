@@ -6,11 +6,9 @@
  * Date: 2017/10/08
  * Time: 0:18
  */
-use \PHPUnit\Framework\TestCase;
-use \INTERMediator\Media\LineDivider;
-use \INTERMediator\Media\FieldDivider;
-//require_once(dirname(__FILE__) . '/../LineDivider.php');
-//require_once(dirname(__FILE__) . '/../FieldDivider.php');
+use PHPUnit\Framework\TestCase;
+use INTERMediator\Media\LineDivider;
+use INTERMediator\Media\FieldDivider;
 
 class Line_Field_Divider_Test extends TestCase
 {

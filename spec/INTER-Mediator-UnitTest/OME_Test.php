@@ -6,7 +6,7 @@
  * Time: 15:40
  */
 
-use \PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\TestCase;
 use INTERMediator\Messaging\OME;
 //require_once(dirname(__FILE__) . '/../../src/php/Messaging/OME.php');
 

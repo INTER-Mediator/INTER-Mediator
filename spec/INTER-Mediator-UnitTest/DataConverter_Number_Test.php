@@ -2,9 +2,9 @@
 /**
  * DataConverter_Number_Test file
  */
-use \PHPUnit\Framework\TestCase;
-use \INTERMediator\Locale\IMLocale;
-use \INTERMediator\Data_Converter\Number;
+use PHPUnit\Framework\TestCase;
+use INTERMediator\Locale\IMLocale;
+use NTERMediator\Data_Converter\Number;
 
 class DataConverter_Number_Test extends TestCase
 {

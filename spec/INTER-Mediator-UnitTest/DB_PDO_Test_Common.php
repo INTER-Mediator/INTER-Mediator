@@ -9,8 +9,6 @@
  */
 
 use PHPUnit\Framework\TestCase;
-
-//use \DateTime;
 use INTERMediator\IMUtil;
 use INTERMediator\DB\Proxy;
 
