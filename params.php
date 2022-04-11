@@ -150,7 +150,7 @@ $slackParameters = [
 /* Service Server Behavior
  * ===================
  * Port number and host name for service server */
-$notUseServiceServer = false;  // Default is FALSE!. If it sets to false, every features with Service Server don't work.
+$notUseServiceServer = false;  // Default is FALSE!. If it sets to true, every feature with Service Server don't work.
 $activateClientService = true;  // Default is TRUE!!.
 $serviceServerProtocol = "ws";  // The Service Server url components to connect from client.
 $serviceServerHost = "";    // "" for public ip address.
