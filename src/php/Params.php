@@ -56,6 +56,13 @@ class Params
         }
     }
 
+    /*
+     * The IDE try to let us modify the code "isset(self::$vars[$vName]) ? self::$vars[$vName] : $defValue" to
+     * "self::$vars[$vName] ?? $defValue", but you don't modify like that. The variable in the params.php file
+     * should be the boolean value false. In that case (i.e., the self::$vars[$vName] is false) the former code
+     * returns self::$vars[$vName], but the later one does $defValue. We expect that the false value return false.
+     * So please don't modify with the ?? operator.
+     */
     public static function getParameterValue($vName, $defValue)
     {
         self::readParamsPHPFile();
