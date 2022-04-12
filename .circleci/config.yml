@@ -10,6 +10,7 @@ jobs:
       - run: cp -p .circleci/Dockerfile .
       - run: docker build -t inter-mediator-ubuntu .
       - run: docker run --privileged -d --name ubuntu --rm inter-mediator-ubuntu
+        - run: docker run -it ubuntu sh -c "cd cd '/home/circleci/INTER-Mediator'; ls -l; cd; ls -l"
       - run: docker exec -it ubuntu sh -c "apt-get update"
       - run: docker exec -it ubuntu sh -c "cd INTER-Mediator; gem install itamae --no-doc; itamae local dist-docs/vm-for-trial/recipe.rb; echo y | sh /home/circleci/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh"
       - run: docker exec -it ubuntu sh -c "php -v; php -m; locale -a; locale"
