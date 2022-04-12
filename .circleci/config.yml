@@ -11,7 +11,7 @@ jobs:
       - run: docker build -t inter-mediator-ubuntu .
       - run: docker run --privileged -d --name ubuntu --rm inter-mediator-ubuntu
       - run: docker exec -it ubuntu sh -c "apt-get update"
-      - run: docker exec -it ubuntu sh -c "cd INTER-Mediator; gem install itamae --no-doc; itamae local dist-docs/vm-for-trial/recipe.rb; echo y | sh /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh"
+      - run: docker exec -it ubuntu sh -c "cd INTER-Mediator; gem install itamae --no-doc; itamae local dist-docs/vm-for-trial/recipe.rb; echo y | sh /home/circleci/INTER-Mediator/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh"
       - run: docker exec -it ubuntu sh -c "php -v; php -m; locale -a; locale"
       - run: docker exec -it ubuntu sh -c "chown -R www-data /var/www"
       - run: docker exec -it ubuntu sh -c "curl -sS https://getcomposer.org/installer | php ; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer"
