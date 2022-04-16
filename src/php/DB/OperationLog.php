@@ -122,7 +122,7 @@ class OperationLog
                 $this->arrayToString($dbInstance->logger->getErrorMessages()));
 
             if ($this->accessLogExtensionClass !== false && class_exists($this->accessLogExtensionClass)) {
-                $extInstance = new ($this->accessLogExtensionClass)($dbInstance);
+                $extInstance = new ($this->accessLogExtensionClass)($dbInstance, $result);
                 $fields = $extInstance->extendingFields();
                 foreach ($fields as $field) {
                     $dbInstance->dbSettings->addValueWithField($field, $extInstance->valueForField($field));
