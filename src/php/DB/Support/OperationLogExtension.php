@@ -7,7 +7,8 @@ abstract class OperationLogExtension
     private $proxy;
     private $result;
 
-    public function __construct($proxy, $result){
+    public function __construct($proxy, $result = null)
+    {
         $this->proxy = $proxy;
         $this->result = $result;
     }
