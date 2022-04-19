@@ -4,8 +4,8 @@ namespace INTERMediator\DB\Support;
 
 abstract class OperationLogExtension
 {
-    private $proxy;
-    private $result;
+    protected $proxy;
+    protected $result;
 
     public function __construct($proxy, $result = null)
     {
