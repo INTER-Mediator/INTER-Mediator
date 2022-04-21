@@ -17,6 +17,7 @@ jobs:
       - run: docker exec -it ubuntu sh -c "php -v; php -m; locale -a; locale"
       - run: docker exec -it ubuntu sh -c "chown -R www-data /var/www"
       - run: docker exec -it ubuntu sh -c "curl -sS https://getcomposer.org/installer | php ; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer"
+      - run: docker exec -it ubuntu sh -c "git config --global --add safe.directory /var/www/html/INTER-Mediator"
       - run: docker exec -it ubuntu sh -c "cd /var/www/html/INTER-Mediator; composer update --with-dependencies; git log -n 1"
       - run: docker exec -e CIRCLECI=true -it ubuntu sh -c "cd /var/www/html/INTER-Mediator; ./vendor/bin/phpunit --bootstrap ./vendor/autoload.php --configuration /var/www/html/INTER-Mediator/spec/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
       - run: docker exec -it ubuntu sh -c "cd /var/www/html/INTER-Mediator && composer jest"
