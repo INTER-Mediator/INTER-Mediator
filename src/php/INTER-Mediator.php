@@ -16,6 +16,7 @@
 namespace INTERMediator;
 
 use \IntlDateFormatter;
+use \DateTime;
 
 // Setup autoloader
 $imRoot = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR;
