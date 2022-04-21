@@ -409,6 +409,9 @@ class IMUtil
      */
     public static function valueForJSInsert($str): string
     {
+        if(is_null($str)){
+            return "";
+        }
         return str_replace("'", "\\'",
             str_replace('"', '\\"',
                 str_replace("/", "\\/",

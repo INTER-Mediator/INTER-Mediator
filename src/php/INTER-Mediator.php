@@ -48,7 +48,15 @@ spl_autoload_register(function ($className) {
 });
 
 // Define constant
-define("IM_TODAY", date('Y-m-d'));
+$fmt = new IntlDateFormatter(
+    Params::getParameterValue("appLocale", "UTC"),
+    IntlDateFormatter::FULL,
+    IntlDateFormatter::NONE,
+    Params::getParameterValue("defaultTimezone", "UTC"),
+    IntlDateFormatter::GREGORIAN,
+    'Y-MM-dd'
+);
+define("IM_TODAY", $fmt->format((new DateTime())->getTimestamp()));
 
 /**
  * INTER-Mediator entry point
