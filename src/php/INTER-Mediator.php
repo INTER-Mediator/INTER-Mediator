@@ -15,6 +15,8 @@
 
 namespace INTERMediator;
 
+use \IntlDateFormatter;
+
 // Setup autoloader
 $imRoot = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR;
 $autoLoad = $imRoot . 'vendor/autoload.php';
