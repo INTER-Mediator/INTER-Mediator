@@ -1,8 +1,8 @@
 <phpunit>
-    <filter>
-        <blacklist>
+    <coverage>
+        <exclude>
             <directory suffix=".php">../INTER-Mediator-UnitTest/</directory>
             <directory suffix=".php">../../src/lib/</directory>
-        </blacklist>
-    </filter>
+        </exclude>
+    </coverage>
 </phpunit>
