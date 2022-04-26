@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "jest": "*",
+    "jest-environment-jsdom": "*",
     "power-assert": "*"
   },
   "dependencies": {
