@@ -6,6 +6,6 @@
  */
 module.exports = {
   'verbose': true,
-  'testURL': 'http://localhost/',
+  'testEnvironmentOptions': {url: 'http://localhost/'},
   'setupFiles': ['./test-setup.js']
 }
