@@ -20,6 +20,7 @@
     "ext-libxml": "*",
     "ext-exif": "*",
     "ext-gd": "*",
+    "ext-intl": "*",
     "mouf/nodejs-installer": ">=1.0",
     "paragonie/constant_time_encoding": "*",
     "inter-mediator/fxphp": "*",
