@@ -356,11 +356,11 @@ const IMLibElement = {
             }
           }
           } else if (typeAttr === 'date') {
-            element.value = IMLibFormat.dateFormat(curVal, '%Y-%M-%D')
+            element.value = !curVal ? "" : IMLibFormat.dateFormat(curVal, '%Y-%M-%D')
           } else if (typeAttr === 'time') {
-            element.value = IMLibFormat.timeFormat(curVal, '%H:%I:%S')
+            element.value = !curVal ? "" : IMLibFormat.timeFormat(curVal, '%H:%I:%S')
           } else if (typeAttr === 'datetime-local') {
-            element.value = IMLibFormat.datetimeFormat(curVal, '%Y-%M-%DT%H:%I:%S')
+            element.value = !curVal ? "" : IMLibFormat.datetimeFormat(curVal, '%Y-%M-%DT%H:%I:%S')
         } else { // this node must be text field
           element.value = curVal
         }

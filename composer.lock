@@ -770,7 +770,7 @@
             "time": "2022-03-20T21:55:58+00:00"
         },
         {
-            "name": "inter-mediator/fmdataapi",
+            "name": "inter-mediatorfmdataapi",
             "version": "26",
             "source": {
                 "type": "git",
