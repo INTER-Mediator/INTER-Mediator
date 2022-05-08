@@ -1084,6 +1084,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
             $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
             return null;
         }
+        return true;
     }
 
     function deleteFromDB()
@@ -1193,6 +1194,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
             $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
             return null;
         }
+        return true;
     }
 
     public function requireUpdatedRecord($value)

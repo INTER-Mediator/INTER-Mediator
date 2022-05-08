@@ -33,7 +33,7 @@
           INTERMediator.additionalFieldValueOnDelete[contextsArray[i]]
             = {field: 'target', value: params.target}
         }
-        document.getElementById('deffile').appendChild(document.createTextNode(params.target))
+        document.getElementById('deffile').innerHTML = params.target
         INTERMediator.ignoreOptimisticLocking = true
       }
       INTERMediatorOnPage.doAfterConstruct = function () {
@@ -406,7 +406,7 @@
             <td><input type="text" data-im="contexts@protect-reading"/></td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>all</th>
             <td colspan="5">
                 user:<input type="text" data-im="contexts@authentication-all-user">
@@ -416,7 +416,7 @@
             </td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>read</th>
             <td colspan="5">
                 user:<input type="text" data-im="contexts@authentication-load-user"/>
@@ -426,7 +426,7 @@
             </td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>update</th>
             <td colspan="5">
                 user:<input type="text" data-im="contexts@authentication-update-user">
@@ -436,7 +436,7 @@
             </td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>create</th>
             <td colspan="5">
                 user:<input type="text" data-im="contexts@authentication-new-user">
@@ -446,7 +446,7 @@
             </td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>delete</th>
             <td colspan="5">
                 user:<input type="text" data-im="contexts@authentication-delete-user">
@@ -464,7 +464,7 @@
             <th colspan="6" class="sub-title">read</th>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>from</th>
             <td><input type="text" data-im="contexts@send-mail-load-from"/></td>
             <th>to</th>
@@ -473,7 +473,7 @@
             <td><input type="text" data-im="contexts@send-mail-load-cc"/></td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>bcc</th>
             <td><input type="text" data-im="contexts@send-mail-load-bcc"/></td>
             <th>subject</th>
@@ -482,7 +482,7 @@
             <td><input type="text" data-im="contexts@send-mail-load-body"/></td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>from-constant</th>
             <td><input type="text" data-im="contexts@send-mail-load-from-constant"/></td>
             <th>to-constant</th>
@@ -491,7 +491,7 @@
             <td><input type="text" data-im="contexts@send-mail-load-cc-constant"/></td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>bcc-constant</th>
             <td><input type="text" data-im="contexts@send-mail-load-bcc-constant"/></td>
             <th>subject-constant</th>
@@ -500,7 +500,7 @@
             <td><input type="text" data-im="contexts@send-mail-load-body-constant"/></td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>body-template</th>
             <td><input type="text" data-im="contexts@send-mail-load-body-template"/></td>
             <th>body-fields</th>
@@ -509,7 +509,7 @@
             <td><input type="text" data-im="contexts@send-mail-load-f-option"/></td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>body-wrap</th>
             <td><input type="text" data-im="contexts@send-mail-load-body-wrap"/></td>
         </tr>
@@ -518,7 +518,7 @@
             <th colspan="6" class="sub-title">update</th>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>from</th>
             <td><input type="text" data-im="contexts@send-mail-edit-from"/></td>
             <th>to</th>
@@ -527,7 +527,7 @@
             <td><input type="text" data-im="contexts@send-mail-edit-cc"/></td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>bcc</th>
             <td><input type="text" data-im="contexts@send-mail-edit-bcc"/></td>
             <th>subject</th>
@@ -536,7 +536,7 @@
             <td><input type="text" data-im="contexts@send-mail-edit-body"/></td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>from-constant</th>
             <td><input type="text" data-im="contexts@send-mail-edit-from-constant"/></td>
             <th>to-constant</th>
@@ -545,7 +545,7 @@
             <td><input type="text" data-im="contexts@send-mail-edit-cc-constant"/></td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>bcc-constant</th>
             <td><input type="text" data-im="contexts@send-mail-edit-bcc-constant"/></td>
             <th>subject-constant</th>
@@ -554,7 +554,7 @@
             <td><input type="text" data-im="contexts@send-mail-edit-body-constant"/></td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>body-template</th>
             <td><input type="text" data-im="contexts@send-mail-edit-body-template"/></td>
             <th>body-fields</th>
@@ -563,7 +563,7 @@
             <td><input type="text" data-im="contexts@send-mail-edit-f-option"/></td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>body-wrap</th>
             <td><input type="text" data-im="contexts@send-mail-edit-body-wrap"/></td>
         </tr>
@@ -572,7 +572,7 @@
             <th colspan="6" class="sub-title">create</th>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>from</th>
             <td><input type="text" data-im="contexts@send-mail-new-from"/></td>
             <th>to</th>
@@ -581,7 +581,7 @@
             <td><input type="text" data-im="contexts@send-mail-new-cc"/></td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>bcc</th>
             <td><input type="text" data-im="contexts@send-mail-new-bcc"/></td>
             <th>subject</th>
@@ -590,7 +590,7 @@
             <td><input type="text" data-im="contexts@send-mail-new-body"/></td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>from-constant</th>
             <td><input type="text" data-im="contexts@send-mail-new-from-constant"/></td>
             <th>to-constant</th>
@@ -599,7 +599,7 @@
             <td><input type="text" data-im="contexts@send-mail-new-cc-constant"/></td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>bcc-constant</th>
             <td><input type="text" data-im="contexts@send-mail-new-bcc-constant"/></td>
             <th>subject-constant</th>
@@ -608,7 +608,7 @@
             <td><input type="text" data-im="contexts@send-mail-new-body-constant"/></td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>body-template</th>
             <td><input type="text" data-im="contexts@send-mail-new-body-template"/></td>
             <th>body-fields</th>
@@ -617,7 +617,7 @@
             <td><input type="text" data-im="contexts@send-mail-new-f-option"/></td>
         </tr>
         <tr class="advanced">
-            <th></th>
+            <td class="firstcolumn"></td>
             <th>body-wrap</th>
             <td><input type="text" data-im="contexts@send-mail-new-body-wrap"/></td>
         </tr>
