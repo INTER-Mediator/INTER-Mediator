@@ -144,7 +144,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         }
         $resultLog = $fileUploader->getResultForLog();
     } else if (!isset($_POST['access']) && !isset($_GET['media'])) {    // Download JS module to client
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             $db = new DB\Proxy();
             $db->initialize($datasource, $options, $dbspecification, $debug, '');
             $messages = IMUtil::getMessageClassInstance();
@@ -166,6 +166,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         }
         // Bootstrap of Service Server
         ServiceServerProxy::instance()->checkServiceServer();
+
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
         foreach (ServiceServerProxy::instance()->getErrors() as $message) {

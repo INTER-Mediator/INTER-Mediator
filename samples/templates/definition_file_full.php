@@ -246,7 +246,7 @@ IM_Entry(
             'issuedhash-dsn' => 'string',
         ),
         'media-root-dir' => 'string',
-        'media-context' => 'string',
+//        'media-context' => 'string',
         'smtp' => array(
             'server' => 'string',
             'port' => 'integer',

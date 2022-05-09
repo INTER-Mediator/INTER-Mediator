@@ -126,15 +126,6 @@
             <td><input type="text" data-im="contexts@key"/></td>
             <th>sequence</th>
             <td><input type="text" data-im="contexts@sequence"/></td>
-            <th>paging</th>
-            <td><input type="text" data-im="contexts@paging"/></td>
-        </tr>
-        <tr>
-            <td class="firstcolumn"></td>
-            <th>repeat-control</th>
-            <td><input type="text" data-im="contexts@repeat-control"/></td>
-            <th>navi-control</th>
-            <td><input type="text" data-im="contexts@navi-control"/></td>
             <th>records</th>
             <td><input type="text" data-im="contexts@records"/></td>
         </tr>
@@ -146,6 +137,52 @@
             <td><input type="text" data-im="contexts@cache"/></td>
             <th>soft-delete</th>
             <td><input type="text" data-im="contexts@soft-delete"/></td>
+        </tr>
+        <tr>
+            <td class="firstcolumn"></td>
+            <th>count</th>
+            <td><input type="text" data-im="contexts@count"/></td>
+            <th>source</th>
+            <td><input type="text" data-im="contexts@source"/></td>
+            <th>ignoring-field</th>
+            <td><input type="text" data-im="contexts@ignoring-field"/></td>
+        </tr>
+        <tr>
+            <td class="firstcolumn"></td>
+            <th>numeric-fields</th>
+            <td><input type="text" data-im="contexts@numeric-fields"/></td>
+            <td colspan="4">"data" and "appending-data" are not supported.</td>
+        </tr>
+        <tr>
+            <td class="firstcolumn"></td>
+            <th colspan="6" class="title">UI Control</th>
+        </tr>
+        <tr>
+            <td class="firstcolumn"></td>
+            <th>paging</th>
+            <td><input type="text" data-im="contexts@paging"/></td>
+            <th>repeat-control</th>
+            <td><input type="text" data-im="contexts@repeat-control"/></td>
+            <th>navi-control</th>
+            <td><input type="text" data-im="contexts@navi-control"/></td>
+        </tr>
+        <tr class="advanced">
+            <td class="firstcolumn"></td>
+            <th>insert (button name)</th>
+            <td><input type="text" data-im="contexts@buttonnames-insert"/></td>
+            <th>delete (button name)</th>
+            <td><input type="text" data-im="contexts@buttonnames-delete"/></td>
+            <th>copy (button name)</th>
+            <td><input type="text" data-im="contexts@buttonnames-copy"/></td>
+        </tr>
+        <tr class="advanced">
+            <td class="firstcolumn"></td>
+            <th>navi-detail (button name)</th>
+            <td><input type="text" data-im="contexts@buttonnames-navi-detail"/></td>
+            <th>navi-back (button name)</th>
+            <td><input type="text" data-im="contexts@buttonnames-navi-back"/></td>
+            <th>navi-title</th>
+            <td><input type="text" data-im="contexts@navi-title"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
@@ -166,8 +203,8 @@
             <td><input type="text" data-im="contexts@before-move-nextstep"/></td>
             <th>post-query-stored</th>
             <td><input type="text" data-im="contexts@post-query-stored"/></td>
-            <td colspan="2">"data" and "appending-data" are not supported.</td>
-
+            <th>just-move-thisstep</th>
+            <td><input type="text" data-im="contexts@just-move-thisstep"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
@@ -181,26 +218,6 @@
             <td><input type="text" data-im="contexts@post-dismiss-message"/></td>
             <th>post-move-url</th>
             <td><input type="text" data-im="contexts@post-move-url"/></td>
-        </tr>
-        <tr class="advanced">
-            <td class="firstcolumn"></td>
-            <th colspan="6" class="title">Button Names Customization</th>
-        </tr>
-        <tr class="advanced">
-            <td class="firstcolumn"></td>
-            <th>insert</th>
-            <td><input type="text" data-im="contexts@buttonnames-insert"/></td>
-            <th>delete</th>
-            <td><input type="text" data-im="contexts@buttonnames-delete"/></td>
-            <th>copy</th>
-            <td><input type="text" data-im="contexts@buttonnames-copy"/></td>
-        </tr>
-        <tr class="advanced">
-            <td class="firstcolumn"></td>
-            <th>navi-detail</th>
-            <td><input type="text" data-im="contexts@buttonnames-navi-detail"/></td>
-            <th>navi-back</th>
-            <td><input type="text" data-im="contexts@buttonnames-navi-back"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
@@ -236,6 +253,7 @@
                         <td><input type="text" data-im="query@operator"/></td>
                         <th>value</th>
                         <td><input type="text" data-im="query@value"/></td>
+                        <td></td>
                     </tr>
                 </table>
             </td>
@@ -253,6 +271,7 @@
                         <td><input type="text" data-im="sort@field"/></td>
                         <th>direction</th>
                         <td><input type="text" data-im="sort@direction"/></td>
+                        <td></td>
                     </tr>
                 </table>
             </td>
@@ -274,6 +293,7 @@
                         <td><input type="text" data-im="relation@operator"/></td>
                         <th>portal</th>
                         <td><input type="text" data-im="relation@portal"/></td>
+                        <td></td>
                     </tr>
                 </table>
             </td>
@@ -291,6 +311,7 @@
                         <td><input type="text" data-im="default-values@field"/></td>
                         <th>value</th>
                         <td><input type="text" data-im="default-values@value"/></td>
+                        <td></td>
                     </tr>
                 </table>
             </td>
@@ -312,6 +333,7 @@
                         <td><input type="text" data-im="validation@message"/></td>
                         <th>notify</th>
                         <td><input type="text" data-im="validation@notify"/></td>
+                        <td></td>
                     </tr>
                 </table>
             </td>
@@ -329,6 +351,7 @@
                         <td><input type="text" data-im="calculation@field"/></td>
                         <th>expression</th>
                         <td><input type="text" data-im="calculation@expression" size="100"/></td>
+                        <td></td>
                     </tr>
                 </table>
             </td>
@@ -350,6 +373,7 @@
                         <td><input type="text" data-im="script@definition"/></td>
                         <th>parameter</th>
                         <td><input type="text" data-im="script@parameter"/></td>
+                        <td></td>
                     </tr>
                 </table>
             </td>
@@ -369,6 +393,7 @@
                         <td><input type="text" data-im="global@field"/></td>
                         <th>value</th>
                         <td><input type="text" data-im="global@value"/></td>
+                        <td></td>
                     </tr>
                 </table>
             </td>
@@ -388,6 +413,7 @@
                         <td><input type="text" data-im="file-upload@context"/></td>
                         <th>container</th>
                         <td><input type="text" data-im="file-upload@container"/></td>
+                        <td></td>
                     </tr>
                 </table>
             </td>
@@ -457,7 +483,12 @@
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
-            <th colspan="6" class="title">Sending Email</th>
+            <th colspan="6" class="title">Sending Email or Messaging</th>
+        </tr>
+        <tr class="advanced">
+            <td class="firstcolumn"></td>
+            <th>driver</th>
+            <td><input type="text" data-im="contexts@messaging-driver"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
@@ -466,52 +497,52 @@
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>from</th>
-            <td><input type="text" data-im="contexts@send-mail-load-from"/></td>
+            <td><input type="text" data-im="contexts@messaging-read-from"/></td>
             <th>to</th>
-            <td><input type="text" data-im="contexts@send-mail-load-to"/></td>
+            <td><input type="text" data-im="contexts@messaging-read-to"/></td>
             <th>cc</th>
-            <td><input type="text" data-im="contexts@send-mail-load-cc"/></td>
+            <td><input type="text" data-im="contexts@messaging-read-cc"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>bcc</th>
-            <td><input type="text" data-im="contexts@send-mail-load-bcc"/></td>
+            <td><input type="text" data-im="contexts@messaging-read-bcc"/></td>
             <th>subject</th>
-            <td><input type="text" data-im="contexts@send-mail-load-subject"/></td>
+            <td><input type="text" data-im="contexts@messaging-read-subject"/></td>
             <th>body</th>
-            <td><input type="text" data-im="contexts@send-mail-load-body"/></td>
+            <td><input type="text" data-im="contexts@messaging-read-body"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>from-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-load-from-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-read-from-constant"/></td>
             <th>to-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-load-to-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-read-to-constant"/></td>
             <th>cc-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-load-cc-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-read-cc-constant"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>bcc-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-load-bcc-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-read-bcc-constant"/></td>
             <th>subject-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-load-subject-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-read-subject-constant"/></td>
             <th>body-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-load-body-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-read-body-constant"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>body-template</th>
-            <td><input type="text" data-im="contexts@send-mail-load-body-template"/></td>
+            <td><input type="text" data-im="contexts@messaging-read-body-template"/></td>
             <th>body-fields</th>
-            <td><input type="text" data-im="contexts@send-mail-load-body-fields"/></td>
+            <td><input type="text" data-im="contexts@messaging-read-body-fields"/></td>
             <th>f-option</th>
-            <td><input type="text" data-im="contexts@send-mail-load-f-option"/></td>
+            <td><input type="text" data-im="contexts@messaging-read-f-option"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>body-wrap</th>
-            <td><input type="text" data-im="contexts@send-mail-load-body-wrap"/></td>
+            <td><input type="text" data-im="contexts@messaging-read-body-wrap"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
@@ -520,52 +551,52 @@
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>from</th>
-            <td><input type="text" data-im="contexts@send-mail-edit-from"/></td>
+            <td><input type="text" data-im="contexts@messaging-update-from"/></td>
             <th>to</th>
-            <td><input type="text" data-im="contexts@send-mail-edit-to"/></td>
+            <td><input type="text" data-im="contexts@messaging-update-to"/></td>
             <th>cc</th>
-            <td><input type="text" data-im="contexts@send-mail-edit-cc"/></td>
+            <td><input type="text" data-im="contexts@messaging-update-cc"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>bcc</th>
-            <td><input type="text" data-im="contexts@send-mail-edit-bcc"/></td>
+            <td><input type="text" data-im="contexts@messaging-update-bcc"/></td>
             <th>subject</th>
-            <td><input type="text" data-im="contexts@send-mail-edit-subject"/></td>
+            <td><input type="text" data-im="contexts@messaging-update-subject"/></td>
             <th>body</th>
-            <td><input type="text" data-im="contexts@send-mail-edit-body"/></td>
+            <td><input type="text" data-im="contexts@messaging-update-body"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>from-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-edit-from-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-update-from-constant"/></td>
             <th>to-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-edit-to-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-update-to-constant"/></td>
             <th>cc-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-edit-cc-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-update-cc-constant"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>bcc-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-edit-bcc-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-update-bcc-constant"/></td>
             <th>subject-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-edit-subject-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-update-subject-constant"/></td>
             <th>body-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-edit-body-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-update-body-constant"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>body-template</th>
-            <td><input type="text" data-im="contexts@send-mail-edit-body-template"/></td>
+            <td><input type="text" data-im="contexts@messaging-update-body-template"/></td>
             <th>body-fields</th>
-            <td><input type="text" data-im="contexts@send-mail-edit-body-fields"/></td>
+            <td><input type="text" data-im="contexts@messaging-update-body-fields"/></td>
             <th>f-option</th>
-            <td><input type="text" data-im="contexts@send-mail-edit-f-option"/></td>
+            <td><input type="text" data-im="contexts@messaging-update-f-option"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>body-wrap</th>
-            <td><input type="text" data-im="contexts@send-mail-edit-body-wrap"/></td>
+            <td><input type="text" data-im="contexts@messaging-update-body-wrap"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
@@ -574,52 +605,52 @@
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>from</th>
-            <td><input type="text" data-im="contexts@send-mail-new-from"/></td>
+            <td><input type="text" data-im="contexts@messaging-create-from"/></td>
             <th>to</th>
-            <td><input type="text" data-im="contexts@send-mail-new-to"/></td>
+            <td><input type="text" data-im="contexts@messaging-create-to"/></td>
             <th>cc</th>
-            <td><input type="text" data-im="contexts@send-mail-new-cc"/></td>
+            <td><input type="text" data-im="contexts@messaging-create-cc"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>bcc</th>
-            <td><input type="text" data-im="contexts@send-mail-new-bcc"/></td>
+            <td><input type="text" data-im="contexts@messaging-create-bcc"/></td>
             <th>subject</th>
-            <td><input type="text" data-im="contexts@send-mail-new-subject"/></td>
+            <td><input type="text" data-im="contexts@messaging-create-subject"/></td>
             <th>body</th>
-            <td><input type="text" data-im="contexts@send-mail-new-body"/></td>
+            <td><input type="text" data-im="contexts@messaging-create-body"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>from-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-new-from-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-create-from-constant"/></td>
             <th>to-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-new-to-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-create-to-constant"/></td>
             <th>cc-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-new-cc-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-create-cc-constant"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>bcc-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-new-bcc-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-create-bcc-constant"/></td>
             <th>subject-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-new-subject-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-create-subject-constant"/></td>
             <th>body-constant</th>
-            <td><input type="text" data-im="contexts@send-mail-new-body-constant"/></td>
+            <td><input type="text" data-im="contexts@messaging-create-body-constant"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>body-template</th>
-            <td><input type="text" data-im="contexts@send-mail-new-body-template"/></td>
+            <td><input type="text" data-im="contexts@messaging-create-body-template"/></td>
             <th>body-fields</th>
-            <td><input type="text" data-im="contexts@send-mail-new-body-fields"/></td>
+            <td><input type="text" data-im="contexts@messaging-create-body-fields"/></td>
             <th>f-option</th>
-            <td><input type="text" data-im="contexts@send-mail-new-f-option"/></td>
+            <td><input type="text" data-im="contexts@messaging-create-f-option"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
             <th>body-wrap</th>
-            <td><input type="text" data-im="contexts@send-mail-new-body-wrap"/></td>
+            <td><input type="text" data-im="contexts@messaging-create-body-wrap"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
@@ -668,81 +699,21 @@
             <td><input type="text" data-im="options@theme"/></td>
             <th>media-root-dir</th>
             <td><input type="text" data-im="options@media-root-dir"/></td>
-            <th>media-context</th>
-            <td><input type="text" data-im="options@media-context"/></td>
-        </tr>
-        <tr class="advanced">
-            <td class="firstcolumn"></td>
-            <th>separator</th>
-            <td><input type="text" data-im="options@separator"/></td>
-            <th>transaction</th>
-            <td><input type="text" data-im="options@transaction"/></td>
+            <!--            <th>media-context</th>-->
+            <!--            <td><input type="text" data-im="options@media-context"/></td>-->
             <th>credit-including</th>
             <td><input type="text" data-im="options@credit-including"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
+            <!--            <th>separator</th>-->
+            <!--            <td><input type="text" data-im="options@separator"/></td>-->
+            <th>transaction</th>
+            <td><input type="text" data-im="options@transaction"/></td>
             <th>app-locale</th>
             <td><input type="text" data-im="options@app-locale"/></td>
             <th>app-currency</th>
             <td colspan="3"><input type="text" data-im="options@app-currency"/></td>
-        </tr>
-        <tr class="advanced">
-            <td class="firstcolumn"></td>
-            <th colspan="6" class="title">Aliases</th>
-        </tr>
-        <tr class="advanced">
-            <td class="firstcolumn"></td>
-            <td colspan="6">
-                <table>
-                    <tr>
-                        <th>alias</th>
-                        <td><input type="text" data-im="aliases@alias"/></td>
-                        <th>original term</th>
-                        <td><input type="text" data-im="aliases@original"/></td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td class="firstcolumn"></td>
-            <th colspan="6" class="title">Formatters</th>
-        </tr>
-        <tr>
-            <td class="firstcolumn"></td>
-            <td colspan="6">
-                <table>
-                    <tr>
-                        <th>field</th>
-                        <td><input type="text" data-im="formatter@field"/></td>
-                        <th>converter-class</th>
-                        <td><input type="text" data-im="formatter@converter-class"/></td>
-                        <th>parameter</th>
-                        <td><input type="text" data-im="formatter@parameter"/></td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr class="advanced">
-            <td class="firstcolumn"></td>
-            <th colspan="6" class="title">Browser Compatibilities</th>
-        </tr>
-        <tr class="advanced">
-            <td class="firstcolumn"></td>
-            <td colspan="6">
-                <table>
-                    <tr>
-                        <th>browser-agent</th>
-                        <td><input type="text" data-im="browser-compatibility@agent"/></td>
-                        <th>version</th>
-                        <td><input type="text" data-im="browser-compatibility@version"/></td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr class="advanced">
-            <td class="firstcolumn"></td>
-            <th colspan="6" class="title">Local Context Values</th>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
@@ -793,7 +764,9 @@
             <th>server</th>
             <td><input type="text" data-im="options@smtp-server"/></td>
             <th>port</th>
-            <td colspan="3"><input type="text" data-im="options@smtp-port"/></td>
+            <td><input type="text" data-im="options@smtp-port"/></td>
+            <th>encription</th>
+            <td><input type="text" data-im="options@smtp-encryption"/></td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
@@ -804,16 +777,86 @@
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
-            <th colspan="9" class="title">Pusher</th>
+            <th colspan="6" class="title">Importing</th>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
-            <th>app_id</th>
-            <td><input type="text" data-im="options@pusher-app_id"/></td>
-            <th>key</th>
-            <td><input type="text" data-im="options@pusher-key"/></td>
-            <th>secret</th>
-            <td><input type="text" data-im="options@pusher-secret"/></td>
+            <th>1st-line</th>
+            <td><input type="text" data-im="options@import-1st-line"/></td>
+            <th>skip-lines</th>
+            <td><input type="text" data-im="options@import-skip-lines"/></td>
+        </tr>
+        <tr class="advanced">
+            <td class="firstcolumn"></td>
+            <th>format</th>
+            <td><input type="text" data-im="options@import-format"/></td>
+            <th>use-replace</th>
+            <td><input type="text" data-im="options@import-use-replace"/></td>
+        </tr>
+        <tr class="advanced">
+            <td class="firstcolumn"></td>
+            <th>convert-number</th>
+            <td><input type="text" data-im="options@import-convert-number"/></td>
+            <th>convert-date</th>
+            <td><input type="text" data-im="options@import-convert-date"/></td>
+            <th>convert-datetime</th>
+            <td><input type="text" data-im="options@import-convert-datetime"/></td>
+        </tr>
+        <tr class="advanced">
+            <td class="firstcolumn"></td>
+            <th colspan="6" class="title">Aliases</th>
+        </tr>
+        <tr class="advanced">
+            <td class="firstcolumn"></td>
+            <td colspan="6">
+                <table>
+                    <tr>
+                        <th>alias</th>
+                        <td><input type="text" data-im="aliases@alias"/></td>
+                        <th>original term</th>
+                        <td><input type="text" data-im="aliases@original"/></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="advanced">
+            <td class="firstcolumn"></td>
+            <th colspan="6" class="title">Formatters</th>
+        </tr>
+        <tr>
+            <td class="firstcolumn"></td>
+            <td colspan="6">
+                <table>
+                    <tr>
+                        <th>field</th>
+                        <td><input type="text" data-im="formatter@field"/></td>
+                        <th>converter-class</th>
+                        <td><input type="text" data-im="formatter@converter-class"/></td>
+                        <th>parameter</th>
+                        <td><input type="text" data-im="formatter@parameter"/></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="advanced">
+            <td class="firstcolumn"></td>
+            <th colspan="6" class="title">Browser Compatibilities</th>
+        </tr>
+        <tr class="advanced">
+            <td class="firstcolumn"></td>
+            <td colspan="6">
+                <table>
+                    <tr>
+                        <th>browser-agent</th>
+                        <td><input type="text" data-im="browser-compatibility@agent"/></td>
+                        <th>version</th>
+                        <td><input type="text" data-im="browser-compatibility@version"/></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </td>
         </tr>
         <tr class="advanced">
             <td class="firstcolumn"></td>
@@ -828,6 +871,7 @@
                         <td><input type="text" data-im="local-context@key"/></td>
                         <th>value</th>
                         <td><input type="text" data-im="local-context@value"/></td>
+                        <td></td>
                     </tr>
                 </table>
             </td>

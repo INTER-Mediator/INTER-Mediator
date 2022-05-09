@@ -210,7 +210,7 @@ class DefinitionChecker
             'saml-builtin-auth' => 'boolean',
         ),
         'media-root-dir' => 'string',
-        'media-context' => 'string',
+//        'media-context' => 'string',
         'smtp' => array(
             'server' => 'string',
             'port' => 'integer',
