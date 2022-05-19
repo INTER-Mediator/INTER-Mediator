@@ -33,7 +33,10 @@
           INTERMediator.additionalFieldValueOnDelete[contextsArray[i]]
             = {field: 'target', value: params.target}
         }
-        document.getElementById('deffile').innerHTML = params.target
+        while (document.getElementById('deffile').firstChild) {
+          document.getElementById('deffile').removeChild(document.getElementById('deffile').firstChild);
+        }
+        document.getElementById('deffile').appendChild(document.createTextNode(params.target))
         INTERMediator.ignoreOptimisticLocking = true
       }
       INTERMediatorOnPage.doAfterConstruct = function () {
