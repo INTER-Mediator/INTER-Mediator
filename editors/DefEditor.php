@@ -167,54 +167,61 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                         'authentication-delete-group' => getValueFromArray($context, 'authentication', 'delete', 'group'),
                         'authentication-delete-target' => getValueFromArray($context, 'authentication', 'delete', 'target'),
                         'authentication-delete-field' => getValueFromArray($context, 'authentication', 'delete', 'field'),
-                        'send-mail-load-from' => getValueFromArray($context, 'send-mail', 'load', 'from'),
-                        'send-mail-load-to' => getValueFromArray($context, 'send-mail', 'load', 'to'),
-                        'send-mail-load-cc' => getValueFromArray($context, 'send-mail', 'load', 'cc'),
-                        'send-mail-load-bcc' => getValueFromArray($context, 'send-mail', 'load', 'bcc'),
-                        'send-mail-load-subject' => getValueFromArray($context, 'send-mail', 'load', 'subject'),
-                        'send-mail-load-body' => getValueFromArray($context, 'send-mail', 'load', 'body'),
-                        'send-mail-load-from-constant' => getValueFromArray($context, 'send-mail', 'load', 'from-constant'),
-                        'send-mail-load-to-constant' => getValueFromArray($context, 'send-mail', 'load', 'to-constant'),
-                        'send-mail-load-cc-constant' => getValueFromArray($context, 'send-mail', 'load', 'cc-constant'),
-                        'send-mail-load-bcc-constant' => getValueFromArray($context, 'send-mail', 'load', 'bcc-constant'),
-                        'send-mail-load-subject-constant' => getValueFromArray($context, 'send-mail', 'load', 'subject-constant'),
-                        'send-mail-load-body-constant' => getValueFromArray($context, 'send-mail', 'load', 'body-constant'),
-                        'send-mail-load-body-template' => getValueFromArray($context, 'send-mail', 'load', 'body-template'),
-                        'send-mail-load-body-fields' => getValueFromArray($context, 'send-mail', 'load', 'body-fields'),
-                        'send-mail-load-f-option' => getValueFromArray($context, 'send-mail', 'load', 'f-option'),
-                        'send-mail-load-body-wrap' => getValueFromArray($context, 'send-mail', 'load', 'body-wrap'),
-                        'send-mail-edit-from' => getValueFromArray($context, 'send-mail', 'edit', 'from'),
-                        'send-mail-edit-to' => getValueFromArray($context, 'send-mail', 'edit', 'to'),
-                        'send-mail-edit-cc' => getValueFromArray($context, 'send-mail', 'edit', 'cc'),
-                        'send-mail-edit-bcc' => getValueFromArray($context, 'send-mail', 'edit', 'bcc'),
-                        'send-mail-edit-subject' => getValueFromArray($context, 'send-mail', 'edit', 'subject'),
-                        'send-mail-edit-body' => getValueFromArray($context, 'send-mail', 'edit', 'body'),
-                        'send-mail-edit-from-constant' => getValueFromArray($context, 'send-mail', 'edit', 'from-constant'),
-                        'send-mail-edit-to-constant' => getValueFromArray($context, 'send-mail', 'edit', 'to-constant'),
-                        'send-mail-edit-cc-constant' => getValueFromArray($context, 'send-mail', 'edit', 'cc-constant'),
-                        'send-mail-edit-bcc-constant' => getValueFromArray($context, 'send-mail', 'edit', 'bcc-constant'),
-                        'send-mail-edit-subject-constant' => getValueFromArray($context, 'send-mail', 'edit', 'subject-constant'),
-                        'send-mail-edit-body-constant' => getValueFromArray($context, 'send-mail', 'edit', 'body-constant'),
-                        'send-mail-edit-body-template' => getValueFromArray($context, 'send-mail', 'edit', 'body-template'),
-                        'send-mail-edit-body-fields' => getValueFromArray($context, 'send-mail', 'edit', 'body-fields'),
-                        'send-mail-edit-f-option' => getValueFromArray($context, 'send-mail', 'edit', 'f-option'),
-                        'send-mail-edit-body-wrap' => getValueFromArray($context, 'send-mail', 'edit', 'body-wrap'),
-                        'send-mail-new-from' => getValueFromArray($context, 'send-mail', 'new', 'from'),
-                        'send-mail-new-to' => getValueFromArray($context, 'send-mail', 'new', 'to'),
-                        'send-mail-new-cc' => getValueFromArray($context, 'send-mail', 'new', 'cc'),
-                        'send-mail-new-bcc' => getValueFromArray($context, 'send-mail', 'new', 'bcc'),
-                        'send-mail-new-subject' => getValueFromArray($context, 'send-mail', 'new', 'subject'),
-                        'send-mail-new-body' => getValueFromArray($context, 'send-mail', 'new', 'body'),
-                        'send-mail-new-from-constant' => getValueFromArray($context, 'send-mail', 'new', 'from-constant'),
-                        'send-mail-new-to-constant' => getValueFromArray($context, 'send-mail', 'new', 'to-constant'),
-                        'send-mail-new-cc-constant' => getValueFromArray($context, 'send-mail', 'new', 'cc-constant'),
-                        'send-mail-new-bcc-constant' => getValueFromArray($context, 'send-mail', 'new', 'bcc-constant'),
-                        'send-mail-new-subject-constant' => getValueFromArray($context, 'send-mail', 'new', 'subject-constant'),
-                        'send-mail-new-body-constant' => getValueFromArray($context, 'send-mail', 'new', 'body-constant'),
-                        'send-mail-new-body-template' => getValueFromArray($context, 'send-mail', 'new', 'body-template'),
-                        'send-mail-new-body-fields' => getValueFromArray($context, 'send-mail', 'new', 'body-fields'),
-                        'send-mail-new-f-option' => getValueFromArray($context, 'send-mail', 'new', 'f-option'),
-                        'send-mail-new-body-wrap' => getValueFromArray($context, 'send-mail', 'new', 'body-wrap'),
+                        'messaging-driver' => getValueFromArray($context, 'messaging', 'driver'),
+                        'messaging-read-from' => getValueFromArray($context, 'messaging', 'read', 'from'),
+                        'messaging-read-to' => getValueFromArray($context, 'messaging', 'read', 'to'),
+                        'messaging-read-cc' => getValueFromArray($context, 'messaging', 'read', 'cc'),
+                        'messaging-read-bcc' => getValueFromArray($context, 'messaging', 'read', 'bcc'),
+                        'messaging-read-subject' => getValueFromArray($context, 'messaging', 'read', 'subject'),
+                        'messaging-read-body' => getValueFromArray($context, 'messaging', 'read', 'body'),
+                        'messaging-read-from-constant' => getValueFromArray($context, 'messaging', 'read', 'from-constant'),
+                        'messaging-read-to-constant' => getValueFromArray($context, 'messaging', 'read', 'to-constant'),
+                        'messaging-read-cc-constant' => getValueFromArray($context, 'messaging', 'read', 'cc-constant'),
+                        'messaging-read-bcc-constant' => getValueFromArray($context, 'messaging', 'read', 'bcc-constant'),
+                        'messaging-read-subject-constant' => getValueFromArray($context, 'messaging', 'read', 'subject-constant'),
+                        'messaging-read-body-constant' => getValueFromArray($context, 'messaging', 'read', 'body-constant'),
+                        'messaging-read-body-template' => getValueFromArray($context, 'messaging', 'read', 'body-template'),
+                        'messaging-read-body-fields' => getValueFromArray($context, 'messaging', 'read', 'body-fields'),
+                        'messaging-read-f-option' => getValueFromArray($context, 'messaging', 'read', 'f-option'),
+                        'messaging-read-body-wrap' => getValueFromArray($context, 'messaging', 'read', 'body-wrap'),
+                        'messaging-update-from' => getValueFromArray($context, 'messaging', 'update', 'from'),
+                        'messaging-update-to' => getValueFromArray($context, 'messaging', 'update', 'to'),
+                        'messaging-update-cc' => getValueFromArray($context, 'messaging', 'update', 'cc'),
+                        'messaging-update-bcc' => getValueFromArray($context, 'messaging', 'update', 'bcc'),
+                        'messaging-update-subject' => getValueFromArray($context, 'messaging', 'update', 'subject'),
+                        'messaging-update-body' => getValueFromArray($context, 'messaging', 'update', 'body'),
+                        'messaging-update-from-constant' => getValueFromArray($context, 'messaging', 'update', 'from-constant'),
+                        'messaging-update-to-constant' => getValueFromArray($context, 'messaging', 'update', 'to-constant'),
+                        'messaging-update-cc-constant' => getValueFromArray($context, 'messaging', 'update', 'cc-constant'),
+                        'messaging-update-bcc-constant' => getValueFromArray($context, 'messaging', 'update', 'bcc-constant'),
+                        'messaging-update-subject-constant' => getValueFromArray($context, 'messaging', 'update', 'subject-constant'),
+                        'messaging-update-body-constant' => getValueFromArray($context, 'messaging', 'update', 'body-constant'),
+                        'messaging-update-body-template' => getValueFromArray($context, 'messaging', 'update', 'body-template'),
+                        'messaging-update-body-fields' => getValueFromArray($context, 'messaging', 'update', 'body-fields'),
+                        'messaging-update-f-option' => getValueFromArray($context, 'messaging', 'update', 'f-option'),
+                        'messaging-update-body-wrap' => getValueFromArray($context, 'messaging', 'update', 'body-wrap'),
+                        'messaging-create-from' => getValueFromArray($context, 'messaging', 'create', 'from'),
+                        'messaging-create-to' => getValueFromArray($context, 'messaging', 'create', 'to'),
+                        'messaging-create-cc' => getValueFromArray($context, 'messaging', 'create', 'cc'),
+                        'messaging-create-bcc' => getValueFromArray($context, 'messaging', 'create', 'bcc'),
+                        'messaging-create-subject' => getValueFromArray($context, 'messaging', 'create', 'subject'),
+                        'messaging-create-body' => getValueFromArray($context, 'messaging', 'create', 'body'),
+                        'messaging-create-from-constant' => getValueFromArray($context, 'messaging', 'create', 'from-constant'),
+                        'messaging-create-to-constant' => getValueFromArray($context, 'messaging', 'create', 'to-constant'),
+                        'messaging-create-cc-constant' => getValueFromArray($context, 'messaging', 'create', 'cc-constant'),
+                        'messaging-create-bcc-constant' => getValueFromArray($context, 'messaging', 'create', 'bcc-constant'),
+                        'messaging-create-subject-constant' => getValueFromArray($context, 'messaging', 'create', 'subject-constant'),
+                        'messaging-create-body-constant' => getValueFromArray($context, 'messaging', 'create', 'body-constant'),
+                        'messaging-create-body-template' => getValueFromArray($context, 'messaging', 'create', 'body-template'),
+                        'messaging-create-body-fields' => getValueFromArray($context, 'messaging', 'create', 'body-fields'),
+                        'messaging-create-f-option' => getValueFromArray($context, 'messaging', 'create', 'f-option'),
+                        'messaging-create-body-wrap' => getValueFromArray($context, 'messaging', 'create', 'body-wrap'),
+                        'count' => getValueFromArray($context, 'count'),
+                        'source' => getValueFromArray($context, 'source'),
+                        'navi-title' => getValueFromArray($context, 'navi-title'),
+                        'just-move-thisstep' => getValueFromArray($context, 'just-move-thisstep'),
+                        'ignoring-field' => getValueFromArray($context, 'ignoring-field'),
+                        'numeric-fields' => getValueFromArray($context, 'numeric-fields'),
                     );
                     $seq++;
                 }
@@ -352,7 +359,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                     'separator' => getValueFromArray($globalOptions, 'separator'),
                     'transaction' => getValueFromArray($globalOptions, 'transaction'),
                     'media-root-dir' => getValueFromArray($globalOptions, 'media-root-dir'),
-                    'media-context' => getValueFromArray($globalOptions, 'media-context'),
+//                    'media-context' => getValueFromArray($globalOptions, 'media-context'),
                     'credit-including' => getValueFromArray($globalOptions, 'credit-including'),
                     'app-locale' => getValueFromArray($globalOptions, 'app-locale'),
                     'app-currency' => getValueFromArray($globalOptions, 'app-currency'),
@@ -384,9 +391,19 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                     'smtp-port' => getValueFromArray($globalOptions, 'smtp', 'port'),
                     'smtp-username' => getValueFromArray($globalOptions, 'smtp', 'username'),
                     'smtp-password' => getValueFromArray($globalOptions, 'smtp', 'password'),
-                    'pusher-app_id' => getValueFromArray($globalOptions, 'pusher', 'app_id'),
-                    'pusher-key' => getValueFromArray($globalOptions, 'pusher', 'key'),
-                    'pusher-secret' => getValueFromArray($globalOptions, 'pusher', 'secret'),
+                    'smtp-encryption' => getValueFromArray($globalOptions, 'smtp', 'encryption'),
+//                    'pusher-app_id' => getValueFromArray($globalOptions, 'pusher', 'app_id'),
+//                    'pusher-key' => getValueFromArray($globalOptions, 'pusher', 'key'),
+//                    'pusher-secret' => getValueFromArray($globalOptions, 'pusher', 'secret'),
+                    'slack-token' => getValueFromArray($globalOptions, 'slack', 'token'),
+                    'slack-channel' => getValueFromArray($globalOptions, 'slack', 'channel'),
+                    'import-1st-line' => getValueFromArray($globalOptions, 'import', '1st-line'),
+                    'import-skip-lines' => getValueFromArray($globalOptions, 'import', 'skip-lines'),
+                    'import-format' => getValueFromArray($globalOptions, 'import', 'format'),
+                    'import-use-replace' => getValueFromArray($globalOptions, 'import', 'use-replace'),
+                    'import-convert-number' => getValueFromArray($globalOptions, 'import', 'convert-number'),
+                    'import-convert-date' => getValueFromArray($globalOptions, 'import', 'convert-date'),
+                    'import-convert-datetime' => getValueFromArray($globalOptions, 'import', 'convert-datetime'),
                 );
                 $seq++;
                 break;
@@ -521,7 +538,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
             'global' => array('db-operation', 'field', 'value'),
             'calculation' => array('field', 'expression'),
             'file-upload' => array('field', 'context', 'container'),
-            'send-mail' => array('db-operation', 'from', 'to', 'cc', 'bcc', 'subject', 'body',
+            'messaging' => array('db-operation', 'from', 'to', 'cc', 'bcc', 'subject', 'body',
                 'from-constant', 'to-constant', 'cc-constant', 'bcc-constant', 'subject-constant',
                 'body-constant', 'body-template', 'body-fields', 'f-option', 'body-wrap'),
         );
@@ -530,11 +547,13 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
             'browser-compatibility' => array('browserdef'),
             'formatter' => array('field', 'converter-class', 'parameter'),
             'local-context' => array('key', 'value'),
+            'import' => ['1st-line', 'skip-lines', 'format', 'use-replace',
+                'convert-number', 'convert-date', 'convert-datetime'],
         );
 
         $keysShouldInteger = array(
-            'records', 'maxrecords', 'smtp-port',
-            'send-mail-load-body-wrap', 'send-mail-edit-body-wrap', 'send-mail-new-body-wrap',
+            'records', 'maxrecords', 'smtp-port', 'import-skip-lines',
+            'messaging-load-body-wrap', 'messaging-edit-body-wrap', 'messaging-new-body-wrap',
         );
 
         $keysShouldBoolean = array(
@@ -548,6 +567,8 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
             'authentication-update-user', 'authentication-update-group',
             'authentication-new-user', 'authentication-new-group',
             'authentication-delete-user', 'authentication-delete-group',
+            'import-convert-number', 'import-convert-date', 'import-convert-datetime',
+            'ignoring-field', 'numeric-fields',
         );
 
         // $this->logger->setDebugMessage("dataSourceName={$dataSourceName}");
@@ -623,35 +644,44 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                             unset($globalDataSource[$contextID][$firstKey]);
                         }
                     }
-                } else if (strpos($theKey, "send-mail-") === 0) {
-                    $firstKey = "send-mail";
+                } else if (strpos($theKey, "messaging-") === 0) {
+                    $firstKey = "messaging";
                     $keyRest = substr($theKey, 10);
-                    $secondKey = substr($keyRest, 0, strpos($keyRest, "-"));
-                    $thirdKey = substr($keyRest, strpos($keyRest, "-") + 1);
-                    if (!isset($globalDataSource[$contextID][$firstKey])) {
-                        $globalDataSource[$contextID][$firstKey] = array();
-                    }
-                    if (!isset($globalDataSource[$contextID][$firstKey][$secondKey])) {
-                        $globalDataSource[$contextID][$firstKey][$secondKey] = array();
+                    if (strpos($keyRest, "-") === false) {
+                        $secondKey = $keyRest;
+                        $thirdKey = false;
+                    } else {
+                        $secondKey = substr($keyRest, 0, strpos($keyRest, "-"));
+                        $thirdKey = substr($keyRest, strpos($keyRest, "-") + 1);
                     }
                     $setValue = $this->dbSettings->getValueOfField($theKey);
-                    if (array_search($theKey, $keysShouldInteger) !== false) {
-                        $setValue = ($setValue === '') ? '' : (int)$setValue;
-                    } else if (array_search($thirdKey, $keysShouldBoolean) !== false) {
-                        if (preg_match("/^false$/i", $setValue)) {
-                            $setValue = false;
-                        } else if (preg_match("/^true$/i", $setValue)) {
-                            $setValue = true;
+                    if ($secondKey == "driver" && !$thirdKey) {
+                        $globalDataSource[$contextID][$firstKey][$secondKey] = $setValue;
+                    } else {
+                        if (!isset($globalDataSource[$contextID][$firstKey])) {
+                            $globalDataSource[$contextID][$firstKey] = array();
                         }
-                    }
-                    if (strlen($setValue) > 0 || $setValue === false) {
-                        $globalDataSource[$contextID][$firstKey][$secondKey][$thirdKey] = $setValue;
-                    } else if (isset($globalDataSource[$contextID][$firstKey][$secondKey][$thirdKey])) {
-                        unset($globalDataSource[$contextID][$firstKey][$secondKey][$thirdKey]);
-                        if (count($globalDataSource[$contextID][$firstKey][$secondKey]) === 0) {
-                            unset($globalDataSource[$contextID][$firstKey][$secondKey]);
-                            if (count($globalDataSource[$contextID][$firstKey]) === 0) {
-                                unset($globalDataSource[$contextID][$firstKey]);
+                        if (!isset($globalDataSource[$contextID][$firstKey][$secondKey])) {
+                            $globalDataSource[$contextID][$firstKey][$secondKey] = array();
+                        }
+                        if (array_search($theKey, $keysShouldInteger) !== false) {
+                            $setValue = ($setValue === '') ? '' : (int)$setValue;
+                        } else if (array_search($thirdKey, $keysShouldBoolean) !== false) {
+                            if (preg_match("/^false$/i", $setValue)) {
+                                $setValue = false;
+                            } else if (preg_match("/^true$/i", $setValue)) {
+                                $setValue = true;
+                            }
+                        }
+                        if (strlen($setValue) > 0 || $setValue === false) {
+                            $globalDataSource[$contextID][$firstKey][$secondKey][$thirdKey] = $setValue;
+                        } else if (isset($globalDataSource[$contextID][$firstKey][$secondKey][$thirdKey])) {
+                            unset($globalDataSource[$contextID][$firstKey][$secondKey][$thirdKey]);
+                            if (count($globalDataSource[$contextID][$firstKey][$secondKey]) === 0) {
+                                unset($globalDataSource[$contextID][$firstKey][$secondKey]);
+                                if (count($globalDataSource[$contextID][$firstKey]) === 0) {
+                                    unset($globalDataSource[$contextID][$firstKey]);
+                                }
                             }
                         }
                     }
@@ -764,21 +794,25 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                             unset($globalOptions["smtp"]);
                         }
                     }
-                } else if (strpos($theKey, "pusher-") === 0) {
+                } else if (strpos($theKey, "import-") === 0) {
                     $authKey = substr($theKey, 7);
-                    if (!isset($globalOptions["pusher"][$authKey])) {
-                        $globalOptions["pusher"][$authKey] = array();
+                    if (!isset($globalOptions["import"][$authKey])) {
+                        $globalOptions["import"][$authKey] = array();
                     }
                     $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (array_search($theKey, $keysShouldArray) !== false) {
+                        $setValue = explode(",", str_replace(" ", "", $setValue ?? ""));
+                    }
                     if (array_search($theKey, $keysShouldInteger) !== false) {
                         $setValue = ($setValue === '') ? '' : (int)$setValue;
                     }
-                    if (strlen($setValue) > 0 || $setValue === false) {
-                        $globalOptions["pusher"][$authKey] = $setValue;
-                    } else if (isset($globalOptions["pusher"][$authKey])) {
-                        unset($globalOptions["pusher"][$authKey]);
-                        if (count($globalOptions["pusher"]) === 0) {
-                            unset($globalOptions["pusher"]);
+                    if (is_array($setValue) || is_numeric($setValue)
+                        || (is_string($setValue) && strlen($setValue) > 0) || $setValue === false) {
+                        $globalOptions["import"][$authKey] = $setValue;
+                    } else if (isset($globalOptions["import"][$authKey])) {
+                        unset($globalOptions["import"][$authKey]);
+                        if (count($globalOptions["import"]) === 0) {
+                            unset($globalOptions["import"]);
                         }
                     }
                 } else {
@@ -1084,6 +1118,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
             $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
             return null;
         }
+        return true;
     }
 
     function deleteFromDB()
@@ -1193,6 +1228,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
             $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
             return null;
         }
+        return true;
     }
 
     public function requireUpdatedRecord($value)
@@ -1206,7 +1242,8 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
     }
 
 
-    public function updatedRecord(){
+    public function updatedRecord()
+    {
         return $this->updatedRecord;
     }
 
@@ -1257,7 +1294,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
 
     public function setUpdatedRecord($record, $value = false, $index = 0)
     {
-        $this->updatedRecord=$record;
+        $this->updatedRecord = $record;
     }
 
     public function hasTransaction()
