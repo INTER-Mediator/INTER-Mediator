@@ -11,6 +11,8 @@ Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.10 (In Development)
+- The Service Server by node is not booted in default settings. If you need to use it, you have to modify the setting
+  in the params.php file. The Service Server requires for server side validation, and synchronizing with clients.
 - The _im_seq pesudo field appears in context. It shows the sequential number in the context records from 1.
 - The _im_count pesudo field appears in context. It shows how many records in the context.
 - In the INTERMediatorOnPage class buttonClassCopy, buttonClassDelete, buttonClassInsert, buttonClassMaster and

@@ -74,7 +74,7 @@ class GenerateJSCode
             null, null, null, null,
             '', null, null, "default",
             'ja_JP', 'JP', null, null,
-            "11479", false, 'ws', false,
+            "11478", false, 'ws', true,
             false, false, 1, false,
             false, false
         ]);
@@ -331,9 +331,10 @@ class GenerateJSCode
         $sss = ServiceServerProxy::instance()->isActive();
         $this->generateAssignJS("INTERMediatorOnPage.serviceServerStatus", $sss ? "true" : "false");
 
-        $activateClientService = $activateClientService && $hasSyncControl;
         $this->generateAssignJS("INTERMediatorOnPage.activateClientService",
-            ($activateClientService && !$notUseServiceServer) ? "true" : "false");
+            ($activateClientService && $hasSyncControl && !$notUseServiceServer) ? "true" : "false");
+        $this->generateAssignJS("INTERMediatorOnPage.useServiceServer",
+            !$notUseServiceServer ? "true" : "false");
         $this->generateAssignJS("INTERMediatorOnPage.serviceServerURL",
             "{$q}{$serviceServerProtocol}://{$serviceServerHost}:{$serviceServerPort}{$q}");
         $this->generateAssignJS("INTERMediatorOnPage.serverDefaultTimezone", $q, date_default_timezone_get(), $q);

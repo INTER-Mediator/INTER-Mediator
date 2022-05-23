@@ -60,7 +60,7 @@ class INTERMediator_Test extends TestCase
         $params = Params::getParameterValue([
             "activateClientService", "serviceServerPort", "serviceServerHost", "serviceServerConnect",
             "stopSSEveryQuit", "bootWithInstalledNode", "preventSSAutoBoot", "notUseServiceServer", "foreverLog"
-        ], false);
+        ], [false, false, false, false, false, false, false, true, false]);
         $this->assertSame(9, count($params), "Params::getParameterValue should return any values.");
 
         $key = 'activateClientService';
@@ -102,10 +102,10 @@ class INTERMediator_Test extends TestCase
         $this->assertEquals($assertValue, Params::getParameterValue($key, false), $message);
 
         $key = 'notUseServiceServer';
-        $assertValue = false;
-        $assertStr = 'false';
+        $assertValue = true;
+        $assertStr = 'true';
         $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
-        $this->assertEquals($assertValue, Params::getParameterValue($key, false), $message);
+        $this->assertEquals($assertValue, Params::getParameterValue($key, true), $message);
 
 //        $key = 'foreverLog';
 //        $assertValue = false;
