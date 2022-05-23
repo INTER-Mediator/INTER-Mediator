@@ -64,8 +64,8 @@ class INTERMediator_Test extends TestCase
         $this->assertSame(9, count($params), "Params::getParameterValue should return any values.");
 
         $key = 'activateClientService';
-        $assertValue = true;
-        $assertStr = 'true';
+        $assertValue = false;
+        $assertStr = 'false';
         $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
         $this->assertEquals($assertValue, Params::getParameterValue($key, false), $message);
 
