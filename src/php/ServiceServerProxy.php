@@ -47,7 +47,7 @@ class ServiceServerProxy
             "serviceServerConnect", "serviceServerPort", "stopSSEveryQuit", "bootWithInstalledNode",
             "preventSSAutoBoot", "notUseServiceServer", "foreverLog", "serviceServerKey",
             "serviceServerCert", "serviceServerCA",],
-            ["http://localhost", 11478, false, false, false, false, null, '', '', '']);
+            ["http://localhost", 11478, false, false, false, true, null, '', '', '']);
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
     }
 

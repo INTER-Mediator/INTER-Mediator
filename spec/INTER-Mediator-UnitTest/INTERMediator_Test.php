@@ -60,12 +60,12 @@ class INTERMediator_Test extends TestCase
         $params = Params::getParameterValue([
             "activateClientService", "serviceServerPort", "serviceServerHost", "serviceServerConnect",
             "stopSSEveryQuit", "bootWithInstalledNode", "preventSSAutoBoot", "notUseServiceServer", "foreverLog"
-        ], false);
+        ], [false, false, false, false, false, false, false, true, false]);
         $this->assertSame(9, count($params), "Params::getParameterValue should return any values.");
 
         $key = 'activateClientService';
-        $assertValue = true;
-        $assertStr = 'true';
+        $assertValue = false;
+        $assertStr = 'false';
         $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
         $this->assertEquals($assertValue, Params::getParameterValue($key, false), $message);
 
@@ -74,13 +74,13 @@ class INTERMediator_Test extends TestCase
             $assertValue = 'http://192.168.56.101';
             $assertStr = 'http://192.168.56.101';
             $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
-            $this->assertEquals($assertValue, Params::getParameterValue($key, false), $message);
+            $this->assertEquals($assertValue, Params::getParameterValue($key, 'http://192.168.56.101'), $message);
         } else if (getenv('CIRCLECI') !== 'true') {
             $key = 'serviceServerConnect';
             $assertValue = 'http://localhost';
             $assertStr = 'http://localhost';
             $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
-            $this->assertEquals($assertValue, Params::getParameterValue($key, false), $message);
+            $this->assertEquals($assertValue, Params::getParameterValue($key, 'http://localhost'), $message);
         }
 
         $key = 'stopSSEveryQuit';
@@ -102,10 +102,10 @@ class INTERMediator_Test extends TestCase
         $this->assertEquals($assertValue, Params::getParameterValue($key, false), $message);
 
         $key = 'notUseServiceServer';
-        $assertValue = false;
-        $assertStr = 'false';
+        $assertValue = true;
+        $assertStr = 'true';
         $message = "The variable {$key} in the params.php should be {$assertStr} for distribution.";
-        $this->assertEquals($assertValue, Params::getParameterValue($key, false), $message);
+        $this->assertEquals($assertValue, Params::getParameterValue($key, true), $message);
 
 //        $key = 'foreverLog';
 //        $assertValue = false;

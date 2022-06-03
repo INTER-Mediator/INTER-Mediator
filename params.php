@@ -150,8 +150,9 @@ $slackParameters = [
 /* Service Server Behavior
  * ===================
  * Port number and host name for service server */
-$notUseServiceServer = false;  // Default is FALSE!. If it sets to true, every feature with Service Server don't work.
-$activateClientService = true;  // Default is TRUE!!.
+$notUseServiceServer = true;  // Default is TRUE!. It has to set false to work every feature with Service Server.
+/*
+$activateClientService = false;  // Default is FLASE!.
 $serviceServerProtocol = "ws";  // The Service Server url components to connect from client.
 $serviceServerHost = "";    // "" for public ip address.
 $serviceServerPort = "11478";
@@ -163,7 +164,7 @@ $stopSSEveryQuit = false;
 $bootWithInstalledNode = false;
 $preventSSAutoBoot = false;
 $foreverLog = '/tmp/forever.log';
-
+*/
 /* Operation Log
  * ===================
  * the table named 'operationlog' is required.

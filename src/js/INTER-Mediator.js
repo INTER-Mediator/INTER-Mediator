@@ -1267,7 +1267,7 @@ const INTERMediator = {
         }
         let idValuesForFieldName = setupLinkedNode(repeatersOneRec, contextObj, targetRecordset, ix, keyingValue)
         contextObj.setValue(keyingValue, "_im_seq", ix + 1);
-        contextObj.setValue(keyingValue, "_im_count",countRecord);
+        contextObj.setValue(keyingValue, "_im_count", countRecord);
         IMLibPageNavigation.setupDeleteButton(encNodeTag, repeatersOneRec, contextObj, keyField, keyValue)
         IMLibPageNavigation.setupNavigationButton(encNodeTag, repeatersOneRec, currentContextDef, keyField, keyValue, contextObj)
         IMLibPageNavigation.setupCopyButton(encNodeTag, repNodeTag, repeatersOneRec, contextObj, targetRecordset[ix])
@@ -1770,18 +1770,18 @@ const INTERMediator = {
         creditNode.appendChild(cNode)
         cNode.className = '_im_credit4'
 
-        let spNode = document.createElement('span')
-        spNode.className = '_im_credit_ssstatus'
-        cNode.appendChild(spNode)
-        const mark = document.createTextNode('Service Server Status:')
-        spNode.appendChild(mark)
-        const markNode = document.createElement('span')
-        markNode.className = '_im_credit_mark'
-        markNode.setAttribute('title', 'Service Server is a server side helper for just validation on Ver.6.')
-        spNode.appendChild(markNode)
-        markNode.appendChild(document.createTextNode('◆'))
-        markNode.style.color = INTERMediatorOnPage.serviceServerStatus ? 'green' : 'red'
-        if (INTERMediatorOnPage.activateClientService) {
+        if (INTERMediatorOnPage.useServiceServer) {
+          let spNode = document.createElement('span')
+          spNode.className = '_im_credit_ssstatus'
+          cNode.appendChild(spNode)
+          const mark = document.createTextNode('Service Server Status:')
+          spNode.appendChild(mark)
+          const markNode = document.createElement('span')
+          markNode.className = '_im_credit_mark'
+          markNode.setAttribute('title', 'Service Server is a server side helper for just validation on Ver.6.')
+          spNode.appendChild(markNode)
+          markNode.appendChild(document.createTextNode('◆'))
+          markNode.style.color = INTERMediatorOnPage.serviceServerStatus ? 'green' : 'red'
           const markSktNode = document.createElement('span')
           markSktNode.appendChild(document.createTextNode('➤'))
           markSktNode.className = '_im_socket_mark'
@@ -1791,7 +1791,7 @@ const INTERMediator = {
             markSktNode.style.color = 'yellow'
           }
         }
-        spNode = document.createElement('span')
+        let spNode = document.createElement('span')
         spNode.className = '_im_credit_vstring'
         cNode.appendChild(spNode)
         const aNode = document.createElement('a')
