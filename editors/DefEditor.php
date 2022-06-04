@@ -126,6 +126,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                         'port' => getValueFromArray($context, 'port'),
                         'protocol' => getValueFromArray($context, 'protocol'),
                         'datatype' => getValueFromArray($context, 'datatype'),
+                        'cert-verifying' => getValueFromArray($context, 'cert-verifying'),
                         'cache' => getValueFromArray($context, 'cache'),
                         'soft-delete' => getValueFromArray($context, 'soft-delete'),
                         'post-reconstruct' => getValueFromArray($context, 'post-reconstruct'),
@@ -469,6 +470,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                     'port' => getValueFromArray($globalDBSpecs, 'port'),
                     'protocol' => getValueFromArray($globalDBSpecs, 'protocol'),
                     'datatype' => getValueFromArray($globalDBSpecs, 'datatype'),
+                    'cert-verifying' => getValueFromArray($globalDBSpecs, 'cert-verifying'),
                 );
                 $seq++;
                 break;
@@ -558,7 +560,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
 
         $keysShouldBoolean = array(
             'paging', 'email-as-username', 'portal', 'media-handling', 'post-reconstruct',
-            'container', 'soft-delete', 'f-option',
+            'container', 'soft-delete', 'f-option','cert-verifying',
         );
 
         $keysShouldArray = array(

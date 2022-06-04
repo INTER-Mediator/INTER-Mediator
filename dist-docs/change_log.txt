@@ -29,6 +29,7 @@ Ver.10 (In Development)
 - [BUG FIX] When checkbox set to off, the message which someone modified showed unexpectedly.
 - [BUG FIX] After moving from list to detail and back to list page, paging position wasn't retrieve and show the
   list from the start of it.
+- [BUG FIX] The definition file editor didn't support some keys added from Ver.8 or whatever.
 
 Ver.9 (January 31, 2022)
 - [Important] Native upser authentication and LDAP direct supporting was dropped. If you want to LDAP server
