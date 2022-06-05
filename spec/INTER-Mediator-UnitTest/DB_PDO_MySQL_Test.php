@@ -16,6 +16,10 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
 {
     public $dsn;
 
+    public function isMySQL() {
+        return true;
+    }
+
     function setUp(): void
     {
         mb_internal_encoding('UTF-8');

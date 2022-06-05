@@ -203,29 +203,29 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $insideOp = ' AND ';
             $outsideOp = ' OR ';
             foreach ($tableInfo['query'] as $condition) {
-                if ($condition['field'] == '__operation__') {
-                    $chunkCount++;
-                    if (isset($condition['operator']) && $condition['operator'] == 'ex') {
-                        $insideOp = ' OR ';
-                        $outsideOp = ' AND ';
-                    }
-                } else if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
-                    $escapedField = $this->handler->quotedEntityName($condition['field']);
-                    $condition = $this->normalizedCondition($condition);
-                    if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
-                        throw new Exception("Invalid Operator.: {$condition['operator']}");
-                    }
-                    if (isset($condition['value']) && !is_null($condition['value'])) {
-                        $escapedValue = $this->link->quote($condition['value']);
-                        if (isset($condition['operator'])) {
+                if (isset($condition['field'])) {
+                    if ($condition['field'] == '__operation__') {
+                        $chunkCount++;
+                        if (isset($condition['operator']) && isset($condition['operator']) && $condition['operator'] == 'ex') {
+                            $insideOp = ' OR ';
+                            $outsideOp = ' AND ';
+                        }
+                    } else if ((!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey)
+                        && isset($condition['operator'])) {
+                        $escapedField = $this->handler->quotedEntityName($condition['field']);
+                        $condition = $this->normalizedCondition($condition);
+                        if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
+                            throw new Exception("Invalid Operator.: {$condition['operator']}");
+                        }
+                        if (isset($condition['value'])) {
+                            $escapedValue = $this->link->quote($condition['value']);
                             $queryClauseArray[$chunkCount][]
                                 = (!in_array($condition['field'], $numericFields) || strtolower($condition['operator']) == 'in')
                                 ? "{$escapedField} {$condition['operator']} {$escapedValue}"
                                 : ("{$escapedField} {$condition['operator']} " . floatval($condition['value']));
+                        } else {
+                            $queryClauseArray[$chunkCount][] = "{$escapedField} {$condition['operator']}";
                         }
-                    } else {
-                        $queryClauseArray[$chunkCount][]
-                            = "{$escapedField} {$condition['operator']}";
                     }
                 }
             }

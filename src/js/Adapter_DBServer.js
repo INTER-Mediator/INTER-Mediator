@@ -681,7 +681,7 @@ const INTERMediator_DBAdapter = {
 
   // Private method for the db_queryParameters method
   parseAdditionalCriteria: function (params, criteriaObject, conditions, extCount) {
-    const removeIndice = []
+    const removeIndices = []
     if (criteriaObject) {
       if (criteriaObject.field) {
         criteriaObject = [criteriaObject]
@@ -714,13 +714,13 @@ const INTERMediator_DBAdapter = {
           extCount++
         }
         if (criteriaObject[index] && criteriaObject[index].onetime) {
-          removeIndice.push = index
+          removeIndices.push = index
         }
       }
-      if (removeIndice.length > 0) {
+      if (removeIndices.length > 0) {
         const modifyConditions = []
         for (let index = 0; index < criteriaObject.length; index++) {
-          if (!(index in removeIndice)) {
+          if (!(index in removeIndices)) {
             modifyConditions.push(criteriaObject[index])
           }
         }
@@ -753,7 +753,7 @@ const INTERMediator_DBAdapter = {
     const orderFields = {}
     const addExLimit = INTERMediator.alwaysAddOperationExchange ? 0 : 1
     for (const key in IMLibLocalContext.store) {
-      if (IMLibLocalContext.store.hasOwnProperty(key)) {
+      // if (IMLibLocalContext.store.hasOwnProperty(key)) {
         const value = String(IMLibLocalContext.store[key])
         const keyParams = key.split(':')
         if (keyParams && keyParams.length > 1 && keyParams[1].trim() === args.name && value.length > 0) {
@@ -765,7 +765,7 @@ const INTERMediator_DBAdapter = {
               params += '&condition' + extCount + 'operator=ex'
               extCount++
             }
-            for (index = 0; index < fields.length; index++) {
+            for (let index = 0; index < fields.length; index++) {
               const conditionSign = fields[index].trim() + '#' + operator + '#' + value
               if (!INTERMediator_DBAdapter.eliminateDuplicatedConditions || conditions.indexOf(conditionSign) < 0) {
                 params += '&condition' + extCount +
@@ -780,10 +780,10 @@ const INTERMediator_DBAdapter = {
             orderFields[parseInt(value)] = [keyParams[2].trim(), keyParams[3].trim()]
           }
         }
-      }
+      // }
     }
     const orderedKeys = Object.keys(orderFields)
-    for (i = 0; i < orderedKeys.length; i++) {
+    for (let i = 0; i < orderedKeys.length; i++) {
       params += '&sortkey' + extCountSort + 'field=' + encodeURIComponent(orderFields[orderedKeys[i]][0])
       params += '&sortkey' + extCountSort + 'direction=' + encodeURIComponent(orderFields[orderedKeys[i]][1])
       extCountSort++

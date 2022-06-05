@@ -1152,6 +1152,7 @@ $notUseServiceServer = false;
 $messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any other major browsers.';
 $messages['ja'][1022] = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
 $activateClientService = true;
+$defaultTimezone = 'Asia/Tokyo';
 EOF
   end
 elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
@@ -1209,6 +1210,7 @@ $notUseServiceServer = false;
 $messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any other major browsers.';
 $messages['ja'][1022] = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
 $activateClientService = true;
+$defaultTimezone = 'Asia/Tokyo';
 EOF
   end
 end
