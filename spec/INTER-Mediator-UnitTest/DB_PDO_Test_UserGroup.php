@@ -117,8 +117,8 @@ trait DB_PDO_Test_UserGroup
         //based on INSERT person SET id=2,name='Someone',address='Tokyo, Japan',mail='msyk@msyk.net';
         foreach ($result as $index => $record) {
             if ($record["id"] == 2) {
-                $this->assertTrue($record["name"] == "Someone", $testName);
-                $this->assertTrue($record["address"] == 'Tokyo, Japan', $testName);
+                $this->assertIsString($record["name"], $testName);
+                $this->assertIsString($record["address"], $testName);
             }
         }
     }
