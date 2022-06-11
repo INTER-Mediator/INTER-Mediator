@@ -114,12 +114,9 @@ trait DB_PDO_Test_UserGroup
         $result = $this->db_proxy->getDatabaseResult();
         $this->assertTrue((is_array($result) ? count($result) : -1) == $this->db_proxy->getDatabaseResultCount(), $testName);
 
-        //based on INSERT person SET id=2,name='Someone',address='Tokyo, Japan',mail='msyk@msyk.net';
-        foreach ($result as $index => $record) {
-            if ($record["id"] == 2) {
-                $this->assertIsString($record["name"], $testName);
-                $this->assertIsString($record["address"], $testName);
-            }
+        foreach ($result as $record) {
+            $this->assertIsString($record["name"], $testName);
+            $this->assertIsString($record["address"], $testName);
         }
     }
 
