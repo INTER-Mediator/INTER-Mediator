@@ -46,12 +46,14 @@ trait DB_PDO_SQLSupport
         return $escapedValue;
     }
 
-    private function generateWhereClause($conditions, $primaryKey, $numericFields, $isExtra = false)
+    private function generateWhereClause($conditions, $primaryKey, $numericFields, $isExtra = false, $insideOp = ' AND ', $outsideOp = ' OR ')
     {
+        $fieldOp = ' OR ';
+        $groupOp = ' OR ';
+        $blockOp = ' OR ';
+        $result = '';
         $chunkCount = 0;
         $queryClauseArray = [];
-        $insideOp = ' AND ';
-        $outsideOp = ' OR ';
         $isInBlock = false;
         foreach ($conditions as $condition) {
             if (isset($condition['field'])) {
@@ -65,11 +67,41 @@ trait DB_PDO_SQLSupport
                             $insideOp = ' OR ';
                             $outsideOp = ' AND ';
                         } else if (strpos($condition['operator'], 'block') === 0) {
-                            $result = $this->arrayToClause($queryClauseArray, $insideOp, $outsideOp);
-                            $isInBlock = true;
+                            // ASSUMPTION: field=__operation__, operator=block/*/*/* must be at the end of condition settings.
+                            // ASSUMPTION: After 'block', there are just condition and __operation__ only item.
+                            $result .= "({$this->arrayToClause($queryClauseArray, $insideOp, $outsideOp)}) AND (";
+                            $queryClauseArray = [];
+                            $isInBlock = 1;
                             [$fieldOp, $groupOp, $blockOp] = $this->determineOperatorsInBlock($condition['operator']);
                         }
                     }
+                } else if ($isInBlock) {
+                    $fieldList = explode(",", $condition['field']);
+                    $lcConditions = [];
+                    $isMultiValue = false;
+                    if ($blockOp) {
+                        $valueList = explode(" ", $condition['value']);
+                        if (count($valueList) === 1) {
+                            $valueList = explode("　", $condition['value']);
+                        }
+                        $isMultiValue = count($valueList) > 1;
+                        foreach ($valueList as $value) {
+                            foreach ($fieldList as $field) {
+                                $lcConditions[] = ['field' => $field, 'operator' => $condition['operator'], 'value' => $value];
+                            }
+                            $lcConditions[] = ['field' => '__operation__'];
+                        }
+                    } else {
+                        foreach ($fieldList as $field) {
+                            $lcConditions[] = ['field' => $field, 'operator' => $condition['operator'], 'value' => $condition['value']];
+                        }
+                    }
+                    $resultItem = $this->generateWhereClause($lcConditions, $primaryKey, $numericFields, $isExtra, $fieldOp, $blockOp);
+                    if ($isInBlock !== 1) {
+                        $result .= $groupOp;
+                    }
+                    $result .= ($isMultiValue ? '(' : '') . $resultItem . ($isMultiValue ? ')' : '');
+                    $isInBlock += 1;
                 } else if ((!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey)
                     && isset($condition['operator'])) {
                     $escapedField = $this->handler->quotedEntityName($condition['field']);
@@ -96,6 +128,8 @@ trait DB_PDO_SQLSupport
         }
         if (!$isInBlock) {
             $result = $this->arrayToClause($queryClauseArray, $insideOp, $outsideOp);
+        } else {
+            $result .= ")";
         }
         return $result;
     }

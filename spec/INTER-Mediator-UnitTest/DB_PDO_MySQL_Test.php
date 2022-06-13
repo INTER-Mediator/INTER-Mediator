@@ -170,17 +170,6 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
         );
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
-
-        $this->condition1expected = $this->condition1expected1;
-        $this->condition2expected = $this->condition2expected1;
-        $this->condition3expected = $this->condition3expected1;
-        $this->condition4expected = $this->condition4expected1;
-        $this->condition5expected = $this->condition5expected1;
-        $this->condition6expected = $this->condition6expected1;
-        $this->condition7expected = $this->condition7expected1;
-        $this->condition8expected = $this->condition8expected1;
-        $this->condition9expected = $this->condition9expected1;
-        $this->condition10expected = $this->condition10expected1;
     }
 
     protected $sqlSETClause1 = "(`num1`,`num2`,`date1`,`date2`,`time1`,`time2`,`dt1`,`dt2`,`vc1`,`vc2`,`text1`,`text2`) "
