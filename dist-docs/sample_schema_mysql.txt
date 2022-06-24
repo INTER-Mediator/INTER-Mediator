@@ -55,7 +55,6 @@ CREATE TABLE person	(
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
-CREATE UNIQUE INDEX person_id ON person (id);
 
 INSERT person SET id=1,name='Masayuki Nii',address='Saitama, Japan',mail='msyk@msyk.net';
 INSERT person SET id=2,name='Someone',address='Tokyo, Japan',mail='msyk@msyk.net';
@@ -74,7 +73,6 @@ CREATE TABLE contact	(
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
-CREATE UNIQUE INDEX contact_id ON contact (id);
 CREATE INDEX contact_person_id ON contact (person_id);
 
 INSERT contact SET person_id=1,datetime='2009-12-1 15:23:00',summary='Telephone',way=4,kind=4;
@@ -92,7 +90,6 @@ CREATE TABLE contact_way	(
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
-CREATE UNIQUE INDEX contact_way_id ON contact_way (id);
 
 INSERT contact_way SET id=4,name='Direct';
 INSERT contact_way SET id=5,name='Indirect';
@@ -105,7 +102,6 @@ CREATE TABLE contact_kind	(
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
-CREATE UNIQUE INDEX contact_kind_id ON contact_kind (id);
 
 INSERT contact_kind SET id=4,name='Talk';
 INSERT contact_kind SET id=5,name='Meet';
@@ -156,7 +152,6 @@ CREATE TABLE history	(
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
-CREATE UNIQUE INDEX history_id ON history (id);
 CREATE INDEX history_person_id ON history (person_id);
 
 INSERT history SET person_id=1,startdate='2001-4-1',enddate='2003-3-31',description='Hight School';
@@ -177,7 +172,6 @@ CREATE TABLE postalcode	(
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
-CREATE UNIQUE INDEX postalcode_id ON postalcode (id);
 CREATE INDEX postalcode_f3 ON postalcode (f3);
 CREATE INDEX postalcode_f8 ON postalcode (f8);
 
@@ -252,7 +246,6 @@ CREATE TABLE asset	(
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
-CREATE UNIQUE INDEX asset_id ON asset (asset_id);
 CREATE INDEX asset_purchase ON asset (purchase);
 CREATE INDEX asset_discard ON asset (discard);
 
@@ -268,7 +261,6 @@ CREATE TABLE rent	(
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
-CREATE UNIQUE INDEX rent_id ON rent (rent_id);
 CREATE INDEX rent_rentdate  ON rent (rentdate);
 CREATE INDEX rent_backdate  ON rent (backdate);
 CREATE INDEX rent_asset_id  ON rent (asset_id);
@@ -284,7 +276,6 @@ CREATE TABLE staff	(
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
-CREATE UNIQUE INDEX staff_id ON staff (staff_id);
 
 DROP TABLE IF EXISTS category;
 CREATE TABLE category	(
@@ -294,7 +285,6 @@ CREATE TABLE category	(
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
-CREATE UNIQUE INDEX category_id ON category (category_id);
 
 INSERT asset SET asset_id=11,category='個人用',name='MacBook Air[1]',manifacture='Apple',productinfo='2012/250GB/4GB',purchase='2012-8-1',discard='1904-01-01';
 INSERT asset SET asset_id=12,category='個人用',name='MacBook Air[2]',manifacture='Apple',productinfo='2012/250GB/4GB',purchase='2012-8-1',discard='1904-01-01';

@@ -42,6 +42,9 @@ class INTERMediator_AllTests extends TestCase
         $suite->addTestFile($folder . 'DataConverter_Number_Test.php');
         $suite->addTestFile($folder . 'DataConverter_NumberBase_Test.php');
         if (!$dontTestDB) {
+            $suite->addTestFile($folder . 'DB_PDO_Test_Conditions.php');
+            $suite->addTestFile($folder . 'DB_PDO_Test_UserGroup.php');
+            $suite->addTestFile($folder . 'DB_PDO_Test_LocalContextConditions.php');
             $suite->addTestFile($folder . 'DB_Formatters_Test.php');
             $suite->addTestFile($folder . 'DB_PDO_MySQL_Test.php');
             $suite->addTestFile($folder . 'DB_PDO_PostgreSQL_Test.php');

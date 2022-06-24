@@ -32,7 +32,6 @@ CREATE TABLE person	(
 	location	INTEGER,
 	memo		TEXT
 );
-CREATE UNIQUE INDEX person_id ON person (id);
 
 INSERT INTO person(id,name,address,mail) VALUES (1,'Masayuki Nii','Saitama, Japan','msyk@msyk.net');
 INSERT INTO person(id,name,address,mail) VALUES (2,'Someone','Tokyo, Japan','msyk@msyk.net');
@@ -48,7 +47,6 @@ CREATE TABLE contact	(
 	way 		INTEGER     default 4,
 	kind		INTEGER
 );
-CREATE UNIQUE INDEX contact_id ON contact (id);
 CREATE INDEX contact_person_id ON contact (person_id);
 
 INSERT INTO contact (person_id,datetime,summary,way,kind) VALUES (1,'2009-12-01 15:23:00','Telephone',4,4);
@@ -63,7 +61,6 @@ CREATE TABLE contact_way	(
 	id		INTEGER PRIMARY KEY AUTOINCREMENT,
 	name	TEXT
 );
-CREATE UNIQUE INDEX contact_way_id ON contact_way (id);
 
 INSERT INTO contact_way(id,name) VALUES(4,'Direct');
 INSERT INTO contact_way(id,name) VALUES(5,'Indirect');
@@ -73,7 +70,6 @@ CREATE TABLE contact_kind	(
 	id		INTEGER PRIMARY KEY AUTOINCREMENT,
 	name	TEXT
 );
-CREATE UNIQUE INDEX contact_kind_id ON contact_kind (id);
 
 INSERT INTO contact_kind(id,name) VALUES(4,'Talk');
 INSERT INTO contact_kind(id,name) VALUES(5,'Meet');
@@ -118,7 +114,6 @@ CREATE TABLE history	(
 	enddate		DATE,
 	username    TEXT
 );
-CREATE UNIQUE INDEX history_id ON history (id);
 CREATE INDEX history_person_id ON history (person_id);
 
 INSERT INTO history(person_id,startdate,enddate,description) VALUES(1,'2001-04-01','2003-03-31','Hight School');
@@ -134,7 +129,6 @@ CREATE TABLE postalcode	(
 	f9	TEXT,
 	memo	TEXT
 );
-CREATE UNIQUE INDEX postalcode_id ON postalcode (id);
 CREATE INDEX postalcode_f3 ON postalcode (f3);
 CREATE INDEX postalcode_f8 ON postalcode (f8);
 /*
@@ -195,7 +189,6 @@ CREATE TABLE asset	(
     discard     DATE,
     memo	    TEXT
 );
-CREATE UNIQUE INDEX asset_id ON asset (asset_id);
 CREATE INDEX asset_purchase ON asset (purchase);
 CREATE INDEX asset_discard ON asset (discard);
 
@@ -208,7 +201,6 @@ CREATE TABLE rent	(
     backdate    DATE,
     memo	    TEXT
 );
-CREATE UNIQUE INDEX rent_id ON rent (rent_id);
 CREATE INDEX rent_rentdate  ON rent (rentdate);
 CREATE INDEX rent_backdate  ON rent (backdate);
 CREATE INDEX rent_asset_id  ON rent (asset_id);
@@ -221,14 +213,12 @@ CREATE TABLE staff	(
     section     VARCHAR(20),
     memo	    TEXT
 );
-CREATE UNIQUE INDEX staff_id ON staff (staff_id);
 
 DROP TABLE IF EXISTS category;
 CREATE TABLE category	(
 	category_id	INTEGER PRIMARY KEY AUTOINCREMENT,
 	name		VARCHAR(20)
 );
-CREATE UNIQUE INDEX category_id ON category (category_id);
 
 INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (11, '個人用', 'MacBook Air[1]', 'Apple', '2012/250GB/4GB', '2012-08-01', '1904-01-01');
 INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (12, '個人用', 'MacBook Air[2]', 'Apple', '2012/250GB/4GB', '2012-08-01', '1904-01-01');
