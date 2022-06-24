@@ -752,7 +752,7 @@ const INTERMediator_DBAdapter = {
   parseLocalContext: function (args, params, extCount, extCountSort) {
     const orderFields = {}
     if (INTERMediator.alwaysAddOperationExchange) {
-      INTERMediator.lcConditionsOP1AND = true
+      INTERMediator.lcConditionsOP1AND = false
       INTERMediator.lcConditionsOP2AND = true
     }
     let isFirstItem = true
