@@ -234,7 +234,7 @@ field_10=company&field_11=description&field_12=item_total&field_13=alertStyle&fi
 field_15=net_total&field_16=tax_total&
 start=0&
 records=200&
-condition0field=__operation__&condition0operator=block/T/T/F&
+condition0field=__operation__&condition0operator=block/F/T/F&
 condition1field=issued_date&condition1operator=%3E%3D&condition1value=2022-03-31&
 condition2field=issued_date&condition2operator=%3C%3D&condition2value=2022-07-30&
 condition3field=company%2Cdebit_item_name%2Ccredit_item_name%2Cdescription&condition3operator=*match*&
