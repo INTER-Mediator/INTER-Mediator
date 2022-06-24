@@ -156,3 +156,42 @@ condition104operator=%3E&
 condition104value=0`.replace(/\n/g, "")
   expect(params).toBe(expectParams)
 })
+
+test('checking db_queryParameters with local context conditions', function () {
+  'use strict'
+  const args = {
+    conditions: null,
+    fields: ['checkStyle', 'account_id', 'account_id', 'parent_account_id', 'issued_date', 'kind_str', 'attached', 'pattern_name', 'debit_item_name', 'credit_item_name', 'company', 'description', 'item_total', 'alertStyle', 'parent_total', 'net_total', 'tax_total'],
+    name: "account_list",
+    paging: "1",
+    parentkeyvalue: {},
+    records: 200,
+    uselimit: true,
+    useoffset: true,
+  }
+  IMLibLocalContext.store = {
+    "condition:account_list:account_id,parent_account_id:=": "",
+    "condition:account_list:issued_date:>=": "2022-03-31",
+    "condition:account_list:issued_date:<=": "2022-07-30",
+    "condition:account_list:company,debit_item_name,credit_item_name,description:*match*": "ライフマティックス",
+    "condition:account_list:item_total:<=": "",
+    "condition:account_list:item_total:>=": "",
+    "limitnumber:account_list": "200",
+    "_@condition:account_list:account_id,parent_account_id:=": "",
+    "_@condition:account_list:company,debit_item_name,credit_item_name,description:*match*": "ライフマティックス",
+    "_@condition:account_list:issued_date:<=": "2022-07-30",
+    "_@condition:account_list:issued_date:>=": "2022-03-31",
+    "_@condition:account_list:item_total:<=": "",
+    "_@condition:account_list:item_total:>=": "",
+    "_@limitnumber:account_list": "200",
+    _im_pagedSize: 200,
+    _im_pagination: true,
+    _im_startFrom: 0
+  }
+  INTERMediator.startFrom=0
+  INTERMediator.alwaysAddOperationExchange=true
+  INTERMediator_DBAdapter.eliminateDuplicatedConditions= false
+  const params = `access=read&name=account_list&field_0=checkStyle&field_1=account_id&field_2=account_id&field_3=parent_account_id&field_4=issued_date&field_5=kind_str&field_6=attached&field_7=pattern_name&field_8=debit_item_name&field_9=credit_item_name&field_10=company&field_11=description&field_12=item_total&field_13=alertStyle&field_14=parent_total&field_15=net_total&field_16=tax_total&start=0&records=200&condition0field=__operation__&condition0operator=ex&condition1field=issued_date&condition1operator=%3E%3D&condition1value=2022-03-31&condition2field=__operation__&condition2operator=ex&condition3field=issued_date&condition3operator=%3C%3D&condition3value=2022-07-30&condition4field=__operation__&condition4operator=ex&condition5field=company&condition5operator=*match*&condition5value=%E3%83%A9%E3%82%A4%E3%83%95%E3%83%9E%E3%83%86%E3%82%A3%E3%83%83%E3%82%AF%E3%82%B9&condition6field=debit_item_name&condition6operator=*match*&condition6value=%E3%83%A9%E3%82%A4%E3%83%95%E3%83%9E%E3%83%86%E3%82%A3%E3%83%83%E3%82%AF%E3%82%B9&condition7field=credit_item_name&condition7operator=*match*&condition7value=%E3%83%A9%E3%82%A4%E3%83%95%E3%83%9E%E3%83%86%E3%82%A3%E3%83%83%E3%82%AF%E3%82%B9&condition8field=description&condition8operator=*match*&condition8value=%E3%83%A9%E3%82%A4%E3%83%95%E3%83%9E%E3%83%86%E3%82%A3%E3%83%83%E3%82%AF%E3%82%B9'
+
+  expect(INTERMediator_DBAdapter.db_queryParameters(args)).toBe(params)
+})

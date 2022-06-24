@@ -753,34 +753,32 @@ const INTERMediator_DBAdapter = {
     const orderFields = {}
     const addExLimit = INTERMediator.alwaysAddOperationExchange ? 0 : 1
     for (const key in IMLibLocalContext.store) {
-      // if (IMLibLocalContext.store.hasOwnProperty(key)) {
-        const value = String(IMLibLocalContext.store[key])
-        const keyParams = key.split(':')
-        if (keyParams && keyParams.length > 1 && keyParams[1].trim() === args.name && value.length > 0) {
-          if (keyParams[0].trim() === 'condition' && keyParams.length >= 4) {
-            const fields = keyParams[2].split(',')
-            const operator = keyParams[3].trim()
-            if (fields.length > addExLimit) {
-              params += '&condition' + extCount + 'field=__operation__'
-              params += '&condition' + extCount + 'operator=ex'
-              extCount++
-            }
-            for (let index = 0; index < fields.length; index++) {
-              const conditionSign = fields[index].trim() + '#' + operator + '#' + value
-              if (!INTERMediator_DBAdapter.eliminateDuplicatedConditions || conditions.indexOf(conditionSign) < 0) {
-                params += '&condition' + extCount +
-                  'field=' + encodeURIComponent(fields[index].replace(';;', '::').trim())
-                params += '&condition' + extCount + 'operator=' + encodeURIComponent(operator)
-                params += '&condition' + extCount + 'value=' + encodeURIComponent(value)
-                conditions.push(conditionSign)
-              }
-              extCount++
-            }
-          } else if (keyParams[0].trim() === 'valueofaddorder' && keyParams.length >= 4) {
-            orderFields[parseInt(value)] = [keyParams[2].trim(), keyParams[3].trim()]
+      const value = String(IMLibLocalContext.store[key])
+      const keyParams = key.split(':')
+      if (keyParams && keyParams.length > 1 && keyParams[1].trim() === args.name && value.length > 0) {
+        if (keyParams[0].trim() === 'condition' && keyParams.length >= 4) {
+          const fields = keyParams[2].split(',')
+          const operator = keyParams[3].trim()
+          if (fields.length > addExLimit) {
+            params += '&condition' + extCount + 'field=__operation__'
+            params += '&condition' + extCount + 'operator=ex'
+            extCount++
           }
+          for (let index = 0; index < fields.length; index++) {
+            const conditionSign = fields[index].trim() + '#' + operator + '#' + value
+            if (!INTERMediator_DBAdapter.eliminateDuplicatedConditions || conditions.indexOf(conditionSign) < 0) {
+              params += '&condition' + extCount +
+                'field=' + encodeURIComponent(fields[index].replace(';;', '::').trim())
+              params += '&condition' + extCount + 'operator=' + encodeURIComponent(operator)
+              params += '&condition' + extCount + 'value=' + encodeURIComponent(value)
+              conditions.push(conditionSign)
+            }
+            extCount++
+          }
+        } else if (keyParams[0].trim() === 'valueofaddorder' && keyParams.length >= 4) {
+          orderFields[parseInt(value)] = [keyParams[2].trim(), keyParams[3].trim()]
         }
-      // }
+      }
     }
     const orderedKeys = Object.keys(orderFields)
     for (let i = 0; i < orderedKeys.length; i++) {
@@ -1215,3 +1213,4 @@ const INTERMediator_DBAdapter = {
 module.exports = INTERMediator_DBAdapter
 const INTERMediator = require('../../src/js/INTER-Mediator')
 const IMLibLocalContext = require('../../src/js/INTER-Mediator-LocalContext')
+const INTERMediatorLib = require("../../src/js/INTER-Mediator-Lib")
