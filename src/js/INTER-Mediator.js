@@ -209,7 +209,12 @@ const INTERMediator = {
   currentContext: null,
   currentRecordset: null,
   socketMarkNode: null,
-  alwaysAddOperationExchange: false,
+
+  // Local Context Conditions behaviors
+  alwaysAddOperationExchange: false, // for compatible previous ver.10
+  lcConditionsOP1AND: false,
+  lcConditionsOP2AND: false,
+  lcConditionsOP3AND: false,
 
   // Detect Internet Explorer and its version.
   propertyIETridentSetup: () => {

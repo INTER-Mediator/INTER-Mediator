@@ -675,7 +675,7 @@ const INTERMediator_DBAdapter = {
       params, INTERMediator.additionalCondition[args.name], conditions, extCount);
     [params, extCountSort] = INTERMediator_DBAdapter.parseAdditionalSortParameter(
       params, INTERMediator.additionalSortKey[args.name], extCountSort);
-    params = INTERMediator_DBAdapter.parseLocalContext(args, params, conditions, extCount, extCountSort)[0]
+    params = INTERMediator_DBAdapter.parseLocalContext(args, params, extCount, extCountSort)[0]
     return params
   },
 
@@ -749,32 +749,30 @@ const INTERMediator_DBAdapter = {
   },
 
   // Private method for the db_queryParameters method
-  parseLocalContext: function (args, params, conditions, extCount, extCountSort) {
+  parseLocalContext: function (args, params, extCount, extCountSort) {
     const orderFields = {}
-    const addExLimit = INTERMediator.alwaysAddOperationExchange ? 0 : 1
+    if (INTERMediator.alwaysAddOperationExchange) {
+      INTERMediator.lcConditionsOP1AND = true
+      INTERMediator.lcConditionsOP2AND = true
+    }
+    let isFirstItem = true
     for (const key in IMLibLocalContext.store) {
       const value = String(IMLibLocalContext.store[key])
       const keyParams = key.split(':')
       if (keyParams && keyParams.length > 1 && keyParams[1].trim() === args.name && value.length > 0) {
         if (keyParams[0].trim() === 'condition' && keyParams.length >= 4) {
-          const fields = keyParams[2].split(',')
-          const operator = keyParams[3].trim()
-          if (fields.length > addExLimit) {
+          if (isFirstItem) {
             params += '&condition' + extCount + 'field=__operation__'
-            params += '&condition' + extCount + 'operator=ex'
+            params += '&condition' + extCount + 'operator=block/' + (INTERMediator.lcConditionsOP1AND ? 'T' : 'F')
+              + '/' + (INTERMediator.lcConditionsOP2AND ? 'T' : 'F') + '/' + (INTERMediator.lcConditionsOP3AND ? 'T' : 'F')
             extCount++
+            isFirstItem = false
           }
-          for (let index = 0; index < fields.length; index++) {
-            const conditionSign = fields[index].trim() + '#' + operator + '#' + value
-            if (!INTERMediator_DBAdapter.eliminateDuplicatedConditions || conditions.indexOf(conditionSign) < 0) {
-              params += '&condition' + extCount +
-                'field=' + encodeURIComponent(fields[index].replace(';;', '::').trim())
-              params += '&condition' + extCount + 'operator=' + encodeURIComponent(operator)
-              params += '&condition' + extCount + 'value=' + encodeURIComponent(value)
-              conditions.push(conditionSign)
-            }
-            extCount++
-          }
+         params += '&condition' + extCount +
+            'field=' + encodeURIComponent(keyParams[2].trim().replace(';;', '::').trim())
+          params += '&condition' + extCount + 'operator=' + encodeURIComponent(keyParams[3].trim())
+          params += '&condition' + extCount + 'value=' + encodeURIComponent(value)
+          extCount++
         } else if (keyParams[0].trim() === 'valueofaddorder' && keyParams.length >= 4) {
           orderFields[parseInt(value)] = [keyParams[2].trim(), keyParams[3].trim()]
         }
@@ -786,7 +784,7 @@ const INTERMediator_DBAdapter = {
       params += '&sortkey' + extCountSort + 'direction=' + encodeURIComponent(orderFields[orderedKeys[i]][1])
       extCountSort++
     }
-    return [params, conditions, extCount, extCountSort];
+    return [params, extCount, extCountSort];
   },
   /*
    db_update
