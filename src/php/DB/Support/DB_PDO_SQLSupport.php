@@ -69,7 +69,8 @@ trait DB_PDO_SQLSupport
                         } else if (strpos($condition['operator'], 'block') === 0) {
                             // ASSUMPTION: field=__operation__, operator=block/*/*/* must be at the end of condition settings.
                             // ASSUMPTION: After 'block', there are just condition and __operation__ only item.
-                            $result .= "({$this->arrayToClause($queryClauseArray, $insideOp, $outsideOp)}) AND (";
+                            $currentConditions = $this->arrayToClause($queryClauseArray, $insideOp, $outsideOp);
+                            $result .= (strlen($currentConditions) > 0 ? "({$currentConditions}) AND" : '') . " (";
                             $queryClauseArray = [];
                             $isInBlock = 1;
                             [$fieldOp, $groupOp, $blockOp] = $this->determineOperatorsInBlock($condition['operator']);
