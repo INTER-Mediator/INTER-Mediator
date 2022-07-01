@@ -198,6 +198,9 @@ class OME
      */
     public function checkEmail($address)
     {
+        if ( is_null($address)) {
+            $this->errorMessage = "アドレス“{$address}”は空です。";
+        }
         if (!preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9_.+-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9._-]+)+$/", $address)) {
             if (isset($address)) {
                 $this->errorMessage = "アドレス“{$address}”は正しくないメールアドレスです。";
