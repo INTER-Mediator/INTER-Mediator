@@ -19,7 +19,7 @@ $pattern = "/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+
 if (count($_POST) > 0) {
     if ($_POST['ad1'] != $_POST['ad2']) {
         $message .= '2つのメールアドレスが異なっています。';
-    } else if (preg_match($pattern, $_POST['ad1']) !== 1) {
+    } else if (isset($_POST['ad1']) && preg_match($pattern, $_POST['ad1']) !== 1) {
         $message .= 'メールアドレスの形式が正しくありません。';
     } else {
         require_once('../../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
