@@ -28,6 +28,8 @@ Ver.10 (In Development)
 - Local Context conditions (i.e.:data-im="_@condition:...") can control operations of the generated sql statement with
   INTERMediator.lcConditionsOP1AND, ..OP2.. and ..OP3.. properties.
   See https://inter-mediator.info/ja/for-developers/bindingfunc.html
+- The message "The Data Sources of the Definition: [0][portals][1] includes an undefined keyword."
+  (shows in Ver.8's limitation) cleared.
 - [BUG FIX] The lookup feature was not fully efficient, and refactored them.
 - [BUG FIX] When checkbox set to off, the message which someone modified showed unexpectedly.
 - [BUG FIX] After moving from list to detail and back to list page, paging position wasn't retrieve and show the
