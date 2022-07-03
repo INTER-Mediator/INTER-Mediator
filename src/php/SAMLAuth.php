@@ -50,7 +50,7 @@ class SAMLAuth
                 $totalJudge = true;
                 $attrs = $this->getValuesFromAttributes();
                 foreach ($this->samlAdditionalRules as $key => $rule) {
-                    if (!preg_match($rule, $attrs[$key])) {
+                    if (isset($attrs[$key]) && !preg_match($rule, $attrs[$key])) {
                         $totalJudge = false;
                     }
                 }

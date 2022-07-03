@@ -17,9 +17,9 @@
     <script>
       INTERMediatorOnPage.doBeforeConstruct = function () {
         INTERMediatorLog.suppressDebugMessageOnPage = true
-        INTERMediator.lcConditionsOP1AND = true;
-        INTERMediator.lcConditionsOP2AND = false;
-        INTERMediator.lcConditionsOP3AND = 'AND';
+        INTERMediator.lcConditionsOP1AND = false;
+        INTERMediator.lcConditionsOP2AND = true;
+        INTERMediator.lcConditionsOP3AND = true;
       }
     </script>
 </head>
@@ -28,9 +28,9 @@
     <thead>
     <tr>
         <td colspan="9">
-            <input type="text" data-im="_@condition:testtable:num1:>=">
-            <input type="text" data-im="_@condition:testtable:num2:<=">
-            <input type="text" data-im="_@condition:testtable:vc1,vc2,vc3:*match*">
+            <input type="text" data-im="_@condition:testtable:num1:>=">←data-im="_@condition:testtable:num1:&gt;="<br>
+            <input type="text" data-im="_@condition:testtable:num2:<=">←data-im="_@condition:testtable:num2:&lt;="<br>
+            <input type="text" data-im="_@condition:testtable:vc1,vc2,vc3:*match*">←data-im="_@condition:testtable:vc1,vc2,vc3:*match*"<br>
             <button data-im="_@update:testtable">検索</button>
         </td>
     </tr>

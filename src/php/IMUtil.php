@@ -356,9 +356,8 @@ class IMUtil
             return TRUE;
         }
 
-        if (substr($host, -($length + 1)) === '.' . $webServerName &&
-            strpos($webServerName, '.') !== FALSE &&
-            !preg_match('/^[0-9.]+$/', $webServerName)
+        if (!is_null($webServerName) && substr($host, -($length + 1)) === '.' . $webServerName &&
+            strpos($webServerName, '.') !== FALSE && !preg_match('/^[0-9.]+$/', $webServerName)
         ) {
             return TRUE;
         }
@@ -409,7 +408,7 @@ class IMUtil
      */
     public static function valueForJSInsert($str): string
     {
-        if(is_null($str)){
+        if (is_null($str)) {
             return "";
         }
         return str_replace("'", "\\'",

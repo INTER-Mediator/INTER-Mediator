@@ -135,9 +135,11 @@ abstract class DB_PDO_Handler
         $fieldArray = [];
         $matches = [];
         foreach ($result as $row) {
-            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (count($matches) > 0 && in_array($matches[0], $this->numericFieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
+            if(!is_null($row[$this->fieldNameForType])) {
+                preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
+                if (count($matches) > 0 && in_array($matches[0], $this->numericFieldTypes)) {
+                    $fieldArray[] = $row[$this->fieldNameForField];
+                }
             }
         }
         return $fieldArray;
@@ -197,9 +199,11 @@ abstract class DB_PDO_Handler
         $fieldArray = [];
         $matches = [];
         foreach ($result as $row) {
-            preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
-            if (in_array($matches[0], $this->booleanFieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
+            if(!is_null($row[$this->fieldNameForType])) {
+                preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
+                if (in_array($matches[0], $this->booleanFieldTypes)) {
+                    $fieldArray[] = $row[$this->fieldNameForField];
+                }
             }
         }
         return $fieldArray;

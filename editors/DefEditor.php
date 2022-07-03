@@ -57,7 +57,7 @@ function changeIncludeIMPath($src, $validStatement)
     $includeFunctions = array('require_once', 'include_once', 'require', 'include');
     foreach ($includeFunctions as $targetFunction) {
         $pattern = '/' . $targetFunction . '\\(.+INTER-Mediator.php.+\\);/';
-        if (preg_match($pattern, $src)) {
+        if (!is_null($src) && preg_match($pattern, $src)) {
             return preg_replace($pattern, $validStatement, $src);
         }
     }
@@ -584,10 +584,12 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                         $globalDataSource[$contextID]["authentication"] = array();
                     }
                     $setValue = $this->dbSettings->getValueOfField($theKey);
-                    if (preg_match("/^false$/i", $setValue)) {
-                        $setValue = false;
-                    } else if (preg_match("/^true$/i", $setValue)) {
-                        $setValue = true;
+                    if(!is_null($setValue)) {
+                        if (preg_match("/^false$/i", $setValue)) {
+                            $setValue = false;
+                        } else if (preg_match("/^true$/i", $setValue)) {
+                            $setValue = true;
+                        }
                     }
                     if ($setValue === true || $setValue === false) {
                         $globalDataSource[$contextID]["authentication"]["media-handling"] = $setValue;
@@ -668,7 +670,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                         }
                         if (array_search($theKey, $keysShouldInteger) !== false) {
                             $setValue = ($setValue === '') ? '' : (int)$setValue;
-                        } else if (array_search($thirdKey, $keysShouldBoolean) !== false) {
+                        } else if (array_search($thirdKey, $keysShouldBoolean) !== false && !is_null($setValue)) {
                             if (preg_match("/^false$/i", $setValue)) {
                                 $setValue = false;
                             } else if (preg_match("/^true$/i", $setValue)) {
@@ -691,7 +693,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                     $setValue = $this->dbSettings->getValueOfField($theKey);
                     if (array_search($theKey, $keysShouldInteger) !== false) {
                         $setValue = ($setValue === '') ? '' : (int)$setValue;
-                    } else if (array_search($theKey, $keysShouldBoolean) !== false) {
+                    } else if (array_search($theKey, $keysShouldBoolean) !== false && !is_null($setValue)) {
                         if (preg_match("/(false)/i", $setValue)) {
                             $setValue = false;
                         } else if (preg_match("/(true)/i", $setValue)) {
@@ -720,7 +722,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                     $fieldValue = $this->dbSettings->getValueOfField($key);
                     if (array_search($key, $keysShouldInteger) !== false) {
                         $fieldValue = ($fieldValue === '') ? '' : (int)$fieldValue;
-                    } else if (array_search($key, $keysShouldBoolean) !== false) {
+                    } else if (array_search($key, $keysShouldBoolean) !== false && !is_null($fieldValue)) {
                         if (preg_match("/(false)/i", $fieldValue)) {
                             $fieldValue = false;
                         } else if (preg_match("/(true)/i", $fieldValue)) {
@@ -749,7 +751,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                         $globalOptions["authentication"][$authKey] = array();
                     }
                     $setValue = $this->dbSettings->getValueOfField($theKey);
-                    if ($authKey === "email-as-username") {
+                    if ($authKey === "email-as-username" && !is_null($setValue)) {
                         if (preg_match("/^false$/i", $setValue)) {
                             $setValue = false;
                         } else if (preg_match("/^true$/i", $setValue)) {
@@ -821,7 +823,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                     $setValue = $this->dbSettings->getValueOfField($theKey);
                     if (array_search($theKey, $keysShouldInteger) !== false) {
                         $setValue = ($setValue === '') ? '' : (int)$setValue;
-                    } else if (array_search($theKey, $keysShouldBoolean) !== false) {
+                    } else if (array_search($theKey, $keysShouldBoolean) !== false && !is_null($setValue)) {
                         if (preg_match("/(false)/i", $setValue)) {
                             $setValue = false;
                         } else if (preg_match("/(true)/i", $setValue)) {
