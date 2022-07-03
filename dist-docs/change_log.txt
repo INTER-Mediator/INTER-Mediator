@@ -30,6 +30,7 @@ Ver.10 (In Development)
   See https://inter-mediator.info/ja/for-developers/bindingfunc.html
 - The message "The Data Sources of the Definition: [0][portals][1] includes an undefined keyword."
   (shows in Ver.8's limitation) cleared.
+- Definition File Editor supports the portals keyword.
 - [BUG FIX] The lookup feature was not fully efficient, and refactored them.
 - [BUG FIX] When checkbox set to off, the message which someone modified showed unexpectedly.
 - [BUG FIX] After moving from list to detail and back to list page, paging position wasn't retrieve and show the
