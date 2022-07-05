@@ -223,6 +223,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                         'just-move-thisstep' => getValueFromArray($context, 'just-move-thisstep'),
                         'ignoring-field' => getValueFromArray($context, 'ignoring-field'),
                         'numeric-fields' => getValueFromArray($context, 'numeric-fields'),
+                        'portals' => getValueFromArray($context, 'portals'),
                     );
                     $seq++;
                 }
@@ -570,7 +571,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
             'authentication-new-user', 'authentication-new-group',
             'authentication-delete-user', 'authentication-delete-group',
             'import-convert-number', 'import-convert-date', 'import-convert-datetime',
-            'ignoring-field', 'numeric-fields',
+            'ignoring-field', 'numeric-fields','portals',
         );
 
         // $this->logger->setDebugMessage("dataSourceName={$dataSourceName}");
