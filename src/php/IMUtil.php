@@ -498,7 +498,12 @@ class IMUtil
     {
         $resultStr = '';
         for ($i = 0; $i < $digit; $i++) {
-            $resultStr .= chr(random_int(33, 126));
+            try{
+                $code = random_int(33, 126);
+            } catch (\Exception $ex) {
+                $code = rand(33, 126);
+            }
+            $resultStr .= chr($code);
         }
         return $resultStr;
     }
@@ -568,8 +573,17 @@ class IMUtil
     public static function generateRandomPW()
     {
         $str = '';
-        for ($i = 0; $i < random_int(15, 20); $i++) {
-            $n = random_int(33, 126); // They should be an ASCII character for JS SHA1 lib.
+        try{
+            $limit = random_int(15, 20);
+        } catch (\Exception $ex) {
+            $limit = rand(15, 20);
+        }
+        for ($i = 0; $i < $limit; $i++) {
+            try{
+                $n = random_int(33, 126); // They should be an ASCII character for JS SHA1 lib.
+            } catch (\Exception $ex) {
+                $n = rand(33, 126); // They should be an ASCII character for JS SHA1 lib.
+            }
             $str .= chr($n);
         }
         return $str;

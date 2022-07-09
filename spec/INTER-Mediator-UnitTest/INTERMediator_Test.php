@@ -114,6 +114,27 @@ class INTERMediator_Test extends TestCase
 //        $this->assertFalse(isset($params[$key]), $message);
     }
 
+    private function checkNotDefined($key){
+        $message = "The variable {$key} in the params.php should not be defined for distribution.";
+        $value = Params::getParameterValue($key, 'Not defined');
+        $this->assertEquals('Not defined', $value, $message);
+    }
+
+    public function test_checkParamsFileDefaultAWSS3(){
+        $this->checkNotDefined('accessRegion');
+        $this->checkNotDefined('rootBucket');
+        $this->checkNotDefined('applyingACL');
+        $this->checkNotDefined('s3AccessProfile');
+        $this->checkNotDefined('s3AccessKey');
+        $this->checkNotDefined('s3AccessSecret');
+        $this->checkNotDefined('s3urlCustomize');
+        $this->checkNotDefined('dropboxAppKey');
+        $this->checkNotDefined('dropboxAppSecret');
+        $this->checkNotDefined('dropboxRefreshToken');
+        $this->checkNotDefined('dropboxAccessTokenPath');
+        $this->checkNotDefined('rootInDropbox');
+    }
+
     public function test_valueForJSInsert()
     {
         $expected = "\\'";

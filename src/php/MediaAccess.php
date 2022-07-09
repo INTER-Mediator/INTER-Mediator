@@ -18,8 +18,11 @@ namespace INTERMediator;
 use Aws\Credentials\Credentials;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
+use Spatie\Dropbox\Client;
+use msyk\DropboxAPIShortLivedToken\AutoRefreshingDropBoxTokenService;
 use Exception;
-use phpseclib\Crypt\RSA;
+
+//use phpseclib\Crypt\RSA;
 
 class MediaAccess
 {
@@ -46,7 +49,7 @@ class MediaAccess
 
     private function isPossibleSchema($file): bool
     {
-        $schema = ["https:", "http:", "class:", "s3:"];
+        $schema = ["https:", "http:", "class:", "s3:", "dropbox:"];
         foreach ($schema as $scheme) {
             if (strpos($file, $scheme) === 0) {
                 return true;
@@ -258,6 +261,33 @@ class MediaAccess
                     $content = $result['Body'];
                 }
 
+                header("Content-Type: " . IMUtil::getMimeType($fileName));
+                header("Content-Length: " . strlen($content));
+                header("Content-Disposition: {$this->disposition}; filename={$dq}"
+                    . str_replace("+", "%20", urlencode($fileName) ?? "") . $dq);
+                $util = new IMUtil();
+                $util->outputSecurityHeaders();
+                $this->outputImage($content);
+            } else if (stripos($target, 'dropbox://') === 0) {
+                $appKey = Params::getParameterValue('dropboxAppKey', '');
+                $appSecret = Params::getParameterValue('dropboxAppSecret', '');
+                $refreshToken = Params::getParameterValue('dropboxRefreshToken', '');
+                $accessTokenPath = Params::getParameterValue('dropboxAccessTokenPath', '');
+                $startOfPath = strpos($target, "/", 5);
+                $urlPath = substr($target, $startOfPath + 2);
+                $fileName = basename($urlPath);
+                file_put_contents("/tmp/2.txt", var_export($accessTokenPath, true));
+                try {
+                    $tokenProvider = new AutoRefreshingDropBoxTokenService(
+                        $refreshToken, $appKey, $appSecret, $accessTokenPath);
+                    $client = new Client($tokenProvider);
+                    // $content = $client->download($urlPath); // Is that bug of spatie/dropbox-api ???
+                    $response = $client->contentEndpointRequest('files/download', ['path' => $urlPath,]);
+                    $content = $response->getBody()->getContents();
+                } catch (\Exception $ex) {
+                    error_log($ex->getMessage());
+                    $this->exitAsError(500);
+                }
                 header("Content-Type: " . IMUtil::getMimeType($fileName));
                 header("Content-Length: " . strlen($content));
                 header("Content-Disposition: {$this->disposition}; filename={$dq}"
