@@ -59,7 +59,11 @@ class FileSystem implements UploadingSupport
             . $this->justfyPathComponent($keyfield, $uploadFilePathMode) . "="
             . $this->justfyPathComponent($keyvalue, $uploadFilePathMode) . DIRECTORY_SEPARATOR
             . $this->justfyPathComponent($targetFieldName, $uploadFilePathMode);
-        $rand4Digits = random_int(1000, 9999);
+        try {
+            $rand4Digits = random_int(1000, 9999);
+        } catch (\Exception $ex) {
+            $rand4Digits = rand(1000, 9999);
+        }
         $filePartialPath = $dirPath . '/' . $filePathInfo['filename'] . '_'
             . $rand4Digits . '.' . $filePathInfo['extension'];
         $filePath = $fileRoot . $filePartialPath;
