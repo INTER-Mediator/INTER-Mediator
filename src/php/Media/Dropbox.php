@@ -41,6 +41,7 @@ class Dropbox implements UploadingSupport
 
     public function processing($db, $url, $options, $files, $noOutput, $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug)
     {
+        $dbAlt = new Proxy();
         $counter = -1;
         foreach ($files as $fn => $fileInfo) { // Single file only
             $counter += 1;
@@ -63,6 +64,7 @@ class Dropbox implements UploadingSupport
             } catch (\Exception $ex) {
                 $rand4Digits = rand(1000, 9999);
             }
+
             $objectPath = $this->rootInDropbox . '/' . $dirPath
                 . '/' . $filePathInfo['filename'] . '_' . $rand4Digits . '.' . $filePathInfo['extension'];
             $storedURL = "dropbox://$objectPath";
@@ -75,21 +77,18 @@ class Dropbox implements UploadingSupport
                 }
             }
 
-            $db = new Proxy();
-            $db->initialize($datasource, $options, $dbspec, $debug, $contextname);
-            $db->dbSettings->addExtraCriteria($keyfield, "=", $keyvalue);
-            $db->dbSettings->setFieldsRequired(array($targetFieldName));
-            $db->dbSettings->setValue(array($storedURL));
-            $db->processingRequest("update", true);
-            $dbProxyRecord = $db->getDatabaseResult();
+            $dbAlt->initialize($datasource, $options, $dbspec, $debug, $contextname);
+            $dbAlt->dbSettings->addExtraCriteria($keyfield, "=", $keyvalue);
+            $dbAlt->dbSettings->setFieldsRequired(array($targetFieldName));
+            $dbAlt->dbSettings->setValue(array($storedURL));
+            $dbAlt->processingRequest("update", true);
+            $dbProxyRecord = $dbAlt->getDatabaseResult();
 
-            $relatedContext = null;
             if (isset($dbProxyContext['file-upload'])) {
                 foreach ($dbProxyContext['file-upload'] as $item) {
                     if (isset($item['field']) && $item['field'] == $targetFieldName) {
-                        $relatedContext = new Proxy();
-                        $relatedContext->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : null);
-                        $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
+                        $dbAlt->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : null);
+                        $relatedContextInfo = $dbAlt->dbSettings->getDataSourceTargetArray();
                         $fields = array();
                         $values = array();
                         if (isset($relatedContextInfo["query"])) {
@@ -110,9 +109,9 @@ class Dropbox implements UploadingSupport
                         }
                         $fields[] = "path";
                         $values[] = $storedURL;
-                        $relatedContext->dbSettings->setFieldsRequired($fields);
-                        $relatedContext->dbSettings->setValue($values);
-                        $relatedContext->processingRequest("create", true, true);
+                        $dbAlt->dbSettings->setFieldsRequired($fields);
+                        $dbAlt->dbSettings->setValue($values);
+                        $dbAlt->processingRequest("create", true, true);
                     }
                 }
             }
@@ -124,8 +123,19 @@ class Dropbox implements UploadingSupport
                 $client = new Client($tokenProvider);
                 $client->upload($objectPath, file_get_contents($fileInfoTemp), 'add');
             } catch (\Exception $ex) {
-                var_export($ex->getMessage());
+                if (!is_null($url)) {
+                    header('Location: ' . $url);
+                } else {
+                    $db->logger->setErrorMessage($ex->getMessage());
+                    $db->processingRequest("noop");
+                    if (!$noOutput) {
+                        $db->finishCommunication();
+                        $db->exportOutputDataAsJSON();
+                    }
+                }
+                return;
             }
+            unlink($fileInfoTemp); // Remove upload file
         }
     }
 }
