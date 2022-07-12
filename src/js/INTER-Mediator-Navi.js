@@ -24,6 +24,7 @@
  */
 const IMLibPageNavigation = {
   deleteInsertOnNavi: [],
+  isKeepOnNaviArray: false,
   previousModeDetail: null,
   stepNavigation: [],
   stepCurrentContextName: null,
@@ -1303,7 +1304,9 @@ const IMLibPageNavigation = {
         operator: '=',
         value: keyValue
       }, undefined, '_imlabel_crosstable')
+      IMLibPageNavigation.isKeepOnNaviArray = true
       await INTERMediator.constructMain(detailContext)
+      IMLibPageNavigation.isKeepOnNaviArray = false
       INTERMediator.clearCondition(contextName)
       if (isHide) {
         INTERMediatorOnPage.masterScrollPosition = {x: window.scrollX, y: window.scrollY}
@@ -1520,8 +1523,8 @@ const IMLibPageNavigation = {
         tdNode.setAttribute('colspan', 100)
         tdNode.setAttribute('class', 'IM_NaviBack_TD')
         INTERMediator.setIdValue(trNode)
-        if(isTop){
-          targetNode.insertBefore(trNode,targetNode.getElementsByTagName('TR')[0])
+        if (isTop) {
+          targetNode.insertBefore(trNode, targetNode.getElementsByTagName('TR')[0])
         } else {
           targetNode.appendChild(trNode)
         }

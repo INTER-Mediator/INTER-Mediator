@@ -21,12 +21,12 @@ IM_Entry(
             'records' => 3,
             'name' => 'productlist',
             'view' => 'product',
+            'table' => 'product',
             'key' => 'id',
             'paging' => true,
             'sort' => array(array('field' => 'unitprice', 'direction' => 'ASC'),),
             'navi-control' => 'master',
-//            'repeat-control' => 'insert delete',
-//            'paging' => true,
+            'repeat-control' => 'insert delete copy',
         ),
         array(
             'records' => 1,
@@ -35,7 +35,6 @@ IM_Entry(
             'table' => 'product',
             'key' => 'id',
             'navi-control' => 'detail-top',
-//            'paging' => true,
         ),
     ),
     array(

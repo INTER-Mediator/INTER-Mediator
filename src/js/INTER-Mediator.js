@@ -437,7 +437,9 @@ const INTERMediator = {
     await INTERMediatorOnPage.retrieveAuthInfo()
     INTERMediator.connectToServiceServer()
 
-    IMLibPageNavigation.deleteInsertOnNavi = []
+    if(!IMLibPageNavigation.isKeepOnNaviArray) {
+      IMLibPageNavigation.deleteInsertOnNavi = []
+    }
     try {
       if (updateRequiredContext === true || typeof updateRequiredContext === 'undefined') {
         INTERMediator.partialConstructing = false
