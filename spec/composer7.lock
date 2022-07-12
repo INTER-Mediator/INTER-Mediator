@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fec42cda252e747680a96166a3e63e82",
+    "content-hash": "7e113e17c71dc02e5611764c304ae442",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -58,16 +58,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.231.2",
+            "version": "3.231.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "9a7c2a8c4b7f95074749e1a7b575e6b4486bdcab"
+                "reference": "f52b74060063d6545ee8324f1d161f37fcb87c8c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/9a7c2a8c4b7f95074749e1a7b575e6b4486bdcab",
-                "reference": "9a7c2a8c4b7f95074749e1a7b575e6b4486bdcab",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/f52b74060063d6545ee8324f1d161f37fcb87c8c",
+                "reference": "f52b74060063d6545ee8324f1d161f37fcb87c8c",
                 "shasum": ""
             },
             "require": {
@@ -144,9 +144,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.231.2"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.231.3"
             },
-            "time": "2022-07-08T18:16:11+00:00"
+            "time": "2022-07-11T18:20:19+00:00"
         },
         {
             "name": "doctrine/lexer",
@@ -1191,23 +1191,22 @@
         },
         {
             "name": "msyk/dropbox-api-shortlivedtoken",
-            "version": "dev-main",
+            "version": "5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/msyk/dropbox-api-shortlivedtoken.git",
-                "reference": "692c4576ed2b14d5fcd6337ce3b1a5077f9de4b3"
+                "reference": "52424ef8e93b6986771c347d73b4e2f8ff1e9fcb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/msyk/dropbox-api-shortlivedtoken/zipball/692c4576ed2b14d5fcd6337ce3b1a5077f9de4b3",
-                "reference": "692c4576ed2b14d5fcd6337ce3b1a5077f9de4b3",
+                "url": "https://api.github.com/repos/msyk/dropbox-api-shortlivedtoken/zipball/52424ef8e93b6986771c347d73b4e2f8ff1e9fcb",
+                "reference": "52424ef8e93b6986771c347d73b4e2f8ff1e9fcb",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.1.0",
                 "spatie/dropbox-api": "*"
             },
-            "default-branch": true,
             "type": "application",
             "autoload": {
                 "psr-4": {
