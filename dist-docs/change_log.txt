@@ -74,6 +74,7 @@ Ver.9 (January 31, 2022)
 - The variable $suppressAuthTargetFillingOnCreate in params.php prevents to set the target field of authentication
   on carete operation.
 - The dist-docs/generateminifyjshere.sh file is the shell script generating the minified js file on composer installed.
+- The default value of $sendMailCompatibilityMode variable in params.php changed as false.
 - [BUG FIX] The addCondition() api of INTERMediator class ignore conditions in some case (value: 0, or without value).
   This was over checking the object describing a condition, and modified to easier.
 - [BUG FIX] The MediaAccess class with a context level authentication couldn't show images in some cases.

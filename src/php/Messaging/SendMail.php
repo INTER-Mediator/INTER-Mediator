@@ -25,7 +25,7 @@ class SendMail extends MessagingProvider
 
     public function __construct()
     {
-        $this->isCompatible = Params::getParameterValue("sendMailCompatibilityMode", true);
+        $this->isCompatible = Params::getParameterValue("sendMailCompatibilityMode", false);
     }
 
     public function processing($dbProxy, $sendMailParam, $result)
