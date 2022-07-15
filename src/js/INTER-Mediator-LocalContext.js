@@ -26,6 +26,8 @@ const IMLibLocalContext = {
   contextName: '_',
   store: {},
   binding: {},
+  keyRespondTypes: ['text', 'date', 'datetime-local', 'email', 'month', 'number', 'password', 'search', 'tel', 'time', 'url', 'week'],
+
 
   clearAll: function () {
     'use strict'
@@ -118,20 +120,19 @@ const IMLibLocalContext = {
 
   bindingNode: function (node) {
     'use strict'
-    let linkInfos, nodeInfo, idValue, i, j, value, params, unbinding, unexistId, dataImControl
     if (node.nodeType !== 1) {
       return
     }
-    linkInfos = INTERMediatorLib.getLinkedElementInfo(node)
-    dataImControl = node.getAttribute('data-im-control')
-    unbinding = (dataImControl && dataImControl === 'unbind')
-    for (i = 0; i < linkInfos.length; i += 1) {
-      nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos[i])
+    const linkInfos = INTERMediatorLib.getLinkedElementInfo(node)
+    const dataImControl = node.getAttribute('data-im-control')
+    const unbinding = (dataImControl && dataImControl === 'unbind')
+    for (let i = 0; i < linkInfos.length; i += 1) {
+      const nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos[i])
       if (nodeInfo.table === this.contextName) {
         if (!node.id) {
           node.id = INTERMediator.nextIdValue()
         }
-        idValue = node.id
+        const idValue = node.id
         if (!this.binding[nodeInfo.field]) {
           this.binding[nodeInfo.field] = []
         }
@@ -139,9 +140,9 @@ const IMLibLocalContext = {
           this.binding[nodeInfo.field].push(idValue)
           // this.store[nodeInfo.field] = document.getElementById(idValue).value
         }
-        unexistId = -1
+        let unexistId = -1
         while (unexistId >= 0) {
-          for (j = 0; j < this.binding[nodeInfo.field].length; j++) {
+          for (let j = 0; j < this.binding[nodeInfo.field].length; j++) {
             if (!document.getElementById(this.binding[nodeInfo.field][j])) {
               unexistId = j
             }
@@ -151,17 +152,17 @@ const IMLibLocalContext = {
           }
         }
 
-        value = this.store[nodeInfo.field]
+        const value = this.store[nodeInfo.field]
         IMLibElement.setValueToIMNode(node, nodeInfo.target, value, true)
 
-        params = nodeInfo.field.split(':')
+        const params = nodeInfo.field.split(':')
         switch (params[0]) {
           case 'addorder':
             IMLibMouseEventDispatch.setExecute(idValue, IMLibUI.eventAddOrderHandler)
             break
           case 'update':
             IMLibMouseEventDispatch.setExecute(idValue, (function () {
-              let contextName = params[1]
+              const contextName = params[1]
               return async function () {
                 updateFirstContext(contextName)
               }
@@ -169,7 +170,7 @@ const IMLibLocalContext = {
             break
           case 'condition':
             let attrType = node.getAttribute('type')
-            if (attrType && attrType === 'text') {
+            if (attrType && IMLibLocalContext.keyRespondTypes.indexOf(attrType) > -1) {
               IMLibKeyDownEventDispatch.setExecuteByCode(idValue, 'Enter', (function () {
                 let contextName = params[1]
                 return async function (event) {
