@@ -24,6 +24,11 @@ IM_Entry(
             'sort' => array(
                 array('field' => 'dt1', 'direction' => 'desc'),
             ),
+            'file-upload' => [
+                ['field' => 'text1', 'context' => 'fileupload',],
+//                ['container' => 'S3',],
+                ['container' => 'Dropbox',],
+            ],
             'post-reconstruct' => true,
             'repeat-control' => 'insert delete',
             'default-values' => array(
@@ -32,6 +37,12 @@ IM_Entry(
             ),
             'authentication' => ['media-handling' => true],
         ),
+        [
+            'name' => 'fileupload',
+            'key' => 'id',
+            'relation' => [['foreign-key' => 'f_id', 'join-field' => 'id', 'operator' => '='],],
+            'repeat-control' => 'delete',
+        ],
     ),
     array(
         'formatter' => array(

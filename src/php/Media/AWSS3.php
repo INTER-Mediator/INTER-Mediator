@@ -45,6 +45,8 @@ class AWSS3 implements UploadingSupport
 
     public function processing($db, $url, $options, $files, $noOutput, $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug)
     {
+        $dbAlt = new Proxy();
+
         $counter = -1;
         foreach ($files as $fn => $fileInfo) {
             $counter += 1;
@@ -116,21 +118,18 @@ class AWSS3 implements UploadingSupport
                 }
             }
 
-            $db = new Proxy();
-            $db->initialize($datasource, $options, $dbspec, $debug, $contextname);
-            $db->dbSettings->addExtraCriteria($keyfield, "=", $keyvalue);
-            $db->dbSettings->setFieldsRequired(array($targetFieldName));
-            $db->dbSettings->setValue(array($storedURL));
-            $db->processingRequest("update", true);
-            $dbProxyRecord = $db->getDatabaseResult();
+            $dbAlt->initialize($datasource, $options, $dbspec, $debug, $contextname);
+            $dbAlt->dbSettings->addExtraCriteria($keyfield, "=", $keyvalue);
+            $dbAlt->dbSettings->setFieldsRequired(array($targetFieldName));
+            $dbAlt->dbSettings->setValue(array($storedURL));
+            $dbAlt->processingRequest("update", true);
+            $dbProxyRecord = $dbAlt->getDatabaseResult();
 
-            $relatedContext = null;
             if (isset($dbProxyContext['file-upload'])) {
                 foreach ($dbProxyContext['file-upload'] as $item) {
                     if (isset($item['field']) && $item['field'] == $targetFieldName) {
-                        $relatedContext = new Proxy();
-                        $relatedContext->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : null);
-                        $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
+                        $dbAlt->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : null);
+                        $relatedContextInfo = $dbAlt->dbSettings->getDataSourceTargetArray();
                         $fields = array();
                         $values = array();
                         if (isset($relatedContextInfo["query"])) {
@@ -151,13 +150,13 @@ class AWSS3 implements UploadingSupport
                         }
                         $fields[] = "path";
                         $values[] = $storedURL;
-                        $relatedContext->dbSettings->setFieldsRequired($fields);
-                        $relatedContext->dbSettings->setValue($values);
-                        $relatedContext->processingRequest("create", true, true);
+                        $dbAlt->dbSettings->setFieldsRequired($fields);
+                        $dbAlt->dbSettings->setValue($values);
+                        $dbAlt->processingRequest("create", true, true);
                     }
                 }
             }
-            $db->addOutputData('dbresult', $storedURL);
+            $dbAlt->addOutputData('dbresult', $storedURL);
         }
     }
 }

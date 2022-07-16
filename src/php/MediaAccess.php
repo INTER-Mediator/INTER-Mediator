@@ -18,7 +18,7 @@ namespace INTERMediator;
 use Aws\Credentials\Credentials;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
-use Spatie\Dropbox\Client;
+use msyk\DropboxAPIShortLivedToken\DropboxClientModified;
 use msyk\DropboxAPIShortLivedToken\AutoRefreshingDropBoxTokenService;
 use Exception;
 
@@ -276,14 +276,11 @@ class MediaAccess
                 $startOfPath = strpos($target, "/", 5);
                 $urlPath = substr($target, $startOfPath + 2);
                 $fileName = basename($urlPath);
-                file_put_contents("/tmp/2.txt", var_export($accessTokenPath, true));
                 try {
                     $tokenProvider = new AutoRefreshingDropBoxTokenService(
                         $refreshToken, $appKey, $appSecret, $accessTokenPath);
-                    $client = new Client($tokenProvider);
-                    // $content = $client->download($urlPath); // Is that bug of spatie/dropbox-api ???
-                    $response = $client->contentEndpointRequest('files/download', ['path' => $urlPath,]);
-                    $content = $response->getBody()->getContents();
+                    $client = new DropboxClientModified($tokenProvider);
+                    $content = $client->download($urlPath);
                 } catch (\Exception $ex) {
                     error_log($ex->getMessage());
                     $this->exitAsError(500);

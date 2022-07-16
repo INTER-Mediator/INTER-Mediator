@@ -81,6 +81,7 @@
                 <th>Date and Time/Path</th>
                 <th>Upload</th>
                 <th>Picture</th>
+                <th>File Upload</th>
                 <th></th>
             </tr>
             </thead>
@@ -88,11 +89,20 @@
             <tr>
                 <td>
                     <div data-im="testtable@dt1"></div>
-                    <div data-im="testtable@vc1"></div>
+                    <div data-im="testtable@text1"></div>
                 </td>
-                <td data-im="testtable@vc1" data-im-widget="jquery_fileupload"></td>
+                <td data-im="testtable@text1" data-im-widget="jquery_fileupload"></td>
                 <td>
-                    <img src="include_authAll_MySQL.php?media=" style="width: 50px" data-im="testtable@vc1@#src">
+                    <img src="include_authAll_MySQL.php?media=" style="width: 50px" data-im="testtable@text1@#src">
+                </td>
+                <td>
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td data-im="fileupload@path"></td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </td>
                 <td></td>
             </tr>
