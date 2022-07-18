@@ -27,7 +27,7 @@ IM_Entry(
             'file-upload' => [
                 ['field' => 'text1', 'context' => 'fileupload',],
 //                ['container' => 'S3',],
-                ['container' => 'Dropbox',],
+ //               ['container' => 'Dropbox',],
             ],
             'post-reconstruct' => true,
             'repeat-control' => 'insert delete',

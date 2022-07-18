@@ -78,6 +78,7 @@ class GenerateJSCode
             false, false, 1, false,
             false, false
         ]);
+        $credentialCookieDomain = Params::getParameterValue('credentialCookieDomain', NULL);
 
         $resetPage = $options['authentication']['reset-page'] ?? $resetPage ?? null;
         $enrollPage = $options['authentication']['enroll-page'] ?? $enrollPage ?? null;
@@ -264,6 +265,8 @@ class GenerateJSCode
         }
         $this->generateAssignJS(
             "INTERMediatorOnPage.requireAuthentication", $boolValue);
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.credentialCookieDomain", $q, ($credentialCookieDomain ?? ''), $q);
         $this->generateAssignJS(
             "INTERMediatorOnPage.authRequiredContext", IMUtil::arrayToJS($requireAuthenticationContext));
         if (!is_null($enrollPage)) {
