@@ -87,6 +87,7 @@ let INTERMediatorOnPage = {
   buttonClassBackNavi: null,
   useServiceServer: false,
   activateClientService: false,
+  credentialCookieDomain: null,
   /*
   This method 'getMessages' is going to be replaced valid one with the browser's language.
   Here is defined to prevent the warning of static check.
@@ -136,7 +137,7 @@ let INTERMediatorOnPage = {
             returnVal = INTERMediatorOnPage.getSessionStorageWithFallDown(key)
             break
         }
-      } else if(value == ''){ // remover
+      } else if (value == '') { // remover
         switch (INTERMediatorOnPage.authStoring) {
           case 'cookie':
           case 'cookie-domainwide':
@@ -153,6 +154,8 @@ let INTERMediatorOnPage = {
             INTERMediatorOnPage.setCookie(key, value)
             break
           case 'cookie-domainwide':
+            INTERMediatorOnPage.setCookieDomainWide(key, value)
+            break
           case 'credential':
             INTERMediatorOnPage.setCookieDomainWide(key, value)
             break
@@ -354,12 +357,19 @@ let INTERMediatorOnPage = {
     'use strict'
     const d = new Date()
     d.setTime(d.getTime() + expired * 1000)
-    let cookieString = key + '=' + encodeURIComponent(val) + (isDomain ? ';path=/' : '') + ';'
+    let cookieString = key + '=' + encodeURIComponent(val)
+    if (INTERMediatorOnPage.credentialCookieDomain) {
+      cookieString += `;domain=.${INTERMediatorOnPage.credentialCookieDomain}`
+      // The dot before domain name is for matching the PHP's setcookie function's behavior.
+    }
+    if (isDomain) {
+      cookieString += `;path=/`
+    }
     if (expired > 0) {
-      cookieString += 'max-age=' + expired + ';expires=' + d.toUTCString() + ';'
+      cookieString += ';max-age=' + expired + ';expires=' + d.toUTCString()
     }
     if (document.URL.substring(0, 8) === 'https://') {
-      cookieString += 'secure;'
+      cookieString += ';secure;'
     }
     document.cookie = cookieString
   },

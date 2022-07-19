@@ -54,6 +54,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     private $isStopNotifyAndMessaging = false;
     private $suppressMediaToken = false;
     private $migrateSHA1to2;
+    private $credentialCookieDomain;
 
     public function setClientId($cid) // For testing
     {
@@ -604,6 +605,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->logger->setDebugMessage("Start to initialize the DB\Proxy class instance.", 2);
         $this->dbSettings->setSAMLExpiringSeconds(Params::getParameterValue('ldapExpiringSeconds', 600));
         $this->dbSettings->setSAMLExpiringSeconds(Params::getParameterValue('samlExpiringSeconds', 600));
+        $this->credentialCookieDomain = Params::getParameterValue('credentialCookieDomain', "");
 
         $this->accessLogLevel = intval(Params::getParameterValue('accessLogLevel', false));
         $this->clientSyncAvailable = boolval(Params::getParameterValue("activateClientService", false));
@@ -1181,8 +1183,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 if ($this->authSucceed) {
                     setcookie('_im_credential_token',
                         $this->generateCredential($generatedChallenge, $generatedUID),
-                        time() + $this->dbSettings->getAuthenticationItem('authexpired'),
-                        '/', $_SERVER['SERVER_NAME'], false, true);
+                        time() + $this->dbSettings->getAuthenticationItem('authexpired'), '/',
+                        $this->credentialCookieDomain, false, true);
                 } else {
                     setcookie("_im_credential_token", "", time() - 3600);
                 }
@@ -1214,11 +1216,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $cookieNameToken .= ('_' . $realm);
                 }
                 setcookie($cookieNameToken, $generatedChallenge,
-                    time() + $this->dbSettings->getAuthenticationItem('authexpired'),
-                    '/', $_SERVER['SERVER_NAME'], false, true);
+                    time() + $this->dbSettings->getAuthenticationItem('authexpired'), '/',
+                    $this->credentialCookieDomain, false, true);
                 setcookie($cookieNameUser, $this->paramAuthUser,
-                    time() + $this->dbSettings->getAuthenticationItem('authexpired'),
-                    '/', $_SERVER['SERVER_NAME'], false, false);
+                    time() + $this->dbSettings->getAuthenticationItem('authexpired'), '/',
+                    $this->credentialCookieDomain, false, false);
                 $this->logger->setDebugMessage("mediatoken stored", 2);
             }
         }
