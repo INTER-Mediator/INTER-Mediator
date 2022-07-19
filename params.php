@@ -73,10 +73,7 @@ $webServerName = array('');
  */
 $browserCompatibility = array(
     'Chrome' => '1+',
-    'Edge' => '12+',
-    // Edge/12.0(Microsoft Edge 20)
-    //'Trident' => '7+',
-    // Trident/7.0(Internet Explorer 11)
+    'Edge' => '12+', // Edge/12.0(Microsoft Edge 20)
     'Firefox' => '2+',
     'Opera' => '1+',
     'Safari' => '4+',
@@ -96,7 +93,7 @@ $browserCompatibility = array(
 // $waitAfterMail = 20;  // Wait after send email with smtp server. Unit is Millisecond.
 
 // Sending email features compatibility with INTER-Mediator v5 unless 'template-context' key isn't specified.
-$sendMailCompatibilityMode = true;  // default is true
+$sendMailCompatibilityMode = false;  // default is false (Until Ver.9 the default value was true.)
 
 // Error/Warning/Debug messages can write to the PHP's error log. The default values are false
 //$errorMessageLogging = false;
