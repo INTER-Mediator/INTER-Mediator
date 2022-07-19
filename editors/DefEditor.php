@@ -140,7 +140,6 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                         'aggregation-from' => getValueFromArray($context, 'aggregation-from'),
                         'aggregation-group-by' => getValueFromArray($context, 'aggregation-group-by'),
                         'post-query-stored' => getValueFromArray($context, 'post-query-stored'),
-                        'post-query-stored' => getValueFromArray($context, 'post-query-stored'),
                         'before-move-nextstep' => getValueFromArray($context, 'before-move-nextstep'),
                         'buttonnames-insert' => getValueFromArray($context, 'button-names', 'insert'),
                         'buttonnames-delete' => getValueFromArray($context, 'button-names', 'delete'),
@@ -556,12 +555,12 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
 
         $keysShouldInteger = array(
             'records', 'maxrecords', 'smtp-port', 'import-skip-lines',
-            'messaging-load-body-wrap', 'messaging-edit-body-wrap', 'messaging-new-body-wrap',
+            'messaging-load-body-wrap', 'messaging-edit-body-wrap', 'messaging-new-body-wrap', 'messaging-create-body-wrap',
         );
 
         $keysShouldBoolean = array(
             'paging', 'email-as-username', 'portal', 'media-handling', 'post-reconstruct',
-            'container', 'soft-delete', 'f-option','cert-verifying',
+            'container', 'soft-delete', 'f-option', 'cert-verifying',
         );
 
         $keysShouldArray = array(
@@ -571,7 +570,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
             'authentication-new-user', 'authentication-new-group',
             'authentication-delete-user', 'authentication-delete-group',
             'import-convert-number', 'import-convert-date', 'import-convert-datetime',
-            'ignoring-field', 'numeric-fields','portals',
+            'ignoring-field', 'numeric-fields', 'portals',
         );
 
         // $this->logger->setDebugMessage("dataSourceName={$dataSourceName}");
@@ -585,7 +584,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                         $globalDataSource[$contextID]["authentication"] = array();
                     }
                     $setValue = $this->dbSettings->getValueOfField($theKey);
-                    if(!is_null($setValue)) {
+                    if (!is_null($setValue)) {
                         if (preg_match("/^false$/i", $setValue)) {
                             $setValue = false;
                         } else if (preg_match("/^true$/i", $setValue)) {
