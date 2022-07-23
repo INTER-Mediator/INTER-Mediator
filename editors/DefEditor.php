@@ -134,6 +134,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                         'post-move-url' => getValueFromArray($context, 'post-move-url'),
                         'repeat-control' => getValueFromArray($context, 'repeat-control'),
                         'navi-control' => getValueFromArray($context, 'navi-control'),
+                        'sync-control' => getValueFromArray($context, 'sync-control'),
                         'post-repeater' => getValueFromArray($context, 'post-repeater'),
                         'post-enclosure' => getValueFromArray($context, 'post-enclosure'),
                         'aggregation-select' => getValueFromArray($context, 'aggregation-select'),

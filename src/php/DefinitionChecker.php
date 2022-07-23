@@ -214,6 +214,7 @@ class DefinitionChecker
         'smtp' => array(
             'server' => 'string',
             'port' => 'integer',
+            'encryption' => 'string',
             'username' => 'string',
             'password' => 'string',
         ),
