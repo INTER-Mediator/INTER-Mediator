@@ -6,7 +6,7 @@
 
 //const JSEncrypt = require('../../node_modules/jsencrypt/bin/jsencrypt.js')
 
-test('JSEncrypt Test: Check the collect encription with RSA key.', function () {
+test('JSEncrypt Test: Check the collect encryption with RSA key.', function () {
   'use strict'
 
   return // JSEncrypt doesn't use anymore. 2022-01-23 by msyk
