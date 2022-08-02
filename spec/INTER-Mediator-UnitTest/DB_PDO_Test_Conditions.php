@@ -155,4 +155,24 @@ trait DB_PDO_Test_Conditions
             [['field' => 'num1', 'operator' => 'IS NULL'],],
             '(("num1" IS NULL))');
     }
+
+    public function testCondition12()
+    {
+        $this->checkConditions(
+            [['field' => 'num1', 'value' => 100]], // No operator key
+            null,
+            '("num1" = 100)');
+    }
+
+    public function testCondition13()
+    {
+        $this->checkConditions(
+            [
+                ['field' => 'num1', 'value' => 100], // No operator key
+                ['field' => 'num1', 'operator' => '<', 'value' => 300],
+            ],
+            null,
+            '("num1" = 100 AND "num1" < 300)');
+    }
+
 }

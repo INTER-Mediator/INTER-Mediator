@@ -88,13 +88,13 @@ trait DB_PDO_SQLSupport
                         $isMultiValue = count($valueList) > 1;
                         foreach ($valueList as $value) {
                             foreach ($fieldList as $field) {
-                                $lcConditions[] = ['field' => $field, 'operator' => $condition['operator'], 'value' => $value];
+                                $lcConditions[] = ['field' => $field, 'operator' => $condition['operator'] ?? '=', 'value' => $value];
                             }
                             $lcConditions[] = ['field' => '__operation__'];
                         }
                     } else {
                         foreach ($fieldList as $field) {
-                            $lcConditions[] = ['field' => $field, 'operator' => $condition['operator'], 'value' => $condition['value']];
+                            $lcConditions[] = ['field' => $field, 'operator' => $condition['operator'] ?? '=', 'value' => $condition['value']];
                         }
                     }
                     $resultItem = $this->generateWhereClause($lcConditions, $primaryKey, $numericFields, $isExtra, $fieldOp, $blockOp);
@@ -103,8 +103,10 @@ trait DB_PDO_SQLSupport
                     }
                     $result .= ($isMultiValue ? '(' : '') . $resultItem . ($isMultiValue ? ')' : '');
                     $isInBlock += 1;
-                } else if ((!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey)
-                    && isset($condition['operator'])) {
+                } else if ((!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey)) {
+                    if(!isset($condition['operator'])){
+                        $condition['operator'] = '=';
+                    }
                     $escapedField = $this->handler->quotedEntityName($condition['field']);
                     $condition = $this->normalizedCondition($condition);
                     if (!$this->specHandler->isPossibleOperator($condition['operator'])) {

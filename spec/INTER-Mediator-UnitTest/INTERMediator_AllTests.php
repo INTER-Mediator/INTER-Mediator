@@ -13,6 +13,14 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+/*
+ * The test of INTER-Mediator can do with 'composer test', but macOS might report the error as like
+ * "Failed to open stream: Too many open files in ...". (Masayuki Nii, 2022-07-29)
+ * In that case, the following command resolve this issue.
+ * https://magento.stackexchange.com/questions/314894/composer-installation-fails-with-failed-to-open-stream-too-many-open-files
+ *
+ * ulimit -n 10000
+ */
 error_reporting(E_ALL);
 
 use PHPUnit\Framework\TestCase;
