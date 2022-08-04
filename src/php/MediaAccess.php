@@ -20,7 +20,6 @@ use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use msyk\DropboxAPIShortLivedToken\DropboxClientModified;
 use msyk\DropboxAPIShortLivedToken\AutoRefreshingDropBoxTokenService;
-use Exception;
 
 //use phpseclib\Crypt\RSA;
 
@@ -168,41 +167,43 @@ class MediaAccess
                 $this->outputImage($content);
             } else if (stripos($target, 'http://') === 0 || stripos($target, 'https://') === 0) { // http or https
                 $parsedUrl = parse_url($target);
-                if (get_class($dbProxyInstance->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI' &&
-                    isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver') {
-                    // for FileMaker Data API
-                    $target = 'http://' . $parsedUrl['user'] . ':' . $parsedUrl['pass'] . '@127.0.0.1:1895' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
-                    if (function_exists('curl_init')) {
-                        $session = curl_init($target);
-                        curl_setopt($session, CURLOPT_HEADER, true);
-                        curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-                        $content = curl_exec($session);
-                        $headerSize = curl_getinfo($session, CURLINFO_HEADER_SIZE);
-                        $headers = substr($content, 0, $headerSize);
-                        curl_close($session);
-                        $sessionKey = '';
-                        if ($header = explode("\r\n", $headers)) {
-                            foreach ($header as $line) {
-                                if ($line) {
-                                    $h = explode(': ', $line);
-                                    if (isset($h[0]) && isset($h[1]) && $h[0] == 'Set-Cookie') {
-                                        $sessionKey = str_replace(
-                                            '; HttpOnly', '', str_replace('X-FMS-Session-Key=', '', $h[1] ?? "")
-                                        );
+                if (get_class($dbProxyInstance->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI' ){ // for FileMaker Data API
+                    if(isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver') { // Set As 'localserver'
+                        $target = 'http://' . $parsedUrl['user'] . ':' . $parsedUrl['pass'] . '@127.0.0.1:1895' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
+                        if (function_exists('curl_init')) {
+                            $session = curl_init($target);
+                            curl_setopt($session, CURLOPT_HEADER, true);
+                            curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+                            $content = curl_exec($session);
+                            $headerSize = curl_getinfo($session, CURLINFO_HEADER_SIZE);
+                            $headers = substr($content, 0, $headerSize);
+                            curl_close($session);
+                            $sessionKey = '';
+                            if ($header = explode("\r\n", $headers)) {
+                                foreach ($header as $line) {
+                                    if ($line) {
+                                        $h = explode(': ', $line);
+                                        if (isset($h[0]) && isset($h[1]) && $h[0] == 'Set-Cookie') {
+                                            $sessionKey = str_replace(
+                                                '; HttpOnly', '', str_replace('X-FMS-Session-Key=', '', $h[1] ?? "")
+                                            );
+                                        }
                                     }
                                 }
                             }
+                            $target = 'http://127.0.0.1:1895' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
+                            $headers = array('X-FMS-Session-Key: ' . $sessionKey);
+                            $session = curl_init($target);
+                            curl_setopt($session, CURLOPT_HEADER, false);
+                            curl_setopt($session, CURLOPT_HTTPHEADER, $headers);
+                            curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+                            $content = curl_exec($session);
+                            curl_close($session);
+                        } else {
+                            $this->exitAsError(500);
                         }
-                        $target = 'http://127.0.0.1:1895' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
-                        $headers = array('X-FMS-Session-Key: ' . $sessionKey);
-                        $session = curl_init($target);
-                        curl_setopt($session, CURLOPT_HEADER, false);
-                        curl_setopt($session, CURLOPT_HTTPHEADER, $headers);
-                        curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-                        $content = curl_exec($session);
-                        curl_close($session);
-                    } else {
-                        $this->exitAsError(500);
+                    } else { // Other settings
+                        $content = $dbProxyInstance->dbClass->getContainerData($target);
                     }
                 } else if (intval(get_cfg_var('allow_url_fopen')) === 1) {
                     $content = file_get_contents($target);
@@ -293,14 +294,15 @@ class MediaAccess
                 $util->outputSecurityHeaders();
                 $this->outputImage($content);
             }
-        } catch (Exception $ex) {
-            // do nothing
+        } catch (\Exception $ex) {
+            error_log($ex->getMessage());
+            $this->exitAsError(500);
         }
     }
 
     /**
      * @param $code int any error code, but supported just 204, 401 and 500.
-     * @throws Exception happens anytime.
+     * @throws \Exception happens anytime.
      */
     private function exitAsError($code)
     {
@@ -316,7 +318,7 @@ class MediaAccess
                 break;
             default: // for debug purpose mainly.
         }
-        throw new Exception('Respond HTTP Error.');
+        throw new \Exception('Respond HTTP Error.');
     }
 
     /**
@@ -519,7 +521,7 @@ class MediaAccess
                         if ($image !== false) {
                             try {
                                 $exif = @exif_read_data($tempPath);
-                            } catch (Exception $ex) {
+                            } catch (\Exception $ex) {
                                 $exif = false;
                             }
                             if ($exif !== false && !empty($exif['Orientation'])) {
