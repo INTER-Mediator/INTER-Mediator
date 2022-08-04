@@ -302,7 +302,7 @@ class MediaAccess
 
     /**
      * @param $code int any error code, but supported just 204, 401 and 500.
-     * @throws Exception happens anytime.
+     * @throws \Exception happens anytime.
      */
     private function exitAsError($code)
     {
@@ -318,7 +318,7 @@ class MediaAccess
                 break;
             default: // for debug purpose mainly.
         }
-        throw new Exception('Respond HTTP Error.');
+        throw new \Exception('Respond HTTP Error.');
     }
 
     /**
@@ -521,7 +521,7 @@ class MediaAccess
                         if ($image !== false) {
                             try {
                                 $exif = @exif_read_data($tempPath);
-                            } catch (Exception $ex) {
+                            } catch (\Exception $ex) {
                                 $exif = false;
                             }
                             if ($exif !== false && !empty($exif['Orientation'])) {
