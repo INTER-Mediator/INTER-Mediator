@@ -33,7 +33,7 @@ Ver.10 (In Development)
 - Definition File Editor supports the portals keyword.
 - Dropbox can set as the container of media files. The context definition in definition file might have
   the 'file-upload' entries and the 'container' key can have the value "Dropbox".
-  The paramters for accessing Dropbox is defined in the params.php.
+  The parameters for accessing Dropbox is defined in the params.php.
 - Local context 'condition' which sets to the input tag can respond Enter key not only 'text' also other string style elements.
 - [BUG FIX] The lookup feature was not fully efficient, and refactored them.
 - [BUG FIX] When checkbox set to off, the message which someone modified showed unexpectedly.
@@ -41,6 +41,7 @@ Ver.10 (In Development)
   list from the start of it.
 - [BUG FIX] The definition file editor didn't support some keys added from Ver.8 or whatever.
 - [BUG FIX] On the master/detail navigation, Any buttons on pagination were disappeared after clicking Detail button.
+- [BUG FIX] On the MediaAccess class, container data with FileMaker_DataAPI couldn't get.
 
 Ver.9 (January 31, 2022)
 - [Important] Native upser authentication and LDAP direct supporting was dropped. If you want to LDAP server
