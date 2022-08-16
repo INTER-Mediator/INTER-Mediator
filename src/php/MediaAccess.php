@@ -203,7 +203,7 @@ class MediaAccess
                             $this->exitAsError(500);
                         }
                     } else { // Other settings
-                        $content = $dbProxyInstance->dbClass->getContainerData($target);
+                        $content = $dbProxyInstance->dbClass->fmData->getContainerData($target);
                     }
                 } else if (intval(get_cfg_var('allow_url_fopen')) === 1) {
                     $content = file_get_contents($target);
