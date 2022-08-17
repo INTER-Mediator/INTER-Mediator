@@ -202,8 +202,7 @@ const IMLibElement = {
           break
         default:
           while (element.childNodes.length > 0) {
-            if (element.parentNode.getAttribute('data-im-element') === 'processed' &&
-              INTERMediatorLib.isWidgetElement(element.parentNode)) {
+            if (INTERMediatorLib.isProcessed(element.parentNode) && INTERMediatorLib.isWidgetElement(element.parentNode)) {
               // for data-im-widget
               return false
             }
@@ -461,7 +460,7 @@ const IMLibElement = {
         element.setAttribute('data-iminputadded', 'set')
       }
     }
-    element.setAttribute('data-im-element', 'processed')
+    INTERMediatorLib.markProcessed(element)
     return needPostValueSet
   },
 
