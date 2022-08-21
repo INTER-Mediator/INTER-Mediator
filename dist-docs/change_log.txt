@@ -35,6 +35,8 @@ Ver.10 (In Development)
   the 'file-upload' entries and the 'container' key can have the value "Dropbox".
   The parameters for accessing Dropbox is defined in the params.php.
 - Local context 'condition' which sets to the input tag can respond Enter key not only 'text' also other string style elements.
+- The property INTERMediatorOnPage.updateProcessedNode controls updating the node value after node processing.
+  It applies nodes other than INPUT/SELECT/TEXTAREA tag. The default value is false, and the values don't update.
 - [BUG FIX] The lookup feature was not fully efficient, and refactored them.
 - [BUG FIX] When checkbox set to off, the message which someone modified showed unexpectedly.
 - [BUG FIX] After moving from list to detail and back to list page, paging position wasn't retrieve and show the

@@ -202,11 +202,12 @@ const IMLibElement = {
           break
         default:
           while (element.childNodes.length > 0) {
-            if (INTERMediatorLib.isProcessed(element.parentNode) && INTERMediatorLib.isWidgetElement(element.parentNode)) {
-              // for data-im-widget
+            if (INTERMediatorLib.isProcessed(element.parentNode)) { // for data-im-widget
+              return false
+            } else if (!INTERMediatorOnPage.updateProcessedNode && INTERMediatorLib.isWidgetElement(element.parentNode)){
               return false
             }
-            element.removeChild(element.childNodes[0])
+              element.removeChild(element.childNodes[0])
           }
           break
       }
@@ -354,12 +355,12 @@ const IMLibElement = {
               element.checked = false
             }
           }
-          } else if (typeAttr === 'date') {
-            element.value = !curVal ? "" : IMLibFormat.dateFormat(curVal, '%Y-%M-%D')
-          } else if (typeAttr === 'time') {
-            element.value = !curVal ? "" : IMLibFormat.timeFormat(curVal, '%H:%I:%S')
-          } else if (typeAttr === 'datetime-local') {
-            element.value = !curVal ? "" : IMLibFormat.datetimeFormat(curVal, '%Y-%M-%DT%H:%I:%S')
+        } else if (typeAttr === 'date') {
+          element.value = !curVal ? "" : IMLibFormat.dateFormat(curVal, '%Y-%M-%D')
+        } else if (typeAttr === 'time') {
+          element.value = !curVal ? "" : IMLibFormat.timeFormat(curVal, '%H:%I:%S')
+        } else if (typeAttr === 'datetime-local') {
+          element.value = !curVal ? "" : IMLibFormat.datetimeFormat(curVal, '%Y-%M-%DT%H:%I:%S')
         } else { // this node must be text field
           element.value = curVal
         }
