@@ -352,18 +352,21 @@ const IMLibPageNavigation = {
 
   insertRecordFromNavi: function (targetName, keyField, isConfirm) {
     'use strict'
+    const contextDef = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', targetName)
+    if (contextDef === null) {
+      window.alert('no targetname :' + targetName)
+      return
+    }
     if (isConfirm) {
-      if (!window.confirm(INTERMediatorOnPage.getMessages()[1026])) {
+      let confirmMessage = INTERMediatorOnPage.getMessages()[1026]
+      if (contextDef['confirm-messages'] && contextDef['confirm-messages']['insert']) {
+        confirmMessage = contextDef['confirm-messages']['insert']
+      }
+      if (!window.confirm(confirmMessage)) {
         return
       }
     }
     INTERMediatorOnPage.showProgress()
-    const contextDef = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', targetName)
-    if (contextDef === null) {
-      window.alert('no targetname :' + targetName)
-      INTERMediatorOnPage.hideProgress()
-      return
-    }
 
     IMLibQueue.setTask((function () {
       const contextDefCapt = contextDef
@@ -428,8 +431,15 @@ const IMLibPageNavigation = {
 
   deleteRecordFromNavi: function (targetName, keyField, keyValue, isConfirm) {
     'use strict'
-    if (isConfirm && !window.confirm(INTERMediatorOnPage.getMessages()[1025])) {
-      return
+    const contextDef = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', targetName)
+    if (isConfirm) {
+      let confirmMessage = INTERMediatorOnPage.getMessages()[1025]
+      if (contextDef['confirm-messages'] && contextDef['confirm-messages']['delete']) {
+        confirmMessage = contextDef['confirm-messages']['delete']
+      }
+      if (!window.confirm(confirmMessage)) {
+        return
+      }
     }
     IMLibQueue.setTask((function () {
       const deleteArgs = {
@@ -470,8 +480,14 @@ const IMLibPageNavigation = {
 
   copyRecordFromNavi: function (contextDef, keyValue) {
     'use strict'
-    if (contextDef['repeat-control'].match(/confirm-copy/) && !window.confirm(INTERMediatorOnPage.getMessages()[1041])) {
-      return
+    if (contextDef['repeat-control'].match(/confirm-copy/)) {
+      let confirmMessage = INTERMediatorOnPage.getMessages()[1041]
+      if (contextDef['confirm-messages'] && contextDef['confirm-messages']['copy']) {
+        confirmMessage = contextDef['confirm-messages']['copy']
+      }
+      if (!window.confirm(confirmMessage)) {
+        return
+      }
     }
     IMLibQueue.setTask((function () {
       const contextDefCapt = contextDef

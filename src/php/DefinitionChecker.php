@@ -430,6 +430,11 @@ class DefinitionChecker
                 'navi-back' => 'string',
                 'copy' => 'string',
             ),
+            'confirm-messages' => array(
+                'insert' => 'string',
+                'delete' => 'string',
+                'copy' => 'string',
+            ),
             'ignoring-field' => 'array',
             'import' => [
                 '1st-line' => 'boolean|string',
