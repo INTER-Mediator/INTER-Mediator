@@ -50,7 +50,7 @@
     "express": "*",
     "flatpickr": ">=4.6.3",
     "forever": ">=4.0.2",
-    "inter-mediator-expressionparser": "1.0.18",
+    "inter-mediator-expressionparser": "1.0.19",
     "inter-mediator-formatter": "1.0.19",
     "inter-mediator-locale": "1.0.4",
     "inter-mediator-nodegraph": "1.0.6",
