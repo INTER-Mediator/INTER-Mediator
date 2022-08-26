@@ -88,6 +88,7 @@ let INTERMediatorOnPage = {
   useServiceServer: false,
   activateClientService: false,
   credentialCookieDomain: null,
+  updateProcessedNode: false,
   /*
   This method 'getMessages' is going to be replaced valid one with the browser's language.
   Here is defined to prevent the warning of static check.

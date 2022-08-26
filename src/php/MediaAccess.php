@@ -167,8 +167,8 @@ class MediaAccess
                 $this->outputImage($content);
             } else if (stripos($target, 'http://') === 0 || stripos($target, 'https://') === 0) { // http or https
                 $parsedUrl = parse_url($target);
-                if (get_class($dbProxyInstance->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI' ){ // for FileMaker Data API
-                    if(isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver') { // Set As 'localserver'
+                if (get_class($dbProxyInstance->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') { // for FileMaker Data API
+                    if (isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver') { // Set As 'localserver'
                         $target = 'http://' . $parsedUrl['user'] . ':' . $parsedUrl['pass'] . '@127.0.0.1:1895' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
                         if (function_exists('curl_init')) {
                             $session = curl_init($target);
@@ -203,6 +203,7 @@ class MediaAccess
                             $this->exitAsError(500);
                         }
                     } else { // Other settings
+                        $dbProxyInstance->dbClass->setupFMDataAPIforDB($dbProxyInstance->dbSettings->getEntityForRetrieve(), 1);
                         $content = $dbProxyInstance->dbClass->fmData->getContainerData($target);
                     }
                 } else if (intval(get_cfg_var('allow_url_fopen')) === 1) {
