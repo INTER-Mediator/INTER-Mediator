@@ -203,8 +203,8 @@ class MediaAccess
                             $this->exitAsError(500);
                         }
                     } else { // Other settings
-                        $dbProxyInstance->dbClass->setupFMDataAPIforDB($dbProxyInstance->dbSettings->getEntityForRetrieve(), 1);
-                        $content = $dbProxyInstance->dbClass->fmData->getContainerData($target);
+                        $dbProxyInstance->dbClass->setupFMDataAPIforDB(NULL, 1);
+                        $content = base64_decode($dbProxyInstance->dbClass->fmData->getContainerData($target));
                     }
                 } else if (intval(get_cfg_var('allow_url_fopen')) === 1) {
                     $content = file_get_contents($target);
