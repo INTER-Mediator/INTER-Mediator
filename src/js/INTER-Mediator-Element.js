@@ -204,10 +204,10 @@ const IMLibElement = {
           while (element.childNodes.length > 0) {
             if (INTERMediatorLib.isProcessed(element.parentNode)) { // for data-im-widget
               return false
-            } else if (!INTERMediatorOnPage.updateProcessedNode && INTERMediatorLib.isWidgetElement(element.parentNode)){
+            } else if (!INTERMediatorOnPage.updateProcessedNode && INTERMediatorLib.isWidgetElement(element.parentNode)) {
               return false
             }
-              element.removeChild(element.childNodes[0])
+            element.removeChild(element.childNodes[0])
           }
           break
       }

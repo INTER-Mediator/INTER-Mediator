@@ -354,9 +354,14 @@ const IMLibUI = {
 
   copyButton: function (contextObj, keyValue) {
     'use strict'
-    let contextDef = contextObj.getContextDef()
+    const contextDef = contextObj.getContextDef()
     if (contextDef['repeat-control'].match(/confirm-copy/)) {
-      if (!window.confirm(INTERMediatorOnPage.getMessages()[1041])) {
+      const contextDef = contextObj.getContextDef()
+      let confirmMessage = INTERMediatorOnPage.getMessages()[1041]
+      if (contextDef['confirm-messages'] && contextDef['confirm-messages']['copy']) {
+        confirmMessage = contextDef['confirm-messages']['copy']
+      }
+      if (!window.confirm(confirmMessage)) {
         return
       }
     }
@@ -364,28 +369,27 @@ const IMLibUI = {
       let contextObjCapt = contextObj
       let keyValueCapt = keyValue
       return function (completeTask) {
-        let contextDef, assocDef, i, index, def, assocContexts, pStart, copyTerm
-        contextDef = contextObjCapt.getContextDef()
+        const contextDef = contextObjCapt.getContextDef()
         INTERMediatorOnPage.showProgress()
         try {
           if (contextDef.relation) {
-            for (index in contextDef.relation) {
+            for (const index in contextDef.relation) {
               if (contextDef.relation[index].portal === true) {
                 contextDef.portal = true
               }
             }
           }
 
-          assocDef = []
+          const assocDef = []
           if (contextDef['repeat-control'].match(/copy-/)) {
-            pStart = contextDef['repeat-control'].indexOf('copy-')
-            copyTerm = contextDef['repeat-control'].substr(pStart + 5)
+            let pStart = contextDef['repeat-control'].indexOf('copy-')
+            let copyTerm = contextDef['repeat-control'].substr(pStart + 5)
             if ((pStart = copyTerm.search(/\s/)) > -1) {
               copyTerm = copyTerm.substr(0, pStart)
             }
-            assocContexts = copyTerm.split(',')
-            for (i = 0; i < assocContexts.length; i++) {
-              def = IMLibContextPool.getContextDef(assocContexts[i])
+            const assocContexts = copyTerm.split(',')
+            for (let i = 0; i < assocContexts.length; i++) {
+              const def = IMLibContextPool.getContextDef(assocContexts[i])
               if (def.relation[0]['foreign-key']) {
                 assocDef.push({
                   name: def.name,
@@ -422,7 +426,7 @@ const IMLibUI = {
                   INTERMediator_DBAdapter.unregister()
                   await INTERMediator.constructMain(contextObjCapt2)
                   sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(contextObjCapt2)
-                  for (i = 0; i < sameOriginContexts.length; i++) {
+                  for (let i = 0; i < sameOriginContexts.length; i++) {
                     await INTERMediator.constructMain(sameOriginContexts[i], null)
                   }
                   INTERMediator.additionalCondition = restore
@@ -449,10 +453,13 @@ const IMLibUI = {
 
   deleteButton: function (currentContext, keyField, keyValue, isConfirm) {
     'use strict'
-    let dialogMessage
     if (isConfirm) {
-      dialogMessage = INTERMediatorOnPage.getMessages()[1025]
-      if (!window.confirm(dialogMessage)) {
+      const contextDef = currentContext.getContextDef()
+      let confirmMessage = INTERMediatorOnPage.getMessages()[1025]
+      if (contextDef['confirm-messages'] && contextDef['confirm-messages']['delete']) {
+        confirmMessage = contextDef['confirm-messages']['delete']
+      }
+      if (!window.confirm(confirmMessage)) {
         return
       }
     }
@@ -484,7 +491,7 @@ const IMLibUI = {
               }
               IMLibPageNavigation.navigationSetup()
               targetRepeaters = currentContextCapt2.binding[keying]._im_repeater
-              if(targetRepeaters) {
+              if (targetRepeaters) {
                 for (i = 0; i < targetRepeaters.length; i++) {
                   IMLibContextPool.removeRecordFromPool(targetRepeaters[i].id)
                 }
@@ -559,7 +566,12 @@ const IMLibUI = {
   insertButton: function (currentObj, keyValue, foreignValues, updateNodes, isConfirm) {
     'use strict'
     if (isConfirm) {
-      if (!window.confirm(INTERMediatorOnPage.getMessages()[1026])) {
+      const currentContext = currentObj.getContextDef()
+      let confirmMessage = INTERMediatorOnPage.getMessages()[1026]
+      if (currentContext['confirm-messages'] && currentContext['confirm-messages']['insert']) {
+        confirmMessage = currentContext['confirm-messages']['insert']
+      }
+      if (!window.confirm(confirmMessage)) {
         return
       }
     }
@@ -880,11 +892,11 @@ const IMLibUI = {
           if (INTERMediatorLib.isWidgetElement(linkedNodes[i])) {
             widgetValue = linkedNodes[i]._im_getValue()
             if (widgetValue) {
-              if(Array.isArray(widgetValue)){
-                for(let val of widgetValue) {
+              if (Array.isArray(widgetValue)) {
+                for (let val of widgetValue) {
                   fieldData.push({field: comp[1], value: val})
                 }
-              }else{
+              } else {
                 fieldData.push({field: comp[1], value: widgetValue})
               }
             }
