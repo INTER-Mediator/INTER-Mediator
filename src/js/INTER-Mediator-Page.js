@@ -1098,30 +1098,63 @@ let INTERMediatorOnPage = {
    * But it doesn't work by excluding to call by flag variable. I don't know why.
    * 2017-05-04 Masayuki Nii
    */
-  hideProgress: function () {
+  hideProgress: async function () {
     'use strict'
+    console.log(`showProgress-hideProgress:${INTERMediatorOnPage.progressCounter}`)
     if (!INTERMediatorOnPage.isShowProgress) {
       return
     }
-    const frontPanel = document.getElementById('_im_progress')
-    if (frontPanel) {
-      const themeName = INTERMediatorOnPage.getTheme().toLowerCase()
-      if (themeName === 'least' || themeName === 'thosedays') {
-        frontPanel.style.display = 'none'
-      } else {
-        frontPanel.style.transitionDuration = '0.3s'
-        frontPanel.style.opacity = 0
-        frontPanel.style.zIndex = -9999
+
+    INTERMediatorOnPage.progressCounter -= 1;
+    if (INTERMediatorOnPage.progressCounter == 0) {
+      // Waiting for debug
+      // const wait = async (ms) => new Promise(resolve => setTimeout(resolve, ms));
+      // await wait(1000)
+
+      const frontPanel = document.getElementById('_im_progress')
+      if (frontPanel) {
+        const themeName = INTERMediatorOnPage.getTheme().toLowerCase()
+        if (themeName === 'least' || themeName === 'thosedays') {
+          frontPanel.style.display = 'none'
+        } else {
+          frontPanel.style.transitionDuration = '0.3s'
+          frontPanel.style.opacity = 0
+          frontPanel.style.zIndex = -9999
+        }
       }
+      INTERMediatorOnPage.progressShowing = false;
     }
   },
 
-  /*  GIF animation image was generated on
-   But they describe no copyright or kind of message doesn't required. */
+  // Gear SVG was generated on http://loading.io/.
 
-  showProgress: function () {
-    'use strict'
+  showProgress: function (isDelay = true) {
+    console.log(`showProgress:${INTERMediatorOnPage.progressCounter}`)
     if (!INTERMediatorOnPage.isShowProgress) {
+      return
+    }
+    INTERMediatorOnPage.progressCounter += 1;
+    if (isDelay) {
+      setTimeout(INTERMediatorOnPage.showProgressImpl, INTERMediatorOnPage.progressStartDelay)
+    } else {
+      INTERMediatorOnPage.showProgressImpl()
+    }
+  },
+
+  progressCounter: 0,
+  progressShowing: false,
+  progressStartDelay: 300,
+
+  showProgressImpl: function () {
+    'use strict'
+    // if (!INTERMediatorOnPage.isShowProgress) {
+    //   return
+    // }
+    console.log(`showProgressImpl:${INTERMediatorOnPage.progressCounter}`)
+    if (INTERMediatorOnPage.progressShowing) {
+      return
+    }
+    if (INTERMediatorOnPage.progressCounter == 0) {
       return
     }
     const themeName = INTERMediatorOnPage.getTheme().toLowerCase()
@@ -1163,9 +1196,8 @@ let INTERMediatorOnPage = {
       frontPanel.style.opacity = 1.0
       frontPanel.style.zIndex = 555555
     }
+    INTERMediatorOnPage.progressShowing = true;
   },
-
-// Gear SVG was generated on http://loading.io/.
 
   setReferenceToTheme: function () {
     'use strict'

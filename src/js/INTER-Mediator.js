@@ -425,7 +425,7 @@ const INTERMediator = {
     if (!INTERMediatorOnPage.isAutoConstruct) {
       return
     }
-    INTERMediatorOnPage.showProgress()
+    INTERMediatorOnPage.showProgress(false)
 
     INTERMediator.crossTableStage = 0
     INTERMediator.appendingNodesAtLast = []
