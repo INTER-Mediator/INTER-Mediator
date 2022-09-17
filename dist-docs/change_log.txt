@@ -11,6 +11,13 @@ Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.10 (In Development)
+- Auto saving for INPUT and TEXTAREA element. Customizing in JavaScript code and their default value are:
+  IMLibElement.textAutoSave = true // Auto saving availability
+  IMLibElement.checkingSeconds = 1 // Repeating period in seconds
+  IMLibElement.waitSeconds = 5  // Waiting seconds to save from last input
+- Revert the Initial Value feature is working for INPUT and TEXTAREA element with Control+Shift+Z.
+- The 'Gear-style' progress information starts with a little bit after. Delay time can customize in JavaScript code.
+  INTERMediatorOnPage.progressStartDelay = 300 // Delay time in milliseconds
 - The Service Server by node is not booted in default settings. If you need to use it, you have to modify the setting
   in the params.php file. The Service Server requires for server side validation, and synchronizing with clients.
 - The _im_seq pesudo field appears in context. It shows the sequential number in the context records from 1.

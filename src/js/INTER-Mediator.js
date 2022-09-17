@@ -869,6 +869,7 @@ const INTERMediator = {
                 }
               }
             }
+            contextObj.captureCurrentStore()
           }
           return contextObj
         } catch (ex) {

@@ -14,6 +14,7 @@
 
 INTERMediatorOnPage.doBeforeConstruct = function () {
   INTERMediatorLog.suppressDebugMessageOnPage = true
+  // INTERMediatorOnPage.progressStartDelay = 0
 }
 
 INTERMediatorOnPage.doAfterConstruct = function () {
