@@ -633,6 +633,12 @@ INSERT item SET invoice_id=2,product_id=4,qty=3;
 INSERT item SET invoice_id=2,product_id=5,qty=3;
 INSERT item SET invoice_id=3,product_id=3,qty=20;
 
+/* The following view used for an exercise in the training book */
+CREATE VIEW item_display AS
+    SELECT item.id, item.invoice_id, item.product_id, item.category_id, product.name, item.qty,
+        product.unitprice as unitprice, qty * product.unitprice AS amount
+    FROM item, product WHERE item.product_id=product.id;
+
 # mysql> select * from item_display;
 # +----+------------+------------+-------------+--------+------+-----------+------------------+--------+
 # | id | invoice_id | product_id | category_id | name   | qty  | unitprice | unitprice_master | amount |
