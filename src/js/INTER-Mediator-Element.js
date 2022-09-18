@@ -564,18 +564,15 @@ const IMLibElement = {
       }
     }
     IMLibInputEventDispatch.setExecute(elementId, (targetId) => {
-      console.log(`Input Evemt: ${targetId}`)
       IMLibElement.lastEditDT = new Date()
       startWatching(targetId)
       IMLibElement.isAlreadySaved = false
     })
     IMLibFocusInEventDispatch.setExecute(elementId, (targetId) => {
-      console.log(`Focus-In Evemt: ${targetId}`)
       IMLibElement.lastEditDT = null
       startWatching(targetId)
     })
     IMLibFocusOutEventDispatch.setExecute(elementId, (targetId) => {
-      console.log(`Focus-Out Evemt: ${targetId}`)
       if (IMLibElement.editingTargetId != targetId) {
         return
       }
@@ -585,8 +582,6 @@ const IMLibElement = {
       IMLibElement.editWatchingTimer = null
     })
     IMLibKeyUpEventDispatch.setExecute(elementId, (event) => {
-      console.log(`Key up Evemt: ${event}`)
-      console.log(event)
       if (event.key == 'Z' && !event.altKey && event.ctrlKey && event.shiftKey) { //Control+Shift+Z
         if (IMLibElement.editingTargetId) {
           const nodeInfo = IMLibContextPool.getContextInfoFromId(IMLibElement.editingTargetId, null)
@@ -599,13 +594,11 @@ const IMLibElement = {
   },
 
   repeatedlyCall: () => {
-    console.log(`repeated call:`)
     if (!IMLibElement.lastEditDT) {
       return
     }
     const interval = (new Date()).getTime() - IMLibElement.lastEditDT.getTime()
     if (interval > IMLibElement.waitSeconds * 1000) {
-      console.log(`SAVE:`)
       if (!IMLibElement.editingTargetId) {
         return
       }
