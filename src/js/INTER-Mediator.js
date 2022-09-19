@@ -99,11 +99,6 @@ const INTERMediator = {
   additionalFieldValueOnUpdate: {},
   /**
    * @public
-   * @type {object}
-   */
-  additionalFieldValueOnDelete: {},
-  /**
-   * @public
    * @type {int}
    */
   waitSecondsAfterPostMessage: 4,

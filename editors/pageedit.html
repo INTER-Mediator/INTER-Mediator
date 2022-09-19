@@ -36,8 +36,8 @@
                 = {field: 'target', value: params.target};
             INTERMediator.additionalFieldValueOnUpdate['pagefile']
                 = {field: 'target', value: params.target};
-            INTERMediator.additionalFieldValueOnDelete['pagefile']
-                = {field: 'target', value: params.target};
+            // INTERMediator.additionalFieldValueOnDelete['pagefile']
+            //     = {field: 'target', value: params.target};
 
             document.getElementById('deffile').appendChild(document.createTextNode(params.target));
             INTERMediator.ignoreOptimisticLocking = true;
