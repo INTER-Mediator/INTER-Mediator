@@ -45,6 +45,9 @@ Ver.10 (In Development)
 - The property INTERMediatorOnPage.updateProcessedNode controls updating the node value after node processing.
   It applies nodes other than INPUT/SELECT/TEXTAREA tag. The default value is false, and the values don't update.
 - The "confirm-messages" key in a context of definition file can set the dialog message after clicking insert/delete/copy button.
+- The post repeater/enclosure method can define with INTERMediatorOnPage.postRepeater_[context name](param) or
+  INTERMediatorOnPage.postEnclosure_[context name](param), and these doesn't require the 'post-repeater' or
+  'post-enclosure' keyed value in the context definition.
 - [BUG FIX] The lookup feature was not fully efficient, and refactored them.
 - [BUG FIX] When checkbox set to off, the message which someone modified showed unexpectedly.
 - [BUG FIX] After moving from list to detail and back to list page, paging position wasn't retrieve and show the

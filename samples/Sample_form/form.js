@@ -21,3 +21,12 @@ INTERMediatorOnPage.doAfterConstruct = function () {
   document.getElementById('wrapper').style.display = 'block'
 }
 
+// INTERMediatorOnPage.postRepeater_person = function (param) {
+//   console.log('post repeater method called')
+//   console.log(param)
+// }
+//
+// INTERMediatorOnPage.postEnclosure_person = function (param) {
+//   console.log('post enclosure method called')
+//   console.log(param)
+// }
