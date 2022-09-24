@@ -331,6 +331,7 @@ const IMLibElement = {
           element._im_setValue(curVal)
         }
       } else if (element.tagName === 'INPUT') {
+        IMLibElement.setupSavingTimer(element.id)
         const typeAttr = element.getAttribute('type')
         if (typeAttr === 'checkbox' || typeAttr === 'radio') { // set the value
           const valueAttr = element.value
@@ -368,6 +369,7 @@ const IMLibElement = {
         needPostValueSet = true
         element.value = curVal
       } else if (element.tagName === 'TEXTAREA') {
+        IMLibElement.setupSavingTimer(element.id)
         if (INTERMediator.defaultTargetInnerHTML) {
           element.innerHTML = curVal
         } else {
@@ -381,43 +383,6 @@ const IMLibElement = {
         }
       }
     }
-    /* // formatSpec variable is not set anywhere.
-    if (formatSpec && negativeColor) {
-      let negativeSign = INTERMediatorLocale.negative_sign
-      let negativeTailSign = ''
-      const flags = IMLibElement.initilaizeFlags(element)
-      if (flags.negativeStyle === 0 || flags.negativeStyle === 1) {
-        negativeSign = '-'
-      } else if (flags.negativeStyle === 2) {
-        negativeSign = '('
-        negativeTailSign = ')'
-      } else if (flags.negativeStyle === 3) {
-        negativeSign = '<'
-        negativeTailSign = '>'
-      } else if (flags.negativeStyle === 4) {
-        negativeSign = ' CR'
-      } else if (flags.negativeStyle === 5) {
-        negativeSign = '▲'
-      }
-
-      if (flags.negativeStyle === 0 || flags.negativeStyle === 5) {
-        if (curVal.indexOf(negativeSign) === 0) {
-          element.style.color = negativeColor
-        }
-      } else if (flags.negativeStyle === 1 || flags.negativeStyle === 4) {
-        if (curVal.indexOf(negativeSign) > -1 &&
-          curVal.indexOf(negativeSign) === curVal.length - negativeSign.length) {
-          element.style.color = negativeColor
-        }
-      } else if (flags.negativeStyle === 2 || flags.negativeStyle === 3) {
-        if (curVal.indexOf(negativeSign) === 0) {
-          if (curVal.indexOf(negativeTailSign) > -1 &&
-            curVal.indexOf(negativeTailSign) === curVal.length - 1) {
-            element.style.color = negativeColor
-          }
-        }
-      }
-    } */
     if ((element.tagName === 'INPUT' || element.tagName === 'SELECT' || element.tagName === 'TEXTAREA') &&
       !isReplaceOrAppend &&
       (!imControl || imControl.indexOf('unbind') > 0 || imControl.indexOf('lookup') === 0)) {
@@ -577,17 +542,78 @@ const IMLibElement = {
         }
       }
     }
-  }
-}
+  },
 
-const IMLibTextEditing = {
-  eventList: [],
+  textAutoSave: true, // Public
+  editingTargetId: null,
+  lastEditDT: null,
+  editWatchingTimer: null,
+  checkingSeconds: 1, // Public
+  waitSeconds: 5, // Public
+  //ignoreKeys: ['Tab', 'Enter'],
+  isAlreadySaved: false,
 
-  eventDetect: function (event) {
-    let id = event.target.id
-    let key = event.key
-    let code = event.code
-  }
+  setupSavingTimer: (elementId) => {
+    if (!IMLibElement.textAutoSave) {
+      return
+    }
+    const startWatching = (targetId) => {
+      IMLibElement.editingTargetId = targetId
+      if (!IMLibElement.editWatchingTimer) {
+        IMLibElement.editWatchingTimer = setInterval(IMLibElement.repeatedlyCall, IMLibElement.checkingSeconds * 1000)
+      }
+    }
+    IMLibInputEventDispatch.setExecute(elementId, (targetId) => {
+      IMLibElement.lastEditDT = new Date()
+      startWatching(targetId)
+      IMLibElement.isAlreadySaved = false
+    })
+    IMLibFocusInEventDispatch.setExecute(elementId, (targetId) => {
+      IMLibElement.lastEditDT = null
+      startWatching(targetId)
+    })
+    IMLibFocusOutEventDispatch.setExecute(elementId, (targetId) => {
+      if (IMLibElement.editingTargetId != targetId) {
+        return
+      }
+      IMLibElement.editingTargetId = null
+      IMLibElement.lastEditDT = null
+      clearTimeout(IMLibElement.editWatchingTimer);
+      IMLibElement.editWatchingTimer = null
+    })
+    IMLibKeyUpEventDispatch.setExecute(elementId, (event) => {
+      if (event.key == 'Z' && !event.altKey && event.ctrlKey && event.shiftKey) { //Control+Shift+Z
+        if (IMLibElement.editingTargetId) {
+          const nodeInfo = IMLibContextPool.getContextInfoFromId(IMLibElement.editingTargetId, null)
+          if(nodeInfo) {
+            nodeInfo.context.backToInitialValue(nodeInfo.record, nodeInfo.field)
+          }
+        }
+      }
+    })
+  },
+
+  repeatedlyCall: () => {
+    if (!IMLibElement.lastEditDT) {
+      return
+    }
+    const interval = (new Date()).getTime() - IMLibElement.lastEditDT.getTime()
+    if (interval > IMLibElement.waitSeconds * 1000) {
+      if (!IMLibElement.editingTargetId) {
+        return
+      }
+      IMLibElement.lastEditDT = null
+      const node = document.getElementById(IMLibElement.editingTargetId)
+      if (!node) {
+        return
+      }
+      if (IMLibUI.validation(node, true)) {
+        IMLibUI.valueChange(node.id)
+        IMLibElement.lastEditDT = null
+        IMLibElement.isAlreadySaved = true
+      }
+    }
+  },
 }
 
 // @@IM@@IgnoringRestOfFile
@@ -597,3 +623,8 @@ const INTERMediatorOnPage = require('./INTER-Mediator-Page')
 const INTERMediatorLib = require('../../src/js/INTER-Mediator-Lib')
 const INTERMediator = require('../../src/js/INTER-Mediator')
 const IMLibChangeEventDispatch = require('../../src/js/INTER-Mediator-Events')
+const IMLibInputEventDispatch = require('../../src/js/INTER-Mediator-Events')
+const IMLibFocusInEventDispatch = require('../../src/js/INTER-Mediator-Events')
+const IMLibFocusOutEventDispatch = require('../../src/js/INTER-Mediator-Events')
+const IMLibKeyUpEventDispatch = require('../../src/js/INTER-Mediator-Events')
+const IMLibKeyDownEventDispatch = require('../../src/js/INTER-Mediator-Events')

@@ -46,7 +46,7 @@ const IMLibUI = {
       return false
     }
     if (!IMLibUI.validation(changedObj)) { // Validation error.
-      changedObj.focus()
+      //changedObj.focus()
       linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj)
       nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]) // Suppose to be the first definition.
       contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target)
@@ -55,8 +55,7 @@ const IMLibUI = {
         let originalContextInfo = contextInfo
         return function () {
           if (IMLibUI.revertOnValidationError && originalContextInfo) {
-            originalObj.value = originalContextInfo.context.getValue(
-              originalContextInfo.record, originalContextInfo.field)
+            originalObj.value = originalContextInfo.context.getValue(originalContextInfo.record, originalContextInfo.field)
           }
           originalObj.removeAttribute('data-im-validation-notification')
         }
@@ -66,11 +65,13 @@ const IMLibUI = {
     if (validationOnly === true) {
       return true
     }
-
+    if (IMLibElement.isAlreadySaved) {
+      return true
+    }
     IMLibQueue.setTask(async function (completeTask) {
       returnValue = await valueChangeImpl(idValue, completeTask)
     })
-    return returnValue
+    return true
 
     // After validating, update nodes and database.
     async function valueChangeImpl(idValue, completeTask) {
@@ -234,7 +235,7 @@ const IMLibUI = {
               if (!window.confirm(INTERMediatorLib.getInsertedString(
                 INTERMediatorOnPage.getMessages()[1001], [initialvalue, newValue, currentFieldVal]))) {
                 window.setTimeout(function () {
-                  changedObjectCapt.focus()
+                  //changedObjectCapt.focus()
                 }, 0)
 
                 INTERMediatorOnPage.hideProgress()
@@ -254,9 +255,7 @@ const IMLibUI = {
     }
   },
 
-  validation: function (changedObj) {
-    'use strict'
-    let linkInfo, matched, context, i, index, didValidate, contextInfo, result
+  validation: function (changedObj, justJudge = false) {
     let messageNodes = []
     let messageNode
     if (messageNodes) {
@@ -269,59 +268,66 @@ const IMLibUI = {
       messageNodes = []
     }
     try {
-      linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj)
-      didValidate = false
-      result = true
+      let i
+      const linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj)
+      let didValidate = false
+      let result = true
+      let totalResult = true
       if (linkInfo.length > 0) {
-        matched = linkInfo[0].match(/([^@]+)/)
+        let matched = linkInfo[0].match(/([^@]+)/)
         if (matched[1] !== IMLibLocalContext.contextName) {
-          context = INTERMediatorLib.getNamedObject(
-            INTERMediatorOnPage.getDataSources(), 'name', matched[1])
+          const context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', matched[1])
           if (context && context.validation) {
             for (i = 0; i < linkInfo.length; i++) {
               matched = linkInfo[i].match(/([^@]+)@([^@]+)/)
-              for (index in context.validation) {
+              for (const index in context.validation) {
                 if (context.validation[index].field === matched[2]) {
                   didValidate = true
                   result = Parser.evaluate(
                     context.validation[index].rule,
                     {'value': changedObj.value, 'target': changedObj})
                   if (!result) {
-                    switch (context.validation[index].notify) {
-                      case 'inline':
-                        INTERMediatorLib.clearErrorMessage(changedObj)
-                        messageNode = INTERMediatorLib.createErrorMessageNode(
-                          'SPAN', context.validation[index].message)
-                        changedObj.parentNode.insertBefore(
-                          messageNode, changedObj.nextSibling)
-                        messageNodes.push(messageNode)
-                        break
-                      case 'end-of-sibling':
-                        INTERMediatorLib.clearErrorMessage(changedObj)
-                        messageNode = INTERMediatorLib.createErrorMessageNode(
-                          'DIV', context.validation[index].message)
-                        changedObj.parentNode.appendChild(messageNode)
-                        messageNodes.push(messageNode)
-                        break
-                      default:
-                        if (changedObj.getAttribute('data-im-validation-notification') !== 'alert') {
-                          window.alert(context.validation[index].message)
-                          changedObj.setAttribute('data-im-validation-notification', 'alert')
-                        }
-                        break
-                    }
-                    contextInfo = IMLibContextPool.getContextInfoFromId(changedObj, '')
-                    if (contextInfo) { // Just supporting NON-target info.
-                      changedObj.value = contextInfo.context.getValue(
-                        contextInfo.record, contextInfo.field)
-                      window.setTimeout(function () {
-                        changedObj.focus()
-                      }, 0)
-                      if (INTERMediatorOnPage.doAfterValidationFailure !== null) {
-                        INTERMediatorOnPage.doAfterValidationFailure(changedObj, linkInfo[i])
+                    if (justJudge) {
+                      totalResult &= result
+                    } else {
+                      switch (context.validation[index].notify) {
+                        case 'inline':
+                          INTERMediatorLib.clearErrorMessage(changedObj)
+                          messageNode = INTERMediatorLib.createErrorMessageNode(
+                            'SPAN', context.validation[index].message)
+                          changedObj.parentNode.insertBefore(
+                            messageNode, changedObj.nextSibling)
+                          messageNodes.push(messageNode)
+                          break
+                        case 'end-of-sibling':
+                          INTERMediatorLib.clearErrorMessage(changedObj)
+                          messageNode = INTERMediatorLib.createErrorMessageNode(
+                            'DIV', context.validation[index].message)
+                          changedObj.parentNode.appendChild(messageNode)
+                          messageNodes.push(messageNode)
+                          break
+                        default:
+                          if (changedObj.getAttribute('data-im-validation-notification') !== 'alert') {
+                            window.alert(context.validation[index].message)
+                            changedObj.setAttribute('data-im-validation-notification', 'alert')
+                          }
+                          break
                       }
+                      const contextInfo = IMLibContextPool.getContextInfoFromId(changedObj, '')
+                      if (contextInfo) { // Just supporting NON-target info.
+                        changedObj.value = contextInfo.context.getValue(
+                          contextInfo.record, contextInfo.field)
+                        // IMLibQueue.setTask(function (complete) {
+                        //   IMLibElement.setupSavingTimer(changedObj.id, true)
+                        //   //changedObj.focus()
+                        //   complete()
+                        // }, false, true)
+                        if (INTERMediatorOnPage.doAfterValidationFailure !== null) {
+                          INTERMediatorOnPage.doAfterValidationFailure(changedObj, linkInfo[i])
+                        }
+                      }
+                      return result
                     }
-                    return result
                   } else {
                     switch (context.validation[index].notify) {
                       case 'inline':
@@ -334,6 +340,9 @@ const IMLibUI = {
               }
             }
           }
+        }
+        if (justJudge) {
+          return totalResult
         }
         if (didValidate) {
           if (INTERMediatorOnPage.doAfterValidationSucceed) {

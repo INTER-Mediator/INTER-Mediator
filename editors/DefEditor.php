@@ -552,7 +552,8 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
             'file-upload' => array('field', 'context', 'container'),
             'messaging' => array('db-operation', 'from', 'to', 'cc', 'bcc', 'subject', 'body',
                 /* 'from-constant', 'to-constant', 'cc-constant', 'bcc-constant', 'subject-constant',
-                'body-constant', 'body-template', 'body-fields',*/ 'f-option', 'body-wrap', 'template-context', 'store', 'attachment'),
+                'body-constant', 'body-template', 'body-fields',*/
+                'f-option', 'body-wrap', 'template-context', 'store', 'attachment'),
         );
         $allKeysOptions = array(
             'aliases' => array('alias', 'original'),
@@ -896,7 +897,15 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                 break;
             case 'dbsettings':
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
-                $globalDBSpecs[$theKey] = $this->dbSettings->getValueOfField($theKey);
+                $theValue = $this->dbSettings->getValueOfField($theKey);
+                if ($theKey == 'cert-verifying' && !is_null($theValue)) {
+                    if (preg_match("/(false)/i", $theValue)) {
+                        $theValue = false;
+                    } else if (preg_match("/(true)/i", $theValue)) {
+                        $theValue = true;
+                    }
+                }
+                $globalDBSpecs[$theKey] = $theValue;
                 $result = array($globalDBSpecs);
                 break;
             case 'external-db':

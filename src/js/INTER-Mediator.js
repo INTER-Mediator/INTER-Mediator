@@ -99,11 +99,6 @@ const INTERMediator = {
   additionalFieldValueOnUpdate: {},
   /**
    * @public
-   * @type {object}
-   */
-  additionalFieldValueOnDelete: {},
-  /**
-   * @public
    * @type {int}
    */
   waitSecondsAfterPostMessage: 4,
@@ -425,7 +420,7 @@ const INTERMediator = {
     if (!INTERMediatorOnPage.isAutoConstruct) {
       return
     }
-    INTERMediatorOnPage.showProgress()
+    INTERMediatorOnPage.showProgress(false)
 
     INTERMediator.crossTableStage = 0
     INTERMediator.appendingNodesAtLast = []
@@ -437,7 +432,7 @@ const INTERMediator = {
     await INTERMediatorOnPage.retrieveAuthInfo()
     INTERMediator.connectToServiceServer()
 
-    if(!IMLibPageNavigation.isKeepOnNaviArray) {
+    if (!IMLibPageNavigation.isKeepOnNaviArray) {
       IMLibPageNavigation.deleteInsertOnNavi = []
     }
     try {
@@ -869,6 +864,7 @@ const INTERMediator = {
                 }
               }
             }
+            contextObj.captureCurrentStore()
           }
           return contextObj
         } catch (ex) {
@@ -1503,12 +1499,14 @@ const INTERMediator = {
             currentContextDef.name, 2)
         }
 
-        if (currentContextDef['post-repeater']) {
+        if (INTERMediatorOnPage[`postRepeater_${currentContextDef.name}`]) {
+          INTERMediatorOnPage[`postRepeater_${currentContextDef.name}`](newlyAddedNodes)
+          INTERMediatorLog.setDebugMessage('Call the post repeater method INTERMediatorOnPage.postRepeater_' +
+            currentContextDef['name'] + ' with the context: ' + currentContextDef.name, 2)
+        } else if (currentContextDef['post-repeater'] && INTERMediatorOnPage[currentContextDef['post-repeater']]) {
           INTERMediatorOnPage[currentContextDef['post-repeater']](newlyAddedNodes)
-
           INTERMediatorLog.setDebugMessage('Call the post repeater method INTERMediatorOnPage.' +
-            currentContextDef['post-repeater'] + ' with the context: ' +
-            currentContextDef.name, 2)
+            currentContextDef['post-repeater'] + ' with the context: ' + currentContextDef.name, 2)
         }
       } catch (ex) {
         if (ex.message === '_im_auth_required_') {
@@ -1553,7 +1551,12 @@ const INTERMediator = {
         }
       }
       try {
-        if (currentContextDef['post-enclosure']) {
+        if (INTERMediatorOnPage[`postEnclosure_${currentContextDef.name}`]) {
+          INTERMediatorOnPage[`postEnclosure_${currentContextDef.name}`](node)
+          INTERMediatorLog.setDebugMessage(
+            'Call the post enclosure method INTERMediatorOnPage.postEnclosure_' + currentContextDef.name +
+            ' with the context: ' + currentContextDef.name, 2)
+        } else if (currentContextDef['post-enclosure'] && INTERMediatorOnPage[currentContextDef['post-enclosure']]) {
           INTERMediatorOnPage[currentContextDef['post-enclosure']](node)
           INTERMediatorLog.setDebugMessage(
             'Call the post enclosure method INTERMediatorOnPage.' + currentContextDef['post-enclosure'] +
@@ -1563,8 +1566,7 @@ const INTERMediator = {
         if (ex.message === '_im_auth_required_') {
           throw ex
         } else {
-          INTERMediatorLog.setErrorMessage(ex,
-            'EXCEPTION-22: hint: post-enclosure of ' + currentContextDef.name)
+          INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-22: hint: post-enclosure of ' + currentContextDef.name)
         }
       }
     }

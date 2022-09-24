@@ -16,12 +16,14 @@
 /**
  * @fileoverview IMLibEventResponder class is defined here.
  */
-let IMLibChangeEventDispatch
-let IMLibKeyDownEventDispatch
-let IMLibKeyUpEventDispatch
-let IMLibInputEventDispatch
-let IMLibMouseEventDispatch
-let IMLibBlurEventDispatch
+let IMLibChangeEventDispatch = null
+let IMLibKeyDownEventDispatch = null
+let IMLibKeyUpEventDispatch = null
+let IMLibInputEventDispatch = null
+let IMLibMouseEventDispatch = null
+let IMLibBlurEventDispatch = null
+let IMLibFocusInEventDispatch = null
+let IMLibFocusOutEventDispatch = null
 
 function IMLibEventDispatch() {
   'use strict'
@@ -84,6 +86,8 @@ let IMLibEventResponder = {
     IMLibMouseEventDispatch = new IMLibEventDispatch()
     IMLibBlurEventDispatch = new IMLibEventDispatch()
     IMLibInputEventDispatch = new IMLibEventDispatch()
+    IMLibFocusInEventDispatch = new IMLibEventDispatch()
+    IMLibFocusOutEventDispatch = new IMLibEventDispatch()
     body = document.getElementsByTagName('BODY')[0]
 
     INTERMediatorLib.addEvent(body, 'change', function (event) {
@@ -137,7 +141,10 @@ let IMLibEventResponder = {
       }
       let executable = IMLibKeyDownEventDispatch.dispatchTable[event.target.id][event.code]
       if (!executable) {
-        return
+        executable = IMLibKeyDownEventDispatch.dispatchTable[event.target.id]
+        if (!executable) {
+          return
+        }
       }
       executable(event)
     })
@@ -149,13 +156,15 @@ let IMLibEventResponder = {
       if (!event || !event.target || !event.target.id || !IMLibKeyUpEventDispatch.dispatchTable[event.target.id]) {
         return
       }
-      IMLibTextEditing.eventDetect(event)
       if (!IMLibKeyUpEventDispatch.dispatchTable[event.target.id]) {
         return
       }
       let executable = IMLibKeyUpEventDispatch.dispatchTable[event.target.id][event.code]
       if (!executable) {
-        return
+        executable = IMLibKeyUpEventDispatch.dispatchTable[event.target.id]
+        if (!executable) {
+          return
+        }
       }
       executable(event)
     })
@@ -187,6 +196,34 @@ let IMLibEventResponder = {
           return
         }
       }
+    })
+
+    INTERMediatorLib.addEvent(body, 'focusin', function (event) {
+      if (event.defaultPrevented) {
+        return
+      }
+      if (!event || !event.target || !event.target.id || !IMLibFocusInEventDispatch.dispatchTable[event.target.id]) {
+        return
+      }
+      let executable = IMLibFocusInEventDispatch.dispatchTable[event.target.id]
+      if (!executable) {
+        return
+      }
+      executable(event.target.id)
+    })
+
+    INTERMediatorLib.addEvent(body, 'focusout', function (event) {
+      if (event.defaultPrevented) {
+        return
+      }
+      if (!event || !event.target || !event.target.id || !IMLibFocusOutEventDispatch.dispatchTable[event.target.id]) {
+        return
+      }
+      let executable = IMLibFocusOutEventDispatch.dispatchTable[event.target.id]
+      if (!executable) {
+        return
+      }
+      executable(event.target.id)
     })
   }
 }

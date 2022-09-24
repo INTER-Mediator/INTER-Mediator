@@ -30,6 +30,7 @@ class IMLibContext {
     this.sourceName = null
     this.contextDefinition = null // Context Definition object, set on initialization.
     this.store = {}
+    this.storeCaptured = null
     this.binding = {}
     this.contextInfo = {}
     this.modified = {}
@@ -195,7 +196,7 @@ class IMLibContext {
                 isOthersModified = false
               } else if (!parseInt(currentFieldVal)) {
                 isOthersModified = false
-              //} else {
+                //} else {
                 //isOthersModified = true
               }
             }
@@ -1311,6 +1312,24 @@ this.lookingUpInfo
           }
         })())
       }
+    }
+  }
+
+  captureCurrentStore() {
+    if (!this.storeCaptured) {
+      this.storeCaptured = Object.create(this.store)
+      for (const key in this.store) {
+        this.storeCaptured[key] = {}
+        Object.assign(this.storeCaptured[key], this.store[key])
+      }
+    }
+  }
+
+  backToInitialValue(record, field) {
+    if (this.storeCaptured && this.storeCaptured[record] && this.storeCaptured[record][field]) {
+      const origData = this.storeCaptured[record][field]
+      this.setValue(record, field, origData)
+      this.setDataWithKey(record.split('=')[1], field, origData)
     }
   }
 }

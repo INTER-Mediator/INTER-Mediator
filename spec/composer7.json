@@ -32,7 +32,8 @@
     "aws/aws-sdk-php": "*",
     "simplesamlphp/simplesamlphp": "*",
     "matthiasmullie/minify": "*",
-    "msyk/dropbox-api-shortlivedtoken": ">=5"
+    "msyk/dropbox-api-shortlivedtoken": ">=5",
+    "league/csv": "*"
   },
   "extra": {
     "mouf": {
