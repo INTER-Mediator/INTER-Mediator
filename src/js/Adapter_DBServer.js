@@ -765,11 +765,12 @@ const INTERMediator_DBAdapter = {
             params += '&condition' + extCount + 'field=__operation__'
             params += '&condition' + extCount + 'operator=block/' + (INTERMediator.lcConditionsOP1AND ? 'T' : 'F')
               + '/' + (INTERMediator.lcConditionsOP2AND ? 'T' : 'F')
-              + '/' + (INTERMediator.lcConditionsOP3AND === 'AND' ? 'AND' :  (INTERMediator.lcConditionsOP3AND ? 'T' : 'F'))
+              + '/' + (INTERMediator.lcConditionsOP3AND.toUpperCase() === 'AND' ? 'AND'
+                : (INTERMediator.lcConditionsOP3AND ? 'T' : 'F'))
             extCount++
             isFirstItem = false
           }
-         params += '&condition' + extCount +
+          params += '&condition' + extCount +
             'field=' + encodeURIComponent(keyParams[2].trim().replace(';;', '::').trim())
           params += '&condition' + extCount + 'operator=' + encodeURIComponent(keyParams[3].trim())
           params += '&condition' + extCount + 'value=' + encodeURIComponent(value)
