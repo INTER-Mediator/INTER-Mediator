@@ -63,6 +63,8 @@ jobs:
 
 #      - name: Update dependencies
 #        run: composer update
+      - name: Remove lock file
+        run: rm ./composer.lock
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
