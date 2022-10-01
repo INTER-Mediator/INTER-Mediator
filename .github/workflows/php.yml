@@ -52,6 +52,8 @@ jobs:
         run: printenv
       - name: PHP Module Checking
         run: php -m
+      - name: Update dependencies
+        run: composer update
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
@@ -60,11 +62,6 @@ jobs:
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-php-
-
-#      - name: Update dependencies
-#        run: composer update
-      - name: Remove lock file
-        run: rm ./composer.lock
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
