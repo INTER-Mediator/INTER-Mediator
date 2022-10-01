@@ -40,8 +40,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Validate composer.json and composer.lock
-        run: composer validate --strict
+#      - name: Validate composer.json and composer.lock
+#        run: composer validate --strict
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2
