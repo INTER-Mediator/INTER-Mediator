@@ -1100,7 +1100,6 @@ let INTERMediatorOnPage = {
    */
   hideProgress: async function () {
     'use strict'
-    console.log(`showProgress-hideProgress:${INTERMediatorOnPage.progressCounter}`)
     if (!INTERMediatorOnPage.isShowProgress) {
       return
     }
@@ -1127,9 +1126,7 @@ let INTERMediatorOnPage = {
   },
 
   // Gear SVG was generated on http://loading.io/.
-
   showProgress: function (isDelay = true) {
-    console.log(`showProgress:${INTERMediatorOnPage.progressCounter}`)
     if (!INTERMediatorOnPage.isShowProgress) {
       return
     }
@@ -1150,7 +1147,6 @@ let INTERMediatorOnPage = {
     // if (!INTERMediatorOnPage.isShowProgress) {
     //   return
     // }
-    console.log(`showProgressImpl:${INTERMediatorOnPage.progressCounter}`)
     if (INTERMediatorOnPage.progressShowing) {
       return
     }
