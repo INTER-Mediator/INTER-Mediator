@@ -1468,6 +1468,10 @@ execute "chmod -R a=rX,u+w,g+w \"#{WEBROOT}\"" do
   command "chmod -R a=rX,u+w,g+w \"#{WEBROOT}\""
 end
 
+execute "git config --global --add safe.directory \"#{WEBROOT}/INTER-Mediator\"" do
+  command "git config --global --add safe.directory \"#{WEBROOT}/INTER-Mediator\""
+end
+
 execute "cd \"#{WEBROOT}\" && cd INTER-Mediator && git checkout ." do
   command "cd \"#{WEBROOT}\" && cd INTER-Mediator && git checkout ."
 end
