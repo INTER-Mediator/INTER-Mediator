@@ -40,6 +40,15 @@ spl_autoload_register(function ($className) {
         require_once $path;
         return true;
     }
+    // Load from the specific directory with params.php
+    $cDir = Params::getParameterValue("loadFrom", false);
+    if ($cDir) {
+        $path = "{$cDir}/" . implode('/', $comps) . ".php";
+        if (file_exists($path)) {
+            require_once $path;
+            return true;
+        }
+    }
     // Load from the file inside files of FX.php.
     $imRoot = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR;
     $path = "{$imRoot}/vendor/yodarunamok/fxphp/lib/datasource_classes/{$className}.class.php";
@@ -70,10 +79,10 @@ define("IM_TODAY", $fmt->format((new DateTime())->getTimestamp()));
  */
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
-    // check required PHP extensions
-    $requiredFunctions = array(
-        'mbstring' => 'mb_internal_encoding',
-    );
+    // check required PHP extensions -> This is going to do with composer
+//    $requiredFunctions = array(
+//        'mbstring' => 'mb_internal_encoding',
+//    );
 //    if (isset($options) && is_array($options)) {
 //        foreach ($options as $key => $option) {
 //            if ($key == 'authentication'
@@ -87,14 +96,14 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 //            }
 //        }
 //    }
-    foreach ($requiredFunctions as $key => $value) {
-        if (!function_exists($value)) {
-            $generator = new GenerateJSCode();
-            $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
-            $generator->generateErrorMessageJS("PHP extension \"" . $key . "\" is required for running INTER-Mediator.");
-            return;
-        }
-    }
+//    foreach ($requiredFunctions as $key => $value) {
+//        if (!function_exists($value)) {
+//            $generator = new GenerateJSCode();
+//            $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
+//            $generator->generateErrorMessageJS("PHP extension \"" . $key . "\" is required for running INTER-Mediator.");
+//            return;
+//        }
+//    }
 
     // Read from params.php
     [$defaultTimezone, $accessLogLevel] = Params::getParameterValue(["defaultTimezone", "accessLogLevel"], ["UTC", false]);

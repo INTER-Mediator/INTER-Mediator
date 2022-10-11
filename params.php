@@ -238,6 +238,9 @@ $messages['ja'][1022] = "Internet Explorerは使用できません。Edgeある�
 
 /* Customizing Server Behavior
  * =================== */
+// Adding class loading path with an absolute path. Please don't terminate with /.
+$loadFrom = '/Users/msyk/Code/INTER-Mediator/samples/Sample_forDebugging/ExtendingClasses';
+
 // If you don't set the default timezone in the php.ini file,
 //      activate the line below and specify suitable timezone name.
 $defaultTimezone = 'Asia/Tokyo';

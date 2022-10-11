@@ -32,6 +32,7 @@ class MediaAccess
     private $cookieUser;    // set with the checkAuthentication method.
     private $accessLogLevel = 0;
     private $outputMessage = ['apology' => 'Logging messages are not implemented so far.'];
+    private $thrownException = false;
 
     public function getResultForLog(): array
     {
@@ -59,6 +60,7 @@ class MediaAccess
 
     public function processing($dbProxyInstance, $options, $file)
     {
+        $this->thrownException = false;
         $contextRecord = null;
         try {
             // It the $file ('media'parameter) isn't specified, it doesn't respond an error.
@@ -307,6 +309,10 @@ class MediaAccess
      */
     private function exitAsError($code)
     {
+        if ($this->thrownException) {
+            return;
+        }
+        $this->thrownException = true;
         switch ($code) {
             case 204:
                 header("HTTP/1.1 204 No Content");

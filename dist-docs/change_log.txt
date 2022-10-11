@@ -48,6 +48,10 @@ Ver.10 (In Development)
 - The post repeater/enclosure method can define with INTERMediatorOnPage.postRepeater_[context name](param) or
   INTERMediatorOnPage.postEnclosure_[context name](param), and these doesn't require the 'post-repeater' or
   'post-enclosure' keyed value in the context definition.
+- An additional class loading path can specify with the variable $loadFrom in the params.php file. The path has to be
+  an absolute and don't terminate with /. The sample is samples/Sample_forDebugging/add-ext-class.html/php.
+- QRCode plugin added. The sample is samples/Sample_webpage/qrcode_MySQL.html.
+- Mermaid plugin added. The sample is samples/Sample_webpage/mermaid_MySQL.html.
 - [BUG FIX] The lookup feature was not fully efficient, and refactored them.
 - [BUG FIX] When checkbox set to off, the message which someone modified showed unexpectedly.
 - [BUG FIX] After moving from list to detail and back to list page, paging position wasn't retrieve and show the

@@ -13,14 +13,13 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css"/>
     <title>INTER-Mediator - Sample - Authorized Chat / MySQL</title>
     <script type="text/javascript" src="include_MySQL.php"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js"></script>
-    <script type="text/javascript" src="../../node_modules/inter-mediator-plugin-codemirror/index.js"></script>
+    <script type="text/javascript" src="../../node_modules/inter-mediator-plugin-mermaid/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>
       INTERMediatorOnPage.doBeforeConstruct = function () {
-        INTERMediatorLog.suppressDebugMessageOnPage = true;
+        INTERMediatorLog.suppressDebugMessageOnPage = true
       };
     </script>
 </head>
@@ -29,19 +28,20 @@
     <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
 </header>
 <div id="wrapper">
-    <h1>JavaScript Component Test (CodeMirror)</h1>
+    <h1>JavaScript Component Test (Marmaid-js)</h1>
     <table>
         <thead>
         <tr>
-            <th>Date and Time</th>
             <th>Message</th>
+            <th>Marmaid-js</th>
             <th></th>
         </tr>
         </thead>
         <tbody>
         <tr>
-            <td data-im="testtable@dt1"></td>
-            <td data-im="testtable@text1" data-im-widget="codemirror" style="min-width: 400px"></td>
+            <td><textarea data-im="testtable@text1" style="width: 300px; height: 300px"></textarea></td>
+            <td data-im="testtable@text1" data-im-widget="mermaid" style="width: 600px; height: 300px"></td>
+            <td style="white-space: nowrap"></td>
         </tr>
         </tbody>
     </table>

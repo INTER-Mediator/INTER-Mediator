@@ -48,7 +48,6 @@
   "dependencies": {
     "cors": "*",
     "express": "*",
-    "flatpickr": ">=4.6.3",
     "forever": ">=4.0.2",
     "inter-mediator-expressionparser": "1.0.19",
     "inter-mediator-formatter": "1.0.19",
@@ -59,14 +58,17 @@
     "inter-mediator-plugin-jquerydatepicker": "1.0.2",
     "inter-mediator-plugin-jqueryfileupload": "1.3.1",
     "inter-mediator-plugin-jsonformatter": "1.0.0",
+    "inter-mediator-plugin-mermaid": "1.0.1",
     "inter-mediator-plugin-popupselector": "1.0.1",
+    "inter-mediator-plugin-qrcode": "1.0.2",
     "inter-mediator-plugin-tinymce": "1.1.0",
     "inter-mediator-queue": "1.0.8",
     "jssha": ">=3.0.0",
     "npm-platform-dependencies": "*",
     "socket.io": ">=3.1.0",
     "socket.io-client": ">=3.1.0",
-    "tinymce": ">=6.0.0"
+    "tinymce": ">=6.0.0",
+    "qrcode": ">=1.5.0"
   },
   "win32Dependencies": {
     "forever-win": "*"
