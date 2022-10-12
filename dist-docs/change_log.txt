@@ -10,7 +10,7 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.10 (In Development)
+Ver.10 (October 12, 2022)
 - Auto saving for INPUT and TEXTAREA element. Customizing in JavaScript code and their default value are:
   IMLibElement.textAutoSave = true // Auto saving availability
   IMLibElement.checkingSeconds = 1 // Repeating period in seconds
@@ -33,7 +33,7 @@ Ver.10 (In Development)
 - The operation logging feature can customize for extending fields with INTERMediator\DB\Support\OperationLogExtension.
   Also $recordingOperations and $accessLogExtensionClass can be defined in params.php file.
 - Local Context conditions (i.e.:data-im="_@condition:...") can control operations of the generated sql statement with
-  INTERMediator.lcConditionsOP1AND, ..OP2.. and ..OP3.. properties.
+  INTERMediator.lcConditionsOP1AND, INTERMediator.lcConditionsOP2AND and INTERMediator.lcConditionsOP3AND properties.
   See https://inter-mediator.info/ja/for-developers/bindingfunc.html
 - The message "The Data Sources of the Definition: [0][portals][1] includes an undefined keyword."
   (shows in Ver.8's limitation) cleared.
