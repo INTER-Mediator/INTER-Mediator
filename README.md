@@ -16,17 +16,17 @@ All information can be available at:
 Sample pages within this repository are published at below,
 and anyone can see sample pages working with database.
 You don't have to deploy the samples if you just want to see this at a glance.
-This demo page works on INTER-Mediator Ver.5.x (Stable version).
-- https://demo.inter-mediator.com/INTER-Mediator_stable/Samples/
 
-The demo with INTER-Mediator Ver.7 is as below. After Ver.6, the head of repository is just under construction.
-If you have any question about deploying with your applications, ask to INTER-Mediator committers.
+The demo with the latest version of INTER-Mediator is here:
 - https://demo.inter-mediator.com/INTER-Mediator/samples/
+
+This demo page works on INTER-Mediator Ver.5.x (Milestone version).
+INTER-Mediator Ver.6 was quite different from previous versions. So we have called the Stable version for the final release of Ver.5.
+- https://demo.inter-mediator.com/INTER-Mediator_milestone/Samples/
 
 ## Documentation
 
 + [Manual](https://inter-mediator.info/)
-	+ [Virtual Machine for Test and Evaluation / Japanese](https://inter-mediator.info/ja/for-novices/vm.html)
 	+ [Reference of Definition File / Japanese](https://inter-mediator.info/ja/for-developers/index.html)
 + [change_log](https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/change_log.txt)
 + [In a future (Direction of Developement)](https://github.com/INTER-Mediator/INTER-Mediator/wiki/Direction-of-INTER-Mediator-Development)

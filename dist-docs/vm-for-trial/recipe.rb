@@ -141,7 +141,7 @@ end
 if node[:platform] == 'ubuntu'
   if node[:virtualization][:system] != 'docker'
     execute 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate' do
-      command 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate'
+#       command 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate'
     end
   end
 

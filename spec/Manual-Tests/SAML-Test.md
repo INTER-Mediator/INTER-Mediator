@@ -10,6 +10,9 @@ which just have test accounts. After someone tests the SAML features, the result
 
 The format of below is: [commit code from git log], [Version from composer.json], [Checker name], [Result]
 
+- commit 9e71362ba2ca277987e55ee7a517a027f2b1453a (Wed Oct 12 08:09:56 2022 +0900), Ver.10(2022-10-01),
+  by Masayuki Nii(2022-10-12 11:45), OK
+
 - commit ce1b3167d04a8767480c40da99d3cdb90a4a9f76 (Tue Apr 12 11:07:50 2022 +0900), Ver.10(2022-04-08),
   by Masayuki Nii(2022-04-12 15:30), OK
 
