@@ -139,11 +139,11 @@ else
 end
 
 if node[:platform] == 'ubuntu'
-  if node[:virtualization][:system] != 'docker'
-    execute 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate' do
+#   if node[:virtualization][:system] != 'docker'
+#     execute 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate' do
 #       command 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate'
-    end
-  end
+#     end
+#   end
 
   if node[:platform_version].to_f < 18
     execute 'sed -i -e "s/security.ubuntu.com/archive.ubuntu.com/g" /etc/apt/sources.list' do
