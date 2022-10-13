@@ -652,20 +652,20 @@ describe command('date -d "`cat ' + WEBROOT + '/INTER-Mediator/dist-docs/readme.
   its(:stdout) { should match /1/ }
 end
 
-range = 1..40
-range.each{|num|
-  describe file(WEBROOT + '/def' + "%02d" % num + '.php') do
-    it { should be_file }
-    it { should be_mode 664 }
-    its(:content) { should match /require_once\('INTER-Mediator\/INTER-Mediator.php'\);/ }
-  end
-
-  describe file(WEBROOT + '/page' + "%02d" % num + '.html') do
-    it { should be_file }
-    it { should be_mode 664 }
-    its(:content) { should match /<!DOCTYPE html>/ }
-  end
-}
+# range = 1..40
+# range.each{|num|
+#   describe file(WEBROOT + '/def' + "%02d" % num + '.php') do
+#     it { should be_file }
+#     it { should be_mode 664 }
+#     its(:content) { should match /require_once\('INTER-Mediator\/INTER-Mediator.php'\);/ }
+#   end
+#
+#   describe file(WEBROOT + '/page' + "%02d" % num + '.html') do
+#     it { should be_file }
+#     it { should be_mode 664 }
+#     its(:content) { should match /<!DOCTYPE html>/ }
+#   end
+# }
 
 describe command('mysql -u root --password=im4135dev test_db -e \'SHOW TABLES\'') do
   its(:stdout) { should match /cor_way_kind/ }
