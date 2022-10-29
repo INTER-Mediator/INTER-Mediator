@@ -26,6 +26,7 @@ class Export
         if (count($contextData) < 1) {
             exit;
         }
+        $existKeysLabels = count($this->keysAndLabels) > 0;
 
         $writer = Writer::createFromString();
         CharsetConverter::addTo($writer, 'UTF-8', $this->encoding);
@@ -33,8 +34,19 @@ class Export
         $writer->setEscape('\\');
         $writer->setEnclosure($this->quote);
         $writer->setNewline($this->endOfLine);
-        $fieldArray = array_values($this->keysAndLabels);
-        if (count($fieldArray) == 0) {
+        if ($existKeysLabels) {
+            $keysArray = array_keys($this->keysAndLabels);
+            $fieldArray = array_values($this->keysAndLabels);
+            $result = [];
+            foreach ($contextData as $record) {
+                $newRecord = [];
+                foreach ($keysArray as $key) {
+                    $newRecord[] = $record[$key];
+                }
+                $result[] = $newRecord;
+            }
+            $contextData = $result;
+        } else {
             $fieldArray = array_keys($contextData[0]);
         }
         $writer->insertOne($fieldArray);
