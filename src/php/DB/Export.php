@@ -28,7 +28,7 @@ class Export
         }
 
         $writer = Writer::createFromString();
-        CharsetConverter::addTo($writer, 'UTF-8',$this->encoding, );
+        CharsetConverter::addTo($writer, 'UTF-8', $this->encoding);
         $writer->setDelimiter($this->fieldSeparator);
         $writer->setEscape('\\');
         $writer->setEnclosure($this->quote);
