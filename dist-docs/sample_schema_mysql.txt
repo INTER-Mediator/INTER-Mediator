@@ -547,6 +547,27 @@ INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject,
 VALUES(1, '@@Q2@@', '', '', 'msyk@msyk.net', 'ご意見承りました',
 'ご意見を投稿していただき、ありがとうございます。伺った内容は以下の通りです。よろしくお願いします。\n\nお名前：@@Q1@@\nメールアドレス：@@Q2@@\nご意見：@@Q3@@\n\n====\nINTER-Mediator本部事務局');
 
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES(2, '@@mail@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'テストメール2',
+'テストメールです。@@name@@様宛で、送信先は@@mail@@です。');
+
+# Storing Sent Mail
+CREATE TABLE maillog (
+	id				INT  AUTO_INCREMENT,
+    to_field TEXT,
+    bcc_field TEXT,
+    cc_field TEXT,
+    from_field TEXT,
+    subject TEXT,
+    body TEXT,
+    errors TEXT,
+    dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    foreign_id INT,
+	PRIMARY KEY(id)
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
+		ENGINE=InnoDB;
+
 # Operation Log Store
 CREATE TABLE operationlog (
 	id				INT  AUTO_INCREMENT,
