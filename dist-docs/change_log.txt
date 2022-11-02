@@ -10,6 +10,10 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
+Ver.11 (in development)
+- Generic exporting class prepared as DB\Export.php.
+  See the Export button on the sample file /samples/Sample_pdf/list_detail_MySQL.html.
+
 Ver.10 (October 12, 2022)
 - Auto saving for INPUT and TEXTAREA element. Customizing in JavaScript code and their default value are:
   IMLibElement.textAutoSave = true // Auto saving availability
