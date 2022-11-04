@@ -2,7 +2,7 @@ version: 2
 jobs:
   test:
     docker:
-      - image: circleci/php:7.4.20-apache
+      - image: cimg/php:7.4.26
     working_directory: ~/INTER-Mediator
     steps:
       - checkout
@@ -14,7 +14,7 @@ jobs:
       - run: docker exec -it ubuntu sh -c "cd INTER-Mediator; git fetch --all; git checkout $CIRCLE_BRANCH"
       - run: docker exec -it ubuntu sh -c "apt-get update"
       - run: docker exec -it ubuntu sh -c "cd INTER-Mediator; gem install net-ssh -v 6.1.0; gem install itamae --no-doc"
-      - run: docker exec -it ubuntu sh -c "cd INTER-Mediator; COMPOSER_HOME='/var/www'; itamae local dist-docs/vm-for-trial/recipe.rb"
+      - run: docker exec -it ubuntu sh -c "cd INTER-Mediator; itamae local dist-docs/vm-for-trial/recipe.rb"
       - run: docker exec -it ubuntu sh -c "cd INTER-Mediator; echo y | sh /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh"
       - run: docker exec -it ubuntu sh -c "php -v; php -m; locale -a; locale"
       - run: docker exec -it ubuntu sh -c "chown -R www-data /var/www"
