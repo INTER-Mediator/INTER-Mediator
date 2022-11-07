@@ -85,10 +85,11 @@ $browserCompatibility = array(
  * =================== */
 // If you want to specify the smtp server info, set them below.
 //$sendMailSMTP = array(
-//    'server' => 'anyserver',
+//    'protocol' => 'smtp',
+//    'server' => 'your.smtp.server',
 //    'port' => 587,
-//    'username' => 'username',
-//    'password' => 'password',
+//    'username' => 'your.user.name',
+//    'password' => 'your.password',
 //);
 // $waitAfterMail = 20;  // Wait after send email with smtp server. Unit is Millisecond.
 

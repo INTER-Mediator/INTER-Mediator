@@ -137,6 +137,9 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 
     public function quotedEntityName($entityName)
     {
+        if (!$entityName) {
+            return null;
+        }
         if (strpos($entityName, ".") !== false) {
             $components = explode(".", $entityName);
             $quotedName = array();

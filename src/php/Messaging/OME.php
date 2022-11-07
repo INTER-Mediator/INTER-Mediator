@@ -44,11 +44,16 @@ namespace INTERMediator\Messaging;
 
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
-use Swift_Attachment;
-use Swift_Image;
-use Swift_Mailer;
-use Swift_Message;
-use Swift_SmtpTransport;
+
+use Symfony\Component\Mailer\Exception\ExceptionInterface;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mailer\Exception\IncompleteDsnException;
+use Symfony\Component\Mailer\Exception\UnsupportedSchemeException;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Header\MailboxListHeader;
 
 class OME
 {
@@ -198,7 +203,7 @@ class OME
      */
     public function checkEmail($address)
     {
-        if ( is_null($address)) {
+        if (is_null($address)) {
             $this->errorMessage = "アドレス“{$address}”は空です。";
         }
         if (!preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9_.+-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9._-]+)+$/", $address)) {
@@ -560,76 +565,89 @@ class OME
             }
         } else {
             $port = (isset($this->smtpInfo['port']) && strlen($this->smtpInfo['port']) > 0) ? $this->smtpInfo['port'] : 25;
-            if (isset($this->smtpInfo['encryption']) && strlen($this->smtpInfo['encryption']) > 0) {
-                $transport = new Swift_SmtpTransport($this->smtpInfo['host'], $port, $this->smtpInfo['encryption']);
-            } else {
-                $transport = new Swift_SmtpTransport($this->smtpInfo['host'], $port);
+            $portPart = ":{$port}";
+            $host = (isset($this->smtpInfo['host']) && strlen($this->smtpInfo['host']) > 0) ? $this->smtpInfo['host'] : 'default';
+            $protocol = (isset($this->smtpInfo['protocol']) && strlen($this->smtpInfo['protocol']) > 0) ? $this->smtpInfo['protocol'] : 'native';
+            $user = (isset($this->smtpInfo['user']) && strlen($this->smtpInfo['user']) > 0) ? $this->smtpInfo['user'] : '';
+            $pass = (isset($this->smtpInfo['pass']) && strlen($this->smtpInfo['pass']) > 0) ? $this->smtpInfo['pass'] : '';
+            $userPart = urlencode($user) . ":" . urlencode($pass) . "@";
+            if ($user == '' || $pass == '') {
+                $userPart = "";
+                $portPart = "";
             }
-            if (isset($this->smtpInfo['user']) && strlen($this->smtpInfo['user']) > 0) {
-                $transport->setUsername($this->smtpInfo['user']);
+            if ($host == 'default' || strpos($host, 'default?') === 0) {
+                $portPart = "";
             }
-            if (isset($this->smtpInfo['pass']) && strlen($this->smtpInfo['pass']) > 0) {
-                $transport->setPassword($this->smtpInfo['pass']);
-            }
-            $mailer = new Swift_Mailer($transport);
-            $message = new Swift_Message($headerField);
+            $url = "{$protocol}://{$userPart}{$host}{$portPart}";
+
+            $email = new Email();
+            $email->subject($this->subject);
             if ($this->fromField != null) {
-                $addArray = $this->recepientsArray(explode(',', $this->fromField));
-                if (count($addArray) > 0) {
-                    $message->setFrom($addArray);
+                $addArray = $this->recepientsAddressArray(explode(',', $this->fromField));
+                if (strlen($this->fromField) > 0 && count($addArray) > 0) {
+                    $email->from($addArray[0]);
                 }
             }
             $recipientsInfo = '';
-            $addArray = $this->recepientsArray(explode(',', $this->toField));
+            $addArray = $this->recepientsAddressArray(explode(',', $this->toField));
             if (strlen($this->toField) > 0 && count($addArray) > 0) {
-                $message->setTo($addArray);
+                foreach ($addArray as $address) {
+                    $email->addTo($address);
+                }
                 $recipientsInfo .= "[To]{$this->toField}";
             }
-            $addArray = $this->recepientsArray(explode(',', $this->ccField));
+            $addArray = $this->recepientsAddressArray(explode(',', $this->ccField));
             if (strlen($this->ccField) > 0 && count($addArray) > 0) {
-                $message->setCc($addArray);
+                foreach ($addArray as $address) {
+                    $email->addCc($address);
+                }
                 $recipientsInfo .= "[CC]{$this->ccField}";
             }
-            $addArray = $this->recepientsArray(explode(',', $this->bccField));
+            $addArray = $this->recepientsAddressArray(explode(',', $this->bccField));
             if (strlen($this->bccField) > 0 && strlen($this->toField) > 0 && count($addArray) > 0) {
-                $message->setBcc($addArray);
+                foreach ($addArray as $address) {
+                    $email->addBcc($address);
+                }
                 $recipientsInfo .= "[BCC]{$this->bccField}";
             }
-            $message->setSubject($this->subject);
             $this->bodyType = ($this->bodyType === false) ? 'text/plain' : $this->bodyType;
             $targetTerm = "##image##";
             if (strpos($this->body, $targetTerm) !== false && $this->bodyType == 'text/html') {
                 $imagePos = strpos($this->body, $targetTerm);
+                $counter = 1;
                 foreach ($this->attachments as $path) {
-                    $cid = $message->embed(Swift_Image::fromPath($path));
+                    $cid = "embedded-image-{$counter}";
+                    $counter += 1;
+                    $email->embedFromPath($path, $cid/*, IMUtil::getMIMEType(pathinfo($path, PATHINFO_EXTENSION))*/);
+                    $bodyString = substr($this->body, 0, $imagePos) . "cid:{$cid}"
+                        . substr($this->body, $imagePos + strlen($targetTerm));
                 }
-                $bodyString = substr($this->body, 0, $imagePos) . $cid .
-                    substr($this->body, $imagePos + strlen($targetTerm));
-                $message->setBody($bodyString, $this->bodyType);
             } else {
                 $bodyString = ($this->bodyType == 'text/html') ? $this->body : $this->devideWithLimitingWidth($this->body);
                 if ($this->mailEncoding != 'UTF-8') {
                     $bodyString = mb_convert_encoding($bodyString, $this->mailEncoding);
                 }
                 foreach ($this->attachments as $path) {
-                    $message->attach(Swift_Attachment::fromPath($path)->setFilename(basename($path)));
-                }
-                if ($this->bodyType == 'text/html') {
-                    $message->setBody($bodyString, $this->bodyType);
-                } else {
-                    $message->setBody($bodyString); // In case of 'text/plain', the mime code shouldn't set.
+                    $email->attachFromPath($path);
                 }
             }
-            $failures = [];
-            $resultMail = $mailer->send($message, $failures);
-            if (!$resultMail) {
-                $messageClass = IMUtil::getMessageClassInstance();
-                $headMsg = $messageClass->getMessageAs(1050);
-                if (is_array($failures) && count($failures) > 0) {
-                    $this->errorMessage = $headMsg . '"' . implode('", "', $failures) . "\"\n";
+            if ($this->bodyType == 'text/html') {
+                $email->html($bodyString);
+            } else {
+                $email->text($bodyString);
+            }
+            $resultMail = true;
+            try {
+                (new Mailer(Transport::fromDsn($url)))->send($email);
+            } catch (ExceptionInterface $e) {
+                $headMsg = (IMUtil::getMessageClassInstance())->getMessageAs(1050);
+                $exceptionMessage = $e->getMessage();
+                if (strlen($exceptionMessage) > 0) {
+                    $this->errorMessage = $headMsg . '"' . $exceptionMessage . "\"\n";
                 } else {
                     $this->errorMessage = "{$headMsg}{$recipientsInfo}\n";
                 }
+                $resultMail = false;
             }
             usleep($this->waitMS * 1000);
         }
@@ -651,6 +669,22 @@ class OME
                 }
             } else {
                 $result[] = $str;
+            }
+        }
+        return $result;
+    }
+
+    private function recepientsAddressArray($ar)
+    {
+        mb_regex_encoding('UTF-8');
+        $result = [];
+        foreach ($ar as $item) {
+            $str = trim($item);
+            if (strlen($str) > 1) {
+                $r = $this->divideMailAddress($str);
+                if ($r['address']) {
+                    $result[] = $r['name'] ? new Address($r['address'], $r['name']) : new Address($r['address']);
+                }
             }
         }
         return $result;

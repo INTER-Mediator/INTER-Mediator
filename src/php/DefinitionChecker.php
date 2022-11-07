@@ -212,6 +212,7 @@ class DefinitionChecker
         'media-root-dir' => 'string',
 //        'media-context' => 'string',
         'smtp' => array(
+            'protocol' => 'string',
             'server' => 'string',
             'port' => 'integer',
             'encryption' => 'string',

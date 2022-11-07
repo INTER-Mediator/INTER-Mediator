@@ -25,7 +25,6 @@
     "paragonie/constant_time_encoding": "*",
     "inter-mediator/fxphp": "*",
     "inter-mediator/fmdataapi": ">=28",
-    "swiftmailer/swiftmailer": "*",
     "tecnickcom/tcpdf": "*",
     "setasign/fpdi": "*",
     "smalot/pdfparser": "*",
@@ -33,7 +32,10 @@
     "simplesamlphp/simplesamlphp": "*",
     "matthiasmullie/minify": "*",
     "msyk/dropbox-api-shortlivedtoken": ">=5",
-    "league/csv": "*"
+    "league/csv": "*",
+    "symfony/mailer": "*",
+    "symfony/amazon-mailer": "*",
+    "symfony/google-mailer": "*"
   },
   "extra": {
     "mouf": {

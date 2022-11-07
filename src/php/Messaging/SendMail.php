@@ -54,18 +54,18 @@ class SendMail extends MessagingProvider
             if (isset($smtpConfig) && is_array($smtpConfig)) {
                 if (isset($smtpConfig['password'])) {
                     $ome->setSmtpInfo(array(
-                        'host' => $smtpConfig['server'],
-                        'port' => $smtpConfig['port'],
-                        'protocol' => 'SMTP_AUTH',
+                        'host' => $smtpConfig['server'] ?? 'default',
+                        'port' => $smtpConfig['port'] ?? '',
+                        'protocol' => $smtpConfig['protocol'] ?? 'smtp',
                         'user' => $smtpConfig['username'],
                         'pass' => $smtpConfig['password'],
                         'encryption' => $smtpConfig['encryption'] ?? null,
                     ));
                 } else {
                     $ome->setSmtpInfo(array(
-                        'host' => $smtpConfig['server'],
-                        'port' => $smtpConfig['port'],
-                        'protocol' => 'SMTP',
+                        'host' => $smtpConfig['server'] ?? 'default',
+                        'port' => $smtpConfig['port'] ?? '',
+                        'protocol' => $smtpConfig['protocol'] ?? 'smtp',
                     ));
                 }
             }
