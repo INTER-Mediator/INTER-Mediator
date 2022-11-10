@@ -22,6 +22,44 @@ class IMUtil_Test extends TestCase
         $this->util = new IMUtil();
     }
 
+    public function test_RelativePath()
+    {
+        $fromPath = '/samples/Practices/search_page1.html';
+        $toPath = '/samples/Practices/search_def.php';
+        $p = IMUtil::relativePath($fromPath, $toPath);
+        $this->assertEquals('search_def.php', $p);
+
+        $fromPath = '/samples/Practices/search_page1.html';
+        $toPath = '/index.php';
+        $p = IMUtil::relativePath($fromPath, $toPath);
+        $this->assertEquals('../../index.php', $p);
+
+        $fromPath = '/samples/Practices/search_page1.html';
+        $toPath = '/lib/src/INTER-Mediator/index.php';
+        $p = IMUtil::relativePath($fromPath, $toPath);
+        $this->assertEquals('../../lib/src/INTER-Mediator/index.php', $p);
+
+        $fromPath = '/samples/Practices/search_page1.html';
+        $toPath = '/samples/Practices/dir/search_def.php';
+        $p = IMUtil::relativePath($fromPath, $toPath);
+        $this->assertEquals('dir/search_def.php', $p);
+
+        $fromPath = '/samples/Practices/search_page1.html';
+        $toPath = '/samples/Practices/dir/dir/search_def.php';
+        $p = IMUtil::relativePath($fromPath, $toPath);
+        $this->assertEquals('dir/dir/search_def.php', $p);
+
+        $fromPath = '/samples/Practices/page/search_page1.html';
+        $toPath = '/samples/Practices/dir/search_def.php';
+        $p = IMUtil::relativePath($fromPath, $toPath);
+        $this->assertEquals('../dir/search_def.php', $p);
+
+        $fromPath = '/samples/Practices/page/search_page1.html';
+        $toPath = '/samples/Practices/dir/dir/search_def.php';
+        $p = IMUtil::relativePath($fromPath, $toPath);
+        $this->assertEquals('../dir/dir/search_def.php', $p);
+    }
+
     public function test_phpVersion()
     {
         $version = IMUtil::phpVersion("5.4.45");
@@ -54,7 +92,7 @@ class IMUtil_Test extends TestCase
 
     public function test_getParameterValue()
     {
-        $webServerName = Params::getParameterValue('webServerName','');
+        $webServerName = Params::getParameterValue('webServerName', '');
         if (php_uname('n') === 'inter-mediator-server') {
             $this->assertEquals($webServerName, '192.168.56.101');
         } else {

@@ -245,11 +245,11 @@ const IMLibElement = {
         } else {
           currentValue = originalValue ? originalValue : element.getAttribute(curTarget)
           if (curVal.indexOf('/fmi/xml/cnt/') === 0 && currentValue.indexOf('?media=') === -1) {
-            curVal = INTERMediatorOnPage.getEntryPath() + '?media=' + curVal
+            curVal = INTERMediatorLib.mergeURLParameter(INTERMediatorOnPage.getEntryPath(), 'media', curVal)
           } else if (curVal.indexOf('https://' + location.hostname + '/Streaming_SSL/MainDB') === 0 &&
             currentValue.indexOf('?media=') === -1) {
-            curVal = INTERMediatorOnPage.getEntryPath() +
-              '?media=' + encodeURIComponent(curVal.replace('https://' + location.hostname, ''))
+            curVal = INTERMediatorLib.mergeURLParameter(INTERMediatorOnPage.getEntryPath(), 'media',
+              encodeURIComponent(curVal.replace('https://' + location.hostname, '')))
           }
           element.setAttribute(curTarget, currentValue + curVal)
         }
@@ -281,11 +281,11 @@ const IMLibElement = {
         } else {
           currentValue = element.getAttribute(curTarget)
           if (curVal.indexOf('/fmi/xml/cnt/') === 0 && currentValue.indexOf('?media=') === -1) {
-            curVal = INTERMediatorOnPage.getEntryPath() + '?media=' + curVal
+            curVal = INTERMediatorLib.mergeURLParameter(INTERMediatorOnPage.getEntryPath(), 'media', curVal)
           } else if (curVal.indexOf('https://' + location.hostname + '/Streaming_SSL/MainDB') === 0 &&
             currentValue.indexOf('?media=') === -1) {
-            curVal = INTERMediatorOnPage.getEntryPath() +
-              '?media=' + curVal.replace('https://' + location.hostname, '')
+            curVal = INTERMediatorLib.mergeURLParameter(INTERMediatorOnPage.getEntryPath(), 'media',
+              curVal.replace('https://' + location.hostname, ''))
           }
           if (currentValue) {
             element.setAttribute(curTarget, currentValue.replace('$', curVal))
@@ -585,7 +585,7 @@ const IMLibElement = {
       if (event.key == 'Z' && !event.altKey && event.ctrlKey && event.shiftKey) { //Control+Shift+Z
         if (IMLibElement.editingTargetId) {
           const nodeInfo = IMLibContextPool.getContextInfoFromId(IMLibElement.editingTargetId, null)
-          if(nodeInfo) {
+          if (nodeInfo) {
             nodeInfo.context.backToInitialValue(nodeInfo.record, nodeInfo.field)
           }
         }

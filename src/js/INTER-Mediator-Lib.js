@@ -145,7 +145,7 @@ const INTERMediatorLib = {
     }
     let shaObj = null
     if (INTERMediatorOnPage.passwordHash > 1.4 || INTERMediatorOnPage.alwaysGenSHA2) {
-      shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds" : 5000})
+      shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
     } else {
       shaObj = new jsSHA('SHA-1', 'TEXT')
     }
@@ -1114,6 +1114,14 @@ const INTERMediatorLib = {
     return ('0' + dt.getHours()).substr(-2, 2) + ':' +
       ('0' + dt.getMinutes()).substr(-2, 2) + ':' +
       ('0' + dt.getSeconds()).substr(-2, 2)
+  },
+
+  mergeURLParameter: function (url, key, value) {
+    if (url.indexOf('?') > 0) {
+      return `${url}&${key}=${value}`
+    } else {
+      return `${url}?${key}=${value}`
+    }
   }
 }
 

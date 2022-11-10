@@ -19,7 +19,11 @@ namespace INTERMediator;
 use DateInterval;
 use DateTime;
 use Exception;
+use Symfony\Component\Yaml\Yaml;
 
+/**
+ *
+ */
 class IMUtil
 {
     public static function currentDTString($subSeconds = 0): string
@@ -498,7 +502,7 @@ class IMUtil
     {
         $resultStr = '';
         for ($i = 0; $i < $digit; $i++) {
-            try{
+            try {
                 $code = random_int(33, 126);
             } catch (\Exception $ex) {
                 $code = rand(33, 126);
@@ -573,13 +577,13 @@ class IMUtil
     public static function generateRandomPW()
     {
         $str = '';
-        try{
+        try {
             $limit = random_int(15, 20);
         } catch (\Exception $ex) {
             $limit = rand(15, 20);
         }
         for ($i = 0; $i < $limit; $i++) {
-            try{
+            try {
                 $n = random_int(33, 126); // They should be an ASCII character for JS SHA1 lib.
             } catch (\Exception $ex) {
                 $n = rand(33, 126); // They should be an ASCII character for JS SHA1 lib.
@@ -589,4 +593,73 @@ class IMUtil
         return $str;
     }
 
+    public static function relativePath($fromPath, $toPath)
+    {
+        $from = explode("/", $fromPath);
+        $to = explode("/", $toPath);
+        $commonRoot = 0;
+        for ($i = 0; $i < min(count($from), count($to)); $i += 1) {
+            if (!isset($from[$i]) || !isset($to[$i]) || ($from[$i] != $to[$i])) {
+                $commonRoot = $i;
+                break;
+            }
+        }
+        $path = '';
+        for ($index = count($from) - 2; $index >= $commonRoot; $index -= 1) {
+            $path = "../{$path}";
+        }
+        for ($index = $commonRoot; $index < count($to); $index += 1) {
+            $separator = (strlen($path) == 0) ? '' : '/';
+            $path = "{$path}{$separator}{$to[$index]}";
+        }
+        return str_replace('//', '/', $path);
+    }
+
+    public static function isInsideOf($checkPath, $dir)
+    {
+        if (!$checkPath || !$dir) { // Both parameter have not to falsy.
+            return false;
+        }
+        if (strlen($dir) > strlen($checkPath)) { // Apparently outside of $dir.
+            return false;
+        }
+        if (substr($checkPath, 0, strlen($dir)) == $dir) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function getYAMLDefContent()
+    {
+        $defPoolPath = Params::getParameterValue('yamlDefFilePool', false);
+        $docRoot = $_SERVER['DOCUMENT_ROOT'];
+        if (isset($_GET['deffile'])) { // The yaml file path is set on the deffile parameter
+            $yamlFilePath = $docRoot . '/' . $_GET['deffile'];
+            $yamlFile = $_GET['deffile'];
+        } else { // The yaml file has the same name of the page file
+            $ref = parse_url($_SERVER['HTTP_REFERER'] ?? '', PHP_URL_PATH);
+            $fname = basename($ref);
+            $dotPos = strrpos($fname, '.');
+            if ($dotPos !== false) {
+                $fname = substr($fname, 0, $dotPos);
+            }
+            $yamlFilePath = $docRoot . dirname($ref) . '/' . $fname . '.yml';
+            $yamlFile = basename($yamlFilePath);
+        }
+        if (!file_exists($yamlFilePath) && $defPoolPath && file_exists("{$defPoolPath}/{$yamlFile}")) {
+            $yamlFilePath = "{$defPoolPath}/{$yamlFile}";
+        }
+
+        if (!file_exists($yamlFilePath)) {
+            throw new Exception("The yaml format definition file does not exist: {$yamlFilePath}");
+        }
+        $realPath = realpath($yamlFilePath);
+        if (!(IMUtil::isInsideOf($realPath, $docRoot) || ($defPoolPath && IMUtil::isInsideOf($realPath, $defPoolPath)))) {
+            throw new Exception("The yaml file exists outside of any permitted paths: {$realPath}");
+        }
+        return Yaml::parse(file_get_contents($realPath));
+    }
 }

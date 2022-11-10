@@ -35,7 +35,8 @@
     "league/csv": "*",
     "symfony/mailer": "*",
     "symfony/amazon-mailer": "*",
-    "symfony/google-mailer": "*"
+    "symfony/google-mailer": "*",
+    "symfony/yaml": "*"
   },
   "extra": {
     "mouf": {

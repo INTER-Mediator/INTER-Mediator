@@ -445,8 +445,11 @@ let INTERMediatorOnPage = {
     if (INTERMediatorOnPage.isSetDefaultStyle) {
       backBox.style.height = '100%'
       backBox.style.width = '100%'
-      backBox.style.backgroundImage = 'url(' + INTERMediatorOnPage.getEntryPath() +
-        '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=background.gif)'
+      let url = INTERMediatorOnPage.getEntryPath()
+      url = INTERMediatorLib.mergeURLParameter(url, 'theme', INTERMediatorOnPage.getTheme())
+      url = INTERMediatorLib.mergeURLParameter(url, 'type', 'images')
+      url = INTERMediatorLib.mergeURLParameter(url, 'name', 'background.gif')
+      backBox.style.backgroundImage = `url(${url})`
       backBox.style.position = 'absolute'
       backBox.style.padding = ' 50px 0 0 0'
       backBox.style.top = '0'
@@ -791,8 +794,11 @@ let INTERMediatorOnPage = {
       backBox.style.width = '100%'
       // backBox.style.backgroundColor = '#BBBBBB'
       if (INTERMediatorOnPage.isSetDefaultStyle) {
-        backBox.style.backgroundImage = 'url(' + INTERMediatorOnPage.getEntryPath() +
-          '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=background-error.gif)'
+        let url = INTERMediatorOnPage.getEntryPath()
+        url = INTERMediatorLib.mergeURLParameter(url, 'theme', INTERMediatorOnPage.getTheme())
+        url = INTERMediatorLib.mergeURLParameter(url, 'type', 'images')
+        url = INTERMediatorLib.mergeURLParameter(url, 'name', 'background-error.gif')
+        backBox.style.backgroundImage = `url(${url})`
       }
       backBox.style.position = 'absolute'
       backBox.style.padding = ' 50px 0 0 0'
@@ -1168,8 +1174,11 @@ let INTERMediatorOnPage = {
       if (themeName === 'least' || themeName === 'thosedays') {
         const imageIM = document.createElement('img')
         imageIM.setAttribute('id', '_im_logo')
-        imageIM.setAttribute('src', INTERMediatorOnPage.getEntryPath() +
-          '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=logo.gif')
+        let url = INTERMediatorOnPage.getEntryPath()
+        url = INTERMediatorLib.mergeURLParameter(url, 'theme', INTERMediatorOnPage.getTheme())
+        url = INTERMediatorLib.mergeURLParameter(url, 'type', 'images')
+        url = INTERMediatorLib.mergeURLParameter(url, 'name', 'logo.gif')
+        imageIM.setAttribute('src', url)
         frontPanel.appendChild(imageIM)
         const imageProgress = document.createElement('img')
         imageProgress.setAttribute('id', '_im_animatedimage')
@@ -1182,8 +1191,11 @@ let INTERMediatorOnPage = {
         frontPanel.appendChild(document.createTextNode('INTER-Mediator working'))
       } else {
         const imageIM = document.createElement('img')
-        imageIM.setAttribute('src', INTERMediatorOnPage.getEntryPath() +
-          '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=gears.svg')
+        let url = INTERMediatorOnPage.getEntryPath()
+        url = INTERMediatorLib.mergeURLParameter(url, 'theme', INTERMediatorOnPage.getTheme())
+        url = INTERMediatorLib.mergeURLParameter(url, 'type', 'images')
+        url = INTERMediatorLib.mergeURLParameter(url, 'name', 'gears.svg')
+        imageIM.setAttribute('src', url)
         frontPanel.appendChild(imageIM)
       }
     }
@@ -1199,8 +1211,10 @@ let INTERMediatorOnPage = {
     'use strict'
     const headNode = document.getElementsByTagName('HEAD')[0]
     const linkElement = document.createElement('link')
-    linkElement.setAttribute('href', INTERMediatorOnPage.getEntryPath() +
-      '?theme=' + INTERMediatorOnPage.getTheme() + '&type=css')
+    let url = INTERMediatorOnPage.getEntryPath()
+    url = INTERMediatorLib.mergeURLParameter(url, 'theme', INTERMediatorOnPage.getTheme())
+    url = INTERMediatorLib.mergeURLParameter(url, 'type', 'css')
+    linkElement.setAttribute('href', url)
     linkElement.setAttribute('rel', 'stylesheet')
     linkElement.setAttribute('type', 'text/css')
     let styleIndex = -1
