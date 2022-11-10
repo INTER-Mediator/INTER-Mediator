@@ -66,6 +66,8 @@ IM_Entry(
         ],
         [
             'name' => 'cor_way_kindname',
+            'aggregation-select' => 'cor_way_kind.*,contact_kind.name as name_kind',
+            'aggregation-from' => 'cor_way_kind INNER JOIN contact_kind ON cor_way_kind.kind_id = contact_kind.id',
             'key' => 'id',
             'relation' => [
                 [
@@ -89,11 +91,11 @@ IM_Entry(
         ],
     ],
     [
-        'formatter' => [],
-        'aliases' => [
-            'kindid' => 'cor_way_kindname@kind_id@value',
-            'kindname' => 'cor_way_kindname@name_kind@innerHTML',
-        ],
+//        'formatter' => [],
+//        'aliases' => [
+//            'kindid' => 'cor_way_kindname@kind_id@value',
+//            'kindname' => 'cor_way_kindname@name_kind@innerHTML',
+//        ],
     ],
     [
         'db-class' => 'PDO',

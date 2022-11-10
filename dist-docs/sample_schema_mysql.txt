@@ -125,9 +125,9 @@ CREATE TABLE cor_way_kind	(
 CREATE INDEX cor_way_id ON cor_way_kind (way_id);
 CREATE INDEX cor_kind_id ON cor_way_kind (way_id);
 
-CREATE VIEW cor_way_kindname AS SELECT cor_way_kind.*,contact_kind.name as name_kind
-FROM cor_way_kind, contact_kind
-WHERE cor_way_kind.kind_id = contact_kind.id;
+# CREATE VIEW cor_way_kindname AS SELECT cor_way_kind.*,contact_kind.name as name_kind
+# FROM cor_way_kind, contact_kind
+# WHERE cor_way_kind.kind_id = contact_kind.id;
 
 INSERT cor_way_kind SET way_id=4,kind_id=4;
 INSERT cor_way_kind SET way_id=4,kind_id=5;

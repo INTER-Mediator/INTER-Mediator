@@ -49,13 +49,26 @@ IM_Entry(
             'name' => 'contact_way',
             'key' => 'id',
         ),
-        array(
+//        array(
+//            'name' => 'cor_way_kindname',
+//            'key' => 'id',
+//            'relation' => array(
+//                array('foreign-key' => 'way_id', 'join-field' => 'way', 'operator' => '=')
+//            ),
+//        ),
+        [
             'name' => 'cor_way_kindname',
+            'aggregation-select' => 'cor_way_kind.*,contact_kind.name as name_kind',
+            'aggregation-from' => 'cor_way_kind INNER JOIN contact_kind ON cor_way_kind.kind_id = contact_kind.id',
             'key' => 'id',
-            'relation' => array(
-                array('foreign-key' => 'way_id', 'join-field' => 'way', 'operator' => '=')
-            ),
-        ),
+            'relation' => [
+                [
+                    'foreign-key' => 'way_id',
+                    'join-field' => 'way',
+                    'operator' => '=',
+                ],
+            ],
+        ],
         array(
             'name' => 'history',
             'key' => 'id',
@@ -79,11 +92,11 @@ IM_Entry(
         ),
     ),
     array(
-        'formatter' => array(),
-        'aliases' => array(
-            'kindid' => 'cor_way_kindname@kind_id@value',
-            'kindname' => 'cor_way_kindname@name_kind@innerHTML',
-        ),
+//        'formatter' => array(),
+//        'aliases' => array(
+//            'kindid' => 'cor_way_kindname@kind_id@value',
+//            'kindname' => 'cor_way_kindname@name_kind@innerHTML',
+//        ),
         //    'transaction' => 'none',
         'authentication' => array( // table only, for all operations
             'user' => array('user1'), // Itemize permitted users

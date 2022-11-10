@@ -135,7 +135,7 @@ abstract class DB_PDO_Handler
         $fieldArray = [];
         $matches = [];
         foreach ($result as $row) {
-            if(!is_null($row[$this->fieldNameForType])) {
+            if (!is_null($row[$this->fieldNameForType])) {
                 preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
                 if (count($matches) > 0 && in_array($matches[0], $this->numericFieldTypes)) {
                     $fieldArray[] = $row[$this->fieldNameForField];
@@ -199,7 +199,7 @@ abstract class DB_PDO_Handler
         $fieldArray = [];
         $matches = [];
         foreach ($result as $row) {
-            if(!is_null($row[$this->fieldNameForType])) {
+            if (!is_null($row[$this->fieldNameForType])) {
                 preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
                 if (in_array($matches[0], $this->booleanFieldTypes)) {
                     $fieldArray[] = $row[$this->fieldNameForField];
@@ -216,15 +216,19 @@ abstract class DB_PDO_Handler
     protected function getTableInfo($tableName)
     {
         if (!isset($this->tableInfo[$tableName])) {
-            $sql = $this->getTalbeInfoSQL($tableName);
+            $sql = $this->getTalbeInfoSQL($tableName); // Returns SQL as like 'SHOW COLUMNS FROM $tableName'.
+            $result = null;
             $this->dbClassObj->logger->setDebugMessage($sql);
-            $result = $this->dbClassObj->link->query($sql);
-            if (!$result) {
-                throw new Exception('Inspection SQL Error:' . $sql);
+            try {
+                $result = $this->dbClassObj->link->query($sql);
+            } catch (Exception $ex) { // In case of aggregation-select and aggregation-from keyword appear in context definition.
+                //return []; // do nothing
             }
             $infoResult = [];
-            foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                $infoResult[] = $row;
+            if ($result) {
+                foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                    $infoResult[] = $row;
+                }
             }
             $this->tableInfo[$tableName] = $infoResult;
         } else {
