@@ -70,7 +70,7 @@ jobs:
 
       - name: Setup MySQL
         run: |
-          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.txt
+          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.sql
           mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "CREATE USER IF NOT EXISTS 'web'@'%' IDENTIFIED BY 'password';"
           mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO 'web'@'%';"
           mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "GRANT SHOW VIEW ON TABLE test_db.* TO 'web'@'%';"
@@ -84,7 +84,7 @@ jobs:
       - name: Setup SQLite
         run: |
           touch sample.sq3
-          sqlite3 sample.sq3 < ./dist-docs/sample_schema_sqlite.txt
+          sqlite3 sample.sq3 < ./dist-docs/sample_schema_sqlite.sql
           chmod 777 sample.sq3
 #          chown www-data sample.sq3
 
