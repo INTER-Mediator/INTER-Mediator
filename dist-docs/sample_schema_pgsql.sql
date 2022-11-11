@@ -20,18 +20,22 @@ $ psql -f sample_schema_pgsql.sql -h localhost test_db
  *********************************************************************/
 
 -- DROP USER web;
-CREATE USER web PASSWORD 'password';
+CREATE
+USER web PASSWORD 'password';
 /*
 DROP DATABASE IF EXISTS test_db;
 CREATE DATABASE test_db ENCODING 'UTF8';
 */
 VACUUM;
 
-DROP SCHEMA IF EXISTS im_sample CASCADE;
-CREATE SCHEMA im_sample;
+DROP
+SCHEMA IF EXISTS im_sample CASCADE;
+CREATE
+SCHEMA im_sample;
 
 SET search_path TO im_sample,public;
-ALTER USER web SET search_path TO im_sample,public;
+ALTER
+USER web SET search_path TO im_sample,public;
 
 /*  The schema for the "Sample_form" and "Sample_Auth" sample set. */
 CREATE
@@ -454,20 +458,20 @@ CREATE INDEX authuser_email ON authuser (email);
 CREATE INDEX authuser_limitdt ON authuser (limitdt);
 GRANT ALL PRIVILEGES ON im_sample.authuser_id_seq TO web;
 
-INSERT INTO authuser(id, username, hashedpasswd)
-VALUES (1, 'user1', 'd83eefa0a9bd7190c94e7911688503737a99db0154455354');
-INSERT INTO authuser(id, username, hashedpasswd)
-VALUES (2, 'user2', '5115aba773983066bcf4a8655ddac8525c1d3c6354455354');
-INSERT INTO authuser(id, username, hashedpasswd)
-VALUES (3, 'user3', 'd1a7981108a73e9fbd570e23ecca87c2c5cb967554455354');
-INSERT INTO authuser(id, username, hashedpasswd)
-VALUES (4, 'user4', '8c1b394577d0191417e8d962c5f6e3ca15068f8254455354');
-INSERT INTO authuser(id, username, hashedpasswd)
-VALUES (5, 'user5', 'ee403ef2642f2e63dca12af72856620e6a24102d54455354');
-INSERT INTO authuser(id, username, hashedpasswd)
-VALUES (6, 'mig2m', 'cd85a299c154c4714b23ce4b63618527289296ba6642c2685651ad8b9f20ce02285d7b34');
-INSERT INTO authuser(id, username, hashedpasswd)
-VALUES (7, 'mig2', 'fcc2ab4678963966614b5544a40f4b814ba3da41b3b69df6622e51b74818232864235970');
+INSERT INTO authuser(username, hashedpasswd)
+VALUES ('user1', 'd83eefa0a9bd7190c94e7911688503737a99db0154455354');
+INSERT INTO authuser(username, hashedpasswd)
+VALUES ('user2', '5115aba773983066bcf4a8655ddac8525c1d3c6354455354');
+INSERT INTO authuser(username, hashedpasswd)
+VALUES ('user3', 'd1a7981108a73e9fbd570e23ecca87c2c5cb967554455354');
+INSERT INTO authuser(username, hashedpasswd)
+VALUES ('user4', '8c1b394577d0191417e8d962c5f6e3ca15068f8254455354');
+INSERT INTO authuser(username, hashedpasswd)
+VALUES ('user5', 'ee403ef2642f2e63dca12af72856620e6a24102d54455354');
+INSERT INTO authuser(username, hashedpasswd)
+VALUES ('mig2m', 'cd85a299c154c4714b23ce4b63618527289296ba6642c2685651ad8b9f20ce02285d7b34');
+INSERT INTO authuser(username, hashedpasswd)
+VALUES ('mig2', 'fcc2ab4678963966614b5544a40f4b814ba3da41b3b69df6622e51b74818232864235970');
 /*
 # The user1 has the password 'user1'. It's salted with the string 'TEXT'.
 # All users have the password the same as user name. All are salted with 'TEXT'

@@ -116,7 +116,7 @@ abstract class DB_Proxy_Test_Common extends TestCase
         $dataSrcPgsql = [['name' => "testtable",
             'view' => "{$this->schemaName}testtable",
             'table' => "{$this->schemaName}testtable",
-            'key' => 'id', 'sequence' => "{$this->schemaName}serial"]];
+            'key' => 'id'/*, 'sequence' => "{$this->schemaName}serial"*/]];
 
         $this->dbProxySetupForAccess("person", 1, true);
         $msg = $this->db_proxy->logger->clearLogs();
@@ -189,12 +189,12 @@ abstract class DB_Proxy_Test_Common extends TestCase
             'view' => "{$this->schemaName}testtable",
             'table' => "{$this->schemaName}testtable",
             'extending-class' => $classNum == 1 ? "AdvisorSample" : "AdvisorSampleNew",
-            'key' => 'id', 'sequence' => "{$this->schemaName}serial"]];
+            'key' => 'id', /*'sequence' => "{$this->schemaName}serial"*/]];
         $dataSrcOthers = [['name' => "testtable",
             'view' => "testtable",
             'table' => "testtable",
             'extending-class' => $classNum == 1 ? "AdvisorSample" : "AdvisorSampleNew",
-            'key' => 'id', 'sequence' => 'im_sample.serial']];
+            'key' => 'id', /*'sequence' => 'im_sample.serial'*/]];
 
         $this->dbProxySetupForAccess("person", 1, $classNum);
 //        $msg = $this->db_proxy->logger->clearLogs();
@@ -256,7 +256,8 @@ class AdvisorSample extends UseSharedObjects implements AfterRead, AfterUpdate, 
         if (strpos($dbSpec['dsn'], 'pgsql') === 0) { // In case of PostgreSQL
             $result = $this->dbCreate("testtable",
                 ['vc1' => $nameValue, 'vc2' => $addressValue],
-                [['name' => "testtable", 'view' => "im_sample.testtable", 'table' => "im_sample.testtable", 'key' => 'id', 'sequence' => 'im_sample.serial',]]);
+                [['name' => "testtable", 'view' => "im_sample.testtable",
+                    'table' => "im_sample.testtable", 'key' => 'id', /*'sequence' => 'im_sample.serial',*/]]);
         } else {
             $result = $this->dbCreate("testtable", ['vc1' => $nameValue, 'vc2' => $addressValue]);
         }
@@ -300,7 +301,8 @@ class AdvisorSampleNew extends UseSharedObjects implements AfterRead, AfterUpdat
         if (strpos($dbSpec['dsn'], 'pgsql') === 0) { // In case of PostgreSQL
             $resultCreate = $this->dbCreate("testtable",
                 ['vc1' => $nameValue, 'vc2' => $addressValue],
-                [['name' => "testtable", 'view' => "im_sample.testtable", 'table' => "im_sample.testtable", 'key' => 'id', 'sequence' => 'im_sample.serial',]]);
+                [['name' => "testtable", 'view' => "im_sample.testtable", 'table' => "im_sample.testtable",
+                    'key' => 'id'/*, 'sequence' => 'im_sample.serial',*/]]);
         } else {
             $resultCreate = $this->dbCreate("testtable", ['vc1' => $nameValue, 'vc2' => $addressValue]);
         }
