@@ -30,26 +30,27 @@
 <div id="wrapper">
     <h1>Invoice (Sample for Calculation)</h1>
     <div class="sub_title" id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
-    <table>
+    <table class="_im_test-invoce-table">
         <tbody>
         <tr>
             <th>id</th>
-            <td><input type="text" data-im="invoice@id"></td>
+            <td><input type="text" data-im="invoice@id" class="_im_test-invoice-id"></td>
         </tr>
         <tr>
             <th>issued</th>
             <td>
-                <input type="text" data-im="invoice@issued" data-im-format="date(long)">
-                <span data-im="invoice@issued" data-im-format="date(%g%m月%d日)"></span>
+                <input type="text" data-im="invoice@issued" data-im-format="date(long)" class="_im_test-invoice-issued">
+                <span data-im="invoice@issued" data-im-format="date(%g%m月%d日)"
+                      class="_im_test-invoice-issued-formatted"></span>
             </td>
         </tr>
         <tr>
             <th>title</th>
-            <td><input type="text" data-im="invoice@title"></td>
+            <td><input type="text" data-im="invoice@title" class="_im_test-invoice-title"></td>
         </tr>
         <tr>
             <td colspan="2">
-                <table>
+                <table class="_im_test-item-table">
                     <thead>
                     <tr>
                         <th>product</th>
@@ -66,25 +67,27 @@
                     <tr>
                         <td>
                             <div>
-                                <input type="text" data-im="item@product_id" size="2">
+                                <input type="text" data-im="item@product_id" size="2" class="_im_test-item-product_id">
                             </div>
                             <div class="inline" data-im-control="enclosure">
                                 <div class="inline" data-im-control="repeater">
-                                    <span data-im="product@name"></span>
+                                    <span data-im="product@name" class="_im_test-product-name"></span>
                                 </div>
-                             </div>
-                            <select data-im="item@product_id">
-                                <option data-im="productlist@id@value productlist@name"></option>
+                            </div>
+                            <select data-im="item@product_id" class="_im_test-product-id">
+                                <option data-im="productlist@id@value productlist@name"
+                                        class="_im_test-productlist-name"></option>
                             </select>
                         </td>
                         <td>
                             <input class="price" type="text" size="5"
-                                   data-im="item@qty item@qty_color@style.color">
+                                   data-im="item@qty item@qty_color@style.color" class="_im_test-item-qty">
                         </td>
                         <td>
                             <div><input type="text" size="20"
                                         data-im="item@product_name"
-                                        data-im-control="lookup:item@product_id:product@name"></div>
+                                        data-im-control="lookup:item@product_id:product@name"
+                                        class="_im_test-item-puroduct_name"></div>
                         </td>
                         <td>
                             <div>
@@ -92,24 +95,19 @@
                                        data-im="item@product_unitprice"
                                        data-im-control="lookup:item@product_id:product@unitprice"
                                        data-im-format="number()"
-                                       data-im-format-options="useseparator">
+                                       data-im-format-options="useseparator"
+                                       class="_im_test-item-unitprice">
                             </div>
                         </td>
-                        <td align="right">
-                            <span style="text-align: right"
-                                  data-im="item@net_price"
-                                  data-im-format="number()"
-                                  data-im-format-options="useseparator"></span></td>
-                        <td align="right">
-                            <span style="text-align: right"
-                                  data-im="item@tax_price"
-                                  data-im-format="number()"
-                                  data-im-format-options="useseparator"></span></td>
-                        <td align="right">
-                            <span style="text-align: right"
-                                  data-im="item@amount_calc"
-                                  data-im-format="number()"
-                                  data-im-format-options="useseparator"></span></td>
+                        <td style="text-align: right">
+                            <span data-im="item@net_price" data-im-format="number()"
+                                  data-im-format-options="useseparator" class="_im_test-item-net_price"></span></td>
+                        <td style="text-align: right">
+                            <span data-im="item@tax_price" data-im-format="number()"
+                                  data-im-format-options="useseparator" class="_im_test-item-tax_price"></span></td>
+                        <td style="text-align: right">
+                            <span data-im="item@amount_calc" data-im-format="number()"
+                                  data-im-format-options="useseparator" class="_im_test-item-amount_calc"></span></td>
                         <td></td>
                     </tr>
                     </tbody>
@@ -118,13 +116,13 @@
         </tr>
         <tr>
             <th>Tax Rate:</th>
-            <td><input type="text" data-im="_@taxRate"></td>
+            <td><input type="text" data-im="_@taxRate" class="_im_test-taxRate"></td>
         </tr>
         <tr>
             <th>Total:</th>
             <td data-im="invoice@total_calc"
                 data-im-format="currency(2)"
-                data-im-format-options="useseparator"></td>
+                data-im-format-options="useseparator" class="_im_test-invoice-total_calc"></td>
         </tr>
         </tbody>
     </table>

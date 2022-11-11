@@ -17,7 +17,7 @@ Ver.11 (in development)
 - The YAML based definition file can work as like PHP's one. The file name of yaml file can set as the same as page file.
   In the script tag to import the framework, the src attribute has to refer the index.php of the repository root.
 [BUG FIX] In same case of using aggregation-select/from the error happened about the view or table didn't exist.
-[INFO] About ample SQL files in the dist-docs direcotory, thier extenstions changed to .sql from .txt.
+[INFO] About sample SQL files in the dist-docs direcotory, thier extenstions changed to .sql from .txt.
 
 Ver.10 (October 12, 2022)
 - Auto saving for INPUT and TEXTAREA element. Customizing in JavaScript code and their default value are:
