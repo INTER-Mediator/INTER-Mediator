@@ -41,27 +41,27 @@ if [ "$INPUT" = "y" -o "$INPUT" = "Y" ]; then
     if [ $OS = 'ubuntu' ] ; then
         mysql -u root --password="${VMPASSWORD}" -e "set global validate_password_policy=LOW;"
     fi
-    mysql -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.txt"
-    # mysql -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.txt" > /dev/null 2>&1
+    mysql -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.sql"
+    # mysql -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.sql" > /dev/null 2>&1
     if [ $OS = 'ubuntu' ] ; then
         mysql -u root --password="${VMPASSWORD}" -e "set global validate_password_policy=MEDIUM;"
     fi
     if [ $? -gt 0 ]; then
         if [ -e '/.dockerenv' ]; then
-            mysql -h db -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.txt"
+            mysql -h db -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.sql"
         fi
     fi
     if [ ! -e '/.dockerenv' ]; then
         if [ -e "/etc/alpine-release" ]; then
-            mysql -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk '{print $3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
+            mysql -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.sql | grep Date: | awk '{print $3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
         else
-            mysql -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk '{print $2,$3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
+            mysql -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.sql | grep Date: | awk '{print $2,$3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
         fi
     fi
 
     echo "${VMPASSWORD}" | sudo -u postgres -S psql -c 'drop database if exists test_db;'
     echo "${VMPASSWORD}" | sudo -u postgres -S psql -c 'create database test_db;'
-    echo "${VMPASSWORD}" | sudo -u postgres -S psql -f "${IMDISTDOC}/sample_schema_pgsql.txt" test_db
+    echo "${VMPASSWORD}" | sudo -u postgres -S psql -f "${IMDISTDOC}/sample_schema_pgsql.sql" test_db
 
     if [ ! -e "${SQLITEDIR}" ]; then
         echo "${VMPASSWORD}" | sudo -S mkdir -p "${SQLITEDIR}"
@@ -69,7 +69,7 @@ if [ "$INPUT" = "y" -o "$INPUT" = "Y" ]; then
     if [ -f "${SQLITEDB}" ]; then
         echo "${VMPASSWORD}" | sudo -S rm "${SQLITEDB}"
     fi
-    echo "${VMPASSWORD}" | sudo -S sqlite3 "${SQLITEDB}" < "${IMDISTDOC}/sample_schema_sqlite.txt"
+    echo "${VMPASSWORD}" | sudo -S sqlite3 "${SQLITEDB}" < "${IMDISTDOC}/sample_schema_sqlite.sql"
     echo "${VMPASSWORD}" | sudo -S chown -R "${WWWUSERNAME}":im-developer "${SQLITEDIR}"
     echo "${VMPASSWORD}" | sudo -S chmod 775 "${SQLITEDIR}"
     echo "${VMPASSWORD}" | sudo -S chmod 664 "${SQLITEDB}"

@@ -1314,14 +1314,14 @@ EOF
 end
 
 if node[:platform] == 'redhat'
-  execute "sed -e 's|utf8mb4|utf8|g' \"#{IMDISTDOC}/sample_schema_mysql.txt\" > \"#{IMDISTDOC}/temp\"" do
-    command "sed -e 's|utf8mb4|utf8|g' \"#{IMDISTDOC}/sample_schema_mysql.txt\" > \"#{IMDISTDOC}/temp\""
+  execute "sed -e 's|utf8mb4|utf8|g' \"#{IMDISTDOC}/sample_schema_mysql.sql\" > \"#{IMDISTDOC}/temp\"" do
+    command "sed -e 's|utf8mb4|utf8|g' \"#{IMDISTDOC}/sample_schema_mysql.sql\" > \"#{IMDISTDOC}/temp\""
   end
-  execute "rm \"#{IMDISTDOC}/sample_schema_mysql.txt\"" do
-    command "rm \"#{IMDISTDOC}/sample_schema_mysql.txt\""
+  execute "rm \"#{IMDISTDOC}/sample_schema_mysql.sql\"" do
+    command "rm \"#{IMDISTDOC}/sample_schema_mysql.sql\""
   end
-  execute "mv \"#{IMDISTDOC}/temp\" \"#{IMDISTDOC}/sample_schema_mysql.txt\"" do
-    command "mv \"#{IMDISTDOC}/temp\" \"#{IMDISTDOC}/sample_schema_mysql.txt\""
+  execute "mv \"#{IMDISTDOC}/temp\" \"#{IMDISTDOC}/sample_schema_mysql.sql\"" do
+    command "mv \"#{IMDISTDOC}/temp\" \"#{IMDISTDOC}/sample_schema_mysql.sql\""
   end
 end
 

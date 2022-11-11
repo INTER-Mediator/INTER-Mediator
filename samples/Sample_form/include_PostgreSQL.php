@@ -27,7 +27,7 @@ IM_Entry(
             'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
             'repeat-control' => 'insert delete copy-contact,history',
-            'sequence' => 'im_sample.person_id_seq',
+           // 'sequence' => 'im_sample.person_id_seq',
             'button-names' => array(
                 'insert'=>'レコード追加',
                 'delete'=>'レコード削除',
@@ -43,7 +43,7 @@ IM_Entry(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
             'repeat-control' => 'insert delete copy',
-            'sequence' => 'im_sample.serial',
+          //  'sequence' => 'im_sample.serial',
             'default-values'=>[['field'=>'summary','value'=>'test']],
         ),
         array(
@@ -51,17 +51,17 @@ IM_Entry(
             'view' => 'im_sample.contact_way',
             'table' => 'im_sample.contact_way',
             'key' => 'id',
-            'sequence' => 'im_sample.serial',
+          //  'sequence' => 'im_sample.serial',
         ),
         array(
             'name' => 'cor_way_kindname',
-            'view' => 'im_sample.cor_way_kindname',
-            'table' => 'im_sample.cor_way_kindname',
+            'aggregation-select' => 'cor_way_kind.*,contact_kind.name as name_kind',
+            'aggregation-from' => 'im_sample.cor_way_kind INNER JOIN im_sample.contact_kind ON cor_way_kind.kind_id = contact_kind.id',
             'key' => 'id',
             'relation' => array(
                 array('foreign-key' => 'way_id', 'join-field' => 'way', 'operator' => '=')
             ),
-            'sequence' => 'im_sample.serial',
+          //  'sequence' => 'im_sample.serial',
         ),
         array(
             'name' => 'history',
@@ -72,19 +72,13 @@ IM_Entry(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
             'repeat-control' => 'insert delete',
-            'sequence' => 'im_sample.serial',
+          //  'sequence' => 'im_sample.serial',
         ),
     ),
-    array(
-        'formatter' => array(),
-        'aliases' => array(
-            'kindid' => 'cor_way_kindname@kind_id@value',
-            'kindname' => 'cor_way_kindname@name_kind@innerHTML',
-        ),
-    ),
+    [],
     array(
         'db-class' => 'PDO',
         'dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db',
     ),
-    false
+    2
 );

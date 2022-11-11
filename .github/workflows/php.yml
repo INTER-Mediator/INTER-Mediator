@@ -34,7 +34,7 @@ jobs:
           POSTGRES_PASSWORD: EeLeBui7%Eesa4oto
           POSTGRES_DB: test_db
 #        volumes:
-#          - /home/runner/work/INTER-Mediator/INTER-Mediator/dist-docs/sample_schema_pgsql.txt:/docker-entrypoint-initdb.d/sample_schema_pgsql.sql
+#          - /home/runner/work/INTER-Mediator/INTER-Mediator/dist-docs/sample_schema_pgsql.sql:/docker-entrypoint-initdb.d/sample_schema_pgsql.sql
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
@@ -76,7 +76,7 @@ jobs:
           mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "GRANT SHOW VIEW ON TABLE test_db.* TO 'web'@'%';"
 
       - name: Setup PostgreSQL
-        run: psql postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./dist-docs/sample_schema_pgsql.txt
+        run: psql postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./dist-docs/sample_schema_pgsql.sql
 
 #      - name: Check MySQL
 #        run: mysql -h 127.0.0.1 --port 3306 -u web --password=password -e "select * from person;" test_db

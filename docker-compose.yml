@@ -13,7 +13,7 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: ./dist-docs/sample_schema_mysql.txt
+        source: ./dist-docs/sample_schema_mysql.sql
         target: /docker-entrypoint-initdb.d/sample_schema_mysql.sql
     environment:
       MYSQL_DATABASE: test_db
