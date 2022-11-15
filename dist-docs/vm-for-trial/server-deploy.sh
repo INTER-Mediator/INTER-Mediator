@@ -66,6 +66,6 @@ done
 
 # Import schema
 
-sed -E -e "s/'web'/'web\_${USER}'/g" "${IMDISTDOC}/sample_schema_mysql.txt" > "${IMDISTDOC}/tmp1"
+sed -E -e "s/'web'/'web\_${USER}'/g" "${IMDISTDOC}/sample_schema_mysql.sql" > "${IMDISTDOC}/tmp1"
 sed -E -e "s/test\_db/test\_db\_${USER}/g" "${IMDISTDOC}/tmp1" > "${IMDISTDOC}/tmp2"
 mysql -u root -p < "${IMDISTDOC}/tmp2"

@@ -16,10 +16,12 @@
     <meta name="viewport" content="initial-scale=1"/>
     <title>Step Operation Sample - INTER-Mediator</title>
     <link rel="stylesheet" href="mobile.css"/>
-    <script type="text/javascript" src="moblie_MySQL.php"></script>
+    <script type="text/javascript" src="../../index.php"></script>
+<!--    <script type="text/javascript" src="mobile_MySQL.php"></script>-->
     <script type="text/javascript">
         INTERMediatorOnPage.doAfterConstruct = function () {
-            document.getElementById('container').style.display = "block";
+          INTERMediatorLog.suppressDebugMessageOnPage = true
+          document.getElementById('container').style.display = "block";
         };
 
         INTERMediatorOnPage.nextStepFromEdit = function () {

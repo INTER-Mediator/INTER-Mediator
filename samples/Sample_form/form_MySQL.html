@@ -22,34 +22,34 @@
 <header>
     <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
 </header>
-    <div id="nonsupportmessage">
-        <div>
-            If you see this, you must use any unsupported web browser.<br>
-            Or you should set to active for JavaScript.
-            In case of generating the page, Please wait a while.
-        </div>
-        <div>
-            この表示が見えている場合、非対応ブラウザで参照されています。<br>
-            あるいは、JavaScriptを使用しないように設定されています。
-            描画処理中の場合はしばらくお待ちください。
-        </div>
+<div id="nonsupportmessage">
+    <div>
+        If you see this, you must use any unsupported web browser.<br>
+        Or you should set to active for JavaScript.
+        In case of generating the page, Please wait a while.
     </div>
+    <div>
+        この表示が見えている場合、非対応ブラウザで参照されています。<br>
+        あるいは、JavaScriptを使用しないように設定されています。
+        描画処理中の場合はしばらくお待ちください。
+    </div>
+</div>
 <div id="wrapper" style="display:none">
     <h1>Contact Management (Sample for Several Fundamental Features)</h1>
     <div class="sub_title" id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
-    <table border="1">
+    <table class="_im_test-person-table">
         <tbody>
         <tr>
             <th>id</th>
             <td>
-                <div data-im="person@id"></div>
-<!--                <div data-im="person@aaa"></div>-->
+                <div data-im="person@id" class="_im_test-person-id"></div>
+                <!--                <div data-im="person@aaa"></div>-->
             </td>
         </tr>
         <tr>
             <th>category</th>
             <td>
-                <select data-im="person@category">
+                <select data-im="person@category" class="_im_test-person-category">
                     <option value="101">Family</option>
                     <option value="102">ClassMate</option>
                     <option value="103">Collegue</option>
@@ -58,36 +58,40 @@
         </tr>
         <tr>
             <th>check</th>
-            <td><input type="checkbox" data-im="person@checking" value="1"></td>
+            <td><input type="checkbox" data-im="person@checking" value="1" class="_im_test-person-checking"></td>
         </tr>
         <tr>
             <th>name</th>
-            <td colspan="5"><input type="text" data-im="person@name" value=""></td>
+            <td colspan="5"><input type="text" data-im="person@name" value="" class="_im_test-person-name"></td>
         </tr>
         <tr>
             <th>mail</th>
-            <td colspan="5"><input type="email" data-im="person@mail" value=""></td>
+            <td colspan="5"><input type="email" data-im="person@mail" value="" class="_im_test-person-mail"></td>
         </tr>
         <tr>
             <th>location</th>
             <td colspan="5">
-                <label><input type="radio" name="radio1" data-im="person@location" value="201"> Domestic</label>
-                <label><input type="radio" name="radio1" data-im="person@location" value="202"> International</label>
-                <label><input type="radio" name="radio1" data-im="person@location" value="203"> Neightbor</label>
-                <label><input type="radio" name="radio1" data-im="person@location" value="204"> Space</label>
+                <label><input type="radio" name="radio1" data-im="person@location" value="201"
+                              class="_im_test-person-location"> Domestic</label>
+                <label><input type="radio" name="radio1" data-im="person@location" value="202"
+                              class="_im_test-person-location"> International</label>
+                <label><input type="radio" name="radio1" data-im="person@location" value="203"
+                              class="_im_test-person-location"> Neightbor</label>
+                <label><input type="radio" name="radio1" data-im="person@location" value="204"
+                              class="_im_test-person-location"> Space</label>
             </td>
         </tr>
         <tr>
             <th>memo</th>
             <td colspan="5">
-                <textarea data-im="person@memo"></textarea>
+                <textarea data-im="person@memo" class="_im_test-person-memo"></textarea>
                 <input type="month" data-im="person@memo">
                 <input type="week" data-im="person@memo">
             </td>
         </tr>
         <tr>
             <td colspan="6">
-                <table border="1">
+                <table class="_im_test-contact-table">
                     <thead>
                     <tr>
                         <th>datetime</th>
@@ -99,23 +103,28 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <td><input type="datetime-local" data-im="contact@datetime"></td>
-                        <td>
-                            <input type="text" data-im="contact@summary"><br>
-                            important:
-                            <input type="checkbox" data-im="contact@important" value="1">
+                        <td><input type="datetime-local" data-im="contact@datetime" class="_im_test-contact-datetime">
                         </td>
                         <td>
-                            <select data-im="contact@way">
-                                <option data-im="contact_way@id@value|contact_way@name@innerHTML"></option>
+                            <input type="text" data-im="contact@summary" class="_im_test-contact-summary"><br>
+                            important:
+                            <input type="checkbox" data-im="contact@important" value="1"
+                                   class="_im_test-contact-important">
+                        </td>
+                        <td>
+                            <select data-im="contact@way" class="_im_test-contact-way">
+                                <option data-im="contact_way@id@value contact_way@name"
+                                        class="_im_test-contact_way-id"></option>
                             </select>
                             /
-                            <select data-im="contact@kind">
-                                <option data-im="kindid|kindname"></option>
+                            <select data-im="contact@kind" class="_im_test-contact-kind">
+                                <option data-im="cor_way_kindname@kind_id@value cor_way_kindname@name_kind"
+                                        class="_im_test-cor_way_kindname-kind_id"></option>
                             </select>
                         </td>
                         <td>
-                            <textarea style="width: 100px" data-im="contact@description@innerHTML"></textarea>
+                            <textarea style="width: 100px" data-im="contact@description@innerHTML"
+                                      class="_im_test-contact-description"></textarea>
                         </td>
                         <td></td>
                     </tr>
@@ -125,12 +134,12 @@
         </tr>
         <tr>
             <td colspan="6">
-                <ul>
+                <ul class="_im_test-history-list">
                     <li>
                         <hr>
-                        <input type="text" data-im="history@startdate"></li>
-                    <li><input type="text" data-im="history@enddate"></li>
-                    <li><input type="text" data-im="history@description"></li>
+                        <input type="text" data-im="history@startdate" class="_im_test-history-startdate"></li>
+                    <li><input type="text" data-im="history@enddate" class="_im_test-history-enddate"></li>
+                    <li><input type="text" data-im="history@description" class="_im_test-history-description"></li>
                 </ul>
             </td>
         </tr>

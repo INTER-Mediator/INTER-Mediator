@@ -264,6 +264,8 @@ $uploadFilePathMode = "";
 /* This statement set debug to false forcely. */
 $prohibitDebugMode = false;
 
+$yamlDefFilePool = "/Users/msyk/Code/INTER-Mediator/samples/defpool";
+
 // The DOCUMENT_ROOT isn't full path on a rental server, this variable
 // is set before the result of DOCUMENT_ROOT.
 //$documentRootPrefix = "/usr/local/chroot";

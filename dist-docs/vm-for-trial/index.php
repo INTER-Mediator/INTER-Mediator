@@ -35,7 +35,7 @@ if ($content) {
 $filterForDate = "| grep Date: | awk '{print $2,$3,$4,$5,$6}'";
 $modDate = exec("git --git-dir={$imRoot}/.git log -1 {$filterForDate}");
 $imModDate = (new DateTime($modDate))->format('Y年m月d日');
-$modDate = exec("git --git-dir={$imRoot}/.git log -1 -- -p dist-docs/sample_schema_mysql.txt {$filterForDate}");
+$modDate = exec("git --git-dir={$imRoot}/.git log -1 -- -p dist-docs/sample_schema_mysql.sql {$filterForDate}");
 $mysqlModDate = (new DateTime($modDate))->format('Y年m月d日');
 $modDate = exec("git --git-dir={$imRoot}/.git log -1 -- -p dist-docs/TestDB.fmp12 {$filterForDate}");
 $fmModDate = (new DateTime($modDate))->format('Y年m月d日');

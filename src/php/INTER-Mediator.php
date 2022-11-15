@@ -79,32 +79,6 @@ define("IM_TODAY", $fmt->format((new DateTime())->getTimestamp()));
  */
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
-    // check required PHP extensions -> This is going to do with composer
-//    $requiredFunctions = array(
-//        'mbstring' => 'mb_internal_encoding',
-//    );
-//    if (isset($options) && is_array($options)) {
-//        foreach ($options as $key => $option) {
-//            if ($key == 'authentication'
-//                && isset($option['user'])
-//                && is_array($option['user'])
-//                && array_search('database_native', $option['user']) !== false
-//            ) {
-//                // Native Authentication requires BC Math functions
-//                $requiredFunctions = array_merge($requiredFunctions, array('bcmath' => 'bcadd'));
-//                break;
-//            }
-//        }
-//    }
-//    foreach ($requiredFunctions as $key => $value) {
-//        if (!function_exists($value)) {
-//            $generator = new GenerateJSCode();
-//            $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
-//            $generator->generateErrorMessageJS("PHP extension \"" . $key . "\" is required for running INTER-Mediator.");
-//            return;
-//        }
-//    }
-
     // Read from params.php
     [$defaultTimezone, $accessLogLevel] = Params::getParameterValue(["defaultTimezone", "accessLogLevel"], ["UTC", false]);
     // Setup Timezone

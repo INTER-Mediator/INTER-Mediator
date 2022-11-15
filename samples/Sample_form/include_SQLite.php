@@ -45,6 +45,8 @@ IM_Entry(
         ),
         array(
             'name' => 'cor_way_kindname',
+            'aggregation-select' => 'cor_way_kind.*,contact_kind.name as name_kind',
+            'aggregation-from' => 'cor_way_kind INNER JOIN contact_kind ON cor_way_kind.kind_id = contact_kind.id',
             'key' => 'id',
             'relation' => array(
                 array('foreign-key' => 'way_id', 'join-field' => 'way', 'operator' => '=')
@@ -58,16 +60,10 @@ IM_Entry(
             'repeat-control' => 'insert delete',
         ),
     ),
-    array(
-        'formatter' => array(),
-        'aliases' => array(
-            'kindid' => 'cor_way_kindname@kind_id@value',
-            'kindname' => 'cor_way_kindname@name_kind@innerHTML',
-        ),
-    ),
+    [],
     array(
         'db-class' => 'PDO',
         'dsn' => 'sqlite:/var/db/im/sample.sq3',
     ),
-    false
+    2
 );

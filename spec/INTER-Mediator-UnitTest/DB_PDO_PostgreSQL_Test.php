@@ -47,7 +47,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
                 'sort' => array(
                     array('field' => 'id', 'direction' => 'asc'),
                 ),
-                'sequence' => $seqName,
+                //'sequence' => $seqName,
             )
         );
         if (!is_null($subContextName)) {
@@ -85,7 +85,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
                     'key' => 'id',
                     'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
                     'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
-                    'sequence' => 'im_sample.person_id_seq',
+                    //'sequence' => 'im_sample.person_id_seq',
                 )
             ),
             array(

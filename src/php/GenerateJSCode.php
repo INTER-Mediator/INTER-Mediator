@@ -172,10 +172,12 @@ class GenerateJSCode
                 . (isset($scriptPathSufix) ? $scriptPathSuffix : '');
         } else {
             $pathToMySelf = filter_var($scriptName);
+            $pathToMySelf = IMUtil::relativePath(parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH), $_SERVER['SCRIPT_NAME']);
         }
+        $qStr = isset($_SERVER['QUERY_STRING']) ? "?{$_SERVER['QUERY_STRING']}" : '';
 
         $this->generateAssignJS(
-            "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
+            "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$qStr}{$q};}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getTheme", "function(){return {$q}",
             $options['theme'] ?? $themeName, "{$q};}");
