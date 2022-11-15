@@ -1,0 +1,20 @@
+contexts:
+  - name: productlist
+    view: product
+    key: id
+    records: 10
+    query:
+      - field: name
+        value: '%'
+        operator: LIKE
+    sort:
+      - field: name
+        direction: ASC
+  - records: 1
+    name: productdetail
+    view: product
+    key: id
+options: { }
+connection:
+  db-class: PDO
+debug: false

@@ -6,8 +6,8 @@ contexts:
     key: id
     paging: true
     sort:
-      field: unitprice
-      direction: ASC
+      - field: unitprice
+        direction: ASC
     navi-control: master
     repeat-control: 'insert delete copy'
   - records: 1

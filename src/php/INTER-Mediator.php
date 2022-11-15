@@ -33,24 +33,26 @@ if (file_exists($autoLoad)) { // If vendor is inside of INTER-Mediator
 
 spl_autoload_register(function ($className) {
     $comps = explode('\\', $className);
-    $className = $comps[count($comps) - 1];
-    // Load from the file located on the same directory as definition file.
-    $path = dirname($_SERVER['SCRIPT_FILENAME']) . "/{$className}.php";
-    if (file_exists($path)) {
-        require_once $path;
-        return true;
-    }
-    // Load from the specific directory with params.php
-    $cDir = Params::getParameterValue("loadFrom", false);
-    if ($cDir) {
-        $path = "{$cDir}/" . implode('/', $comps) . ".php";
-        if (file_exists($path)) {
-            require_once $path;
-            return true;
+    $searchDirs = [
+        // Load from the file located on the same directory as the definition file.
+        dirname($_SERVER['SCRIPT_FILENAME']),
+        // Load from the file located on the same directory as the page file.
+        IMUtil::relativePath($_SERVER['SCRIPT_NAME'] ?? null, parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH)),
+        // Load from the specific directory with params.php
+        Params::getParameterValue("loadFrom", false)
+    ];
+    foreach ($searchDirs as $dir) {
+        if ($dir) {
+            $path = $dir . "/" . implode('/', $comps) . ".php";
+            if (file_exists($path)) {
+                require_once $path;
+                return true;
+            }
         }
     }
     // Load from the file inside files of FX.php.
     $imRoot = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR;
+    $className = $comps[count($comps) - 1];
     $path = "{$imRoot}/vendor/yodarunamok/fxphp/lib/datasource_classes/{$className}.class.php";
     if (file_exists($path)) {
         require_once $path;
