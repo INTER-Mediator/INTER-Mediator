@@ -595,6 +595,9 @@ class IMUtil
 
     public static function relativePath($fromPath, $toPath)
     {
+        if (!$fromPath || !$toPath) {
+            return null;
+        }
         $from = explode("/", $fromPath);
         $to = explode("/", $toPath);
         $commonRoot = 0;
