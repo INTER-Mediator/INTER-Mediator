@@ -53,31 +53,34 @@ class GenerateJSCode
     {
         $q = '"';
         $ds = DIRECTORY_SEPARATOR;
-        [
-            $browserCompatibility, $scriptPathPrefix, $scriptPathSuffix, $oAuthProvider,
-            $oAuthClientID, $oAuthRedirect, $passwordPolicy, $dbClass,
-            $dbDSN, $nonSupportMessageId, $valuesForLocalContext, $themeName,
-            $appLocale, $appCurrency, $resetPage, $enrollPage,
-            $serviceServerPort, $serviceServerHost, $serviceServerProtocol, $notUseServiceServer,
-            $activateClientService, $followingTimezones, $passwordHash, $alwaysGenSHA2,
-            $isSAML, $samlWithBuiltInAuth
-        ] = Params::getParameterValue([
-            "browserCompatibility", "scriptPathPrefix", "scriptPathSuffix", "oAuthProvider",
-            "oAuthClientID", "oAuthRedirect", "passwordPolicy", "dbClass",
-            "dbDSN", "nonSupportMessageId", "valuesForLocalContext", "themeName",
-            "appLocale", "appCurrency", "resetPage", "enrollPage",
-            "serviceServerPort", "serviceServerHost", "serviceServerProtocol", "notUseServiceServer",
-            "activateClientService", "followingTimezones", "passwordHash", "alwaysGenSHA2",
-            "isSAML", "samlWithBuiltInAuth"
-        ], [
-            null, null, null, null,
-            null, null, null, null,
-            '', null, null, "default",
-            'ja_JP', 'JP', null, null,
-            "11478", false, 'ws', true,
-            false, false, 1, false,
-            false, false
-        ]);
+
+        $browserCompatibility = Params::getParameterValue("browserCompatibility", null);
+        $callURL = Params::getParameterValue("callURL", null);
+        $scriptPathPrefix = Params::getParameterValue("scriptPathPrefix", null);
+        $scriptPathSuffix = Params::getParameterValue("scriptPathSuffix", null);
+        $oAuthProvider = Params::getParameterValue("oAuthProvider", null);
+        $oAuthClientID = Params::getParameterValue("oAuthClientID", null);
+        $oAuthRedirect = Params::getParameterValue("oAuthRedirect", null);
+        $passwordPolicy = Params::getParameterValue("passwordPolicy", null);
+        $dbClass = Params::getParameterValue("dbClass", null);
+        $dbDSN = Params::getParameterValue("dbDSN", '');
+        $nonSupportMessageId = Params::getParameterValue("nonSupportMessageId", null);
+        $valuesForLocalContext = Params::getParameterValue("valuesForLocalContext", null);
+        $themeName = Params::getParameterValue("themeName", 'default');
+        $appLocale = Params::getParameterValue("appLocale", 'ja_JP');
+        $appCurrency = Params::getParameterValue("appCurrency", 'JP');
+        $resetPage = Params::getParameterValue("resetPage", null);
+        $enrollPage = Params::getParameterValue("enrollPage", null);
+        $serviceServerPort = Params::getParameterValue("serviceServerPort", "11478");
+        $serviceServerHost = Params::getParameterValue("serviceServerHost", null);
+        $serviceServerProtocol = Params::getParameterValue("serviceServerProtocol", 'ws');
+        $notUseServiceServer = Params::getParameterValue("notUseServiceServer", null);
+        $activateClientService = Params::getParameterValue("activateClientService", null);
+        $followingTimezones = Params::getParameterValue("followingTimezones", null);
+        $passwordHash = Params::getParameterValue("passwordHash", 1);
+        $alwaysGenSHA2 = Params::getParameterValue("alwaysGenSHA2", null);
+        $isSAML = Params::getParameterValue("isSAML", null);
+        $samlWithBuiltInAuth = Params::getParameterValue("samlWithBuiltInAuth", null);
         $credentialCookieDomain = Params::getParameterValue('credentialCookieDomain', NULL);
 
         $resetPage = $options['authentication']['reset-page'] ?? $resetPage ?? null;
@@ -89,9 +92,7 @@ class GenerateJSCode
         $isSAML = $options['authentication']['is-saml'] ?? $isSAML ?? false;
         $samlWithBuiltInAuth = $options['authentication']['saml-builtin-auth'] ?? $samlWithBuiltInAuth ?? false;
 
-        $serverName = $_SERVER['SCRIPT_NAME'] ?? 'Not_on_web_server';
         $documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? 'Not_on_web_server';
-        $scriptName = $_SERVER['SCRIPT_NAME'] ?? 'Not_on_web_server';
 
         $hasSyncControl = false;
         foreach ($datasource as $contextDef) {
@@ -118,7 +119,7 @@ class GenerateJSCode
         $relativeToDefFile = '';
         $editorPath = realpath($pathToIM . $ds . 'editors');
         if ($editorPath) { // In case of core only build.
-            $defFilePath = realpath($documentRoot . $serverName);
+            $defFilePath = realpath($documentRoot . $_SERVER['SCRIPT_NAME']);
             while (strpos($defFilePath, $editorPath) !== 0 && strlen($editorPath) > 1) {
                 $editorPath = dirname($editorPath);
                 $relativeToDefFile .= '..' . $ds;
@@ -168,11 +169,10 @@ class GenerateJSCode
             $pathToMySelf = $callURL;
         } else if (isset($scriptPathPrefix) || isset($scriptPathSuffix)) {
             $pathToMySelf = ($scriptPathPrefix ?? '')
-                . filter_var($scriptName)
-                . (isset($scriptPathSufix) ? $scriptPathSuffix : '');
+                . ($_SERVER['SCRIPT_NAME'] ?? null) . (isset($scriptPathSufix) ? $scriptPathSuffix : '');
         } else {
-            $pathToMySelf = filter_var($scriptName);
-            $pathToMySelf = IMUtil::relativePath(parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH), $_SERVER['SCRIPT_NAME']);
+            $pathToMySelf = IMUtil::relativePath(
+                parse_url($_SERVER['HTTP_REFERER'] ?? null, PHP_URL_PATH), $_SERVER['SCRIPT_NAME'] ?? null);
         }
         $qStr = isset($_SERVER['QUERY_STRING']) ? "?{$_SERVER['QUERY_STRING']}" : '';
 
@@ -216,7 +216,7 @@ class GenerateJSCode
             "INTERMediatorOnPage.browserCompatibility",
             "function(){return ", IMUtil::arrayToJS($browserCompatibility), ";}");
 
-        $remoteAddr = filter_var($_SERVER['REMOTE_ADDR']);
+        $remoteAddr = $_SERVER['REMOTE_ADDR'];
         if (is_null($remoteAddr) || $remoteAddr === FALSE) {
             $remoteAddr = '0.0.0.0';
         }
