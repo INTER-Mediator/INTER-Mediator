@@ -650,6 +650,9 @@ class IMUtil
                 $fname = substr($fname, 0, $dotPos);
             }
             $yamlFilePath = $docRoot . dirname($ref) . '/' . $fname . '.yml';
+            if (!file_exists($yamlFilePath)) {
+                $yamlFilePath = $docRoot . dirname($ref) . '/' . $fname . '.json';
+            }
             $yamlFile = basename($yamlFilePath);
         }
         if (!file_exists($yamlFilePath) && $defPoolPath && file_exists("{$defPoolPath}/{$yamlFile}")) {
@@ -663,6 +666,12 @@ class IMUtil
         if (!(IMUtil::isInsideOf($realPath, $docRoot) || ($defPoolPath && IMUtil::isInsideOf($realPath, $defPoolPath)))) {
             throw new Exception("The yaml file exists outside of any permitted paths: {$realPath}");
         }
-        return Yaml::parse(file_get_contents($realPath));
+        return [Yaml::parse(file_get_contents($realPath)), $yamlFilePath];
+        // OMG! Yaml parser can parse JSON data!! Really??
+    }
+
+    public static function getDefinitionFromYAML($yaml)
+    {
+        return Yaml::parse($yaml);
     }
 }
