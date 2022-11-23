@@ -236,6 +236,7 @@ class DefinitionChecker
             'convert-date' => array('*' => 'string'),
             'convert-datetime' => array('*' => 'string'),
         ],
+        'terms'=> 'array',
     );
     private $prohibitKeywordsMessaging = [
         'from' => 'string',

@@ -22,6 +22,24 @@ use INTERMediator\Params;
 class MessageStrings
 {
 
+    public function getTerms($options)
+    {
+        $className = get_class($this);
+        $underLine = strpos($className, '_');
+        $terms = Params::getParameterValue("terms", null);
+        $thisLang = ($underLine === false) ? 'en' : substr($className, $underLine + 1);
+        $termList = [];
+        if (is_array($terms) && isset($terms[$thisLang])) {
+            $termList = $terms[$thisLang];
+        }
+        if (isset($options['terms']) && isset($options['terms'][$thisLang])) {
+            foreach ($options['terms'][$thisLang] as $key => $value) {
+                $termList[$key] = $value;
+            }
+        }
+        return $termList;
+    }
+
     public function getMessages()
     {
         $altMessages = Params::getParameterValue("messages", null);

@@ -264,7 +264,8 @@ $uploadFilePathMode = "";
 /* This statement set debug to false forcely. */
 $prohibitDebugMode = false;
 
-$yamlDefFilePool = "/Users/msyk/Code/INTER-Mediator/samples/defpool";
+// YAML files can be stored in the path of the following variable.
+//$yamlDefFilePool = "/Users/msyk/Code/INTER-Mediator/samples/defpool";
 
 // The DOCUMENT_ROOT isn't full path on a rental server, this variable
 // is set before the result of DOCUMENT_ROOT.
@@ -280,3 +281,20 @@ $yamlDefFilePool = "/Users/msyk/Code/INTER-Mediator/samples/defpool";
 // In case of using INTER-Mediator with other frameworks, you might specify any special URL to call.
 // So you can set the another url to the $callURL variables and it can be replaced with $_SERVER['SCRIPT_NAME'].
 //$callURL = "http://yourdomai/your/path/to/definition-file.php"
+
+/* Localizing
+ * =================== */
+$terms = [
+//    'en' => [
+//        'header' => 'INTER-Mediator - Sample - Form Style/MySQL',
+//        'page-title' => 'Contact Management (Sample for Several Fundamental Features)',
+//        'msg1' => '',
+//        'msg2' => '',
+//    ],
+    'ja' => [
+//        'header' => 'INTER-Mediator - サンプル - フォーム形式/MySQL',
+//        'page-title' => 'コンタクト先管理 (さまざまな機能を確認するためのサンプル)',
+        'category' => 'カテゴリ',
+        'check' => 'チェック',
+    ],
+];

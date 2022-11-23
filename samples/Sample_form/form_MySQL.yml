@@ -41,7 +41,14 @@ contexts:
         join-field: id
         operator: '='
     repeat-control: 'insert delete'
-options: { }
+options:
+  terms:
+    en:
+      header: INTER-Mediator - Sample - Form Style/MySQL
+      page-title: Contact Management (Sample for Several Fundamental Features
+    ja:
+      header: INTER-Mediator - サンプル - フォーム形式/MySQL
+      page-title: コンタクト先管理 (さまざまな機能を確認するためのサンプル)
 connection:
   db-class: PDO
 debug: 2
