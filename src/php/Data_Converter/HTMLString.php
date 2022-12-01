@@ -61,12 +61,18 @@ class HTMLString
     }
 
     protected function replaceCRLF($str)    {
+        if(is_null($str)) {
+            return null;
+        }
         return str_replace("\n", "<br />",
             str_replace("\r", "<br />",
                 str_replace("\r\n", "<br />", $str)));
     }
 
     protected function replaceLinkToATag($str)  {
+        if(is_null($str)) {
+            return null;
+        }
         return mb_ereg_replace("(https?|ftp)(:\\/\\/[-_.!~*\\'()a-zA-Z0-9;\\/?:\\@&=+\\$,%#]+)",
             "<a href=\"\\0\" target=\"_blank\">\\0</a>", $str, "i");
     }
