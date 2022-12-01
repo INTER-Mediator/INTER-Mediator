@@ -49,6 +49,9 @@ class HTMLString
     }
 
     protected function replaceTags($str)    {
+        if(is_null($str)) {
+            return null;
+        }
         return str_replace(">", "&gt;",
             str_replace("<", "&lt;",
                 str_replace("'", "&#39;",
