@@ -600,7 +600,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence']
             : "{$this->dbSettings->getEntityForUpdate()}_{$keyField}_seq";
         $lastKeyValue = $this->link->lastInsertId($seqObject);
-        if ($isReplace && $lastKeyValue == 0) { // lastInsertId returns 0 after replace command.
+        if (/* $isReplace && */ $lastKeyValue == 0) { // lastInsertId returns 0 after replace command.
+            // Moreover, about MySQL, it returns 0 with the key field without AUTO_INCREMENT.
             $lastKeyValue = -999; // This means kind of error, so avoid to set non zero value.
         }
 
@@ -610,6 +611,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         if ($this->isRequiredUpdated) {
             $sql = $this->handler->sqlSELECTCommand() . "* FROM " . $viewName
                 . " WHERE " . $keyField . "=" . $this->link->quote($lastKeyValue);
+            $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
             if ($result === false) {
                 $this->errorMessageStore('Select:' . $sql);
