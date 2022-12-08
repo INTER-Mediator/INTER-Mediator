@@ -560,6 +560,7 @@ const INTERMediator = {
       } else {
         bodyNode.innerHTML = INTERMediator.rootEnclosure
       }
+      INTERMediator.localizing()
       postSetFields = []
       INTERMediatorOnPage.setReferenceToTheme()
       IMLibPageNavigation.initializeStepInfo(false)
@@ -1977,6 +1978,23 @@ const INTERMediator = {
       delete value[contextName]
       INTERMediator.recordLimit = value
       IMLibLocalContext.archive()
+    }
+  },
+
+  localizing: ()=>{
+    const terms = INTERMediatorOnPage.getTerms()
+    const targetNodes = document.querySelectorAll("*[data-im-locale]");
+    for(const node of targetNodes){
+      const localeValue = node.getAttribute("data-im-locale")
+      if(terms[localeValue]) {
+        const bros = node.childNodes
+        for(const item of bros){
+          if(item.nodeType == Node.TEXT_NODE) {
+            node.removeChild(item)
+          }
+        }
+        node.appendChild(document.createTextNode(terms[localeValue]))
+      }
     }
   },
 

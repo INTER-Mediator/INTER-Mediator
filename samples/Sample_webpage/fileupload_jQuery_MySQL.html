@@ -29,7 +29,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.28.0/js/jquery.fileupload-process.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.28.0/js/jquery.fileupload-image.min.js"></script>
     <!-- Loading INTER-Mediator -->
-    <script type="text/javascript" src="include_MySQL.php"></script>
+<!--    <script type="text/javascript" src="include_MySQL.php"></script>-->
+    <script type="text/javascript" src="../../index.php"></script>
     <script src="../../node_modules/inter-mediator-plugin-jqueryfileupload/index.js"></script>
     <script>
       INTERMediatorOnPage.doBeforeConstruct = function () {
@@ -81,6 +82,7 @@
             <tr>
                 <th>Date and Time</th>
                 <th>Message</th>
+                <th></th>
                 <th>History</th>
                 <th></th>
             </tr>
@@ -88,10 +90,12 @@
             <tbody>
             <tr>
                 <td>
-                    <div data-im="testtable@dt1"></div>
+                    <div data-im="testtable@dt1" data-im-format="DateTime(long)"></div>
                     <div data-im="testtable@vc1"></div>
                 </td>
                 <td data-im="testtable@vc1" data-im-widget="jquery_fileupload"></td>
+<!--                <td><img src="include_MySQL.php?media=" data-im="testtable@vc1@#src" style="width: 60px"></td>-->
+                <td><img src="../../index.php?deffile=/samples/Sample_webpage/fileupload_jQuery_MySQL.yml&media=" data-im="testtable@vc1@#src" style="width: 60px"></td>
                 <td>
                     <table>
                         <tbody>
@@ -108,7 +112,7 @@
     </div>
 </div>
 <footer>
-    <small>INTER-Mediator ©2020</small>
+    <small>INTER-Mediator @2022</small>
 </footer>
 </body>
 </html>

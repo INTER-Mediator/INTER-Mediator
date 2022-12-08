@@ -78,11 +78,13 @@ define("IM_TODAY", $fmt->format((new DateTime())->getTimestamp()));
  * @param $options
  * @param $dbspecification
  * @param bool $debug
+ * @param string $origin The path to the definition file.
  */
-function IM_Entry($datasource, $options, $dbspecification, $debug = false)
+function IM_Entry($datasource, $options, $dbspecification, $debug = false, $origin = null)
 {
     // Read from params.php
-    [$defaultTimezone, $accessLogLevel] = Params::getParameterValue(["defaultTimezone", "accessLogLevel"], ["UTC", false]);
+    $defaultTimezone = Params::getParameterValue("defaultTimezone", "UTC");
+    $accessLogLevel = Params::getParameterValue("accessLogLevel", false);
     // Setup Timezone
     if ($defaultTimezone) {
         date_default_timezone_set($defaultTimezone);
@@ -165,6 +167,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         ServiceServerProxy::instance()->checkServiceServer();
         $dbInstance = new DB\Proxy();
         $isInitialized = $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
+        $dbInstance->logger->setDebugMessage("Definition File: {$origin}", 1);
         $dbInstance->logger->setErrorMessages(ServiceServerProxy::instance()->getErrors());
         $dbInstance->logger->setDebugMessages(ServiceServerProxy::instance()->getMessages());
         if (!$isInitialized) {

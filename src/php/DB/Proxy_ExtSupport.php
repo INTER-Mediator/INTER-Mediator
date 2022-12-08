@@ -98,7 +98,7 @@ trait Proxy_ExtSupport
         $targetSpec = $spec ?? $this->extDataSource;
         if ($targetSpec) {
             foreach ($targetSpec as $item) {
-                if ($item['name'] == $target) {
+                if (isset($item['name']) && ($item['name'] == $target)) {
                     $result = true;
                     break;
                 }

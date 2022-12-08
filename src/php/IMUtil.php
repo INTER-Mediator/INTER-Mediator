@@ -639,30 +639,49 @@ class IMUtil
     {
         $defPoolPath = Params::getParameterValue('yamlDefFilePool', false);
         $docRoot = $_SERVER['DOCUMENT_ROOT'];
+        $ref = parse_url($_SERVER['HTTP_REFERER'] ?? '', PHP_URL_PATH);
+        $possibleDirs = [$docRoot, $docRoot . dirname($ref), $defPoolPath,];
         if (isset($_GET['deffile'])) { // The yaml file path is set on the deffile parameter
-            $yamlFilePath = $docRoot . '/' . $_GET['deffile'];
-            $yamlFile = $_GET['deffile'];
+            $filePath = $_GET['deffile'];
+            $possibleDirs[] = $docRoot;
+            $possibleExts = [''];
         } else { // The yaml file has the same name of the page file
-            $ref = parse_url($_SERVER['HTTP_REFERER'] ?? '', PHP_URL_PATH);
-            $fname = basename($ref);
-            $dotPos = strrpos($fname, '.');
+            $filePath = basename($ref);
+            $dotPos = strrpos($filePath, '.');
             if ($dotPos !== false) {
-                $fname = substr($fname, 0, $dotPos);
+                $filePath = substr($filePath, 0, $dotPos);
             }
-            $yamlFilePath = $docRoot . dirname($ref) . '/' . $fname . '.yml';
-            $yamlFile = basename($yamlFilePath);
+            $possibleExts = ['.yml', '.yaml', '.json'];
         }
-        if (!file_exists($yamlFilePath) && $defPoolPath && file_exists("{$defPoolPath}/{$yamlFile}")) {
-            $yamlFilePath = "{$defPoolPath}/{$yamlFile}";
+        $yamlFilePath = '';
+        $searchResult = [];
+        foreach ($possibleDirs as $dir) {
+            if ($dir) {
+                foreach ($possibleExts as $extension) {
+                    $yamlFilePath = $dir . '/' . $filePath . $extension;
+                    if (file_exists($yamlFilePath)) {
+                        break 2;
+                    }
+                    $searchResult[] = $yamlFilePath;
+                }
+            }
         }
-
         if (!file_exists($yamlFilePath)) {
-            throw new Exception("The yaml format definition file does not exist: {$yamlFilePath}");
+            throw new Exception(
+                "The yaml format definition file does not exist on following paths:\\n"
+                . implode("\\n", $searchResult)
+            );
         }
         $realPath = realpath($yamlFilePath);
         if (!(IMUtil::isInsideOf($realPath, $docRoot) || ($defPoolPath && IMUtil::isInsideOf($realPath, $defPoolPath)))) {
             throw new Exception("The yaml file exists outside of any permitted paths: {$realPath}");
         }
-        return Yaml::parse(file_get_contents($realPath));
+        return [Yaml::parse(file_get_contents($realPath)), $yamlFilePath];
+        // OMG! Yaml parser can parse JSON data!! Really??
+    }
+
+    public static function getDefinitionFromYAML($yaml)
+    {
+        return Yaml::parse($yaml);
     }
 }

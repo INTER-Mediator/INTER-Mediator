@@ -13,19 +13,30 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-// error_reporting(E_ALL); // For debugging
+require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 
-require_once('src/php/INTER-Mediator.php');
+$yaml = <<<EOYAML
+contexts:
+  - records: 3
+    maxrecords: 3
+    name: productlist
+    view: product
+    key: id
+    sort:
+      - field: name
+        direction: ASC
+    navi-control: master-hide
+    paging: true
+  - records: 1
+    name: productdetail
+    view: product
+    table: product
+    key: id
+    navi-control: detail-top-update
+options: { }
+connection:
+  db-class: PDO
+debug: 2
+EOYAML;
 
-function IM_Entry($datasource, $options, $dbspecification, $debug = false)
-{
-    INTERMediator\IM_Entry($datasource, $options, $dbspecification, $debug, $_SERVER['SCRIPT_FILENAME']);
-}
-
-function IM_Entry_YAML($yaml, $defFile = null) {
-    $yamlContent = INTERMediator\IMUtil::getDefinitionFromYAML($yaml);
-    IM_Entry(
-        $yamlContent['contexts'] ?? null, $yamlContent['options'] ?? null,
-        $yamlContent['connection'] ?? null, $yamlContent['debug'] ?? 2, $defFile
-    );
-}
+IM_Entry_YAML($yaml);
