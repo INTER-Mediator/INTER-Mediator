@@ -845,7 +845,7 @@ SET id=6,
 INSERT authuser
 SET id=7,
     `username`='mig2',
-    hashedpasswd='fcc2ab4678963966614b5544a40f4b814ba3da41b3b69df6622e51b74818232864235970';
+    hashedpasswd='b7d863d29021fc96de261da6a5dfb6c4c28d3d43c75ad5ddddea4ec8716bdaf074675473';
 
 # The user1 has the password 'user1'. It's salted with the string 'TEXT'.
 # All users have the password the same as user name. All are salted with 'TEXT'
@@ -858,12 +858,11 @@ SET id=7,
 #  - combine above two results:
 #  d83eefa0a9bd7190c94e7911688503737a99db0154455354
 
-# The user mig2 has SHA-256 hashed password. The below shows how to calculate it from a password.
+# The user mig2 has SHA-256 hashed password with 5000 times. There is no way to simple hash generating commands.
+# The script dist-docs/passwdgen.sh can generate longer hash. The below shows how to calculate it from a password.
 #
-# % echo -n 'mig2HASH' | openssl sha256 -sha256
-# 8c507f3a84f430b8e7f2c2953bdc8bc68b8043ca74e156995ead04755fbcdea0
-# % echo -n 'HASH' | xxd -ps
-# 48415348
+# % dist-docs/passwdgen.sh '--password=mig2'
+# '','mig2','b7d863d29021fc96de261da6a5dfb6c4c28d3d43c75ad5ddddea4ec8716bdaf074675473'
 
 # The user mig2m is originally SHA-1 hashed password with passowrd 'mig2m' and salt 'HASH' as like first line.
 # The SHA-1 hash value convert with same salt and re-hashed with SH2-256 as like third line.

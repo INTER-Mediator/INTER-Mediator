@@ -32,7 +32,7 @@ check_arg_exit(){
 
 # generate_hash_passwd username password
 generate_hash_passwd(){
-    SOLT=$(cat /dev/urandom | base64 | fold -w 4 | head -n 1)
+    SOLT=$(cat /dev/urandom | head -c 10 | base64 | fold -w 4 | head -n 1)
     VALUE=$(${ECHO} -n "$2${SOLT}" | openssl sha256 -sha256)
     for i in {1..4999}
     do

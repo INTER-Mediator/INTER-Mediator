@@ -51,4 +51,4 @@ options:
       page-title: コンタクト先管理 (さまざまな機能を確認するためのサンプル)
 connection:
   db-class: PDO
-debug: 2
+debug: false
