@@ -45,10 +45,16 @@ options:
   terms:
     en:
       header: INTER-Mediator - Sample - Form Style/MySQL
-      page-title: Contact Management (Sample for Several Fundamental Features
+      page:
+        title: Contact Management (Sample for Several Fundamental Features
     ja:
       header: INTER-Mediator - サンプル - フォーム形式/MySQL
-      page-title: コンタクト先管理 (さまざまな機能を確認するためのサンプル)
+      page:
+        title: コンタクト先管理 (さまざまな機能を確認するためのサンプル)
+      way:
+        Calling: 電話
+        Mail: 手紙
+        Email: 電子メール
 connection:
   db-class: PDO
 debug: false
