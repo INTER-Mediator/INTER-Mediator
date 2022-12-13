@@ -222,8 +222,15 @@ const IMLibElement = {
       }
     }
 
-    let currentValue
     curVal = String(curVal)
+    const imLocale = element.getAttribute('data-im-locale')
+    if (imLocale) {
+      const value = INTERMediator.getLocalizedString(`${imLocale}|${curVal}`)
+      if (value) {
+        curVal = value
+      }
+    }
+    let currentValue
     const negativeColor = element.getAttribute('data-im-format-negative-color')
     if (curTarget !== null && curTarget.length > 0) { // target is specified
       if (curTarget.charAt(0) === '#') { // Appending

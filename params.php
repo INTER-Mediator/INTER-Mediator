@@ -284,17 +284,17 @@ $prohibitDebugMode = false;
 
 /* Localizing
  * =================== */
-$terms = [
+//$terms = [
 //    'en' => [
 //        'header' => 'INTER-Mediator - Sample - Form Style/MySQL',
 //        'page-title' => 'Contact Management (Sample for Several Fundamental Features)',
 //        'msg1' => '',
 //        'msg2' => '',
 //    ],
-    'ja' => [
+//    'ja' => [
 //        'header' => 'INTER-Mediator - サンプル - フォーム形式/MySQL',
 //        'page-title' => 'コンタクト先管理 (さまざまな機能を確認するためのサンプル)',
-        'category' => 'カテゴリ',
-        'check' => 'チェック',
-    ],
-];
+//        'category' => 'カテゴリ',
+//        'check' => 'チェック',
+//   ],
+//];

@@ -203,9 +203,10 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.getMessages",
             "function(){return ", IMUtil::arrayToJS($messageClass->getMessages()), ";}");
+        $terms = $messageClass->getTerms($options);
         $this->generateAssignJS(
             "INTERMediatorOnPage.getTerms",
-            "function(){return ", IMUtil::arrayToJS($messageClass->getTerms($options)), ";}");
+            "function(){return ", (count($terms) > 0) ? IMUtil::arrayToJS($terms) : "null", ";}");
 
         if (isset($options['browser-compatibility'])) {
             $browserCompatibility = $options['browser-compatibility'];

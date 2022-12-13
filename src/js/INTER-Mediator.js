@@ -1981,21 +1981,41 @@ const INTERMediator = {
     }
   },
 
-  localizing: ()=>{
-    const terms = INTERMediatorOnPage.getTerms()
+  localizing: () => {
     const targetNodes = document.querySelectorAll("*[data-im-locale]");
-    for(const node of targetNodes){
+    for (const node of targetNodes) {
       const localeValue = node.getAttribute("data-im-locale")
-      if(terms[localeValue]) {
-        const bros = node.childNodes
-        for(const item of bros){
-          if(item.nodeType == Node.TEXT_NODE) {
-            node.removeChild(item)
+      const bindValue = node.getAttribute("data-im")
+      if (!bindValue) {
+        const value = INTERMediator.getLocalizedString(localeValue)
+        if (value) { // If the value is null, do nothing anyway.
+          const bros = node.childNodes
+          for (const item of bros) {
+            if (item.nodeType == Node.TEXT_NODE) {
+              node.removeChild(item)
+            }
           }
+          node.appendChild(document.createTextNode(value))
         }
-        node.appendChild(document.createTextNode(terms[localeValue]))
       }
     }
+  },
+
+  getLocalizedString: (localeValue) => {
+    const terms = INTERMediatorOnPage.getTerms()
+    if (!terms || !localeValue) {
+      return null;
+    }
+    const localeKey = localeValue.split('|')
+    let value = terms
+    for (const key of localeKey) {
+      if (!value[key]) {
+        value = null
+        break;
+      }
+      value = value[key]
+    }
+    return value
   },
 
   /* Compatibility for previous version. These methos are defined here ever.
