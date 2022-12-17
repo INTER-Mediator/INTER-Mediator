@@ -1287,7 +1287,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     function saveChallenge($username, $challenge, $clientId)
     {
         $this->logger->setDebugMessage(
-            "[saveChallenge]user=${username}, challenge={$challenge}, clientid={$clientId}", 2);
+            "[saveChallenge]user={$username}, challenge={$challenge}, clientid={$clientId}", 2);
         $username = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($username);
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
         $this->authDbClass->authHandler->authSupportStoreChallenge($uid, $challenge, $clientId);
@@ -1305,7 +1305,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $hashedvalue = $this->paramResponse ?? $falseHash;
         $hashedvalue2m = $this->paramResponse2m ?? $falseHash;
         $hashedvalue2 = $this->paramResponse2 ?? $falseHash;
-        $this->logger->setDebugMessage("[checkAuthorization]user=${username}, paramResponse={$hashedvalue}, "
+        $this->logger->setDebugMessage("[checkAuthorization]user={$username}, paramResponse={$hashedvalue}, "
             . "paramResponse2m={$hashedvalue2m}, paramResponse2={$hashedvalue2}, clientid={$this->clientId}", 2);
 
         $returnValue = false;
