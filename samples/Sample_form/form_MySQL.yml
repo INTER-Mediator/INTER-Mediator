@@ -45,10 +45,18 @@ options:
   terms:
     en:
       header: INTER-Mediator - Sample - Form Style/MySQL
+      category: Category
+      check: Check
       page:
         title: Contact Management (Sample for Several Fundamental Features
+      way:
+        Calling: Telephone
+        Mail: Paper Mail
+        Email: Electronic Mail
     ja:
       header: INTER-Mediator - サンプル - フォーム形式/MySQL
+      category: カテゴリ
+      check: チェック
       page:
         title: コンタクト先管理 (さまざまな機能を確認するためのサンプル)
       way:
