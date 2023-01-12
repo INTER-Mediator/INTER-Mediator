@@ -37,7 +37,8 @@ spl_autoload_register(function ($className) {
         // Load from the file located on the same directory as the definition file.
         dirname($_SERVER['SCRIPT_FILENAME']),
         // Load from the file located on the same directory as the page file.
-        IMUtil::relativePath($_SERVER['SCRIPT_NAME'], parse_url($_SERVER['HTTP_REFERER'] ?? null, PHP_URL_PATH)),
+        dirname(IMUtil::relativePath($_SERVER['SCRIPT_NAME'],
+            parse_url($_SERVER['HTTP_REFERER'] ?? null, PHP_URL_PATH))),
         // Load from the specific directory with params.php
         Params::getParameterValue("loadFrom", false)
     ];
