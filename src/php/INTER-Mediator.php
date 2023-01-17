@@ -33,17 +33,22 @@ if (file_exists($autoLoad)) { // If vendor is inside of INTER-Mediator
 
 spl_autoload_register(function ($className) {
     $comps = explode('\\', $className);
+    $className = $comps[count($comps) - 1];
+    $refPath = IMUtil::relativePath($_SERVER['SCRIPT_NAME'], parse_url($_SERVER['HTTP_REFERER'] ?? null, PHP_URL_PATH));
+    $paramPath = Params::getParameterValue("loadFrom", false);
     $searchDirs = [
         // Load from the file located on the same directory as the definition file.
-        dirname($_SERVER['SCRIPT_FILENAME']),
+        dirname($_SERVER['SCRIPT_FILENAME']) . "/" . implode('/', $comps) . ".php",
+        dirname($_SERVER['SCRIPT_FILENAME']) . "/{$className}.php",
         // Load from the file located on the same directory as the page file.
-        IMUtil::relativePath($_SERVER['SCRIPT_NAME'], parse_url($_SERVER['HTTP_REFERER'] ?? null, PHP_URL_PATH)),
+        $refPath . "/" . implode('/', $comps) . ".php",
+        $refPath . "/{$className}.php",
         // Load from the specific directory with params.php
-        Params::getParameterValue("loadFrom", false)
+        $paramPath ? ($paramPath . "/" . implode('/', $comps) . ".php") : false,
+        $paramPath ? ($paramPath . "/{$className}.php") : false,
     ];
-    foreach ($searchDirs as $dir) {
-        if ($dir) {
-            $path = $dir . "/" . implode('/', $comps) . ".php";
+    foreach ($searchDirs as $path) {
+        if ($path) {
             if (file_exists($path)) {
                 require_once $path;
                 return true;
