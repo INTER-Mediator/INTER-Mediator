@@ -923,21 +923,21 @@ const INTERMediator_DBAdapter = {
     let params, i, counter, index, addedObject
     params = 'access=delete&name=' + encodeURIComponent(args.name)
     counter = 0
-    // if (INTERMediator.additionalFieldValueOnDelete &&
-    //   INTERMediator.additionalFieldValueOnDelete[args.name]) {
-    //   addedObject = INTERMediator.additionalFieldValueOnDelete[args.name]
-    //   if (addedObject.field) {
-    //     addedObject = [addedObject]
-    //   }
-    //   for (index in addedObject) {
-    //     if (addedObject.hasOwnProperty(index)) {
-    //       let oneDefinition = addedObject[index]
-    //       params += '&field_' + counter + '=' + encodeURIComponent(oneDefinition.field)
-    //       params += '&value_' + counter + '=' + encodeURIComponent(oneDefinition.value)
-    //       counter++
-    //     }
-    //   }
-    // }
+    if (INTERMediator.additionalFieldValueOnDelete &&
+      INTERMediator.additionalFieldValueOnDelete[args.name]) {
+      addedObject = INTERMediator.additionalFieldValueOnDelete[args.name]
+      if (addedObject.field) {
+        addedObject = [addedObject]
+      }
+      for (index in addedObject) {
+        if (addedObject.hasOwnProperty(index)) {
+          let oneDefinition = addedObject[index]
+          params += '&field_' + counter + '=' + encodeURIComponent(oneDefinition.field)
+          params += '&value_' + counter + '=' + encodeURIComponent(oneDefinition.value)
+          counter++
+        }
+      }
+    }
 
     for (i = 0; i < args.conditions.length; i++) {
       params += '&condition' + i + 'field=' + encodeURIComponent(args.conditions[i].field)
