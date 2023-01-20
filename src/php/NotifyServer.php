@@ -74,7 +74,10 @@ class NotifyServer
      */
     public function register($entity, $condition, $pkArray)
     {
-        return $this->dbClass->notifyHandler->register($this->clientId, $entity, $condition, $pkArray);
+        if ($this->dbClass->notifyHandler) {
+            return $this->dbClass->notifyHandler->register($this->clientId, $entity, $condition, $pkArray);
+        }
+        return null;
     }
 
     /**
@@ -84,7 +87,10 @@ class NotifyServer
      */
     public function unregister($client, $tableKeys)
     {
-        return $this->dbClass->notifyHandler->unregister($client, $tableKeys);
+        if ($this->dbClass && $this->dbClass->notifyHandler) {
+            return $this->dbClass->notifyHandler->unregister($client, $tableKeys);
+        }
+        return null;
     }
 
     /**
@@ -96,9 +102,11 @@ class NotifyServer
      */
     public function updated($clientId, $entity, $pkArray, $field, $value, $isNotify)
     {
-        $channels = $this->dbClass->notifyHandler->matchInRegistered($clientId, $entity, $pkArray);
-        $this->trigger($channels, 'update',
-            ['justnotify' => $isNotify, 'entity' => $entity, 'pkvalue' => $pkArray, 'field' => $field, 'value' => $value]);
+        if ($this->dbClass && $this->dbClass->notifyHandler) {
+            $channels = $this->dbClass->notifyHandler->matchInRegistered($clientId, $entity, $pkArray);
+            $this->trigger($channels, 'update',
+                ['justnotify' => $isNotify, 'entity' => $entity, 'pkvalue' => $pkArray, 'field' => $field, 'value' => $value]);
+        }
     }
 
     /**
@@ -109,9 +117,11 @@ class NotifyServer
      */
     public function created($clientId, $entity, $pkArray, $record, $isNotify)
     {
-        $channels = $this->dbClass->notifyHandler->appendIntoRegistered($clientId, $entity, $pkArray);
-        $this->trigger($channels, 'create',
-            ['justnotify' => $isNotify, 'entity' => $entity, 'pkvalue' => $pkArray, 'value' => array_values($record)]);
+        if ($this->dbClass && $this->dbClass->notifyHandler) {
+            $channels = $this->dbClass->notifyHandler->appendIntoRegistered($clientId, $entity, $pkArray);
+            $this->trigger($channels, 'create',
+                ['justnotify' => $isNotify, 'entity' => $entity, 'pkvalue' => $pkArray, 'value' => array_values($record)]);
+        }
     }
 
     /**
@@ -121,10 +131,12 @@ class NotifyServer
      */
     public function deleted($clientId, $entity, $pkArray)
     {
-        $channels = $this->dbClass->notifyHandler->removeFromRegistered($clientId, $entity, $pkArray);
+        if ($this->dbClass && $this->dbClass->notifyHandler) {
+            $channels = $this->dbClass->notifyHandler->removeFromRegistered($clientId, $entity, $pkArray);
 
-        $data = array('entity' => $entity, 'pkvalue' => $pkArray);
-        $this->trigger($channels, 'delete', $data);
+            $data = array('entity' => $entity, 'pkvalue' => $pkArray);
+            $this->trigger($channels, 'delete', $data);
+        }
     }
 
     /**
