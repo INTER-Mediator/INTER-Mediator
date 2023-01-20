@@ -30,8 +30,8 @@
             = {field: 'target', value: params.target}
           INTERMediator.additionalFieldValueOnUpdate[contextsArray[i]]
             = {field: 'target', value: params.target}
-          // INTERMediator.additionalFieldValueOnDelete[contextsArray[i]]
-          //   = {field: 'target', value: params.target}
+          INTERMediator.additionalFieldValueOnDelete[contextsArray[i]]
+            = {field: 'target', value: params.target}
         }
         while (document.getElementById('deffile').firstChild) {
           document.getElementById('deffile').removeChild(document.getElementById('deffile').firstChild);
@@ -520,30 +520,30 @@
             <th>body</th>
             <td><input type="text" data-im="contexts@messaging-read-body"/></td>
         </tr>
-<!--        <tr class="advanced">-->
-<!--            <td class="firstcolumn"></td>-->
-<!--            <th>from-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-read-from-constant"/></td>-->
-<!--            <th>to-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-read-to-constant"/></td>-->
-<!--            <th>cc-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-read-cc-constant"/></td>-->
-<!--        </tr>-->
-<!--        <tr class="advanced">-->
-<!--            <td class="firstcolumn"></td>-->
-<!--            <th>bcc-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-read-bcc-constant"/></td>-->
-<!--            <th>subject-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-read-subject-constant"/></td>-->
-<!--            <th>body-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-read-body-constant"/></td>-->
-<!--        </tr>-->
+        <!--        <tr class="advanced">-->
+        <!--            <td class="firstcolumn"></td>-->
+        <!--            <th>from-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-read-from-constant"/></td>-->
+        <!--            <th>to-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-read-to-constant"/></td>-->
+        <!--            <th>cc-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-read-cc-constant"/></td>-->
+        <!--        </tr>-->
+        <!--        <tr class="advanced">-->
+        <!--            <td class="firstcolumn"></td>-->
+        <!--            <th>bcc-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-read-bcc-constant"/></td>-->
+        <!--            <th>subject-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-read-subject-constant"/></td>-->
+        <!--            <th>body-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-read-body-constant"/></td>-->
+        <!--        </tr>-->
         <tr class="advanced">
             <td class="firstcolumn"></td>
-<!--            <th>body-template</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-read-body-template"/></td>-->
-<!--            <th>body-fields</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-read-body-fields"/></td>-->
+            <!--            <th>body-template</th>-->
+            <!--            <td><input type="text" data-im="contexts@messaging-read-body-template"/></td>-->
+            <!--            <th>body-fields</th>-->
+            <!--            <td><input type="text" data-im="contexts@messaging-read-body-fields"/></td>-->
             <th>template-context</th>
             <td><input type="text" data-im="contexts@messaging-read-template-context"/></td>
             <th>store</th>
@@ -580,30 +580,30 @@
             <th>body</th>
             <td><input type="text" data-im="contexts@messaging-update-body"/></td>
         </tr>
-<!--        <tr class="advanced">-->
-<!--            <td class="firstcolumn"></td>-->
-<!--            <th>from-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-update-from-constant"/></td>-->
-<!--            <th>to-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-update-to-constant"/></td>-->
-<!--            <th>cc-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-update-cc-constant"/></td>-->
-<!--        </tr>-->
-<!--        <tr class="advanced">-->
-<!--            <td class="firstcolumn"></td>-->
-<!--            <th>bcc-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-update-bcc-constant"/></td>-->
-<!--            <th>subject-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-update-subject-constant"/></td>-->
-<!--            <th>body-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-update-body-constant"/></td>-->
-<!--        </tr>-->
+        <!--        <tr class="advanced">-->
+        <!--            <td class="firstcolumn"></td>-->
+        <!--            <th>from-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-update-from-constant"/></td>-->
+        <!--            <th>to-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-update-to-constant"/></td>-->
+        <!--            <th>cc-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-update-cc-constant"/></td>-->
+        <!--        </tr>-->
+        <!--        <tr class="advanced">-->
+        <!--            <td class="firstcolumn"></td>-->
+        <!--            <th>bcc-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-update-bcc-constant"/></td>-->
+        <!--            <th>subject-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-update-subject-constant"/></td>-->
+        <!--            <th>body-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-update-body-constant"/></td>-->
+        <!--        </tr>-->
         <tr class="advanced">
             <td class="firstcolumn"></td>
-<!--            <th>body-template</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-update-body-template"/></td>-->
-<!--            <th>body-fields</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-update-body-fields"/></td>-->
+            <!--            <th>body-template</th>-->
+            <!--            <td><input type="text" data-im="contexts@messaging-update-body-template"/></td>-->
+            <!--            <th>body-fields</th>-->
+            <!--            <td><input type="text" data-im="contexts@messaging-update-body-fields"/></td>-->
             <th>template-context</th>
             <td><input type="text" data-im="contexts@messaging-update-template-context"/></td>
             <th>store</th>
@@ -640,30 +640,30 @@
             <th>body</th>
             <td><input type="text" data-im="contexts@messaging-create-body"/></td>
         </tr>
-<!--        <tr class="advanced">-->
-<!--            <td class="firstcolumn"></td>-->
-<!--            <th>from-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-create-from-constant"/></td>-->
-<!--            <th>to-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-create-to-constant"/></td>-->
-<!--            <th>cc-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-create-cc-constant"/></td>-->
-<!--        </tr>-->
-<!--        <tr class="advanced">-->
-<!--            <td class="firstcolumn"></td>-->
-<!--            <th>bcc-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-create-bcc-constant"/></td>-->
-<!--            <th>subject-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-create-subject-constant"/></td>-->
-<!--            <th>body-constant</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-create-body-constant"/></td>-->
-<!--        </tr>-->
+        <!--        <tr class="advanced">-->
+        <!--            <td class="firstcolumn"></td>-->
+        <!--            <th>from-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-create-from-constant"/></td>-->
+        <!--            <th>to-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-create-to-constant"/></td>-->
+        <!--            <th>cc-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-create-cc-constant"/></td>-->
+        <!--        </tr>-->
+        <!--        <tr class="advanced">-->
+        <!--            <td class="firstcolumn"></td>-->
+        <!--            <th>bcc-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-create-bcc-constant"/></td>-->
+        <!--            <th>subject-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-create-subject-constant"/></td>-->
+        <!--            <th>body-constant</th>-->
+        <!--            <td><input type="text" data-im="contexts@messaging-create-body-constant"/></td>-->
+        <!--        </tr>-->
         <tr class="advanced">
             <td class="firstcolumn"></td>
-<!--            <th>body-template</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-create-body-template"/></td>-->
-<!--            <th>body-fields</th>-->
-<!--            <td><input type="text" data-im="contexts@messaging-create-body-fields"/></td>-->
+            <!--            <th>body-template</th>-->
+            <!--            <td><input type="text" data-im="contexts@messaging-create-body-template"/></td>-->
+            <!--            <th>body-fields</th>-->
+            <!--            <td><input type="text" data-im="contexts@messaging-create-body-fields"/></td>-->
             <th>template-context</th>
             <td><input type="text" data-im="contexts@messaging-create-template-context"/></td>
             <th>store</th>

@@ -331,7 +331,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 && strpos(strtolower($currentDataSource['sync-control']), 'update') !== false) {
                 try {
                     $this->dbSettings->notifyServer->updated(
-                        $this->PostData['notifyid'],
+                        $this->PostData['notifyid'] ?? null,
                         $this->dbClass->notifyHandler->queriedEntity(),
                         $this->dbClass->notifyHandler->queriedPrimaryKeys(),
                         $this->dbSettings->getFieldsRequired(),
@@ -414,7 +414,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     && strpos(strtolower($currentDataSource['sync-control']), 'create') !== false) {
                     try {
                         $this->dbSettings->notifyServer->created(
-                            $this->PostData['notifyid'],
+                            $this->PostData['notifyid'] ?? null,
                             $this->dbClass->notifyHandler->queriedEntity(),
                             $this->dbClass->notifyHandler->queriedPrimaryKeys(),
                             $result,
@@ -496,7 +496,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 && strpos(strtolower($currentDataSource['sync-control']), 'delete') !== false) {
                 try {
                     $this->dbSettings->notifyServer->deleted(
-                        $this->PostData['notifyid'],
+                        $this->PostData['notifyid'] ?? null,
                         $this->dbClass->notifyHandler->queriedEntity(),
                         $this->dbClass->notifyHandler->queriedPrimaryKeys()
                     );
@@ -551,7 +551,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 && strpos(strtolower($currentDataSource['sync-control']), 'create') !== false) {
                 try {
                     $this->dbSettings->notifyServer->created(
-                        $this->PostData['notifyid'],
+                        $this->PostData['notifyid'] ?? null,
                         $this->dbClass->notifyHandler->queriedEntity(),
                         $this->dbClass->notifyHandler->queriedPrimaryKeys(),
                         $result,
