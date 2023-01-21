@@ -15,91 +15,95 @@
 
 require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 
-IM_Entry(
-    [
-        [
-            'records' => 1,
-            'paging' => true,
-            'name' => 'person',
-            'key' => 'id',
-            'query' => [],
-            'sort' => [['field' => 'id', 'direction' => 'asc',],],
-            'repeat-control' => 'insert copy-contact,history delete',
-            'sync-control' => 'create update delete',
-            'button-names' => [
-                'insert' => 'レコード追加',
-                'delete' => 'レコード削除',
-                'copy' => 'レコード複製',
-            ],
-            // => ['aaa'],
-        ],
-        [
-            'name' => 'contact',
-            'key' => 'id',
-            'relation' => [
-                [
-                    'foreign-key' => 'person_id',
-                    'join-field' => 'id',
-                    'operator' => '=',
-                ],
-            ],
-            'sync-control' => 'create update delete',
-            'repeat-control' => 'insert-confirm delete-confirm copy',
-//        'query' =>
-//            [
-//                [
-//                    'field' => 'datetime',
-//                    'value' => '2005-01-01 00:00:00',
-//                    'operator' => '>',
-//                ],
-//            ],
-            'default-values' => [
-                [
-                    'field' => 'datetime',
-                    'value' => '2012-01-01 00:00:00',
-                ],
-            ],
-        ],
-        [
-            'name' => 'contact_way',
-            'key' => 'id',
-        ],
-        [
-            'name' => 'cor_way_kindname',
-            'aggregation-select' => 'cor_way_kind.*,contact_kind.name as name_kind',
-            'aggregation-from' => 'cor_way_kind INNER JOIN contact_kind ON cor_way_kind.kind_id = contact_kind.id',
-            'key' => 'id',
-            'relation' => [
-                [
-                    'foreign-key' => 'way_id',
-                    'join-field' => 'way',
-                    'operator' => '=',
-                ],
-            ],
-        ],
-        [
-            'name' => 'history',
-            'key' => 'id',
-            'relation' => [
-                [
-                    'foreign-key' => 'person_id',
-                    'join-field' => 'id',
-                    'operator' => '=',
-                ],
-            ],
-            'repeat-control' => 'insert delete',
-        ],
-    ],
-    [
-//        'formatter' => [],
-//        'aliases' => [
-//            'kindid' => 'cor_way_kindname@kind_id@value',
-//            'kindname' => 'cor_way_kindname@name_kind@innerHTML',
-//        ],
-    ],
-    [
-        'db-class' => 'PDO',
-//        'dsn' => 'mysql:host=127.0.0.1;dbname=test_db;charset=utf8mb4',
-    ],
-    2
-);
+IM_Entry(array (
+  0 => 
+  array (
+    'records' => 1,
+    'paging' => true,
+    'name' => 'person',
+    'key' => 'id',
+    'sort' => 
+    array (
+      0 => 
+      array (
+        'field' => 'id',
+        'direction' => 'asc',
+      ),
+    ),
+    'repeat-control' => 'insert copy-contact,history delete',
+    'sync-control' => 'create update delete',
+    'button-names' => 
+    array (
+      'insert' => 'レコード追加',
+      'delete' => 'レコード削除',
+      'copy' => 'レコード複製',
+    ),
+  ),
+  1 => 
+  array (
+    'name' => 'contact',
+    'key' => 'id',
+    'relation' => 
+    array (
+      0 => 
+      array (
+        'foreign-key' => 'person_id',
+        'join-field' => 'id',
+        'operator' => '=',
+      ),
+    ),
+    'sync-control' => 'create update delete',
+    'repeat-control' => 'insert-confirm delete-confirm copy',
+    'default-values' => 
+    array (
+      0 => 
+      array (
+        'field' => 'datetime',
+        'value' => '2012-01-01 00:00:00',
+      ),
+    ),
+  ),
+  2 => 
+  array (
+    'name' => 'contact_way',
+    'key' => 'id',
+  ),
+  3 => 
+  array (
+    'name' => 'cor_way_kindname',
+    'aggregation-select' => 'cor_way_kind.*,contact_kind.name as name_kind',
+    'aggregation-from' => 'cor_way_kind INNER JOIN contact_kind ON cor_way_kind.kind_id = contact_kind.id',
+    'key' => 'id',
+    'relation' => 
+    array (
+      0 => 
+      array (
+        'foreign-key' => 'way_id',
+        'join-field' => 'way',
+        'operator' => '=',
+      ),
+    ),
+  ),
+  4 => 
+  array (
+    'name' => 'history',
+    'key' => 'id',
+    'relation' => 
+    array (
+      0 => 
+      array (
+        'foreign-key' => 'person_id',
+        'join-field' => 'id',
+        'operator' => '=',
+      ),
+    ),
+    'repeat-control' => 'insert delete',
+  ),
+),
+array (
+),
+array (
+  'db-class' => 'PDO',
+),
+2);
+?>

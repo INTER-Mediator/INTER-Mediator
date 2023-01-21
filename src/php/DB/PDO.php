@@ -189,8 +189,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                         $sql = $condition['definition'];
                         $this->logger->setDebugMessage($sql);
                         $result = $this->link->query($sql);
-                        if ($result === false) {
-                            $this->errorMessageStore('Pre-script:' . $sql);
+                        if (!$this->errorHandlingPDO($sql, $result)) {
+                            return false;
                         }
                     }
                 }
@@ -247,8 +247,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $sql = "{$this->handler->sqlSelectCommand()}count(*) FROM {$countingName} {$queryClause} {$groupBy}";
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
-            if ($result === false) {
-                $this->errorMessageStore('Select:' . $sql);
+            if (!$this->errorHandlingPDO($sql, $result)) {
                 return false;
             }
             $this->mainTableCount = $isAggregate ? $result->rowCount() : $result->fetchColumn(0);
@@ -260,8 +259,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 $sql = "{$this->handler->sqlSELECTCommand()}count(*) FROM {$countingName} {$groupBy}";
                 $this->logger->setDebugMessage($sql);
                 $result = $this->link->query($sql);
-                if ($result === false) {
-                    $this->errorMessageStore('Select:' . $sql);
+                if (!$this->errorHandlingPDO($sql, $result)) {
                     return false;
                 }
                 $this->mainTableTotalCount = $isAggregate ? $result->rowCount() : $result->fetchColumn(0);
@@ -276,9 +274,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
 
         // Query
         $result = $this->link->query($sql);
-
-        if ($result === false) {
-            $this->errorMessageStore('Select:' . $sql);
+        if (!$this->errorHandlingPDO($sql, $result)) {
             return false;
         }
         $this->notifyHandler->setQueriedPrimaryKeys(array());
@@ -325,8 +321,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                         $sql = $condition['definition'];
                         $this->logger->setDebugMessage($sql);
                         $result = $this->link->query($sql);
-                        if ($result === false) {
-                            $this->errorMessageStore('Post-script:' . $sql);
+                        if (!$this->errorHandlingPDO($sql, $result)) {
                             return false;
                         }
                     }
@@ -334,6 +329,27 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             }
         }
         return $sqlResult;
+    }
+
+    private function errorHandlingPDO($sql, $result)
+    {
+        $errorCode = $this->link->errorCode();
+        $errorClass = is_null($errorCode) ? "00" : substr($errorCode,0, 2);
+        if ($errorClass != "00") {
+            $errorMsg = var_export($this->link->errorCode(), true);
+            if ($errorClass == "01") {
+                $this->logger->setWarningMessage($errorMsg);
+            } else {
+                $this->errorMessageStore('[ERROR] SQL:' . $sql);
+                $this->errorMessageStore($errorMsg);
+                return false;
+            }
+        }
+        if ($result === false || is_null($result)) {
+            $this->errorMessageStore('[ERROR] SQL:' . $sql);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -385,8 +401,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
-                    if (!$result) {
-                        $this->errorMessageStore('Pre-script:' . $sql);
+                    if (!$this->errorHandlingPDO($sql, $result)) {
                         return false;
                     }
                 }
@@ -439,8 +454,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $prepSQL->queryString . " with " . str_replace("\n", " ", var_export($setParameter, true) ?? ""));
 
         $result = $prepSQL->execute($setParameter);
-        if ($result === false) {
-            $this->errorMessageStore('Update:' . $sql);
+        if (!$this->errorHandlingPDO($sql, $result)) {
             return false;
         }
 
@@ -449,35 +463,34 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $sql = $this->handler->sqlSELECTCommand() . "* FROM {$targetTable} {$queryClause}";
             $result = $this->link->query($sql);
             $this->logger->setDebugMessage($sql);
-            if ($result === false) {
-                $this->errorMessageStore('Select:' . $sql);
-            } else {
-                $this->notifyHandler->setQueriedPrimaryKeys(array());
-                $keyField = $this->getKeyFieldOfContext($tableInfo);
-                $sqlResult = array();
-                $isFirstRow = true;
-                foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                    $rowArray = array();
-                    foreach ($row as $field => $val) {
-                        if ($isFirstRow) {
-                            $this->fieldInfo[] = $field;
-                        }
-                        $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
-                        $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
-                        // Convert the time explanation from UTC to server setup timezone
-                        if (in_array($field, $timeFields) && !is_null($rowArray[$field]) && $rowArray[$field] !== '') {
-                            $dt = new DateTime($rowArray[$field], new DateTimeZone(date_default_timezone_get()));
-                            $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $rowArray[$field]);
-                            $dt->setTimezone(new DateTimeZone('UTC'));
-                            $rowArray[$field] = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
-                        }
-                    }
-                    $sqlResult[] = $rowArray;
-                    $this->notifyHandler->addQueriedPrimaryKeys($rowArray[$keyField]);
-                    $isFirstRow = false;
-                }
-                $this->updatedRecord = count($sqlResult) ? $sqlResult : null;
+            if (!$this->errorHandlingPDO($sql, $result)) {
+                return false;
             }
+            $this->notifyHandler->setQueriedPrimaryKeys(array());
+            $keyField = $this->getKeyFieldOfContext($tableInfo);
+            $sqlResult = array();
+            $isFirstRow = true;
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $rowArray = array();
+                foreach ($row as $field => $val) {
+                    if ($isFirstRow) {
+                        $this->fieldInfo[] = $field;
+                    }
+                    $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
+                    $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
+                    // Convert the time explanation from UTC to server setup timezone
+                    if (in_array($field, $timeFields) && !is_null($rowArray[$field]) && $rowArray[$field] !== '') {
+                        $dt = new DateTime($rowArray[$field], new DateTimeZone(date_default_timezone_get()));
+                        $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $rowArray[$field]);
+                        $dt->setTimezone(new DateTimeZone('UTC'));
+                        $rowArray[$field] = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+                    }
+                }
+                $sqlResult[] = $rowArray;
+                $this->notifyHandler->addQueriedPrimaryKeys($rowArray[$keyField]);
+                $isFirstRow = false;
+            }
+            $this->updatedRecord = count($sqlResult) ? $sqlResult : null;
         }
 
         if (isset($tableInfo['script'])) {
@@ -486,8 +499,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
-                    if (!$result) {
-                        $this->errorMessageStore('Post-script:' . $sql);
+                    if (!$this->errorHandlingPDO($sql, $result)) {
                         return false;
                     }
                 }
@@ -531,8 +543,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
-                    if (!$result) {
-                        $this->errorMessageStore('Pre-script:' . $sql);
+                    if (!$this->errorHandlingPDO($sql, $result)) {
                         return false;
                     }
                 }
@@ -584,7 +595,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             }
         }
 
-        $keyField = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
+        $keyField = $tableInfo['key'] ?? 'id';
         $setClause = $this->handler->sqlSETClause($tableNameRow, $setColumnNames, $keyField, $setValues);
         if ($isReplace) {
             $sql = $this->handler->sqlREPLACECommand($tableName, $setClause);
@@ -593,12 +604,10 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
         $this->logger->setDebugMessage($sql);
         $result = $this->link->exec($sql);
-        if ($result === false || is_null($result)) {
-            $this->errorMessageStore('Insert:' . $sql);
+        if (!$this->errorHandlingPDO($sql, $result)) {
             return false;
         }
-        $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence']
-            : "{$this->dbSettings->getEntityForUpdate()}_{$keyField}_seq";
+        $seqObject = $tableInfo['sequence'] ?? "{$this->dbSettings->getEntityForUpdate()}_{$keyField}_seq";
         $lastKeyValue = $this->link->lastInsertId($seqObject);
         if (/* $isReplace && */ $lastKeyValue == 0) { // lastInsertId returns 0 after replace command.
             // Moreover, about MySQL, it returns 0 with the key field without AUTO_INCREMENT.
@@ -613,32 +622,11 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 . " WHERE " . $keyField . "=" . $this->link->quote($lastKeyValue);
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
-            if ($result === false) {
-                $this->errorMessageStore('Select:' . $sql);
-            } else {
-                $sqlResult = array();
-                $isFirstRow = true;
-                foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                    $rowArray = array();
-                    foreach ($row as $field => $val) {
-                        if ($isFirstRow) {
-                            $this->fieldInfo[] = $field;
-                        }
-                        $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
-                        $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
-                        // Convert the time explanation from UTC to server setup timezone
-                        if (in_array($field, $timeFields) && !is_null($rowArray[$field]) && $rowArray[$field] !== '') {
-                            $dt = new DateTime($rowArray[$field], new DateTimeZone(date_default_timezone_get()));
-                            $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $rowArray[$field]);
-                            $dt->setTimezone(new DateTimeZone('UTC'));
-                            $rowArray[$field] = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
-                        }
-                    }
-                    $sqlResult[] = $rowArray;
-                    $isFirstRow = false;
-                }
-                $this->updatedRecord = count($sqlResult) ? $sqlResult : null;
+            if (!$this->errorHandlingPDO($sql, $result)) {
+                return false;
             }
+            $sqlResult = $this->getResultRelation($result, $timeFields);
+            $this->updatedRecord = count($sqlResult) ? $sqlResult : null;
         }
 
         if (isset($tableInfo['script'])) {
@@ -649,8 +637,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
-                    if (!$result) {
-                        $this->errorMessageStore('Post-script:' . $sql);
+                    if (!$this->errorHandlingPDO($sql, $result)) {
                         return false;
                     }
                 }
@@ -680,8 +667,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
-                    if (!$result) {
-                        $this->errorMessageStore('Pre-script:' . $sql);
+                    if (!$this->errorHandlingPDO($sql, $result)) {
                         return false;
                     }
                 }
@@ -695,8 +681,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $sql = "{$this->handler->sqlDELETECommand()}{$tableName} WHERE {$queryClause}";
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
-        if (!$result) {
-            $this->errorMessageStore('Delete Error:' . $sql);
+        if (!$this->errorHandlingPDO($sql, $result)) {
             return false;
         }
         $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityForUpdate());
@@ -707,8 +692,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
-                    if (!$result) {
-                        $this->errorMessageStore('Post-script:' . $sql);
+                    if (!$this->errorHandlingPDO($sql, $result)) {
                         return false;
                     }
                 }
@@ -739,8 +723,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
-                    if (!$result) {
-                        $this->errorMessageStore('Pre-script:' . $sql);
+                    if (!$this->errorHandlingPDO($sql, $result)) {
                         return false;
                     }
                 }
@@ -786,32 +769,11 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 . " WHERE " . $tableInfo['key'] . "=" . $this->link->quote($lastKeyValue);
             $result = $this->link->query($sql);
             $this->logger->setDebugMessage($sql);
-            if ($result === false) {
-                $this->errorMessageStore('Select:' . $sql);
-            } else {
-                $sqlResult = array();
-                $isFirstRow = true;
-                foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                    $rowArray = array();
-                    foreach ($row as $field => $val) {
-                        if ($isFirstRow) {
-                            $this->fieldInfo[] = $field;
-                        }
-                        $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
-                        $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
-                        // Convert the time explanation from UTC to server setup timezone
-                        if (in_array($field, $timeFields) && !is_null($rowArray[$field]) && $rowArray[$field] !== '') {
-                            $dt = new DateTime($rowArray[$field], new DateTimeZone(date_default_timezone_get()));
-                            $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $rowArray[$field]);
-                            $dt->setTimezone(new DateTimeZone('UTC'));
-                            $rowArray[$field] = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
-                        }
-                    }
-                    $sqlResult[] = $rowArray;
-                    $isFirstRow = false;
-                }
-                $this->updatedRecord = $sqlResult;
+            if (!$this->errorHandlingPDO($sql, $result)) {
+                return false;
             }
+            $sqlResult = $this->getResultRelation($result, $timeFields);
+            $this->updatedRecord = $sqlResult;
         }
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
@@ -819,8 +781,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
-                    if (!$result) {
-                        $this->errorMessageStore('Post-script:' . $sql);
+                    if (!$this->errorHandlingPDO($sql, $result)) {
                         return false;
                     }
                 }
@@ -955,5 +916,37 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     public function rollbackTransaction()
     {
         $this->link->rollBack();
+    }
+
+    /**
+     * @param $result
+     * @param array $timeFields
+     * @return array
+     * @throws \Exception
+     */
+    private function getResultRelation($result, array $timeFields): array
+    {
+        $sqlResult = array();
+        $isFirstRow = true;
+        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+            $rowArray = array();
+            foreach ($row as $field => $val) {
+                if ($isFirstRow) {
+                    $this->fieldInfo[] = $field;
+                }
+                $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
+                $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
+                // Convert the time explanation from UTC to server setup timezone
+                if (in_array($field, $timeFields) && !is_null($rowArray[$field]) && $rowArray[$field] !== '') {
+                    $dt = new DateTime($rowArray[$field], new DateTimeZone(date_default_timezone_get()));
+                    $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $rowArray[$field]);
+                    $dt->setTimezone(new DateTimeZone('UTC'));
+                    $rowArray[$field] = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+                }
+            }
+            $sqlResult[] = $rowArray;
+            $isFirstRow = false;
+        }
+        return $sqlResult;
     }
 }
