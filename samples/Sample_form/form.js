@@ -13,6 +13,7 @@
 // };
 
 INTERMediatorOnPage.doBeforeConstruct = function () {
+  INTERMediatorLog.errorMessageByAlert = true
   INTERMediatorLog.suppressDebugMessageOnPage = true
   // INTERMediatorOnPage.progressStartDelay = 0
 }

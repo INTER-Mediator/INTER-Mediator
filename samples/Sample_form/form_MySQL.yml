@@ -65,4 +65,4 @@ options:
         Email: 電子メール
 connection:
   db-class: PDO
-debug: false
+debug: 2
