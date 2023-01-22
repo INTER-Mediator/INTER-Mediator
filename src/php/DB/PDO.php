@@ -114,6 +114,28 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
     }
 
+    private function errorHandlingPDO($sql, $result)
+    {
+        $errorCode = $this->link->errorCode();
+        $errorClass = is_null($errorCode) ? "00" : substr($errorCode, 0, 2);
+        if ($errorClass != "00") {
+            if ($errorClass == "01") {
+                $this->logger->setWarningMessage(var_export($this->link->errorInfo(), true));
+            } else {
+                $this->errorMessageStore('[ERROR] SQL:' . $sql);
+                return false;
+            }
+        } else {
+            $this->handler->specialErrorHandling();
+        }
+        if ($result === false || is_null($result)) {
+            $this->errorMessageStore('[ERROR] SQL:' . $sql);
+            return false;
+        }
+        return true;
+    }
+
+
     /**
      * @return bool
      */
@@ -329,27 +351,6 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             }
         }
         return $sqlResult;
-    }
-
-    private function errorHandlingPDO($sql, $result)
-    {
-        $errorCode = $this->link->errorCode();
-        $errorClass = is_null($errorCode) ? "00" : substr($errorCode,0, 2);
-        if ($errorClass != "00") {
-            $errorMsg = var_export($this->link->errorCode(), true);
-            if ($errorClass == "01") {
-                $this->logger->setWarningMessage($errorMsg);
-            } else {
-                $this->errorMessageStore('[ERROR] SQL:' . $sql);
-                $this->errorMessageStore($errorMsg);
-                return false;
-            }
-        }
-        if ($result === false || is_null($result)) {
-            $this->errorMessageStore('[ERROR] SQL:' . $sql);
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -608,7 +609,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             return false;
         }
         $seqObject = $tableInfo['sequence'] ?? "{$this->dbSettings->getEntityForUpdate()}_{$keyField}_seq";
-        $lastKeyValue = $this->link->lastInsertId($seqObject);
+        $lastKeyValue = $this->handler->lastInsertIdAlt($seqObject); // $this->link->lastInsertId($seqObject);
         if (/* $isReplace && */ $lastKeyValue == 0) { // lastInsertId returns 0 after replace command.
             // Moreover, about MySQL, it returns 0 with the key field without AUTO_INCREMENT.
             $lastKeyValue = -999; // This means kind of error, so avoid to set non zero value.

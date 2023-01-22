@@ -199,4 +199,56 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         }
         return $returnValue;
     }
+
+    /*
+  * As far as MySQL goes, in case of rising up the warning of violating constraints of foreign keys.
+  * it happens any kind of warning but errorCode returns 00000 which means no error. There is no other way
+  * to call SHOW WARNINGS. Other db engines don't do anything here.
+     * Sample of SHOW WARNINGS
+     * mysql> show warnings;
++---------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Level   | Code | Message                                                                                                                                                                                                           |
++---------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Warning | 1452 | Cannot add or update a child row: a foreign key constraint fails (`embryoscope`.`transferembryo`, CONSTRAINT `transferembryo_ibfk_2` FOREIGN KEY (`embryoID`) REFERENCES `embryo` (`embryoID`) ON DELETE CASCADE) |
++---------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+  */
+    public function specialErrorHandling()
+    {
+        if ($this->dbClassObj->link) {
+            $warnings = $this->dbClassObj->link->query('SHOW COUNT(*) WARNINGS');
+            $warningsCount = 0;
+            foreach ($warnings->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $warningsCount = intval($row['@@session.warning_count']);
+            }
+            if ($warningsCount > 0) {
+                $warnings = $this->dbClassObj->link->query('SHOW WARNINGS');
+                $debugMsg = "";
+                foreach ($warnings->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                    $message = "[{$row['Level']}]({$row['Code']}){$row['Message']}";
+                    $debugMsg .= "{$message}\n";
+                    if ($row['Level'] == 'Warning') {
+                        $this->dbClassObj->logger->setWarningMessage($message);
+                    }
+                }
+                if (strlen($debugMsg) > 0) {
+                    $this->dbClassObj->logger->setDebugMessage($debugMsg);
+                }
+            }
+        }
+    }
+
+    public function lastInsertIdAlt($seqObject)
+    {
+        if ($this->dbClassObj->link) {
+            $warnings = $this->dbClassObj->link->query('SELECT LAST_INSERT_ID() AS ID');
+            $lastId = 0;
+            foreach ($warnings->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $lastId = intval($row['ID']);
+            }
+            return $lastId;
+        }
+        return null;
+    }
 }
