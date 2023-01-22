@@ -956,7 +956,7 @@ elsif node[:platform] == 'redhat'
   end
 end
 
-if node[:platform] == 'alpine'
+if node[:platform] == 'alpine' || node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 20
   package 'ca-certificates' do
     action :install
   end
