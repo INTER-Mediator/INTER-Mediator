@@ -1,6 +1,6 @@
 # coding: utf-8
 
-# Recipe file of Itamae for Alpine Linux 3.13, Ubuntu Server 18.04 LTS, CentOS Linux 7
+# Recipe file of Itamae for Alpine Linux 3.13, Ubuntu Server 20.04 LTS, CentOS Linux 7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -136,6 +136,22 @@ else
   execute 'usermod -a -G im-developer developer' do
     command 'usermod -a -G im-developer developer'
   end
+end
+
+directory '/home/developer' do
+  action :create
+  owner 'developer'
+  group 'developer'
+end
+file '/home/developer/.bashrc' do
+  action :create
+  owner 'developer'
+  group 'developer'
+end
+file '/home/developer/.viminfo' do
+  action :create
+  owner 'developer'
+  group 'developer'
 end
 
 if node[:platform] == 'ubuntu'
@@ -321,8 +337,9 @@ elsif node[:platform] == 'ubuntu'
   package 'mysql-server' do
     action :install
   end
-  file '/etc/mysql/conf.d/im.cnf' do
-    content <<-EOF
+  if node[:platform_version].to_f < 20
+    file '/etc/mysql/conf.d/im.cnf' do
+      content <<-EOF
 [mysqld]
 character-set-server=utf8mb4
 skip-character-set-client-handshake
@@ -336,6 +353,27 @@ default-character-set=utf8mb4
 [mysql]
 default-character-set=utf8mb4
 EOF
+    end
+  else
+    file '/etc/mysql/mysql.conf.d/im.cnf' do
+      content <<-EOF
+[mysqld]
+character-set-server=utf8mb4
+skip-character-set-client-handshake
+
+[client]
+default-character-set=utf8mb4
+
+[mysqldump]
+default-character-set=utf8mb4
+
+[mysql]
+default-character-set=utf8mb4
+EOF
+    end
+    execute "chown -R mysql:mysql /etc/mysql/mysql.conf.d" do
+      command "chown -R mysql:mysql /etc/mysql/mysql.conf.d"
+    end
   end
   service 'mysql' do
     action [ :enable, :start ]
@@ -550,7 +588,29 @@ elsif node[:platform] == 'ubuntu'
   package 'libmysqlclient-dev' do
     action :install
   end
-  if node[:platform_version].to_f >= 18
+  if node[:platform_version].to_f >= 20
+    package 'php8.1' do
+      action :install
+    end
+    package 'php8.1-cli' do
+      action :install
+    end
+    package 'libapache2-mod-php8.1' do
+      action :install
+    end
+    package 'php8.1-xml' do
+      action :install
+    end
+    package 'php8.1-mbstring' do
+      action :install
+    end
+    package 'php8.1-bcmath' do
+      action :install
+    end
+    package 'php8.1-ldap' do
+      action :install
+    end
+  elsif node[:platform_version].to_f >= 18
     package 'php' do
       action :install
     end
@@ -660,8 +720,12 @@ if node[:platform] == 'ubuntu'
     package 'php7.2-mysql' do
       action :install
     end
-  else
+  elsif node[:platform_version].to_f < 20
     package 'php-mysql' do
+      action :install
+    end
+  else
+    package 'php8.1-mysql' do
       action :install
     end
   end
@@ -689,8 +753,12 @@ if node[:platform] == 'ubuntu'
     package 'php7.2-pgsql' do
       action :install
     end
-  else
+  elsif node[:platform_version].to_f < 20
     package 'php-pgsql' do
+      action :install
+    end
+  else
+    package 'php8.1-pgsql' do
       action :install
     end
   end
@@ -709,8 +777,12 @@ if node[:platform] == 'ubuntu'
     package 'php7.2-sqlite3' do
       action :install
     end
-  else
+  elsif node[:platform_version].to_f < 20
     package 'php-sqlite3' do
+      action :install
+    end
+  else
+    package 'php8.1-sqlite3' do
       action :install
     end
   end
@@ -747,7 +819,7 @@ if node[:platform] == 'ubuntu'
     package 'php7.2-intl' do
       action :install
     end
-  else
+  elsif node[:platform_version].to_f < 20
     package 'php-curl' do
       action :install
     end
@@ -758,6 +830,19 @@ if node[:platform] == 'ubuntu'
       action :install
     end
     package 'php-intl' do
+      action :install
+    end
+  else
+    package 'php8.1-curl' do
+      action :install
+    end
+    package 'php8.1-gd' do
+      action :install
+    end
+    package 'php8.1-xmlrpc' do
+      action :install
+    end
+    package 'php8.1-intl' do
       action :install
     end
   end
@@ -843,7 +928,7 @@ if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform
     action :install
   end
 end
-if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 20) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
+if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 22) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   execute 'npm install -g n' do
     command 'npm install -g n'
   end
@@ -1210,11 +1295,13 @@ end
 
 # Install npm packages
 
-if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
+if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14 && node[:platform_version].to_f < 20) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   execute 'npm install -g buster --unsafe-perm' do
     command 'npm install -g buster --unsafe-perm'
   end
+end
 
+if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   if node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
     package 'bzip2' do
       action :install  # for phantomjs
@@ -1492,21 +1579,6 @@ execute "chmod 755 \"#{IMVMROOT}/index.php\"" do
   command "chmod 755 \"#{IMVMROOT}/index.php\""
 end
 
-directory '/home/developer' do
-  action :create
-  owner 'developer'
-  group 'developer'
-end
-file '/home/developer/.bashrc' do
-  action :create
-  owner 'developer'
-  group 'developer'
-end
-file '/home/developer/.viminfo' do
-  action :create
-  owner 'developer'
-  group 'developer'
-end
 execute 'chown -R developer:developer /home/developer' do
   command 'chown -R developer:developer /home/developer'
 end
@@ -1537,9 +1609,13 @@ if node[:platform] == 'ubuntu'
     execute 'cat /etc/php/7.2/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/7.2/apache2/php.ini.tmp && mv /etc/php/7.2/apache2/php.ini.tmp /etc/php/7.2/apache2/php.ini' do
       command 'cat /etc/php/7.2/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/7.2/apache2/php.ini.tmp && mv /etc/php/7.2/apache2/php.ini.tmp /etc/php/7.2/apache2/php.ini'
     end
-  else
+  elsif node[:platform_version].to_f < 20
     execute 'cat /etc/php/8.0/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/8.0/apache2/php.ini.tmp && mv /etc/php/8.0/apache2/php.ini.tmp /etc/php/8.0/apache2/php.ini' do
       command 'cat /etc/php/8.0/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/8.0/apache2/php.ini.tmp && mv /etc/php/8.0/apache2/php.ini.tmp /etc/php/8.0/apache2/php.ini'
+    end
+  else
+    execute 'cat /etc/php/8.1/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/8.1/apache2/php.ini.tmp && mv /etc/php/8.1/apache2/php.ini.tmp /etc/php/8.1/apache2/php.ini' do
+      command 'cat /etc/php/8.1/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/8.1/apache2/php.ini.tmp && mv /etc/php/8.1/apache2/php.ini.tmp /etc/php/8.1/apache2/php.ini'
     end
   end
 end
@@ -2075,20 +2151,20 @@ elsif node[:platform] == 'ubuntu'
     package 'ruby-dev' do
       action :install
     end
-    execute 'gem install rspec --no-ri --no-rdoc' do
-      command 'gem install rspec --no-ri --no-rdoc'
+    execute 'gem install rspec -N' do
+      command 'gem install rspec -N'
     end
-    execute 'gem install bundler --no-ri --no-rdoc' do
-      command 'gem install bundler --no-ri --no-rdoc'
+    execute 'gem install bundler -N' do
+      command 'gem install bundler -N'
     end
-    execute 'gem install ffi --no-ri --no-rdoc' do
-      command 'gem install ffi --no-ri --no-rdoc'
+    execute 'gem install ffi -N' do
+      command 'gem install ffi -N'
     end
-    execute 'gem install childprocess -v "0.9.0" --no-ri --no-rdoc' do
-      command 'gem install childprocess -v "0.9.0" --no-ri --no-rdoc'
+    execute 'gem install childprocess -v "0.9.0" -N' do
+      command 'gem install childprocess -v "0.9.0" -N'
     end
-    execute 'gem install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc' do
-      command 'gem install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc'
+    execute 'gem install selenium-webdriver -v "3.142.3" -N' do
+      command 'gem install selenium-webdriver -v "3.142.3" -N'
     end
   end
   package 'firefox' do
