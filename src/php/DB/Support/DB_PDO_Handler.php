@@ -117,7 +117,8 @@ abstract class DB_PDO_Handler
             }
             $keyField = $tableInfo['key'] ?? 'id';
             $seqObject = $tableInfo['sequence'] ?? "{$tableName}_{$keyField}_seq";
-            $returnValue = $this->dbClassObj->link->lastInsertId($seqObject);
+            $returnValue = $this->lastInsertIdAlt($seqObject);
+            //$returnValue = $this->dbClassObj->link->lastInsertId($seqObject);
         } catch (Exception $ex) {
             $this->dbClassObj->errorMessageStore($ex->getMessage());
             return false;
@@ -255,6 +256,21 @@ abstract class DB_PDO_Handler
             return true;
         }
         return false;
+    }
+
+    /*
+     * As far as MySQL goes, in case of rising up the warning of violating constraints of foreign keys.
+     * it happens any kind of warning but errorCode returns 00000 which means no error. There is no other way
+     * to call SHOW WARNINGS. Other db engines don't do anything here
+     */
+    public function specialErrorHandling()
+    {
+
+    }
+
+    public function lastInsertIdAlt($seqObject)
+    {
+        return $this->dbClassObj->link->lastInsertId($seqObject);
     }
 
 }
