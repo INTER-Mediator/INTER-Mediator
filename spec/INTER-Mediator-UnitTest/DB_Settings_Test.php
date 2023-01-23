@@ -8,6 +8,8 @@ use INTERMediator\DB\Settings;
 
 class DB_Settings_Test extends TestCase
 {
+    private $settings;
+
     public function setUp(): void
     {
         $this->settings = new Settings();

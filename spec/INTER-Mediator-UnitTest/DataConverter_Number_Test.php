@@ -9,6 +9,9 @@ use INTERMediator\Data_Converter\Number;
 
 class DataConverter_Number_Test extends TestCase
 {
+    private $dataconverter;
+    private $dataconverter2;
+
     public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';

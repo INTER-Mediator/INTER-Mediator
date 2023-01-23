@@ -16,7 +16,8 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
 {
     public $dsn;
 
-    public function isMySQL() {
+    public function isMySQL()
+    {
         return true;
     }
 
@@ -67,6 +68,32 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
                 ),
             );
         }
+        $options = null;
+        $dbSettings = array(
+            'db-class' => 'PDO',
+            'dsn' => $this->dsn,
+            'user' => 'web',
+            'password' => 'password',
+        );
+        $this->db_proxy = new Proxy(true);
+        $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+    }
+
+    function dbProxySetupForAccessSetKey($contextName, $maxRecord, $keyName)
+    {
+        $this->schemaName = "";
+        $contexts = array(
+            array(
+                'records' => $maxRecord,
+                'name' => $contextName,
+                'view' => $contextName,
+                'table' => $contextName,
+                'key' => $keyName,
+                'sort' => array(
+                    array('field' => $keyName, 'direction' => 'asc'),
+                ),
+            )
+        );
         $options = null;
         $dbSettings = array(
             'db-class' => 'PDO',

@@ -32,7 +32,8 @@ abstract class DB_PDO_Test_Common extends TestCase
         date_default_timezone_set('Asia/Tokyo');
     }
 
-    public function isMySQL() {
+    public function isMySQL()
+    {
         return false;
     }
 
@@ -108,10 +109,9 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->dbProxySetupForAccess("contact", 1000000);
         $this->db_proxy->requireUpdatedRecord(true);
         $newKeyValue = $this->db_proxy->createInDB();
-        $this->db_proxy->logger->clearLogs();
-
-        var_dump($this->db_proxy->logger->getErrorMessages());
-        var_dump($this->db_proxy->logger->getDebugMessages());
+//        $this->db_proxy->logger->clearLogs();
+//        var_dump($this->db_proxy->logger->getErrorMessages());
+//        var_dump($this->db_proxy->logger->getDebugMessages());
 
         $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
         $createdRecord = $this->db_proxy->getUpdatedRecord();
@@ -149,6 +149,49 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertTrue(count($result) == 1, "It should be just one record.");
         $this->assertTrue($result[0]["name"] === $nameValue, "Field value is not same as the definition.");
         $this->assertTrue($result[0]["address"] === $addressValue, "Field value is not same as the definition.");
+    }
+
+    public function testCreateRecord()
+    {
+        $this->dbProxySetupForAccessSetKey("testtable", 1000000, "id");
+        $this->db_proxy->requireUpdatedRecord(true);
+        $this->db_proxy->dbSettings->addValueWithField("num1", 200);
+        $this->db_proxy->dbSettings->addValueWithField("num2", 100);
+        $newKeyValue = $this->db_proxy->createInDB();
+        echo " Returns {$newKeyValue}\n";
+
+        $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
+        $createdRecord = $this->db_proxy->getUpdatedRecord();
+        $this->assertNotNull($createdRecord, "Created record should be exists.(1)");
+        $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");
+        $this->assertTrue($createdRecord[0]["num1"] == 200, "The num1 field must have value 200.");
+        $this->assertTrue($createdRecord[0]["num2"] == 100, "The num2 field must have value 100.");
+
+        $this->dbProxySetupForAccessSetKey("testtable", 1000000, "num1");
+        // Set the primary key field with not AUTO_INCREMENT field
+        $randomNumber = random_int(100000, 999999);
+        $this->db_proxy->dbSettings->addValueWithField("num1", $randomNumber);
+        $this->db_proxy->dbSettings->addValueWithField("num2", 100);
+        $this->db_proxy->requireUpdatedRecord(true);
+        $newKeyValue = $this->db_proxy->createInDB();
+        echo " Returns {$newKeyValue}\n";
+        $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
+        $createdRecord = $this->db_proxy->getUpdatedRecord();
+        $this->assertNotNull($createdRecord, "Created record should be exists.(2)");
+        $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");
+        $this->assertTrue($createdRecord[0]["num1"] == $randomNumber, "The num1 field must have value {$randomNumber}.");
+        $this->assertTrue($createdRecord[0]["num2"] == 100, "The num2 field must have value 100.");
+
+        $this->dbProxySetupForAccessSetKey("testtable", 1000000, "num1");
+        // Set the primary key field with not AUTO_INCREMENT field
+        $randomNumber = random_int(100000, 999999);
+        $this->db_proxy->dbSettings->addValueWithField("num2", 100); // Doesn't set the value to the key field
+        $this->db_proxy->requireUpdatedRecord(true);
+        $newKeyValue = $this->db_proxy->createInDB();
+
+        $this->assertTrue($newKeyValue == -999, "Record wasn't created.");
+        $createdRecord = $this->db_proxy->getUpdatedRecord();
+        $this->assertNull($createdRecord, "Record wasn't created.");
     }
 
     public function testCopySingleRecord()

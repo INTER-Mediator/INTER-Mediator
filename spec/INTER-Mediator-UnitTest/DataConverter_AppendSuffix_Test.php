@@ -7,6 +7,8 @@ use INTERMediator\Data_Converter\AppendSuffix;
 
 class DataConverter_AppendSuffix_Test extends TestCase
 {
+    private $dataconverter;
+
     public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';

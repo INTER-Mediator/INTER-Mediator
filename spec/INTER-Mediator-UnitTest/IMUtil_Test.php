@@ -12,8 +12,8 @@ use INTERMediator\IMUtil;
 
 class IMUtil_Test extends TestCase
 {
-
     private $util;
+    private $reflectionMethod;
 
     public function setUp(): void
     {

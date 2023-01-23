@@ -64,6 +64,29 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
     }
+    function dbProxySetupForAccessSetKey($contextName, $maxRecord, $keyName)
+    {
+        $this->schemaName = "";
+        $contexts = array(
+            array(
+                'records' => $maxRecord,
+                'name' => $contextName,
+                'view' => $contextName,
+                'table' => $contextName,
+                'key' => $keyName,
+                'sort' => array(
+                    array('field' => $keyName, 'direction' => 'asc'),
+                ),
+            )
+        );
+        $options = null;
+        $dbSettings = array(
+            'db-class' => 'PDO',
+            'dsn' => $this->dsn,
+         );
+        $this->db_proxy = new Proxy(true);
+        $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+    }
 
     function dbProxySetupForAuth()
     {

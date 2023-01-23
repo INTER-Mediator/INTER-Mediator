@@ -8,10 +8,18 @@ use INTERMediator\Data_Converter\HTMLString;
 
 class DataConverter_HTMLString_Test extends TestCase
 {
+    private $dataconverter;
+    private $dataconverter2;
+    private $dataconverter3;
+    private $dataconverterForLinking;
+    private $dataconverterForLinking2;
+    private $dataconverterForLinking3;
+    private $dataconverterWithoutEscaping;
+
     public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
-        
+
         $this->dataconverter = new HTMLString();
         $this->dataconverter2 = new HTMLString(false);
         $this->dataconverter3 = new HTMLString('false');
@@ -20,13 +28,13 @@ class DataConverter_HTMLString_Test extends TestCase
         $this->dataconverterForLinking3 = new HTMLString('autolink');
         $this->dataconverterWithoutEscaping = new HTMLString('noescape');
     }
-    
+
     public function test_converterFromUserToDB()
     {
         $expected = '';
         $string = '';
         $this->assertSame($expected, $this->dataconverter->converterFromUserToDB($string));
-        
+
         $expected = '<a href="http://inter-mediator.org/" target="_blank">http://inter-mediator.org/</a>' . "\n";
         $string = '<a href="http://inter-mediator.org/" target="_blank">http://inter-mediator.org/</a>' . "\n";
         $this->assertSame($expected, $this->dataconverter->converterFromUserToDB($string));
@@ -39,7 +47,7 @@ class DataConverter_HTMLString_Test extends TestCase
         $string = '<a href="http://inter-mediator.org/" target="_blank">http://inter-mediator.org/</a>' . "\n";
         $this->assertSame($expected, $this->dataconverterWithoutEscaping->converterFromUserToDB($string));
     }
-    
+
     public function test_converterFromDBtoUser()
     {
         $expected = '';
