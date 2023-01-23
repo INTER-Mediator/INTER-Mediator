@@ -34,7 +34,9 @@ if (file_exists($autoLoad)) { // If vendor is inside of INTER-Mediator
 spl_autoload_register(function ($className) {
     $comps = explode('\\', $className);
     $className = $comps[count($comps) - 1];
-    $refPath = IMUtil::relativePath($_SERVER['SCRIPT_NAME'], parse_url($_SERVER['HTTP_REFERER'] ?? null, PHP_URL_PATH));
+    $refPath = dirname(
+        IMUtil::relativePath($_SERVER['SCRIPT_NAME'],
+            parse_url($_SERVER['HTTP_REFERER'] ?? null, PHP_URL_PATH)));
     $paramPath = Params::getParameterValue("loadFrom", false);
     $searchDirs = [
         // Load from the file located on the same directory as the definition file.
