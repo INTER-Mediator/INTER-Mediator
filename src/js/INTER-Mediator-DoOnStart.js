@@ -109,9 +109,6 @@ if (window) {
       event.returnValue = confirmationMessage //Gecko + IE
       return confirmationMessage //Webkit, Safari, Chrome etc.
     } else {
-      if(INTERMediatorOnPage.activateClientService) {
-        INTERMediator_DBAdapter.unregister()
-      }
       return undefined
     }
   })

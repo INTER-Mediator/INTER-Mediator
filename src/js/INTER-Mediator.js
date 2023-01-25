@@ -367,6 +367,16 @@ const INTERMediator = {
     INTERMediator.ssSocket.disconnect()
   },
 
+  moveAnotherURL: async (url, task = null) => {
+    if (INTERMediatorOnPage.activateClientService) {
+      await INTERMediator_DBAdapter.unregister()
+      if (task) {
+        task()
+      }
+    }
+    location.href = url
+  },
+
   /** Construct Page **
    * Construct the Web Page with DB Data. Usually this method will be called automatically.
    * @param indexOfKeyFieldObject If this parameter is omitted or set to true,

@@ -21,6 +21,10 @@ Ver.11 (in development)
 - [BUG FIX] In same case of using aggregation-select/from the error happened about the view or table didn't exist.
 - [BUG FIX] INTERMediator.additionalFieldValueOnDelete uses in the Definition File editor, so retrieved it.
 - [INFO] About sample SQL files in the dist-docs directory, their extensions changed to .sql from .txt.
+- On the multiple client synchronization (i.e. using sync-control in any definition), the clean up task has to call
+  "INTERMediator_DBAdapter.unregister()" explicitly.
+- INTERMediator.moveAnotherURL(url, task) is newly added. This will call "INTERMediator_DBAdapter.unregister()", do the "task"
+  and move to the "url" place
 
 Ver.10 (October 12, 2022)
 - Auto saving for INPUT and TEXTAREA element. Customizing in JavaScript code and their default value are:

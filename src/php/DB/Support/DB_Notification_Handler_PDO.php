@@ -107,8 +107,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         return $newContextId;
     }
 
-    public function unregister(
-        $clientId, $tableKeys)
+    public function unregister($clientId, $tableKeys)
     {
         $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
         $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
@@ -138,19 +137,20 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                 $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO] Pragma:{$sql}");
                 return false;
             }
-            $versionSign = explode('.', phpversion());
-            if ($versionSign[0] <= 5 && $versionSign[1] <= 2) {
-                $sql = "SELECT id FROM {$regTable} WHERE {$criteriaString}";
-                $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
-                $result = $this->dbClass->link->query($sql);
-                if ($result === false) {
-                    $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO] Select: {$sql}");
-                    return false;
-                }
-                foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                    $contextIds[] = $row['id'];
-                }
-            }
+            /* SQLite with under PHP 5.2 is too much deprecated. */
+//            $versionSign = explode('.', phpversion());
+//            if ($versionSign[0] <= 5 && $versionSign[1] <= 2) {
+//                $sql = "SELECT id FROM {$regTable} WHERE {$criteriaString}";
+//                $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
+//                $result = $this->dbClass->link->query($sql);
+//                if ($result === false) {
+//                    $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO] Select: {$sql}");
+//                    return false;
+//                }
+//                foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+//                    $contextIds[] = $row['id'];
+//                }
+//            }
         }
         $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$regTable} WHERE {$criteriaString}";
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
@@ -159,18 +159,18 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
             $this->dbClass->errorMessageStore("Delete:{$sql}");
             return false;
         }
-        if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0 && count($contextIds) > 0) {
-            foreach ($contextIds as $cId) {
-                $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$pksTable} WHERE context_id = "
-                    . $this->dbClass->link->quote($cId);
-                $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
-                $result = $this->dbClass->link->exec($sql);
-                if ($result === false) {
-                    $this->dbClass->errorMessageStore("Delete:{$sql}");
-                    return false;
-                }
-            }
-        }
+//        if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0 && count($contextIds) > 0) {
+//            foreach ($contextIds as $cId) {
+//                $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$pksTable} WHERE context_id = "
+//                    . $this->dbClass->link->quote($cId);
+//                $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
+//                $result = $this->dbClass->link->exec($sql);
+//                if ($result === false) {
+//                    $this->dbClass->errorMessageStore("Delete:{$sql}");
+//                    return false;
+//                }
+//            }
+//        }
         return true;
     }
 
