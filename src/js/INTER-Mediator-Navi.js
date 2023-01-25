@@ -17,6 +17,7 @@
 /**
  * @fileoverview IMLibPageNavigation class is defined here.
  */
+//const INTERMediator_DBAdapter = require("./Adapter_DBServer");
 /**
  *
  * Usually you don't have to instanciate this class with new operator.
@@ -62,10 +63,13 @@ const IMLibPageNavigation = {
           node.id = INTERMediator.nextIdValue()
         }
         IMLibMouseEventDispatch.setExecute(node.id, function () {
-          IMLibQueue.setTask((complete) => {
+          IMLibQueue.setTask(async (complete) => {
             complete()
             INTERMediator.initialize()
             IMLibLocalContext.archive()
+            if (INTERMediatorOnPage.activateClientService) {
+              await INTERMediator_DBAdapter.unregister()
+            }
             location.reload()
           }, false, true)
         })

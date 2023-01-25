@@ -14,6 +14,8 @@ use PHPUnit\Framework\TestCase;
 
 class INTERMediator_Test extends TestCase
 {
+    private $db_proxy;
+
     public function setUp(): void
     {
         mb_internal_encoding('UTF-8');

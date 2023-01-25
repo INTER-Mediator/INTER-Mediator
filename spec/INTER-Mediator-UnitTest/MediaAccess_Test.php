@@ -8,6 +8,10 @@ use PHPUnit\Framework\TestCase;
 
 class MediaAccess_Test extends TestCase
 {
+    private $mediaaccess;
+    private $reflectionClass;
+    private $reflectionMethod;
+    
     protected function setUp(): void
     {
         $this->mediaaccess = new MediaAccess();

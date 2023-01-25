@@ -24,6 +24,7 @@ class FMDateTime
     private $useMbstring;
     private $choosenLocale;
     private $fmtNum;
+    private $fmt;
 
     /**
      *

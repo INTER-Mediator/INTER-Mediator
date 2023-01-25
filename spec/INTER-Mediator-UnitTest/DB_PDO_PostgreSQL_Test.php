@@ -73,6 +73,32 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
     }
 
+    function dbProxySetupForAccessSetKey($contextName, $maxRecord, $keyName)
+    {
+        $this->schemaName = "";
+        $contexts = array(
+            array(
+                'records' => $maxRecord,
+                'name' => $contextName,
+                'view' => "{$this->schemaName}{$contextName}",
+                'table' => "{$this->schemaName}{$contextName}",
+                'key' => $keyName,
+                'sort' => array(
+                    array('field' => $keyName, 'direction' => 'asc'),
+                ),
+            )
+        );
+        $options = null;
+        $dbSettings = array(
+            'db-class' => 'PDO',
+            'dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db',
+            'user' => 'web',
+            'password' => 'password',
+        );
+        $this->db_proxy = new Proxy(true);
+        $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+    }
+
     function dbProxySetupForAuth()
     {
         $this->db_proxy = new Proxy(true);

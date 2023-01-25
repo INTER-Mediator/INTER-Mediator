@@ -7,6 +7,8 @@ use INTERMediator\Data_Converter\FMDateTime;
 
 class DataConverter_FMDateTime_Test extends TestCase
 {
+    private $dataconverter;
+
     protected function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
