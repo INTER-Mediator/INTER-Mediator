@@ -843,4 +843,19 @@ class Settings
         return $dsrc['name'];
     }
 
+    public function getEntityAsSource()
+    {
+        $dsrc = $this->getDataSourceTargetArray();
+        if (is_null($dsrc)) {
+            return null;
+        }
+        if (isset($dsrc['source'])) {
+            return $dsrc['source'];
+        }
+        if (isset($dsrc['table'])) {
+            return $dsrc['table'];
+        }
+        return $dsrc['name'];
+    }
+
 }

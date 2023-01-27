@@ -199,7 +199,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $this->mainTableTotalCount = 0;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
-        $boolFields = $this->handler->getBooleanFields($this->dbSettings->getEntityForUpdate());
+        $updatingTable = $this->dbSettings->getEntityForUpdate();
+        $sourceTable = $this->dbSettings->getEntityAsSource();
+        $boolFields = $this->handler->getBooleanFields($updatingTable);
 
         if (!$this->setupConnection()) { //Establish the connection
             return false;
@@ -290,7 +292,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $sql = "{$this->handler->sqlSELECTCommand()}{$fields} FROM {$viewOrTableName} {$queryClause} {$groupBy} "
             . $this->handler->sqlOrderByCommand($sortClause, $limitParam, $offset);
         $this->logger->setDebugMessage($sql);
-        $this->notifyHandler->setQueriedEntity($isAggregate ? $this->dbSettings->getAggregationFrom() : $tableName);
+        $this->notifyHandler->setQueriedEntity($isAggregate ? $this->dbSettings->getAggregationFrom() : $sourceTable);
         $this->notifyHandler->setQueriedCondition(
             "{$queryClause} {$this->handler->sqlOrderByCommand($sortClause, $limitParam, $offset)}");
 
@@ -449,7 +451,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
         $sql = "{$this->handler->sqlUPDATECommand()}{$tableName} SET {$setClause} {$queryClause}";
         $prepSQL = $this->link->prepare($sql);
-        $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityForUpdate());
+        $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityAsSource());
 
         $this->logger->setDebugMessage(
             $prepSQL->queryString . " with " . str_replace("\n", " ", var_export($setParameter, true) ?? ""));
@@ -616,7 +618,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
 
         $this->notifyHandler->setQueriedPrimaryKeys(array($lastKeyValue));
-        $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityForUpdate());
+        $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityAsSource());
 
         if ($this->isRequiredUpdated) {
             $sql = $this->handler->sqlSELECTCommand() . "* FROM " . $viewName
@@ -685,7 +687,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         if (!$this->errorHandlingPDO($sql, $result)) {
             return false;
         }
-        $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityForUpdate());
+        $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityAsSource());
 
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
@@ -747,7 +749,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             return false;
         }
         $this->notifyHandler->setQueriedPrimaryKeys(array($lastKeyValue));
-        $this->notifyHandler->setQueriedEntity($tableName);
+        $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityAsSource());
         //======
         $assocArray = $this->dbSettings->getAssociated();
         if ($assocArray) {

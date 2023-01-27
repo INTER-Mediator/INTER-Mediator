@@ -79,17 +79,28 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
     }
 
     /*
-      sqlite> PRAGMA table_info(person);
-      cid         name        type        notnull     dflt_value  pk
-      ----------  ----------  ----------  ----------  ----------  ----------
-      0           id          INTEGER     0                       1
-      1           name        TEXT        0                       0
-      2           address     TEXT        0                       0
-      3           mail        TEXT        0                       0
-      4           category    INTEGER     0                       0
-      5           checking    INTEGER     0                       0
-      6           location    INTEGER     0                       0
-      7           memo        TEXT        0                       0
+sqlite> .mode column
+sqlite> PRAGMA table_info(testtable);
+cid  name   type          notnull  dflt_value             pk
+---  -----  ------------  -------  ---------------------  --
+0    id     INTEGER       0                               1
+1    num1   INT           1        0                      0
+2    num2   INT           0                               0
+3    num3   INT           0                               0
+4    dt1    DateTime      1        CURRENT_TIMESTAMP      0
+5    dt2    DateTime      0                               0
+6    dt3    DateTime      0                               0
+7    date1  Date          1        CURRENT_TIMESTAMP      0
+8    date2  Date          0                               0
+9    time1  Time          1        CURRENT_TIMESTAMP      0
+10   time2  Time          0                               0
+11   ts1    Timestamp     1        CURRENT_TIMESTAMP      0
+12   ts2    Timestamp     0        '2001-01-01 00:00:00'  0
+13   vc1    VARCHAR(100)  1        ''                     0
+14   vc2    VARCHAR(100)  0                               0
+15   vc3    VARCHAR(100)  0                               0
+16   text1  TEXT          1        ''                     0
+17   text2  TEXT          0                               0
        */
 
     protected function getFieldListsForCopy($tableName, $keyField, $assocField, $assocValue, $defaultValues)
