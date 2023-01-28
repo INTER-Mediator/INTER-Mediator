@@ -94,18 +94,47 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
     }
 
     /*
-      * mysql> show columns from func;
-+-------+------------------------------+------+-----+---------+-------+
-| Field | Type                         | Null | Key | Default | Extra |
-+-------+------------------------------+------+-----+---------+-------+
-| name  | char(64)                     | NO   | PRI |         |       |
-| ret   | tinyint(1)                   | NO   |     | 0       |       |
-| dl    | char(128)                    | NO   |     |         |       |
-| type  | enum('function','aggregate') | NO   |     | NULL    |       |
-+-------+------------------------------+------+-----+---------+-------+
-4 rows in set (0.00 sec)
+mysql> show columns from testtable;
++-------+--------------+------+-----+---------------------+-----------------------------------------------+
+| Field | Type         | Null | Key | Default             | Extra                                         |
++-------+--------------+------+-----+---------------------+-----------------------------------------------+
+| id    | int          | NO   | PRI | NULL                | auto_increment                                |
+| num1  | int          | NO   |     | NULL                |                                               |
+| num2  | int          | YES  |     | NULL                |                                               |
+| num3  | int          | YES  |     | NULL                |                                               |
+| dt1   | datetime     | NO   |     | NULL                |                                               |
+| dt2   | datetime     | YES  |     | NULL                |                                               |
+| dt3   | datetime     | YES  |     | NULL                |                                               |
+| date1 | date         | NO   |     | NULL                |                                               |
+| date2 | date         | YES  |     | NULL                |                                               |
+| time1 | time         | NO   |     | NULL                |                                               |
+| time2 | time         | YES  |     | NULL                |                                               |
+| ts1   | timestamp    | NO   |     | CURRENT_TIMESTAMP   | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
+| ts2   | timestamp    | YES  |     | 2001-01-01 00:00:00 |                                               |
+| vc1   | varchar(100) | NO   |     | NULL                |                                               |
+| vc2   | varchar(100) | YES  |     | NULL                |                                               |
+| vc3   | varchar(100) | YES  |     | NULL                |                                               |
+| text1 | text         | NO   |     | NULL                |                                               |
+| text2 | text         | YES  |     | NULL                |                                               |
++-------+--------------+------+-----+---------------------+-----------------------------------------------+
+18 rows in set (0.01 sec)
 
-    In case of calculation field of a vew, the type column is going to be ''.
+mysql> show columns from item_display;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| id          | int         | NO   |     | 0       |       |
+| invoice_id  | int         | YES  |     | NULL    |       |
+| product_id  | int         | YES  |     | NULL    |       |
+| category_id | int         | YES  |     | NULL    |       |
+| name        | varchar(20) | YES  |     | NULL    |       |
+| qty         | int         | YES  |     | NULL    |       |
+| unitprice   | float       | YES  |     | NULL    |       |
+| amount      | double      | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+8 rows in set (0.00 sec)
+
+    In case of calculation field of a view, the type column is going to be ''.
     */
 
     protected function getFieldListsForCopy($tableName, $keyField, $assocField, $assocValue, $defaultValues)

@@ -100,17 +100,28 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return $sql;
     }
     /*
-# select table_catalog,table_schema,table_name,column_name,column_default from information_schema.columns where table_name='person';
-table_catalog | table_schema | table_name | column_name |                column_default
----------------+--------------+------------+-------------+----------------------------------------------
-test_db       | im_sample    | person     | id          | nextval('im_sample.person_id_seq'::regclass)
-test_db       | im_sample    | person     | name        |
-test_db       | im_sample    | person     | address     |
-test_db       | im_sample    | person     | mail        |
-test_db       | im_sample    | person     | category    |
-test_db       | im_sample    | person     | checking    |
-test_db       | im_sample    | person     | location    |
-test_db       | im_sample    | person     | memo        |
+# SELECT column_name, column_default, is_nullable, data_type, character_maximum_length,numeric_precision, numeric_scale FROM information_schema.columns WHERE table_schema='im_sample' AND table_name='testtable';
+ column_name |                   column_default                   | is_nullable |          data_type          | character_maximum_length | numeric_precision | numeric_scale
+-------------+----------------------------------------------------+-------------+-----------------------------+--------------------------+-------------------+---------------
+ id          | nextval('im_sample.testtable_id_seq'::regclass)    | NO          | integer                     |                          |                32 |             0
+ num1        | 0                                                  | NO          | integer                     |                          |                32 |             0
+ num2        |                                                    | YES         | integer                     |                          |                32 |             0
+ num3        |                                                    | YES         | integer                     |                          |                32 |             0
+ dt1         | CURRENT_TIMESTAMP                                  | NO          | timestamp without time zone |                          |                   |
+ dt2         |                                                    | YES         | timestamp without time zone |                          |                   |
+ dt3         |                                                    | YES         | timestamp without time zone |                          |                   |
+ date1       | CURRENT_TIMESTAMP                                  | NO          | date                        |                          |                   |
+ date2       |                                                    | YES         | date                        |                          |                   |
+ time1       | CURRENT_TIMESTAMP                                  | NO          | time without time zone      |                          |                   |
+ time2       |                                                    | YES         | time without time zone      |                          |                   |
+ ts1         | CURRENT_TIMESTAMP                                  | NO          | timestamp without time zone |                          |                   |
+ ts2         | '2001-01-01 00:00:00'::timestamp without time zone | YES         | timestamp without time zone |                          |                   |
+ vc1         | ''::character varying                              | NO          | character varying           |                      100 |                   |
+ vc2         |                                                    | YES         | character varying           |                      100 |                   |
+ vc3         |                                                    | YES         | character varying           |                      100 |                   |
+ text1       | ''::text                                           | NO          | text                        |                          |                   |
+ text2       |                                                    | YES         | text                        |                          |                   |
+(18 rows)
  */
 
 
