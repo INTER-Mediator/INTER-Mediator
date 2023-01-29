@@ -367,14 +367,17 @@ const INTERMediator = {
     INTERMediator.ssSocket.disconnect()
   },
 
-  moveAnotherURL: async (url, task = null) => {
-    if (INTERMediatorOnPage.activateClientService) {
-      await INTERMediator_DBAdapter.unregister()
+  moveAnotherURL: (url, task = null) => {
+    IMLibQueue.setTask(async (complete) => {
+      if (INTERMediatorOnPage.activateClientService) {
+        await INTERMediator_DBAdapter.unregister()
+      }
       if (task) {
         task()
       }
-    }
-    location.href = url
+      complete()
+      location.href = url
+    }, false, true)
   },
 
   /** Construct Page **

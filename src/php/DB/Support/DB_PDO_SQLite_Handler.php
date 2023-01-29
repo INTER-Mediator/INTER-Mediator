@@ -101,6 +101,20 @@ cid  name   type          notnull  dflt_value             pk
 15   vc3    VARCHAR(100)  0                               0
 16   text1  TEXT          1        ''                     0
 17   text2  TEXT          0                               0
+
+    https://stackoverflow.com/questions/20979239/how-to-tell-if-a-sqlite-column-is-autoincrement
+
+sqlite> SELECT COUNT(*) FROM sqlite_sequence WHERE name='testtable';
+1
+sqlite> SELECT * FROM sqlite_sequence WHERE name='testtable';
+testtable|106
+sqlite> SELECT COUNT(*) FROM sqlite_sequence WHERE name='person';
+1
+sqlite> SELECT * FROM sqlite_sequence;
+person|90
+contact|52
+contact_way|6
+
        */
 
     protected function getFieldListsForCopy($tableName, $keyField, $assocField, $assocValue, $defaultValues)
