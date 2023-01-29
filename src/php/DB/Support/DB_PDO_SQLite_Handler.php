@@ -73,6 +73,21 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
+    protected function getAutoIncrementField($tableName)
+    {
+//        if ($this->dbClassObj->link) {
+//            $seqCount = $this->dbClassObj->link->query('SELECT COUNT(*) FROM sqlite_sequence WHERE name=' . $tableName);
+//            $row = $seqCount->fetch(\PDO::FETCH_NUM);
+//            if($row && isset($row[0])) {
+//                if($row[0]>0) {
+//                    return null; // OMG
+//                }
+//            }
+//        }
+        return '_CANCEL_THE_INCR_FIELD_DETECT_';
+        // SQLite doesn't support to create a record with non AUTOINCREMENT field as the primary key.
+    }
+
     protected function getTalbeInfoSQL($tableName)
     {
         return "PRAGMA table_info({$tableName})";

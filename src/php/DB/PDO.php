@@ -611,7 +611,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             return false;
         }
         $seqObject = $tableInfo['sequence'] ?? "{$this->dbSettings->getEntityForUpdate()}_{$keyField}_seq";
-        $lastKeyValue = $this->handler->lastInsertIdAlt($seqObject); // $this->link->lastInsertId($seqObject);
+        $lastKeyValue = $this->handler->lastInsertIdAlt($seqObject,$tableNameRow); // $this->link->lastInsertId($seqObject);
         if (/* $isReplace && */ $lastKeyValue == 0) { // lastInsertId returns 0 after replace command.
             // Moreover, about MySQL, it returns 0 with the key field without AUTO_INCREMENT.
             $lastKeyValue = -999; // This means kind of error, so avoid to set non zero value.

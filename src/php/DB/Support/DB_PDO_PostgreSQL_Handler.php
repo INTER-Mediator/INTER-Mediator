@@ -83,6 +83,21 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return $fieldArray;
     }
 
+    protected function getAutoIncrementField($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        foreach ($result as $row) {
+            if (strpos($row["column_default"], "nextval(") !== false) {
+                return $row["column_name"];;
+            }
+        }
+        return null;
+    }
+
     protected function getTalbeInfoSQL($tableName)
     {
         if (strpos($tableName, ".") !== false) {
