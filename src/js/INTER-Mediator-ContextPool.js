@@ -394,10 +394,7 @@ const IMLibContextPool = {
     const entityName = info.entity
     for (let i = 0; i < this.poolingContexts.length; i += 1) {
       const contextDef = this.getContextDef(this.poolingContexts[i].contextName)
-      let contextSource = contextDef.name
-      contextSource = contextDef.view ?? contextSource
-      contextSource = contextDef.table ?? contextSource
-      contextSource = contextDef.source ?? contextSource
+      const contextSource = contextDef.source ?? contextDef.table ?? contextDef.view ?? contextDef.name
       if (contextSource === entityName) {
         const keyField = contextDef.key
         const recKey = keyField + '=' + info.pkvalue[0]
@@ -422,10 +419,7 @@ const IMLibContextPool = {
     const entityName = info.entity
     for (let i = 0; i < this.poolingContexts.length; i += 1) {
       const contextDef = this.getContextDef(this.poolingContexts[i].contextName)
-      let contextSource = contextDef.name
-      contextSource = contextDef.view ?? contextSource
-      contextSource = contextDef.table ?? contextSource
-      contextSource = contextDef.source ?? contextSource
+      const contextSource = contextDef.source ?? contextDef.table ?? contextDef.view ?? contextDef.name
       if (contextSource === entityName) {
         if (this.poolingContexts[i].isContaining(info.value[0])) {
           await INTERMediator.constructMain(this.poolingContexts[i])
@@ -439,10 +433,7 @@ const IMLibContextPool = {
     const entityName = info.entity
     for (let i = 0; i < this.poolingContexts.length; i += 1) {
       const contextDef = this.getContextDef(this.poolingContexts[i].contextName)
-      let contextSource = contextDef.name
-      contextSource = contextDef.view ?? contextSource
-      contextSource = contextDef.table ?? contextSource
-      contextSource = contextDef.source ?? contextSource
+      const contextSource = contextDef.source ?? contextDef.table ?? contextDef.view ?? contextDef.name
       if (contextSource === entityName) {
         this.poolingContexts[i].removeEntry(info.pkvalue)
       }
