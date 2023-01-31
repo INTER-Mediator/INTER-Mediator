@@ -88,6 +88,21 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return $fieldArray;
     }
 
+    protected function getAutoIncrementField($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        foreach ($result as $row) {
+            if (strpos($row["Extra"], "auto_increment") !== false) {
+                return $row["Field"];;
+            }
+        }
+        return null;
+    }
+
     protected function getTalbeInfoSQL($tableName)
     {
         return "SHOW COLUMNS FROM " . $this->quotedEntityName($tableName);
@@ -268,15 +283,14 @@ mysql> show columns from item_display;
         }
     }
 
-    public function lastInsertIdAlt($seqObject)
+    public function getLastInsertId($seqObject)
     {
         if ($this->dbClassObj->link) {
             $warnings = $this->dbClassObj->link->query('SELECT LAST_INSERT_ID() AS ID');
-            $lastId = 0;
             foreach ($warnings->fetchAll(\PDO::FETCH_ASSOC) as $row) {
                 $lastId = intval($row['ID']);
+                return $lastId;
             }
-            return $lastId;
         }
         return null;
     }

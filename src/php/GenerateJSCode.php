@@ -176,6 +176,10 @@ class GenerateJSCode
         }
         $qStr = isset($_SERVER['QUERY_STRING']) ? "?{$_SERVER['QUERY_STRING']}" : '';
 
+        if($qStr == '?') {
+            $qStr = '';
+        }
+
         $this->generateAssignJS(
             "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$qStr}{$q};}");
         $this->generateAssignJS(

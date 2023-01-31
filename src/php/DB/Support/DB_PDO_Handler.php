@@ -117,7 +117,7 @@ abstract class DB_PDO_Handler
             }
             $keyField = $tableInfo['key'] ?? 'id';
             $seqObject = $tableInfo['sequence'] ?? "{$tableName}_{$keyField}_seq";
-            $returnValue = $this->lastInsertIdAlt($seqObject);
+            $returnValue = $this->lastInsertIdAlt($seqObject, $tableName);
             //$returnValue = $this->dbClassObj->link->lastInsertId($seqObject);
         } catch (Exception $ex) {
             $this->dbClassObj->errorMessageStore($ex->getMessage());
@@ -238,6 +238,8 @@ abstract class DB_PDO_Handler
         return $infoResult;
     }
 
+    protected abstract function getAutoIncrementField($tableName);
+
     protected abstract function getTalbeInfoSQL($tableName);
 
     protected abstract function getFieldListsForCopy(
@@ -268,9 +270,28 @@ abstract class DB_PDO_Handler
 
     }
 
-    public function lastInsertIdAlt($seqObject)
+    public function getLastInsertId($seqObject)
     {
+        if (!$this->dbClassObj->link) {
+            return null;
+        }
         return $this->dbClassObj->link->lastInsertId($seqObject);
     }
 
+    public function lastInsertIdAlt($seqObject, $tableName)
+    {
+        $incrementField = $this->getAutoIncrementField($tableName);
+        $contextDef = $this->dbClassObj->dbSettings->getDataSourceTargetArray();
+        $keyField = $contextDef['key'] ?? null;
+        if ($incrementField && ($incrementField == $keyField || $incrementField == '_CANCEL_THE_INCR_FIELD_DETECT_')) {
+            // Exists AUTO_INCREMENT field
+            return $this->getLastInsertId($seqObject);
+        } else {  // Not exist AUTO_INCREMENT field
+            if (isset($keyField)) {
+                $settingValues = $this->dbClassObj->dbSettings->getValuesWithFields(); // $dbClassObj is PDO class.
+                return $settingValues[$keyField] ?? null;
+            }
+        }
+        return null;
+    }
 }

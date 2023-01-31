@@ -73,6 +73,21 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
+    protected function getAutoIncrementField($tableName)
+    {
+//        if ($this->dbClassObj->link) {
+//            $seqCount = $this->dbClassObj->link->query('SELECT COUNT(*) FROM sqlite_sequence WHERE name=' . $tableName);
+//            $row = $seqCount->fetch(\PDO::FETCH_NUM);
+//            if($row && isset($row[0])) {
+//                if($row[0]>0) {
+//                    return null; // OMG
+//                }
+//            }
+//        }
+        return '_CANCEL_THE_INCR_FIELD_DETECT_';
+        // SQLite doesn't support to create a record with non AUTOINCREMENT field as the primary key.
+    }
+
     protected function getTalbeInfoSQL($tableName)
     {
         return "PRAGMA table_info({$tableName})";
@@ -101,6 +116,20 @@ cid  name   type          notnull  dflt_value             pk
 15   vc3    VARCHAR(100)  0                               0
 16   text1  TEXT          1        ''                     0
 17   text2  TEXT          0                               0
+
+    https://stackoverflow.com/questions/20979239/how-to-tell-if-a-sqlite-column-is-autoincrement
+
+sqlite> SELECT COUNT(*) FROM sqlite_sequence WHERE name='testtable';
+1
+sqlite> SELECT * FROM sqlite_sequence WHERE name='testtable';
+testtable|106
+sqlite> SELECT COUNT(*) FROM sqlite_sequence WHERE name='person';
+1
+sqlite> SELECT * FROM sqlite_sequence;
+person|90
+contact|52
+contact_way|6
+
        */
 
     protected function getFieldListsForCopy($tableName, $keyField, $assocField, $assocValue, $defaultValues)

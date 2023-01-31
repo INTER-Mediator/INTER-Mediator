@@ -64,6 +64,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
     }
+
     function dbProxySetupForAccessSetKey($contextName, $maxRecord, $keyName)
     {
         $this->schemaName = "";
@@ -83,7 +84,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
         $dbSettings = array(
             'db-class' => 'PDO',
             'dsn' => $this->dsn,
-         );
+        );
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
     }
@@ -185,6 +186,11 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
         );
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+    }
+
+    public function testCreateRecord2()
+    {
+        // SQLite doesn't support the record creation with the key field as non AUTOINCREMENT field.
     }
 
     protected $sqlSETClause1 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "

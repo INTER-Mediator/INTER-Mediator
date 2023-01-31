@@ -743,11 +743,13 @@ const IMLibUI = {
                   }
                   const createdRecord = [{}]
                   createdRecord[0][keyField] = newRecordId
+                  IMLibPageNavigation.isKeepOnNaviArray = true
                   await INTERMediator.constructMain(associatedContext, result.dbresult)
                   const sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(associatedContext)
                   for (let i = 0; i < sameOriginContexts.length; i++) {
                     await INTERMediator.constructMain(sameOriginContexts[i], null)
                   }
+                  IMLibPageNavigation.isKeepOnNaviArray = false
                 }
                 // To work the looking-up feature
                 const contexts = IMLibContextPool.getContextFromName(associatedContext.contextName)

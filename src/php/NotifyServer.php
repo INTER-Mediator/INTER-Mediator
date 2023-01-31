@@ -35,8 +35,8 @@ class NotifyServer
         $this->dbClass = $dbClass;
         $this->dbSettings = $dbSettings;
         $this->clientId = $clientId;
-        if (is_null($dbClass) || is_null($dbSettings) || is_null($clientId)
-            || !is_subclass_of($dbClass, 'DB_Interface_Registering')
+        if (is_null($dbClass) || is_null($dbSettings)
+            || !is_subclass_of($dbClass->notifyHandler, 'INTERMediator\DB\Support\DB_Interface_Registering')
             || !$dbClass->notifyHandler->isExistRequiredTable()
         ) {
             return false;
