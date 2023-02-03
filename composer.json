@@ -90,7 +90,6 @@
       "rm -rf node_modules vendor"
     ],
     "post-update-cmd": [
-      "./vendor/bin/npm config set registry https://registry.npmjs.org/",
       "./vendor/bin/npm install",
       "./vendor/bin/npm update",
       "rm -f __Did_you_run_composer_update.txt"
