@@ -408,7 +408,9 @@ const IMLibContextPool = {
         const keyField = contextDef.key
         const recKey = keyField + '=' + info.pkvalue[0]
         for (let j = 0; j < info.field.length; j += 1) {
-          this.poolingContexts[i].setValue(recKey, info.field[j], info.value[j])
+          if(this.poolingContexts[i].getValue(recKey, info.field[j]) != info.value[j]) {
+            this.poolingContexts[i].setValue(recKey, info.field[j], info.value[j])
+          }
         }
         const bindingInfo = this.poolingContexts[i].binding[recKey][info.field[0]]
         for (let j = 0; j < bindingInfo.length; j++) {
