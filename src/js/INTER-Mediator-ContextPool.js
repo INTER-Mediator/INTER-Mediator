@@ -390,6 +390,15 @@ const IMLibContextPool = {
     return contexts
   },
 
+  /*
+   Sample of info variable.
+
+   {entity: "Patient",
+    field:  ['patientIDx', 'first_name', 'last_name', 'date_of_birth', 'status'],
+    justnotify: false,
+    pkvalue: [1],
+    value:  ['PC1R85MS_44631.1', 'Test', 'Patient', '1990-01-01', 1]}
+   */
   updateOnAnotherClientUpdated: async function (info) {
     const entityName = info.entity
     for (let i = 0; i < this.poolingContexts.length; i += 1) {
@@ -398,8 +407,11 @@ const IMLibContextPool = {
       if (contextSource === entityName) {
         const keyField = contextDef.key
         const recKey = keyField + '=' + info.pkvalue[0]
-        this.poolingContexts[i].setValue(recKey, info.field[0], info.value[0])
-
+        for (let j = 0; j < info.field.length; j += 1) {
+          if(this.poolingContexts[i].getValue(recKey, info.field[j]) != info.value[j]) {
+            this.poolingContexts[i].setValue(recKey, info.field[j], info.value[j])
+          }
+        }
         const bindingInfo = this.poolingContexts[i].binding[recKey][info.field[0]]
         for (let j = 0; j < bindingInfo.length; j++) {
           const updateRequiredContext = IMLibContextPool.dependingObjects(bindingInfo[j].id)
