@@ -30,12 +30,6 @@ class INTERMediator_AllTests extends TestCase
 {
     public static function suite()
     {
-        $my = new INTERMediator_AllTests();
-        return $my->testSuiteSetup();
-    }
-
-    public function testSuiteSetup()
-    {
         $dontTestDB = false;
         $dontTestMySQL = false;
         $dontTestPostgreSQL = false;
@@ -43,16 +37,10 @@ class INTERMediator_AllTests extends TestCase
         $dontTestDataConv = false;
         $dontTestFileMaker = true;
 
-        $version = explode('.', phpversion());
-        $versionNumber = floatval($version[0] . "." . $version[1] . $version[2]);
-        if ($versionNumber < 8.1) {
-            $suite = new TestSuite('all tests');
-        } else {
-            $suite = TestSuite::empty('all_tests');
-        }
+        $suite = new TestSuite('all tests');
         $folder = dirname(__FILE__) . '/';
 
-        if (!$dontTestDataConv) {
+        if(!$dontTestDataConv) {
             $suite->addTestFile($folder . 'DataConverter_Currency_YenIM_Test.php');
             $suite->addTestFile($folder . 'DataConverter_Currency_YenIntl_Test.php');
             $suite->addTestFile($folder . 'DataConverter_Currency_DollerIM_Test.php');
@@ -73,26 +61,26 @@ class INTERMediator_AllTests extends TestCase
             $suite->addTestFile($folder . 'DB_PDO_Test_UserGroup.php');
             $suite->addTestFile($folder . 'DB_PDO_Test_LocalContextConditions.php');
             $suite->addTestFile($folder . 'DB_Formatters_Test.php');
-            if (!$dontTestMySQL) {
+            if(!$dontTestMySQL) {
                 $suite->addTestFile($folder . 'DB_PDO_MySQL_Test.php');
             }
-            if (!$dontTestPostgreSQL) {
+            if(!$dontTestPostgreSQL) {
                 $suite->addTestFile($folder . 'DB_PDO_PostgreSQL_Test.php');
             }
-            if (!$dontTestSQLite) {
+            if(!$dontTestSQLite) {
                 $suite->addTestFile($folder . 'DB_PDO_SQLite_Test.php');
             }
             if (!$dontTestFileMaker) {
                 $suite->addTestFile($folder . 'DB_FMS_DataAPI_Test.php');
                 $suite->addTestFile($folder . 'DB_FMS_FX_Test.php');
             }
-            if (!$dontTestMySQL) {
+            if(!$dontTestMySQL) {
                 $suite->addTestFile($folder . 'DB_Proxy_MySQL_Test.php');
             }
-            if (!$dontTestPostgreSQL) {
+            if(!$dontTestPostgreSQL) {
                 $suite->addTestFile($folder . 'DB_Proxy_PostgreSQL_Test.php');
             }
-            if (!$dontTestSQLite) {
+            if(!$dontTestSQLite) {
                 $suite->addTestFile($folder . 'DB_Proxy_SQLite_Test.php');
             }
             $suite->addTestFile($folder . 'DB_Settings_Test.php');
@@ -119,11 +107,6 @@ class INTERMediator_AllTests extends TestCase
             $suite->addTestFile($folder . 'defedit_Test.php');
             $suite->addTestFile($folder . 'pageedit_Test.php');
         }
-        if ($versionNumber >= 8.1) {
-            $suite->run();
-        }
-        $this->assertTrue(true, "Dummy test case.");
-
         return $suite;
     }
 }
