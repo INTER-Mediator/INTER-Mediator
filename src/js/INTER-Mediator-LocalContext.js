@@ -169,10 +169,12 @@ const IMLibLocalContext = {
             })())
             break
           case 'condition':
-            let attrType = node.getAttribute('type')
-            if (attrType && IMLibLocalContext.keyRespondTypes.indexOf(attrType) > -1) {
+            const nodeIsInput = (node.tagName === 'INPUT')
+            const nodeIsSelect = (node.tagName === 'SELECT')
+            const attrType = node.getAttribute('type')
+            if (nodeIsInput && attrType && IMLibLocalContext.keyRespondTypes.indexOf(attrType) > -1) {
               IMLibKeyDownEventDispatch.setExecuteByCode(idValue, 'Enter', (function () {
-                let contextName = params[1]
+                const contextName = params[1]
                 return async function (event) {
                   if (event.keyCode == 13) {
                     updateFirstContext(contextName)
@@ -183,9 +185,9 @@ const IMLibLocalContext = {
                      to prevent the context updating for the finalize key. msyk 2019-12-28 */
                 }
               })())
-            } else if (attrType && (attrType === 'checkbox' || attrType === 'radio')) {
+            } else if (nodeIsInput || nodeIsSelect) {
               IMLibChangeEventDispatch.setExecute(idValue, (function () {
-                let contextName = params[1]
+                const contextName = params[1]
                 return async function () {
                   updateFirstContext(contextName)
                 }
@@ -197,7 +199,7 @@ const IMLibLocalContext = {
               this.store[nodeInfo.field] = node.value
             }
             IMLibChangeEventDispatch.setExecute(idValue, (function () {
-              let contextName = params[1]
+              const contextName = params[1]
               return async function () {
                 updateFirstContext(contextName)
               }
@@ -215,7 +217,7 @@ const IMLibLocalContext = {
       INTERMediator.startFrom = 0
       // await IMLibUI.eventUpdateHandler(contextName)
       IMLibLocalContext.updateAll()
-      let context = IMLibContextPool.getContextFromName(contextName)
+      const context = IMLibContextPool.getContextFromName(contextName)
       await INTERMediator.constructMain(context[0])
       //IMLibPageNavigation.navigationSetup()
     }
