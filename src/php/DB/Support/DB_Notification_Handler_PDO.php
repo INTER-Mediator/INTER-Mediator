@@ -17,7 +17,10 @@
 namespace INTERMediator\DB\Support;
 
 use INTERMediator\IMUtil;
+use INTERMediator\Params;
 use PDO;
+use DateTime;
+use DateInterval;
 
 class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_Interface_Registering
 {
@@ -53,6 +56,22 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
             return false;
         }
         $currentDTFormat = IMUtil::currentDTString();
+
+        // Delete outdated records from registereddt
+        $limitDT = new DateTime();
+        $backSeconds = Params::getParameterValue("backSeconds", 3600 * 24 * 2);
+        $limitDT->sub(new DateInterval("PT{$backSeconds}S"));
+        $limitDT = $this->dbClass->link->quote($limitDT->format('Y-m-d H:i:s'));
+        $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$regTable} "
+            . "WHERE {$this->dbClass->handler->quotedEntityName('registereddt')} < {$limitDT}";
+        $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
+        $result = $this->dbClass->link->exec($sql);
+        if ($result === false) {
+            $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO][ERROR] Delete:{$sql}");
+            return false;
+        }
+
+        // Register displaying records to registereddt
         $tableRef = "{$regTable} (clientid,entity,conditions,registereddt)";
         $setArray = implode(',', array_map(function ($e) {
             return $this->dbClass->link->quote($e);
@@ -61,7 +80,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
         $result = $this->dbClass->link->exec($sql);
         if ($result !== 1) {
-            $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO] Insert: {$sql}");
+            $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO][ERROR] Insert: {$sql}");
             return false;
         }
         if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) {
@@ -79,8 +98,8 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                 $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
                 $result = $this->dbClass->link->exec($sql);
                 if ($result < 1) {
-                    $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$this->dbClass->link->errorInfo()}");
-                    $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO] Insert: {$sql}");
+                    $this->logger->setDebugMessage("[DB_Notification_Handler_PDO][ERROR] {$this->dbClass->link->errorInfo()}");
+                    $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO][ERROR] Insert: {$sql}");
                     return false;
                 }
             }
@@ -98,8 +117,8 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                 $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
                 $result = $this->dbClass->link->exec($sql);
                 if ($result < 1) {
-                    $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$this->dbClass->link->errorInfo()}");
-                    $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO] Insert: {$sql}");
+                    $this->logger->setDebugMessage("[DB_Notification_Handler_PDO][ERROR] {$this->dbClass->link->errorInfo()}");
+                    $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO][ERROR] Insert: {$sql}");
                     return false;
                 }
             }

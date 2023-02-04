@@ -151,9 +151,9 @@ $slackParameters = [
  * Port number and host name for service server */
 $notUseServiceServer = true;  // Default is TRUE!. It has to set false to work every feature with Service Server.
 /*
-$activateClientService = false;  // Default is FLASE!.
+$activateClientService = true;  // Default is FLASE!.
 $serviceServerProtocol = "ws";  // The Service Server url components to connect from client.
-$serviceServerHost = "";    // "" for public ip address.
+$serviceServerHost = "localhost";    // "" for public ip address.
 $serviceServerPort = "11478";
 $serviceServerKey = "";  // Path of Key file for wss protocol **** wss protocol doesn't work so far.
 $serviceServerCert = ""; // Path of Cert file for wss protocol
@@ -162,7 +162,10 @@ $serviceServerConnect = "http://localhost"; // The Service Server host name to c
 $stopSSEveryQuit = false;
 $bootWithInstalledNode = false;
 $preventSSAutoBoot = false;
-$foreverLog = '/tmp/forever.log';
+$backSeconds = 3600 * 24 * 2; // The seconds value that detect the outdated registering records.
+*/
+/*
+ * $foreverLog = '/tmp/forever.log';
 */
 /* Operation Log
  * ===================
