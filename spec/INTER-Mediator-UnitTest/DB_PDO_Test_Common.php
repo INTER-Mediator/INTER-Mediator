@@ -176,7 +176,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->db_proxy->dbSettings->addValueWithField("num2", 100);
         $this->db_proxy->requireUpdatedRecord(true);
         $newKeyValue = $this->db_proxy->createInDB();
-        echo " Returns {$newKeyValue}\n";
+//        echo " Returns {$newKeyValue}\n";
         $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
         $createdRecord = $this->db_proxy->getUpdatedRecord();
         $this->assertNotNull($createdRecord, "Created record should be exists.(2)");
