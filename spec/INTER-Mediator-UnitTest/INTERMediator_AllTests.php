@@ -119,7 +119,7 @@ class INTERMediator_AllTests extends TestCase
             $suite->addTestFile($folder . 'defedit_Test.php');
             $suite->addTestFile($folder . 'pageedit_Test.php');
         }
-        if ($versionNumber >= 8.2) {
+        if ($versionNumber >= 8.1) {
             $suite->run();
         }
         $this->assertTrue(true, "Dummy test case.");
