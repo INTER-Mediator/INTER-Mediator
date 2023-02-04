@@ -185,7 +185,8 @@ const IMLibLocalContext = {
                      to prevent the context updating for the finalize key. msyk 2019-12-28 */
                 }
               })())
-            } else if (nodeIsInput || nodeIsSelect) {
+            } else if ((nodeIsInput && attrType && (attrType === 'checkbox' || attrType === 'radio'))
+              || nodeIsSelect) {
               IMLibChangeEventDispatch.setExecute(idValue, (function () {
                 const contextName = params[1]
                 return async function () {
@@ -194,7 +195,8 @@ const IMLibLocalContext = {
               })())
             }
             break
-          case 'limitnumber':
+          case 'limitnumber'
+          :
             if (node.value) {
               this.store[nodeInfo.field] = node.value
             }
