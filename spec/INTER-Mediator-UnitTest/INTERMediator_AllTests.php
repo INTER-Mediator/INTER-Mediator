@@ -45,7 +45,7 @@ class INTERMediator_AllTests extends TestCase
 
         $version = explode('.', phpversion());
         $versionNumber = floatval($version[0] . "." . $version[1] . $version[2]);
-        if ($versionNumber < 8.2) {
+        if ($versionNumber < 8.1) {
             $suite = new TestSuite('all tests');
         } else {
             $suite = TestSuite::empty('all_tests');
