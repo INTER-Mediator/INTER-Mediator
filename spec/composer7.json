@@ -47,7 +47,7 @@
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "*"
+    "phpunit/phpunit": "<=9.6.1"
   },
   "autoload": {
     "psr-4": {

@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestSuite;
 
 class INTERMediator_AllTests extends TestCase
 {
-    public function testSuiteSetup()
+    public static function suite()
     {
         $dontTestDB = false;
         $dontTestMySQL = false;
@@ -37,8 +37,7 @@ class INTERMediator_AllTests extends TestCase
         $dontTestDataConv = false;
         $dontTestFileMaker = true;
 
-//        $suite = new TestSuite('all tests');
-        $suite = TestSuite::empty('SomeName');
+        $suite = new TestSuite('all tests');
         $folder = dirname(__FILE__) . '/';
 
         if(!$dontTestDataConv) {
@@ -108,8 +107,6 @@ class INTERMediator_AllTests extends TestCase
             $suite->addTestFile($folder . 'defedit_Test.php');
             $suite->addTestFile($folder . 'pageedit_Test.php');
         }
-        $suite->run();
-        $this->assertTrue(true, "Test Suite have to finish successfully.");
         return $suite;
     }
 }
