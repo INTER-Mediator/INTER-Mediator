@@ -201,11 +201,14 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
             return false;
         }
         $originPK = $pkArray[0];
-        $sql = "SELECT DISTINCT clientid FROM " . $pksTable . "," . $regTable . " WHERE " .
-            "context_id = id and clientid <> " . $this->dbClass->link->quote($clientId) .
-            " and entity = " . $this->dbClass->link->quote($entity) .
-            " and pk = " . $this->dbClass->link->quote($originPK) .
-            " ORDER BY clientid";
+        $extraCond = '';
+        if (!is_null($clientId)) {
+            $extraCond = " AND clientid <> {$this->dbClass->link->quote($clientId)}";
+        }
+        $sql = "SELECT DISTINCT clientid FROM {$pksTable},{$regTable} WHERE context_id = id {$extraCond}"
+            . " AND entity = {$this->dbClass->link->quote($entity)} AND pk = {$this->dbClass->link->quote($originPK)}"
+            . " ORDER BY clientid";
+
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
