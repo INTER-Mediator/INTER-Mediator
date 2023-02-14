@@ -184,6 +184,10 @@ $dontRecordDownload = false;
 $dontRecordDownloadNoGet = false;
 $accessLogExtensionClass = 'LoggingExt'; // Processing for some extending fields.
 
+/* Media File Support
+ * =================== */
+//$mediaRootDir = "/var/www/images";
+
 /* S3 Support
  * =================== */
 //$accessRegion = "ap-northeast-1"; // This means the Tokyo region.

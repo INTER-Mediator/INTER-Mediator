@@ -72,7 +72,8 @@ class MediaAccess
             }
             // If the media parameter is an URL, the variable isURL will be set to true.
             $isURL = $this->isPossibleSchema($file);
-            if (!$isURL && !isset($options['media-root-dir'])) {
+            $mediaRootDir = $options['media-root-dir'] ?? Params::getParameterValue('mediaRootDir', null) ?? null;
+            if (!$isURL && !$mediaRootDir) {
                 $erMessage = "[INTER-Mediator] This MediaAccess operation requires the option value of the 'media-root-dir' key.";
                 echo $erMessage;
                 error_log($erMessage);
@@ -92,7 +93,7 @@ class MediaAccess
                 error_log($erMessage);
                 $this->exitAsError(200);
             }
-            $target = $isURL ? $file : "{$options['media-root-dir']}/{$file}";
+            $target = $isURL ? $file : "{$mediaRootDir}/{$file}";
             // Analyze the target variable if it contains context name and key parameters.
             $analyzeResult = $this->analyzeTarget($target);  // Check the context name and key fields.
             if ($analyzeResult) {

@@ -18,6 +18,8 @@ Ver.11 (in development)
   In the script tag to import the framework, the src attribute has to refer the index.php of the repository root.
 - Page localizing is available. The $terms variable in params.php or terms key in the option area of a definition file,
   also using data-im-locale attribute for nodes on a page file.
+- Introduced the $mediaRootDir variable in params.php file for setting the media root directory. This is prior to the
+  media-root-dir setting in option area of definition file.
 - [BUG FIX] In same case of using aggregation-select/from the error happened about the view or table didn't exist.
 - [BUG FIX] INTERMediator.additionalFieldValueOnDelete uses in the Definition File editor, so retrieved it.
 - [INFO] About sample SQL files in the dist-docs directory, their extensions changed to .sql from .txt.
