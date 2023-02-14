@@ -798,7 +798,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->credential = $_COOKIE['_im_credential_token'] ?? "";
         $this->clientId = $this->PostData['clientid'] ?? ($_SERVER['REMOTE_ADDR'] ?? "Non-browser-client");
 
-        $this->dbSettings->setMediaRoot($options['media-root-dir'] ?? null);
+        $this->dbSettings->setMediaRoot($options['media-root-dir']
+            ?? Params::getParameterValue('mediaRootDir', null) ?? null);
 
         $this->logger->setDebugMessage("Server side locale: " . setlocale(LC_ALL, "0"), 2);
 
