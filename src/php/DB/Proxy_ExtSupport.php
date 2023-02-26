@@ -128,7 +128,7 @@ trait Proxy_ExtSupport
         }
         if (isset($query[0]) && is_array($query[0])) {
             foreach ($query as $item) {
-                $this->extProxy->dbSettings->addExtraCriteria($item['field'], $item['operator'], $item['value']);
+                $this->extProxy->dbSettings->addExtraCriteria($item['field'], $item['operator'], $item['value'] ?? null);
             }
         } else {
             foreach ($query as $field => $value) {
