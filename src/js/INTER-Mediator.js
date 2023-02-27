@@ -358,11 +358,11 @@ const INTERMediator = {
     }
   },
 
-  serviceServerShouldDisconnect: () => {
+  serviceServerShouldDisconnect: async () => {
     if (!INTERMediatorOnPage.serviceServerStatus || !INTERMediatorOnPage.activateClientService) {
       return
     }
-    INTERMediator_DBAdapter.unregister()
+    await INTERMediator_DBAdapter.unregister()
     INTERMediator.socketMarkNode.style.color = 'red'
     INTERMediator.ssSocket.disconnect()
   },

@@ -432,7 +432,7 @@ const IMLibUI = {
                     INTERMediator.additionalCondition = conditions
                     IMLibLocalContext.archive()
                   }
-                  INTERMediator_DBAdapter.unregister()
+                  await INTERMediator_DBAdapter.unregister()
                   await INTERMediator.constructMain(contextObjCapt2)
                   sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(contextObjCapt2)
                   for (let i = 0; i < sameOriginContexts.length; i++) {

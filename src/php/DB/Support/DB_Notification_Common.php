@@ -68,6 +68,9 @@ abstract class DB_Notification_Common
 
     public function addQueriedPrimaryKeys($name)
     {
+        if (!$name) {
+            return;
+        }
         if (is_null($this->queriedPrimaryKeys)) {
             $this->queriedPrimaryKeys = array($name);
         } else {
