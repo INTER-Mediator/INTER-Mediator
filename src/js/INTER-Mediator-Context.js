@@ -524,7 +524,7 @@ class IMLibContext {
     }
   }
 
-  removeContext() {
+  async removeContext() {
     'use strict'
     let regIds = []
     let childContexts = []
@@ -533,7 +533,7 @@ class IMLibContext {
     while (this.enclosureNode.firstChild) {
       this.enclosureNode.removeChild(this.enclosureNode.firstChild)
     }
-    INTERMediator_DBAdapter.unregister(regIds)
+    await INTERMediator_DBAdapter.unregister(regIds)
 
     function seekRemovingContext(context) {
       let myChildren

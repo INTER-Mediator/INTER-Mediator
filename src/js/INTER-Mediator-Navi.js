@@ -347,9 +347,9 @@ const IMLibPageNavigation = {
     }
   },
 
-  moveRecordFromNavi: function (targetName, page) {
+  moveRecordFromNavi: async function (targetName, page) {
     'use strict'
-    INTERMediator_DBAdapter.unregister()
+    await INTERMediator_DBAdapter.unregister()
     INTERMediator.startFrom = page
     INTERMediator.constructMain(true)
   },
