@@ -273,7 +273,7 @@ mysql> show columns from item_display;
                     $message = "[{$row['Level']}]({$row['Code']}){$row['Message']}";
                     $debugMsg .= "{$message}\n";
                     if ($row['Level'] == 'Warning') {
-                        $this->dbClassObj->logger->setWarningMessage("{$message} by ${$sql}");
+                        $this->dbClassObj->logger->setWarningMessage("{$message} by {$sql}");
                     }
                 }
                 if (strlen($debugMsg) > 0) {

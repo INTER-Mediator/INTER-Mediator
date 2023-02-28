@@ -154,10 +154,17 @@ abstract class DB_PDO_Test_Common extends TestCase
     public function testCreateRecord1()
     {
         $this->dbProxySetupForAccessSetKey("testtable", 1000000, "id");
+
+//        $this->db_proxy->logger->clearLogs();
+
         $this->db_proxy->requireUpdatedRecord(true);
         $this->db_proxy->dbSettings->addValueWithField("num1", 200);
         $this->db_proxy->dbSettings->addValueWithField("num2", 100);
         $newKeyValue = $this->db_proxy->createInDB();
+
+//        var_dump($this->db_proxy->logger->getErrorMessages());
+//        var_dump($this->db_proxy->logger->getWarningMessages());
+//        var_dump($this->db_proxy->logger->getDebugMessages());
 
         $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
         $createdRecord = $this->db_proxy->getUpdatedRecord();
