@@ -463,7 +463,7 @@ const INTERMediator = {
         INTERMediator.partialConstructing = true
         try {
           if (!recordset) {
-            updateRequiredContext.removeContext()
+            await updateRequiredContext.removeContext()
             const originalNodes = updateRequiredContext.original
             for (let i = 0; i < originalNodes.length; i++) {
               updateRequiredContext.enclosureNode.appendChild(originalNodes[i].cloneNode(true))

@@ -28,10 +28,10 @@ if [ $(basename "${imRoot}") != "inter-mediator" ]; then
   exit 1
 fi
 imRootOver=$(dirname "${imRoot}")
-if [ $(basename "${imRootOver}") != "inter-mediator" ]; then
-  /bin/echo "This command works on just composer installed inter-mediator."
-  exit 1
-fi
+#if [ $(basename "${imRootOver}") != "inter-mediator" ]; then
+#  /bin/echo "This command works on just composer installed inter-mediator."
+#  exit 1
+#fi
 vendorDir=$(dirname "${imRootOver}")
 if [ $(basename "${vendorDir}") != "vendor" ]; then
   /bin/echo "This command works on just composer installed inter-mediator."
