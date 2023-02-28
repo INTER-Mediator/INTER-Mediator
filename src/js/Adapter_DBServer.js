@@ -1203,9 +1203,9 @@ const INTERMediator_DBAdapter = {
       if (entityPkInfo) {
         params += '&pks=' + encodeURIComponent(JSON.stringify(entityPkInfo))
       }
-      p = await INTERMediator_DBAdapter.server_access_async(params, 1018, 1016, null, null, null)
+      await INTERMediatorOnPage.retrieveAuthInfo()
+      await INTERMediator_DBAdapter.server_access_async(params, 1018, 1016, null, null, null)
     }
-    return p
   }
 }
 

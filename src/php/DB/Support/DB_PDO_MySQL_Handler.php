@@ -258,7 +258,7 @@ mysql> show columns from item_display;
 1 row in set (0.00 sec)
 
   */
-    public function specialErrorHandling()
+    public function specialErrorHandling($sql)
     {
         if ($this->dbClassObj->link) {
             $warnings = $this->dbClassObj->link->query('SHOW COUNT(*) WARNINGS');
@@ -273,7 +273,7 @@ mysql> show columns from item_display;
                     $message = "[{$row['Level']}]({$row['Code']}){$row['Message']}";
                     $debugMsg .= "{$message}\n";
                     if ($row['Level'] == 'Warning') {
-                        $this->dbClassObj->logger->setWarningMessage($message);
+                        $this->dbClassObj->logger->setWarningMessage("{$message} by ${$sql}");
                     }
                 }
                 if (strlen($debugMsg) > 0) {

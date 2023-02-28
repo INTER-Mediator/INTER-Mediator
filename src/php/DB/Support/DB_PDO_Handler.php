@@ -265,7 +265,7 @@ abstract class DB_PDO_Handler
      * it happens any kind of warning but errorCode returns 00000 which means no error. There is no other way
      * to call SHOW WARNINGS. Other db engines don't do anything here
      */
-    public function specialErrorHandling()
+    public function specialErrorHandling($sql)
     {
 
     }
