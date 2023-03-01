@@ -369,9 +369,7 @@ const INTERMediator = {
 
   moveAnotherURL: (url, task = null) => {
     IMLibQueue.setTask(async (complete) => {
-      if (INTERMediatorOnPage.activateClientService) {
-        await INTERMediator_DBAdapter.unregister()
-      }
+      await INTERMediator_DBAdapter.unregister()
       if (task) {
         task()
       }

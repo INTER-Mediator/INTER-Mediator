@@ -1195,7 +1195,7 @@ const INTERMediator_DBAdapter = {
     }
   },
 
-  unregister: async function (entityPkInfo) {
+  unregister: async function (entityPkInfo = null) {
     'use strict'
     let params, p = null
     if (INTERMediatorOnPage.activateClientService) {
