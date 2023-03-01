@@ -137,6 +137,8 @@ class MessageStrings
         1050 => "Unsent recipients: ",
         1051 => "Mail sending error: ",
         1052 => "Summary",
+        1053 => "Unregister Multi-client Synchronization",
+        1054 => "Connection Error in unregister=@1@/@2@",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',
