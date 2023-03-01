@@ -1196,9 +1196,8 @@ const INTERMediator_DBAdapter = {
   },
 
   unregister: async function (entityPkInfo = null) {
-    let params, p = null
     if (INTERMediatorOnPage.activateClientService) {
-      params = 'access=unregister'
+      let params = 'access=unregister'
       if (entityPkInfo) {
         params += '&pks=' + encodeURIComponent(JSON.stringify(entityPkInfo))
       }
