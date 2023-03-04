@@ -129,7 +129,6 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
     public function unregister($clientId, $tableKeys)
     {
         $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
-        $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
@@ -204,6 +203,9 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
         $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
         if (!$this->dbClass->setupConnection()) { //Establish the connection
+            return false;
+        }
+        if(!$pkArray || !isset($pkArray[0])) {
             return false;
         }
         $sql = "SELECT id,clientid FROM {$regTable} WHERE entity = " . $this->dbClass->link->quote($entity);
