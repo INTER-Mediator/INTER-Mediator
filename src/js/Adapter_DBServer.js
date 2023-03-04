@@ -1195,17 +1195,15 @@ const INTERMediator_DBAdapter = {
     }
   },
 
-  unregister: async function (entityPkInfo) {
-    'use strict'
-    let params, p = null
+  unregister: async function (entityPkInfo = null) {
     if (INTERMediatorOnPage.activateClientService) {
-      params = 'access=unregister'
+      let params = 'access=unregister'
       if (entityPkInfo) {
         params += '&pks=' + encodeURIComponent(JSON.stringify(entityPkInfo))
       }
-      p = await INTERMediator_DBAdapter.server_access_async(params, 1018, 1016, null, null, null)
+      await INTERMediatorOnPage.retrieveAuthInfo()
+      await INTERMediator_DBAdapter.server_access_async(params, 1053, 1054, null, null, null)
     }
-    return p
   }
 }
 

@@ -126,7 +126,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 return false;
             }
         } else {
-            $this->handler->specialErrorHandling();
+            $this->handler->specialErrorHandling($sql);
         }
         if ($result === false || is_null($result)) {
             $this->errorMessageStore('[ERROR] SQL:' . $sql);

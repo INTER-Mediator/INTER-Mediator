@@ -67,9 +67,7 @@ const IMLibPageNavigation = {
             complete()
             INTERMediator.initialize()
             IMLibLocalContext.archive()
-            if (INTERMediatorOnPage.activateClientService) {
-              await INTERMediator_DBAdapter.unregister()
-            }
+            await INTERMediator_DBAdapter.unregister()
             location.reload()
           }, false, true)
         })
@@ -398,7 +396,7 @@ const IMLibPageNavigation = {
                   INTERMediator.pagedAllCount++
                 }
                 completeTask()
-                INTERMediator_DBAdapter.unregister()
+                await INTERMediator_DBAdapter.unregister()
                 await INTERMediator.constructMain(true)
                 INTERMediator.additionalCondition = restore
                 IMLibPageNavigation.navigationSetup()
@@ -547,7 +545,7 @@ const IMLibPageNavigation = {
                     INTERMediator.additionalCondition = conditions
                     IMLibLocalContext.archive()
                   }
-                  INTERMediator_DBAdapter.unregister()
+                  await INTERMediator_DBAdapter.unregister()
                   await INTERMediator.constructMain(true)
                   INTERMediator.additionalCondition = restore
                 }
