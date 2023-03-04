@@ -198,7 +198,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         return array_unique($targetClients);
     }
 
-    public function appendIntoRegistered($clientId, $entity, $pkArray)
+    public function appendIntoRegistered($clientId, $entity, $pkArray, $record)
     {
         $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
         $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
