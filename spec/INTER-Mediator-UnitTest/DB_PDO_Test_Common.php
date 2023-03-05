@@ -470,7 +470,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertTrue(count($recSet) == 0, "Count pk values");
     }
 
-    /* Testing procedure has to reconsider with updating appendIntoRegistered method. 2023-3-5 by msyk
+    /* Testing procedure has to reconsider with updating appendIntoRegistered method. 2023-3-5 by msyk */
     public
     function testMultiClientSyncAppend()
     {
@@ -482,7 +482,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $pkArray1 = array(1001, 2001, 3003, 4004);
         $pkArray2 = array(9001, 8001, 3003, 4004);
 
-        $this->db_proxy->logger->clearLogs();
+//        $this->db_proxy->logger->clearLogs();
 
         $entity = "person";
         $clientId1 = "123456789ABCDEF";
@@ -492,16 +492,16 @@ abstract class DB_PDO_Test_Common extends TestCase
         $clientId3 = "555588888DDDDDD";
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId3, "table2", $condition, $pkArray2) !== false, $testName);
 
-        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId1, $entity, array(101));
-        var_dump($this->db_proxy->logger->getErrorMessages());
-        var_dump($this->db_proxy->logger->getWarningMessages());
-        var_dump($this->db_proxy->logger->getDebugMessages());
-        var_dump($result);
+        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId1, $entity, array(1));
+//        var_dump($this->db_proxy->logger->getErrorMessages());
+//        var_dump($this->db_proxy->logger->getWarningMessages());
+//        var_dump($this->db_proxy->logger->getDebugMessages());
+//        var_dump($result);
         $this->assertTrue($result[0] == $clientId2, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 101));
         $this->assertTrue(count($recSet) == 2, $testName);
 
-        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId2, $entity, array(102));
+        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId2, $entity, array(2));
         $this->assertTrue($result[0] == $clientId1, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 102));
         $this->assertTrue(count($recSet) == 2, $testName);
@@ -520,9 +520,8 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertTrue(count($recSet) == 0, "Count pk values");
 
         //$reult = $this->db_proxy->dbClass->notifyHandler->removeFromRegistered($clientId, $entity, $pkArray);
-
     }
-    */
+
 
     public
     function testMultiClientSyncRemove()
