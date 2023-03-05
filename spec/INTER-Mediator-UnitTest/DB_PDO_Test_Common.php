@@ -490,7 +490,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $clientId2 = "ZZYYEEDDFF39887";
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
         $clientId3 = "555588888DDDDDD";
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId3, "table2", $condition, $pkArray2) !== false, $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId3, "testtable", $condition, $pkArray2) !== false, $testName);
 
         $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId1, $entity, array(1));
 //        var_dump($this->db_proxy->logger->getErrorMessages());
@@ -499,25 +499,25 @@ abstract class DB_PDO_Test_Common extends TestCase
 //        var_dump($result);
         $this->assertTrue($result[0] == $clientId2, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 1));
-        $this->assertTrue(count($recSet) == 2, $testName);
+        $this->assertEquals(2, count($recSet), $testName);
 
         $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId2, $entity, array(2));
         $this->assertTrue($result[0] == $clientId1, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 2));
-        $this->assertTrue(count($recSet) == 2, $testName);
+        $this->assertEquals(2, count($recSet), $testName);
 
-        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId3, "testtable", array(103));
-        $this->assertTrue(count($result) == 0, $testName);
-        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 103));
-        $this->assertTrue(count($recSet) == 1, $testName);
+        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId3, "testtable", array(3));
+        $this->assertEquals(0, count($result), $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 3));
+        $this->assertEquals(1, count($recSet), $testName);
 
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId1, null) !== false, $testName);
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId2, null) !== false, $testName);
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId3, null) !== false, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
-        $this->assertTrue(count($recSet) == 0, "Count table1");
+        $this->assertEquals(0, count($recSet), "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
-        $this->assertTrue(count($recSet) == 0, "Count pk values");
+        $this->assertEquals(0, count($recSet), "Count pk values");
 
         //$reult = $this->db_proxy->dbClass->notifyHandler->removeFromRegistered($clientId, $entity, $pkArray);
     }
