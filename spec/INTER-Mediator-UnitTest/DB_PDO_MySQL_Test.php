@@ -137,7 +137,8 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
                 'user' => 'web',
                 'password' => 'password',
             ),
-            2
+            2,
+            'person'
         );
     }
 

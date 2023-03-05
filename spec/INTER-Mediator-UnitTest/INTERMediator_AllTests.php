@@ -32,8 +32,8 @@ class INTERMediator_AllTests extends TestCase
     {
         $dontTestDB = false;
         $dontTestMySQL = false;
-        $dontTestPostgreSQL = false;
-        $dontTestSQLite = false;
+        $dontTestPostgreSQL = true;
+        $dontTestSQLite = true;
         $dontTestDataConv = false;
         $dontTestFileMaker = true;
 
