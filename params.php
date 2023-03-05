@@ -122,7 +122,7 @@ $slackParameters = [
 //$emailAsAliasOfUserName = true;
 //$passwordPolicy = "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName";
 
-// A enrollment page and a password reset page are going to show on login panel.
+// An enrollment page and a password reset page are going to show on login panel.
 //$resetPage = '...url...';
 //$enrollPage = '...url...';
 
@@ -149,8 +149,8 @@ $slackParameters = [
 /* Service Server Behavior
  * ===================
  * Port number and host name for service server */
-$notUseServiceServer = true;  // Default is TRUE!. It has to set false to work every feature with Service Server.
-/*
+$notUseServiceServer = false;  // Default is TRUE!. It has to set false to work every feature with Service Server.
+
 $activateClientService = true;  // Default is FLASE!.
 $serviceServerProtocol = "ws";  // The Service Server url components to connect from client.
 $serviceServerHost = "localhost";    // "" for public ip address.
@@ -163,7 +163,7 @@ $stopSSEveryQuit = false;
 $bootWithInstalledNode = false;
 $preventSSAutoBoot = false;
 $backSeconds = 3600 * 24 * 2; // The seconds value that detect the outdated registering records.
-*/
+
 /*
  * $foreverLog = '/tmp/forever.log';
 */

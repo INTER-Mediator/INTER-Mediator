@@ -156,20 +156,6 @@ class Settings
 
     function __construct()
     {
-//        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-//        $currentDirParam = $currentDir . 'params.php';
-//        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
-//        if (file_exists($parentDirParam)) {
-//            include($parentDirParam);
-//        } else if (file_exists($currentDirParam)) {
-//            include($currentDirParam);
-//        }
-//        $this->params_ldapServer = isset($ldapServer) ? $ldapServer : null;
-//        $this->params_ldapPort = isset($ldapPort) ? $ldapPort : null;
-//        $this->params_ldapBase = isset($ldapBase) ? $ldapBase : null;
-//        $this->params_ldapContainer = isset($ldapContainer) ? $ldapContainer : null;
-//        $this->params_ldapAccountKey = isset($ldapAccountKey) ? $ldapAccountKey : null;
-//        $this->params_samlExpiringSeconds = isset($samlExpiringSeconds) ? $samlExpiringSeconds : 600;
     }
 
     public function getAggregationSelect()

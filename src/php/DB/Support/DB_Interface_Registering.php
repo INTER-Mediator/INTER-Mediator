@@ -28,6 +28,6 @@ interface DB_Interface_Registering
     public function register($clientId, $entity, $condition, $pkArray);
     public function unregister($clientId, $tableKeys);
     public function matchInRegistered($clientId, $entity, $pkArray);
-    public function appendIntoRegistered($clientId, $entity, $pkArray, $record);
+    public function appendIntoRegistered($clientId, $entity, $pkArray);
     public function removeFromRegistered($clientId, $entity, $pkArray);
 }

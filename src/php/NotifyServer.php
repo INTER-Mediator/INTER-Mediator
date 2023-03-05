@@ -118,7 +118,7 @@ class NotifyServer
     public function created($clientId, $entity, $pkArray, $record, $isNotify)
     {
         if ($this->dbClass && $this->dbClass->notifyHandler) {
-            $channels = $this->dbClass->notifyHandler->appendIntoRegistered($clientId, $entity, $pkArray, $record);
+            $channels = $this->dbClass->notifyHandler->appendIntoRegistered($clientId, $entity, $pkArray);
             $this->trigger($channels, 'create',
                 ['justnotify' => $isNotify, 'entity' => $entity, 'pkvalue' => $pkArray, 'value' => array_values($record)]);
         }

@@ -198,36 +198,68 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         return array_unique($targetClients);
     }
 
-    public function appendIntoRegistered($clientId, $entity, $pkArray, $record)
+    public function appendIntoRegistered($clientId, $entity, $pkArray)
     {
+//        $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] clientId={$clientId}, entity={$entity}");
+//        $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] pkArray=" . var_export($pkArray, true));
+//        $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] record=" . var_export($record, true));
+//        $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] contextDef=" . var_export($this->dbSettings->getDataSourceTargetArray(), true));
+
         $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
         $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
+        $contextDef = $this->dbSettings->getDataSourceTargetArray();
+        if (!$contextDef || !isset($contextDef['key'])) {
+            $this->dbClass->errorMessageStore("The context {$contextDef['name']} doesn't have the 'key'.");
+            return false;
+        }
+        $keyField = $contextDef['key'];
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        if(!$pkArray || !isset($pkArray[0])) {
+        if (!$pkArray || !isset($pkArray[0])) {
             return false;
         }
-        $sql = "SELECT id,clientid FROM {$regTable} WHERE entity = " . $this->dbClass->link->quote($entity);
+        $sql = "SELECT id,clientid,conditions FROM {$regTable} WHERE entity = " . $this->dbClass->link->quote($entity);
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore("Select:{$sql}");
             return false;
         }
-        $targetClients = array();
+        $targetClients = [];
+        $conditionToContent = [];
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            $targetClients[] = $row['clientid'];
-            $tableRef = "{$pksTable} (context_id,pk)";
-            $setClause = "VALUES({$this->dbClass->link->quote($row['id'])},{$this->dbClass->link->quote($pkArray[0])})";
-            $sql = $this->dbClass->handler->sqlINSERTCommand($tableRef, $setClause);
-            $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
-            $result = $this->dbClass->link->query($sql);
-            if ($result === false) {
-                $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO] Insert: {$sql}");
-                return false;
+
+//            $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] row=" . var_export($row, true));
+
+            if (!isset($conditionToContent[$row['conditions']])) {
+                $sql = "SELECT {$keyField} FROM {$entity} {$row['conditions']}";
+                $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
+                $resultContent = $this->dbClass->link->query($sql);
+                if ($resultContent === false) {
+                    $this->dbClass->errorMessageStore("Select:{$sql}");
+                    return false;
+                }
+                $conditionToContent[$row['conditions']] = [];
+                foreach ($resultContent->fetchAll(PDO::FETCH_ASSOC) as $rowContent) {
+                    $conditionToContent[$row['conditions']][] = $rowContent[$keyField];
+                }
             }
-            $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] Inserted count: {$result->rowCount()}", 2);
+
+//            $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] content=" . var_export($conditionToContent[$row['conditions']], true));
+
+            if (in_array($pkArray[0], $conditionToContent[$row['conditions']])) {
+                $targetClients[] = $row['clientid'];
+                $tableRef = "{$pksTable} (context_id,pk)";
+                $setClause = "VALUES({$this->dbClass->link->quote($row['id'])},{$this->dbClass->link->quote($pkArray[0])})";
+                $sql = $this->dbClass->handler->sqlINSERTCommand($tableRef, $setClause);
+                $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
+                $result = $this->dbClass->link->query($sql);
+                if ($result === false) {
+                    $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO] Insert: {$sql}");
+                    return false;
+                }
+            }
         }
         return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }
