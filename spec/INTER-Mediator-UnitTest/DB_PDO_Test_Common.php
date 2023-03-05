@@ -498,12 +498,12 @@ abstract class DB_PDO_Test_Common extends TestCase
 //        var_dump($this->db_proxy->logger->getDebugMessages());
 //        var_dump($result);
         $this->assertTrue($result[0] == $clientId2, $testName);
-        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 101));
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 1));
         $this->assertTrue(count($recSet) == 2, $testName);
 
         $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId2, $entity, array(2));
         $this->assertTrue($result[0] == $clientId1, $testName);
-        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 102));
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 2));
         $this->assertTrue(count($recSet) == 2, $testName);
 
         $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId3, "table2", array(103));
