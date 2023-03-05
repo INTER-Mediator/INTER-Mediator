@@ -506,7 +506,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 2));
         $this->assertTrue(count($recSet) == 2, $testName);
 
-        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId3, "table2", array(103));
+        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId3, "testtable", array(103));
         $this->assertTrue(count($result) == 0, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 103));
         $this->assertTrue(count($recSet) == 1, $testName);
