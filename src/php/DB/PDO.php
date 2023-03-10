@@ -440,7 +440,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $setParameter[] = $convertedValue;
         }
         if (count($setClause) < 1) {
-            $this->logger->setErrorMessage('No data to update.');
+            $this->logger->setErrorMessage("No data to update for table {$tableName}.");
             return false;
         }
         $setClause = implode(',', $setClause);
