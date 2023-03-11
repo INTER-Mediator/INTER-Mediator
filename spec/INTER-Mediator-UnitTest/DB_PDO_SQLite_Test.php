@@ -120,7 +120,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
                 'db-class' => 'PDO',
                 'dsn' => $this->dsn,
             ),
-            false
+            false, 'person'
         );
     }
 

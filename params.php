@@ -122,7 +122,7 @@ $slackParameters = [
 //$emailAsAliasOfUserName = true;
 //$passwordPolicy = "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName";
 
-// A enrollment page and a password reset page are going to show on login panel.
+// An enrollment page and a password reset page are going to show on login panel.
 //$resetPage = '...url...';
 //$enrollPage = '...url...';
 

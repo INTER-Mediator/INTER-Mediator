@@ -1032,19 +1032,21 @@ class DB_FMS_Test_Common extends TestCase
      */
     public function testMultiClientSyncMatching()
     {
-        $testName = "Match the sync info.";
         $this->dbProxySetupForAuth();
         //$this->db_proxy->dbClass->deleteForTest("registeredcontext");
         //$this->db_proxy->dbClass->deleteForTest("registeredpks");
         $condition = "WHERE id=1001 ORDER BY xdate LIMIT 10";
         $pkArray1 = array(1001, 2001, 3003, 4004);
         $pkArray2 = array(9001, 8001, 3003, 4004);
-
         $entity = "table1";
+
         $clientId1 = "123456789ABCDEF";
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId1, $entity, $condition, $pkArray1) !== false, $testName);
+        $resultRegistering = $this->db_proxy->dbClass->notifyHandler->register($clientId1, $entity, $condition, $pkArray1);
+        $this->assertNotFalse($resultRegistering, "Register client, entitiy and condition");
+
         $clientId2 = "ZZYYEEDDFF39887";
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
+        $resultRegistering = $this->db_proxy->dbClass->notifyHandler->register($clientId2, $entity, $condition, $pkArray2);
+        $this->assertNotFalse($resultRegistering, "Register client, entitiy and condition");
 
         $result = $this->db_proxy->dbClass->notifyHandler->matchInRegistered($clientId2, $entity, array(3003));
         $this->assertTrue(count($result) == 1, "Count matching");
@@ -1060,12 +1062,14 @@ class DB_FMS_Test_Common extends TestCase
         $result = $this->db_proxy->dbClass->notifyHandler->matchInRegistered($clientId2, $entity, array(8001));
         $this->assertTrue(count($result) == 0, "Count matching 4");
 
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId1, null) !== false, $testName);
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId2, null) !== false, $testName);
+        $resultRegistering = $this->db_proxy->dbClass->notifyHandler->unregister($clientId1, null);
+        $this->assertNotFalse($resultRegistering, "Unregister a client");
+        $resultRegistering = $this->db_proxy->dbClass->notifyHandler->unregister($clientId2, null);
+        $this->assertNotFalse($resultRegistering, "Unregister a client");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
-        $this->assertTrue(count($recSet) == 0, "Count table1");
+        $this->assertEquals(0, count($recSet), "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
-        $this->assertTrue(count($recSet) == 0, "Count pk values");
+        $this->assertEquals(0, count($recSet), "Count pk values");
     }
 
     /**
@@ -1080,14 +1084,19 @@ class DB_FMS_Test_Common extends TestCase
         $condition = "WHERE id=1001 ORDER BY xdate LIMIT 10";
         $pkArray1 = array(1001, 2001, 3003, 4004);
         $pkArray2 = array(9001, 8001, 3003, 4004);
-
         $entity = "table1";
+
         $clientId1 = "123456789ABCDEF";
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId1, $entity, $condition, $pkArray1) !== false, $testName);
+        $resultRegistering = $this->db_proxy->dbClass->notifyHandler->register($clientId1, $entity, $condition, $pkArray1);
+        $this->assertNotFalse($resultRegistering, "Register client, entitiy and condition");
+
         $clientId2 = "ZZYYEEDDFF39887";
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
+        $resultRegistering = $this->db_proxy->dbClass->notifyHandler->register($clientId2, $entity, $condition, $pkArray2);
+        $this->assertNotFalse($resultRegistering, "Register client, entitiy and condition");
+
         $clientId3 = "555588888DDDDDD";
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId3, "table2", $condition, $pkArray2) !== false, $testName);
+        $resultRegistering = $this->db_proxy->dbClass->notifyHandler->register($clientId3, "table2", $condition, $pkArray2);
+        $this->assertNotFalse($resultRegistering, "Register client, entitiy and condition");
 
         $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId1, $entity, array(101));
         $this->assertTrue($result[0] == $clientId2, $testName);

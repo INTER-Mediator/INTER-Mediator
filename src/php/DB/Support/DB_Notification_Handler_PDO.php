@@ -129,22 +129,24 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
     public function unregister($clientId, $tableKeys)
     {
         $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
-        $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
 
-        $criteria = array("clientid = " . $this->dbClass->link->quote($clientId));
+        $criteria = ["clientid = " . $this->dbClass->link->quote($clientId)];
         if ($tableKeys) {
-            $subCriteria = array();
+            $subCriteria = [];
             foreach ($tableKeys as $regId) {
-                $subCriteria[] = "id = " . $this->dbClass->link->quote($regId);
+                if ($regId) {
+                    $subCriteria[] = "id = " . $this->dbClass->link->quote($regId);
+                }
             }
-            $criteria[] = "(" . implode(" or ", $subCriteria) . ")";
+            if (count($subCriteria) > 0) {
+                $criteria[] = "(" . implode(" or ", $subCriteria) . ")";
+            }
         }
         $criteriaString = implode(" and ", $criteria);
 
-        $contextIds = array();
         // SQLite initially doesn't support delete cascade. To support it,
         // the PRAGMA statement as below should be executed. But PHP 5.2 doens't
         // work, so it must delete
@@ -156,20 +158,6 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                 $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO] Pragma:{$sql}");
                 return false;
             }
-            /* SQLite with under PHP 5.2 is too much deprecated. */
-//            $versionSign = explode('.', phpversion());
-//            if ($versionSign[0] <= 5 && $versionSign[1] <= 2) {
-//                $sql = "SELECT id FROM {$regTable} WHERE {$criteriaString}";
-//                $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
-//                $result = $this->dbClass->link->query($sql);
-//                if ($result === false) {
-//                    $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO] Select: {$sql}");
-//                    return false;
-//                }
-//                foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-//                    $contextIds[] = $row['id'];
-//                }
-//            }
         }
         $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$regTable} WHERE {$criteriaString}";
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
@@ -178,18 +166,6 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
             $this->dbClass->errorMessageStore("Delete:{$sql}");
             return false;
         }
-//        if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0 && count($contextIds) > 0) {
-//            foreach ($contextIds as $cId) {
-//                $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$pksTable} WHERE context_id = "
-//                    . $this->dbClass->link->quote($cId);
-//                $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
-//                $result = $this->dbClass->link->exec($sql);
-//                if ($result === false) {
-//                    $this->dbClass->errorMessageStore("Delete:{$sql}");
-//                    return false;
-//                }
-//            }
-//        }
         return true;
     }
 
@@ -224,31 +200,65 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
 
     public function appendIntoRegistered($clientId, $entity, $pkArray)
     {
+        $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] clientId={$clientId}, entity={$entity}");
+        $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] pkArray=" . var_export($pkArray, true));
+        $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] contextDef=" . var_export($this->dbSettings->getDataSourceTargetArray(), true));
+
         $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
         $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
+        $contextDef = $this->dbSettings->getDataSourceTargetArray();
+        if (!$contextDef || !isset($contextDef['key'])) {
+            $this->dbClass->errorMessageStore("The context {$contextDef['name']} doesn't have the 'key'.");
+            return false;
+        }
+        $keyField = $contextDef['key'];
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "SELECT id,clientid FROM {$regTable} WHERE entity = " . $this->dbClass->link->quote($entity);
+        if (!$pkArray || !isset($pkArray[0])) {
+            return false;
+        }
+        $sql = "SELECT id,clientid,conditions FROM {$regTable} WHERE entity = " . $this->dbClass->link->quote($entity);
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore("Select:{$sql}");
             return false;
         }
-        $targetClients = array();
+        $targetClients = [];
+        $conditionToContent = [];
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            $targetClients[] = $row['clientid'];
-            $tableRef = "{$pksTable} (context_id,pk)";
-            $setClause = "VALUES({$this->dbClass->link->quote($row['id'])},{$this->dbClass->link->quote($pkArray[0])})";
-            $sql = $this->dbClass->handler->sqlINSERTCommand($tableRef, $setClause);
-            $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
-            $result = $this->dbClass->link->query($sql);
-            if ($result === false) {
-                $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO] Insert: {$sql}");
-                return false;
+
+//            $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] row=" . var_export($row, true));
+
+            if (!isset($conditionToContent[$row['conditions']])) {
+                $sql = "SELECT {$keyField} FROM {$entity} {$row['conditions']}";
+                $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
+                $resultContent = $this->dbClass->link->query($sql);
+                if ($resultContent === false) {
+                    $this->dbClass->errorMessageStore("Select:{$sql}");
+                    return false;
+                }
+                $conditionToContent[$row['conditions']] = [];
+                foreach ($resultContent->fetchAll(PDO::FETCH_ASSOC) as $rowContent) {
+                    $conditionToContent[$row['conditions']][] = $rowContent[$keyField];
+                }
             }
-            $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] Inserted count: {$result->rowCount()}", 2);
+
+            $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] content=" . var_export($conditionToContent[$row['conditions']], true));
+
+            if (in_array($pkArray[0], $conditionToContent[$row['conditions']])) {
+                $targetClients[] = $row['clientid'];
+                $tableRef = "{$pksTable} (context_id,pk)";
+                $setClause = "VALUES({$this->dbClass->link->quote($row['id'])},{$this->dbClass->link->quote($pkArray[0])})";
+                $sql = $this->dbClass->handler->sqlINSERTCommand($tableRef, $setClause);
+                $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
+                $result = $this->dbClass->link->query($sql);
+                if ($result === false) {
+                    $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO] Insert: {$sql}");
+                    return false;
+                }
+            }
         }
         return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }
@@ -271,7 +281,10 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $targetClients[] = $row['clientid'];
             $sql = "{$this->dbClass->handler->sqlDELETECommand()}{$pksTable} WHERE context_id = "
-                . $this->dbClass->link->quote($row['id']) . " and pk = " . $this->dbClass->link->quote($pkArray[0]);
+                . $this->dbClass->link->quote($row['id']);
+            if ($pkArray && isset($pkArray[0])) {
+                $sql .= " and pk = " . $this->dbClass->link->quote($pkArray[0]);
+            }
             $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
             $resultDelete = $this->dbClass->link->query($sql);
             if ($resultDelete === false) {
