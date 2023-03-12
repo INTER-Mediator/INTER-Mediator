@@ -294,7 +294,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $this->logger->setDebugMessage($sql);
         $this->notifyHandler->setQueriedEntity($isAggregate ? $this->dbSettings->getAggregationFrom() : $sourceTable);
         $this->notifyHandler->setQueriedCondition(
-            "{$queryClause} {$this->handler->sqlOrderByCommand($sortClause, $limitParam, $offset)}");
+            "{$viewOrTableName} {$queryClause} {$this->handler->sqlOrderByCommand($sortClause, $limitParam, $offset)}");
 
         // Query
         $result = $this->link->query($sql);

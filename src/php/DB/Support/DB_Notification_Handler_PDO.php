@@ -231,7 +231,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
 //            $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] row=" . var_export($row, true));
 
             if (!isset($conditionToContent[$row['conditions']])) {
-                $sql = "SELECT {$pkField} FROM {$entity} {$row['conditions']}";
+                $sql = "SELECT {$pkField} FROM {$row['conditions']}";
                 $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
                 $resultContent = $this->dbClass->link->query($sql);
                 if ($resultContent === false) {
