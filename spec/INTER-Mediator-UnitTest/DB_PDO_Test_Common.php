@@ -477,7 +477,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->dbProxySetupForAuth();
         $this->db_proxy->dbClass->deleteForTest("registeredcontext");
         $this->db_proxy->dbClass->deleteForTest("registeredpks");
-        $condition = " ORDER BY id LIMIT 10 OFFSET 0";
+        $condition = "person ORDER BY id LIMIT 10 OFFSET 0";
         $pkArray1 = array(1001, 2001, 3003, 4004);
         $pkArray2 = array(9001, 8001, 3003, 4004);
         $entity = "person";
