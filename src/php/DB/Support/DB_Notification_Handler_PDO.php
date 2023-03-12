@@ -198,20 +198,19 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         return array_unique($targetClients);
     }
 
-    public function appendIntoRegistered($clientId, $entity, $pkArray)
+    public function appendIntoRegistered($clientId, $entity, $pkField, $pkArray)
     {
-        $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] clientId={$clientId}, entity={$entity}");
-        $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] pkArray=" . var_export($pkArray, true));
-        $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] contextDef=" . var_export($this->dbSettings->getDataSourceTargetArray(), true));
+        $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] clientId={$clientId}, entity={$entity}, pkField={$pkField} pkArray=" . var_export($pkArray, true));
+        //$this->logger->setDebugMessage("[DB_Notification_Handler_PDO] contextDef=" . var_export($this->dbSettings->getDataSourceTargetArray(), true));
 
         $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
         $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
-        $contextDef = $this->dbSettings->getDataSourceTargetArray();
-        if (!$contextDef || !isset($contextDef['key'])) {
-            $this->dbClass->errorMessageStore("The context {$contextDef['name']} doesn't have the 'key'.");
+//        $contextDef = $this->dbSettings->getDataSourceTargetArray();
+        if (!$pkField ) {
+            $this->dbClass->errorMessageStore("The entity {$entity} doesn't have the 'key'.");
             return false;
         }
-        $keyField = $contextDef['key'];
+//        $keyField = $contextDef['key'];
         if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
@@ -232,7 +231,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
 //            $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] row=" . var_export($row, true));
 
             if (!isset($conditionToContent[$row['conditions']])) {
-                $sql = "SELECT {$keyField} FROM {$entity} {$row['conditions']}";
+                $sql = "SELECT {$pkField} FROM {$entity} {$row['conditions']}";
                 $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
                 $resultContent = $this->dbClass->link->query($sql);
                 if ($resultContent === false) {
@@ -241,7 +240,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                 }
                 $conditionToContent[$row['conditions']] = [];
                 foreach ($resultContent->fetchAll(PDO::FETCH_ASSOC) as $rowContent) {
-                    $conditionToContent[$row['conditions']][] = $rowContent[$keyField];
+                    $conditionToContent[$row['conditions']][] = $rowContent[$pkField];
                 }
             }
 

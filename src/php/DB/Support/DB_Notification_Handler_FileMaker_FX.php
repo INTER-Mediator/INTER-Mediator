@@ -167,7 +167,7 @@ class DB_Notification_Handler_FileMaker_FX
         return array_unique($targetClients);
     }
 
-    public function appendIntoRegistered($clientId, $entity, $pkArray)
+    public function appendIntoRegistered($clientId, $entity, $pkField, $pkArray)
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;

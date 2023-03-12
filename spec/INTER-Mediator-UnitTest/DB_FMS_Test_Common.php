@@ -1098,17 +1098,17 @@ class DB_FMS_Test_Common extends TestCase
         $resultRegistering = $this->db_proxy->dbClass->notifyHandler->register($clientId3, "table2", $condition, $pkArray2);
         $this->assertNotFalse($resultRegistering, "Register client, entitiy and condition");
 
-        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId1, $entity, array(101));
+        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId1, $entity, "id", array(101));
         $this->assertTrue($result[0] == $clientId2, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 101));
         $this->assertTrue(count($recSet) == 2, $testName);
 
-        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId2, $entity, array(102));
+        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId2, $entity, "id", array(102));
         $this->assertTrue($result[0] == $clientId1, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 102));
         $this->assertTrue(count($recSet) == 2, $testName);
 
-        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId3, "table2", array(103));
+        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId3, "table2", "id", array(103));
         $this->assertTrue(count($result) == 0, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 103));
         $this->assertTrue(count($recSet) == 1, $testName);

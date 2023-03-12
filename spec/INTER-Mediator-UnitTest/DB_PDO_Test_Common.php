@@ -496,12 +496,12 @@ abstract class DB_PDO_Test_Common extends TestCase
         $resultRegistering = $this->db_proxy->dbClass->notifyHandler->register($clientId3, "testtable", $condition, $pkArray2);
         $this->assertNotFalse($resultRegistering, "Register client, entitiy and condition");
 
-        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId1, $entity, array(1));
+        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId1, $entity,  "id",array(1));
         $this->assertTrue($result[0] == $clientId2, "Append to Sync Info");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 1));
         $this->assertEquals(2, count($recSet), "Check the appended result");
 
-        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId2, $entity, array(2));
+        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId2, $entity, "id", array(2));
         $this->assertTrue($result[0] == $clientId1, "Append to Sync Info");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 2));
         $this->assertEquals(2, count($recSet), "Check the appended result");

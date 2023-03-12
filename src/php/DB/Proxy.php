@@ -417,6 +417,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                             $this->PostData['notifyid'] ?? null,
                             $this->dbClass->notifyHandler->queriedEntity(),
                             $this->dbClass->notifyHandler->queriedPrimaryKeys(),
+                            $currentDataSource['key'],
                             $result,
                             strpos(strtolower($currentDataSource['sync-control']), 'create-notify') !== false
                         );
@@ -703,7 +704,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         if ($this->clientSyncAvailable) {
             $this->dbSettings->notifyServer = new NotifyServer();
             $nid = $this->PostData['notifyid'] ?? null;
-            if($this->dbSettings->notifyServer->initialize($this->authDbClass, $this->dbSettings, $nid)) {
+            if ($this->dbSettings->notifyServer->initialize($this->authDbClass, $this->dbSettings, $nid)) {
                 $this->logger->setDebugMessage("The NotifyServer was instanciated.", 2);
             } else {
                 $this->logger->setDebugMessage("The NotifyServer failed to initialize.", 2);
