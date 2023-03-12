@@ -477,7 +477,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->dbProxySetupForAuth();
         $this->db_proxy->dbClass->deleteForTest("registeredcontext");
         $this->db_proxy->dbClass->deleteForTest("registeredpks");
-        $condition = " ORDER BY id LIMIT 10 OFFSET 0";
+        $condition = "person ORDER BY id LIMIT 10 OFFSET 0";
         $pkArray1 = array(1001, 2001, 3003, 4004);
         $pkArray2 = array(9001, 8001, 3003, 4004);
         $entity = "person";
@@ -496,12 +496,12 @@ abstract class DB_PDO_Test_Common extends TestCase
         $resultRegistering = $this->db_proxy->dbClass->notifyHandler->register($clientId3, "testtable", $condition, $pkArray2);
         $this->assertNotFalse($resultRegistering, "Register client, entitiy and condition");
 
-        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId1, $entity, array(1));
+        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId1, $entity,  "id",array(1));
         $this->assertTrue($result[0] == $clientId2, "Append to Sync Info");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 1));
         $this->assertEquals(2, count($recSet), "Check the appended result");
 
-        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId2, $entity, array(2));
+        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId2, $entity, "id", array(2));
         $this->assertTrue($result[0] == $clientId1, "Append to Sync Info");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 2));
         $this->assertEquals(2, count($recSet), "Check the appended result");
