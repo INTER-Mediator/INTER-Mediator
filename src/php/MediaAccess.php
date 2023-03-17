@@ -31,20 +31,35 @@ class MediaAccess
     private $targetContextName = null;  // set with the analyzeTarget method.
     private $cookieUser;    // set with the checkAuthentication method.
     private $accessLogLevel = 0;
-    private $outputMessage = ['apology' => 'Logging messages are not implemented so far.'];
+    private $outputMessage = [];
     private $thrownException = false;
+
+    private $dbProxyInstance = null;
+
+    public function __construct()
+    {
+        $this->accessLogLevel = Params::getParameterValue("accessLogLevel", false);
+    }
 
     public function getResultForLog(): array
     {
         if ($this->accessLogLevel < 1) {
             return [];
         }
+        $this->outputMessage["name"] = $this->targetContextName;
+        $this->outputMessage["authuser"] = $this->cookieUser;
         return $this->outputMessage;
     }
 
     public function asAttachment()
     {
         $this->disposition = "attachment";
+    }
+
+    private function errorHandling($message)
+    {
+        error_log($message);
+        $this->dbProxyInstance->logger->setErrorMessage($message);
     }
 
     private function isPossibleSchema($file): bool
@@ -60,6 +75,7 @@ class MediaAccess
 
     public function processing($dbProxyInstance, $options, $file)
     {
+        $this->dbProxyInstance = $dbProxyInstance;
         $this->thrownException = false;
         $contextRecord = null;
         try {
@@ -67,7 +83,7 @@ class MediaAccess
             if (strlen($file) === 0) {
                 $erMessage = "[INTER-Mediator] The value of the 'media' key in url isn't specified.";
                 echo $erMessage;
-                error_log($erMessage);
+                $this->errorHandling($erMessage);
                 $this->exitAsError(200);
             }
             // If the media parameter is an URL, the variable isURL will be set to true.
@@ -76,7 +92,7 @@ class MediaAccess
             if (!$isURL && !$mediaRootDir) {
                 $erMessage = "[INTER-Mediator] This MediaAccess operation requires the option value of the 'media-root-dir' key.";
                 echo $erMessage;
-                error_log($erMessage);
+                $this->errorHandling($erMessage);
                 $this->exitAsError(200); // The file accessing requires the media-root-dir keyed value.
             }
             /*
@@ -90,7 +106,7 @@ class MediaAccess
             if (strpos($file, '../') !== false) { // Stop for security reason.
                 $erMessage = "[INTER-Mediator] The '..' path component isn't permitted.";
                 echo $erMessage;
-                error_log($erMessage);
+                $this->errorHandling($erMessage);
                 $this->exitAsError(200);
             }
             $target = $isURL ? $file : "{$mediaRootDir}/{$file}";
@@ -142,7 +158,7 @@ class MediaAccess
             if (!$condition) {
                 $erMessage = "[INTER-Mediator] No record which is associated with the parameters in the url({$target}).";
                 echo $erMessage;
-                error_log($erMessage);
+                $this->errorHandling($erMessage);
                 $this->exitAsError(500);
             }
 
@@ -153,7 +169,7 @@ class MediaAccess
 
             if (!$isURL) { // File path.
                 if (!empty($file) && !file_exists($target)) {
-                    error_log("[INTER-Mediator] The file does't exist: {$target}.");
+                    $this->errorHandling("[INTER-Mediator] The file does't exist: {$target}.");
                     $this->exitAsError(500);
                 }
                 $content = file_get_contents($target);
@@ -257,7 +273,7 @@ class MediaAccess
                 try {
                     $result = $s3->getObject($objectSpec);
                 } catch (S3Exception $e) {
-                    error_log($e->getMessage());
+                    $this->errorHandling($e->getMessage());
                     $this->exitAsError(500);
                 }
                 if (interface_exists($result['Body'], 'Psr\Http\Message\StreamInterface')) {
@@ -287,7 +303,7 @@ class MediaAccess
                     $client = new DropboxClientModified($tokenProvider);
                     $content = $client->download($urlPath);
                 } catch (\Exception $ex) {
-                    error_log($ex->getMessage());
+                    $this->errorHandling($ex->getMessage());
                     $this->exitAsError(500);
                 }
                 header("Content-Type: " . IMUtil::getMimeType($fileName));
@@ -299,7 +315,7 @@ class MediaAccess
                 $this->outputImage($content);
             }
         } catch (\Exception $ex) {
-            error_log($ex->getMessage());
+            $this->errorHandling($ex->getMessage());
             $this->exitAsError(500);
         }
     }

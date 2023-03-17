@@ -171,8 +171,8 @@ $backSeconds = 3600 * 24 * 2; // The seconds value that detect the outdated regi
  * ===================
  * the table named 'operationlog' is required.
  * The schema of the table describes in dist-docs/sample_schema_*.txt files. */
-$accessLogLevel = false;    // false: No logging, 1: without data, 2: with data
-/*
+$accessLogLevel = 2;    // false: No logging, 1: without data, 2: with data
+
 $dbClassLog = $dbClass;
 $dbDSNLog = $dbDSN;
 $dbUserLog = $dbUser;
@@ -183,8 +183,8 @@ $dontRecordTheme = false;
 $dontRecordChallenge = false;
 $dontRecordDownload = false;
 $dontRecordDownloadNoGet = false;
-$accessLogExtensionClass = 'LoggingExt'; // Processing for some extending fields.
-*/
+//$accessLogExtensionClass = 'LoggingExt'; // Processing for some extending fields.
+
 /* Media File Support
  * =================== */
 //$mediaRootDir = "/var/www/images";

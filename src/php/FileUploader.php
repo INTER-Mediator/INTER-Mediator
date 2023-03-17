@@ -21,15 +21,22 @@ class FileUploader
     private $db;
     private $url = NULL;
     private $accessLogLevel = 0;
-    private $outputMessage = ['apology' => 'Logging messages are not implemented so far.'];
+    private $outputMessage = [];
 
     public $dbresult = null;
+
+    public function __construct()
+    {
+        $this->accessLogLevel = Params::getParameterValue("accessLogLevel", false);
+    }
 
     public function getResultForLog()
     {
         if ($this->accessLogLevel < 1) {
             return [];
         }
+
+        $this->outputMessage['name'] = $_POST["_im_contextname"];
         return $this->outputMessage;
     }
 
