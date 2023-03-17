@@ -149,8 +149,8 @@ $slackParameters = [
 /* Service Server Behavior
  * ===================
  * Port number and host name for service server */
-$notUseServiceServer = false;  // Default is TRUE!. It has to set false to work every feature with Service Server.
-
+$notUseServiceServer = true;  // Default is TRUE!. It has to set false to work every feature with Service Server.
+/*
 $activateClientService = true;  // Default is FLASE!.
 $serviceServerProtocol = "ws";  // The Service Server url components to connect from client.
 $serviceServerHost = "localhost";    // "" for public ip address.
@@ -163,7 +163,7 @@ $stopSSEveryQuit = false;
 $bootWithInstalledNode = false;
 $preventSSAutoBoot = false;
 $backSeconds = 3600 * 24 * 2; // The seconds value that detect the outdated registering records.
-
+*/
 /*
  * $foreverLog = '/tmp/forever.log';
 */
@@ -171,7 +171,8 @@ $backSeconds = 3600 * 24 * 2; // The seconds value that detect the outdated regi
  * ===================
  * the table named 'operationlog' is required.
  * The schema of the table describes in dist-docs/sample_schema_*.txt files. */
-$accessLogLevel = 2;    // false: No logging, 1: without data, 2: with data
+$accessLogLevel = false;    // false: No logging, 1: without data, 2: with data
+/*
 $dbClassLog = $dbClass;
 $dbDSNLog = $dbDSN;
 $dbUserLog = $dbUser;
@@ -183,7 +184,7 @@ $dontRecordChallenge = false;
 $dontRecordDownload = false;
 $dontRecordDownloadNoGet = false;
 $accessLogExtensionClass = 'LoggingExt'; // Processing for some extending fields.
-
+*/
 /* Media File Support
  * =================== */
 //$mediaRootDir = "/var/www/images";
