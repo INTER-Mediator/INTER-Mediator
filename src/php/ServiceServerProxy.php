@@ -80,13 +80,17 @@ class ServiceServerProxy
             }
             return $ssStatus;
         } else {
-            if (!$this->isServerStartable()) {
+            if (!$this->isServerStartable()) { // Check the home directory can be writable.
                 $userName = IMUtil::getServerUserName();
                 $userHome = IMUtil::getServerUserHome();
                 $this->errors[] = $this->messageHead . "Service Server can't boot because the root directory " .
                     "({$userHome}) of the web server user ({$userName})  isn't writable.";
                 return false;
             }
+            if (strpos(php_sapi_name(), 'cli') !== false) { // It's executing with command line interface.
+                return false; // Do nothing; that is no try to boot the service server.
+            }
+
             $waitSec = 3;
             $startDT = new DateTime();
             $counterInit = $counter = 5;
