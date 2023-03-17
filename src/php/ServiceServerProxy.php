@@ -228,7 +228,8 @@ class ServiceServerProxy
 
         $logFile = $this->foreverLog ?? (tempnam(sys_get_temp_dir(), 'IMSS-') . ".log");
         $options = "-a -l {$logFile} --minUptime 5000 --spinSleepTime 5000";
-        $originURL = (isset($_SERVER['HTTPS']) ? "https://" : "http://") . "{$_SERVER['HTTP_HOST']}";
+        $hostName = $_SERVER['HTTP_HOST'] ?? '*';
+        $originURL = (isset($_SERVER['HTTPS']) ? "https://" : "http://") . $hostName;
         $cmd = "{$forever} start {$options} {$scriptPath} {$this->paramsPort} {$dq}{$originURL}{$dq}";
         if ($this->serviceServerKey && $this->serviceServerCert) {
             $cmd .= " {$dq}{$this->serviceServerKey}{$dq} ";
