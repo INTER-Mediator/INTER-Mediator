@@ -87,7 +87,7 @@ class ServiceServerProxy
                     "({$userHome}) of the web server user ({$userName})  isn't writable.";
                 return false;
             }
-            if (strpos(php_sapi_name(), 'cli') !== false) { // It's executing with command line interface.
+            if (php_sapi_name() == 'cli') { // It's executing with command line interface.
                 return false; // Do nothing; that is no try to boot the service server.
             }
 
