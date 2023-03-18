@@ -77,41 +77,49 @@ class ServiceServerProxy
         if ($this->dontAutoBoot || $this->dontUse) {
             $ssStatus = $this->isActive();
             if (!$ssStatus) {
-                $this->messages[] = $this->messageHead . 'Service Server is NOT working so far.';
+                $message = $this->messageHead . 'Service Server is NOT working so far.';
+                $this->messages[] = $message;
+                $logger->setDebugMessage("[ServiceServerProxy] {$message}");
             }
             return $ssStatus;
         } else {
             if (!$this->isServerStartable()) { // Check the home directory can be writable.
                 $userName = IMUtil::getServerUserName();
                 $userHome = IMUtil::getServerUserHome();
-                $this->errors[] = $this->messageHead . "Service Server can't boot because the root directory " .
+                $message = $this->messageHead . "Service Server can't boot because the root directory " .
                     "({$userHome}) of the web server user ({$userName})  isn't writable.";
+                $this->messages[] = $message;
                 return false;
             }
+            $isStartCLI = false;
             if (php_sapi_name() == 'cli') { // It's executing with command line interface.
-                return false; // Do nothing; that is no try to boot the service server.
+                $message = $this->messageHead . "[ServiceServerProxy] php_sapi_name() returns" . php_sapi_name();
+                $this->messages[] = $message;
+                $isStartCLI = true; // Do nothing; that is no try to boot the service server.
             }
 
             $waitSec = 3;
             $startDT = new DateTime();
-            $counterInit = $counter = 5;
+            $counterInit = $counter = $isStartCLI ? 1 : 5;
             $isStartServer = false;
             while (!$this->isActive()) {
-                if (!$isStartServer) {
+                if (!$isStartServer && !$isStartCLI) {
                     $this->startServer();
                     $isStartServer = true;
                 }
                 $counter -= 1;
 
                 if ($counter < 1) {
-                    $this->errors[] = $this->messageHead . "Service Server couldn't boot in spite of {$counterInit} times trial.";
+                    $message = $this->messageHead . "Service Server couldn't boot in spite of {$counterInit} times trial.";
+                    $this->messages[] = $message;
                     return false;
                 }
 
                 $intObj = (new DateTime())->diff($startDT, true);
                 $intSecs = ((((($intObj->y * 30) + $intObj->m) * 12 + $intObj->d) * 24 + $intObj->h) * 60 + $intObj->i) * 60 + $intObj->s;
                 if ($intSecs > $waitSec) {
-                    $this->errors[] = $this->messageHead . 'Service Server could not be available for timeout.';
+                    $message = $this->messageHead . 'Service Server could not be available for timeout.';
+                    $this->messages[] = $message;
                     return false;
                 }
                 sleep(1.0);

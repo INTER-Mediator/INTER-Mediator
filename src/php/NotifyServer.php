@@ -64,9 +64,7 @@ class NotifyServer
         $ssInstance = ServiceServerProxy::instance();
         $ssInstance->clearMessages();
         $ssInstance->clearErrors();
-        $this->dbClass->logger->setDebugMessage("[NotifyServer] calling sync method of ServiceServerProxy.");
         $ssInstance->sync($channels, $operation, $data);
-        $this->dbClass->logger->setDebugMessage("[NotifyServer] called sync method of ServiceServerProxy.");
         $logger->setDebugMessages($ssInstance->getMessages());
         $logger->setErrorMessages($ssInstance->getErrors());
 
