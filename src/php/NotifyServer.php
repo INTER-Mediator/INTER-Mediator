@@ -57,13 +57,14 @@ class NotifyServer
      */
     private function trigger($channels, $operation, $data)
     {
-        $this->dbClass->logger->setDebugMessage("[NotifyServer] trigger / channels=" . var_export($channels, true)
+        $logger = Logger::getInstance();
+        $logger->setDebugMessage("[NotifyServer] trigger / channels=" . var_export($channels, true)
             . "operation={$operation}, data=" . var_export($data, true), 2);
         $ssInstance = ServiceServerProxy::instance();
         $ssInstance->clearMessages();
         $ssInstance->clearErrors();
         $ssInstance->sync($channels, $operation, $data);
-        $logger = Logger::getInstance();
+        $this->dbClass->logger->setDebugMessage("[NotifyServer] called sync method of ServiceServerProxy.");
         $logger->setDebugMessages($ssInstance->getMessages());
         $logger->setErrorMessages($ssInstance->getErrors());
     }
