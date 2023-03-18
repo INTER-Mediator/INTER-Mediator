@@ -10,6 +10,7 @@
 namespace INTERMediator;
 
 use DateTime;
+use INTERMediator\DB\Logger;
 
 $gSSPInstance = null;
 
@@ -294,10 +295,14 @@ class ServiceServerProxy
 
     public function sync($channels, $operation, $data): bool
     {
+        $logger = Logger::getInstance();
+        $logger->setDebugMessage("[ServiceServerProxy] sync");
         if (!$this->checkServiceServer()) {
+            $logger->setDebugMessage("[ServiceServerProxy] return false");
             return false;
         }
         $result = $this->callServer("trigger", ['clients' => $channels, 'operation' => $operation, 'data' => $data]);
+        $logger->setDebugMessage("[ServiceServerProxy] callServer result={$result}");
         return true;
     }
 
