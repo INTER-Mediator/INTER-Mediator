@@ -244,7 +244,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                 }
             }
 
-            $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] content=" . var_export($conditionToContent[$row['conditions']], true));
+            // $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] content=" . var_export($conditionToContent[$row['conditions']], true));
 
             if (in_array($pkArray[0], $conditionToContent[$row['conditions']])) {
                 $targetClients[] = $row['clientid'];
