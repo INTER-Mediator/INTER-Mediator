@@ -93,7 +93,7 @@ class ServiceServerProxy
             }
             $isStartCLI = false;
             if (php_sapi_name() == 'cli') { // It's executing with command line interface.
-                $message = $this->messageHead . "[ServiceServerProxy] php_sapi_name() returns" . php_sapi_name();
+                $message = $this->messageHead . "[ServiceServerProxy] php_sapi_name() returns=" . php_sapi_name();
                 $this->messages[] = $message;
                 $isStartCLI = true; // Do nothing; that is no try to boot the service server.
             }

@@ -107,7 +107,7 @@ const IMLibContextPool = {
       return result
     }
 
-    const linkInfo = INTERMediatorLib.getLinkedElementInfo(element)
+    let linkInfo = INTERMediatorLib.getLinkedElementInfo(element)
     if (!linkInfo && INTERMediatorLib.isWidgetElement(element.parentNode)) {
       linkInfo = INTERMediatorLib.getLinkedElementInfo(element.parentNode)
     }
@@ -408,7 +408,7 @@ const IMLibContextPool = {
         const keyField = contextDef.key
         const recKey = keyField + '=' + info.pkvalue[0]
         for (let j = 0; j < info.field.length; j += 1) {
-          if(this.poolingContexts[i].getValue(recKey, info.field[j]) != info.value[j]) {
+          if (this.poolingContexts[i].getValue(recKey, info.field[j]) != info.value[j]) {
             this.poolingContexts[i].setValue(recKey, info.field[j], info.value[j])
           }
         }
@@ -434,7 +434,10 @@ const IMLibContextPool = {
       const contextSource = contextDef.source ?? contextDef.table ?? contextDef.view ?? contextDef.name
       if (contextSource === entityName) {
         if (this.poolingContexts[i].isContaining(info.value[0])) {
-          await INTERMediator.constructMain(this.poolingContexts[i])
+          IMLibQueue.setTask(async (complete) => {
+            await INTERMediator.constructMain(this.poolingContexts[i])
+            complete()
+          })
         }
       }
     }
