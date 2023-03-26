@@ -627,6 +627,9 @@ const INTERMediator_DBAdapter = {
       } else {
         recordLimit = args.records
       }
+      if (INTERMediator.recordLimit[args.name]) {
+        recordLimit = parseInt(INTERMediator.recordLimit[args.name])
+      }
     }
 
     if (args.primaryKeyOnly) {
@@ -652,8 +655,11 @@ const INTERMediator_DBAdapter = {
       }
     }
     if (args.useoffset && INTERMediator.startFrom !== null) {
-      params += '&start=' + encodeURIComponent(INTERMediator.startFrom)
+      params += '&start=' + parseInt(INTERMediator.startFrom)
+    } else if (INTERMediator.recordStart[args.name]) {
+      params += '&start=' + parseInt(INTERMediator.recordStart[args.name])
     }
+
     extCount = 0
     extCountSort = 0;
     conditions = []
