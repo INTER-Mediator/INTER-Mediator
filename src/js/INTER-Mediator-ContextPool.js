@@ -419,7 +419,9 @@ const IMLibContextPool = {
             updateRequiredContext[k].foreignValue = {}
             updateRequiredContext[k].foreignValue[info.field[0]] = info.value[0]
             if (updateRequiredContext[k]) {
+              INTERMediatorOnPage.updatingWithSynchronize += 1;
               await INTERMediator.constructMain(updateRequiredContext[k])
+              INTERMediatorOnPage.updatingWithSynchronize -= 1;
             }
           }
         }
@@ -435,7 +437,9 @@ const IMLibContextPool = {
       if (contextSource === entityName) {
         if (this.poolingContexts[i].isContaining(info.value[0])) {
           IMLibQueue.setTask(async (complete) => {
+            INTERMediatorOnPage.updatingWithSynchronize += 1;
             await INTERMediator.constructMain(this.poolingContexts[i])
+            INTERMediatorOnPage.updatingWithSynchronize -= 1;
             complete()
           })
         }

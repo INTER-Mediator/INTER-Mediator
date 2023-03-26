@@ -267,6 +267,9 @@ const INTERMediator_DBAdapter = {
                     location.href = INTERMediatorOnPage.loginURL
                   }
                 }
+                if (INTERMediatorOnPage.updatingWithSynchronize > 0) {
+                  location.reload() // It might stop here.
+                }
                 if (authAgainProc) {
                   authAgainProc(myRequest)
                 } else if (!accessURL.match(/access=challenge/)) {
