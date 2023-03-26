@@ -627,7 +627,7 @@ const INTERMediator_DBAdapter = {
       } else {
         recordLimit = args.records
       }
-      if (INTERMediator.recordLimit[args.name]) {
+      if (INTERMediator.recordLimit && INTERMediator.recordLimit[args.name]) {
         recordLimit = parseInt(INTERMediator.recordLimit[args.name])
       }
     }
@@ -656,7 +656,7 @@ const INTERMediator_DBAdapter = {
     }
     if (args.useoffset && INTERMediator.startFrom !== null) {
       params += '&start=' + parseInt(INTERMediator.startFrom)
-    } else if (INTERMediator.recordStart[args.name]) {
+    } else if (INTERMediator.recordStart && INTERMediator.recordStart[args.name]) {
       params += '&start=' + parseInt(INTERMediator.recordStart[args.name])
     }
 
