@@ -267,7 +267,7 @@ const INTERMediator_DBAdapter = {
                     location.href = INTERMediatorOnPage.loginURL
                   }
                 }
-                if (INTERMediatorOnPage.updatingWithSynchronize > 0) {
+                if (INTERMediatorOnPage.updatingWithSynchronize > 0 || INTERMediator.partialConstructing) {
                   location.reload() // It might stop here.
                 }
                 if (authAgainProc) {
