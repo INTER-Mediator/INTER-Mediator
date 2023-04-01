@@ -48,6 +48,7 @@ class OperationLog
 
     public function setEntry($result)
     {
+
         $access = $_GET['access'] ?? ($_POST['access'] ?? (isset($_GET['theme']) ? 'theme' : 'download'));
         if (
             ($this->recordingOperations !== false && !in_array($access, $this->recordingOperations))
@@ -58,11 +59,10 @@ class OperationLog
         ) {
             return;
         }
-        $targetContext = $_GET['name'] ?? ($_POST['name'] ?? (isset($_GET['theme']) ? ($_GET['css'] ?? '') : ''));
+        $targetContext = $_GET['name'] ?? $_POST['name'] ?? $result['name'] ?? (isset($_GET['theme']) ? ($_GET['css'] ?? '') : '');
         if ($this->recordingContexts !== false && !in_array($targetContext, $this->recordingContexts)) {
             return;
         }
-
         $dbInstance = new Proxy(true);
         $dbInstance->ignoringPost();
         $contextName = 'operationlog';
@@ -82,7 +82,7 @@ class OperationLog
         $isInitialized = $dbInstance->initialize($dataSource, $options, $dbSpecification, $debug, $contextName);
         if ($isInitialized) {
             $dbInstance->dbSettings->addValueWithField("context", $targetContext);
-            $userValue = isset($_POST['authuser']) ? $_POST['authuser'] : '';
+            $userValue = $_POST['authuser'] ?? $result['authuser'] ?? '';
             if ($userValue === '') {
                 $cookieNameUser = "_im_username";
                 if (isset($this->contextOptions['authentication']['realm'])) {
@@ -92,28 +92,15 @@ class OperationLog
                 $userValue = isset($_COOKIE[$cookieNameUser]) ? $_COOKIE[$cookieNameUser] : '';
             }
             $dbInstance->dbSettings->addValueWithField("user", $userValue);
-            $dbInstance->dbSettings->addValueWithField("client_id_in", isset($_POST['clientid']) ? $_POST['clientid'] : '');
-            $clientIdOut = '';
-            foreach ($result as $key => $value) {
-                if ($key == 'clientid') {
-                    $clientIdOut = $value;
-                }
-            }
-            $dbInstance->dbSettings->addValueWithField("client_id_out", $clientIdOut);
+            $dbInstance->dbSettings->addValueWithField("client_id_in", $_POST['clientid'] ?? '');
+            $dbInstance->dbSettings->addValueWithField("client_id_out", $result['clientid'] ?? '');
             $dbInstance->dbSettings->addValueWithField("client_ip", $_SERVER['REMOTE_ADDR']);
             $dbInstance->dbSettings->addValueWithField("path", $_SERVER['PHP_SELF']);
             $dbInstance->dbSettings->addValueWithField("access", $access);
-            $requireAuth = false;
-            if (isset($result['requireAuth'])
-                && ($result['requireAuth'] === true || $result['requireAuth'] === 'true')) {
-                $requireAuth = true;
-            }
+            $requireAuth = isset($result['requireAuth']) && ($result['requireAuth'] === true || $result['requireAuth'] === 'true');
             $dbInstance->dbSettings->addValueWithField("require_auth", $requireAuth);
-            $setAuth = false;
-            if (isset($result['getRequireAuthorization'])
-                && ($result['getRequireAuthorization'] === true || $result['getRequireAuthorization'] === 'true')) {
-                $setAuth = true;
-            }
+            $setAuth = isset($result['getRequireAuthorization'])
+                && ($result['getRequireAuthorization'] === true || $result['getRequireAuthorization'] === 'true');
             $dbInstance->dbSettings->addValueWithField("set_auth", $setAuth);
             $dbInstance->dbSettings->addValueWithField("get_data", $this->arrayToString($_GET));
             $dbInstance->dbSettings->addValueWithField("post_data", $this->arrayToString($_POST));

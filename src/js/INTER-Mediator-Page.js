@@ -89,6 +89,7 @@ let INTERMediatorOnPage = {
   activateClientService: false,
   credentialCookieDomain: null,
   updateProcessedNode: false,
+  updatingWithSynchronize: 0,
   /*
   This method 'getMessages' is going to be replaced valid one with the browser's language.
   Here is defined to prevent the warning of static check.
@@ -650,6 +651,7 @@ let INTERMediatorOnPage = {
       }
     }
     authButton.onclick = async function () {
+      INTERMediatorOnPage.hideProgress()
       let messageNode = document.getElementById('_im_newpass_message')
       if (messageNode) {
         INTERMediatorLib.removeChildNodes(messageNode)

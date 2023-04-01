@@ -57,13 +57,17 @@ class NotifyServer
      */
     private function trigger($channels, $operation, $data)
     {
+        $logger = Logger::getInstance();
+        $logger->setDebugMessage("[NotifyServer] trigger / channels=" . var_export($channels, true)
+            . "operation={$operation}, data=" . var_export($data, true), 2);
+
         $ssInstance = ServiceServerProxy::instance();
         $ssInstance->clearMessages();
         $ssInstance->clearErrors();
         $ssInstance->sync($channels, $operation, $data);
-        $logger = Logger::getInstance();
         $logger->setDebugMessages($ssInstance->getMessages());
         $logger->setErrorMessages($ssInstance->getErrors());
+
     }
 
     /**
@@ -74,6 +78,7 @@ class NotifyServer
      */
     public function register($entity, $condition, $pkArray)
     {
+        $this->dbClass->logger->setDebugMessage("[NotifyServer] register", 2);
         if ($this->dbClass->notifyHandler) {
             return $this->dbClass->notifyHandler->register($this->clientId, $entity, $condition, $pkArray);
         }
@@ -87,6 +92,7 @@ class NotifyServer
      */
     public function unregister($client, $tableKeys)
     {
+        $this->dbClass->logger->setDebugMessage("[NotifyServer] unregister", 2);
         if ($this->dbClass && $this->dbClass->notifyHandler) {
             return $this->dbClass->notifyHandler->unregister($client, $tableKeys);
         }
@@ -102,6 +108,7 @@ class NotifyServer
      */
     public function updated($clientId, $entity, $pkArray, $field, $value, $isNotify)
     {
+        $this->dbClass->logger->setDebugMessage("[NotifyServer] updated", 2);
         if ($this->dbClass && $this->dbClass->notifyHandler) {
             $channels = $this->dbClass->notifyHandler->matchInRegistered($clientId, $entity, $pkArray);
             $this->trigger($channels, 'update',
@@ -117,6 +124,7 @@ class NotifyServer
      */
     public function created($clientId, $entity, $pkArray, $pkField, $record, $isNotify)
     {
+        $this->dbClass->logger->setDebugMessage("[NotifyServer] created", 2);
         if ($this->dbClass && $this->dbClass->notifyHandler) {
             $channels = $this->dbClass->notifyHandler->appendIntoRegistered($clientId, $entity, $pkField, $pkArray);
             $this->trigger($channels, 'create',
@@ -131,6 +139,7 @@ class NotifyServer
      */
     public function deleted($clientId, $entity, $pkArray)
     {
+        $this->dbClass->logger->setDebugMessage("[NotifyServer] deleted", 2);
         if ($this->dbClass && $this->dbClass->notifyHandler) {
             $channels = $this->dbClass->notifyHandler->removeFromRegistered($clientId, $entity, $pkArray);
 
@@ -146,6 +155,7 @@ class NotifyServer
      */
     public function notify($client, $entity, $keying)
     {
+        $this->dbClass->logger->setDebugMessage("[NotifyServer] notify", 2);
 
     }
 }

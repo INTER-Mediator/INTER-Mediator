@@ -171,6 +171,8 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
 
     public function matchInRegistered($clientId, $entity, $pkArray)
     {
+        $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] matchInRegistered / clientId={$clientId}, entity={$entity}, pkArray=" . var_export($pkArray, true));
+
         $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
         $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
         if (!$this->dbClass->setupConnection()) { //Establish the connection
@@ -200,13 +202,13 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
 
     public function appendIntoRegistered($clientId, $entity, $pkField, $pkArray)
     {
-        $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] clientId={$clientId}, entity={$entity}, pkField={$pkField} pkArray=" . var_export($pkArray, true));
+        $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] appendIntoRegistered / clientId={$clientId}, entity={$entity}, pkField={$pkField}, pkArray=" . var_export($pkArray, true));
         //$this->logger->setDebugMessage("[DB_Notification_Handler_PDO] contextDef=" . var_export($this->dbSettings->getDataSourceTargetArray(), true));
 
         $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
         $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
 //        $contextDef = $this->dbSettings->getDataSourceTargetArray();
-        if (!$pkField ) {
+        if (!$pkField) {
             $this->dbClass->errorMessageStore("The entity {$entity} doesn't have the 'key'.");
             return false;
         }
@@ -244,7 +246,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                 }
             }
 
-            $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] content=" . var_export($conditionToContent[$row['conditions']], true));
+            // $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] content=" . var_export($conditionToContent[$row['conditions']], true));
 
             if (in_array($pkArray[0], $conditionToContent[$row['conditions']])) {
                 $targetClients[] = $row['clientid'];

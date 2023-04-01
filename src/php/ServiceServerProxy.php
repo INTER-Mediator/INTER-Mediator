@@ -10,6 +10,7 @@
 namespace INTERMediator;
 
 use DateTime;
+use INTERMediator\DB\Logger;
 
 $gSSPInstance = null;
 
@@ -76,37 +77,49 @@ class ServiceServerProxy
         if ($this->dontAutoBoot || $this->dontUse) {
             $ssStatus = $this->isActive();
             if (!$ssStatus) {
-                $this->messages[] = $this->messageHead . 'Service Server is NOT working so far.';
+                $message = $this->messageHead . 'Service Server is NOT working so far.';
+                $this->messages[] = $message;
+                $logger->setDebugMessage("[ServiceServerProxy] {$message}");
             }
             return $ssStatus;
         } else {
-            if (!$this->isServerStartable()) {
+            if (!$this->isServerStartable()) { // Check the home directory can be writable.
                 $userName = IMUtil::getServerUserName();
                 $userHome = IMUtil::getServerUserHome();
-                $this->errors[] = $this->messageHead . "Service Server can't boot because the root directory " .
+                $message = $this->messageHead . "Service Server can't boot because the root directory " .
                     "({$userHome}) of the web server user ({$userName})  isn't writable.";
+                $this->messages[] = $message;
                 return false;
             }
+            $isStartCLI = false;
+            if (php_sapi_name() == 'cli') { // It's executing with command line interface.
+                $message = $this->messageHead . "[ServiceServerProxy] php_sapi_name() returns=" . php_sapi_name();
+                $this->messages[] = $message;
+                $isStartCLI = true; // Do nothing; that is no try to boot the service server.
+            }
+
             $waitSec = 3;
             $startDT = new DateTime();
-            $counterInit = $counter = 5;
+            $counterInit = $counter = $isStartCLI ? 1 : 5;
             $isStartServer = false;
             while (!$this->isActive()) {
-                if (!$isStartServer) {
+                if (!$isStartServer && !$isStartCLI) {
                     $this->startServer();
                     $isStartServer = true;
                 }
                 $counter -= 1;
 
                 if ($counter < 1) {
-                    $this->errors[] = $this->messageHead . "Service Server couldn't boot in spite of {$counterInit} times trial.";
+                    $message = $this->messageHead . "Service Server couldn't boot in spite of {$counterInit} times trial.";
+                    $this->messages[] = $message;
                     return false;
                 }
 
                 $intObj = (new DateTime())->diff($startDT, true);
                 $intSecs = ((((($intObj->y * 30) + $intObj->m) * 12 + $intObj->d) * 24 + $intObj->h) * 60 + $intObj->i) * 60 + $intObj->s;
                 if ($intSecs > $waitSec) {
-                    $this->errors[] = $this->messageHead . 'Service Server could not be available for timeout.';
+                    $message = $this->messageHead . 'Service Server could not be available for timeout.';
+                    $this->messages[] = $message;
                     return false;
                 }
                 sleep(1.0);
@@ -228,7 +241,8 @@ class ServiceServerProxy
 
         $logFile = $this->foreverLog ?? (tempnam(sys_get_temp_dir(), 'IMSS-') . ".log");
         $options = "-a -l {$logFile} --minUptime 5000 --spinSleepTime 5000";
-        $originURL = (isset($_SERVER['HTTPS']) ? "https://" : "http://") . "{$_SERVER['HTTP_HOST']}";
+        $hostName = $_SERVER['HTTP_HOST'] ?? '*';
+        $originURL = (isset($_SERVER['HTTPS']) ? "https://" : "http://") . $hostName;
         $cmd = "{$forever} start {$options} {$scriptPath} {$this->paramsPort} {$dq}{$originURL}{$dq}";
         if ($this->serviceServerKey && $this->serviceServerCert) {
             $cmd .= " {$dq}{$this->serviceServerKey}{$dq} ";
@@ -289,10 +303,14 @@ class ServiceServerProxy
 
     public function sync($channels, $operation, $data): bool
     {
+        $logger = Logger::getInstance();
+        $logger->setDebugMessage("[ServiceServerProxy] sync");
         if (!$this->checkServiceServer()) {
+            $logger->setDebugMessage("[ServiceServerProxy] return false");
             return false;
         }
         $result = $this->callServer("trigger", ['clients' => $channels, 'operation' => $operation, 'data' => $data]);
+        $logger->setDebugMessage("[ServiceServerProxy] callServer result={$result}");
         return true;
     }
 

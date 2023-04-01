@@ -1997,6 +1997,24 @@ const INTERMediator = {
     }
   },
 
+  setRecordStart: (contextName, limit) => {
+    'use strict'
+    const value = INTERMediator.recordStart
+    value[contextName] = limit
+    INTERMediator.recordStart = value
+    IMLibLocalContext.archive()
+  },
+
+  clearRecordStart: (contextName) => {
+    'use strict'
+    const value = INTERMediator.recordStart
+    if (value[contextName]) {
+      delete value[contextName]
+      INTERMediator.recordStart = value
+      IMLibLocalContext.archive()
+    }
+  },
+
   localizing: () => {
     const targetNodes = document.querySelectorAll("*[data-im-locale]");
     for (const node of targetNodes) {

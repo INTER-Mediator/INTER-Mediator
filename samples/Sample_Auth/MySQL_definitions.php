@@ -53,6 +53,7 @@ IM_Entry(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
             'repeat-control' => 'insert delete',
+            'sync-control' => 'create update delete',
 //            'authentication' => array(
 ////                'read' => array( /* load, update, new, delete*/
 ////                    'group' => array("group1","group2"),
@@ -84,6 +85,7 @@ IM_Entry(
             'aggregation-select' => 'cor_way_kind.*,contact_kind.name as name_kind',
             'aggregation-from' => 'cor_way_kind INNER JOIN contact_kind ON cor_way_kind.kind_id = contact_kind.id',
             'key' => 'id',
+            'sync-control' => 'create update delete',
             'relation' => [
                 [
                     'foreign-key' => 'way_id',
@@ -99,6 +101,7 @@ IM_Entry(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
             'repeat-control' => 'insert delete',
+            'sync-control' => 'create update delete',
 //            'authentication' => array(
 //                'all' => array( /* load, update, new, delete*/
 //                    'user' => array(),
@@ -128,7 +131,7 @@ IM_Entry(
 //            'group-table' => 'authgroup',
 //            'corresponding-table' => 'authcor',
 //            'challenge-table' => 'issuedhash',
-            'authexpired' => '100', // Set as seconds.
+            'authexpired' => '15', // Set as seconds.
             'storing' => 'credential', // session-storage, 'cookie'(default), 'cookie-domainwide', 'none', credential
             'realm' => 'Sample_Auth/MySQL_definitions', //
 //            'email-as-username' => true,

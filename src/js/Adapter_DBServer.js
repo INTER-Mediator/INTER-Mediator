@@ -267,6 +267,9 @@ const INTERMediator_DBAdapter = {
                     location.href = INTERMediatorOnPage.loginURL
                   }
                 }
+                if (INTERMediatorOnPage.updatingWithSynchronize > 0 || INTERMediator.partialConstructing) {
+                  location.reload() // It might stop here.
+                }
                 if (authAgainProc) {
                   authAgainProc(myRequest)
                 } else if (!accessURL.match(/access=challenge/)) {
@@ -624,6 +627,9 @@ const INTERMediator_DBAdapter = {
       } else {
         recordLimit = args.records
       }
+      if (INTERMediator.recordLimit && INTERMediator.recordLimit[args.name]) {
+        recordLimit = parseInt(INTERMediator.recordLimit[args.name])
+      }
     }
 
     if (args.primaryKeyOnly) {
@@ -649,8 +655,11 @@ const INTERMediator_DBAdapter = {
       }
     }
     if (args.useoffset && INTERMediator.startFrom !== null) {
-      params += '&start=' + encodeURIComponent(INTERMediator.startFrom)
+      params += '&start=' + parseInt(INTERMediator.startFrom)
+    } else if (INTERMediator.recordStart && INTERMediator.recordStart[args.name]) {
+      params += '&start=' + parseInt(INTERMediator.recordStart[args.name])
     }
+
     extCount = 0
     extCountSort = 0;
     conditions = []
