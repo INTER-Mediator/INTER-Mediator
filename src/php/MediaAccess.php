@@ -21,26 +21,60 @@ use Aws\S3\S3Client;
 use msyk\DropboxAPIShortLivedToken\DropboxClientModified;
 use msyk\DropboxAPIShortLivedToken\AutoRefreshingDropBoxTokenService;
 
-//use phpseclib\Crypt\RSA;
-
+/**
+ *
+ */
 class MediaAccess
 {
+    /**
+     * @var string
+     */
     private $disposition = "inline";    // default disposition.
+    /**
+     * @var
+     */
     private $targetKeyField;    // set with the analyzeTarget method.
+    /**
+     * @var
+     */
     private $targetKeyValue;  // set with the analyzeTarget method.
+    /**
+     * @var null
+     */
     private $targetContextName = null;  // set with the analyzeTarget method.
+    /**
+     * @var
+     */
     private $cookieUser;    // set with the checkAuthentication method.
+    /**
+     * @var array|mixed
+     */
     private $accessLogLevel = 0;
+    /**
+     * @var array
+     */
     private $outputMessage = [];
+    /**
+     * @var bool
+     */
     private $thrownException = false;
 
+    /**
+     * @var null
+     */
     private $dbProxyInstance = null;
 
+    /**
+     *
+     */
     public function __construct()
     {
         $this->accessLogLevel = Params::getParameterValue("accessLogLevel", false);
     }
 
+    /**
+     * @return array
+     */
     public function getResultForLog(): array
     {
         if ($this->accessLogLevel < 1) {
@@ -51,28 +85,31 @@ class MediaAccess
         return $this->outputMessage;
     }
 
+    /**
+     * @return void
+     */
     public function asAttachment()
     {
         $this->disposition = "attachment";
     }
 
+    /**
+     * @param $message
+     * @return void
+     */
     private function errorHandling($message)
     {
         error_log($message);
         $this->dbProxyInstance->logger->setErrorMessage($message);
     }
 
-    private function isPossibleSchema($file): bool
-    {
-        $schema = ["https:", "http:", "class:", "s3:", "dropbox:"];
-        foreach ($schema as $scheme) {
-            if (strpos($file, $scheme) === 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    /**
+     * @param $dbProxyInstance
+     * @param $options
+     * @param $file
+     * @return void
+     * @throws \Exception
+     */
     public function processing($dbProxyInstance, $options, $file)
     {
         $this->dbProxyInstance = $dbProxyInstance;
@@ -90,7 +127,8 @@ class MediaAccess
             $isURL = $this->isPossibleSchema($file);
             $mediaRootDir = $options['media-root-dir'] ?? Params::getParameterValue('mediaRootDir', null) ?? null;
             if (!$isURL && !$mediaRootDir) {
-                $erMessage = "[INTER-Mediator] This MediaAccess operation requires the option value of the 'media-root-dir' key.";
+                $erMessage = "[INTER-Mediator] MediaAccess operation requires the option value of the 'media-root-dir' "
+                    . "key or \$mediaRootDir variable in the params.php file.";
                 echo $erMessage;
                 $this->errorHandling($erMessage);
                 $this->exitAsError(200); // The file accessing requires the media-root-dir keyed value.
@@ -167,157 +205,68 @@ class MediaAccess
             $content = false;
             $dq = '"';
 
-            if (!$isURL) { // File path.
-                if (!empty($file) && !file_exists($target)) {
-                    $this->errorHandling("[INTER-Mediator] The file does't exist: {$target}.");
-                    $this->exitAsError(500);
-                }
-                $content = file_get_contents($target);
-                $fileName = basename($file);
-                $qPos = strpos($fileName, "?");
-                if ($qPos !== false) {
-                    $fileName = substr($fileName, 0, $qPos);
-                }
-                header("Content-Type: " . IMUtil::getMimeType($fileName));
-                header("Content-Length: " . strlen($content));
-                header("Content-Disposition: {$this->disposition}; filename={$dq}" . urlencode($fileName) . $dq);
-                $util = new IMUtil();
-                $util->outputSecurityHeaders();
-                $this->outputImage($content);
-            } else if (stripos($target, 'http://') === 0 || stripos($target, 'https://') === 0) { // http or https
-                $parsedUrl = parse_url($target);
-                if (get_class($dbProxyInstance->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') { // for FileMaker Data API
-                    if (isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver') { // Set As 'localserver'
-                        $target = 'http://' . $parsedUrl['user'] . ':' . $parsedUrl['pass'] . '@127.0.0.1:1895' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
-                        if (function_exists('curl_init')) {
-                            $session = curl_init($target);
-                            curl_setopt($session, CURLOPT_HEADER, true);
-                            curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-                            $content = curl_exec($session);
-                            $headerSize = curl_getinfo($session, CURLINFO_HEADER_SIZE);
-                            $headers = substr($content, 0, $headerSize);
-                            curl_close($session);
-                            $sessionKey = '';
-                            if ($header = explode("\r\n", $headers)) {
-                                foreach ($header as $line) {
-                                    if ($line) {
-                                        $h = explode(': ', $line);
-                                        if (isset($h[0]) && isset($h[1]) && $h[0] == 'Set-Cookie') {
-                                            $sessionKey = str_replace(
-                                                '; HttpOnly', '', str_replace('X-FMS-Session-Key=', '', $h[1] ?? "")
-                                            );
-                                        }
-                                    }
-                                }
-                            }
-                            $target = 'http://127.0.0.1:1895' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
-                            $headers = array('X-FMS-Session-Key: ' . $sessionKey);
-                            $session = curl_init($target);
-                            curl_setopt($session, CURLOPT_HEADER, false);
-                            curl_setopt($session, CURLOPT_HTTPHEADER, $headers);
-                            curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-                            $content = curl_exec($session);
-                            curl_close($session);
-                        } else {
-                            $this->exitAsError(500);
-                        }
-                    } else { // Other settings
-                        $dbProxyInstance->dbClass->setupFMDataAPIforDB(NULL, 1);
-                        $content = base64_decode($dbProxyInstance->dbClass->fmData->getContainerData($target));
-                    }
-                } else if (intval(get_cfg_var('allow_url_fopen')) === 1) {
-                    $content = file_get_contents($target);
-                } else {
-                    if (function_exists('curl_init')) {
-                        $session = curl_init($target);
-                        curl_setopt($session, CURLOPT_HEADER, false);
-                        curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-                        $content = curl_exec($session);
-                        curl_close($session);
-                    } else {
-                        $this->exitAsError(500);
-                    }
-                }
-                $fileName = basename($file);
-                $qPos = strpos($fileName, "?");
-                if ($qPos !== false) {
-                    $fileName = str_replace("%20", " ", substr($fileName, 0, $qPos) ?? "");
-                }
-                header("Content-Type: " . IMUtil::getMimeType($fileName));
-                header("Content-Length: " . strlen($content));
-                header("Content-Disposition: {$this->disposition}; filename={$dq}"
-                    . str_replace("+", "%20", urlencode($fileName) ?? "") . $dq);
-                $util = new IMUtil();
-                $util->outputSecurityHeaders();
-                $this->outputImage($content);
-            } else if (stripos($target, 'class://') === 0) { // class
+            if (stripos($target, 'class://') === 0) { // class url is special handling.
                 $noscheme = substr($target, 8);
                 $className = substr($noscheme, 0, strpos($noscheme, "/"));
                 $processingObject = new $className();
                 $processingObject->processing($contextRecord, $options);
-            } else if (stripos($target, 's3://') === 0) {
-                [$accessRegion, $rootBucket, $s3AccessKey, $s3AccessSecret, $s3AccessProfile]
-                    = Params::getParameterValue(
-                    ["accessRegion", "rootBucket", "s3AccessKey", "s3AccessSecret", "s3AccessProfile"], null);
-                $startOfPath = strpos($target, "/", 5);
-                $urlPath = substr($target, $startOfPath + 1);
-                $fileName = basename($urlPath);
-                $clientArgs = ['version' => 'latest', 'region' => $accessRegion];
-                if ($s3AccessProfile) {
-                    $clientArgs['profile'] = $s3AccessProfile;
-                } else if ($s3AccessKey && $s3AccessSecret) {
-                    $clientArgs['credentials'] = new Credentials($s3AccessKey, $s3AccessSecret);
-                }
-                $s3 = new S3Client($clientArgs);
-                $objectSpec = ['Bucket' => $rootBucket, 'Key' => $urlPath,];
-                try {
-                    $result = $s3->getObject($objectSpec);
-                } catch (S3Exception $e) {
-                    $this->errorHandling($e->getMessage());
-                    $this->exitAsError(500);
-                }
-                if (interface_exists($result['Body'], 'Psr\Http\Message\StreamInterface')) {
-                    $content = $result['Body']->getContents();
-                } else {
-                    $content = $result['Body'];
-                }
+            } else {
+                $className = $this->getClassNameForMedia($isURL, $target); // Decide class from URL
+                $dbProxyInstance->logger->setDebugMessage("Instantiate the class '{$className}'", 2);
+                $processing = new $className();
+                $content = $processing->getMedia($file, $target, $dbProxyInstance);
+                $fileName = $processing->getFileName($file);
+                header("Content-Type: " . IMUtil::getMimeType($fileName));
+                header("Content-Length: " . strlen($content));
+                header("Content-Disposition: {$this->disposition}; filename={$dq}{$fileName}{$dq}");
+                $util = new IMUtil();
+                $util->outputSecurityHeaders();
+                $this->outputImage($content);
 
-                header("Content-Type: " . IMUtil::getMimeType($fileName));
-                header("Content-Length: " . strlen($content));
-                header("Content-Disposition: {$this->disposition}; filename={$dq}"
-                    . str_replace("+", "%20", urlencode($fileName) ?? "") . $dq);
-                $util = new IMUtil();
-                $util->outputSecurityHeaders();
-                $this->outputImage($content);
-            } else if (stripos($target, 'dropbox://') === 0) {
-                $appKey = Params::getParameterValue('dropboxAppKey', '');
-                $appSecret = Params::getParameterValue('dropboxAppSecret', '');
-                $refreshToken = Params::getParameterValue('dropboxRefreshToken', '');
-                $accessTokenPath = Params::getParameterValue('dropboxAccessTokenPath', '');
-                $startOfPath = strpos($target, "/", 5);
-                $urlPath = substr($target, $startOfPath + 2);
-                $fileName = basename($urlPath);
-                try {
-                    $tokenProvider = new AutoRefreshingDropBoxTokenService(
-                        $refreshToken, $appKey, $appSecret, $accessTokenPath);
-                    $client = new DropboxClientModified($tokenProvider);
-                    $content = $client->download($urlPath);
-                } catch (\Exception $ex) {
-                    $this->errorHandling($ex->getMessage());
-                    $this->exitAsError(500);
-                }
-                header("Content-Type: " . IMUtil::getMimeType($fileName));
-                header("Content-Length: " . strlen($content));
-                header("Content-Disposition: {$this->disposition}; filename={$dq}"
-                    . str_replace("+", "%20", urlencode($fileName) ?? "") . $dq);
-                $util = new IMUtil();
-                $util->outputSecurityHeaders();
-                $this->outputImage($content);
             }
         } catch (\Exception $ex) {
             $this->errorHandling($ex->getMessage());
             $this->exitAsError(500);
         }
+    }
+
+    /**
+     * @param $isURL
+     * @param $target
+     * @return string
+     * @throws \Exception
+     */
+    private function getClassNameForMedia($isURL, $target)
+    {
+        if (!$isURL) { // File path.
+            $className = "FileSystem";
+        } else if (stripos($target, 'http://') === 0 || stripos($target, 'https://') === 0) { // http or https
+            $className = "FileMakerContainer";
+        } else if (stripos($target, 's3://') === 0) {
+            $className = "AWSS3";
+        } else if (stripos($target, 'dropbox://') === 0) {
+            $className = "Dropbox";
+        } else if (stripos($target, 'file://') === 0) {
+            $className = "FileURL";
+        } else {
+            throw new \Exception('Undefined schema in URL.');
+        }
+        return "INTERMediator\\Media\\{$className}";
+    }
+
+    /**
+     * @param $file
+     * @return bool
+     */
+    private function isPossibleSchema($file): bool
+    {
+        $schema = ["https:", "http:", "class:", "s3:", "dropbox:", "file:"];
+        foreach ($schema as $scheme) {
+            if (strpos($file, $scheme) === 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -352,45 +301,16 @@ class MediaAccess
      * @param $isURL
      * @return array
      */
-    public function checkForFileMakerMedia($dbProxyInstance, $options, $file, $isURL): array
+    private function checkForFileMakerMedia($dbProxyInstance, $options, $file, $isURL): array
     {
         if (strpos($file, '/fmi/xml/cnt/') === 0 ||
             strpos($file, '/Streaming_SSL/MainDB') === 0) {
             // FileMaker's container field storing an image.
-//            if (isset($options['authentication']['user'][0])
-//                && $options['authentication']['user'][0] == 'database_native'
-//            ) {
-//                $passPhrase = '';
-//                $generatedPrivateKey = ''; // avoid errors for defined in params.php.
-//
-//                $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
-//                $currentDirParam = $imRootDir . 'params.php';
-//                $parentDirParam = dirname($imRootDir) . DIRECTORY_SEPARATOR . 'params.php';
-//                if (file_exists($parentDirParam)) {
-//                    include($parentDirParam);
-//                } else if (file_exists($currentDirParam)) {
-//                    include($currentDirParam);
-//                }
-//                $rsa = new RSA();
-//                $rsa->setPassword($passPhrase);
-//                $rsa->loadKey($generatedPrivateKey);
-//                $rsa->setEncryptionMode(RSA::ENCRYPTION_PKCS1);
-//                $cookieNameUser = '_im_username';
-//                $cookieNamePassword = '_im_crypted';
-//                $credential = isset($_COOKIE[$cookieNameUser]) ? urlencode($_COOKIE[$cookieNameUser]) : '';
-//                if (isset($_COOKIE[$cookieNamePassword]) && strlen($_COOKIE[$cookieNamePassword]) > 0) {
-//                    $credential .= ':' . urlencode($rsa->decrypt(base64_decode($_COOKIE[$cookieNamePassword])));
-//                }
-//                $urlHost = $dbProxyInstance->dbSettings->getDbSpecProtocol() . '://' . $credential . '@'
-//                    . $dbProxyInstance->dbSettings->getDbSpecServer() . ':'
-//                    . $dbProxyInstance->dbSettings->getDbSpecPort();
-//            } else {
             $urlHost = $dbProxyInstance->dbSettings->getDbSpecProtocol() . "://"
                 . urlencode($dbProxyInstance->dbSettings->getDbSpecUser()) . ":"
                 . urlencode($dbProxyInstance->dbSettings->getDbSpecPassword()) . "@"
                 . $dbProxyInstance->dbSettings->getDbSpecServer() . ":"
                 . $dbProxyInstance->dbSettings->getDbSpecPort();
-//            }
             $file = $urlHost . $file;
             $oldLocale = setlocale(LC_CTYPE, 0);
             setlocale(LC_CTYPE, 'C');
@@ -482,6 +402,10 @@ class MediaAccess
         return null;
     }
 
+    /**
+     * @param $target
+     * @return bool
+     */
     private function analyzeTarget($target): bool
     {
         // The following properties are the results of this method.
@@ -515,6 +439,10 @@ class MediaAccess
         return $result;
     }
 
+    /**
+     * @param $content
+     * @return void
+     */
     private function outputImage($content)
     {
         $rotate = false;

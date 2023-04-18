@@ -13,23 +13,48 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-
 namespace INTERMediator\Media;
 
+use msyk\DropboxAPIShortLivedToken\DropboxClientModified;
 use Spatie\Dropbox\Client;
 use msyk\DropboxAPIShortLivedToken\AutoRefreshingDropBoxTokenService;
 use INTERMediator\DB\Proxy;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
-class Dropbox implements UploadingSupport
+/**
+ *
+ */
+class Dropbox implements UploadingSupport, DownloadingSupport
 {
+    /**
+     * @var array|mixed
+     */
     private $appKey = null;
+    /**
+     * @var array|mixed
+     */
     private $appSecret = null;
+    /**
+     * @var array|mixed
+     */
     private $refreshToken = null;
+    /**
+     * @var array|mixed
+     */
     private $accessTokenPath = null;
+    /**
+     * @var array|mixed
+     */
     private $rootInDropbox = null;
+    /**
+     * @var null
+     */
+    private $fileName = null;
 
+    /**
+     *
+     */
     public function __construct()
     {
         $this->appKey = Params::getParameterValue('dropboxAppKey', '');
@@ -39,6 +64,55 @@ class Dropbox implements UploadingSupport
         $this->rootInDropbox = Params::getParameterValue('rootInDropbox', '/');
     }
 
+    /**
+     * @param $mediaAccess
+     * @param $file
+     * @param $target
+     * @param $dbProxyInstance
+     * @param $content
+     * @return string
+     * @throws \Exception
+     */
+    public function getMedia($file, $target, $dbProxyInstance)
+    {
+        $startOfPath = strpos($target, "/", 5);
+        $urlPath = substr($target, $startOfPath + 2);
+        $this->fileName = str_replace("+", "%20", urlencode(basename($urlPath)) ?? "");
+        try {
+            $tokenProvider = new AutoRefreshingDropBoxTokenService(
+                $this->refreshToken, $this->appKey, $this->appSecret, $this->accessTokenPath);
+            $client = new DropboxClientModified($tokenProvider);
+            $content = $client->download($urlPath);
+        } catch (\Exception $ex) {
+            throw $ex;
+        }
+        return $content;
+    }
+
+    /**
+     * @param $file
+     * @return null|string
+     */
+    public function getFileName($file)
+    {
+        return $this->fileName;
+    }
+
+    /**
+     * @param $db
+     * @param $url
+     * @param $options
+     * @param $files
+     * @param $noOutput
+     * @param $field
+     * @param $contextname
+     * @param $keyfield
+     * @param $keyvalue
+     * @param $datasource
+     * @param $dbspec
+     * @param $debug
+     * @return void
+     */
     public function processing($db, $url, $options, $files, $noOutput, $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug)
     {
         $dbAlt = new Proxy();

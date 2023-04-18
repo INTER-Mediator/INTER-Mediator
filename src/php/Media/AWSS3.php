@@ -23,26 +23,119 @@ use INTERMediator\DB\Proxy;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
-class AWSS3 implements UploadingSupport
+class AWSS3 implements UploadingSupport, DownloadingSupport
 {
+    /**
+     * @var array|mixed
+     */
     private $accessRegion = null;
+    /**
+     * @var array|mixed
+     */
     private $rootBucket = null;
+    /**
+     * @var array|mixed
+     */
     private $applyingACL = null;
+    /**
+     * @var bool
+     */
     private $isSuppliedSecret = false;
+    /**
+     * @var array|mixed
+     */
     private $s3AccessKey = null;
+    /**
+     * @var array|mixed
+     */
     private $s3AccessSecret = null;
+    /**
+     * @var array|mixed
+     */
     private $s3AccessProfile = null;
+    /**
+     * @var array|mixed
+     */
     private $s3urlCustomize = null;
+    /**
+     * @var null
+     */
+    private $fileName = null;
 
+
+    /**
+     *
+     */
     public function __construct()
     {
-        [$this->accessRegion, $this->rootBucket, $this->applyingACL, $this->s3AccessProfile,
-            $this->s3AccessKey, $this->s3AccessSecret, $this->s3urlCustomize]
-            = Params::getParameterValue(["accessRegion", "rootBucket", "applyingACL",  "s3AccessProfile",
-            "s3AccessKey", "s3AccessSecret", "s3urlCustomize",], [false,false,false,false,false,false,true,]);
+        $this->accessRegion = Params::getParameterValue("accessRegion", false);
+        $this->rootBucket = Params::getParameterValue("rootBucket", false);
+        $this->applyingACL = Params::getParameterValue("applyingACL", false);
+        $this->s3AccessProfile = Params::getParameterValue("s3AccessProfile", false);
+        $this->s3AccessKey = Params::getParameterValue("s3AccessKey", false);
+        $this->s3AccessSecret = Params::getParameterValue("s3AccessSecret", false);
+        $this->s3urlCustomize = Params::getParameterValue("s3urlCustomize", true);
         $this->isSuppliedSecret = $this->s3AccessKey && $this->s3AccessSecret;
     }
 
+    /**
+     * @param $mediaAccess
+     * @param $file
+     * @param $target
+     * @param $dbProxyInstance
+     * @param $content
+     * @return mixed|null
+     */
+    public function getMedia($file, $target, $dbProxyInstance)
+    {
+        $startOfPath = strpos($target, "/", 5);
+        $urlPath = substr($target, $startOfPath + 1);
+        $this->fileName = str_replace("+", "%20", urlencode(basename($urlPath)) ?? "");
+        $clientArgs = ['version' => 'latest', 'region' => $this->accessRegion];
+        if ($this->s3AccessProfile) {
+            $clientArgs['profile'] = $this->s3AccessProfile;
+        } else if ($this->s3AccessKey && $this->s3AccessSecret) {
+            $clientArgs['credentials'] = new Credentials($this->s3AccessKey, $this->s3AccessSecret);
+        }
+        $s3 = new S3Client($clientArgs);
+        $objectSpec = ['Bucket' => $this->rootBucket, 'Key' => $urlPath,];
+        try {
+            $result = $s3->getObject($objectSpec);
+        } catch (S3Exception $e) {
+            throw $e;
+        }
+        if (interface_exists($result['Body'], 'Psr\Http\Message\StreamInterface')) {
+            $content = $result['Body']->getContents();
+        } else {
+            $content = $result['Body'];
+        }
+        return $content;
+    }
+
+    /**
+     * @param $file
+     * @return null
+     */
+    public function getFileName($file)
+    {
+        return $this->fileName;
+    }
+
+    /**
+     * @param $db
+     * @param $url
+     * @param $options
+     * @param $files
+     * @param $noOutput
+     * @param $field
+     * @param $contextname
+     * @param $keyfield
+     * @param $keyvalue
+     * @param $datasource
+     * @param $dbspec
+     * @param $debug
+     * @return void
+     */
     public function processing($db, $url, $options, $files, $noOutput, $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug)
     {
         $dbAlt = new Proxy();

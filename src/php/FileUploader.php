@@ -121,31 +121,9 @@ class FileUploader
 
         $this->db->logger->setDebugMessage("FileUploader class's processing starts: files=" . var_export($files, true));
 
-        $className = "FileSystem";
-        $dbProxyContext = $this->db->dbSettings->getDataSourceTargetArray();
-
-        if (($dbspec['db-class'] === 'FileMaker_FX' || $dbspec['db-class'] === 'FileMaker_DataAPI') &&
-            isset($dbProxyContext['file-upload'])) {
-            foreach ($dbProxyContext['file-upload'] as $item) {
-                if (isset($item['container'])
-                    && (((boolean)$item['container'] === TRUE)
-                        || ($item['container'] === 'FileMaker'))) {
-                    $className = "FileMakerContainer";
-                    break;
-                }
-            }
-        }
-        if (isset($dbProxyContext['file-upload'])) {
-            foreach ($dbProxyContext['file-upload'] as $item) {
-                if (isset($item['container']) && (strtolower($item['container']) === 's3')) {
-                    $className = "AWSS3";
-                    break;
-                } else if (isset($item['container']) && (strtolower($item['container']) === 'dropbox')) {
-                    $className = "Dropbox";
-                    break;
-                }
-            }
-        }
+        $contextDef = $this->db->dbSettings->getDataSourceTargetArray();
+        $dbClass = ($contextDef['db-class'] ?? ($dbspec['db-class'] ?? Params::getParameterValue('dbClass', '')));
+        $className = $this->getClassNameForMedia($dbClass);
 
         if (isset($_POST['_im_redirect'])) {
             $this->url = $this->getRedirectUrl($_POST['_im_redirect']);
@@ -252,5 +230,43 @@ class FileUploader
         }
 
         return FALSE;
+    }
+
+
+    /**
+     * @param $dbclass
+     * @return string
+     */
+    private function getClassNameForMedia($dbclass): string
+    {
+        $className = "FileSystem";
+        $contextDef = $this->db->dbSettings->getDataSourceTargetArray();
+
+        if (($dbclass === 'FileMaker_FX' || $dbclass === 'FileMaker_DataAPI') &&
+            isset($contextDef['file-upload'])) {
+            foreach ($contextDef['file-upload'] as $item) {
+                if (isset($item['container'])
+                    && (((boolean)$item['container'] === TRUE)
+                        || ($item['container'] === 'FileMaker'))) {
+                    $className = "FileMakerContainer";
+                    break;
+                }
+            }
+        }
+        if (isset($contextDef['file-upload'])) {
+            foreach ($contextDef['file-upload'] as $item) {
+                if (isset($item['container']) && (strtolower($item['container']) === 's3')) {
+                    $className = "AWSS3";
+                    break;
+                } else if (isset($item['container']) && (strtolower($item['container']) === 'dropbox')) {
+                    $className = "Dropbox";
+                    break;
+                }else if (isset($item['container']) && (strtolower($item['container']) === 'fileurl')) {
+                    $className = "FileURL";
+                    break;
+                }
+            }
+        }
+        return $className;
     }
 }

@@ -18,12 +18,114 @@ namespace INTERMediator\Media;
 
 use INTERMediator\IMUtil;
 use INTERMediator\DB\Proxy;
+use INTERMediator\Params;
 
-class FileMakerContainer implements UploadingSupport
+/**
+ *
+ */
+class FileMakerContainer implements UploadingSupport, DownloadingSupport
 {
+    /**
+     * @param $target
+     * @param $dbProxyInstance
+     * @param $content
+     * @param $file
+     * @param string $dq
+     * @return void
+     * @throws \Exception
+     */
+    public function getMedia($file, $target, $dbProxyInstance)
+    {
+        $dq = '"';
+        $parsedUrl = parse_url($target);
+        if (get_class($dbProxyInstance->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') { // for FileMaker Data API
+            if (isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver') { // Set As 'localserver'
+                $target = 'http://' . $parsedUrl['user'] . ':' . $parsedUrl['pass'] . '@127.0.0.1:1895' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
+                if (function_exists('curl_init')) {
+                    $session = curl_init($target);
+                    curl_setopt($session, CURLOPT_HEADER, true);
+                    curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+                    $content = curl_exec($session);
+                    $headerSize = curl_getinfo($session, CURLINFO_HEADER_SIZE);
+                    $headers = substr($content, 0, $headerSize);
+                    curl_close($session);
+                    $sessionKey = '';
+                    if ($header = explode("\r\n", $headers)) {
+                        foreach ($header as $line) {
+                            if ($line) {
+                                $h = explode(': ', $line);
+                                if (isset($h[0]) && isset($h[1]) && $h[0] == 'Set-Cookie') {
+                                    $sessionKey = str_replace(
+                                        '; HttpOnly', '', str_replace('X-FMS-Session-Key=', '', $h[1] ?? "")
+                                    );
+                                }
+                            }
+                        }
+                    }
+                    $target = 'http://127.0.0.1:1895' . $parsedUrl['path'] . '?' . $parsedUrl['query'];
+                    $headers = array('X-FMS-Session-Key: ' . $sessionKey);
+                    $session = curl_init($target);
+                    curl_setopt($session, CURLOPT_HEADER, false);
+                    curl_setopt($session, CURLOPT_HTTPHEADER, $headers);
+                    curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+                    $content = curl_exec($session);
+                    curl_close($session);
+                } else {
+                    throw new \Exception("CURL doesn't installed here.");
+                }
+            } else { // Other settings
+                $dbProxyInstance->dbClass->setupFMDataAPIforDB(NULL, 1);
+                $content = base64_decode($dbProxyInstance->dbClass->fmData->getContainerData($target));
+            }
+        } else if (intval(get_cfg_var('allow_url_fopen')) === 1) {
+            $content = file_get_contents($target);
+        } else {
+            if (function_exists('curl_init')) {
+                $session = curl_init($target);
+                curl_setopt($session, CURLOPT_HEADER, false);
+                curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+                $content = curl_exec($session);
+                curl_close($session);
+            } else {
+                throw new \Exception("CURL doesn't installed here.");
+            }
+        }
+        return $content;
+    }
+
+    /**
+     * @param $file
+     * @return array|string|string[]
+     */
+    public function getFileName($file)
+    {
+        $fileName = basename($file);
+        $qPos = strpos($fileName, "?");
+        if ($qPos !== false) {
+            $fileName = str_replace("%20", " ", substr($fileName, 0, $qPos) ?? "");
+        }
+        return $fileName;
+    }
+
+    /**
+     * @param $db
+     * @param $url
+     * @param $options
+     * @param $files
+     * @param $noOutput
+     * @param $field
+     * @param $contextname
+     * @param $keyfield
+     * @param $keyvalue
+     * @param $datasource
+     * @param $dbspec
+     * @param $debug
+     * @return void
+     */
     public function processing($db, $url, $options, $files, $noOutput, $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug)
     {
-        if (!isset($options['media-root-dir'])) {
+        $mediaRootDir = $options['media-root-dir'] ?? Params::getParameterValue('mediaRootDir', null) ?? null;
+        if (!$mediaRootDir) {
             if (!is_null($this->url)) {
                 header('Location: ' . $this->url);
             } else {
