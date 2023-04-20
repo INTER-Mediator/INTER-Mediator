@@ -7,6 +7,7 @@ contexts:
         direction: desc
     file-upload:
       - field: vc2
+#        container: FileURL
         context: fileupload
     repeat-control: 'insert delete'
     default-values:

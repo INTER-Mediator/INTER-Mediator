@@ -24,7 +24,7 @@ use INTERMediator\Params;
 /**
  *
  */
-class FileSystem implements UploadingSupport, DownloadingSupport
+class FileURL implements UploadingSupport, DownloadingSupport
 {
     /**
      * @param $mediaAccess
@@ -135,6 +135,7 @@ class FileSystem implements UploadingSupport, DownloadingSupport
                 $result = false;
             }
         }
+        //exec("chmod -R o+x " . escapeshellcmd($fileRoot));
         return [$result, $filePath, $filePartialPath];
     }
 
@@ -193,7 +194,7 @@ class FileSystem implements UploadingSupport, DownloadingSupport
                 $db->initialize($datasource, $options, $dbspec, $debug, $contextname);
                 $db->dbSettings->addExtraCriteria($keyfield, "=", $keyvalue);
                 $db->dbSettings->setFieldsRequired(array($targetFieldName));
-                $db->dbSettings->setValue(array($filePartialPath));
+                $db->dbSettings->setValue(array("file://{$filePath}"));
                 $db->processingRequest("update", true);
                 $dbProxyRecord = $db->getDatabaseResult();
                 if (isset($dbProxyContext['file-upload'])) {
