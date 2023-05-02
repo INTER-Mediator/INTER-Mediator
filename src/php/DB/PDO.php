@@ -197,15 +197,16 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $this->fieldInfo = null;
         $this->mainTableCount = 0;
         $this->mainTableTotalCount = 0;
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
         $updatingTable = $this->dbSettings->getEntityForUpdate();
         $sourceTable = $this->dbSettings->getEntityAsSource();
         $boolFields = $this->handler->getBooleanFields($updatingTable);
 
-        if (!$this->setupConnection()) { //Establish the connection
-            return false;
-        }
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] == 'load' || $condition['db-operation'] == 'read') {
@@ -380,6 +381,10 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     function updateDB($bypassAuth)
     {
         $this->fieldInfo = null;
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $nullableFields = $this->handler->getNullableFields($this->dbSettings->getEntityForUpdate());
@@ -395,9 +400,6 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $boolFields = $this->handler->getBooleanFields($this->dbSettings->getEntityForUpdate());
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
-        if (!$this->setupConnection()) { //Establish the connection
-            return false;
-        }
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] == 'update' && $condition['situation'] == 'pre') {
@@ -519,6 +521,10 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     public function createInDB($isReplace = false)
     {
         $this->fieldInfo = null;
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
@@ -535,9 +541,6 @@ class PDO extends UseSharedObjects implements DBClass_Interface
 
         $setColumnNames = array();
         $setValues = array();
-        if (!$this->setupConnection()) { //Establish the connection
-            return false;
-        }
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
                 if (($condition['db-operation'] == 'new' || $condition['db-operation'] == 'create')
@@ -656,13 +659,13 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     function deleteFromDB()
     {
         $this->fieldInfo = null;
-        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
-        $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
-
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
+
+        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
+        $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
+        $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
@@ -707,6 +710,10 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     function copyInDB()
     {
         $this->fieldInfo = null;
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->dbSettings->getEntityForUpdate();
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
@@ -714,10 +721,6 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
         if (isset($tableInfo['time-fields']) && is_array($tableInfo['time-fields'])) {
             $timeFields = array_merge($timeFields, $tableInfo['time-fields']);
-        }
-
-        if (!$this->setupConnection()) { //Establish the connection
-            return false;
         }
 
         if (isset($tableInfo['script'])) {
