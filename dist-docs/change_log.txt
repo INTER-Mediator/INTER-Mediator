@@ -21,6 +21,7 @@ Ver.11 (in development)
 - Introduced the $mediaRootDir variable in params.php file for setting the media root directory. This is prior to the
   media-root-dir setting in option area of definition file.
 - Add methods setRecordStart and clearRecordStart on INTERMediator class.
+- The FileURL container is introduced. It can store a 'file:///...' url for an uploaded file with absolute path.
 - [BUG FIX] In same case of using aggregation-select/from the error happened about the view or table didn't exist.
 - [BUG FIX] INTERMediator.additionalFieldValueOnDelete uses in the Definition File editor, so retrieved it.
 - [INFO] About sample SQL files in the dist-docs directory, their extensions changed to .sql from .txt.

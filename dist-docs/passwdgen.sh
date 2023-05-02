@@ -18,10 +18,10 @@
 ECHO="/bin/echo"
 
 optSQL=0
-optGen=0
 csvFile=
 userName=
 password=
+SOLT=$(cat /dev/urandom | head -c 10 | base64 | fold -w 4 | head -n 1)
 
 check_arg_exit(){
 	if [ -z "$OPTARG" ]; then
@@ -32,7 +32,6 @@ check_arg_exit(){
 
 # generate_hash_passwd username password
 generate_hash_passwd(){
-    SOLT=$(cat /dev/urandom | head -c 10 | base64 | fold -w 4 | head -n 1)
     VALUE=$(${ECHO} -n "$2${SOLT}" | openssl sha256 -sha256)
     for i in {1..4999}
     do
@@ -48,7 +47,7 @@ generate_hash_passwd(){
     fi
 }
 
-while getopts "sgc:u:p:-:" opt; do
+while getopts "sc:u:p:t:-:" opt; do
 	if [ ${opt} = "-" ]; then
 		opt=$(echo ${OPTARG} | awk -F'=' '{print $1}')
 		OPTARG=$(echo ${OPTARG} | awk -F'=' '{print $2}')
@@ -57,9 +56,6 @@ while getopts "sgc:u:p:-:" opt; do
 	case "$opt" in
 		s | sql)
 			optSQL=1
-			;;
-		g | generate)
-			optGen=1
 			;;
 		c | csv)
 		    check_arg_exit
@@ -73,6 +69,10 @@ while getopts "sgc:u:p:-:" opt; do
 		    check_arg_exit
 		    password="${OPTARG}"
 			;;
+		t | solt)
+		    check_arg_exit
+		    SOLT="${OPTARG}"
+			;;
 		? )
 			exit 1
 			;;
@@ -81,6 +81,12 @@ while getopts "sgc:u:p:-:" opt; do
 			exit 1
 	esac
 done
+
+if [ ${#SOLT} -ne 4 ]
+then
+  echo "The SOLT has to be just 4 byte." 1>&2
+  exit 2
+fi
 
 if [ ${#csvFile} -gt 0 ]
 then

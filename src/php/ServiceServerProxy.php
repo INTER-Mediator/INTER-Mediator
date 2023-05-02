@@ -79,6 +79,7 @@ class ServiceServerProxy
             if (!$ssStatus) {
                 $message = $this->messageHead . 'Service Server is NOT working so far.';
                 $this->messages[] = $message;
+                $logger = Logger::getInstance();
                 $logger->setDebugMessage("[ServiceServerProxy] {$message}");
             }
             return $ssStatus;
