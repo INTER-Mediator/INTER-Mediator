@@ -30,7 +30,8 @@ CREATE USER IF NOT EXISTS 'web'@'localhost' IDENTIFIED BY 'password';
 
 # Grant to All operations for all objects with web account
 GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO 'web'@'localhost';
-GRANT SHOW VIEW ON TABLE test_db.* TO 'web'@'localhost';
+GRANT SHOW VIEW ON TABLE test_db.* TO 'web'@'localhost'; # For mysqldump
+GRANT RELOAD, PROCESS ON *.* TO 'webuser'@'localhost'; # For mysqldump
 # For mysqldump, the SHOW VIEW privilege is just required, and use options --single-transaction and --no-tablespaces.
 
 DROP DATABASE IF EXISTS test_db;
