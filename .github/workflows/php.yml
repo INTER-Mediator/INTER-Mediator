@@ -100,7 +100,7 @@ jobs:
         # - name: Run test suite
         #   run: composer run-script test
       - run: pwd
-      - run: php -S localhost:9000
+      - run: php -S localhost:9000 &
       - name: Setup Headless Chrome
         uses: browser-actions/setup-chrome@v1
       - run: chrome --version
