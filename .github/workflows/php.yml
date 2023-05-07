@@ -99,6 +99,8 @@ jobs:
 
         # - name: Run test suite
         #   run: composer run-script test
+      - run: pwd
+      - run: systemctl start httpd
       - name: Setup Headless Chrome
         uses: browser-actions/setup-chrome@v1
       - run: chrome --version
