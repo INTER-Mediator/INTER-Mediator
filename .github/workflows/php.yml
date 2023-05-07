@@ -99,3 +99,5 @@ jobs:
 
         # - name: Run test suite
         #   run: composer run-script test
+      - uses: browser-actions/setup-chrome@v1
+      - run: chrome --version
