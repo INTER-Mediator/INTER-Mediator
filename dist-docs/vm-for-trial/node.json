@@ -1,0 +1,5 @@
+{
+    "virtualization": {
+      "system": "docker"
+    }
+  }
