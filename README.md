@@ -1,4 +1,4 @@
-# INTER-Mediator [![Build Status](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/php.yml/badge.svg)](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/php.yml) [![Build Status](https://circleci.com/gh/INTER-Mediator/INTER-Mediator/tree/master.svg?style=shield)](https://circleci.com/gh/INTER-Mediator/INTER-Mediator) 
+# INTER-Mediator [![Build Status](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/php.yml/badge.svg)](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/php.yml)
 
 [//]: # ([![pipeline status]&#40;https://gitlab.com/INTER-Mediator/INTER-Mediator/badges/master/pipeline.svg&#41;]&#40;https://gitlab.com/INTER-Mediator/INTER-Mediator/pipelines&#41;)
 

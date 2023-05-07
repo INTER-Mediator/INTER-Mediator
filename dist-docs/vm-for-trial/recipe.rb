@@ -1076,8 +1076,8 @@ if node[:platform] == 'ubuntu'
   end
 end
 
-execute "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout master && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git" do
-  command "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout master && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git"
+execute "cd \"#{WEBROOT}\" && git clone https://github.com/matsuo/INTER-Mediator.git && cd INTER-Mediator && git checkout migrate-to-github-actions && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git" do
+  command "cd \"#{WEBROOT}\" && git clone https://github.com/matsuo/INTER-Mediator.git && cd INTER-Mediator && git checkout migrate-to-github-actions && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git"
 end
 
 if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
@@ -2029,7 +2029,7 @@ export DISPLAY=:99.0
 /usr/bin/Xvfb :99 -screen 0 1024x768x24 -extension RANDR > /dev/null 2>&1 &
 /bin/sleep 5
 firefox http://localhost:1111/capture > /dev/null &
-chromium-browser --no-sandbox --headless --remote-debugging-port=9222 http://localhost:1111/capture > /dev/null &
+#chromium-browser --no-sandbox --headless --remote-debugging-port=9222 http://localhost:1111/capture > /dev/null &
 exit 0
 EOF
   end
@@ -2145,6 +2145,9 @@ elsif node[:platform] == 'ubuntu'
     package 'ruby-dev' do
       action :install
     end
+    package 'libffi-dev' do
+      action :install
+    end
     execute 'gem install rspec -N' do
       command 'gem install rspec -N'
     end
@@ -2154,18 +2157,18 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem install ffi -N' do
       command 'gem install ffi -N'
     end
-    execute 'gem install childprocess -v "0.9.0" -N' do
-      command 'gem install childprocess -v "0.9.0" -N'
+    execute 'gem install childprocess -N' do
+      command 'gem install childprocess -N'
     end
-    execute 'gem install selenium-webdriver -v "3.142.3" -N' do
-      command 'gem install selenium-webdriver -v "3.142.3" -N'
+    execute 'gem install selenium-webdriver -N' do
+      command 'gem install selenium-webdriver -N'
     end
   end
   package 'firefox' do
     action :install
   end
-  execute 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz > /tmp/geckodriver-v0.26.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.26.0-linux64.tar.gz' do
-    command 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz > /tmp/geckodriver-v0.26.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.26.0-linux64.tar.gz'
+  execute 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz > /tmp/geckodriver-v0.33.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.33.0-linux64.tar.gz' do
+    command 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz > /tmp/geckodriver-v0.33.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.33.0-linux64.tar.gz'
   end
   package 'chromium-browser' do
     action :install
@@ -2238,11 +2241,11 @@ if node[:platform] == 'alpine'
     command "chmod 755 \"#{WEBROOT}\"/INTER-Mediator/node_modules/jest/bin/jest.js"
   end
 end
-if node[:platform] == 'ubuntu' && node[:virtualization][:system] == 'docker'
-  execute 'sudo /etc/rc.local &' do
-      command 'sudo /etc/rc.local &'
-  end
-end
+#if node[:platform] == 'ubuntu' && node[:virtualization][:system] == 'docker'
+#  execute 'sudo /etc/rc.local &' do
+#      command 'sudo /etc/rc.local &'
+#  end
+#end
 if node[:virtualization][:system] != 'docker'
   if node[:platform] == 'redhat' || node[:platform] == 'ubuntu'
     service 'smb' do

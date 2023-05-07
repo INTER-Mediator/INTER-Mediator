@@ -4,6 +4,7 @@ gem 'docker-api'
 
 group :test do
   gem 'ffi'
+  gem 'net-telnet', '>= 0.2.0'
   gem 'specinfra'
   gem 'net-ssh'
   gem 'serverspec'
