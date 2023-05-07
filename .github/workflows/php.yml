@@ -99,5 +99,10 @@ jobs:
 
         # - name: Run test suite
         #   run: composer run-script test
-      - uses: browser-actions/setup-chrome@v1
+      - name: Setup Headless Chrome
+        uses: browser-actions/setup-chrome@v1
       - run: chrome --version
+      - name: Setup WebdriverIO
+        run: cd spec/run;npm update
+      - name: Starting End-to-End Tests
+        run: cd spec/run;npm run wdio
