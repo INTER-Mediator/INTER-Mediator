@@ -2113,8 +2113,8 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem2.0 install childprocess -v "0.9.0" --no-ri --no-rdoc' do
       command 'gem2.0 install childprocess -v "0.9.0" --no-ri --no-rdoc'
     end
-    execute 'gem2.0 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc' do
-      command 'gem2.0 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc'
+    execute 'gem2.0 install selenium-webdriver -v "3.142.2" --no-ri --no-rdoc' do
+      command 'gem2.0 install selenium-webdriver -v "3.142.2" --no-ri --no-rdoc'
     end
   elsif node[:platform_version].to_f < 18
     package 'ruby2.3' do
@@ -2135,8 +2135,8 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem2.3 install childprocess -v "0.9.0" --no-ri --no-rdoc' do
       command 'gem2.3 install childprocess -v "0.9.0" --no-ri --no-rdoc'
     end
-    execute 'gem2.3 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc' do
-      command 'gem2.3 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc'
+    execute 'gem2.3 install selenium-webdriver -v "3.142.2" --no-ri --no-rdoc' do
+      command 'gem2.3 install selenium-webdriver -v "3.142.2" --no-ri --no-rdoc'
     end
   else
     package 'ruby' do
@@ -2157,11 +2157,11 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem install ffi -N' do
       command 'gem install ffi -N'
     end
-    execute 'gem install childprocess -N' do
-      command 'gem install childprocess -N'
+    execute 'gem install childprocess -v "1.0.1" -N' do
+      command 'gem install childprocess -v "1.0.1" -N'
     end
-    execute 'gem install selenium-webdriver -N' do
-      command 'gem install selenium-webdriver -N'
+    execute 'gem install selenium-webdriver -v "3.142.2" -N' do
+      command 'gem install selenium-webdriver -v "3.142.2" -N'
     end
   end
   package 'firefox' do
