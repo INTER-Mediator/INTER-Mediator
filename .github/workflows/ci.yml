@@ -17,7 +17,7 @@ jobs:
           docker build -t inter-mediator-ubuntu .
           docker run --privileged -d --name ubuntu --rm inter-mediator-ubuntu
           docker exec -i ubuntu sh -c "git clone https://github.com/matsuo/INTER-Mediator"
-          docker exec -i ubuntu sh -c "cd INTER-Mediator; git fetch --all; git checkout github-actions"
+          docker exec -i ubuntu sh -c "cd INTER-Mediator; git fetch --all; git checkout migrate-to-github-actions"
           docker exec -i ubuntu sh -c "apt-get update"
           docker exec -i ubuntu sh -c "cd INTER-Mediator; gem install net-ssh -v 6.1.0 --no-doc; gem install itamae --no-doc"
           docker exec -i ubuntu sh -c "cd INTER-Mediator; itamae local --node-json dist-docs/vm-for-trial/node.json dist-docs/vm-for-trial/recipe.rb"
