@@ -2029,7 +2029,7 @@ export DISPLAY=:99.0
 /usr/bin/Xvfb :99 -screen 0 1024x768x24 -extension RANDR > /dev/null 2>&1 &
 /bin/sleep 5
 firefox http://localhost:1111/capture > /dev/null &
-chromium-browser --no-sandbox --headless --remote-debugging-port=9222 http://localhost:1111/capture > /dev/null &
+#chromium-browser --no-sandbox --headless --remote-debugging-port=9222 http://localhost:1111/capture > /dev/null &
 exit 0
 EOF
   end
@@ -2113,8 +2113,8 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem2.0 install childprocess -v "0.9.0" --no-ri --no-rdoc' do
       command 'gem2.0 install childprocess -v "0.9.0" --no-ri --no-rdoc'
     end
-    execute 'gem2.0 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc' do
-      command 'gem2.0 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc'
+    execute 'gem2.0 install selenium-webdriver -v "3.142.2" --no-ri --no-rdoc' do
+      command 'gem2.0 install selenium-webdriver -v "3.142.2" --no-ri --no-rdoc'
     end
   elsif node[:platform_version].to_f < 18
     package 'ruby2.3' do
@@ -2135,14 +2135,17 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem2.3 install childprocess -v "0.9.0" --no-ri --no-rdoc' do
       command 'gem2.3 install childprocess -v "0.9.0" --no-ri --no-rdoc'
     end
-    execute 'gem2.3 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc' do
-      command 'gem2.3 install selenium-webdriver -v "3.142.3" --no-ri --no-rdoc'
+    execute 'gem2.3 install selenium-webdriver -v "3.142.2" --no-ri --no-rdoc' do
+      command 'gem2.3 install selenium-webdriver -v "3.142.2" --no-ri --no-rdoc'
     end
   else
     package 'ruby' do
       action :install
     end
     package 'ruby-dev' do
+      action :install
+    end
+    package 'libffi-dev' do
       action :install
     end
     execute 'gem install rspec -N' do
@@ -2154,18 +2157,18 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem install ffi -N' do
       command 'gem install ffi -N'
     end
-    execute 'gem install childprocess -v "0.9.0" -N' do
-      command 'gem install childprocess -v "0.9.0" -N'
+    execute 'gem install childprocess -v "1.0.1" -N' do
+      command 'gem install childprocess -v "1.0.1" -N'
     end
-    execute 'gem install selenium-webdriver -v "3.142.3" -N' do
-      command 'gem install selenium-webdriver -v "3.142.3" -N'
+    execute 'gem install selenium-webdriver -v "3.142.2" -N' do
+      command 'gem install selenium-webdriver -v "3.142.2" -N'
     end
   end
   package 'firefox' do
     action :install
   end
-  execute 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz > /tmp/geckodriver-v0.26.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.26.0-linux64.tar.gz' do
-    command 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz > /tmp/geckodriver-v0.26.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.26.0-linux64.tar.gz'
+  execute 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz > /tmp/geckodriver-v0.33.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.33.0-linux64.tar.gz' do
+    command 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz > /tmp/geckodriver-v0.33.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.33.0-linux64.tar.gz'
   end
   package 'chromium-browser' do
     action :install
@@ -2238,11 +2241,11 @@ if node[:platform] == 'alpine'
     command "chmod 755 \"#{WEBROOT}\"/INTER-Mediator/node_modules/jest/bin/jest.js"
   end
 end
-if node[:platform] == 'ubuntu' && node[:virtualization][:system] == 'docker'
-  execute 'sudo /etc/rc.local &' do
-      command 'sudo /etc/rc.local &'
-  end
-end
+#if node[:platform] == 'ubuntu' && node[:virtualization][:system] == 'docker'
+#  execute 'sudo /etc/rc.local &' do
+#      command 'sudo /etc/rc.local &'
+#  end
+#end
 if node[:virtualization][:system] != 'docker'
   if node[:platform] == 'redhat' || node[:platform] == 'ubuntu'
     service 'smb' do

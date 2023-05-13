@@ -1,0 +1,32 @@
+name: build
+
+on:
+  push:
+    branches:
+      - "*"
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: CI
+        shell: bash
+        run: |
+          cp .github/workflows/Dockerfile Dockerfile
+          docker build -t inter-mediator-ubuntu .
+          docker run --privileged -d --name ubuntu --rm inter-mediator-ubuntu
+          docker exec -i ubuntu sh -c "git clone https://github.com/INTER-Mediator/INTER-Mediator"
+          docker exec -i ubuntu sh -c "cd INTER-Mediator; git fetch --all; git checkout master"
+          docker exec -i ubuntu sh -c "apt-get update"
+          docker exec -i ubuntu sh -c "cd INTER-Mediator; gem install net-ssh -v 6.1.0 --no-doc; gem install itamae --no-doc"
+          docker exec -i ubuntu sh -c "cd INTER-Mediator; itamae local --node-json dist-docs/vm-for-trial/node.json dist-docs/vm-for-trial/recipe.rb"
+          docker exec -i ubuntu sh -c "cd INTER-Mediator; echo y | sh /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh"
+          docker exec -i ubuntu sh -c "php -v; php -m; locale -a; locale"
+          docker exec -i ubuntu sh -c "chown -R www-data /var/www"
+          docker exec -i ubuntu sh -c "curl -sS https://getcomposer.org/installer | php ; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer"
+          docker exec -i ubuntu sh -c "git config --global --add safe.directory /var/www/html/INTER-Mediator"
+          docker exec -i ubuntu sh -c "cd /var/www/html/INTER-Mediator; composer update --with-dependencies; git log -n 1"
+          docker exec -e CIRCLECI=true -i ubuntu sh -c "cd /var/www/html/INTER-Mediator; ./vendor/bin/phpunit --bootstrap ./vendor/autoload.php --configuration /var/www/html/INTER-Mediator/spec/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+          docker exec -i ubuntu sh -c "cd /var/www/html/INTER-Mediator && composer jest"
+          docker exec -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile -e DISPLAY=:99.0 -i ubuntu sh -c "apt-get -y install ruby-dev firefox xvfb; gem install bundler --no-doc; bundle; curl -L https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz > /tmp/geckodriver-v0.33.0-linux64.tar.gz; cd /usr/bin/; sudo tar xzvf /tmp/geckodriver-v0.33.0-linux64.tar.gz; /etc/rc.local; xvfb-run -e /dev/stdout --auto-servernum --server-num=99 rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec -f doc -c /var/www/html/INTER-Mediator/dist-docs/docker/spec/samples/samples_spec.rb"
