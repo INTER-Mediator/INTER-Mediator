@@ -1,0 +1,66 @@
+{
+  "name": "INTER-Mediator",
+  "description": "Web Development Framework",
+  "author": "INTER-Mediator Directive Committee",
+  "license": "MIT",
+  "contributors": [
+    {
+      "name": "Masayuki Nii"
+    },
+    {
+      "name": "Atsushi Matsuo"
+    },
+    {
+      "name": "Kiyonori Ito"
+    },
+    {
+      "name": "Kentaro Suzuki"
+    },
+    {
+      "name": "Nobuo Hayashi"
+    },
+    {
+      "name": "Kazuaki Osawa"
+    },
+    {
+      "name": "Hiroko Oki"
+    },
+    {
+      "name": "Tomomitsu Baba"
+    },
+    {
+      "name": "Motofumi Iijima"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/INTER-Mediator/INTER-Mediator.git"
+  },
+  "scripts": {
+    "test": "npx wdio run ./run/wdio.conf.js",
+    "postinstall": "npmpd",
+    "wdio": "npx wdio run wdio.conf.js"
+  },
+  "devDependencies": {
+    "@wdio/cli": "^8.10.0",
+    "@wdio/local-runner": "^8.10.0",
+    "@wdio/mocha-framework": "^8.10.0",
+    "@wdio/spec-reporter": "^8.10.0",
+    "appium-safari-driver": "*",
+    "chromedriver": "112",
+    "geckodriver": "*",
+    "ms-chromium-edge-driver": "*",
+    "wdio-chromedriver-service": "*",
+    "ts-node": "*"
+  },
+  "dependencies": {
+    "selenium-webdriver": "*",
+    "wdio": "*"
+  },
+  "win32Dependencies": {
+    "forever-win": "*"
+  },
+  "engines": {
+    "node": "*"
+  }
+}
