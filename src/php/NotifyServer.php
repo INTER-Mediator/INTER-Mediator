@@ -58,8 +58,8 @@ class NotifyServer
     private function trigger($channels, $operation, $data)
     {
         $logger = Logger::getInstance();
-        $logger->setDebugMessage("[NotifyServer] trigger / channels=" . var_export($channels, true)
-            . "operation={$operation}, data=" . var_export($data, true), 2);
+        $logger->setDebugMessage(str_replace("\n", "", "[NotifyServer] trigger / channels="
+            . var_export($channels, true) . "operation={$operation}, data=" . var_export($data, true)), 2);
 
         $ssInstance = ServiceServerProxy::instance();
         $ssInstance->clearMessages();

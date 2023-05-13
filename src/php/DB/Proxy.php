@@ -28,8 +28,8 @@ use INTERMediator\Params;
 
 class Proxy extends UseSharedObjects implements Proxy_Interface
 {
-    public $dbClass = null; // for Default context
-    public $authDbClass = null; // for issuedhash context
+//    public ?string $dbClass = null; // declared in UseSharedObjects
+    private $authDbClass = null; // for issuedhash context
     private $userExpanded = null;
     public $outputOfProcessing = null;
     public $paramAuthUser = null;
