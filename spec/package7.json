@@ -49,7 +49,7 @@
     "cors": "*",
     "express": "*",
     "forever": ">=4.0.2",
-    "inter-mediator-expressionparser": "1.0.21",
+    "inter-mediator-expressionparser": "1.0.23",
     "inter-mediator-formatter": "1.0.19",
     "inter-mediator-locale": "1.0.4",
     "inter-mediator-nodegraph": "1.0.6",
