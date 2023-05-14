@@ -3,7 +3,7 @@ const FormPage = require('../pageobjects/form_mysql.page');
 describe('Form Page', () => {
   it('can open with the valid title', async () => {
     await FormPage.open()
-    await expect(browser).toHaveTitle('INTER-Mediator - サンプル - フォーム形式/MySQL')
+    await expect(browser).toHaveTitle("INTER-Mediator - Sample - Form Style/MySQL"/*'INTER-Mediator - サンプル - フォーム形式/MySQL'*/)
   });
   it('has the INTER-Mediator\'s navigatio.n', async () => {
     await expect(FormPage.navigator).toExist()

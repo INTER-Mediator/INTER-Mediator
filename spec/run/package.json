@@ -47,7 +47,7 @@
     "@wdio/mocha-framework": "^8.10.0",
     "@wdio/spec-reporter": "^8.10.0",
     "appium-safari-driver": "*",
-    "chromedriver": "112",
+    "chromedriver": "113",
     "geckodriver": "*",
     "ms-chromium-edge-driver": "*",
     "wdio-chromedriver-service": "*",

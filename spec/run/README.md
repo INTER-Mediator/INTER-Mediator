@@ -6,3 +6,5 @@ cd spec/run
 npm update
 npm run wdio
 ```
+
+Also refer to the GitHub Action at /.github/workflows/php.yml.
