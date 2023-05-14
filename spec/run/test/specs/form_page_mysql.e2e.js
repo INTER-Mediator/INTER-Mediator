@@ -108,6 +108,11 @@ describe('Form Page', () => {
     await expect(FormPage.fieldPersonLocations[3]).not.toBeSelected()
     await expect(FormPage.fieldPersonMemo).toHaveValue("first\nsecond\nthird")
   });
+  it('just clicks some buttons.', async () => {
+    await FormPage.navigatorUpdateButton.click();
+    await FormPage.navigatorMoveButtonNext.click();
+    await FormPage.navigatorMoveButtonPrevious.click();
+  });
   // it('retrieve the first record to default values.', async () => {
   //   await FormPage.navigatorUpdateButton.click();
   //   await expect(FormPage.fieldPersonId).toHaveText("1")
