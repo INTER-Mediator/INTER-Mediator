@@ -1,7 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
   "version": "11",
-  "time": "2023-05-02",
+  "time": "2023-05-14",
   "repositories": [
     {
       "type": "git",
@@ -84,7 +84,7 @@
       "./vendor/bin/phpunit --globals-backup --bootstrap ./vendor/autoload.php spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
     ],
     "jest": [
-      "./node_modules/.bin/jest --config ./spec/jest.config.js"
+      "./node_modules/.bin/jest --config ./spec/jest-test-suite/jest.config.js"
     ],
     "clear": [
       "rm -rf node_modules vendor"
