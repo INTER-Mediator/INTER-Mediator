@@ -11,7 +11,7 @@
         "cors": "*",
         "express": "*",
         "forever": ">=4.0.2",
-        "inter-mediator-expressionparser": "1.0.20",
+        "inter-mediator-expressionparser": "1.0.21",
         "inter-mediator-formatter": "1.0.19",
         "inter-mediator-locale": "1.0.4",
         "inter-mediator-nodegraph": "1.0.6",
@@ -4036,9 +4036,9 @@
       "integrity": "sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew=="
     },
     "node_modules/inter-mediator-expressionparser": {
-      "version": "1.0.20",
-      "resolved": "https://registry.npmjs.org/inter-mediator-expressionparser/-/inter-mediator-expressionparser-1.0.20.tgz",
-      "integrity": "sha512-B1J59jucND3oX4GN1Br6UJVRxoDvr3ye87cAjeC+cj+7qL30ZQxxlYz3Qqll67aai14uhpS9M+S7wjI70JmwSQ==",
+      "version": "1.0.21",
+      "resolved": "https://registry.npmjs.org/inter-mediator-expressionparser/-/inter-mediator-expressionparser-1.0.21.tgz",
+      "integrity": "sha512-wUJiddRBKugDDsda+8U32QfHCuIB8FcNZwEWdUrTZ10vxnQ687xq+665zBsvJ2H7ayuhRHoQoibx1nyAWZ2Eyw==",
       "dependencies": {
         "inter-mediator-formatter": "^1.0.19",
         "inter-mediator-locale": "^1.0.4"
