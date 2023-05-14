@@ -102,11 +102,11 @@ jobs:
 
         # E2E test with WebdriverIO
 #      - run: pwd
-#      - run: php -S localhost:9000 &
-#      - name: Setup Headless Chrome
-#        uses: browser-actions/setup-chrome@v1
-#      - run: chrome --version
-#      - name: Setup WebdriverIO
-#        run: cd spec/run;npm update
-#      - name: Starting End-to-End Tests
-#        run: cd spec/run;npm run wdio
+      - run: php -S localhost:9000 &
+      - name: Setup Headless Chrome
+        uses: browser-actions/setup-chrome@v1
+      - run: chrome --version
+      - name: Setup WebdriverIO
+        run: cd spec/run;npm update
+      - name: Starting End-to-End Tests
+        run: cd spec/run;npm run wdio
