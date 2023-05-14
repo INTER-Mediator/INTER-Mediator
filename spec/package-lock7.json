@@ -11,7 +11,7 @@
         "cors": "*",
         "express": "*",
         "forever": ">=4.0.2",
-        "inter-mediator-expressionparser": "1.0.19",
+        "inter-mediator-expressionparser": "1.0.20",
         "inter-mediator-formatter": "1.0.19",
         "inter-mediator-locale": "1.0.4",
         "inter-mediator-nodegraph": "1.0.6",
@@ -3632,12 +3632,13 @@
       }
     },
     "node_modules/get-intrinsic": {
-      "version": "1.2.0",
-      "resolved": "https://registry.npmjs.org/get-intrinsic/-/get-intrinsic-1.2.0.tgz",
-      "integrity": "sha512-L049y6nFOuom5wGyRc3/gdTLO94dySVKRACj1RmJZBQXlbTMhtNIgkWkUHq+jYmZvKf14EW1EoJnnjbmoHij0Q==",
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/get-intrinsic/-/get-intrinsic-1.2.1.tgz",
+      "integrity": "sha512-2DcsyfABl+gVHEfCOaTrWgyt+tb6MSEGmKq+kI5HwLbIYgjgmMcV8KQ41uaKz1xxUcn9tJtgFbQUEVcEbd0FYw==",
       "dependencies": {
         "function-bind": "^1.1.1",
         "has": "^1.0.3",
+        "has-proto": "^1.0.1",
         "has-symbols": "^1.0.3"
       },
       "funding": {
@@ -3771,6 +3772,17 @@
       "integrity": "sha512-62DVLZGoiEBDHQyqG4w9xCuZ7eJEwNmJRWw2VY84Oedb7WFcA27fiEVe8oUQx9hAUJ4ekurquucTGwsyO1XGdQ==",
       "dependencies": {
         "get-intrinsic": "^1.1.1"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/has-proto": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/has-proto/-/has-proto-1.0.1.tgz",
+      "integrity": "sha512-7qE+iP+O+bgF9clE5+UoBFzE65mlBiVj3tKCrlNQ0Ogwm0BjpT/gK4SlLYDMybDh5I3TCTKnPPa0oMG7JDYrhg==",
+      "engines": {
+        "node": ">= 0.4"
       },
       "funding": {
         "url": "https://github.com/sponsors/ljharb"
@@ -4024,9 +4036,9 @@
       "integrity": "sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew=="
     },
     "node_modules/inter-mediator-expressionparser": {
-      "version": "1.0.19",
-      "resolved": "https://registry.npmjs.org/inter-mediator-expressionparser/-/inter-mediator-expressionparser-1.0.19.tgz",
-      "integrity": "sha512-nrxA3faGMT8SysbQisG6PTfgzEJAO1hYsbBN54rgeDzIw4Wz3nw0OFbV2kpDJ8zTfn5ujgpCq1FptrpLhrhAgw==",
+      "version": "1.0.20",
+      "resolved": "https://registry.npmjs.org/inter-mediator-expressionparser/-/inter-mediator-expressionparser-1.0.20.tgz",
+      "integrity": "sha512-B1J59jucND3oX4GN1Br6UJVRxoDvr3ye87cAjeC+cj+7qL30ZQxxlYz3Qqll67aai14uhpS9M+S7wjI70JmwSQ==",
       "dependencies": {
         "inter-mediator-formatter": "^1.0.19",
         "inter-mediator-locale": "^1.0.4"
