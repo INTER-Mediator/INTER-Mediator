@@ -412,6 +412,9 @@ EOF
     execute 'curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash' do
       command 'curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash'
     end
+    package 'epel-release' do
+      action :install
+    end
     package 'MariaDB-server' do
       action :install
     end
@@ -656,8 +659,8 @@ elsif node[:platform] == 'redhat'
   execute 'yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm' do
     command 'yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm'
   end
-  execute 'yum install -y --enablerepo=epel,remi,remi-php74 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap' do
-    command 'yum install -y --enablerepo=epel,remi,remi-php74 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap'
+  execute 'yum install -y --enablerepo=epel,remi,remi-php74 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap php-intl' do
+    command 'yum install -y --enablerepo=epel,remi,remi-php74 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap php-intl'
   end
   if node[:platform_version].to_f < 6
     package 'php-mbstring' do
@@ -898,11 +901,6 @@ elsif node[:platform] == 'ubuntu'
   end
 end
 
-if node[:platform] == 'redhat'
-  package 'epel-release' do
-    action :install
-  end
-end
 package 'nodejs' do
   action :install
 end
