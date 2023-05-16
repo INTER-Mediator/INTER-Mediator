@@ -116,7 +116,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false, $orig
         $fileUploader->processInfo();
         $resultLog = $fileUploader->getResultForLog();
     } else if (!isset($_POST['access']) && isset($_GET['media'])) { // Media accessing
-        $dbProxyInstance = new DB\Proxy();
+        $dbProxyInstance = new DB\Proxy(false, true);
         $dbProxyInstance->initialize($datasource, $options, $dbspecification, $debug);
         $mediaHandler = new MediaAccess();
         if (isset($_GET['attach'])) {
@@ -124,8 +124,6 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false, $orig
         }
         $mediaHandler->processing($dbProxyInstance, $options, $_GET['media']);
         $resultLog = $mediaHandler->getResultForLog();
-//        file_put_contents('/tmp/1', var_export($dbProxyInstance->logger->getDebugMessages(),true));
-//        file_put_contents('/tmp/2', var_export($dbProxyInstance->logger->getErrorMessages(),true));
     } else if ((isset($_POST['access']) && $_POST['access'] == 'uploadfile')
         || (isset($_GET['access']) && $_GET['access'] == 'uploadfile')
     ) {     // File uploading
