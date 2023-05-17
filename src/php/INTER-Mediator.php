@@ -116,7 +116,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false, $orig
         $fileUploader->processInfo();
         $resultLog = $fileUploader->getResultForLog();
     } else if (!isset($_POST['access']) && isset($_GET['media'])) { // Media accessing
-        $dbProxyInstance = new DB\Proxy(false, true);
+        $dbProxyInstance = new DB\Proxy(false, false);
         $dbProxyInstance->initialize($datasource, $options, $dbspecification, $debug);
         $mediaHandler = new MediaAccess();
         if (isset($_GET['attach'])) {
