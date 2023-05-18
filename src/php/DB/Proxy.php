@@ -18,6 +18,8 @@ namespace INTERMediator\DB;
 
 use Composer\Semver\Interval;
 use Exception;
+use DateTime;
+use DateInterval;
 use INTERMediator\FileUploader;
 use INTERMediator\IMUtil;
 use INTERMediator\SAMLAuth;
