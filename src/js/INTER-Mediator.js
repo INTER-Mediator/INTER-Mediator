@@ -216,6 +216,8 @@ const INTERMediator = {
   lcConditionsOP2AND: false,
   lcConditionsOP3AND: false,
 
+  ignoringDataContexts: [],
+
   // Detect Internet Explorer and its version.
   propertyIETridentSetup: () => {
     'use strict'
@@ -1239,7 +1241,11 @@ const INTERMediator = {
       const currentContextDef = contextObj.getContextDef()
       const targetTotalCount = targetRecords.totalCount
 
-      let targetRecordset = currentContextDef.data ? targetRecords.recordset : targetRecords.dbresult
+      let hasData = currentContextDef.data
+      if (INTERMediator.ignoringDataContexts.indexOf(currentContextDef.name) > -1) {
+        hasData = false;
+      }
+      let targetRecordset = hasData ? targetRecords.recordset : targetRecords.dbresult
       if (isPortalAccessMode(currentContextDef)) {
         targetRecordset = targetRecords.recordset
       }
@@ -1367,7 +1373,8 @@ const INTERMediator = {
             targetRecords.dbresult = result.recordset
             targetRecords.count = result.count
           })
-      } else if (contextObj.contextDefinition.data) {
+      } else if (contextObj.contextDefinition.data
+        && INTERMediator.ignoringDataContexts.indexOf(contextObj.contextDefinition.name) < 0) {
         for (const key in contextObj.contextDefinition.data) {
           if (contextObj.contextDefinition.data.hasOwnProperty(key)) {
             recordset.push(contextObj.contextDefinition.data[key])
@@ -2050,6 +2057,19 @@ const INTERMediator = {
       value = value[key]
     }
     return value
+  },
+
+  ignoreDataInContext(contextName, flag = true) {
+    const check = INTERMediator.ignoringDataContexts.indexOf(contextName)
+    if (flag) {
+      if (check > -1) {
+        INTERMediator.ignoringDataContexts.push(contextName)
+      }
+    } else {
+      if (check > -1) {
+        INTERMediator.ignoringDataContexts.splice(check, 1)
+      }
+    }
   },
 
   /* Compatibility for previous version. These methos are defined here ever.
