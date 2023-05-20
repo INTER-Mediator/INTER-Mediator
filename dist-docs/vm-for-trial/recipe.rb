@@ -1275,14 +1275,38 @@ end
 
 # Install php/js libraries
 
-if node[:platform] == 'redhat'
-  execute "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'" do
-    command "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'"
+if node[:platform] == 'redhat' && node[:platform_version].to_f >= 7 && node[:platform_version].to_f < 8
+  # Node.js 18 requires glibc 2.18
+  execute "wget https://ftp.gnu.org/gnu/glibc/glibc-2.18.tar.gz" do
+    command "wget https://ftp.gnu.org/gnu/glibc/glibc-2.18.tar.gz"
   end
-else
-  execute "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'" do
-    command "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'"  # returns error for the script of nodejs-installer.
+  execute "tar zxvf glibc-2.18.tar.gz" do
+    command "tar zxvf glibc-2.18.tar.gz"
   end
+  execute "cd glibc-2.18" do
+    command "cd glibc-2.18"
+  end
+  execute "mkdir build" do
+    command "mkdir build"
+  end
+  execute "cd build" do
+    command "cd build"
+  end
+  execute "../configure --prefix=/opt/glibc-2.18" do
+    command "../configure --prefix=/opt/glibc-2.18"
+  end
+  execute "make -j4" do
+    command "make -j4"
+  end
+  execute "make install" do
+    command "make install"
+  end
+  execute "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/glibc-2.18/lib" do
+    command "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/glibc-2.18/lib"
+  end
+end
+execute "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'" do
+  command "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'"
 end
 
 # Install npm packages
