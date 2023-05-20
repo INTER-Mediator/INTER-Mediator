@@ -65,3 +65,31 @@ test('AdditionalCondition-Add_Clear_Label', function () {
   INTERMediator.clearCondition('context2', 'label')
   expect(INTERMediator.additionalCondition.context2.length).toBe(3)
 })
+
+test('ignoreDataInContext setting test.', function () {
+  'use strict'
+  expect(INTERMediator.ignoringDataContexts.length).toBe(0)
+
+  INTERMediator.ignoreDataInContext('context1')
+  expect(INTERMediator.ignoringDataContexts.length).toBe(1)
+  expect(INTERMediator.ignoringDataContexts[0]).toBe('context1')
+
+  INTERMediator.ignoreDataInContext('context2')
+  expect(INTERMediator.ignoringDataContexts.length).toBe(2)
+  expect(INTERMediator.ignoringDataContexts[0]).toBe('context1')
+  expect(INTERMediator.ignoringDataContexts[1]).toBe('context2')
+
+  INTERMediator.ignoreDataInContext('context2')
+  expect(INTERMediator.ignoringDataContexts.length).toBe(2)
+  expect(INTERMediator.ignoringDataContexts[0]).toBe('context1')
+  expect(INTERMediator.ignoringDataContexts[1]).toBe('context2')
+
+  INTERMediator.ignoreDataInContext('context1', false)
+  expect(INTERMediator.ignoringDataContexts.length).toBe(1)
+  expect(INTERMediator.ignoringDataContexts[0]).toBe('context2')
+
+  INTERMediator.ignoreDataInContext('context3', true)
+  expect(INTERMediator.ignoringDataContexts.length).toBe(2)
+  expect(INTERMediator.ignoringDataContexts[0]).toBe('context2')
+  expect(INTERMediator.ignoringDataContexts[1]).toBe('context3')
+})
