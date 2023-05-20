@@ -2062,7 +2062,7 @@ const INTERMediator = {
   ignoreDataInContext(contextName, flag = true) {
     const check = INTERMediator.ignoringDataContexts.indexOf(contextName)
     if (flag) {
-      if (check > -1) {
+      if (check < 0) {
         INTERMediator.ignoringDataContexts.push(contextName)
       }
     } else {
