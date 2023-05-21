@@ -1279,32 +1279,8 @@ end
 
 if node[:platform] == 'redhat' && node[:platform_version].to_f >= 7 && node[:platform_version].to_f < 8
   # Node.js 18 requires glibc 2.18
-  execute "wget https://ftp.gnu.org/gnu/glibc/glibc-2.18.tar.gz" do
-    command "wget https://ftp.gnu.org/gnu/glibc/glibc-2.18.tar.gz"
-  end
-  execute "tar zxvf glibc-2.18.tar.gz" do
-    command "tar zxvf glibc-2.18.tar.gz"
-  end
-  execute "cd glibc-2.18" do
-    command "cd glibc-2.18"
-  end
-  execute "mkdir build" do
-    command "mkdir build"
-  end
-  execute "cd build" do
-    command "cd build"
-  end
-  execute "../configure --prefix=/opt/glibc-2.18" do
-    command "../configure --prefix=/opt/glibc-2.18"
-  end
-  execute "make -j4" do
-    command "make -j4"
-  end
-  execute "make install" do
-    command "make install"
-  end
-  execute "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/glibc-2.18/lib" do
-    command "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/glibc-2.18/lib"
+  execute "wget https://ftp.gnu.org/gnu/glibc/glibc-2.18.tar.gz && tar zxvf glibc-2.18.tar.gz && cd glibc-2.18 && mkdir build && cd build && ../configure --prefix=/opt/glibc-2.18 && make -j4 && make install && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/glibc-2.18/lib" do
+    command "wget https://ftp.gnu.org/gnu/glibc/glibc-2.18.tar.gz && tar zxvf glibc-2.18.tar.gz && cd glibc-2.18 && mkdir build && cd build && ../configure --prefix=/opt/glibc-2.18 && make -j4 && make install && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/glibc-2.18/lib"
   end
 end
 execute "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'" do
