@@ -921,11 +921,13 @@ if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform
   end
 end
 if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 22) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
-  execute 'npm install -g n' do
-    command 'npm install -g n'
-  end
-  execute 'n stable' do
-    command 'n stable'
+  if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 22) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 7 && node[:platform_version].to_f < 8)
+    execute 'npm install -g n' do
+      command 'npm install -g n'
+    end
+    execute 'n stable' do
+      command 'n stable'
+    end
   end
   execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
     command 'ln -sf /usr/local/bin/node /usr/bin/node'
