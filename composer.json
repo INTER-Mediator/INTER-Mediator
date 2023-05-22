@@ -86,6 +86,9 @@
     "jest": [
       "./node_modules/.bin/jest --config ./spec/jest-test-suite/jest.config.js"
     ],
+    "wdio-test": [
+      "cd spec/run;npm run wdio"
+    ],
     "clear": [
       "rm -rf node_modules vendor"
     ],
@@ -97,25 +100,6 @@
     "post-install-cmd": [
       "./vendor/bin/npm install",
       "rm -f __Did_you_run_composer_update.txt"
-    ],
-    "post-create-project-cmd": [
-      "mkdir -p ../398A6028-0181-4B75-BFD9-1C094B5ADD9F",
-      "mkdir -p ../398A6028-0181-4B75-BFD9-1C094B5ADD9F/lib/src",
-      "cp -f -r ../INTER-Mediator ../398A6028-0181-4B75-BFD9-1C094B5ADD9F/lib/src",
-      "mv ../398A6028-0181-4B75-BFD9-1C094B5ADD9F ../IM-Project",
-      "cd ../IM-Project",
-      "openssl genrsa -out ../IM-Project/gen.key 2048",
-      "cp ../IM-Project/lib/src/INTER-Mediator/params.php ../IM-Project/lib/p.php",
-      "grep -B 10000 -e '-----BEGIN RSA PRIVATE KEY-----' ../IM-Project/lib/p.php > ../IM-Project/lib/params.php",
-      "tail -n +2 gen.key | head -n 25 >> ../IM-Project/lib/params.php",
-      "grep -A 10000 -e '-----END RSA PRIVATE KEY-----' ../IM-Project/lib/p.php >> ../IM-Project/lib/params.php",
-      "cp ../IM-Project/lib/src/INTER-Mediator/dist-docs/sample_schema_mysql.txt ../IM-Project/lib/",
-      "cp ../IM-Project/lib/src/INTER-Mediator/dist-docs/project-start.html ../IM-Project/index.html",
-      "cp ../IM-Project/lib/src/INTER-Mediator/samples/templates/page_file_simple.html ../IM-Project/template.html",
-      "cp ../IM-Project/lib/src/INTER-Mediator/samples/templates/definition_file_simple.php ../IM-Project/t.php",
-      "sed -E -e 's|INTER-Mediator.php|lib/INTER-Mediator/INTER-Mediator.php|g' ../IM-Project/t.php > ../IM-Project/template.php",
-      "rm ../IM-Project/t.php ../IM-Project/lib/p.php ../IM-Project/gen.key",
-      "../IM-Project/lib/src/INTER-Mediator/dist-docs/buildup.sh --deploy"
     ],
     "forever-list": [
       "./node_modules/.bin/forever list"
