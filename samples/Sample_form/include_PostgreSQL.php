@@ -33,6 +33,7 @@ IM_Entry(
                 'delete'=>'レコード削除',
                 'copy'=>'レコード複製',
             ),
+            'numeric-fields' => ['checking'],
         ),
         array(
             'name' => 'contact',

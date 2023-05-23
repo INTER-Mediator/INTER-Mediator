@@ -388,9 +388,11 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $nullableFields = $this->handler->getNullableFields($this->dbSettings->getEntityForUpdate());
-        $fieldInfosNN = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
+        $numericFields = $this->handler->getNumericFields($this->dbSettings->getEntityForUpdate());
+        $nullableNumericFields = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
         if (isset($tableInfo['numeric-fields']) && is_array($tableInfo['numeric-fields'])) {
-            $fieldInfosNN = array_merge($fieldInfosNN, $tableInfo['numeric-fields']);
+            $nullableFields = array_merge($nullableFields, $tableInfo['numeric-fields']);
+            $nullableNumericFields = array_merge($nullableNumericFields, $tableInfo['numeric-fields']);
         }
         $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
@@ -417,15 +419,18 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $setParameter = array();
         $counter = 0;
         $fieldValues = $this->dbSettings->getValue();
+
         foreach ($this->dbSettings->getFieldsRequired() as $field) {
             $value = $fieldValues[$counter];
             $counter++;
             $setClause[] = $this->handler->quotedEntityName($field) . "=?";
             $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-            if (in_array($field, $fieldInfosNN) && $value === "") {
-                $convertedValue = NULL;
-            } else if (in_array($field, $boolFields)) {
+            if (in_array($field, $boolFields)) {
                 $convertedValue = $this->isTrue($convertedValue);
+            } else if (in_array($field, $nullableNumericFields) && $value === "") {
+                $convertedValue = NULL;
+            } else if (in_array($field, $numericFields) && $value === "") {
+                $convertedValue = 0;
             } else {
                 $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                 $convertedValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
@@ -442,11 +447,10 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $setParameter[] = $convertedValue;
         }
         if (count($setClause) < 1) {
-            $this->logger->setErrorMessage("No data to update for table {$tableName}.");
+            $this->logger->setErrorMessage("No data to update for table{$tableName}.");
             return false;
         }
         $setClause = implode(',', $setClause);
-
         $queryClause = $this->getWhereClause('update', false, true, $signedUser, $bypassAuth);
         if ($queryClause != '') {
             $queryClause = "WHERE {$queryClause}";
@@ -457,8 +461,20 @@ class PDO extends UseSharedObjects implements DBClass_Interface
 
         $this->logger->setDebugMessage(
             $prepSQL->queryString . " with " . str_replace("\n", " ", var_export($setParameter, true) ?? ""));
-
-        $result = $prepSQL->execute($setParameter);
+        // Thanks for the following code: https://koyhogetech.hatenablog.com/entry/20101217/pdo_pgsql
+        $count = 1;
+        foreach ($setParameter as $param) {
+            $bindType = \PDO::PARAM_STR;
+            $bindType = is_int($param) ? \PDO::PARAM_INT : $bindType;
+            $bindType = is_bool($param) ? \PDO::PARAM_BOOL : $bindType;
+            $bindType = is_null($param) ? \PDO::PARAM_NULL : $bindType;
+            $bindResult = $prepSQL->bindValue($count, $param, $bindType);
+            if (!$this->errorHandlingPDO($sql, $bindResult)) {
+                return false;
+            }
+            $count += 1;
+        }
+        $result = $prepSQL->execute();
         if (!$this->errorHandlingPDO($sql, $result)) {
             return false;
         }
@@ -518,7 +534,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
      * @param $bypassAuth
      * @return bool
      */
-    public function createInDB($isReplace = false)
+    public
+    function createInDB($isReplace = false)
     {
         $this->fieldInfo = null;
         if (!$this->setupConnection()) { //Establish the connection
@@ -614,7 +631,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             return false;
         }
         $seqObject = $tableInfo['sequence'] ?? "{$this->dbSettings->getEntityForUpdate()}_{$keyField}_seq";
-        $lastKeyValue = $this->handler->lastInsertIdAlt($seqObject,$tableNameRow); // $this->link->lastInsertId($seqObject);
+        $lastKeyValue = $this->handler->lastInsertIdAlt($seqObject, $tableNameRow); // $this->link->lastInsertId($seqObject);
         if (/* $isReplace && */ $lastKeyValue == 0) { // lastInsertId returns 0 after replace command.
             // Moreover, about MySQL, it returns 0 with the key field without AUTO_INCREMENT.
             $lastKeyValue = -999; // This means kind of error, so avoid to set non zero value.
@@ -796,7 +813,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         return $lastKeyValue;
     }
 
-    private function getKeyFieldOfContext($context)
+    private
+    function getKeyFieldOfContext($context)
     {
         if (isset($context) && isset($context['key'])) {
             return $context['key'];
@@ -813,7 +831,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         return $this->fieldInfo;
     }
 
-    private function isTrue($d)
+    private
+    function isTrue($d)
     {
         if (is_null($d)) {
             return false;
@@ -826,7 +845,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         return false;
     }
 
-    public function queryForTest($table, $conditions = null)
+    public
+    function queryForTest($table, $conditions = null)
     {
         if ($table == null) {
             $this->errorMessageStore("The table doesn't specified.");
@@ -865,7 +885,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         return $recordSet;
     }
 
-    public function deleteForTest($table, $conditions = null)
+    public
+    function deleteForTest($table, $conditions = null)
     {
         if ($table == null) {
             $this->errorMessageStore("The table doesn't specified.");
@@ -899,27 +920,32 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     /*
      * Transaction
      */
-    public function hasTransaction()
+    public
+    function hasTransaction()
     {
         return true;
     }
 
-    public function inTransaction()
+    public
+    function inTransaction()
     {
         return $this->link->inTransaction();
     }
 
-    public function beginTransaction()
+    public
+    function beginTransaction()
     {
         $this->link->beginTransaction();
     }
 
-    public function commitTransaction()
+    public
+    function commitTransaction()
     {
         $this->link->commit();
     }
 
-    public function rollbackTransaction()
+    public
+    function rollbackTransaction()
     {
         $this->link->rollBack();
     }
@@ -930,7 +956,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
      * @return array
      * @throws \Exception
      */
-    private function getResultRelation($result, array $timeFields): array
+    private
+    function getResultRelation($result, array $timeFields): array
     {
         $sqlResult = array();
         $isFirstRow = true;

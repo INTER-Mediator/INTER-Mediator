@@ -20,27 +20,21 @@ $ psql -f sample_schema_pgsql.sql -h localhost test_db
  *********************************************************************/
 
 -- DROP USER web;
-CREATE
-USER web PASSWORD 'password';
+CREATE USER web PASSWORD 'password';
 /*
 DROP DATABASE IF EXISTS test_db;
 CREATE DATABASE test_db ENCODING 'UTF8';
 */
 VACUUM;
 
-DROP
-SCHEMA IF EXISTS im_sample CASCADE;
-CREATE
-SCHEMA im_sample;
+DROP SCHEMA IF EXISTS im_sample CASCADE;
+CREATE SCHEMA im_sample;
 
 SET search_path TO im_sample,public;
-ALTER
-USER web SET search_path TO im_sample,public;
+ALTER USER web SET search_path TO im_sample,public;
 
 /*  The schema for the "Sample_form" and "Sample_Auth" sample set. */
-CREATE
-SEQUENCE serial START
-1000;
+CREATE SEQUENCE serial START 1000;
 CREATE TABLE person
 (
     id       SERIAL PRIMARY KEY,
@@ -48,7 +42,7 @@ CREATE TABLE person
     address  TEXT,
     mail     TEXT,
     category INTEGER,
-    checking INTEGER,
+    checking BOOLEAN NOT NULL DEFAULT FALSE,
     location INTEGER,
     memo     TEXT
 );
@@ -69,8 +63,8 @@ CREATE TABLE contact
     description TEXT,
     datetime    TIMESTAMP,
     summary     TEXT,
-    important   INTEGER,
-    way         INTEGER default 4,
+    important   INTEGER NOT NULL DEFAULT 0,
+    way         INTEGER          default 4,
     kind        INTEGER
 );
 CREATE INDEX contact_person_id ON contact (person_id);
@@ -600,7 +594,11 @@ CREATE TABLE testtable
     vc2   VARCHAR(100),
     vc3   VARCHAR(100),
     text1 TEXT         NOT NULL DEFAULT '',
-    text2 TEXT
+    text2 TEXT,
+    float1 REAL NOT NULL DEFAULT 0,
+    float2 REAL,
+    double1 DOUBLE PRECISION NOT NULL DEFAULT 0,
+    double2 DOUBLE PRECISION
 );
 GRANT ALL PRIVILEGES ON im_sample.testtable_id_seq TO web;
 
