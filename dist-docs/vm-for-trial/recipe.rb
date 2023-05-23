@@ -1282,9 +1282,9 @@ if node[:platform] == 'redhat' && node[:platform_version].to_f >= 7 && node[:pla
   execute "yum groupinstall \"Development tools\" -y" do
     command "yum groupinstall \"Development tools\" -y"
   end
-  #execute "wget https://ftp.gnu.org/gnu/glibc/glibc-2.18.tar.gz && tar zxvf glibc-2.18.tar.gz && cd glibc-2.18 && mkdir build && cd build && ../configure --prefix=/opt/glibc-2.18 && make -j4 && make install && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/glibc-2.18/lib" do
-  #  command "wget https://ftp.gnu.org/gnu/glibc/glibc-2.18.tar.gz && tar zxvf glibc-2.18.tar.gz && cd glibc-2.18 && mkdir build && cd build && ../configure --prefix=/opt/glibc-2.18 && make -j4 && make install && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/glibc-2.18/lib"
-  #end
+  execute "wget https://ftp.gnu.org/gnu/glibc/glibc-2.18.tar.gz && tar zxvf glibc-2.18.tar.gz && cd glibc-2.18 && mkdir build && cd build && ../configure --prefix=/opt/glibc-2.18 && make -j4 && make install && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/glibc-2.18/lib" do
+    command "wget https://ftp.gnu.org/gnu/glibc/glibc-2.18.tar.gz && tar zxvf glibc-2.18.tar.gz && cd glibc-2.18 && mkdir build && cd build && ../configure --prefix=/opt/glibc-2.18 && make -j4 && make install && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/glibc-2.18/lib"
+  end
 end
 
 execute "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'" do
