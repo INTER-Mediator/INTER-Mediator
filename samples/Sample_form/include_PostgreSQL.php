@@ -42,7 +42,7 @@ IM_Entry(
             'relation' => array(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
-            'repeat-control' => 'insert delete copy',
+            'repeat-control' => 'insert-confirm delete-confirm copy',
           //  'sequence' => 'im_sample.serial',
             'default-values'=>[['field'=>'summary','value'=>'test']],
         ),

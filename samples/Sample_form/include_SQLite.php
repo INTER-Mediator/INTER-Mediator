@@ -37,7 +37,7 @@ IM_Entry(
             'relation' => array(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
-            'repeat-control' => 'insert delete copy',
+            'repeat-control' => 'insert-confirm delete-confirm copy',
         ),
         array(
             'name' => 'contact_way',
