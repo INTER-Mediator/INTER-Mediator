@@ -111,6 +111,8 @@ jobs:
           touch sample.sq3
           sqlite3 sample.sq3 < ./dist-docs/sample_schema_sqlite.sql
           chmod 777 sample.sq3
+      - name: Checking path
+        run: pwd;ls
 
       - name: Boot the web server with php server mode
         run: php -S localhost:9000 &

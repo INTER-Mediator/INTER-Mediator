@@ -63,7 +63,8 @@ IM_Entry(
     [],
     array(
         'db-class' => 'PDO',
-        'dsn' => 'sqlite:/var/db/im/sample.sq3',
+        'dsn' => 'sqlite:/home/runner/sample.sq3',
+    //    'dsn' => 'sqlite:/var/db/im/sample.sq3',
     ),
     2
 );
