@@ -6,6 +6,7 @@ describe('Form Page', () => {
     await expect(browser).toHaveTitle('INTER-Mediator - Sample - Form Style/SQLite')
   });
   it('has the INTER-Mediator\'s navigation.', async () => {
+    await browser.pause(3000)
     await expect(FormPage.navigator).toExist()
     await expect(FormPage.navigatorUpdateButton).toExist()
     await expect(FormPage.navigatorInfo).toExist()
