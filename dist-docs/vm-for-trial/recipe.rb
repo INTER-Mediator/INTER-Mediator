@@ -921,11 +921,13 @@ if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform
   end
 end
 if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 22) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
-  execute 'npm install -g n' do
-    command 'npm install -g n'
-  end
-  execute 'n stable' do
-    command 'n stable'
+  if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 22) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 7 && node[:platform_version].to_f < 8)
+    execute 'npm install -g n' do
+      command 'npm install -g n'
+    end
+    execute 'n stable' do
+      command 'n stable'
+    end
   end
   execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
     command 'ln -sf /usr/local/bin/node /usr/bin/node'
@@ -1275,14 +1277,18 @@ end
 
 # Install php/js libraries
 
-if node[:platform] == 'redhat'
-  execute "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'" do
-    command "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'"
+if node[:platform] == 'redhat' && node[:platform_version].to_f >= 7 && node[:platform_version].to_f < 8
+  # Node.js 18 requires glibc 2.18
+  execute "yum groupinstall \"Development tools\" -y" do
+    command "yum groupinstall \"Development tools\" -y"
   end
-else
-  execute "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'" do
-    command "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'"  # returns error for the script of nodejs-installer.
-  end
+  #execute "wget https://ftp.gnu.org/gnu/glibc/glibc-2.18.tar.gz && tar zxvf glibc-2.18.tar.gz && cd glibc-2.18 && mkdir build && cd build && ../configure --prefix=/opt/glibc-2.18 && make -j4 && make install && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/glibc-2.18/lib" do
+  #  command "wget https://ftp.gnu.org/gnu/glibc/glibc-2.18.tar.gz && tar zxvf glibc-2.18.tar.gz && cd glibc-2.18 && mkdir build && cd build && ../configure --prefix=/opt/glibc-2.18 && make -j4 && make install && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/glibc-2.18/lib"
+  #end
+end
+
+execute "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'" do
+  command "su - developer -c 'cd \"#{IMROOT}\" && /usr/local/bin/composer update --with-all-dependencies'"
 end
 
 # Install npm packages
