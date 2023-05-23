@@ -30,7 +30,8 @@ CREATE USER IF NOT EXISTS 'web'@'localhost' IDENTIFIED BY 'password';
 
 # Grant to All operations for all objects with web account
 GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO 'web'@'localhost';
-GRANT SHOW VIEW ON TABLE test_db.* TO 'web'@'localhost'; # For mysqldump
+GRANT SHOW VIEW ON TABLE test_db.* TO 'web'@'localhost';
+# For mysqldump
 # GRANT RELOAD, PROCESS ON *.* TO 'webuser'@'localhost'; # For mysqldump
 # For mysqldump, the SHOW VIEW privilege is just required, and use options --single-transaction and --no-tablespaces.
 
@@ -1047,24 +1048,28 @@ CREATE TABLE operationlog
 
 CREATE TABLE testtable
 (
-    id    INT AUTO_INCREMENT,
-    num1  INT          NOT NULL DEFAULT 0,
-    num2  INT,
-    num3  INT,
-    dt1   DateTime     NOT NULL DEFAULT '2001-01-01 00:00:00',
-    dt2   DateTime,
-    dt3   DateTime,
-    date1 Date         NOT NULL DEFAULT '2001-01-01',
-    date2 Date,
-    time1 Time         NOT NULL DEFAULT '00:00:00',
-    time2 Time,
-    ts1   Timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    ts2   Timestamp             DEFAULT '2001-01-01 00:00:00',
-    vc1   VARCHAR(100) NOT NULL DEFAULT '',
-    vc2   VARCHAR(100),
-    vc3   VARCHAR(100),
-    text1 TEXT,
-    text2 TEXT,
+    id      INT AUTO_INCREMENT,
+    num1    INT          NOT NULL DEFAULT 0,
+    num2    INT,
+    num3    INT,
+    dt1     DateTime     NOT NULL DEFAULT '2001-01-01 00:00:00',
+    dt2     DateTime,
+    dt3     DateTime,
+    date1   Date         NOT NULL DEFAULT '2001-01-01',
+    date2   Date,
+    time1   Time         NOT NULL DEFAULT '00:00:00',
+    time2   Time,
+    ts1     Timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    ts2     Timestamp             DEFAULT '2001-01-01 00:00:00',
+    vc1     VARCHAR(100) NOT NULL DEFAULT '',
+    vc2     VARCHAR(100),
+    vc3     VARCHAR(100),
+    text1   TEXT,
+    text2   TEXT,
+    float1  FLOAT NOT NULL DEFAULT 0,
+    float2  FLOAT,
+    double1 DOUBLE NOT NULL DEFAULT 0,
+    double2 DOUBLE,
     PRIMARY KEY (id)
 ) CHARACTER SET utf8mb4,
   COLLATE utf8mb4_unicode_ci

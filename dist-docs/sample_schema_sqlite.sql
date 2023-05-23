@@ -553,24 +553,28 @@ CREATE TABLE operationlog
 
 CREATE TABLE testtable
 (
-    id    INTEGER PRIMARY KEY AUTOINCREMENT,
-    num1  INT          NOT NULL DEFAULT 0,
-    num2  INT,
-    num3  INT,
-    dt1   DateTime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    dt2   DateTime,
-    dt3   DateTime,
-    date1 Date         NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    date2 Date,
-    time1 Time         NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    time2 Time,
-    ts1   Timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    ts2   Timestamp             DEFAULT '2001-01-01 00:00:00',
-    vc1   VARCHAR(100) NOT NULL DEFAULT '',
-    vc2   VARCHAR(100),
-    vc3   VARCHAR(100),
-    text1 TEXT         NOT NULL DEFAULT '',
-    text2 TEXT
+    id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    num1    INT          NOT NULL DEFAULT 0,
+    num2    INT,
+    num3    INT,
+    dt1     DateTime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    dt2     DateTime,
+    dt3     DateTime,
+    date1   Date         NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date2   Date,
+    time1   Time         NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    time2   Time,
+    ts1     Timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ts2     Timestamp             DEFAULT '2001-01-01 00:00:00',
+    vc1     VARCHAR(100) NOT NULL DEFAULT '',
+    vc2     VARCHAR(100),
+    vc3     VARCHAR(100),
+    text1   TEXT         NOT NULL DEFAULT '',
+    text2   TEXT,
+    float1  FLOAT NOT NULL DEFAULT 0,
+    float2  FLOAT,
+    double1 DOUBLE NOT NULL DEFAULT 0,
+    double2 DOUBLE
 );
 
 /* # Sample Data */
