@@ -63,7 +63,7 @@ IM_Entry(
     [],
     array(
         'db-class' => 'PDO',
-        'dsn' => (getenv('GITHUB_ACTION') == '__run')
+        'dsn' => getenv('GITHUB_ACTIONs')
             ? 'sqlite:/home/runner/work/INTER-Mediator/INTER-Mediator/sample.sq3'
             : 'sqlite:/var/db/im/sample.sq3',
     ),
