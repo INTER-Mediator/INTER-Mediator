@@ -595,10 +595,10 @@ CREATE TABLE testtable
     vc3   VARCHAR(100),
     text1 TEXT         NOT NULL DEFAULT '',
     text2 TEXT,
-    float1 FLOAT NOT NULL DEFAULT 0,
-    float2 FLOAT,
-    double1 DOUBLE NOT NULL DEFAULT 0,
-    double2 DOUBLE
+    float1 REAL NOT NULL DEFAULT 0,
+    float2 REAL,
+    double1 DOUBLE PRECISION NOT NULL DEFAULT 0,
+    double2 DOUBLE PRECISION
 );
 GRANT ALL PRIVILEGES ON im_sample.testtable_id_seq TO web;
 
