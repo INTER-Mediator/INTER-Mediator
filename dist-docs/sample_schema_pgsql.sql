@@ -48,7 +48,7 @@ CREATE TABLE person
     address  TEXT,
     mail     TEXT,
     category INTEGER,
-    checking BOOLEAN,
+    checking INTEGER,
     location INTEGER,
     memo     TEXT
 );

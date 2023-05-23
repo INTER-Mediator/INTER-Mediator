@@ -26,9 +26,9 @@ IM_Entry(
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
             'repeat-control' => 'insert delete copy-contact,history',
             'button-names' => array(
-                'insert'=>'レコード追加',
-                'delete'=>'レコード削除',
-                'copy'=>'レコード複製',
+                'insert' => 'レコード追加',
+                'delete' => 'レコード削除',
+                'copy' => 'レコード複製',
             ),
         ),
         array(
@@ -37,7 +37,7 @@ IM_Entry(
             'relation' => array(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
-            'repeat-control' => 'insert delete copy',
+            'repeat-control' => 'insert-confirm delete-confirm copy',
         ),
         array(
             'name' => 'contact_way',
@@ -63,7 +63,9 @@ IM_Entry(
     [],
     array(
         'db-class' => 'PDO',
-        'dsn' => 'sqlite:/var/db/im/sample.sq3',
+        'dsn' => getenv('GITHUB_ACTIONS')
+            ? 'sqlite:/home/runner/work/INTER-Mediator/INTER-Mediator/sample.sq3'
+            : 'sqlite:/var/db/im/sample.sq3',
     ),
     2
 );

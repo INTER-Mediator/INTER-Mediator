@@ -32,10 +32,53 @@ class FormPagePostgreSQL extends IMPage {
     return $('._im_test-person-memo');
   }
 
+  get contactTable() {
+    return $('._im_test-contact-table');
+  }
+
+  get contactTableInsertButton() {
+    return this.contactTable.$('.IM_Button_Insert')
+  }
+
+  get rowContact() {
+    return $$('._im_test-contact-row');
+  }
+
+  get rowContactDeleteButton() {
+    return this.contactTable.$$('.IM_Button_Delete')
+  }
+
+  get rowContactCopyButton() {
+    return this.contactTable.$$('.IM_Button_Copy')
+  }
+
+  get rowContactDateTime() {
+    return $$('._im_test-contact-datetime');
+  }
+
+  get rowContactSummary() {
+    return $$('._im_test-contact-summary');
+  }
+
+  get rowContactImportant() {
+    return $$('._im_test-contact-important');
+  }
+
+  get rowContactWay() {
+    return $$('._im_test-contact-way');
+  }
+
+  get rowContactKind() {
+    return $$('._im_test-contact-kind');
+  }
+
+  get rowContactDescription() {
+    return $$('._im_test-contact-description');
+  }
+
   open() {
     return super.open('samples/Sample_form/form_SQLite.html');
   }
-
 }
 
 module.exports = new FormPagePostgreSQL();
