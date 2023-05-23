@@ -203,6 +203,8 @@ describe('Form Page', () => {
   it('can delete a row in detail area.', async () => {
     await FormPage.open()
     await FormPage.navigatorUpdateButton.click();
+    await browser.pause(3000)
+
     await expect(FormPage.contactTableInsertButton).toExist()
     await FormPage.rowContactDeleteButton[1].click()
     await browser.acceptAlert()
