@@ -119,7 +119,7 @@ class FileUploader
         $this->db = new DB\Proxy();
         $this->db->initialize($datasource, $options, $dbspec, $debug, $contextname);
 
-        $this->db->logger->setDebugMessage("FileUploader class's processing starts: files=" . var_export($files, true));
+        $this->db->logger->setDebugMessage("FileUploader class's processing starts: files=" . str_replace("\n", "", var_export($files, true)));
 
         $contextDef = $this->db->dbSettings->getDataSourceTargetArray();
         $dbClass = ($contextDef['db-class'] ?? ($dbspec['db-class'] ?? Params::getParameterValue('dbClass', '')));
