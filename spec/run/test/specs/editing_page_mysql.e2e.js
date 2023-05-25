@@ -58,8 +58,9 @@ describe('Editing Page', () => {
     await expect(EditingPage.fieldNum1Checkbox).toBeSelected()
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("1")
     await EditingPage.fieldNum1Checkbox.click() // OFF
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
-    await EditingPage.navigatorUpdateButton.waitForClickable()
+    await browser.pause(waiting)
     await expect(EditingPage.fieldNum1Checkbox).not.toBeSelected()
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("0")
   })
@@ -72,8 +73,9 @@ describe('Editing Page', () => {
     await expect(EditingPage.fieldNum2Checkbox).toBeSelected()
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("1")
     await EditingPage.fieldNum2Checkbox.click() // OFF
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
-    await EditingPage.navigatorUpdateButton.waitForClickable()
+    await browser.pause(waiting)
     await expect(EditingPage.fieldNum2Checkbox).not.toBeSelected()
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("")
   })
@@ -97,7 +99,7 @@ describe('Editing Page', () => {
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("2")
   })
   it('can edit the radio buttons of nullable integer field.', async () => {
-    const buttons = await await EditingPage.fieldNum2Radio
+    const buttons = await EditingPage.fieldNum2Radio
     await expect(buttons[0]).toExist()
     await expect(buttons[1]).toExist()
     await expect(buttons[0]).not.toBeSelected() // Checking initial value
