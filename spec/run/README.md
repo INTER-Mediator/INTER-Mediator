@@ -6,5 +6,12 @@ cd spec/run
 npm update
 npm run wdio
 ```
+After setup with the command ```npm update```, you can test with this command on the root of this repository:
+```
+composer wdio-test
+```
 
 Also refer to the GitHub Action at /.github/workflows/php.yml.
+
+The samples/E2E-Test directory has the target pages for these tests.
+

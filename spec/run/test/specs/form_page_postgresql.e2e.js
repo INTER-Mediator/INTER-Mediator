@@ -19,8 +19,8 @@ describe('Form Page', () => {
     await expect(FormPage.navigatorMoveButtonLast).toExist()
     await expect(FormPage.navigatorMoveButtonLast).toHaveText('>>')
     await expect(FormPage.navigatorDeleteButton).toExist()
-    await expect(FormPage.navigatorInfoInsertButton).toExist()
-    await expect(FormPage.navigatorInfoCopy).toExist()
+    await expect(FormPage.navigatorInsertButton).toExist()
+    await expect(FormPage.navigatorCopyButton).toExist()
   });
   it('can move current record with the navigation.', async () => {
     await expect(FormPage.fieldPersonId).toExist()

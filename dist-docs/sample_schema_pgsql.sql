@@ -34,7 +34,9 @@ SET search_path TO im_sample,public;
 ALTER USER web SET search_path TO im_sample,public;
 
 /*  The schema for the "Sample_form" and "Sample_Auth" sample set. */
-CREATE SEQUENCE serial START 1000;
+CREATE
+SEQUENCE serial START
+1000;
 CREATE TABLE person
 (
     id       SERIAL PRIMARY KEY,
@@ -577,26 +579,28 @@ GRANT ALL PRIVILEGES ON im_sample.operationlog_id_seq TO web;
 
 CREATE TABLE testtable
 (
-    id    SERIAL PRIMARY KEY,
-    num1  INTEGER      NOT NULL DEFAULT 0,
-    num2  INTEGER,
-    num3  INTEGER,
-    dt1   Timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    dt2   Timestamp,
-    dt3   Timestamp,
-    date1 Date         NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    date2 Date,
-    time1 Time         NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    time2 Time,
-    ts1   Timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    ts2   Timestamp             DEFAULT '2001-01-01 00:00:00',
-    vc1   VARCHAR(100) NOT NULL DEFAULT '',
-    vc2   VARCHAR(100),
-    vc3   VARCHAR(100),
-    text1 TEXT         NOT NULL DEFAULT '',
-    text2 TEXT,
-    float1 REAL NOT NULL DEFAULT 0,
-    float2 REAL,
+    id      SERIAL PRIMARY KEY,
+    num1    INTEGER          NOT NULL DEFAULT 0,
+    num2    INTEGER,
+    num3    INTEGER,
+    dt1     Timestamp        NOT NULL DEFAULT '2001-01-01 00:00:00',
+    dt2     Timestamp,
+    dt3     Timestamp,
+    date1   Date             NOT NULL DEFAULT '2001-01-01',
+    date2   Date,
+    time1   Time             NOT NULL DEFAULT '00:00:00',
+    time2   Time,
+    ts1     Timestamp        NOT NULL DEFAULT '2001-01-01 00:00:00',
+    ts2     Timestamp,
+    vc1     VARCHAR(100)     NOT NULL DEFAULT '',
+    vc2     VARCHAR(100),
+    vc3     VARCHAR(100),
+    text1   TEXT             NOT NULL DEFAULT '',
+    text2   TEXT,
+    float1  REAL             NOT NULL DEFAULT 0,
+    float2  REAL,
+    bool1   BOOLEAN          NOT NULL DEFAULT FALSE,
+    bool2   BOOLEAN,
     double1 DOUBLE PRECISION NOT NULL DEFAULT 0,
     double2 DOUBLE PRECISION
 );

@@ -51,11 +51,11 @@ module.exports = class IMPage {
         return $('#IM_NAVIGATOR .IM_NAV_delete_button');
     }
 
-    get navigatorInfoInsertButton() {
+    get navigatorInsertButton() {
         return $('#IM_NAVIGATOR .IM_NAV_insert_button');
     }
 
-    get navigatorInfoCopy() {
+    get navigatorCopyButton() {
         return $('#IM_NAVIGATOR .IM_NAV_copy_button');
     }
 }

@@ -20,8 +20,8 @@ describe('Form Page', () => {
     await expect(FormPage.navigatorMoveButtonLast).toExist()
     await expect(FormPage.navigatorMoveButtonLast).toHaveText('>>')
     await expect(FormPage.navigatorDeleteButton).toExist()
-    await expect(FormPage.navigatorInfoInsertButton).toExist()
-    await expect(FormPage.navigatorInfoCopy).toExist()
+    await expect(FormPage.navigatorInsertButton).toExist()
+    await expect(FormPage.navigatorCopyButton).toExist()
   });
   it('can move current record with the navigation.', async () => {
     await expect(FormPage.fieldPersonId).toExist()
@@ -189,6 +189,7 @@ describe('Form Page', () => {
     await FormPage.navigatorUpdateButton.click();
     await expect(FormPage.contactTableInsertButton).toExist()
     await FormPage.contactTableInsertButton.click()
+    await browser.pause(3000)
     await browser.acceptAlert()
     await browser.pause(3000)
 
@@ -207,6 +208,7 @@ describe('Form Page', () => {
 
     await expect(FormPage.contactTableInsertButton).toExist()
     await FormPage.rowContactDeleteButton[1].click()
+    await browser.pause(3000)
     await browser.acceptAlert()
     await browser.pause(3000)
 
