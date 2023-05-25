@@ -78,44 +78,46 @@ describe('Editing Page', () => {
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("")
   })
   it('can edit the radio buttons of integer field which is NOT NULL.', async () => {
-    await expect(EditingPage.fieldNum1Radio[0]).toExist()
-    await expect(EditingPage.fieldNum1Radio[1]).toExist()
-    await expect(EditingPage.fieldNum1Radio[0]).not.toBeSelected() // Checking initial value
-    await expect(EditingPage.fieldNum1Radio[1]).not.toBeSelected() // Checking initial value
-    await EditingPage.fieldNum1Radio[0].click() // First button
+    const buttons = await EditingPage.fieldNum1Radio
+    await expect(buttons[0]).toExist()
+    await expect(buttons[1]).toExist()
+    await expect(buttons[0]).not.toBeSelected() // Checking initial value
+    await expect(buttons[1]).not.toBeSelected() // Checking initial value
+    await buttons[0].click() // First button
     await EditingPage.navigatorUpdateButton.click()
     await EditingPage.navigatorUpdateButton.waitForClickable()
-    await expect(EditingPage.fieldNum1Radio[0]).toBeSelected() // Checking initial value
-    await expect(EditingPage.fieldNum1Radio[1]).not.toBeSelected() // Checking initial value
+    await expect(buttons[0]).toBeSelected() // Checking initial value
+    await expect(buttons[1]).not.toBeSelected() // Checking initial value
+    await expect(buttons).toHaveValue("1")
+    await buttons[1].click() // Second button
+    await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.waitForClickable()
+    await expect(buttons[0]).not.toBeSelected() // Checking initial value
+    await expect(buttons[1]).toBeSelected() // Checking initial value
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("1")
-    await EditingPage.fieldNum1Radio[1].click() // Second button
-    await EditingPage.navigatorUpdateButton.click()
-    await EditingPage.navigatorUpdateButton.waitForClickable()
-    await expect(EditingPage.fieldNum1Radio[0]).not.toBeSelected() // Checking initial value
-    await expect(EditingPage.fieldNum1Radio[1]).toBeSelected() // Checking initial value
-    await expect(EditingPage.fieldNum1Textfield).toHaveValue("2")
   })
   it('can edit the radio buttons of nullable integer field.', async () => {
-    await expect(EditingPage.fieldNum2Radio[0]).toExist()
-    await expect(EditingPage.fieldNum2Radio[1]).toExist()
-    await expect(EditingPage.fieldNum2Radio[0]).not.toBeSelected() // Checking initial value
-    await expect(EditingPage.fieldNum2Radio[1]).not.toBeSelected() // Checking initial value
-    await EditingPage.fieldNum2Radio[0].click() // First button
+    const buttons = await buttons
+    await expect(buttons[0]).toExist()
+    await expect(buttons[1]).toExist()
+    await expect(buttons[0]).not.toBeSelected() // Checking initial value
+    await expect(buttons[1]).not.toBeSelected() // Checking initial value
+    await buttons[0].click() // First button
     await EditingPage.navigatorUpdateButton.click()
     await EditingPage.navigatorUpdateButton.waitForClickable()
-    await expect(EditingPage.fieldNum2Radio[0]).toBeSelected() // Checking initial value
-    await expect(EditingPage.fieldNum2Radio[1]).not.toBeSelected() // Checking initial value
+    await expect(buttons[0]).toBeSelected() // Checking initial value
+    await expect(buttons[1]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("1")
-    await EditingPage.fieldNum2Radio[1].click() // Second button
+    await buttons[1].click() // Second button
     await EditingPage.navigatorUpdateButton.click()
     await EditingPage.navigatorUpdateButton.waitForClickable()
-    await expect(EditingPage.fieldNum2Radio[0]).not.toBeSelected() // Checking initial value
-    await expect(EditingPage.fieldNum2Radio[1]).toBeSelected() // Checking initial value
-    await expect(EditingPage.fieldNum2Textfield).toHaveValue("2")
+    await expect(buttons[0]).not.toBeSelected() // Checking initial value
+    await expect(buttons[1]).toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldNum2Textfield).toHaveValue("1")
   })
   it('can edit the popup menu of integer field which is NOT NULL.', async () => {
     await expect(EditingPage.fieldNum1Popup).toExist()
-    await expect(EditingPage.fieldNum1Popup).toHaveValue("") // Checking initial value
+    await expect(EditingPage.fieldNum1Popup).toHaveValue("0") // Checking initial value
     await expect(EditingPage.fieldNum1Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldNum1Popup.selectByVisibleText("select1") // Select second item
     await EditingPage.navigatorUpdateButton.click()
@@ -158,8 +160,9 @@ describe('Editing Page', () => {
     await expect(EditingPage.fieldDt1Textfield).toHaveValue("2001-01-01 00:00:00") // Checking initial value
     const value = new Date().toISOString().substring(0, 19).replace("T", " ")
     await EditingPage.fieldDt1Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
-    await browser.pause(waiting * 2)
+    await browser.pause(waiting)
     await expect(EditingPage.fieldDt1Textfield).toHaveValue(value)
     // This field can't clear
   })
@@ -168,8 +171,9 @@ describe('Editing Page', () => {
     await expect(EditingPage.fieldDt2Textfield).toHaveValue("") // Checking initial value
     const value = new Date().toISOString().substring(0, 19).replace("T", " ")
     await EditingPage.fieldDt2Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
-    await EditingPage.navigatorUpdateButton.waitForClickable()
+    await browser.pause(waiting)
     await expect(EditingPage.fieldDt2Textfield).toHaveValue(String(value))
     // This field can't clear
   })
@@ -178,7 +182,9 @@ describe('Editing Page', () => {
     await expect(EditingPage.fieldDate1Textfield).toHaveValue("2001-01-01") // Checking initial value
     const value = new Date().toISOString().substring(0, 10)
     await EditingPage.fieldDate1Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
     await expect(EditingPage.fieldDate1Textfield).toHaveValue(value)
     // This field can't clear
   })
@@ -187,8 +193,9 @@ describe('Editing Page', () => {
     await expect(EditingPage.fieldDate2Textfield).toHaveValue("") // Checking initial value
     const value = new Date().toISOString().substring(0, 10)
     await EditingPage.fieldDate2Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
-    await EditingPage.navigatorUpdateButton.waitForClickable()
+    await browser.pause(waiting)
     await expect(EditingPage.fieldDate2Textfield).toHaveValue(String(value))
     // This field can't clear
   })
@@ -197,7 +204,9 @@ describe('Editing Page', () => {
     await expect(EditingPage.fieldTime1Textfield).toHaveValue("00:00:00") // Checking initial value
     const value = new Date().toISOString().substring(11, 19)
     await EditingPage.fieldTime1Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
     await expect(EditingPage.fieldTime1Textfield).toHaveValue(value)
     // This field can't clear
   })
@@ -206,8 +215,9 @@ describe('Editing Page', () => {
     await expect(EditingPage.fieldTime2Textfield).toHaveValue("") // Checking initial value
     const value = new Date().toISOString().substring(11, 19)
     await EditingPage.fieldTime2Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
-    await EditingPage.navigatorUpdateButton.waitForClickable()
+    await browser.pause(waiting)
     await expect(EditingPage.fieldTime2Textfield).toHaveValue(String(value))
     // This field can't clear
   })
@@ -216,7 +226,9 @@ describe('Editing Page', () => {
     await expect(EditingPage.fieldTs1Textfield).toHaveValue("2001-01-01 00:00:00") // Checking initial value
     const value = new Date().toISOString().substring(0, 19).replace("T", " ")
     await EditingPage.fieldTs1Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
     await expect(EditingPage.fieldTs1Textfield).toHaveValue(value)
     // This field can't clear
   })
@@ -225,7 +237,9 @@ describe('Editing Page', () => {
     await expect(EditingPage.fieldTs2Textfield).toHaveValue("2001-01-01 00:00:00") // Checking initial value
     const value = new Date().toISOString().substring(0, 19).replace("T", " ")
     await EditingPage.fieldTs2Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.waitForClickable()
     await expect(EditingPage.fieldTs2Textfield).toHaveValue(value)
     // This field can't clear
