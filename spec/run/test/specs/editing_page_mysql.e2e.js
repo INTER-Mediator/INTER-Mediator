@@ -85,13 +85,13 @@ describe('Editing Page', () => {
     await expect(buttons[1]).not.toBeSelected() // Checking initial value
     await buttons[0].click() // First button
     await EditingPage.navigatorUpdateButton.click()
-    await EditingPage.navigatorUpdateButton.waitForClickable()
+    await browser.pause(waiting)
     await expect(buttons[0]).toBeSelected() // Checking initial value
     await expect(buttons[1]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("1")
     await buttons[1].click() // Second button
     await EditingPage.navigatorUpdateButton.click()
-    await EditingPage.navigatorUpdateButton.waitForClickable()
+    await browser.pause(waiting)
     await expect(buttons[0]).not.toBeSelected() // Checking initial value
     await expect(buttons[1]).toBeSelected() // Checking initial value
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("2")
@@ -104,13 +104,13 @@ describe('Editing Page', () => {
     await expect(buttons[1]).not.toBeSelected() // Checking initial value
     await buttons[0].click() // First button
     await EditingPage.navigatorUpdateButton.click()
-    await EditingPage.navigatorUpdateButton.waitForClickable()
+    await browser.pause(waiting)
     await expect(buttons[0]).toBeSelected() // Checking initial value
     await expect(buttons[1]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("1")
     await buttons[1].click() // Second button
     await EditingPage.navigatorUpdateButton.click()
-    await EditingPage.navigatorUpdateButton.waitForClickable()
+    await browser.pause(waiting)
     await expect(buttons[0]).not.toBeSelected() // Checking initial value
     await expect(buttons[1]).toBeSelected() // Checking initial value
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("2")
@@ -163,7 +163,7 @@ describe('Editing Page', () => {
     await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
-    await expect(EditingPage.fieldDt1Textfield).toHaveValue(value)
+    await expect(EditingPage.fieldDt1Textfield).toHaveValue(String(value))
     // This field can't clear
   })
   it('can edit the text field of nullable datetime field.', async () => {
@@ -185,7 +185,7 @@ describe('Editing Page', () => {
     await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
-    await expect(EditingPage.fieldDate1Textfield).toHaveValue(value)
+    await expect(EditingPage.fieldDate1Textfield).toHaveValue(String(value))
     // This field can't clear
   })
   it('can edit the text field of nullable date field.', async () => {
@@ -207,7 +207,7 @@ describe('Editing Page', () => {
     await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
-    await expect(EditingPage.fieldTime1Textfield).toHaveValue(value)
+    await expect(EditingPage.fieldTime1Textfield).toHaveValue(String(value))
     // This field can't clear
   })
   it('can edit the text field of nullable time field.', async () => {
@@ -229,7 +229,7 @@ describe('Editing Page', () => {
     await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
-    await expect(EditingPage.fieldTs1Textfield).toHaveValue(value)
+    await expect(EditingPage.fieldTs1Textfield).toHaveValue(String(value))
     // This field can't clear
   })
   it('can edit the text field of nullable timestamp field.', async () => {
@@ -241,7 +241,7 @@ describe('Editing Page', () => {
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.waitForClickable()
-    await expect(EditingPage.fieldTs2Textfield).toHaveValue(value)
+    await expect(EditingPage.fieldTs2Textfield).toHaveValue(String(value))
     // This field can't clear
   })
 
