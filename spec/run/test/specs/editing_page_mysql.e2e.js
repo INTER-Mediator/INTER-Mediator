@@ -222,7 +222,7 @@ describe('Editing Page', () => {
   })
   it('can edit the text field of nullable timestamp field.', async () => {
     await expect(EditingPage.fieldTs2Textfield).toExist()
-    await expect(EditingPage.fieldTs2Textfield).toHaveValue("") // Checking initial value
+    await expect(EditingPage.fieldTs2Textfield).toHaveValue("2001-01-01 00:00:00") // Checking initial value
     const value = new Date().toISOString().substring(0, 19).replace("T", " ")
     await EditingPage.fieldTs2Textfield.setValue(value) // Set a value to the field
     await EditingPage.navigatorUpdateButton.click()
