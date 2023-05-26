@@ -568,274 +568,282 @@ describe('Editing Page', () => {
     await browser.pause(waiting)
     await expect(EditingPage.fieldText2Textarea).toHaveValue("")
   })
-  // it('can edit the text field of float field which is NOT NULL.', async () => {
-  //   await expect(EditingPage.fieldFloat1Textfield).toExist()
-  //   await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0") // Checking initial value
-  //   const value = Math.trunc(Math.random() * 100000)/1000
-  //   await EditingPage.fieldFloat1Textfield.setValue(value) // Set a value to the field
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat1Textfield).toHaveValue(String(value))
-  //   await EditingPage.fieldFloat1Textfield.setValue("") // Clear the field
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0")
-  // })
-  // it('can edit the text field of nullable float field.', async () => {
-  //   await expect(EditingPage.fieldFloat2Textfield).toExist()
-  //   await expect(EditingPage.fieldFloat2Textfield).toHaveValue("") // Checking initial value
-  //   const value = Math.trunc(Math.random() * 100000)/1000
-  //   await EditingPage.fieldFloat2Textfield.setValue(value) // Set a value to the field
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat2Textfield).toHaveValue(String(value))
-  //   await EditingPage.fieldFloat2Textfield.setValue("") // Clear the field
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat2Textfield).toHaveValue("")
-  // })
+  it('can edit the text field of float field which is NOT NULL.', async () => {
+    await expect(EditingPage.fieldFloat1Textfield).toExist()
+    await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0") // Checking initial value
+    let value = Math.trunc(Math.random() * 100000)
+    value = (value % 10 == 0) ? (value + 1) : value
+    value /= 100
+    await EditingPage.fieldFloat1Textfield.setValue(value) // Set a value to the field
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat1Textfield).toHaveValue(String(value))
+    await EditingPage.fieldFloat1Textfield.setValue("") // Clear the field
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0")
+  })
+  it('can edit the text field of nullable float field.', async () => {
+    await expect(EditingPage.fieldFloat2Textfield).toExist()
+    await expect(EditingPage.fieldFloat2Textfield).toHaveValue("") // Checking initial value
+    let value = Math.trunc(Math.random() * 100000)
+    value = (value % 10 == 0) ? (value + 1) : value
+    value /= 100
+    await EditingPage.fieldFloat2Textfield.setValue(value) // Set a value to the field
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat2Textfield).toHaveValue(String(value))
+    await EditingPage.fieldFloat2Textfield.setValue("") // Clear the field
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat2Textfield).toHaveValue("")
+  })
   // Checkbox for non-integer type field is out of scope, ok?
-  // it('can edit the checkbox of float field which is NOT NULL.', async () => {
-  //   await expect(EditingPage.fieldFloat1Checkbox).toExist()
-  //   await expect(EditingPage.fieldFloat1Checkbox).not.toBeSelected() // Checking initial value
-  //   await EditingPage.fieldFloat1Checkbox.click() // ON
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat1Checkbox).toBeSelected()
-  //   await expect(EditingPage.fieldFloat1Textfield).toHaveValue("1")
-  //   await EditingPage.fieldFloat1Checkbox.click() // OFF
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat1Checkbox).not.toBeSelected()
-  //   await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0")
-  // })
+  it('can edit the checkbox of float field which is NOT NULL.', async () => {
+    await expect(EditingPage.fieldFloat1Checkbox).toExist()
+    await expect(EditingPage.fieldFloat1Checkbox).not.toBeSelected() // Checking initial value
+    await EditingPage.fieldFloat1Checkbox.click() // ON
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat1Checkbox).toBeSelected()
+    await expect(EditingPage.fieldFloat1Textfield).toHaveValue("1.00")
+    await EditingPage.fieldFloat1Checkbox.click() // OFF
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat1Checkbox).not.toBeSelected()
+    await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0.00")
+  })
   // Checkbox for non-integer type field is out of scope, ok?
-  // it('can edit the checkbox of nullable float field.', async () => {
-  //   await expect(EditingPage.fieldFloat2Checkbox).toExist()
-  //   await expect(EditingPage.fieldFloat2Checkbox).not.toBeSelected() // Checking initial value
-  //   await EditingPage.fieldFloat2Checkbox.click() // ON
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat2Checkbox).toBeSelected()
-  //   await expect(EditingPage.fieldFloat2Textfield).toHaveValue("1")
-  //   await EditingPage.fieldFloat2Checkbox.click() // OFF
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat2Checkbox).not.toBeSelected()
-  //   await expect(EditingPage.fieldFloat2Textfield).toHaveValue("")
-  // })
+  it('can edit the checkbox of nullable float field.', async () => {
+    await expect(EditingPage.fieldFloat2Checkbox).toExist()
+    await expect(EditingPage.fieldFloat2Checkbox).not.toBeSelected() // Checking initial value
+    await EditingPage.fieldFloat2Checkbox.click() // ON
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat2Checkbox).toBeSelected()
+    await expect(EditingPage.fieldFloat2Textfield).toHaveValue("1.00")
+    await EditingPage.fieldFloat2Checkbox.click() // OFF
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat2Checkbox).not.toBeSelected()
+    await expect(EditingPage.fieldFloat2Textfield).toHaveValue("")
+  })
   // Radio Buttons for non-integer type field is out of scope, ok?
-  // it('can edit the radio buttons of float field which is NOT NULL.', async () => {
-  //   await expect(EditingPage.fieldFloat1Radio[0]).toExist()
-  //   await expect(EditingPage.fieldFloat1Radio[1]).toExist()
-  //   await expect(EditingPage.fieldFloat1Radio[0]).not.toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldFloat1Radio[1]).not.toBeSelected() // Checking initial value
-  //   await EditingPage.fieldFloat1Radio[0].click() // First button
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat1Radio[0]).toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldFloat1Radio[1]).not.toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldFloat1Textfield).toHaveValue("1")
-  //   await EditingPage.fieldFloat1Radio[1].click() // Second button
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat1Radio[0]).not.toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldFloat1Radio[1]).toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldFloat1Textfield).toHaveValue("2")
-  // })
+  it('can edit the radio buttons of float field which is NOT NULL.', async () => {
+    await expect(EditingPage.fieldFloat1Radio[0]).toExist()
+    await expect(EditingPage.fieldFloat1Radio[1]).toExist()
+    await expect(EditingPage.fieldFloat1Radio[0]).not.toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldFloat1Radio[1]).not.toBeSelected() // Checking initial value
+    await EditingPage.fieldFloat1Radio[0].click() // First button
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat1Radio[0]).toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldFloat1Radio[1]).not.toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0.00")
+    await EditingPage.fieldFloat1Radio[1].click() // Second button
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat1Radio[0]).not.toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldFloat1Radio[1]).toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldFloat1Textfield).toHaveValue("1.00")
+  })
   // Radio Buttons for non-integer type field is out of scope, ok?
-  // it('can edit the radio buttons of nullable float field.', async () => {
-  //   await expect(EditingPage.fieldFloat2Radio[0]).toExist()
-  //   await expect(EditingPage.fieldFloat2Radio[1]).toExist()
-  //   await expect(EditingPage.fieldFloat2Radio[0]).not.toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldFloat2Radio[1]).not.toBeSelected() // Checking initial value
-  //   await EditingPage.fieldFloat2Radio[0].click() // First button
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat2Radio[0]).toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldFloat2Radio[1]).not.toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldFloat2Textfield).toHaveValue("0")
-  //   await EditingPage.fieldFloat2Radio[1].click() // Second button
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat2Radio[0]).not.toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldFloat2Radio[1]).toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldFloat2Textfield).toHaveValue("1")
-  // })
-  // it('can edit the popup menu of float field which is NOT NULL.', async () => {
-  //   await expect(EditingPage.fieldFloat1Popup).toExist()
-  //   await expect(EditingPage.fieldFloat1Popup).toHaveValue("") // Checking initial value
-  //   await expect(EditingPage.fieldFloat1Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
-  //   await EditingPage.fieldFloat1Popup.selectByVisibleText("select1") // Select second item
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat1Popup).toHaveValue("10")
-  //   await expect(EditingPage.fieldFloat1Textfield).toHaveValue("10")
-  //   await EditingPage.fieldFloat1Popup.selectByIndex(2) // Select third item
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat1Popup).toHaveValue("20")
-  //   await expect(EditingPage.fieldFloat1Textfield).toHaveValue("20")
-  //   await EditingPage.fieldFloat1Popup.selectByIndex(0) // Select first item
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat1Popup).toHaveValue("")
-  //   await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0")
-  // })
-  // it('can edit the popup menu of nullable float field.', async () => {
-  //   await expect(EditingPage.fieldFloat2Popup).toExist()
-  //   await expect(EditingPage.fieldFloat2Popup).toHaveValue("") // Checking initial value
-  //   await expect(EditingPage.fieldFloat2Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
-  //   await EditingPage.fieldFloat2Popup.selectByVisibleText("select1") // Select second item
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat2Popup).toHaveValue("10")
-  //   await expect(EditingPage.fieldFloat2Textfield).toHaveValue("10")
-  //   await EditingPage.fieldFloat2Popup.selectByIndex(2) // Select third item
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat2Popup).toHaveValue("20")
-  //   await expect(EditingPage.fieldFloat2Textfield).toHaveValue("20")
-  //   await EditingPage.fieldFloat2Popup.selectByIndex(0) // Select first item
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldFloat2Popup).toHaveValue("")
-  //   await expect(EditingPage.fieldFloat2Textfield).toHaveValue("")
-  // })
-  // it('can edit the text field of double field which is NOT NULL.', async () => {
-  //   await expect(EditingPage.fieldDouble1Textfield).toExist()
-  //   await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0") // Checking initial value
-  //   const value = Math.trunc(Math.random() * 100000000000000)/100000
-  //   await EditingPage.fieldDouble1Textfield.setValue(value) // Set a value to the field
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble1Textfield).toHaveValue(String(value))
-  //   await EditingPage.fieldDouble1Textfield.setValue("") // Clear the field
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0")
-  // })
-  // it('can edit the text field of nullable double field.', async () => {
-  //   await expect(EditingPage.fieldDouble2Textfield).toExist()
-  //   await expect(EditingPage.fieldDouble2Textfield).toHaveValue("") // Checking initial value
-  //   const value = Math.trunc(Math.random() * 100000000000000)/100000
-  //   await EditingPage.fieldDouble2Textfield.setValue(value) // Set a value to the field
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble2Textfield).toHaveValue(String(value))
-  //   await EditingPage.fieldDouble2Textfield.setValue("") // Clear the field
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble2Textfield).toHaveValue("")
-  // })
+  it('can edit the radio buttons of nullable float field.', async () => {
+    await expect(EditingPage.fieldFloat2Radio[0]).toExist()
+    await expect(EditingPage.fieldFloat2Radio[1]).toExist()
+    await expect(EditingPage.fieldFloat2Radio[0]).not.toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldFloat2Radio[1]).not.toBeSelected() // Checking initial value
+    await EditingPage.fieldFloat2Radio[0].click() // First button
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat2Radio[0]).toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldFloat2Radio[1]).not.toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldFloat2Textfield).toHaveValue("0.00")
+    await EditingPage.fieldFloat2Radio[1].click() // Second button
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat2Radio[0]).not.toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldFloat2Radio[1]).toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldFloat2Textfield).toHaveValue("1.00")
+  })
+  it('can edit the popup menu of float field which is NOT NULL.', async () => {
+    await expect(EditingPage.fieldFloat1Popup).toExist()
+    await expect(EditingPage.fieldFloat1Popup).toHaveValue("") // Checking initial value
+    await expect(EditingPage.fieldFloat1Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
+    await EditingPage.fieldFloat1Popup.selectByVisibleText("select1") // Select second item
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat1Popup).toHaveValue("10.00")
+    await expect(EditingPage.fieldFloat1Textfield).toHaveValue("10.00")
+    await EditingPage.fieldFloat1Popup.selectByIndex(2) // Select third item
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat1Popup).toHaveValue("20.00")
+    await expect(EditingPage.fieldFloat1Textfield).toHaveValue("20.00")
+    await EditingPage.fieldFloat1Popup.selectByIndex(0) // Select first item
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat1Popup).toHaveValue("")
+    await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0.00")
+  })
+  it('can edit the popup menu of nullable float field.', async () => {
+    await expect(EditingPage.fieldFloat2Popup).toExist()
+    await expect(EditingPage.fieldFloat2Popup).toHaveValue("") // Checking initial value
+    await expect(EditingPage.fieldFloat2Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
+    await EditingPage.fieldFloat2Popup.selectByVisibleText("select1") // Select second item
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat2Popup).toHaveValue("10.00")
+    await expect(EditingPage.fieldFloat2Textfield).toHaveValue("10.00")
+    await EditingPage.fieldFloat2Popup.selectByIndex(2) // Select third item
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat2Popup).toHaveValue("20.00")
+    await expect(EditingPage.fieldFloat2Textfield).toHaveValue("20.00")
+    await EditingPage.fieldFloat2Popup.selectByIndex(0) // Select first item
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldFloat2Popup).toHaveValue("")
+    await expect(EditingPage.fieldFloat2Textfield).toHaveValue("")
+  })
+  it('can edit the text field of double field which is NOT NULL.', async () => {
+    await expect(EditingPage.fieldDouble1Textfield).toExist()
+    await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0") // Checking initial value
+    let value = Math.trunc(Math.random() * 100000000000000000)
+    value = (value % 10 == 0) ? (value + 1) : value
+    value /= 100
+    await EditingPage.fieldDouble1Textfield.setValue(value) // Set a value to the field
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble1Textfield).toHaveValue(String(value))
+    await EditingPage.fieldDouble1Textfield.setValue("") // Clear the field
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0")
+  })
+  it('can edit the text field of nullable double field.', async () => {
+    await expect(EditingPage.fieldDouble2Textfield).toExist()
+    await expect(EditingPage.fieldDouble2Textfield).toHaveValue("") // Checking initial value
+    let value = Math.trunc(Math.random() * 100000000000000000)
+    value = (value % 10 == 0) ? (value + 1) : value
+    value /= 100
+    await EditingPage.fieldDouble2Textfield.setValue(value) // Set a value to the field
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble2Textfield).toHaveValue(String(value))
+    await EditingPage.fieldDouble2Textfield.setValue("") // Clear the field
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble2Textfield).toHaveValue("")
+  })
   // Checkbox for non-integer type field is out of scope, ok?
-  // it('can edit the checkbox of double field which is NOT NULL.', async () => {
-  //   await expect(EditingPage.fieldDouble1Checkbox).toExist()
-  //   await expect(EditingPage.fieldDouble1Checkbox).not.toBeSelected() // Checking initial value
-  //   await EditingPage.fieldDouble1Checkbox.click() // ON
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble1Checkbox).toBeSelected()
-  //   await expect(EditingPage.fieldDouble1Textfield).toHaveValue("1")
-  //   await EditingPage.fieldDouble1Checkbox.click() // OFF
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble1Checkbox).not.toBeSelected()
-  //   await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0")
-  // })
+  it('can edit the checkbox of double field which is NOT NULL.', async () => {
+    await expect(EditingPage.fieldDouble1Checkbox).toExist()
+    await expect(EditingPage.fieldDouble1Checkbox).not.toBeSelected() // Checking initial value
+    await EditingPage.fieldDouble1Checkbox.click() // ON
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble1Checkbox).toBeSelected()
+    await expect(EditingPage.fieldDouble1Textfield).toHaveValue("1")
+    await EditingPage.fieldDouble1Checkbox.click() // OFF
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble1Checkbox).not.toBeSelected()
+    await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0")
+  })
   // Checkbox for non-integer type field is out of scope, ok?
-  // it('can edit the checkbox of nullable double field.', async () => {
-  //   await expect(EditingPage.fieldDouble2Checkbox).toExist()
-  //   await expect(EditingPage.fieldDouble2Checkbox).not.toBeSelected() // Checking initial value
-  //   await EditingPage.fieldDouble2Checkbox.click() // ON
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble2Checkbox).toBeSelected()
-  //   await expect(EditingPage.fieldDouble2Textfield).toHaveValue("1")
-  //   await EditingPage.fieldDouble2Checkbox.click() // OFF
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble2Checkbox).not.toBeSelected()
-  //   await expect(EditingPage.fieldDouble2Textfield).toHaveValue("")
-  // })
+  it('can edit the checkbox of nullable double field.', async () => {
+    await expect(EditingPage.fieldDouble2Checkbox).toExist()
+    await expect(EditingPage.fieldDouble2Checkbox).not.toBeSelected() // Checking initial value
+    await EditingPage.fieldDouble2Checkbox.click() // ON
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble2Checkbox).toBeSelected()
+    await expect(EditingPage.fieldDouble2Textfield).toHaveValue("1")
+    await EditingPage.fieldDouble2Checkbox.click() // OFF
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble2Checkbox).not.toBeSelected()
+    await expect(EditingPage.fieldDouble2Textfield).toHaveValue("")
+  })
   // Radio Buttons for non-integer type field is out of scope, ok?
-  // it('can edit the radio buttons of double field which is NOT NULL.', async () => {
-  //   await expect(EditingPage.fieldDouble1Radio[0]).toExist()
-  //   await expect(EditingPage.fieldDouble1Radio[1]).toExist()
-  //   await expect(EditingPage.fieldDouble1Radio[0]).not.toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldDouble1Radio[1]).not.toBeSelected() // Checking initial value
-  //   await EditingPage.fieldDouble1Radio[0].click() // First button
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble1Radio[0]).toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldDouble1Radio[1]).not.toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldDouble1Textfield).toHaveValue("1")
-  //   await EditingPage.fieldDouble1Radio[1].click() // Second button
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble1Radio[0]).not.toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldDouble1Radio[1]).toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldDouble1Textfield).toHaveValue("2")
-  // })
+  it('can edit the radio buttons of double field which is NOT NULL.', async () => {
+    await expect(EditingPage.fieldDouble1Radio[0]).toExist()
+    await expect(EditingPage.fieldDouble1Radio[1]).toExist()
+    await expect(EditingPage.fieldDouble1Radio[0]).not.toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldDouble1Radio[1]).not.toBeSelected() // Checking initial value
+    await EditingPage.fieldDouble1Radio[0].click() // First button
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble1Radio[0]).toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldDouble1Radio[1]).not.toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0.00")
+    await EditingPage.fieldDouble1Radio[1].click() // Second button
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble1Radio[0]).not.toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldDouble1Radio[1]).toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldDouble1Textfield).toHaveValue("1.00")
+  })
   // Radio Buttons for non-integer type field is out of scope, ok?
-  // it('can edit the radio buttons of double integer field.', async () => {
-  //   await expect(EditingPage.fieldDouble2Radio[0]).toExist()
-  //   await expect(EditingPage.fieldDouble2Radio[1]).toExist()
-  //   await expect(EditingPage.fieldDouble2Radio[0]).not.toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldDouble2Radio[1]).not.toBeSelected() // Checking initial value
-  //   await EditingPage.fieldDouble2Radio[0].click() // First button
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble2Radio[0]).toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldDouble2Radio[1]).not.toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldDouble2Textfield).toHaveValue("0")
-  //   await EditingPage.fieldDouble2Radio[1].click() // Second button
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble2Radio[0]).not.toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldDouble2Radio[1]).toBeSelected() // Checking initial value
-  //   await expect(EditingPage.fieldDouble2Textfield).toHaveValue("1")
-  // })
-  // it('can edit the popup menu of double field which is NOT NULL.', async () => {
-  //   await expect(EditingPage.fieldDouble1Popup).toExist()
-  //   await expect(EditingPage.fieldDouble1Popup).toHaveValue("") // Checking initial value
-  //   await expect(EditingPage.fieldDouble1Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
-  //   await EditingPage.fieldDouble1Popup.selectByVisibleText("select1") // Select second item
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble1Popup).toHaveValue("10")
-  //   await expect(EditingPage.fieldDouble1Textfield).toHaveValue("10")
-  //   await EditingPage.fieldDouble1Popup.selectByIndex(2) // Select third item
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble1Popup).toHaveValue("20")
-  //   await expect(EditingPage.fieldDouble1Textfield).toHaveValue("20")
-  //   await EditingPage.fieldDouble1Popup.selectByIndex(0) // Select first item
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble1Popup).toHaveValue("")
-  //   await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0")
-  // })
-  // it('can edit the popup menu of nullable double field.', async () => {
-  //   await expect(EditingPage.fieldDouble2Popup).toExist()
-  //   await expect(EditingPage.fieldDouble2Popup).toHaveValue("") // Checking initial value
-  //   await expect(EditingPage.fieldDouble2Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
-  //   await EditingPage.fieldDouble2Popup.selectByVisibleText("select1") // Select second item
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble2Popup).toHaveValue("10")
-  //   await expect(EditingPage.fieldDouble2Textfield).toHaveValue("10")
-  //   await EditingPage.fieldDouble2Popup.selectByIndex(2) // Select third item
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble2Popup).toHaveValue("20")
-  //   await expect(EditingPage.fieldDouble2Textfield).toHaveValue("20")
-  //   await EditingPage.fieldDouble2Popup.selectByIndex(0) // Select first item
-  //   await EditingPage.navigatorUpdateButton.click()
-  //   await browser.pause(waiting)
-  //   await expect(EditingPage.fieldDouble2Popup).toHaveValue("")
-  //   await expect(EditingPage.fieldDouble2Textfield).toHaveValue("")
-  // })
+  it('can edit the radio buttons of double integer field.', async () => {
+    await expect(EditingPage.fieldDouble2Radio[0]).toExist()
+    await expect(EditingPage.fieldDouble2Radio[1]).toExist()
+    await expect(EditingPage.fieldDouble2Radio[0]).not.toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldDouble2Radio[1]).not.toBeSelected() // Checking initial value
+    await EditingPage.fieldDouble2Radio[0].click() // First button
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble2Radio[0]).toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldDouble2Radio[1]).not.toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldDouble2Textfield).toHaveValue("0.00")
+    await EditingPage.fieldDouble2Radio[1].click() // Second button
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble2Radio[0]).not.toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldDouble2Radio[1]).toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldDouble2Textfield).toHaveValue("1.00")
+  })
+  it('can edit the popup menu of double field which is NOT NULL.', async () => {
+    await expect(EditingPage.fieldDouble1Popup).toExist()
+    await expect(EditingPage.fieldDouble1Popup).toHaveValue("") // Checking initial value
+    await expect(EditingPage.fieldDouble1Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
+    await EditingPage.fieldDouble1Popup.selectByVisibleText("select1") // Select second item
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble1Popup).toHaveValue("10.00")
+    await expect(EditingPage.fieldDouble1Textfield).toHaveValue("10.00")
+    await EditingPage.fieldDouble1Popup.selectByIndex(2) // Select third item
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble1Popup).toHaveValue("20.00")
+    await expect(EditingPage.fieldDouble1Textfield).toHaveValue("20.00")
+    await EditingPage.fieldDouble1Popup.selectByIndex(0) // Select first item
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble1Popup).toHaveValue("")
+    await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0.00")
+  })
+  it('can edit the popup menu of nullable double field.', async () => {
+    await expect(EditingPage.fieldDouble2Popup).toExist()
+    await expect(EditingPage.fieldDouble2Popup).toHaveValue("") // Checking initial value
+    await expect(EditingPage.fieldDouble2Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
+    await EditingPage.fieldDouble2Popup.selectByVisibleText("select1") // Select second item
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble2Popup).toHaveValue("10.00")
+    await expect(EditingPage.fieldDouble2Textfield).toHaveValue("10.00")
+    await EditingPage.fieldDouble2Popup.selectByIndex(2) // Select third item
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble2Popup).toHaveValue("20.00")
+    await expect(EditingPage.fieldDouble2Textfield).toHaveValue("20.00")
+    await EditingPage.fieldDouble2Popup.selectByIndex(0) // Select first item
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await expect(EditingPage.fieldDouble2Popup).toHaveValue("")
+    await expect(EditingPage.fieldDouble2Textfield).toHaveValue("")
+  })
   it('can edit the text field of boolean field which is NOT NULL.', async () => {
     await expect(EditingPage.fieldBool1Textfield).toExist()
     await expect(EditingPage.fieldBool1Textfield).toHaveValue("0") // Checking initial value
