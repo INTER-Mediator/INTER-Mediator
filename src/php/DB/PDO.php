@@ -390,6 +390,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $nullableFields = $this->handler->getNullableFields($this->dbSettings->getEntityForUpdate());
         $numericFields = $this->handler->getNumericFields($this->dbSettings->getEntityForUpdate());
         $nullableNumericFields = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
+
         if (isset($tableInfo['numeric-fields']) && is_array($tableInfo['numeric-fields'])) {
             $nullableFields = array_merge($nullableFields, $tableInfo['numeric-fields']);
             $nullableNumericFields = array_merge($nullableNumericFields, $tableInfo['numeric-fields']);
@@ -421,37 +422,40 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $fieldValues = $this->dbSettings->getValue();
 
         foreach ($this->dbSettings->getFieldsRequired() as $field) {
-            $value = $fieldValues[$counter];
-            $counter++;
             $setClause[] = $this->handler->quotedEntityName($field) . "=?";
-            $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
+            $value = (is_array($fieldValues[$counter]))
+                ? implode("\n", $fieldValues[$counter]) : $fieldValues[$counter];
+            $counter++;
             if (in_array($field, $boolFields)) {
-                $convertedValue = $this->isTrue($convertedValue);
-            } else if (in_array($field, $nullableNumericFields) && $value === "") {
-                $convertedValue = NULL;
-            } else if (in_array($field, $numericFields) && $value === "") {
-                $convertedValue = 0;
+                $value = $this->isTrue($value);
+            } else if ($value === "") {
+                if (in_array($field, $nullableNumericFields)) {
+                    $value = NULL;
+                } else if (in_array($field, $numericFields)) {
+                    $value = 0;
+                }
             } else {
                 $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
-                $convertedValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
+                $value = $this->formatter->formatterToDB($filedInForm, $value);
                 // Convert the time explanation from UTC to server setup timezone
-                if (in_array($field, $timeFields) && !is_null($convertedValue) && $convertedValue !== '') {
-                    $dt = new DateTime($convertedValue, new DateTimeZone('UTC'));
-                    $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $convertedValue);
+                if (in_array($field, $timeFields) && !is_null($value) && $value !== '') {
+                    $dt = new DateTime($value, new DateTimeZone('UTC'));
+                    $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $value);
                     $dt->setTimezone(new DateTimeZone(date_default_timezone_get()));
-                    $convertedValue = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+                    $value = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
                 } else if (in_array($field, $nullableFields)) {
-                    $convertedValue = $convertedValue ?? NULL;
+                    $value = $value ?? NULL;
                 }
             }
-            $setParameter[] = $convertedValue;
+            $setParameter[] = $value;
         }
         if (count($setClause) < 1) {
             $this->logger->setErrorMessage("No data to update for table{$tableName}.");
             return false;
         }
         $setClause = implode(',', $setClause);
-        $queryClause = $this->getWhereClause('update', false, true, $signedUser, $bypassAuth);
+        $queryClause = $this->getWhereClause('update',
+            false, true, $signedUser, $bypassAuth);
         if ($queryClause != '') {
             $queryClause = "WHERE {$queryClause}";
         }
@@ -459,8 +463,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $prepSQL = $this->link->prepare($sql);
         $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityAsSource());
 
-        $this->logger->setDebugMessage(
-            $prepSQL->queryString . " with " . str_replace("\n", " ", var_export($setParameter, true) ?? ""));
+        $this->logger->setDebugMessage($prepSQL->queryString
+            . " with " . str_replace("\n", " ", var_export($setParameter, true) ?? ""));
         // Thanks for the following code: https://koyhogetech.hatenablog.com/entry/20101217/pdo_pgsql
         $count = 1;
         foreach ($setParameter as $param) {
