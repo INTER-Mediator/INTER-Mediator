@@ -185,6 +185,7 @@ describe('Form Page', () => {
   });
   it('can insert a row into detail area.', async () => {
     await FormPage.open()
+    await browser.pause(1000)
     await FormPage.navigatorUpdateButton.click();
     await expect(FormPage.contactTableInsertButton).toExist()
     await FormPage.contactTableInsertButton.click()
@@ -201,6 +202,7 @@ describe('Form Page', () => {
   })
   it('can delete a row in detail area.', async () => {
     await FormPage.open()
+    await browser.pause(1000)
     await FormPage.navigatorUpdateButton.click();
     await expect(FormPage.contactTableInsertButton).toExist()
     await FormPage.rowContactDeleteButton[1].click()
@@ -216,11 +218,11 @@ describe('Form Page', () => {
   })
   it('can copy a row in detail area.', async () => {
     await FormPage.open()
+    await browser.pause(1000)
     await FormPage.navigatorUpdateButton.click();
     await browser.pause(3000)
 
     const value = await FormPage.rowContactSummary[1].getValue()
-    console.log(value)
     await expect(FormPage.contactTableInsertButton).toExist()
     await FormPage.rowContactCopyButton[1].click()
     //await browser.acceptAlert()
