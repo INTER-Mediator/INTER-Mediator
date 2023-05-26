@@ -21,14 +21,16 @@ exports.config = {
   // will be called from there.
   //
   specs: [
-     './test/specs/**/*.js'
-    ],
+    './test/specs/**/*.js'
+  ],
   // Patterns to exclude.
   exclude: [
     // './test/specs/form_page_mysql.e2e.js',
     // './test/specs/form_page_postgresql.e2e.js',
     // './test/specs/form_page_sqlite.e2e.js',
-  //  './test/specs/editing_page_mysql.e2e.js',
+    // './test/specs/editing_page_mysql.e2e.js',
+    //  './test/specs/editing_page_postgresql.e2e.js',
+    //'./test/specs/editing_page_sqlite.e2e.js',
   ],
   //
   // ============
@@ -76,7 +78,7 @@ exports.config = {
   // Define all options that are relevant for the WebdriverIO instance here
   //
   // Level of logging verbosity: trace | debug | info | warn | error | silent
-  logLevel: 'info',
+  logLevel: 'warn',
   //
   // Set specific log levels per logger
   // loggers:

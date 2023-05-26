@@ -17,7 +17,7 @@ require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 
 IM_Entry(
     array(
-        array(
+        [
             'records' => 1,
             'paging' => true,
             'name' => 'person',
@@ -30,35 +30,52 @@ IM_Entry(
                 'delete' => 'レコード削除',
                 'copy' => 'レコード複製',
             ),
-        ),
-        array(
+        ],
+        [
             'name' => 'contact',
             'key' => 'id',
             'relation' => array(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
-            'repeat-control' => 'insert-confirm delete-confirm copy',
-        ),
-        array(
+            'repeat-control' => 'insert-confirm delete-confirm copy',],
+
+        [
             'name' => 'contact_way',
             'key' => 'id',
-        ),
-        array(
+        ],
+        [
             'name' => 'cor_way_kindname',
             'aggregation-select' => 'cor_way_kind.*,contact_kind.name as name_kind',
             'aggregation-from' => 'cor_way_kind INNER JOIN contact_kind ON cor_way_kind.kind_id = contact_kind.id',
             'key' => 'id',
             'relation' => array(
                 array('foreign-key' => 'way_id', 'join-field' => 'way', 'operator' => '=')
-            ),
-        ),
-        array('name' => 'history',
+            ),],
+        [
+            'name' => 'history',
             'key' => 'id',
             'relation' => array(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
             'repeat-control' => 'insert delete',
-        ),
+        ],
+        [
+            "name" => "testtable",
+            "key" => "id",
+            "repeat-control" => "insert delete",
+            "records" => 1,
+            "paging" => true,
+            "sort" => [["field" => "id", "direction" => "DESC",],],
+        ],
+        [
+            "name" => "selection",
+            "key" => "id",
+            "data" => [
+                ["id" => "select1", "num" => "10"],
+                ["id" => "select2", "num" => 20,],
+                ["id" => "select3", "num" => 30]
+            ]
+        ],
     ),
     [],
     array(

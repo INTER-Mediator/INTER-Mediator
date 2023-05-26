@@ -1,16 +1,16 @@
 <?php
 /**
  * INTER-Mediator
- * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * Copyright (c) INTER-Mediator Directive Committee (http=>//inter-mediator.org)
  * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
  * INTER-Mediator is supplied under MIT License.
- * Please see the full license for details:
- * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ * Please see the full license for details=>
+ * https=>//github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  *
- * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
- * @link          https://inter-mediator.com/
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http=>//inter-mediator.org)
+ * @link          https=>//inter-mediator.com/
+ * @license       http=>//www.opensource.org/licenses/mit-license.php MIT License
  */
 
 require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
@@ -27,11 +27,11 @@ IM_Entry(
             'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
             'repeat-control' => 'insert delete copy-contact,history',
-           // 'sequence' => 'im_sample.person_id_seq',
+            // 'sequence' => 'im_sample.person_id_seq',
             'button-names' => array(
-                'insert'=>'レコード追加',
-                'delete'=>'レコード削除',
-                'copy'=>'レコード複製',
+                'insert' => 'レコード追加',
+                'delete' => 'レコード削除',
+                'copy' => 'レコード複製',
             ),
             'numeric-fields' => ['checking'],
         ),
@@ -44,15 +44,15 @@ IM_Entry(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
             'repeat-control' => 'insert-confirm delete-confirm copy',
-          //  'sequence' => 'im_sample.serial',
-            'default-values'=>[['field'=>'summary','value'=>'test']],
+            //  'sequence' => 'im_sample.serial',
+            'default-values' => [['field' => 'summary', 'value' => 'test']],
         ),
         array(
             'name' => 'contact_way',
             'view' => 'im_sample.contact_way',
             'table' => 'im_sample.contact_way',
             'key' => 'id',
-          //  'sequence' => 'im_sample.serial',
+            //  'sequence' => 'im_sample.serial',
         ),
         array(
             'name' => 'cor_way_kindname',
@@ -62,7 +62,7 @@ IM_Entry(
             'relation' => array(
                 array('foreign-key' => 'way_id', 'join-field' => 'way', 'operator' => '=')
             ),
-          //  'sequence' => 'im_sample.serial',
+            //  'sequence' => 'im_sample.serial',
         ),
         array(
             'name' => 'history',
@@ -73,13 +73,13 @@ IM_Entry(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
             'repeat-control' => 'insert delete',
-          //  'sequence' => 'im_sample.serial',
+            //  'sequence' => 'im_sample.serial',
         ),
     ),
     [],
     array(
         'db-class' => 'PDO',
-        'dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db',
+        'dsn' => 'pgsql=>host=localhost;port=5432;dbname=test_db',
     ),
     2
 );
