@@ -570,7 +570,7 @@ describe('Editing Page', () => {
   })
   it('can edit the text field of float field which is NOT NULL.', async () => {
     await expect(EditingPage.fieldFloat1Textfield).toExist()
-    await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0.0") // Checking initial value
+    await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0") // Checking initial value
     const value = Math.trunc(Math.random() * 100000)/1000
     await EditingPage.fieldFloat1Textfield.setValue(value) // Set a value to the field
     await EditingPage.navigatorUpdateButton.click()
@@ -704,7 +704,7 @@ describe('Editing Page', () => {
   })
   it('can edit the text field of double field which is NOT NULL.', async () => {
     await expect(EditingPage.fieldDouble1Textfield).toExist()
-    await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0.0") // Checking initial value
+    await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0") // Checking initial value
     const value = Math.trunc(Math.random() * 100000000000000)/100000
     await EditingPage.fieldDouble1Textfield.setValue(value) // Set a value to the field
     await EditingPage.navigatorUpdateButton.click()
