@@ -22,13 +22,13 @@ exports.config = {
   //
   specs: [
     //  './test/specs/**/*.js'
+    './test/specs/form_page_mysql.e2e.js',
+    './test/specs/form_page_postgresql.e2e.js',
+    './test/specs/form_page_sqlite.e2e.js',
     './test/specs/editing_page_mysql.e2e.js',
   ],
   // Patterns to exclude.
   exclude: [
-    './test/specs/form_page_mysql.e2e.js',
-    './test/specs/form_page_postgresql.e2e.js',
-    './test/specs/form_page_sqlite.e2e.js',
   ],
   //
   // ============

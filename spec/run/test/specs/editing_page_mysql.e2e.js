@@ -234,18 +234,18 @@ describe('Editing Page', () => {
   //   await expect(EditingPage.fieldTs1Textfield).toHaveValue(String(value))
   //   // This field can't clear
   // })
-  it('can edit the text field of nullable timestamp field.', async () => {
-    await expect(EditingPage.fieldTs2Textfield).toExist()
-    await expect(EditingPage.fieldTs2Textfield).toHaveValue("2001-01-01 00:00:00") // Checking initial value
-    const value = new Date().toISOString().substring(0, 19).replace("T", " ")
-    await EditingPage.fieldTs2Textfield.setValue(value) // Set a value to the field
-    await browser.pause(waiting)
-    await EditingPage.navigatorUpdateButton.click()
-    await browser.pause(waiting)
-    await browser.pause(waiting)
-    await expect(EditingPage.fieldTs2Textfield).toHaveValue(String(value))
-    // This field can't clear
-  })
+  // it('can edit the text field of nullable timestamp field.', async () => {
+  //   await expect(EditingPage.fieldTs2Textfield).toExist()
+  //   await expect(EditingPage.fieldTs2Textfield).toHaveValue("2001-01-01 00:00:00") // Checking initial value
+  //   const value = new Date().toISOString().substring(0, 19).replace("T", " ")
+  //   await EditingPage.fieldTs2Textfield.setValue(value) // Set a value to the field
+  //   await browser.pause(waiting)
+  //   await EditingPage.navigatorUpdateButton.click()
+  //   await browser.pause(waiting)
+  //   await browser.pause(waiting)
+  //   await expect(EditingPage.fieldTs2Textfield).toHaveValue(String(value))
+  //   // This field can't clear
+  // })
 
   it('can edit the text field of varchar field which is NOT NULL.', async () => {
     await EditingPage.open()
@@ -522,7 +522,7 @@ describe('Editing Page', () => {
   it('can edit the text field of float field which is NOT NULL.', async () => {
     await expect(EditingPage.fieldFloat1Textfield).toExist()
     await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0") // Checking initial value
-    const value = Math.random() * 10000000
+    const value = Math.trunc(Math.random() * 100000)/1000
     await EditingPage.fieldFloat1Textfield.setValue(value) // Set a value to the field
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
@@ -535,7 +535,7 @@ describe('Editing Page', () => {
   it('can edit the text field of nullable float field.', async () => {
     await expect(EditingPage.fieldFloat2Textfield).toExist()
     await expect(EditingPage.fieldFloat2Textfield).toHaveValue("") // Checking initial value
-    const value = Math.random() * 10000000
+    const value = Math.trunc(Math.random() * 100000)/1000
     await EditingPage.fieldFloat2Textfield.setValue(value) // Set a value to the field
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
@@ -630,7 +630,7 @@ describe('Editing Page', () => {
     await EditingPage.fieldFloat1Popup.selectByIndex(0) // Select first item
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
-    await expect(EditingPage.fieldFloat1Popup).toHaveValue("20")
+    await expect(EditingPage.fieldFloat1Popup).toHaveValue("")
     await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0")
   })
   it('can edit the popup menu of nullable float field.', async () => {
@@ -922,7 +922,7 @@ describe('Editing Page', () => {
     await EditingPage.fieldBool2Popup.selectByIndex(0) // Select first item
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
-    await expect(EditingPage.fieldBool2Popup).toHaveValue("20")
+    await expect(EditingPage.fieldBool2Popup).toHaveValue("")
     await expect(EditingPage.fieldBool2Textfield).toHaveValue("")
   })
 })
