@@ -192,7 +192,7 @@ describe('Form Page', () => {
     await browser.acceptAlert()
     await browser.pause(3000)
 
-    const rows = FormPage.rowContact
+    const rows = await FormPage.rowContact
     await expect(rows[0]).toExist() // There has three lines
     await expect(rows[1]).toExist()
     await expect(rows[2]).toExist()
@@ -207,7 +207,7 @@ describe('Form Page', () => {
     await browser.acceptAlert()
     await browser.pause(3000)
 
-    const rows = FormPage.rowContact
+    const rows = await FormPage.rowContact
     await expect(rows[0]).toExist() // There has three lines
     await expect(rows[1]).toExist()
     await expect(rows[2]).toExist()
@@ -223,7 +223,7 @@ describe('Form Page', () => {
     //await browser.acceptAlert()
     await browser.pause(3000)
 
-    const rows = FormPage.rowContact
+    const rows = await FormPage.rowContact
     await expect(rows[0]).toExist() // There has three lines
     await expect(rows[1]).toExist()
     await expect(rows[2]).toExist()

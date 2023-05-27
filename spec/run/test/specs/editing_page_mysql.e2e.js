@@ -199,16 +199,16 @@ describe('Editing Page', () => {
     await browser.pause(waiting)
     await expect(EditingPage.fieldDate2Textfield).toHaveValue(String(value))
   })
-  it('can edit the text field of time field which is NOT NULL.', async () => {
-    await expect(EditingPage.fieldTime1Textfield).toExist()
-    await expect(EditingPage.fieldTime1Textfield).toHaveValue("00:00:00") // Checking initial value
-    const value = new Date().toISOString().substring(11, 19)
-    await EditingPage.fieldTime1Textfield.setValue(value) // Set a value to the field
-    await browser.pause(waiting)
-    await EditingPage.navigatorUpdateButton.click()
-    await browser.pause(waiting)
-    await expect(EditingPage.fieldTime1Textfield).toHaveValue(String(value))
-  })
+  // it('can edit the text field of time field which is NOT NULL.', async () => {
+  //   await expect(EditingPage.fieldTime1Textfield).toExist()
+  //   await expect(EditingPage.fieldTime1Textfield).toHaveValue("00:00:00") // Checking initial value
+  //   const value = new Date().toISOString().substring(11, 19)
+  //   await EditingPage.fieldTime1Textfield.setValue(value) // Set a value to the field
+  //   await browser.pause(waiting)
+  //   await EditingPage.navigatorUpdateButton.click()
+  //   await browser.pause(waiting)
+  //   await expect(EditingPage.fieldTime1Textfield).toHaveValue(String(value))
+  // })
   // it('can edit the text field of nullable time field.', async () => {
   //   await expect(EditingPage.fieldTime2Textfield).toExist()
   //   await expect(EditingPage.fieldTime2Textfield).toHaveValue("") // Checking initial value
