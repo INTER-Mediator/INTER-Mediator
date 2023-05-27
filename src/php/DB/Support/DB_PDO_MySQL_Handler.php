@@ -28,6 +28,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
     protected $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
         'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision', 'year',];
     protected $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+    protected $dateFieldTypes = ['datetime', 'date', 'timestamp'];
     protected $booleanFieldTypes = ['boolean', 'bool'];
 
     public function sqlSELECTCommand()
@@ -72,20 +73,30 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
-    public function getNullableFields($tableName)
+//    public function getNullableFields($tableName)
+//    {
+//        try {
+//            $result = $this->getTableInfo($tableName);
+//        } catch (Exception $ex) {
+//            throw $ex;
+//        }
+//        $fieldArray = [];
+//        foreach ($result as $row) {
+//            if ($row[$this->fieldNameForNullable] == "YES") {
+//                $fieldArray[] = $row[$this->fieldNameForField];
+//            }
+//        }
+//        return $fieldArray;
+//    }
+
+    public function dateResetForNotNull()
     {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $fieldArray = [];
-        foreach ($result as $row) {
-            if ($row[$this->fieldNameForNullable] == "YES") {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
+        return '1000-01-01';
+    }
+
+    protected function checkNullableField($info)
+    {
+        return $info == 'YES';
     }
 
     protected function getAutoIncrementField($tableName)

@@ -155,40 +155,56 @@ abstract class DB_PDO_Handler
         }
         $fieldArray = [];
         foreach ($result as $row) {
-            if (!$row[$this->fieldNameForNullable]) {
+            if ($this->checkNullableField($row[$this->fieldNameForNullable])) {
                 $fieldArray[] = $row[$this->fieldNameForField];
             }
         }
         return $fieldArray;
     }
-
-    public function getNullableNumericFields($tableName)
-    {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $nullableFields = $this->getNullableFields($tableName);
-        $numericFields = $this->getNumericFields($tableName);
-        return array_intersect($nullableFields, $numericFields);
-    }
-
-    public function getTimeFields($tableName)
-    {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $fieldArray = [];
-        foreach ($result as $row) {
-            if (in_array(strtolower($row[$this->fieldNameForType]), $this->timeFieldTypes)) {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
-    }
+//
+//    public function getNullableNumericFields($tableName)
+//    {
+//        try {
+//            $result = $this->getTableInfo($tableName);
+//        } catch (Exception $ex) {
+//            throw $ex;
+//        }
+//        $nullableFields = $this->getNullableFields($tableName);
+//        $numericFields = $this->getNumericFields($tableName);
+//        return array_intersect($nullableFields, $numericFields);
+//    }
+//
+//    public function getTimeFields($tableName)
+//    {
+//        try {
+//            $result = $this->getTableInfo($tableName);
+//        } catch (Exception $ex) {
+//            throw $ex;
+//        }
+//        $fieldArray = [];
+//        foreach ($result as $row) {
+//            if (in_array(strtolower($row[$this->fieldNameForType]), $this->timeFieldTypes)) {
+//                $fieldArray[] = $row[$this->fieldNameForField];
+//            }
+//        }
+//        return $fieldArray;
+//    }
+//
+//    public function getDateFields($tableName)
+//    {
+//        try {
+//            $result = $this->getTableInfo($tableName);
+//        } catch (Exception $ex) {
+//            throw $ex;
+//        }
+//        $fieldArray = [];
+//        foreach ($result as $row) {
+//            if (in_array(strtolower($row[$this->fieldNameForType]), $this->dateFieldTypes)) {
+//                $fieldArray[] = $row[$this->fieldNameForField];
+//            }
+//        }
+//        return $fieldArray;
+//    }
 
     public function getBooleanFields($tableName)
     {
@@ -210,9 +226,52 @@ abstract class DB_PDO_Handler
         return $fieldArray;
     }
 
+    public function getTypedFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $numericFields = [];
+        $nullableFields = [];
+        $timeFields = [];
+        $dateFields = [];
+        $booleanFields = [];
+        $matches = [];
+        foreach ($result as $row) {
+            if (!is_null($row[$this->fieldNameForType])) {
+                preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
+                if (count($matches) > 0) {
+                    $fieldType = strtolower($row[$this->fieldNameForType]);
+                    if ($this->checkNullableField($row[$this->fieldNameForNullable])) {
+                        $nullableFields[] = $row[$this->fieldNameForField];
+                    }
+                    if (in_array($fieldType, $this->numericFieldTypes)) {
+                        $numericFields[] = $row[$this->fieldNameForField];
+                    }
+                    if (in_array($fieldType, $this->booleanFieldTypes)) {
+                        $booleanFields[] = $row[$this->fieldNameForField];
+                    }
+                    if (in_array($fieldType, $this->timeFieldTypes)) {
+                        $timeFields[] = $row[$this->fieldNameForField];
+                    }
+                    if (in_array($fieldType, $this->dateFieldTypes)) {
+                        $dateFields[] = $row[$this->fieldNameForField];
+                    }
+                }
+            }
+        }
+        return [$nullableFields, $numericFields, $booleanFields, $timeFields, $dateFields];
+    }
+
     public abstract function quotedEntityName($entityName);
 
     public abstract function optionalOperationInSetup();
+
+    public abstract function dateResetForNotNull();
+
+    protected abstract function checkNullableField($info);
 
     protected function getTableInfo($tableName)
     {

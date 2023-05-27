@@ -27,7 +27,8 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
     protected $fieldNameForNullable = 'is_nullable';
     protected $numericFieldTypes = array('bigint', 'bit', 'decimal', 'float', 'hierarchyid', 'int', 'money', 'numeric',
         'real', 'smallint', 'smallmoney', 'tinyint',);
-    protected $timeFieldTypes = ['datetime', 'datetime2', 'datetimeoffset', 'time', 'smaldatetime'];
+    protected $timeFieldTypes = ['datetime', 'datetime2', 'datetimeoffset', 'time', 'smalldatetime'];
+    protected $dateFieldTypes = ['date', 'datetimeoffset', 'smalldatetime'];
     protected $booleanFieldTypes = [];
 
     public function sqlSELECTCommand()
@@ -43,6 +44,11 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
     public function sqlOffsetCommand($param)
     {
         return "OFFSET {$param}";
+    }
+
+    public function dateResetForNotNull()
+    {
+        return '1000-01-01';
     }
 
     public function sqlOrderByCommand($sortClause, $limit, $offset)
@@ -81,6 +87,11 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $setValues);
         return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
+    }
+
+    protected function checkNullableField($info)
+    {
+        return $info == 0;
     }
 
     protected function getTalbeInfoSQL($tableName)
@@ -231,5 +242,10 @@ xml
             }
         }
         return $returnValue;
+    }
+
+    protected function getAutoIncrementField($tableName)
+    {
+        // TODO: Implement getAutoIncrementField() method.
     }
 }
