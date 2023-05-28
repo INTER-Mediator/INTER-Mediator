@@ -398,7 +398,7 @@ it('can edit the radio buttons of nullable varchar field.', async () => {
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Textarea).toHaveValue("")
   })
-  it('can edit the textarea of varchar field which is NOT NULL.', async () => {
+  it('can edit the textarea of varchar field which is nullable text field.', async () => {
     await expect(EditingPage.fieldVc2Textarea).toExist()
     await expect(EditingPage.fieldVc2Textarea).toHaveValue("") // Checking initial value
     const value = "AAAA\n3333333\nイエスマンに未来はない\n#$#$#$#$"
@@ -558,7 +558,7 @@ it('can edit the checkbox of nullable text field.', async () => {
     await browser.pause(waiting)
     await expect(EditingPage.fieldText1Textarea).toHaveValue("")
   })
-  it('can edit the textarea of text field which is NOT NULL.', async () => {
+  it('can edit the textarea of text field which is nullable text field.', async () => {
     await expect(EditingPage.fieldText2Textarea).toExist()
     await expect(EditingPage.fieldText2Textarea).toHaveValue("") // Checking initial value
     const value = "AAAA\n3333333\nイエスマンに未来はない\n#$#$#$#$"
