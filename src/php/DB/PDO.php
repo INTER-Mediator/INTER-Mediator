@@ -387,19 +387,19 @@ class PDO extends UseSharedObjects implements DBClass_Interface
 
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
-        $nullableFields = $this->handler->getNullableFields($this->dbSettings->getEntityForUpdate());
-        $numericFields = $this->handler->getNumericFields($this->dbSettings->getEntityForUpdate());
-        $nullableNumericFields = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
-        if (isset($tableInfo['numeric-fields']) && is_array($tableInfo['numeric-fields'])) {
-            $nullableFields = array_merge($nullableFields, $tableInfo['numeric-fields']);
-            $nullableNumericFields = array_merge($nullableNumericFields, $tableInfo['numeric-fields']);
+        [$nullableFields, $numericFields, $boolFields, $timeFields, $dateFields]
+            = $this->handler->getTypedFields($this->dbSettings->getEntityForUpdate());
+        $this->logger->setDebugMessage("nullableFields=" . var_export($nullableFields, true)
+            . ",\nnumericFields=" . var_export($numericFields, true)
+            . ", \nboolFields = " . var_export($boolFields, true)
+            . ", \ntimeFields = " . var_export($timeFields, true)
+            . ", \ndateFields = " . var_export($dateFields, true));
+        if (isset($tableInfo['numeric - fields']) && is_array($tableInfo['numeric - fields'])) {
+            $numericFields = array_merge($nullableFields, $tableInfo['numeric - fields']);
         }
-        $timeFields = $this->isFollowingTimezones
-            ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
-        if (isset($tableInfo['time-fields']) && is_array($tableInfo['time-fields'])) {
-            $timeFields = array_merge($timeFields, $tableInfo['time-fields']);
+        if (isset($tableInfo['time - fields']) && is_array($tableInfo['time - fields'])) {
+            $timeFields = array_merge($timeFields, $tableInfo['time - fields']);
         }
-        $boolFields = $this->handler->getBooleanFields($this->dbSettings->getEntityForUpdate());
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         if (isset($tableInfo['script'])) {
@@ -421,37 +421,49 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $fieldValues = $this->dbSettings->getValue();
 
         foreach ($this->dbSettings->getFieldsRequired() as $field) {
-            $value = $fieldValues[$counter];
-            $counter++;
             $setClause[] = $this->handler->quotedEntityName($field) . "=?";
-            $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-            if (in_array($field, $boolFields)) {
-                $convertedValue = $this->isTrue($convertedValue);
-            } else if (in_array($field, $nullableNumericFields) && $value === "") {
-                $convertedValue = NULL;
-            } else if (in_array($field, $numericFields) && $value === "") {
-                $convertedValue = 0;
+            $value = (is_array($fieldValues[$counter]))
+                ? implode("\n", $fieldValues[$counter]) : $fieldValues[$counter];
+            $counter++;
+            $a=strlen($value);
+            $b=in_array($field, $numericFields);$c=in_array($field, $boolFields);
+            if (strlen($value) == 0) {
+                if (in_array($field, $nullableFields)) {
+                    $value = NULL;
+                } else if (in_array($field, $numericFields) || in_array($field, $boolFields)) {
+                    $value = 0;
+                } else if (in_array($field, $dateFields) && in_array($field, $timeFields)) {
+                    $value = "{$this->handler->dateResetForNotNull()} 00:00:00";
+                } else if (in_array($field, $dateFields)) {
+                    $value = $this->handler->dateResetForNotNull();
+                } else if (in_array($field, $timeFields)) {
+                    $value = '00:00:00';
+                }
+            } else if (in_array($field, $boolFields)) {
+                $value = $this->isTrue($value);
             } else {
                 $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
-                $convertedValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
+                $value = $this->formatter->formatterToDB($filedInForm, $value);
                 // Convert the time explanation from UTC to server setup timezone
-                if (in_array($field, $timeFields) && !is_null($convertedValue) && $convertedValue !== '') {
-                    $dt = new DateTime($convertedValue, new DateTimeZone('UTC'));
-                    $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $convertedValue);
+                if ($this->isFollowingTimezones && in_array($field, $timeFields) && !is_null($value) && $value !== '') {
+                    $dt = new DateTime($value, new DateTimeZone('UTC'));
+                    $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $value);
                     $dt->setTimezone(new DateTimeZone(date_default_timezone_get()));
-                    $convertedValue = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+                    $value = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
                 } else if (in_array($field, $nullableFields)) {
-                    $convertedValue = $convertedValue ?? NULL;
+                    $value = $value ?? NULL;
                 }
             }
-            $setParameter[] = $convertedValue;
+            $setParameter[] = $value;
+            $this->logger->setDebugMessage("field={$field}, value={$value}, len={$a}/{$b}/{$c}");
         }
         if (count($setClause) < 1) {
-            $this->logger->setErrorMessage("No data to update for table{$tableName}.");
+            $this->logger->setErrorMessage("No data to update for table {$tableName}.");
             return false;
         }
         $setClause = implode(',', $setClause);
-        $queryClause = $this->getWhereClause('update', false, true, $signedUser, $bypassAuth);
+        $queryClause = $this->getWhereClause('update',
+            false, true, $signedUser, $bypassAuth);
         if ($queryClause != '') {
             $queryClause = "WHERE {$queryClause}";
         }
@@ -459,8 +471,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $prepSQL = $this->link->prepare($sql);
         $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityAsSource());
 
-        $this->logger->setDebugMessage(
-            $prepSQL->queryString . " with " . str_replace("\n", " ", var_export($setParameter, true) ?? ""));
+        $this->logger->setDebugMessage($prepSQL->queryString
+            . " with " . str_replace("\n", " ", var_export($setParameter, true) ?? ""));
         // Thanks for the following code: https://koyhogetech.hatenablog.com/entry/20101217/pdo_pgsql
         $count = 1;
         foreach ($setParameter as $param) {
@@ -481,7 +493,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
 
         if ($this->isRequiredUpdated) {
             $targetTable = $this->handler->quotedEntityName($this->dbSettings->getEntityForRetrieve());
-            $sql = $this->handler->sqlSELECTCommand() . "* FROM {$targetTable} {$queryClause}";
+            $sql = $this->handler->sqlSELECTCommand() . " * FROM {$targetTable} {$queryClause}";
             $result = $this->link->query($sql);
             $this->logger->setDebugMessage($sql);
             if (!$this->errorHandlingPDO($sql, $result)) {
@@ -545,8 +557,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
-        if (isset($tableInfo['time-fields']) && is_array($tableInfo['time-fields'])) {
-            $timeFields = array_merge($timeFields, $tableInfo['time-fields']);
+        if (isset($tableInfo['time - fields']) && is_array($tableInfo['time - fields'])) {
+            $timeFields = array_merge($timeFields, $tableInfo['time - fields']);
         }
         $tableNameRow = $this->dbSettings->getEntityForUpdate();
         $tableName = $this->handler->quotedEntityName($tableNameRow);
@@ -591,8 +603,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             }
             $setValues[] = $this->formatter->formatterToDB($filedInForm, $convertedValue);
         }
-        if (isset($tableInfo['default-values'])) {
-            foreach ($tableInfo['default-values'] as $itemDef) {
+        if (isset($tableInfo['default - values'])) {
+            foreach ($tableInfo['default - values'] as $itemDef) {
                 $field = $itemDef['field'];
                 $value = $itemDef['value'];
                 if (!in_array($field, $setColumnNames)) {
@@ -641,8 +653,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityAsSource());
 
         if ($this->isRequiredUpdated) {
-            $sql = $this->handler->sqlSELECTCommand() . "* FROM " . $viewName
-                . " WHERE " . $keyField . "=" . $this->link->quote($lastKeyValue);
+            $sql = $this->handler->sqlSELECTCommand() . " * FROM " . $viewName
+                . " WHERE " . $keyField . " = " . $this->link->quote($lastKeyValue);
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
             if (!$this->errorHandlingPDO($sql, $result)) {
@@ -736,8 +748,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
         $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
-        if (isset($tableInfo['time-fields']) && is_array($tableInfo['time-fields'])) {
-            $timeFields = array_merge($timeFields, $tableInfo['time-fields']);
+        if (isset($tableInfo['time - fields']) && is_array($tableInfo['time - fields'])) {
+            $timeFields = array_merge($timeFields, $tableInfo['time - fields']);
         }
 
         if (isset($tableInfo['script'])) {
@@ -759,8 +771,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             return false;
         }
         $defaultValues = array();
-        if (!$this->isSuppressDVOnCopy && isset($tableInfo['default-values'])) {
-            foreach ($tableInfo['default-values'] as $itemDef) {
+        if (!$this->isSuppressDVOnCopy && isset($tableInfo['default - values'])) {
+            foreach ($tableInfo['default - values'] as $itemDef) {
                 $defaultValues[$itemDef['field']] = $itemDef['value'];
             }
         }
@@ -778,8 +790,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 $queryClause = $this->handler->quotedEntityName($assocInfo["field"]) . "=" .
                     $this->link->quote($assocInfo["value"]);
                 $defaultValues = array();
-                if (!$this->isSuppressDVOnCopyAssoc && isset($assocContextDef['default-values'])) {
-                    foreach ($assocContextDef['default-values'] as $itemDef) {
+                if (!$this->isSuppressDVOnCopyAssoc && isset($assocContextDef['default - values'])) {
+                    foreach ($assocContextDef['default - values'] as $itemDef) {
                         $defaultValues[$itemDef['field']] = $itemDef['value'];
                     }
                 }
@@ -853,7 +865,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             return false;
         }
         if (!$this->setupConnection()) { //Establish the connection
-            $this->errorMessageStore("Can't open db connection.");
+            $this->errorMessageStore("Can't open db connection . ");
             return false;
         }
         $sql = "{$this->handler->sqlSELECTCommand()}* FROM " . $this->handler->quotedEntityName($table);
@@ -862,9 +874,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $first = true;
             foreach ($conditions as $field => $value) {
                 if (!$first) {
-                    $sql .= " AND ";
+                    $sql .= " and ";
                 }
-                $sql .= $this->handler->quotedEntityName($field) . "=" . $this->link->quote($value);
+                $sql .= $this->handler->quotedEntityName($field) . " = " . $this->link->quote($value);
                 $first = false;
             }
         }
@@ -873,7 +885,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             var_dump($this->link->errorInfo());
             return false;
         }
-        $this->logger->setDebugMessage("[queryForTest] {$sql}");
+        $this->logger->setDebugMessage("[queryForTest] {
+        $sql}");
         $recordSet = array();
         foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             $oneRecord = array();
@@ -893,7 +906,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             return false;
         }
         if (!$this->setupConnection()) { //Establish the connection
-            $this->errorMessageStore("Can't open db connection.");
+            $this->errorMessageStore("Can't open db connection . ");
             return false;
         }
         $sql = "{$this->handler->sqlDELETECommand()}" . $this->handler->quotedEntityName($table);
@@ -902,9 +915,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $first = true;
             foreach ($conditions as $field => $value) {
                 if (!$first) {
-                    $sql .= " AND ";
+                    $sql .= " and ";
                 }
-                $sql .= $this->handler->quotedEntityName($field) . "=" . $this->link->quote($value);
+                $sql .= $this->handler->quotedEntityName($field) . " = " . $this->link->quote($value);
                 $first = false;
             }
         }
@@ -913,7 +926,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             var_dump($this->link->errorInfo());
             return false;
         }
-        $this->logger->setDebugMessage("[deleteForTest] {$sql}");
+        $this->logger->setDebugMessage("[deleteForTest] {
+        $sql}");
         return true;
     }
 

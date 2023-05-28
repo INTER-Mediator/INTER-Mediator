@@ -19,8 +19,8 @@ describe('Form Page', () => {
     await expect(FormPage.navigatorMoveButtonLast).toExist()
     await expect(FormPage.navigatorMoveButtonLast).toHaveText('>>')
     await expect(FormPage.navigatorDeleteButton).toExist()
-    await expect(FormPage.navigatorInfoInsertButton).toExist()
-    await expect(FormPage.navigatorInfoCopy).toExist()
+    await expect(FormPage.navigatorInsertButton).toExist()
+    await expect(FormPage.navigatorCopyButton).toExist()
   });
   it('can move current record with the navigation.', async () => {
     await expect(FormPage.fieldPersonId).toExist()
@@ -184,12 +184,12 @@ describe('Form Page', () => {
     await expect(FormPage.rowContactKind[1]).toHaveValue('13')
   });
   it('can insert a row into detail area.', async () => {
-    await FormPage.open()
     await FormPage.navigatorUpdateButton.click();
+    await browser.pause(1000)
     await expect(FormPage.contactTableInsertButton).toExist()
     await FormPage.contactTableInsertButton.click()
     await browser.acceptAlert()
-    await browser.pause(3000)
+    await browser.pause(1000)
 
     const rows = FormPage.rowContact
     await expect(rows[0]).toExist() // There has three lines
@@ -200,12 +200,13 @@ describe('Form Page', () => {
     await expect(FormPage.rowContactSummary[3]).toHaveValue('')
   })
   it('can delete a row in detail area.', async () => {
-    await FormPage.open()
+    // await FormPage.open()
+    // await browser.pause(1000)
     await FormPage.navigatorUpdateButton.click();
-    await expect(FormPage.contactTableInsertButton).toExist()
+    await browser.pause(1000)
     await FormPage.rowContactDeleteButton[1].click()
     await browser.acceptAlert()
-    await browser.pause(3000)
+    await browser.pause(1000)
 
     const rows = FormPage.rowContact
     await expect(rows[0]).toExist() // There has three lines
@@ -215,12 +216,12 @@ describe('Form Page', () => {
     await expect(rows[4]).not.toExist()
   })
   it('can copy a row in detail area.', async () => {
-    await FormPage.open()
+    // await FormPage.open()
+    // await browser.pause(1000)
     await FormPage.navigatorUpdateButton.click();
     await browser.pause(3000)
 
     const value = await FormPage.rowContactSummary[1].getValue()
-    console.log(value)
     await expect(FormPage.contactTableInsertButton).toExist()
     await FormPage.rowContactCopyButton[1].click()
     //await browser.acceptAlert()

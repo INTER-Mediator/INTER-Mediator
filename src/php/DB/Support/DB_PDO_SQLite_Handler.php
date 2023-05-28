@@ -29,6 +29,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2', 'int8',
         'double', 'double precision', 'float', 'decimal', 'boolean');
     protected $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+    protected $dateFieldTypes = ['datetime', 'date', 'timestamp'];
     protected $booleanFieldTypes = [];
 
     public function sqlSELECTCommand()
@@ -71,6 +72,16 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $setValues);
         return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
+    }
+
+    public function dateResetForNotNull()
+    {
+        return '1970-01-01';
+    }
+
+    protected function checkNullableField($info)
+    {
+        return $info == 0;
     }
 
     protected function getAutoIncrementField($tableName)

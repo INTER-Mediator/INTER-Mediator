@@ -25,9 +25,12 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     protected $fieldNameForField = 'column_name';
     protected $fieldNameForType = 'data_type';
     protected $fieldNameForNullable = 'is_nullable';
-    protected $numericFieldTypes = array('smallint', 'integer', 'bigint', 'decimal', 'numeric',
-        'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money',);
-    protected $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+    protected $numericFieldTypes = ['smallint', 'integer', 'bigint', 'decimal', 'numeric',
+        'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money',];
+    protected $timeFieldTypes = ['datetime', 'datetime without time zone',
+        'time', 'time without time zone', 'timestamp', 'timestamp without time zone'];
+    protected $dateFieldTypes = ['datetime', 'datetime without time zone',
+        'date', 'date without time zone', 'timestamp', 'timestamp without time zone',];
     protected $booleanFieldTypes = ['boolean'];
 
     public function sqlSELECTCommand()
@@ -67,20 +70,29 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
-    public function getNullableFields($tableName)
+//    public function getNullableFields($tableName)
+//    {
+//        try {
+//            $result = $this->getTableInfo($tableName);
+//        } catch (Exception $ex) {
+//            throw $ex;
+//        }
+//        $fieldArray = [];
+//        foreach ($result as $row) {
+//            if ($row[$this->fieldNameForNullable] == "YES") {
+//                $fieldArray[] = $row[$this->fieldNameForField];
+//            }
+//        }
+//        return $fieldArray;
+//    }
+
+    public function dateResetForNotNull(){
+        return '1000-01-01';
+    }
+
+    protected function checkNullableField($info)
     {
-        try {
-            $result = $this->getTableInfo($tableName);
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-        $fieldArray = [];
-        foreach ($result as $row) {
-            if ($row[$this->fieldNameForNullable] == "YES") {
-                $fieldArray[] = $row[$this->fieldNameForField];
-            }
-        }
-        return $fieldArray;
+        return $info == 'YES';
     }
 
     protected function getAutoIncrementField($tableName)
@@ -114,6 +126,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         }
         return $sql;
     }
+
     /*
 # SELECT column_name, column_default, is_nullable, data_type, character_maximum_length,numeric_precision, numeric_scale FROM information_schema.columns WHERE table_schema='im_sample' AND table_name='testtable';
  column_name |                   column_default                   | is_nullable |          data_type          | character_maximum_length | numeric_precision | numeric_scale

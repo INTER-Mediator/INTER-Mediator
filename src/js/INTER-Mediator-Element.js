@@ -558,7 +558,8 @@ const IMLibElement = {
   checkingSeconds: 1, // Public
   waitSeconds: 5, // Public
   //ignoreKeys: ['Tab', 'Enter'],
-  isAlreadySaved: false,
+  isAlreadySaved: false, // Checking within timer process
+  isNonTimerSaved: false, // Checking saving in other process
 
   setupSavingTimer: (elementId) => {
     if (!IMLibElement.textAutoSave) {
@@ -574,12 +575,15 @@ const IMLibElement = {
       IMLibElement.lastEditDT = new Date()
       startWatching(targetId)
       IMLibElement.isAlreadySaved = false
+      IMLibElement.isNonTimerSaved = false
     })
     IMLibFocusInEventDispatch.setExecute(elementId, (targetId) => {
       IMLibElement.lastEditDT = null
       startWatching(targetId)
     })
     IMLibFocusOutEventDispatch.setExecute(elementId, (targetId) => {
+      IMLibElement.isAlreadySaved = false
+      IMLibElement.isNonTimerSaved = false
       if (IMLibElement.editingTargetId != targetId) {
         return
       }
@@ -601,7 +605,7 @@ const IMLibElement = {
   },
 
   repeatedlyCall: () => {
-    if (!IMLibElement.lastEditDT) {
+    if (!IMLibElement.lastEditDT || IMLibElement.isNonTimerSaved) {
       return
     }
     const interval = (new Date()).getTime() - IMLibElement.lastEditDT.getTime()

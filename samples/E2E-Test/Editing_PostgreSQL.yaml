@@ -1,0 +1,25 @@
+contexts:
+  - name: testtable
+    view: im_sample.testtable
+    table: im_sample.testtable
+    key: id
+    repeat-control: insert delete
+    records: 1
+    paging: true
+    sort:
+      - field: id
+        direction: DESC
+  - name: selection
+    key: id
+    data:
+      - id: select1
+        num: 10
+      - id: select2
+        num: 20
+      - id: select3
+        num: 30
+options: [ ]
+connection:
+  db-class: PDO
+  dsn: pgsql:host=localhost;port=5432;dbname=test_db
+debug: 2
