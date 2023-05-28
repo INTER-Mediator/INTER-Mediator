@@ -89,8 +89,8 @@ jobs:
 #          chown www-data sample.sq3
       - name: Modify params.php file
         run: |
-          echo "$defaultTimezone = 'Asia/Tokyo';\n" >> params.php
-          echo "$followingTimezones = true;\n" >> params.php
+          echo "\n\$defaultTimezone = 'UCT';\n" >> params.php
+          echo "\$followingTimezones = true;\n" >> params.php
 
       - name: Test of PHP Code
         run: composer test
