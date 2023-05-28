@@ -201,6 +201,7 @@ const IMLibUI = {
               if (completeTaskCapt) {
                 completeTaskCapt()
               }
+              IMLibElement.isAlreadySaved = true
             }
           })(),
           (function () {

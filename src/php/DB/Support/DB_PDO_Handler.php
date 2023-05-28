@@ -161,50 +161,50 @@ abstract class DB_PDO_Handler
         }
         return $fieldArray;
     }
-//
-//    public function getNullableNumericFields($tableName)
-//    {
-//        try {
-//            $result = $this->getTableInfo($tableName);
-//        } catch (Exception $ex) {
-//            throw $ex;
-//        }
-//        $nullableFields = $this->getNullableFields($tableName);
-//        $numericFields = $this->getNumericFields($tableName);
-//        return array_intersect($nullableFields, $numericFields);
-//    }
-//
-//    public function getTimeFields($tableName)
-//    {
-//        try {
-//            $result = $this->getTableInfo($tableName);
-//        } catch (Exception $ex) {
-//            throw $ex;
-//        }
-//        $fieldArray = [];
-//        foreach ($result as $row) {
-//            if (in_array(strtolower($row[$this->fieldNameForType]), $this->timeFieldTypes)) {
-//                $fieldArray[] = $row[$this->fieldNameForField];
-//            }
-//        }
-//        return $fieldArray;
-//    }
-//
-//    public function getDateFields($tableName)
-//    {
-//        try {
-//            $result = $this->getTableInfo($tableName);
-//        } catch (Exception $ex) {
-//            throw $ex;
-//        }
-//        $fieldArray = [];
-//        foreach ($result as $row) {
-//            if (in_array(strtolower($row[$this->fieldNameForType]), $this->dateFieldTypes)) {
-//                $fieldArray[] = $row[$this->fieldNameForField];
-//            }
-//        }
-//        return $fieldArray;
-//    }
+
+    public function getNullableNumericFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $nullableFields = $this->getNullableFields($tableName);
+        $numericFields = $this->getNumericFields($tableName);
+        return array_intersect($nullableFields, $numericFields);
+    }
+
+    public function getTimeFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $fieldArray = [];
+        foreach ($result as $row) {
+            if (in_array(strtolower($row[$this->fieldNameForType]), $this->timeFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
+
+    public function getDateFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $fieldArray = [];
+        foreach ($result as $row) {
+            if (in_array(strtolower($row[$this->fieldNameForType]), $this->dateFieldTypes)) {
+                $fieldArray[] = $row[$this->fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
 
     public function getBooleanFields($tableName)
     {
