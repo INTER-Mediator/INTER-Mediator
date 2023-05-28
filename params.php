@@ -254,7 +254,7 @@ $loadFrom = '/Users/msyk/Code/INTER-Mediator/samples/Sample_forDebugging/Extendi
 // If you don't set the default timezone in the php.ini file,
 //      activate the line below and specify suitable timezone name.
 $defaultTimezone = 'Asia/Tokyo';
-$followingTimezones = true;
+//$followingTimezones = true;
 
 // Server side locale for this application. This locale replaces the browser's accepting languages.
 $appLocale = "ja_JP";   // Locale for application has to be specified the language_country code.
