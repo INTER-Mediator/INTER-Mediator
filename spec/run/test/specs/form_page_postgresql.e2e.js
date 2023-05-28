@@ -170,7 +170,7 @@ describe('Form Page', () => {
 
     await FormPage.rowContactWay[0].selectByIndex(2)
     await expect(FormPage.rowContactWay[0]).toHaveValue('6')
-    await expect(FormPage.rowContactKind[0]).toHaveText("Calling\nMail\nEmail\nSee on Chat\nTwitter")
+    await expect(FormPage.rowContactKind[0]).toHaveText("See on Web\nTwitter\nConference")
     await expect(FormPage.rowContactKind[0]).toHaveValue('')
     await FormPage.rowContactKind[0].selectByIndex(1)
     await expect(FormPage.rowContactKind[0]).toHaveValue('12')

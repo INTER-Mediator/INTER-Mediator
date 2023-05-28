@@ -91,10 +91,8 @@ jobs:
         run: |
           echo "" >> params.php
           echo "\$defaultTimezone = 'UCT';" >> params.php
-          echo "" >> params.php
           echo "\$followingTimezones = true;" >> params.php
           echo "" >> params.php
-          cat params.php
 
       - name: Test of PHP Code
         run: composer test
