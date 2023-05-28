@@ -320,7 +320,7 @@ describe('Editing Page', () => {
   })
   it('can edit the textarea of text field which is NOT NULL.', async () => {
     await expect(EditingPage.fieldText1Textarea).toExist()
-    await expect(EditingPage.fieldText1Textarea).toHaveValue("select2") // Checking initial value
+    await expect(EditingPage.fieldText1Textarea).toHaveValue("") // Checking initial value
     const value = "AAAA\n3333333\nイエスマンに未来はない\n#$#$#$#$"
     await EditingPage.fieldText1Textarea.setValue(value) // Set a value to the field
     await EditingPage.navigatorUpdateButton.click()
@@ -333,7 +333,7 @@ describe('Editing Page', () => {
   })
   it('can edit the textarea of text field which is nullable text field.', async () => {
     await expect(EditingPage.fieldText2Textarea).toExist()
-    await expect(EditingPage.fieldText2Textarea).toHaveValue("select2") // Checking initial value
+    await expect(EditingPage.fieldText2Textarea).toHaveValue("") // Checking initial value
     const value = "AAAA\n3333333\nイエスマンに未来はない\n#$#$#$#$"
     await EditingPage.fieldText2Textarea.setValue(value) // Set a value to the field
     await EditingPage.navigatorUpdateButton.click()
