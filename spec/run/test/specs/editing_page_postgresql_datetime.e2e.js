@@ -22,6 +22,8 @@ describe('Editing Page', () => {
     await expect(EditingPage.navigatorInsertButton).toExist()
     await EditingPage.navigatorInsertButton.click()
     await EditingPage.navigatorInsertButton.waitForClickable()
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
   })
   // it('can edit the text field of datetime field which is NOT NULL.', async () => {
   //   await expect(EditingPage.fieldDt1Textfield).toExist()
