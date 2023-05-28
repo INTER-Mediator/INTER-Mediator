@@ -121,29 +121,34 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 
     /*
 mysql> show columns from testtable;
-+-------+--------------+------+-----+---------------------+-----------------------------------------------+
-| Field | Type         | Null | Key | Default             | Extra                                         |
-+-------+--------------+------+-----+---------------------+-----------------------------------------------+
-| id    | int          | NO   | PRI | NULL                | auto_increment                                |
-| num1  | int          | NO   |     | NULL                |                                               |
-| num2  | int          | YES  |     | NULL                |                                               |
-| num3  | int          | YES  |     | NULL                |                                               |
-| dt1   | datetime     | NO   |     | NULL                |                                               |
-| dt2   | datetime     | YES  |     | NULL                |                                               |
-| dt3   | datetime     | YES  |     | NULL                |                                               |
-| date1 | date         | NO   |     | NULL                |                                               |
-| date2 | date         | YES  |     | NULL                |                                               |
-| time1 | time         | NO   |     | NULL                |                                               |
-| time2 | time         | YES  |     | NULL                |                                               |
-| ts1   | timestamp    | NO   |     | CURRENT_TIMESTAMP   | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
-| ts2   | timestamp    | YES  |     | 2001-01-01 00:00:00 |                                               |
-| vc1   | varchar(100) | NO   |     | NULL                |                                               |
-| vc2   | varchar(100) | YES  |     | NULL                |                                               |
-| vc3   | varchar(100) | YES  |     | NULL                |                                               |
-| text1 | text         | NO   |     | NULL                |                                               |
-| text2 | text         | YES  |     | NULL                |                                               |
-+-------+--------------+------+-----+---------------------+-----------------------------------------------+
-18 rows in set (0.01 sec)
++---------+--------------+------+-----+---------------------+----------------+
+| Field   | Type         | Null | Key | Default             | Extra          |
++---------+--------------+------+-----+---------------------+----------------+
+| id      | int          | NO   | PRI | NULL                | auto_increment |
+| num1    | int          | NO   |     | 0                   |                |
+| num2    | int          | YES  |     | NULL                |                |
+| num3    | int          | YES  |     | NULL                |                |
+| dt1     | datetime     | NO   |     | 2001-01-01 00:00:00 |                |
+| dt2     | datetime     | YES  |     | NULL                |                |
+| dt3     | datetime     | YES  |     | NULL                |                |
+| date1   | date         | NO   |     | 2001-01-01          |                |
+| date2   | date         | YES  |     | NULL                |                |
+| time1   | time         | NO   |     | 00:00:00            |                |
+| time2   | time         | YES  |     | NULL                |                |
+| ts1     | timestamp    | NO   |     | 2001-01-01 00:00:00 |                |
+| ts2     | timestamp    | YES  |     | 2001-01-01 00:00:00 |                |
+| vc1     | varchar(100) | NO   |     |                     |                |
+| vc2     | varchar(100) | YES  |     | NULL                |                |
+| vc3     | varchar(100) | YES  |     | NULL                |                |
+| text1   | text         | YES  |     | NULL                |                |
+| text2   | text         | YES  |     | NULL                |                |
+| float1  | float        | NO   |     | 0                   |                |
+| float2  | float        | YES  |     | NULL                |                |
+| double1 | double       | NO   |     | 0                   |                |
+| double2 | double       | YES  |     | NULL                |                |
+| bool1   | tinyint(1)   | NO   |     | 0                   |                |
+| bool2   | tinyint(1)   | YES  |     | NULL                |                |
++---------+--------------+------+-----+---------------------+----------------+
 
 mysql> show columns from item_display;
 +-------------+-------------+------+-----+---------+-------+

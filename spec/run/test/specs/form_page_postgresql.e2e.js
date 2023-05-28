@@ -198,7 +198,7 @@ describe('Form Page', () => {
     await expect(rows[2]).toExist()
     await expect(rows[3]).toExist()
     await expect(rows[4]).not.toExist()
-    await expect(FormPage.rowContactSummary[3]).toHaveValue('test')
+    await expect(FormPage.rowContactSummary[3]).toHaveValue('')
   })
   it('can delete a row in detail area.', async () => {
     await FormPage.navigatorUpdateButton.click();
@@ -229,7 +229,7 @@ describe('Form Page', () => {
     await expect(rows[2]).toExist()
     await expect(rows[3]).toExist()
     await expect(rows[4]).not.toExist()
-    await expect(FormPage.rowContactSummary[3]).toHaveValue('test')
+    await expect(FormPage.rowContactSummary[3]).toHaveValue('Mail')
   })
 });
 

@@ -389,11 +389,11 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         [$nullableFields, $numericFields, $boolFields, $timeFields, $dateFields]
             = $this->handler->getTypedFields($this->dbSettings->getEntityForUpdate());
-//        $this->logger->setDebugMessage("nullableFields=" . var_export($nullableFields, true)
-//            . ",\nnumericFields=" . var_export($numericFields, true)
-//            . ", \nboolFields = " . var_export($boolFields, true)
-//            . ", \ntimeFields = " . var_export($timeFields, true)
-//            . ", \ndateFields = " . var_export($dateFields, true));
+        $this->logger->setDebugMessage("nullableFields=" . var_export($nullableFields, true)
+            . ",\nnumericFields=" . var_export($numericFields, true)
+            . ", \nboolFields = " . var_export($boolFields, true)
+            . ", \ntimeFields = " . var_export($timeFields, true)
+            . ", \ndateFields = " . var_export($dateFields, true));
         if (isset($tableInfo['numeric - fields']) && is_array($tableInfo['numeric - fields'])) {
             $numericFields = array_merge($nullableFields, $tableInfo['numeric - fields']);
         }
@@ -425,12 +425,12 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $value = (is_array($fieldValues[$counter]))
                 ? implode("\n", $fieldValues[$counter]) : $fieldValues[$counter];
             $counter++;
-            if (in_array($field, $boolFields)) {
-                $value = $this->isTrue($value);
-            } else if ($value === "") {
+            $a=strlen($value);
+            $b=in_array($field, $numericFields);$c=in_array($field, $boolFields);
+            if (strlen($value) == 0) {
                 if (in_array($field, $nullableFields)) {
                     $value = NULL;
-                } else if (in_array($field, $numericFields)) {
+                } else if (in_array($field, $numericFields) || in_array($field, $boolFields)) {
                     $value = 0;
                 } else if (in_array($field, $dateFields) && in_array($field, $timeFields)) {
                     $value = "{$this->handler->dateResetForNotNull()} 00:00:00";
@@ -439,6 +439,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 } else if (in_array($field, $timeFields)) {
                     $value = '00:00:00';
                 }
+            } else if (in_array($field, $boolFields)) {
+                $value = $this->isTrue($value);
             } else {
                 $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                 $value = $this->formatter->formatterToDB($filedInForm, $value);
@@ -453,6 +455,7 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 }
             }
             $setParameter[] = $value;
+            $this->logger->setDebugMessage("field={$field}, value={$value}, len={$a}/{$b}/{$c}");
         }
         if (count($setClause) < 1) {
             $this->logger->setErrorMessage("No data to update for table {$tableName}.");

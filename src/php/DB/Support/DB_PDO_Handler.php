@@ -243,7 +243,7 @@ abstract class DB_PDO_Handler
             if (!is_null($row[$this->fieldNameForType])) {
                 preg_match("/[a-z ]+/", strtolower($row[$this->fieldNameForType]), $matches);
                 if (count($matches) > 0) {
-                    $fieldType = strtolower($row[$this->fieldNameForType]);
+                    $fieldType = $matches[0];
                     if ($this->checkNullableField($row[$this->fieldNameForNullable])) {
                         $nullableFields[] = $row[$this->fieldNameForField];
                     }
