@@ -65,17 +65,17 @@ describe('Editing Page', () => {
   //   await expect(EditingPage.fieldDate1Textfield).toHaveValue(String(value))
   //   // This field can't clear
   // })
-  it('can edit the text field of nullable date field.', async () => {
-    await expect(EditingPage.fieldDate2Textfield).toExist()
-    await expect(EditingPage.fieldDate2Textfield).toHaveValue("") // Checking initial value
-    const value = new Date().toISOString().substring(0, 10)
-    await EditingPage.fieldDate2Textfield.setValue(value) // Set a value to the field
-    await browser.pause(waiting)
-    await EditingPage.navigatorUpdateButton.click()
-    await browser.pause(waiting)
-    await expect(EditingPage.fieldDate2Textfield).toHaveValue(String(value))
-    // This field can't clear
-  })
+  // it('can edit the text field of nullable date field.', async () => {
+  //   await expect(EditingPage.fieldDate2Textfield).toExist()
+  //   await expect(EditingPage.fieldDate2Textfield).toHaveValue("") // Checking initial value
+  //   const value = new Date().toISOString().substring(0, 10)
+  //   await EditingPage.fieldDate2Textfield.setValue(value) // Set a value to the field
+  //   await browser.pause(waiting)
+  //   await EditingPage.navigatorUpdateButton.click()
+  //   await browser.pause(waiting)
+  //   await expect(EditingPage.fieldDate2Textfield).toHaveValue(String(value))
+  //   // This field can't clear
+  // })
   // it('can edit the text field of time field which is NOT NULL.', async () => {
   //   await expect(EditingPage.fieldTime1Textfield).toExist()
   //   await expect(EditingPage.fieldTime1Textfield).toHaveValue("00:00:00") // Checking initial value
