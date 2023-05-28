@@ -89,8 +89,11 @@ jobs:
 #          chown www-data sample.sq3
       - name: Modify params.php file
         run: |
-          echo "\n\$defaultTimezone = 'UCT';\n" >> params.php
-          echo "\$followingTimezones = true;\n" >> params.php
+          echo "" >> params.php
+          echo "\$defaultTimezone = 'UCT';" >> params.php
+          echo "" >> params.php
+          echo "\$followingTimezones = true;" >> params.php
+          echo "" >> params.php
           cat params.php
 
       - name: Test of PHP Code
