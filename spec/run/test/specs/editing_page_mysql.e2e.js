@@ -859,7 +859,7 @@ it('can edit the checkbox of nullable text field.', async () => {
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool1Checkbox).not.toBeSelected()
-    await expect(EditingPage.fieldBool1Textfield).toHaveValue("")
+    await expect(EditingPage.fieldBool1Textfield).toHaveValue("0")
   })
   it('can edit the checkbox of nullable boolean field.', async () => {
     await EditingPage.fieldBool2Textfield.setValue("") // Clear the field
@@ -934,7 +934,7 @@ it('can edit the checkbox of nullable text field.', async () => {
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool1Popup).toHaveValue("")
-    await expect(EditingPage.fieldBool1Textfield).toHaveValue("")
+    await expect(EditingPage.fieldBool1Textfield).toHaveValue("0")
   })
   it('can edit the popup menu of nullable boolean field.', async () => {
     await expect(EditingPage.fieldBool2Popup).toExist()
