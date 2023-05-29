@@ -16,6 +16,8 @@
 
 namespace INTERMediator\DB\Support;
 
+use INTERMediator\Params;
+
 abstract class DB_Auth_Common implements Auth_Interface_CommonDB
 {
     protected $dbSettings = null;
@@ -136,7 +138,14 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
                 break;
             }
         }
-        return array_values(array_unique($groupsArray));
+        $result = array_values(array_unique($groupsArray));
+        if (count($result) == 0){
+            $defaultGroup = Params::getParameterValue("defaultGroupName", false);
+            if($defaultGroup) {
+                $result = [$defaultGroup];
+            }
+        }
+        return $result;
     }
 
 }

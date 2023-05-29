@@ -22,6 +22,7 @@ Ver.11 (in development)
   media-root-dir setting in option area of definition file.
 - Add methods setRecordStart and clearRecordStart on INTERMediator class.
 - The FileURL container is introduced. It can store a 'file:///...' url for an uploaded file with absolute path.
+- The $defaultGroupName in the params.php file let any user with no group belong to this group.
 - INTERMediator.ignoreDataInContext(cName[, flag]) ignores the specified context name.
 - [BUG FIX] In same case of using aggregation-select/from the error happened about the view or table didn't exist.
 - [BUG FIX] INTERMediator.additionalFieldValueOnDelete uses in the Definition File editor, so retrieved it.
