@@ -18,6 +18,7 @@ namespace INTERMediator\DB\Support;
 
 use INTERMediator\IMUtil;
 use INTERMediator\OAuthAuth;
+use INTERMediator\Params;
 use PDO;
 
 class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
@@ -564,6 +565,12 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $this->candidateGroups = array();
         foreach ($this->belongGroups as $groupid) {
             $this->candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
+        }
+        if (count($this->candidateGroups) == 0){
+            $defaultGroup = Params::getParameterValue("defaultGroupName", false);
+            if($defaultGroup) {
+                $this->candidateGroups = [$defaultGroup];
+            }
         }
         return $this->candidateGroups;
     }

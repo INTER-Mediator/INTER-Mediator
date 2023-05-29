@@ -139,12 +139,6 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
             }
         }
         $result = array_values(array_unique($groupsArray));
-        if (count($result) == 0){
-            $defaultGroup = Params::getParameterValue("defaultGroupName", false);
-            if($defaultGroup) {
-                $result = [$defaultGroup];
-            }
-        }
         return $result;
     }
 
