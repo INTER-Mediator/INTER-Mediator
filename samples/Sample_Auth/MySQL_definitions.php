@@ -126,7 +126,7 @@ IM_Entry(
         //    'transaction' => 'none',
         'authentication' => array( // table only, for all operations
 //            'user' => array('user1'), // Itemize permitted users
-//            'group' => array('group2'), // Itemize permitted groups
+            'group' => array('users','group1'), // Itemize permitted groups
 //            'user-table' => 'authuser', // Default values
 //            'group-table' => 'authgroup',
 //            'corresponding-table' => 'authcor',

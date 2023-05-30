@@ -920,9 +920,9 @@ SET user_id=1,
 INSERT authcor
 SET user_id=2,
     dest_group_id=1;
-INSERT authcor
-SET user_id=3,
-    dest_group_id=1;
+# INSERT authcor
+# SET user_id=3,
+#     dest_group_id=1;
 INSERT authcor
 SET user_id=6,
     dest_group_id=1;

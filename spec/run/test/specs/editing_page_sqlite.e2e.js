@@ -601,6 +601,10 @@ it('can edit the checkbox of nullable text field.', async () => {
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat2Textfield).toHaveValue("")
   })
+  /*
+  The following tests of checkbox, radio buttons and popup menu for float value don't work on before version 8.0.
+  They works after version 8.1. So they commented out so far.
+   */
   // // Checkbox for non-integer type field is out of scope, ok?
   // it('can edit the checkbox of float field which is NOT NULL.', async () => {
   //   await expect(EditingPage.fieldFloat1Checkbox).toExist()
@@ -739,6 +743,10 @@ it('can edit the checkbox of nullable text field.', async () => {
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble2Textfield).toHaveValue("")
   })
+  /*
+  The following tests of checkbox, radio buttons and popup menu for double value don't work on before version 8.0.
+  They works after version 8.1. So they commented out so far.
+   */
   // // Checkbox for non-integer type field is out of scope, ok?
   // it('can edit the checkbox of double field which is NOT NULL.', async () => {
   //   await expect(EditingPage.fieldDouble1Checkbox).toExist()
