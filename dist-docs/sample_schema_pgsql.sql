@@ -437,7 +437,7 @@ CREATE TABLE registeredpks
     PRIMARY KEY (context_id, pk),
     FOREIGN KEY (context_id) REFERENCES registeredcontext (id) ON DELETE CASCADE
 );
-GRANT ALL PRIVILEGES ON im_sample.registeredpks_id_seq TO web;
+/* GRANT ALL PRIVILEGES ON im_sample.registeredpks_id_seq TO web; */
 
 /* Authetication tables */
 CREATE TABLE authuser
