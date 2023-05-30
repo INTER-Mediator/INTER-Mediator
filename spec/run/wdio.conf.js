@@ -25,15 +25,15 @@ exports.config = {
   ],
   // Patterns to exclude.
   exclude: [
-    './test/specs/sample_top_page.e2e.js',
-    './test/specs/form_page_mysql.e2e.js',
-    './test/specs/form_page_postgresql.e2e.js',
-    './test/specs/form_page_sqlite.e2e.js',
-    './test/specs/editing_page_mysql.e2e.js',
-    './test/specs/editing_page_postgresql_numeric.e2e.js',
-    './test/specs/editing_page_postgresql_string.e2e.js',
+    // './test/specs/sample_top_page.e2e.js',
+    // './test/specs/form_page_mysql.e2e.js',
+    // './test/specs/form_page_postgresql.e2e.js',
+    // './test/specs/form_page_sqlite.e2e.js',
+    // './test/specs/editing_page_mysql.e2e.js',
+    // './test/specs/editing_page_postgresql_numeric.e2e.js',
+    // './test/specs/editing_page_postgresql_string.e2e.js',
     // './test/specs/editing_page_postgresql_datetime.e2e.js',
-    './test/specs/editing_page_sqlite.e2e.js',
+    // './test/specs/editing_page_sqlite.e2e.js',
   ],
   //
   // ============
