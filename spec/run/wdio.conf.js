@@ -29,11 +29,15 @@ exports.config = {
     // './test/specs/form_page_mysql.e2e.js',
     // './test/specs/form_page_postgresql.e2e.js',
     // './test/specs/form_page_sqlite.e2e.js',
-    // './test/specs/editing_page_mysql.e2e.js',
+    // './test/specs/editing_page_mysql_numeric.e2e.js',
+    // './test/specs/editing_page_mysql_string.e2e.js',
+    // './test/specs/editing_page_mysql_datetime.e2e.js',
     // './test/specs/editing_page_postgresql_numeric.e2e.js',
     // './test/specs/editing_page_postgresql_string.e2e.js',
     // './test/specs/editing_page_postgresql_datetime.e2e.js',
-    // './test/specs/editing_page_sqlite.e2e.js',
+    // './test/specs/editing_page_sqlite_numeric.e2e.js',
+    // './test/specs/editing_page_sqlite_string.e2e.js',
+    // './test/specs/editing_page_sqlite_datetime.e2e.js',
   ],
   //
   // ============
