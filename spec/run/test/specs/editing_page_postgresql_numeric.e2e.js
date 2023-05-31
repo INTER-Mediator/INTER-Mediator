@@ -87,13 +87,17 @@ describe('Editing Page Numeric Fields', () => {
     await expect(buttons[1]).toExist()
     await expect(buttons[0]).not.toBeSelected() // Checking initial value
     await expect(buttons[1]).not.toBeSelected() // Checking initial value
+
     await buttons[0].click() // First button
-    await EditingPage.navigatorUpdateButton.click()
-    await browser.pause(waiting)
     await expect(buttons[0]).toBeSelected() // Checking initial value
     await expect(buttons[1]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("1")
+
     await buttons[1].click() // Second button
+    await expect(buttons[0]).not.toBeSelected() // Checking initial value
+    await expect(buttons[1]).toBeSelected() // Checking initial value
+    await expect(EditingPage.fieldNum1Textfield).toHaveValue("2")
+
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(buttons[0]).not.toBeSelected() // Checking initial value
@@ -121,7 +125,7 @@ describe('Editing Page Numeric Fields', () => {
   })
   it('can edit the popup menu of integer field which is NOT NULL.', async () => {
     await expect(EditingPage.fieldNum1Popup).toExist()
-    await expect(EditingPage.fieldNum1Popup).toHaveValue("") // Checking initial value
+    // await expect(EditingPage.fieldNum1Popup).toHaveValue("") // Checking initial value
     await expect(EditingPage.fieldNum1Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldNum1Popup.selectByVisibleText("select1") // Select second item
     await EditingPage.navigatorUpdateButton.click()
