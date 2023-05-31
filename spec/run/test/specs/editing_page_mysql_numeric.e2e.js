@@ -1,7 +1,7 @@
 const EditingPage = require('../pageobjects/editing_page_mysql.page');
 
 const waiting = 2000
-describe('Editing Page', () => {
+describe('Editing Page Numeric Fields', () => {
   it('can open with the valid title.', async () => {
     await EditingPage.open()
     await expect(browser).toHaveTitle("INTER-Mediator - Sample - Editing/MySQL"/*'INTER-Mediator - サンプル - フォーム形式/MySQL'*/)

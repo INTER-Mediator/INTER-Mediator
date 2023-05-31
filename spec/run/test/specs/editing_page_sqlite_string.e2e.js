@@ -1,7 +1,7 @@
 const EditingPage = require('../pageobjects/editing_page_sqlite.page');
 
 const waiting = 2000
-describe('Editing Page', () => {
+describe('Editing Page String Fields', () => {
   it('can open with the valid title.', async () => {
     await EditingPage.open()
     await expect(browser).toHaveTitle("INTER-Mediator - Sample - Editing/SQLite"/*'INTER-Mediator - サンプル - フォーム形式/MySQL'*/)

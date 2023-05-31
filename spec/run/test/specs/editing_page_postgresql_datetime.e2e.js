@@ -6,7 +6,7 @@ const waiting = 2000
 const initDateTime = "2001-01-01 00:00:00" // For UCT server
 const initTime = "00:00:00" // For UCT server
 
-describe('Editing Page', () => {
+describe('Editing Page Date/Time Fields', () => {
   it('can open with the valid title.', async () => {
     await EditingPage.open()
     await expect(browser).toHaveTitle("INTER-Mediator - Sample - Editing/PostgreSQL"/*'INTER-Mediator - サンプル - フォーム形式/MySQL'*/)

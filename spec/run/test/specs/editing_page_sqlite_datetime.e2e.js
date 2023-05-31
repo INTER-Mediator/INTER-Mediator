@@ -8,7 +8,7 @@ const initDateTime = "2001-01-01 00:00:00" // For UCT server
 const initTime = "00:00:00" // For UCT server
 const zeroDateTime = "1970-01-01 00:00:00"
 
-describe('Editing Page', () => {
+describe('Editing Page Date/Time Fields', () => {
   it('can open with the valid title.', async () => {
     await EditingPage.open()
     await expect(browser).toHaveTitle("INTER-Mediator - Sample - Editing/SQLite"/*'INTER-Mediator - サンプル - フォーム形式/MySQL'*/)
