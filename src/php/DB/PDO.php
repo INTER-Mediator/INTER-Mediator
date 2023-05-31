@@ -394,11 +394,11 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             . ", \nboolFields = " . var_export($boolFields, true)
             . ", \ntimeFields = " . var_export($timeFields, true)
             . ", \ndateFields = " . var_export($dateFields, true));
-        if (isset($tableInfo['numeric - fields']) && is_array($tableInfo['numeric - fields'])) {
-            $numericFields = array_merge($nullableFields, $tableInfo['numeric - fields']);
+        if (isset($tableInfo['numeric-fields']) && is_array($tableInfo['numeric-fields'])) {
+            $numericFields = array_merge($nullableFields, $tableInfo['numeric-fields']);
         }
-        if (isset($tableInfo['time - fields']) && is_array($tableInfo['time - fields'])) {
-            $timeFields = array_merge($timeFields, $tableInfo['time - fields']);
+        if (isset($tableInfo['time-fields']) && is_array($tableInfo['time-fields'])) {
+            $timeFields = array_merge($timeFields, $tableInfo['time-fields']);
         }
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
@@ -557,8 +557,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
-        if (isset($tableInfo['time - fields']) && is_array($tableInfo['time - fields'])) {
-            $timeFields = array_merge($timeFields, $tableInfo['time - fields']);
+        if (isset($tableInfo['time-fields']) && is_array($tableInfo['time-fields'])) {
+            $timeFields = array_merge($timeFields, $tableInfo['time-fields']);
         }
         $tableNameRow = $this->dbSettings->getEntityForUpdate();
         $tableName = $this->handler->quotedEntityName($tableNameRow);
@@ -603,8 +603,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             }
             $setValues[] = $this->formatter->formatterToDB($filedInForm, $convertedValue);
         }
-        if (isset($tableInfo['default - values'])) {
-            foreach ($tableInfo['default - values'] as $itemDef) {
+        if (isset($tableInfo['default-values'])) {
+            foreach ($tableInfo['default-values'] as $itemDef) {
                 $field = $itemDef['field'];
                 $value = $itemDef['value'];
                 if (!in_array($field, $setColumnNames)) {
@@ -748,8 +748,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
         $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
-        if (isset($tableInfo['time - fields']) && is_array($tableInfo['time - fields'])) {
-            $timeFields = array_merge($timeFields, $tableInfo['time - fields']);
+        if (isset($tableInfo['time-fields']) && is_array($tableInfo['time-fields'])) {
+            $timeFields = array_merge($timeFields, $tableInfo['time-fields']);
         }
 
         if (isset($tableInfo['script'])) {
@@ -771,8 +771,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             return false;
         }
         $defaultValues = array();
-        if (!$this->isSuppressDVOnCopy && isset($tableInfo['default - values'])) {
-            foreach ($tableInfo['default - values'] as $itemDef) {
+        if (!$this->isSuppressDVOnCopy && isset($tableInfo['default-values'])) {
+            foreach ($tableInfo['default-values'] as $itemDef) {
                 $defaultValues[$itemDef['field']] = $itemDef['value'];
             }
         }
@@ -790,8 +790,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
                 $queryClause = $this->handler->quotedEntityName($assocInfo["field"]) . "=" .
                     $this->link->quote($assocInfo["value"]);
                 $defaultValues = array();
-                if (!$this->isSuppressDVOnCopyAssoc && isset($assocContextDef['default - values'])) {
-                    foreach ($assocContextDef['default - values'] as $itemDef) {
+                if (!$this->isSuppressDVOnCopyAssoc && isset($assocContextDef['default-values'])) {
+                    foreach ($assocContextDef['default-values'] as $itemDef) {
                         $defaultValues[$itemDef['field']] = $itemDef['value'];
                     }
                 }
