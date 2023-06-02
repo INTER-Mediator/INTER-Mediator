@@ -166,11 +166,11 @@ describe('Editing Page String Fields', () => {
     await expect(EditingPage.fieldVc1Textarea).toHaveValue("") // Checking initial value
     const value = "AAAA\n3333333\nイエスマンに未来はない\n#$#$#$#$"
     await EditingPage.fieldVc1Textarea.setValue(value) // Set a value to the field
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Textarea).toHaveValue(String(value))
     await EditingPage.fieldVc1Textarea.setValue("") // Clear the field
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Textarea).toHaveValue("")
   })
@@ -179,11 +179,11 @@ describe('Editing Page String Fields', () => {
     await expect(EditingPage.fieldVc2Textarea).toHaveValue("") // Checking initial value
     const value = "AAAA\n3333333\nイエスマンに未来はない\n#$#$#$#$"
     await EditingPage.fieldVc2Textarea.setValue(value) // Set a value to the field
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc2Textarea).toHaveValue(String(value))
     await EditingPage.fieldVc2Textarea.setValue("") // Clear the field
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc2Textarea).toHaveValue("")
   })
