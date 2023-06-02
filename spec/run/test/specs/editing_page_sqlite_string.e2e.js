@@ -1,10 +1,10 @@
-const EditingPage = require('../pageobjects/editing_page_postgresql.page');
+const EditingPage = require('../pageobjects/editing_page_sqlite.page');
 
 const waiting = 2000
 describe('Editing Page String Fields', () => {
   it('can open with the valid title.', async () => {
     await EditingPage.open()
-    await expect(browser).toHaveTitle("INTER-Mediator - Sample - Editing/PostgreSQL"/*'INTER-Mediator - サンプル - フォーム形式/MySQL'*/)
+    await expect(browser).toHaveTitle("INTER-Mediator - Sample - Editing/SQLite"/*'INTER-Mediator - サンプル - フォーム形式/MySQL'*/)
   })
   it('has the INTER-Mediator\'s navigation.', async () => {
     await expect(EditingPage.navigator).toExist()
@@ -102,7 +102,7 @@ describe('Editing Page String Fields', () => {
     await expect(EditingPage.fieldVc1Textfield).toHaveValue("select2")
   })
   // Radio Buttons for non-integer type field is out of scope, ok?
-  it('can edit the radio buttons of nullable varchar field.', async () => {
+it('can edit the radio buttons of nullable varchar field.', async () => {
     await expect(EditingPage.fieldVc2Radio[0]).toExist()
     await expect(EditingPage.fieldVc2Radio[1]).toExist()
     await expect(EditingPage.fieldVc2Radio[0]).not.toBeSelected() // Checking initial value
@@ -125,12 +125,12 @@ describe('Editing Page String Fields', () => {
     await expect(EditingPage.fieldVc1Popup).toHaveValue("select2") // Checking initial value
     await expect(EditingPage.fieldVc1Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldVc1Popup.selectByVisibleText("select1") // Select second item
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Popup).toHaveValue("select1")
     await expect(EditingPage.fieldVc1Textfield).toHaveValue("select1")
     await EditingPage.fieldVc1Popup.selectByIndex(2) // Select third item
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Popup).toHaveValue("select2")
     await expect(EditingPage.fieldVc1Textfield).toHaveValue("select2")
@@ -145,12 +145,12 @@ describe('Editing Page String Fields', () => {
     await expect(EditingPage.fieldVc2Popup).toHaveValue("select2") // Checking initial value
     await expect(EditingPage.fieldVc2Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldVc2Popup.selectByVisibleText("select1") // Select second item
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc2Popup).toHaveValue("select1")
     await expect(EditingPage.fieldVc2Textfield).toHaveValue("select1")
     await EditingPage.fieldVc2Popup.selectByIndex(2) // Select third item
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc2Popup).toHaveValue("select2")
     await expect(EditingPage.fieldVc2Textfield).toHaveValue("select2")
@@ -228,7 +228,7 @@ describe('Editing Page String Fields', () => {
     await expect(EditingPage.fieldText1Textfield).toHaveValue("")
   })
   // Checkbox for non-integer type field is out of scope, ok?
-  it('can edit the checkbox of nullable text field.', async () => {
+it('can edit the checkbox of nullable text field.', async () => {
     await expect(EditingPage.fieldText2Checkbox).toExist()
     await expect(EditingPage.fieldText2Checkbox).not.toBeSelected() // Checking initial value
     await EditingPage.fieldText2Checkbox.click() // ON

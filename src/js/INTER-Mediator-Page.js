@@ -36,6 +36,7 @@ let INTERMediatorOnPage = {
   httppasswd: null,
   mediaToken: null,
   realm: '',
+  succeedCredential: false,
   dbCache: {},
   isEmailAsUsername: false,
   passwordPolicy: null,
@@ -700,8 +701,11 @@ let INTERMediatorOnPage = {
       if (INTERMediatorOnPage.authStoring == 'credential') {
         await INTERMediator_DBAdapter.getCredential()
       }
-      doAfterAuth() // Retry.
+      if (INTERMediatorOnPage.succeedCredential) {
+        doAfterAuth() // Retry.
+      }
       INTERMediatorLog.flushMessage()
+      INTERMediatorOnPage.hideProgress(true)
     }
     if (chgpwButton) {
       const checkPolicyMethod = this.checkPasswordPolicy
@@ -762,18 +766,11 @@ let INTERMediatorOnPage = {
       }
     }
 
-    if (INTERMediatorOnPage.publickeysize < 2048) {
+    if (INTERMediatorOnPage.authCount > 0) {
       const messageNode = document.getElementById('_im_login_message')
       INTERMediatorLib.removeChildNodes(messageNode)
-      messageNode.appendChild(
-        document.createTextNode(
-          INTERMediatorLib.getInsertedStringFromErrorNumber(2025)))
-    } else if (INTERMediatorOnPage.authCount > 0) {
-      const messageNode = document.getElementById('_im_login_message')
-      INTERMediatorLib.removeChildNodes(messageNode)
-      messageNode.appendChild(
-        document.createTextNode(
-          INTERMediatorLib.getInsertedStringFromErrorNumber(2012)))
+      messageNode.appendChild(document.createTextNode(
+        INTERMediatorLib.getInsertedStringFromErrorNumber(2012)))
     }
 
     window.scrollTo(0, 0)
@@ -1106,14 +1103,13 @@ let INTERMediatorOnPage = {
    * But it doesn't work by excluding to call by flag variable. I don't know why.
    * 2017-05-04 Masayuki Nii
    */
-  hideProgress: async function () {
-    'use strict'
+  hideProgress: async function (force = false) {
     if (!INTERMediatorOnPage.isShowProgress) {
       return
     }
 
     INTERMediatorOnPage.progressCounter -= 1;
-    if (INTERMediatorOnPage.progressCounter == 0) {
+    if (INTERMediatorOnPage.progressCounter <= 0 || force) {
       // Waiting for debug
       // const wait = async (ms) => new Promise(resolve => setTimeout(resolve, ms));
       // await wait(1000)
@@ -1124,12 +1120,14 @@ let INTERMediatorOnPage = {
         if (themeName === 'least' || themeName === 'thosedays') {
           frontPanel.style.display = 'none'
         } else {
+          // frontPanel.style.display = 'none'
           frontPanel.style.transitionDuration = '0.3s'
           frontPanel.style.opacity = 0
           frontPanel.style.zIndex = -9999
         }
       }
-      INTERMediatorOnPage.progressShowing = false;
+      INTERMediatorOnPage.progressShowing = false
+      INTERMediatorOnPage.progressCounter = 0
     }
   },
 

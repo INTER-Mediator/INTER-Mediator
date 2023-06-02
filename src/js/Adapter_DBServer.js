@@ -411,15 +411,18 @@ const INTERMediator_DBAdapter = {
 
   getCredential: async function () {
     'use strict'
+    INTERMediatorOnPage.succeedCredential = false
     await INTERMediator_DBAdapter.server_access_async(
       'access=credential', 1048, 1049,
       function () {
+        INTERMediatorOnPage.succeedCredential = true
         INTERMediatorOnPage.clearCredentials()
       }, function () {
         INTERMediatorOnPage.clearCredentials()
       },
       INTERMediator_DBAdapter.createExceptionFunc(
         1016, function () {
+          // INTERMediatorOnPage.hideProgress(true)
           INTERMediator.constructMain()
         }
       ))

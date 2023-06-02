@@ -1,10 +1,10 @@
-const EditingPage = require('../pageobjects/editing_page_postgresql.page');
+const EditingPage = require('../pageobjects/editing_page_mysql.page');
 
 const waiting = 2000
 describe('Editing Page String Fields', () => {
   it('can open with the valid title.', async () => {
     await EditingPage.open()
-    await expect(browser).toHaveTitle("INTER-Mediator - Sample - Editing/PostgreSQL"/*'INTER-Mediator - サンプル - フォーム形式/MySQL'*/)
+    await expect(browser).toHaveTitle("INTER-Mediator - Sample - Editing/MySQL"/*'INTER-Mediator - サンプル - フォーム形式/MySQL'*/)
   })
   it('has the INTER-Mediator\'s navigation.', async () => {
     await expect(EditingPage.navigator).toExist()
@@ -25,6 +25,7 @@ describe('Editing Page String Fields', () => {
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
   })
+
   it('can edit the text field of varchar field which is NOT NULL.', async () => {
     await expect(EditingPage.fieldVc1Textfield).toExist()
     await expect(EditingPage.fieldVc1Textfield).toHaveValue("") // Checking initial value
@@ -125,17 +126,17 @@ describe('Editing Page String Fields', () => {
     await expect(EditingPage.fieldVc1Popup).toHaveValue("select2") // Checking initial value
     await expect(EditingPage.fieldVc1Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldVc1Popup.selectByVisibleText("select1") // Select second item
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Popup).toHaveValue("select1")
     await expect(EditingPage.fieldVc1Textfield).toHaveValue("select1")
     await EditingPage.fieldVc1Popup.selectByIndex(2) // Select third item
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Popup).toHaveValue("select2")
     await expect(EditingPage.fieldVc1Textfield).toHaveValue("select2")
     await EditingPage.fieldVc1Popup.selectByIndex(0) // Select first item
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Popup).toHaveValue("")
     await expect(EditingPage.fieldVc1Textfield).toHaveValue("")
@@ -145,17 +146,17 @@ describe('Editing Page String Fields', () => {
     await expect(EditingPage.fieldVc2Popup).toHaveValue("select2") // Checking initial value
     await expect(EditingPage.fieldVc2Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldVc2Popup.selectByVisibleText("select1") // Select second item
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc2Popup).toHaveValue("select1")
     await expect(EditingPage.fieldVc2Textfield).toHaveValue("select1")
     await EditingPage.fieldVc2Popup.selectByIndex(2) // Select third item
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc2Popup).toHaveValue("select2")
     await expect(EditingPage.fieldVc2Textfield).toHaveValue("select2")
     await EditingPage.fieldVc2Popup.selectByIndex(0) // Select first item
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc2Popup).toHaveValue("")
     await expect(EditingPage.fieldVc2Textfield).toHaveValue("")
@@ -165,11 +166,11 @@ describe('Editing Page String Fields', () => {
     await expect(EditingPage.fieldVc1Textarea).toHaveValue("") // Checking initial value
     const value = "AAAA\n3333333\nイエスマンに未来はない\n#$#$#$#$"
     await EditingPage.fieldVc1Textarea.setValue(value) // Set a value to the field
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Textarea).toHaveValue(String(value))
     await EditingPage.fieldVc1Textarea.setValue("") // Clear the field
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Textarea).toHaveValue("")
   })
@@ -178,11 +179,11 @@ describe('Editing Page String Fields', () => {
     await expect(EditingPage.fieldVc2Textarea).toHaveValue("") // Checking initial value
     const value = "AAAA\n3333333\nイエスマンに未来はない\n#$#$#$#$"
     await EditingPage.fieldVc2Textarea.setValue(value) // Set a value to the field
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc2Textarea).toHaveValue(String(value))
     await EditingPage.fieldVc2Textarea.setValue("") // Clear the field
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc2Textarea).toHaveValue("")
   })

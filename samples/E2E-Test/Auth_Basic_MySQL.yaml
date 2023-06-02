@@ -1,0 +1,22 @@
+contexts:
+  - name: testtable
+    key: id
+    records: 10000
+    sort: [{ field: dt1, direction: desc }]
+    file-upload: [{ field: text1, context: fileupload }]
+    post-reconstruct: TRUE,
+    repeat-control: insert delete
+#    default-values: [{ field: dt1, value: 2021-12-29 }]
+    authentication: { media-handling: true }
+  - name: fileupload
+    key: id,
+    relation: [{ foreign-key: f_id, join-field: id, operator: = }]
+options:
+  media-root-dir: /tmp
+  authentication:
+#    user: [ user1, user2 ]
+    authexpired: 10
+    storing: credential
+connection:
+  db-class: PDO
+debug: false

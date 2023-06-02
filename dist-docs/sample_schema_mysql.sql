@@ -1059,8 +1059,8 @@ CREATE TABLE testtable
     date2   Date,
     time1   Time         NOT NULL DEFAULT '00:00:00',
     time2   Time,
-    ts1     Timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    ts2     Timestamp             DEFAULT CURRENT_TIMESTAMP, # Required default value
+    ts1     Timestamp    NOT NULL DEFAULT '2001-01-01 00:00:00',
+    ts2     Timestamp             DEFAULT '2001-01-01 00:00:00', # Required default value
     vc1     VARCHAR(100) NOT NULL DEFAULT '',
     vc2     VARCHAR(100),
     vc3     VARCHAR(100),

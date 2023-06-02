@@ -389,11 +389,11 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         [$nullableFields, $numericFields, $boolFields, $timeFields, $dateFields]
             = $this->handler->getTypedFields($this->dbSettings->getEntityForUpdate());
-        $this->logger->setDebugMessage("nullableFields=" . var_export($nullableFields, true)
-            . ",\nnumericFields=" . var_export($numericFields, true)
-            . ", \nboolFields = " . var_export($boolFields, true)
-            . ", \ntimeFields = " . var_export($timeFields, true)
-            . ", \ndateFields = " . var_export($dateFields, true));
+//        $this->logger->setDebugMessage("nullableFields=" . var_export($nullableFields, true)
+//            . ",\nnumericFields=" . var_export($numericFields, true)
+//            . ", \nboolFields = " . var_export($boolFields, true)
+//            . ", \ntimeFields = " . var_export($timeFields, true)
+//            . ", \ndateFields = " . var_export($dateFields, true));
         if (isset($tableInfo['numeric-fields']) && is_array($tableInfo['numeric-fields'])) {
             $numericFields = array_merge($nullableFields, $tableInfo['numeric-fields']);
         }

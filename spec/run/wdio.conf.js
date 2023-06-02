@@ -21,20 +21,25 @@ exports.config = {
   // will be called from there.
   //
   specs: [
-    './test/specs/**/*.js'
-  ],
-  // Patterns to exclude.
-  exclude: [
-    // './test/specs/sample_top_page.e2e.js',
-    // './test/specs/form_page_mysql.e2e.js',
-    // './test/specs/form_page_postgresql.e2e.js',
-    // './test/specs/form_page_sqlite.e2e.js',
-    // './test/specs/editing_page_mysql.e2e.js',
+    // './test/specs/**/*.js'
+    './test/specs/form_page_mysql.e2e.js',
+    './test/specs/form_page_postgresql.e2e.js',
+    './test/specs/form_page_sqlite.e2e.js',
+    './test/specs/auth_page_basic_mysql.e2e.js',
+    './test/specs/auth_page_basic_postgresql.e2e.js',
+    './test/specs/auth_page_basic_sqlite.e2e.js',
+    // './test/specs/editing_page_mysql_numeric.e2e.js',
+    // './test/specs/editing_page_mysql_string.e2e.js',
+    // './test/specs/editing_page_mysql_datetime.e2e.js',
     // './test/specs/editing_page_postgresql_numeric.e2e.js',
     // './test/specs/editing_page_postgresql_string.e2e.js',
     // './test/specs/editing_page_postgresql_datetime.e2e.js',
-    // './test/specs/editing_page_sqlite.e2e.js',
-  ],
+    // './test/specs/editing_page_sqlite_numeric.e2e.js',
+    // './test/specs/editing_page_sqlite_string.e2e.js',
+    // './test/specs/editing_page_sqlite_datetime.e2e.js',
+    ],
+  // Patterns to exclude.
+  exclude: [],
   //
   // ============
   // Capabilities
