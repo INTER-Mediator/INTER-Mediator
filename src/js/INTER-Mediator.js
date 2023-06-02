@@ -505,7 +505,7 @@ const INTERMediator = {
         if (INTERMediatorOnPage.requireAuthentication) {
           if (!INTERMediatorOnPage.isComplementAuthData()) {
             INTERMediatorOnPage.clearCredentials()
-            INTERMediatorOnPage.hideProgress()
+            INTERMediatorOnPage.hideProgress(true)
             INTERMediatorOnPage.authenticating(
               function () {
                 INTERMediator.constructMain(updateRequiredContext)
@@ -558,7 +558,7 @@ const INTERMediator = {
     }
     INTERMediatorOnPage.isFinishToConstruct = false
     INTERMediator.partialConstructing = true
-    INTERMediatorOnPage.hideProgress()
+    INTERMediatorOnPage.hideProgress(true)
     INTERMediatorLog.flushMessage() // Show messages
 
     /* --------------------------------------------------------------------

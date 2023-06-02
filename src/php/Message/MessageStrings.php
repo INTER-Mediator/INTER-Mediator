@@ -163,7 +163,6 @@ class MessageStrings
         2022 => 'Enrollment this site with email',
         2023 => 'Reset my password',
         2024 => 'You need to prepare your email address.',
-        2025 => 'Require a 2048-bit private key at least for authentication',
         2026 => 'SAML Login',
         2027 => "You can't login with this account. Do you want to logout?",
         3101 => 'Drag Here.',
