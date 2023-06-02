@@ -66,8 +66,10 @@ describe('Login required page', () => {
     await AuthPage.authUsername.setValue("user1")
     await AuthPage.authPassword.setValue("user1")
     await AuthPage.authLoginButton.click() // Finally login succeed.
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).not.toExist()
 
+    await expect(AuthPage.logoutLink).toHaveText("Logout")
     await AuthPage.logoutLink.waitForClickable()
     await AuthPage.logoutLink.click()
     await browser.pause(waiting)
@@ -86,32 +88,58 @@ describe('Login required page', () => {
     await AuthPage.authUsername.setValue("dsakjjljl")
     await AuthPage.authPassword.setValue("dsakjjljl")
     await AuthPage.authLoginButton.click() // One more mistake to login
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).toExist()
     await expect(AuthPage.authLoginMessage).toHaveText(failMsg)
 
     await AuthPage.authUsername.setValue("user1")
     await AuthPage.authPassword.setValue("user1")
     await AuthPage.authLoginButton.click() // Finally login succeed.
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).not.toExist()
 
+    await expect(AuthPage.logoutLink).toHaveText("Logout")
     await AuthPage.logoutLink.waitForClickable()
     await AuthPage.logoutLink.click()
     await browser.pause(waiting)
     await expect(AuthPage.authPanel).toExist()
   })
 
-  it('succeed login without mistake.', async () => {
+  it('succeed login without mistake and continue to logging in.', async () => {
     await browser.refresh()
     await expect(AuthPage.authPanel).toExist()
     await AuthPage.authUsername.setValue("user1")
     await AuthPage.authPassword.setValue("user1")
     await AuthPage.authLoginButton.click() // Finally login succeed.
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).not.toExist()
 
+    await browser.refresh()
+    await expect(AuthPage.authPanel).not.toExist() // Still logging in
+
+    await browser.refresh()
+    await expect(AuthPage.authPanel).not.toExist() // Still logging in
+
+    await expect(AuthPage.logoutLink).toHaveText("Logout")
     await AuthPage.logoutLink.waitForClickable()
     await AuthPage.logoutLink.click()
     await browser.pause(waiting)
+    await expect(AuthPage.authPanel).toExist() // logged out
+  })
+
+  it('works timeout to login.', async () => {
+    await browser.refresh()
     await expect(AuthPage.authPanel).toExist()
+    await AuthPage.authUsername.setValue("user1")
+    await AuthPage.authPassword.setValue("user1")
+    await AuthPage.authLoginButton.click() // Finally login succeed.
+    await browser.pause(waiting)
+    await expect(AuthPage.authPanel).not.toExist()
+
+    await browser.pause(10000) // Wait for timeout
+
+    await browser.refresh()
+    await expect(AuthPage.authPanel).toExist() // logged out
   })
 
   it('can change the password.', async () => {
