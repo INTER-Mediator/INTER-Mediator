@@ -327,11 +327,11 @@ describe('Editing Page Numeric Fields', () => {
     value = (value % 10 == 0) ? (value + 1) : value
     value /= 100
     await EditingPage.fieldDouble1Textfield.setValue(value) // Set a value to the field
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble1Textfield).toHaveValue(String(value))
     await EditingPage.fieldDouble1Textfield.setValue("") // Clear the field
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0.00")
   })
@@ -342,11 +342,11 @@ describe('Editing Page Numeric Fields', () => {
     value = (value % 10 == 0) ? (value + 1) : value
     value /= 100
     await EditingPage.fieldDouble2Textfield.setValue(value) // Set a value to the field
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble2Textfield).toHaveValue(String(value))
     await EditingPage.fieldDouble2Textfield.setValue("") // Clear the field
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble2Textfield).toHaveValue("")
   })

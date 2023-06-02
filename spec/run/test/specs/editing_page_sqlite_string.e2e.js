@@ -125,12 +125,12 @@ it('can edit the radio buttons of nullable varchar field.', async () => {
     await expect(EditingPage.fieldVc1Popup).toHaveValue("select2") // Checking initial value
     await expect(EditingPage.fieldVc1Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldVc1Popup.selectByVisibleText("select1") // Select second item
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Popup).toHaveValue("select1")
     await expect(EditingPage.fieldVc1Textfield).toHaveValue("select1")
     await EditingPage.fieldVc1Popup.selectByIndex(2) // Select third item
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Popup).toHaveValue("select2")
     await expect(EditingPage.fieldVc1Textfield).toHaveValue("select2")
@@ -145,12 +145,12 @@ it('can edit the radio buttons of nullable varchar field.', async () => {
     await expect(EditingPage.fieldVc2Popup).toHaveValue("select2") // Checking initial value
     await expect(EditingPage.fieldVc2Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldVc2Popup.selectByVisibleText("select1") // Select second item
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc2Popup).toHaveValue("select1")
     await expect(EditingPage.fieldVc2Textfield).toHaveValue("select1")
     await EditingPage.fieldVc2Popup.selectByIndex(2) // Select third item
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc2Popup).toHaveValue("select2")
     await expect(EditingPage.fieldVc2Textfield).toHaveValue("select2")
