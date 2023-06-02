@@ -70,6 +70,7 @@ describe('Login required page', () => {
 
     await expect(AuthPage.logoutLink).toHaveText("Logout")
     await AuthPage.logoutLink.click()
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).toExist()
   })
 
@@ -93,7 +94,9 @@ describe('Login required page', () => {
     await AuthPage.authLoginButton.click() // Finally login succeed.
     await expect(AuthPage.authPanel).not.toExist()
 
+    await expect(AuthPage.logoutLink).toHaveText("Logout")
     await AuthPage.logoutLink.click()
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).toExist()
   })
 
@@ -105,7 +108,9 @@ describe('Login required page', () => {
     await AuthPage.authLoginButton.click() // Finally login succeed.
     await expect(AuthPage.authPanel).not.toExist()
 
+    await expect(AuthPage.logoutLink).toHaveText("Logout")
     await AuthPage.logoutLink.click()
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).toExist()
   })
 
