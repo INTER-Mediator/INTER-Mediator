@@ -191,12 +191,12 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldFloat1Checkbox).toExist()
     await expect(EditingPage.fieldFloat1Checkbox).not.toBeSelected() // Checking initial value
     await EditingPage.fieldFloat1Checkbox.click() // ON
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat1Checkbox).toBeSelected()
     await expect(EditingPage.fieldFloat1Textfield).toHaveValue("1")
     await EditingPage.fieldFloat1Checkbox.click() // OFF
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat1Checkbox).not.toBeSelected()
     await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0")
@@ -206,12 +206,12 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldFloat2Checkbox).toExist()
     await expect(EditingPage.fieldFloat2Checkbox).not.toBeSelected() // Checking initial value
     await EditingPage.fieldFloat2Checkbox.click() // ON
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat2Checkbox).toBeSelected()
     await expect(EditingPage.fieldFloat2Textfield).toHaveValue("1")
     await EditingPage.fieldFloat2Checkbox.click() // OFF
-    await EditingPage.navigatorUpdateButton.click()
+    // await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat2Checkbox).not.toBeSelected()
     await expect(EditingPage.fieldFloat2Textfield).toHaveValue("")
