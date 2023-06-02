@@ -23,9 +23,6 @@ exports.config = {
   specs: [
     // './test/specs/**/*.js'
     './test/specs/sample_top_page.e2e.js',
-    './test/specs/auth_page_basic_mysql.e2e.js',
-    './test/specs/auth_page_basic_postgresql.e2e.js',
-    './test/specs/auth_page_basic_sqlite.e2e.js',
     './test/specs/form_page_mysql.e2e.js',
     './test/specs/form_page_postgresql.e2e.js',
     './test/specs/form_page_sqlite.e2e.js',
@@ -38,6 +35,9 @@ exports.config = {
     './test/specs/editing_page_sqlite_numeric.e2e.js',
     './test/specs/editing_page_sqlite_string.e2e.js',
     './test/specs/editing_page_sqlite_datetime.e2e.js',
+    './test/specs/auth_page_basic_mysql.e2e.js',
+    './test/specs/auth_page_basic_postgresql.e2e.js',
+    './test/specs/auth_page_basic_sqlite.e2e.js',
   ],
   // Patterns to exclude.
   exclude: [],
