@@ -1,12 +1,12 @@
 const EditingPage = require('../pageobjects/editing_page_sqlite.page');
 
 const waiting = 1000
-const initDateTime = "2000-12-31 15:00:00" // For Asia/Tokyo server
-const initTime = "15:00:00" // For Asia/Tokyo server
-const zeroDateTime = "1969-12-31 15:00:00"
-// const initDateTime = "2001-01-01 00:00:00" // For UCT server
-// const initTime = "00:00:00" // For UCT server
-// const zeroDateTime = "1970-01-01 00:00:00"
+// const initDateTime = "2000-12-31 15:00:00" // For Asia/Tokyo server
+// const initTime = "15:00:00" // For Asia/Tokyo server
+// const zeroDateTime = "1969-12-31 15:00:00"
+const initDateTime = "2001-01-01 00:00:00" // For UCT server
+const initTime = "00:00:00" // For UCT server
+const zeroDateTime = "1970-01-01 00:00:00"
 
 describe('Editing Page Date/Time Fields', () => {
   it('can open with the valid title.', async () => {
