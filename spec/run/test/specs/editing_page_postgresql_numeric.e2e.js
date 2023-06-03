@@ -1,6 +1,6 @@
 const EditingPage = require('../pageobjects/editing_page_postgresql.page');
 
-const waiting = 2000
+const waiting = 1000
 describe('Editing Page Numeric Fields', () => {
   it('can open with the valid title.', async () => {
     await EditingPage.open()
@@ -24,13 +24,14 @@ describe('Editing Page Numeric Fields', () => {
     await EditingPage.navigatorInsertButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
+    await EditingPage.reopen()
   })
   it('can edit the text field of integer field which is NOT NULL.', async () => {
     await expect(EditingPage.fieldNum1Textfield).toExist()
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("0") // Checking initial value
     const value = Math.trunc(Math.random() * 10000000)
     await EditingPage.fieldNum1Textfield.setValue(String(value)) // Set a value to the field
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum1Textfield).toHaveValue(String(value))
     await EditingPage.fieldNum1Textfield.setValue("") // Clear the field
@@ -43,7 +44,7 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("") // Checking initial value
     const value = Math.trunc(Math.random() * 10000000)
     await EditingPage.fieldNum2Textfield.setValue(value) // Set a value to the field
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum2Textfield).toHaveValue(String(value))
     await EditingPage.fieldNum2Textfield.setValue("") // Clear the field

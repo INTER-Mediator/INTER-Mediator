@@ -8,6 +8,10 @@ module.exports = class FormPage extends IMPage {
     return $('._im_test_num1_textfield');
   }
 
+  get fieldId() {
+    return $('._im_test_id');
+  }
+
   get fieldNum1Checkbox() {
     return $('._im_test_num1_checkbox');
   }
