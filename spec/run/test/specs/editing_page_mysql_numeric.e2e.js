@@ -34,7 +34,7 @@ describe('Editing Page Numeric Fields', () => {
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum1Textfield).toHaveValue(String(value))
     await EditingPage.fieldNum1Textfield.setValue("") // Clear the field
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("0")
   })
@@ -47,7 +47,7 @@ describe('Editing Page Numeric Fields', () => {
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum2Textfield).toHaveValue(String(value))
     await EditingPage.fieldNum2Textfield.setValue("") // Clear the field
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("")
   })
@@ -61,8 +61,8 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("1")
     await EditingPage.fieldNum1Checkbox.click() // OFF
     await browser.pause(waiting)
-    // await EditingPage.navigatorUpdateButton.click()
-    // await browser.pause(waiting)
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
     await expect(EditingPage.fieldNum1Checkbox).not.toBeSelected()
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("0")
   })
@@ -75,8 +75,8 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldNum2Checkbox).toBeSelected()
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("1")
     await EditingPage.fieldNum2Checkbox.click() // OFF
-    // await browser.pause(waiting)
-    // await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum2Checkbox).not.toBeSelected()
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("")
@@ -196,7 +196,8 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldFloat1Checkbox).toBeSelected()
     await expect(EditingPage.fieldFloat1Textfield).toHaveValue("1")
     await EditingPage.fieldFloat1Checkbox.click() // OFF
-    // await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat1Checkbox).not.toBeSelected()
     await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0")
@@ -211,7 +212,8 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldFloat2Checkbox).toBeSelected()
     await expect(EditingPage.fieldFloat2Textfield).toHaveValue("1")
     await EditingPage.fieldFloat2Checkbox.click() // OFF
-    // await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat2Checkbox).not.toBeSelected()
     await expect(EditingPage.fieldFloat2Textfield).toHaveValue("")

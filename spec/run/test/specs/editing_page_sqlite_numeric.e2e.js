@@ -331,7 +331,7 @@ describe('Editing Page Numeric Fields', () => {
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble1Textfield).toHaveValue(String(value))
     await EditingPage.fieldDouble1Textfield.setValue("") // Clear the field
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0.00")
   })
