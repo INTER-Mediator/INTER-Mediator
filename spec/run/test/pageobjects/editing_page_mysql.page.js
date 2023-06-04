@@ -8,6 +8,12 @@ class FormPageMySQL extends EditingPage {
   open() {
     return super.open('samples/E2E-Test/Editing_MySQL.html');
   }
+
+  async reopen() {
+    const id = await this.fieldId.getText()
+    return super.open(`samples/E2E-Test/Editing_MySQL.html?id=${id}`);
+  }
+
 }
 
 module.exports = new FormPageMySQL();

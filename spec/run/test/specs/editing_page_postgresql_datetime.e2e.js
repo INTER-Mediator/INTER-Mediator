@@ -1,6 +1,6 @@
 const EditingPage = require('../pageobjects/editing_page_postgresql.page');
 
-const waiting = 2000
+const waiting = 1000
 // const initDateTime = "2000-12-31 15:00:00" // For Asia/Tokyo server
 // const initTime = "15:00:00" // For Asia/Tokyo server
 const initDateTime = "2001-01-01 00:00:00" // For UCT server
@@ -29,6 +29,7 @@ describe('Editing Page Date/Time Fields', () => {
     await EditingPage.navigatorInsertButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
+    await EditingPage.reopen()
   })
   it('can edit the text field of datetime field which is NOT NULL.', async () => {
     await expect(EditingPage.fieldDt1Textfield).toExist()

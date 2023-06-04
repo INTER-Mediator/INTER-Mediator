@@ -1,6 +1,6 @@
 const EditingPage = require('../pageobjects/editing_page_sqlite.page');
 
-const waiting = 2000
+const waiting = 1000
 describe('Editing Page Numeric Fields', () => {
   it('can open with the valid title.', async () => {
     await EditingPage.open()
@@ -24,6 +24,7 @@ describe('Editing Page Numeric Fields', () => {
     await EditingPage.navigatorInsertButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
+    await EditingPage.reopen()
   })
   it('can edit the text field of integer field which is NOT NULL.', async () => {
     await expect(EditingPage.fieldNum1Textfield).toExist()
@@ -89,19 +90,19 @@ describe('Editing Page Numeric Fields', () => {
     await expect(buttons[1]).not.toBeSelected() // Checking initial value
     await buttons[0].click() // First button
     // await browser.pause(waiting)
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     // await browser.pause(waiting)
     await expect(buttons[0]).toBeSelected() // Checking initial value
     await expect(buttons[1]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("1")
     await buttons[1].click() // Second button
     // await browser.pause(waiting)
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     // await browser.pause(waiting)
     await expect(buttons[0]).not.toBeSelected() // Checking initial value
     await expect(buttons[1]).toBeSelected() // Checking initial value
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("2")
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     // await expect(buttons[0]).not.toBeSelected() // Checking initial value
     // await expect(buttons[1]).toBeSelected() // Checking initial value
@@ -114,20 +115,20 @@ describe('Editing Page Numeric Fields', () => {
     await expect(buttons[0]).not.toBeSelected() // Checking initial value
     await expect(buttons[1]).not.toBeSelected() // Checking initial value
     await buttons[0].click() // First button
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     // await browser.pause(waiting)
     await expect(buttons[0]).toBeSelected() // Checking initial value
     await expect(buttons[1]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("1")
 
     await buttons[1].click() // Second button
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     // await browser.pause(waiting)
     await expect(buttons[0]).not.toBeSelected() // Checking initial value
     await expect(buttons[1]).toBeSelected() // Checking initial value
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("2")
 
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     // await expect(buttons[0]).not.toBeSelected() // Checking initial value
     // await expect(buttons[1]).toBeSelected() // Checking initial value
@@ -181,6 +182,7 @@ describe('Editing Page Numeric Fields', () => {
   it('can edit the text field of float field which is NOT NULL.', async () => {
     await expect(EditingPage.fieldFloat1Textfield).toExist()
     await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0.00") // Checking initial value
+
     let value = Math.trunc(Math.random() * 100000)
     value = (value % 10 == 0) ? (value + 1) : value
     value /= 100
@@ -188,6 +190,7 @@ describe('Editing Page Numeric Fields', () => {
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat1Textfield).toHaveValue(String(value))
+
     await EditingPage.fieldFloat1Textfield.setValue("") // Clear the field
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
@@ -323,15 +326,17 @@ describe('Editing Page Numeric Fields', () => {
   it('can edit the text field of double field which is NOT NULL.', async () => {
     await expect(EditingPage.fieldDouble1Textfield).toExist()
     await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0.00") // Checking initial value
+
     let value = Math.trunc(Math.random() * 100000000000000)
     value = (value % 10 == 0) ? (value + 1) : value
     value /= 100
     await EditingPage.fieldDouble1Textfield.setValue(value) // Set a value to the field
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble1Textfield).toHaveValue(String(value))
+
     await EditingPage.fieldDouble1Textfield.setValue("") // Clear the field
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0.00")
   })
@@ -342,11 +347,11 @@ describe('Editing Page Numeric Fields', () => {
     value = (value % 10 == 0) ? (value + 1) : value
     value /= 100
     await EditingPage.fieldDouble2Textfield.setValue(value) // Set a value to the field
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble2Textfield).toHaveValue(String(value))
     await EditingPage.fieldDouble2Textfield.setValue("") // Clear the field
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble2Textfield).toHaveValue("")
   })

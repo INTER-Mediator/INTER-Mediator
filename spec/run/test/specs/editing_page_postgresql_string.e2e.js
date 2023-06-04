@@ -1,6 +1,6 @@
 const EditingPage = require('../pageobjects/editing_page_postgresql.page');
 
-const waiting = 2000
+const waiting = 1000
 describe('Editing Page String Fields', () => {
   it('can open with the valid title.', async () => {
     await EditingPage.open()
@@ -24,6 +24,7 @@ describe('Editing Page String Fields', () => {
     await EditingPage.navigatorInsertButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
+    await EditingPage.reopen()
   })
   it('can edit the text field of varchar field which is NOT NULL.', async () => {
     await expect(EditingPage.fieldVc1Textfield).toExist()
@@ -164,10 +165,12 @@ describe('Editing Page String Fields', () => {
     await expect(EditingPage.fieldVc1Textarea).toExist()
     await expect(EditingPage.fieldVc1Textarea).toHaveValue("") // Checking initial value
     const value = "AAAA\n3333333\nイエスマンに未来はない\n#$#$#$#$"
+
     await EditingPage.fieldVc1Textarea.setValue(value) // Set a value to the field
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Textarea).toHaveValue(String(value))
+
     await EditingPage.fieldVc1Textarea.setValue("") // Clear the field
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
@@ -177,6 +180,7 @@ describe('Editing Page String Fields', () => {
     await expect(EditingPage.fieldVc2Textarea).toExist()
     await expect(EditingPage.fieldVc2Textarea).toHaveValue("") // Checking initial value
     const value = "AAAA\n3333333\nイエスマンに未来はない\n#$#$#$#$"
+
     await EditingPage.fieldVc2Textarea.setValue(value) // Set a value to the field
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)

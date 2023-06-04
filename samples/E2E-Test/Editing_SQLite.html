@@ -17,6 +17,11 @@
     <script>
       INTERMediatorOnPage.doBeforeConstruct = function () {
         INTERMediatorLog.suppressDebugMessageOnPage = true
+        const params = INTERMediatorOnPage.getURLParametersAsArray()
+        if (params['id']) {
+          INTERMediator.clearCondition('testtable')
+          INTERMediator.addCondition('testtable', {field: 'id', operator: "=", value: parseInt(params['id'])})
+        }
       }
 
       INTERMediatorOnPage.doAfterConstruct = function () {
@@ -51,6 +56,9 @@
         </tr>
         </thead>
         <tbody>
+        <tr>
+            <th data-im="testtable@id" class="_im_test_id"></th>
+        </tr>
         <tr>
             <th>num1</th>
             <td><input type="text" data-im="testtable@num1" class="_im_test_num1_textfield"></td>

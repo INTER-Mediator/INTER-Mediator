@@ -1,6 +1,6 @@
 const EditingPage = require('../pageobjects/editing_page_sqlite.page');
 
-const waiting = 2000
+const waiting = 1000
 describe('Editing Page String Fields', () => {
   it('can open with the valid title.', async () => {
     await EditingPage.open()
@@ -24,6 +24,7 @@ describe('Editing Page String Fields', () => {
     await EditingPage.navigatorInsertButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
+    await EditingPage.reopen()
   })
   it('can edit the text field of varchar field which is NOT NULL.', async () => {
     await expect(EditingPage.fieldVc1Textfield).toExist()
@@ -125,12 +126,12 @@ it('can edit the radio buttons of nullable varchar field.', async () => {
     await expect(EditingPage.fieldVc1Popup).toHaveValue("select2") // Checking initial value
     await expect(EditingPage.fieldVc1Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldVc1Popup.selectByVisibleText("select1") // Select second item
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Popup).toHaveValue("select1")
     await expect(EditingPage.fieldVc1Textfield).toHaveValue("select1")
     await EditingPage.fieldVc1Popup.selectByIndex(2) // Select third item
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Popup).toHaveValue("select2")
     await expect(EditingPage.fieldVc1Textfield).toHaveValue("select2")
@@ -145,12 +146,12 @@ it('can edit the radio buttons of nullable varchar field.', async () => {
     await expect(EditingPage.fieldVc2Popup).toHaveValue("select2") // Checking initial value
     await expect(EditingPage.fieldVc2Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldVc2Popup.selectByVisibleText("select1") // Select second item
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc2Popup).toHaveValue("select1")
     await expect(EditingPage.fieldVc2Textfield).toHaveValue("select1")
     await EditingPage.fieldVc2Popup.selectByIndex(2) // Select third item
-    // await EditingPage.navigatorUpdateButton.click()
+    await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc2Popup).toHaveValue("select2")
     await expect(EditingPage.fieldVc2Textfield).toHaveValue("select2")
@@ -244,16 +245,20 @@ it('can edit the checkbox of nullable text field.', async () => {
   })
   // Radio Buttons for non-integer type field is out of scope, ok?
   it('can edit the radio buttons of text field which is NOT NULL.', async () => {
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
     await expect(EditingPage.fieldText1Radio[0]).toExist()
     await expect(EditingPage.fieldText1Radio[1]).toExist()
     await expect(EditingPage.fieldText1Radio[0]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldText1Radio[1]).not.toBeSelected() // Checking initial value
+
     await EditingPage.fieldText1Radio[0].click() // First button
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldText1Radio[0]).toBeSelected() // Checking initial value
     await expect(EditingPage.fieldText1Radio[1]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldText1Textfield).toHaveValue("select1")
+
     await EditingPage.fieldText1Radio[1].click() // Second button
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
@@ -263,16 +268,20 @@ it('can edit the checkbox of nullable text field.', async () => {
   })
   // Radio Buttons for non-integer type field is out of scope, ok?
   it('can edit the radio buttons of nullable text field.', async () => {
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
     await expect(EditingPage.fieldText2Radio[0]).toExist()
     await expect(EditingPage.fieldText2Radio[1]).toExist()
     await expect(EditingPage.fieldText2Radio[0]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldText2Radio[1]).not.toBeSelected() // Checking initial value
+
     await EditingPage.fieldText2Radio[0].click() // First button
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldText2Radio[0]).toBeSelected() // Checking initial value
     await expect(EditingPage.fieldText2Radio[1]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldText2Textfield).toHaveValue("select1")
+
     await EditingPage.fieldText2Radio[1].click() // Second button
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
@@ -281,19 +290,24 @@ it('can edit the checkbox of nullable text field.', async () => {
     await expect(EditingPage.fieldText2Textfield).toHaveValue("select2")
   })
   it('can edit the popup menu of text field which is NOT NULL.', async () => {
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
     await expect(EditingPage.fieldText1Popup).toExist()
     await expect(EditingPage.fieldText1Popup).toHaveValue("select2") // Checking initial value
     await expect(EditingPage.fieldText1Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
+
     await EditingPage.fieldText1Popup.selectByVisibleText("select1") // Select second item
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldText1Popup).toHaveValue("select1")
     await expect(EditingPage.fieldText1Textfield).toHaveValue("select1")
+
     await EditingPage.fieldText1Popup.selectByIndex(2) // Select third item
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldText1Popup).toHaveValue("select2")
     await expect(EditingPage.fieldText1Textfield).toHaveValue("select2")
+
     await EditingPage.fieldText1Popup.selectByIndex(0) // Select first item
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
@@ -301,19 +315,24 @@ it('can edit the checkbox of nullable text field.', async () => {
     await expect(EditingPage.fieldText1Textfield).toHaveValue("")
   })
   it('can edit the popup menu of nullable text field.', async () => {
+    await EditingPage.navigatorUpdateButton.click()
+    await browser.pause(waiting)
     await expect(EditingPage.fieldText2Popup).toExist()
     await expect(EditingPage.fieldText2Popup).toHaveValue("select2") // Checking initial value
     await expect(EditingPage.fieldText2Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
+
     await EditingPage.fieldText2Popup.selectByVisibleText("select1") // Select second item
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldText2Popup).toHaveValue("select1")
     await expect(EditingPage.fieldText2Textfield).toHaveValue("select1")
+
     await EditingPage.fieldText2Popup.selectByIndex(2) // Select third item
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldText2Popup).toHaveValue("select2")
     await expect(EditingPage.fieldText2Textfield).toHaveValue("select2")
+
     await EditingPage.fieldText2Popup.selectByIndex(0) // Select first item
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
