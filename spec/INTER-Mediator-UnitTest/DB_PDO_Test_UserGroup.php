@@ -162,9 +162,10 @@ trait DB_PDO_Test_UserGroup
         $password = "testuser1";
 
         [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password);
-        $this->assertTrue($addUserResult);
+        $this->assertTrue($addUserResult, $testName);
 
         $hpw = $this->db_proxy->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
+        $this->assertTrue($hpw == $hashedpw, $testName);
 
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
