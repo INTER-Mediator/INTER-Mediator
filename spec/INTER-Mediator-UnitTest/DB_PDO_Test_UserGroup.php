@@ -71,6 +71,7 @@ trait DB_PDO_Test_UserGroup
         $username = 'user1';
         $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
         $uid = $this->db_proxy->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
+        $hpw = $this->db_proxy->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
 
         $challenge = IMUtil::generateChallenge();
         $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
@@ -83,9 +84,9 @@ trait DB_PDO_Test_UserGroup
         $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
 
         $this->db_proxy->setParamResponse([$calcuratedHash]);
-        $this->db_proxy->setClientId("TEST");
-        $this->assertTrue(
-            $this->db_proxy->checkAuthorization($username), $testName);
+        $this->db_proxy->setClientId_forTest("TEST");
+        $this->db_proxy->setHashedPassword_forTest($hpw);
+        $this->assertTrue($this->db_proxy->checkAuthorization($username), $testName);
     }
 
     public function testAuthByValidUser()
@@ -107,7 +108,7 @@ trait DB_PDO_Test_UserGroup
         $this->db_proxy->dbSettings->setCurrentUser($username);
         $this->db_proxy->dbSettings->setDataSourceName("person");
         $this->db_proxy->paramAuthUser = $username;
-        $this->db_proxy->setClientId($clientId);
+        $this->db_proxy->setClientId_forTest($clientId);
         $this->db_proxy->setParamResponse([$calcuratedHash]);
 
         $this->db_proxy->processingRequest("read");
@@ -139,7 +140,7 @@ trait DB_PDO_Test_UserGroup
         $this->db_proxy->dbSettings->setCurrentUser($username);
         $this->db_proxy->dbSettings->setDataSourceName("person");
         $this->db_proxy->paramAuthUser = $username;
-        $this->db_proxy->setClientId($clientId);
+        $this->db_proxy->setClientId_forTest($clientId);
         $this->db_proxy->setParamResponse([$calcuratedHash]);
 
         $this->db_proxy->processingRequest("read");
@@ -159,6 +160,7 @@ trait DB_PDO_Test_UserGroup
         $testName = "Create New User and Authenticate";
         $username = "testuser1";
         $password = "testuser1";
+        $hpw = $this->db_proxy->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
 
         [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password);
         $this->assertTrue($addUserResult);
@@ -181,7 +183,8 @@ trait DB_PDO_Test_UserGroup
             hash_hmac('sha256', $hashedvalue256, $challenge),
             hash_hmac('sha256', $hashedvalue256, $challenge),
         ]);
-        $this->db_proxy->setClientId($clientId);
+        $this->db_proxy->setClientId_forTest($clientId);
+        $this->db_proxy->setHashedPassword_forTest($hpw);
         $checkResult = $this->db_proxy->checkAuthorization($username);
 
 //        var_export($this->db_proxy->logger->getErrorMessages());

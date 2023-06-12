@@ -59,9 +59,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     private $migrateSHA1to2;
     private $credentialCookieDomain;
 
-    public function setClientId($cid) // For testing
+    public function setClientId_forTest($cid) // For testing
     {
         $this->clientId = $cid;
+    }
+
+    public function setHashedPassword_forTest($hpw) // For testing
+    {
+        $this->hashedPassword = $hpw;
     }
 
     public function setParamResponse($res) // For testing

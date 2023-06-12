@@ -716,7 +716,7 @@ class DB_FMS_Test_Common extends TestCase
         $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
 
         $this->db_proxy->setParamResponse([$calcuratedHash]);
-        $this->db_proxy->setClientId("TEST");
+        $this->db_proxy->setClientId_forTest("TEST");
         $this->assertTrue(
             $this->db_proxy->checkAuthorization($username), $testName);
     }
@@ -743,7 +743,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->setCurrentUser($username);
         $this->db_proxy->dbSettings->setDataSourceName('person');
         $this->db_proxy->paramAuthUser = $username;
-        $this->db_proxy->setClientId($clientId);
+        $this->db_proxy->setClientId_forTest($clientId);
         $this->db_proxy->paramResponse = $calcuratedHash;
 
         $this->db_proxy->processingRequest('read');
@@ -795,7 +795,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->setCurrentUser($username);
         $this->db_proxy->dbSettings->setDataSourceName("person");
         $this->db_proxy->paramAuthUser = $username;
-        $this->db_proxy->setClientId($clientId);
+        $this->db_proxy->setClientId_forTest($clientId);
         $this->db_proxy->paramResponse = $calcuratedHash;
 
         $this->db_proxy->processingRequest("read");
@@ -834,7 +834,7 @@ class DB_FMS_Test_Common extends TestCase
         //echo $hashedvalue;
 
         $this->db_proxy->setParamResponse([hash_hmac('sha256', $hashedvalue, $challenge)]);
-        $this->db_proxy->setClientId($clientId);
+        $this->db_proxy->setClientId_forTest($clientId);
         $this->assertTrue(
             $this->db_proxy->checkAuthorization($username),
             $testName);
