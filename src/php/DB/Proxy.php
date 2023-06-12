@@ -1340,11 +1340,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("[checkAuthorization]Credential auth passed.", 2);
                 $returnValue = true;
             } else { // Hash Auth checking
-                $hmacValue = hash_hmac('sha256', $this->hashedPassword, $storedChallenge);
-                $hmacValue2m = hash_hmac('sha256', $this->hashedPassword, $storedChallenge);
+                $hmacValue = ($this->hashedPassword && $storedChallenge)
+                    ? hash_hmac('sha256', $this->hashedPassword, $storedChallenge) : 'no-value';
+                $hmacValue2m = ($this->hashedPassword && $storedChallenge)
+                    ? hash_hmac('sha256', $this->hashedPassword, $storedChallenge) : 'no-value';
                 $this->logger->setDebugMessage(
                     "[checkAuthorization]hashedPassword={$this->hashedPassword}/hmac_value={$hmacValue}", 2);
-                if (strlen($this->hashedPassword) > 0) {
+                if ($this->hashedPassword && strlen($this->hashedPassword) > 0) {
                     if ($hashedvalue == $hmacValue) {
                         $this->logger->setDebugMessage("[checkAuthorization]sha1 hash used.", 2);
                         $returnValue = true;
