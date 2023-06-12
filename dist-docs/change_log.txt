@@ -28,6 +28,8 @@ Ver.11 (in development)
 - [BUG FIX] INTERMediator.additionalFieldValueOnDelete uses in the Definition File editor, so retrieved it.
 - [BIG FIX] After failed to login, any messages didn't show on the login panel.
 - [INFO] About sample SQL files in the dist-docs directory, their extensions changed to .sql from .txt.
+- [SECURITY IMPROVED] The hash calculation for the 'credential' authentication was updated. The value is sha-256 hash of
+  challenge, client id and user's password hash. The challenge is already stored with the user on db.
 - On the multiple client synchronization (i.e. using sync-control in any definition), the clean up task has to call
   "INTERMediator_DBAdapter.unregister()" explicitly.
 - INTERMediator.moveAnotherURL(url, task) is newly added. This will call "INTERMediator_DBAdapter.unregister()", do the "task"

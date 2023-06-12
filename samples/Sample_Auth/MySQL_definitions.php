@@ -131,7 +131,7 @@ IM_Entry(
 //            'group-table' => 'authgroup',
 //            'corresponding-table' => 'authcor',
 //            'challenge-table' => 'issuedhash',
-            'authexpired' => '15', // Set as seconds.
+            'authexpired' => '1000', // Set as seconds.
             'storing' => 'credential', // session-storage, 'cookie'(default), 'cookie-domainwide', 'none', credential
             'realm' => 'Sample_Auth/MySQL_definitions', //
 //            'email-as-username' => true,

@@ -142,6 +142,39 @@ describe('Login required page', () => {
     await expect(AuthPage.authPanel).toExist() // logged out
   })
 
+  it('succeed login with sha-256 hashed users.', async () => {
+    await browser.refresh()
+    await expect(AuthPage.authPanel).toExist()
+    await AuthPage.authUsername.setValue("mig2m")
+    await AuthPage.authPassword.setValue("mig2m")
+    await AuthPage.authLoginButton.click() // login succeed.
+    await browser.pause(waiting)
+    await expect(AuthPage.authPanel).not.toExist()
+
+    await browser.refresh()
+    await expect(AuthPage.authPanel).not.toExist() // Still logging in
+
+    await expect(AuthPage.logoutLink).toHaveText("Logout")
+    await AuthPage.logoutLink.waitForClickable()
+    await AuthPage.logoutLink.click()
+    await browser.pause(waiting)
+    await expect(AuthPage.authPanel).toExist() // logged out
+
+    await browser.refresh()
+    await expect(AuthPage.authPanel).toExist()
+    await AuthPage.authUsername.setValue("mig2")
+    await AuthPage.authPassword.setValue("mig2")
+    await AuthPage.authLoginButton.click() // login succeed.
+    await browser.pause(waiting)
+    await expect(AuthPage.authPanel).not.toExist()
+
+    await expect(AuthPage.logoutLink).toHaveText("Logout")
+    await AuthPage.logoutLink.waitForClickable()
+    await AuthPage.logoutLink.click()
+    await browser.pause(waiting)
+    await expect(AuthPage.authPanel).toExist() // logged out
+  })
+
   it('can change the password.', async () => {
     await browser.refresh()
     await expect(AuthPage.authPanel).toExist()
