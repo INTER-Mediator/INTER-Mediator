@@ -76,7 +76,7 @@ jobs:
           mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "GRANT SHOW VIEW ON TABLE test_db.* TO 'web'@'%';"
 
       - name: Setup PostgreSQL
-        run: psql postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./dist-docs/sample_schema_pgsql.sql
+        run: psql --quiet postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./dist-docs/sample_schema_pgsql.sql
 
 #      - name: Check MySQL
 #        run: mysql -h 127.0.0.1 --port 3306 -u web --password=password -e "select * from person;" test_db
@@ -110,7 +110,7 @@ jobs:
       - name: Revert MySQL Data
         run: mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.sql
       - name: Revert PostgreSQL Data
-        run: psql postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./dist-docs/sample_schema_pgsql.sql
+        run: psql --quiet postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./dist-docs/sample_schema_pgsql.sql
       - name: Revert SQLite Data
         run: |
           rm sample.sq3
