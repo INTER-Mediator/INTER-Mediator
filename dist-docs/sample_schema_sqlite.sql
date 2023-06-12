@@ -389,6 +389,13 @@ CREATE TABLE chat
     message   TEXT
 );
 
+CREATE TABLE fileupload
+(
+    id   INTEGER PRIMARY KEY AUTOINCREMENT,
+    f_id INTEGER,
+    path TEXT
+);
+
 /* Observable */
 
 CREATE TABLE registeredcontext

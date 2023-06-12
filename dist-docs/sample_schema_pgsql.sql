@@ -418,6 +418,14 @@ CREATE TABLE chat
 );
 GRANT ALL PRIVILEGES ON im_sample.chat_id_seq TO web;
 
+CREATE TABLE fileupload
+(
+    id   SERIAL PRIMARY KEY,
+    f_id INTEGER,
+    path TEXT
+);
+GRANT ALL PRIVILEGES ON im_sample.fileupload_id_seq TO web;
+
 /* Observable */
 
 CREATE TABLE registeredcontext
