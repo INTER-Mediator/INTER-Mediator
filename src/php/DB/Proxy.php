@@ -36,11 +36,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     private $userExpanded = null;
     public $outputOfProcessing = null;
     public $paramAuthUser = null;
+    public $hashedPassword = null;
 
     private $paramResponse = null;
     private $paramResponse2m = null;
     private $paramResponse2 = null;
-    private $paramCryptResponse = null;
     private $credential = null;
     private $authSucceed = false;
     private $clientId;
@@ -59,9 +59,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     private $migrateSHA1to2;
     private $credentialCookieDomain;
 
-    public function setClientId($cid) // For testing
+    public function setClientId_forTest($cid) // For testing
     {
         $this->clientId = $cid;
+    }
+
+    public function setHashedPassword_forTest($hpw) // For testing
+    {
+        $this->hashedPassword = $hpw;
     }
 
     public function setParamResponse($res) // For testing
@@ -164,7 +169,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         if (!$testmode) {
             $cacheMediaAccess = Params::getParameterValue("cacheMediaAccess", false);
             header('Content-Type: text/javascript;charset="UTF-8"');
-            if(!$noCache && $cacheMediaAccess) {
+            if (!$noCache && $cacheMediaAccess) {
                 $dt = (new DateTime('UTC'))->add(DateInterval::createFromDateString('1 month'));
                 header("Expires: {$dt->format('D, d M Y H:i:s \G\M\T')}");
             } else {
@@ -804,7 +809,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->paramResponse = $this->PostData['response'] ?? "";
         $this->paramResponse2m = $this->PostData['response2m'] ?? "";
         $this->paramResponse2 = $this->PostData['response2'] ?? "";
-        $this->paramCryptResponse = $this->PostData['cresponse'] ?? "";
         $this->credential = $_COOKIE['_im_credential_token'] ?? "";
         $this->clientId = $this->PostData['clientid'] ?? ($_SERVER['REMOTE_ADDR'] ?? "Non-browser-client");
 
@@ -935,6 +939,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $this->dbSettings->setRequireAuthentication(true);
                 }
                 $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($this->paramAuthUser);
+                $this->hashedPassword = $this->dbClass->authHandler->authSupportRetrieveHashedPassword($signedUser);
                 if ($this->dbSettings->getIsSAML()) { // Set up as SAML
                     if ($this->checkAuthorization($signedUser, true)) {
                         $this->logger->setDebugMessage("IM-built-in Authentication for SAML user succeed.");
@@ -1195,11 +1200,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             if ($authStoring == 'credential') {
                 if ($this->authSucceed) {
                     setcookie('_im_credential_token',
-                        $this->generateCredential($generatedChallenge, $generatedUID),
+                        $this->generateCredential($generatedChallenge, $generatedUID, $this->hashedPassword),
                         time() + $this->dbSettings->getAuthenticationItem('authexpired'), '/',
                         $this->credentialCookieDomain, false, true);
                 } else {
-                    setcookie("_im_credential_token", "", time() - 3600);
+                    setcookie("_im_credential_token", "", time() - 3600); // Should be removed.
                 }
                 if ($this->originalAccess == 'challenge') {
                     $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";
@@ -1242,9 +1247,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->addOutputData('debugMessages', $this->logger->getDebugMessages());
     }
 
-    private function generateCredential($generatedChallenge, $generatedUID)
+    private function generateCredential($generatedChallenge, $generatedUID, $pwHash)
     {
-        return hash("sha256", $generatedChallenge . $generatedUID);
+        return hash("sha256", $generatedChallenge . $generatedUID . $pwHash);
     }
 
     public function getDatabaseResult()
@@ -1286,7 +1291,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     function authSupportGetSalt($username)
     {
-        $hashedpw = $this->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
+        $hashedpw = $this->hashedPassword ?? $this->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
         return substr($hashedpw, -8);
     }
 
@@ -1335,22 +1340,24 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge($uid, $this->clientId);
         $this->logger->setDebugMessage("[checkAuthorization]storedChallenge={$storedChallenge}/{$this->credential}", 2);
         if (strlen($storedChallenge) == 48) { // ex.fc0d54312ce33c2fac19d758
-            if ($this->credential == $this->generateCredential($storedChallenge, $this->clientId)) { // Credential Auth passed
+            if ($this->credential == $this->generateCredential($storedChallenge, $this->clientId, $this->hashedPassword)) {
+                // Credential Auth passed
                 $this->logger->setDebugMessage("[checkAuthorization]Credential auth passed.", 2);
                 $returnValue = true;
             } else { // Hash Auth checking
-                $hashedPassword = $this->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
-                $hmacValue = hash_hmac('sha256', $hashedPassword, $storedChallenge);
-                $hmacValue2m = hash_hmac('sha256', $hashedPassword, $storedChallenge);
+                $hmacValue = ($this->hashedPassword && $storedChallenge)
+                    ? hash_hmac('sha256', $this->hashedPassword, $storedChallenge) : 'no-value';
+                $hmacValue2m = ($this->hashedPassword && $storedChallenge)
+                    ? hash_hmac('sha256', $this->hashedPassword, $storedChallenge) : 'no-value';
                 $this->logger->setDebugMessage(
-                    "[checkAuthorization]hashedPassword={$hashedPassword}/hmac_value={$hmacValue}", 2);
-                if (strlen($hashedPassword) > 0) {
+                    "[checkAuthorization]hashedPassword={$this->hashedPassword}/hmac_value={$hmacValue}", 2);
+                if ($this->hashedPassword && strlen($this->hashedPassword) > 0) {
                     if ($hashedvalue == $hmacValue) {
                         $this->logger->setDebugMessage("[checkAuthorization]sha1 hash used.", 2);
                         $returnValue = true;
                         if ($this->migrateSHA1to2) {
-                            $salt = hex2bin(substr($hashedPassword, -8));
-                            $hashedPw = IMUtil::convertHashedPassword($hashedPassword, $this->passwordHash, true, $salt);
+                            $salt = hex2bin(substr($this->hashedPassword, -8));
+                            $hashedPw = IMUtil::convertHashedPassword($this->hashedPassword, $this->passwordHash, true, $salt);
                             $result = $this->dbClass->authHandler->authSupportChangePassword($signedUser, $hashedPw);
                         }
                     } else if ($hashedvalue2m == $hmacValue2m) {
@@ -1392,7 +1399,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $token
      * @return bool
      */
-    function checkMediaToken($user, $token)
+    public function checkMediaToken($user, $token)
     {
         $this->logger->setDebugMessage("[checkMediaToken] user={$user}, token={$token}", 2);
         $returnValue = false;
