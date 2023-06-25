@@ -119,21 +119,16 @@ IM_Entry(
     ),
     array(
         'formatter' => array(),
-//        'aliases' => array(
-//            'kindid' => 'cor_way_kindname@kind_id@value',
-//            'kindname' => 'cor_way_kindname@name_kind@innerHTML',
-//        ),
-        //    'transaction' => 'none',
         'authentication' => array( // table only, for all operations
 //            'user' => array('user1'), // Itemize permitted users
-            'group' => array('users','group1'), // Itemize permitted groups
+//            'group' => array('users','group1'), // Itemize permitted groups
 //            'user-table' => 'authuser', // Default values
 //            'group-table' => 'authgroup',
 //            'corresponding-table' => 'authcor',
 //            'challenge-table' => 'issuedhash',
-            'authexpired' => '1000', // Set as seconds.
-            'storing' => 'credential', // session-storage, 'cookie'(default), 'cookie-domainwide', 'none', credential
-            'realm' => 'Sample_Auth/MySQL_definitions', //
+//            'authexpired' => '1000', // Set as seconds.
+//            'storing' => 'credential', // session-storage, 'cookie'(default), 'cookie-domainwide', 'none', credential
+//            'realm' => 'Sample_Auth/MySQL_definitions', //
 //            'email-as-username' => true,
 //        'password-policy' => "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName",
 //            'enroll-page' => 'http://msyk.net/',
