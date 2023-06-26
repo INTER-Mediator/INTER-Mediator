@@ -539,6 +539,8 @@ class Settings
                 return 'issuedhash';
             case 'authexpired':
                 return 3600 * 8;
+            case 'storing':
+                return 'credential';
         }
         return null;
     }

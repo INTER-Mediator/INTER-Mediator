@@ -303,7 +303,7 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.authStoring",
             $q, (isset($options['authentication']) && isset($options['authentication']['storing'])) ?
-            $options['authentication']['storing'] : 'cookie', $q);
+            $options['authentication']['storing'] : 'credential', $q);
         $this->generateAssignJS(
             "INTERMediatorOnPage.authExpired",
             (isset($options['authentication']) && isset($options['authentication']['authexpired'])) ?
