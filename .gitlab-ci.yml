@@ -15,15 +15,15 @@ before_script:
 
 test:
   script:
-    - docker run -e "container=docker" --privileged -d --name centos7 centos:7 /sbin/init
-    # - docker run -e "container=docker" --platform=linux/amd64 --privileged -d --name centos7 centos:7 /sbin/init
-    - docker exec -e --privileged -i centos7 sh -c "yum install -y git curl sudo zip unzip && git clone https://github.com/INTER-Mediator/INTER-Mediator && sleep 5 && cd INTER-Mediator && git checkout master && curl -L https://github.com/itamae-kitchen/mitamae/releases/download/v1.12.0/mitamae-x86_64-linux.tar.gz | tar xvz && mv mitamae-x86_64-linux mitamae && ./mitamae local dist-docs/vm-for-trial/recipe.rb; dist-docs/installfiles.sh -2"
-    - docker exec --privileged -i centos7 sh -c "yum install -y ruby && gem install --no-doc net-ssh -v 4.2.0 && gem install --no-doc rake -v 12.3.3 && gem install --no-doc serverspec"
-    - docker exec --privileged -i centos7 sh -c "cd /INTER-Mediator/dist-docs/vm-for-trial/ && echo \"require 'serverspec'\" > spec/spec_helper.rb; echo \"\" >> spec/spec_helper; echo \"set :backend, :exec\" >> spec/spec_helper.rb; rspec /INTER-Mediator/dist-docs/vm-for-trial/spec/192.168.56.101/sample_spec.rb -f doc -c"
-    - docker exec -e --privileged -i centos7 sh -c "php -v; curl -sS https://getcomposer.org/installer | php; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer; cd /INTER-Mediator/; /usr/local/bin/composer require --dev phpunit/phpunit ^9; /usr/local/bin/composer update --with-all-dependencies; localedef -f UTF-8 -i en_GB en_GB; ./vendor/bin/phpunit --bootstrap /INTER-Mediator/vendor/autoload.php --configuration /INTER-Mediator/spec/INTER-Mediator-UnitTest/phpunit.xml /INTER-Mediator/spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
-    - docker exec -e DISPLAY=:99.0 --privileged -i centos7 sh -c "cd /INTER-Mediator/ && composer jest"
-    - docker stop centos7
-    - docker rm centos7
+    - docker run -e "container=docker" --privileged -d --name almalinux8 almalinux:8 /sbin/init
+    # - docker run -e "container=docker" --platform=linux/amd64 --privileged -d --name almalinux8 almalinux:8 /sbin/init
+    - docker exec -e --privileged -i almalinux8 sh -c "yum install -y git curl sudo zip unzip && git clone https://github.com/INTER-Mediator/INTER-Mediator && sleep 5 && cd INTER-Mediator && git checkout master && curl -L https://github.com/itamae-kitchen/mitamae/releases/download/v1.12.0/mitamae-x86_64-linux.tar.gz | tar xvz && mv mitamae-x86_64-linux mitamae && ./mitamae local dist-docs/vm-for-trial/recipe.rb; dist-docs/installfiles.sh -2"
+    - docker exec --privileged -i almalinux8 sh -c "yum install -y ruby && gem install --no-doc net-ssh -v 4.2.0 && gem install --no-doc rake -v 12.3.3 && gem install --no-doc serverspec"
+    - docker exec --privileged -i almalinux8 sh -c "cd /INTER-Mediator/dist-docs/vm-for-trial/ && echo \"require 'serverspec'\" > spec/spec_helper.rb; echo \"\" >> spec/spec_helper; echo \"set :backend, :exec\" >> spec/spec_helper.rb; rspec /INTER-Mediator/dist-docs/vm-for-trial/spec/192.168.56.101/sample_spec.rb -f doc -c"
+    - docker exec -e --privileged -i almalinux8 sh -c "php -v; curl -sS https://getcomposer.org/installer | php; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer; cd /INTER-Mediator/; /usr/local/bin/composer require --dev phpunit/phpunit ^9; /usr/local/bin/composer update --with-all-dependencies; localedef -f UTF-8 -i en_GB en_GB; ./vendor/bin/phpunit --bootstrap /INTER-Mediator/vendor/autoload.php --configuration /INTER-Mediator/spec/INTER-Mediator-UnitTest/phpunit.xml /INTER-Mediator/spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+    - docker exec -e DISPLAY=:99.0 --privileged -i almalinux8 sh -c "cd /INTER-Mediator/ && composer jest"
+    - docker stop almalinux8
+    - docker rm almalinux8
 
 pages:
   stage: deploy

@@ -14,10 +14,13 @@
 # - Run "rake spec" on the host of VM
 #
 
+if [ -e "/usr/bin/yum" ]; then
+    yum install -y tar
+fi
 if [ `uname -m` = "arm64" ]; then
-     curl -L https://github.com/itamae-kitchen/mitamae/releases/download/v1.12.0/mitamae-aarch64-linux.tar.gz | tar xvz
-    ./mitamae-aarch64-linux local ./recipe.rb
+    curl -L https://github.com/itamae-kitchen/mitamae/releases/download/v1.12.0/mitamae-aarch64-linux.tar.gz | tar xvz
+    ./mitamae-aarch64-linux local ./recipe.rb --log-level=debug
 else
-     curl -L https://github.com/itamae-kitchen/mitamae/releases/download/v1.12.0/mitamae-x86_64-linux.tar.gz | tar xvz
-    ./mitamae-x86_64-linux local ./recipe.rb
+    curl -L https://github.com/itamae-kitchen/mitamae/releases/download/v1.12.0/mitamae-x86_64-linux.tar.gz | tar xvz
+    ./mitamae-x86_64-linux local ./recipe.rb --log-level=debug
 fi
