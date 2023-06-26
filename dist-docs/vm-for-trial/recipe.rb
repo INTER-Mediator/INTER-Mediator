@@ -1,6 +1,6 @@
 # coding: utf-8
 
-# Recipe file of Itamae for Alpine Linux 3.13, Ubuntu Server 20.04 LTS, CentOS Linux 7
+# Recipe file of Itamae for Ubuntu Server 20.04 LTS, AlmaLinux 8.8 and Alpine Linux 3.13
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -421,8 +421,8 @@ EOF
     service 'mariadb' do
       action [ :enable, :start ]
     end
-    execute 'mysqladmin -u root password "*********"' do
-      command 'mysqladmin -u root password "im4135dev"'
+    execute 'mariadb-admin -u root password "*********"' do
+      command 'mariadb-admin -u root password "im4135dev"'
     end
     file '/etc/my.cnf.d/im.cnf' do
       content <<-EOF
@@ -655,12 +655,12 @@ elsif node[:platform] == 'ubuntu'
   execute 'curl -sS https://getcomposer.org/installer | php; sudo mv composer.phar /usr/local/bin/composer; sudo chmod +x /usr/local/bin/composer;' do
     command 'curl -sS https://getcomposer.org/installer | php; sudo mv composer.phar /usr/local/bin/composer; sudo chmod +x /usr/local/bin/composer;'
   end
-elsif node[:platform] == 'redhat'
-  execute 'yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm' do
-    command 'yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm'
+elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 8
+  execute 'dnf install -y https://rpms.remirepo.net/enterprise/remi-release-8.rpm' do
+    command 'dnf install -y https://rpms.remirepo.net/enterprise/remi-release-8.rpm'
   end
-  execute 'yum install -y --enablerepo=epel,remi,remi-php74 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap php-intl' do
-    command 'yum install -y --enablerepo=epel,remi,remi-php74 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap php-intl'
+  execute 'dnf module install php:remi-8.1' do
+    command 'dnf module install php:remi-8.1'
   end
   if node[:platform_version].to_f < 6
     package 'php-mbstring' do
@@ -925,9 +925,9 @@ if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 22) || (node[:
     execute 'npm install -g n' do
       command 'npm install -g n'
     end
-    execute 'n stable' do
-      command 'n stable'
-    end
+    #execute 'n stable' do
+    #  command 'n stable'
+    #end
   end
   execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
     command 'ln -sf /usr/local/bin/node /usr/bin/node'
