@@ -908,7 +908,7 @@ package 'nodejs' do
   action :install
 end
 
-if node[:platform] == 'redhat'
+if node[:platform] == 'redhat' && node[:platform_version].to_f < 8
   execute 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10' do
     command 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10'
   end
@@ -923,20 +923,20 @@ if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform
     action :install
   end
 end
-if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 22) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
+if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 22) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6 && node[:platform_version].to_f < 8)
   if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 22) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 7 && node[:platform_version].to_f < 8)
     execute 'npm install -g n' do
       command 'npm install -g n'
     end
-    #execute 'n stable' do
-    #  command 'n stable'
-    #end
-  end
-  execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
-    command 'ln -sf /usr/local/bin/node /usr/bin/node'
-  end
-  execute 'ln -sf /usr/local/bin/npm /usr/bin/npm' do
-    command 'ln -sf /usr/local/bin/npm /usr/bin/npm'
+    execute 'n stable' do
+      command 'n stable'
+    end
+    execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
+      command 'ln -sf /usr/local/bin/node /usr/bin/node'
+    end
+    execute 'ln -sf /usr/local/bin/npm /usr/bin/npm' do
+      command 'ln -sf /usr/local/bin/npm /usr/bin/npm'
+    end
   end
   if node[:platform] == 'ubuntu' && node[:platform_version].to_f < 18
     execute 'apt-get purge -y nodejs npm' do
