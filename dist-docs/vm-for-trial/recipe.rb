@@ -659,8 +659,11 @@ elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 8
   execute 'dnf install -y https://rpms.remirepo.net/enterprise/remi-release-8.rpm' do
     command 'dnf install -y https://rpms.remirepo.net/enterprise/remi-release-8.rpm'
   end
-  execute 'dnf module install php:remi-8.1' do
-    command 'dnf module install php:remi-8.1'
+  execute 'dnf module -y reset php' do
+    command 'dnf module -y reset php'
+  end
+  execute 'dnf module -y install php:remi-8.1' do
+    command 'dnf module -y install php:remi-8.1'
   end
   if node[:platform_version].to_f < 6
     package 'php-mbstring' do
@@ -905,7 +908,7 @@ package 'nodejs' do
   action :install
 end
 
-if node[:platform] == 'redhat'
+if node[:platform] == 'redhat' && node[:platform_version].to_f < 8
   execute 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10' do
     command 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10'
   end
@@ -920,20 +923,20 @@ if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform
     action :install
   end
 end
-if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 22) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
+if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 22) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6 && node[:platform_version].to_f < 8)
   if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 22) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 7 && node[:platform_version].to_f < 8)
     execute 'npm install -g n' do
       command 'npm install -g n'
     end
-    #execute 'n stable' do
-    #  command 'n stable'
-    #end
-  end
-  execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
-    command 'ln -sf /usr/local/bin/node /usr/bin/node'
-  end
-  execute 'ln -sf /usr/local/bin/npm /usr/bin/npm' do
-    command 'ln -sf /usr/local/bin/npm /usr/bin/npm'
+    execute 'n stable' do
+      command 'n stable'
+    end
+    execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
+      command 'ln -sf /usr/local/bin/node /usr/bin/node'
+    end
+    execute 'ln -sf /usr/local/bin/npm /usr/bin/npm' do
+      command 'ln -sf /usr/local/bin/npm /usr/bin/npm'
+    end
   end
   if node[:platform] == 'ubuntu' && node[:platform_version].to_f < 18
     execute 'apt-get purge -y nodejs npm' do
