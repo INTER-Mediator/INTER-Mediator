@@ -737,7 +737,7 @@ elsif node[:platform] == 'redhat'
     package 'mysql-devel' do
       action :install
     end
-  else
+  elsif node[:platform_version].to_f < 8
     package 'mariadb-devel' do
       action :install
     end
