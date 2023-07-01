@@ -659,11 +659,11 @@ elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 8
   execute 'dnf install -y https://rpms.remirepo.net/enterprise/remi-release-8.rpm' do
     command 'dnf install -y https://rpms.remirepo.net/enterprise/remi-release-8.rpm'
   end
-  execute 'dnf module -y reset php' do
-    command 'dnf module -y reset php'
+  execute 'dnf -y module reset php && dnf -y module enable php:remi-8.1' do
+    command 'dnf -y module reset php && dnf -y module enable php:remi-8.1'
   end
-  execute 'dnf module -y install php:remi-8.1' do
-    command 'dnf module -y install php:remi-8.1'
+  execute 'dnf -y install php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap php-intl' do
+    command 'dnf -y install php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap php-intl'
   end
   if node[:platform_version].to_f < 6
     package 'php-mbstring' do
