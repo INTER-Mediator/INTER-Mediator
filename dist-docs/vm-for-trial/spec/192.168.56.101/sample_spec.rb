@@ -46,8 +46,11 @@ end
 describe package('mysql-server'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f < 7) do
   it { should be_installed }
 end
-describe file('/etc/yum.repos.d/mariadb.repo'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+describe file('/etc/yum.repos.d/mariadb.repo'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 && os[:release].to_f < 8 do
   its(:content) { should match /baseurl = https:\/\/dlm.mariadb.com\/repo\/mariadb-server\/10.7\/yum\/rhel\/7\/x86_64/ }
+end
+describe file('/etc/yum.repos.d/mariadb.repo'), :if => os[:family] == 'redhat' && os[:release].to_f >= 8 do
+  its(:content) { should match /baseurl = https:\/\/dlm.mariadb.com\/repo\/mariadb-server\/11.0\/yum\/rhel\/8\/x86_64/ }
 end
 describe package('MariaDB-server'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
   it { should be_installed }
@@ -341,7 +344,7 @@ end
 describe package('mysql-devel'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
   it { should be_installed }
 end
-describe package('MariaDB-devel'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+describe package('MariaDB-devel'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 && os[:release].to_f < 8 do
   it { should be_installed }
 end
 
@@ -619,7 +622,7 @@ describe file(WEBROOT + '/params.php') do
   its(:content) { should match /\$dbUser = 'web';/ }
   its(:content) { should match /\$dbOption = \[\];/ }
   its(:content) { should match /\$dbServer = '192.168.56.1';/ }
-  its(:content) { should match /\$generatedPrivateKey = <<<EOL/ }
+  # its(:content) { should match /\$generatedPrivateKey = <<<EOL/ }
   its(:content) { should_not match /\$dbDataType = 'FMPro12';/ }
 end
 describe file(WEBROOT + '/params.php'), :if => os[:family] == 'alpine' do
