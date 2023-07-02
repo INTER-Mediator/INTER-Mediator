@@ -1393,9 +1393,6 @@ EOF
         execute 'rm /usr/lib/firewalld/policies/allow-host-ipv6.xml' do
           command 'rm /usr/lib/firewalld/policies/allow-host-ipv6.xml'
         end
-        execute 'rm /etc/firewalld/policies/allow-host-ipv6.xml' do
-          command 'rm /etc/firewalld/policies/allow-host-ipv6.xml'
-        end
         execute 'systemctl restart firewalld' do
           command 'systemctl restart firewalld'
         end
