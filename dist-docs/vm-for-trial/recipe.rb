@@ -1388,6 +1388,18 @@ EOF
       service 'firewalld' do
         action [ :enable, :start ]
       end
+      if node[:platform_version].to_f >= 8 && node[:platform_version].to_f < 9
+        # Work-around Steps for AlmaxLinux 8
+        execute 'rm /usr/lib/firewalld/policies/allow-host-ipv6.xml' do
+          command 'rm /usr/lib/firewalld/policies/allow-host-ipv6.xml'
+        end
+        execute 'rm /etc/firewalld/policies/allow-host-ipv6.xml' do
+          command 'rm /etc/firewalld/policies/allow-host-ipv6.xml'
+        end
+        execute 'systemctl restart firewalld' do
+          command 'systemctl restart firewalld'
+        end
+      end
       execute 'firewall-cmd --zone=public --add-service=http --permanent' do
         command 'firewall-cmd --zone=public --add-service=http --permanent'
       end
