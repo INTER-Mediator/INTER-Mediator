@@ -1388,10 +1388,10 @@ EOF
       service 'firewalld' do
         action [ :enable, :start ]
       end
-      if node[:platform_version].to_f >= 8 && node[:platform_version].to_f < 9
+      if node[:platform_version].to_f >= 8
         # Work-around Steps for AlmaxLinux 8
-        execute 'rm /usr/lib/firewalld/policies/allow-host-ipv6.xml' do
-          command 'rm /usr/lib/firewalld/policies/allow-host-ipv6.xml'
+        execute 'sed -i -e "s/FirewallBackend=nftables/FirewallBackend=iptables/g" /etc/firewalld/firewalld.conf' do
+          command 'sed -i -e "s/FirewallBackend=nftables/FirewallBackend=iptables/g" /etc/firewalld/firewalld.conf'
         end
         execute 'systemctl restart firewalld' do
           command 'systemctl restart firewalld'
