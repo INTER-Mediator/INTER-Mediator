@@ -129,7 +129,7 @@ $slackParameters = [
 
 //$suppressDefaultValuesOnCopy = false; // If you don't want to set default values on copying records, set this true
 //$suppressDefaultValuesOnCopyAssoc = false; // If you don't want to set default values on copying records of the associated records, set this true
-//$suppressAuthTargetFillingOnCreate = false; // If you don' want to set the target field of authentication on carete operation, set this true.
+//$suppressAuthTargetFillingOnCreate = false; // If you don't want to set the target field of authentication on carete operation, set this true.
 
 /* OAuth Support */
 // $oAuthProvider = 'Google';
@@ -139,13 +139,12 @@ $slackParameters = [
 
 /* SAML Support
    Information about setting up an SAML Service Provider exists in the samples/saml-config directory. */
-//$isSAML = true;
+//$isSAML = true; # The default value of isSAML is false.
 //$samlAuthSource = 'default-sp';
 //$samlExpiringSeconds = 1800;
 //$samlWithBuiltInAuth = true;
 //$samlAttrRules = ['username' => 'uid|0', 'realname' => 'eduPersonAffiliation|0'];
 //$samlAdditionalRules = ['username' => '(user02|user03)'];
-//$samlExpiringSeconds = 1800;
 
 /* Service Server Behavior
  * ===================
