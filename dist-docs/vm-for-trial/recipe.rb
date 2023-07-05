@@ -1,6 +1,6 @@
 # coding: utf-8
 
-# Recipe file of Itamae for Alpine Linux 3.13, Ubuntu Server 20.04 LTS, CentOS Linux 7
+# Recipe file of Itamae for Ubuntu Server 20.04 LTS, AlmaLinux 8.8 and Alpine Linux 3.13
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -421,8 +421,8 @@ EOF
     service 'mariadb' do
       action [ :enable, :start ]
     end
-    execute 'mysqladmin -u root password "*********"' do
-      command 'mysqladmin -u root password "im4135dev"'
+    execute 'mariadb-admin -u root password "*********"' do
+      command 'mariadb-admin -u root password "im4135dev"'
     end
     file '/etc/my.cnf.d/im.cnf' do
       content <<-EOF
@@ -655,12 +655,15 @@ elsif node[:platform] == 'ubuntu'
   execute 'curl -sS https://getcomposer.org/installer | php; sudo mv composer.phar /usr/local/bin/composer; sudo chmod +x /usr/local/bin/composer;' do
     command 'curl -sS https://getcomposer.org/installer | php; sudo mv composer.phar /usr/local/bin/composer; sudo chmod +x /usr/local/bin/composer;'
   end
-elsif node[:platform] == 'redhat'
-  execute 'yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm' do
-    command 'yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm'
+elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 8
+  execute 'dnf install -y https://rpms.remirepo.net/enterprise/remi-release-8.rpm' do
+    command 'dnf install -y https://rpms.remirepo.net/enterprise/remi-release-8.rpm'
   end
-  execute 'yum install -y --enablerepo=epel,remi,remi-php74 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap php-intl' do
-    command 'yum install -y --enablerepo=epel,remi,remi-php74 php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap php-intl'
+  execute 'dnf -y module reset php && dnf -y module enable php:remi-8.1' do
+    command 'dnf -y module reset php && dnf -y module enable php:remi-8.1'
+  end
+  execute 'dnf -y install php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap php-intl' do
+    command 'dnf -y install php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap php-intl'
   end
   if node[:platform_version].to_f < 6
     package 'php-mbstring' do
@@ -734,7 +737,7 @@ elsif node[:platform] == 'redhat'
     package 'mysql-devel' do
       action :install
     end
-  else
+  elsif node[:platform_version].to_f < 8
     package 'mariadb-devel' do
       action :install
     end
@@ -905,7 +908,7 @@ package 'nodejs' do
   action :install
 end
 
-if node[:platform] == 'redhat'
+if node[:platform] == 'redhat' && node[:platform_version].to_f < 8
   execute 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10' do
     command 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10'
   end
@@ -920,7 +923,7 @@ if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform
     action :install
   end
 end
-if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 22) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
+if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 22) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6 && node[:platform_version].to_f < 8)
   if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 22) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 7 && node[:platform_version].to_f < 8)
     execute 'npm install -g n' do
       command 'npm install -g n'
@@ -928,12 +931,12 @@ if (node[:platform] == 'ubuntu' && node[:platform_version].to_f < 22) || (node[:
     execute 'n stable' do
       command 'n stable'
     end
-  end
-  execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
-    command 'ln -sf /usr/local/bin/node /usr/bin/node'
-  end
-  execute 'ln -sf /usr/local/bin/npm /usr/bin/npm' do
-    command 'ln -sf /usr/local/bin/npm /usr/bin/npm'
+    execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
+      command 'ln -sf /usr/local/bin/node /usr/bin/node'
+    end
+    execute 'ln -sf /usr/local/bin/npm /usr/bin/npm' do
+      command 'ln -sf /usr/local/bin/npm /usr/bin/npm'
+    end
   end
   if node[:platform] == 'ubuntu' && node[:platform_version].to_f < 18
     execute 'apt-get purge -y nodejs npm' do
@@ -1384,6 +1387,15 @@ EOF
       end
       service 'firewalld' do
         action [ :enable, :start ]
+      end
+      if node[:platform_version].to_f >= 8 && node[:platform_version].to_f < 9
+        # Work-around Steps for AlmaxLinux 8
+        execute 'rm /usr/lib/firewalld/policies/allow-host-ipv6.xml' do
+          command 'rm /usr/lib/firewalld/policies/allow-host-ipv6.xml'
+        end
+        execute 'systemctl restart firewalld' do
+          command 'systemctl restart firewalld'
+        end
       end
       execute 'firewall-cmd --zone=public --add-service=http --permanent' do
         command 'firewall-cmd --zone=public --add-service=http --permanent'
