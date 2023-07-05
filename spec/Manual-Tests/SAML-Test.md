@@ -10,13 +10,16 @@ which just have test accounts. After someone tests the SAML features, the result
 
 The format of below is: [commit code from git log], [Version from composer.json], [Checker name], [Result]
 
-- commit 9e71362ba2ca277987e55ee7a517a027f2b1453a (Wed Oct 12 08:09:56 2022 +0900), Ver.10(2022-10-01),
+- commit d2c2dae28fa2caf9a28662172de797a83c1dd0fe (Sun Jul 2 11:49:42 2023 +0900), INTER-Mediator Ver.11(2023-05-31) with SimpleSAMLphp Ver.2.0.4, 
+  by Masayuki Nii(2023-07-05 11:30), OK
+
+- commit 9e71362ba2ca277987e55ee7a517a027f2b1453a (Wed Oct 12 08:09:56 2022 +0900), INTER-Mediator Ver.10(2022-10-01),
   by Masayuki Nii(2022-10-12 11:45), OK
 
-- commit ce1b3167d04a8767480c40da99d3cdb90a4a9f76 (Tue Apr 12 11:07:50 2022 +0900), Ver.10(2022-04-08),
+- commit ce1b3167d04a8767480c40da99d3cdb90a4a9f76 (Tue Apr 12 11:07:50 2022 +0900), INTER-Mediator Ver.10(2022-04-08),
   by Masayuki Nii(2022-04-12 15:30), OK
 
-- commit 1146c962dd1d42115cf9537b09fae951681e0fbc(Sat Jan 29 21:22:06 2022 +0900), Ver.9(2022-01-29),
+- commit 1146c962dd1d42115cf9537b09fae951681e0fbc(Sat Jan 29 21:22:06 2022 +0900), INTER-Mediator Ver.9(2022-01-29),
   by Masayuki Nii(2022-01-30 9:00), OK
 
 ## Test Procedure
@@ -33,7 +36,7 @@ Set the SAML is active ($isSAML = true;), but the built-in auth is inactive ($sa
 
 Set the SAML is active ($isSAML = true;), but the built-in auth is also active ($samlWithBuiltInAuth = true;).
 
-- Open the web app page, and check to show the the built-in login page with the SAML Auth button.
+- Open the web app page, and check to show the built-in login page with the SAML Auth button.
 - Try to the wrong account on built-in login panel, and check not to log in and repeatedly show the login panel.
 - Try to the valid built-in account on built-in login panel, and check to log in correctly.
 - Try to the valid SAML account on built-in login panel, and check not to log in.
