@@ -231,17 +231,15 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
                 . " WHERE id=" . $user_id;
         } else {
             $returnValue = true;
-            $sql = $this->dbClass->handler->sqlINSERTCommand(
-                "{$userTable} (" . implode(",", $keys) . ")",
+            $sql = $this->dbClass->handler->sqlINSERTCommand("{$userTable} (" . implode(",", $keys) . ")",
                 "VALUES (" . implode(",", $values) . ")");
         }
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
-            $this->dbClass->errorMessageStore('[authSupportOAuthUserHandling] ' . $sql);
+            $this->dbClass->errorMessageStore("[authSupportOAuthUserHandling] {$sql}");
             return $returnValue;
         }
-        $this->logger->setDebugMessage("[authSupportOAuthUserHandling] {
-                $sql}");
+        $this->logger->setDebugMessage("[authSupportOAuthUserHandling] {$sql}");
         return $returnValue;
     }
 
@@ -446,7 +444,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
 
     private function privateGetUserIdFromUsername($username, $isCheckLimit)
     {
-        $this->logger->setDebugMessage("[privateGetUserIdFromUsername]username ={$username}", 2);
+        $this->logger->setDebugMessage("[privateGetUserIdFromUsername]username={$username}", 2);
 
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -467,15 +465,17 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         }
         $this->logger->setDebugMessage("[privateGetUserIdFromUsername] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            if (!$isCheckLimit){
+            if (!$isCheckLimit) {
                 return $row['id'];
             }
-            if ($isCheckLimit && isset($row['limitdt']) && !is_null($row['limitdt'])) {
+            else if ($isCheckLimit && is_null($row['limitdt'])) {
+                return $row['id'];
+            }
+            else if ($isCheckLimit && isset($row['limitdt'])) {
                 if (time() - strtotime($row['limitdt']) <= $this->dbSettings->getSAMLExpiringSeconds()) {
                     return $row['id'];
                 }
             }
-
         }
         return false;
     }

@@ -66,6 +66,7 @@ trait DB_PDO_Test_UserGroup
     public function testAuthUser5()
     {
         $this->dbProxySetupForAuth();
+        //$this->db_proxy->logger->clearLogs();
 
         $testName = "Simulation of Authentication";
         $username = 'user1';
@@ -86,7 +87,12 @@ trait DB_PDO_Test_UserGroup
         $this->db_proxy->setParamResponse([$calcuratedHash]);
         $this->db_proxy->setClientId_forTest("TEST");
         $this->db_proxy->setHashedPassword_forTest($hpw);
-        $this->assertTrue($this->db_proxy->checkAuthorization($username), $testName);
+        $authResult = $this->db_proxy->checkAuthorization($username);
+
+        //var_export($this->db_proxy->logger->getErrorMessages());
+        //var_export($this->db_proxy->logger->getDebugMessages());
+
+        $this->assertTrue($authResult, $testName);
     }
 
     public function testAuthByValidUser()
@@ -113,7 +119,7 @@ trait DB_PDO_Test_UserGroup
 
         $this->db_proxy->processingRequest("read");
         $result = $this->db_proxy->getDatabaseResult();
-        $this->assertTrue((is_array($result) ? count($result) : -1) == $this->db_proxy->getDatabaseResultCount(), $testName);
+        $this->assertEquals(is_array($result) ? count($result) : -1, $this->db_proxy->getDatabaseResultCount(), $testName);
 
         foreach ($result as $record) {
             $this->assertIsString($record["name"], $testName);
