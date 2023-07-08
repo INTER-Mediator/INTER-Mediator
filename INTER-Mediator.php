@@ -24,7 +24,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 
 function IM_Entry_YAML($yaml, $defFile = null) {
     $yamlContent = INTERMediator\IMUtil::getDefinitionFromYAML($yaml);
-    IM_Entry(
+    INTERMediator\IM_Entry(
         $yamlContent['contexts'] ?? null, $yamlContent['options'] ?? null,
         $yamlContent['connection'] ?? null, $yamlContent['debug'] ?? 2, $defFile
     );

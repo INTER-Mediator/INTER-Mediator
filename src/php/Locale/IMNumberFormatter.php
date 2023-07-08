@@ -56,20 +56,18 @@ class IMNumberFormatter
     {
         $locInfo = localeconv();
         $s = '';
-        switch ($attr) {
-            case 5: /*NumberFormatter::CURRENCY_CODE*/
-                $s = $this->currencySymbol;
-                break;
+        /*NumberFormatter::CURRENCY_CODE*/
+        if ($attr == 5) {
+            $s = $this->currencySymbol;
         }
         return $s;
     }
 
     public function setAttribute($attr, $value)
     {
-        switch ($attr) {
-            case 8: /*NumberFormatter::FRACTION_DIGITS*/
-                $this->flactionDigit = $value;
-                break;
+        /*NumberFormatter::FRACTION_DIGITS*/
+        if ($attr == 8) {
+            $this->flactionDigit = $value;
         }
     }
 

@@ -24,7 +24,7 @@ if (count($_GET) > 0) {
         for ($i = 0; $i < 6; $i++) {
             try {
                 $n = random_int(0, strlen($seed) - 1);
-            } catch (\Exception $ex) {
+            } catch (Exception $ex) {
                 $n = rand(0, strlen($seed) - 1);
             }
             $password .= substr($seed, $n, 1);

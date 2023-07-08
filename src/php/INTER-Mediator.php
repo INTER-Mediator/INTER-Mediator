@@ -15,16 +15,16 @@
 
 namespace INTERMediator;
 
-use \IntlDateFormatter;
-use \DateTime;
+use IntlDateFormatter;
+use DateTime;
 
 // Setup autoloader
-$imRoot = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR;
+$imRoot = dirname(__FILE__, 3) . DIRECTORY_SEPARATOR;
 $autoLoad = $imRoot . 'vendor/autoload.php';
 if (file_exists($autoLoad)) { // If vendor is inside of INTER-Mediator
     require($autoLoad);
 } else { // If INTER-Mediator is installed with composer.json
-    $vendorRoot = dirname(dirname($imRoot)) . DIRECTORY_SEPARATOR;
+    $vendorRoot = dirname($imRoot, 2) . DIRECTORY_SEPARATOR;
     $autoLoad = $vendorRoot . 'autoload.php';
     if (file_exists($autoLoad)) {
         require($autoLoad);
@@ -58,7 +58,7 @@ spl_autoload_register(function ($className) {
         }
     }
     // Load from the file inside files of FX.php.
-    $imRoot = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR;
+    $imRoot = dirname(__FILE__, 3) . DIRECTORY_SEPARATOR;
     $className = $comps[count($comps) - 1];
     $path = "{$imRoot}/vendor/yodarunamok/fxphp/lib/datasource_classes/{$className}.class.php";
     if (file_exists($path)) {

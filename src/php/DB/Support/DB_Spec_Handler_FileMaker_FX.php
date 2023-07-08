@@ -34,14 +34,14 @@ class DB_Spec_Handler_FileMaker_FX implements DB_Spec_Behavior
 
     public function isPossibleOperator($operator)
     {
-        return !(FALSE === array_search(strtoupper($operator), array(
-                'EQ', 'CN', 'BW', 'EW', 'GT', 'GTE', 'LT', 'LTE', 'NEQ', 'AND', 'OR', 'ASIS',
-            )));
+        return !(!in_array(strtoupper($operator), array(
+            'EQ', 'CN', 'BW', 'EW', 'GT', 'GTE', 'LT', 'LTE', 'NEQ', 'AND', 'OR', 'ASIS',
+        )));
     }
 
     public function isPossibleOrderSpecifier($specifier)
     {
-        return !(array_search(strtoupper($specifier), array('ASCEND', 'DESCEND', 'ASC', 'DESC')) === FALSE);
+        return !(!in_array(strtoupper($specifier), array('ASCEND', 'DESCEND', 'ASC', 'DESC')));
     }
 
     public function isContainingFieldName($fname, $fieldnames)

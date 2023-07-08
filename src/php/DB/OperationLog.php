@@ -20,7 +20,6 @@ use INTERMediator\Params;
 class OperationLog
 {
     private $accessLogLevel;
-    private $isWithData;
     private $dbClassLog;
     private $dbUserLog;
     private $dbPasswordLog;
@@ -43,7 +42,6 @@ class OperationLog
             = Params::getParameterValue(["accessLogLevel", "dbClassLog", "dbUserLog", "dbPasswordLog", "dbDSNLog",
             "recordingContexts", "dontRecordTheme", "dontRecordChallenge", "dontRecordDownload",
             "dontRecordDownloadNoGet", "recordingOperations", "accessLogExtensionClass"], false);
-        $this->isWithData = ($this->accessLogLevel === 2);
     }
 
     public function setEntry($result)
@@ -89,7 +87,7 @@ class OperationLog
                     $cookieNameUser .= ('_' . str_replace(" ", "_",
                             str_replace(".", "_", $this->contextOptions['authentication']['realm']) ?? ""));
                 }
-                $userValue = isset($_COOKIE[$cookieNameUser]) ? $_COOKIE[$cookieNameUser] : '';
+                $userValue = $_COOKIE[$cookieNameUser] ?? '';
             }
             $dbInstance->dbSettings->addValueWithField("user", $userValue);
             $dbInstance->dbSettings->addValueWithField("client_id_in", $_POST['clientid'] ?? '');

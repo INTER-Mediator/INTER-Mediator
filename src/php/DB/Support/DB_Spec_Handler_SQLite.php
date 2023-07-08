@@ -44,24 +44,24 @@ class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
 
     public function isPossibleOperator($operator)
     {
-        return !(FALSE === array_search(strtoupper($operator), array(
-                '||',
-                '*', '/', '%',
-                '+', '-',
-                '<<', '>>', '&', '|',
-                '<', '<=', '>', '>=',
-                '=', '==', '!=', '<>', 'IS', 'IS NOT', 'IN', 'LIKE', 'GLOB', 'MATCH', 'REGEXP',
-                'AND',
-                'IS NULL', //NULL value test
-                'OR',
-                'IN',
-                '-', '+', '~', 'NOT',
-                'IS NOT NULL', //	NOT NULL value test
-            )));
+        return !(!in_array(strtoupper($operator), array(
+            '||',
+            '*', '/', '%',
+            '+', '-',
+            '<<', '>>', '&', '|',
+            '<', '<=', '>', '>=',
+            '=', '==', '!=', '<>', 'IS', 'IS NOT', 'IN', 'LIKE', 'GLOB', 'MATCH', 'REGEXP',
+            'AND',
+            'IS NULL', //NULL value test
+            'OR',
+            'IN',
+            '-', '+', '~', 'NOT',
+            'IS NOT NULL', //	NOT NULL value test
+        )));
     }
 
     public function isPossibleOrderSpecifier($specifier)
     {
-        return !(array_search(strtoupper($specifier), array('ASC', 'DESC')) === FALSE);
+        return !(!in_array(strtoupper($specifier), array('ASC', 'DESC')));
     }
 }

@@ -15,7 +15,7 @@
 
 namespace INTERMediator\DB;
 
-use \DateTime;
+use DateTime;
 
 class Extended_PDO extends PDO
 {

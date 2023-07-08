@@ -72,7 +72,7 @@ class DefinitionChecker
         if (is_array($endPoint)) {
             if (is_array($items)) {
                 foreach ($items as $key => $value) {
-                    array_push($this->path, $key);
+                    $this->path[] = $key;
                     $this->moveChildren($value);
                     array_pop($this->path);
                 }

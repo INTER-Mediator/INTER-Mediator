@@ -109,7 +109,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         } else if (is_string($this->outputOfProcessing[$key])) {
             $this->outputOfProcessing[$key] .= $value;
         } else {
-            $this->outputOfProcessing[$key] = (string)$this->outputOfProcessing[$key] . (string)$value;
+            $this->outputOfProcessing[$key] = $this->outputOfProcessing[$key] . $value;
         }
     }
 
@@ -635,7 +635,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
         $this->dbSettings->setSeparator($options['separator'] ?? '@');
         $this->formatter->setFormatter($options['formatter'] ?? null);
-        $this->dbSettings->setDataSourceName(!is_null($target) ? $target : (isset($this->PostData['name']) ? $this->PostData['name'] : "_im_auth"));
+        $this->dbSettings->setDataSourceName(!is_null($target) ? $target : ($this->PostData['name'] ?? "_im_auth"));
         $context = $this->dbSettings->getDataSourceTargetArray();
         if (count($_FILES) > 0) {
             $this->dbSettings->setAttachedFiles($context['name'], $_FILES);
@@ -661,7 +661,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $context['option'] ?? ($dbspec['option'] ?? Params::getParameterValue('dbOption', '')));
         $this->dbSettings->setCertVerifying(
             $context['cert-verifying'] ?? ($dbspec['cert-verifying'] ?? Params::getParameterValue('certVerifying', true)));
-        if (isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn'])) {
+        if (isset($options['authentication']['issuedhash-dsn'])) {
             $this->dbSettings->setDbSpecDSN($options['authentication']['issuedhash-dsn']);
         } else {
             $this->dbSettings->setDbSpecDSN(
@@ -698,7 +698,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
         /* Authentication and Authorization Judgement */
         $challengeDSN = null;
-        if (isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn'])) {
+        if (isset($options['authentication']['issuedhash-dsn'])) {
             $challengeDSN = $options['authentication']['issuedhash-dsn'];
         } else {
             $challengeDSN = Params::getParameterValue('issuedHashDSN', null);
@@ -787,7 +787,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $value = IMUtil::removeNull(filter_var($this->PostData["value_{$i}"]));
             $this->dbSettings->addValue($value);
         }
-        if (isset($options['authentication']) && isset($options['authentication']['email-as-username'])) {
+        if (isset($options['authentication']['email-as-username'])) {
             $this->dbSettings->setEmailAsAccount($options['authentication']['email-as-username']);
         } else if (isset($emailAsAliasOfUserName) && $emailAsAliasOfUserName) {
             $this->dbSettings->setEmailAsAccount($emailAsAliasOfUserName);
@@ -817,7 +817,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
         $this->logger->setDebugMessage("Server side locale: " . setlocale(LC_ALL, "0"), 2);
 
-        if (isset($options['authentication']) && isset($options['authentication']['is-saml'])) {
+        if (isset($options['authentication']['is-saml'])) {
             $this->dbSettings->setIsSAML($options['authentication']['is-saml']);
         } else {
             $this->dbSettings->setIsSAML(Params::getParameterValue('isSAML', false));
@@ -1217,10 +1217,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->outputOfProcessing['requireAuth'] = true;
             }
             $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-            if (isset($tableInfo['authentication']) &&
-                isset($tableInfo['authentication']['media-handling']) &&
-                $tableInfo['authentication']['media-handling'] === true &&
-                !$this->suppressMediaToken
+            if (isset($tableInfo['authentication']['media-handling'])
+                && $tableInfo['authentication']['media-handling'] === true
+                && !$this->suppressMediaToken
             ) {
                 $generatedChallenge = IMUtil::generateChallenge();
                 $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
@@ -1436,8 +1435,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      */
     function changePassword($username, $newpassword)
     {
-        $returnValue = $this->dbClass->authHandler->authSupportChangePassword($username, $newpassword);
-        return $returnValue;
+        return $this->dbClass->authHandler->authSupportChangePassword($username, $newpassword);
     }
 
     /**
@@ -1503,10 +1501,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         if ($userID < 1) {
             return false;
         }
-        $result = $this->dbClass->authHandler->authSupportUserEnrollmentActivateUser(
+        return $this->dbClass->authHandler->authSupportUserEnrollmentActivateUser(
             $userID, IMUtil::convertHashedPassword($password, $this->passwordHash, $this->alwaysGenSHA2),
             $rawPWField, $password);
-        return $result;
     }
 
     private

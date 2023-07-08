@@ -19,15 +19,14 @@ namespace INTERMediator;
 class Theme
 {
     private $altThemePath;
-    private $themeName;
     private $accessLogLevel;
     private $outputMessage = [];
 
     public function __construct()
     {
         // Read from params.php
-        [$this->accessLogLevel, $this->altThemePath, $this->themeName] = Params::getParameterValue(
-            ["accessLogLevel", "altThemePath", "themeName"],[false, null, "default"]);
+        $this->accessLogLevel = Params::getParameterValue("accessLogLevel", false);
+        $this->altThemePath = Params::getParameterValue("altThemePath", null);
     }
 
     public function getResultForLog(): array

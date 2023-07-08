@@ -36,8 +36,8 @@ class Params
             $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
             if (basename($imRootDir) == 'inter-mediator'
                 && basename(dirname($imRootDir)) == 'inter-mediator'
-                && basename(dirname(dirname($imRootDir))) == 'vendor') { // This means IM is installed by Composer.
-                $appRootDir = dirname(dirname(dirname($imRootDir)));
+                && basename(dirname($imRootDir, 2)) == 'vendor') { // This means IM is installed by Composer.
+                $appRootDir = dirname($imRootDir, 3);
                 if (file_exists($appRootDir . DIRECTORY_SEPARATOR . 'params.php')) {
                     include($appRootDir . DIRECTORY_SEPARATOR . 'params.php');
                 } else if (file_exists($appRootDir . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'params.php')) {
@@ -67,12 +67,12 @@ class Params
     {
         self::readParamsPHPFile();
         if (!is_array($vName) && !is_array($defValue)) {
-            return isset(self::$vars[$vName]) ? self::$vars[$vName] : $defValue;
+            return self::$vars[$vName] ?? $defValue;
         } else if (is_array($vName) && is_array($defValue) && count($vName) == count($defValue)) {
             $arValue = [];
             $count = 0;
             foreach ($vName as $var) {
-                $arValue[] = isset(self::$vars[$var]) ? self::$vars[$var] : $defValue[$count];
+                $arValue[] = self::$vars[$var] ?? $defValue[$count];
                 $count += 1;
             }
             return $arValue;
@@ -80,15 +80,14 @@ class Params
             $arValue = [];
             $count = 0;
             foreach ($vName as $var) {
-                $arValue[] = isset(self::$vars[$var]) ? self::$vars[$var]
-                    : (is_array($defValue) ? $defValue[min($count, count($defValue) - 1)] : $defValue);
+                $arValue[] = self::$vars[$var] ?? (is_array($defValue) ? $defValue[min($count, count($defValue) - 1)] : $defValue);
                 $count += 1;
             }
             return $arValue;
         } else if (is_array($defValue)) {
-            return isset(self::$vars[$vName]) ? self::$vars[$vName] : $defValue[0];
+            return self::$vars[$vName] ?? $defValue[0];
         } else {
-            return isset(self::$vars[$vName]) ? self::$vars[$vName] : $defValue;
+            return self::$vars[$vName] ?? $defValue;
         }
     }
 

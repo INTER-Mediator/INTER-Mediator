@@ -46,14 +46,10 @@ use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
 use Symfony\Component\Mailer\Exception\ExceptionInterface;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Email;
-use Symfony\Component\Mailer\Exception\IncompleteDsnException;
-use Symfony\Component\Mailer\Exception\UnsupportedSchemeException;
 use Symfony\Component\Mime\Address;
-use Symfony\Component\Mime\Header\MailboxListHeader;
 
 class OME
 {
@@ -73,12 +69,11 @@ class OME
     private $tmpContents = '';
     private $attachments = [];
 
-    private $senderAddress = null;
     private $smtpInfo = null;
     private $isSetCurrentDateToHead = false;
     private $isUseSendmailParam = false;
 
-    private $waitMS = 0;
+    private $waitMS;
 
     function __construct()
     {
@@ -120,7 +115,8 @@ class OME
 
     /**    メールの本文を設定する。既存の本文は置き換えられる。
      *
-     * @param string メールの本文に設定する文字列
+     * @param $str string メールの本文に設定する文字列
+     * @param $type bool
      */
     public function setBody($str, $type = false)
     {
@@ -239,7 +235,6 @@ class OME
                 if ($isSetToParam || $this->isUseSendmailParam)
                     $this->sendmailParam = "-f $address";
             }
-            $this->senderAddress = $address;
             return true;
         }
         return false;
@@ -773,9 +768,8 @@ class OME
         if (($cCode >= 0x30) && ($cCode <= 0x39)) return True;
         if (($cCode >= 0x41) && ($cCode <= 0x5A)) return True;
         if (($cCode >= 0x61) && ($cCode <= 0x7A)) return True;
-        switch ($str) {
-            case "'":
-                return True;
+        if ($str == "'") {
+            return True;
         } // Endo of switch
         return False;
     } // End of function isWordElement()

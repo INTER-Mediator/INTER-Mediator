@@ -125,9 +125,9 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             session_start();
         }
         if (in_array($layoutName, array($this->dbSettings->getUserTable(), $this->dbSettings->getHashTable()))) {
-            $token = isset($_SESSION['X-FM-Data-Access-Token-Auth']) ? $_SESSION['X-FM-Data-Access-Token-Auth'] : '';
+            $token = $_SESSION['X-FM-Data-Access-Token-Auth'] ?? '';
         } else {
-            $token = isset($_SESSION['X-FM-Data-Access-Token']) ? $_SESSION['X-FM-Data-Access-Token'] : '';
+            $token = $_SESSION['X-FM-Data-Access-Token'] ?? '';
         }
         try {
             if ($token === '') {
@@ -328,11 +328,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         $limitParam = 100000000;
         if (isset($context['maxrecords'])) {
             if (intval($context['maxrecords']) < $this->dbSettings->getRecordCount()) {
-                if (intval($context['maxrecords']) < intval($context['records'])) {
-                    $limitParam = intval($context['records']);
-                } else {
-                    $limitParam = intval($context['maxrecords']);
-                }
+                $limitParam = max(intval($context['maxrecords']), intval($context['records']));
             } else {
                 $limitParam = $this->dbSettings->getRecordCount();
             }
@@ -389,7 +385,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                     }
 
                     $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-                    $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : $this->specHandler->getDefaultKey();
+                    $primaryKey = $tableInfo['key'] ?? $this->specHandler->getDefaultKey();
                     if ($condition['field'] == $primaryKey && isset($condition['value'])) {
                         $this->notifyHandler->setQueriedPrimaryKeys(array($condition['value']));
                     }
@@ -417,7 +413,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                         $foreignField = $relDef['foreign-key'];
                         $foreignValue = $foreignDef['value'];
                         $relDef = $this->normalizedCondition($relDef);
-                        $foreignOperator = isset($relDef['operator']) ? $relDef['operator'] : 'eq';
+                        $foreignOperator = $relDef['operator'] ?? 'eq';
                         $formattedValue = $this->formatter->formatterToDB(
                             "{$tableName}{$this->dbSettings->getSeparator()}{$foreignField}", $foreignValue);
                         if (!$this->specHandler->isPossibleOperator($foreignOperator)) {
@@ -689,7 +685,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                     $this->mainTableCount = count($recordArray);
                     break;
                 } else {
-                    array_push($recordArray, $dataArray);
+                    $recordArray[] = $dataArray;
                 }
                 if (intval($result->count()) == 1) {
                     break;
@@ -782,7 +778,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             $this->setupFMDataAPIforDB($layout, 1);
         }
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : $this->specHandler->getDefaultKey();
+        $primaryKey = $tableInfo['key'] ?? $this->specHandler->getDefaultKey();
 
         if (isset($tableInfo['query'])) {
             foreach ($tableInfo['query'] as $condition) {
@@ -858,7 +854,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         $result = NULL;
         $data = array();
         $portal = array();
-        if (count($condition) === 1 && isset($condition[0]) && isset($condition[0]['recordId'])) {
+        if (isset($condition[0]['recordId']) && count($condition) === 1) {
             $recordId = str_replace('=', '', $condition[0]['recordId'] ?? "");
             if (is_numeric($recordId)) {
                 $result = $this->fmData->{$layout}->getRecord($recordId);
@@ -897,7 +893,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
 
         if ($result->count() === 1) {
             $this->notifyHandler->setQueriedPrimaryKeys(array());
-            $keyField = isset($context['key']) ? $context['key'] : $this->specHandler->getDefaultKey();
+            $keyField = $context['key'] ?? $this->specHandler->getDefaultKey();
             foreach ($result as $record) {
                 $recId = $record->getRecordId();
                 if ($keyField == $this->specHandler->getDefaultKey()) {
@@ -1052,7 +1048,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             }
         }
 
-        $keyFieldName = isset($context['key']) ? $context['key'] : $this->specHandler->getDefaultKey();
+        $keyFieldName = $context['key'] ?? $this->specHandler->getDefaultKey();
 
         $recordData = array();
 
@@ -1254,7 +1250,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             return false;
         }
         if ($result->count() > 0) {
-            $keyField = isset($context['key']) ? $context['key'] : $this->specHandler->getDefaultKey();
+            $keyField = $context['key'] ?? $this->specHandler->getDefaultKey();
             foreach ($result as $record) {
                 $recId = $record->getRecordId();
                 if ($keyField == $this->specHandler->getDefaultKey()) {

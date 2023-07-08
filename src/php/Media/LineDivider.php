@@ -9,7 +9,7 @@
 
 namespace INTERMediator\Media;
 
-use \Iterator;
+use Iterator;
 
 class LineDivider implements Iterator
 {

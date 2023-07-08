@@ -21,7 +21,6 @@ use INTERMediator\DB\Logger;
 class NotifyServer
 {
     private $dbClass;
-    private $dbSettings;
     private $clientId;
 
     /**
@@ -33,7 +32,6 @@ class NotifyServer
     public function initialize($dbClass, $dbSettings, $clientId)
     {
         $this->dbClass = $dbClass;
-        $this->dbSettings = $dbSettings;
         $this->clientId = $clientId;
         if (is_null($dbClass) || is_null($dbSettings)
             || !is_subclass_of($dbClass->notifyHandler, 'INTERMediator\DB\Support\DB_Interface_Registering')

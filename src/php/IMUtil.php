@@ -83,7 +83,7 @@ class IMUtil
 
     public static function pathToINTERMediator(): string
     {
-        return dirname(dirname(dirname(__FILE__)));
+        return dirname(__FILE__, 3);
     }
 
     public static function getMIMEType($path): string
@@ -504,7 +504,7 @@ class IMUtil
         for ($i = 0; $i < $digit; $i++) {
             try {
                 $code = random_int(33, 126);
-            } catch (\Exception $ex) {
+            } catch (Exception $ex) {
                 $code = rand(33, 126);
             }
             $resultStr .= chr($code);
@@ -579,13 +579,13 @@ class IMUtil
         $str = '';
         try {
             $limit = random_int(15, 20);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $limit = rand(15, 20);
         }
         for ($i = 0; $i < $limit; $i++) {
             try {
                 $n = random_int(33, 126); // They should be an ASCII character for JS SHA1 lib.
-            } catch (\Exception $ex) {
+            } catch (Exception $ex) {
                 $n = rand(33, 126); // They should be an ASCII character for JS SHA1 lib.
             }
             $str .= chr($n);
