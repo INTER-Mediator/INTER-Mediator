@@ -131,27 +131,26 @@ const INTERMediatorLib = {
     return nodeAttr && nodeAttr.match(/insert/)
   },
 
-  generatePasswordHash: function (password) {
+  generateSalt() {
     'use strict'
     const numToHex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']
     let salt = ''
     let saltHex = ''
     for (let i = 0; i < 4; i += 1) {
       const code = Math.floor(Math.random() * (128 - 32) + 32)
-      const lowCode = code & 0xF
-      const highCode = (code >> 4) & 0xF
       salt += String.fromCharCode(code)
-      saltHex += numToHex[highCode] + numToHex[lowCode]
+      saltHex += numToHex[code & 0xF] + numToHex[(code >> 4) & 0xF]
     }
-    let shaObj = null
-    if (INTERMediatorOnPage.passwordHash > 1.4 || INTERMediatorOnPage.alwaysGenSHA2) {
-      shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
-    } else {
-      shaObj = new jsSHA('SHA-1', 'TEXT')
-    }
+    return [salt, saltHex]
+  },
+
+  generatePasswordHash: function (password) {
+    'use strict'
+    let shaObj = (INTERMediatorOnPage.passwordHash > 1.4 || INTERMediatorOnPage.alwaysGenSHA2)
+      ? new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000}) : new jsSHA('SHA-1', 'TEXT')
+    const [salt, saltHex] = INTERMediatorLib.generateSalt()
     shaObj.update(password + salt)
-    let hash = shaObj.getHash('HEX')
-    return encodeURIComponent(hash + saltHex)
+    return encodeURIComponent(shaObj.getHash('HEX') + saltHex)
   },
 
   getParentRepeater: function (node) {
