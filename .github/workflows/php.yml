@@ -14,7 +14,7 @@ jobs:
       matrix:
         operating-system: [ubuntu-latest]
 #        operating-system: [ubuntu-latest, macos-latest, windows-latest]
-        php-versions: ['7.3','7.4','8.0','8.1','8.2']
+        php-versions: ['7.4','8.0','8.1','8.2']
     name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
     services:
       mysql: # https://qiita.com/sayama0402/items/e863ffb597ce87bf2e2f
