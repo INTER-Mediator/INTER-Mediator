@@ -38,6 +38,13 @@ const INTERMediator_DBAdapter = {
   generate_authParams: function () {
     'use strict'
     let authParams = ''
+    // if (!INTERMediatorOnPage.authHashedPassword()
+    //   && !INTERMediatorOnPage.authHashedPassword2m()
+    //   && !INTERMediatorOnPage.authHashedPassword2()) {
+    //   INTERMediatorOnPage.authUser (null)
+    //   INTERMediatorOnPage.authChallenge = null
+    //   INTERMediatorOnPage.clientId = null
+    // }
 
     if (INTERMediatorOnPage.authUser() && INTERMediatorOnPage.authUser().length > 0) {
       authParams = '&clientid=' + encodeURIComponent(INTERMediatorOnPage.clientId())

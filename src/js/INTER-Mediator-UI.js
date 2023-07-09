@@ -34,7 +34,7 @@ const IMLibUI = {
   /*
    valueChange
    Parameters: It the validationOnly parameter is set to true, this method should return the boolean value
-   if validation is succeeded or not.
+   if validation is succeed or not.
    */
   valueChange: function (idValue, validationOnly) {
     'use strict'
@@ -142,6 +142,7 @@ const IMLibUI = {
             let contextInfoCapt = contextInfo
             let newValueCapt = newValue
             let completeTaskCapt = completeTask
+            let nodeInfoCapt = nodeInfo
             return async function (result) {
               let updateRequiredContext, currentValue, associatedNode, field, node, children, delNodes,
                 recordObj, keepProp
@@ -853,7 +854,7 @@ const IMLibUI = {
                         skipNodes.push(nameAttr)
                         const nameNodes = targetNode.querySelectorAll('input[type=radio]')
                         for (let node of nameNodes) {
-                          if (node.name === nameAttr && node.checked) {
+                          if (node.name == nameAttr && node.checked) {
                             nodeValue = node.value
                           }
                         }
