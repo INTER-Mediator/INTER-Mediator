@@ -58,7 +58,7 @@ class SAMLAuth
                     return [$additional, $user];
                 }
             }
-            $rule = isset($this->samlAttrRules['username']) ? $this->samlAttrRules['username'] : 'uid|0';
+            $rule = $this->samlAttrRules['username'] ?? 'uid|0';
             $user = $this->getValuesWithRule($rule);
         }
         return [$additional, $user];
@@ -85,7 +85,7 @@ class SAMLAuth
         $returnValue = null;
         $attributes = $this->authSimple->getAttributes();
         $comps = explode('|', $rule);
-        if (count($comps) == 2 && isset($attributes[$comps[0]]) && isset($attributes[$comps[0]][$comps[1]])) {
+        if (isset($attributes[$comps[0]][$comps[1]]) && count($comps) == 2) {
             $returnValue = $attributes[$comps[0]][$comps[1]];
         } else if (isset($attributes[$rule])) {
             $returnValue = $attributes[$rule];

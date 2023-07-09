@@ -15,6 +15,7 @@
 
 namespace INTERMediator\Media;
 
+use Exception;
 use msyk\DropboxAPIShortLivedToken\DropboxClientModified;
 use Spatie\Dropbox\Client;
 use msyk\DropboxAPIShortLivedToken\AutoRefreshingDropBoxTokenService;
@@ -71,7 +72,7 @@ class Dropbox implements UploadingSupport, DownloadingSupport
      * @param $dbProxyInstance
      * @param $content
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getMedia($file, $target, $dbProxyInstance)
     {
@@ -83,7 +84,7 @@ class Dropbox implements UploadingSupport, DownloadingSupport
                 $this->refreshToken, $this->appKey, $this->appSecret, $this->accessTokenPath);
             $client = new DropboxClientModified($tokenProvider);
             $content = $client->download($urlPath);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             throw $ex;
         }
         return $content;
@@ -135,7 +136,7 @@ class Dropbox implements UploadingSupport, DownloadingSupport
                 . $keyfield . "=" . $keyvalue . DIRECTORY_SEPARATOR . $targetFieldName;
             try {
                 $rand4Digits = random_int(1000, 9999);
-            } catch (\Exception $ex) {
+            } catch (Exception $ex) {
                 $rand4Digits = rand(1000, 9999);
             }
 
@@ -161,7 +162,7 @@ class Dropbox implements UploadingSupport, DownloadingSupport
             if (isset($dbProxyContext['file-upload'])) {
                 foreach ($dbProxyContext['file-upload'] as $item) {
                     if (isset($item['field']) && $item['field'] == $targetFieldName) {
-                        $dbAlt->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : null);
+                        $dbAlt->initialize($datasource, $options, $dbspec, $debug, $item['context'] ?? null);
                         $relatedContextInfo = $dbAlt->dbSettings->getDataSourceTargetArray();
                         $fields = array();
                         $values = array();
@@ -196,7 +197,7 @@ class Dropbox implements UploadingSupport, DownloadingSupport
                     $this->refreshToken, $this->appKey, $this->appSecret, $this->accessTokenPath);
                 $client = new Client($tokenProvider);
                 $client->upload($objectPath, file_get_contents($fileInfoTemp), 'add');
-            } catch (\Exception $ex) {
+            } catch (Exception $ex) {
                 if (!is_null($url)) {
                     header('Location: ' . $url);
                 } else {

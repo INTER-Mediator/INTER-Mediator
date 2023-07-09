@@ -19,6 +19,7 @@ namespace INTERMediator\DB;
 use INTERMediator\Params;
 use DateTime;
 use ReflectionClass;
+use ReflectionException;
 
 class Logger
 {
@@ -74,7 +75,7 @@ class Logger
                     $returnValue = strpos($ref->getNamespaceName(), $setting) === 0;
                 }
             }
-        } catch (\ReflectionException $e) {
+        } catch (ReflectionException $e) {
         }
         return $returnValue;
     }

@@ -97,9 +97,8 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
     {
         $fields = "c.name, t.name type, c.max_length, c.precision, c.scale, c.is_nullable, " .
             "c.is_identity, c.default_object_id, c.is_computed, c.collation_name";
-        $sql = "SELECT {$fields} FROM sys.columns c INNER JOIN sys.types t ON c. system_type_id = t. system_type_id " .
+        return "SELECT {$fields} FROM sys.columns c INNER JOIN sys.types t ON c. system_type_id = t. system_type_id " .
             "WHERE object_id = object_id('{$this->quotedEntityName($tableName)}')";
-        return $sql;
     }
 
     /*

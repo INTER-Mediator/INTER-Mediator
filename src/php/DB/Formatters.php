@@ -27,7 +27,7 @@ class Formatters
                 if (!isset($this->formatter[$oneItem['field']])) {
                     $cvClassName = "INTERMediator\\Data_Converter\\".$oneItem['converter-class'];
                     $this->formatter[$oneItem['field']]
-                        = new $cvClassName(isset($oneItem['parameter']) ? $oneItem['parameter'] : '');
+                        = new $cvClassName($oneItem['parameter'] ?? '');
                 }
             }
         }

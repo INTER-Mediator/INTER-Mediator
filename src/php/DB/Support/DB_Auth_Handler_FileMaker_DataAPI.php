@@ -707,7 +707,6 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
                 break;
             case  'field_group':
                 throw new Exception('The authSupportCheckMediaPrivilege method has to modify for field-group targeting.');
-                break;
             default: // 'context_auth' or 'no_auth'
                 throw new Exception('Unexpected authSupportCheckMediaPrivilege method usage.');
         }
@@ -791,8 +790,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $this->logger->setDebugMessage(
             $this->dbClass->stringWithoutCredential($this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
         foreach ($result as $record) {
-            $userID = $record->user_id;
-            return $userID;
+            return $record->user_id;
         }
         return false;
 

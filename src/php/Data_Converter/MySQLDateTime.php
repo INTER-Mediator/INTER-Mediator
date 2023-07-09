@@ -46,6 +46,7 @@ class MySQLDateTime
         $slash = substr_count($str, '-');
         $colon = substr_count($str, ':');
         $dtObj = false;
+        $fmt = 'Y-m-d H:i:s';
         if (($sp !== FALSE) && ($slash == 2) && ($colon == 2)) {
             $sep = explode(' ', $str);
             $comp = explode('-', $sep[0]);

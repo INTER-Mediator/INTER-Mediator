@@ -67,12 +67,12 @@ class Params
     {
         self::readParamsPHPFile();
         if (!is_array($vName) && !is_array($defValue)) {
-            return isset(self::$vars[$vName]) ? self::$vars[$vName] : $defValue;
+            return self::$vars[$vName] ?? $defValue;
         } else if (is_array($vName) && is_array($defValue) && count($vName) == count($defValue)) {
             $arValue = [];
             $count = 0;
             foreach ($vName as $var) {
-                $arValue[] = isset(self::$vars[$var]) ? self::$vars[$var] : $defValue[$count];
+                $arValue[] = self::$vars[$var] ?? $defValue[$count];
                 $count += 1;
             }
             return $arValue;
@@ -80,15 +80,14 @@ class Params
             $arValue = [];
             $count = 0;
             foreach ($vName as $var) {
-                $arValue[] = isset(self::$vars[$var]) ? self::$vars[$var]
-                    : (is_array($defValue) ? $defValue[min($count, count($defValue) - 1)] : $defValue);
+                $arValue[] = self::$vars[$var] ?? (is_array($defValue) ? $defValue[min($count, count($defValue) - 1)] : $defValue);
                 $count += 1;
             }
             return $arValue;
         } else if (is_array($defValue)) {
-            return isset(self::$vars[$vName]) ? self::$vars[$vName] : $defValue[0];
+            return self::$vars[$vName] ?? $defValue[0];
         } else {
-            return isset(self::$vars[$vName]) ? self::$vars[$vName] : $defValue;
+            return self::$vars[$vName] ?? $defValue;
         }
     }
 

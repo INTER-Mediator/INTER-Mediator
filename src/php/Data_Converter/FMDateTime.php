@@ -15,6 +15,7 @@
 namespace INTERMediator\Data_Converter;
 
 use DateTime;
+use INTERMediator\Locale\IMLocale;
 
 class FMDateTime
 {
@@ -33,9 +34,9 @@ class FMDateTime
     public function __construct($format = '')
     {
         $this->fmt = $format;
-        \INTERMediator\Locale\IMLocale::setLocale(LC_ALL);
-        $this->choosenLocale = \INTERMediator\Locale\IMLocale::$choosenLocale;
-        $this->useMbstring = \INTERMediator\Locale\IMLocale::$useMbstring;
+        IMLocale::setLocale(LC_ALL);
+        $this->choosenLocale = IMLocale::$choosenLocale;
+        $this->useMbstring = IMLocale::$useMbstring;
         date_default_timezone_set($this->tz);
     }
 
@@ -49,6 +50,7 @@ class FMDateTime
         $slash = substr_count($str, '/');
         $colon = substr_count($str, ':');
         $dtObj = false;
+        $fmt = 'Y-m-d H:i:s';
         if (($sp !== FALSE) && ($slash === 2) && ($colon === 2)) {
             $sep = explode(' ', $str);
             $comp = explode('/', $sep[0]);

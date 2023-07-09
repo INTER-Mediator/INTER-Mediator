@@ -2,6 +2,7 @@
 
 namespace INTERMediator\DB;
 
+use DateTime;
 use League\Csv\Writer;
 use League\Csv\CharsetConverter;
 
@@ -20,7 +21,7 @@ class Export
     {
         $qH = '"'; // Double quote in header
         header('Content-Type: data:application/octet-stream');
-        $filename = $this->fileNamePrefix . (new \DateTime())->format('Ymd') . ".{$this->fileExtension}";
+        $filename = $this->fileNamePrefix . (new DateTime())->format('Ymd') . ".{$this->fileExtension}";
         header("Content-Disposition: attachment; filename={$qH}{$filename}{$qH}");
 
         if (count($contextData) < 1) {

@@ -83,11 +83,13 @@ class Settings
     private $attachedFields = null;
     private $certVerifying = true;
 
-    public function setSAMLAdditionalRules($value){
+    public function setSAMLAdditionalRules($value)
+    {
         $this->samlAdditionalRules = $value;
     }
 
-    public function getSAMLAdditionalRules(){
+    public function getSAMLAdditionalRules()
+    {
         return $this->samlAdditionalRules;
     }
 
@@ -488,12 +490,12 @@ class Settings
 
     public function getAccessUser()
     {
-        return $this->accessUser != null ? $this->accessUser : $this->dbSpecUser;
+        return $this->accessUser ?? $this->dbSpecUser;
     }
 
     public function getAccessPassword()
     {
-        return $this->accessPassword != null ? $this->accessPassword : $this->dbSpecPassword;
+        return $this->accessPassword ?? $this->dbSpecPassword;
     }
 
     public function setUserAndPasswordForAccess($user, $pass)

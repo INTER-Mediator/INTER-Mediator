@@ -1,4 +1,7 @@
 <?php
+
+use INTERMediator\DB\Extending\AfterRead;
+
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -13,7 +16,7 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-class YearMonthGen implements \INTERMediator\DB\Extending\AfterRead
+class YearMonthGen implements AfterRead
 {
     public function doAfterReadFromDB($result)
     {

@@ -48,7 +48,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
         if (!is_numeric($recordId)) {
             $this->dbClass->errorMessageStore (
                 $this->dbClass->stringWithoutCredential (
-                    "FX reports error at insert action: " .
+                    "FMDataAPI reports error at insert action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"
                 )
             );
@@ -74,13 +74,13 @@ class DB_Notification_Handler_FileMaker_DataAPI
                 if (!is_numeric($recordId)) {
                     $this->logger->setDebugMessage(
                         $this->dbClass->stringWithoutCredential(
-                            "FX reports error at insert action: " .
+                            "FMDataAPI reports error at insert action: " .
                             "code={$result['errorCode']}, url={$result['URL']}"
                         )
                     );
                     $this->dbClass->errorMessageStore(
                         $this->dbClass->stringWithoutCredential(
-                            "FX reports error at insert action: " .
+                            "FMDataAPI reports error at insert action: " .
                             "code={$result['errorCode']}, url={$result['URL']}"
                         )
                     );
@@ -124,7 +124,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
             $this->dbClass->fmData->errorCode() != 401) {
             $this->dbClass->errorMessageStore(
                 $this->dbClass->stringWithoutCredential(
-                    "FX reports error at find action: " .
+                    "FMDataAPI reports error at find action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"
                 )
             );
@@ -152,7 +152,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
             $this->dbClass->fmData->errorCode() != 401) {
             $this->dbClass->errorMessageStore(
                 $this->dbClass->stringWithoutCredential(
-                    "FX reports error at find action: " .
+                    "FMDataAPI reports error at find action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"
                 )
             );
@@ -180,7 +180,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
                 $this->dbClass->fmData->errorCode() != 401) {
                 $this->dbClass->errorMessageStore(
                     $this->dbClass->stringWithoutCredential(
-                        "FX reports error at find action: " .
+                        "FMDataAPI reports error at find action: " .
                         "code={$result['errorCode']}, url={$result['URL']}"
                     )
                 );
@@ -206,7 +206,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
             $this->dbClass->fmData->errorCode() != 401) {
             $this->dbClass->errorMessageStore(
                 $this->dbClass->stringWithoutCredential(
-                    "FX reports error at find action: " .
+                    "FMDataAPI reports error at find action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"
                 )
             );
@@ -225,7 +225,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
                     if (!is_numeric($recordId)) {
                         $this->dbClass->errorMessageStore(
                             $this->dbClass->stringWithoutCredential(
-                                "FX reports error at insert action: " .
+                                "FMDataAPI reports error at insert action: " .
                                 "code={$result['errorCode']}, url={$result['URL']}"
                             )
                         );
@@ -254,7 +254,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
             $this->dbClass->fmData->errorCode() != 401) {
             $this->dbClass->errorMessageStore(
                 $this->dbClass->stringWithoutCredential(
-                    "FX reports error at find action: " .
+                    "FMDataAPI reports error at find action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"
                 )
             );
