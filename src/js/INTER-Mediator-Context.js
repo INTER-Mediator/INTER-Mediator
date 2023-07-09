@@ -511,7 +511,7 @@ class IMLibContext {
       this.tableName = this.contextName
       this.viewName = this.contextName
       this.sourceName = this.contextName
-      // This is not a valid case, it just prevent the error in the unit test.
+      // This is not a valid case, it just prevents the error in the unit test.
       return
     }
     contextDef = this.getContextDef()
@@ -566,9 +566,8 @@ class IMLibContext {
 
   getContextDef() {
     'use strict'
-    const contextDef = INTERMediatorLib.getNamedObject(
+    return INTERMediatorLib.getNamedObject(
       INTERMediatorOnPage.getDataSources(), 'name', this.contextName)
-    return contextDef
   }
 
   /*
@@ -581,7 +580,7 @@ class IMLibContext {
     let oneSortKey, condtextDef, lower, upper, index, targetRecord, contextValue, checkingValue, stop
     if (isDebug !== true) {
       if (INTERMediator && INTERMediator.additionalSortKey[this.contextName]) {
-        for (i = 0; i < INTERMediator.additionalSortKey[this.contextName].length; i += 1) {
+        for (let i = 0; i < INTERMediator.additionalSortKey[this.contextName].length; i += 1) {
           oneSortKey = INTERMediator.additionalSortKey[this.contextName][i]
           if (!(oneSortKey.field in fields)) {
             fields.push(oneSortKey.field)
@@ -875,16 +874,16 @@ class IMLibContext {
 
   isValueUndefined(recKey, key, portal) {
     'use strict'
-    let value, tableOccurence, relatedRecId
+    let value, tableOccurrence, relatedRecId
     try {
       if (portal) {
-        tableOccurence = key.split('::')[0]
+        tableOccurrence = key.split('::')[0]
         relatedRecId = portal.split('=')[1]
-        value = this.store[recKey][0][tableOccurence][relatedRecId][key]
+        value = this.store[recKey][0][tableOccurrence][relatedRecId][key]
       } else {
         value = this.store[recKey][key]
       }
-      return (typeof value === 'undefined') ? true : false
+      return (typeof value === 'undefined')
     } catch (ex) {
       return null
     }
@@ -1204,7 +1203,7 @@ this.lookingUpInfo
     lookingContexts = [] // Correcting the context names of contexts looked up. i.e. 'from' key data
     if (this.lookingUpInfo[contextInfo.record]) {
       for (const obj of this.lookingUpInfo[contextInfo.record]) {
-        if (obj.trigger == linkInfo[0]) { // Suppose to be the first definition.
+        if (obj.trigger === linkInfo[0]) { // Suppose to be the first definition.
           fromValue = obj.from.split('@')
           if (lookingContexts.indexOf(fromValue[0]) < 0) {
             lookingContexts.push(fromValue[0])
@@ -1217,7 +1216,7 @@ this.lookingUpInfo
       contexts = IMLibContextPool.getContextFromName(contextName)
       for (const context of contexts) {
         contextDef = context.getContextDef()
-        if (context.parentContext == this && contextDef.relation  /* && relation[0]['foreign-key'] == keyField*/) {
+        if (context.parentContext === this && contextDef.relation  /* && relation[0]['foreign-key'] == keyField*/) {
           keying = contextDef.relation[0]['foreign-key'] + '=' + value
           if (context.store[keying]) {  // There is the lookup required data on any context
             fromStore[contextName] = context.store[keying]
@@ -1259,7 +1258,7 @@ this.lookingUpInfo
           let fields = []
           for (obj of lookingUpInfoObj) {
             let fromValue = obj.from.split('@')
-            if (fromValue[0] == targetContext.contextName && fromValue[1]) {
+            if (fromValue[0] === targetContext.contextName && fromValue[1]) {
               fields.push(fromValue[1])
             }
           }
@@ -1286,7 +1285,7 @@ this.lookingUpInfo
                       imTarget = obj.target.split('@')
                       fromValue = obj.from.split('@')
                       if (imTarget[1] && fromValue[0] && fromValue[1]
-                        && fromValue[0] == targetContext.contextName && aRecord[fromValue[1]]) {
+                        && fromValue[0] === targetContext.contextName && aRecord[fromValue[1]]) {
                         thisObj.setDataWithKey(obj.key_value, imTarget[1], aRecord[fromValue[1]])
                       }
                     }

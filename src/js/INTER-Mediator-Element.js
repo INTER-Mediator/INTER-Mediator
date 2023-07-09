@@ -22,7 +22,7 @@ const IMLibFormat = require('../../node_modules/inter-mediator-formatter/index')
 
 /**
  *
- * Usually you don't have to instanciate this class with new operator.
+ * Usually you don't have to instantiate this class with new operator.
  * @constructor
  */
 const IMLibElement = {
@@ -351,13 +351,13 @@ const IMLibElement = {
           if (typeAttr === 'checkbox' && curValues.length > 1) {
             for (let i = 0; i < curValues.length; i += 1) {
               if (valueAttr === curValues[i] && !INTERMediator.dontSelectRadioCheck) {
-                // The above operator shuold be '==' not '==='
+                // The above operator should be '==' not '==='
                 element.checked = true
               }
             }
           } else {
             if (valueAttr === curVal && !INTERMediator.dontSelectRadioCheck) {
-              // The above operator shuold be '==' not '==='
+              // The above operator should be '==' not '==='
               element.checked = true
             } else {
               element.checked = false
@@ -493,14 +493,14 @@ const IMLibElement = {
    <<Multiple lines in TEXTAREA before IE 10>> 2017-08-05, Masayuki Nii
 
    Most of modern browsers can handle the 'next line(\n)' character as the line separator.
-   Otherwise IE 9 requires special handling for multiple line strings.
+   Otherwise, IE 9 requires special handling for multiple line strings.
 
    - If such a strings sets to value property, it shows just a single line.
-   - To prevent the above situation, it has to replace the line sparating characters to <br>,
+   - To prevent the above situation, it has to replace the line separating characters to <br>,
    and set it to innerHTML property.
-   - The value property of multi-line strings doesn't contain any line sparating characters.
-   - The innerHTML property of multi-line strings contains <br> for line sparators.
-   - If the value of TEXTAREA can be get with repaceing <br> to \n from the innerHTML property.
+   - The value property of multi-line strings doesn't contain any line separating characters.
+   - The innerHTML property of multi-line strings contains <br> for line separators.
+   - If the value of TEXTAREA can get with replacing <br> to \n from the innerHTML property.
 
    */
 
@@ -584,7 +584,7 @@ const IMLibElement = {
     IMLibFocusOutEventDispatch.setExecute(elementId, (targetId) => {
       IMLibElement.isAlreadySaved = false
       IMLibElement.isNonTimerSaved = false
-      if (IMLibElement.editingTargetId != targetId) {
+      if (IMLibElement.editingTargetId !== targetId) {
         return
       }
       IMLibElement.editingTargetId = null
@@ -593,7 +593,7 @@ const IMLibElement = {
       IMLibElement.editWatchingTimer = null
     })
     IMLibKeyUpEventDispatch.setExecute(elementId, (event) => {
-      if (event.key == 'Z' && !event.altKey && event.ctrlKey && event.shiftKey) { //Control+Shift+Z
+      if (event.key === 'Z' && !event.altKey && event.ctrlKey && event.shiftKey) { //Control+Shift+Z
         if (IMLibElement.editingTargetId) {
           const nodeInfo = IMLibContextPool.getContextInfoFromId(IMLibElement.editingTargetId, null)
           if (nodeInfo) {

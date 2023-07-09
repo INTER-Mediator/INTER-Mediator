@@ -34,7 +34,7 @@ const IMLibUI = {
   /*
    valueChange
    Parameters: It the validationOnly parameter is set to true, this method should return the boolean value
-   if validation is succeed or not.
+   if validation succeeds or not.
    */
   valueChange: function (idValue, validationOnly) {
     'use strict'
@@ -854,7 +854,7 @@ const IMLibUI = {
                         skipNodes.push(nameAttr)
                         const nameNodes = targetNode.querySelectorAll('input[type=radio]')
                         for (let node of nameNodes) {
-                          if (node.name == nameAttr && node.checked) {
+                          if (node.name === nameAttr && node.checked) {
                             nodeValue = node.value
                           }
                         }
@@ -938,7 +938,7 @@ const IMLibUI = {
       INTERMediatorOnPage.hideProgress()
       return
     }
-    if (IMLibUI.postOnlyNoRecordPrevent && fieldData.length == 0) {
+    if (IMLibUI.postOnlyNoRecordPrevent && fieldData.length === 0) {
       INTERMediatorOnPage.hideProgress()
       return
     }

@@ -183,7 +183,7 @@ const IMLibContextPool = {
     if (!cName) {
       return false
     }
-    if (cName == '_') {
+    if (cName === '_') {
       return IMLibLocalContext
     }
     for (let i = 0; i < this.poolingContexts.length; i += 1) {
