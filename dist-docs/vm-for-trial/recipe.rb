@@ -1393,8 +1393,11 @@ EOF
         execute 'sed -i -e "s/FirewallBackend=nftables/FirewallBackend=iptables/g" /etc/firewalld/firewalld.conf' do
           command 'sed -i -e "s/FirewallBackend=nftables/FirewallBackend=iptables/g" /etc/firewalld/firewalld.conf'
         end
-        execute 'systemctl restart firewalld' do
-          command 'systemctl restart firewalld'
+        package 'iptables-services' do
+          action :install
+        end
+        execute 'systemctl restart firewalld.service' do
+          command 'systemctl restart firewalld.service'
         end
       end
       execute 'firewall-cmd --zone=public --add-service=http --permanent' do
