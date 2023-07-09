@@ -585,14 +585,13 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $this->firstLevel = true;
         $this->belongGroups = array();
         $this->resolveGroup($userid);
-        $this->candidateGroups = array();
+        $candidateGroups = array();
         foreach ($this->belongGroups as $groupid) {
-            $this->candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
+            $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
         }
-        return $this->candidateGroups;
+        return $candidateGroups;
     }
 
-    private $candidateGroups;
     private $belongGroups;
     private $firstLevel;
 

@@ -16,7 +16,6 @@
 
 namespace INTERMediator\Message;
 
-use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
 class MessageStrings

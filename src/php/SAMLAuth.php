@@ -16,7 +16,6 @@
 
 namespace INTERMediator;
 
-use INTERMediator\DB\Proxy;
 use SimpleSAML\Auth\Simple;
 
 class SAMLAuth

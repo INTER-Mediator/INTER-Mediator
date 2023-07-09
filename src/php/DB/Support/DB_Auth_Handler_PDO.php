@@ -20,6 +20,7 @@ use INTERMediator\IMUtil;
 use INTERMediator\OAuthAuth;
 use INTERMediator\Params;
 use PDO;
+use Exception;
 
 class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
 {
@@ -550,24 +551,20 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $this->belongGroups = array();
         $this->resolveGroup($userid);
 
-        $this->candidateGroups = array();
+        $candidateGroups = array();
         foreach ($this->belongGroups as $groupid) {
-            $this->candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
+            $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
         }
-        if (count($this->candidateGroups) == 0) {
+        if (count($candidateGroups) == 0) {
             $defaultGroup = Params::getParameterValue("defaultGroupName", false);
             if ($defaultGroup) {
-                $this->candidateGroups = [$defaultGroup];
+                $candidateGroups = [$defaultGroup];
             }
         }
-        return $this->candidateGroups;
+        return $candidateGroups;
     }
 
-    /**
-     * @var
-     */
-    private
-        $candidateGroups;
+
     /**
      * @var
      */

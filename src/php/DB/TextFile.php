@@ -243,14 +243,12 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
 
     public function isPossibleOperator($operator)
     {
-        return !(FALSE === array_search(strtoupper($operator), array(
-                '=',
-            )));
+        return in_array(strtoupper($operator), array('='));
     }
 
     public function isPossibleOrderSpecifier($specifier)
     {
-        return !(array_search(strtoupper($specifier), array('ASC', 'DESC')) === FALSE);
+        return in_array(strtoupper($specifier), array('ASC', 'DESC'));
     }
 
     public function requireUpdatedRecord($value)
@@ -263,11 +261,12 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
         // TODO: Implement getUpdatedRecord() method.
     }
 
-    public function updatedRecord(){
+    public function updatedRecord()
+    {
         // TODO: Implement getUpdatedRecord() method.
     }
 
-    public function setUpdatedRecord($record, $value=false, $index = 0)
+    public function setUpdatedRecord($record, $value = false, $index = 0)
     {
         // TODO: Implement getUpdatedRecord() method.
     }

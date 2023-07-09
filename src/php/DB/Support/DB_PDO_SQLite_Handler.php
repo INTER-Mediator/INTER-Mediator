@@ -17,7 +17,6 @@
 namespace INTERMediator\DB\Support;
 
 use Exception;
-use PDO;
 
 class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 {

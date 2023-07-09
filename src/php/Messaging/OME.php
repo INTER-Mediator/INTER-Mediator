@@ -46,14 +46,10 @@ use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
 use Symfony\Component\Mailer\Exception\ExceptionInterface;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Email;
-use Symfony\Component\Mailer\Exception\IncompleteDsnException;
-use Symfony\Component\Mailer\Exception\UnsupportedSchemeException;
 use Symfony\Component\Mime\Address;
-use Symfony\Component\Mime\Header\MailboxListHeader;
 
 class OME
 {

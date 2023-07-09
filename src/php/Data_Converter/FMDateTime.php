@@ -14,7 +14,7 @@
  */
 namespace INTERMediator\Data_Converter;
 
-use \DateTime;
+use DateTime;
 
 class FMDateTime
 {
@@ -23,7 +23,6 @@ class FMDateTime
 
     private $useMbstring;
     private $choosenLocale;
-    private $fmtNum;
     private $fmt;
 
     /**

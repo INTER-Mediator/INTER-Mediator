@@ -616,7 +616,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                         $globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]] = array();
                     }
                     $setValue = $this->dbSettings->getValueOfField($theKey);
-                    if (array_search($theKey, $keysShouldArray) !== false) {
+                    if (in_array($theKey, $keysShouldArray)) {
                         $setValue = explode(",", str_replace(" ", "", $setValue ?? ""));
                     }
                     if ((is_array($setValue) && count($setValue) > 0 && strlen($setValue[0]) > 0)
@@ -634,7 +634,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                     }
                 } else if (strpos($theKey, "protect-") === 0) {
                     $setValue = $this->dbSettings->getValueOfField($theKey);
-                    if (array_search($theKey, $keysShouldArray) !== false) {
+                    if (in_array($theKey, $keysShouldArray)) {
                         $setValue = explode(",", str_replace(" ", "", $setValue ?? ""));
                     }
                     if ((is_array($setValue) && count($setValue) > 0 && strlen($setValue[0]) > 0)
@@ -679,9 +679,9 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                         if (!isset($globalDataSource[$contextID][$firstKey][$secondKey])) {
                             $globalDataSource[$contextID][$firstKey][$secondKey] = array();
                         }
-                        if (array_search($theKey, $keysShouldInteger) !== false) {
+                        if (in_array($theKey, $keysShouldInteger)) {
                             $setValue = ($setValue === '') ? '' : (int)$setValue;
-                        } else if (array_search($thirdKey, $keysShouldBoolean) !== false && !is_null($setValue)) {
+                        } else if (in_array($thirdKey, $keysShouldBoolean) && !is_null($setValue)) {
                             if (preg_match("/^false$/i", $setValue)) {
                                 $setValue = false;
                             } else if (preg_match("/^true$/i", $setValue)) {
@@ -702,9 +702,9 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                     }
                 } else {
                     $setValue = $this->dbSettings->getValueOfField($theKey);
-                    if (array_search($theKey, $keysShouldInteger) !== false) {
+                    if (in_array($theKey, $keysShouldInteger)) {
                         $setValue = ($setValue === '') ? '' : (int)$setValue;
-                    } else if (array_search($theKey, $keysShouldBoolean) !== false && !is_null($setValue)) {
+                    } else if (in_array($theKey, $keysShouldBoolean) && !is_null($setValue)) {
                         if (preg_match("/(false)/i", $setValue)) {
                             $setValue = false;
                         } else if (preg_match("/(true)/i", $setValue)) {
@@ -731,9 +731,9 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
                 foreach ($allKeys[$dataSourceName] as $key) {
                     $fieldValue = $this->dbSettings->getValueOfField($key);
-                    if (array_search($key, $keysShouldInteger) !== false) {
+                    if (in_array($key, $keysShouldInteger)) {
                         $fieldValue = ($fieldValue === '') ? '' : (int)$fieldValue;
-                    } else if (array_search($key, $keysShouldBoolean) !== false && !is_null($fieldValue)) {
+                    } else if (in_array($key, $keysShouldBoolean) && !is_null($fieldValue)) {
                         if (preg_match("/(false)/i", $fieldValue)) {
                             $fieldValue = false;
                         } else if (preg_match("/(true)/i", $fieldValue)) {
@@ -798,7 +798,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                         $globalOptions["smtp"][$authKey] = array();
                     }
                     $setValue = $this->dbSettings->getValueOfField($theKey);
-                    if (array_search($theKey, $keysShouldInteger) !== false) {
+                    if (in_array($theKey, $keysShouldInteger)) {
                         $setValue = ($setValue === '') ? '' : (int)$setValue;
                     }
                     if (strlen($setValue) > 0 || $setValue === false) {
@@ -815,10 +815,10 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                         $globalOptions["import"][$authKey] = array();
                     }
                     $setValue = $this->dbSettings->getValueOfField($theKey);
-                    if (array_search($theKey, $keysShouldArray) !== false) {
+                    if (in_array($theKey, $keysShouldArray)) {
                         $setValue = explode(",", str_replace(" ", "", $setValue ?? ""));
                     }
-                    if (array_search($theKey, $keysShouldInteger) !== false) {
+                    if (in_array($theKey, $keysShouldInteger)) {
                         $setValue = ($setValue === '') ? '' : (int)$setValue;
                     }
                     if (is_array($setValue) || is_numeric($setValue)
@@ -832,9 +832,9 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
                     }
                 } else {
                     $setValue = $this->dbSettings->getValueOfField($theKey);
-                    if (array_search($theKey, $keysShouldInteger) !== false) {
+                    if (in_array($theKey, $keysShouldInteger)) {
                         $setValue = ($setValue === '') ? '' : (int)$setValue;
-                    } else if (array_search($theKey, $keysShouldBoolean) !== false && !is_null($setValue)) {
+                    } else if (in_array($theKey, $keysShouldBoolean) && !is_null($setValue)) {
                         if (preg_match("/(false)/i", $setValue)) {
                             $setValue = false;
                         } else if (preg_match("/(true)/i", $setValue)) {

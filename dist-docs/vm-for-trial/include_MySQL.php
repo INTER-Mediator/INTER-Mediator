@@ -13,7 +13,7 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-require_once(dirname(dirname(dirname(__FILE__))) . '/INTER-Mediator.php');
+require_once(dirname(__FILE__, 3) . '/INTER-Mediator.php');
 
 IM_Entry(
     array(

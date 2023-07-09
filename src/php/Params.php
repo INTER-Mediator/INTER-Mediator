@@ -36,8 +36,8 @@ class Params
             $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
             if (basename($imRootDir) == 'inter-mediator'
                 && basename(dirname($imRootDir)) == 'inter-mediator'
-                && basename(dirname(dirname($imRootDir))) == 'vendor') { // This means IM is installed by Composer.
-                $appRootDir = dirname(dirname(dirname($imRootDir)));
+                && basename(dirname($imRootDir, 2)) == 'vendor') { // This means IM is installed by Composer.
+                $appRootDir = dirname($imRootDir, 3);
                 if (file_exists($appRootDir . DIRECTORY_SEPARATOR . 'params.php')) {
                     include($appRootDir . DIRECTORY_SEPARATOR . 'params.php');
                 } else if (file_exists($appRootDir . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'params.php')) {

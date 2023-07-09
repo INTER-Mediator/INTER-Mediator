@@ -15,7 +15,6 @@
 
 namespace INTERMediator\Messaging;
 
-use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
 class SendSlack extends MessagingProvider
@@ -28,7 +27,7 @@ class SendSlack extends MessagingProvider
         $slackParameters = Params::getParameterValue("slackParameters", null);
         if (is_array($slackParameters)) {
             $this->token = $slackParameters['token'];
-            $this->channle = $slackParameters['channel'];
+            $this->channel = $slackParameters['channel'];
         }
     }
 

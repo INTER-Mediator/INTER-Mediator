@@ -83,7 +83,7 @@ class IMUtil
 
     public static function pathToINTERMediator(): string
     {
-        return dirname(dirname(dirname(__FILE__)));
+        return dirname(__FILE__, 3);
     }
 
     public static function getMIMEType($path): string

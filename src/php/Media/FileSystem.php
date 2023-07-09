@@ -352,7 +352,7 @@ class FileSystem implements UploadingSupport, DownloadingSupport
                         if ($index < count($importingFields)) {
                             $field = $importingFields[$index];
                             if ($field !== '_') { // The '_' field is gonna ignore.
-                                if (array_search($field, $convert2Number) !== false) {
+                                if (in_array($field, $convert2Number)) {
                                     $original = $value;
                                     $value = '';
                                     for ($i = 0; $i < strlen($original); $i++) {
@@ -362,7 +362,7 @@ class FileSystem implements UploadingSupport, DownloadingSupport
                                         }
                                     }
                                 }
-                                if (array_search($field, $convert2Date) !== false) {
+                                if (in_array($field, $convert2Date)) {
                                     try {
                                         $dt = new \DateTime($value);
                                     } catch (\Exception $ex) {
@@ -370,7 +370,7 @@ class FileSystem implements UploadingSupport, DownloadingSupport
                                     }
                                     $value = $dt->format('Y-m-d');
                                 }
-                                if (array_search($field, $convert2DateTime) !== false) {
+                                if (in_array($field, $convert2DateTime)) {
                                     try {
                                         $dt = new \DateTime($value);
                                     } catch (\Exception $ex) {

@@ -16,8 +16,6 @@
 
 namespace INTERMediator\DB\Support;
 
-use INTERMediator\Params;
-
 abstract class DB_Auth_Common implements Auth_Interface_CommonDB
 {
     protected $dbSettings = null;

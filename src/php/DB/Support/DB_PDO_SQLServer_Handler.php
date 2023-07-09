@@ -17,7 +17,6 @@
 namespace INTERMediator\DB\Support;
 
 use Exception;
-use PDO;
 
 class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
 {
@@ -174,17 +173,17 @@ xml
             if ($keyField === $row['name'] || $row['is_identity'] === 1) {
                 // skip key field to asign value.
             } else if ($assocField === $row['name']) {
-                if (array_search($quatedFieldName, $fieldArray) === FALSE) {
+                if (!in_array($quatedFieldName, $fieldArray)) {
                     $fieldArray[] = $quatedFieldName;
                     $listArray[] = $this->dbClassObj->link->quote($assocValue);
                 }
             } else if (isset($defaultValues[$row['name']])) {
-                if (array_search($quatedFieldName, $fieldArray) === FALSE) {
+                if (!in_array($quatedFieldName, $fieldArray)) {
                     $fieldArray[] = $quatedFieldName;
                     $listArray[] = $this->dbClassObj->link->quote($defaultValues[$row['name']]);
                 }
             } else {
-                if (array_search($quatedFieldName, $fieldArray) === FALSE) {
+                if (!in_array($quatedFieldName, $fieldArray)) {
                     $fieldArray[] = $quatedFieldName;
                     $listArray[] = $this->quotedEntityName($row['name']);
                 }
