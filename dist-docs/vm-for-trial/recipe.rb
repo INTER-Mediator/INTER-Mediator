@@ -1382,32 +1382,34 @@ EOF
         command 'service iptables restart'
       end
     else
-      package 'firewalld' do
-        action :install
-      end
-      service 'firewalld' do
-        action [ :enable, :start ]
-      end
-      if node[:platform_version].to_f >= 8
-        # Work-around Steps for AlmaxLinux 8
-        execute 'sed -i -e "s/FirewallBackend=nftables/FirewallBackend=iptables/g" /etc/firewalld/firewalld.conf' do
-          command 'sed -i -e "s/FirewallBackend=nftables/FirewallBackend=iptables/g" /etc/firewalld/firewalld.conf'
-        end
-        package 'iptables-services' do
+      if node[:virtualization][:system] != 'docker'
+        package 'firewalld' do
           action :install
         end
-        execute 'systemctl restart firewalld.service' do
-          command 'systemctl restart firewalld.service'
+        service 'firewalld' do
+          action [ :enable, :start ]
         end
-      end
-      execute 'firewall-cmd --zone=public --add-service=http --permanent' do
-        command 'firewall-cmd --zone=public --add-service=http --permanent'
-      end
-      execute 'firewall-cmd --zone=public --add-service=samba --permanent' do
-        command 'firewall-cmd --zone=public --add-service=samba --permanent'
-      end
-      execute 'firewall-cmd --reload' do
-        command 'firewall-cmd --reload'
+        if node[:platform_version].to_f >= 8
+          # Work-around Steps for AlmaxLinux 8
+          execute 'sed -i -e "s/FirewallBackend=nftables/FirewallBackend=iptables/g" /etc/firewalld/firewalld.conf' do
+            command 'sed -i -e "s/FirewallBackend=nftables/FirewallBackend=iptables/g" /etc/firewalld/firewalld.conf'
+          end
+          package 'iptables-services' do
+            action :install
+          end
+          execute 'systemctl restart firewalld.service' do
+            command 'systemctl restart firewalld.service'
+          end
+          execute 'firewall-cmd --zone=public --add-service=http --permanent' do
+            command 'firewall-cmd --zone=public --add-service=http --permanent'
+          end
+          execute 'firewall-cmd --zone=public --add-service=samba --permanent' do
+            command 'firewall-cmd --zone=public --add-service=samba --permanent'
+          end
+          execute 'firewall-cmd --reload' do
+            command 'firewall-cmd --reload'
+          end
+        end
       end
     end
   end
@@ -1943,8 +1945,22 @@ if node[:platform] == 'redhat' && node[:virtualization][:system] != 'docker'
   package 'libselinux-utils' do
     action :install
   end
-  package 'policycoreutils-python' do
-    action :install
+  if node[:platform_version].to_f >= 8
+    execute 'dnf makecache --refresh' do
+      command 'dnf makecache --refresh'
+    end
+  end
+  if node[:platform_version].to_f >= 8
+    package 'python3-policycoreutils' do
+      action :install
+    end
+    package 'policycoreutils-python-utils' do
+      action :install
+    end
+  else
+    package 'policycoreutils-python' do
+      action :install
+    end
   end
   execute 'setsebool -P samba_export_all_rw 1' do
     command 'setsebool -P samba_export_all_rw 1'

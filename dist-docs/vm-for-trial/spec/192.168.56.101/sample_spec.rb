@@ -901,6 +901,15 @@ describe file('/opt/FileMaker/FileMaker Server/Data/Databases/TestDB.fmp12'), :i
 end
 
 
+# SELinux
+describe package('python3-policycoreutils'), :if => os[:family] == 'redhat' && os[:release].to_f >= 8 do
+  it { should be_installed }
+end
+describe package('policycoreutils-python-utils'), :if => os[:family] == 'redhat' && os[:release].to_f >= 8 do
+  it { should be_installed }
+end
+
+
 describe file('/etc/motd'), :if => os[:family] == 'redhat' || os[:family] == 'alpine' do
   its(:content) { should match /Welcome to INTER-Mediator-Server VM!/ }
 end
