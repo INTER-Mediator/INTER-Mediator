@@ -1,12 +1,16 @@
 const EditingPage = require('../pageobjects/editing_page_mysql.page');
 
 const waiting = 1000
-// const initDateTime = "2000-12-31 15:00:00" // For Asia/Tokyo server
-// const initTime = "15:00:00" // For Asia/Tokyo server
-// const zeroDateTime = "0999-12-31 14:41:01"
-const initDateTime = "2001-01-01 00:00:00" // For UCT server
-const initTime = "00:00:00" // For UCT server
-const zeroDateTime = "1000-01-01 00:00:00"
+let initDateTime, initTime, zeroDateTime
+if (process.platform === 'darwin') {
+  initDateTime = "2000-12-31 15:00:00" // For Asia/Tokyo server
+  initTime = "15:00:00" // For Asia/Tokyo server
+  zeroDateTime = "0999-12-31 14:41:01"
+} else {
+  initDateTime = "2001-01-01 00:00:00" // For UCT server
+  initTime = "00:00:00" // For UCT server
+  zeroDateTime = "1000-01-01 00:00:00"
+}
 
 describe('Editing Page Date/Time Fields', () => {
   it('can open with the valid title.', async () => {
@@ -52,7 +56,7 @@ describe('Editing Page Date/Time Fields', () => {
     await expect(EditingPage.fieldDt2Textfield).toExist()
     await expect(EditingPage.fieldDt2Textfield).toHaveValue("") // Checking initial value
 
-   const value = new Date().toISOString().substring(0, 19).replace("T", " ")
+    const value = new Date().toISOString().substring(0, 19).replace("T", " ")
     await EditingPage.fieldDt2Textfield.setValue(value) // Set a value to the field
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
