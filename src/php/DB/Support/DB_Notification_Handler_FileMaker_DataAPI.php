@@ -13,12 +13,14 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\DB\Support;
+
 use DateTime;
 use Exception;
 
 class DB_Notification_Handler_FileMaker_DataAPI
-    extends DB_Notification_Common 
+    extends DB_Notification_Common
     implements DB_Interface_Registering
 {
     /*
@@ -46,10 +48,10 @@ class DB_Notification_Handler_FileMaker_DataAPI
             'registereddt' => $currentDTFormat,
         ));
         if (!is_numeric($recordId)) {
-            $this->dbClass->errorMessageStore (
-                $this->dbClass->stringWithoutCredential (
+            $this->dbClass->errorMessageStore(
+                $this->dbClass->stringWithoutCredential(
                     "FMDataAPI reports error at insert action: " .
-                    "code={$result['errorCode']}, url={$result['URL']}"
+                    "code={$this->dbClass->fmData->errorCode()}, message={$this->dbClass->fmData->errorMessage()}"
                 )
             );
             return false;
@@ -75,13 +77,13 @@ class DB_Notification_Handler_FileMaker_DataAPI
                     $this->logger->setDebugMessage(
                         $this->dbClass->stringWithoutCredential(
                             "FMDataAPI reports error at insert action: " .
-                            "code={$result['errorCode']}, url={$result['URL']}"
+                            "code={$this->dbClass->fmData->errorCode()}, message={$this->dbClass->fmData->errorMessage()}"
                         )
                     );
                     $this->dbClass->errorMessageStore(
                         $this->dbClass->stringWithoutCredential(
                             "FMDataAPI reports error at insert action: " .
-                            "code={$result['errorCode']}, url={$result['URL']}"
+                            "code={$this->dbClass->fmData->errorCode()}, message={$this->dbClass->fmData->errorMessage()}"
                         )
                     );
                     return false;
@@ -125,7 +127,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
             $this->dbClass->errorMessageStore(
                 $this->dbClass->stringWithoutCredential(
                     "FMDataAPI reports error at find action: " .
-                    "code={$result['errorCode']}, url={$result['URL']}"
+                    "code={$this->dbClass->fmData->errorCode()}, message={$this->dbClass->fmData->errorMessage()}"
                 )
             );
             return false;
@@ -140,7 +142,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
         $pksTable = $this->dbSettings->registerPKTableName;
         $originPK = $pkArray[0];
         $this->dbClass->setupFMDataAPIforDB($regTable, 'all');
-        $conditions = array(array('entity' => $entity), array('clientid' => $clientId,  "omit"=>"true"));
+        $conditions = array(array('entity' => $entity), array('clientid' => $clientId, "omit" => "true"));
         $sort = array(array('clientid', 'ascend'));
         try {
             $result = $this->dbClass->fmData->{$regTable}->query($conditions, $sort);
@@ -153,11 +155,11 @@ class DB_Notification_Handler_FileMaker_DataAPI
             $this->dbClass->errorMessageStore(
                 $this->dbClass->stringWithoutCredential(
                     "FMDataAPI reports error at find action: " .
-                    "code={$result['errorCode']}, url={$result['URL']}"
+                    "code={$this->dbClass->fmData->errorCode()}, message={$this->dbClass->fmData->errorMessage()}"
                 )
             );
         } else {
-            if ($result->count() > 0) {
+            if ($this->dbClass->fmData->getFoundCount() > 0) {
                 foreach ($result as $record) {
                     $targetId = $record->id;
                     $targetClient = $record->clientid;
@@ -181,7 +183,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
                 $this->dbClass->errorMessageStore(
                     $this->dbClass->stringWithoutCredential(
                         "FMDataAPI reports error at find action: " .
-                        "code={$result['errorCode']}, url={$result['URL']}"
+                        "code={$this->dbClass->fmData->errorCode()}, message={$this->dbClass->fmData->errorMessage()}"
                     )
                 );
             }
@@ -207,12 +209,12 @@ class DB_Notification_Handler_FileMaker_DataAPI
             $this->dbClass->errorMessageStore(
                 $this->dbClass->stringWithoutCredential(
                     "FMDataAPI reports error at find action: " .
-                    "code={$result['errorCode']}, url={$result['URL']}"
+                    "code={$this->dbClass->fmData->errorCode()}, message={$this->dbClass->fmData->errorMessage()}"
                 )
             );
             return false;
         } else {
-            if ($result->count() > 0) {
+            if ($this->dbClass->fmData->getFoundCount() > 0) {
                 foreach ($result as $record) {
                     $targetId = $record->id;
                     $targetClients[] = $record->clientid;
@@ -221,12 +223,12 @@ class DB_Notification_Handler_FileMaker_DataAPI
                         'context_id' => $targetId,
                         'pk' => $pkArray[0],
                     ));
-    
+
                     if (!is_numeric($recordId)) {
                         $this->dbClass->errorMessageStore(
                             $this->dbClass->stringWithoutCredential(
                                 "FMDataAPI reports error at insert action: " .
-                                "code={$result['errorCode']}, url={$result['URL']}"
+                                "code={$this->dbClass->fmData->errorCode()}, message={$this->dbClass->fmData->errorMessage()}"
                             )
                         );
                         return false;
@@ -255,12 +257,12 @@ class DB_Notification_Handler_FileMaker_DataAPI
             $this->dbClass->errorMessageStore(
                 $this->dbClass->stringWithoutCredential(
                     "FMDataAPI reports error at find action: " .
-                    "code={$result['errorCode']}, url={$result['URL']}"
+                    "code={$this->dbClass->fmData->errorCode()}, message={$this->dbClass->fmData->errorMessage()}"
                 )
             );
             return false;
         } else {
-            if ($result->count() > 0) {
+            if ($this->dbClass->fmData->getFoundCount() > 0) {
                 foreach ($result as $record) {
                     $targetId = $record->id;
                     $targetClients[] = $record->clientid;
