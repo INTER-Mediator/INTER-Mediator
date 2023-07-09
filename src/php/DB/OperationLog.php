@@ -89,7 +89,7 @@ class OperationLog
                     $cookieNameUser .= ('_' . str_replace(" ", "_",
                             str_replace(".", "_", $this->contextOptions['authentication']['realm']) ?? ""));
                 }
-                $userValue = isset($_COOKIE[$cookieNameUser]) ? $_COOKIE[$cookieNameUser] : '';
+                $userValue = $_COOKIE[$cookieNameUser] ?? '';
             }
             $dbInstance->dbSettings->addValueWithField("user", $userValue);
             $dbInstance->dbSettings->addValueWithField("client_id_in", $_POST['clientid'] ?? '');

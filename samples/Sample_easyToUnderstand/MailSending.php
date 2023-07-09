@@ -1,4 +1,7 @@
 <?php
+
+use INTERMediator\DB\Extending\AfterCreate;
+
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -13,7 +16,7 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-class MailSending implements \INTERMediator\DB\Extending\AfterCreate
+class MailSending implements AfterCreate
 {
     public function doAfterCreateToDB($result)
     {

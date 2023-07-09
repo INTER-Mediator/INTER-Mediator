@@ -19,7 +19,7 @@
  */
 /**
  *
- * Usually you don't have to instanciate this class with new operator.
+ * Usually you don't have to instantiate this class with new operator.
  * @constructor
  */
 const IMLib = {
@@ -84,7 +84,7 @@ const INTERMediatorLib = {
 
   // Refer to: https://qiita.com/amamamaou/items/ef0b797156b324bb4ef3
   isObject: (val) => {
-    return Object.prototype.toString.call(val).slice(8, -1).toLowerCase() == 'object'
+    return Object.prototype.toString.call(val).slice(8, -1).toLowerCase() === 'object'
   },
 
   isArray: (val) => {
@@ -96,15 +96,15 @@ const INTERMediatorLib = {
   },
 
   isNull: (val) => {
-    return Object.prototype.toString.call(val).slice(8, -1).toLowerCase() == 'null'
+    return Object.prototype.toString.call(val).slice(8, -1).toLowerCase() === 'null'
   },
 
   isUndefined: (val) => {
-    return Object.prototype.toString.call(val).slice(8, -1).toLowerCase() == 'undefined'
+    return Object.prototype.toString.call(val).slice(8, -1).toLowerCase() === 'undefined'
   },
 
   isBoolean: (val) => {
-    return Object.prototype.toString.call(val).slice(8, -1).toLowerCase() == 'boolean'
+    return Object.prototype.toString.call(val).slice(8, -1).toLowerCase() === 'boolean'
   },
 
   markProcessed: function (node) {
@@ -131,27 +131,25 @@ const INTERMediatorLib = {
     return nodeAttr && nodeAttr.match(/insert/)
   },
 
-  generatePasswordHash: function (password) {
+  generateSalt() {
     'use strict'
-    const numToHex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']
     let salt = ''
     let saltHex = ''
     for (let i = 0; i < 4; i += 1) {
       const code = Math.floor(Math.random() * (128 - 32) + 32)
-      const lowCode = code & 0xF
-      const highCode = (code >> 4) & 0xF
       salt += String.fromCharCode(code)
-      saltHex += numToHex[highCode] + numToHex[lowCode]
+      saltHex += code.toString(16)
     }
-    let shaObj = null
-    if (INTERMediatorOnPage.passwordHash > 1.4 || INTERMediatorOnPage.alwaysGenSHA2) {
-      shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
-    } else {
-      shaObj = new jsSHA('SHA-1', 'TEXT')
-    }
+    return [salt, saltHex]
+  },
+
+  generatePasswordHash: function (password) {
+    'use strict'
+    let shaObj = (INTERMediatorOnPage.passwordHash > 1.4 || INTERMediatorOnPage.alwaysGenSHA2)
+      ? new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000}) : new jsSHA('SHA-1', 'TEXT')
+    const [salt, saltHex] = INTERMediatorLib.generateSalt()
     shaObj.update(password + salt)
-    let hash = shaObj.getHash('HEX')
-    return encodeURIComponent(hash + saltHex)
+    return encodeURIComponent(shaObj.getHash('HEX') + saltHex)
   },
 
   getParentRepeater: function (node) {
@@ -320,7 +318,7 @@ const INTERMediatorLib = {
   },
 
   /**
-   * Cheking the argument is the Linked Element or not.
+   * Checking the argument is the Linked Element or not.
    */
 
   isLinkedElement: function (node) {
@@ -334,7 +332,7 @@ const INTERMediatorLib = {
         if (node.getAttribute('TITLE') !== null && node.getAttribute('TITLE').length > 0) {
           // IE: If the node doesn't have a title attribute, getAttribute
           // doesn't return null.
-          // So it requrired check if it's empty string.
+          // So it required check if it's empty string.
           return true
         }
       }
@@ -397,7 +395,7 @@ const INTERMediatorLib = {
 
   getEnclosure: function (node) {
     'use strict'
-    let detectedRepeater
+    let detectedRepeater = null
     let currentNode = node
     while (currentNode !== null) {
       if (INTERMediatorLib.isRepeater(currentNode, true)) {
@@ -411,7 +409,7 @@ const INTERMediatorLib = {
     return null
 
     /**
-     * Check the pair of nodes in argument is valid for repater/enclosure.
+     * Check the pair of nodes in argument is valid for repeater/enclosure.
      */
 
     function isRepeaterOfEnclosure(repeater, enclosure) {
@@ -574,7 +572,7 @@ const INTERMediatorLib = {
     }
     const comps = nodeInfo.split(INTERMediator.separator)
     let tableName = ''
-    let fieldName = ''
+    let fieldName
     let targetName = ''
     if (comps.length === 3) {
       tableName = comps[0]
@@ -625,7 +623,7 @@ const INTERMediatorLib = {
     }
     const comps = attribute.split(INTERMediator.separator)
     let tableName = ''
-    let fieldName = ''
+    let fieldName
     let targetName = ''
     if (comps.length === 3) {
       tableName = comps[0]
@@ -657,9 +655,9 @@ const INTERMediatorLib = {
   removeEvent: function (serialId) {
     'use strict'
     if (this.eventInfos[serialId].node.removeEventListener) {
-      this.eventInfos[serialId].node.removeEventListener(this.eventInfos[serialId].evt, this.eventInfos[serialId].func, false)
+      this.eventInfos[serialId].node.removeEventListener(this.eventInfos[serialId].event, this.eventInfos[serialId].func, false)
     } else if (this.eventInfos[serialId].node.detachEvent) {
-      this.eventInfos[serialId].node.detachEvent('on' + this.eventInfos[serialId].evt, this.eventInfos[serialId].func)
+      this.eventInfos[serialId].node.detachEvent('on' + this.eventInfos[serialId].event, this.eventInfos[serialId].func)
     }
   },
 
@@ -690,7 +688,7 @@ const INTERMediatorLib = {
   /**
    * This method returns the rounded value of the 1st parameter to the 2nd parameter from decimal point.
    * @param {number} value The source value.
-   * @param {integer} digit Positive number means after the decimal point, and negative menas before it.
+   * @param {number} digit Positive number means after the decimal point, and negative means before it.
    * @returns {number}
    */
   Round: function (value, digit) {
@@ -874,10 +872,7 @@ const INTERMediatorLib = {
     if (!element || !element.tagName) {
       return false
     }
-    if (element.tagName === 'SELECT') {
-      return true
-    }
-    return false
+    return element.tagName === 'SELECT';
   },
 
   /*
@@ -1053,9 +1048,9 @@ const INTERMediatorLib = {
   clearErrorMessage: function (node) {
     'use strict'
     if (node) {
-      const errorMsgs = INTERMediatorLib.getElementsByClassName(node.parentNode, '_im_alertmessage')
-      for (let j = 0; j < errorMsgs.length; j++) {
-        errorMsgs[j].parentNode.removeChild(errorMsgs[j])
+      const errorMessages = INTERMediatorLib.getElementsByClassName(node.parentNode, '_im_alertmessage')
+      for (let j = 0; j < errorMessages.length; j++) {
+        errorMessages[j].parentNode.removeChild(errorMessages[j])
       }
     }
   },
@@ -1064,56 +1059,56 @@ const INTERMediatorLib = {
     'use strict'
     dt = (!dt) ? new Date() : dt
     if (INTERMediatorOnPage.isFollowingTimezone) {
-      return dt.getUTCFullYear() + '-' + ('0' + (dt.getUTCMonth() + 1)).substr(-2, 2) + '-' +
-        ('0' + dt.getUTCDate()).substr(-2, 2) + ' ' + ('0' + dt.getUTCHours()).substr(-2, 2) + ':' +
-        ('0' + dt.getUTCMinutes()).substr(-2, 2) + ':' + ('0' + dt.getUTCSeconds()).substr(-2, 2)
+      return dt.getUTCFullYear() + '-' + ('0' + (dt.getUTCMonth() + 1)).slice(-2) + '-' +
+        ('0' + dt.getUTCDate()).slice(-2) + ' ' + ('0' + dt.getUTCHours()).slice(-2) + ':' +
+        ('0' + dt.getUTCMinutes()).slice(-2) + ':' + ('0' + dt.getUTCSeconds()).slice(-2)
     }
-    return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '-' +
-      ('0' + dt.getDate()).substr(-2, 2) + ' ' + ('0' + dt.getHours()).substr(-2, 2) + ':' +
-      ('0' + dt.getMinutes()).substr(-2, 2) + ':' + ('0' + dt.getSeconds()).substr(-2, 2)
+    return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).slice(-2) + '-' +
+      ('0' + dt.getDate()).slice(-2) + ' ' + ('0' + dt.getHours()).slice(-2) + ':' +
+      ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2)
   },
 
   dateTimeStringFileMaker: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
     if (INTERMediatorOnPage.isFollowingTimezone) {
-      return ('0' + (dt.getUTCMonth() + 1)).substr(-2, 2) + '/' + ('0' + dt.getUTCDate()).substr(-2, 2) + '/' +
-        dt.getUTCFullYear() + ' ' + ('0' + dt.getUTCHours()).substr(-2, 2) + ':' +
-        ('0' + dt.getUTCMinutes()).substr(-2, 2) + ':' + ('0' + dt.getUTCSeconds()).substr(-2, 2)
+      return ('0' + (dt.getUTCMonth() + 1)).slice(-2) + '/' + ('0' + dt.getUTCDate()).slice(-2) + '/' +
+        dt.getUTCFullYear() + ' ' + ('0' + dt.getUTCHours()).slice(-2) + ':' +
+        ('0' + dt.getUTCMinutes()).slice(-2) + ':' + ('0' + dt.getUTCSeconds()).slice(-2)
     }
-    return ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '/' + ('0' + dt.getDate()).substr(-2, 2) + '/' +
-      dt.getFullYear() + ' ' + ('0' + dt.getHours()).substr(-2, 2) + ':' +
-      ('0' + dt.getMinutes()).substr(-2, 2) + ':' + ('0' + dt.getSeconds()).substr(-2, 2)
+    return ('0' + (dt.getMonth() + 1)).slice(-2) + '/' + ('0' + dt.getDate()).slice(-2) + '/' +
+      dt.getFullYear() + ' ' + ('0' + dt.getHours()).slice(-2) + ':' +
+      ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2)
   },
 
   dateStringISO: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
     if (INTERMediatorOnPage.isFollowingTimezone) {
-      return dt.getUTCFullYear() + '-' + ('0' + (dt.getUTCMonth() + 1)).substr(-2, 2) +
-        '-' + ('0' + dt.getUTCDate()).substr(-2, 2)
+      return dt.getUTCFullYear() + '-' + ('0' + (dt.getUTCMonth() + 1)).slice(-2) +
+        '-' + ('0' + dt.getUTCDate()).slice(-2)
     }
-    return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).substr(-2, 2) +
-      '-' + ('0' + dt.getDate()).substr(-2, 2)
+    return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).slice(-2) +
+      '-' + ('0' + dt.getDate()).slice(-2)
   },
 
   dateStringFileMaker: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
     if (INTERMediatorOnPage.isFollowingTimezone) {
-      return ('0' + (dt.getUTCMonth() + 1)).substr(-2, 2) + '/' +
-        ('0' + dt.getUTCDate()).substr(-2, 2) + '/' + dt.getUTCFullYear()
+      return ('0' + (dt.getUTCMonth() + 1)).slice(-2) + '/' +
+        ('0' + dt.getUTCDate()).slice(-2) + '/' + dt.getUTCFullYear()
     }
-    return ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '/' +
-      ('0' + dt.getDate()).substr(-2, 2) + '/' + dt.getFullYear()
+    return ('0' + (dt.getMonth() + 1)).slice(-2) + '/' +
+      ('0' + dt.getDate()).slice(-2) + '/' + dt.getFullYear()
   },
 
   timeString: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
-    return ('0' + dt.getHours()).substr(-2, 2) + ':' +
-      ('0' + dt.getMinutes()).substr(-2, 2) + ':' +
-      ('0' + dt.getSeconds()).substr(-2, 2)
+    return ('0' + dt.getHours()).slice(-2) + ':' +
+      ('0' + dt.getMinutes()).slice(-2) + ':' +
+      ('0' + dt.getSeconds()).slice(-2)
   },
 
   mergeURLParameter: function (url, key, value) {

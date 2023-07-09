@@ -20,6 +20,7 @@ use INTERMediator\IMUtil;
 use INTERMediator\OAuthAuth;
 use INTERMediator\Params;
 use PDO;
+use Exception;
 
 class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
 {
@@ -443,13 +444,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return $this->privateGetUserIdFromUsername($username, true);
     }
 
-    private $overLimitDTUser;
-
     private function privateGetUserIdFromUsername($username, $isCheckLimit)
     {
         $this->logger->setDebugMessage("[privateGetUserIdFromUsername]username ={$username}", 2);
 
-        $this->overLimitDTUser = false;
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
             return false;
@@ -469,12 +467,14 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         }
         $this->logger->setDebugMessage("[privateGetUserIdFromUsername] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            if (!$isCheckLimit || is_null($row['limitdt'])) {
+                return $row['id'];
+            }
             if ($isCheckLimit && isset($row['limitdt']) && !is_null($row['limitdt'])) {
-                if (time() - strtotime($row['limitdt']) > $this->dbSettings->getSAMLExpiringSeconds()) {
-                    $this->overLimitDTUser = false;
+                if (time() - strtotime($row['limitdt']) <= $this->dbSettings->getSAMLExpiringSeconds()) {
+                    return $row['id'];
                 }
             }
-            return $row['id'];
         }
         return false;
     }
@@ -551,24 +551,20 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $this->belongGroups = array();
         $this->resolveGroup($userid);
 
-        $this->candidateGroups = array();
+        $candidateGroups = array();
         foreach ($this->belongGroups as $groupid) {
-            $this->candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
+            $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
         }
-        if (count($this->candidateGroups) == 0) {
+        if (count($candidateGroups) == 0) {
             $defaultGroup = Params::getParameterValue("defaultGroupName", false);
             if ($defaultGroup) {
-                $this->candidateGroups = [$defaultGroup];
+                $candidateGroups = [$defaultGroup];
             }
         }
-        return $this->candidateGroups;
+        return $candidateGroups;
     }
 
-    /**
-     * @var
-     */
-    private
-        $candidateGroups;
+
     /**
      * @var
      */

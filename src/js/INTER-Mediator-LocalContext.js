@@ -85,7 +85,7 @@ const IMLibLocalContext = {
 
   archive: function () {
     'use strict'
-    const x = INTERMediator.getLocalProperty('_im_startFrom', 0)
+    // const x = INTERMediator.getLocalProperty('_im_startFrom', 0)
     INTERMediatorOnPage.removeCookie('_im_localcontext')
     let jsonString = JSON.stringify(this.store)
     if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
@@ -101,7 +101,7 @@ const IMLibLocalContext = {
 
   unarchive: function () {
     'use strict'
-    const x = INTERMediator.getLocalProperty('_im_startFrom', 0)
+    // const x = INTERMediator.getLocalProperty('_im_startFrom', 0)
     let localContext
     if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
       try {
@@ -176,7 +176,7 @@ const IMLibLocalContext = {
               IMLibKeyDownEventDispatch.setExecuteByCode(idValue, 'Enter', (function () {
                 const contextName = params[1]
                 return async function (event) {
-                  if (event.keyCode == 13) {
+                  if (event.keyCode === 13) {
                     updateFirstContext(contextName)
                   }
                   /* We understand the keyCode property is already deprecated. But the code property is "Enter" for

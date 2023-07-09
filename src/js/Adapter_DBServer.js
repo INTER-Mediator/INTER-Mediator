@@ -90,7 +90,7 @@ const INTERMediator_DBAdapter = {
     return authParams
   },
 
-  store_challenge: function (challenge, isChallange) {
+  store_challenge: function (challenge, isChallenge) {
     'use strict'
     if (challenge !== null) {
       const len = 48
@@ -107,7 +107,7 @@ const INTERMediator_DBAdapter = {
         INTERMediatorLog.setDebugMessage('store_challenge/authUserSalt=' + INTERMediatorOnPage.authUserSalt)
       }
     }
-    if (!isChallange && INTERMediatorOnPage.authStoring == 'credential') {
+    if (!isChallenge && INTERMediatorOnPage.authStoring === 'credential') {
       INTERMediatorOnPage.authChallenge = ''
     }
   },
@@ -222,7 +222,7 @@ const INTERMediator_DBAdapter = {
               if (INTERMediatorOnPage.isSAML) {
                 if (jsonObject.samluser) {
                   INTERMediatorOnPage.authUser(jsonObject.samluser)
-                  if (INTERMediatorOnPage.authStoring != 'credential') {
+                  if (INTERMediatorOnPage.authStoring !== 'credential') {
                     INTERMediatorOnPage.authHashedPassword(jsonObject.temppw)
                     INTERMediatorOnPage.authHashedPassword2m(jsonObject.temppw)
                     INTERMediatorOnPage.authHashedPassword2(jsonObject.temppw)
@@ -301,7 +301,7 @@ const INTERMediator_DBAdapter = {
         if (fData) {
           for (const param of authParams.split('&')) {
             const comp = param.split('=')
-            if (comp.length == 2 && comp[0].length > 0) {
+            if (comp.length === 2 && comp[0].length > 0) {
               fData.append(comp[0], decodeURIComponent(comp[1]))
             }
           }
@@ -1003,7 +1003,7 @@ const INTERMediator_DBAdapter = {
     'use strict'
     let isFormData = false, paramsStr = '', paramsFD = null
     for (const def of args.dataset) { // Checking the multi parted form data is required.
-      if (def.value && def.value.file && def.value.kind && def.value.kind == 'attached') {
+      if (def.value && def.value.file && def.value.kind && def.value.kind === 'attached') {
         isFormData = true
       }
     }
@@ -1087,7 +1087,7 @@ const INTERMediator_DBAdapter = {
         if (addedObject.hasOwnProperty(index)) {
           let oneDefinition = addedObject[index]
           if (oneDefinition.value && oneDefinition.value.file
-            && oneDefinition.value.kind && oneDefinition.value.kind == 'attached') {
+            && oneDefinition.value.kind && oneDefinition.value.kind === 'attached') {
             params.append('value_' + counterAttach, oneDefinition.value.name)
             fields += (fields.length === 0 ? '' : ',') + oneDefinition.field
             counterAttach++
@@ -1101,7 +1101,7 @@ const INTERMediator_DBAdapter = {
     }
     for (i = 0; i < args.dataset.length; i++) {
       if (args.dataset[i].value && args.dataset[i].value.file
-        && args.dataset[i].value.kind && args.dataset[i].value.kind == 'attached') {
+        && args.dataset[i].value.kind && args.dataset[i].value.kind === 'attached') {
         params.append('attach_' + counterAttach, args.dataset[i].value.file, args.dataset[i].value.file.name)
         fields += (fields.length === 0 ? '' : ',') + args.dataset[i].field
         counterAttach++

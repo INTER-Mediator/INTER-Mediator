@@ -392,14 +392,13 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         $this->firstLevel = true;
         $this->belongGroups = array();
         $this->resolveGroup($userid);
-        $this->candidateGroups = array();
+        $candidateGroups = array();
         foreach ($this->belongGroups as $groupid) {
-            $this->candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
+            $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
         }
-        return $this->candidateGroups;
+        return $candidateGroups;
     }
 
-    private $candidateGroups;
     private $belongGroups;
     private $firstLevel;
 
@@ -494,7 +493,6 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
                 break;
             case  'field_group':
                 throw new Exception('The authSupportCheckMediaPrivilege method has to modify for field-group targeting.');
-                break;
             default: // 'context_auth' or 'no_auth'
                 throw new Exception('Unexpected authSupportCheckMediaPrivilege method usage.');
         }
@@ -560,8 +558,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         }
         $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         foreach ($result['data'] as $key => $row) {
-            $userID = $row['user_id'][0];
-            return $userID;
+            return $row['user_id'][0];
         }
         return false;
 

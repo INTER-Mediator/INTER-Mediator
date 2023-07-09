@@ -16,6 +16,7 @@
 
 namespace INTERMediator\Media;
 
+use Exception;
 use INTERMediator\IMUtil;
 use INTERMediator\DB\Proxy;
 use INTERMediator\Params;
@@ -32,7 +33,7 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
      * @param $file
      * @param string $dq
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function getMedia($file, $target, $dbProxyInstance)
     {
@@ -71,7 +72,7 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
                     $content = curl_exec($session);
                     curl_close($session);
                 } else {
-                    throw new \Exception("CURL doesn't installed here.");
+                    throw new Exception("CURL doesn't installed here.");
                 }
             } else { // Other settings
                 $dbProxyInstance->dbClass->setupFMDataAPIforDB(NULL, 1);
@@ -87,7 +88,7 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
                 $content = curl_exec($session);
                 curl_close($session);
             } else {
-                throw new \Exception("CURL doesn't installed here.");
+                throw new Exception("CURL doesn't installed here.");
             }
         }
         return $content;

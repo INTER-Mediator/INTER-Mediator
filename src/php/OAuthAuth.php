@@ -145,12 +145,11 @@ class OAuthAuth
         }
         $this->errorMessage = array_merge($this->errorMessage, $dbProxy->logger->getErrorMessages());
 
-        $oAuthStoring = isset($_COOKIE["_im_oauth_storing"]) ? $_COOKIE["_im_oauth_storing"] : "";
+        $oAuthStoring = $_COOKIE["_im_oauth_storing"] ?? "";
         $oAuthStoring = $oAuthStoring == 'session-storage' ? "true" : "false";
-        $oAuthRealm = isset($_COOKIE["_im_oauth_realm"]) ? $_COOKIE["_im_oauth_realm"] : "";
+        $oAuthRealm = $_COOKIE["_im_oauth_realm"] ?? "";
 
-        $this->jsCode = '';
-        $this->jsCode .= 'function setAnyStore(key, val) {';
+        $this->jsCode = 'function setAnyStore(key, val) {';
         $this->jsCode .= "let isSession = {$oAuthStoring}, realm = '{$oAuthRealm}';";
         $this->jsCode .= 'let d, isFinish = false, ex = 3600, authKey;';
         $this->jsCode .= 'd = new Date();d.setTime(d.getTime() + ex * 1000);';

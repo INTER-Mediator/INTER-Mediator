@@ -15,11 +15,7 @@
 
 namespace INTERMediator;
 
-use Aws\Credentials\Credentials;
-use Aws\S3\Exception\S3Exception;
-use Aws\S3\S3Client;
-use msyk\DropboxAPIShortLivedToken\DropboxClientModified;
-use msyk\DropboxAPIShortLivedToken\AutoRefreshingDropBoxTokenService;
+use Exception;
 
 /**
  *
@@ -108,7 +104,7 @@ class MediaAccess
      * @param $options
      * @param $file
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function processing($dbProxyInstance, $options, $file)
     {
@@ -224,7 +220,7 @@ class MediaAccess
                 $this->outputImage($content);
 
             }
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $this->errorHandling($ex->getMessage());
             $this->exitAsError(500);
         }
@@ -234,7 +230,7 @@ class MediaAccess
      * @param $isURL
      * @param $target
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     private function getClassNameForMedia($isURL, $target)
     {
@@ -249,7 +245,7 @@ class MediaAccess
         } else if (stripos($target, 'file://') === 0) {
             $className = "FileURL";
         } else {
-            throw new \Exception('Undefined schema in URL.');
+            throw new Exception('Undefined schema in URL.');
         }
         return "INTERMediator\\Media\\{$className}";
     }
@@ -271,7 +267,7 @@ class MediaAccess
 
     /**
      * @param $code int any error code, but supported just 204, 401 and 500.
-     * @throws \Exception happens anytime.
+     * @throws Exception happens anytime.
      */
     private function exitAsError($code)
     {
@@ -291,7 +287,7 @@ class MediaAccess
                 break;
             default: // for debug purpose mainly.
         }
-        throw new \Exception('Respond HTTP Error.');
+        throw new Exception('Respond HTTP Error.');
     }
 
     /**
@@ -473,7 +469,7 @@ class MediaAccess
                         if ($image !== false) {
                             try {
                                 $exif = @exif_read_data($tempPath);
-                            } catch (\Exception $ex) {
+                            } catch (Exception $ex) {
                                 $exif = false;
                             }
                             if ($exif !== false && !empty($exif['Orientation'])) {

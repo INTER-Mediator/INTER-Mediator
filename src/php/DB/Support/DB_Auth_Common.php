@@ -16,8 +16,6 @@
 
 namespace INTERMediator\DB\Support;
 
-use INTERMediator\Params;
-
 abstract class DB_Auth_Common implements Auth_Interface_CommonDB
 {
     protected $dbSettings = null;
@@ -138,8 +136,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
                 break;
             }
         }
-        $result = array_values(array_unique($groupsArray));
-        return $result;
+        return array_values(array_unique($groupsArray));
     }
 
 }

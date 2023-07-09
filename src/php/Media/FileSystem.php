@@ -16,6 +16,7 @@
 
 namespace INTERMediator\Media;
 
+use Exception;
 use INTERMediator\IMUtil;
 use INTERMediator\DB\Proxy;
 use INTERMediator\Locale\IMLocaleFormatTable;
@@ -32,16 +33,15 @@ class FileSystem implements UploadingSupport, DownloadingSupport
      * @param $target
      * @param string $dq
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
 
     public function getMedia($file, $target, $dbProxyInstance)
     {
         if (!empty($file) && !file_exists($target)) {
-            throw new \Exception("[INTER-Mediator] The file does't exist: {$target}.");
+            throw new Exception("[INTER-Mediator] The file does't exist: {$target}.");
         }
-        $content = file_get_contents($target);
-        return $content;
+        return file_get_contents($target);
     }
 
     /**
@@ -117,7 +117,7 @@ class FileSystem implements UploadingSupport, DownloadingSupport
             . $this->justfyPathComponent($targetFieldName, $uploadFilePathMode);
         try {
             $rand4Digits = random_int(1000, 9999);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $rand4Digits = rand(1000, 9999);
         }
         $filePartialPath = $dirPath . '/' . $filePathInfo['filename'] . '_'
@@ -200,7 +200,7 @@ class FileSystem implements UploadingSupport, DownloadingSupport
                     foreach ($dbProxyContext['file-upload'] as $item) {
                         if ($item['field'] == $targetFieldName) {
                             $relatedContext = new Proxy();
-                            $relatedContext->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : null);
+                            $relatedContext->initialize($datasource, $options, $dbspec, $debug, $item['context'] ?? null);
                             $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
                             $fields = array();
                             $values = array();
@@ -283,36 +283,36 @@ class FileSystem implements UploadingSupport, DownloadingSupport
         [$import1stLine, $importSkipLines, $importFormat, $useReplace, $convert2Number, $convert2Date, $convert2DateTime]
             = Params::getParameterValue(["import1stLine", "importSkipLines", "importFormat", "useReplace",
             "convert2Number", "convert2Date", "convert2DateTime"], [true, 0, 'CSV', false, [], [], [],]);
-        $import1stLine = (isset($dbContext['import']) && isset($dbContext['import']['1st-line']))
+        $import1stLine = (isset($dbContext['import']['1st-line']))
             ? $dbContext['import']['1st-line']
-            : ((isset($options['import']) && isset($options['import']['1st-line']))
+            : ((isset($options['import']['1st-line']))
                 ? $options['import']['1st-line'] : $import1stLine);
-        $importSkipLines = (isset($dbContext['import']) && isset($dbContext['import']['skip-lines']))
+        $importSkipLines = (isset($dbContext['import']['skip-lines']))
             ? $dbContext['import']['skip-lines']
-            : (intval((isset($options['import']) && isset($options['import']['skip-lines']))
+            : (intval((isset($options['import']['skip-lines']))
                 ? $options['import']['skip-lines'] : $importSkipLines));
-        $importFormat = (isset($dbContext['import']) && isset($dbContext['import']['format']))
+        $importFormat = (isset($dbContext['import']['format']))
             ? $dbContext['import']['format']
-            : ((isset($options['import']) && isset($options['import']['format']))
+            : ((isset($options['import']['format']))
                 ? $options['import']['format'] : $importFormat);
         $separator = (strtolower($importFormat) == 'tsv') ? "\t" : ",";
-        $useReplace = boolval((isset($dbContext['import']) && isset($dbContext['import']['use-replace']))
+        $useReplace = boolval((isset($dbContext['import']['use-replace']))
             ? $dbContext['import']['use-replace']
-            : ((isset($options['import']) && isset($options['import']['use-replace']))
+            : ((isset($options['import']['use-replace']))
                 ? $options['import']['use-replace'] : $useReplace));
-        $convert2Number = (isset($dbContext['import']) && isset($dbContext['import']['convert-number']))
+        $convert2Number = (isset($dbContext['import']['convert-number']))
             ? $dbContext['import']['convert-number']
-            : ((isset($options['import']) && isset($options['import']['convert-number']))
+            : ((isset($options['import']['convert-number']))
                 ? $options['import']['convert-number'] : $convert2Number);
         $convert2Number = is_array($convert2Number) ? $convert2Number : [];
-        $convert2Date = (isset($dbContext['import']) && isset($dbContext['import']['convert-date']))
+        $convert2Date = (isset($dbContext['import']['convert-date']))
             ? $dbContext['import']['convert-date']
-            : ((isset($options['import']) && isset($options['import']['convert-date']))
+            : ((isset($options['import']['convert-date']))
                 ? $options['import']['convert-date'] : $convert2Date);
         $convert2Date = is_array($convert2Date) ? $convert2Date : [];
-        $convert2DateTime = (isset($dbContext['import']) && isset($dbContext['import']['convert-datetime']))
+        $convert2DateTime = (isset($dbContext['import']['convert-datetime']))
             ? $dbContext['import']['convert-datetime']
-            : ((isset($options['import']) && isset($options['import']['convert-datetime']))
+            : ((isset($options['import']['convert-datetime']))
                 ? $options['import']['convert-datetime'] : $convert2DateTime);
         $convert2DateTime = is_array($convert2DateTime) ? $convert2DateTime : [];
 
@@ -352,7 +352,7 @@ class FileSystem implements UploadingSupport, DownloadingSupport
                         if ($index < count($importingFields)) {
                             $field = $importingFields[$index];
                             if ($field !== '_') { // The '_' field is gonna ignore.
-                                if (array_search($field, $convert2Number) !== false) {
+                                if (in_array($field, $convert2Number)) {
                                     $original = $value;
                                     $value = '';
                                     for ($i = 0; $i < strlen($original); $i++) {
@@ -362,18 +362,18 @@ class FileSystem implements UploadingSupport, DownloadingSupport
                                         }
                                     }
                                 }
-                                if (array_search($field, $convert2Date) !== false) {
+                                if (in_array($field, $convert2Date)) {
                                     try {
                                         $dt = new \DateTime($value);
-                                    } catch (\Exception $ex) {
+                                    } catch (Exception $ex) {
                                         $dt = new \DateTime("0001-01-01 00:00:00");
                                     }
                                     $value = $dt->format('Y-m-d');
                                 }
-                                if (array_search($field, $convert2DateTime) !== false) {
+                                if (in_array($field, $convert2DateTime)) {
                                     try {
                                         $dt = new \DateTime($value);
-                                    } catch (\Exception $ex) {
+                                    } catch (Exception $ex) {
                                         $dt = new \DateTime("0001-01-01 00:00:00");
                                     }
                                     $value = $dt->format('Y-m-d H:i:s');

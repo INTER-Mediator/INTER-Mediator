@@ -755,7 +755,7 @@ const INTERMediator = {
       IMLibLocalContext.bindingDescendant(node)
 
       /** --------------------------------------------------------------------
-       * Expanding enclosure as usual (means not 'cross tabole').
+       * Expanding enclosure as usual (means not 'cross table').
        */
       async function enclosureProcessing(enclosureNode, repeatersOriginal, currentRecord, parentObjectInfo,
                                          currentContextObj, procBeforeRetrieve, customExpandRepeater) {
@@ -891,11 +891,7 @@ const INTERMediator = {
         }
 
         function seekWithAttribute(node, attrName) {
-          if (!node || node.nodeType !== 1) {
-            return null
-          }
-          let result = seekWithAttributeImpl(node, attrName)
-          return result
+          return (!node || node.nodeType !== 1) ? null : seekWithAttributeImpl(node, attrName)
         }
 
         function seekWithAttributeImpl(node, attrName) {
@@ -966,7 +962,7 @@ const INTERMediator = {
         targetRepeater = ctComponentNodes[3].cloneNode(true)
         const nodeForKeyValues = {}
         const trNodes = node.getElementsByTagName('TR')
-        if (!trNodes || trNodes.length == 0 || colArray.length == 0) {
+        if (!trNodes || trNodes.length === 0 || colArray.length === 0) {
           const tableNode = node.parentNode
           tableNode.parentNode.removeChild(tableNode)
           return
@@ -1060,10 +1056,10 @@ const INTERMediator = {
                 }
               }
             }
-            const sumCell = ctComponentNodes[(n == 0) ? 1 : 3].cloneNode(true)
+            const sumCell = ctComponentNodes[(n === 0) ? 1 : 3].cloneNode(true)
             lineNodes[n].appendChild(sumCell)
             sumCell.className = (sumCell.className ? (sumCell.className + ' ') : '') + '_im_cross_summary'
-            if (n == 0) {
+            if (n === 0) {
               sumCell.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[1052]))
             } else {
               setupLinkedNode([sumCell], expandContextObj, [rowSum], 0, "id=-1")
@@ -1133,7 +1129,8 @@ const INTERMediator = {
       }
       let idValuesForFieldName = {}
       const currentContextDef = contextObj.getContextDef()
-      const linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(nodes, INTERMediator.crossTableStage == 0)
+      const linkedElements
+        = INTERMediatorLib.seekLinkedAndWidgetNodes(nodes, INTERMediator.crossTableStage === 0)
       const currentWidgetNodes = linkedElements.widgetNode
       const currentLinkedNodes = linkedElements.linkedNode
       try {
@@ -1845,12 +1842,8 @@ const INTERMediator = {
      */
     function isPortalAccessMode(currentContextDef) {
       'use strict'
-      if (currentContextDef.relation && currentContextDef.relation[0] &&
-        Boolean(currentContextDef.relation[0].portal) === true) {
-        return true
-      } else {
-        return false
-      }
+      return !!(currentContextDef.relation && currentContextDef.relation[0] &&
+        Boolean(currentContextDef.relation[0].portal) === true);
     }
   },
 
@@ -2032,7 +2025,7 @@ const INTERMediator = {
         if (value) { // If the value is null, do nothing anyway.
           const bros = node.childNodes
           for (const item of bros) {
-            if (item.nodeType == Node.TEXT_NODE) {
+            if (item.nodeType === Node.TEXT_NODE) {
               node.removeChild(item)
             }
           }

@@ -91,6 +91,10 @@ let INTERMediatorOnPage = {
   credentialCookieDomain: null,
   updateProcessedNode: false,
   updatingWithSynchronize: 0,
+  passwordHash: null,
+  alwaysGenSHA2: false,
+  isFollowingTimezone: false,
+  isSAML: false,
   /*
   This method 'getMessages' is going to be replaced valid one with the browser's language.
   Here is defined to prevent the warning of static check.
@@ -140,7 +144,7 @@ let INTERMediatorOnPage = {
             returnVal = INTERMediatorOnPage.getSessionStorageWithFallDown(key)
             break
         }
-      } else if (value == '') { // remover
+      } else if (value === '') { // remover
         switch (INTERMediatorOnPage.authStoring) {
           case 'cookie':
           case 'cookie-domainwide':
@@ -191,10 +195,6 @@ let INTERMediatorOnPage = {
     return INTERMediatorOnPage.authHashedPasswordWorker('_im_credential2', value)
   },
 
-  // authCryptedPassword: function (value = false) {
-  //   return INTERMediatorOnPage.authHashedPasswordWorker('_im_crypted', value)
-  // },
-
   clearCredentials: function () {
     'use strict'
     INTERMediatorOnPage.authChallenge = ''
@@ -217,7 +217,7 @@ let INTERMediatorOnPage = {
   retrieveAuthInfo: async function () {
     'use strict'
     if (INTERMediatorOnPage.authUser() && INTERMediatorOnPage.authUser().length > 0) {
-      if (INTERMediatorOnPage.authStoring != 'credential') {
+      if (INTERMediatorOnPage.authStoring !== 'credential') {
         await INTERMediator_DBAdapter.getChallenge()
         INTERMediatorLog.flushMessage()
       }
@@ -241,7 +241,6 @@ let INTERMediatorOnPage = {
         INTERMediatorOnPage.removeCookie('_im_credential')
         INTERMediatorOnPage.removeCookie('_im_credential2m')
         INTERMediatorOnPage.removeCookie('_im_credential2')
-        // INTERMediatorOnPage.removeCookie('_im_crypted')
         break
       case 'session-storage':
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_clientid')
@@ -251,7 +250,6 @@ let INTERMediatorOnPage = {
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_credential2m')
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_credential2')
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_mediatoken')
-        // INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_crypted')
         break
     }
   },
@@ -652,7 +650,7 @@ let INTERMediatorOnPage = {
       }
     }
     authButton.onclick = async function () {
-      INTERMediatorOnPage.hideProgress()
+      await INTERMediatorOnPage.hideProgress()
       let messageNode = document.getElementById('_im_newpass_message')
       if (messageNode) {
         INTERMediatorLib.removeChildNodes(messageNode)
@@ -698,7 +696,7 @@ let INTERMediatorOnPage = {
       // if (INTERMediatorOnPage.authUser() && INTERMediatorOnPage.authUser().length > 0) { // Authentication succeed, Store cookies.
       //   INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
       // }
-      if (INTERMediatorOnPage.authStoring == 'credential') {
+      if (INTERMediatorOnPage.authStoring === 'credential') {
         await INTERMediator_DBAdapter.getCredential()
       }
       if (INTERMediatorOnPage.succeedCredential) {
@@ -815,7 +813,7 @@ let INTERMediatorOnPage = {
       frontPanel.style.margin = '50px auto 0 auto'
       frontPanel.style.padding = '20px 4px 20px 4px'
       frontPanel.style.borderRadius = '10px'
-      frontPanel.style.position = 'relatvie'
+      frontPanel.style.position = 'relative'
       frontPanel.style.textAlign = 'Center'
     }
     frontPanel.onclick = function () {
@@ -1097,7 +1095,7 @@ let INTERMediatorOnPage = {
 
   /*
    * The hiding process is realized by _im_progress's div elements, but it's quite sensitive.
-   * I've tried to set the CSS amimations but it seems to be a reson to stay the progress panel.
+   * I've tried to set the CSS animations, but it seems to be a reason to stay the progress panel.
    * So far I gave up to use CSS animations. I think it's matter of handling transitionend event.
    * Now this method is going to be called multiple times in case of edit text field.
    * But it doesn't work by excluding to call by flag variable. I don't know why.
@@ -1156,7 +1154,7 @@ let INTERMediatorOnPage = {
     if (INTERMediatorOnPage.progressShowing) {
       return
     }
-    if (INTERMediatorOnPage.progressCounter == 0) {
+    if (INTERMediatorOnPage.progressCounter === 0) {
       return
     }
     const themeName = INTERMediatorOnPage.getTheme().toLowerCase()

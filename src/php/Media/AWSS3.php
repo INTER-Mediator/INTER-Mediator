@@ -159,7 +159,7 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
                 . $keyfield . "=" . $keyvalue . DIRECTORY_SEPARATOR . $targetFieldName;
             try {
                 $rand4Digits = random_int(1000, 9999);
-            } catch (\Exception $ex) {
+            } catch (Exception $ex) {
                 $rand4Digits = rand(1000, 9999);
             }
             $objectKey = $dirPath . '/' . $filePathInfo['filename'] . '_' . $rand4Digits . '.' . $filePathInfo['extension'];
@@ -221,7 +221,7 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
             if (isset($dbProxyContext['file-upload'])) {
                 foreach ($dbProxyContext['file-upload'] as $item) {
                     if (isset($item['field']) && $item['field'] == $targetFieldName) {
-                        $dbAlt->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : null);
+                        $dbAlt->initialize($datasource, $options, $dbspec, $debug, $item['context'] ?? null);
                         $relatedContextInfo = $dbAlt->dbSettings->getDataSourceTargetArray();
                         $fields = array();
                         $values = array();

@@ -14,6 +14,8 @@
  */
 namespace INTERMediator\Data_Converter;
 
+use INTERMediator\Locale\IMLocale;
+
 class Currency extends NumberBase
 {
 
@@ -28,7 +30,7 @@ class Currency extends NumberBase
     function converterFromDBtoUser($str)
     {
         $this->formatter->setAttribute(8 /*NumberFormatter::FRACTION_DIGITS*/, $this->d);
-        return $this->formatter->formatCurrency($str, \INTERMediator\Locale\IMLocale::$currencyCode);
+        return $this->formatter->formatCurrency($str, IMLocale::$currencyCode);
     }
 
     function converterFromUserToDB($str)

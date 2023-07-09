@@ -1,6 +1,8 @@
 <?php
 
-class ExportSample extends \INTERMediator\DB\Export
+use INTERMediator\DB\Export;
+
+class ExportSample extends Export
 {
     protected $keysAndLabels = [
         "unitprice" => "単価",

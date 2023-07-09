@@ -9,6 +9,9 @@
  *   INTER-Mediator is supplied under MIT License.
  */  -->
 <?php
+
+use INTERMediator\Data_Converter\FMDateTime;
+
 $imRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
 if (!empty($_SERVER['DOCUMENT_ROOT'])) {
     $imRoot = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'INTER-Mediator';
@@ -92,12 +95,12 @@ if (file_exists('/etc/redhat-release')) {
         概ね、user1でログインができますが、アクセス権の設定のテストも行っており、すべてのユーザーでのログインができるとは限りません。
         設定を参照の上ログインの確認や、あるいはできないことの確認をしてください。
     </li>
-    <li>FileMaker向けのサンプルプログラムはホストマシンで、FileMaker Serverが稼働している場合で、このVMのネットワークを「ホストオンリーアダプター」にしていれば、おそらくそのまま稼働します。他のホストや異なるネットワーク設定の場合は、<?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo htmlspecialchars($wwwRoot, ENT_QUOTES, 'UTF-8'); }; ?>/params.phpファイルの、$dbServer変数の値を変更してください。<a href="INTER-Mediator/dist-docs/TestDB.fmp12">TestDB.fmp12</a>（サンプルデータベース）の管理者アカウント名とパスワードに関する情報については、<a href="INTER-Mediator/dist-docs/readme.txt">readme.txt</a> ファイル内の「Account Information for FileMaker Database」を参照してください。</li>
-    <li><strong>サンプルデータベースの最終更新日</strong>：<?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo 'MariaDB'; } else { echo 'MySQL'; }; ?>=<?php echo htmlspecialchars($mysqlModDate, ENT_QUOTES, 'UTF-8'); ?>、
+    <li>FileMaker向けのサンプルプログラムはホストマシンで、FileMaker Serverが稼働している場合で、このVMのネットワークを「ホストオンリーアダプター」にしていれば、おそらくそのまま稼働します。他のホストや異なるネットワーク設定の場合は、<?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo htmlspecialchars($wwwRoot, ENT_QUOTES, 'UTF-8'); } ?>/params.phpファイルの、$dbServer変数の値を変更してください。<a href="INTER-Mediator/dist-docs/TestDB.fmp12">TestDB.fmp12</a>（サンプルデータベース）の管理者アカウント名とパスワードに関する情報については、<a href="INTER-Mediator/dist-docs/readme.txt">readme.txt</a> ファイル内の「Account Information for FileMaker Database」を参照してください。</li>
+    <li><strong>サンプルデータベースの最終更新日</strong>：<?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo 'MariaDB'; } else { echo 'MySQL'; } ?>=<?php echo htmlspecialchars($mysqlModDate, ENT_QUOTES, 'UTF-8'); ?>、
         FileMaker=<?php echo htmlspecialchars($fmModDate, ENT_QUOTES, 'UTF-8'); ?>
         <br><strong>あなたがお使いのサンプルデータベース</strong>：
-        <span data-im-control="enclosure"><span data-im-control="noresult"><?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo 'MariaDB'; } else { echo 'MySQL'; }; ?>=2015年7月10日以前</span>
-        <span data-im-control="repeater"><span data-im="information@lastupdated"><?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo 'MariaDB'; } else { echo 'MySQL'; }; ?>=</span></span>
+        <span data-im-control="enclosure"><span data-im-control="noresult"><?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo 'MariaDB'; } else { echo 'MySQL'; } ?>=2015年7月10日以前</span>
+        <span data-im-control="repeater"><span data-im="information@lastupdated"><?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo 'MariaDB'; } else { echo 'MySQL'; } ?>=</span></span>
         </span><?php
         try {
             $ch = curl_init();
@@ -117,7 +120,7 @@ if (file_exists('/etc/redhat-release')) {
                 $output = '、FileMaker=2015年7月11日以前';
             }
             require "{$imRoot}" . DIRECTORY_SEPARATOR .'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
-            $converter = new \INTERMediator\Data_Converter\FMDateTime();
+            $converter = new FMDateTime();
             error_reporting(0);
             foreach ($parsedData->resultset->record->field as $key => $field) {
                 if ((string)$field->attributes()->name === 'lastupdated') {
@@ -618,7 +621,7 @@ if (file_exists('/etc/redhat-release')) {
             <td>sudoによりルート権限取得可能</td>
         </tr>
         <tr>
-            <td><?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo 'MariaDB'; } else { echo 'MySQL'; }; ?></td>
+            <td><?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo 'MariaDB'; } else { echo 'MySQL'; } ?></td>
             <td>root@localhost</td>
             <td>im4135dev</td>
             <td>プロセスの稼働ユーザーはmysql</td>
@@ -646,7 +649,7 @@ if (file_exists('/etc/redhat-release')) {
     <li>タイムゾーン：Asia/Tokyo</li>
     <li>ホスト名：inter-mediator-server</li>
     <li>Webサーバルート：<?php echo htmlspecialchars($wwwRoot, ENT_QUOTES, 'UTF-8'); ?></li>
-    <?php if ($osName === 'Ubuntu Server') { echo '<li>初期設定：OpenSSH Server, LAMP Server, Mail Server, PostgreSQL database</li>'; }; ?>
+    <?php if ($osName === 'Ubuntu Server') { echo '<li>初期設定：OpenSSH Server, LAMP Server, Mail Server, PostgreSQL database</li>'; } ?>
     <li>アクセス方法：SSH、SFTP、HTTP、SMB</li>
     <li>作成グループ：im-developer（developerおよびwww-dataが所属）</li>
 </ul>
@@ -659,7 +662,7 @@ if (file_exists('/etc/redhat-release')) {
 
 <h3>サンプルデータベースの初期化方法</h3>
 
-<p>VM上で下記のコマンドを実行すると、サンプルデータベース（<?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo 'MariaDB'; } else { echo 'MySQL'; }; ?>、PostgreSQL、SQLite）を初期化できます。</p>
+<p>VM上で下記のコマンドを実行すると、サンプルデータベース（<?php if ($osName === 'Alpine Linux' || $osName === 'CentOS Linux') { echo 'MariaDB'; } else { echo 'MySQL'; } ?>、PostgreSQL、SQLite）を初期化できます。</p>
 <ul>
     <li><?php echo 'source ' . htmlspecialchars($wwwRoot, ENT_QUOTES, 'UTF-8') . '/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh'; ?></li>
 </ul>
