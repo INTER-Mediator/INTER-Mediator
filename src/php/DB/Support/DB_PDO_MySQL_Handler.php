@@ -108,7 +108,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         }
         foreach ($result as $row) {
             if (strpos($row["Extra"], "auto_increment") !== false) {
-                return $row["Field"];
+                return $row["Field"];;
             }
         }
         return null;
@@ -279,13 +279,13 @@ mysql> show columns from item_display;
         if ($this->dbClassObj->link) {
             $warnings = $this->dbClassObj->link->query('SHOW COUNT(*) WARNINGS');
             $warningsCount = 0;
-            foreach ($warnings->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            foreach ($warnings->fetchAll(\PDO::FETCH_ASSOC) as $row) {
                 $warningsCount = intval($row['@@session.warning_count']);
             }
             if ($warningsCount > 0) {
                 $warnings = $this->dbClassObj->link->query('SHOW WARNINGS');
                 $debugMsg = "";
-                foreach ($warnings->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                foreach ($warnings->fetchAll(\PDO::FETCH_ASSOC) as $row) {
                     $message = "[{$row['Level']}]({$row['Code']}){$row['Message']}";
                     $debugMsg .= "{$message}\n";
                     if ($row['Level'] == 'Warning') {
@@ -303,8 +303,9 @@ mysql> show columns from item_display;
     {
         if ($this->dbClassObj->link) {
             $warnings = $this->dbClassObj->link->query('SELECT LAST_INSERT_ID() AS ID');
-            foreach ($warnings->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                return intval($row['ID']);
+            foreach ($warnings->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $lastId = intval($row['ID']);
+                return $lastId;
             }
         }
         return null;

@@ -32,7 +32,7 @@ class MessageStrings
         if (is_array($terms) && isset($terms[$thisLang])) {
             $termList = $terms[$thisLang];
         }
-        if (isset($options['terms'][$thisLang])) {
+        if (isset($options['terms']) && isset($options['terms'][$thisLang])) {
             foreach ($options['terms'][$thisLang] as $key => $value) {
                 $termList[$key] = $value;
             }

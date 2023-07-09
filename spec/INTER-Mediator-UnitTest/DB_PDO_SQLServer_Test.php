@@ -166,7 +166,7 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
 
     protected function getSampleComdition()
     {
-        return "WHERE id=1001 ORDER BY xdate OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY";
+        return "WHERE id=1001 ORDER BY xdate OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY";;
     }
 
     protected $sqlSETClause1 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "

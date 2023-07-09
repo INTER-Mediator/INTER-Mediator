@@ -14,8 +14,8 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace INTERMediator\DB\Support;
-use DateTime;
-use Exception;
+use \DateTime;
+use \Exception;
 
 class DB_Notification_Handler_FileMaker_DataAPI
     extends DB_Notification_Common 

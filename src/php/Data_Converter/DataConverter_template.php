@@ -41,7 +41,6 @@ class DataConverter_template
      */
     function converterFromDBtoUser($str)
     {
-        return $str;
     }
 
     /**
@@ -52,6 +51,5 @@ class DataConverter_template
      */
     function converterFromUserToDB($str)
     {
-        return $str;
     }
 }

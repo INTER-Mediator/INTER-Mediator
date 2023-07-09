@@ -32,7 +32,9 @@ class CWPKit
         $xml = curl_exec($ch);
         curl_close($ch);
         libxml_use_internal_errors(true);
-        return simplexml_load_string($xml);
+        $data = simplexml_load_string($xml);
+
+        return $data;
     }
 
     public function getServerVersion()

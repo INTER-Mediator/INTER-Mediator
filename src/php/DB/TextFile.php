@@ -136,7 +136,7 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $queryClause = '';
-        $primaryKey = $tableInfo['key'] ?? 'id';
+        $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
 
         // 'field' => '__operation__' is not supported.
         // Authentication and Authorization are NOT supported.
@@ -151,7 +151,7 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
                     $queryClauseArray[] = array(
                         "field" => $condition['field'],
                         "value" => $condition['value'],
-                        "operator" => $condition['operator'] ?? "=",
+                        "operator" => isset($condition['operator']) ? $condition['operator'] : "=",
                     );
                 }
             }
@@ -166,7 +166,7 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
                     $queryClauseArray[] = array(
                         "field" => $condition['field'],
                         "value" => $condition['value'],
-                        "operator" => $condition['operator'] ?? "=",
+                        "operator" => isset($condition['operator']) ? $condition['operator'] : "=",
                     );
                 }
             }
@@ -179,7 +179,7 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
                         $queryClauseArray[] = array(
                             "field" => $relDef['foreign-key'],
                             "value" => $foreignDef['value'],
-                            "operator" => $relDef['operator'] ?? "=",
+                            "operator" => isset($relDef['operator']) ? $relDef['operator'] : "=",
                         );
                     }
                 }
@@ -204,7 +204,7 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
                 }
                 $sortClause[] = array(
                     "field" => $condition['field'],
-                    "direction" => $condition['direction'] ?? "ASC",
+                    "direction" => isset($condition['direction']) ? $condition['direction'] : "ASC",
                 );
             }
         }
@@ -215,7 +215,7 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
                 }
                 $sortClause[] = array(
                     "field" => $condition['field'],
-                    "direction" => $condition['direction'] ?? "ASC",
+                    "direction" => isset($condition['direction']) ? $condition['direction'] : "ASC",
                 );
             }
         }
@@ -243,14 +243,14 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
 
     public function isPossibleOperator($operator)
     {
-        return !(!in_array(strtoupper($operator), array(
-            '=',
-        )));
+        return !(FALSE === array_search(strtoupper($operator), array(
+                '=',
+            )));
     }
 
     public function isPossibleOrderSpecifier($specifier)
     {
-        return !(!in_array(strtoupper($specifier), array('ASC', 'DESC')));
+        return !(array_search(strtoupper($specifier), array('ASC', 'DESC')) === FALSE);
     }
 
     public function requireUpdatedRecord($value)

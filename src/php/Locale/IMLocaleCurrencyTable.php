@@ -31,7 +31,9 @@ class IMLocaleCurrencyTable
         if (!isset(IMLocaleCurrencyTable::$localeCurrencyTable[$localeCode])) {
             $localeCode = 'JP';
         }
-        return IMLocaleCurrencyTable::$localeCurrencyTable[strtoupper($localeCode)];
+        $locInfo = IMLocaleCurrencyTable::$localeCurrencyTable[strtoupper($localeCode)];
+
+        return $locInfo;
     }
 
     public static function getCountryCurrencyCode($cCode)
@@ -44,7 +46,9 @@ class IMLocaleCurrencyTable
         if (!isset(IMLocaleCurrencyTable::$localeCurrencyTable[$cCode])) {
             $cCode = 'JP';
         }
-        return IMLocaleCurrencyTable::$localeCurrencyTable[strtoupper($cCode)];
+        $locInfo = IMLocaleCurrencyTable::$localeCurrencyTable[strtoupper($cCode)];
+
+        return $locInfo;
     }
 
     /*

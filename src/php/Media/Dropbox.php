@@ -161,7 +161,7 @@ class Dropbox implements UploadingSupport, DownloadingSupport
             if (isset($dbProxyContext['file-upload'])) {
                 foreach ($dbProxyContext['file-upload'] as $item) {
                     if (isset($item['field']) && $item['field'] == $targetFieldName) {
-                        $dbAlt->initialize($datasource, $options, $dbspec, $debug, $item['context'] ?? null);
+                        $dbAlt->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : null);
                         $relatedContextInfo = $dbAlt->dbSettings->getDataSourceTargetArray();
                         $fields = array();
                         $values = array();

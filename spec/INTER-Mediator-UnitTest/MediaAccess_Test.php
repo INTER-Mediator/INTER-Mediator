@@ -9,7 +9,9 @@ use PHPUnit\Framework\TestCase;
 class MediaAccess_Test extends TestCase
 {
     private $mediaaccess;
-
+    private $reflectionClass;
+    private $reflectionMethod;
+    
     protected function setUp(): void
     {
         $this->mediaaccess = new MediaAccess();
@@ -18,15 +20,15 @@ class MediaAccess_Test extends TestCase
     public function test_asAttachment()
     {
         if (((float)phpversion()) >= 5.3) {
-            $reflectionClass = new ReflectionClass('\INTERMediator\MediaAccess');
-            $disposition = $reflectionClass->getProperty('disposition');
+            $this->reflectionClass = new ReflectionClass('\INTERMediator\MediaAccess');
+            $disposition = $this->reflectionClass->getProperty('disposition');
             $disposition->setAccessible(true);
 
             $expected = 'inline';
             $this->assertEquals($expected, $disposition->getValue($this->mediaaccess));
 
             $expected = 'attachment';
-            $attachment = $reflectionClass->getMethod('asAttachment');
+            $attachment = $this->reflectionClass->getMethod('asAttachment');
             $attachment->setAccessible(true);
             $attachment->invoke($this->mediaaccess);
             $this->assertEquals($expected, $disposition->getValue($this->mediaaccess));
@@ -36,13 +38,13 @@ class MediaAccess_Test extends TestCase
     public function test_exitAsError()
     {
         if (((float)phpversion()) >= 5.3) {
-            $reflectionMethod = new ReflectionMethod('\INTERMediator\MediaAccess', 'exitAsError');
-            $reflectionMethod->setAccessible(true);
+            $this->reflectionMethod = new ReflectionMethod('\INTERMediator\MediaAccess', 'exitAsError');
+            $this->reflectionMethod->setAccessible(true);
 
             $code = '';
             $expected = 'Respond HTTP Error.';
             try {
-                $reflectionMethod->invokeArgs($this->mediaaccess, array($code));
+                $this->reflectionMethod->invokeArgs($this->mediaaccess, array($code));
                 $this->fail('No Exception happens');
             } catch (Exception $e) {
                 $this->assertEquals($expected, $e->getMessage());

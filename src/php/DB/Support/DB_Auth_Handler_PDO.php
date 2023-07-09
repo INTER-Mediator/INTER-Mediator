@@ -443,11 +443,13 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return $this->privateGetUserIdFromUsername($username, true);
     }
 
+    private $overLimitDTUser;
 
     private function privateGetUserIdFromUsername($username, $isCheckLimit)
     {
         $this->logger->setDebugMessage("[privateGetUserIdFromUsername]username ={$username}", 2);
 
+        $this->overLimitDTUser = false;
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
             return false;
@@ -467,15 +469,12 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         }
         $this->logger->setDebugMessage("[privateGetUserIdFromUsername] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            if (!$isCheckLimit){
-                return $row['id'];
-            }
             if ($isCheckLimit && isset($row['limitdt']) && !is_null($row['limitdt'])) {
-                if (time() - strtotime($row['limitdt']) <= $this->dbSettings->getSAMLExpiringSeconds()) {
-                    return $row['id'];
+                if (time() - strtotime($row['limitdt']) > $this->dbSettings->getSAMLExpiringSeconds()) {
+                    $this->overLimitDTUser = false;
                 }
             }
-
+            return $row['id'];
         }
         return false;
     }
@@ -552,27 +551,34 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $this->belongGroups = array();
         $this->resolveGroup($userid);
 
-        $candidateGroups = array();
+        $this->candidateGroups = array();
         foreach ($this->belongGroups as $groupid) {
-            $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
+            $this->candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
         }
-        if (count($candidateGroups) == 0) {
+        if (count($this->candidateGroups) == 0) {
             $defaultGroup = Params::getParameterValue("defaultGroupName", false);
             if ($defaultGroup) {
-                $candidateGroups = [$defaultGroup];
+                $this->candidateGroups = [$defaultGroup];
             }
         }
-        return $candidateGroups;
+        return $this->candidateGroups;
     }
 
     /**
      * @var
      */
-    private $belongGroups;
+    private
+        $candidateGroups;
     /**
      * @var
      */
-    private $firstLevel;
+    private
+        $belongGroups;
+    /**
+     * @var
+     */
+    private
+        $firstLevel;
 
     /**
      * @param $groupid

@@ -22,7 +22,8 @@ class MarkdownString extends _HTMLString
     {
         $str = $this->replaceTags($str);
         $str = $this->taggingAsMarkdown($str);
-        return $this->replaceLinkToATag($str);
+        $str = $this->replaceLinkToATag($str);
+        return $str;
     }
 
     public function taggingAsMarkdown($str)

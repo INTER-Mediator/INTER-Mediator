@@ -197,7 +197,8 @@ class GenerateJSCode
         $this->generateAssignJS("INTERMediatorOnPage.dbClassName", "{$q}{$dbClassName}{$q}");
         $this->generateAssignJS("INTERMediatorOnPage.defaultKeyName", "{$q}{$defaultKey}{$q}");
 
-        $isEmailAsUsernae = isset($options['authentication']['email-as-username'])
+        $isEmailAsUsernae = isset($options['authentication'])
+            && isset($options['authentication']['email-as-username'])
             && $options['authentication']['email-as-username'] === true;
         $this->generateAssignJS(
             "INTERMediatorOnPage.isEmailAsUsername", $isEmailAsUsernae ? "true" : "false");
@@ -301,20 +302,21 @@ class GenerateJSCode
         }
         $this->generateAssignJS(
             "INTERMediatorOnPage.authStoring",
-            $q, (isset($options['authentication']['storing'])) ?
+            $q, (isset($options['authentication']) && isset($options['authentication']['storing'])) ?
             $options['authentication']['storing'] : 'credential', $q);
         $this->generateAssignJS(
             "INTERMediatorOnPage.authExpired",
-            (isset($options['authentication']['authexpired'])) ?
+            (isset($options['authentication']) && isset($options['authentication']['authexpired'])) ?
                 $options['authentication']['authexpired'] : '3600');
         $this->generateAssignJS(
             "INTERMediatorOnPage.realm", $q,
-            (isset($options['authentication']['realm'])) ?
+            (isset($options['authentication']) && isset($options['authentication']['realm'])) ?
                 $options['authentication']['realm'] : '', $q);
         if (isset($passwordPolicy)) {
             $this->generateAssignJS(
                 "INTERMediatorOnPage.passwordPolicy", $q, $passwordPolicy, $q);
-        } else if (isset($options["authentication"]["password-policy"])
+        } else if (isset($options["authentication"])
+            && isset($options["authentication"]["password-policy"])
         ) {
             $this->generateAssignJS(
                 "INTERMediatorOnPage.passwordPolicy", $q, $options["authentication"]["password-policy"], $q);

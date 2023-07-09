@@ -145,9 +145,9 @@ class OAuthAuth
         }
         $this->errorMessage = array_merge($this->errorMessage, $dbProxy->logger->getErrorMessages());
 
-        $oAuthStoring = $_COOKIE["_im_oauth_storing"] ?? "";
+        $oAuthStoring = isset($_COOKIE["_im_oauth_storing"]) ? $_COOKIE["_im_oauth_storing"] : "";
         $oAuthStoring = $oAuthStoring == 'session-storage' ? "true" : "false";
-        $oAuthRealm = $_COOKIE["_im_oauth_realm"] ?? "";
+        $oAuthRealm = isset($_COOKIE["_im_oauth_realm"]) ? $_COOKIE["_im_oauth_realm"] : "";
 
         $this->jsCode = '';
         $this->jsCode .= 'function setAnyStore(key, val) {';

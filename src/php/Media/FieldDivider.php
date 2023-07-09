@@ -9,7 +9,7 @@
 
 namespace INTERMediator\Media;
 
-use Iterator;
+use \Iterator;
 
 class FieldDivider implements Iterator
 {

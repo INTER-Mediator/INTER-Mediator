@@ -392,13 +392,14 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         $this->firstLevel = true;
         $this->belongGroups = array();
         $this->resolveGroup($userid);
-        $candidateGroups = array();
+        $this->candidateGroups = array();
         foreach ($this->belongGroups as $groupid) {
-            $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
+            $this->candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
         }
-        return $candidateGroups;
+        return $this->candidateGroups;
     }
 
+    private $candidateGroups;
     private $belongGroups;
     private $firstLevel;
 
@@ -559,7 +560,8 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         }
         $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         foreach ($result['data'] as $key => $row) {
-            return $row['user_id'][0];
+            $userID = $row['user_id'][0];
+            return $userID;
         }
         return false;
 

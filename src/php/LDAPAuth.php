@@ -39,7 +39,7 @@ class LDAPAuth
 
         $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
         $currentDirParam = $currentDir . 'params.php';
-        $parentDirParam = dirname(__FILE__, 2) . DIRECTORY_SEPARATOR . 'params.php';
+        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
         if (file_exists($parentDirParam)) {
             include($parentDirParam);
         } else if (file_exists($currentDirParam)) {

@@ -14,7 +14,7 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace INTERMediator\DB\Support;
-use DateTime;
+use \DateTime;
 
 class DB_Notification_Handler_FileMaker_FX
     extends DB_Notification_Common

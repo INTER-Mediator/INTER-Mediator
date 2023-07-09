@@ -106,3 +106,4 @@ array (
   'db-class' => 'PDO',
 ),
 2);
+?>

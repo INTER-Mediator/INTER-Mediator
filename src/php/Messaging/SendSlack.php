@@ -51,7 +51,7 @@ class SendSlack extends MessagingProvider
         $errorMsg = "";
         for ($i = 0; $i < count($result); $i++) {
             $channel = $this->channel;
-            if (isset($result[$i][$contextDef['subject']]) && isset($contextDef['subject'])) {
+            if (isset($result[$i]) && isset($contextDef['subject']) && isset($result[$i][$contextDef['subject']])) {
                 $channel = $result[$i][$contextDef['subject']];
             }
             $channel = $this->modernTemplating($result[$i], $channel);

@@ -585,13 +585,14 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $this->firstLevel = true;
         $this->belongGroups = array();
         $this->resolveGroup($userid);
-        $candidateGroups = array();
+        $this->candidateGroups = array();
         foreach ($this->belongGroups as $groupid) {
-            $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
+            $this->candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
         }
-        return $candidateGroups;
+        return $this->candidateGroups;
     }
 
+    private $candidateGroups;
     private $belongGroups;
     private $firstLevel;
 
@@ -791,7 +792,8 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $this->logger->setDebugMessage(
             $this->dbClass->stringWithoutCredential($this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
         foreach ($result as $record) {
-            return $record->user_id;
+            $userID = $record->user_id;
+            return $userID;
         }
         return false;
 

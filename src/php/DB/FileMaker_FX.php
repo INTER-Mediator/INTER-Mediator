@@ -125,7 +125,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
         if (is_file($path) && is_readable($path)) {
             require_once($path);
         } else {
-            throw new Exception('Data Access Class "FileMaker_FX" of INTER-Mediator requires "RetrieveFM7Data" class.');
+            throw new \Exception('Data Access Class "FileMaker_FX" of INTER-Mediator requires "RetrieveFM7Data" class.');
         }
 
         $fxObj = new FX(
@@ -319,7 +319,11 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
         $limitParam = 100000000;
         if (isset($context['maxrecords'])) {
             if (intval($context['maxrecords']) < $this->dbSettings->getRecordCount()) {
-                $limitParam = max(intval($context['maxrecords']), intval($context['records']));
+                if (intval($context['maxrecords']) < intval($context['records'])) {
+                    $limitParam = intval($context['records']);
+                } else {
+                    $limitParam = intval($context['maxrecords']);
+                }
             } else {
                 $limitParam = $this->dbSettings->getRecordCount();
             }
@@ -877,7 +881,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                         $this->mainTableCount = count($recordArray);
                         break;
                     } else {
-                        $recordArray[] = $dataArray;
+                        array_push($recordArray, $dataArray);
                     }
                     if (intval($data['resultset']['@attributes']['fetch-size']) == 1) {
                         break;

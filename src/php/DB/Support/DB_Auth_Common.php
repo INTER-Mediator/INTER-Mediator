@@ -138,7 +138,8 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
                 break;
             }
         }
-        return array_values(array_unique($groupsArray));
+        $result = array_values(array_unique($groupsArray));
+        return $result;
     }
 
 }

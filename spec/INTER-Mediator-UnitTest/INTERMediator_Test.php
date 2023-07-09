@@ -14,14 +14,15 @@ use PHPUnit\Framework\TestCase;
 
 class INTERMediator_Test extends TestCase
 {
+    private $db_proxy;
 
     public function setUp(): void
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
 
-        $db_proxy = new Proxy(true);
-        $db_proxy->initialize(array(),
+        $this->db_proxy = new Proxy(true);
+        $this->db_proxy->initialize(array(),
             array(
                 'authentication' => array( // table only, for all operations
                     'user' => array('user1'), // Itemize permitted users

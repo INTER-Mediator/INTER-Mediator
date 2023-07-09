@@ -238,7 +238,11 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         $limitParam = 100000000;
         if (isset($tableInfo['maxrecords'])) {
             if (intval($tableInfo['maxrecords']) < $this->dbSettings->getRecordCount()) {
-                $limitParam = max(intval($tableInfo['maxrecords']), intval($tableInfo['records']));
+                if (intval($tableInfo['maxrecords']) < intval($tableInfo['records'])) {
+                    $limitParam = intval($tableInfo['records']);
+                } else {
+                    $limitParam = intval($tableInfo['maxrecords']);
+                }
             } else {
                 $limitParam = $this->dbSettings->getRecordCount();
             }
@@ -421,9 +425,8 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $value = (is_array($fieldValues[$counter]))
                 ? implode("\n", $fieldValues[$counter]) : $fieldValues[$counter];
             $counter++;
-            $a = strlen($value);
-            $b = in_array($field, $numericFields);
-            $c = in_array($field, $boolFields);
+            $a=strlen($value);
+            $b=in_array($field, $numericFields);$c=in_array($field, $boolFields);
             if (strlen($value) == 0) {
                 if (in_array($field, $nullableFields)) {
                     $value = NULL;
@@ -825,7 +828,10 @@ class PDO extends UseSharedObjects implements DBClass_Interface
     private
     function getKeyFieldOfContext($context)
     {
-        return $context['key'] ?? $this->specHandler->getDefaultKey();
+        if (isset($context) && isset($context['key'])) {
+            return $context['key'];
+        }
+        return $this->specHandler->getDefaultKey();
     }
 
     /**
