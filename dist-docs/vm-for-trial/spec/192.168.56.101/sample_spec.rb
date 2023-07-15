@@ -846,7 +846,7 @@ end
 describe file('/etc/sysconfig/iptables'), :if => os[:family] == 'redhat' && os[:release].to_f >= 6 && os[:release].to_f < 7 do
   its(:content) { should match /-A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT/ }
 end
-describe file('/etc/firewalld/zones/public.xml'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+describe file('/etc/firewalld/zones/public.xml'), :if => host_inventory['virtualization'][:system] != 'docker' && os[:family] == 'redhat' && os[:release].to_f >= 7 do
   its(:content) { should match /<service name="http"\/>/ }
 end
 
