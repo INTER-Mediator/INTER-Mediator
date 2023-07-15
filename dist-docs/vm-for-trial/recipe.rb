@@ -1066,8 +1066,14 @@ if node[:platform] == 'ubuntu'
   end
 end
 
-execute 'RESULT=`id vagrant 2>/dev/null`; if [ "$RESULT" != "" ]; then mysql -e "GRANT ALL PRIVILEGES ON *.* TO \'root\'@\'localhost\' identified by \'*********\';" -u root ; fi' do
-  command 'RESULT=`id vagrant 2>/dev/null`; if [ "$RESULT" != "" ]; then mysql -e "GRANT ALL PRIVILEGES ON *.* TO \'root\'@\'localhost\' identified by \'im4135dev\';" -u root ; fi'
+if node[:platform] == 'redhat' && node[:platform_version].to_f >= 8
+  execute 'RESULT=`id vagrant 2>/dev/null`; if [ "$RESULT" != "" ]; then mariadb -e "GRANT ALL PRIVILEGES ON *.* TO \'root\'@\'localhost\' identified by \'*********\';" -u root ; fi' do
+    command 'RESULT=`id vagrant 2>/dev/null`; if [ "$RESULT" != "" ]; then mariadb -e "GRANT ALL PRIVILEGES ON *.* TO \'root\'@\'localhost\' identified by \'im4135dev\';" -u root ; fi'
+  end
+else
+  execute 'RESULT=`id vagrant 2>/dev/null`; if [ "$RESULT" != "" ]; then mysql -e "GRANT ALL PRIVILEGES ON *.* TO \'root\'@\'localhost\' identified by \'*********\';" -u root ; fi' do
+    command 'RESULT=`id vagrant 2>/dev/null`; if [ "$RESULT" != "" ]; then mysql -e "GRANT ALL PRIVILEGES ON *.* TO \'root\'@\'localhost\' identified by \'im4135dev\';" -u root ; fi'
+  end
 end
 
 if node[:platform] == 'ubuntu'
