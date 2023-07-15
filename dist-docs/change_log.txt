@@ -24,6 +24,7 @@ Ver.11 (in development)
 - The FileURL container is introduced. It can store a 'file:///...' url for an uploaded file with absolute path.
 - The $defaultGroupName in the params.php file let any user with no group belong to this group.
 - INTERMediator.ignoreDataInContext(cName[, flag]) ignores the specified context name.
+- Update dbupdate.sh for MariaDB 11.
 - [BUG FIX] In same case of using aggregation-select/from the error happened about the view or table didn't exist.
 - [BUG FIX] INTERMediator.additionalFieldValueOnDelete uses in the Definition File editor, so retrieved it.
 - [BIG FIX] After failed to login, any messages didn't show on the login panel.
