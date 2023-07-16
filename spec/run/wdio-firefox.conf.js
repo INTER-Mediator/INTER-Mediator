@@ -1,4 +1,4 @@
-exports.config = {
+export const config = {
   //
   // ====================
   // Runner Configuration
@@ -28,9 +28,9 @@ exports.config = {
     './test/specs/auth_page_basic_mysql.e2e.js',
     './test/specs/auth_page_basic_postgresql.e2e.js',
     './test/specs/auth_page_basic_sqlite.e2e.js',
-     './test/specs/editing_page_mysql_numeric.e2e.js',
-     './test/specs/editing_page_mysql_string.e2e.js',
-     './test/specs/editing_page_mysql_datetime.e2e.js',
+    './test/specs/editing_page_mysql_numeric.e2e.js',
+    './test/specs/editing_page_mysql_string.e2e.js',
+    './test/specs/editing_page_mysql_datetime.e2e.js',
     './test/specs/editing_page_postgresql_numeric.e2e.js',
     './test/specs/editing_page_postgresql_string.e2e.js',
     './test/specs/editing_page_postgresql_datetime.e2e.js',
@@ -73,7 +73,7 @@ exports.config = {
     'moz:firefoxOptions': {
       args: ['-headless']
     }
-   }
+  }
     // If outputDir is provided WebdriverIO can capture driver session logs
     // it is possible to configure which logTypes to include/exclude.
     // excludeDriverLogs: ['*'], // pass '*' to exclude all driver session logs
