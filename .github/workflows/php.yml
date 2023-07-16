@@ -132,4 +132,4 @@ jobs:
       - name: Setup WebdriverIO
         run: cd spec/run;npm update
       - name: Starting End-to-End Tests with Google Chrome
-        run: cd spec/run;npm run wdio wdio-chrome.conf.js
+        run: cd spec/run;npx wdio wdio-chrome.conf.js
