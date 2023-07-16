@@ -222,8 +222,14 @@ elsif node[:platform] == 'redhat'
       command 'sudo su - postgres -c "initdb --encoding=UTF8 --no-locale"'
     end
   else
-    execute 'postgresql-setup initdb' do
-      command 'postgresql-setup initdb'
+    if node[:virtualization][:system] == 'docker'
+      execute 'PGSETUP_INITDB_OPTIONS="--encoding=UTF-8 --no-locale --no-sync" postgresql-setup initdb' do
+        command 'PGSETUP_INITDB_OPTIONS="--encoding=UTF-8 --no-locale --no-sync" postgresql-setup initdb'
+      end
+    else
+      execute 'PGSETUP_INITDB_OPTIONS="--encoding=UTF-8 --no-locale" postgresql-setup initdb' do
+        command 'PGSETUP_INITDB_OPTIONS="--encoding=UTF-8 --no-locale" postgresql-setup initdb'
+      end
     end
   end
 end
@@ -1512,7 +1518,6 @@ if node[:platform] == 'redhat'
 # "host" records.  In that case you will also need to make PostgreSQL
 # listen on a non-local interface via the listen_addresses
 # configuration parameter, or via the -i or -h command line switches.
-#
 
 
 
@@ -1531,10 +1536,8 @@ host    replication     all             127.0.0.1/32            ident
 host    replication     all             ::1/128                 ident
 EOF
   end
-  if node[:virtualization][:system] != 'docker'
-    service 'postgresql' do
-      action [ :restart ]
-    end
+  service 'postgresql' do
+    action [ :restart ]
   end
 end
 
