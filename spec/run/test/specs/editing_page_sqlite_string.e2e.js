@@ -1,10 +1,13 @@
 const EditingPage = require('../pageobjects/editing_page_sqlite.page');
 
-const waiting = 1000
+const waiting = 500
+
+let pageTitle = "INTER-Mediator - Sample - Editing/SQLite"
+
 describe('Editing Page String Fields', () => {
   it('can open with the valid title.', async () => {
     await EditingPage.open()
-    await expect(browser).toHaveTitle("INTER-Mediator - Sample - Editing/SQLite"/*'INTER-Mediator - サンプル - フォーム形式/MySQL'*/)
+    await expect(browser).toHaveTitle(pageTitle)
   })
   it('has the INTER-Mediator\'s navigation.', async () => {
     await expect(EditingPage.navigator).toExist()
@@ -20,6 +23,7 @@ describe('Editing Page String Fields', () => {
     await expect(EditingPage.navigatorMoveButtonLast).toExist()
     await expect(EditingPage.navigatorMoveButtonLast).toHaveText('>>')
     await expect(EditingPage.navigatorInsertButton).toExist()
+    await browser.pause(waiting)
     await EditingPage.navigatorInsertButton.click()
     await EditingPage.navigatorInsertButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
@@ -31,6 +35,7 @@ describe('Editing Page String Fields', () => {
     await expect(EditingPage.fieldVc1Textfield).toHaveValue("") // Checking initial value
     const value = Math.trunc(Math.random() * 10000000)
     await EditingPage.fieldVc1Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Textfield).toHaveValue(String(value))

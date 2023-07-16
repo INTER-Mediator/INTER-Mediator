@@ -22,15 +22,15 @@ exports.config = {
   //
   specs: [
     // './test/specs/**/*.js'
-    './test/specs/form_page_mysql.e2e.js',
-    './test/specs/form_page_postgresql.e2e.js',
-    './test/specs/form_page_sqlite.e2e.js',
-    './test/specs/auth_page_basic_mysql.e2e.js',
-    './test/specs/auth_page_basic_postgresql.e2e.js',
-    './test/specs/auth_page_basic_sqlite.e2e.js',
-    './test/specs/editing_page_mysql_numeric.e2e.js',
-    './test/specs/editing_page_mysql_string.e2e.js',
-    './test/specs/editing_page_mysql_datetime.e2e.js',
+    // './test/specs/form_page_mysql.e2e.js',
+    //  './test/specs/form_page_postgresql.e2e.js',
+    // './test/specs/form_page_sqlite.e2e.js',
+    // './test/specs/auth_page_basic_mysql.e2e.js',
+    // './test/specs/auth_page_basic_postgresql.e2e.js',
+    // './test/specs/auth_page_basic_sqlite.e2e.js',
+     './test/specs/editing_page_mysql_numeric.e2e.js',
+     './test/specs/editing_page_mysql_string.e2e.js',
+     './test/specs/editing_page_mysql_datetime.e2e.js',
     './test/specs/editing_page_postgresql_numeric.e2e.js',
     './test/specs/editing_page_postgresql_string.e2e.js',
     './test/specs/editing_page_postgresql_datetime.e2e.js',
@@ -67,7 +67,7 @@ exports.config = {
     // maxInstances can get overwritten per capability. So if you have an in-house Selenium
     // grid with only 5 firefox instances available you can make sure that not more than
     // 5 instances get started at a time.
-    maxInstances: 5,
+    maxInstances: 3,
     //
     browserName: 'firefox',
     'moz:firefoxOptions': {

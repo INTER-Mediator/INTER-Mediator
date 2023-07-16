@@ -111,8 +111,10 @@ jobs:
         run: cd spec/run;npm update
       - name: Setup Headless Chrome
         uses: browser-actions/setup-chrome@v1
-#      - name: Setup Microsoft Edge
-#        uses: browser-actions/setup-edge@v1
+      - name: Setup Microsoft Edge
+        uses: browser-actions/setup-edge@v1
+      - name: Setup Firefox
+        uses: browser-actions/setup-firefox@v1
 
       - name: Boot the web server with php server mode
         run: |
@@ -121,6 +123,8 @@ jobs:
           cat "spec/run/wdio-chrome.conf.js.bak" | sed -e "s/9000/`echo -n ${GHPORTNUM}`/" > "spec/run/wdio-chrome.conf.js"
           mv "spec/run/wdio-edge.conf.js" "spec/run/wdio-edge.conf.js.bak"
           cat "spec/run/wdio-edge.conf.js.bak" | sed -e "s/9000/`echo -n ${GHPORTNUM}`/" > "spec/run/wdio-edge.conf.js"
+          mv "spec/run/wdio-firefox.conf.js" "spec/run/wdio-firefox.conf.js.bak"
+          cat "spec/run/wdio-edge.firefox.js.bak" | sed -e "s/9000/`echo -n ${GHPORTNUM}`/" > "spec/run/wdio-firefox.conf.js"
           php -S "localhost:${GHPORTNUM}" &
 
       - name: Revert MySQL Data
@@ -150,3 +154,18 @@ jobs:
 #
 #      - name: Starting End-to-End Tests with Microsoft Edge
 #        run: cd spec/run;npx wdio wdio-edge.conf.js
+
+      - name: Revert MySQL Data
+        run: mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.sql
+      - name: Revert PostgreSQL Data
+        run: psql --quiet postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./dist-docs/sample_schema_pgsql.sql
+      - name: Revert SQLite Data
+        run: |
+          rm sample.sq3
+          touch sample.sq3
+          sqlite3 sample.sq3 < ./dist-docs/sample_schema_sqlite.sql
+          chmod 777 sample.sq3
+
+      - name: Starting End-to-End Tests with Firefox
+        run: cd spec/run;npx wdio wdio-firefox.conf.js
+

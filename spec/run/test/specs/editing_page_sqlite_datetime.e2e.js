@@ -1,6 +1,9 @@
 const EditingPage = require('../pageobjects/editing_page_sqlite.page');
 
-const waiting = 1000
+const waiting = 500
+
+let pageTitle = "INTER-Mediator - Sample - Editing/SQLite"
+
 let initDateTime, initTime, zeroDateTime
 if (process.platform === 'darwin') {
   initDateTime = "2000-12-31 15:00:00" // For Asia/Tokyo server
@@ -15,7 +18,7 @@ if (process.platform === 'darwin') {
 describe('Editing Page Date/Time Fields', () => {
   it('can open with the valid title.', async () => {
     await EditingPage.open()
-    await expect(browser).toHaveTitle("INTER-Mediator - Sample - Editing/SQLite"/*'INTER-Mediator - サンプル - フォーム形式/MySQL'*/)
+    await expect(browser).toHaveTitle(pageTitle)
   })
   it('has the INTER-Mediator\'s navigation.', async () => {
     await expect(EditingPage.navigator).toExist()
@@ -31,6 +34,7 @@ describe('Editing Page Date/Time Fields', () => {
     await expect(EditingPage.navigatorMoveButtonLast).toExist()
     await expect(EditingPage.navigatorMoveButtonLast).toHaveText('>>')
     await expect(EditingPage.navigatorInsertButton).toExist()
+    await browser.pause(waiting)
     await EditingPage.navigatorInsertButton.click()
     await EditingPage.navigatorInsertButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()

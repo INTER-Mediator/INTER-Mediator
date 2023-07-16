@@ -1,9 +1,18 @@
 const FormPage = require('../pageobjects/form_sqlite.page');
 
+const waiting = 500
+
+let pageTitle
+if (/*process.platform === 'darwin'*/ false) {
+  pageTitle = "NTER-Mediator - サンプル - フォーム形式/SQLite"
+} else {
+  pageTitle = "INTER-Mediator - Sample - Form Style/SQLite"
+}
+
 describe('Form Page', () => {
   it('can open with the valid title', async () => {
     await FormPage.open()
-    await expect(browser).toHaveTitle('INTER-Mediator - Sample - Form Style/SQLite')
+    await expect(browser).toHaveTitle(pageTitle)
   });
   it('has the INTER-Mediator\'s navigation.', async () => {
     await browser.pause(3000)
@@ -27,29 +36,29 @@ describe('Form Page', () => {
     await expect(FormPage.fieldPersonId).toExist()
     await expect(FormPage.fieldPersonId).toHaveText("1")
     await FormPage.navigatorMoveButtonNext.click()
-    await browser.pause(1000)
+    await browser.pause(waiting)
     await expect(FormPage.fieldPersonId).toExist()
     await expect(FormPage.fieldPersonId).toHaveText("2")
     await FormPage.navigatorMoveButtonNext.click()
-    await browser.pause(1000)
+    await browser.pause(waiting)
     await expect(FormPage.fieldPersonId).toExist()
     await expect(FormPage.fieldPersonId).toHaveText("3")
     await FormPage.navigatorMoveButtonPrevious.click()
-    await browser.pause(1000)
+    await browser.pause(waiting)
     await expect(FormPage.fieldPersonId).toExist()
     await expect(FormPage.fieldPersonId).toHaveText("2")
     await FormPage.navigatorMoveButtonLast.click()
-    await browser.pause(1000)
+    await browser.pause(waiting)
     await expect(FormPage.fieldPersonId).toExist()
     await expect(FormPage.fieldPersonId).toHaveText("3")
     await FormPage.navigatorMoveButtonFirst.click()
-    await browser.pause(1000)
+    await browser.pause(waiting)
     await expect(FormPage.fieldPersonId).toExist()
     await expect(FormPage.fieldPersonId).toHaveText("1")
   });
   it('can retrieve the first record from database.', async () => {
     await FormPage.navigatorMoveButtonFirst.click()
-    await browser.pause(1000)
+    await browser.pause(waiting)
 
     await expect(FormPage.fieldPersonId).toHaveText("1")
     await expect(FormPage.fieldPersonCategory).toHaveValue("")
@@ -65,7 +74,7 @@ describe('Form Page', () => {
   });
   it('can retrieve the second record from database.', async () => {
     await FormPage.navigatorMoveButtonNext.click()
-    await browser.pause(1000)
+    await browser.pause(waiting)
 
     await expect(FormPage.fieldPersonId).toHaveText("2")
     await expect(FormPage.fieldPersonCategory).toHaveValue("")
@@ -81,7 +90,7 @@ describe('Form Page', () => {
   });
   it('can retrieve the third record from database.', async () => {
     await FormPage.navigatorMoveButtonNext.click()
-    await browser.pause(1000)
+    await browser.pause(waiting)
 
     await expect(FormPage.fieldPersonId).toHaveText("3")
     await expect(FormPage.fieldPersonCategory).toHaveValue("")
@@ -97,7 +106,7 @@ describe('Form Page', () => {
   });
   it('can edit the first record.', async () => {
     await FormPage.navigatorUpdateButton.click();
-    await browser.pause(1000)
+    await browser.pause(waiting)
 
     await expect(FormPage.fieldPersonId).toHaveText("1")
     await FormPage.fieldPersonCategory.selectByVisibleText('Family')
@@ -108,7 +117,7 @@ describe('Form Page', () => {
   });
   it('can store the edited data on the first record.', async () => {
     await FormPage.navigatorUpdateButton.click();
-    await browser.pause(1000)
+    await browser.pause(waiting)
 
     await expect(FormPage.fieldPersonId).toHaveText("1")
     await expect(FormPage.fieldPersonCategory).toHaveValue("101")
@@ -124,7 +133,7 @@ describe('Form Page', () => {
   });
   it('detail area expanded with multi-record', async () => {
     await FormPage.navigatorUpdateButton.click();
-    await browser.pause(1000)
+    await browser.pause(waiting)
 
     await expect(FormPage.contactTable).toExist() // check the detailed Contact table
     const rows = FormPage.rowContact
@@ -156,8 +165,9 @@ describe('Form Page', () => {
   });
   it('works two popup menus that are depending with relationship.', async () => {
     await FormPage.navigatorMoveButtonFirst.click() // Move to first record
+    await browser.pause(waiting)
     await FormPage.navigatorUpdateButton.click();
-    await browser.pause(1000)
+    await browser.pause(waiting)
     await expect(FormPage.rowContact[0]).toExist()
     await expect(FormPage.rowContactWay[0]).toHaveText("Direct\nIndirect\nOthers")
     await expect(FormPage.rowContactKind[0]).toHaveText("Talk\nMeet\nMeeting")
@@ -186,11 +196,11 @@ describe('Form Page', () => {
   });
   it('can insert a row into detail area.', async () => {
     await FormPage.navigatorUpdateButton.click();
-    await browser.pause(3000)
+    await browser.pause(waiting)
     await FormPage.contactTableInsertButton.click()
-    await browser.pause(3000)
+    await browser.pause(waiting)
     await browser.acceptAlert()
-    await browser.pause(3000)
+    await browser.pause(waiting)
 
     const rows = FormPage.rowContact
     await expect(rows[0]).toExist() // There has three lines
@@ -202,13 +212,13 @@ describe('Form Page', () => {
   })
   it('can delete a row in detail area.', async () => {
     await FormPage.navigatorUpdateButton.click();
-    await browser.pause(3000)
+    await browser.pause(waiting)
 
     await expect(FormPage.contactTableInsertButton).toExist()
     await FormPage.rowContactDeleteButton[1].click()
-    await browser.pause(3000)
+    await browser.pause(waiting)
     await browser.acceptAlert()
-    await browser.pause(3000)
+    await browser.pause(waiting)
 
     const rows = FormPage.rowContact
     await expect(rows[0]).toExist() // There has three lines
@@ -219,13 +229,13 @@ describe('Form Page', () => {
   })
   it('can copy a row in detail area.', async () => {
     await FormPage.navigatorUpdateButton.click();
-    await browser.pause(3000)
+    await browser.pause(waiting)
 
     const value = await FormPage.rowContactSummary[1].getValue()
     await expect(FormPage.contactTableInsertButton).toExist()
     await FormPage.rowContactCopyButton[1].click()
     //await browser.acceptAlert()
-    await browser.pause(3000)
+    await browser.pause(waiting)
 
     const rows = FormPage.rowContact
     await expect(rows[0]).toExist() // There has three lines

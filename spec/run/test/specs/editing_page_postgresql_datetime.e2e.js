@@ -1,6 +1,9 @@
 const EditingPage = require('../pageobjects/editing_page_postgresql.page');
 
-const waiting = 1000
+const waiting = 500
+
+let pageTitle = "INTER-Mediator - Sample - Editing/PostgreSQL"
+
 let initDateTime, initTime
 if (process.platform === 'darwin') {
   initDateTime = "2000-12-31 15:00:00" // For Asia/Tokyo server
@@ -12,7 +15,7 @@ if (process.platform === 'darwin') {
 describe('Editing Page Date/Time Fields', () => {
   it('can open with the valid title.', async () => {
     await EditingPage.open()
-    await expect(browser).toHaveTitle("INTER-Mediator - Sample - Editing/PostgreSQL"/*'INTER-Mediator - サンプル - フォーム形式/MySQL'*/)
+    await expect(browser).toHaveTitle(pageTitle)
   })
   it('has the INTER-Mediator\'s navigation.', async () => {
     await expect(EditingPage.navigator).toExist()

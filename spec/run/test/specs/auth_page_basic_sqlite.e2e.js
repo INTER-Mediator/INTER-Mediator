@@ -1,15 +1,28 @@
 const AuthPage = require('../pageobjects/auth_page_sqlite.page');
 
-const waiting = 2000
+const waiting = 500
 
-const noInputMsg = "You should input user and/or password."
-const failMsg = "Retry to login. You should clarify the user and the password."
-const errorMsg = "Authentication Error!"
-const cantChangePWMsg = "Failure to change your password. Maybe the old password is not correct."
-const changePWMsg = "Succeed to change your password. Login with the new password."
-// const noInputMsg = "ユーザー名ないしはパスワードが入力されていません"
-// const failMsg = "ユーザー名とパスワードを確認して、もう一度ログインをしてください"
-// const errorMsg = "認証エラー!"
+let pageTitle
+if (/*process.platform === 'darwin'*/ false) {
+  pageTitle = 'INTER-Mediator - サンプル - フォーム形式/SQLite'
+} else {
+  pageTitle = "INTER-Mediator - Sample - Auth/SQLite"
+}
+
+let noInputMsg, failMsg, errorMsg, cantChangePWMsg, changePWMsg
+if (/*process.platform === 'darwin'*/ false) {
+  noInputMsg = "ユーザー名ないしはパスワードが入力されていません"
+  failMsg = "ユーザー名とパスワードを確認して、もう一度ログインをしてください"
+  errorMsg = "認証エラー!"
+  cantChangePWMsg = "Failure to change your password. Maybe the old password is not correct."
+  changePWMsg = "Succeed to change your password. Login with the new password."
+} else {
+  noInputMsg = "You should input user and/or password."
+  failMsg = "Retry to login. You should clarify the user and the password."
+  errorMsg = "Authentication Error!"
+  cantChangePWMsg = "Failure to change your password. Maybe the old password is not correct."
+  changePWMsg = "Succeed to change your password. Login with the new password."
+}
 
 describe('Login required page', () => {
   it('can open with the valid title.', async () => {
