@@ -113,6 +113,8 @@ jobs:
         uses: browser-actions/setup-chrome@v1
       - name: Setup Microsoft Edge
         uses: browser-actions/setup-edge@v1
+        with:
+          edge-version: beta
 
       - name: Boot the web server with php server mode
         run: |
