@@ -24,16 +24,18 @@ Ver.11 (in development)
 - The FileURL container is introduced. It can store a 'file:///...' url for an uploaded file with absolute path.
 - The $defaultGroupName in the params.php file let any user with no group belong to this group.
 - INTERMediator.ignoreDataInContext(cName[, flag]) ignores the specified context name.
-- [BUG FIX] In same case of using aggregation-select/from the error happened about the view or table didn't exist.
-- [BUG FIX] INTERMediator.additionalFieldValueOnDelete uses in the Definition File editor, so retrieved it.
-- [BIG FIX] After failed to login, any messages didn't show on the login panel.
-- [INFO] About sample SQL files in the dist-docs directory, their extensions changed to .sql from .txt.
-- [SECURITY IMPROVED] The hash calculation for the 'credential' authentication was updated. The value is sha-256 hash of
-  challenge, client id and user's password hash. The challenge is already stored with the user on db.
 - On the multiple client synchronization (i.e. using sync-control in any definition), the clean up task has to call
   "INTERMediator_DBAdapter.unregister()" explicitly.
 - INTERMediator.moveAnotherURL(url, task) is newly added. This will call "INTERMediator_DBAdapter.unregister()", do the "task"
   and move to the "url" place
+- Update dbupdate.sh for MariaDB 11.
+- Update recipe.rb and sample_spec.rb etc. for the INTER-Mediator-Server virtual machine and CI.
+- [SECURITY IMPROVED] The hash calculation for the 'credential' authentication was updated. The value is sha-256 hash of
+  challenge, client id and user's password hash. The challenge is already stored with the user on db.
+- [INFO] About sample SQL files in the dist-docs directory, their extensions changed to .sql from .txt.
+- [BUG FIX] In same case of using aggregation-select/from the error happened about the view or table didn't exist.
+- [BUG FIX] INTERMediator.additionalFieldValueOnDelete uses in the Definition File editor, so retrieved it.
+- [BIG FIX] After failed to login, any messages didn't show on the login panel.
 
 Ver.10 (October 12, 2022)
 - Auto saving for INPUT and TEXTAREA element. Customizing in JavaScript code and their default value are:

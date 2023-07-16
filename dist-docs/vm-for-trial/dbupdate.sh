@@ -22,6 +22,10 @@ if [ $IMVMFORTRIAL = '.' ] ; then
 else
     IMDISTDOC=`dirname ${IMVMFORTRIAL}`
 fi
+MYCMD="mysql"
+if [ -e "/usr/bin/mariadb" ]; then
+    MYCMD="mariadb"
+fi
 SQLITEDIR="/var/db/im"
 SQLITEDB="${SQLITEDIR}/sample.sq3"
 
@@ -33,29 +37,29 @@ if [ "$INPUT" = "y" -o "$INPUT" = "Y" ]; then
     echo "Initializing databases..."
 
     if [ -e "/etc/redhat-release" ]; then
-        mysql -u root --password="${VMPASSWORD}" test_db -e "DROP USER 'web'@'localhost';"
+        "${MYCMD}" -u root --password="${VMPASSWORD}" test_db -e "DROP USER 'web'@'localhost';"
     fi
     if [ -e "/etc/alpine-release" ]; then
-        mysql -u root --password="${VMPASSWORD}" test_db -e "DROP USER IF EXISTS 'web'@'localhost';"
+        "${MYCMD}" -u root --password="${VMPASSWORD}" test_db -e "DROP USER IF EXISTS 'web'@'localhost';"
     fi
     if [ $OS = 'ubuntu' ] ; then
-        mysql -u root --password="${VMPASSWORD}" -e "set global validate_password_policy=LOW;"
+        "${MYCMD}" -u root --password="${VMPASSWORD}" -e "set global validate_password_policy=LOW;"
     fi
-    mysql -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.sql"
-    # mysql -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.sql" > /dev/null 2>&1
+    "${MYCMD}" -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.sql"
+    # "${MYCMD}" -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.sql" > /dev/null 2>&1
     if [ $OS = 'ubuntu' ] ; then
-        mysql -u root --password="${VMPASSWORD}" -e "set global validate_password_policy=MEDIUM;"
+        "${MYCMD}" -u root --password="${VMPASSWORD}" -e "set global validate_password_policy=MEDIUM;"
     fi
     if [ $? -gt 0 ]; then
         if [ -e '/.dockerenv' ]; then
-            mysql -h db -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.sql"
+            "${MYCMD}" -h db -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.sql"
         fi
     fi
     if [ ! -e '/.dockerenv' ]; then
         if [ -e "/etc/alpine-release" ]; then
-            mysql -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.sql | grep Date: | awk '{print $3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
+            "${MYCMD}" -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.sql | grep Date: | awk '{print $3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
         else
-            mysql -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.sql | grep Date: | awk '{print $2,$3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
+            "${MYCMD}" -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.sql | grep Date: | awk '{print $2,$3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
         fi
     fi
 
