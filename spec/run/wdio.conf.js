@@ -67,7 +67,7 @@ exports.config = {
     // maxInstances can get overwritten per capability. So if you have an in-house Selenium
     // grid with only 5 firefox instances available you can make sure that not more than
     // 5 instances get started at a time.
-    maxInstances: 5,
+    maxInstances: 10,
     //
     browserName: 'chrome',
     acceptInsecureCerts: true,
@@ -75,11 +75,17 @@ exports.config = {
       args: ['--headless', '--disable-gpu', '--disable-dev-shm-usage'],
     }
   }, {
+    maxInstances: 10,
     browserName: 'firefox'
   }, {
+    maxInstances: 10,
     browserName: 'safari'
   }, {
-    browserName: 'MicrosoftEdge'
+    maxInstances: 10,
+    browserName: 'MicrosoftEdge',
+    'ms:edgeOptions': {
+      args: ['--headless']
+    }
   }
     // If outputDir is provided WebdriverIO can capture driver session logs
     // it is possible to configure which logTypes to include/exclude.
