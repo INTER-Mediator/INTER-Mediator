@@ -670,7 +670,10 @@ end
 #   end
 # }
 
-describe command('mysql -u root --password=im4135dev test_db -e \'SHOW TABLES\'') do
+describe command('mariadb -u root --password=im4135dev test_db -e \'SHOW TABLES\''), :if => os[:family] == 'redhat' && os[:release].to_f >= 8 do
+  its(:stdout) { should match /cor_way_kind/ }
+end
+describe command('mysql -u root --password=im4135dev test_db -e \'SHOW TABLES\''), :if => os[:family] == 'ubuntu' || os[:family] == 'alpine' || (os[:family] == 'redhat' && os[:release].to_f < 8) do
   its(:stdout) { should match /cor_way_kind/ }
 end
 
