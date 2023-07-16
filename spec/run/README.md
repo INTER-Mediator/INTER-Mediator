@@ -20,23 +20,23 @@ The samples/E2E-Test directory has the target pages for these tests.
 Just run the test with Google Chrome
 
 ```
-npm run wdio wdio-chrome.conf.js 
+npx wdio wdio-chrome.conf.js 
 ```
 
 Just run the test with Microsoft Edge
 
 ```
-npm run wdio wdio-edge.conf.js 
+npx wdio wdio-edge.conf.js 
 ```
 
 Just run the test with Firefox
 
 ```
-npm run wdio wdio-firefox.conf.js 
+npx wdio wdio-firefox.conf.js 
 ```
 
-Just run the test with Safari
+Just run the test with Safari. This test works on the /spec/run-safari directory.
 
 ```
-npm run wdio wdio-safari.conf.js 
+npx wdio wdio-safari.conf.js 
 ```
