@@ -121,10 +121,15 @@ jobs:
         run: pwd;ls
 
       - name: Boot the web server with php server mode
-        run: GHPORTNUM=`expr 9000 + \`echo -n ${{ matrix.php-versions }} | sed -e "s/\.//g"\``; mv spec/run/wdio.conf.js spec/run/wdio.conf.js.bak; cat spec/run/wdio.conf.js.bak | sed -e "s/9000/`echo -n ${GHPORTNUM}`/" > spec/run/wdio.conf.js; php -S localhost:`echo -n ${GHPORTNUM}` &
+        run: |
+          BASECONF="wdio-chrome.conf.js"
+          GHPORTNUM=`expr 9000 + \`echo -n ${{ matrix.php-versions }} | sed -e "s/\.//g"\``
+          mv "spec/run/${BASECONF}" "spec/run/${BASECONF}.bak"
+          cat "spec/run/${BASECONF}.bak" | sed -e "s/9000/`echo -n ${GHPORTNUM}`/" > "spec/run/${BASECONF}"
+          php -S "localhost:${GHPORTNUM}" &
       - name: Setup Headless Chrome
         uses: browser-actions/setup-chrome@v1
       - name: Setup WebdriverIO
         run: cd spec/run;npm update
-      - name: Starting End-to-End Tests
-        run: composer wdio-test
+      - name: Starting End-to-End Tests with Google Chrome
+        run: cd spec/run;npm run wdio "${BASECONF}"
