@@ -127,6 +127,9 @@ jobs:
           cat "spec/run/wdio-edge.firefox.js.bak" | sed -e "s/9000/`echo -n ${GHPORTNUM}`/" > "spec/run/wdio-firefox.conf.js"
           php -S "localhost:${GHPORTNUM}" &
 
+      - name: Check config file for Firefox
+        run: cat "spec/run/wdio-firefox.conf.js"
+
       - name: Revert MySQL Data
         run: mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.sql
       - name: Revert PostgreSQL Data
