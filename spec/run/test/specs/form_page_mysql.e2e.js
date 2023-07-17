@@ -229,13 +229,13 @@ describe('Form Page', () => {
     // await FormPage.open()
     // await browser.pause(waiting)
     await FormPage.navigatorUpdateButton.click();
-    await browser.pause(3000)
+    await browser.pause(waiting)
 
     const value = await FormPage.rowContactSummary[1].getValue()
     await expect(FormPage.contactTableInsertButton).toExist()
     await FormPage.rowContactCopyButton[1].click()
     //await browser.acceptAlert()
-    await browser.pause(3000)
+    await browser.pause(waiting * 3)
 
     const rows = FormPage.rowContact
     await expect(rows[0]).toExist() // There has three lines

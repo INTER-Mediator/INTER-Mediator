@@ -231,7 +231,7 @@ describe('Form Page', () => {
     await expect(FormPage.contactTableInsertButton).toExist()
     await FormPage.rowContactCopyButton[1].click()
     //await browser.acceptAlert()
-    await browser.pause(waiting)
+    await browser.pause(waiting * 3)
 
     const rows = await FormPage.rowContact
     await expect(rows[0]).toExist() // There has three lines
