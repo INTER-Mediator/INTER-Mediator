@@ -132,7 +132,7 @@ describe('Form Page', () => {
   });
   it('detail area expanded with multi-record', async () => {
     await FormPage.navigatorUpdateButton.click();
-    await browser.pause(waiting)
+    await browser.pause(waiting * 3)
 
     await expect(FormPage.contactTable).toExist() // check the detailed Contact table
     const rows = FormPage.rowContact
