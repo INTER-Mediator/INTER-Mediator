@@ -222,14 +222,8 @@ elsif node[:platform] == 'redhat'
       command 'sudo su - postgres -c "initdb --encoding=UTF8 --no-locale"'
     end
   else
-    if node[:virtualization][:system] == 'docker'
-      execute 'PGSETUP_INITDB_OPTIONS="--encoding=UTF-8 --no-locale --no-sync" postgresql-setup initdb' do
-        command 'PGSETUP_INITDB_OPTIONS="--encoding=UTF-8 --no-locale --no-sync" postgresql-setup initdb'
-      end
-    else
-      execute 'PGSETUP_INITDB_OPTIONS="--encoding=UTF-8 --no-locale" postgresql-setup initdb' do
-        command 'PGSETUP_INITDB_OPTIONS="--encoding=UTF-8 --no-locale" postgresql-setup initdb'
-      end
+    execute 'PGSETUP_INITDB_OPTIONS="--encoding=UTF-8 --no-locale" postgresql-setup --initdb' do
+      command 'PGSETUP_INITDB_OPTIONS="--encoding=UTF-8 --no-locale" postgresql-setup --initdb'
     end
   end
 end
@@ -1536,8 +1530,11 @@ host    replication     all             127.0.0.1/32            ident
 host    replication     all             ::1/128                 ident
 EOF
   end
-  service 'postgresql' do
-    action [ :restart ]
+  #service 'postgresql' do
+  #  action [ :restart ]
+  #end
+  execute 'systemctl reload postgresql.service' do
+    command 'systemctl reload postgresql.service'
   end
 end
 
