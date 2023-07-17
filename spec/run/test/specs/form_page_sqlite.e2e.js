@@ -241,7 +241,6 @@ describe('Form Page', () => {
     // await browser.pause(waiting)
     await FormPage.navigatorUpdateButton.waitForClickable()
     await FormPage.navigatorUpdateButton.click();
-
     await browser.pause(waiting)
     const value = await FormPage.rowContactSummary[1].getValue()
     await expect(FormPage.contactTableInsertButton).toExist()

@@ -67,7 +67,7 @@ exports.config = {
     // maxInstances can get overwritten per capability. So if you have an in-house Selenium
     // grid with only 5 firefox instances available you can make sure that not more than
     // 5 instances get started at a time.
-    maxInstances: 1, // This is prefer for setting to 1 here
+    maxInstances: 3, // This is prefer for setting to 1 here
     //
     browserName: 'firefox',
     'moz:firefoxOptions': {
