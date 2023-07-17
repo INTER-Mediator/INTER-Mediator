@@ -168,7 +168,7 @@ describe('Form Page', () => {
     await FormPage.navigatorMoveButtonFirst.click() // Move to first record
     await FormPage.navigatorUpdateButton.waitForClickable()
     await FormPage.navigatorUpdateButton.click();
-    await FormPage.rowContact[0].waitForExist()
+    await browser.pause(waiting)
     await expect(FormPage.rowContact[0]).toExist()
     await expect(FormPage.rowContactWay[0]).toHaveText("Direct\nIndirect\nOthers")
     await expect(FormPage.rowContactKind[0]).toHaveText("Talk\nMeet\nMeeting")
