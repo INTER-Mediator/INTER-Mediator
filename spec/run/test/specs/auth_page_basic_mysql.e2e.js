@@ -218,6 +218,7 @@ describe('Login required page', () => {
     await AuthPage.authLoginButton.click() // can login with new password
     await expect(AuthPage.authPanel).not.toExist()
 
+    await AuthPage.logoutLink.waitForClickable()
     await AuthPage.logoutLink.click()
     await expect(AuthPage.authPanel).toExist()
     await AuthPage.authUsername.setValue("user1")

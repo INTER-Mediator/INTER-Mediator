@@ -42,6 +42,7 @@ describe('Editing Page Date/Time Fields', () => {
     await expect(EditingPage.fieldDt1Textfield).toHaveValue(initDateTime) // Checking initial value
     const value = new Date().toISOString().substring(0, 19).replace("T", " ")
     await EditingPage.fieldDt1Textfield.setValue(value) // Set a value to the field
+    await EditingPage.navigatorUpdateButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDt1Textfield).toHaveValue(String(value))

@@ -34,6 +34,7 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("0") // Checking initial value
     const value = Math.trunc(Math.random() * 10000000)
     await EditingPage.fieldNum1Textfield.setValue(String(value)) // Set a value to the field
+    await EditingPage.navigatorUpdateButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum1Textfield).toHaveValue(String(value))
@@ -47,6 +48,7 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("") // Checking initial value
     const value = Math.trunc(Math.random() * 10000000)
     await EditingPage.fieldNum2Textfield.setValue(value) // Set a value to the field
+    await EditingPage.navigatorUpdateButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum2Textfield).toHaveValue(String(value))

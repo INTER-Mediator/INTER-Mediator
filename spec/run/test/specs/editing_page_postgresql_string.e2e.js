@@ -61,11 +61,13 @@ describe('Editing Page String Fields', () => {
     await expect(EditingPage.fieldVc1Checkbox).not.toBeSelected() // Checking initial value
     await EditingPage.fieldVc1Checkbox.click() // ON
     await browser.pause(waiting)
+    await EditingPage.navigatorUpdateButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await EditingPage.fieldVc1Checkbox.waitForExist()
     await expect(EditingPage.fieldVc1Checkbox).toBeSelected()
     await expect(EditingPage.fieldVc1Textfield).toHaveValue("ON")
     await EditingPage.fieldVc1Checkbox.click() // OFF
+    await EditingPage.navigatorUpdateButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Checkbox).not.toBeSelected()
@@ -75,7 +77,9 @@ describe('Editing Page String Fields', () => {
   it('can edit the checkbox of nullable varchar field.', async () => {
     await expect(EditingPage.fieldVc2Checkbox).toExist()
     await expect(EditingPage.fieldVc2Checkbox).not.toBeSelected() // Checking initial value
+    await EditingPage.fieldVc2Checkbox.waitForClickable()
     await EditingPage.fieldVc2Checkbox.click() // ON
+    await EditingPage.navigatorUpdateButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc2Checkbox).toBeSelected()
@@ -93,12 +97,14 @@ describe('Editing Page String Fields', () => {
     await expect(EditingPage.fieldVc1Radio[0]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldVc1Radio[1]).not.toBeSelected() // Checking initial value
     await EditingPage.fieldVc1Radio[0].click() // First button
+    await EditingPage.navigatorUpdateButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Radio[0]).toBeSelected() // Checking initial value
     await expect(EditingPage.fieldVc1Radio[1]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldVc1Textfield).toHaveValue("select1")
     await EditingPage.fieldVc1Radio[1].click() // Second button
+    await EditingPage.navigatorUpdateButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldVc1Radio[0]).not.toBeSelected() // Checking initial value

@@ -229,6 +229,7 @@ describe('Form Page', () => {
     await rows[0].waitForExist()
     await rows[1].waitForExist()
     await rows[2].waitForExist()
+    await browser.pause(waiting)
     await expect(rows[0]).toExist() // There has three lines
     await expect(rows[1]).toExist()
     await expect(rows[2]).toExist()
@@ -254,6 +255,7 @@ describe('Form Page', () => {
     await rows[1].waitForExist()
     await rows[2].waitForExist()
     await rows[3].waitForExist()
+    await browser.pause(waiting)
     await expect(rows[0]).toExist() // There has three lines
     await expect(rows[1]).toExist()
     await expect(rows[2]).toExist()
