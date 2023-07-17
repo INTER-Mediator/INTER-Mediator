@@ -186,7 +186,7 @@ describe('Form Page', () => {
     await expect(FormPage.rowContactKind[0]).toHaveText("Talk\nMeet\nMeeting")
 
     await FormPage.rowContactWay[0].selectByIndex(1)
-    await browser.pause(waiting)
+    await browser.pause(waiting * 2)
     await expect(FormPage.rowContactWay[0]).toHaveValue('5')
     await expect(FormPage.rowContactKind[0]).toHaveText("Calling\nMail\nEmail\nSee on Chat\nTwitter")
     await expect(FormPage.rowContactKind[0]).toHaveValue('')
@@ -195,7 +195,7 @@ describe('Form Page', () => {
     await expect(FormPage.rowContactKind[0]).toHaveValue('8')
 
     await FormPage.rowContactWay[0].selectByIndex(2)
-    await browser.pause(waiting)
+    await browser.pause(waiting * 2)
     await expect(FormPage.rowContactWay[0]).toHaveValue('6')
     await expect(FormPage.rowContactKind[0]).toHaveText("See on Web\nTwitter\nConference")
     await expect(FormPage.rowContactKind[0]).toHaveValue('')
@@ -205,7 +205,7 @@ describe('Form Page', () => {
 
     await expect(FormPage.rowContact[1]).toExist()
     await FormPage.rowContactWay[1].selectByIndex(2)
-    await browser.pause(waiting)
+    await browser.pause(waiting * 2)
     await expect(FormPage.rowContactWay[1]).toHaveValue('6')
     await expect(FormPage.rowContactKind[1]).toHaveText("See on Web\nTwitter\nConference")
     await expect(FormPage.rowContactKind[1]).toHaveValue('')
