@@ -164,10 +164,11 @@ describe('Form Page', () => {
     await expect(FormPage.rowContactDescription[2]).toHaveValue('')
   });
   it('works two popup menus that are depending with relationship.', async () => {
+    await FormPage.navigatorMoveButtonFirst.waitForClickable()
     await FormPage.navigatorMoveButtonFirst.click() // Move to first record
-    await browser.pause(waiting)
+    await FormPage.navigatorUpdateButton.waitForClickable()
     await FormPage.navigatorUpdateButton.click();
-    await browser.pause(waiting)
+    await FormPage.rowContact[0].waitForExist()
     await expect(FormPage.rowContact[0]).toExist()
     await expect(FormPage.rowContactWay[0]).toHaveText("Direct\nIndirect\nOthers")
     await expect(FormPage.rowContactKind[0]).toHaveText("Talk\nMeet\nMeeting")
@@ -195,14 +196,18 @@ describe('Form Page', () => {
     await expect(FormPage.rowContactKind[1]).toHaveValue('13')
   });
   it('can insert a row into detail area.', async () => {
+    await FormPage.navigatorUpdateButton.waitForClickable();
     await FormPage.navigatorUpdateButton.click();
-    await browser.pause(waiting)
+    await FormPage.contactTableInsertButton.waitForClickable()
+    await expect(FormPage.contactTableInsertButton).toExist()
     await FormPage.contactTableInsertButton.click()
-    await browser.pause(waiting)
     await browser.acceptAlert()
-    await browser.pause(waiting)
-
+    await browser.pause(waiting * 2)
     const rows = FormPage.rowContact
+    await rows[0].waitForExist()
+    await rows[1].waitForExist()
+    await rows[2].waitForExist()
+    await rows[3].waitForExist()
     await expect(rows[0]).toExist() // There has three lines
     await expect(rows[1]).toExist()
     await expect(rows[2]).toExist()
@@ -211,16 +216,19 @@ describe('Form Page', () => {
     await expect(FormPage.rowContactSummary[3]).toHaveValue('')
   })
   it('can delete a row in detail area.', async () => {
+    // await FormPage.open()
+    // await browser.pause(waiting)
+    await FormPage.navigatorUpdateButton.waitForClickable()
     await FormPage.navigatorUpdateButton.click();
-    await browser.pause(waiting)
-
-    await expect(FormPage.contactTableInsertButton).toExist()
+    await FormPage.rowContactDeleteButton[1].waitForClickable()
     await FormPage.rowContactDeleteButton[1].click()
-    await browser.pause(waiting)
     await browser.acceptAlert()
-    await browser.pause(waiting)
+    await browser.pause(waiting * 2)
 
     const rows = FormPage.rowContact
+    await rows[0].waitForExist()
+    await rows[1].waitForExist()
+    await rows[2].waitForExist()
     await expect(rows[0]).toExist() // There has three lines
     await expect(rows[1]).toExist()
     await expect(rows[2]).toExist()
@@ -228,23 +236,33 @@ describe('Form Page', () => {
     await expect(rows[4]).not.toExist()
   })
   it('can copy a row in detail area.', async () => {
+    // await FormPage.open()
+    // await browser.pause(waiting)
+    await FormPage.navigatorUpdateButton.waitForClickable()
     await FormPage.navigatorUpdateButton.click();
-    await browser.pause(waiting)
 
+    await browser.pause(waiting)
     const value = await FormPage.rowContactSummary[1].getValue()
     await expect(FormPage.contactTableInsertButton).toExist()
+    await FormPage.rowContactDeleteButton[1].waitForClickable()
     await FormPage.rowContactCopyButton[1].click()
     //await browser.acceptAlert()
-    await browser.pause(waiting * 3)
+    await browser.pause(waiting * 2)
 
     const rows = FormPage.rowContact
+    await rows[0].waitForExist()
+    await rows[1].waitForExist()
+    await rows[2].waitForExist()
+    await rows[3].waitForExist()
     await expect(rows[0]).toExist() // There has three lines
     await expect(rows[1]).toExist()
     await expect(rows[2]).toExist()
     await expect(rows[3]).toExist()
     await expect(rows[4]).not.toExist()
+    await browser.pause(waiting * 2)
     await expect(FormPage.rowContactSummary[3]).toHaveValue(value)
   })
+
 });
 
 
