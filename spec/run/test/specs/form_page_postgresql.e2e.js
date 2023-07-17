@@ -186,25 +186,31 @@ describe('Form Page', () => {
     await expect(FormPage.rowContactKind[0]).toHaveText("Talk\nMeet\nMeeting")
 
     await FormPage.rowContactWay[0].selectByIndex(1)
+    await browser.pause(waiting)
     await expect(FormPage.rowContactWay[0]).toHaveValue('5')
     await expect(FormPage.rowContactKind[0]).toHaveText("Calling\nMail\nEmail\nSee on Chat\nTwitter")
     await expect(FormPage.rowContactKind[0]).toHaveValue('')
     await FormPage.rowContactKind[0].selectByIndex(1)
+    await browser.pause(waiting)
     await expect(FormPage.rowContactKind[0]).toHaveValue('8')
 
     await FormPage.rowContactWay[0].selectByIndex(2)
+    await browser.pause(waiting)
     await expect(FormPage.rowContactWay[0]).toHaveValue('6')
     await expect(FormPage.rowContactKind[0]).toHaveText("See on Web\nTwitter\nConference")
     await expect(FormPage.rowContactKind[0]).toHaveValue('')
     await FormPage.rowContactKind[0].selectByIndex(1)
+    await browser.pause(waiting)
     await expect(FormPage.rowContactKind[0]).toHaveValue('12')
 
     await expect(FormPage.rowContact[1]).toExist()
     await FormPage.rowContactWay[1].selectByIndex(2)
+    await browser.pause(waiting)
     await expect(FormPage.rowContactWay[1]).toHaveValue('6')
     await expect(FormPage.rowContactKind[1]).toHaveText("See on Web\nTwitter\nConference")
     await expect(FormPage.rowContactKind[1]).toHaveValue('')
     await FormPage.rowContactKind[1].selectByIndex(2)
+    await browser.pause(waiting)
     await expect(FormPage.rowContactKind[1]).toHaveValue('13')
   });
   it('can insert a row into detail area.', async () => {
@@ -220,6 +226,7 @@ describe('Form Page', () => {
     await rows[1].waitForExist()
     await rows[2].waitForExist()
     await rows[3].waitForExist()
+    await browser.pause(waiting)
     await expect(rows[0]).toExist() // There has three lines
     await expect(rows[1]).toExist()
     await expect(rows[2]).toExist()
@@ -241,6 +248,7 @@ describe('Form Page', () => {
     await rows[0].waitForExist()
     await rows[1].waitForExist()
     await rows[2].waitForExist()
+    await browser.pause(waiting)
     await expect(rows[0]).toExist() // There has three lines
     await expect(rows[1]).toExist()
     await expect(rows[2]).toExist()
@@ -265,6 +273,7 @@ describe('Form Page', () => {
     await rows[1].waitForExist()
     await rows[2].waitForExist()
     await rows[3].waitForExist()
+    await browser.pause(waiting)
     await expect(rows[0]).toExist() // There has three lines
     await expect(rows[1]).toExist()
     await expect(rows[2]).toExist()
