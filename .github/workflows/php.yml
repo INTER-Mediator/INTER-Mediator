@@ -125,7 +125,7 @@ jobs:
           mv "spec/run/wdio-edge.conf.js" "spec/run/wdio-edge.conf.js.bak"
           cat "spec/run/wdio-edge.conf.js.bak" | sed -e "s/9000/`echo -n ${GHPORTNUM}`/" > "spec/run/wdio-edge.conf.js"
           mv "spec/run/wdio-firefox.conf.js" "spec/run/wdio-firefox.conf.js.bak"
-          cat "spec/run/wdio-firefox.js.bak" | sed -e "s/9000/`echo -n ${GHPORTNUM}`/" > "spec/run/wdio-firefox.conf.js"
+          cat "spec/run/wdio-firefox.conf.js.bak" | sed -e "s/9000/`echo -n ${GHPORTNUM}`/" > "spec/run/wdio-firefox.conf.js"
           php -S "localhost:${GHPORTNUM}" &
 
       - name: Revert MySQL Data
