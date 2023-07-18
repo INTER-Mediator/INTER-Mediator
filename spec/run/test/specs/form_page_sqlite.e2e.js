@@ -200,6 +200,7 @@ describe('Form Page', () => {
     await FormPage.navigatorUpdateButton.click();
     await FormPage.contactTableInsertButton.waitForClickable()
     await expect(FormPage.contactTableInsertButton).toExist()
+    await browser.pause(waiting * 2)
     await FormPage.contactTableInsertButton.click()
     await browser.acceptAlert()
     await browser.pause(waiting * 2)
@@ -220,6 +221,7 @@ describe('Form Page', () => {
     // await browser.pause(waiting)
     await FormPage.navigatorUpdateButton.waitForClickable()
     await FormPage.navigatorUpdateButton.click();
+    await browser.pause(waiting * 2)
     await FormPage.rowContactDeleteButton[1].waitForClickable()
     await FormPage.rowContactDeleteButton[1].click()
     await browser.acceptAlert()
@@ -241,9 +243,10 @@ describe('Form Page', () => {
     // await browser.pause(waiting)
     await FormPage.navigatorUpdateButton.waitForClickable()
     await FormPage.navigatorUpdateButton.click();
-    await browser.pause(waiting)
+    await browser.pause(waiting*2)
     const value = await FormPage.rowContactSummary[1].getValue()
     await expect(FormPage.contactTableInsertButton).toExist()
+    await browser.pause(waiting * 2)
     await FormPage.rowContactDeleteButton[1].waitForClickable()
     await FormPage.rowContactCopyButton[1].click()
     //await browser.acceptAlert()

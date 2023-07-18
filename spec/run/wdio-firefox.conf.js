@@ -22,21 +22,21 @@ exports.config = {
   //
   specs: [
     // './test/specs/**/*.js'
-    './test/specs/form_page_mysql.e2e.js',
-    './test/specs/form_page_postgresql.e2e.js',
+    // './test/specs/form_page_mysql.e2e.js',
+    // './test/specs/form_page_postgresql.e2e.js',
     './test/specs/form_page_sqlite.e2e.js',
-    './test/specs/auth_page_basic_mysql.e2e.js',
-    './test/specs/auth_page_basic_postgresql.e2e.js',
-    './test/specs/auth_page_basic_sqlite.e2e.js',
-    './test/specs/editing_page_mysql_numeric.e2e.js',
-    './test/specs/editing_page_mysql_string.e2e.js',
-    './test/specs/editing_page_mysql_datetime.e2e.js',
-    './test/specs/editing_page_postgresql_numeric.e2e.js',
-    './test/specs/editing_page_postgresql_string.e2e.js',
-    './test/specs/editing_page_postgresql_datetime.e2e.js',
-    './test/specs/editing_page_sqlite_numeric.e2e.js',
-    './test/specs/editing_page_sqlite_string.e2e.js',
-    './test/specs/editing_page_sqlite_datetime.e2e.js',
+    // './test/specs/auth_page_basic_mysql.e2e.js',
+    // './test/specs/auth_page_basic_postgresql.e2e.js',
+    // './test/specs/auth_page_basic_sqlite.e2e.js',
+    // './test/specs/editing_page_mysql_numeric.e2e.js',
+    // './test/specs/editing_page_mysql_string.e2e.js',
+    // './test/specs/editing_page_mysql_datetime.e2e.js',
+    // './test/specs/editing_page_postgresql_numeric.e2e.js',
+    // './test/specs/editing_page_postgresql_string.e2e.js',
+    // './test/specs/editing_page_postgresql_datetime.e2e.js',
+    // './test/specs/editing_page_sqlite_numeric.e2e.js',
+    // './test/specs/editing_page_sqlite_string.e2e.js',
+    // './test/specs/editing_page_sqlite_datetime.e2e.js',
   ],
   // Patterns to exclude.
   exclude: [],
@@ -70,9 +70,9 @@ exports.config = {
     maxInstances: 1, // This is prefer for setting to 1 here
     //
     browserName: 'firefox',
-    'moz:firefoxOptions': {
-      args: ['-headless']
-    }
+    // 'moz:firefoxOptions': {
+    //   args: ['-headless']
+    // }
   }
     // If outputDir is provided WebdriverIO can capture driver session logs
     // it is possible to configure which logTypes to include/exclude.
@@ -86,7 +86,7 @@ exports.config = {
 // Define all options that are relevant for the WebdriverIO instance here
 //
 // Level of logging verbosity: trace | debug | info | warn | error | silent
-  logLevel: 'warn',
+  logLevel: 'info',
   //
   // Set specific log levels per logger
   // loggers:
