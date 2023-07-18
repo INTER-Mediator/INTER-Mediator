@@ -9,6 +9,7 @@ on:
 
 jobs:
   run:
+    runs-on: ubuntu-latest
     continue-on-error: ${{ matrix.operating-system }}
     strategy:
       matrix:
