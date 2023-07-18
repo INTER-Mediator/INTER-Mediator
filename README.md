@@ -1,4 +1,7 @@
-# INTER-Mediator [![Build Status](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/php.yml/badge.svg)](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/php.yml)
+# INTER-Mediator 
+[![Build Status](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/php.yml/badge.svg)](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/php.yml)
+[![Build Status](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/e2e-test-chrome.yml/badge.svg)](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/php.yml)
+[![Build Status](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/e2e-test-firefox.yml/badge.svg)](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/php.yml)
 
 [//]: # ([![pipeline status]&#40;https://gitlab.com/INTER-Mediator/INTER-Mediator/badges/master/pipeline.svg&#41;]&#40;https://gitlab.com/INTER-Mediator/INTER-Mediator/pipelines&#41;)
 
