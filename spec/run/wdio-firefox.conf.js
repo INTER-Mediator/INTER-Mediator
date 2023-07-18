@@ -70,9 +70,9 @@ exports.config = {
     maxInstances: 1, // This is prefer for setting to 1 here
     //
     browserName: 'firefox',
-    // 'moz:firefoxOptions': {
-    //   args: ['-headless']
-    // }
+    'moz:firefoxOptions': {
+      args: ['-headless']
+    }
   }
     // If outputDir is provided WebdriverIO can capture driver session logs
     // it is possible to configure which logTypes to include/exclude.
