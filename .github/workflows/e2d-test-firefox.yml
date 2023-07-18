@@ -9,8 +9,8 @@ on:
 
 jobs:
   run:
-    runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.operating-system }}
+    runs-on: ${{ matrix.operating-system }}
+    continue-on-error: true
     strategy:
       matrix:
         operating-system: [ubuntu-latest]
