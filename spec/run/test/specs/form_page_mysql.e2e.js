@@ -163,8 +163,10 @@ describe('Form Page', () => {
     await expect(FormPage.rowContactDescription[2]).toHaveValue('')
   });
   it('works two popup menus that are depending with relationship.', async () => {
+    await FormPage.navigatorMoveButtonFirst.waitForClickable()
     await FormPage.navigatorMoveButtonFirst.click() // Move to first record
     await browser.pause(waiting)
+    await FormPage.navigatorUpdateButton.waitForClickable();
     await FormPage.navigatorUpdateButton.click();
     await browser.pause(waiting)
     await expect(FormPage.rowContact[0]).toExist()

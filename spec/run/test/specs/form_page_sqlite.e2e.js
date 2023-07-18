@@ -105,17 +105,21 @@ describe('Form Page', () => {
     await expect(FormPage.fieldPersonMemo).toHaveValue("")
   });
   it('can edit the first record.', async () => {
+    await FormPage.navigatorUpdateButton.waitForClickable();
     await FormPage.navigatorUpdateButton.click();
     await browser.pause(waiting)
 
     await expect(FormPage.fieldPersonId).toHaveText("1")
     await FormPage.fieldPersonCategory.selectByVisibleText('Family')
+    await FormPage.fieldPersonCheck.waitForClickable()
     await FormPage.fieldPersonCheck.click()
     await FormPage.fieldPersonName.setValue("edit1")
+    await FormPage.fieldPersonLocations[0].waitForClickable()
     await FormPage.fieldPersonLocations[0].click()
     await FormPage.fieldPersonMemo.setValue("first\nsecond\nthird")
   });
   it('can store the edited data on the first record.', async () => {
+    await FormPage.navigatorUpdateButton.waitForClickable();
     await FormPage.navigatorUpdateButton.click();
     await browser.pause(waiting)
 
@@ -132,6 +136,7 @@ describe('Form Page', () => {
     await expect(FormPage.fieldPersonMemo).toHaveValue("first\nsecond\nthird")
   });
   it('detail area expanded with multi-record', async () => {
+    await FormPage.navigatorUpdateButton.waitForClickable();
     await FormPage.navigatorUpdateButton.click();
     await browser.pause(waiting)
 
