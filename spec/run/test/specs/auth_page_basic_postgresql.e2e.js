@@ -1,15 +1,28 @@
 const AuthPage = require('../pageobjects/auth_page_postgresql.page');
 
-const waiting = 2000
+const waiting = 500
 
-const noInputMsg = "You should input user and/or password."
-const failMsg = "Retry to login. You should clarify the user and the password."
-const errorMsg = "Authentication Error!"
-const cantChangePWMsg = "Failure to change your password. Maybe the old password is not correct."
-const changePWMsg = "Succeed to change your password. Login with the new password."
-// const noInputMsg = "ユーザー名ないしはパスワードが入力されていません"
-// const failMsg = "ユーザー名とパスワードを確認して、もう一度ログインをしてください"
-// const errorMsg = "認証エラー!"
+let pageTitle
+if (/*process.platform === 'darwin'*/ false) {
+  pageTitle = 'INTER-Mediator - サンプル - フォーム形式/PostgreSQL'
+} else {
+  pageTitle = "INTER-Mediator - Sample - Auth/PostgreSQL"
+}
+
+let noInputMsg, failMsg, errorMsg, cantChangePWMsg, changePWMsg
+if (/*process.platform === 'darwin'*/ false) {
+  noInputMsg = "ユーザー名ないしはパスワードが入力されていません"
+  failMsg = "ユーザー名とパスワードを確認して、もう一度ログインをしてください"
+  errorMsg = "認証エラー!"
+  cantChangePWMsg = "Failure to change your password. Maybe the old password is not correct."
+  changePWMsg = "Succeed to change your password. Login with the new password."
+} else {
+  noInputMsg = "You should input user and/or password."
+  failMsg = "Retry to login. You should clarify the user and the password."
+  errorMsg = "Authentication Error!"
+  cantChangePWMsg = "Failure to change your password. Maybe the old password is not correct."
+  changePWMsg = "Succeed to change your password. Login with the new password."
+}
 
 describe('Login required page', () => {
   it('can open with the valid title.', async () => {
@@ -56,6 +69,7 @@ describe('Login required page', () => {
 
   it('succeed login after 1 mistake.', async () => {
     await browser.refresh()
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).toExist()
     await AuthPage.authUsername.setValue("dsakjjljl")
     await AuthPage.authPassword.setValue("dsakjjljl")
@@ -78,6 +92,7 @@ describe('Login required page', () => {
 
   it('succeed login after 2 mistake.', async () => {
     await browser.refresh()
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).toExist()
     await AuthPage.authUsername.setValue("dsakjjljl")
     await AuthPage.authPassword.setValue("dsakjjljl")
@@ -107,6 +122,7 @@ describe('Login required page', () => {
 
   it('succeed login without mistake and continue to logging in.', async () => {
     await browser.refresh()
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).toExist()
     await AuthPage.authUsername.setValue("user1")
     await AuthPage.authPassword.setValue("user1")
@@ -115,9 +131,11 @@ describe('Login required page', () => {
     await expect(AuthPage.authPanel).not.toExist()
 
     await browser.refresh()
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).not.toExist() // Still logging in
 
     await browser.refresh()
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).not.toExist() // Still logging in
 
     await expect(AuthPage.logoutLink).toHaveText("Logout")
@@ -129,6 +147,7 @@ describe('Login required page', () => {
 
   it('works timeout to login.', async () => {
     await browser.refresh()
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).toExist()
     await AuthPage.authUsername.setValue("user1")
     await AuthPage.authPassword.setValue("user1")
@@ -139,11 +158,13 @@ describe('Login required page', () => {
     await browser.pause(10000) // Wait for timeout
 
     await browser.refresh()
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).toExist() // logged out
   })
 
   it('succeed login with sha-256 hashed users.', async () => {
     await browser.refresh()
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).toExist()
     await AuthPage.authUsername.setValue("mig2m")
     await AuthPage.authPassword.setValue("mig2m")
@@ -152,6 +173,7 @@ describe('Login required page', () => {
     await expect(AuthPage.authPanel).not.toExist()
 
     await browser.refresh()
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).not.toExist() // Still logging in
 
     await expect(AuthPage.logoutLink).toHaveText("Logout")
@@ -161,6 +183,7 @@ describe('Login required page', () => {
     await expect(AuthPage.authPanel).toExist() // logged out
 
     await browser.refresh()
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).toExist()
     await AuthPage.authUsername.setValue("mig2")
     await AuthPage.authPassword.setValue("mig2")
@@ -177,6 +200,7 @@ describe('Login required page', () => {
 
   it('can change the password.', async () => {
     await browser.refresh()
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).toExist()
     await AuthPage.authUsername.setValue("user1")
     await AuthPage.authPassword.setValue("dfjdjfadsklfjdksa")
@@ -186,6 +210,7 @@ describe('Login required page', () => {
     await expect(AuthPage.authNewPasswordMessage).toHaveText(cantChangePWMsg) // Succeed to change by this message
 
     await browser.refresh()
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).toExist()
     await AuthPage.authUsername.setValue("user1")
     await AuthPage.authPassword.setValue("user1")
@@ -205,6 +230,7 @@ describe('Login required page', () => {
     await AuthPage.authLoginButton.click() // can login with new password
     await expect(AuthPage.authPanel).not.toExist()
 
+    await AuthPage.logoutLink.waitForClickable()
     await AuthPage.logoutLink.click()
     await expect(AuthPage.authPanel).toExist()
     await AuthPage.authUsername.setValue("user1")

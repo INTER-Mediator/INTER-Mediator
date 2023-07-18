@@ -1,10 +1,13 @@
 const EditingPage = require('../pageobjects/editing_page_postgresql.page');
 
-const waiting = 1000
+const waiting = 500
+
+let pageTitle = "INTER-Mediator - Sample - Editing/PostgreSQL"
+
 describe('Editing Page Numeric Fields', () => {
   it('can open with the valid title.', async () => {
     await EditingPage.open()
-    await expect(browser).toHaveTitle("INTER-Mediator - Sample - Editing/PostgreSQL"/*'INTER-Mediator - サンプル - フォーム形式/MySQL'*/)
+    await expect(browser).toHaveTitle(pageTitle)
   })
   it('has the INTER-Mediator\'s navigation.', async () => {
     await expect(EditingPage.navigator).toExist()
@@ -31,6 +34,7 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("0") // Checking initial value
     const value = Math.trunc(Math.random() * 10000000)
     await EditingPage.fieldNum1Textfield.setValue(String(value)) // Set a value to the field
+    await EditingPage.navigatorUpdateButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum1Textfield).toHaveValue(String(value))
@@ -44,6 +48,7 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("") // Checking initial value
     const value = Math.trunc(Math.random() * 10000000)
     await EditingPage.fieldNum2Textfield.setValue(value) // Set a value to the field
+    await EditingPage.navigatorUpdateButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum2Textfield).toHaveValue(String(value))

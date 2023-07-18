@@ -100,8 +100,8 @@ class INTERMediator_AllTests extends TestCase
         $suite->addTestFile($folder . 'ServiceServer_Test.php');
         /*
          * CI envirionment can't test the SMTP communication. Is that no wander?
-         * The test case OME_Test.php has tests to send mail but they are commented.
-         * If you require to check to send mail, I'd like you to run on the your own environment.
+         * The test case OME_Test.php has tests to send mail, but they are commented.
+         * If you require to check to send mail, I'd like you to run on your own environment.
          */
         $suite->addTestFile($folder . 'VM_Test.php');
         if (php_uname('n') !== 'inter-mediator-server') {

@@ -1,6 +1,9 @@
 const EditingPage = require('../pageobjects/editing_page_sqlite.page');
 
-const waiting = 1000
+const waiting = 500
+
+let pageTitle = "INTER-Mediator - Sample - Editing/SQLite"
+
 let initDateTime, initTime, zeroDateTime
 if (process.platform === 'darwin') {
   initDateTime = "2000-12-31 15:00:00" // For Asia/Tokyo server
@@ -15,7 +18,7 @@ if (process.platform === 'darwin') {
 describe('Editing Page Date/Time Fields', () => {
   it('can open with the valid title.', async () => {
     await EditingPage.open()
-    await expect(browser).toHaveTitle("INTER-Mediator - Sample - Editing/SQLite"/*'INTER-Mediator - サンプル - フォーム形式/MySQL'*/)
+    await expect(browser).toHaveTitle(pageTitle)
   })
   it('has the INTER-Mediator\'s navigation.', async () => {
     await expect(EditingPage.navigator).toExist()
@@ -31,6 +34,7 @@ describe('Editing Page Date/Time Fields', () => {
     await expect(EditingPage.navigatorMoveButtonLast).toExist()
     await expect(EditingPage.navigatorMoveButtonLast).toHaveText('>>')
     await expect(EditingPage.navigatorInsertButton).toExist()
+    await browser.pause(waiting)
     await EditingPage.navigatorInsertButton.click()
     await EditingPage.navigatorInsertButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
@@ -43,11 +47,13 @@ describe('Editing Page Date/Time Fields', () => {
 
     const value = new Date().toISOString().substring(0, 19).replace("T", " ")
     await EditingPage.fieldDt1Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDt1Textfield).toHaveValue(String(value))
 
     await EditingPage.fieldDt1Textfield.setValue("") // Clear the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDt1Textfield).toHaveValue(zeroDateTime)
@@ -58,11 +64,13 @@ describe('Editing Page Date/Time Fields', () => {
 
     const value = new Date().toISOString().substring(0, 19).replace("T", " ")
     await EditingPage.fieldDt2Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDt2Textfield).toHaveValue(String(value))
 
     await EditingPage.fieldDt2Textfield.setValue("") // Clear the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDt2Textfield).toHaveValue("")
@@ -73,11 +81,13 @@ describe('Editing Page Date/Time Fields', () => {
 
     const value = new Date().toISOString().substring(0, 10)
     await EditingPage.fieldDate1Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDate1Textfield).toHaveValue(String(value))
 
     await EditingPage.fieldDate1Textfield.setValue("") // Clear the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDate1Textfield).toHaveValue("1970-01-01")
@@ -88,11 +98,13 @@ describe('Editing Page Date/Time Fields', () => {
 
     const value = new Date().toISOString().substring(0, 10)
     await EditingPage.fieldDate2Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDate2Textfield).toHaveValue(String(value))
 
     await EditingPage.fieldDate2Textfield.setValue("") // Clear the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDate2Textfield).toHaveValue("")
@@ -103,11 +115,13 @@ describe('Editing Page Date/Time Fields', () => {
 
     const value = new Date().toISOString().substring(11, 19)
     await EditingPage.fieldTime1Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldTime1Textfield).toHaveValue(String(value))
 
     await EditingPage.fieldTime1Textfield.setValue("") // Clear the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldTime1Textfield).toHaveValue(initTime)
@@ -118,11 +132,13 @@ describe('Editing Page Date/Time Fields', () => {
 
     const value = new Date().toISOString().substring(11, 19)
     await EditingPage.fieldTime2Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldTime2Textfield).toHaveValue(String(value))
 
     await EditingPage.fieldTime2Textfield.setValue("") // Clear the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldTime2Textfield).toHaveValue("")
@@ -133,11 +149,13 @@ describe('Editing Page Date/Time Fields', () => {
 
     const value = new Date().toISOString().substring(0, 19).replace("T", " ")
     await EditingPage.fieldTs1Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldTs1Textfield).toHaveValue(String(value))
 
     await EditingPage.fieldTs1Textfield.setValue("") // Clear the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldTs1Textfield).toHaveValue(zeroDateTime)
@@ -148,11 +166,13 @@ describe('Editing Page Date/Time Fields', () => {
 
     const value = new Date().toISOString().substring(0, 19).replace("T", " ")
     await EditingPage.fieldTs2Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldTs2Textfield).toHaveValue(String(value))
 
     await EditingPage.fieldTs2Textfield.setValue("") // Clear the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldTs2Textfield).toHaveValue("")

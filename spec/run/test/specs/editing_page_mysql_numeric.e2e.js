@@ -1,10 +1,13 @@
 const EditingPage = require('../pageobjects/editing_page_mysql.page');
 
-const waiting = 1000
+const waiting = 500
+
+let pageTitle = "INTER-Mediator - Sample - Editing/MySQL"
+
 describe('Editing Page Numeric Fields', () => {
   it('can open with the valid title.', async () => {
     await EditingPage.open()
-    await expect(browser).toHaveTitle("INTER-Mediator - Sample - Editing/MySQL"/*'INTER-Mediator - サンプル - フォーム形式/MySQL'*/)
+    await expect(browser).toHaveTitle(pageTitle)
   })
   it('has the INTER-Mediator\'s navigation.', async () => {
     await expect(EditingPage.navigator).toExist()
@@ -20,6 +23,7 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.navigatorMoveButtonLast).toExist()
     await expect(EditingPage.navigatorMoveButtonLast).toHaveText('>>')
     await expect(EditingPage.navigatorInsertButton).toExist()
+    await browser.pause(waiting)
     await EditingPage.navigatorInsertButton.click()
     await EditingPage.navigatorInsertButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
@@ -31,6 +35,7 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("0") // Checking initial value
     const value = Math.trunc(Math.random() * 10000000)
     await EditingPage.fieldNum1Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum1Textfield).toHaveValue(String(value))
@@ -44,10 +49,12 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("") // Checking initial value
     const value = Math.trunc(Math.random() * 10000000)
     await EditingPage.fieldNum2Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum2Textfield).toHaveValue(String(value))
     await EditingPage.fieldNum2Textfield.setValue("") // Clear the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("")
@@ -89,12 +96,14 @@ describe('Editing Page Numeric Fields', () => {
     await expect(buttons[0]).not.toBeSelected() // Checking initial value
     await expect(buttons[1]).not.toBeSelected() // Checking initial value
     await buttons[0].click() // First button
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(buttons[0]).toBeSelected() // Checking initial value
     await expect(buttons[1]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("1")
     await buttons[1].click() // Second button
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(buttons[0]).not.toBeSelected() // Checking initial value
@@ -125,16 +134,19 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldNum1Popup).toHaveValue("") // Checking initial value
     await expect(EditingPage.fieldNum1Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldNum1Popup.selectByVisibleText("select1") // Select second item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum1Popup).toHaveValue("10")
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("10")
     await EditingPage.fieldNum1Popup.selectByIndex(2) // Select third item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum1Popup).toHaveValue("20")
     await expect(EditingPage.fieldNum1Textfield).toHaveValue("20")
     await EditingPage.fieldNum1Popup.selectByIndex(0) // Select first item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum1Popup).toHaveValue("0")
@@ -145,16 +157,19 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldNum2Popup).toHaveValue("") // Checking initial value
     await expect(EditingPage.fieldNum2Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldNum2Popup.selectByVisibleText("select1") // Select second item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum2Popup).toHaveValue("10")
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("10")
     await EditingPage.fieldNum2Popup.selectByIndex(2) // Select third item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum2Popup).toHaveValue("20")
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("20")
     await EditingPage.fieldNum2Popup.selectByIndex(0) // Select first item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldNum2Popup).toHaveValue("")
@@ -166,10 +181,12 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0") // Checking initial value
     const value = Math.trunc(Math.random() * 100000) / 1000
     await EditingPage.fieldFloat1Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat1Textfield).toHaveValue(String(value))
     await EditingPage.fieldFloat1Textfield.setValue("") // Clear the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0")
@@ -179,10 +196,12 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldFloat2Textfield).toHaveValue("") // Checking initial value
     const value = Math.trunc(Math.random() * 100000) / 1000
     await EditingPage.fieldFloat2Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat2Textfield).toHaveValue(String(value))
     await EditingPage.fieldFloat2Textfield.setValue("") // Clear the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat2Textfield).toHaveValue("")
@@ -192,6 +211,7 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldFloat1Checkbox).toExist()
     await expect(EditingPage.fieldFloat1Checkbox).not.toBeSelected() // Checking initial value
     await EditingPage.fieldFloat1Checkbox.click() // ON
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat1Checkbox).toBeSelected()
@@ -208,6 +228,7 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldFloat2Checkbox).toExist()
     await expect(EditingPage.fieldFloat2Checkbox).not.toBeSelected() // Checking initial value
     await EditingPage.fieldFloat2Checkbox.click() // ON
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat2Checkbox).toBeSelected()
@@ -226,12 +247,14 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldFloat1Radio[0]).toBeSelected() // Checking initial value
     await expect(EditingPage.fieldFloat1Radio[1]).not.toBeSelected() // Checking initial value
     await EditingPage.fieldFloat1Radio[0].click() // First button
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat1Radio[0]).toBeSelected() // Checking initial value
     await expect(EditingPage.fieldFloat1Radio[1]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldFloat1Textfield).toHaveValue("0")
     await EditingPage.fieldFloat1Radio[1].click() // Second button
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat1Radio[0]).not.toBeSelected() // Checking initial value
@@ -245,12 +268,14 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldFloat2Radio[0]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldFloat2Radio[1]).not.toBeSelected() // Checking initial value
     await EditingPage.fieldFloat2Radio[0].click() // First button
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat2Radio[0]).toBeSelected() // Checking initial value
     await expect(EditingPage.fieldFloat2Radio[1]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldFloat2Textfield).toHaveValue("0")
     await EditingPage.fieldFloat2Radio[1].click() // Second button
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat2Radio[0]).not.toBeSelected() // Checking initial value
@@ -262,16 +287,19 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldFloat1Popup).toHaveValue("") // Checking initial value
     await expect(EditingPage.fieldFloat1Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldFloat1Popup.selectByVisibleText("select1") // Select second item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat1Popup).toHaveValue("10")
     await expect(EditingPage.fieldFloat1Textfield).toHaveValue("10")
     await EditingPage.fieldFloat1Popup.selectByIndex(2) // Select third item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat1Popup).toHaveValue("20")
     await expect(EditingPage.fieldFloat1Textfield).toHaveValue("20")
     await EditingPage.fieldFloat1Popup.selectByIndex(0) // Select first item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat1Popup).toHaveValue("")
@@ -282,16 +310,19 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldFloat2Popup).toHaveValue("") // Checking initial value
     await expect(EditingPage.fieldFloat2Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldFloat2Popup.selectByVisibleText("select1") // Select second item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat2Popup).toHaveValue("10")
     await expect(EditingPage.fieldFloat2Textfield).toHaveValue("10")
     await EditingPage.fieldFloat2Popup.selectByIndex(2) // Select third item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat2Popup).toHaveValue("20")
     await expect(EditingPage.fieldFloat2Textfield).toHaveValue("20")
     await EditingPage.fieldFloat2Popup.selectByIndex(0) // Select first item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldFloat2Popup).toHaveValue("")
@@ -302,10 +333,12 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0") // Checking initial value
     const value = Math.random() * 10000000
     await EditingPage.fieldDouble1Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble1Textfield).toHaveValue(String(value))
     await EditingPage.fieldDouble1Textfield.setValue("") // Clear the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0")
@@ -315,10 +348,12 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldDouble2Textfield).toHaveValue("") // Checking initial value
     const value = Math.random() * 10000000
     await EditingPage.fieldDouble2Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble2Textfield).toHaveValue(String(value))
     await EditingPage.fieldDouble2Textfield.setValue("") // Clear the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble2Textfield).toHaveValue("")
@@ -328,11 +363,13 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldDouble1Checkbox).toExist()
     await expect(EditingPage.fieldDouble1Checkbox).not.toBeSelected() // Checking initial value
     await EditingPage.fieldDouble1Checkbox.click() // ON
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble1Checkbox).toBeSelected()
     await expect(EditingPage.fieldDouble1Textfield).toHaveValue("1")
     await EditingPage.fieldDouble1Checkbox.click() // OFF
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble1Checkbox).not.toBeSelected()
@@ -343,11 +380,13 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldDouble2Checkbox).toExist()
     await expect(EditingPage.fieldDouble2Checkbox).not.toBeSelected() // Checking initial value
     await EditingPage.fieldDouble2Checkbox.click() // ON
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble2Checkbox).toBeSelected()
     await expect(EditingPage.fieldDouble2Textfield).toHaveValue("1")
     await EditingPage.fieldDouble2Checkbox.click() // OFF
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble2Checkbox).not.toBeSelected()
@@ -360,12 +399,14 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldDouble1Radio[0]).toBeSelected() // Checking initial value
     await expect(EditingPage.fieldDouble1Radio[1]).not.toBeSelected() // Checking initial value
     await EditingPage.fieldDouble1Radio[0].click() // First button
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble1Radio[0]).toBeSelected() // Checking initial value
     await expect(EditingPage.fieldDouble1Radio[1]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldDouble1Textfield).toHaveValue("0")
     await EditingPage.fieldDouble1Radio[1].click() // Second button
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble1Radio[0]).not.toBeSelected() // Checking initial value
@@ -379,12 +420,14 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldDouble2Radio[0]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldDouble2Radio[1]).not.toBeSelected() // Checking initial value
     await EditingPage.fieldDouble2Radio[0].click() // First button
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble2Radio[0]).toBeSelected() // Checking initial value
     await expect(EditingPage.fieldDouble2Radio[1]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldDouble2Textfield).toHaveValue("0")
     await EditingPage.fieldDouble2Radio[1].click() // Second button
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble2Radio[0]).not.toBeSelected() // Checking initial value
@@ -396,16 +439,19 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldDouble1Popup).toHaveValue("") // Checking initial value
     await expect(EditingPage.fieldDouble1Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldDouble1Popup.selectByVisibleText("select1") // Select second item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble1Popup).toHaveValue("10")
     await expect(EditingPage.fieldDouble1Textfield).toHaveValue("10")
     await EditingPage.fieldDouble1Popup.selectByIndex(2) // Select third item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble1Popup).toHaveValue("20")
     await expect(EditingPage.fieldDouble1Textfield).toHaveValue("20")
     await EditingPage.fieldDouble1Popup.selectByIndex(0) // Select first item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble1Popup).toHaveValue("")
@@ -416,16 +462,19 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldDouble2Popup).toHaveValue("") // Checking initial value
     await expect(EditingPage.fieldDouble2Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldDouble2Popup.selectByVisibleText("select1") // Select second item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble2Popup).toHaveValue("10")
     await expect(EditingPage.fieldDouble2Textfield).toHaveValue("10")
     await EditingPage.fieldDouble2Popup.selectByIndex(2) // Select third item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble2Popup).toHaveValue("20")
     await expect(EditingPage.fieldDouble2Textfield).toHaveValue("20")
     await EditingPage.fieldDouble2Popup.selectByIndex(0) // Select first item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDouble2Popup).toHaveValue("")
@@ -436,10 +485,12 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldBool1Textfield).toHaveValue("0") // Checking initial value
     const value = 1
     await EditingPage.fieldBool1Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool1Textfield).toHaveValue(String(value))
     await EditingPage.fieldBool1Textfield.setValue("") // Clear the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool1Textfield).toHaveValue("0")
@@ -449,10 +500,12 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldBool2Textfield).toHaveValue("") // Checking initial value
     const value = 1
     await EditingPage.fieldBool2Textfield.setValue(value) // Set a value to the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool2Textfield).toHaveValue(String(value))
     await EditingPage.fieldBool2Textfield.setValue("") // Clear the field
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool2Textfield).toHaveValue("")
@@ -465,10 +518,10 @@ describe('Editing Page Numeric Fields', () => {
     await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
-    await browser.pause(waiting)
     await expect(EditingPage.fieldBool1Checkbox).toBeSelected()
     await expect(EditingPage.fieldBool1Textfield).toHaveValue("1")
     await EditingPage.fieldBool1Checkbox.click() // OFF
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool1Checkbox).not.toBeSelected()
@@ -482,10 +535,10 @@ describe('Editing Page Numeric Fields', () => {
     await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
-    await browser.pause(waiting)
     await expect(EditingPage.fieldBool2Checkbox).toBeSelected()
     await expect(EditingPage.fieldBool2Textfield).toHaveValue("1")
     await EditingPage.fieldBool2Checkbox.click() // OFF
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool2Checkbox).not.toBeSelected()
@@ -498,12 +551,14 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldBool1Radio[0]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldBool1Radio[1]).not.toBeSelected() // Checking initial value
     await EditingPage.fieldBool1Radio[0].click() // First button
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool1Radio[0]).toBeSelected() // Checking initial value
     await expect(EditingPage.fieldBool1Radio[1]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldBool1Textfield).toHaveValue("0")
     await EditingPage.fieldBool1Radio[1].click() // Second button
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool1Radio[0]).not.toBeSelected() // Checking initial value
@@ -517,12 +572,14 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldBool2Radio[0]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldBool2Radio[1]).not.toBeSelected() // Checking initial value
     await EditingPage.fieldBool2Radio[0].click() // First button
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool2Radio[0]).toBeSelected() // Checking initial value
     await expect(EditingPage.fieldBool2Radio[1]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldBool2Textfield).toHaveValue("0")
     await EditingPage.fieldBool2Radio[1].click() // Second button
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool2Radio[0]).not.toBeSelected() // Checking initial value
@@ -534,16 +591,19 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldBool1Popup).toHaveValue("") // Checking initial value
     await expect(EditingPage.fieldBool1Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldBool1Popup.selectByVisibleText("select1") // Select second item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool1Popup).toHaveValue("10")
     await expect(EditingPage.fieldBool1Textfield).toHaveValue("10")
     await EditingPage.fieldBool1Popup.selectByIndex(2) // Select third item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool1Popup).toHaveValue("20")
     await expect(EditingPage.fieldBool1Textfield).toHaveValue("20")
     await EditingPage.fieldBool1Popup.selectByIndex(0) // Select first item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool1Popup).toHaveValue("")
@@ -554,21 +614,22 @@ describe('Editing Page Numeric Fields', () => {
     await expect(EditingPage.fieldBool2Popup).toHaveValue("") // Checking initial value
     await expect(EditingPage.fieldBool2Popup).toHaveText("unselect\nselect1\nselect2\nselect3")
     await EditingPage.fieldBool2Popup.selectByVisibleText("select1") // Select second item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool2Popup).toHaveValue("10")
     await expect(EditingPage.fieldBool2Textfield).toHaveValue("10")
     await EditingPage.fieldBool2Popup.selectByIndex(2) // Select third item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool2Popup).toHaveValue("20")
     await expect(EditingPage.fieldBool2Textfield).toHaveValue("20")
     await EditingPage.fieldBool2Popup.selectByIndex(0) // Select first item
+    await browser.pause(waiting)
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldBool2Popup).toHaveValue("")
     await expect(EditingPage.fieldBool2Textfield).toHaveValue("")
   })
 })
-
-

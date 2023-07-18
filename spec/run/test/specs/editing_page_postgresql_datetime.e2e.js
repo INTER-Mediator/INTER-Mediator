@@ -1,6 +1,9 @@
 const EditingPage = require('../pageobjects/editing_page_postgresql.page');
 
-const waiting = 1000
+const waiting = 500
+
+let pageTitle = "INTER-Mediator - Sample - Editing/PostgreSQL"
+
 let initDateTime, initTime
 if (process.platform === 'darwin') {
   initDateTime = "2000-12-31 15:00:00" // For Asia/Tokyo server
@@ -12,7 +15,7 @@ if (process.platform === 'darwin') {
 describe('Editing Page Date/Time Fields', () => {
   it('can open with the valid title.', async () => {
     await EditingPage.open()
-    await expect(browser).toHaveTitle("INTER-Mediator - Sample - Editing/PostgreSQL"/*'INTER-Mediator - サンプル - フォーム形式/MySQL'*/)
+    await expect(browser).toHaveTitle(pageTitle)
   })
   it('has the INTER-Mediator\'s navigation.', async () => {
     await expect(EditingPage.navigator).toExist()
@@ -39,6 +42,7 @@ describe('Editing Page Date/Time Fields', () => {
     await expect(EditingPage.fieldDt1Textfield).toHaveValue(initDateTime) // Checking initial value
     const value = new Date().toISOString().substring(0, 19).replace("T", " ")
     await EditingPage.fieldDt1Textfield.setValue(value) // Set a value to the field
+    await EditingPage.navigatorUpdateButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldDt1Textfield).toHaveValue(String(value))
@@ -101,10 +105,12 @@ describe('Editing Page Date/Time Fields', () => {
     await expect(EditingPage.fieldTime2Textfield).toHaveValue("") // Checking initial value
     const value = new Date().toISOString().substring(11, 19)
     await EditingPage.fieldTime2Textfield.setValue(value) // Set a value to the field
+    await EditingPage.navigatorUpdateButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldTime2Textfield).toHaveValue(String(value))
     await EditingPage.fieldTime2Textfield.setValue("") // Clear the field
+    await EditingPage.navigatorUpdateButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
     await browser.pause(waiting)
     await expect(EditingPage.fieldTime2Textfield).toHaveValue("")

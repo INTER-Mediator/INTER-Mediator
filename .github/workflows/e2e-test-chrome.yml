@@ -1,4 +1,4 @@
-name: unit-test
+name: e2e-test-chrome
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
         operating-system: [ubuntu-latest]
 #        operating-system: [ubuntu-latest, macos-latest, windows-latest]
         php-versions: ['7.4','8.0','8.1','8.2']
-    name: Unit Test on ${{ matrix.operating-system }} with PHP ${{ matrix.php-versions }}
+    name: End-to-End Test for Chrome on ${{ matrix.operating-system }} with PHP ${{ matrix.php-versions }}
     services:
       mysql: # https://qiita.com/sayama0402/items/e863ffb597ce87bf2e2f
         image: mysql:5.7
@@ -94,14 +94,19 @@ jobs:
           echo "\$followingTimezones = true;" >> params.php
           echo "" >> params.php
 
-      - name: Test of PHP Code
-        run: composer test
+        # E2E test with WebdriverIO
+      - name: Setup Headless Chrome
+        uses: browser-actions/setup-chrome@v1
 
-      - name: Test of JavaScript Code
-        run: composer jest
+      - name: Setup WebdriverIO
+        run: cd spec/run;npm update
 
-        # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-        # Docs: https://getcomposer.org/doc/articles/scripts.md
+      - name: Boot the web server with php server mode
+        run: |
+          GHPORTNUM=`expr 9000 + \`echo -n ${{ matrix.php-versions }} | sed -e "s/\.//g"\``
+          mv "spec/run/wdio-chrome.conf.js" "spec/run/wdio-chrome.conf.js.bak"
+          cat "spec/run/wdio-chrome.conf.js.bak" | sed -e "s/9000/`echo -n ${GHPORTNUM}`/" > "spec/run/wdio-chrome.conf.js"
+          php -S "localhost:${GHPORTNUM}" &
 
-        # - name: Run test suite
-        #   run: composer run-script test
+      - name: Starting End-to-End Tests with Google Chrome
+        run: cd spec/run;npx wdio wdio-chrome.conf.js

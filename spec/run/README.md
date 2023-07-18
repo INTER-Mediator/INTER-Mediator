@@ -15,3 +15,28 @@ Also refer to the GitHub Action at /.github/workflows/php.yml.
 
 The samples/E2E-Test directory has the target pages for these tests.
 
+## Other commands
+
+Just run the test with Google Chrome
+
+```
+npx wdio wdio-chrome.conf.js 
+```
+
+Just run the test with Microsoft Edge
+
+```
+npx wdio wdio-edge.conf.js 
+```
+
+Just run the test with Firefox
+
+```
+npx wdio wdio-firefox.conf.js 
+```
+
+Just run the test with Safari. This test works on the /spec/run-safari directory.
+
+```
+npx wdio wdio-safari.conf.js 
+```

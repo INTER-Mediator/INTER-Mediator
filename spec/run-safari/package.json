@@ -52,6 +52,7 @@
     "wdio-chromedriver-service": "^8.1.1",
     "wdio-edgedriver-service": "^3.0.2",
     "wdio-geckodriver-service": "^5.0.1",
+    "wdio-safaridriver-service": "^2.1.0",
     "postcss": "*",
     "postcss-cli": "*",
     "autoprefixer": "*"

@@ -1,4 +1,4 @@
-name: unit-test
+name: e2e-test-firefox
 
 on:
   push:
@@ -10,12 +10,13 @@ on:
 jobs:
   run:
     runs-on: ${{ matrix.operating-system }}
+#    continue-on-error: true
     strategy:
       matrix:
         operating-system: [ubuntu-latest]
 #        operating-system: [ubuntu-latest, macos-latest, windows-latest]
-        php-versions: ['7.4','8.0','8.1','8.2']
-    name: Unit Test on ${{ matrix.operating-system }} with PHP ${{ matrix.php-versions }}
+        php-versions: ['8.2']
+    name: End-to-End Test for Firefox on ${{ matrix.operating-system }} with PHP ${{ matrix.php-versions }}
     services:
       mysql: # https://qiita.com/sayama0402/items/e863ffb597ce87bf2e2f
         image: mysql:5.7
@@ -94,14 +95,20 @@ jobs:
           echo "\$followingTimezones = true;" >> params.php
           echo "" >> params.php
 
-      - name: Test of PHP Code
-        run: composer test
+        # E2E test with WebdriverIO
+      - name: Setup Firefox
+        uses: browser-actions/setup-firefox@v1
 
-      - name: Test of JavaScript Code
-        run: composer jest
+      - name: Setup WebdriverIO
+        run: cd spec/run;npm update
 
-        # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-        # Docs: https://getcomposer.org/doc/articles/scripts.md
+      - name: Boot the web server with php server mode
+        run: |
+          GHPORTNUM=`expr 9000 + \`echo -n ${{ matrix.php-versions }} | sed -e "s/\.//g"\``
+          mv "spec/run/wdio-firefox.conf.js" "spec/run/wdio-firefox.conf.js.bak"
+          cat "spec/run/wdio-firefox.conf.js.bak" | sed -e "s/9000/`echo -n ${GHPORTNUM}`/" > "spec/run/wdio-firefox.conf.js"
+          php -S "localhost:${GHPORTNUM}" &
 
-        # - name: Run test suite
-        #   run: composer run-script test
+      - name: Starting End-to-End Tests with Firefox
+        run: cd spec/run;npx wdio wdio-firefox.conf.js
+

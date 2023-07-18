@@ -56,7 +56,7 @@ exports.config = {
   // and 30 processes will get spawned. The property handles how many capabilities
   // from the same test should run tests.
   //
-  maxInstances: 5,
+  maxInstances: 10,
   //
   // If you have trouble getting all important capabilities together, check out the
   // Sauce Labs platform configurator - a great tool to configure your capabilities:
@@ -69,26 +69,7 @@ exports.config = {
     // 5 instances get started at a time.
     maxInstances: 5,
     //
-    browserName: 'chrome',
-    acceptInsecureCerts: true,
-    'goog:chromeOptions': {
-      args: ['--headless', '--disable-gpu', '--disable-dev-shm-usage'],
-    }
-  }, {
-    maxInstances: 5,
-    browserName: 'firefox',
-    'moz:firefoxOptions': {
-      args: ['-headless']
-    }
-  }, {
-    maxInstances: 5,
     browserName: 'safari'
-  }, {
-    maxInstances: 5,
-    browserName: 'MicrosoftEdge',
-    'ms:edgeOptions': {
-      args: ['--headless']
-    }
   }
     // If outputDir is provided WebdriverIO can capture driver session logs
     // it is possible to configure which logTypes to include/exclude.
@@ -142,7 +123,7 @@ exports.config = {
   // Services take over a specific job you don't want to take care of. They enhance
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
-  services: ['chromedriver', 'geckodriver', 'edgedriver', 'safaridriver'],
+  services: ['safaridriver'],
 
   // Framework you want to run your specs with.
   // The following are supported: Mocha, Jasmine, and Cucumber
