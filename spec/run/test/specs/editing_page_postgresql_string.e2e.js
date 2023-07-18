@@ -71,6 +71,7 @@ describe('Editing Page String Fields', () => {
     await EditingPage.fieldVc1Checkbox.waitForExist()
     await expect(EditingPage.fieldVc1Checkbox).toBeSelected()
     await expect(EditingPage.fieldVc1Textfield).toHaveValue("ON")
+    await EditingPage.fieldVc1Checkbox.waitForClickable() // OFF
     await EditingPage.fieldVc1Checkbox.click() // OFF
     await EditingPage.navigatorUpdateButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
