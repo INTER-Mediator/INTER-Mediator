@@ -10,7 +10,7 @@ on:
 jobs:
   run:
     runs-on: ${{ matrix.operating-system }}
-    continue-on-error: true
+#    continue-on-error: true
     strategy:
       fail-fast: true
       matrix:
