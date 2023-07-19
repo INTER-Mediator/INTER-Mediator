@@ -112,6 +112,7 @@ describe('Form Page', () => {
     await browser.pause(waiting)
 
     await expect(FormPage.fieldPersonId).toHaveText("1")
+    await FormPage.fieldPersonCategory.waitForClickable()
     await FormPage.fieldPersonCategory.selectByVisibleText('Family')
     await FormPage.fieldPersonCheck.waitForClickable()
     await FormPage.fieldPersonCheck.click()
@@ -176,7 +177,8 @@ describe('Form Page', () => {
     await browser.pause(waiting)
     await FormPage.navigatorUpdateButton.waitForClickable();
     await FormPage.navigatorUpdateButton.click();
-    await browser.pause(waiting)
+    await browser.pause(waiting * 4)
+
     await expect(FormPage.rowContact[0]).toExist()
     await expect(FormPage.rowContactWay[0]).toHaveText("Direct\nIndirect\nOthers")
     await expect(FormPage.rowContactKind[0]).toHaveText("Talk\nMeet\nMeeting")
