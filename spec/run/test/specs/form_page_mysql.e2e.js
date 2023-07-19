@@ -56,6 +56,7 @@ describe('Form Page', () => {
     await expect(FormPage.fieldPersonId).toHaveText("1")
   });
   it('can retrieve the first record from database.', async () => {
+    await FormPage.navigatorUpdateButton.waitForClickable();
     await FormPage.navigatorMoveButtonFirst.click()
     await browser.pause(waiting)
 
@@ -72,6 +73,7 @@ describe('Form Page', () => {
     await expect(FormPage.fieldPersonMemo).toHaveValue("")
   });
   it('can retrieve the second record from database.', async () => {
+    await FormPage.navigatorUpdateButton.waitForClickable();
     await FormPage.navigatorMoveButtonNext.click()
     await browser.pause(waiting)
 
@@ -88,6 +90,7 @@ describe('Form Page', () => {
     await expect(FormPage.fieldPersonMemo).toHaveValue("")
   });
   it('can retrieve the third record from database.', async () => {
+    await FormPage.navigatorUpdateButton.waitForClickable();
     await FormPage.navigatorMoveButtonNext.click()
     await browser.pause(waiting)
 
@@ -104,17 +107,21 @@ describe('Form Page', () => {
     await expect(FormPage.fieldPersonMemo).toHaveValue("")
   });
   it('can edit the first record.', async () => {
+    await FormPage.navigatorUpdateButton.waitForClickable();
     await FormPage.navigatorUpdateButton.click();
     await browser.pause(waiting)
 
     await expect(FormPage.fieldPersonId).toHaveText("1")
     await FormPage.fieldPersonCategory.selectByVisibleText('Family')
+    await FormPage.fieldPersonCheck.waitForClickable()
     await FormPage.fieldPersonCheck.click()
     await FormPage.fieldPersonName.setValue("edit1")
+    await FormPage.fieldPersonLocations[0].waitForClickable()
     await FormPage.fieldPersonLocations[0].click()
     await FormPage.fieldPersonMemo.setValue("first\nsecond\nthird")
   });
   it('can store the edited data on the first record.', async () => {
+    await FormPage.navigatorUpdateButton.waitForClickable();
     await FormPage.navigatorUpdateButton.click();
     await browser.pause(waiting)
 
@@ -131,6 +138,7 @@ describe('Form Page', () => {
     await expect(FormPage.fieldPersonMemo).toHaveValue("first\nsecond\nthird")
   });
   it('detail area expanded with multi-record', async () => {
+    await FormPage.navigatorUpdateButton.waitForClickable();
     await FormPage.navigatorUpdateButton.click();
     await browser.pause(waiting * 3)
 
@@ -174,25 +182,31 @@ describe('Form Page', () => {
     await expect(FormPage.rowContactKind[0]).toHaveText("Talk\nMeet\nMeeting")
 
     await FormPage.rowContactWay[0].selectByIndex(1)
+    await browser.pause(waiting)
     await expect(FormPage.rowContactWay[0]).toHaveValue('5')
     await expect(FormPage.rowContactKind[0]).toHaveText("Telephone\nPaper Mail\nElectronic Mail\nSee on Chat\nTwitter")
     await expect(FormPage.rowContactKind[0]).toHaveValue('')
     await FormPage.rowContactKind[0].selectByIndex(1)
+    await browser.pause(waiting)
     await expect(FormPage.rowContactKind[0]).toHaveValue('8')
 
     await FormPage.rowContactWay[0].selectByIndex(2)
+    await browser.pause(waiting)
     await expect(FormPage.rowContactWay[0]).toHaveValue('6')
     await expect(FormPage.rowContactKind[0]).toHaveText("See on Web\nTwitter\nConference")
     await expect(FormPage.rowContactKind[0]).toHaveValue('')
     await FormPage.rowContactKind[0].selectByIndex(1)
+    await browser.pause(waiting)
     await expect(FormPage.rowContactKind[0]).toHaveValue('12')
 
     await expect(FormPage.rowContact[1]).toExist()
     await FormPage.rowContactWay[1].selectByIndex(2)
+    await browser.pause(waiting)
     await expect(FormPage.rowContactWay[1]).toHaveValue('6')
     await expect(FormPage.rowContactKind[1]).toHaveText("See on Web\nTwitter\nConference")
     await expect(FormPage.rowContactKind[1]).toHaveValue('')
     await FormPage.rowContactKind[1].selectByIndex(2)
+    await browser.pause(waiting)
     await expect(FormPage.rowContactKind[1]).toHaveValue('13')
   });
   it('can insert a row into detail area.', async () => {
