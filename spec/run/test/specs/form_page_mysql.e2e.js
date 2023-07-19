@@ -241,7 +241,7 @@ describe('Form Page', () => {
     await FormPage.rowContactDeleteButton[1].waitForClickable()
     await FormPage.rowContactDeleteButton[1].click()
     await browser.acceptAlert()
-    await browser.pause(waiting * 2)
+    await browser.pause(waiting * 4)
 
     const rows = FormPage.rowContact
     await rows[0].waitForExist()
@@ -264,7 +264,7 @@ describe('Form Page', () => {
     await FormPage.rowContactDeleteButton[1].waitForClickable()
     await FormPage.rowContactCopyButton[1].click()
     //await browser.acceptAlert()
-    await browser.pause(waiting * 2)
+    await browser.pause(waiting * 4)
 
     const rows = FormPage.rowContact
     await rows[0].waitForExist()
@@ -276,7 +276,6 @@ describe('Form Page', () => {
     await expect(rows[2]).toExist()
     await expect(rows[3]).toExist()
     await expect(rows[4]).not.toExist()
-    await browser.pause(waiting * 2)
     await expect(FormPage.rowContactSummary[3]).toHaveValue(value)
   })
 });
