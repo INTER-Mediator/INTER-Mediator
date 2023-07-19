@@ -119,10 +119,14 @@ describe('Form Page', () => {
     await FormPage.fieldPersonCategory.waitForClickable()
     await FormPage.fieldPersonCategory.selectByVisibleText('Family')
     await FormPage.fieldPersonCheck.waitForClickable()
+    await browser.pause(waiting)
     await FormPage.fieldPersonCheck.click()
+    await browser.pause(waiting)
     await FormPage.fieldPersonName.setValue("edit1")
     await FormPage.fieldPersonLocations[0].waitForClickable()
+    await browser.pause(waiting)
     await FormPage.fieldPersonLocations[0].click()
+    await browser.pause(waiting)
     await FormPage.fieldPersonMemo.setValue("first\nsecond\nthird")
   });
   it('can store the edited data on the first record.', async () => {
