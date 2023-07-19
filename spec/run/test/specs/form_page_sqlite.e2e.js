@@ -110,6 +110,7 @@ describe('Form Page', () => {
     await browser.pause(waiting)
 
     await expect(FormPage.fieldPersonId).toHaveText("1")
+    await browser.pause(waiting)
     await FormPage.fieldPersonCategory.selectByVisibleText('Family')
     await FormPage.fieldPersonCheck.waitForClickable()
     await FormPage.fieldPersonCheck.click()
@@ -124,6 +125,7 @@ describe('Form Page', () => {
     await browser.pause(waiting)
 
     await expect(FormPage.fieldPersonId).toHaveText("1")
+    await browser.pause(waiting)
     await expect(FormPage.fieldPersonCategory).toHaveValue("101")
     await expect(FormPage.fieldPersonCategory).toHaveText("Family\nClassMate\nCollegue")
     await expect(FormPage.fieldPersonCheck).toBeSelected()

@@ -130,7 +130,7 @@ describe('Editing Page Numeric Fields', () => {
     await buttons[0].click() // First button
     await EditingPage.navigatorUpdateButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
-    // await browser.pause(waiting)
+    await browser.pause(waiting)
     await expect(buttons[0]).toBeSelected() // Checking initial value
     await expect(buttons[1]).not.toBeSelected() // Checking initial value
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("1")
@@ -139,7 +139,7 @@ describe('Editing Page Numeric Fields', () => {
     await buttons[1].click() // Second button
     await EditingPage.navigatorUpdateButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
-    // await browser.pause(waiting)
+    await browser.pause(waiting)
     await expect(buttons[0]).not.toBeSelected() // Checking initial value
     await expect(buttons[1]).toBeSelected() // Checking initial value
     await expect(EditingPage.fieldNum2Textfield).toHaveValue("2")
