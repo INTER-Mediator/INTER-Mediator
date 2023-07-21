@@ -70,10 +70,10 @@ class GenerateJSCode_Test extends TestCase
         if (((float)phpversion()) >= 5.3) {
             $this->reflectionMethod = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'combineScripts');
             $this->reflectionMethod->setAccessible(true);
-            $currentDir = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR .
+            $currentDir = dirname(__FILE__, 4) . DIRECTORY_SEPARATOR .
                 'src' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
             $content = $this->reflectionMethod->invokeArgs($this->generater, array($currentDir));
-            $jsLibDir = dirname(dirname($currentDir)) . DIRECTORY_SEPARATOR . 'node_modules' . DIRECTORY_SEPARATOR;
+            $jsLibDir = dirname($currentDir, 2) . DIRECTORY_SEPARATOR . 'node_modules' . DIRECTORY_SEPARATOR;
             $method = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'readJSSource');
             $method->setAccessible(true);
             $partOfCode = $method->invokeArgs($this->generater, array($jsLibDir . 'jssha/dist/sha.js'));

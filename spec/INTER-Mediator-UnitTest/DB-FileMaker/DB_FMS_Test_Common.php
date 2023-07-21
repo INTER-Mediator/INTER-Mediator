@@ -3,6 +3,9 @@
  * DB_FMS_Test_Common file
  */
 
+namespace DB_FileMaker;
+
+use IMUtil;
 use PHPUnit\Framework\TestCase;
 
 class DB_FMS_Test_Common extends TestCase

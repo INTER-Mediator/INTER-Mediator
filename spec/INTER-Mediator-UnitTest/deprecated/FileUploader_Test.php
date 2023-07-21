@@ -2,12 +2,20 @@
 /**
  * FileUploader_Test file
  */
-require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-//spl_autoload_register('loadClass');
-require_once(dirname(__FILE__) . '/../params.php');
+
+namespace deprecated;
+
+use INTERMediator\FileUploader;
+use PHPUnit\Framework\TestCase;
+use ReflectionMethod;
+
+//require_once(dirname(__FILE__) . '/../../../INTER-Mediator.php');
+//require_once(dirname(__FILE__) . '/../../../params.php');
 
 class FileUploader_Test extends TestCase
 {
+    private $uploader;
+
     protected function setUp(): void
     {
         $this->uploader = new FileUploader();

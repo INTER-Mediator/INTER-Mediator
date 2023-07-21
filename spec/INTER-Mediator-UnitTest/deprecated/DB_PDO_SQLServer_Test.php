@@ -8,8 +8,10 @@
  *
  */
 
+namespace deprecated;
 require_once('DB_PDO_Test_Common.php');
 
+use DB_PDO_Test_Common;
 use INTERMediator\DB\Proxy;
 
 class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common

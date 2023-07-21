@@ -1,8 +1,25 @@
 <phpunit>
-    <coverage>
-        <exclude>
-            <directory suffix=".php">../INTER-Mediator-UnitTest/</directory>
-            <directory suffix=".php">../../src/lib/</directory>
-        </exclude>
-    </coverage>
+<!--    <coverage>-->
+<!--        <exclude>-->
+<!--            <directory suffix=".php">../INTER-Mediator-UnitTest/</directory>-->
+<!--            <directory suffix=".php">../../src/lib/</directory>-->
+<!--        </exclude>-->
+<!--    </coverage>-->
+    <testsuites>
+        <testsuite name="core">
+            <directory>Core</directory>
+        </testsuite>
+        <testsuite name="data-converter">
+            <directory>DataConverter</directory>
+        </testsuite>
+        <testsuite name="db-pdo">
+            <directory>DB-PDO</directory>
+        </testsuite>
+        <testsuite name="editors">
+            <directory>Editors</directory>
+        </testsuite>
+        <testsuite name="db-pdo">
+            <directory>DB-PDO</directory>
+        </testsuite>
+    </testsuites>
 </phpunit>

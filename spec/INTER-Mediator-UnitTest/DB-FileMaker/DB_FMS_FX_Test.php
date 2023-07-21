@@ -1,13 +1,17 @@
 <?php
 /**
- * DB_FMS_DataAPI_Test file
+ * DB_FMS_FX_Test file
  */
+
+namespace DB_FileMaker;
 require_once('DB_FMS_Test_Common.php');
 
-use INTERMediator\DB\Proxy;
-use PHPUnit\Framework\TestCase;
+use DB_FMS_Test_Common;
+use DBuse;
 
-class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
+INTERMediator\DB\Proxy;
+
+class DB_FMS_FX_Test extends DB_FMS_Test_Common
 {
     function setUp(): void
     {
@@ -24,14 +28,13 @@ class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
                 'name' => $contextName,
                 'key' => 'id',
                 'sort' => array(
-                    array('field'=>'id','direction'=>'asc'),
+                    array('field' => 'id', 'direction' => 'asc'),
                 ),
             )
         );
         $options = null;
         $dbSettings = array(
-            'db-class' => 'FileMaker_DataAPI',
-            'server' => 'localserver',
+            'db-class' => 'FileMaker_FX',
             'user' => 'web',
             'password' => 'password',
         );
@@ -43,7 +46,7 @@ class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
     {
         $this->db_proxy = new \INTERMediator\DB\Proxy(true);
         $this->db_proxy->initialize(array(
-                array(
+            array(
                 'records' => 1000,
                 'paging' => true,
                 'name' => 'person',
@@ -53,23 +56,22 @@ class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
                 'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
                 'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
                 'sequence' => 'im_sample.serial',
-                )
-            ),
+            )
+        ),
             array(
                 'authentication' => array( // table only, for all operations
-                'user' => array('user1'), // Itemize permitted users
-                'group' => array('group2'), // Itemize permitted groups
-                'user-table' => 'authuser', // Default value
-                'group-table' => 'authgroup',
-                'corresponding-table' => 'authcor',
-                'challenge-table' => 'issuedhash',
-                'authexpired' => '300', // Set as seconds.
-                'storing' => 'credential', // 'cookie'(default), 'cookie-domainwide', 'none'
+                    'user' => array('user1'), // Itemize permitted users
+                    'group' => array('group2'), // Itemize permitted groups
+                    'user-table' => 'authuser', // Default value
+                    'group-table' => 'authgroup',
+                    'corresponding-table' => 'authcor',
+                    'challenge-table' => 'issuedhash',
+                    'authexpired' => '300', // Set as seconds.
+                    'storing' => 'credential', // 'cookie'(default), 'cookie-domainwide', 'none'
                 ),
             ),
             array(
-                'db-class' => 'FileMaker_DataAPI',
-                'server' => 'localserver',
+                'db-class' => 'FileMaker_FX',
                 'user' => 'web',
                 'password' => 'password',
             ),

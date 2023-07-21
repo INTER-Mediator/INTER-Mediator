@@ -6,6 +6,8 @@
  * Time: 15:40
  */
 
+namespace deprecated;
+
 use INTERMediator\DB\Proxy;
 use PHPUnit\Framework\TestCase;
 

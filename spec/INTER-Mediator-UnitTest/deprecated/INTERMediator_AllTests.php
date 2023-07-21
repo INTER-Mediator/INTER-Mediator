@@ -21,6 +21,8 @@
  *
  * ulimit -n 10000
  */
+
+namespace deprecated;
 error_reporting(E_ALL);
 
 use PHPUnit\Framework\TestCase;
@@ -38,9 +40,9 @@ class INTERMediator_AllTests extends TestCase
         $dontTestFileMaker = true;
 
         $suite = new TestSuite('all tests');
-        $folder = dirname(__FILE__) . '/';
+        $folder = dirname(__FILE__) . 'INTERMediator_AllTests.php/';
 
-        if(!$dontTestDataConv) {
+        if (!$dontTestDataConv) {
             $suite->addTestFile($folder . 'DataConverter_Currency_YenIM_Test.php');
             $suite->addTestFile($folder . 'DataConverter_Currency_YenIntl_Test.php');
             $suite->addTestFile($folder . 'DataConverter_Currency_DollerIM_Test.php');
@@ -61,26 +63,26 @@ class INTERMediator_AllTests extends TestCase
             $suite->addTestFile($folder . 'DB_PDO_Test_UserGroup.php');
             $suite->addTestFile($folder . 'DB_PDO_Test_LocalContextConditions.php');
             $suite->addTestFile($folder . 'DB_Formatters_Test.php');
-            if(!$dontTestMySQL) {
+            if (!$dontTestMySQL) {
                 $suite->addTestFile($folder . 'DB_PDO_MySQL_Test.php');
             }
-            if(!$dontTestPostgreSQL) {
+            if (!$dontTestPostgreSQL) {
                 $suite->addTestFile($folder . 'DB_PDO_PostgreSQL_Test.php');
             }
-            if(!$dontTestSQLite) {
+            if (!$dontTestSQLite) {
                 $suite->addTestFile($folder . 'DB_PDO_SQLite_Test.php');
             }
             if (!$dontTestFileMaker) {
                 $suite->addTestFile($folder . 'DB_FMS_DataAPI_Test.php');
                 $suite->addTestFile($folder . 'DB_FMS_FX_Test.php');
             }
-            if(!$dontTestMySQL) {
+            if (!$dontTestMySQL) {
                 $suite->addTestFile($folder . 'DB_Proxy_MySQL_Test.php');
             }
-            if(!$dontTestPostgreSQL) {
+            if (!$dontTestPostgreSQL) {
                 $suite->addTestFile($folder . 'DB_Proxy_PostgreSQL_Test.php');
             }
-            if(!$dontTestSQLite) {
+            if (!$dontTestSQLite) {
                 $suite->addTestFile($folder . 'DB_Proxy_SQLite_Test.php');
             }
             $suite->addTestFile($folder . 'DB_Settings_Test.php');

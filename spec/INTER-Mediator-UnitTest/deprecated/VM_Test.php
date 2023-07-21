@@ -1,5 +1,7 @@
 <?php
 
+namespace deprecated;
+
 use INTERMediator\IMUtil;
 use PHPUnit\Framework\TestCase;
 

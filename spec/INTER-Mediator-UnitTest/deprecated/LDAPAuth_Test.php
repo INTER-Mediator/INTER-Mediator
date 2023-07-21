@@ -6,6 +6,9 @@
  * Time: 23:49
  */
 
+namespace deprecated;
+
+use LDAPAuth;
 use PHPUnit\Framework\TestCase;
 
 class LDAPAuth_Test extends TestCase

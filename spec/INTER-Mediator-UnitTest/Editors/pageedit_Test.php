@@ -1,12 +1,13 @@
 <?php
 /**
- * defedit_Test file
+ * pageedit_Test file
  */
 
-use INTERMediator\IMUtil;
+namespace Editors;
+
 use PHPUnit\Framework\TestCase;
 
-class defedit_Test extends TestCase
+class pageedit_Test extends TestCase
 {
     public function setUp(): void
     {
@@ -23,8 +24,8 @@ class defedit_Test extends TestCase
     public function test___construct()
     {
         ob_start();
-        $imPath = IMUtil::pathToINTERMediator();
-        require_once($imPath . '/editors/defedit.php');
+        $imPath = \INTERMediator\IMUtil::pathToINTERMediator();
+        require_once($imPath . '/editors/pageedit.php');
         $output = ob_get_contents();
         $this->assertStringNotContainsString('INTERMediatorLog.debugMode=', $output);
         ob_end_clean();
