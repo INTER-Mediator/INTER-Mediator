@@ -3,6 +3,7 @@
  * DataConverter_Currency_Test file
  */
 
+namespace deprecated;
 require_once(dirname(__FILE__) . '/DataConverter_Currency_Base_Test.php');
 
 use INTERMediator\Data_Converter\Currency;

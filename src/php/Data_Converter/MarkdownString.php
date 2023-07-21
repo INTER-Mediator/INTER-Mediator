@@ -15,7 +15,7 @@
  */
 namespace INTERMediator\Data_Converter;
 
-class MarkdownString extends _HTMLString
+class MarkdownString extends HTMLString
 {
 
     public function converterFromDBtoUser($str)

@@ -1,6 +1,6 @@
 <?php
 /**
- * DataConverter_HTMLString_Test file
+ * DataConverter_MarkdownString_Test file
  */
 
 use PHPUnit\Framework\TestCase;

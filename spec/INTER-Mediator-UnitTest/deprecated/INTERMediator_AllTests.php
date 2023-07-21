@@ -22,7 +22,6 @@
  * ulimit -n 10000
  */
 
-namespace deprecated;
 error_reporting(E_ALL);
 
 use PHPUnit\Framework\TestCase;
