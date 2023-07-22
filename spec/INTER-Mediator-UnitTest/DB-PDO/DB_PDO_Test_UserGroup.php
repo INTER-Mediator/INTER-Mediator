@@ -208,6 +208,7 @@ trait DB_PDO_Test_UserGroup
         [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password, false, ['realname' => 'test123']);
         $this->assertTrue($addUserResult);
 
+        $this->setTestMode();
         $this->dbInit(
             [['name' => 'authuser', 'view' => "{$this->schemaName}authuser", 'table' => "{$this->schemaName}authuser",
                 'records' => 1, 'key' => 'id']], null,
@@ -230,6 +231,7 @@ trait DB_PDO_Test_UserGroup
             ['username' => 'mycat', 'realname' => 'test123']);
         $this->assertTrue($addUserResult);
 
+        $this->setTestMode();
         $this->dbInit(
             [['name' => 'authuser', 'view' => "{$this->schemaName}authuser", 'table' => "{$this->schemaName}authuser",
                 'records' => 1, 'key' => 'id']], null,
