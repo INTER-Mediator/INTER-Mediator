@@ -3,8 +3,10 @@
  * DataConverter_HTMLString_Test file
  */
 
-use PHPUnit\Framework\TestCase;
+namespace Text;
+
 use INTERMediator\Data_Converter\HTMLString;
+use PHPUnit\Framework\TestCase;
 
 class DataConverter_HTMLString_Test extends TestCase
 {

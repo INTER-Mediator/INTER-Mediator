@@ -3,7 +3,10 @@
  * DataConverter_Currency_Test file
  */
 
-require_once(dirname(__FILE__) . '/DataConverter_Currency_Base_Test.php');
+namespace Currency;
+use DataConverter_Currency_Base_Test;
+
+require_once(dirname(__FILE__) . '/../DataConverter_Currency_Base_Test.php');
 
 class DataConverter_Currency_PoundIntl_Test extends DataConverter_Currency_Base_Test
 {

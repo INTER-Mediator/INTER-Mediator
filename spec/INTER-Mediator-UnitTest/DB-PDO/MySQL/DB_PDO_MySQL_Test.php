@@ -8,52 +8,58 @@
  *
  */
 
-require_once('DB_PDO_Test_Common.php');
+require_once(dirname(__FILE__) . '/../DB_PDO_Test_Common.php');
 
 use INTERMediator\DB\Proxy;
 
-class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
+class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
 {
     public $dsn;
 
-    function setUp(): void
+    public function isMySQL()
     {
-        $_SERVER['SCRIPT_NAME'] = __FILE__;
-        mb_internal_encoding('UTF-8');
-        date_default_timezone_set('Asia/Tokyo');
-        $this->dsn = 'pgsql:host=localhost;port=5432;dbname=test_db';
+        return true;
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
-    public function testAggregation()
+    function setUp(): void
     {
-        // The sample schema doesn't have a data to check this feature.
+        mb_internal_encoding('UTF-8');
+        date_default_timezone_set('Asia/Tokyo');
+
+        $this->dsn = 'mysql:host=localhost;dbname=test_db;charset=utf8mb4';
+        if (getenv('TRAVIS') === 'true') {
+            $this->dsn = 'mysql:host=localhost;dbname=test_db;charset=utf8mb4';
+        } else if (getenv('GITHUB_ACTIONS') === 'true') {
+            $this->dsn = 'mysql:host=127.0.0.1;dbname=test_db;charset=utf8mb4';
+        } else if (file_exists('/etc/alpine-release')) {
+            $this->dsn = 'mysql:dbname=test_db;host=127.0.0.1';
+        } else if (file_exists('/etc/redhat-release')) {
+            $this->dsn = 'mysql:unix_socket=/var/lib/mysql/mysql.sock;dbname=test_db;charset=utf8mb4';
+        }
     }
 
     function dbProxySetupForAccess($contextName, $maxRecord, $subContextName = null)
     {
-        $this->schemaName = "im_sample.";
-        $seqName = ($contextName == "person") ? "im_sample.person_id_seq" : "im_sample.serial";
+        $this->schemaName = "";
         $contexts = array(
             array(
                 'records' => $maxRecord,
                 'name' => $contextName,
-                'view' => "{$this->schemaName}{$contextName}",
-                'table' => "{$this->schemaName}{$contextName}",
+                'view' => $contextName,
+                'table' => $contextName,
                 'key' => 'id',
                 'repeat-control' => is_null($subContextName) ? 'copy' : "copy-{$subContextName}",
                 'sort' => array(
                     array('field' => 'id', 'direction' => 'asc'),
                 ),
-                //'sequence' => $seqName,
             )
         );
         if (!is_null($subContextName)) {
             $contexts[] = array(
                 'records' => $maxRecord,
                 'name' => $subContextName,
+                'view' => $subContextName,
+                'table' => $subContextName,
                 'key' => 'id',
                 'relation' => array(
                     "foreign-key" => "{$contextName}_id",
@@ -65,12 +71,13 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $options = null;
         $dbSettings = array(
             'db-class' => 'PDO',
-            'dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db',
+            'dsn' => $this->dsn,
             'user' => 'web',
             'password' => 'password',
         );
         $this->db_proxy = new Proxy(true);
-        $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+        $resultInit = $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
     function dbProxySetupForAccessSetKey($contextName, $maxRecord, $keyName)
@@ -80,8 +87,8 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
             array(
                 'records' => $maxRecord,
                 'name' => $contextName,
-                'view' => "{$this->schemaName}{$contextName}",
-                'table' => "{$this->schemaName}{$contextName}",
+                'view' => $contextName,
+                'table' => $contextName,
                 'key' => $keyName,
                 'sort' => array(
                     array('field' => $keyName, 'direction' => 'asc'),
@@ -91,18 +98,20 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $options = null;
         $dbSettings = array(
             'db-class' => 'PDO',
-            'dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db',
+            'dsn' => $this->dsn,
             'user' => 'web',
             'password' => 'password',
         );
         $this->db_proxy = new Proxy(true);
-        $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+        $resultInit = $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
     function dbProxySetupForAuth()
     {
+        $this->schemaName = "";
         $this->db_proxy = new Proxy(true);
-        $this->db_proxy->initialize(
+        $resultInit = $this->db_proxy->initialize(
             array(
                 array(
                     'records' => 1000,
@@ -111,35 +120,38 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
                     'key' => 'id',
                     'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
                     'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
-                    //'sequence' => 'im_sample.person_id_seq',
+                    'sequence' => 'im_sample.serial',
                 )
             ),
             array(
                 'authentication' => array( // table only, for all operations
                     'user' => array('user1'), // Itemize permitted users
-                    'group' => array('group2'), // Itemize permitted groups
-                    'user-table' => 'im_sample.authuser', // Default value
-                    'group-table' => 'im_sample.authgroup',
-                    'corresponding-table' => 'im_sample.authcor',
-                    'challenge-table' => 'im_sample.issuedhash',
+                    'group' => array('group2'), // gropu2 contain user4 and user5
+                    'user-table' => 'authuser', // Default value
+                    'group-table' => 'authgroup',
+                    'corresponding-table' => 'authcor',
+                    'challenge-table' => 'issuedhash',
                     'authexpired' => '300', // Set as seconds.
                     'storing' => 'credential', // 'cookie'(default), 'cookie-domainwide', 'none'
                 ),
             ),
             array(
                 'db-class' => 'PDO',
-                'dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db',
+                'dsn' => $this->dsn,
                 'user' => 'web',
                 'password' => 'password',
             ),
-            2, 'person'
+            2,
+            'person'
         );
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
     function dbProxySetupForAggregation()
     {
+        $this->schemaName = "";
         $this->db_proxy = new Proxy(true);
-        $this->db_proxy->initialize(
+        $resultInit = $this->db_proxy->initialize(
             array(
                 array(
                     'name' => 'summary',
@@ -160,18 +172,19 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
             null,
             array(
                 'db-class' => 'PDO',
-                'dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db',
+                'dsn' => $this->dsn,
                 'user' => 'web',
                 'password' => 'password',
             ),
             2,
             "summary"
         );
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
     function dbProxySetupForCondition($queryArray)
     {
-        $this->schemaName = "im_sample.";
+        $this->schemaName = "";
         $contextName = 'testtable';
         $contexts = array(
             array(
@@ -191,15 +204,15 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
             'password' => 'password',
         );
         $this->db_proxy = new Proxy(true);
-        $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
-
+        $resultInit = $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
-    protected $sqlSETClause1 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
+    protected $sqlSETClause1 = "(`num1`,`num2`,`date1`,`date2`,`time1`,`time2`,`dt1`,`dt2`,`vc1`,`vc2`,`text1`,`text2`) "
     . "VALUES(100,200,'2022-04-01','2022-04-01','10:21:31','10:21:31','2022-04-01 10:21:31','2022-04-01 10:21:31','TEST','TEST','TEST','TEST')";
-    protected $sqlSETClause2 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
-    . "VALUES(0,NULL,'',NULL,'',NULL,'',NULL,'',NULL,'',NULL)";
-    protected $sqlSETClause3 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
+    protected $sqlSETClause2 = "(`num1`,`num2`,`date1`,`date2`,`time1`,`time2`,`dt1`,`dt2`,`vc1`,`vc2`,`text1`,`text2`) "
+    . "VALUES(0,NULL,'',NULL,'',NULL,'',NULL,'',NULL,NULL,NULL)";
+    protected $sqlSETClause3 = "(`num1`,`num2`,`date1`,`date2`,`time1`,`time2`,`dt1`,`dt2`,`vc1`,`vc2`,`text1`,`text2`) "
     . "VALUES(0,0,'','','','','','','','','','')";
 
 }

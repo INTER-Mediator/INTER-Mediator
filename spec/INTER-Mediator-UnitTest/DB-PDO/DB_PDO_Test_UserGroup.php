@@ -203,21 +203,19 @@ trait DB_PDO_Test_UserGroup
         $username = "testuser2";
         $password = "testuser2";
 
+        $this->db_proxy->logger->clearLogs();
+
         [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password, false, ['realname' => 'test123']);
         $this->assertTrue($addUserResult);
 
-        $db = new Proxy(true);
-        $db->ignoringPost();
+        $this->dbInit(
+            [['name' => 'authuser', 'view' => "{$this->schemaName}authuser", 'table' => "{$this->schemaName}authuser",
+                'records' => 1, 'key' => 'id']], null,
+            ['db-class' => 'PDO', 'dsn' => $this->dsn, 'user' => 'web', 'password' => 'password']);
+        $readResult = $this->dbRead('authuser', ["username" => $username]);
+        $this->assertEquals('test123', $readResult[0]['realname'], 'The realname is supplied with parameter.');
+        $this->assertEquals($username, $readResult[0]['username'], 'The username has to be keep.');
 
-        // ユーザー名からユーザidを取得
-        $db->initialize([['name' => 'authuser', 'record' => 1, 'key' => 'id']],
-            [], ['db-class' => 'PDO',], 2, 'authuser');
-        $db->dbSettings->addExtraCriteria("username", "=", $username);
-        $db->processingRequest('read', true);
-        $userResult = $db->getDatabaseResult();
-
-        $this->assertEquals('test123', $userResult[0]['realname'], 'The realname is supplied with parameter.');
-        $this->assertEquals($username, $userResult[0]['username'], 'The username has to be keep.');
     }
 
     public function testAddUser3()
@@ -232,18 +230,13 @@ trait DB_PDO_Test_UserGroup
             ['username' => 'mycat', 'realname' => 'test123']);
         $this->assertTrue($addUserResult);
 
-        $db = new Proxy(true);
-        $db->ignoringPost();
-
-        // ユーザー名からユーザidを取得
-        $db->initialize([['name' => 'authuser', 'record' => 1, 'key' => 'id']],
-            [], ['db-class' => 'PDO',], 2, 'authuser');
-        $db->dbSettings->addExtraCriteria("username", "=", $username);
-        $db->processingRequest('read', true);
-        $userResult = $db->getDatabaseResult();
-
-        $this->assertEquals('test123', $userResult[0]['realname'], 'The realname is supplied with parameter.');
-        $this->assertEquals($username, $userResult[0]['username'], 'The username has to be keep.');
+        $this->dbInit(
+            [['name' => 'authuser', 'view' => "{$this->schemaName}authuser", 'table' => "{$this->schemaName}authuser",
+                'records' => 1, 'key' => 'id']], null,
+            ['db-class' => 'PDO', 'dsn' => $this->dsn, 'user' => 'web', 'password' => 'password']);
+        $readResult = $this->dbRead('authuser', ["username" => $username]);
+        $this->assertEquals('test123', $readResult[0]['realname'], 'The realname is supplied with parameter.');
+        $this->assertEquals($username, $readResult[0]['username'], 'The username has to be keep.');
     }
 
     function testUserGroup()

@@ -2,9 +2,12 @@
 /**
  * DataConverter_NumberBase_Test file
  */
-use PHPUnit\Framework\TestCase;
-use INTERMediator\Locale\IMLocale;
+
+namespace Number;
+
 use INTERMediator\Data_Converter\NumberBase;
+use INTERMediator\Locale\IMLocale;
+use PHPUnit\Framework\TestCase;
 
 class DataConverter_NumberBase_Test extends TestCase
 {
@@ -13,9 +16,9 @@ class DataConverter_NumberBase_Test extends TestCase
     public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
-        setlocale (LC_ALL, 'ja_JP', 'ja');
+        setlocale(LC_ALL, 'ja_JP', 'ja');
         $this->dataconverter = new NumberBase();
-        
+
 //        $locInfo = localeconv();
 //        $this->decimalMark = $locInfo['mon_decimal_point'];
 //        if (strlen($this->decimalMark) == 0) {

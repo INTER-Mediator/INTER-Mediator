@@ -1,41 +1,31 @@
 <?php
-/*
- * Created by JetBrains PhpStorm.
- * User: msyk
- * Date: 11/12/14
- * Time: 14:21
- * Unit Test by PHPUnit (http://phpunit.de)
- *
+/**
+ * PDO-SQLite_Test file
  */
-
-require_once('DB_PDO_Test_Common.php');
+require_once(dirname(__FILE__) . '/../DB_PDO_Test_Common.php');
 
 use INTERMediator\DB\Proxy;
 
-class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
+class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
 {
-    public $dsn;
-
-    public function isMySQL()
-    {
-        return true;
-    }
+    public $dsn = 'sqlite:/var/db/im/sample.sq3';
 
     function setUp(): void
     {
+        $_SERVER['SCRIPT_NAME'] = __FILE__;
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
-
-        $this->dsn = 'mysql:host=localhost;dbname=test_db;charset=utf8mb4';
-        if (getenv('TRAVIS') === 'true') {
-            $this->dsn = 'mysql:host=localhost;dbname=test_db;charset=utf8mb4';
-        } else if (getenv('GITHUB_ACTIONS') === 'true') {
-            $this->dsn = 'mysql:host=127.0.0.1;dbname=test_db;charset=utf8mb4';
-        } else if (file_exists('/etc/alpine-release')) {
-            $this->dsn = 'mysql:dbname=test_db;host=127.0.0.1';
-        } else if (file_exists('/etc/redhat-release')) {
-            $this->dsn = 'mysql:unix_socket=/var/lib/mysql/mysql.sock;dbname=test_db;charset=utf8mb4';
+        if (getenv('GITHUB_ACTIONS') === 'true') {
+            $this->dsn = 'sqlite:/home/runner/work/INTER-Mediator/INTER-Mediator/sample.sq3';
         }
+    }
+
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testAggregation()
+    {
+        // The sample schema doesn't have a data to check this feature.
     }
 
     function dbProxySetupForAccess($contextName, $maxRecord, $subContextName = null)
@@ -45,8 +35,8 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
             array(
                 'records' => $maxRecord,
                 'name' => $contextName,
-                'view' => $contextName,
-                'table' => $contextName,
+                'view' => "{$this->schemaName}{$contextName}",
+                'table' => "{$this->schemaName}{$contextName}",
                 'key' => 'id',
                 'repeat-control' => is_null($subContextName) ? 'copy' : "copy-{$subContextName}",
                 'sort' => array(
@@ -58,8 +48,6 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
             $contexts[] = array(
                 'records' => $maxRecord,
                 'name' => $subContextName,
-                'view' => $subContextName,
-                'table' => $subContextName,
                 'key' => 'id',
                 'relation' => array(
                     "foreign-key" => "{$contextName}_id",
@@ -72,8 +60,6 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
         $dbSettings = array(
             'db-class' => 'PDO',
             'dsn' => $this->dsn,
-            'user' => 'web',
-            'password' => 'password',
         );
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
@@ -98,8 +84,6 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
         $dbSettings = array(
             'db-class' => 'PDO',
             'dsn' => $this->dsn,
-            'user' => 'web',
-            'password' => 'password',
         );
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
@@ -107,22 +91,24 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
 
     function dbProxySetupForAuth()
     {
+        $this->schemaName = "";
         $this->db_proxy = new Proxy(true);
-        $this->db_proxy->initialize(array(
+        $this->db_proxy->initialize(
             array(
-                'records' => 1000,
-                'paging' => true,
-                'name' => 'person',
-                'key' => 'id',
-                'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
-                'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
-                'sequence' => 'im_sample.serial',
-            )
-        ),
+                array(
+                    'records' => 1000,
+                    'paging' => true,
+                    'name' => 'person',
+                    'key' => 'id',
+                    'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
+                    'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
+                    'sequence' => 'im_sample.serial',
+                )
+            ),
             array(
                 'authentication' => array( // table only, for all operations
                     'user' => array('user1'), // Itemize permitted users
-                    'group' => array('group2'), // gropu2 contain user4 and user5
+                    'group' => array('group2'), // Itemize permitted groups
                     'user-table' => 'authuser', // Default value
                     'group-table' => 'authgroup',
                     'corresponding-table' => 'authcor',
@@ -134,16 +120,22 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
             array(
                 'db-class' => 'PDO',
                 'dsn' => $this->dsn,
-                'user' => 'web',
-                'password' => 'password',
             ),
-            2,
-            'person'
+            false, 'person'
         );
+    }
+
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testNativeUser()
+    {
+        // SQLite doesn't have native users.
     }
 
     function dbProxySetupForAggregation()
     {
+        $this->schemaName = "";
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize(
             array(
@@ -167,8 +159,6 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
             array(
                 'db-class' => 'PDO',
                 'dsn' => $this->dsn,
-                'user' => 'web',
-                'password' => 'password',
             ),
             2,
             "summary"
@@ -200,11 +190,17 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
     }
 
-    protected $sqlSETClause1 = "(`num1`,`num2`,`date1`,`date2`,`time1`,`time2`,`dt1`,`dt2`,`vc1`,`vc2`,`text1`,`text2`) "
+    public function testCreateRecord2()
+    {
+        // SQLite doesn't support the record creation with the key field as non AUTOINCREMENT field.
+        $this->assertNull(null, "This is dummy test record to avoid judged as risky test");
+    }
+
+    protected $sqlSETClause1 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
     . "VALUES(100,200,'2022-04-01','2022-04-01','10:21:31','10:21:31','2022-04-01 10:21:31','2022-04-01 10:21:31','TEST','TEST','TEST','TEST')";
-    protected $sqlSETClause2 = "(`num1`,`num2`,`date1`,`date2`,`time1`,`time2`,`dt1`,`dt2`,`vc1`,`vc2`,`text1`,`text2`) "
-    . "VALUES(0,NULL,'',NULL,'',NULL,'',NULL,'',NULL,NULL,NULL)";
-    protected $sqlSETClause3 = "(`num1`,`num2`,`date1`,`date2`,`time1`,`time2`,`dt1`,`dt2`,`vc1`,`vc2`,`text1`,`text2`) "
+    protected $sqlSETClause2 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
+    . "VALUES(0,NULL,'',NULL,'',NULL,'',NULL,'',NULL,'',NULL)";
+    protected $sqlSETClause3 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
     . "VALUES(0,0,'','','','','','','','','','')";
 
 }

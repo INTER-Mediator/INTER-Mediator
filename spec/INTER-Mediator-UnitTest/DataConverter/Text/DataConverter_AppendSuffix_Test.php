@@ -2,8 +2,11 @@
 /**
  * DataConverter_AppendSuffix_Test file
  */
-use PHPUnit\Framework\TestCase;
+
+namespace Text;
+
 use INTERMediator\Data_Converter\AppendSuffix;
+use PHPUnit\Framework\TestCase;
 
 class DataConverter_AppendSuffix_Test extends TestCase
 {
@@ -12,10 +15,10 @@ class DataConverter_AppendSuffix_Test extends TestCase
     public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
-        
+
         $this->dataconverter = new AppendSuffix('円');
     }
-    
+
     public function test_converterFromDBtoUser()
     {
         $string = '1000';

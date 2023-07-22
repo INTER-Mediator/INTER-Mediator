@@ -34,9 +34,7 @@ SET search_path TO im_sample,public;
 ALTER USER web SET search_path TO im_sample,public;
 
 /*  The schema for the "Sample_form" and "Sample_Auth" sample set. */
-CREATE
-SEQUENCE serial START
-1000;
+CREATE SEQUENCE serial START 1000;
 CREATE TABLE person
 (
     id       SERIAL PRIMARY KEY,

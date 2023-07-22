@@ -104,7 +104,6 @@ class MarkdownString extends HTMLString
         }
         if ($inTable) {
             $result[] = "</table>";
-            $inTable = false;
         }
         $result[] = "</div>";
         return implode('', $result);

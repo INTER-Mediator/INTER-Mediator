@@ -1,10 +1,8 @@
 <?php
 
-namespace DB_FileMaker;
+use PHPUnit\Framework\TestCase;
 
-use TestCase;
-
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR
+require_once(dirname(__FILE__, 4) . DIRECTORY_SEPARATOR
     . 'src' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'CWPKit' . DIRECTORY_SEPARATOR . 'CWPKit.php');
 
 class CWPKit_Test extends TestCase

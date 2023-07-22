@@ -3,8 +3,10 @@
  * DataConverter_MySQLDateTime_Test file
  */
 
-use PHPUnit\Framework\TestCase;
+namespace DateTime;
+
 use INTERMediator\Data_Converter\MySQLDateTime;
+use PHPUnit\Framework\TestCase;
 
 class DataConverter_MySQLDateTime_Test extends TestCase
 {
@@ -13,10 +15,10 @@ class DataConverter_MySQLDateTime_Test extends TestCase
     public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
-        
+
         $this->dataconverter = new MySQLDateTime();
     }
-    
+
     public function test_converterFromDBtoUser()
     {
         $expected = '';
@@ -57,7 +59,7 @@ class DataConverter_MySQLDateTime_Test extends TestCase
         $timeString = '12:34:56';
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($timeString));
     }
-    
+
     public function test_converterFromUserToDB()
     {
         $expected = null;

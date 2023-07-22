@@ -3,9 +3,11 @@
  * DataConverter_Number_Test file
  */
 
-use PHPUnit\Framework\TestCase;
-use INTERMediator\Locale\IMLocale;
+namespace Number;
+
 use INTERMediator\Data_Converter\Number;
+use INTERMediator\Locale\IMLocale;
+use PHPUnit\Framework\TestCase;
 
 class DataConverter_Number_Test extends TestCase
 {

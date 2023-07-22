@@ -1,23 +1,27 @@
 <?php
-/**
- * PDO-SQLite_Test file
+/*
+ * Created by JetBrains PhpStorm.
+ * User: msyk
+ * Date: 11/12/14
+ * Time: 14:21
+ * Unit Test by PHPUnit (http://phpunit.de)
+ *
  */
-require_once('DB_PDO_Test_Common.php');
+
+require_once(dirname(__FILE__) . '/../DB_PDO_Test_Common.php');
 
 use INTERMediator\DB\Proxy;
 
-class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
+class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
 {
-    public $dsn = 'sqlite:/var/db/im/sample.sq3';
+    public $dsn;
 
     function setUp(): void
     {
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
-        if (getenv('GITHUB_ACTIONS') === 'true') {
-            $this->dsn = 'sqlite:/home/runner/work/INTER-Mediator/INTER-Mediator/sample.sq3';
-        }
+        $this->dsn = 'pgsql:host=localhost;port=5432;dbname=test_db';
     }
 
     /**
@@ -30,7 +34,8 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
 
     function dbProxySetupForAccess($contextName, $maxRecord, $subContextName = null)
     {
-        $this->schemaName = "";
+        $this->schemaName = "im_sample.";
+        $seqName = ($contextName == "person") ? "im_sample.person_id_seq" : "im_sample.serial";
         $contexts = array(
             array(
                 'records' => $maxRecord,
@@ -42,6 +47,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
                 'sort' => array(
                     array('field' => 'id', 'direction' => 'asc'),
                 ),
+                //'sequence' => $seqName,
             )
         );
         if (!is_null($subContextName)) {
@@ -59,7 +65,9 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
         $options = null;
         $dbSettings = array(
             'db-class' => 'PDO',
-            'dsn' => $this->dsn,
+            'dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db',
+            'user' => 'web',
+            'password' => 'password',
         );
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
@@ -67,13 +75,13 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
 
     function dbProxySetupForAccessSetKey($contextName, $maxRecord, $keyName)
     {
-        $this->schemaName = "";
+        $this->schemaName = "im_sample.";
         $contexts = array(
             array(
                 'records' => $maxRecord,
                 'name' => $contextName,
-                'view' => $contextName,
-                'table' => $contextName,
+                'view' => "{$this->schemaName}{$contextName}",
+                'table' => "{$this->schemaName}{$contextName}",
                 'key' => $keyName,
                 'sort' => array(
                     array('field' => $keyName, 'direction' => 'asc'),
@@ -83,7 +91,9 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
         $options = null;
         $dbSettings = array(
             'db-class' => 'PDO',
-            'dsn' => $this->dsn,
+            'dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db',
+            'user' => 'web',
+            'password' => 'password',
         );
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
@@ -91,6 +101,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
 
     function dbProxySetupForAuth()
     {
+        $this->schemaName = "im_sample.";
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize(
             array(
@@ -101,39 +112,34 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
                     'key' => 'id',
                     'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
                     'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
-                    'sequence' => 'im_sample.serial',
+                    //'sequence' => 'im_sample.person_id_seq',
                 )
             ),
             array(
                 'authentication' => array( // table only, for all operations
                     'user' => array('user1'), // Itemize permitted users
                     'group' => array('group2'), // Itemize permitted groups
-                    'user-table' => 'authuser', // Default value
-                    'group-table' => 'authgroup',
-                    'corresponding-table' => 'authcor',
-                    'challenge-table' => 'issuedhash',
+                    'user-table' => 'im_sample.authuser', // Default value
+                    'group-table' => 'im_sample.authgroup',
+                    'corresponding-table' => 'im_sample.authcor',
+                    'challenge-table' => 'im_sample.issuedhash',
                     'authexpired' => '300', // Set as seconds.
                     'storing' => 'credential', // 'cookie'(default), 'cookie-domainwide', 'none'
                 ),
             ),
             array(
                 'db-class' => 'PDO',
-                'dsn' => $this->dsn,
+                'dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db',
+                'user' => 'web',
+                'password' => 'password',
             ),
-            false, 'person'
+            2, 'person'
         );
-    }
-
-    /**
-     * @doesNotPerformAssertions
-     */
-    public function testNativeUser()
-    {
-        // SQLite doesn't have native users.
     }
 
     function dbProxySetupForAggregation()
     {
+        $this->schemaName = "im_sample.";
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize(
             array(
@@ -156,7 +162,9 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
             null,
             array(
                 'db-class' => 'PDO',
-                'dsn' => $this->dsn,
+                'dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db',
+                'user' => 'web',
+                'password' => 'password',
             ),
             2,
             "summary"
@@ -165,7 +173,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
 
     function dbProxySetupForCondition($queryArray)
     {
-        $this->schemaName = "";
+        $this->schemaName = "im_sample.";
         $contextName = 'testtable';
         $contexts = array(
             array(
@@ -186,12 +194,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
         );
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
-    }
 
-    public function testCreateRecord2()
-    {
-        // SQLite doesn't support the record creation with the key field as non AUTOINCREMENT field.
-        $this->assertNull(null, "This is dummy test record to avoid judged as risky test");
     }
 
     protected $sqlSETClause1 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "

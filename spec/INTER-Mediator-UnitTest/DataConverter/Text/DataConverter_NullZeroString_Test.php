@@ -2,8 +2,11 @@
 /**
  * DataConverter_NullZeroString_Test file
  */
-use PHPUnit\Framework\TestCase;
+
+namespace Text;
+
 use INTERMediator\Data_Converter\NullZeroString;
+use PHPUnit\Framework\TestCase;
 
 class DataConverter_NullZeroString_Test extends TestCase
 {
@@ -12,10 +15,10 @@ class DataConverter_NullZeroString_Test extends TestCase
     public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
-        
+
         $this->dataconverter = new NullZeroString();
     }
-    
+
     public function test_converterFromUserToDB()
     {
         $string = '';
@@ -25,7 +28,7 @@ class DataConverter_NullZeroString_Test extends TestCase
         $string = 'Test';
         $this->assertSame($expected, $this->dataconverter->converterFromUserToDB($string));
     }
-    
+
     public function test_converterFromDBtoUser()
     {
         $expected = '';

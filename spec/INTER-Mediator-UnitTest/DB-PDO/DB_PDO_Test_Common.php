@@ -10,6 +10,7 @@
 
 use PHPUnit\Framework\TestCase;
 use INTERMediator\DB\Proxy;
+use INTERMediator\DB\Proxy_ExtSupport;
 
 require_once 'DB_PDO_Test_Conditions.php';
 require_once 'DB_PDO_Test_UserGroup.php';
@@ -23,6 +24,7 @@ abstract class DB_PDO_Test_Common extends TestCase
     use DB_PDO_Test_Conditions;
     use DB_PDO_Test_UserGroup;
     use DB_PDO_Test_LocalContextConditions;
+    use Proxy_ExtSupport;
 
     abstract function dbProxySetupForAccess($contextName, $maxRecord);
 

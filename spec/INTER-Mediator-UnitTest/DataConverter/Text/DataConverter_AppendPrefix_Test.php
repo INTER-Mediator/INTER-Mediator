@@ -2,8 +2,11 @@
 /**
  * DataConverter_AppendPrefix_Test file
  */
-use PHPUnit\Framework\TestCase;
+
+namespace Text;
+
 use INTERMediator\Data_Converter\AppendPrefix;
+use PHPUnit\Framework\TestCase;
 
 class DataConverter_AppendPrefix_Test extends TestCase
 {
@@ -12,10 +15,10 @@ class DataConverter_AppendPrefix_Test extends TestCase
     public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
-        
+
         $this->dataconverter = new AppendPrefix('￥');
     }
-    
+
     public function test_converterFromDBtoUser()
     {
         $string = '1000';

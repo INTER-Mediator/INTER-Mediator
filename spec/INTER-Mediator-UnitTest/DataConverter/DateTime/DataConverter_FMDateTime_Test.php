@@ -2,8 +2,11 @@
 /**
  * DataConverter_FMDateTime_Test file
  */
-use PHPUnit\Framework\TestCase;
+
+namespace DateTime;
+
 use INTERMediator\Data_Converter\FMDateTime;
+use PHPUnit\Framework\TestCase;
 
 class DataConverter_FMDateTime_Test extends TestCase
 {

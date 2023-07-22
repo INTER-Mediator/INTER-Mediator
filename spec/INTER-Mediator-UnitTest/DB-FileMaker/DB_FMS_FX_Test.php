@@ -3,13 +3,9 @@
  * DB_FMS_FX_Test file
  */
 
-namespace DB_FileMaker;
 require_once('DB_FMS_Test_Common.php');
 
-use DB_FMS_Test_Common;
-use DBuse;
-
-INTERMediator\DB\Proxy;
+use INTERMediator\DB\Proxy;
 
 class DB_FMS_FX_Test extends DB_FMS_Test_Common
 {

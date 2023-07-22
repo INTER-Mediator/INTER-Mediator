@@ -6,20 +6,15 @@ use INTERMediator\DB\UseSharedObjects;
 use INTERMediator\DB\Extending\AfterRead;
 use INTERMediator\DB\Proxy_ExtSupport;
 
-require_once('DB_Proxy_Test_Common.php');
+require_once(dirname(__FILE__) . '/../DB_Proxy_Test_Common.php');
 
-class DB_Proxy_SQLite_Test extends DB_Proxy_Test_Common
+class DB_Proxy_PostgreSQL_Test extends DB_Proxy_Test_Common
 {
 
     function setUp(): void
     {
         parent::setUp();
-
-        $dsn = 'sqlite:/var/db/im/sample.sq3';
-        if (getenv('GITHUB_ACTIONS') === 'true') {
-            $dsn = 'sqlite:/home/runner/work/INTER-Mediator/INTER-Mediator/sample.sq3';
-        }
-
+        $dsn = 'pgsql:host=localhost;port=5432;dbname=test_db';
         $this->dbSpec = array(
             'db-class' => 'PDO',
             'dsn' => $dsn,
@@ -30,12 +25,14 @@ class DB_Proxy_SQLite_Test extends DB_Proxy_Test_Common
 
     function dbProxySetupForAccess($contextName, $maxRecord, $hasExtend = false)
     {
-        $this->schemaName = "";
+        $this->schemaName = "im_sample.";
         $this->dataSource = [
             [
                 'records' => $maxRecord,
                 'paging' => true,
                 'name' => $contextName,
+                'view' => "{$this->schemaName}{$contextName}",
+                'table' => "{$this->schemaName}{$contextName}",
                 'key' => 'id',
                 'query' => [['field' => 'id', 'value' => '3', 'operator' => '='],],
                 'sort' => [['field' => 'id', 'direction' => 'asc'],],
@@ -48,17 +45,20 @@ class DB_Proxy_SQLite_Test extends DB_Proxy_Test_Common
         }
         $this->options = null;
         $this->db_proxy = new Proxy(true);
-        $this->db_proxy->initialize($this->dataSource, $this->options, $this->dbSpec, 2, $contextName);
+        $resultInit = $this->db_proxy->initialize($this->dataSource, $this->options, $this->dbSpec, 2, $contextName);
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
     function dbProxySetupForAuthAccess($contextName, $maxRecord, $subContextName = null)
     {
-        $this->schemaName = "";
+        $this->schemaName = "im_sample.";
         $this->dataSource = [
             [
                 'records' => $maxRecord,
                 'paging' => true,
                 'name' => $contextName,
+                'view' => "{$this->schemaName}{$contextName}",
+                'table' => "{$this->schemaName}{$contextName}",
                 'key' => 'id',
                 'query' => [['field' => 'id', 'value' => '3', 'operator' => '='],],
                 'sort' => [['field' => 'id', 'direction' => 'asc'],],
@@ -89,7 +89,8 @@ class DB_Proxy_SQLite_Test extends DB_Proxy_Test_Common
             ),
         );
         $this->db_proxy = new Proxy(true);
-        $this->db_proxy->initialize($this->dataSource, $this->options, $this->dbSpec, 2, $contextName);
+        $resultInit = $this->db_proxy->initialize($this->dataSource, $this->options, $this->dbSpec, 2, $contextName);
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
 }

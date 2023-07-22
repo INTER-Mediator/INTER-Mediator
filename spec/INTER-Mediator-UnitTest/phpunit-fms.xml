@@ -1,0 +1,13 @@
+<phpunit>
+<!--    <coverage>-->
+<!--        <exclude>-->
+<!--            <directory suffix=".php">../INTER-Mediator-UnitTest/</directory>-->
+<!--            <directory suffix=".php">../../src/lib/</directory>-->
+<!--        </exclude>-->
+<!--    </coverage>-->
+    <testsuites>
+        <testsuite name="filemaker">
+            <directory>DB-FileMaker</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

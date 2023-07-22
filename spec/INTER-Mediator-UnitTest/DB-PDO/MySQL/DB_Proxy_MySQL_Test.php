@@ -6,7 +6,7 @@ use INTERMediator\DB\UseSharedObjects;
 use INTERMediator\DB\Extending\AfterRead;
 use INTERMediator\DB\Proxy_ExtSupport;
 
-require_once('DB_Proxy_Test_Common.php');
+require_once(dirname(__FILE__) . '/../DB_Proxy_Test_Common.php');
 
 class DB_Proxy_MySQL_Test extends DB_Proxy_Test_Common
 {
@@ -54,7 +54,8 @@ class DB_Proxy_MySQL_Test extends DB_Proxy_Test_Common
         }
         $this->options = null;
         $this->db_proxy = new Proxy(true);
-        $this->db_proxy->initialize($this->dataSource, $this->options, $this->dbSpec, 2, $contextName);
+        $resultInit = $this->db_proxy->initialize($this->dataSource, $this->options, $this->dbSpec, 2, $contextName);
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
     function dbProxySetupForAuthAccess($contextName, $maxRecord, $subContextName = null)
@@ -95,7 +96,8 @@ class DB_Proxy_MySQL_Test extends DB_Proxy_Test_Common
             ),
         );
         $this->db_proxy = new Proxy(true);
-        $this->db_proxy->initialize($this->dataSource, $this->options, $this->dbSpec, 2, $contextName);
+        $resultInit = $this->db_proxy->initialize($this->dataSource, $this->options, $this->dbSpec, 2, $contextName);
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
 }

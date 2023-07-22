@@ -3,8 +3,10 @@
  * DataConverter_MarkdownString_Test file
  */
 
-use PHPUnit\Framework\TestCase;
+namespace Text;
+
 use INTERMediator\Data_Converter\MarkdownString;
+use PHPUnit\Framework\TestCase;
 
 class DataConverter_MarkdownString_Test extends TestCase
 {
