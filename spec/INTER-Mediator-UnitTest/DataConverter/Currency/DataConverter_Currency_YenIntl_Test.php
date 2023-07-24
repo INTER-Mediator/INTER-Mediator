@@ -6,7 +6,6 @@
 namespace Currency;
 require_once(dirname(__FILE__) . '/../DataConverter_Currency_Base_Test.php');
 
-use DataConverter_Currency_Base_Test;
 use INTERMediator\Data_Converter\Currency;
 use INTERMediator\Locale\IMLocale;
 

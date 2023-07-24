@@ -4,7 +4,6 @@
  */
 
 namespace Currency;
-use DataConverter_Currency_Base_Test;
 
 require_once(dirname(__FILE__) . '/../DataConverter_Currency_Base_Test.php');
 
