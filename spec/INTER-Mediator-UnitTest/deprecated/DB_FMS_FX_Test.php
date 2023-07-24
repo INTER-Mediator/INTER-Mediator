@@ -3,6 +3,9 @@
  * DB_FMS_FX_Test file
  */
 
+namespace deprecated;
+use DB_FMS_Test_Common;
+
 require_once('DB_FMS_Test_Common.php');
 
 class DB_FMS_FX_Test extends DB_FMS_Test_Common
@@ -29,7 +32,7 @@ class DB_FMS_FX_Test extends DB_FMS_Test_Common
         $options = null;
         $dbSettings = array(
             'db-class' => 'FileMaker_FX',
-            'server' => '127.0.0.1', //'10.211.56.2',//'localserver',
+            'server' => '10.211.56.2',//'localserver','127.0.0.1', //
             'user' => 'web',
             'password' => 'password',
         );
@@ -68,7 +71,7 @@ class DB_FMS_FX_Test extends DB_FMS_Test_Common
             ),
             array(
                 'db-class' => 'FileMaker_FX',
-                'server' => '127.0.0.1', //'10.211.56.2',//'localserver',
+                'server' => '10.211.56.2',//'localserver','127.0.0.1', //
                 'user' => 'web',
                 'password' => 'password',
             ),

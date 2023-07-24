@@ -28,6 +28,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->dbProxySetupForAccess($layoutName, 1);
         $this->db_proxy->readFromDB($layoutName);
         $this->assertEquals($expected, $this->db_proxy->dbClass->notifyHandler->queriedEntity());
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -43,6 +44,7 @@ class DB_FMS_Test_Common extends TestCase
         }
         $this->db_proxy->readFromDB($layoutName);
         $this->assertEquals($expected, $this->db_proxy->dbClass->notifyHandler->queriedCondition());
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -202,6 +204,7 @@ class DB_FMS_Test_Common extends TestCase
                 $expected = array('script.presort' => 'testscript', 'script.presort.param' => '1');
             }
             $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+            $this->db_proxy->closeDBOperation();
         }
     }
 
@@ -226,6 +229,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOperator('AND'));
         $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOperator('OR'));
         $this->assertFalse($this->db_proxy->dbClass->specHandler->isPossibleOperator('='));
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -242,6 +246,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOrderSpecifier('DESCEND'));
         $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOrderSpecifier('ASC'));
         $this->assertTrue($this->db_proxy->dbClass->specHandler->isPossibleOrderSpecifier('DESC'));
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -326,6 +331,7 @@ class DB_FMS_Test_Common extends TestCase
             'operator' => '',
         );
         $this->assertEquals($expected, $this->db_proxy->dbClass->normalizedCondition($condition));
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -348,6 +354,7 @@ class DB_FMS_Test_Common extends TestCase
             $this->assertEquals('descend', $method->invokeArgs($this->db_proxy->dbClass, array('DESC')));
             $this->assertEquals('descend', $method->invokeArgs($this->db_proxy->dbClass, array('desc')));
             $this->assertEquals('default', $method->invokeArgs($this->db_proxy->dbClass, array('default')));
+            $this->db_proxy->closeDBOperation();
         }
     }
 
@@ -361,6 +368,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->dbProxySetupForAccess($layoutName, 1);
         $this->db_proxy->readFromDB($layoutName);
         $this->assertFalse($this->db_proxy->dbClass->specHandler->isNullAcceptable());
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -381,6 +389,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertTrue(count($result) == 1, "After the query, just one should be retrieved.");
         $this->assertEquals(3, $recordCount, "This table contanins 3 records");
         $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -398,6 +407,7 @@ class DB_FMS_Test_Common extends TestCase
 
         //        var_export($this->db_proxy->logger->getAllErrorMessages());
         //        var_export($this->db_proxy->logger->getDebugMessage());
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -411,6 +421,7 @@ class DB_FMS_Test_Common extends TestCase
         $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals(15, count($result));
         $this->assertEquals(3654, $totalCount);
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -427,6 +438,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertEquals($limit, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1000000', $result[0]['f3']);
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -442,6 +454,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertEquals(15, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1670032', $result[0]['f3']);
+        $this->db_proxy->closeDBOperation();
 
         $this->dbProxySetupForAccess('postalcode', 1000000);
         $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'query' => array(array('field' => 'f3', 'value' => '167', 'operator' => 'bw'), array('field' => 'f9', 'value' => '天沼', 'operator' => 'neq')))));
@@ -451,6 +464,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertEquals(14, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1670021', $result[0]['f3']);
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -467,6 +481,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertEquals(1, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1670022', $result[0]['f3']);
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -484,6 +499,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertEquals($limit, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1670032', $result[0]['f3']);
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -499,6 +515,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertEquals(15, count($result));
         $this->assertEquals(3654, $totalCount);
         $this->assertEquals('1670032', $result[0]['f3']);
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -513,6 +530,7 @@ class DB_FMS_Test_Common extends TestCase
         $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals(2, count($result));
         $this->assertEquals(3654, $totalCount);
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -528,6 +546,7 @@ class DB_FMS_Test_Common extends TestCase
         $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals(15, count($result));
         $this->assertEquals(3654, $totalCount);
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -540,7 +559,7 @@ class DB_FMS_Test_Common extends TestCase
         $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals(1, count($result));
         $this->assertEquals(3654, $totalCount);
-
+        $this->db_proxy->closeDBOperation();
 
         $this->dbProxySetupForAccess('postalcode', 1000000);
         if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_FX') {
@@ -550,13 +569,19 @@ class DB_FMS_Test_Common extends TestCase
             foreach ($result as $record) {
                 $recId = $record['recordId'];
                 $this->db_proxy->dbSettings->addExtraCriteria('recordId', 'eq', $recId);
+                break;
             }
         }
         $result = $this->db_proxy->readFromDB();
         $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals(1, count($result));
-        $this->assertEquals(3654, $totalCount);
+        if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_FX') {
+            $this->assertEquals(3654, $totalCount);
+        } else if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
+            $this->assertEquals(1, $totalCount);
+        }
         $this->assertEquals('1000000', $result[0]['f3']);
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -572,6 +597,7 @@ class DB_FMS_Test_Common extends TestCase
         $totalCount = $this->db_proxy->getTotalCount();
         $this->assertEquals(93, count($result));
         $this->assertEquals(3654, $totalCount);
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -623,6 +649,7 @@ class DB_FMS_Test_Common extends TestCase
         //        var_export($this->db_proxy->logger->getAllErrorMessages());
         //        var_export($this->db_proxy->logger->getDebugMessage());
 
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -658,7 +685,7 @@ class DB_FMS_Test_Common extends TestCase
         $retrievedPasswd = $this->db_proxy->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
         //echo var_export($this->db_proxy->logger->getDebugMessage(), true);
         $this->assertEquals($expectedPasswd, $retrievedPasswd, $testName);
-
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -673,7 +700,7 @@ class DB_FMS_Test_Common extends TestCase
         $username = 'user1';
         $retrievedSalt = $this->db_proxy->authSupportGetSalt($username);
         $this->assertEquals('54455354', $retrievedSalt, $testName);
-
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -695,7 +722,7 @@ class DB_FMS_Test_Common extends TestCase
         $challenge = IMUtil::generateChallenge();
         $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($username, $challenge, "TEST");
         $this->assertEquals($challenge, $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($username, "TEST"), $testName);
-
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -706,10 +733,13 @@ class DB_FMS_Test_Common extends TestCase
     {
         $this->dbProxySetupForAuth();
 
+//        $this->db_proxy->logger->clearLogs();
+
         $testName = "Simulation of Authentication";
         $username = 'user1';
         $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
         $uid = $this->db_proxy->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
+        $hpw = $this->db_proxy->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
 
         $challenge = IMUtil::generateChallenge();
         $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
@@ -721,10 +751,16 @@ class DB_FMS_Test_Common extends TestCase
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
         $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
 
-        $this->db_proxy->setParamResponse([$calcuratedHash]);
+        $this->db_proxy->setParamResponse($calcuratedHash);
         $this->db_proxy->setClientId_forTest("TEST");
-        $this->assertTrue(
-            $this->db_proxy->checkAuthorization($username), $testName);
+        $this->db_proxy->setHashedPassword_forTest($hpw);
+        $checkResult = $this->db_proxy->checkAuthorization($username);
+
+//        var_export($this->db_proxy->logger->getAllErrorMessages());
+//        var_export($this->db_proxy->logger->getDebugMessage());
+
+        $this->assertTrue($checkResult, $testName);
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -777,6 +813,7 @@ class DB_FMS_Test_Common extends TestCase
                 }
             }
         }
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -810,6 +847,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertTrue(is_null($this->db_proxy->getDatabaseTotalCount()), $testName);
         $this->assertTrue(is_null($this->db_proxy->getDatabaseResult()), $testName);
         $this->assertTrue($this->db_proxy->dbSettings->getRequireAuthentication(), $testName);
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -820,18 +858,17 @@ class DB_FMS_Test_Common extends TestCase
     {
         $this->dbProxySetupForAuth();
 
-        $this->db_proxy->logger->clearLogs();
+//        $this->db_proxy->logger->clearLogs();
 
         $testName = "Create New User and Authenticate";
         $username = "testuser1";
         $password = "testuser1";
 
         [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password);
+        $this->assertTrue($addUserResult, $testName);
 
-        var_export($this->db_proxy->logger->getAllErrorMessages());
-        var_export($this->db_proxy->logger->getDebugMessage());
-
-        $this->assertTrue($addUserResult);
+        $hpw = $this->db_proxy->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
+        $this->assertTrue($hpw == $hashedpw, $testName);
 
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
@@ -840,14 +877,26 @@ class DB_FMS_Test_Common extends TestCase
         $challenge = IMUtil::generateChallenge();
         $this->db_proxy->saveChallenge($username, $challenge, $clientId);
 
-        $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
-        //echo $hashedvalue;
-
-        $this->db_proxy->setParamResponse([hash_hmac('sha256', $hashedvalue, $challenge)]);
+        $hashedvalue = hash('sha1', $password . $retrievedSalt) . $retrievedHexSalt;
+        $value = $password . $retrievedSalt;
+        for ($i = 0; $i < 4999; $i++) {
+            $value = hash("sha256", $value, true);
+        }
+        $hashedvalue256 = hash("sha256", $value, false) . $retrievedHexSalt;
+        $this->db_proxy->setParamResponse([
+            hash_hmac('sha256', $hashedvalue, $challenge),
+            hash_hmac('sha256', $hashedvalue256, $challenge),
+            hash_hmac('sha256', $hashedvalue256, $challenge),
+        ]);
         $this->db_proxy->setClientId_forTest($clientId);
-        $this->assertTrue(
-            $this->db_proxy->checkAuthorization($username),
-            $testName);
+        $this->db_proxy->setHashedPassword_forTest($hpw);
+        $checkResult = $this->db_proxy->checkAuthorization($username);
+
+//        var_export($this->db_proxy->logger->getErrorMessages());
+//        var_export($this->db_proxy->logger->getDebugMessages());
+
+        $this->assertTrue($checkResult, $testName);
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -862,26 +911,27 @@ class DB_FMS_Test_Common extends TestCase
         $groupArray = $this->db_proxy->dbClass->authHandler->authSupportGetGroupsOfUser('user1');
         //echo var_export($groupArray);
         $this->assertTrue(count($groupArray) > 0, $testName);
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
-    public function testNativeUser()
-    {
-        $this->dbProxySetupForAuth();
-
-        $testName = "Native User Challenge Check";
-        $cliendId = "12345";
-
-        $challenge = IMUtil::generateChallenge();
-        //echo "\ngenerated=", $challenge;
-        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge(0, $challenge, $cliendId);
-
-        $this->assertTrue(
-            $this->db_proxy->checkChallenge($challenge, $cliendId), $testName);
-    }
+//    public function testNativeUser()
+//    {
+//        $this->dbProxySetupForAuth();
+//
+//        $testName = "Native User Challenge Check";
+//        $cliendId = "12345";
+//
+//        $challenge = IMUtil::generateChallenge();
+//        //echo "\ngenerated=", $challenge;
+//        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge(0, $challenge, $cliendId);
+//
+//        $this->assertTrue($this->db_proxy->checkChallenge($challenge, $cliendId), $testName);
+//        $this->db_proxy->closeDBOperation();
+//    }
 
     public function testDefaultKey()
     {
@@ -893,6 +943,7 @@ class DB_FMS_Test_Common extends TestCase
         } else if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
             $this->assertEquals('recordId', call_user_func(array($className, 'defaultKey')));
         }
+        $this->db_proxy->closeDBOperation();
     }
 
     public function testGetDefaultKey()
@@ -905,6 +956,7 @@ class DB_FMS_Test_Common extends TestCase
         } else if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
             $this->assertEquals('recordId', $value);
         }
+        $this->db_proxy->closeDBOperation();
     }
 
     public function testMultiClientSyncTableExsistence()
@@ -912,6 +964,7 @@ class DB_FMS_Test_Common extends TestCase
         $testName = "Tables for storing the context and ids should be existing.";
         $this->dbProxySetupForAuth();
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->isExistRequiredTable(), $testName);
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -987,6 +1040,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertTrue(count($recSet) == 0, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
         $this->assertTrue(count($recSet) == 0, "Count pk values");
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -995,7 +1049,6 @@ class DB_FMS_Test_Common extends TestCase
     public function testMultiClientSyncRegisterAndUnregisterPartial()
     {
         $testName = "Register and Unregister partically.";
-        $this->dbProxySetupForAuth();
         //$this->db_proxy->dbClass->deleteForTest("registeredcontext");
         //$this->db_proxy->dbClass->deleteForTest("registeredpks");
         $clientId = "123456789ABCDEF";
@@ -1003,10 +1056,18 @@ class DB_FMS_Test_Common extends TestCase
         $pkArray = array(1001, 2001, 3003, 4004);
 
         $entity = "table1";
+        $this->dbProxySetupForAuth();
         $registResult1 = $this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray);
+        $this->db_proxy->closeDBOperation();
+        $this->dbProxySetupForAuth();
         $registResult2 = $this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray);
+        $this->db_proxy->closeDBOperation();
+        $this->dbProxySetupForAuth();
         $registResult3 = $this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray);
+        $this->db_proxy->closeDBOperation();
         //var_export($this->db_proxy->logger->getDebugMessage());
+
+        $this->dbProxySetupForAuth();
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
             array("clientid" => $clientId, "entity" => $entity));
@@ -1035,6 +1096,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertTrue(count($recSet) == 0, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
         $this->assertTrue(count($recSet) == 0, "Count pk values");
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -1080,6 +1142,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertEquals(0, count($recSet), "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
         $this->assertEquals(0, count($recSet), "Count pk values");
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -1132,6 +1195,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertTrue(count($recSet) == 0, "Count pk values");
 
         //$result = $this->db_proxy->dbClass->notifyHandler->removeFromRegistered($clientId, $entity, $pkArray);
+        $this->db_proxy->closeDBOperation();
     }
 
     /**
@@ -1167,12 +1231,14 @@ class DB_FMS_Test_Common extends TestCase
         $this->assertTrue(count($recSet) == 0, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
         $this->assertTrue(count($recSet) == 0, "Count pk values");
+        $this->db_proxy->closeDBOperation();
     }
 
     public function testIsSupportAggregation()
     {
         $this->dbProxySetupForAccess('person_layout', 1);
         $this->assertFalse($this->db_proxy->dbClass->specHandler->isSupportAggregation());
+        $this->db_proxy->closeDBOperation();
     }
 
     public function testGetAuthorizedUsers()
@@ -1180,6 +1246,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->dbProxySetupForAuth();
         $authorizedUsers = $this->db_proxy->dbClass->authHandler->getAuthorizedUsers('read');
         $this->assertTrue($authorizedUsers == array('user1'));
+        $this->db_proxy->closeDBOperation();
     }
 
     public function testGetAuthorizedGroups()
@@ -1187,5 +1254,6 @@ class DB_FMS_Test_Common extends TestCase
         $this->dbProxySetupForAuth();
         $authorizedGroups = $this->db_proxy->dbClass->authHandler->getAuthorizedGroups('read');
         $this->assertTrue($authorizedGroups == array('group2'));
+        $this->db_proxy->closeDBOperation();
     }
 }

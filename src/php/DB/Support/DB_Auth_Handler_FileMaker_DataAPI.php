@@ -278,6 +278,12 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
 
         $this->logger->setDebugMessage(
             $this->dbClass->stringWithoutCredential($this->dbClass->fmData->{$userTable}->getDebugInfo()));
+        if (is_null($result)) {
+            $this->logger->setDebugMessage(
+                $this->dbClass->stringWithoutCredential(
+                    $this->dbClass->fmData->{$userTable}->getDebugInfo()));
+            return false;
+        }
         if ((get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation' ||
                 $result->count() < 1) && $this->dbSettings->getEmailAsAccount()) {
             $this->dbClass->setupFMDataAPIforDB($userTable, 1);
@@ -292,12 +298,6 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
                     $this->dbClass->fmData->{$userTable}->getDebugInfo()));
         }
 
-        if (is_null($result)) {
-            $this->logger->setDebugMessage(
-                $this->dbClass->stringWithoutCredential(get_class($result) . ': ' .
-                    $this->dbClass->fmData->{$userTable}->getDebugInfo()));
-            return false;
-        }
         foreach ($result as $record) {
             return $record->hashedpasswd;
         }
