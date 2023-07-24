@@ -278,6 +278,12 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
 
         $this->logger->setDebugMessage(
             $this->dbClass->stringWithoutCredential($this->dbClass->fmData->{$userTable}->getDebugInfo()));
+        if (is_null($result)) {
+            $this->logger->setDebugMessage(
+                $this->dbClass->stringWithoutCredential(
+                    $this->dbClass->fmData->{$userTable}->getDebugInfo()));
+            return false;
+        }
         if ((get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation' ||
                 $result->count() < 1) && $this->dbSettings->getEmailAsAccount()) {
             $this->dbClass->setupFMDataAPIforDB($userTable, 1);
@@ -292,12 +298,6 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
                     $this->dbClass->fmData->{$userTable}->getDebugInfo()));
         }
 
-        if (is_null($result)) {
-            $this->logger->setDebugMessage(
-                $this->dbClass->stringWithoutCredential(get_class($result) . ': ' .
-                    $this->dbClass->fmData->{$userTable}->getDebugInfo()));
-            return false;
-        }
         foreach ($result as $record) {
             return $record->hashedpasswd;
         }
@@ -305,7 +305,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return false;
     }
 
-    public function authSupportCreateUser($username, $hashedpassword, $isSAML = false, $ldapPassword = null, $attrs=null)
+    public function authSupportCreateUser($username, $hashedpassword, $isSAML = false, $ldapPassword = null, $attrs = null)
     {
         if ($this->authSupportRetrieveHashedPassword($username) !== false) {
             $this->logger->setErrorMessage('User Already exist: ' . $username);
@@ -317,7 +317,6 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             'username' => $username,
             'hashedpasswd' => $hashedpassword,
         ));
-
         if (!is_numeric($recordId)) {
             $this->logger->setDebugMessage(
                 $this->dbClass->stringWithoutCredential(get_class($recordId) . ': ' .

@@ -296,6 +296,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
 
         // Query
         $result = $this->link->query($sql);
+
+
+
         if (!$this->errorHandlingPDO($sql, $result)) {
             return false;
         }
@@ -991,5 +994,10 @@ class PDO extends UseSharedObjects implements DBClass_Interface
             $isFirstRow = false;
         }
         return $sqlResult;
+    }
+
+    public function closeDBOperation()
+    {
+        // Do nothing
     }
 }

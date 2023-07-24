@@ -97,9 +97,8 @@ IM_Entry(
     ),
     array(
         'db-class' => 'FileMaker_FX',
-        'option' => array(),
-        'user' => 'web',
-        'password' => 'password',
+        'port' => '80',
+        'protocol' => 'http',
     ),
     false
 );

@@ -22,12 +22,12 @@ $dbUser = 'web';
 $dbPassword = 'password';
 
 // FileMaker_FX/DataAPI are aware of below:
-$dbServer = '127.0.0.1';
+$dbServer = '10.211.56.2'; //'127.0.0.1'; //
 $dbPort = '80';
 //$dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
-//$certVerifying = false;
+$certVerifying = false;
 
 // PDO is aware of below:
 $dbDSN = 'mysql:host=127.0.0.1;dbname=test_db;charset=utf8mb4';

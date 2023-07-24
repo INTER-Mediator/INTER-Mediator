@@ -158,6 +158,11 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
         }
     }
 
+    public function closeDBOperation()
+    {
+        // Do nothing
+    }
+
     private function stringReturnOnly($str)
     {
         return str_replace("\n\r", "\r", str_replace("\n", "\r", $str ?? ""));
@@ -423,6 +428,8 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                 } else if ($condition['field'] == '__operation__' && strtolower($condition['operator']) == 'ex') {
                     $this->fx->SetLogicalOR();
                     $useOrOperation = true;
+                } else if ($condition['field'] == '__operation__' && strpos($condition['operator'], 'block/') === 0) {
+                    // just ignore it
                 } else {
                     $condition = $this->normalizedCondition($condition);
                     if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
@@ -504,7 +511,7 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
             $authFailure = FALSE;
             $authInfoField = $this->authHandler->getFieldForAuthorization("read");
             $authInfoTarget = $this->authHandler->getTargetForAuthorization("read");
-            if (strlen($authInfoField) > 0 && $this->_field_exists($authInfoField) === FALSE) {
+            if ($authInfoField && strlen($authInfoField) > 0 && $this->_field_exists($authInfoField) === FALSE) {
                 $authFailure = TRUE;
             }
             if ($authInfoTarget == 'field-user' && $authFailure === FALSE) {

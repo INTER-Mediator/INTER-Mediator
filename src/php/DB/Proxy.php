@@ -1634,4 +1634,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->dbClass->rollbackTransaction();
     }
 
+    public function closeDBOperation()
+    {
+        $this->dbClass->closeDBOperation();
+    }
 }

@@ -44,7 +44,7 @@ IM_Entry(
     ),
     array(
         'db-class' => 'FileMaker_DataAPI',
-        'server' => 'localserver',
-    ),
+        'port' => '443',
+        'protocol' => 'https',    ),
     false // debug
 );

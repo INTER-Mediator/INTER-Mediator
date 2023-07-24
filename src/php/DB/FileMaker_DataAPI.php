@@ -171,6 +171,19 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         $this->specHandler = new Support\DB_Spec_Handler_FileMaker_DataAPI();
     }
 
+    public function closeDBOperation()
+    {
+        if ($this->fmData) {
+            $this->fmData->endCommunication();
+        }
+        if ($this->fmDataAuth) {
+            $this->fmDataAuth->endCommunication();
+        }
+        if ($this->fmDataAlt) {
+            $this->fmDataAlt->endCommunication();
+        }
+    }
+
     public function stringWithoutCredential($str)
     {
         if (is_null($this->fmData)) {
@@ -379,6 +392,8 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                     $useOrOperation = true;
                 } else if ($condition['field'] == '__operation__' && strtolower($condition['operator']) == 'ex') {
                     $useOrOperation = true;
+                } else if ($condition['field'] == '__operation__' && strpos($condition['operator'], 'block/') === 0) {
+                    // just ignore it
                 } else {
                     $condition = $this->normalizedCondition($condition);
                     if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
@@ -951,7 +966,7 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 }
 
                 $this->notifyHandler->setQueriedEntity($layout);
-                $this->fmData->{$layout}->keepAuth = true;
+                // $this->fmData->{$layout}->keepAuth = true;
 
                 $fieldName = filter_input(INPUT_POST, '_im_field');
                 $useContainer = FALSE;

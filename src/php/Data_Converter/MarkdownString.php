@@ -15,7 +15,7 @@
  */
 namespace INTERMediator\Data_Converter;
 
-class MarkdownString extends _HTMLString
+class MarkdownString extends HTMLString
 {
 
     public function converterFromDBtoUser($str)
@@ -104,7 +104,6 @@ class MarkdownString extends _HTMLString
         }
         if ($inTable) {
             $result[] = "</table>";
-            $inTable = false;
         }
         $result[] = "</div>";
         return implode('', $result);

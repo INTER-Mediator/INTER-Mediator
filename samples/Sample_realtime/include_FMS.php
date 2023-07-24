@@ -83,6 +83,10 @@ IM_Entry(
             ],
         ],
     ],
-    ['db-class' => 'FileMaker_FX'],
+    [
+        'db-class' => 'FileMaker_FX',
+        'port' => '80',
+        'protocol' => 'http',
+    ],
     false
 );

@@ -30,12 +30,16 @@ Ver.11 (in development)
   and move to the "url" place
 - Update dbupdate.sh for MariaDB 11.
 - Update recipe.rb and sample_spec.rb etc. for the INTER-Mediator-Server virtual machine and CI.
+- Unit tests work on phpunit v10, and test classes divided 'testsuite' style. The unit test for FileMaker classes ware separated.
 - [SECURITY IMPROVED] The hash calculation for the 'credential' authentication was updated. The value is sha-256 hash of
   challenge, client id and user's password hash. The challenge is already stored with the user on db.
 - [INFO] About sample SQL files in the dist-docs directory, their extensions changed to .sql from .txt.
 - [BUG FIX] In same case of using aggregation-select/from the error happened about the view or table didn't exist.
 - [BUG FIX] INTERMediator.additionalFieldValueOnDelete uses in the Definition File editor, so retrieved it.
 - [BIG FIX] After failed to login, any messages didn't show on the login panel.
+
+- [Limitations] On the FileMaker's database class, INTERMediator.lcConditionsOP1AND, INTERMediator.lcConditionsOP2AND
+  and INTERMediator.lcConditionsOP3AND are ignored. They work just on PDO class.
 
 Ver.10 (October 12, 2022)
 - Auto saving for INPUT and TEXTAREA element. Customizing in JavaScript code and their default value are:

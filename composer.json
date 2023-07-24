@@ -47,7 +47,7 @@
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "^9.6"
+    "phpunit/phpunit": "*"
   },
   "autoload": {
     "psr-4": {
@@ -81,7 +81,10 @@
   },
   "scripts": {
     "test": [
-      "./vendor/bin/phpunit --globals-backup --bootstrap ./vendor/autoload.php spec/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+      "./vendor/bin/phpunit --bootstrap ./vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit.xml"
+    ],
+    "test-fms": [
+      "./vendor/bin/phpunit --bootstrap ./vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit-fms.xml --process-isolation"
     ],
     "jest": [
       "./node_modules/.bin/jest --config ./spec/jest-test-suite/jest.config.js"

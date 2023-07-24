@@ -29,13 +29,13 @@ IM_Entry(
                 ),
             ),
             'button-names' => array(
-                'insert'=>'レコード追加',
-                'delete'=>'レコード削除',
-                'copy'=>'レコード複製',
+                'insert' => 'レコード追加',
+                'delete' => 'レコード削除',
+                'copy' => 'レコード複製',
             ),
             'authentication' => array(
                 'read' => array( /* load, update, new, delete*/
-                    'group' => array("group1","group2"),
+                    'group' => array("group1", "group2"),
                 ),
                 'update' => array( /* load, update, new, delete*/
                     'group' => array("group2"),
@@ -98,7 +98,8 @@ IM_Entry(
     ),
     array(
         'db-class' => 'FileMaker_DataAPI',
-        'server' => 'localserver',
+        'port' => '443',
+        'protocol' => 'https',
 //        'external-db' => array(
 //            'issuedhash' => 'sqlite:/var/db/im/sample.sq3',
 //        ),
