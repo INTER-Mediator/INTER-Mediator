@@ -32,6 +32,10 @@ class CWPKit
         $xml = curl_exec($ch);
         curl_close($ch);
         libxml_use_internal_errors(true);
+
+        file_put_contents("/tmp/1", var_export($xml,true));
+        file_put_contents("/tmp/2", var_export(curl_error($ch),true));
+
         return simplexml_load_string($xml);
     }
 

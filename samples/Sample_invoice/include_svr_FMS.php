@@ -107,6 +107,10 @@ IM_Entry(
             ),
         ),
     ),
-    array('db-class' => 'FileMaker_FX'),
+    array(
+        'db-class' => 'FileMaker_FX',
+        'port' => '80',
+        'protocol' => 'http',
+    ),
     false
 );

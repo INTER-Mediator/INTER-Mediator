@@ -11,7 +11,7 @@ class CWPKit_Test extends TestCase
     {
         $config = array(
             'urlScheme' => 'http',
-            'dataServer' => '192.168.56.1',
+            'dataServer' => '10.211.56.2',// '192.168.56.1',
             'dataPort' => '80',
             'DBUser' => 'web',
             'DBPassword' => 'password',
@@ -35,7 +35,7 @@ class CWPKit_Test extends TestCase
 
     public function test_getServerVersion()
     {
-        $expected = '15.0.1.137';
+        $expected = '20.1.2.207';
         $result = $this->cwpkit->getServerVersion();
         $this->assertEquals($result, $expected);
     }

@@ -305,7 +305,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return false;
     }
 
-    public function authSupportCreateUser($username, $hashedpassword, $isSAML = false, $ldapPassword = null, $attrs=null)
+    public function authSupportCreateUser($username, $hashedpassword, $isSAML = false, $ldapPassword = null, $attrs = null)
     {
         if ($this->authSupportRetrieveHashedPassword($username) !== false) {
             $this->logger->setErrorMessage('User Already exist: ' . $username);
@@ -317,7 +317,6 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             'username' => $username,
             'hashedpasswd' => $hashedpassword,
         ));
-
         if (!is_numeric($recordId)) {
             $this->logger->setDebugMessage(
                 $this->dbClass->stringWithoutCredential(get_class($recordId) . ': ' .

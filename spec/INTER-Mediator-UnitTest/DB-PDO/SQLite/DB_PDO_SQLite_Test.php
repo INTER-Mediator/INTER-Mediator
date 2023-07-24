@@ -62,7 +62,8 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
             'dsn' => $this->dsn,
         );
         $this->db_proxy = new Proxy(true);
-        $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+        $resultInit = $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
     function dbProxySetupForAccessSetKey($contextName, $maxRecord, $keyName)
@@ -86,14 +87,15 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
             'dsn' => $this->dsn,
         );
         $this->db_proxy = new Proxy(true);
-        $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+        $resultInit = $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
     function dbProxySetupForAuth()
     {
         $this->schemaName = "";
         $this->db_proxy = new Proxy(true);
-        $this->db_proxy->initialize(
+        $resultInit = $this->db_proxy->initialize(
             array(
                 array(
                     'records' => 1000,
@@ -123,6 +125,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
             ),
             false, 'person'
         );
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
     /**
@@ -137,7 +140,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
     {
         $this->schemaName = "";
         $this->db_proxy = new Proxy(true);
-        $this->db_proxy->initialize(
+        $resultInit = $this->db_proxy->initialize(
             array(
                 array(
                     'name' => 'summary',
@@ -163,6 +166,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
             2,
             "summary"
         );
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
     function dbProxySetupForCondition($queryArray)
@@ -187,7 +191,8 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
             'password' => 'password',
         );
         $this->db_proxy = new Proxy(true);
-        $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+        $resultInit = $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
     public function testCreateRecord2()

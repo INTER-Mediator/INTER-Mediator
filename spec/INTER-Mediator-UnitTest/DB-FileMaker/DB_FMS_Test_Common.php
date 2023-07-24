@@ -369,13 +369,18 @@ class DB_FMS_Test_Common extends TestCase
     public function testQuery1_singleRecord()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
+
+//        $this->db_proxy->logger->clearLogs();
+
         $result = $this->db_proxy->readFromDB();
         $recordCount = $this->db_proxy->countQueryResult();
+
+//        var_export($this->db_proxy->logger->getAllErrorMessages());
+//        var_export($this->db_proxy->logger->getDebugMessage());
+
         $this->assertTrue(count($result) == 1, "After the query, just one should be retrieved.");
         $this->assertEquals(3, $recordCount, "This table contanins 3 records");
         $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
-        //        var_export($this->db_proxy->logger->getAllErrorMessages());
-        //        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
     /**
@@ -745,7 +750,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->setDataSourceName('person');
         $this->db_proxy->paramAuthUser = $username;
         $this->db_proxy->setClientId_forTest($clientId);
-        $this->db_proxy->paramResponse = $calcuratedHash;
+        $this->db_proxy->setParamResponse($calcuratedHash);
 
         $this->db_proxy->processingRequest('read');
         $result = $this->db_proxy->getDatabaseResult();
@@ -797,7 +802,7 @@ class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->dbSettings->setDataSourceName("person");
         $this->db_proxy->paramAuthUser = $username;
         $this->db_proxy->setClientId_forTest($clientId);
-        $this->db_proxy->paramResponse = $calcuratedHash;
+        $this->db_proxy->setParamResponse($calcuratedHash);
 
         $this->db_proxy->processingRequest("read");
         $this->assertTrue(is_null($this->db_proxy->getDatabaseResult()), $testName);
@@ -815,13 +820,17 @@ class DB_FMS_Test_Common extends TestCase
     {
         $this->dbProxySetupForAuth();
 
+        $this->db_proxy->logger->clearLogs();
+
         $testName = "Create New User and Authenticate";
         $username = "testuser1";
         $password = "testuser1";
 
         [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password);
-        //var_export($this->db_proxy->logger->getAllErrorMessages());
-        //var_export($this->db_proxy->logger->getDebugMessage());
+
+        var_export($this->db_proxy->logger->getAllErrorMessages());
+        var_export($this->db_proxy->logger->getDebugMessage());
+
         $this->assertTrue($addUserResult);
 
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);

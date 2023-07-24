@@ -74,6 +74,10 @@ IM_Entry(
 //            'email-as-username' => true,
         ),
     ),
-    array('db-class' => 'FileMaker_FX'),
+    array(
+        'db-class' => 'FileMaker_FX',
+        'port' => '80',
+        'protocol' => 'http',
+    ),
     false
 );

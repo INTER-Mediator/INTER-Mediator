@@ -995,4 +995,9 @@ class PDO extends UseSharedObjects implements DBClass_Interface
         }
         return $sqlResult;
     }
+
+    public function closeDBOperation()
+    {
+        // Do nothing
+    }
 }

@@ -27,7 +27,7 @@ $dbPort = '80';
 //$dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
-//$certVerifying = false;
+$certVerifying = false;
 
 // PDO is aware of below:
 $dbDSN = 'mysql:host=127.0.0.1;dbname=test_db;charset=utf8mb4';

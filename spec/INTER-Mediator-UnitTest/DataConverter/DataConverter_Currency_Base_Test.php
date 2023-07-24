@@ -2,6 +2,9 @@
 /**
  * DataConverter_Currency_Test file
  */
+
+namespace Currency;
+
 use PHPUnit\Framework\TestCase;
 
 abstract class DataConverter_Currency_Base_Test extends TestCase

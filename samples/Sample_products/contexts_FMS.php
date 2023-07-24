@@ -42,6 +42,10 @@ IM_Entry(
             array('field' => 'product@unitprice', 'converter-class' => 'Number', 'parameter' => '0'),
         ),
     ),
-    array('db-class' => 'FileMaker_FX'),
+    array(
+        'db-class' => 'FileMaker_FX',
+        'port' => '80',
+        'protocol' => 'http',
+    ),
     false // debug
 );

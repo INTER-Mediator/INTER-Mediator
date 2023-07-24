@@ -98,6 +98,8 @@ IM_Entry(
     ),
     array(
         'db-class' => 'FileMaker_FX',
+        'port' => '80',
+        'protocol' => 'http',
 //        'external-db' => array(
 //            'issuedhash' => 'sqlite:/var/db/im/sample.sq3',
 //        ),

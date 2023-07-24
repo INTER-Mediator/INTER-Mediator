@@ -97,10 +97,8 @@ IM_Entry(
     ),
     array(
         'db-class' => 'FileMaker_DataAPI',
-        'option' => array(),
-        'server' => 'localserver',
-        'user' => 'web',
-        'password' => 'password',
+        'port' => '443',
+        'protocol' => 'https',
     ),
     false
 );

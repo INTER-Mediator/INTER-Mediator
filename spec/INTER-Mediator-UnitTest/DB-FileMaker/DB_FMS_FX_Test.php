@@ -5,8 +5,6 @@
 
 require_once('DB_FMS_Test_Common.php');
 
-use INTERMediator\DB\Proxy;
-
 class DB_FMS_FX_Test extends DB_FMS_Test_Common
 {
     function setUp(): void
@@ -31,17 +29,19 @@ class DB_FMS_FX_Test extends DB_FMS_Test_Common
         $options = null;
         $dbSettings = array(
             'db-class' => 'FileMaker_FX',
+            'server' => '10.211.56.2',//'localserver',
             'user' => 'web',
             'password' => 'password',
         );
         $this->db_proxy = new \INTERMediator\DB\Proxy(true);
-        $this->db_proxy->initialize($contexts, $options, $dbSettings, false, $contextName);
+        $resultInit = $this->db_proxy->initialize($contexts, $options, $dbSettings, false, $contextName);
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
     function dbProxySetupForAuth()
     {
         $this->db_proxy = new \INTERMediator\DB\Proxy(true);
-        $this->db_proxy->initialize(array(
+        $resultInit = $this->db_proxy->initialize(array(
             array(
                 'records' => 1000,
                 'paging' => true,
@@ -68,9 +68,11 @@ class DB_FMS_FX_Test extends DB_FMS_Test_Common
             ),
             array(
                 'db-class' => 'FileMaker_FX',
+                'server' => '10.211.56.2',//'localserver',
                 'user' => 'web',
                 'password' => 'password',
             ),
             false);
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 }

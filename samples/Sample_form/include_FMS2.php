@@ -71,6 +71,10 @@ IM_Entry(
             array('field' => 'history_to@history_to::enddate', 'converter-class' => 'FMDateTime'),
         ),
     ),
-    array('db-class' => 'FileMaker_FX'),
-    false
+    array(
+        'db-class' => 'FileMaker_FX',
+        'port' => '80',
+        'protocol' => 'http',
+    ),
+    2
 );

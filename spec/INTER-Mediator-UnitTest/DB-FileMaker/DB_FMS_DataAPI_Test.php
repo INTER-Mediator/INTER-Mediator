@@ -31,18 +31,20 @@ class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
         $options = null;
         $dbSettings = array(
             'db-class' => 'FileMaker_DataAPI',
-            'server' => 'localserver',
-            'user' => 'web',
-            'password' => 'password',
+            'server' => '10.211.56.2',//'localserver',
+            'port' => '443',
+            'protocol' => 'https',
+            'cert-verifying' => false,
         );
         $this->db_proxy = new \INTERMediator\DB\Proxy(true);
-        $this->db_proxy->initialize($contexts, $options, $dbSettings, false, $contextName);
+        $resultInit = $this->db_proxy->initialize($contexts, $options, $dbSettings, false, $contextName);
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
     function dbProxySetupForAuth()
     {
         $this->db_proxy = new \INTERMediator\DB\Proxy(true);
-        $this->db_proxy->initialize(array(
+        $resultInit = $this->db_proxy->initialize(array(
             array(
                 'records' => 1000,
                 'paging' => true,
@@ -69,10 +71,12 @@ class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
             ),
             array(
                 'db-class' => 'FileMaker_DataAPI',
-                'server' => 'localserver',
-                'user' => 'web',
-                'password' => 'password',
+                'server' => '10.211.56.2',//'localserver',
+                'port' => '443',
+                'protocol' => 'https',
+                'cert-verifying' => false,
             ),
             false);
+        $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 }

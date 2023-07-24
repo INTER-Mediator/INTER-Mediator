@@ -189,6 +189,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false, $orig
         }
         $dbInstance->exportOutputDataAsJSON();
         $resultLog = $dbInstance->getResultForLog();
+        $dbInstance->closeDBOperation();
         ServiceServerProxy::instance()->stopServer();
     }
     if ($accessLogLevel) {
