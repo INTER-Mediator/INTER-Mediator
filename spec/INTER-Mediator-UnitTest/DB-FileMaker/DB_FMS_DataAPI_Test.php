@@ -31,7 +31,7 @@ class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
         $options = null;
         $dbSettings = array(
             'db-class' => 'FileMaker_DataAPI',
-            'server' => '10.211.56.2',//'localserver',
+            'server' => '127.0.0.1', //'10.211.56.2',//'localserver',
             'port' => '443',
             'protocol' => 'https',
             'cert-verifying' => false,
@@ -71,7 +71,7 @@ class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
             ),
             array(
                 'db-class' => 'FileMaker_DataAPI',
-                'server' => '10.211.56.2',//'localserver',
+                'server' => '127.0.0.1', //'10.211.56.2',//'localserver',
                 'port' => '443',
                 'protocol' => 'https',
                 'cert-verifying' => false,

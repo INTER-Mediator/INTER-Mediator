@@ -22,7 +22,7 @@ $dbUser = 'web';
 $dbPassword = 'password';
 
 // FileMaker_FX/DataAPI are aware of below:
-$dbServer = '10.211.56.2'; //'127.0.0.1';
+$dbServer = '127.0.0.1'; // '10.211.56.2'; //
 $dbPort = '80';
 //$dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';

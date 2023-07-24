@@ -29,7 +29,7 @@ class DB_FMS_FX_Test extends DB_FMS_Test_Common
         $options = null;
         $dbSettings = array(
             'db-class' => 'FileMaker_FX',
-            'server' => '10.211.56.2',//'localserver',
+            'server' => '127.0.0.1', //'10.211.56.2',//'localserver',
             'user' => 'web',
             'password' => 'password',
         );
@@ -68,7 +68,7 @@ class DB_FMS_FX_Test extends DB_FMS_Test_Common
             ),
             array(
                 'db-class' => 'FileMaker_FX',
-                'server' => '10.211.56.2',//'localserver',
+                'server' => '127.0.0.1', //'10.211.56.2',//'localserver',
                 'user' => 'web',
                 'password' => 'password',
             ),
