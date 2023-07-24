@@ -30,6 +30,7 @@ Ver.11 (in development)
   and move to the "url" place
 - Update dbupdate.sh for MariaDB 11.
 - Update recipe.rb and sample_spec.rb etc. for the INTER-Mediator-Server virtual machine and CI.
+- Unit tests work on phpunit v10, and test classes divided 'testsuite' style. The unit test for FileMaker classes ware separated.
 - [SECURITY IMPROVED] The hash calculation for the 'credential' authentication was updated. The value is sha-256 hash of
   challenge, client id and user's password hash. The challenge is already stored with the user on db.
 - [INFO] About sample SQL files in the dist-docs directory, their extensions changed to .sql from .txt.
