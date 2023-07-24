@@ -428,6 +428,8 @@ class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
                 } else if ($condition['field'] == '__operation__' && strtolower($condition['operator']) == 'ex') {
                     $this->fx->SetLogicalOR();
                     $useOrOperation = true;
+                } else if ($condition['field'] == '__operation__' && strpos($condition['operator'], 'block/') === 0) {
+                    // just ignore it
                 } else {
                     $condition = $this->normalizedCondition($condition);
                     if (!$this->specHandler->isPossibleOperator($condition['operator'])) {

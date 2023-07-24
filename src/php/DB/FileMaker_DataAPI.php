@@ -392,6 +392,8 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                     $useOrOperation = true;
                 } else if ($condition['field'] == '__operation__' && strtolower($condition['operator']) == 'ex') {
                     $useOrOperation = true;
+                } else if ($condition['field'] == '__operation__' && strpos($condition['operator'], 'block/') === 0) {
+                    // just ignore it
                 } else {
                     $condition = $this->normalizedCondition($condition);
                     if (!$this->specHandler->isPossibleOperator($condition['operator'])) {

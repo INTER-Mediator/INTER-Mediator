@@ -37,6 +37,9 @@ Ver.11 (in development)
 - [BUG FIX] INTERMediator.additionalFieldValueOnDelete uses in the Definition File editor, so retrieved it.
 - [BIG FIX] After failed to login, any messages didn't show on the login panel.
 
+- [Limitations] On the FileMaker's database class, INTERMediator.lcConditionsOP1AND, INTERMediator.lcConditionsOP2AND
+  and INTERMediator.lcConditionsOP3AND are ignored. They work just on PDO class.
+
 Ver.10 (October 12, 2022)
 - Auto saving for INPUT and TEXTAREA element. Customizing in JavaScript code and their default value are:
   IMLibElement.textAutoSave = true // Auto saving availability
