@@ -38,5 +38,6 @@ npx wdio wdio-firefox.conf.js
 Just run the test with Safari. This test works on the /spec/run-safari directory.
 
 ```
+cd /spec/run-safari
 npx wdio wdio-safari.conf.js 
 ```
