@@ -10,7 +10,7 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.11 (in development)
+Ver.11 (July 27, 2023)
 - Generic exporting class prepared as DB\Export.php.
   See the Export button on the sample file /samples/Sample_pdf/list_detail_MySQL.html.
 - SwiftMailer was removed, Symphony Mailer is introduced to send e-mail.
