@@ -19,7 +19,7 @@ use Exception;
 use INTERMediator\FileMakerServer\RESTAPI\FMDataAPI;
 use INTERMediator\IMUtil;
 
-class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
+class FileMaker_DataAPI extends DBClass
 {
     public $fmData = null;     // FMDataAPI class's instance
     public $fmDataAuth = null; // FMDataAPI class's instance

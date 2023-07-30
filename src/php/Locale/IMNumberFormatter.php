@@ -18,13 +18,13 @@ namespace INTERMediator\Locale;
 
 class IMNumberFormatter
 {
-    private $locale = '';
-    private $decimalPoint = '';
-    private $thSeparator = '';
-    private $currencySymbol = '';
-    private $flactionDigit = 0;
+    private string $locale = '';
+    private string $decimalPoint = '';
+    private string $thSeparator = '';
+    private string $currencySymbol = '';
+    private int $flactionDigit = 0;
 
-    public function __construct($locale, $style, $pattern = '')
+    public function __construct(string $locale, int $style, string $pattern = '')
     {
         $this->locale = $locale;
         setlocale(LC_ALL, $locale . '.UTF-8');
@@ -37,7 +37,7 @@ class IMNumberFormatter
         $this->currencySymbol = $locInfo['currency_symbol'];
     }
 
-    public function getSymbol($attr)
+    public function getSymbol(int $attr):string
     {
         $locInfo = localeconv();
         $s = '';
@@ -52,7 +52,7 @@ class IMNumberFormatter
         return $s;
     }
 
-    public function getTextAttribute($attr)
+    public function getTextAttribute(int $attr):string
     {
         $locInfo = localeconv();
         $s = '';
@@ -63,7 +63,7 @@ class IMNumberFormatter
         return $s;
     }
 
-    public function setAttribute($attr, $value)
+    public function setAttribute(int $attr, string $value):void
     {
         /*NumberFormatter::FRACTION_DIGITS*/
         if ($attr == 8) {
@@ -71,7 +71,7 @@ class IMNumberFormatter
         }
     }
 
-    public function formatCurrency($value, $currency)
+    public function formatCurrency(?string $value, ?string $currency):string
     {
         return $this->currencySymbol .
             number_format($value, $this->flactionDigit, $this->decimalPoint, $this->thSeparator);

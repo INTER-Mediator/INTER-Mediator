@@ -16,9 +16,16 @@
 
 namespace INTERMediator\Locale;
 
+/**
+ *
+ */
 class IMLocaleCurrencyTable
 {
-    public static function getCurrencyCode($localeCode)
+    /**
+     * @param string $localeCode
+     * @return string
+     */
+    public static function getCurrencyCode(string $localeCode): string
     {
         if (substr($localeCode, 0, 2) == 'ja') {
             return "JPY";
@@ -34,7 +41,11 @@ class IMLocaleCurrencyTable
         return IMLocaleCurrencyTable::$localeCurrencyTable[strtoupper($localeCode)];
     }
 
-    public static function getCountryCurrencyCode($cCode)
+    /**
+     * @param string $cCode
+     * @return string
+     */
+    public static function getCountryCurrencyCode(string $cCode): string
     {
         if ($cCode == 'JP') {
             return "JPY";
@@ -51,7 +62,10 @@ class IMLocaleCurrencyTable
      * refers
      * https://www.ups.com/worldshiphelp/WS15/JPN/AppHelp/Codes/Country_Territory_and_Currency_Codes.htm
      */
-    private static $localeCurrencyTable = array(
+    /**
+     * @var array|string[]
+     */
+    private static array $localeCurrencyTable = array(
         'AF' => 'USD',
         'AL' => 'EUR',
         'DZ' => 'DZD',

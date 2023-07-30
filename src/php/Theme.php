@@ -16,20 +16,37 @@
 
 namespace INTERMediator;
 
+/**
+ *
+ */
 class Theme
 {
-    private $altThemePath;
-    private $themeName;
-    private $accessLogLevel;
-    private $outputMessage = [];
+    /**
+     * @var string|array|mixed|null
+     */
+    private ?string $altThemePath;
+    /**
+     * @var bool|array|mixed
+     */
+    private bool $accessLogLevel;
+    /**
+     * @var array
+     */
+    private array $outputMessage = [];
 
+    /**
+     *
+     */
     public function __construct()
     {
         // Read from params.php
-        [$this->accessLogLevel, $this->altThemePath, $this->themeName] = Params::getParameterValue(
-            ["accessLogLevel", "altThemePath", "themeName"],[false, null, "default"]);
+        $this->accessLogLevel = Params::getParameterValue("accessLogLevel", false);
+        $this->altThemePath = Params::getParameterValue("altThemePath", null);
     }
 
+    /**
+     * @return array
+     */
     public function getResultForLog(): array
     {
         if ($this->accessLogLevel < 1) {
@@ -38,7 +55,10 @@ class Theme
         return $this->outputMessage;
     }
 
-    public function processing()
+    /**
+     * @return void
+     */
+    public function processing(): void
     {
         $themeNameInRequest = $_GET['theme'];
         $selfInRequest = $_SERVER["SCRIPT_NAME"];
@@ -66,7 +86,11 @@ class Theme
         echo $fContent;
     }
 
-    private function pathToTheme($themeName): ?string
+    /**
+     * @param string|null $themeName
+     * @return string|null
+     */
+    private function pathToTheme(?string $themeName): ?string
     {
         $imPath = IMUtil::pathToINTERMediator();
         $themeName = str_replace('..', '', $themeName ?? "");

@@ -16,9 +16,16 @@
 
 namespace INTERMediator\Locale;
 
+/**
+ *
+ */
 class IMLocaleStringTable
 {
-    public static function getLocaleString($localeCode)
+    /**
+     * @param string $localeCode
+     * @return string
+     */
+    public static function getLocaleString(string $localeCode): string
     {
         if (substr($localeCode, 0, 2) == 'ja') {
             return "jpn_jpn";
@@ -32,7 +39,10 @@ class IMLocaleStringTable
      * This table is generated from Microsoft site:
      * https://msdn.microsoft.com/en-us/library/cc233982.aspx
      */
-    private static $localeStrTable = array(
+    /**
+     * @var array|string[]
+     */
+    private static array $localeStrTable = array(
         'aa' => 'Afar',
         'aa_DJ' => 'Afar_Djibouti',
         'aa_ER' => 'Afar_Eritrea',

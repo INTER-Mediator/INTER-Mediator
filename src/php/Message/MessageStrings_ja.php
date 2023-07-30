@@ -15,10 +15,15 @@
 
 namespace INTERMediator\Message;
 
+/**
+ *
+ */
 class MessageStrings_ja extends MessageStrings
 {
-
-    public $messages = array(
+    /**
+     * @var array|string[]
+     */
+    public array $messages = array(
         1 => 'レコード番号',
         2 => '更新',
         3 => 'レコード追加',

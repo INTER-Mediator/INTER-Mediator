@@ -18,10 +18,17 @@ namespace INTERMediator\Message;
 
 use INTERMediator\Params;
 
+/**
+ *
+ */
 class MessageStrings
 {
 
-    public function getTerms($options)
+    /**
+     * @param array|null $options
+     * @return array
+     */
+    public function getTerms(?array $options): array
     {
         $className = get_class($this);
         $underLine = strpos($className, '_');
@@ -39,7 +46,10 @@ class MessageStrings
         return $termList;
     }
 
-    public function getMessages()
+    /**
+     * @return array|string[]
+     */
+    public function getMessages(): array
     {
         $altMessages = Params::getParameterValue("messages", null);
         $className = get_class($this);
@@ -57,7 +67,12 @@ class MessageStrings
         return $this->messages;
     }
 
-    public function getMessageAs($num, $appending = null)
+    /**
+     * @param int $num
+     * @param array|null $appending
+     * @return string
+     */
+    public function getMessageAs(int $num, ?array $appending = null): string
     {
         $msg = $this->messages[$num];
         $index = 1;
@@ -70,7 +85,10 @@ class MessageStrings
         return $msg;
     }
 
-    public $messages = array(
+    /**
+     * @var array|string[]
+     */
+    public array $messages = array(
         1 => 'Record #',
         2 => 'Refresh',
         3 => 'Add Record',

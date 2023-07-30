@@ -25,7 +25,7 @@ use INTERMediator\Params;
 /**
  * Class PDO
  */
-class PDO extends UseSharedObjects implements DBClass_Interface
+class PDO extends DBClass
 {
     use Support\DB_PDO_SQLSupport;
 

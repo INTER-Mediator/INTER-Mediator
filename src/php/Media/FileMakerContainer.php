@@ -35,7 +35,7 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
      * @return void
      * @throws Exception
      */
-    public function getMedia($file, $target, $dbProxyInstance)
+    public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string
     {
         $dq = '"';
         $parsedUrl = parse_url($target);
@@ -98,7 +98,7 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
      * @param $file
      * @return array|string|string[]
      */
-    public function getFileName($file)
+    public function getFileName(string $file): string
     {
         $fileName = basename($file);
         $qPos = strpos($fileName, "?");
@@ -123,8 +123,9 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
      * @param $debug
      * @return void
      */
-    public function processing($db, $url, $options, $files, $noOutput, $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug)
-    {
+    public function processing(Proxy $db, string $url, ?array $options, array $files, bool $noOutput, string $field,
+                               string  $contextname, string $keyfield, string $keyvalue,
+                               ?array  $datasource, ?array $dbspec, int $debug):void    {
         $mediaRootDir = $options['media-root-dir'] ?? Params::getParameterValue('mediaRootDir', null) ?? null;
         if (!$mediaRootDir) {
             if (!is_null($this->url)) {

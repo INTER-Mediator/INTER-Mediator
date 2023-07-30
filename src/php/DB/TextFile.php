@@ -18,7 +18,7 @@ namespace INTERMediator\DB;
 
 use Exception;
 
-class TextFile extends UseSharedObjects implements DBClass_Interface
+class TextFile extends DBClass
 {
     private $recordCount;
 
@@ -349,5 +349,10 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
     public function clearUseSetDataToUpdatedRecord()
     {
         // TODO: Implement clearUseSetDataToUpdatedRecord() method.
+    }
+
+    public function closeDBOperation()
+    {
+        // TODO: Implement closeDBOperation() method.
     }
 }

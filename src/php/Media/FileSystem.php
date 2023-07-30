@@ -36,7 +36,7 @@ class FileSystem implements UploadingSupport, DownloadingSupport
      * @throws Exception
      */
 
-    public function getMedia($file, $target, $dbProxyInstance)
+    public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string
     {
         if (!empty($file) && !file_exists($target)) {
             throw new Exception("[INTER-Mediator] The file does't exist: {$target}.");
@@ -48,7 +48,7 @@ class FileSystem implements UploadingSupport, DownloadingSupport
      * @param $file
      * @return false|string
      */
-    public function getFileName($file)
+    public function getFileName(string $file): string
     {
         $fileName = basename($file);
         $qPos = strpos($fileName, "?");
@@ -62,7 +62,7 @@ class FileSystem implements UploadingSupport, DownloadingSupport
      * @param $info
      * @return array
      */
-    private function getFileNames($info)
+    private function getFileNames(array $info): array
     {
         if (is_array($info['name'])) {   // JQuery File Upload Style
             $fileInfoName = $info['name'][0];
@@ -80,7 +80,7 @@ class FileSystem implements UploadingSupport, DownloadingSupport
      * @param $errorMsg
      * @return void
      */
-    private function prepareErrorOut($db, $noOutput, $errorMsg)
+    private function prepareErrorOut(Proxy $db, bool $noOutput, string $errorMsg): void
     {
         $db->logger->setErrorMessage($errorMsg);
         $db->processingRequest("noop");
@@ -153,8 +153,9 @@ class FileSystem implements UploadingSupport, DownloadingSupport
      * @param $debug
      * @return void
      */
-    public function processing($db, $url, $options, $files, $noOutput,
-                               $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug)
+    public function processing(Proxy $db, string $url, ?array $options, array $files, bool $noOutput, string $field,
+                               string  $contextname, string $keyfield, string $keyvalue,
+                               ?array  $datasource, ?array $dbspec, int $debug): void
     {
         $counter = -1;
         foreach ($files as $fn => $fileInfo) {

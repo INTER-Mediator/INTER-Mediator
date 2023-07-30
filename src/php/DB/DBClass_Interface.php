@@ -70,4 +70,5 @@ interface DBClass_Interface
     public function rollbackTransaction();
 
     public function closeDBOperation();
+
 }

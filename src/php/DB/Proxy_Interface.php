@@ -26,5 +26,6 @@ interface Proxy_Interface extends DBClass_Interface, Auth_Interface_Communicatio
 
     public function finishCommunication();
 
+    public function exportOutputDataAsJSON();
 }
 

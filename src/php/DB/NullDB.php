@@ -15,7 +15,7 @@
 
 namespace INTERMediator\DB;
 
-class NullDB extends UseSharedObjects implements DBClass_Interface
+class NullDB extends DBClass
 {
 
     public function readFromDB()
@@ -145,4 +145,8 @@ class NullDB extends UseSharedObjects implements DBClass_Interface
     {
     }
 
+    public function closeDBOperation()
+    {
+        // TODO: Implement closeDBOperation() method.
+    }
 }

@@ -13,17 +13,17 @@ use Iterator;
 
 class FieldDivider implements Iterator
 {
-    private $data;
-    private $pos;
-    private $key;
+    private string $data;
+    private int $pos;
+    private int $key;
 
-    private $sep;
-    private $sepCode;
-    private $sqCode;
-    private $dqCode;
-    private $bsCode;
+    private string $sep;
+    private int $sepCode;
+    private int $sqCode;
+    private int $dqCode;
+    private int $bsCode;
 
-    function __construct($d, $sp = ",")
+    function __construct(string $d, string $sp = ",")
     {
         $this->sep = $sp;
         $this->sepCode = ord($this->sep);
@@ -35,7 +35,7 @@ class FieldDivider implements Iterator
         $this->key = 0;
     }
 
-    private function getNextLinePosition()
+    private function getNextLinePosition(): array
     {
         $gotSep = false;
         $isInQuote = false;
@@ -74,7 +74,7 @@ class FieldDivider implements Iterator
         }
     }
 
-    private function escapeRemovingString($str)
+    private function escapeRemovingString(string $str): string
     {
         $bsCode = ord('\\');
         $result = '';
@@ -107,7 +107,7 @@ class FieldDivider implements Iterator
     }
 
     #[\ReturnTypeWillChange]
-    public function key()
+    public function key(): int
     {
         return $this->key;
     }

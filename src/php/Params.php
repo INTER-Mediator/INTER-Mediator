@@ -16,21 +16,20 @@
 
 namespace INTERMediator;
 
+/**
+ *
+ */
 class Params
 {
-    /*
-     * array(52) {
-         ["imRootDir"]=>string(32) "/Users/msyk/Code/INTER-Mediator/"
-         ["dbClass"]=>string(3) "PDO"
-         ["dbUser"]=>string(3) "web"
-         ["dbPassword"]=>string(8) "password"
-         ["dbServer"]=>string(9) "127.0.0.1"
-             :
-
+    /**
+     * @var array|null
      */
-    private static $vars = null;
+    private static ?array $vars = null;
 
-    public static function readParamsPHPFile()
+    /**
+     * @return void
+     */
+    public static function readParamsPHPFile(): void
     {
         if (!self::$vars) {
             $imRootDir = IMUtil::pathToINTERMediator() . DIRECTORY_SEPARATOR;
@@ -56,23 +55,28 @@ class Params
         }
     }
 
-    /*
-     * The IDE try to let us modify the code "isset(self::$vars[$vName]) ? self::$vars[$vName] : $defValue" to
-     * "self::$vars[$vName] ?? $defValue", but you don't modify like that. The variable in the params.php file
-     * should be the boolean value false. In that case (i.e., the self::$vars[$vName] is false) the former code
-     * returns self::$vars[$vName], but the later one does $defValue. We expect that the false value return false.
-     * So please don't modify with the ?? operator.
+    /**
+     * @param mixed $vName
+     * @param mixed $defValue
+     * @return mixed
      */
-    public static function getParameterValue($vName, $defValue)
+    public static function getParameterValue(mixed $vName, mixed $defValue): mixed
     {
+        /*
+         * The IDE try to let us modify the code "isset(self::$vars[$vName]) ? self::$vars[$vName] : $defValue" to
+         * "self::$vars[$vName] ?? $defValue", but you don't modify like that. The variable in the params.php file
+         * should be the boolean value false. In that case (i.e., the self::$vars[$vName] is false) the former code
+         * returns self::$vars[$vName], but the later one does $defValue. We expect that the false value return false.
+         * So please don't modify with the ?? operator.
+         */
         self::readParamsPHPFile();
         if (!is_array($vName) && !is_array($defValue)) {
-            return self::$vars[$vName] ?? $defValue;
+            return isset(self::$vars[$vName]) ? self::$vars[$vName] : $defValue;
         } else if (is_array($vName) && is_array($defValue) && count($vName) == count($defValue)) {
             $arValue = [];
             $count = 0;
             foreach ($vName as $var) {
-                $arValue[] = self::$vars[$var] ?? $defValue[$count];
+                $arValue[] = isset(self::$vars[$var]) ? self::$vars[$var] : $defValue[$count];
                 $count += 1;
             }
             return $arValue;
@@ -80,18 +84,22 @@ class Params
             $arValue = [];
             $count = 0;
             foreach ($vName as $var) {
-                $arValue[] = self::$vars[$var] ?? (is_array($defValue) ? $defValue[min($count, count($defValue) - 1)] : $defValue);
+                $arValue[] = isset(self::$vars[$var]) ? self::$vars[$var]
+                    : (is_array($defValue) ? $defValue[min($count, count($defValue) - 1)] : $defValue);
                 $count += 1;
             }
             return $arValue;
         } else if (is_array($defValue)) {
-            return self::$vars[$vName] ?? $defValue[0];
+            return isset(self::$vars[$vName]) ? self::$vars[$vName] : $defValue[0];
         } else {
-            return self::$vars[$vName] ?? $defValue;
+            return isset(self::$vars[$vName]) ? self::$vars[$vName] : $defValue;
         }
     }
 
-    public static function getVars()
+    /**
+     * @return array|null
+     */
+    public static function getVars(): ?array
     {
         self::readParamsPHPFile();
         return self::$vars;

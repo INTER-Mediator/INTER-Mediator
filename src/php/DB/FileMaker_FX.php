@@ -21,7 +21,7 @@ use FX;
 use INTERMediator\IMUtil;
 use RetrieveFM7Data;
 
-class FileMaker_FX extends UseSharedObjects implements DBClass_Interface
+class FileMaker_FX extends DBClass
 {
     public $fx = null;
     public $fxAuth = null;

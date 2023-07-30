@@ -15,21 +15,29 @@
 
 namespace INTERMediator\Media;
 
+use INTERMediator\DB\DBClass;
+
+/**
+ *
+ */
 interface UploadingSupport
 {
     /**
-     * @param $db
-     * @param $url
-     * @param $options
-     * @param $files
-     * @param $noOutput
-     * @param $field
-     * @param $contextname
-     * @param $keyfield
-     * @param $keyvalue
-     * @param $datasource
-     * @param $dbspec
-     * @param $debug
+     * @param DBClass $db
+     * @param string $url
+     * @param array|null $options
+     * @param array $files
+     * @param bool $noOutput
+     * @param string $field
+     * @param string $contextname
+     * @param string $keyfield
+     * @param string $keyvalue
+     * @param array|null $datasource
+     * @param array|null $dbspec
+     * @param int $debug
+     * @return mixed
      */
-    public function processing($db, $url, $options, $files, $noOutput, $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug);
+    public function processing(Proxy $db, string $url, ?array $options, array $files, bool $noOutput, string $field,
+                               string  $contextname, string $keyfield, string $keyvalue,
+                               ?array  $datasource, ?array $dbspec, int $debug):void;
 }

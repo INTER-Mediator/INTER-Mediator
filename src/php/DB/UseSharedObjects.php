@@ -18,11 +18,11 @@ namespace INTERMediator\DB;
 
 abstract class UseSharedObjects
 {
-    public $dbSettings = null;
-    public $logger = null;
-    public $formatter = null;
-    public $dbClass = null;
-    public $proxyObject = null;
+    public ?Settings $dbSettings = null;
+    public ?Logger $logger = null;
+    public ?Formatters $formatter = null;
+    public ?DBClass $dbClass = null;
+    public ?Proxy $proxyObject = null;
     public $handler = null;    // Handle for each database engine. Uses just PDO.
     public $authHandler = null;
     public $notifyHandler = null;

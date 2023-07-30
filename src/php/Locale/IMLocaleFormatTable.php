@@ -18,9 +18,15 @@ namespace INTERMediator\Locale;
 
 use INTERMediator\IMUtil;
 
+/**
+ *
+ */
 class IMLocaleFormatTable
 {
-    public static function getCurrentLocaleFormat()
+    /**
+     * @return array
+     */
+    public static function getCurrentLocaleFormat(): array
     {
         $info = localeconv();
         if (isset(IMLocaleFormatTable::$localeInfoTable[IMLocale::$choosenLocale])) {
@@ -86,7 +92,11 @@ class IMLocaleFormatTable
         return $info;
     }
 
-    public static function getLocaleFormat($localeCode)
+    /**
+     * @param string $localeCode
+     * @return array
+     */
+    public static function getLocaleFormat(string $localeCode):array
     {
         if (!isset(IMLocaleFormatTable::$localeFormatTable[$localeCode])) {
             $localeCode = 'ja_JP';
@@ -118,7 +128,10 @@ class IMLocaleFormatTable
         );
     }
 
-    private static $localeInfoTable = array(
+    /**
+     * @var array|array[]
+     */
+    private static array $localeInfoTable = array(
         'en' => array(  // Default
             "DAY" => array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"),
             "ABDAY" => array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"),
@@ -163,8 +176,11 @@ class IMLocaleFormatTable
         ),
     );
 
+    /**
+     * @var array|array[]
+     */
     private
-    static $localeFormatTable = array(
+    static array $localeFormatTable = array(
         'ja' => array('.', ',', '￥'),
         'ja_JP' => array('.', ',', '￥'),
         'en_US' => array('.', ',', '$'),

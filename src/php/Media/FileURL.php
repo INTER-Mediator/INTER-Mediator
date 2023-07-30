@@ -36,7 +36,7 @@ class FileURL implements UploadingSupport, DownloadingSupport
      * @throws Exception
      */
 
-    public function getMedia($file, $target, $dbProxyInstance)
+    public function getMedia(string $file, string $target, Proxy $dbProxyInstance): ?string
     {
         if (!empty($file) && !file_exists($target)) {
             throw new Exception("[INTER-Mediator] The file does't exist: {$target}.");
@@ -48,7 +48,7 @@ class FileURL implements UploadingSupport, DownloadingSupport
      * @param $file
      * @return false|string
      */
-    public function getFileName($file)
+    public function getFileName(string $file): string
     {
         $fileName = basename($file);
         $qPos = strpos($fileName, "?");
@@ -62,7 +62,7 @@ class FileURL implements UploadingSupport, DownloadingSupport
      * @param $info
      * @return array
      */
-    private function getFileNames($info)
+    private function getFileNames(array $info): array
     {
         if (is_array($info['name'])) {   // JQuery File Upload Style
             $fileInfoName = $info['name'][0];
@@ -80,7 +80,7 @@ class FileURL implements UploadingSupport, DownloadingSupport
      * @param $errorMsg
      * @return void
      */
-    private function prepareErrorOut($db, $noOutput, $errorMsg)
+    private function prepareErrorOut(Proxy $db, bool $noOutput, string $errorMsg)
     {
         $db->logger->setErrorMessage($errorMsg);
         $db->processingRequest("noop");
@@ -101,8 +101,9 @@ class FileURL implements UploadingSupport, DownloadingSupport
      * @param $filePathInfo
      * @return array
      */
-    private function decideFilePath($db, $noOutput, $options,
-                                    $contextname, $keyfield, $keyvalue, $targetFieldName, $filePathInfo)
+    private function decideFilePath(Proxy $db, bool $noOutput, ?array $options,
+                                    string  $contextname, string $keyfield, string $keyvalue,
+                                    string  $targetFieldName, array $filePathInfo): array
     {
         $result = true;
         $fileRoot = $options['media-root-dir'] ?? Params::getParameterValue('mediaRootDir', null) ?? null;
@@ -154,8 +155,9 @@ class FileURL implements UploadingSupport, DownloadingSupport
      * @param $debug
      * @return void
      */
-    public function processing($db, $url, $options, $files, $noOutput,
-                               $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug)
+    public function processing(Proxy $db, string $url, ?array $options, array $files, bool $noOutput, string $field,
+                               string  $contextname, string $keyfield, string $keyvalue,
+                               ?array  $datasource, ?array $dbspec, int $debug): void
     {
         $counter = -1;
         foreach ($files as $fn => $fileInfo) {
@@ -247,7 +249,7 @@ class FileURL implements UploadingSupport, DownloadingSupport
      * @return array|string|string[]
      */
     private
-    function justfyPathComponent($str, $mode = "default")
+    function justfyPathComponent(string $str, string $mode = "default"): string
     {
         $jStr = $str;
         switch ($mode) {
@@ -278,7 +280,8 @@ class FileURL implements UploadingSupport, DownloadingSupport
      * @param $fileInfoTemp
      */
     private
-    function csvImportOperation($db, $datasource, $options, $dbspec, $debug, $contextname, $fileInfoTemp)
+    function csvImportOperation(Proxy $db, ?array $datasource, ?array $options, ?array $dbspec, int $debug,
+                                string  $contextname, string $fileInfoTemp): void
     {
         $dbContext = $db->dbSettings->getDataSourceTargetArray();
         [$import1stLine, $importSkipLines, $importFormat, $useReplace, $convert2Number, $convert2Date, $convert2DateTime]

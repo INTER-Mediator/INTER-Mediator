@@ -16,8 +16,14 @@
 
 namespace INTERMediator;
 
+/**
+ *
+ */
 class GenerateJSCode
 {
+    /**
+     *
+     */
     public function __construct()
     {
         if (!isset($_SESSION)) {
@@ -30,26 +36,50 @@ class GenerateJSCode
         $util->outputSecurityHeaders();
     }
 
-    public function generateAssignJS($variable, $value1, $value2 = '', $value3 = '', $value4 = '', $value5 = '')
+    /**
+     * @param string $variable
+     * @param string $value1
+     * @param string $value2
+     * @param string $value3
+     * @param string $value4
+     * @param string $value5
+     * @return void
+     */
+    public function generateAssignJS(string $variable, string $value1, string $value2 = '', string $value3 = '', string $value4 = '', string $value5 = ''): void
     {
         echo "{$variable}={$value1}{$value2}{$value3}{$value4}{$value5};\n";
     }
 
-    public function generateDebugMessageJS($message)
+    /**
+     * @param string $message
+     * @return void
+     */
+    public function generateDebugMessageJS(string $message): void
     {
         $q = '"';
         echo "INTERMediatorLog.setDebugMessage({$q}"
             . str_replace("\n", " ", addslashes($message) ?? "") . "{$q});\n";
     }
 
-    public function generateErrorMessageJS($message)
+    /**
+     * @param string $message
+     * @return void
+     */
+    public function generateErrorMessageJS(string $message): void
     {
         $q = '"';
         echo "INTERMediatorLog.setErrorMessage({$q}"
             . str_replace("\n", " ", addslashes($message) ?? "") . "{$q});";
     }
 
-    public function generateInitialJSCode($datasource, $options, $dbspecification, $debug)
+    /**
+     * @param array|null $datasource
+     * @param array|null $options
+     * @param array|null $dbspecification
+     * @param int $debug
+     * @return void
+     */
+    public function generateInitialJSCode(?array $datasource, ?array $options, ?array $dbspecification, int $debug): void
     {
         $q = '"';
         $ds = DIRECTORY_SEPARATOR;
@@ -176,7 +206,7 @@ class GenerateJSCode
         }
         $qStr = isset($_SERVER['QUERY_STRING']) ? "?{$_SERVER['QUERY_STRING']}" : '';
 
-        if($qStr == '?') {
+        if ($qStr == '?') {
             $qStr = '';
         }
 
@@ -193,7 +223,7 @@ class GenerateJSCode
             "function(){return ", IMUtil::arrayToJS($options['aliases'] ?? array()), ";}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getOptionsTransaction",
-            "function(){return ", IMUtil::arrayToJS($options['transaction'] ?? ''), ";}");
+            "function(){return ", IMUtil::stringToJS($options['transaction'] ?? ''), ";}");
         $this->generateAssignJS("INTERMediatorOnPage.dbClassName", "{$q}{$dbClassName}{$q}");
         $this->generateAssignJS("INTERMediatorOnPage.defaultKeyName", "{$q}{$defaultKey}{$q}");
 
@@ -233,7 +263,7 @@ class GenerateJSCode
 
         $this->generateAssignJS(
             "INTERMediatorOnPage.clientNotificationIdentifier",
-            "function(){return ", IMUtil::arrayToJS($clientId), ";}");
+            "function(){return ", IMUtil::stringToJS($clientId), ";}");
 
         if ($nonSupportMessageId != "") {
             $this->generateAssignJS(
@@ -354,7 +384,11 @@ class GenerateJSCode
         $this->generateAssignJS("INTERMediatorOnPage.alwaysGenSHA2", $alwaysGenSHA2 ? "true" : "false");
     }
 
-    private function combineScripts($isSocketIO): string
+    /**
+     * @param bool $isSocketIO
+     * @return string
+     */
+    private function combineScripts(bool $isSocketIO): string
     {
         $imPath = IMUtil::pathToINTERMediator();
         $jsCodeDir = $imPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
@@ -389,7 +423,11 @@ class GenerateJSCode
         return $content;
     }
 
-    private function readJSSource($filename)
+    /**
+     * @param string $filename
+     * @return string
+     */
+    private function readJSSource(string $filename): string
     {
         $content = file_get_contents($filename);
         $pos = strpos($content, "@@IM@@IgnoringRestOfFile");
