@@ -38,10 +38,10 @@ class MediaAccess_Test extends TestCase
         $this->reflectionMethod = new ReflectionMethod('\INTERMediator\MediaAccess', 'exitAsError');
         $this->reflectionMethod->setAccessible(true);
 
-        $code = '';
+        $code = -1;
         $expected = 'Respond HTTP Error.';
         try {
-            $this->reflectionMethod->invokeArgs($this->mediaaccess, $code);
+            $this->reflectionMethod->invokeArgs($this->mediaaccess, array($code));
             $this->fail('No Exception happens');
         } catch (Exception $e) {
             $this->assertEquals($expected, $e->getMessage());
