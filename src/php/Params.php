@@ -60,7 +60,7 @@ class Params
      * @param mixed $defValue
      * @return mixed
      */
-    public static function getParameterValue(mixed $vName, mixed $defValue): mixed
+    public static function getParameterValue($vName, $defValue)
     {
         /*
          * The IDE try to let us modify the code "isset(self::$vars[$vName]) ? self::$vars[$vName] : $defValue" to

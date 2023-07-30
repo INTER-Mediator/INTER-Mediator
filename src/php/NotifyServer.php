@@ -75,7 +75,7 @@ class NotifyServer
      * @param $pkArray
      * @return mixed
      */
-    public function register(string $entity, array $condition, array $pkArray): mixed
+    public function register(string $entity, array $condition, array $pkArray)
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] register", 2);
         if ($this->dbClass->notifyHandler) {
@@ -89,7 +89,7 @@ class NotifyServer
      * @param $tableKeys
      * @return mixed
      */
-    public function unregister(string $client, array $tableKeys): mixed
+    public function unregister(string $client, array $tableKeys)
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] unregister", 2);
         if ($this->dbClass && $this->dbClass->notifyHandler) {
@@ -105,7 +105,7 @@ class NotifyServer
      * @param $field
      * @param $value
      */
-    public function updated(string $clientId, string $entity, array $pkArray, string $field, mixed $value, bool $isNotify): void
+    public function updated(string $clientId, string $entity, array $pkArray, string $field, string $value, bool $isNotify): void
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] updated", 2);
         if ($this->dbClass && $this->dbClass->notifyHandler) {

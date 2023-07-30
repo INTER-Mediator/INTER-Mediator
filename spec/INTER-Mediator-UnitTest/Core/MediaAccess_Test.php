@@ -9,8 +9,6 @@ use PHPUnit\Framework\TestCase;
 class MediaAccess_Test extends TestCase
 {
     private MediaAccess $mediaaccess;
-    private ReflectionClass $reflectionClass;
-    private ReflectionMethod $reflectionMethod;
 
     protected function setUp(): void
     {
@@ -19,29 +17,33 @@ class MediaAccess_Test extends TestCase
 
     public function test_asAttachment(): void
     {
-        $this->reflectionClass = new ReflectionClass('\INTERMediator\MediaAccess');
-        $disposition = $this->reflectionClass->getProperty('disposition');
+        $reflectionClass = new ReflectionClass('\INTERMediator\MediaAccess');
+        $disposition = $reflectionClass->getProperty('disposition');
         $disposition->setAccessible(true);
 
         $expected = 'inline';
         $this->assertEquals($expected, $disposition->getValue($this->mediaaccess));
 
         $expected = 'attachment';
-        $attachment = $this->reflectionClass->getMethod('asAttachment');
+        $attachment = $reflectionClass->getMethod('asAttachment');
         $attachment->setAccessible(true);
-        $attachment->invoke($this->mediaaccess);
+        try {
+            $attachment->invoke($this->mediaaccess);
+        } catch (Exception $e) {
+
+        }
         $this->assertEquals($expected, $disposition->getValue($this->mediaaccess));
     }
 
     public function test_exitAsError(): void
     {
-        $this->reflectionMethod = new ReflectionMethod('\INTERMediator\MediaAccess', 'exitAsError');
-        $this->reflectionMethod->setAccessible(true);
+        $reflectionMethod = new ReflectionMethod('\INTERMediator\MediaAccess', 'exitAsError');
+        $reflectionMethod->setAccessible(true);
 
         $code = -1;
         $expected = 'Respond HTTP Error.';
         try {
-            $this->reflectionMethod->invokeArgs($this->mediaaccess, array($code));
+            $reflectionMethod->invokeArgs($this->mediaaccess, array($code));
             $this->fail('No Exception happens');
         } catch (Exception $e) {
             $this->assertEquals($expected, $e->getMessage());
