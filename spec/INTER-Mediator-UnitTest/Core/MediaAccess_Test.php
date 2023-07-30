@@ -8,47 +8,43 @@ use PHPUnit\Framework\TestCase;
 
 class MediaAccess_Test extends TestCase
 {
-    private $mediaaccess;
-    private $reflectionClass;
-    private $reflectionMethod;
-    
+    private MediaAccess $mediaaccess;
+    private ReflectionClass $reflectionClass;
+    private ReflectionMethod $reflectionMethod;
+
     protected function setUp(): void
     {
         $this->mediaaccess = new MediaAccess();
     }
 
-    public function test_asAttachment()
+    public function test_asAttachment(): void
     {
-        if (((float)phpversion()) >= 5.3) {
-            $this->reflectionClass = new ReflectionClass('\INTERMediator\MediaAccess');
-            $disposition = $this->reflectionClass->getProperty('disposition');
-            $disposition->setAccessible(true);
+        $this->reflectionClass = new ReflectionClass('\INTERMediator\MediaAccess');
+        $disposition = $this->reflectionClass->getProperty('disposition');
+        $disposition->setAccessible(true);
 
-            $expected = 'inline';
-            $this->assertEquals($expected, $disposition->getValue($this->mediaaccess));
+        $expected = 'inline';
+        $this->assertEquals($expected, $disposition->getValue($this->mediaaccess));
 
-            $expected = 'attachment';
-            $attachment = $this->reflectionClass->getMethod('asAttachment');
-            $attachment->setAccessible(true);
-            $attachment->invoke($this->mediaaccess);
-            $this->assertEquals($expected, $disposition->getValue($this->mediaaccess));
-        }
+        $expected = 'attachment';
+        $attachment = $this->reflectionClass->getMethod('asAttachment');
+        $attachment->setAccessible(true);
+        $attachment->invoke($this->mediaaccess);
+        $this->assertEquals($expected, $disposition->getValue($this->mediaaccess));
     }
 
-    public function test_exitAsError()
+    public function test_exitAsError(): void
     {
-        if (((float)phpversion()) >= 5.3) {
-            $this->reflectionMethod = new ReflectionMethod('\INTERMediator\MediaAccess', 'exitAsError');
-            $this->reflectionMethod->setAccessible(true);
+        $this->reflectionMethod = new ReflectionMethod('\INTERMediator\MediaAccess', 'exitAsError');
+        $this->reflectionMethod->setAccessible(true);
 
-            $code = '';
-            $expected = 'Respond HTTP Error.';
-            try {
-                $this->reflectionMethod->invokeArgs($this->mediaaccess, array($code));
-                $this->fail('No Exception happens');
-            } catch (Exception $e) {
-                $this->assertEquals($expected, $e->getMessage());
-            }
+        $code = '';
+        $expected = 'Respond HTTP Error.';
+        try {
+            $this->reflectionMethod->invokeArgs($this->mediaaccess, $code);
+            $this->fail('No Exception happens');
+        } catch (Exception $e) {
+            $this->assertEquals($expected, $e->getMessage());
         }
     }
 }
