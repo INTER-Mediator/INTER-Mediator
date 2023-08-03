@@ -12,24 +12,41 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\Data_Converter;
 
+/**
+ *
+ */
 class AppendSuffix
 {
+    /**
+     * @var string
+     */
+    private string $appendStr;
 
-    private $appendStr;
-
-    function __construct($str = '')
+    /**
+     * @param string $str
+     */
+    function __construct(string $str = '')
     {
         $this->appendStr = $str;
     }
 
-    function converterFromDBtoUser($str)
+    /**
+     * @param string $str
+     * @return string
+     */
+    function converterFromDBtoUser(?string $str): string
     {
         return $str . $this->appendStr;
     }
 
-    function converterFromUserToDB($str)
+    /**
+     * @param string $str
+     * @return string
+     */
+    function converterFromUserToDB(string $str): string
     {
         if (strrpos($str, $this->appendStr) === (strlen($str) - strlen($this->appendStr))) {
             return substr($str, 0, strlen($str) - strlen($this->appendStr));

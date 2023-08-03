@@ -938,6 +938,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->hashedPassword = $this->dbClass->authHandler->authSupportRetrieveHashedPassword($signedUser);
                 if ($this->dbSettings->getIsSAML()) { // Set up as SAML
                     if ($this->checkAuthorization($signedUser, true)) {
+                        $this->dbSettings->setCurrentUser($signedUser);
                         $this->logger->setDebugMessage("IM-built-in Authentication for SAML user succeed.");
                         $this->authSucceed = true;
                     } else { // Timeout with SAML
@@ -971,6 +972,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 } else { // Normal Login process
                     if ($this->checkAuthorization($signedUser, false)) {
+                        $this->dbSettings->setCurrentUser($signedUser);
                         $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
                         $this->authSucceed = true;
                     }
@@ -1285,7 +1287,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     function authSupportGetSalt($username)
     {
         $hashedpw = $this->hashedPassword ?? $this->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
-        return substr($hashedpw, -8);
+        if ($hashedpw) {
+            return substr($hashedpw, -8);
+        }
+        return null;
     }
 
     /* returns user's hash salt.*/
@@ -1332,7 +1337,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
         $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge($uid, $this->clientId);
         $this->logger->setDebugMessage("[checkAuthorization]storedChallenge={$storedChallenge}/{$this->credential}", 2);
-        if (strlen($storedChallenge) == 48) { // ex.fc0d54312ce33c2fac19d758
+        if ($storedChallenge && strlen($storedChallenge) == 48) { // ex.fc0d54312ce33c2fac19d758
             if ($this->credential == $this->generateCredential($storedChallenge, $this->clientId, $this->hashedPassword)) {
                 // Credential Auth passed
                 $this->logger->setDebugMessage("[checkAuthorization]Credential auth passed.", 2);
@@ -1381,7 +1386,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->authDbClass->authHandler->authSupportRemoveOutdatedChallenges();
         // Database user mode is user_id=0
         $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge(0, $clientId);
-        if (strlen($storedChallenge) == 48 && $storedChallenge == $challenge) { // ex.fc0d54312ce33c2fac19d758
+        if ($storedChallenge && strlen($storedChallenge) == 48 && $storedChallenge == $challenge) { // ex.fc0d54312ce33c2fac19d758
             $returnValue = true;
         }
         return $returnValue;
@@ -1443,7 +1448,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
         $userid = $this->dbClass->authHandler->authSupportGetUserIdFromEmail($email);
         $username = $this->dbClass->authHandler->authSupportGetUsernameFromUserId($userid);
-        if ($username === false || $username == '') {
+        if ($username === false || $username == '' || is_null($username)) {
             return false;
         }
         $clienthost = IMUtil::generateChallenge();
@@ -1469,7 +1474,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $userid = $this->dbClass->authHandler->authSupportGetUserIdFromEmail($email);
             $username = $this->dbClass->authHandler->authSupportGetUsernameFromUserId($userid);
         }
-        if ($email === false || $email == '' || $username === false || $username == '') {
+        if ($email === false || $email == '' || is_null($userid)
+            || $username === false || $username == '' || is_null($username)) {
             return false;
         }
         $userid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
@@ -1489,10 +1495,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return $hash;
     }
 
-    function userEnrollmentActivateUser($challenge, $password, $rawPWField = false)
+    function userEnrollmentActivateUser($challenge, $password, $rawPWField = false): ?string
     {
         $userID = $this->authDbClass->authHandler->authSupportUserEnrollmentEnrollingUser($challenge);
-        if ($userID < 1) {
+        if (!$userID) {
             return false;
         }
         return $this->dbClass->authHandler->authSupportUserEnrollmentActivateUser(

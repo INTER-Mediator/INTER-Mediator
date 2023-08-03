@@ -20,7 +20,7 @@ class Export
     public function processing($contextData, $options)
     {
         $qH = '"'; // Double quote in header
-        header('Content-Type: data:application/octet-stream');
+        header('Content-Type: application/octet-stream');
         $filename = $this->fileNamePrefix . (new DateTime())->format('Ymd') . ".{$this->fileExtension}";
         header("Content-Disposition: attachment; filename={$qH}{$filename}{$qH}");
 

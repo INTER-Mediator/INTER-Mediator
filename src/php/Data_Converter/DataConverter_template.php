@@ -27,6 +27,7 @@
  * however Japanese date time system is Y/m/d order. FMDateTime class can covert
  * the date-time data to/from each other.
  */
+
 namespace INTERMediator\Data_Converter;
 
 class DataConverter_template
@@ -39,7 +40,7 @@ class DataConverter_template
      * @param $str This parameter is the data on database.
      * @return The data for display on a web browser.
      */
-    function converterFromDBtoUser($str)
+    function converterFromDBtoUser(?string $str): string
     {
     }
 
@@ -49,7 +50,7 @@ class DataConverter_template
      * @param $str The data a user entered.
      * @return The data for database
      */
-    function converterFromUserToDB($str)
+    function converterFromUserToDB(string $str): string
     {
     }
 }

@@ -15,7 +15,6 @@
 
 namespace INTERMediator\DB\Extending;
 
-
 interface BeforeCopy
 {
     public function doBeforeCopyInDB();

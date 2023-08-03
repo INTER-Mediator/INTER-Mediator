@@ -12,20 +12,35 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\Data_Converter;
 
+/**
+ *
+ */
 class NullZeroString
 {
+    /**
+     *
+     */
     public function __construct()
     {
     }
 
-    public function converterFromUserToDB($str)
+    /**
+     * @param string $str
+     * @return string|null
+     */
+    public function converterFromUserToDB(string $str): ?string
     {
         return ($str == '') ? null : $str;
     }
 
-    public function converterFromDBtoUser($str)
+    /**
+     * @param string|null $str
+     * @return string
+     */
+    public function converterFromDBtoUser(?string $str): string
     {
         return is_null($str) ? '' : $str;
     }

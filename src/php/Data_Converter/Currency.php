@@ -18,8 +18,7 @@ use INTERMediator\Locale\IMLocale;
 
 class Currency extends NumberBase
 {
-
-    private $d = null;
+    private int $d;
 
     function __construct($digits = 0)
     {
@@ -27,13 +26,13 @@ class Currency extends NumberBase
         $this->d = $digits;
     }
 
-    function converterFromDBtoUser($str)
+    function converterFromDBtoUser(?string $str):string
     {
         $this->formatter->setAttribute(8 /*NumberFormatter::FRACTION_DIGITS*/, $this->d);
         return $this->formatter->formatCurrency($str, IMLocale::$currencyCode);
     }
 
-    function converterFromUserToDB($str)
+    function converterFromUserToDB(string $str):string
     {
         $normalized = str_replace($this->thSepMark, '', mb_convert_kana($str, 'n'));
         $numberString = '';

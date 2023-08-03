@@ -21,11 +21,11 @@ use INTERMediator\IMUtil;
 
 class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_Interface_DB
 {
-    public function authSupportStoreChallenge($uid, $challenge, $clientId)
+    public function authSupportStoreChallenge(string $uid, string $challenge, string $clientId): void
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
-            return false;
+            return;
         }
         if ($uid < 1) {
             $uid = 0;
@@ -38,16 +38,16 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $result = $this->dbClass->fmDataAuth->{$hashTable}->query($conditions);
         } catch (Exception $e) {
             $this->logger->setDebugMessage(
-                $this->dbClass->stringWithoutCredential(get_class($result) . ': ' .
+                $this->dbClass->stringWithoutCredential('Exception in Query: ' .
                     $this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
         }
 
-        if ($result !== NULL) {
-            $this->logger->setDebugMessage(
-                $this->dbClass->stringWithoutCredential(get_class($result) . ': ' .
-                    $this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
-            return false;
-        }
+//        if ($result !== NULL) {
+//            $this->logger->setDebugMessage(
+//                $this->dbClass->stringWithoutCredential(get_class($result) . ': ' .
+//                    $this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
+//            return false;
+//        }
         $this->logger->setDebugMessage(
             $this->dbClass->stringWithoutCredential(
                 $this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
@@ -64,19 +64,20 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
                     'clienthost' => $clientId,
                     'user_id' => $uid,
                 ));
-                $result = $this->fmDataAuth->{$hashTable}->getRecord($recordId);
+                $result = $this->dbClass->fmDataAuth->{$hashTable}->getRecord($recordId);
                 if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                     $this->logger->setDebugMessage(
                         $this->dbClass->stringWithoutCredential(get_class($result) . ': ' .
                             $this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
-                    return false;
+                    return;
                 }
                 $this->logger->setDebugMessage(
                     $this->dbClass->stringWithoutCredential(
                         $this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
-                return true;
+                return;
             }
         }
+        $recordId = null;
         $this->dbClass->setupFMDataAPIforAuth($hashTable, 1);
         try {
             $recordId = $this->dbClass->fmDataAuth->{$hashTable}->create(array(
@@ -91,16 +92,16 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
 
         if (!is_numeric($recordId)) {
             $this->logger->setDebugMessage(
-                $this->dbClass->stringWithoutCredential(get_class($result) . ': ' .
+                $this->dbClass->stringWithoutCredential('RecordId is not numeric: ' .
                     $this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
-            return false;
+            return;
         }
         $this->logger->setDebugMessage(
             $this->dbClass->stringWithoutCredential($this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
-        return true;
+        return;
     }
 
-    public function authSupportCheckMediaToken($uid)
+    public function authSupportCheckMediaToken(string $uid): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -109,6 +110,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         if ($uid < 1) {
             $uid = 0;
         }
+        $result = null;
         $this->dbClass->setupFMDataAPIforAuth($hashTable, 1);
         $conditions = array(array('user_id' => $uid, 'clienthost' => '_im_media'));
         try {
@@ -144,11 +146,11 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return false;
     }
 
-    public function authSupportRetrieveChallenge($uid, $clientId, $isDelete = true)
+    public function authSupportRetrieveChallenge(string $uid, string $clientId, bool $isDelete = true): ?string
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
-            return false;
+            return null;
         }
         if ($uid < 1) {
             $uid = 0;
@@ -168,12 +170,12 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
                     if ($isDelete) {
                         $this->dbClass->setupFMDataAPIforAuth($hashTable, 1);
                         try {
-                            $result = $this->dbClass->fmDataAuth->{$hashTable}->delete($recordId);
+                            $this->dbClass->fmDataAuth->{$hashTable}->delete($recordId);
                         } catch (Exception $e) {
                             $this->logger->setDebugMessage(
                                 $this->dbClass->stringWithoutCredential(get_class($result) . ': ' .
                                     $this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
-                            return false;
+                            return null;
                         }
                     }
                     return $hashValue;
@@ -183,7 +185,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $this->logger->setDebugMessage(
                 $this->dbClass->stringWithoutCredential(
                     get_class($result) . ': ' . $this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
-            return false;
+            return null;
         }
 
         $className = is_object($result) ? get_class($result) : "NULL";
@@ -191,15 +193,15 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $this->logger->setDebugMessage(
                 $this->dbClass->stringWithoutCredential($className . ': ' .
                     $this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
-            return false;
+            return null;
         }
         $this->logger->setDebugMessage(
             $this->dbClass->stringWithoutCredential($this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
 
-        return false;
+        return null;
     }
 
-    public function authSupportRemoveOutdatedChallenges()
+    public function authSupportRemoveOutdatedChallenges(): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -253,11 +255,11 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return true;
     }
 
-    public function authSupportRetrieveHashedPassword($username)
+    public function authSupportRetrieveHashedPassword(string $username): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
-            return false;
+            return null;
         }
 
         $this->dbClass->setupFMDataAPIforDB($userTable, 1);
@@ -273,7 +275,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $this->logger->setDebugMessage(
                 $this->dbClass->stringWithoutCredential(
                     $className . ': ' . $this->dbClass->fmData->{$userTable}->getDebugInfo()));
-            return false;
+            return null;
         }
 
         $this->logger->setDebugMessage(
@@ -282,7 +284,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $this->logger->setDebugMessage(
                 $this->dbClass->stringWithoutCredential(
                     $this->dbClass->fmData->{$userTable}->getDebugInfo()));
-            return false;
+            return null;
         }
         if ((get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation' ||
                 $result->count() < 1) && $this->dbSettings->getEmailAsAccount()) {
@@ -291,7 +293,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             try {
                 $result = $this->dbClass->fmData->{$userTable}->query($conditions);
             } catch (Exception $e) {
-                return false;
+                return null;
             }
             $this->logger->setDebugMessage(
                 $this->dbClass->stringWithoutCredential(
@@ -302,12 +304,13 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             return $record->hashedpasswd;
         }
 
-        return false;
+        return null;
     }
 
-    public function authSupportCreateUser($username, $hashedpassword, $isSAML = false, $ldapPassword = null, $attrs = null)
+    public function authSupportCreateUser(string  $username, string $hashedpassword, bool $isSAML = false,
+                                          ?string $ldapPassword = null, ?array $attrs = null): bool
     {
-        if ($this->authSupportRetrieveHashedPassword($username) !== false) {
+        if ($this->authSupportRetrieveHashedPassword($username)) {
             $this->logger->setErrorMessage('User Already exist: ' . $username);
             return false;
         }
@@ -329,7 +332,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return true;
     }
 
-    public function authSupportChangePassword($username, $hashednewpassword)
+    public function authSupportChangePassword(string $username, string $hashednewpassword): bool
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -367,7 +370,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $this->dbClass->fmData->{$userTable}->update($recordId, array(
                 'hashedpasswd' => $hashednewpassword,
             ));
-            $result = $this->fmData->{$userTable}->getRecord($recordId);
+            $result = $this->dbClass->fmData->{$userTable}->getRecord($recordId);
             if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                 $this->logger->setDebugMessage(
                     $this->dbClass->stringWithoutCredential(get_class($result) . ': ' .
@@ -379,7 +382,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return true;
     }
 
-    public function authSupportGetUserIdFromUsername($username)
+    public function authSupportGetUserIdFromUsername(string $username): string
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -423,7 +426,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return false;
     }
 
-    public function authSupportGetUsernameFromUserId($userid)
+    public function authSupportGetUsernameFromUserId(string $userid): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -461,7 +464,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return false;
     }
 
-    public function authSupportGetUserIdFromEmail($email)
+    public function authSupportGetUserIdFromEmail(string $email): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -499,14 +502,14 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return false;
     }
 
-    public function authSupportUnifyUsernameAndEmail($username)
+    public function authSupportUnifyUsernameAndEmail(?string $username): ?string
     {
         if (!$this->dbSettings->getEmailAsAccount() || $this->dbSettings->isDBNative()) {
             return $username;
         }
 
         $userTable = $this->dbSettings->getUserTable();
-        if ($userTable == null || is_null($username) || $username === 0 || $username === '') {
+        if ($userTable == null || $username == 0 || $username === '') {
             return false;
         }
 
@@ -542,7 +545,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return $usernameCandidate;
     }
 
-    public function authSupportGetGroupNameFromGroupId($groupid)
+    public function authSupportGetGroupNameFromGroupId($groupid): ?string
     {
         $groupTable = $this->dbSettings->getGroupTable();
         if ($groupTable == null) {
@@ -570,7 +573,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return false;
     }
 
-    public function authSupportGetGroupsOfUser($user)
+    public function authSupportGetGroupsOfUser(?string $user): array
     {
         $corrTable = $this->dbSettings->getCorrTable();
         if ($corrTable == null) {
@@ -591,10 +594,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return $candidateGroups;
     }
 
-    private $belongGroups;
-    private $firstLevel;
+    private array $belongGroups;
+    private bool $firstLevel;
 
-    private function resolveGroup($groupid)
+    private function resolveGroup(string $groupid): void
     {
         $this->dbClass->setupFMDataAPIforDB_Alt($this->dbSettings->getCorrTable(), 1);
         if ($this->firstLevel) {
@@ -615,9 +618,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             if (!is_null($result)) {
                 foreach ($result as $record) {
                     if (!in_array($record->dest_group_id, $this->belongGroups)) {
-                        if (!$this->resolveGroup($record->dest_group_id)) {
-                            return false;
-                        }
+                        $this->resolveGroup($record->dest_group_id);
                     }
                 }
             }
@@ -625,11 +626,11 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $this->logger->setDebugMessage(
                 $this->dbClass->stringWithoutCredential(get_class($result) . ': ' .
                     $this->dbClass->fmDataAlt->{$this->dbSettings->getCorrTable()}->getDebugInfo()));
-            return false;
+            return;
         }
     }
 
-    public function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)
+    public function authSupportStoreIssuedHashForResetPassword(string $userid, string $clienthost, string $hash): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -656,7 +657,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return true;
     }
 
-    public function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
+    public function authSupportCheckIssuedHashForResetPassword(string $userid, string $randdata, string $hash): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -697,7 +698,8 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return false;
     }
 
-    public function authSupportCheckMediaPrivilege($tableName, $targeting, $userField, $user, $keyField, $keyValue)
+    public function authSupportCheckMediaPrivilege(
+        string $tableName, string $targeting, string $userField, string $user, string $keyField, string $keyValue): ?array
     {
         $user = $this->authSupportUnifyUsernameAndEmail($user);
 
@@ -721,13 +723,13 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $this->logger->setDebugMessage(
                 $this->dbClass->stringWithoutCredential(get_class($result) . ': ' .
                     $this->dbClass->fmDataAuth->{$tableName}->getDebugInfo()));
-            return false;
+            return null;
         }
         if (!is_array($result)) {
             $this->logger->setDebugMessage(
                 $this->dbClass->stringWithoutCredential(get_class($result) . ': ' .
                     $this->dbClass->fmDataAuth->{$tableName}->getDebugInfo()));
-            return false;
+            return null;
         }
         $array = array();
         foreach ($result as $record) {
@@ -740,7 +742,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return $array;
     }
 
-    public function authSupportUserEnrollmentStart($userid, $hash)
+    public function authSupportUserEnrollmentStart(string $userid, string $hash): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -764,7 +766,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return true;
     }
 
-    public function authSupportUserEnrollmentEnrollingUser($hash)
+    public function authSupportUserEnrollmentEnrollingUser(string $hash): ?string
     {
         $hashTable = $this->dbSettings->getHashTable();
         $userTable = $this->dbSettings->getUserTable();
@@ -792,10 +794,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             return $record->user_id;
         }
         return false;
-
     }
 
-    public function authSupportUserEnrollmentActivateUser($userID, $password, $rawPWField, $rawPW)
+    public function authSupportUserEnrollmentActivateUser(
+        string $userID, string $password, string $rawPWField, string $rawPW): ?string
     {
         $hashTable = $this->dbSettings->getHashTable();
         $userTable = $this->dbSettings->getUserTable();
@@ -828,7 +830,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
                     'hashedpasswd' => $password,
                 ));
             }
-            $result = $this->fmDataAlt->{$userTable}->getRecord($recordId);
+            $result = $this->dbClass->fmDataAlt->{$userTable}->getRecord($recordId);
             if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
                 $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential(get_class($result) . ': ' .
                     $this->dbClass->fmDataAlt->{$userTable}->getDebugInfo()));
@@ -839,14 +841,15 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
                     $this->dbClass->fmDataAlt->{$userTable}->getDebugInfo()));
             return $userID;
         }
+        return null;
     }
 
-    public function authSupportIsWithinSAMLLimit($userID)
+    public function authSupportIsWithinSAMLLimit(string $userID): bool
     {
-        // TODO: Implement authSupportIsWithinSAMLLimit() method.
+        return false;
     }
 
-    public function authSupportCanMigrateSHA256Hash()  // authuser, issuedhash
+    public function authSupportCanMigrateSHA256Hash(): bool  // authuser, issuedhash
     {
         return true;
     }

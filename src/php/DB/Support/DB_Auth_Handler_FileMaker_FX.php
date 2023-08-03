@@ -12,17 +12,20 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\DB\Support;
+
 use Datetime;
+use Exception;
 use INTERMediator\IMUtil;
 
 class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interface_DB
 {
-    public function authSupportStoreChallenge($uid, $challenge, $clientId)
+    public function authSupportStoreChallenge(string $uid, string $challenge, string $clientId): void
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
-            return false;
+            return;
         }
         if ($uid < 1) {
             $uid = 0;
@@ -33,7 +36,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         $result = $this->dbClass->fxAuth->DoFxAction('perform_find', TRUE, TRUE, 'full');
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
+            return;
         }
         $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         $currentDT = new DateTime();
@@ -49,10 +52,10 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
             $result = $this->dbClass->fxAuth->DoFxAction("update", TRUE, TRUE, 'full');
             if (!is_array($result)) {
                 $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-                return false;
+                return;
             }
             $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
-            return true;
+            return;
         }
         $this->dbClass->setupFXforAuth($hashTable, 1);
         $this->dbClass->fxAuth->AddDBParam('hash', $challenge);
@@ -62,13 +65,13 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         $result = $this->dbClass->fxAuth->DoFxAction("new", TRUE, TRUE, 'full');
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
+            return;
         }
         $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
-        return true;
+        return;
     }
 
-    public function authSupportCheckMediaToken($uid)
+    public function authSupportCheckMediaToken(string $uid): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -99,11 +102,11 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         return false;
     }
 
-    public function authSupportRetrieveChallenge($uid, $clientId, $isDelete = true)
+    public function authSupportRetrieveChallenge(string $uid, string $clientId, bool $isDelete = true): ?string
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
-            return false;
+            return null;
         }
         if ($uid < 1) {
             $uid = 0;
@@ -114,7 +117,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         $result = $this->dbClass->fxAuth->DoFxAction('perform_find', TRUE, TRUE, 'full');
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
+            return null;
         }
         $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         foreach ($result['data'] as $key => $row) {
@@ -126,15 +129,15 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
                 $result = $this->dbClass->fxAuth->DoFxAction("delete", TRUE, TRUE, 'full');
                 if (!is_array($result)) {
                     $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-                    return false;
+                    return null;
                 }
             }
             return $hashValue;
         }
-        return false;
+        return null;
     }
 
-    public function authSupportRemoveOutdatedChallenges()
+    public function authSupportRemoveOutdatedChallenges(): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -167,11 +170,11 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         return true;
     }
 
-    public function authSupportRetrieveHashedPassword($username)
+    public function authSupportRetrieveHashedPassword(string $username): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
-            return false;
+            return null;
         }
 
         $this->dbClass->setupFXforDB($userTable, 1);
@@ -185,18 +188,19 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         }
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
+            return null;
         }
         $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         foreach ($result['data'] as $key => $row) {
             return $row['hashedpasswd'][0];
         }
-        return false;
+        return null;
     }
 
-    public function authSupportCreateUser($username, $hashedpassword, $isSAML = false, $ldapPassword = null, $attrs=null)
+    public function authSupportCreateUser(string  $username, string $hashedpassword, bool $isSAML = false,
+                                          ?string $ldapPassword = null, ?array $attrs = null): bool
     {
-        if ($this->authSupportRetrieveHashedPassword($username) !== false) {
+        if ($this->authSupportRetrieveHashedPassword($username)) {
             $this->logger->setErrorMessage('User Already exist: ' . $username);
             return false;
         }
@@ -213,7 +217,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         return true;
     }
 
-    public function authSupportChangePassword($username, $hashednewpassword)
+    public function authSupportChangePassword(string $username, string $hashednewpassword): bool
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -250,7 +254,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         return true;
     }
 
-    public function authSupportGetUserIdFromUsername($username)
+    public function authSupportGetUserIdFromUsername(string $username): string
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -276,7 +280,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         return false;
     }
 
-    public function authSupportGetUsernameFromUserId($userid)
+    public function authSupportGetUsernameFromUserId(string $userid): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -300,7 +304,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         return false;
     }
 
-    public function authSupportGetUserIdFromEmail($email)
+    public function authSupportGetUserIdFromEmail(string $email): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -324,7 +328,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         return false;
     }
 
-    public function authSupportUnifyUsernameAndEmail($username)
+    public function authSupportUnifyUsernameAndEmail(?string $username): ?string
     {
         if (!$this->dbSettings->getEmailAsAccount() || $this->dbSettings->isDBNative()) {
             return $username;
@@ -357,7 +361,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         return $usernameCandidate;
     }
 
-    public function authSupportGetGroupNameFromGroupId($groupid)
+    public function authSupportGetGroupNameFromGroupId(string $groupid): ?string
     {
         $groupTable = $this->dbSettings->getGroupTable();
         if ($groupTable == null) {
@@ -378,7 +382,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         return false;
     }
 
-    public function authSupportGetGroupsOfUser($user)
+    public function authSupportGetGroupsOfUser(?string $user): array
     {
         $corrTable = $this->dbSettings->getCorrTable();
         if ($corrTable == null) {
@@ -402,7 +406,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
     private $belongGroups;
     private $firstLevel;
 
-    private function resolveGroup($groupid)
+    private function resolveGroup(string $groupid): void
     {
         $this->dbClass->setupFXforDB_Alt($this->dbSettings->getCorrTable(), 1);
         if ($this->firstLevel) {
@@ -415,19 +419,17 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         $result = $this->dbClass->fxAlt->DoFxAction('perform_find', TRUE, TRUE, 'full');
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
+            return;
         }
         $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         foreach ($result['data'] as $key => $row) {
             if (!in_array($row['dest_group_id'][0], $this->belongGroups)) {
-                if (!$this->resolveGroup($row['dest_group_id'][0])) {
-                    return false;
-                }
+                $this->resolveGroup($row['dest_group_id'][0]);
             }
         }
     }
 
-    public function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)
+    public function authSupportStoreIssuedHashForResetPassword(string $userid, string $clienthost, string $hash): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -449,7 +451,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         return true;
     }
 
-    public function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
+    public function authSupportCheckIssuedHashForResetPassword(string $userid, string $randdata, string $hash): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -484,7 +486,8 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         return false;
     }
 
-    public function authSupportCheckMediaPrivilege($tableName, $targeting, $userField, $user, $keyField, $keyValue)
+    public function authSupportCheckMediaPrivilege(string $tableName, string $targeting, string $userField,
+                                                   string $user, string $keyField, string $keyValue): ?array
     {
         $user = $this->authSupportUnifyUsernameAndEmail($user);
 
@@ -521,7 +524,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         return $array;
     }
 
-    public function authSupportUserEnrollmentStart($userid, $hash)
+    public function authSupportUserEnrollmentStart(string $userid, string $hash): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -540,7 +543,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         return true;
     }
 
-    public function authSupportUserEnrollmentEnrollingUser($hash)
+    public function authSupportUserEnrollmentEnrollingUser(string $hash): ?string
     {
         $hashTable = $this->dbSettings->getHashTable();
         $userTable = $this->dbSettings->getUserTable();
@@ -564,7 +567,8 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
 
     }
 
-    public function authSupportUserEnrollmentActivateUser($userID, $password, $rawPWField, $rawPW)
+    public function authSupportUserEnrollmentActivateUser(
+        string $userID, string $password, string $rawPWField, string $rawPW): ?string
     {
         $hashTable = $this->dbSettings->getHashTable();
         $userTable = $this->dbSettings->getUserTable();
@@ -595,14 +599,15 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
             $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
             return $userID;
         }
+        return false;
     }
 
-    public function authSupportIsWithinSAMLLimit($userID)
+    public function authSupportIsWithinSAMLLimit(string $userID): bool
     {
-        // TODO: Implement authSupportIsWithinSAMLLimit() method.
+        return false;
     }
 
-    public function authSupportCanMigrateSHA256Hash()  // authuser, issuedhash
+    public function authSupportCanMigrateSHA256Hash(): bool  // authuser, issuedhash
     {
         return true;
     }

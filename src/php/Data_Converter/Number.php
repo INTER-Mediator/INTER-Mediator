@@ -12,23 +12,30 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\Data_Converter;
 
+/**
+ *
+ */
 class Number extends NumberBase
 {
-
-    private $d = null;
+    /**
+     * @var int
+     */
+    private int $d;
+    /**
+     * @var bool
+     */
     private $isZeroNoString = false;
 
     /**
-     *
-     * @param
-     * @return
+     * @param int $digits
      */
     function __construct($digits = 0)
     {
         parent::__construct();
-        if ($digits === true)    {
+        if ($digits === true) {
             $this->isZeroNoString = true;
             $this->d = 0;
         } else {
@@ -36,9 +43,13 @@ class Number extends NumberBase
         }
     }
 
-    function converterFromDBtoUser($str)
+    /**
+     * @param string $str
+     * @return string
+     */
+    function converterFromDBtoUser(? string $str): string
     {
-        if ($this->isZeroNoString && (double)$str == 0)  {
+        if ($this->isZeroNoString && (double)$str == 0) {
             return "";
         }
         return number_format((double)$str, (int)($this->d), $this->decimalMark, $this->thSepMark);

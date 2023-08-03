@@ -17,5 +17,5 @@ namespace INTERMediator\DB\Extending;
 
 interface AfterCopy
 {
-    public function doAfterCopyInDB($result);
+    public function doAfterCopyInDB(?array $result): ?array;
 }

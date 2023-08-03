@@ -169,7 +169,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         return true;
     }
 
-    public function matchInRegistered($clientId, $entity, $pkArray)
+    public function matchInRegistered($clientId, $entity, $pkArray): array
     {
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] matchInRegistered / clientId={$clientId}, entity={$entity}, pkArray=" . var_export($pkArray, true));
 

@@ -165,7 +165,7 @@ class MediaAccess
                         $tableName = $dbProxyInstance->dbSettings->getEntityForRetrieve();
                         $contextRecord = $dbProxyInstance->dbClass->authHandler->authSupportCheckMediaPrivilege(
                             $tableName, $authResult, $authInfoField, $this->cookieUser, $this->targetKeyField, $this->targetKeyValue);
-                        if ($contextRecord === false) {
+                        if (!$contextRecord || count($contextRecord) < 1) {
                             $this->exitAsError(401);
                         }
                         $contextRecord = [$contextRecord];

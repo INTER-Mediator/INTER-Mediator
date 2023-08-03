@@ -234,7 +234,7 @@ class AdvisorSample extends UseSharedObjects implements AfterRead, AfterUpdate, 
 {
     use Proxy_ExtSupport;
 
-    public function doAfterReadFromDB($result)
+    public function doAfterReadFromDB($result): ?array
     {
         $modResult = [];
         foreach ($result as $record) {
@@ -244,7 +244,7 @@ class AdvisorSample extends UseSharedObjects implements AfterRead, AfterUpdate, 
         return $modResult;
     }
 
-    public function doAfterUpdateToDB($output)
+    public function doAfterUpdateToDB($output): ?array
     {
         $result = $this->dbClass->getUpdatedRecord();
         $nameValue = $result[0]["name"];
@@ -265,7 +265,7 @@ class AdvisorSample extends UseSharedObjects implements AfterRead, AfterUpdate, 
         return $output;
     }
 
-    public function doAfterCreateToDB($output)
+    public function doAfterCreateToDB($output): ?array
     {
         $result = $this->dbClass->getUpdatedRecord();
         $nameValue = $result[0]["vc1"];
@@ -280,7 +280,7 @@ class AdvisorSampleNew extends UseSharedObjects implements AfterRead, AfterUpdat
 {
     use Proxy_ExtSupport;
 
-    public function doAfterReadFromDB($result)
+    public function doAfterReadFromDB($result): ?array
     {
         $modResult = [];
         foreach ($result as $record) {
@@ -290,7 +290,7 @@ class AdvisorSampleNew extends UseSharedObjects implements AfterRead, AfterUpdat
         return $modResult;
     }
 
-    public function doAfterUpdateToDB($result)
+    public function doAfterUpdateToDB($result): ?array
     {
         $nameValue = $result[0]["name"];
         $addressValue = $result[0]["address"];
@@ -310,7 +310,7 @@ class AdvisorSampleNew extends UseSharedObjects implements AfterRead, AfterUpdat
         return $result;
     }
 
-    public function doAfterCreateToDB($result)
+    public function doAfterCreateToDB($result): ?array
     {
         $nameValue = $result[0]["vc1"];
         $addressValue = $result[0]["vc2"];

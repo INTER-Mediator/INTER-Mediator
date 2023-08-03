@@ -17,7 +17,9 @@ namespace INTERMediator\DB\Extending;
 
 interface AfterRead_WithNavigation
 {
-    public function doAfterReadFromDB( $result);
-    public function countQueryResult();
-    public function getTotalCount();
+    public function doAfterReadFromDB(?array $result): ?array;
+
+    public function countQueryResult(): int;
+
+    public function getTotalCount(): int;
 }

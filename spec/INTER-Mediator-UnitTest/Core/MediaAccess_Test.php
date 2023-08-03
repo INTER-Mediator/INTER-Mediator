@@ -22,7 +22,7 @@ class MediaAccess_Test extends TestCase
         $disposition->setAccessible(true);
 
         $expected = 'inline';
-        $this->assertEquals($expected, $disposition->getValue($this->mediaaccess));
+        $this->assertSame($expected, $disposition->getValue($this->mediaaccess));
 
         $expected = 'attachment';
         $attachment = $reflectionClass->getMethod('asAttachment');
@@ -32,7 +32,7 @@ class MediaAccess_Test extends TestCase
         } catch (Exception $e) {
 
         }
-        $this->assertEquals($expected, $disposition->getValue($this->mediaaccess));
+        $this->assertSame($expected, $disposition->getValue($this->mediaaccess));
     }
 
     public function test_exitAsError(): void
@@ -46,7 +46,7 @@ class MediaAccess_Test extends TestCase
             $reflectionMethod->invokeArgs($this->mediaaccess, array($code));
             $this->fail('No Exception happens');
         } catch (Exception $e) {
-            $this->assertEquals($expected, $e->getMessage());
+            $this->assertSame($expected, (string)$e->getMessage());
         }
     }
 }

@@ -12,13 +12,26 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\Data_Converter;
 
+/**
+ *
+ */
 class HTMLString
 {
-    protected $autolink = false;
-    protected $noescape = false;
+    /**
+     * @var bool
+     */
+    protected bool $autolink = false;
+    /**
+     * @var bool
+     */
+    protected bool $noescape = false;
 
+    /**
+     * @param bool $option
+     */
     public function __construct($option = false)
     {
         if ($option) {
@@ -31,12 +44,20 @@ class HTMLString
         }
     }
 
-    public function converterFromUserToDB($str)
+    /**
+     * @param string $str
+     * @return string
+     */
+    public function converterFromUserToDB(string $str): string
     {
         return $str;
     }
 
-    public function converterFromDBtoUser($str)
+    /**
+     * @param string $str
+     * @return string
+     */
+    public function converterFromDBtoUser(?string $str): string
     {
         if (!$this->noescape) {
             $str = $this->replaceTags($str);
@@ -48,8 +69,13 @@ class HTMLString
         return $str;
     }
 
-    protected function replaceTags($str)    {
-        if(is_null($str)) {
+    /**
+     * @param string|null $str
+     * @return string|null
+     */
+    protected function replaceTags(?string $str): ?string
+    {
+        if (is_null($str)) {
             return null;
         }
         return str_replace(">", "&gt;",
@@ -60,8 +86,13 @@ class HTMLString
 
     }
 
-    protected function replaceCRLF($str)    {
-        if(is_null($str)) {
+    /**
+     * @param string|null $str
+     * @return string|null
+     */
+    protected function replaceCRLF(?string $str): ?string
+    {
+        if (is_null($str)) {
             return null;
         }
         return str_replace("\n", "<br />",
@@ -69,8 +100,13 @@ class HTMLString
                 str_replace("\r\n", "<br />", $str)));
     }
 
-    protected function replaceLinkToATag($str)  {
-        if(is_null($str)) {
+    /**
+     * @param string|null $str
+     * @return string|null
+     */
+    protected function replaceLinkToATag(?string $str): ?string
+    {
+        if (is_null($str)) {
             return null;
         }
         return mb_ereg_replace("(https?|ftp)(:\\/\\/[-_.!~*\\'()a-zA-Z0-9;\\/?:\\@&=+\\$,%#]+)",
