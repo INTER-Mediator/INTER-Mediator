@@ -16,6 +16,8 @@
 
 namespace INTERMediator\Messaging;
 
+use INTERMediator\DB\Proxy;
+
 /**
  * Interface MessagingProvider
  * @package INTERMediator\Messaging
@@ -23,14 +25,14 @@ namespace INTERMediator\Messaging;
 abstract class MessagingProvider
 {
     /**
-     * @param $dbProxy The DB\Proxy class's instance.
-     * @param $contextDef The context definition array of current context.
-     * @param $result The result of query or other db operations.
+     * @param $dbProxy Proxy class's instance.
+     * @param $contextDef array The context definition array of current context.
+     * @param $result string The result of query or other db operations.
      * @return mixed (No return)
      */
-    public abstract function processing($dbProxy, $contextDef, $result);
+    public abstract function processing(Proxy $dbProxy, array $contextDef, array $result);
 
-    public function modernTemplating($record, $tempStr, $ignoreField = false)
+    public function modernTemplating(array $record, string $tempStr, bool $ignoreField = false): string
     {
         $bodyStr = $tempStr;
         if (!$ignoreField && isset($record[$tempStr])) {

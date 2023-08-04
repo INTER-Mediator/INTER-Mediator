@@ -15,7 +15,7 @@
 
 namespace INTERMediator\Media;
 
-use INTERMediator\DB\DBClass;
+use INTERMediator\DB\Proxy;
 
 /**
  *
@@ -23,7 +23,7 @@ use INTERMediator\DB\DBClass;
 interface UploadingSupport
 {
     /**
-     * @param DBClass $db
+     * @param Proxy $db
      * @param string $url
      * @param array|null $options
      * @param array $files

@@ -188,8 +188,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
-            $className = is_null($this->userExpanded) ? null : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeReadFromDB")) {
+                $className = get_class($this->userExpanded);
                 $this->logger->setDebugMessage("The method 'doBeforeReadFromDB' of the class '{$className}' is calling.", 2);
                 $returnBefore = $this->userExpanded->doBeforeReadFromDB();
                 if ($returnBefore === false) {
@@ -221,6 +221,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 }
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterReadFromDB")) {
+                $className = get_class($this->userExpanded);
                 $this->logger->setDebugMessage("The method 'doAfterReadFromDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterReadFromDB($result);
             }
@@ -263,8 +264,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     function countQueryResult()
     {
         $result = null;
-        $className = is_null($this->userExpanded) ? null : get_class($this->userExpanded);
         if ($this->userExpanded && method_exists($this->userExpanded, "countQueryResult")) {
+            $className = get_class($this->userExpanded);
             $this->logger->setDebugMessage("The method 'countQueryResult' of the class '{$className}' is calling.", 2);
             $result = $this->userExpanded->countQueryResult();
         }
@@ -280,8 +281,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     function getTotalCount()
     {
         $result = null;
-        $className = is_null($this->userExpanded) ? null : get_class($this->userExpanded);
         if ($this->userExpanded && method_exists($this->userExpanded, "getTotalCount")) {
+            $className = get_class($this->userExpanded);
             $this->logger->setDebugMessage("The method 'getTotalCount' of the class '{$className}' is calling.", 2);
             $result = $this->userExpanded->getTotalCount();
         }
@@ -300,8 +301,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $resultOfUpdate = null;
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
-            $className = is_null($this->userExpanded) ? "" : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeUpdateDB")) {
+                $className = get_class((object)$this->userExpanded);
                 $this->logger->setDebugMessage(
                     "[Proxy::updateDB] The method 'doBeforeUpdateDB' of the class '{$className}' is calling.", 2);
                 $returnBefore = $this->userExpanded->doBeforeUpdateDB(false);
@@ -325,6 +326,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $result = $this->getUpdatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterUpdateToDB")) {
+                $className = get_class((object)$this->userExpanded);
                 $this->logger->setDebugMessage(
                     "[Proxy::updateDB] The method 'doAfterUpdateToDB' of the class '{$className}' is calling.", 2);
                 $this->dbClass->clearUseSetDataToUpdatedRecord();
@@ -389,8 +391,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $resultOfCreate = null;
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
-            $className = is_null($this->userExpanded) ? "" : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeCreateToDB")) {
+                $className = get_class((object)$this->userExpanded);
                 $this->logger->setDebugMessage(
                     "[Proxy::createInDB] The method 'doBeforeCreateToDB' of the class '{$className}' is calling.", 2);
                 $returnBefore = $this->userExpanded->doBeforeCreateToDB();
@@ -414,6 +416,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $result = $this->getUpdatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterCreateToDB")) {
+                $className = get_class((object)$this->userExpanded);
                 $this->logger->setDebugMessage(
                     "[Proxy::createInDB] The method 'doAfterCreateToDB' of the class '{$className}' is calling.", 2);
                 $this->dbClass->clearUseSetDataToUpdatedRecord();

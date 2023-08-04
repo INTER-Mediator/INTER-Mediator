@@ -28,12 +28,12 @@ class SendMail extends MessagingProvider
         $this->isCompatible = Params::getParameterValue("sendMailCompatibilityMode", false);
     }
 
-    public function processing($dbProxy, $sendMailParam, $result)
+    public function processing(Proxy $dbProxy, array $sendMailParam, array $result)
     {
         return $this->processingImpl($dbProxy, $sendMailParam, $result, $dbProxy->dbSettings->getSmtpConfiguration());
     }
 
-    private function processingImpl($dbProxy, $sendMailParam, $result, $smtpConfig)
+    private function processingImpl(Proxy $dbProxy, array $sendMailParam, array $result, ?array $smtpConfig)
     {
         if (isset($sendMailParam['template-context'])) {
             $this->isCompatible = false;

@@ -16,18 +16,20 @@
 
 namespace INTERMediator\Messaging;
 
+use INTERMediator\DB\Proxy;
+
 class MessagingProxy extends MessagingProvider
 {
     private $msgProvider;
 
-    public function __construct($driver)
+    public function __construct(string $driver)
     {
         $className = ucfirst(strtolower(mb_ereg_replace('([a-zA-Z]+)', '\1', $driver)));
         $className = "INTERMediator\\Messaging\\Send{$className}";
         $this->msgProvider = new $className;
     }
 
-    public function processing($dbProxy, $contextDef, $result)
+    public function processing(Proxy $dbProxy, array $contextDef, array $result)
     {
         $className = get_class($this->msgProvider);
         $dbProxy->logger->setDebugMessage("[Messaging\MessagingProxy] Processing with {$className} class.", 1);

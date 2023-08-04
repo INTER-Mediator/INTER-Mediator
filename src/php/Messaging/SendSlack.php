@@ -16,6 +16,7 @@
 namespace INTERMediator\Messaging;
 
 use INTERMediator\Params;
+use INTERMediator\DB\Proxy;
 
 class SendSlack extends MessagingProvider
 {
@@ -37,7 +38,7 @@ class SendSlack extends MessagingProvider
      * @param $result  result of query or other db operations.
      * @return mixed (No return)
      */
-    public function processing($dbProxy, $contextDef, $result)
+    public function processing(Proxy $dbProxy, array $contextDef, array $result)
     {
         $options = $dbProxy->dbSettings->getOptions();
         if (isset($options['slack'])) {

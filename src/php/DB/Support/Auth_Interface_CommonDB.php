@@ -19,7 +19,7 @@ interface Auth_Interface_CommonDB
 {
     public function getFieldForAuthorization(string $operation): string;
     public function getTargetForAuthorization(string $operation): string;
-    public function getNoSetForAuthorization(string $operation): string;
+    public function getNoSetForAuthorization(string $operation): ?string;
     public function getAuthorizedUsers(?string $operation = null): array;
     public function getAuthorizedGroups(?string $operation = null): array;
 }

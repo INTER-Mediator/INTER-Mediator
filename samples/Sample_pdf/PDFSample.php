@@ -9,7 +9,7 @@
 class PDFSample
 {
 
-    function processing($contextData, $options)
+    public function processing(array $contextData, ?array $options): void
     {
        $prodId = $contextData[0]['id'];
         $prodName = $contextData[0]['name'];

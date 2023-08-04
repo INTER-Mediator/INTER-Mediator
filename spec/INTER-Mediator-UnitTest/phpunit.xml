@@ -18,12 +18,12 @@
         <testsuite name="db-pdo-mysql">
             <directory>DB-PDO/MySQL</directory>
         </testsuite>
-<!--        <testsuite name="db-pdo-postgresql">-->
-<!--            <directory>DB-PDO/PostgreSQL</directory>-->
-<!--        </testsuite>-->
-<!--        <testsuite name="db-pdo-sqlite">-->
-<!--            <directory>DB-PDO/SQLite</directory>-->
-<!--        </testsuite>-->
+        <testsuite name="db-pdo-postgresql">
+            <directory>DB-PDO/PostgreSQL</directory>
+        </testsuite>
+        <testsuite name="db-pdo-sqlite">
+            <directory>DB-PDO/SQLite</directory>
+        </testsuite>
         <testsuite name="editors">
             <directory>Editors</directory>
         </testsuite>

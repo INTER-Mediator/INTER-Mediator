@@ -17,7 +17,7 @@ class Export
     protected $quote = '"';
     protected $endOfLine = "\n";
 
-    public function processing($contextData, $options)
+    public function processing(array $contextData, ?array $options):void
     {
         $qH = '"'; // Double quote in header
         header('Content-Type: application/octet-stream');
