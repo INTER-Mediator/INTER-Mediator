@@ -18,12 +18,13 @@ namespace INTERMediator\DB\Support;
 
 use Exception;
 use PDO;
+use INTERMediator\DB\DBClass;
 
 abstract class DB_PDO_Handler
 {
-    protected $dbClassObj = null;
+    protected ?DBClass $dbClassObj = null;
 
-    public static function generateHandler($dbObj, $dsn)
+    public static function generateHandler(DBClass $dbObj, string $dsn): ?DB_PDO_Handler
     {
         if (is_null($dbObj)) {
             return null;
@@ -48,13 +49,13 @@ abstract class DB_PDO_Handler
         return null;
     }
 
-    public abstract function sqlSELECTCommand();
+    public abstract function sqlSELECTCommand(): string;
 
-    public abstract function sqlLimitCommand($param);
+    public abstract function sqlLimitCommand(string $param): string;
 
-    public abstract function sqlOffsetCommand($param);
+    public abstract function sqlOffsetCommand(string $param): string;
 
-    public function sqlOrderByCommand($sortClause, $limit, $offset)
+    public function sqlOrderByCommand(string $sortClause, string $limit, string $offset): string
     {
         return
             (strlen($sortClause) > 0 ? "ORDER BY {$sortClause} " : "") .
@@ -62,20 +63,21 @@ abstract class DB_PDO_Handler
             (strlen($offset) > 0 ? "OFFSET {$offset} " : "");
     }
 
-    public abstract function sqlDELETECommand();
+    public abstract function sqlDELETECommand(): string;
 
-    public abstract function sqlUPDATECommand();
+    public abstract function sqlUPDATECommand(): string;
 
-    public abstract function sqlINSERTCommand($tableRef, $setClause);
+    public abstract function sqlINSERTCommand(string $tableRef, string $setClause): string;
 
-    public function sqlREPLACECommand($tableRef, $setClause)
+    public function sqlREPLACECommand(array $tableRef, string $setClause): string
     {
         return $this->sqlINSERTCommand($tableRef, $setClause);
     }
 
-    public abstract function sqlSETClause($tableName, $setColumnNames, $keyField, $setValues);
+    public abstract function sqlSETClause(
+        string $tableName, array $setColumnNames, string $keyField, array $setValues): string;
 
-    protected function sqlSETClauseData($tableName, $setColumnNames, $setValues)
+    protected function sqlSETClauseData(string $tableName, array $setColumnNames, array $setValues): array
     {
         $nullableFields = $this->getNullableFields($tableName);
         $numericFields = $this->getNumericFields($tableName);
@@ -100,7 +102,8 @@ abstract class DB_PDO_Handler
         return [$setNames, $setValuesConv];
     }
 
-    public function copyRecords($tableInfo, $queryClause, $assocField, $assocValue, $defaultValues)
+    public function copyRecords(array  $tableInfo, string $queryClause, string $assocField,
+                                string $assocValue, array $defaultValues): ?string
     {
         $returnValue = null;
         $tableName = $tableInfo["table"] ?? $tableInfo["name"];
@@ -121,12 +124,12 @@ abstract class DB_PDO_Handler
             //$returnValue = $this->dbClassObj->link->lastInsertId($seqObject);
         } catch (Exception $ex) {
             $this->dbClassObj->errorMessageStore($ex->getMessage());
-            return false;
+            return null;
         }
         return $returnValue;
     }
 
-    public function getNumericFields($tableName)
+    public function getNumericFields(string $tableName): array
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -146,7 +149,7 @@ abstract class DB_PDO_Handler
         return $fieldArray;
     }
 
-    public function getNullableFields($tableName)
+    public function getNullableFields(string $tableName): array
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -162,7 +165,7 @@ abstract class DB_PDO_Handler
         return $fieldArray;
     }
 
-    public function getNullableNumericFields($tableName)
+    public function getNullableNumericFields(string $tableName): array
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -174,7 +177,7 @@ abstract class DB_PDO_Handler
         return array_intersect($nullableFields, $numericFields);
     }
 
-    public function getTimeFields($tableName)
+    public function getTimeFields(string $tableName): array
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -190,7 +193,7 @@ abstract class DB_PDO_Handler
         return $fieldArray;
     }
 
-    public function getDateFields($tableName)
+    public function getDateFields(string $tableName): array
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -206,7 +209,7 @@ abstract class DB_PDO_Handler
         return $fieldArray;
     }
 
-    public function getBooleanFields($tableName)
+    public function getBooleanFields(string $tableName): array
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -226,7 +229,7 @@ abstract class DB_PDO_Handler
         return $fieldArray;
     }
 
-    public function getTypedFields($tableName)
+    public function getTypedFields(string $tableName): array
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -265,15 +268,15 @@ abstract class DB_PDO_Handler
         return [$nullableFields, $numericFields, $booleanFields, $timeFields, $dateFields];
     }
 
-    public abstract function quotedEntityName($entityName);
+    public abstract function quotedEntityName(string $entityName): ?string;
 
-    public abstract function optionalOperationInSetup();
+    public abstract function optionalOperationInSetup(): void;
 
-    public abstract function dateResetForNotNull();
+    public abstract function dateResetForNotNull(): string;
 
-    protected abstract function checkNullableField($info);
+    protected abstract function checkNullableField(string $info): bool;
 
-    protected function getTableInfo($tableName)
+    protected function getTableInfo(string $tableName): array
     {
         if (!isset($this->tableInfo[$tableName])) {
             $sql = $this->getTalbeInfoSQL($tableName); // Returns SQL as like 'SHOW COLUMNS FROM $tableName'.
@@ -297,16 +300,16 @@ abstract class DB_PDO_Handler
         return $infoResult;
     }
 
-    protected abstract function getAutoIncrementField($tableName);
+    protected abstract function getAutoIncrementField(string $tableName): ?string;
 
-    protected abstract function getTalbeInfoSQL($tableName);
+    protected abstract function getTalbeInfoSQL(string $tableName): string;
 
     protected abstract function getFieldListsForCopy(
-        $tableName, $keyField, $assocField, $assocValue, $defaultValues);
+        string $tableName, string $keyField, string $assocField, string $assocValue, array $defaultValues):array;
 
-    public abstract function authSupportCanMigrateSHA256Hash($userTable, $hashTable);
+    public abstract function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable):?array;
 
-    private function isTrue($d)
+    private function isTrue(?string $d):bool
     {
         if (is_null($d)) {
             return false;
@@ -324,12 +327,12 @@ abstract class DB_PDO_Handler
      * it happens any kind of warning but errorCode returns 00000 which means no error. There is no other way
      * to call SHOW WARNINGS. Other db engines don't do anything here
      */
-    public function specialErrorHandling($sql)
+    public function specialErrorHandling(string $sql):void
     {
 
     }
 
-    public function getLastInsertId($seqObject)
+    public function getLastInsertId(string $seqObject):?string
     {
         if (!$this->dbClassObj->link) {
             return null;
@@ -337,7 +340,7 @@ abstract class DB_PDO_Handler
         return $this->dbClassObj->link->lastInsertId($seqObject);
     }
 
-    public function lastInsertIdAlt($seqObject, $tableName)
+    public function lastInsertIdAlt(string $seqObject, string $tableName):?string
     {
         $incrementField = $this->getAutoIncrementField($tableName);
         $contextDef = $this->dbClassObj->dbSettings->getDataSourceTargetArray();

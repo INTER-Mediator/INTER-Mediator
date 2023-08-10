@@ -23,7 +23,7 @@ interface Auth_Interface_DB                    // with using table for authentic
 
     public function authSupportRetrieveChallenge(string $uid, string $clientId, bool $isDelete = true): ?string;    // issuedhash
 
-    public function authSupportCheckMediaToken(string $uid): bool;                                // issuedhash
+    public function authSupportCheckMediaToken(string $uid): ?string;                                // issuedhash
 
     public function authSupportRetrieveHashedPassword(string $username): ?string;                    // authuser
 

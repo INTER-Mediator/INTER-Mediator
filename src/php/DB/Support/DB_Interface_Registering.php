@@ -33,13 +33,13 @@ interface DB_Interface_Registering
 
     public function addQueriedPrimaryKeys(string $name): void;
 
-    public function register(string $clientId, string $entity, string $condition, array $pkArray);
+    public function register(string $clientId, string $entity, string $condition, array $pkArray):?string;
 
-    public function unregister(string $clientId, array $tableKeys);
+    public function unregister(string $clientId, array $tableKeys):bool;
 
-    public function matchInRegistered(string $clientId, string $entity, array $pkArray): array;
+    public function matchInRegistered(string $clientId, string $entity, array $pkArray): ?array;
 
-    public function appendIntoRegistered(string $clientId, string $entity, string $pkField, array $pkArray);
+    public function appendIntoRegistered(string $clientId, string $entity, string $pkField, array $pkArray):?array;
 
-    public function removeFromRegistered(string $clientId, string $entity, array $pkArray);
+    public function removeFromRegistered(string $clientId, string $entity, array $pkArray):?array;
 }

@@ -20,8 +20,8 @@ use INTERMediator\DB\Proxy;
 
 class SendSlack extends MessagingProvider
 {
-    private $token = null;
-    private $channel = null;
+    private ?string $token = null;
+    private ?string $channel = null;
 
     public function __construct()
     {
@@ -38,7 +38,7 @@ class SendSlack extends MessagingProvider
      * @param $result  result of query or other db operations.
      * @return mixed (No return)
      */
-    public function processing(Proxy $dbProxy, array $contextDef, array $result)
+    public function processing(Proxy $dbProxy, array $contextDef, array $result):bool
     {
         $options = $dbProxy->dbSettings->getOptions();
         if (isset($options['slack'])) {
@@ -47,8 +47,7 @@ class SendSlack extends MessagingProvider
         }
         $this->channel = $contextDef['subject-constant'] ?? $this->channel;
 
-        $isError = false;
-        $errorMsg = "";
+        $returnValue = true;
         for ($i = 0; $i < count($result); $i++) {
             $channel = $this->channel;
             if (isset($result[$i][$contextDef['subject']]) && isset($contextDef['subject'])) {
@@ -65,7 +64,6 @@ class SendSlack extends MessagingProvider
             $msgURL = "https://slack.com/api/chat.postMessage";
             $header = ["Content-Type: application/json; charset=utf-8", "Authorization: Bearer {$this->token}"];
             $body = json_encode(['channel' => $channel, 'text' => $message]);
-            $info = '';
             $error = '';
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $msgURL);
@@ -82,19 +80,14 @@ class SendSlack extends MessagingProvider
             $errorNumber = curl_errno($ch);
             $dbProxy->logger->setDebugMessage("[SendSlack]Error={$errorNumber}, Response={$response}");
             if (!$errorNumber) {
-                $info = var_export(curl_getinfo($ch), true);
-                $dbProxy->logger->setDebugMessage("[SendSlack]Info={$info}", 2);
-            } else {
-                $isError = true;
-                $errorMsg .= "//{$error}";
                 $error = curl_error($ch);
-                $dbProxy->logger->setErrorMessage("[SendSlack]Info={$error}");
+                $info = var_export(curl_getinfo($ch), true);
+                $dbProxy->logger->setDebugMessage("[SendSlack]Info={$info}, Error={$error}", 2);
+                $this->setWarningMessage(1055, curl_error($ch));
+                $returnValue = false;
             }
             curl_close($ch);
         }
-        if ($isError) {
-            return $errorMsg;
-        }
-        return true;
+        return $returnValue;
     }
 }

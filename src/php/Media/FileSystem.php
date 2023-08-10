@@ -153,7 +153,7 @@ class FileSystem implements UploadingSupport, DownloadingSupport
      * @param $debug
      * @return void
      */
-    public function processing(Proxy $db, string $url, ?array $options, array $files, bool $noOutput, string $field,
+    public function processing(Proxy $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
                                string  $contextname, string $keyfield, string $keyvalue,
                                ?array  $datasource, ?array $dbspec, int $debug): void
     {

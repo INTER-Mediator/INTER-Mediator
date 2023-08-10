@@ -17,7 +17,7 @@ namespace INTERMediator;
 
 use Exception;
 use INTERMediator\DB\Proxy;
-use INTERMediator\DB\DBClass;
+use INTERMediator\DB\Logger;
 
 /**
  *
@@ -31,11 +31,11 @@ class MediaAccess
     /**
      * @var
      */
-    private string $targetKeyField;    // set with the analyzeTarget method.
+    private ?string $targetKeyField;    // set with the analyzeTarget method.
     /**
      * @var
      */
-    private string $targetKeyValue;  // set with the analyzeTarget method.
+    private ?string $targetKeyValue;  // set with the analyzeTarget method.
     /**
      * @var null
      */
@@ -136,7 +136,6 @@ class MediaAccess
              * style URL. In case of an image, $file is just the path info as like above.
              */
             list($file, $isURL) = $this->checkForFileMakerMedia($dbProxyInstance, $file, $isURL);
-
             // Set the target variable
             $file = IMUtil::removeNull($file);
             if (strpos($file, '../') !== false) { // Stop for security reason.
@@ -234,7 +233,7 @@ class MediaAccess
      * @return string
      * @throws Exception
      */
-    private function getClassNameForMedia(bool $isURL, string $target): object
+    private function getClassNameForMedia(bool $isURL, string $target): string
     {
         if (!$isURL) { // File path.
             $className = "FileSystem";

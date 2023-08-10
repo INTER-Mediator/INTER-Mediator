@@ -20,37 +20,37 @@ use Exception;
 
 class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
 {
-    protected $tableInfo = array();
-    protected $fieldNameForField = 'name';
-    protected $fieldNameForType = 'type';
-    protected $fieldNameForNullable = 'is_nullable';
-    protected $numericFieldTypes = array('bigint', 'bit', 'decimal', 'float', 'hierarchyid', 'int', 'money', 'numeric',
-        'real', 'smallint', 'smallmoney', 'tinyint',);
-    protected $timeFieldTypes = ['datetime', 'datetime2', 'datetimeoffset', 'time', 'smalldatetime'];
-    protected $dateFieldTypes = ['date', 'datetimeoffset', 'smalldatetime'];
+    protected array $tableInfo = array();
+    protected string $fieldNameForField = 'name';
+    protected string $fieldNameForType = 'type';
+    protected string $fieldNameForNullable = 'is_nullable';
+    protected array $numericFieldTypes = array('bigint', 'bit', 'decimal', 'float', 'hierarchyid',
+        'int', 'money', 'numeric', 'real', 'smallint', 'smallmoney', 'tinyint',);
+    protected array $timeFieldTypes = ['datetime', 'datetime2', 'datetimeoffset', 'time', 'smalldatetime'];
+    protected array $dateFieldTypes = ['date', 'datetimeoffset', 'smalldatetime'];
     protected $booleanFieldTypes = [];
 
-    public function sqlSELECTCommand()
+    public function sqlSELECTCommand(): string
     {
         return "SELECT ";
     }
 
-    public function sqlLimitCommand($param)
+    public function sqlLimitCommand(string $param): string
     {
         return "LIMIT {$param}";
     }
 
-    public function sqlOffsetCommand($param)
+    public function sqlOffsetCommand(string $param): string
     {
         return "OFFSET {$param}";
     }
 
-    public function dateResetForNotNull()
+    public function dateResetForNotNull(): string
     {
         return '1000-01-01';
     }
 
-    public function sqlOrderByCommand($sortClause, $limit, $offset)
+    public function sqlOrderByCommand(string $sortClause,string  $limit, string $offset): string
     {
         if ($sortClause == '') {
             $tableInfo = $this->dbClassObj->dbSettings->getDataSourceTargetArray();
@@ -66,34 +66,34 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
             . (strlen($limit) > 0 ? "FETCH NEXT {$limit} ROWS ONLY " : "");
     }
 
-    public function sqlDELETECommand()
+    public function sqlDELETECommand(): string
     {
         return "DELETE ";
     }
 
-    public function sqlUPDATECommand()
+    public function sqlUPDATECommand(): string
     {
         return "UPDATE ";
     }
 
-    public function sqlINSERTCommand($tableRef, $setClause)
+    public function sqlINSERTCommand(string $tableRef,string  $setClause): string
     {
         return "INSERT INTO {$tableRef} {$setClause}";
     }
 
-    public function sqlSETClause($tableName, $setColumnNames, $keyField, $setValues)
+    public function sqlSETClause(string $tableName,array $setColumnNames,string  $keyField,array $setValues): string
     {
         [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $setValues);
         return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
-    protected function checkNullableField($info)
+    protected function checkNullableField(string $info): bool
     {
         return $info == 0;
     }
 
-    protected function getTalbeInfoSQL($tableName)
+    protected function getTalbeInfoSQL(string $tableName): string
     {
         $fields = "c.name, t.name type, c.max_length, c.precision, c.scale, c.is_nullable, " .
             "c.is_identity, c.default_object_id, c.is_computed, c.collation_name";
@@ -158,7 +158,8 @@ xml
 
     */
 
-    protected function getFieldListsForCopy($tableName, $keyField, $assocField, $assocValue, $defaultValues)
+    protected function getFieldListsForCopy(string $tableName, string $keyField,string  $assocField,string  $assocValue,
+                                            array $defaultValues): array
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -191,19 +192,19 @@ xml
         return array(implode(',', $fieldArray), implode(',', $listArray));
     }
 
-    public function quotedEntityName($entityName)
+    public function quotedEntityName($entityName): ?string
     {
         return "{$entityName}";
     }
 
-    public function optionalOperationInSetup()
+    public function optionalOperationInSetup(): void
     {
     }
 
 
-    public function authSupportCanMigrateSHA256Hash($userTable, $hashTable)  // authuser, issuedhash
+    public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable):?array  // authuser, issuedhash
     {
-        $checkFieldDefinition = function ($type, $len, $min) {
+        $checkFieldDefinition = function (string $type, int $len, int $min):bool {
             $fDef = strtolower($type);
             if ($fDef != 'text' && $fDef == 'varchar') {
                 if ($len < $min) {
@@ -242,7 +243,7 @@ xml
         return $returnValue;
     }
 
-    protected function getAutoIncrementField($tableName)
+    protected function getAutoIncrementField($tableName): ?string
     {
         // TODO: Implement getAutoIncrementField() method.
     }

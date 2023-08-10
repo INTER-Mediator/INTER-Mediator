@@ -20,27 +20,9 @@ exports.config = {
   // then the current working directory is where your `package.json` resides, so `wdio`
   // will be called from there.
   //
-  specs: [
-    // './test/specs/**/*.js'
-    './test/specs/form_page_mysql.e2e.js',
-    './test/specs/form_page_postgresql.e2e.js',
-    './test/specs/form_page_sqlite.e2e.js',
-    './test/specs/auth_page_basic_mysql.e2e.js',
-    './test/specs/auth_page_basic_postgresql.e2e.js',
-    './test/specs/auth_page_basic_sqlite.e2e.js',
-    './test/specs/editing_page_mysql_numeric.e2e.js',
-    './test/specs/editing_page_mysql_string.e2e.js',
-    './test/specs/editing_page_mysql_datetime.e2e.js',
-    './test/specs/editing_page_postgresql_numeric.e2e.js',
-    './test/specs/editing_page_postgresql_string.e2e.js',
-    './test/specs/editing_page_postgresql_datetime.e2e.js',
-    './test/specs/editing_page_sqlite_numeric.e2e.js',
-    './test/specs/editing_page_sqlite_string.e2e.js',
-    './test/specs/editing_page_sqlite_datetime.e2e.js',
-  ],
-  // Patterns to exclude.
-  exclude: [],
-  //
+  specs: [// './test/specs/**/*.js'
+    './test/specs/form_page_mysql.e2e.js', './test/specs/form_page_postgresql.e2e.js', './test/specs/form_page_sqlite.e2e.js', './test/specs/auth_page_basic_mysql.e2e.js', './test/specs/auth_page_basic_postgresql.e2e.js', './test/specs/auth_page_basic_sqlite.e2e.js', './test/specs/editing_page_mysql_numeric.e2e.js', './test/specs/editing_page_mysql_string.e2e.js', './test/specs/editing_page_mysql_datetime.e2e.js', './test/specs/editing_page_postgresql_numeric.e2e.js', './test/specs/editing_page_postgresql_string.e2e.js', './test/specs/editing_page_postgresql_datetime.e2e.js', './test/specs/editing_page_sqlite_numeric.e2e.js', './test/specs/editing_page_sqlite_string.e2e.js', './test/specs/editing_page_sqlite_datetime.e2e.js',], // Patterns to exclude.
+  exclude: [], //
   // ============
   // Capabilities
   // ============
@@ -56,8 +38,7 @@ exports.config = {
   // and 30 processes will get spawned. The property handles how many capabilities
   // from the same test should run tests.
   //
-  maxInstances: 5,
-  //
+  maxInstances: 5, //
   // If you have trouble getting all important capabilities together, check out the
   // Sauce Labs platform configurator - a great tool to configure your capabilities:
   // https://saucelabs.com/platform/platform-configurator
@@ -67,26 +48,18 @@ exports.config = {
     // maxInstances can get overwritten per capability. So if you have an in-house Selenium
     // grid with only 5 firefox instances available you can make sure that not more than
     // 5 instances get started at a time.
-    maxInstances: 5,
-    //
-    browserName: 'chrome',
-    acceptInsecureCerts: true,
-    'goog:chromeOptions': {
+    maxInstances: 5, //
+    browserName: 'chrome', acceptInsecureCerts: true, 'goog:chromeOptions': {
       args: ['--headless', '--disable-gpu', '--disable-dev-shm-usage'],
     }
   }, {
-    maxInstances: 5,
-    browserName: 'firefox',
-    'moz:firefoxOptions': {
+    maxInstances: 5, browserName: 'firefox', 'moz:firefoxOptions': {
       args: ['-headless']
     }
   }, {
-    maxInstances: 5,
-    browserName: 'safari'
-  }, {
-    maxInstances: 5,
-    browserName: 'MicrosoftEdge',
-    'ms:edgeOptions': {
+  //   maxInstances: 5, browserName: 'safari'
+  // }, {
+    maxInstances: 5, browserName: 'MicrosoftEdge', 'ms:edgeOptions': {
       args: ['--headless']
     }
   }
@@ -94,16 +67,14 @@ exports.config = {
     // it is possible to configure which logTypes to include/exclude.
     // excludeDriverLogs: ['*'], // pass '*' to exclude all driver session logs
     // excludeDriverLogs: ['bugreport', 'server'],
-  ],
-//
+  ], //
 // ===================
 // Test Configurations
 // ===================
 // Define all options that are relevant for the WebdriverIO instance here
 //
 // Level of logging verbosity: trace | debug | info | warn | error | silent
-  logLevel: 'warn',
-  //
+  logLevel: 'warn', //
   // Set specific log levels per logger
   // loggers:
   // - webdriver, webdriverio
@@ -120,29 +91,24 @@ exports.config = {
   //
   // If you only want to run your tests until a specific amount of tests have failed use
   // bail (default is 0 - don't bail, run all tests).
-  bail: 0,
-  //
+  bail: 0, //
   // Set a base URL in order to shorten url command calls. If your `url` parameter starts
   // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
   // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
   // gets prepended directly.
-  baseUrl: 'http://localhost:9000/',
-  //
+  baseUrl: 'http://localhost:9000/', //
   // Default timeout for all waitFor* commands.
-  waitforTimeout: 10000,
-  //
+  waitforTimeout: 10000, //
   // Default timeout in milliseconds for request
   // if browser driver or grid doesn't send response
-  connectionRetryTimeout: 120000,
-  //
+  connectionRetryTimeout: 120000, //
   // Default request retries count
-  connectionRetryCount: 3,
-  //
+  connectionRetryCount: 3, //
   // Test runner services
   // Services take over a specific job you don't want to take care of. They enhance
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
-  services: ['chromedriver', 'geckodriver', 'edgedriver', 'safaridriver'],
+  services: ['chromedriver', 'geckodriver', 'edgedriver'/*, 'safaridriver'*/],
 
   // Framework you want to run your specs with.
   // The following are supported: Mocha, Jasmine, and Cucumber
@@ -150,8 +116,7 @@ exports.config = {
   //
   // Make sure you have the wdio adapter package for the specific framework installed
   // before running any tests.
-  framework: 'mocha',
-  //
+  framework: 'mocha', //
   // The number of times to retry the entire specfile when it fails as a whole
   // specFileRetries: 1,
   //
@@ -171,10 +136,8 @@ exports.config = {
   // Options to be passed to Mocha.
   // See the full list at http://mochajs.org/
   mochaOpts: {
-    ui: 'bdd',
-    timeout: 60000
-  },
-//
+    ui: 'bdd', timeout: 60000
+  }, //
 // =====
 // Hooks
 // =====

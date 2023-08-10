@@ -20,7 +20,7 @@ class DB_Notification_Handler_FileMaker_FX
     extends DB_Notification_Common
     implements DB_Interface_Registering
 {
-    public function isExistRequiredTable()
+    public function isExistRequiredTable(): bool
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -38,7 +38,7 @@ class DB_Notification_Handler_FileMaker_FX
         return true;
     }
 
-    public function register($clientId, $entity, $condition, $pkArray)
+    public function register(string $clientId, string $entity, string $condition, array $pkArray):?string
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -54,7 +54,7 @@ class DB_Notification_Handler_FileMaker_FX
             $this->dbClass->errorMessageStore(
                 $this->dbClass->stringWithoutCredential("FX reports error at insert action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"));
-            return false;
+            return null;
         }
         $newContextId = null;
         foreach ($result['data'] as $recmodid => $recordData) {
@@ -77,14 +77,14 @@ class DB_Notification_Handler_FileMaker_FX
                     $this->dbClass->errorMessageStore(
                         $this->dbClass->stringWithoutCredential("FX reports error at insert action: " .
                             "code={$result['errorCode']}, url={$result['URL']}"));
-                    return false;
+                    return null;
                 }
             }
         }
         return $newContextId;
     }
 
-    public function unregister($clientId, $tableKeys)
+    public function unregister(string $clientId, array $tableKeys):bool
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -116,7 +116,7 @@ class DB_Notification_Handler_FileMaker_FX
         return true;
     }
 
-    public function matchInRegistered($clientId, $entity, $pkArray)
+    public function matchInRegistered(string $clientId, string $entity, array $pkArray): ?array
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -167,7 +167,7 @@ class DB_Notification_Handler_FileMaker_FX
         return array_unique($targetClients);
     }
 
-    public function appendIntoRegistered($clientId, $entity, $pkField, $pkArray)
+    public function appendIntoRegistered(string $clientId, string $entity, string $pkField, array $pkArray):?array
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -180,7 +180,7 @@ class DB_Notification_Handler_FileMaker_FX
             $this->dbClass->errorMessageStore(
                 $this->dbClass->stringWithoutCredential("FX reports error at find action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"));
-            return false;
+            return null;
         } else {
             if ($result['foundCount'] > 0) {
                 foreach ($result['data'] as $recmodid => $recordData) {
@@ -200,7 +200,7 @@ class DB_Notification_Handler_FileMaker_FX
                         $this->dbClass->errorMessageStore(
                             $this->dbClass->stringWithoutCredential("FX reports error at insert action: " .
                                 "code={$result['errorCode']}, url={$result['URL']}"));
-                        return false;
+                        return null;
                     }
                     $this->logger->setDebugMessage("Inserted count: " . $result['foundCount'], 2);
                 }
@@ -209,7 +209,7 @@ class DB_Notification_Handler_FileMaker_FX
         return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }
 
-    public function removeFromRegistered($clientId, $entity, $pkArray)
+    public function removeFromRegistered(string $clientId, string $entity, array $pkArray): ?array
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -222,7 +222,7 @@ class DB_Notification_Handler_FileMaker_FX
             $this->dbClass->errorMessageStore(
                 $this->dbClass->stringWithoutCredential("FX reports error at find action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"));
-            return false;
+            return null;
         } else {
             if ($result['foundCount'] > 0) {
                 foreach ($result['data'] as $recmodid => $recordData) {

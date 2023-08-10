@@ -48,7 +48,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
 
     }
 
-    public function register($clientId, $entity, $condition, $pkArray) /*: bool|int|string */
+    public function register(string $clientId, string $entity, string $condition, array $pkArray):?string
     {
         $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
         $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
@@ -68,7 +68,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         $result = $this->dbClass->link->exec($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO][ERROR] Delete:{$sql}");
-            return false;
+            return null;
         }
 
         // Register displaying records to registereddt
@@ -81,7 +81,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         $result = $this->dbClass->link->exec($sql);
         if ($result !== 1) {
             $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO][ERROR] Insert: {$sql}");
-            return false;
+            return null;
         }
         if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) {
             $newContextId = $this->dbClass->link->lastInsertId("registeredcontext_id_seq");
@@ -100,7 +100,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                 if ($result < 1) {
                     $this->logger->setDebugMessage("[DB_Notification_Handler_PDO][ERROR] {$this->dbClass->link->errorInfo()}");
                     $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO][ERROR] Insert: {$sql}");
-                    return false;
+                    return null;
                 }
             }
         } else {
@@ -119,14 +119,14 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                 if ($result < 1) {
                     $this->logger->setDebugMessage("[DB_Notification_Handler_PDO][ERROR] {$this->dbClass->link->errorInfo()}");
                     $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO][ERROR] Insert: {$sql}");
-                    return false;
+                    return null;
                 }
             }
         }
         return $newContextId;
     }
 
-    public function unregister($clientId, $tableKeys)
+    public function unregister(string $clientId, array $tableKeys):bool
     {
         $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
         if (!$this->dbClass->setupConnection()) { //Establish the connection
@@ -169,12 +169,12 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         return true;
     }
 
-    public function matchInRegistered($clientId, $entity, $pkArray): array
+    public function matchInRegistered(string $clientId, string $entity, array $pkArray): ?array
     {
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] matchInRegistered / clientId={$clientId}, entity={$entity}, pkArray=" . var_export($pkArray, true));
 
         if (!$this->dbClass->setupConnection()) { //Establish the connection
-            return false;
+            return null;
         }
         if (!isset($pkArray[0])) {
             return [];
@@ -190,7 +190,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore("Select: {$sql}");
-            return false;
+            return null;
         }
         $targetClients = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
@@ -199,7 +199,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         return array_unique($targetClients);
     }
 
-    public function appendIntoRegistered($clientId, $entity, $pkField, $pkArray)
+    public function appendIntoRegistered(string $clientId, string $entity, string $pkField, array $pkArray):?array
     {
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] appendIntoRegistered / clientId={$clientId}, entity={$entity}, pkField={$pkField}, pkArray=" . var_export($pkArray, true));
         //$this->logger->setDebugMessage("[DB_Notification_Handler_PDO] contextDef=" . var_export($this->dbSettings->getDataSourceTargetArray(), true));
@@ -209,21 +209,21 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
 //        $contextDef = $this->dbSettings->getDataSourceTargetArray();
         if (!$pkField) {
             $this->dbClass->errorMessageStore("The entity {$entity} doesn't have the 'key'.");
-            return false;
+            return null;
         }
 //        $keyField = $contextDef['key'];
         if (!$this->dbClass->setupConnection()) { //Establish the connection
-            return false;
+            return null;
         }
         if (!$pkArray || !isset($pkArray[0])) {
-            return false;
+            return null;
         }
         $sql = "SELECT id,clientid,conditions FROM {$regTable} WHERE entity = " . $this->dbClass->link->quote($entity);
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore("Select:{$sql}");
-            return false;
+            return null;
         }
         $targetClients = [];
         $conditionToContent = [];
@@ -237,7 +237,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                 $resultContent = $this->dbClass->link->query($sql);
                 if ($resultContent === false) {
                     $this->dbClass->errorMessageStore("Select:{$sql}");
-                    return false;
+                    return null;
                 }
                 $conditionToContent[$row['conditions']] = [];
                 foreach ($resultContent->fetchAll(PDO::FETCH_ASSOC) as $rowContent) {
@@ -256,26 +256,26 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
                 $result = $this->dbClass->link->query($sql);
                 if ($result === false) {
                     $this->dbClass->errorMessageStore("[DB_Notification_Handler_PDO] Insert: {$sql}");
-                    return false;
+                    return null;
                 }
             }
         }
         return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }
 
-    public function removeFromRegistered($clientId, $entity, $pkArray)
+    public function removeFromRegistered(string $clientId, string $entity, array $pkArray): ?array
     {
         $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
         $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
         if (!$this->dbClass->setupConnection()) { //Establish the connection
-            return false;
+            return null;
         }
         $sql = "SELECT id,clientid FROM {$regTable} WHERE entity = " . $this->dbClass->link->quote($entity);
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore("Select:{$sql}");
-            return false;
+            return null;
         }
         $targetClients = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
@@ -289,7 +289,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
             $resultDelete = $this->dbClass->link->query($sql);
             if ($resultDelete === false) {
                 $this->dbClass->errorMessageStore("Delete:{$sql}");
-                return false;
+                return null;
             }
             $this->logger->setDebugMessage("Deleted count: {$resultDelete->rowCount()}", 2);
         }

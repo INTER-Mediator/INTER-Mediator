@@ -29,34 +29,38 @@ class PDO extends DBClass
 {
     use Support\DB_PDO_SQLSupport;
 
-    public $link = null;       // Connection with PDO's link
-    private $mainTableCount = 0;
-    private $mainTableTotalCount = 0;
-    private $fieldInfo = null;
-    private $isAlreadySetup = false;
-    private $isRequiredUpdated = false;
-    private $updatedRecord = null;
-    private $softDeleteField = null;
-    private $softDeleteValue = null;
-    private $isFollowingTimezones;
-    private $isSuppressDVOnCopy;
-    private $isSuppressDVOnCopyAssoc;
-    private $isSuppressAuthTargetFillingOnCreate;
+    public ?\PDO $link = null;       // Connection with PDO's link
+    private int $mainTableCount = 0;
+    private int $mainTableTotalCount = 0;
+    private ?array $fieldInfo = null;
+    private bool $isAlreadySetup = false;
+    private bool $isRequiredUpdated = false;
+    private ?array $updatedRecord = null;
+    private ?string $softDeleteField = null;
+    private ?string $softDeleteValue = null;
+    private bool $useSetDataToUpdatedRecord = false;
+    private bool $isFollowingTimezones;
+    private bool $isSuppressDVOnCopy;
+    private bool $isSuppressDVOnCopyAssoc;
+    private bool $isSuppressAuthTargetFillingOnCreate;
 
     public function __construct()
     {
-        [$this->isFollowingTimezones, $this->isSuppressDVOnCopy,
-            $this->isSuppressDVOnCopyAssoc, $this->isSuppressAuthTargetFillingOnCreate]
-            = Params::getParameterValue(["followingTimezones", "suppressDefaultValuesOnCopy",
-            "suppressDefaultValuesOnCopyAssoc", "suppressAuthTargetFillingOnCreate",], false);
+        $this->isFollowingTimezones = Params::getParameterValue("followingTimezones", false);
+        $this->isSuppressDVOnCopy
+            = Params::getParameterValue("suppressDefaultValuesOnCopy", false);
+        $this->isSuppressDVOnCopyAssoc
+            = Params::getParameterValue("suppressDefaultValuesOnCopyAssoc", false);
+        $this->isSuppressAuthTargetFillingOnCreate
+            = Params::getParameterValue("suppressAuthTargetFillingOnCreate", false);
     }
 
-    public function getUpdatedRecord()
+    public function getUpdatedRecord(): ?array
     {
         return $this->updatedRecord;
     }
 
-    public function updatedRecord()
+    public function updatedRecord(): ?array
     {
         return $this->updatedRecord;
     }
@@ -64,39 +68,37 @@ class PDO extends DBClass
     /* Usually a setter method has just one parameter, but the same named method existed on previous version
        and possibly calling it from user program. So if it has more than one parameter, it might call old
        method and redirect to previous one. (msyk, 2021-11-03) */
-    public function setUpdatedRecord($record, $value = false, $index = 0)
+    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
     {
-        if ($value === false) {
+        if (!$value) {
             $this->updatedRecord = $record;
         } else { // Previous use of this method redirect to setDataToUpdatedRecord
             $this->setDataToUpdatedRecord($record, $value, $index);
         }
     }
 
-    public function setDataToUpdatedRecord($field, $value, $index = 0)
+    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
     {
         $this->updatedRecord[$index][$field] = $value;
         $this->useSetDataToUpdatedRecord = true;
     }
 
-    private $useSetDataToUpdatedRecord = false;
-
-    public function getUseSetDataToUpdatedRecord()
+    public function getUseSetDataToUpdatedRecord(): bool
     {
         return $this->useSetDataToUpdatedRecord;
     }
 
-    public function clearUseSetDataToUpdatedRecord()
+    public function clearUseSetDataToUpdatedRecord(): void
     {
         $this->useSetDataToUpdatedRecord = false;
     }
 
-    public function requireUpdatedRecord($value)
+    public function requireUpdatedRecord(bool $value): void
     {
         $this->isRequiredUpdated = $value;
     }
 
-    public function softDeleteActivate($field, $value)
+    public function softDeleteActivate(string $field, string $value): void
     {
         $this->softDeleteField = $field;
         $this->softDeleteValue = $value;
@@ -105,7 +107,7 @@ class PDO extends DBClass
     /**
      * @param $str
      */
-    public function errorMessageStore($str)
+    public function errorMessageStore(string $str): void
     {
         if ($this->link) {
             $errorInfo = var_export($this->link->errorInfo(), true);
@@ -115,7 +117,7 @@ class PDO extends DBClass
         }
     }
 
-    private function errorHandlingPDO($sql, $result)
+    private function errorHandlingPDO(string $sql, $result)
     {
         $errorCode = $this->link->errorCode();
         $errorClass = is_null($errorCode) ? "00" : substr($errorCode, 0, 2);
@@ -140,7 +142,7 @@ class PDO extends DBClass
     /**
      * @return bool
      */
-    public function setupConnection()
+    public function setupConnection(): bool
     {
         if ($this->isAlreadySetup) {
             return true;
@@ -160,9 +162,9 @@ class PDO extends DBClass
         return true;
     }
 
-    public function setupHandlers($dsn = false)
+    public function setupHandlers(?string $dsn = null): void
     {
-        if ($dsn === false) {
+        if (!$dsn) {
             $dsn = $this->dbSettings->getDbSpecDSN();
         }
         if (!is_null($this->dbSettings)) {
@@ -174,7 +176,7 @@ class PDO extends DBClass
         $this->notifyHandler = new Support\DB_Notification_Handler_PDO($this);
     }
 
-    public function setupWithDSN($dsnString)
+    public function setupWithDSN(string $dsnString): bool
     {
         if ($this->isAlreadySetup) {
             return true;
@@ -193,13 +195,13 @@ class PDO extends DBClass
      * @param $dataSourceName
      * @return array|bool
      */
-    function readFromDB()
+    public function readFromDB(): ?array
     {
         $this->fieldInfo = null;
         $this->mainTableCount = 0;
         $this->mainTableTotalCount = 0;
         if (!$this->setupConnection()) { //Establish the connection
-            return false;
+            return null;
         }
 
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -216,7 +218,7 @@ class PDO extends DBClass
                         $this->logger->setDebugMessage($sql);
                         $result = $this->link->query($sql);
                         if (!$this->errorHandlingPDO($sql, $result)) {
-                            return false;
+                            return null;
                         }
                     }
                 }
@@ -298,9 +300,8 @@ class PDO extends DBClass
         $result = $this->link->query($sql);
 
 
-
         if (!$this->errorHandlingPDO($sql, $result)) {
-            return false;
+            return null;
         }
         $this->notifyHandler->setQueriedPrimaryKeys(array());
         $keyField = $this->getKeyFieldOfContext($tableInfo);
@@ -347,7 +348,7 @@ class PDO extends DBClass
                         $this->logger->setDebugMessage($sql);
                         $result = $this->link->query($sql);
                         if (!$this->errorHandlingPDO($sql, $result)) {
-                            return false;
+                            return null;
                         }
                     }
                 }
@@ -360,7 +361,7 @@ class PDO extends DBClass
      * @param $dataSourceName
      * @return int
      */
-    public function countQueryResult()
+    public function countQueryResult(): int
     {
         return $this->mainTableCount;
     }
@@ -369,7 +370,7 @@ class PDO extends DBClass
      * @param $dataSourceName
      * @return int
      */
-    public function getTotalCount()
+    public function getTotalCount(): int
     {
         return $this->mainTableTotalCount;
     }
@@ -378,7 +379,7 @@ class PDO extends DBClass
      * @param $dataSourceName
      * @return bool
      */
-    function updateDB($bypassAuth)
+    public function updateDB(bool $bypassAuth): bool
     {
         $this->fieldInfo = null;
         if (!$this->setupConnection()) { //Establish the connection
@@ -547,12 +548,11 @@ class PDO extends DBClass
      * @param $bypassAuth
      * @return bool
      */
-    public
-    function createInDB($isReplace = false)
+    public function createInDB($isReplace = false): ?string
     {
         $this->fieldInfo = null;
         if (!$this->setupConnection()) { //Establish the connection
-            return false;
+            return null;
         }
 
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -581,7 +581,7 @@ class PDO extends DBClass
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
                     if (!$this->errorHandlingPDO($sql, $result)) {
-                        return false;
+                        return null;
                     }
                 }
             }
@@ -642,7 +642,7 @@ class PDO extends DBClass
         $this->logger->setDebugMessage($sql);
         $result = $this->link->exec($sql);
         if (!$this->errorHandlingPDO($sql, $result)) {
-            return false;
+            return null;
         }
         $seqObject = $tableInfo['sequence'] ?? "{$this->dbSettings->getEntityForUpdate()}_{$keyField}_seq";
         $lastKeyValue = $this->handler->lastInsertIdAlt($seqObject, $tableNameRow); // $this->link->lastInsertId($seqObject);
@@ -675,7 +675,7 @@ class PDO extends DBClass
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
                     if (!$this->errorHandlingPDO($sql, $result)) {
-                        return false;
+                        return null;
                     }
                 }
             }
@@ -687,7 +687,7 @@ class PDO extends DBClass
      * @param $dataSourceName
      * @return bool
      */
-    function deleteFromDB()
+    public function deleteFromDB(): bool
     {
         $this->fieldInfo = null;
         if (!$this->setupConnection()) { //Establish the connection
@@ -738,11 +738,11 @@ class PDO extends DBClass
         return true;
     }
 
-    function copyInDB()
+    public function copyInDB(): ?string
     {
         $this->fieldInfo = null;
         if (!$this->setupConnection()) { //Establish the connection
-            return false;
+            return null;
         }
 
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -761,7 +761,7 @@ class PDO extends DBClass
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
                     if (!$this->errorHandlingPDO($sql, $result)) {
-                        return false;
+                        return null;
                     }
                 }
             }
@@ -770,7 +770,7 @@ class PDO extends DBClass
         $queryClause = $this->getWhereClause('delete', false, true, $signedUser);
         if ($queryClause == '') {
             $this->errorMessageStore('Don\'t copy with no ciriteria.');
-            return false;
+            return null;
         }
         $defaultValues = array();
         if (!$this->isSuppressDVOnCopy && isset($tableInfo['default-values'])) {
@@ -779,8 +779,8 @@ class PDO extends DBClass
             }
         }
         $lastKeyValue = $this->handler->copyRecords($tableInfo, $queryClause, null, null, $defaultValues);
-        if ($lastKeyValue === false || is_null($lastKeyValue)) {
-            return false;
+        if (is_null($lastKeyValue)) {
+            return null;
         }
         $this->notifyHandler->setQueriedPrimaryKeys(array($lastKeyValue));
         $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityAsSource());
@@ -807,7 +807,7 @@ class PDO extends DBClass
             $result = $this->link->query($sql);
             $this->logger->setDebugMessage($sql);
             if (!$this->errorHandlingPDO($sql, $result)) {
-                return false;
+                return null;
             }
             $sqlResult = $this->getResultRelation($result, $timeFields);
             $this->updatedRecord = $sqlResult;
@@ -819,7 +819,7 @@ class PDO extends DBClass
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
                     if (!$this->errorHandlingPDO($sql, $result)) {
-                        return false;
+                        return null;
                     }
                 }
             }
@@ -828,7 +828,7 @@ class PDO extends DBClass
     }
 
     private
-    function getKeyFieldOfContext($context)
+    function getKeyFieldOfContext(array $context): string
     {
         return $context['key'] ?? $this->specHandler->getDefaultKey();
     }
@@ -837,13 +837,13 @@ class PDO extends DBClass
      * @param $dataSourceName
      * @return null
      */
-    function getFieldInfo($dataSourceName)
+    public function getFieldInfo(string $dataSourceName): ?array
     {
         return $this->fieldInfo;
     }
 
     private
-    function isTrue($d)
+    function isTrue($d): bool // $d is mixed
     {
         if (is_null($d)) {
             return false;
@@ -856,16 +856,15 @@ class PDO extends DBClass
         return false;
     }
 
-    public
-    function queryForTest($table, $conditions = null)
+    public function queryForTest(string $table, ?array $conditions = null): ?array
     {
         if ($table == null) {
             $this->errorMessageStore("The table doesn't specified.");
-            return false;
+            return null;
         }
         if (!$this->setupConnection()) { //Establish the connection
             $this->errorMessageStore("Can't open db connection . ");
-            return false;
+            return null;
         }
         $sql = "{$this->handler->sqlSELECTCommand()}* FROM " . $this->handler->quotedEntityName($table);
         if (is_array($conditions) && count($conditions) > 0) {
@@ -876,13 +875,13 @@ class PDO extends DBClass
                     $sql .= " and ";
                 }
                 $sql .= $this->handler->quotedEntityName($field) . " = " . $this->link->quote($value);
-                $first = false;
+                $first = null;
             }
         }
         $result = $this->link->query($sql);
         if ($result === false) {
             var_dump($this->link->errorInfo());
-            return false;
+            return null;
         }
         $this->logger->setDebugMessage("[queryForTest] {
         $sql}");
@@ -897,8 +896,7 @@ class PDO extends DBClass
         return $recordSet;
     }
 
-    public
-    function deleteForTest($table, $conditions = null)
+    public function deleteForTest(string $table, ?array $conditions = null): bool
     {
         if ($table == null) {
             $this->errorMessageStore("The table doesn't specified.");
@@ -933,32 +931,27 @@ class PDO extends DBClass
     /*
      * Transaction
      */
-    public
-    function hasTransaction()
+    public function hasTransaction(): bool
     {
         return true;
     }
 
-    public
-    function inTransaction()
+    public function inTransaction(): bool
     {
         return $this->link->inTransaction();
     }
 
-    public
-    function beginTransaction()
+    public function beginTransaction(): void
     {
         $this->link->beginTransaction();
     }
 
-    public
-    function commitTransaction()
+    public function commitTransaction(): void
     {
         $this->link->commit();
     }
 
-    public
-    function rollbackTransaction()
+    public function rollbackTransaction(): void
     {
         $this->link->rollBack();
     }
@@ -969,8 +962,7 @@ class PDO extends DBClass
      * @return array
      * @throws Exception
      */
-    private
-    function getResultRelation($result, array $timeFields): array
+    private function getResultRelation($result, array $timeFields): array
     {
         $sqlResult = array();
         $isFirstRow = true;
@@ -996,7 +988,7 @@ class PDO extends DBClass
         return $sqlResult;
     }
 
-    public function closeDBOperation()
+    public function closeDBOperation(): void
     {
         // Do nothing
     }

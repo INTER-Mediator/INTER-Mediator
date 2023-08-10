@@ -23,102 +23,101 @@ use RetrieveFM7Data;
 
 class FileMaker_FX extends DBClass
 {
-    public $fx = null;
-    public $fxAuth = null;
-    public $fxAlt = null;
-    private $mainTableCount = 0;
-    private $mainTableTotalCount = 0;
-    private $fieldInfo = null;
-    private $updatedRecord = null;
-    private $softDeleteField = null;
-    private $softDeleteValue = null;
-    private $errorMessage = [];
+    public ?FX $fx = null;
+    public ?FX $fxAuth = null;
+    public ?FX $fxAlt = null;
+    private int $mainTableCount = 0;
+    private int $mainTableTotalCount = 0;
+    private ?array $fieldInfo = null;
+    private ?array $updatedRecord = null;
+    private ?string $softDeleteField = null;
+    private ?string $softDeleteValue = null;
+    private bool $useSetDataToUpdatedRecord = false;
 
     /**
      * @param $str
      */
-    private function errorMessageStore($str)
+    private function errorMessageStore(string $str)
     {
         $this->logger->setErrorMessage("Query Error: [{$str}] Error Code={$this->fx->lastErrorCode}");
     }
 
-    public function setupConnection()
+    public function setupConnection(): bool
     {
         return true;
     }
 
-    public function requireUpdatedRecord($value)
+    public function requireUpdatedRecord(bool $value): void
     {
         // always can get the new record for FileMaker Server.
     }
 
-    public function getUpdatedRecord()
+    public function getUpdatedRecord(): ?array
     {
         return $this->updatedRecord;
     }
 
-    public function updatedRecord(){
+    public function updatedRecord()
+    {
         return $this->updatedRecord;
     }
 
     /* Usually a setter method has just one parameter, but the same named method existed on previous version
        and possibly calling it from user program. So if it has more than one parameter, it might call old
        method and redirect to previous one. (msyk, 2021-11-03) */
-    public function setUpdatedRecord($record, $value=false, $index = 0)
+    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
     {
-        if($value === false) {
+        if (!$value) {
             $this->updatedRecord = $record;
         } else { // Previous use of this method redirect to setDataToUpdatedRecord
             $this->setDataToUpdatedRecord($record, $value, $index);
         }
     }
 
-    public function setDataToUpdatedRecord($field, $value, $index = 0)
+    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
     {
         $this->updatedRecord[$index][$field] = $value;
         $this->useSetDataToUpdatedRecord = true;
     }
 
-    private $useSetDataToUpdatedRecord = false;
-
-    public function getUseSetDataToUpdatedRecord()
+    public function getUseSetDataToUpdatedRecord(): bool
     {
         return $this->useSetDataToUpdatedRecord;
     }
 
-    public function clearUseSetDataToUpdatedRecord()
+    public function clearUseSetDataToUpdatedRecord(): void
     {
         $this->useSetDataToUpdatedRecord = false;
     }
 
 
-    public function softDeleteActivate($field, $value)
+    public function softDeleteActivate(string $field, string $value): void
     {
         $this->softDeleteField = $field;
         $this->softDeleteValue = $value;
     }
 
-    public function setupFXforAuth($layoutName, $recordCount)
+    public function setupFXforAuth(string $layoutName, int $recordCount): void
     {
         $this->fx = null;
         $this->fxAuth = $this->setupFX_Impl($layoutName, $recordCount,
             $this->dbSettings->getDbSpecUser(), $this->dbSettings->getDbSpecPassword());
     }
 
-    public function setupFXforDB($layoutName, $recordCount)
+    public function setupFXforDB(string $layoutName, int $recordCount): void
     {
         $this->fxAuth = null;
         $this->fx = $this->setupFX_Impl($layoutName, $recordCount,
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
     }
 
-    public function setupFXforDB_Alt($layoutName, $recordCount)
+    public function setupFXforDB_Alt(string $layoutName, int $recordCount): void
     {
         $this->fxAlt = $this->setupFX_Impl($layoutName, $recordCount,
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
     }
 
-    private function setupFX_Impl($layoutName, $recordCount, $user, $password)
+    private function setupFX_Impl(string $layoutName, int $recordCount, $user, $password)
     {
         $path = __DIR__ . '/../../../vendor/inter-mediator/fxphp' .
             '/lib/datasource_classes/RetrieveFM7Data.class.php';
@@ -140,14 +139,14 @@ class FileMaker_FX extends DBClass
         return $fxObj;
     }
 
-    public function setupHandlers($dsn = false)
+    public function setupHandlers(?string $dsn = null): void
     {
         $this->authHandler = new Support\DB_Auth_Handler_FileMaker_FX($this);
         $this->notifyHandler = new Support\DB_Notification_Handler_FileMaker_FX($this);
         $this->specHandler = new Support\DB_Spec_Handler_FileMaker_FX();
     }
 
-    public function stringWithoutCredential($str)
+    public function stringWithoutCredential(string $str): string
     {
         if (is_null($this->fx)) {
             $str = str_replace($this->dbSettings->getDbSpecUser(), "********", $str ?? "");
@@ -158,22 +157,22 @@ class FileMaker_FX extends DBClass
         }
     }
 
-    public function closeDBOperation()
+    public function closeDBOperation(): void
     {
         // Do nothing
     }
 
-    private function stringReturnOnly($str)
+    private function stringReturnOnly(string $str): string
     {
         return str_replace("\n\r", "\r", str_replace("\n", "\r", $str ?? ""));
     }
 
-    private function unifyCRLF($str)
+    private function unifyCRLF(string $str): string
     {
         return str_replace("\n", "\r", str_replace("\r\n", "\r", $str ?? ""));
     }
 
-    private function setSearchConditionsForCompoundFound($field, $value, $operator = NULL)
+    private function setSearchConditionsForCompoundFound(string $field, string $value, ?string $operator = NULL): array
     {
         if ($operator === NULL || $operator === 'neq') {
             return array($field, $value);
@@ -198,7 +197,7 @@ class FileMaker_FX extends DBClass
         }
     }
 
-    private function executeScriptsforLoading($scriptContext)
+    private function executeScriptsforLoading(?array $scriptContext): string
     {
         $queryString = '';
         if (is_array($scriptContext)) {
@@ -238,7 +237,7 @@ class FileMaker_FX extends DBClass
         return $queryString;
     }
 
-    private function executeScripts($fxphp, $condition)
+    private function executeScripts(FX $fxphp, array $condition): FX
     {
         if ($condition['situation'] == 'pre') {
             $fxphp->PerformFMScriptPrefind($condition['definition']);
@@ -260,12 +259,12 @@ class FileMaker_FX extends DBClass
         return $fxphp;
     }
 
-    public function getFieldInfo($dataSourceName)
+    public function getFieldInfo(string $dataSourceName): ?array
     {
         return $this->fieldInfo;
     }
 
-    public function getSchema($dataSourceName)
+    public function getSchema(string $dataSourceName): array
     {
         $this->fieldInfo = null;
 
@@ -293,7 +292,7 @@ class FileMaker_FX extends DBClass
         return $returnArray;
     }
 
-    public function readFromDB()
+    public function readFromDB(): ?array
     {
         $useOrOperation = false;
         $this->fieldInfo = null;
@@ -913,7 +912,8 @@ class FileMaker_FX extends DBClass
         return $recordArray;
     }
 
-    private function createRecordset($resultData, $dataSourceName, $usePortal, $childRecordId, $childRecordIdValue)
+    private function createRecordset(array  $resultData, string $dataSourceName, bool $usePortal,
+                                     string $childRecordId, string $childRecordIdValue): array
     {
         $isFirstRecord = true;
         $returnArray = array();
@@ -999,17 +999,17 @@ class FileMaker_FX extends DBClass
         return $returnArray;
     }
 
-    public function countQueryResult()
+    public function countQueryResult(): int
     {
         return $this->mainTableCount;
     }
 
-    public function getTotalCount()
+    public function getTotalCount(): int
     {
         return $this->mainTableTotalCount;
     }
 
-    public function updateDB($bypassAuth)
+    public function updateDB(bool $bypassAuth): bool
     {
         $this->fieldInfo = null;
         $dataSourceName = $this->dbSettings->getDataSourceName();
@@ -1219,7 +1219,7 @@ class FileMaker_FX extends DBClass
         return true;
     }
 
-    public function createInDB($isReplace = false)
+    public function createInDB(bool $isReplace = false): ?string
     {
         $this->fieldInfo = null;
 
@@ -1335,16 +1335,16 @@ class FileMaker_FX extends DBClass
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
-                $this->errorMessage[] = get_class($result) . ': ' . $result->getDebugInfo();
+                $this->errorMessageStore(get_class($result) . ': ' . $result->getDebugInfo());
             }
-            return false;
+            return null;
         }
 
         $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
         if ($result['errorCode'] > 0 && $result['errorCode'] != 401) {
             $this->logger->setErrorMessage($this->stringWithoutCredential(
                 "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>"));
-            return false;
+            return null;
         }
         foreach ($result['data'] as $key => $row) {
             if ($keyFieldName == $this->specHandler->getDefaultKey()) {
@@ -1363,7 +1363,7 @@ class FileMaker_FX extends DBClass
         return $keyValue;
     }
 
-    public function deleteFromDB()
+    public function deleteFromDB(): bool
     {
         $this->fieldInfo = null;
 
@@ -1441,14 +1441,14 @@ class FileMaker_FX extends DBClass
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
-                $this->errorMessage[] = get_class($result) . ': ' . $result->getDebugInfo();
+                $this->errorMessageStore(get_class($result) . ': ' . $result->getDebugInfo());
             }
             return false;
         }
         $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
         //$this->logger->setDebugMessage($this->stringWithoutCredential(var_export($result['data'],true)));
         if ($result['errorCode'] > 0) {
-            $this->errorMessage[] = "FX reports error at find action: code={$result['errorCode']}, url={$result['URL']}<hr>";
+            $this->errorMessageStore("FX reports error at find action: code={$result['errorCode']}, url={$result['URL']}");
             return false;
         }
         if ($result['foundCount'] != 0) {
@@ -1501,12 +1501,13 @@ class FileMaker_FX extends DBClass
         return true;
     }
 
-    public function copyInDB()
+    public function copyInDB(): ?string
     {
-        $this->errorMessage[] = "Copy operation is not implemented so far.";
+        $this->errorMessageStore("Copy operation is not implemented so far.");
+        return null;
     }
 
-    private function getFieldForFormatter($entity, $field)
+    private function getFieldForFormatter(string $entity, string $field): string
     {
         if (strpos($field, "::") === false) {
             return "{$entity}{$this->dbSettings->getSeparator()}{$field}";
@@ -1529,7 +1530,7 @@ class FileMaker_FX extends DBClass
         return "{$entity}{$this->dbSettings->getSeparator()}{$field}";
     }
 
-    public function normalizedCondition($condition)
+    private function normalizedCondition(array $condition): array
     {
         if (!isset($condition['field'])) {
             $condition['field'] = '';
@@ -1599,11 +1600,11 @@ class FileMaker_FX extends DBClass
         }
     }
 
-    public function queryForTest($table, $conditions = null)
+    public function queryForTest(string $table, ?array $conditions = null): ?array
     {
         if ($table == null) {
             $this->errorMessageStore("The table doesn't specified.");
-            return false;
+            return null;
         }
         $this->setupFXforAuth($table, 'all');
         if (count($conditions) > 0) {
@@ -1617,7 +1618,7 @@ class FileMaker_FX extends DBClass
             $result = $this->fxAuth->DoFxAction('show_all', TRUE, TRUE, 'full');
         }
         if ($result === false) {
-            return false;
+            return null;
         }
         $recordSet = array();
         foreach ($result['data'] as $key => $row) {
@@ -1630,7 +1631,7 @@ class FileMaker_FX extends DBClass
         return $recordSet;
     }
 
-    protected function _adjustSortDirection($direction)
+    protected function _adjustSortDirection(string $direction): string
     {
         if (strtoupper($direction) == 'ASC') {
             $direction = 'ascend';
@@ -1641,7 +1642,7 @@ class FileMaker_FX extends DBClass
         return $direction;
     }
 
-    protected function _field_exists($fieldName)
+    protected function _field_exists(string $fieldName): bool
     {
         $config = array(
             'urlScheme' => $this->fx->urlScheme,
@@ -1664,37 +1665,36 @@ class FileMaker_FX extends DBClass
                 return true;
             }
         }
-
         return false;
     }
 
-    public function deleteForTest($table, $conditions = null)
+    public function deleteForTest(string $table, ?array $conditions = null): bool
     {
-        // TODO: Implement deleteForTest() method.
+        return false;
     }
 
     /*
  * Transaction
  */
-    public function inTransaction()
+    public function inTransaction(): bool
     {
         return false;
     }
 
-    public function hasTransaction()
+    public function hasTransaction(): bool
     {
         return false;
     }
 
-    public function beginTransaction()
+    public function beginTransaction(): void
     {
     }
 
-    public function commitTransaction()
+    public function commitTransaction(): void
     {
     }
 
-    public function rollbackTransaction()
+    public function rollbackTransaction(): void
     {
     }
 

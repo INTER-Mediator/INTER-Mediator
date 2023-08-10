@@ -24,7 +24,6 @@ IM_Entry(
             "key" => "id",
             "repeat-control" => "insert delete",
             "records" => 10000,
-            "paging" => true,
             "sort" => [["field" => "dt1", "direction" => "DESC",],],
             "file-upload" => [["field" => "text1", "context" => "fileupload"],],
             "authentication" => ["media-handling" => true],
@@ -38,7 +37,6 @@ IM_Entry(
     [
         "media-root-dir" => "/tmp",
         "authentication" => [
-//            "user" => ["user1", "user2"],
             "authexpired" => "10",
             "storing" => "credential",
         ],

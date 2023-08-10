@@ -71,11 +71,11 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         return;
     }
 
-    public function authSupportCheckMediaToken(string $uid): bool
+    public function authSupportCheckMediaToken(string $uid): ?string
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
-            return false;
+            return null;
         }
         if ($uid < 1) {
             $uid = 0;
@@ -86,7 +86,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         $result = $this->dbClass->fxAuth->DoFxAction('perform_find', TRUE, TRUE, 'full');
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->dbClass->getDebugInfo());
-            return false;
+            return null;
         }
         $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         foreach ($result['data'] as $key => $row) {
@@ -99,7 +99,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
             }
             return $hashValue;
         }
-        return false;
+        return null;
     }
 
     public function authSupportRetrieveChallenge(string $uid, string $clientId, bool $isDelete = true): ?string

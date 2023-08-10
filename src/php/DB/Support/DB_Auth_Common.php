@@ -52,7 +52,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return $operations;
     }
 
-    function getFieldForAuthorization(string $operation): string
+    public function getFieldForAuthorization(string $operation): ?string
     {
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -69,7 +69,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return $authInfoField;
     }
 
-    function getTargetForAuthorization(string $operation):string
+    public function getTargetForAuthorization(string $operation): ?string
     {
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -86,7 +86,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return $authInfoTarget;
     }
 
-    function getNoSetForAuthorization(string $operation):?string
+    function getNoSetForAuthorization(string $operation): ?string
     {
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();

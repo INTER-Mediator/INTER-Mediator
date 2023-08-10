@@ -2,18 +2,20 @@
 
 namespace INTERMediator\DB\Support;
 
+use INTERMediator\DB\Proxy;
+
 abstract class OperationLogExtension
 {
-    protected $proxy;
-    protected $result;
+    protected Proxy $proxy;
+    protected ?array $result;
 
-    public function __construct($proxy, $result = null)
+    public function __construct(Proxy $proxy, ?array $result = null)
     {
         $this->proxy = $proxy;
         $this->result = $result;
     }
 
-    public abstract function extendingFields();
+    public abstract function extendingFields(): array;
 
-    public abstract function valueForField($field);
+    public abstract function valueForField(string $field): string;
 }

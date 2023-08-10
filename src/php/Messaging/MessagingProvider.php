@@ -16,7 +16,9 @@
 
 namespace INTERMediator\Messaging;
 
+use INTERMediator\DB\Logger;
 use INTERMediator\DB\Proxy;
+use INTERMediator\IMUtil;
 
 /**
  * Interface MessagingProvider
@@ -28,9 +30,17 @@ abstract class MessagingProvider
      * @param $dbProxy Proxy class's instance.
      * @param $contextDef array The context definition array of current context.
      * @param $result string The result of query or other db operations.
-     * @return mixed (No return)
+     * @return string for warning messsage, no messege error or succed return null.
      */
-    public abstract function processing(Proxy $dbProxy, array $contextDef, array $result);
+    public abstract function processing(Proxy $dbProxy, array $contextDef, array $result): bool;
+
+    protected function setWarningMessage(int $num, string $message): void
+    {
+        $messageClass = IMUtil::getMessageClassInstance();
+        $headMsg = $messageClass->getMessageAs($num);
+        $logger = Logger::getInstance();
+        $logger->setWarningMessage("{$headMsg} {$message}");
+    }
 
     public function modernTemplating(array $record, string $tempStr, bool $ignoreField = false): string
     {

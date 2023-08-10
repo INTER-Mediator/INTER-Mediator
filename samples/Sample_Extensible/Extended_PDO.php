@@ -19,7 +19,7 @@ use DateTime;
 
 class Extended_PDO extends PDO
 {
-    function readFromDB()
+    public function readFromDB():?array
     {
         $result = parent::readFromDB();
         $dataSourceName = $this->dbSettings->getDataSourceName();

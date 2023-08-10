@@ -101,11 +101,11 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         return;
     }
 
-    public function authSupportCheckMediaToken(string $uid): bool
+    public function authSupportCheckMediaToken(string $uid): ?string
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
-            return false;
+            return null;
         }
         if ($uid < 1) {
             $uid = 0;
@@ -122,7 +122,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $this->logger->setDebugMessage(
                 $this->dbClass->stringWithoutCredential(get_class($result) . ': ' .
                     $this->dbClass->fmDataAuth->{$hashTable}->getDebugInfo()));
-            return false;
+            return null;
         }
 
         if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
@@ -139,11 +139,11 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $currentDT = new DateTime();
             $seconds = $currentDT->format("U") - $expiredDT->format("U");
             if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
-                return false;
+                return null;
             }
             return $hashValue;
         }
-        return false;
+        return null;
     }
 
     public function authSupportRetrieveChallenge(string $uid, string $clientId, bool $isDelete = true): ?string

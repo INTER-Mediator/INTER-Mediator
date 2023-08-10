@@ -75,7 +75,7 @@ class NotifyServer
      * @param $pkArray
      * @return mixed
      */
-    public function register(string $entity, array $condition, array $pkArray)
+    public function register(string $entity, array $condition, array $pkArray): ?string
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] register", 2);
         if ($this->dbClass->notifyHandler) {
@@ -89,13 +89,13 @@ class NotifyServer
      * @param $tableKeys
      * @return mixed
      */
-    public function unregister(string $client, array $tableKeys)
+    public function unregister(string $client, array $tableKeys): bool
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] unregister", 2);
         if ($this->dbClass && $this->dbClass->notifyHandler) {
             return $this->dbClass->notifyHandler->unregister($client, $tableKeys);
         }
-        return null;
+        return false;
     }
 
     /**
@@ -121,7 +121,7 @@ class NotifyServer
      * @param $pkArray
      * @param $record
      */
-    public function created(string $clientId, string $entity, array $pkArray, string $pkField, array $record, bool $isNotify):void
+    public function created(string $clientId, string $entity, array $pkArray, string $pkField, array $record, bool $isNotify): void
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] created", 2);
         if ($this->dbClass && $this->dbClass->notifyHandler) {
@@ -136,7 +136,7 @@ class NotifyServer
      * @param $entity
      * @param $pkArray
      */
-    public function deleted(string $clientId, string $entity, array $pkArray):void
+    public function deleted(string $clientId, string $entity, array $pkArray): void
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] deleted", 2);
         if ($this->dbClass && $this->dbClass->notifyHandler) {

@@ -16,30 +16,24 @@
 namespace INTERMediator\Messaging;
 
 use INTERMediator\DB\Proxy;
-use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
 class SendMail extends MessagingProvider
 {
-    private $isCompatible = true;
+    private bool $isCompatible;
 
     public function __construct()
     {
         $this->isCompatible = Params::getParameterValue("sendMailCompatibilityMode", false);
     }
 
-    public function processing(Proxy $dbProxy, array $sendMailParam, array $result)
+    public function processing(Proxy $dbProxy, array $sendMailParam, array $result): bool
     {
-        return $this->processingImpl($dbProxy, $sendMailParam, $result, $dbProxy->dbSettings->getSmtpConfiguration());
-    }
-
-    private function processingImpl(Proxy $dbProxy, array $sendMailParam, array $result, ?array $smtpConfig)
-    {
+        $smtpConfig = $dbProxy->dbSettings->getSmtpConfiguration();
         if (isset($sendMailParam['template-context'])) {
             $this->isCompatible = false;
         }
-        $isError = false;
-        $errorMsg = "";
+        $returnValue = true;
         for ($i = 0; $i < (is_array($result) ? count($result) : 0); $i++) {
             $isErrorThisRecord = false;
             $ome = new OME();
@@ -76,8 +70,9 @@ class SendMail extends MessagingProvider
                     $items = explode(",", $sendMailParam['to-constant']);
                     foreach ($items as $item) {
                         $ome->appendToField(trim($item));
+                        $dbProxy->logger->setDebugMessage("[Messaging\SendMail] set address {$item}", 2);
                     }
-                } else if (isset($result[$i][$sendMailParam['to']]) && isset($sendMailParam['to'])) {
+                } else if (isset($sendMailParam['to']) && isset($result[$i][$sendMailParam['to']])) {
                     $items = explode(",", $result[$i][$sendMailParam['to']]);
                     foreach ($items as $item) {
                         $ome->appendToField(trim($item));
@@ -88,7 +83,7 @@ class SendMail extends MessagingProvider
                     foreach ($items as $item) {
                         $ome->appendCcField(trim($item));
                     }
-                } else if (isset($result[$i][$sendMailParam['cc']]) && isset($sendMailParam['cc'])) {
+                } else if (isset($sendMailParam['cc']) && isset($result[$i][$sendMailParam['cc']])) {
                     $items = explode(",", $result[$i][$sendMailParam['cc']]);
                     foreach ($items as $item) {
                         $ome->appendCcField(trim($item));
@@ -99,7 +94,7 @@ class SendMail extends MessagingProvider
                     foreach ($items as $item) {
                         $ome->appendBccField(trim($item));
                     }
-                } else if (isset($result[$i][$sendMailParam['bcc']]) && isset($sendMailParam['bcc'])) {
+                } else if (isset($sendMailParam['bcc']) && isset($result[$i][$sendMailParam['bcc']])) {
                     $items = explode(",", $result[$i][$sendMailParam['bcc']]);
                     foreach ($items as $item) {
                         $ome->appendBccField(trim($item));
@@ -107,12 +102,12 @@ class SendMail extends MessagingProvider
                 }
                 if (isset($sendMailParam['from-constant'])) {
                     $ome->setFromField($sendMailParam['from-constant']);
-                } else if (isset($result[$i][$sendMailParam['from']]) && isset($sendMailParam['from'])) {
+                } else if (isset($sendMailParam['from']) && isset($result[$i][$sendMailParam['from']])) {
                     $ome->setFromField($result[$i][$sendMailParam['from']]);
                 }
                 if (isset($sendMailParam['subject-constant'])) {
                     $ome->setSubject($this->modernTemplating($result[$i], $sendMailParam['subject-constant']));
-                } else if (isset($result[$i][$sendMailParam['subject']]) && isset($sendMailParam['subject'])) {
+                } else if (isset($sendMailParam['subject']) && isset($result[$i][$sendMailParam['subject']])) {
                     $ome->setSubject($result[$i][$sendMailParam['subject']]);
                 }
 
@@ -205,12 +200,10 @@ class SendMail extends MessagingProvider
                     }
                 }
                 if (count($unsentAddrs) > 0) {
-                    $messageClass = IMUtil::getMessageClassInstance();
-                    $headMsg = $messageClass->getMessageAs(1050);
-                    $errorMsg .= "{$headMsg}" . implode(', ', $unsentAddrs) . "\n";
                     $isErrorThisRecord = true;
-                    $isError = true;
+                    $returnValue = false;
                     $dbProxy->logger->setDebugMessage("[Messaging\SendMail] Cancel to send for bad address: " . implode(', ', $unsentAddrs), 2);
+                    $this->setWarningMessage(1050, implode(', ', $unsentAddrs));
                 }
                 $ome->setFromField(trim($this->modernTemplating($result[$i], $mailSeed['from'])));
                 $ome->setSubject($this->modernTemplating($result[$i], $mailSeed['subject']));
@@ -268,14 +261,11 @@ class SendMail extends MessagingProvider
                 } else {
                     $dbProxy->logger->setDebugMessage("[Messaging\SendMail] !!! Fail to send mail. "
                         . $ome->getErrorMessage(), 2);
-                    $isError = true;
-                    $errorMsg .= ((strlen($errorMsg) > 0) ? " / " : '') . $ome->getErrorMessage();
+                    $this->setWarningMessage(1051, $ome->getErrorMessage());
+                    $returnValue = false;
                 }
             }
         }
-        if ($isError) {
-            return $errorMsg;
-        }
-        return true;
+        return $returnValue;
     }
 }

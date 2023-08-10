@@ -26,7 +26,7 @@ class EnrollStart extends UseSharedObjects implements BeforeCreate, AfterCreate
         $this->dbSettings->addValueWithField("hashedpasswd", "dummydummydummy");
     }
 
-    public function doAfterCreateToDB($result)
+    public function doAfterCreateToDB($result): ?array
     {
         $createdRecord = $this->dbClass->getUpdatedRecord();
         $hash = $this->proxyObject->userEnrollmentStart($createdRecord[0]["id"]);

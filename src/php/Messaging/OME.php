@@ -42,6 +42,7 @@
 
 namespace INTERMediator\Messaging;
 
+use Exception;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
@@ -53,28 +54,25 @@ use Symfony\Component\Mime\Address;
 
 class OME
 {
-    private $bodyWidth = 74;
-    private $mailEncoding = "UTF-8";
+    private int $bodyWidth = 74;
+    private string $mailEncoding = "UTF-8";
+    private string $body = '';
+    private ?string $bodyType = '';
+    private string $subject = '';
+    private string $toField = '';
+    private string $ccField = '';
+    private string $bccField = '';
+    private string $fromField = '';
+    private string $extHeaders = '';
+    private string $errorMessage = '';
+    private string $sendmailParam = '';
+    private string $tmpContents = '';
+    private array $attachments = [];
+    private ?array $smtpInfo = null;
+    private bool $isSetCurrentDateToHead = false;
+    private bool $isUseSendmailParam = false;
 
-    private $body = '';
-    private $bodyType = '';
-    private $subject = '';
-    private $toField = '';
-    private $ccField = '';
-    private $bccField = '';
-    private $fromField = '';
-    private $extHeaders = '';
-    private $errorMessage = '';
-    private $sendmailParam = '';
-    private $tmpContents = '';
-    private $attachments = [];
-
-    private $senderAddress = null;
-    private $smtpInfo = null;
-    private $isSetCurrentDateToHead = false;
-    private $isUseSendmailParam = false;
-
-    private $waitMS = 0;
+    private int $waitMS;
 
     function __construct()
     {
@@ -89,27 +87,27 @@ class OME
      *
      * @return string 日本語のエラーメッセージの文字列
      */
-    public function getErrorMessage()
+    public function getErrorMessage(): string
     {
         return $this->errorMessage;
     }
 
-    public function setSmtpInfo($info)
+    public function setSmtpInfo(array $info): void
     {
         $this->smtpInfo = $info;
     }
 
-    public function setMailEncoding($info)
+    public function setMailEncoding(string $info): void
     {
         $this->mailEncoding = $info;
     }
 
-    public function setCurrentDateToHead()
+    public function setCurrentDateToHead(): void
     {
         $this->isSetCurrentDateToHead = true;
     }
 
-    public function useSendMailParam()
+    public function useSendMailParam(): void
     {
         $this->isUseSendmailParam = true;
     }
@@ -118,13 +116,13 @@ class OME
      *
      * @param string メールの本文に設定する文字列
      */
-    public function setBody($str, $type = false)
+    public function setBody(string $str, string $type = null): void
     {
         $this->body = $str;
         $this->bodyType = $type;
     }
 
-    public function getBody()
+    public function getBody(): string
     {
         return $this->body;
     }
@@ -133,7 +131,7 @@ class OME
      *
      * @param string メールの本文に追加する文字列
      */
-    public function appendBody($str)
+    public function appendBody(string $str): void
     {
         $this->body .= $str;
     }
@@ -142,7 +140,7 @@ class OME
      *
      * @param string メールの件名に設定する文字列
      */
-    public function setSubject($str)
+    public function setSubject(string $str): void
     {
         $this->subject = $str;
     }
@@ -151,7 +149,7 @@ class OME
      *
      * @return string メールの件名に設定する文字列
      */
-    public function getSubject()
+    public function getSubject(): string
     {
         return $this->subject;
     }
@@ -161,7 +159,7 @@ class OME
      * @param string    追加するヘッダのフィールド
      * @param string    フィールドの値。日本語を含める場合は自分でエンコードを行う
      */
-    public function setExtraHeader($field, $value)
+    public function setExtraHeader(string $field, string $value): void
     {
         $this->extHeaders = "$field: $value\n";
     }
@@ -170,13 +168,13 @@ class OME
      *
      * @param string    追加のパラメータ。この文字列がそのままmb_send_mail関数の5つ目の引数となる
      */
-    public function setSendMailParam($param)
+    public function setSendMailParam(string $param): void
     {
         $this->sendmailParam = $param;
         $this->isUseSendmailParam = true;
     }
 
-    private function divideMailAddress($addr)
+    private function divideMailAddress(string $addr): array
     {
         if (strlen($addr) > 1) {
             $lpos = mb_strpos($addr, '<');
@@ -184,10 +182,10 @@ class OME
             if ($lpos !== false && $rpos !== false) {
                 $name = trim(mb_substr($addr, 0, $lpos)) . trim(mb_substr($addr, $rpos + 1));
                 $addr = trim(mb_substr($addr, $lpos + 1, $rpos - $lpos - 1));
-                return array('name' => $name, 'address' => $addr);
+                return array($addr, $name);
             }
         }
-        return array('name' => '', 'address' => trim($addr));
+        return array(trim($addr), '');
     }
 
     /**    メールアドレスが正しい形式かどうかを判断する。
@@ -197,7 +195,7 @@ class OME
      * @param string    チェックするメールアドレス。
      * @return    boolean    正しい形式ならTRUE、そうではないときはFALSE
      */
-    public function checkEmail($address)
+    public function checkEmail(?string $address): bool
     {
         if (is_null($address)) {
             $this->errorMessage = "アドレス“{$address}”は空です。";
@@ -218,12 +216,10 @@ class OME
      * @param boolean    送信者アドレスを自動的にsendmailの-fパラメータとして与えて、Return-Pathのアドレスとして使用する場合はTRUE。既定値はFALSE
      * @return    boolean    与えたメールアドレスが正しく、引数が適切に利用されればTRUEを返す。メールアドレスが正しくないとFALSEを戻し、内部変数等には与えた引数のデータは記録されない
      */
-    public function setFromField($address, $name = false, $isSetToParam = FALSE)
+    public function setFromField(string $address, ?string $name = null, bool $isSetToParam = FALSE): bool
     {
-        if ($name === false) {
-            $divided = $this->divideMailAddress($address);
-            $address = $divided['address'];
-            $name = $divided['name'];
+        if (is_null($name) || $name === false) {
+            [$address, $name] = $this->divideMailAddress($address);
         }
         if ($this->checkEmail($address)) {
             if ($name == '') {
@@ -231,15 +227,15 @@ class OME
             } else {
                 $this->fromField = "$name <$address>";
             }
-            if ($isSetToParam || $this->isUseSendmailParam)
+            if ($isSetToParam || $this->isUseSendmailParam) {
                 $this->sendmailParam = "-f $address";
-            $this->senderAddress = $address;
+            }
             return true;
         }
         return false;
     }
 
-    public function getFromField()
+    public function getFromField(): string
     {
         return $this->fromField;
     }
@@ -251,25 +247,24 @@ class OME
      * @return    boolean    与えたメールアドレスが正しく、引数が適切に利用されればTRUEを返す。メールアドレスが正しくないとFALSEを戻し、内部変数等には与えた引数のデータは記録されない
      *
      */
-    public function setToField($address, $name = false)
+    public function setToField(string $address, ?string $name = null): bool
     {
-        if ($name === false) {
-            $divided = $this->divideMailAddress($address);
-            $address = $divided['address'];
-            $name = $divided['name'];
+        if (is_null($name) || $name === false) {
+            [$address, $name] = $this->divideMailAddress($address);
         }
         if ($this->checkEmail($address)) {
-            if ($name == '' || $name === false)
+            if ($name == '' || $name === false) {
                 $this->toField = "$address";
-            else
+            } else {
                 $this->toField = "$name <$address>";
+            }
             return true;
         }
         return false;
     }
 
     // Getter of the To field.
-    public function getToField()
+    public function getToField(): string
     {
         return $this->toField;
     }
@@ -280,12 +275,10 @@ class OME
      * @param string    送信者名。日本語の指定も可能
      * @return boolean メールアドレスを調べて不正ならfalse（アドレスは追加されない）、そうでなければtrue
      */
-    public function appendToField($address, $name = false)
+    public function appendToField(string $address, ?string $name = null): bool
     {
-        if ($name === false) {
-            $divided = $this->divideMailAddress($address);
-            $address = $divided['address'];
-            $name = $divided['name'];
+        if (is_null($name) || $name === false) {
+            [$address, $name] = $this->divideMailAddress($address);
         }
         if ($this->checkEmail($address)) {
             if ($name == '' || $name === false)
@@ -302,7 +295,7 @@ class OME
     }
 
     // Getter of the Cc field.
-    public function getCcField()
+    public function getCcField(): string
     {
         return $this->ccField;
     }
@@ -313,12 +306,10 @@ class OME
      * @param string    送信者名
      * @return boolean    メールアドレスを調べて不正ならfalse（アドレスは設定されない）、そうでなければtrue
      */
-    public function setCcField($address, $name = false)
+    public function setCcField(string $address, ?string $name = null): bool
     {
-        if ($name === false) {
-            $divided = $this->divideMailAddress($address);
-            $address = $divided['address'];
-            $name = $divided['name'];
+        if (is_null($name) || $name === false) {
+            [$address, $name] = $this->divideMailAddress($address);
         }
         if ($this->checkEmail($address)) {
             if ($name == '' || $name === false)
@@ -336,12 +327,10 @@ class OME
      * @param string 送信者名
      * @return boolean    メールアドレスを調べて不正ならfalse（アドレスは追加されない）、そうでなければtrue
      */
-    public function appendCcField($address, $name = false)
+    public function appendCcField(string $address, ?string $name = null): bool
     {
-        if ($name === false) {
-            $divided = $this->divideMailAddress($address);
-            $address = $divided['address'];
-            $name = $divided['name'];
+        if (is_null($name) || $name === false) {
+            [$address, $name] = $this->divideMailAddress($address);
         }
         if ($this->checkEmail($address)) {
             if ($name == '' || $name === false)
@@ -358,7 +347,7 @@ class OME
     }
 
     // Getter of the Bcc field.
-    public function getBccField()
+    public function getBccField(): string
     {
         return $this->bccField;
     }
@@ -369,12 +358,10 @@ class OME
      * @param string 送信者名
      * @return boolean メールアドレスを調べて不正ならfalse（アドレスは設定されない）、そうでなければtrue
      */
-    public function setBccField($address, $name = false)
+    public function setBccField(string $address, ?string $name = null): bool
     {
-        if ($name === false) {
-            $divided = $this->divideMailAddress($address);
-            $address = $divided['address'];
-            $name = $divided['name'];
+        if (is_null($name) || $name === false) {
+            [$address, $name] = $this->divideMailAddress($address);
         }
         if ($this->checkEmail($address)) {
             if ($name == '' || $name === false)
@@ -392,12 +379,10 @@ class OME
      * @param string 送信者名
      * @return string メールアドレスを調べて不正ならfalse（アドレスは追加されない）、そうでなければtrue
      */
-    public function appendBccField($address, $name = false)
+    public function appendBccField(string $address, ?string $name = null): bool
     {
-        if ($name === false) {
-            $divided = $this->divideMailAddress($address);
-            $address = $divided['address'];
-            $name = $divided['name'];
+        if (is_null($name) || $name === false) {
+            [$address, $name] = $this->divideMailAddress($address);
         }
         if ($this->checkEmail($address)) {
             if ($name == '' || $name === false)
@@ -418,7 +403,7 @@ class OME
      * @param string テンプレートファイル。たとえば、同一のディレクトリにあるファイルなら、ファイル名だけを記述すればよい。
      * @return boolean ファイルの中身を読み込めた場合true、ファイルがないなどのエラーの場合はfalse
      */
-    public function setTemplateAsFile($tfile)
+    public function setTemplateAsFile(string $tfile): bool
     {
         $fileContensArray = file($tfile);
         if ($fileContensArray) {
@@ -433,7 +418,7 @@ class OME
      *
      * @param string    テンプレートとして利用する文字列
      */
-    public function setTemplateAsString($str)
+    public function setTemplateAsString(string $str): void
     {
         $this->tmpContents = $str;
     }
@@ -452,7 +437,7 @@ class OME
      * そうでなければfalse（たとえばテンプレートに "@@x@@" などの置き換え文字列が残っている場合。
      * それでも可能な限り置き換えを行い、置き換え文字列は削除される）
      */
-    public function insertToTemplate($ar)
+    public function insertToTemplate(array $ar): bool
     {
         $tempBody = $this->tmpContents;
         $returnValue = TRUE;
@@ -474,7 +459,7 @@ class OME
      *
      * @param integer 改行を行うバイト数。0を指定すると自動改行しない。
      */
-    public function setBodyWidth($bytes)
+    public function setBodyWidth(int $bytes): void
     {
         $this->bodyWidth = $bytes;
     }
@@ -484,7 +469,7 @@ class OME
      * @param string 調べる文字列
      * @return boolean 含まれていたらTRUEを返す
      */
-    private function checkControlCodeNothing($str)
+    private function checkControlCodeNothing(string $str): bool
     {
         return mb_ereg_match("/[[:cntrl:]]/", $str);
     }
@@ -492,7 +477,7 @@ class OME
     /**    添付ファイルを指定する
      * @param string 添付するファイルへのパス
      */
-    public function addAttachment($fpath)
+    public function addAttachment(string $fpath): void
     {
         $this->attachments[] = $fpath;
     }
@@ -504,7 +489,7 @@ class OME
      *
      * @return boolean メールが送信できればtrue、送信できなければFALSE
      */
-    public function send()
+    public function send(): bool
     {
         if ($this->checkControlCodeNothing($this->toField)) {
             $this->errorMessage = '宛先の情報にコントロールコードが含まれています。';
@@ -634,7 +619,7 @@ class OME
             $resultMail = true;
             try {
                 (new Mailer(Transport::fromDsn($url)))->send($email);
-            } catch (ExceptionInterface $e) {
+            } catch (Exception $e) {
                 $headMsg = (IMUtil::getMessageClassInstance())->getMessageAs(1050);
                 $exceptionMessage = $e->getMessage();
                 if (strlen($exceptionMessage) > 0) {
@@ -649,7 +634,7 @@ class OME
         return $resultMail;
     }
 
-    private function recepientsArray($ar)
+    private function recepientsArray(array $ar): array
     {
         mb_regex_encoding('UTF-8');
         $result = [];
@@ -657,10 +642,10 @@ class OME
             $str = trim($item);
             if (strlen($str) > 1) {
                 $r = $this->divideMailAddress($str);
-                if (strlen($r['name']) > 0) {
-                    $result[$r['address']] = $r['name'];
+                if (strlen($r[1]) > 0) {
+                    $result[$r[0]] = $r[1];
                 } else {
-                    $result[] = $r['address'];
+                    $result[] = $r[0];
                 }
             } else {
                 $result[] = $str;
@@ -669,7 +654,7 @@ class OME
         return $result;
     }
 
-    private function recepientsAddressArray($ar)
+    private function recepientsAddressArray(array $ar): array
     {
         mb_regex_encoding('UTF-8');
         $result = [];
@@ -677,8 +662,8 @@ class OME
             $str = trim($item);
             if (strlen($str) > 1) {
                 $r = $this->divideMailAddress($str);
-                if ($r['address']) {
-                    $result[] = $r['name'] ? new Address($r['address'], $r['name']) : new Address($r['address']);
+                if ($r[0]) {
+                    $result[] = $r[1] ? new Address($r[0], $r[1]) : new Address($r[0]);
                 }
             }
         }
@@ -690,7 +675,7 @@ class OME
      * @param string 処理対象の文字列
      * @return string 分割された文字列
      */
-    private function devideWithLimitingWidth($str)
+    private function devideWithLimitingWidth(string $str): string
     {
         $maxByteCount = 2;
         if ($this->bodyWidth == 0)
@@ -735,7 +720,7 @@ class OME
         return $devidedStr;
     } // End of function devideWithLimitingWidth()
 
-    private function unifyCRLF($str)
+    private function unifyCRLF(string $str): string
     {
         $strUnifiedLF = str_replace("\r", "\n", str_replace("\r\n", "\n", $str));
         return str_replace("\n", "\r\n", $strUnifiedLF);
@@ -746,7 +731,7 @@ class OME
      * @param string 処理対象の文字
      * @return boolean 空白ならTRUE
      */
-    private function isSpace($str)
+    private function isSpace(string $str): bool
     {
         switch ($str) {
             case " ":
@@ -761,7 +746,7 @@ class OME
      * @param string 処理対象の文字
      * @return boolean 単語を構成する文字ならTRUE
      */
-    private function isWordElement($str)
+    private function isWordElement(string $str): bool
     {
         if ($this->isSpace($str)) return False;
         $cCode = ord($str);
@@ -779,7 +764,7 @@ class OME
      * @param string 処理対象の文字
      * @return boolean 日本語ならTRUE
      */
-    private function isJapanese($str)
+    private function isJapanese(string $str): bool
     {
         $cCode = ord($str);
         if ($cCode >= 0x80) return True;
@@ -791,7 +776,7 @@ class OME
      * @param string 処理対象の文字
      * @return boolean 行頭禁則文字ならTRUE
      */
-    private function isInhibitLineTopChar($str)
+    private function isInhibitLineTopChar(string $str): bool
     {
         switch ($str) {
             case ')':
@@ -833,7 +818,7 @@ class OME
      * @param string 処理対象の文字
      * @return boolean 行末禁則文字ならTRUE
      */
-    private function isInhibitLineEndChar($str)
+    private function isInhibitLineEndChar(string $str): bool
     {
         switch ($str) {
             case '(':
@@ -864,7 +849,7 @@ class OME
      * @param boolean  日本語と英語の境目を改行する
      * @return string MIMEエンコードした文字列
      */
-    private function header_base64_encode($str, $isSeparateLine)
+    private function header_base64_encode(string $str, bool $isSeparateLine): string
     {
         $strLen = mb_strlen($str);
         $encodedString = '';

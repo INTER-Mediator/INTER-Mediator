@@ -17,42 +17,44 @@ namespace INTERMediator\DB;
 
 use Exception;
 use INTERMediator\FileMakerServer\RESTAPI\FMDataAPI;
+use INTERMediator\FileMakerServer\RESTAPI\Supporting\FileMakerRelation;
 use INTERMediator\IMUtil;
 
 class FileMaker_DataAPI extends DBClass
 {
-    public $fmData = null;     // FMDataAPI class's instance
-    public $fmDataAuth = null; // FMDataAPI class's instance
-    public $fmDataAlt = null;  // FMDataAPI class's instance
-    private $targetLayout = null;
-    private $recordCount = null;
-    private $mainTableCount = 0;
-    private $mainTableTotalCount = 0;
-    private $fieldInfo = null;
-    private $updatedRecord = null;
-    private $softDeleteField = null;
-    private $softDeleteValue = null;
-    private $errorMessage = [];
+    public ?FMDataAPI $fmData = null;     // FMDataAPI class's instance
+    public ?FMDataAPI $fmDataAuth = null; // FMDataAPI class's instance
+    public ?FMDataAPI $fmDataAlt = null;  // FMDataAPI class's instance
+    private ?string $targetLayout = null;
+    private int $recordCount = 0;
+    private int $mainTableCount = 0;
+    private int $mainTableTotalCount = 0;
+    private ?array $fieldInfo = null;
+    private ?array $updatedRecord = null;
+    private ?string $softDeleteField = null;
+    private ?string $softDeleteValue = null;
+    private array $errorMessage = [];
+    private bool $useSetDataToUpdatedRecord = false;
 
     /**
      * @param $str
      */
-    public function errorMessageStore($str)
+    public function errorMessageStore(string $str)
     {
         $this->logger->setErrorMessage("Query Error: [{$str}] Error Code={$this->fmData->errorCode()}");
     }
 
-    public function setupConnection()
+    public function setupConnection(): bool
     {
         return true;
     }
 
-    public function requireUpdatedRecord($value)
+    public function requireUpdatedRecord(bool $value): void
     {
         // always can get the new record for FileMaker Server.
     }
 
-    public function getUpdatedRecord()
+    public function getUpdatedRecord(): ?array
     {
         return $this->updatedRecord;
     }
@@ -65,60 +67,58 @@ class FileMaker_DataAPI extends DBClass
     /* Usually a setter method has just one parameter, but the same named method existed on previous version
       and possibly calling it from user program. So if it has more than one parameter, it might call old
       method and redirect to previous one. (msyk, 2021-11-03) */
-    public function setUpdatedRecord($record, $value = false, $index = 0)
+    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
     {
-        if ($value === false) {
+        if (!$value) {
             $this->updatedRecord = $record;
         } else { // Previous use of this method redirect to setDataToUpdatedRecord
             $this->setDataToUpdatedRecord($record, $value, $index);
         }
     }
 
-    public function setDataToUpdatedRecord($field, $value, $index = 0)
+    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
     {
         $this->updatedRecord[$index][$field] = $value;
         $this->useSetDataToUpdatedRecord = true;
     }
 
-    private $useSetDataToUpdatedRecord = false;
-
-    public function getUseSetDataToUpdatedRecord()
+    public function getUseSetDataToUpdatedRecord(): bool
     {
         return $this->useSetDataToUpdatedRecord;
     }
 
-    public function clearUseSetDataToUpdatedRecord()
+    public function clearUseSetDataToUpdatedRecord(): void
     {
         $this->useSetDataToUpdatedRecord = false;
     }
 
-    public function softDeleteActivate($field, $value)
+    public function softDeleteActivate(string $field, string $value): void
     {
         $this->softDeleteField = $field;
         $this->softDeleteValue = $value;
     }
 
-    public function setupFMDataAPIforAuth($layoutName, $recordCount)
+    public function setupFMDataAPIforAuth(string $layoutName, int $recordCount): void
     {
         $this->fmData = null;
         $this->fmDataAuth = $this->setupFMDataAPI_Impl($layoutName, $recordCount,
             $this->dbSettings->getDbSpecUser(), $this->dbSettings->getDbSpecPassword());
     }
 
-    public function setupFMDataAPIforDB($layoutName, $recordCount)
+    public function setupFMDataAPIforDB(string $layoutName, int $recordCount): void
     {
         $this->fmDataAuth = null;
         $this->fmData = $this->setupFMDataAPI_Impl($layoutName, $recordCount,
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
     }
 
-    public function setupFMDataAPIforDB_Alt($layoutName, $recordCount)
+    public function setupFMDataAPIforDB_Alt(string $layoutName, int $recordCount): void
     {
         $this->fmDataAlt = $this->setupFMDataAPI_Impl($layoutName, $recordCount,
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
     }
 
-    private function setupFMDataAPI_Impl($layoutName, $recordCount, $user, $password)
+    private function setupFMDataAPI_Impl(string $layoutName, int $recordCount, string $user, string $password): FMDataAPI
     {
         $this->targetLayout = $layoutName;
         $this->recordCount = $recordCount;
@@ -164,14 +164,14 @@ class FileMaker_DataAPI extends DBClass
         return $fmDataObj;
     }
 
-    public function setupHandlers($dsn = false)
+    public function setupHandlers(?string $dsn = null): void
     {
         $this->authHandler = new Support\DB_Auth_Handler_FileMaker_DataAPI($this);
         $this->notifyHandler = new Support\DB_Notification_Handler_FileMaker_DataAPI($this);
         $this->specHandler = new Support\DB_Spec_Handler_FileMaker_DataAPI();
     }
 
-    public function closeDBOperation()
+    public function closeDBOperation(): void
     {
         if ($this->fmData) {
             $this->fmData->endCommunication();
@@ -184,7 +184,7 @@ class FileMaker_DataAPI extends DBClass
         }
     }
 
-    public function stringWithoutCredential($str)
+    public function stringWithoutCredential(string $str)
     {
         if (is_null($this->fmData)) {
             $str = str_replace($this->dbSettings->getDbSpecUser(), "********", $str ?? "");
@@ -195,18 +195,18 @@ class FileMaker_DataAPI extends DBClass
         }
     }
 
-    private function stringReturnOnly($str)
+    private function stringReturnOnly(string $str)
     {
         return str_replace("\n\r", "\r", str_replace("\n", "\r", $str ?? ""));
     }
 
-    private function unifyCRLF($str)
+    private function unifyCRLF(string $str)
     {
         return str_replace("\n", "\r", str_replace("\r\n", "\r", $str ?? ""));
     }
 
 
-    private function setSearchConditionsForCompoundFound($field, $value, $operator = NULL)
+    private function setSearchConditionsForCompoundFound(string $field, string $value, ?string $operator = NULL)
     {
         if ($operator === NULL) {
             return array($field, $value);
@@ -230,7 +230,7 @@ class FileMaker_DataAPI extends DBClass
         return null;
     }
 
-    private function executeScripts($scriptContext)
+    private function executeScripts(?array $scriptContext): ?array
     {
         $script = array();
         if (is_array($scriptContext)) {
@@ -266,16 +266,15 @@ class FileMaker_DataAPI extends DBClass
                 }
             }
         }
-
         return $script === array() ? NULL : $script;
     }
 
-    public function getFieldInfo($dataSourceName)
+    public function getFieldInfo(string $dataSourceName): ?array
     {
         return $this->fieldInfo;
     }
 
-    public function getSchema($dataSourceName)
+    public function getSchema(string $dataSourceName)
     {
         $this->fieldInfo = null;
 
@@ -312,7 +311,7 @@ class FileMaker_DataAPI extends DBClass
         return $returnArray;
     }
 
-    public function readFromDB()
+    public function readFromDB(): ?array
     {
         $useOrOperation = FALSE;
         $this->fieldInfo = NULL;
@@ -721,7 +720,7 @@ class FileMaker_DataAPI extends DBClass
         return $recordArray;
     }
 
-    private function createRecordset($resultData)
+    private function createRecordset(?FileMakerRelation $resultData): array
     {
         $returnArray = array();
         $tableName = $this->dbSettings->getEntityForRetrieve();
@@ -752,21 +751,20 @@ class FileMaker_DataAPI extends DBClass
             }
             $returnArray[] = $oneRecordArray;
         }
-
         return $returnArray;
     }
 
-    public function countQueryResult()
+    public function countQueryResult(): int
     {
         return $this->mainTableCount;
     }
 
-    public function getTotalCount()
+    public function getTotalCount(): int
     {
         return $this->mainTableTotalCount;
     }
 
-    public function updateDB($bypassAuth)
+    public function updateDB(bool $bypassAuth): bool
     {
         $this->fieldInfo = null;
         $dataSourceName = $this->dbSettings->getDataSourceName();
@@ -885,12 +883,13 @@ class FileMaker_DataAPI extends DBClass
             }
         }
 
-        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+        if (get_class((object)$result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
                 $this->logger->setErrorMessage(
-                    $this->stringWithoutCredential(get_class($result) . ': ' . $this->fmData->{$layout}->getDebugInfo()));
+                    $this->stringWithoutCredential(
+                        get_class((object)$result) . ': ' . $this->fmData->{$layout}->getDebugInfo()));
             }
             return false;
         }
@@ -1044,7 +1043,7 @@ class FileMaker_DataAPI extends DBClass
         return true;
     }
 
-    public function createInDB($isReplace = false)
+    public function createInDB(bool $isReplace = false): ?string
     {
         $this->fieldInfo = null;
 
@@ -1156,14 +1155,14 @@ class FileMaker_DataAPI extends DBClass
             } else {
                 $this->errorMessage[] = get_class($result) . ': ' . $this->fmData->{$layout}->getDebugInfo();
             }
-            return false;
+            return null;
         }
 
         $this->logger->setDebugMessage($this->stringWithoutCredential($this->fmData->{$layout}->getDebugInfo()));
         if ($this->fmData->errorCode() > 0 && $this->fmData->errorCode() != 401) {
             $this->logger->setErrorMessage($this->stringWithoutCredential(
                 "FileMaker Data API reports error at create action: code={$this->fmData->errorCode()}<hr>"));
-            return false;
+            return null;
         }
 
         $this->notifyHandler->setQueriedPrimaryKeys(array($recId));
@@ -1174,7 +1173,7 @@ class FileMaker_DataAPI extends DBClass
         return $recId;
     }
 
-    public function deleteFromDB()
+    public function deleteFromDB(): bool
     {
         $this->fieldInfo = null;
 
@@ -1313,12 +1312,13 @@ class FileMaker_DataAPI extends DBClass
         return true;
     }
 
-    public function copyInDB()
+    public function copyInDB(): ?string
     {
         $this->errorMessage[] = "Copy operation is not implemented so far.";
+        return null;
     }
 
-    private function getFieldForFormatter($entity, $field)
+    private function getFieldForFormatter(string $entity, string $field): string
     {
         if (strpos($field, "::") === false) {
             return "{$entity}{$this->dbSettings->getSeparator()}{$field}";
@@ -1341,7 +1341,7 @@ class FileMaker_DataAPI extends DBClass
         return "{$entity}{$this->dbSettings->getSeparator()}{$field}";
     }
 
-    public function normalizedCondition($condition)
+    private function normalizedCondition(array $condition): array
     {
         if (!isset($condition['field'])) {
             $condition['field'] = '';
@@ -1411,11 +1411,11 @@ class FileMaker_DataAPI extends DBClass
         }
     }
 
-    public function queryForTest($table, $conditions = null)
+    public function queryForTest(string $table, ?array $conditions = null): ?array
     {
         if ($table == null) {
             $this->errorMessageStore("The table doesn't specified.");
-            return false;
+            return null;
         }
         $this->setupFMDataAPIforAuth($table, 'all');
         $recordSet = array();
@@ -1429,12 +1429,12 @@ class FileMaker_DataAPI extends DBClass
                 $recordSet[] = $oneRecord;
             }
         } catch (Exception $e) {
+            return null;
         }
-
         return $recordSet;
     }
 
-    protected function _adjustSortDirection($direction)
+    protected function _adjustSortDirection(string $direction): string
     {
         if (strtoupper($direction) == 'ASC') {
             $direction = 'ascend';
@@ -1445,7 +1445,7 @@ class FileMaker_DataAPI extends DBClass
         return $direction;
     }
 
-    protected function _getPortalDataForUpdating($data, $result)
+    protected function _getPortalDataForUpdating(array $data, FileMakerRelation $result): array
     {
         // for FileMaker Server 17
         $portal = NULL;
@@ -1477,37 +1477,36 @@ class FileMaker_DataAPI extends DBClass
         if ($data === array()) {
             $data = NULL;
         }
-
         return array($data, $portal);
     }
 
-    public function deleteForTest($table, $conditions = null)
+    public function deleteForTest(string $table, ?array $conditions = null): bool
     {
-        // TODO: Implement deleteForTest() method.
+        return false;
     }
 
     /*
 * Transaction
 */
-    public function hasTransaction()
+    public function hasTransaction(): bool
     {
         return false;
     }
 
-    public function inTransaction()
+    public function inTransaction(): bool
     {
         return false;
     }
 
-    public function beginTransaction()
+    public function beginTransaction(): void
     {
     }
 
-    public function commitTransaction()
+    public function commitTransaction(): void
     {
     }
 
-    public function rollbackTransaction()
+    public function rollbackTransaction(): void
     {
     }
 

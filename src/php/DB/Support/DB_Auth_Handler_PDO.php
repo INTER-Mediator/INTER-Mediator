@@ -85,26 +85,26 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'issuedhash'
      */
-    public function authSupportCheckMediaToken(string $uid): bool
+    public function authSupportCheckMediaToken(string $uid): ?string
     {
         $this->logger->setDebugMessage("[authSupportCheckMediaToken] {$uid}", 2);
 
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
-            return false;
+            return null;
         }
         if ($uid < 0) {
             $uid = 0;
         }
         if (!$this->dbClass->setupConnection()) { //Establish the connection
-            return false;
+            return null;
         }
         $sql = "{$this->dbClass->handler->sqlSELECTCommand()}id,hash,expired FROM {$hashTable} "
             . "WHERE user_id={$uid} and clienthost=" . $this->dbClass->link->quote('_im_media');
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Select:' . $sql);
-            return false;
+            return null;
         }
         $this->logger->setDebugMessage("[authSupportCheckMediaToken] {$sql}");
 
@@ -112,11 +112,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             $hashValue = $row['hash'];
             $seconds = IMUtil::secondsFromNow($row['expired']);
             if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
-                return false;
+                return null;
             }
             return $hashValue;
         }
-        return false;
+        return null;
     }
 
     /**

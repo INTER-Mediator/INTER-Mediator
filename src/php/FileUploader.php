@@ -117,7 +117,7 @@ class FileUploader
     }
 
     public function processingWithParameters(?array  $datasource, ?array $options, ?array $dbspec, int $debug,
-                                             ?string $contextname, ?string $keyfield, ?string $keyvalue, ?string $field,
+                                             ?string $contextname, ?string $keyfield, ?string $keyvalue, ?array $field,
                                              ?array  $files, bool $noOutput): void
     {
         $this->db = new DB\Proxy();
@@ -241,7 +241,7 @@ class FileUploader
      * @param $dbclass
      * @return string
      */
-    private function getClassNameForMedia(DBClass $dbclass): string
+    private function getClassNameForMedia(string $dbclass): string
     {
         $className = "FileSystem";
         $contextDef = $this->db->dbSettings->getDataSourceTargetArray();
