@@ -88,7 +88,7 @@ $sendMailSMTP = array(
     'server' => 'msyk.sakura.ne.jp',
     'port' => '587',
     'username' => 'user01@msyk.net',
-    'password' => 'Jaed9Ea4',
+    'password' => '*********',
 );
 // $waitAfterMail = 20;  // Wait after send email with smtp server. Unit is Millisecond.
 
