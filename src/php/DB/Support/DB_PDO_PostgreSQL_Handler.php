@@ -153,8 +153,8 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
  */
 
 
-    protected function getFieldListsForCopy(string $tableName, string $keyField, string $assocField, string $assocValue,
-                                            array  $defaultValues): array
+    protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
+                                            ?array  $defaultValues): array
     {
         try {
             $result = $this->getTableInfo($tableName);

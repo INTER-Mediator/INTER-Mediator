@@ -60,7 +60,7 @@ class MessageStrings_ja extends MessageStrings
         1019 => "db_delete関数の呼び出しで、必須のプロパティ'name'が指定されていません",
         1020 => "db_delete関数の呼び出しで、必須のプロパティ'conditions'が指定されていません",
         1021 => "db_createRecord関数の呼び出しで、必須のプロパティ'name'が指定されていません",
-        1022 => 'ご使用のWebブラウザには対応していません。（Internet Explorerで互換モードを使用している場合は使用しないでください）',
+        1022 => 'ご使用のWebブラウザには対応していません',
         1023 => '[このサイトはINTER-Mediatorを利用して構築しています。]',
         1024 => '複数のレコードが更新される可能性があります。keyフィールドの指定は適切でないかもしれません。そのまま進めてかまいませんか? ',
         1025 => 'レコードを本当に削除していいですか?',
@@ -132,5 +132,6 @@ class MessageStrings_ja extends MessageStrings
         3210 => "選択ファイル：",
         3211 => "アップロード",
         3212 => "ファイルが壊れているためファイルのアップロードに失敗しました。",
+        9999 => "For testing to customize this message",
     );
 }

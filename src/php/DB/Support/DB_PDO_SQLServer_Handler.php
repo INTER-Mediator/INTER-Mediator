@@ -50,7 +50,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return '1000-01-01';
     }
 
-    public function sqlOrderByCommand(string $sortClause,string  $limit, string $offset): string
+    public function sqlOrderByCommand(string $sortClause, string $limit, string $offset): string
     {
         if ($sortClause == '') {
             $tableInfo = $this->dbClassObj->dbSettings->getDataSourceTargetArray();
@@ -76,12 +76,12 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return "UPDATE ";
     }
 
-    public function sqlINSERTCommand(string $tableRef,string  $setClause): string
+    public function sqlINSERTCommand(string $tableRef, string $setClause): string
     {
         return "INSERT INTO {$tableRef} {$setClause}";
     }
 
-    public function sqlSETClause(string $tableName,array $setColumnNames,string  $keyField,array $setValues): string
+    public function sqlSETClause(string $tableName, array $setColumnNames, string $keyField, array $setValues): string
     {
         [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $setValues);
         return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
@@ -158,8 +158,8 @@ xml
 
     */
 
-    protected function getFieldListsForCopy(string $tableName, string $keyField,string  $assocField,string  $assocValue,
-                                            array $defaultValues): array
+    protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
+                                            ?array $defaultValues): array
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -202,9 +202,9 @@ xml
     }
 
 
-    public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable):?array  // authuser, issuedhash
+    public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable): ?array  // authuser, issuedhash
     {
-        $checkFieldDefinition = function (string $type, int $len, int $min):bool {
+        $checkFieldDefinition = function (string $type, int $len, int $min): bool {
             $fDef = strtolower($type);
             if ($fDef != 'text' && $fDef == 'varchar') {
                 if ($len < $min) {

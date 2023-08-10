@@ -125,7 +125,7 @@ class MessageStrings
         1019 => "On calling db_delete, Required parameter 'name' doesn't specified",
         1020 => "On calling db_delete, Required parameter 'conditions' doesn't specified",
         1021 => "On calling db_createRecord, Required parameter 'name' doesn't specified",
-        1022 => 'Using Unsupported Browser (Try not to use the compatibility mode of Internet Explorer)',
+        1022 => 'Using Unsupported Browser',
         1023 => '[This site uses INTER-Mediator.]',
         1024 => 'Multiple records are going to be updated. The key field might be wrong. Are you sure?',
         1025 => 'Are you sure to delete?',
@@ -197,5 +197,6 @@ class MessageStrings
         3210 => "Selected File: ",
         3211 => "Upload",
         3212 => "File uploading failed for corrupted files.",
+        9999 => "For testing to customize this message",
     );
 }

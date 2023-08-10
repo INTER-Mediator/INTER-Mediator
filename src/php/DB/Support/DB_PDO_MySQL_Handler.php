@@ -168,8 +168,8 @@ mysql> show columns from item_display;
     In case of calculation field of a view, the type column is going to be ''.
     */
 
-    protected function getFieldListsForCopy(string $tableName, string $keyField, string $assocField, string $assocValue,
-                                            array  $defaultValues): array
+    protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
+                                            ?array  $defaultValues): array
     {
         try {
             $result = $this->getTableInfo($tableName);

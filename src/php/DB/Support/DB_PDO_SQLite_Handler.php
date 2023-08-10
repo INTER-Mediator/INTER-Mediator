@@ -142,8 +142,8 @@ contact_way|6
 
        */
 
-    protected function getFieldListsForCopy(string $tableName, string $keyField, string $assocField, string $assocValue,
-                                            array  $defaultValues): array
+    protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
+                                            ?array $defaultValues): array
     {
         try {
             $result = $this->getTableInfo($tableName);

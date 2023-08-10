@@ -238,6 +238,9 @@ $dontRecordDownloadNoGet = false;
 //$messages['default'][1022] = "We don't support Internet Explorer. We'd like you to access by Edge or any other major browsers.";
 //$messages['ja'][1022] = "Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。";
 // These messages are for sample purpose but they are used for unit tests. If you modify them, you have to care about the test code.
+// Following two lines are using on unit test.
+$messages['default'][9999] = "Changed";
+$messages['ja'][9999] = "変更した";
 
 /* Initial values for local context with their keys. */
 //$valuesForLocalContext = array(
