@@ -456,7 +456,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return mixed
      */
-    public function deleteFromDB(): false
+    public function deleteFromDB(): bool
     {
         $result = null;
         try {
