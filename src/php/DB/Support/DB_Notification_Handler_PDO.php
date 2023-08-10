@@ -126,7 +126,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         return $newContextId;
     }
 
-    public function unregister(string $clientId, array $tableKeys):bool
+    public function unregister(string $clientId, ?array $tableKeys):bool
     {
         $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
         if (!$this->dbClass->setupConnection()) { //Establish the connection

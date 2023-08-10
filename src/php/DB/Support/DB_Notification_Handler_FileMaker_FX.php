@@ -84,7 +84,7 @@ class DB_Notification_Handler_FileMaker_FX
         return $newContextId;
     }
 
-    public function unregister(string $clientId, array $tableKeys):bool
+    public function unregister(string $clientId, ?array $tableKeys):bool
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;

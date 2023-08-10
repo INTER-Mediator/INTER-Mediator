@@ -35,7 +35,7 @@ interface DB_Interface_Registering
 
     public function register(string $clientId, string $entity, string $condition, array $pkArray):?string;
 
-    public function unregister(string $clientId, array $tableKeys):bool;
+    public function unregister(string $clientId, ?array $tableKeys):bool;
 
     public function matchInRegistered(string $clientId, string $entity, array $pkArray): ?array;
 

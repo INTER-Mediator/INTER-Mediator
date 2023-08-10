@@ -89,7 +89,7 @@ class NotifyServer
      * @param $tableKeys
      * @return mixed
      */
-    public function unregister(string $client, array $tableKeys): bool
+    public function unregister(string $client, ?array $tableKeys): bool
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] unregister", 2);
         if ($this->dbClass && $this->dbClass->notifyHandler) {
