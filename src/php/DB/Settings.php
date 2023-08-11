@@ -469,7 +469,7 @@ class Settings
     /**
      * @param array $authentication
      */
-    public function setAuthentication(?array $authentication): void
+    public function setAuthentication(?string $authentication): void
     {
         if (isset($authentication['authexpired']) && $authentication['authexpired'] == 0) {
             $authentication['authexpired'] = $this->getAuthenticationItem('authexpired');
