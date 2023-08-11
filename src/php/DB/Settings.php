@@ -485,7 +485,7 @@ class Settings
         return $this->authentication;
     }
 
-    public function getAuthenticationItem(?string $key): ?string
+    public function getAuthenticationItem(?string $key)
     {
         if (isset($this->authentication[$key])) {
             return $this->authentication[$key];
