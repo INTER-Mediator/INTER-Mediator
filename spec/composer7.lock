@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "async-aws/core",
-            "version": "1.19.0",
+            "version": "1.20.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/async-aws/core.git",
-                "reference": "8702223061b63f800257b3177f36cb7572360352"
+                "reference": "e7a42c5cd0af44c4f3df0c4d228fe574c8ae4b68"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/async-aws/core/zipball/8702223061b63f800257b3177f36cb7572360352",
-                "reference": "8702223061b63f800257b3177f36cb7572360352",
+                "url": "https://api.github.com/repos/async-aws/core/zipball/e7a42c5cd0af44c4f3df0c4d228fe574c8ae4b68",
+                "reference": "e7a42c5cd0af44c4f3df0c4d228fe574c8ae4b68",
                 "shasum": ""
             },
             "require": {
@@ -39,7 +39,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.19-dev"
+                    "dev-master": "1.20-dev"
                 }
             },
             "autoload": {
@@ -60,7 +60,7 @@
                 "sts"
             ],
             "support": {
-                "source": "https://github.com/async-aws/core/tree/1.19.0"
+                "source": "https://github.com/async-aws/core/tree/1.20.0"
             },
             "funding": [
                 {
@@ -72,20 +72,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-06-20T19:17:40+00:00"
+            "time": "2023-08-07T20:00:50+00:00"
         },
         {
             "name": "async-aws/ses",
-            "version": "1.5.0",
+            "version": "1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/async-aws/ses.git",
-                "reference": "28f5916f662a0fa69852044b16c7344993c32c04"
+                "reference": "08986c131aa00321ff3c1fa3c0bccbeffa69a1da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/async-aws/ses/zipball/28f5916f662a0fa69852044b16c7344993c32c04",
-                "reference": "28f5916f662a0fa69852044b16c7344993c32c04",
+                "url": "https://api.github.com/repos/async-aws/ses/zipball/08986c131aa00321ff3c1fa3c0bccbeffa69a1da",
+                "reference": "08986c131aa00321ff3c1fa3c0bccbeffa69a1da",
                 "shasum": ""
             },
             "require": {
@@ -96,7 +96,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.5-dev"
+                    "dev-master": "1.6-dev"
                 }
             },
             "autoload": {
@@ -117,7 +117,7 @@
                 "ses"
             ],
             "support": {
-                "source": "https://github.com/async-aws/ses/tree/1.5.0"
+                "source": "https://github.com/async-aws/ses/tree/1.6.0"
             },
             "funding": [
                 {
@@ -129,7 +129,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-09-06T12:28:05+00:00"
+            "time": "2023-08-07T20:00:50+00:00"
         },
         {
             "name": "aws/aws-crt-php",
@@ -187,16 +187,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.277.9",
+            "version": "3.278.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "f2437a755b70756425bf8f1bd588a7c583891900"
+                "reference": "494c3bcd0e1f99aed7ef8b90e3a413d82f6c7e4d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/f2437a755b70756425bf8f1bd588a7c583891900",
-                "reference": "f2437a755b70756425bf8f1bd588a7c583891900",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/494c3bcd0e1f99aed7ef8b90e3a413d82f6c7e4d",
+                "reference": "494c3bcd0e1f99aed7ef8b90e3a413d82f6c7e4d",
                 "shasum": ""
             },
             "require": {
@@ -276,9 +276,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.277.9"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.278.0"
             },
-            "time": "2023-08-04T18:16:19+00:00"
+            "time": "2023-08-10T18:15:03+00:00"
         },
         {
             "name": "composer/ca-bundle",
@@ -3553,16 +3553,16 @@
         },
         {
             "name": "smalot/pdfparser",
-            "version": "v2.5.0",
+            "version": "v2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smalot/pdfparser.git",
-                "reference": "9094d7777aeaa7d8a0a845b352f7dfe4a8baced3"
+                "reference": "eef0263bbaec86d30801d3551ac83f4e1015d4c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smalot/pdfparser/zipball/9094d7777aeaa7d8a0a845b352f7dfe4a8baced3",
-                "reference": "9094d7777aeaa7d8a0a845b352f7dfe4a8baced3",
+                "url": "https://api.github.com/repos/smalot/pdfparser/zipball/eef0263bbaec86d30801d3551ac83f4e1015d4c3",
+                "reference": "eef0263bbaec86d30801d3551ac83f4e1015d4c3",
                 "shasum": ""
             },
             "require": {
@@ -3598,9 +3598,9 @@
             ],
             "support": {
                 "issues": "https://github.com/smalot/pdfparser/issues",
-                "source": "https://github.com/smalot/pdfparser/tree/v2.5.0"
+                "source": "https://github.com/smalot/pdfparser/tree/v2.7.0"
             },
-            "time": "2023-04-24T07:00:49+00:00"
+            "time": "2023-08-10T06:11:26+00:00"
         },
         {
             "name": "spatie/dropbox-api",
