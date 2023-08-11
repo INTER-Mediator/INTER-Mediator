@@ -48,7 +48,7 @@ class SAMLAuth
      * @param array $value
      * @return void
      */
-    public function setSAMLAttrRules(array $value): void
+    public function setSAMLAttrRules(?array $value): void
     {
         $this->samlAttrRules = $value;
     }

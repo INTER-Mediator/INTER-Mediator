@@ -29,21 +29,66 @@ class PDO extends DBClass
 {
     use Support\DB_PDO_SQLSupport;
 
+    /**
+     * @var \PDO|null
+     */
     public ?\PDO $link = null;       // Connection with PDO's link
+    /**
+     * @var int
+     */
     private int $mainTableCount = 0;
+    /**
+     * @var int
+     */
     private int $mainTableTotalCount = 0;
+    /**
+     * @var array|null
+     */
     private ?array $fieldInfo = null;
+    /**
+     * @var bool
+     */
     private bool $isAlreadySetup = false;
+    /**
+     * @var bool
+     */
     private bool $isRequiredUpdated = false;
+    /**
+     * @var array|null
+     */
     private ?array $updatedRecord = null;
+    /**
+     * @var string|null
+     */
     private ?string $softDeleteField = null;
+    /**
+     * @var string|null
+     */
     private ?string $softDeleteValue = null;
+    /**
+     * @var bool
+     */
     private bool $useSetDataToUpdatedRecord = false;
+    /**
+     * @var bool|array|mixed
+     */
     private bool $isFollowingTimezones;
+    /**
+     * @var bool|array|mixed
+     */
     private bool $isSuppressDVOnCopy;
+    /**
+     * @var bool|array|mixed
+     */
     private bool $isSuppressDVOnCopyAssoc;
+    /**
+     * @var bool|array|mixed
+     */
     private bool $isSuppressAuthTargetFillingOnCreate;
 
+    /**
+     *
+     */
     public function __construct()
     {
         $this->isFollowingTimezones = Params::getParameterValue("followingTimezones", false);
@@ -55,11 +100,17 @@ class PDO extends DBClass
             = Params::getParameterValue("suppressAuthTargetFillingOnCreate", false);
     }
 
+    /**
+     * @return array|null
+     */
     public function getUpdatedRecord(): ?array
     {
         return $this->updatedRecord;
     }
 
+    /**
+     * @return array|null
+     */
     public function updatedRecord(): ?array
     {
         return $this->updatedRecord;
@@ -68,6 +119,12 @@ class PDO extends DBClass
     /* Usually a setter method has just one parameter, but the same named method existed on previous version
        and possibly calling it from user program. So if it has more than one parameter, it might call old
        method and redirect to previous one. (msyk, 2021-11-03) */
+    /**
+     * @param array $record
+     * @param string|null $value
+     * @param int $index
+     * @return void
+     */
     public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
     {
         if (!$value) {
@@ -77,27 +134,48 @@ class PDO extends DBClass
         }
     }
 
+    /**
+     * @param string $field
+     * @param string $value
+     * @param int $index
+     * @return void
+     */
     public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
     {
         $this->updatedRecord[$index][$field] = $value;
         $this->useSetDataToUpdatedRecord = true;
     }
 
+    /**
+     * @return bool
+     */
     public function getUseSetDataToUpdatedRecord(): bool
     {
         return $this->useSetDataToUpdatedRecord;
     }
 
+    /**
+     * @return void
+     */
     public function clearUseSetDataToUpdatedRecord(): void
     {
         $this->useSetDataToUpdatedRecord = false;
     }
 
+    /**
+     * @param bool $value
+     * @return void
+     */
     public function requireUpdatedRecord(bool $value): void
     {
         $this->isRequiredUpdated = $value;
     }
 
+    /**
+     * @param string $field
+     * @param string $value
+     * @return void
+     */
     public function softDeleteActivate(string $field, string $value): void
     {
         $this->softDeleteField = $field;
@@ -117,6 +195,11 @@ class PDO extends DBClass
         }
     }
 
+    /**
+     * @param string $sql
+     * @param $result
+     * @return bool
+     */
     private function errorHandlingPDO(string $sql, $result)
     {
         $errorCode = $this->link->errorCode();
@@ -162,6 +245,10 @@ class PDO extends DBClass
         return true;
     }
 
+    /**
+     * @param string|null $dsn
+     * @return void
+     */
     public function setupHandlers(?string $dsn = null): void
     {
         if (!$dsn) {
@@ -176,6 +263,9 @@ class PDO extends DBClass
         $this->notifyHandler = new Support\DB_Notification_Handler_PDO($this);
     }
 
+    /**
+     * @return bool
+     */
     public function setupWithDSN(string $dsnString): bool
     {
         if ($this->isAlreadySetup) {
@@ -738,6 +828,10 @@ class PDO extends DBClass
         return true;
     }
 
+    /**
+     * @return string|null
+     * @throws Exception
+     */
     public function copyInDB(): ?string
     {
         $this->fieldInfo = null;
@@ -827,6 +921,10 @@ class PDO extends DBClass
         return $lastKeyValue;
     }
 
+    /**
+     * @param array $context
+     * @return string
+     */
     private
     function getKeyFieldOfContext(array $context): string
     {
@@ -842,6 +940,10 @@ class PDO extends DBClass
         return $this->fieldInfo;
     }
 
+    /**
+     * @param $d
+     * @return bool
+     */
     private
     function isTrue($d): bool // $d is mixed
     {
@@ -856,6 +958,11 @@ class PDO extends DBClass
         return false;
     }
 
+    /**
+     * @param string $table
+     * @param array|null $conditions
+     * @return array|null
+     */
     public function queryForTest(string $table, ?array $conditions = null): ?array
     {
         if ($table == null) {
@@ -896,6 +1003,11 @@ class PDO extends DBClass
         return $recordSet;
     }
 
+    /**
+     * @param string $table
+     * @param array|null $conditions
+     * @return bool
+     */
     public function deleteForTest(string $table, ?array $conditions = null): bool
     {
         if ($table == null) {
@@ -931,26 +1043,41 @@ class PDO extends DBClass
     /*
      * Transaction
      */
+    /**
+     * @return bool
+     */
     public function hasTransaction(): bool
     {
         return true;
     }
 
+    /**
+     * @return bool
+     */
     public function inTransaction(): bool
     {
         return $this->link->inTransaction();
     }
 
+    /**
+     * @return void
+     */
     public function beginTransaction(): void
     {
         $this->link->beginTransaction();
     }
 
+    /**
+     * @return void
+     */
     public function commitTransaction(): void
     {
         $this->link->commit();
     }
 
+    /**
+     * @return void
+     */
     public function rollbackTransaction(): void
     {
         $this->link->rollBack();
@@ -988,6 +1115,9 @@ class PDO extends DBClass
         return $sqlResult;
     }
 
+    /**
+     * @return void
+     */
     public function closeDBOperation(): void
     {
         // Do nothing

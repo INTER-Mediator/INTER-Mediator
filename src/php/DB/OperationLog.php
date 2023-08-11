@@ -19,34 +19,38 @@ use INTERMediator\Params;
 
 class OperationLog
 {
-    private $accessLogLevel;
-    private $isWithData;
-    private $dbClassLog;
-    private $dbUserLog;
-    private $dbPasswordLog;
-    private $dbDSNLog;
-    private $recordingContexts;
-    private $recordingOperations;
-    private $contextOptions;
-    private $dontRecordTheme;
-    private $dontRecordChallenge;
-    private $dontRecordDownload;
-    private $dontRecordDownloadNoGet;
-    private $accessLogExtensionClass;
+    private int $accessLogLevel;
+    private ?string $dbClassLog;
+    private ?string $dbUserLog;
+    private ?string $dbPasswordLog;
+    private ?string $dbDSNLog;
+    private ?array $recordingContexts;
+    private ?array $recordingOperations;
+    private ?array $contextOptions;
+    private bool $dontRecordTheme;
+    private bool $dontRecordChallenge;
+    private bool $dontRecordDownload;
+    private bool $dontRecordDownloadNoGet;
+    private object $accessLogExtensionClass;
 
-    public function __construct($options)
+    public function __construct(?array $options)
     {
         $this->contextOptions = $options;
-        [$this->accessLogLevel, $this->dbClassLog, $this->dbUserLog, $this->dbPasswordLog, $this->dbDSNLog,
-            $this->recordingContexts, $this->dontRecordTheme, $this->dontRecordChallenge, $this->dontRecordDownload,
-            $this->dontRecordDownloadNoGet, $this->recordingOperations, $this->accessLogExtensionClass]
-            = Params::getParameterValue(["accessLogLevel", "dbClassLog", "dbUserLog", "dbPasswordLog", "dbDSNLog",
-            "recordingContexts", "dontRecordTheme", "dontRecordChallenge", "dontRecordDownload",
-            "dontRecordDownloadNoGet", "recordingOperations", "accessLogExtensionClass"], false);
-        $this->isWithData = ($this->accessLogLevel === 2);
+        $this->accessLogLevel = Params::getParameterValue("accessLogLevel", false);
+        $this->dbClassLog = Params::getParameterValue("dbClassLog", null);
+        $this->dbUserLog = Params::getParameterValue("dbUserLog", null);
+        $this->dbPasswordLog = Params::getParameterValue("dbPasswordLog", null);
+        $this->dbDSNLog = Params::getParameterValue("dbDSNLog", null);
+        $this->recordingContexts = Params::getParameterValue("recordingContexts", null);
+        $this->dontRecordTheme = Params::getParameterValue("dontRecordTheme", false);
+        $this->dontRecordChallenge = Params::getParameterValue("dontRecordChallenge", false);
+        $this->dontRecordDownload = Params::getParameterValue("dontRecordDownload", false);
+        $this->dontRecordDownloadNoGet = Params::getParameterValue("dontRecordDownloadNoGet", false);
+        $this->recordingOperations = Params::getParameterValue("recordingOperations", null);
+        $this->accessLogExtensionClass = Params::getParameterValue("accessLogExtensionClass", null);
     }
 
-    public function setEntry($result)
+    public function setEntry(?array $result): void
     {
 
         $access = $_GET['access'] ?? ($_POST['access'] ?? (isset($_GET['theme']) ? 'theme' : 'download'));
@@ -120,7 +124,7 @@ class OperationLog
         }
     }
 
-    private function arrayToString($ar)
+    private function arrayToString(?array $ar): ?string
     {
         if (is_null($ar) || count($ar) === 0) {
             return null;

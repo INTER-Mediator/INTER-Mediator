@@ -154,7 +154,7 @@ class FileSystem implements UploadingSupport, DownloadingSupport
      * @return void
      */
     public function processing(Proxy $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
-                               string  $contextname, string $keyfield, string $keyvalue,
+                               string  $contextname, ?string $keyfield, ?string $keyvalue,
                                ?array  $datasource, ?array $dbspec, int $debug): void
     {
         $counter = -1;
