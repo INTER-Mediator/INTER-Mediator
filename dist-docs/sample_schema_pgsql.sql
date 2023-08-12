@@ -637,6 +637,7 @@ GRANT ALL PRIVILEGES ON im_sample.rent TO web;
 GRANT ALL PRIVILEGES ON im_sample.staff TO web;
 GRANT ALL PRIVILEGES ON im_sample.category TO web;
 GRANT ALL PRIVILEGES ON im_sample.testtable TO web;
+GRANT ALL PRIVILEGES ON im_sample.fileupload TO web;
 GRANT ALL PRIVILEGES ON im_sample.registeredcontext TO web;
 GRANT ALL PRIVILEGES ON im_sample.registeredpks TO web;
 

@@ -127,6 +127,7 @@ trait Proxy_ExtSupport
             return;
         }
         if (isset($query[0]) && is_array($query[0])) {
+            Logger::getInstance()->setDebugMessage("###1#");
             foreach ($query as $item) {
                 $this->extProxy->dbSettings->addExtraCriteria($item['field'], $item['operator'], $item['value'] ?? null);
             }

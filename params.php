@@ -84,13 +84,12 @@ $browserCompatibility = array(
 /* Messaging Settings
  * =================== */
 // If you want to specify the smtp server info, set them below.
-//$sendMailSMTP = array(
-//    'protocol' => 'smtp',
-//    'server' => 'your.smtp.server',
-//    'port' => 587,
-//    'username' => 'your.user.name',
-//    'password' => 'your.password',
-//);
+$sendMailSMTP = array(
+    'server' => 'msyk.sakura.ne.jp',
+    'port' => '587',
+    'username' => 'user01@msyk.net',
+    'password' => '*********',
+);
 // $waitAfterMail = 20;  // Wait after send email with smtp server. Unit is Millisecond.
 
 // Sending email features compatibility with INTER-Mediator v5 unless 'template-context' key isn't specified.
@@ -236,9 +235,12 @@ $dontRecordDownloadNoGet = false;
 //$themeName = "blackbird";      //Default theme name.
 
 // Altering messages, overwrite and/or adding new messages. The first index is a language, and the second is the error number.
-$messages['default'][1022] = "We don't support Internet Explorer. We'd like you to access by Edge or any other major browsers.";
-$messages['ja'][1022] = "Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。";
+//$messages['default'][1022] = "We don't support Internet Explorer. We'd like you to access by Edge or any other major browsers.";
+//$messages['ja'][1022] = "Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。";
 // These messages are for sample purpose but they are used for unit tests. If you modify them, you have to care about the test code.
+// Following two lines are using on unit test.
+$messages['default'][9999] = "Changed";
+$messages['ja'][9999] = "変更した";
 
 /* Initial values for local context with their keys. */
 //$valuesForLocalContext = array(

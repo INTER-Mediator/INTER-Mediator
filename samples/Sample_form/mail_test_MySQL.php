@@ -41,6 +41,8 @@ IM_Entry(
             'records' => 1,
             'send-mail' => ['read' => [
                 'to' => '@@mail@@',
+//                'to-constant' => 'msyk@msyk.net',
+//                'from-constant' => 'msyk@msyk.net',
                 'subject' => 'テストメール1',
                 'from' => 'Masayuki Nii <msyk@msyk.net>',
                 'body' => "@@name@@様、\nこれはテーストメールです。",

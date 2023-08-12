@@ -12,26 +12,41 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\Data_Converter;
 
 use DateTime;
 use INTERMediator\Locale\IMLocale;
 
+/**
+ *
+ */
 class FMDateTime
 {
 
-    private $tz = 'Asia/Tokyo'; // Should be custimizable.
-
-    private $useMbstring;
-    private $choosenLocale;
-    private $fmt;
+    /**
+     * @var string
+     */
+    private string $tz = 'Asia/Tokyo'; // Should be custimizable.
+    /**
+     * @var bool
+     */
+    private bool $useMbstring;
+    /**
+     * @var string
+     */
+    private string $choosenLocale;
+    /**
+     * @var string|int
+     */
+    private string $fmt;
 
     /**
      *
      * @param integer $format
      * @return unknown_type
      */
-    public function __construct($format = '')
+    public function __construct(string $format = '')
     {
         $this->fmt = $format;
         IMLocale::setLocale(LC_ALL);
@@ -40,7 +55,12 @@ class FMDateTime
         date_default_timezone_set($this->tz);
     }
 
-    public function converterFromDBtoUser($str)
+    /**
+     * @param string $str
+     * @return string
+     * @throws \Exception
+     */
+    public function converterFromDBtoUser(?string $str): string
     {
         if ($str === array()) {
             return '';
@@ -70,7 +90,11 @@ class FMDateTime
         return date(($this->fmt == '') ? $fmt : $this->fmt, $dtObj->format('U'));
     }
 
-    public function converterFromUserToDB($str)
+    /**
+     * @param string $str
+     * @return string
+     */
+    public function converterFromUserToDB(string $str): string
     {
         $dtAr = date_parse($str);
         if ($dtAr === false) return $str;
@@ -87,13 +111,18 @@ class FMDateTime
         return $dt;
     }
 
-    public function dateArrayFromFMDate($d)
+    /**
+     * @param string $d
+     * @return array
+     * @throws \Exception
+     */
+    public function dateArrayFromFMDate(string $d): array
     {
         if ($d == '') {
             return '';
         }
         $jYearStartDate = array(
-            '2019-5-1'=> '令和', '1989-1-8' => '平成', '1926-12-25' => '昭和', '1912-7-30' => '大正', '1868-1-25' => '明治');
+            '2019-5-1' => '令和', '1989-1-8' => '平成', '1926-12-25' => '昭和', '1912-7-30' => '大正', '1868-1-25' => '明治');
         $wStrArray = array('日', '月', '火', '水', '木', '金', '土');
 
         // @codeCoverageIgnoreStart
@@ -131,7 +160,7 @@ class FMDateTime
             'weekday' => $dt->format('w'),
             'longdate' => $dt->format('Y/m/d'),
             'jlongdate' => $gengoName . ' ' . $gengoYear . $dt->format(' 年 n 月 j 日 ')
-            . $wStrArray[$dt->format('w')] . '曜日',
+                . $wStrArray[$dt->format('w')] . '曜日',
         );
     }
 }

@@ -17,5 +17,5 @@ namespace INTERMediator\DB\Extending;
 
 interface AfterCreate
 {
-    public function doAfterCreateToDB($result);
+    public function doAfterCreateToDB(?array $result):?array ;
 }

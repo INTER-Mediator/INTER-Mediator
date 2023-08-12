@@ -17,32 +17,32 @@ namespace INTERMediator\DB\Support;
 
 class DB_Spec_Handler_PostgreSQL extends DB_Spec_Handler_PDO
 {
-    public static function defaultKey()
+    public static function defaultKey(): string
     {
         return "id";
     }
 
-    public function getDefaultKey()
+    public function getDefaultKey(): string
     {
         return "id";
     }
 
-    public function isSupportAggregation()
+    public function isSupportAggregation(): bool
     {
         return true;
     }
 
-    public function isContainingFieldName($fname, $fieldnames)
+    public function isContainingFieldName(string $fname,array $fieldnames): bool
     {
         return in_array($fname, $fieldnames);
     }
 
-    public function isNullAcceptable()
+    public function isNullAcceptable(): bool
     {
         return true;
     }
 
-    public function isOperatorWithoutValue($operator)
+    public function isOperatorWithoutValue(string $operator): bool
     {
         return in_array(strtoupper($operator), array(
             'IS NOT NULL', //	NOT NULL value test
@@ -58,7 +58,7 @@ class DB_Spec_Handler_PostgreSQL extends DB_Spec_Handler_PDO
         ));
     }
 
-    public function isPossibleOperator($operator)
+    public function isPossibleOperator(string $operator): bool
     {
         return in_array(strtoupper($operator), array(
             'LIKE', //
@@ -116,7 +116,7 @@ class DB_Spec_Handler_PostgreSQL extends DB_Spec_Handler_PDO
         ));
     }
 
-    public function isPossibleOrderSpecifier($specifier)
+    public function isPossibleOrderSpecifier(string $specifier): bool
     {
         return in_array(strtoupper($specifier), array('ASC', 'DESC'));
     }

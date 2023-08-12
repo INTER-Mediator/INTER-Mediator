@@ -20,70 +20,70 @@ use Exception;
 
 class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 {
-    protected $tableInfo = array();
-    protected $fieldNameForField = 'name';
-    protected $fieldNameForType = 'type';
-    protected $fieldNameForNullable = 'notnull';
-    protected $numericFieldTypes = array('integer', 'int', 'real', 'numeric',
+    protected array $tableInfo = array();
+    protected string $fieldNameForField = 'name';
+    protected string $fieldNameForType = 'type';
+    protected string $fieldNameForNullable = 'notnull';
+    protected array $numericFieldTypes = array('integer', 'int', 'real', 'numeric',
         'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2', 'int8',
         'double', 'double precision', 'float', 'decimal', 'boolean');
-    protected $timeFieldTypes = ['datetime', 'time', 'timestamp'];
-    protected $dateFieldTypes = ['datetime', 'date', 'timestamp'];
-    protected $booleanFieldTypes = [];
+    protected array $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+    protected array $dateFieldTypes = ['datetime', 'date', 'timestamp'];
+    protected array $booleanFieldTypes = [];
 
-    public function sqlSELECTCommand()
+    public function sqlSELECTCommand(): string
     {
         return "SELECT ";
     }
 
-    public function sqlLimitCommand($param)
+    public function sqlLimitCommand(string $param): string
     {
         return "LIMIT {$param}";
     }
 
-    public function sqlOffsetCommand($param)
+    public function sqlOffsetCommand(string $param): string
     {
         return "OFFSET {$param}";
     }
 
-    public function sqlDELETECommand()
+    public function sqlDELETECommand(): string
     {
         return "DELETE FROM ";
     }
 
-    public function sqlUPDATECommand()
+    public function sqlUPDATECommand(): string
     {
         return "UPDATE ";
     }
 
-    public function sqlINSERTCommand($tableRef, $setClause)
+    public function sqlINSERTCommand(string $tableRef, string $setClause): string
     {
         return "INSERT INTO {$tableRef} {$setClause}";
     }
 
-    public function sqlREPLACECommand($tableRef, $setClause)
+    public function sqlREPLACECommand(array $tableRef, string $setClause): string
     {
         return "REPLACE INTO {$tableRef} {$setClause}";
     }
 
-    public function sqlSETClause($tableName, $setColumnNames, $keyField, $setValues)
+    public function sqlSETClause(string $tableName, array $setColumnNames, string $keyField, array $setValues): string
     {
         [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $setValues);
         return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
-    public function dateResetForNotNull()
+    public function dateResetForNotNull(): string
     {
         return '1970-01-01';
     }
 
-    protected function checkNullableField($info)
+    protected function checkNullableField(string $info): bool
     {
         return $info == 0;
     }
 
-    protected function getAutoIncrementField($tableName)
+    protected function getAutoIncrementField(string $tableName): ?string
     {
 //        if ($this->dbClassObj->link) {
 //            $seqCount = $this->dbClassObj->link->query('SELECT COUNT(*) FROM sqlite_sequence WHERE name=' . $tableName);
@@ -98,7 +98,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         // SQLite doesn't support to create a record with non AUTOINCREMENT field as the primary key.
     }
 
-    protected function getTalbeInfoSQL($tableName)
+    protected function getTalbeInfoSQL(string $tableName): string
     {
         return "PRAGMA table_info({$tableName})";
     }
@@ -142,7 +142,8 @@ contact_way|6
 
        */
 
-    protected function getFieldListsForCopy($tableName, $keyField, $assocField, $assocValue, $defaultValues)
+    protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
+                                            ?array $defaultValues): array
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -168,7 +169,7 @@ contact_way|6
         return array(implode(',', $fieldArray), implode(',', $listArray));
     }
 
-    public function quotedEntityName($entityName)
+    public function quotedEntityName(string $entityName): ?string
     {
         $q = '"';
         if (strpos($entityName, ".") !== false) {
@@ -183,14 +184,14 @@ contact_way|6
 
     }
 
-    public function optionalOperationInSetup()
+    public function optionalOperationInSetup(): void
     {
     }
 
 
-    public function authSupportCanMigrateSHA256Hash($userTable, $hashTable)  // authuser, issuedhash
+    public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable): ?array  // authuser, issuedhash
     {
-        $checkFieldDefinition = function ($type, $min) {
+        $checkFieldDefinition = function (string $type, int $min): bool {
             $fDef = strtolower($type);
             if ($fDef != 'text' && strpos($fDef, 'varchar') !== false) {
                 $openParen = strpos($fDef, '(');
@@ -231,5 +232,4 @@ contact_way|6
         }
         return $returnValue;
     }
-
 }

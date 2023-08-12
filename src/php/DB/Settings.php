@@ -16,124 +16,117 @@
 
 namespace INTERMediator\DB;
 
+use INTERMediator\NotifyServer;
+
 class Settings
 {
-    private $dbSpecServer = null;
-    private $dbSpecPort = null;
-    private $dbSpecUser = null;
-    private $dbSpecPassword = null;
-    private $dbSpecDatabase = null;
-    private $dbSpecDataType = null;
-    private $dbSpecProtocol = null;
-    private $dbSpecDSN = null;
-    private $dbSpecOption = null;
+    private ?string $dbSpecServer = null;
+    private ?string $dbSpecPort = null;
+    private ?string $dbSpecUser = null;
+    private ?string $dbSpecPassword = null;
+    private ?string $dbSpecDatabase = null;
+    private ?string $dbSpecDataType = null;
+    private ?string $dbSpecProtocol = null;
+    private ?string $dbSpecDSN = null;
+    private ?array $dbSpecOption = null;
 
-    private $dataSource = null;
-    private $options = null;
-    private $dbSpec = null;
+    private ?array $dataSource = null;
+    private ?array $options = null;
+    private ?array $dbSpec = null;
 //    private $targetDataSource = null;
-    private $dataSourceName = '';
-    private $recordCount = 0;
-    private $start = 0;
-    private $separator = null;
+    private ?string $dataSourceName = '';
+    private int $recordCount = 0;
+    private int $start = 0;
+    private ?string $separator = null;
 
-    private $extraCriteria = array();
-    private $extraSortKey = array();
-    private $fieldsRequired = array();
-    private $fieldsValues = array();
-    private $foreignFieldAndValue = array();
-    private $currentDataAccess = null;
+    private array $extraCriteria = array();
+    private array $extraSortKey = array();
+    private array $fieldsRequired = array();
+    private array $fieldsValues = array();
+    private array $foreignFieldAndValue = array();
+    private ?DBClass $currentDataAccess = null;
 
-    private $currentUser = null;
-    private $authentication = null;
-    private $accessUser = null;
-    private $accessPassword = null;
-    private $primaryKeyOnly = false;
-    private $isDBNative = false;
-    private $requireAuthorization = false;
-    private $requireAuthentication = false;
+    private ?string $currentUser = null;
+    private ?array $authentication = null;
+    private ?string $accessUser = null;
+    private ?string $accessPassword = null;
+    private bool $primaryKeyOnly = false;
+    private bool $isDBNative = false;
+    private bool $requireAuthorization = false;
+    private bool $requireAuthentication = false;
 
-    private $smtpConfiguration = null;
-    private $associated = null;
-    /**
-     * @var
-     */
-    public $notifyServer = null;
-    public $clientNotificationId = null;
-    public $registerTableName = "registeredcontext";
-    public $registerPKTableName = "registeredpks";
+    private bool $emailAsAccount = false;
+    private ?array $smtpConfiguration = null;
+    private ?array $associated = null;
+    public ?NotifyServer $notifyServer = null;
+    public string $registerTableName = "registeredcontext";
+    public string $registerPKTableName = "registeredpks";
+    private int $params_samlExpiringSeconds;
+    private ?string $params_mediaRoot;
+    private bool $isSAML = false;
+    private ?string $samlAuthSource = '';
+    private ?array $samlAttrRules = null;
+    private ?array $samlAdditionalRules = null;
 
-//    private $params_ldapServer;
-//    private $params_ldapPort;
-//    private $params_ldapBase;
-//    private $params_ldapContainer;
-//    private $params_ldapAccountKey;
-    private $params_samlExpiringSeconds;
-    private $params_mediaRoot;
-    private $isSAML = false;
-    private $samlAuthSource = '';
-    private $samlAttrRules = false;
-    private $samlAdditionalRules = false;
+    private ?string $aggregation_select = null;
+    private ?string $aggregation_from = null;
+    private ?string $aggregation_group_by = null;
 
-    private $aggregation_select = null;
-    private $aggregation_from = null;
-    private $aggregation_group_by = null;
+    private array $attachedFiles = [];
+    private ?array $attachedFields = null;
+    private bool $certVerifying = true;
 
-    private $attachedFiles = [];
-    private $attachedFields = null;
-    private $certVerifying = true;
-
-    public function setSAMLAdditionalRules($value)
+    public function setSAMLAdditionalRules(?array $value): void
     {
         $this->samlAdditionalRules = $value;
     }
 
-    public function getSAMLAdditionalRules()
+    public function getSAMLAdditionalRules(): ?array
     {
         return $this->samlAdditionalRules;
     }
 
-    public function setSAMLAttrRules($value)
+    public function setSAMLAttrRules(?array $value): void
     {
         $this->samlAttrRules = $value;
     }
 
-    public function getSAMLAttrRules()
+    public function getSAMLAttrRules(): ?array
     {
         return $this->samlAttrRules;
     }
 
-    public function setSAMLAuthSource($value)
+    public function setSAMLAuthSource(?string $value): void
     {
         $this->samlAuthSource = $value;
     }
 
-    public function getSAMLAuthSource()
+    public function getSAMLAuthSource(): ?string
     {
         return $this->samlAuthSource;
     }
 
-    public function setIsSaml($value)
+    public function setIsSaml(bool $value): void
     {
-        $this->isSAML = boolval($value);
+        $this->isSAML = $value;
     }
 
-    public function getIsSaml()
+    public function getIsSaml(): bool
     {
         return $this->isSAML;
     }
 
-    public function setCertVerifying($value)
+    public function setCertVerifying(bool $value): void
     {
-        $this->certVerifying = boolval($value);
+        $this->certVerifying = $value;
     }
 
-    public function getCertVerifying()
+    public function getCertVerifying(): bool
     {
         return $this->certVerifying;
     }
 
-    public function setAttachedFiles($contextName, $files)
+    public function setAttachedFiles(string $contextName, array $files): void
     {
         if ($contextName && $files && count($files) > 0) {
             $this->attachedFiles[$contextName] = $files;
@@ -143,7 +136,7 @@ class Settings
         }
     }
 
-    public function getAttachedFiles($contextName)
+    public function getAttachedFiles(string $contextName): ?array
     {
         if ($contextName && $this->attachedFiles && isset($this->attachedFiles[$contextName])) {
             return $this->attachedFiles[$contextName];
@@ -151,7 +144,7 @@ class Settings
         return null;
     }
 
-    public function getAttachedFields()
+    public function getAttachedFields(): ?array
     {
         return $this->attachedFields;
     }
@@ -160,48 +153,37 @@ class Settings
     {
     }
 
-    public function getAggregationSelect()
+    public function getAggregationSelect(): ?string
     {
         return $this->aggregation_select;
     }
 
-    public function setAggregationSelect($value)
+    public function setAggregationSelect(?string $value): void
     {
         $this->aggregation_select = $value;
     }
 
-    public function getAggregationFrom()
+    public function getAggregationFrom(): ?string
     {
         return $this->aggregation_from;
     }
 
-    public function setAggregationFrom($value)
+    public function setAggregationFrom(?string $value): void
     {
         $this->aggregation_from = $value;
     }
 
-    public function getAggregationGroupBy()
+    public function getAggregationGroupBy(): ?string
     {
         return $this->aggregation_group_by;
     }
 
-    public function setAggregationGroupBy($value)
+    public function setAggregationGroupBy(?string $value): void
     {
         $this->aggregation_group_by = $value;
     }
 
-//    public function getLDAPSettings()
-//    {
-//        return array(
-//            $this->params_ldapServer,
-//            $this->params_ldapPort,
-//            $this->params_ldapBase,
-//            $this->params_ldapContainer,
-//            $this->params_ldapAccountKey,
-//        );
-//    }
-//
-    public function addAssociated($name, $field, $value)
+    public function addAssociated(?string $name, ?string $field, ?string $value): void
     {
         if (!$this->associated) {
             $this->associated = array();
@@ -209,68 +191,47 @@ class Settings
         $this->associated[] = array("name" => $name, "field" => $field, "value" => $value);
     }
 
-    public function getAssociated()
+    public function getAssociated(): ?array
     {
         return $this->associated;
     }
 
-    /**
-     * @param string $config
-     */
-    public function setSmtpConfiguration($config)
+    public function setSmtpConfiguration(?array $config): void
     {
         $this->smtpConfiguration = $config;
     }
 
-    /**
-     * @return string
-     */
-    public function getSmtpConfiguration()
+    public function getSmtpConfiguration(): ?array
     {
         return $this->smtpConfiguration;
     }
 
-    /**
-     * @param string $dataSourceName
-     */
-    public function setDataSourceName($dataSourceName)
+    public function setDataSourceName(string $dataSourceName): void
     {
         $this->dataSourceName = $dataSourceName;
     }
 
-    /**
-     * @return string
-     */
-    public function getDataSourceName()
+    public function getDataSourceName(): string
     {
         return $this->dataSourceName;
     }
 
-    /**
-     * @param array $fieldsRequired
-     */
-    public function setFieldsRequired($fieldsRequired)
+    public function setFieldsRequired(?array $fieldsRequired): void
     {
         $this->fieldsRequired = $fieldsRequired;
     }
 
-    /**
-     * @return array
-     */
-    public function getFieldsRequired()
+    public function getFieldsRequired(): ?array
     {
         return $this->fieldsRequired;
     }
 
-    /**
-     * @return array
-     */
-    public function getValue()
+    public function getValue(): ?array
     {
         return $this->fieldsValues;
     }
 
-    public function getValuesWithFields()
+    public function getValuesWithFields(): ?array
     {
         $result = array();
         $requiredFields = $this->getFieldsRequired();
@@ -284,7 +245,7 @@ class Settings
         return $result;
     }
 
-    public function addValueWithField($field, $value)
+    public function addValueWithField(?string $field, ?string $value): void
     {
         $this->fieldsValues[] = $value;
         $this->fieldsRequired[] = $field;
@@ -293,7 +254,7 @@ class Settings
     /**
      * @param array $foreignFieldAndValue
      */
-    public function setForeignFieldAndValue($foreignFieldAndValue)
+    public function setForeignFieldAndValue(?array $foreignFieldAndValue): void
     {
         $this->foreignFieldAndValue = $foreignFieldAndValue;
     }
@@ -301,7 +262,7 @@ class Settings
     /**
      * @return array
      */
-    public function getForeignFieldAndValue()
+    public function getForeignFieldAndValue(): ?array
     {
         return $this->foreignFieldAndValue;
     }
@@ -309,7 +270,7 @@ class Settings
     /**
      * @param boolean $isDBNative
      */
-    public function setDBNative($isDBNative)
+    public function setDBNative(bool $isDBNative): void
     {
         $this->isDBNative = $isDBNative;
     }
@@ -317,7 +278,7 @@ class Settings
     /**
      * @return boolean
      */
-    public function isDBNative()
+    public function isDBNative(): bool
     {
         return $this->isDBNative;
     }
@@ -325,7 +286,7 @@ class Settings
     /**
      * @param boolean $requireAuthentication
      */
-    public function setRequireAuthentication($requireAuthentication)
+    public function setRequireAuthentication(bool $requireAuthentication): void
     {
         $this->requireAuthentication = $requireAuthentication;
     }
@@ -333,7 +294,7 @@ class Settings
     /**
      * @return boolean
      */
-    public function getRequireAuthentication()
+    public function getRequireAuthentication(): bool
     {
         return $this->requireAuthentication;
     }
@@ -341,7 +302,7 @@ class Settings
     /**
      * @param boolean $requireAuthorization
      */
-    public function setRequireAuthorization($requireAuthorization)
+    public function setRequireAuthorization(bool $requireAuthorization): void
     {
         $this->requireAuthorization = $requireAuthorization;
     }
@@ -349,7 +310,7 @@ class Settings
     /**
      * @return boolean
      */
-    public function getRequireAuthorization()
+    public function getRequireAuthorization(): bool
     {
         return $this->requireAuthorization;
     }
@@ -357,7 +318,7 @@ class Settings
     /**
      * @param boolean $primaryKeyOnly
      */
-    public function setPrimaryKeyOnly($primaryKeyOnly)
+    public function setPrimaryKeyOnly(bool $primaryKeyOnly): void
     {
         $this->primaryKeyOnly = $primaryKeyOnly;
     }
@@ -365,17 +326,16 @@ class Settings
     /**
      * @return boolean
      */
-    public function getPrimaryKeyOnly()
+    public function getPrimaryKeyOnly(): bool
     {
         return $this->primaryKeyOnly;
     }
 
-    private $emailAsAccount = false;
 
     /**
      * @param boolean $emailAsAccount
      */
-    public function setEmailAsAccount($emailAsAccount)
+    public function setEmailAsAccount(bool $emailAsAccount): void
     {
         $this->emailAsAccount = $emailAsAccount;
     }
@@ -383,72 +343,72 @@ class Settings
     /**
      * @return boolean
      */
-    public function getEmailAsAccount()
+    public function getEmailAsAccount(): bool
     {
         return $this->emailAsAccount;
     }
 
-    public function getCurrentDataAccess()
+    public function getCurrentDataAccess(): DBClass
     {
         return $this->currentDataAccess;
     }
 
-    public function setCurrentDataAccess($dbaccess)
+    public function setCurrentDataAccess(DBClass $dbaccess): void
     {
         $this->currentDataAccess = $dbaccess;
     }
 
-    public function setDbSpecServer($str)
+    public function setDbSpecServer(?string $str): void
     {
         $this->dbSpecServer = $str;
     }
 
-    public function getDbSpecServer()
+    public function getDbSpecServer(): ?string
     {
         return $this->dbSpecServer;
     }
 
-    public function setDbSpecPort($str)
+    public function setDbSpecPort(?string $str): void
     {
         $this->dbSpecPort = $str;
     }
 
-    public function getDbSpecPort()
+    public function getDbSpecPort(): ?string
     {
         return $this->dbSpecPort;
     }
 
-    public function setDbSpecUser($str)
+    public function setDbSpecUser(?string $str): void
     {
         $this->dbSpecUser = $str;
     }
 
-    public function getDbSpecUser()
+    public function getDbSpecUser(): ?string
     {
         return $this->dbSpecUser;
     }
 
-    public function setDbSpecPassword($str)
+    public function setDbSpecPassword(?string $str): void
     {
         $this->dbSpecPassword = $str;
     }
 
-    public function getDbSpecPassword()
+    public function getDbSpecPassword(): ?string
     {
         return $this->dbSpecPassword;
     }
 
-    public function setDbSpecDataType($str)
+    public function setDbSpecDataType(?string $str): void
     {
         $this->dbSpecDataType = $str;
     }
 
-    public function getDbSpecDataType()
+    public function getDbSpecDataType(): ?string
     {
         return is_null($this->dbSpecDataType) ? "FMPro12" : $this->dbSpecDataType;
     }
 
-    public function setDbSpecDatabase($str)
+    public function setDbSpecDatabase(?string $str): void
     {
         $this->dbSpecDatabase = $str;
     }
@@ -458,7 +418,7 @@ class Settings
         return $this->dbSpecDatabase;
     }
 
-    public function setDbSpecProtocol($str)
+    public function setDbSpecProtocol(?string $str): void
     {
         $this->dbSpecProtocol = $str;
     }
@@ -468,37 +428,37 @@ class Settings
         return $this->dbSpecProtocol;
     }
 
-    public function setDbSpecDSN($str)
+    public function setDbSpecDSN(?string $str): void
     {
         $this->dbSpecDSN = $str;
     }
 
-    public function getDbSpecDSN()
+    public function getDbSpecDSN(): ?string
     {
         return $this->dbSpecDSN;
     }
 
-    public function setDbSpecOption($str)
+    public function setDbSpecOption(?array $options): void
     {
-        $this->dbSpecOption = $str;
+        $this->dbSpecOption = $options;
     }
 
-    public function getDbSpecOption()
+    public function getDbSpecOption(): ?array
     {
         return $this->dbSpecOption;
     }
 
-    public function getAccessUser()
+    public function getAccessUser(): ?string
     {
         return $this->accessUser ?? $this->dbSpecUser;
     }
 
-    public function getAccessPassword()
+    public function getAccessPassword(): ?string
     {
         return $this->accessPassword ?? $this->dbSpecPassword;
     }
 
-    public function setUserAndPasswordForAccess($user, $pass)
+    public function setUserAndPasswordForAccess(?string $user, ?string $pass): void
     {
         $this->accessUser = $user;
         $this->accessPassword = $pass;
@@ -509,7 +469,7 @@ class Settings
     /**
      * @param array $authentication
      */
-    public function setAuthentication($authentication)
+    public function setAuthentication(?array $authentication): void
     {
         if (isset($authentication['authexpired']) && $authentication['authexpired'] == 0) {
             $authentication['authexpired'] = $this->getAuthenticationItem('authexpired');
@@ -520,12 +480,12 @@ class Settings
     /**
      * @return array
      */
-    public function getAuthentication()
+    public function getAuthentication(): ?array
     {
         return $this->authentication;
     }
 
-    public function getAuthenticationItem($key)
+    public function getAuthenticationItem(?string $key)
     {
         if (isset($this->authentication[$key])) {
             return $this->authentication[$key];
@@ -547,62 +507,62 @@ class Settings
         return null;
     }
 
-    public function getUserTable()
+    public function getUserTable(): ?string
     {
         return $this->getAuthenticationItem('user-table');
     }
 
-    public function getGroupTable()
+    public function getGroupTable(): ?string
     {
         return $this->getAuthenticationItem('group-table');
     }
 
-    public function getCorrTable()
+    public function getCorrTable(): ?string
     {
         return $this->getAuthenticationItem('corresponding-table');
     }
 
-    public function getHashTable()
+    public function getHashTable(): ?string
     {
         return $this->getAuthenticationItem('challenge-table');
     }
 
-    public function getExpiringSeconds()
+    public function getExpiringSeconds(): int
     {
         return $this->getAuthenticationItem('authexpired');
     }
 
-    public function setSAMLExpiringSeconds($sec)
+    public function setSAMLExpiringSeconds(int $sec): void
     {
-        $this->params_samlExpiringSeconds = (int)$sec;
+        $this->params_samlExpiringSeconds = $sec;
     }
 
-    public function getSAMLExpiringSeconds()
+    public function getSAMLExpiringSeconds(): int
     {
         return $this->params_samlExpiringSeconds;
     }
 
-    public function setCurrentUser($str)
+    public function setCurrentUser(?string $str): void
     {
         $this->currentUser = $str;
     }
 
-    public function getCurrentUser()
+    public function getCurrentUser(): ?string
     {
         return $this->currentUser;
     }
 
-    public function setDataSource($src)
+    public function setDataSource(?array $src): void
     {
         $this->dataSource = $src;
     }
 
-    public function getDataSource()
+    public function getDataSource(): ?array
     {
         return $this->dataSource;
     }
 
-    public function getDataSourceDefinition($dataSourceName)
+    public function getDataSourceDefinition(?string $dataSourceName): ?array
     {
         foreach ($this->dataSource as $index => $value) {
             if ($value['name'] == $dataSourceName) {
@@ -612,57 +572,57 @@ class Settings
         return null;
     }
 
-    public function setOptions($src)
+    public function setOptions(?array $src): void
     {
         $this->options = $src;
     }
 
-    public function getOptions()
+    public function getOptions(): ?array
     {
         return $this->options;
     }
 
-    public function setDbSpec($src)
+    public function setDbSpec(?array $src): void
     {
         $this->dbSpec = $src;
     }
 
-    public function getDbSpec()
+    public function getDbSpec(): ?array
     {
         return $this->dbSpec;
     }
 
-    public function setSeparator($sep)
+    public function setSeparator(?string $sep): void
     {
         $this->separator = $sep;
     }
 
-    public function getSeparator()
+    public function getSeparator(): ?string
     {
         return $this->separator;
     }
 
-    public function addTargetField($field)
+    public function addTargetField(?string $field): void
     {
         $this->fieldsRequired[] = $field;
     }
 
-    public function getFieldOfIndex($ix)
+    public function getFieldOfIndex(int $ix): ?string
     {
         return $this->fieldsRequired[$ix];
     }
 
-    public function addValue($value)
+    public function addValue(?string $value): void
     {
         $this->fieldsValues[] = $value;
     }
 
-    public function setValue($values)
+    public function setValue(?array $values): void
     {
         $this->fieldsValues = $values;
     }
 
-    public function getValueOfField($targetField)
+    public function getValueOfField(?string $targetField): ?string
     {
         $counter = 0;
         foreach ($this->fieldsRequired as $field) {
@@ -674,42 +634,42 @@ class Settings
         return null;
     }
 
-    public function setStart($st)
+    public function setStart(?string $st): void
     {
         $this->start = intval(mb_ereg_replace('[^0-9]', '', $st));
     }
 
-    public function getStart()
+    public function getStart(): int
     {
         return $this->start;
     }
 
-    public function getRecordCount()
+    public function getRecordCount(): int
     {
         return $this->recordCount;
     }
 
-    public function setRecordCount($sk)
+    public function setRecordCount(?string $sk): void
     {
         $this->recordCount = intval(mb_ereg_replace('[^0-9]', '', $sk));
     }
 
-    public function getExtraCriteria()
+    public function getExtraCriteria(): ?array
     {
         return $this->extraCriteria;
     }
 
-    public function unsetExtraCriteria($index)
+    public function unsetExtraCriteria(int $index): void
     {
         unset($this->extraCriteria[$index]);
     }
 
-    public function addExtraCriteria($field, $operator = '=', $value = null)
+    public function addExtraCriteria(?string $field, ?string $operator = '=', ?string $value = null): void
     {
         $this->extraCriteria[] = array('field' => $field, 'operator' => $operator, 'value' => $value);
     }
 
-    public function getCriteriaValue($targetField)
+    public function getCriteriaValue(?string $targetField): ?string
     {
         foreach ($this->getExtraCriteria() as $ar) {
             if ($targetField == $ar["field"]) {
@@ -719,7 +679,7 @@ class Settings
         return null;
     }
 
-    public function getCriteriaOperator($targetField)
+    public function getCriteriaOperator(?string $targetField): ?string
     {
         foreach ($this->getExtraCriteria() as $ar) {
             if ($targetField == $ar["field"]) {
@@ -729,22 +689,22 @@ class Settings
         return null;
     }
 
-    public function addExtraSortKey($field, $direction)
+    public function addExtraSortKey(?string $field, ?string $direction): void
     {
         $this->extraSortKey[] = array('field' => $field, 'direction' => $direction);
     }
 
-    public function getExtraSortKey()
+    public function getExtraSortKey(): ?array
     {
         return $this->extraSortKey;
     }
 
-    public function addForeignValue($field, $value)
+    public function addForeignValue(?string $field, ?string $value): void
     {
         $this->foreignFieldAndValue[] = array('field' => $field, 'value' => $value);
     }
 
-    public function getForeignKeysValue($targetField)
+    public function getForeignKeysValue(?string $targetField): ?string
     {
         foreach ($this->foreignFieldAndValue as $ar) {
             if ($targetField == $ar["field"]) {
@@ -754,17 +714,17 @@ class Settings
         return null;
     }
 
-    public function setMediaRoot($value)
+    public function setMediaRoot(?string $value): void
     {
         $this->params_mediaRoot = $value;
     }
 
-    public function getMediaRoot()
+    public function getMediaRoot(): ?string
     {
         return $this->params_mediaRoot;
     }
 
-    public function setGlobalInContext($contextName, $operation, $field, $value)
+    public function setGlobalInContext(?string $contextName, ?string $operation, ?string $field, ?string $value): void
     {
         foreach ($this->dataSource as $index => $record) {
             if ($record['name'] == $contextName) {
@@ -781,7 +741,7 @@ class Settings
     }
 
     /* get the information for the 'name'. */
-    public function getDataSourceTargetArray()
+    public function getDataSourceTargetArray(): ?array
     {
         if ($this->dataSource == null) {
             return null;
@@ -794,7 +754,7 @@ class Settings
         return null;
     }
 
-    public function getEntityForRetrieve()
+    public function getEntityForRetrieve(): ?string
     {
         $dsrc = $this->getDataSourceTargetArray();
         if (is_null($dsrc)) {
@@ -806,7 +766,7 @@ class Settings
         return $dsrc['name'];
     }
 
-    public function getEntityForCount()
+    public function getEntityForCount(): ?string
     {
         $dsrc = $this->getDataSourceTargetArray();
         if (is_null($dsrc)) {
@@ -821,7 +781,7 @@ class Settings
         return $dsrc['name'];
     }
 
-    public function getEntityForUpdate()
+    public function getEntityForUpdate(): ?string
     {
         $dsrc = $this->getDataSourceTargetArray();
         if (is_null($dsrc)) {
@@ -833,7 +793,7 @@ class Settings
         return $dsrc['name'];
     }
 
-    public function getEntityAsSource()
+    public function getEntityAsSource(): ?string
     {
         $dsrc = $this->getDataSourceTargetArray();
         if (is_null($dsrc)) {

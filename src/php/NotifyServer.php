@@ -20,9 +20,9 @@ use INTERMediator\DB\Logger;
 
 class NotifyServer
 {
-    private $dbClass;
-    private $dbSettings;
-    private $clientId;
+    private string $dbClass;
+    private array $dbSettings;
+    private string $clientId;
 
     /**
      * @param $dbClass
@@ -30,7 +30,7 @@ class NotifyServer
      * @param $clientId
      * @return bool
      */
-    public function initialize($dbClass, $dbSettings, $clientId)
+    public function initialize(string $dbClass, array $dbSettings, string $clientId): bool
     {
         $this->dbClass = $dbClass;
         $this->dbSettings = $dbSettings;
@@ -55,7 +55,7 @@ class NotifyServer
      * 'field' => [0 => 'name',]
      * 'value' => [0 => 'Masayuki Nii',],]
      */
-    private function trigger($channels, $operation, $data)
+    private function trigger(array $channels, string $operation, array $data): void
     {
         $logger = Logger::getInstance();
         $logger->setDebugMessage(str_replace("\n", "", "[NotifyServer] trigger / channels="
@@ -67,7 +67,6 @@ class NotifyServer
         $ssInstance->sync($channels, $operation, $data);
         $logger->setDebugMessages($ssInstance->getMessages());
         $logger->setErrorMessages($ssInstance->getErrors());
-
     }
 
     /**
@@ -76,7 +75,7 @@ class NotifyServer
      * @param $pkArray
      * @return mixed
      */
-    public function register($entity, $condition, $pkArray)
+    public function register(string $entity, array $condition, array $pkArray): ?string
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] register", 2);
         if ($this->dbClass->notifyHandler) {
@@ -90,13 +89,13 @@ class NotifyServer
      * @param $tableKeys
      * @return mixed
      */
-    public function unregister($client, $tableKeys)
+    public function unregister(string $client, ?array $tableKeys): bool
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] unregister", 2);
         if ($this->dbClass && $this->dbClass->notifyHandler) {
             return $this->dbClass->notifyHandler->unregister($client, $tableKeys);
         }
-        return null;
+        return false;
     }
 
     /**
@@ -106,7 +105,7 @@ class NotifyServer
      * @param $field
      * @param $value
      */
-    public function updated($clientId, $entity, $pkArray, $field, $value, $isNotify)
+    public function updated(string $clientId, string $entity, array $pkArray, string $field, string $value, bool $isNotify): void
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] updated", 2);
         if ($this->dbClass && $this->dbClass->notifyHandler) {
@@ -122,7 +121,7 @@ class NotifyServer
      * @param $pkArray
      * @param $record
      */
-    public function created($clientId, $entity, $pkArray, $pkField, $record, $isNotify)
+    public function created(string $clientId, string $entity, array $pkArray, string $pkField, array $record, bool $isNotify): void
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] created", 2);
         if ($this->dbClass && $this->dbClass->notifyHandler) {
@@ -137,7 +136,7 @@ class NotifyServer
      * @param $entity
      * @param $pkArray
      */
-    public function deleted($clientId, $entity, $pkArray)
+    public function deleted(string $clientId, string $entity, array $pkArray): void
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] deleted", 2);
         if ($this->dbClass && $this->dbClass->notifyHandler) {
@@ -146,16 +145,5 @@ class NotifyServer
             $data = array('entity' => $entity, 'pkvalue' => $pkArray);
             $this->trigger($channels, 'delete', $data);
         }
-    }
-
-    /**
-     * @param $client
-     * @param $entity
-     * @param $keying
-     */
-    public function notify($client, $entity, $keying)
-    {
-        $this->dbClass->logger->setDebugMessage("[NotifyServer] notify", 2);
-
     }
 }

@@ -12,24 +12,41 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\Data_Converter;
 
+/**
+ *
+ */
 class AppendPrefix
 {
+    /**
+     * @var string
+     */
+    private string $appendStr;
 
-    private $appendStr;
-
-    function __construct($str = '')
+    /**
+     * @param string $str
+     */
+    function __construct(string $str = '')
     {
         $this->appendStr = $str;
     }
 
-    function converterFromDBtoUser($str)
+    /**
+     * @param string $str
+     * @return string
+     */
+    function converterFromDBtoUser(?string $str): string
     {
         return $this->appendStr . $str;
     }
 
-    function converterFromUserToDB($str)
+    /**
+     * @param string $str
+     * @return string
+     */
+    function converterFromUserToDB(string $str): string
     {
         if (strpos($str, $this->appendStr) === 0) {
             return substr($str, strlen($this->appendStr));

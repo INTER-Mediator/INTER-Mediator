@@ -18,28 +18,54 @@ namespace INTERMediator;
 
 use SimpleSAML\Auth\Simple;
 
+/**
+ *
+ */
 class SAMLAuth
 {
-    private $authSimple;
-    private $samlAttrRules = false;
-    private $samlAdditionalRules = false;
+    /**
+     * @var string|Simple
+     */
+    private string $authSimple;
+    /**
+     * @var array|null
+     */
+    private ?array $samlAttrRules = null;
+    /**
+     * @var array|null
+     */
+    private ?array $samlAdditionalRules = null;
 
-    public function __construct($authSource)
+    /**
+     * @param string $authSource
+     */
+    public function __construct(string $authSource)
     {
         $this->authSimple = new Simple($authSource);
     }
 
-    public function setSAMLAttrRules($value)
+    /**
+     * @param array $value
+     * @return void
+     */
+    public function setSAMLAttrRules(?array $value): void
     {
         $this->samlAttrRules = $value;
     }
 
-    public function setSAMLAdditionalRules($value)
+    /**
+     * @param array $value
+     * @return void
+     */
+    public function setSAMLAdditionalRules(array $value): void
     {
         $this->samlAdditionalRules = $value;
     }
 
-    public function samlLoginCheck()
+    /**
+     * @return array
+     */
+    public function samlLoginCheck(): array
     {
         $additional = true;
         $user = null;
@@ -64,12 +90,18 @@ class SAMLAuth
         return [$additional, $user];
     }
 
-    public function getAttributes()
+    /**
+     * @return array|null
+     */
+    public function getAttributes(): ?array
     {
         return $this->authSimple->getAttributes();
     }
 
-    public function getValuesFromAttributes()
+    /**
+     * @return array|null
+     */
+    public function getValuesFromAttributes(): ?array
     {
         $extArray = null;
         if ($this->samlAttrRules) {
@@ -80,7 +112,11 @@ class SAMLAuth
         return $extArray;
     }
 
-    private function getValuesWithRule($rule)
+    /**
+     * @param string $rule
+     * @return string
+     */
+    private function getValuesWithRule(string $rule): string
     {
         $returnValue = null;
         $attributes = $this->authSimple->getAttributes();
@@ -93,12 +129,20 @@ class SAMLAuth
         return $returnValue;
     }
 
-    public function samlLoginURL($url = null)
+    /**
+     * @param string|null $url
+     * @return string|null
+     */
+    public function samlLoginURL(?string $url = null): ?string
     {
         return $this->authSimple->getLoginURL($url);
     }
 
-    public function samlLogoutURL($url = null)
+    /**
+     * @param string|null $url
+     * @return string|null
+     */
+    public function samlLogoutURL(?string $url = null): ?string
     {
         return $this->authSimple->getLogoutURL($url);
     }

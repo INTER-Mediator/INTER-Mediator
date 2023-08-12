@@ -13,19 +13,30 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\Data_Converter;
 
+/**
+ *
+ */
 class MarkdownString extends HTMLString
 {
-
-    public function converterFromDBtoUser($str)
+    /**
+     * @param string $str
+     * @return string
+     */
+    public function converterFromDBtoUser(?string $str): string
     {
         $str = $this->replaceTags($str);
         $str = $this->taggingAsMarkdown($str);
         return $this->replaceLinkToATag($str);
     }
 
-    public function taggingAsMarkdown($str)
+    /**
+     * @param string $str
+     * @return string
+     */
+    public function taggingAsMarkdown(string $str): string
     {
         $result = ["<div class='_im_markdown'>"];
         $unifyCRLF = str_replace("\r", "\n", str_replace("\r\n", "\n", $str));
@@ -67,11 +78,11 @@ class MarkdownString extends HTMLString
                 $tag = "h{$paraCount}";
                 $result[] = "<{$tag} class='_im_markdown_{$tag}'>" . substr($aLine, $paraCount) . "</{$tag}>";
             } else if (substr($aLine, 0, 3) == "###") {
-                $result[] = "<p class='_im_markdown_p3'>". substr($aLine, 3) . "</p>";
+                $result[] = "<p class='_im_markdown_p3'>" . substr($aLine, 3) . "</p>";
             } else if (substr($aLine, 0, 2) == "##") {
-                $result[] = "<p class='_im_markdown_p2'>". substr($aLine, 2) . "</p>";
+                $result[] = "<p class='_im_markdown_p2'>" . substr($aLine, 2) . "</p>";
             } else if (substr($aLine, 0, 1) == "#") {
-                $result[] = "<p class='_im_markdown_p1'>". substr($aLine, 1) . "</p>";
+                $result[] = "<p class='_im_markdown_p1'>" . substr($aLine, 1) . "</p>";
             } else if (substr($aLine, 0, 6) == "@@IMG[") {
                 $endPos = mb_strpos($aLine, ']', 6);
                 if ($endPos === FALSE) {

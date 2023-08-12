@@ -19,25 +19,36 @@ use DateTime;
 use DateTimeZone;
 use INTERMediator\Locale\IMLocale;
 
+/**
+ *
+ */
 class MySQLDateTime
 {
+    /**
+     * @var string
+     */
+    private string $tz = 'Asia/Tokyo'; // Should be custimizable.
+    /**
+     * @var string
+     */
+    private string $fmt;
 
-    private $tz = 'Asia/Tokyo'; // Should be custimizable.
-
-    private $useMbstring;
-    private $fmt;
-    private $choosenLocale;
-
-    function __construct($format = '')
+    /**
+     * @param string $format
+     */
+    function __construct(string $format = '')
     {
         $this->fmt = $format;
         IMLocale::setLocale(LC_ALL);
-        $this->choosenLocale = IMLocale::$choosenLocale;
-        $this->useMbstring = IMLocale::$useMbstring;
         date_default_timezone_set($this->tz);
     }
 
-    function converterFromDBtoUser($str)
+    /**
+     * @param string $str
+     * @return string
+     * @throws \Exception
+     */
+    function converterFromDBtoUser(?string $str): string
     {
         if ($str === NULL || $str === '' || $str === '0000-00-00') {
             return '';
@@ -71,7 +82,11 @@ class MySQLDateTime
         return date(($this->fmt == '') ? $fmt : $this->fmt, $dtObj->format('U'));
     }
 
-    function converterFromUserToDB($str)
+    /**
+     * @param string $str
+     * @return string
+     */
+    function converterFromUserToDB(string $str): ?string
     {
         if ($str == "") {
             return null;
@@ -87,5 +102,4 @@ class MySQLDateTime
             $dt = "{$dtAr['hour']}:{$dtAr['minute']}:{$dtAr['second']}";
         return $dt;
     }
-
 }

@@ -17,46 +17,97 @@ namespace INTERMediator\DB;
 
 use Exception;
 use INTERMediator\FileMakerServer\RESTAPI\FMDataAPI;
+use INTERMediator\FileMakerServer\RESTAPI\Supporting\FileMakerRelation;
 use INTERMediator\IMUtil;
 
-class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
+/**
+ *
+ */
+class FileMaker_DataAPI extends DBClass
 {
-    public $fmData = null;     // FMDataAPI class's instance
-    public $fmDataAuth = null; // FMDataAPI class's instance
-    public $fmDataAlt = null;  // FMDataAPI class's instance
-    private $targetLayout = null;
-    private $recordCount = null;
-    private $mainTableCount = 0;
-    private $mainTableTotalCount = 0;
-    private $fieldInfo = null;
-    private $updatedRecord = null;
-    private $softDeleteField = null;
-    private $softDeleteValue = null;
-    private $errorMessage = [];
+    /**
+     * @var FMDataAPI|null
+     */
+    public ?FMDataAPI $fmData = null;     // FMDataAPI class's instance
+    /**
+     * @var FMDataAPI|null
+     */
+    public ?FMDataAPI $fmDataAuth = null; // FMDataAPI class's instance
+    /**
+     * @var FMDataAPI|null
+     */
+    public ?FMDataAPI $fmDataAlt = null;  // FMDataAPI class's instance
+    /**
+     * @var string|null
+     */
+    private ?string $targetLayout = null;
 
     /**
-     * @param $str
+     * @var int
      */
-    public function errorMessageStore($str)
+    private int $mainTableCount = 0;
+    /**
+     * @var int
+     */
+    private int $mainTableTotalCount = 0;
+    /**
+     * @var array|null
+     */
+    private ?array $fieldInfo = null;
+    /**
+     * @var array|null
+     */
+    private ?array $updatedRecord = null;
+    /**
+     * @var string|null
+     */
+    private ?string $softDeleteField = null;
+    /**
+     * @var string|null
+     */
+    private ?string $softDeleteValue = null;
+    /**
+     * @var bool
+     */
+    private bool $useSetDataToUpdatedRecord = false;
+
+    /**
+     * @param string $str
+     * @return void
+     */
+    public function errorMessageStore(string $str)
     {
-        $this->logger->setErrorMessage("Query Error: [{$str}] Error Code={$this->fmData->errorCode()}");
+        $this->logger->setErrorMessage("[FileMaker_DataAPI] Error: {$str}]");
     }
 
-    public function setupConnection()
+    /**
+     * @return bool
+     */
+    public function setupConnection(): bool
     {
         return true;
     }
 
-    public function requireUpdatedRecord($value)
+    /**
+     * @param bool $value
+     * @return void
+     */
+    public function requireUpdatedRecord(bool $value): void
     {
         // always can get the new record for FileMaker Server.
     }
 
-    public function getUpdatedRecord()
+    /**
+     * @return array|null
+     */
+    public function getUpdatedRecord(): ?array
     {
         return $this->updatedRecord;
     }
 
+    /**
+     * @return array|null
+     */
     public function updatedRecord()
     {
         return $this->updatedRecord;
@@ -65,63 +116,105 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
     /* Usually a setter method has just one parameter, but the same named method existed on previous version
       and possibly calling it from user program. So if it has more than one parameter, it might call old
       method and redirect to previous one. (msyk, 2021-11-03) */
-    public function setUpdatedRecord($record, $value = false, $index = 0)
+    /**
+     * @param array $record
+     * @param string|null $value
+     * @param int $index
+     * @return void
+     */
+    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
     {
-        if ($value === false) {
+        if (!$value) {
             $this->updatedRecord = $record;
         } else { // Previous use of this method redirect to setDataToUpdatedRecord
             $this->setDataToUpdatedRecord($record, $value, $index);
         }
     }
 
-    public function setDataToUpdatedRecord($field, $value, $index = 0)
+    /**
+     * @param string $field
+     * @param string $value
+     * @param int $index
+     * @return void
+     */
+    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
     {
         $this->updatedRecord[$index][$field] = $value;
         $this->useSetDataToUpdatedRecord = true;
     }
 
-    private $useSetDataToUpdatedRecord = false;
-
-    public function getUseSetDataToUpdatedRecord()
+    /**
+     * @return bool
+     */
+    public function getUseSetDataToUpdatedRecord(): bool
     {
         return $this->useSetDataToUpdatedRecord;
     }
 
-    public function clearUseSetDataToUpdatedRecord()
+    /**
+     * @return void
+     */
+    public function clearUseSetDataToUpdatedRecord(): void
     {
         $this->useSetDataToUpdatedRecord = false;
     }
 
-    public function softDeleteActivate($field, $value)
+    /**
+     * @param string $field
+     * @param string $value
+     * @return void
+     */
+    public function softDeleteActivate(string $field, string $value): void
     {
         $this->softDeleteField = $field;
         $this->softDeleteValue = $value;
     }
 
-    public function setupFMDataAPIforAuth($layoutName, $recordCount)
+    /**
+     * @param string $layoutName
+     * @param int $recordCount
+     * @return void
+     */
+    public function setupFMDataAPIforAuth(string $layoutName, int $recordCount): void
     {
         $this->fmData = null;
         $this->fmDataAuth = $this->setupFMDataAPI_Impl($layoutName, $recordCount,
             $this->dbSettings->getDbSpecUser(), $this->dbSettings->getDbSpecPassword());
     }
 
-    public function setupFMDataAPIforDB($layoutName, $recordCount)
+    /**
+     * @param string $layoutName
+     * @param int $recordCount
+     * @return void
+     */
+    public function setupFMDataAPIforDB(string $layoutName, int $recordCount): void
     {
         $this->fmDataAuth = null;
         $this->fmData = $this->setupFMDataAPI_Impl($layoutName, $recordCount,
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
     }
 
-    public function setupFMDataAPIforDB_Alt($layoutName, $recordCount)
+    /**
+     * @param string $layoutName
+     * @param int $recordCount
+     * @return void
+     */
+    public function setupFMDataAPIforDB_Alt(string $layoutName, int $recordCount): void
     {
         $this->fmDataAlt = $this->setupFMDataAPI_Impl($layoutName, $recordCount,
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
     }
 
-    private function setupFMDataAPI_Impl($layoutName, $recordCount, $user, $password)
+    /**
+     * @param string $layoutName
+     * @param int $recordCount
+     * @param string $user
+     * @param string $password
+     * @return FMDataAPI
+     */
+    private function setupFMDataAPI_Impl(string $layoutName, int $recordCount, string $user, string $password): FMDataAPI
     {
         $this->targetLayout = $layoutName;
-        $this->recordCount = $recordCount;
         if (!isset($_SESSION)) {
             session_start();
         }
@@ -164,14 +257,21 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         return $fmDataObj;
     }
 
-    public function setupHandlers($dsn = false)
+    /**
+     * @param string|null $dsn
+     * @return void
+     */
+    public function setupHandlers(?string $dsn = null): void
     {
         $this->authHandler = new Support\DB_Auth_Handler_FileMaker_DataAPI($this);
         $this->notifyHandler = new Support\DB_Notification_Handler_FileMaker_DataAPI($this);
         $this->specHandler = new Support\DB_Spec_Handler_FileMaker_DataAPI();
     }
 
-    public function closeDBOperation()
+    /**
+     * @return void
+     */
+    public function closeDBOperation(): void
     {
         if ($this->fmData) {
             $this->fmData->endCommunication();
@@ -184,7 +284,11 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         }
     }
 
-    public function stringWithoutCredential($str)
+    /**
+     * @param string $str
+     * @return array|string|string[]
+     */
+    public function stringWithoutCredential(string $str)
     {
         if (is_null($this->fmData)) {
             $str = str_replace($this->dbSettings->getDbSpecUser(), "********", $str ?? "");
@@ -195,18 +299,32 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         }
     }
 
-    private function stringReturnOnly($str)
+    /**
+     * @param string $str
+     * @return array|string|string[]
+     */
+    private function stringReturnOnly(string $str)
     {
         return str_replace("\n\r", "\r", str_replace("\n", "\r", $str ?? ""));
     }
 
-    private function unifyCRLF($str)
+    /**
+     * @param string $str
+     * @return array|string|string[]
+     */
+    private function unifyCRLF(string $str)
     {
         return str_replace("\n", "\r", str_replace("\r\n", "\r", $str ?? ""));
     }
 
 
-    private function setSearchConditionsForCompoundFound($field, $value, $operator = NULL)
+    /**
+     * @param string $field
+     * @param string $value
+     * @param string|null $operator
+     * @return string[]|null
+     */
+    private function setSearchConditionsForCompoundFound(string $field, string $value, ?string $operator = NULL)
     {
         if ($operator === NULL) {
             return array($field, $value);
@@ -230,7 +348,11 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         return null;
     }
 
-    private function executeScripts($scriptContext)
+    /**
+     * @param array|null $scriptContext
+     * @return array|string[]|null
+     */
+    private function executeScripts(?array $scriptContext): ?array
     {
         $script = array();
         if (is_array($scriptContext)) {
@@ -266,16 +388,24 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 }
             }
         }
-
         return $script === array() ? NULL : $script;
     }
 
-    public function getFieldInfo($dataSourceName)
+    /**
+     * @param string $dataSourceName
+     * @return array|null
+     */
+    public function getFieldInfo(string $dataSourceName): ?array
     {
         return $this->fieldInfo;
     }
 
-    public function getSchema($dataSourceName)
+    /**
+     * @param string $dataSourceName
+     * @return array|false
+     * @throws Exception
+     */
+    public function getSchema(string $dataSourceName)
     {
         $this->fieldInfo = null;
 
@@ -312,7 +442,11 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         return $returnArray;
     }
 
-    public function readFromDB()
+    /**
+     * @return array|array[]|null
+     * @throws Exception
+     */
+    public function readFromDB(): ?array
     {
         $useOrOperation = FALSE;
         $this->fieldInfo = NULL;
@@ -721,7 +855,11 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         return $recordArray;
     }
 
-    private function createRecordset($resultData)
+    /**
+     * @param FileMakerRelation|null $resultData
+     * @return array
+     */
+    private function createRecordset(?FileMakerRelation $resultData): array
     {
         $returnArray = array();
         $tableName = $this->dbSettings->getEntityForRetrieve();
@@ -752,21 +890,31 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             }
             $returnArray[] = $oneRecordArray;
         }
-
         return $returnArray;
     }
 
-    public function countQueryResult()
+    /**
+     * @return int
+     */
+    public function countQueryResult(): int
     {
         return $this->mainTableCount;
     }
 
-    public function getTotalCount()
+    /**
+     * @return int
+     */
+    public function getTotalCount(): int
     {
         return $this->mainTableTotalCount;
     }
 
-    public function updateDB($bypassAuth)
+    /**
+     * @param bool $bypassAuth
+     * @return bool
+     * @throws Exception
+     */
+    public function updateDB(bool $bypassAuth): bool
     {
         $this->fieldInfo = null;
         $dataSourceName = $this->dbSettings->getDataSourceName();
@@ -885,12 +1033,13 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             }
         }
 
-        if (get_class($result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
+        if (get_class((object)$result) !== 'INTERMediator\\FileMakerServer\\RESTAPI\\Supporting\\FileMakerRelation') {
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
                 $this->logger->setErrorMessage(
-                    $this->stringWithoutCredential(get_class($result) . ': ' . $this->fmData->{$layout}->getDebugInfo()));
+                    $this->stringWithoutCredential(
+                        get_class((object)$result) . ': ' . $this->fmData->{$layout}->getDebugInfo()));
             }
             return false;
         }
@@ -1044,7 +1193,12 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         return true;
     }
 
-    public function createInDB($isReplace = false)
+    /**
+     * @param bool $isReplace
+     * @return string|null
+     * @throws Exception
+     */
+    public function createInDB(bool $isReplace = false): ?string
     {
         $this->fieldInfo = null;
 
@@ -1154,16 +1308,16 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
-                $this->errorMessage[] = get_class($result) . ': ' . $this->fmData->{$layout}->getDebugInfo();
+                $this->errorMessageStore(get_class($result) . ": Code={$this->fmData->errorCode()}: " . $this->fmData->{$layout}->getDebugInfo());
             }
-            return false;
+            return null;
         }
 
         $this->logger->setDebugMessage($this->stringWithoutCredential($this->fmData->{$layout}->getDebugInfo()));
         if ($this->fmData->errorCode() > 0 && $this->fmData->errorCode() != 401) {
             $this->logger->setErrorMessage($this->stringWithoutCredential(
                 "FileMaker Data API reports error at create action: code={$this->fmData->errorCode()}<hr>"));
-            return false;
+            return null;
         }
 
         $this->notifyHandler->setQueriedPrimaryKeys(array($recId));
@@ -1174,7 +1328,11 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         return $recId;
     }
 
-    public function deleteFromDB()
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    public function deleteFromDB(): bool
     {
         $this->fieldInfo = null;
 
@@ -1252,13 +1410,13 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
-                $this->errorMessage[] = get_class($result) . ': ' . $this->fmData->{$layout}->getDebugInfo();
+                $this->errorMessageStore(get_class($result) . ": Code={$this->fmData->errorCode()}: " . $this->fmData->{$layout}->getDebugInfo());
             }
             return false;
         }
         $this->logger->setDebugMessage($this->stringWithoutCredential($this->fmData->{$layout}->getDebugInfo()));
         if ($this->fmData->errorCode() > 0) {
-            $this->errorMessage[] = "FileMaker Data API reports error at find action: code={$this->fmData->errorCode()}, url={$this->fmData->{$layout}->getDebugInfo()}<hr>";
+            $this->errorMessageStore("FileMaker Data API reports error at find action: code={$this->fmData->errorCode()}, url={$this->fmData->{$layout}->getDebugInfo()}");
             return false;
         }
         if ($result->count() > 0) {
@@ -1313,12 +1471,21 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         return true;
     }
 
-    public function copyInDB()
+    /**
+     * @return string|null
+     */
+    public function copyInDB(): ?string
     {
-        $this->errorMessage[] = "Copy operation is not implemented so far.";
+        $this->errorMessageStore("Copy operation is not implemented so far.");
+        return null;
     }
 
-    private function getFieldForFormatter($entity, $field)
+    /**
+     * @param string $entity
+     * @param string $field
+     * @return string
+     */
+    private function getFieldForFormatter(string $entity, string $field): string
     {
         if (strpos($field, "::") === false) {
             return "{$entity}{$this->dbSettings->getSeparator()}{$field}";
@@ -1341,7 +1508,11 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         return "{$entity}{$this->dbSettings->getSeparator()}{$field}";
     }
 
-    public function normalizedCondition($condition)
+    /**
+     * @param array $condition
+     * @return array
+     */
+    private function normalizedCondition(array $condition): array
     {
         if (!isset($condition['field'])) {
             $condition['field'] = '';
@@ -1411,11 +1582,16 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         }
     }
 
-    public function queryForTest($table, $conditions = null)
+    /**
+     * @param string $table
+     * @param array|null $conditions
+     * @return array|null
+     */
+    public function queryForTest(string $table, ?array $conditions = null): ?array
     {
         if ($table == null) {
             $this->errorMessageStore("The table doesn't specified.");
-            return false;
+            return null;
         }
         $this->setupFMDataAPIforAuth($table, 'all');
         $recordSet = array();
@@ -1429,12 +1605,16 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
                 $recordSet[] = $oneRecord;
             }
         } catch (Exception $e) {
+            return null;
         }
-
         return $recordSet;
     }
 
-    protected function _adjustSortDirection($direction)
+    /**
+     * @param string $direction
+     * @return string
+     */
+    protected function _adjustSortDirection(string $direction): string
     {
         if (strtoupper($direction) == 'ASC') {
             $direction = 'ascend';
@@ -1445,7 +1625,12 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         return $direction;
     }
 
-    protected function _getPortalDataForUpdating($data, $result)
+    /**
+     * @param array $data
+     * @param FileMakerRelation $result
+     * @return array
+     */
+    protected function _getPortalDataForUpdating(array $data, FileMakerRelation $result): array
     {
         // for FileMaker Server 17
         $portal = NULL;
@@ -1477,37 +1662,56 @@ class FileMaker_DataAPI extends UseSharedObjects implements DBClass_Interface
         if ($data === array()) {
             $data = NULL;
         }
-
         return array($data, $portal);
     }
 
-    public function deleteForTest($table, $conditions = null)
+    /**
+     * @param string $table
+     * @param array|null $conditions
+     * @return bool
+     */
+    public function deleteForTest(string $table, ?array $conditions = null): bool
     {
-        // TODO: Implement deleteForTest() method.
+        return false;
     }
 
     /*
 * Transaction
 */
-    public function hasTransaction()
+    /**
+     * @return bool
+     */
+    public function hasTransaction(): bool
     {
         return false;
     }
 
-    public function inTransaction()
+    /**
+     * @return bool
+     */
+    public function inTransaction(): bool
     {
         return false;
     }
 
-    public function beginTransaction()
+    /**
+     * @return void
+     */
+    public function beginTransaction(): void
     {
     }
 
-    public function commitTransaction()
+    /**
+     * @return void
+     */
+    public function commitTransaction(): void
     {
     }
 
-    public function rollbackTransaction()
+    /**
+     * @return void
+     */
+    public function rollbackTransaction(): void
     {
     }
 

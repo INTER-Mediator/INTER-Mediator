@@ -18,11 +18,11 @@ namespace INTERMediator\DB;
 
 use Exception;
 
-class TextFile extends UseSharedObjects implements DBClass_Interface
+class TextFile extends DBClass
 {
     private $recordCount;
 
-    function readFromDB()
+    public function readFromDB(): ?array
     {
         $textFormat = strtolower($this->dbSettings->getDbSpecDataType());
         if ($textFormat == "csv") {
@@ -127,12 +127,13 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
         }
     }
 
-    public function countQueryResult()
+    public function countQueryResult(): int
     {
         return $this->recordCount;
     }
 
-    private function getWhereClause($currentOperation, $includeContext = true, $includeExtra = true, $signedUser = '')
+    private function getWhereClause(string $currentOperation, bool $includeContext = true, bool $includeExtra = true,
+                                    string $signedUser = ''): array
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $queryClause = '';
@@ -193,7 +194,7 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
     /**
      * @return string
      */
-    private function getSortClause()
+    private function getSortClause(): array
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $sortClause = array();
@@ -222,132 +223,129 @@ class TextFile extends UseSharedObjects implements DBClass_Interface
         return $sortClause;
     }
 
-    public function updateDB($bypassAuth)
-    {
-
-    }
-
-    public function deleteFromDB()
-    {
-    }
-
-    function getFieldInfo($dataSourceName)
-    {
-        // TODO: Implement getFieldInfo() method.
-    }
-
-    public function setupConnection()
-    {
-        // TODO: Implement setupConnection() method.
-    }
-
-    public function isPossibleOperator($operator)
-    {
-        return in_array(strtoupper($operator), array('='));
-    }
-
-    public function isPossibleOrderSpecifier($specifier)
-    {
-        return in_array(strtoupper($specifier), array('ASC', 'DESC'));
-    }
-
-    public function requireUpdatedRecord($value)
-    {
-        // TODO: Implement requireUpdatedRecord() method.
-    }
-
-    public function getUpdatedRecord()
-    {
-        // TODO: Implement getUpdatedRecord() method.
-    }
-
-    public function updatedRecord()
-    {
-        // TODO: Implement getUpdatedRecord() method.
-    }
-
-    public function setUpdatedRecord($record, $value = false, $index = 0)
-    {
-        // TODO: Implement getUpdatedRecord() method.
-    }
-
-    public function createInDB($isReplace = false)
-    {
-        // TODO: Implement newToDB() method.
-    }
-
-    public function softDeleteActivate($field, $value)
-    {
-        // TODO: Implement softDeleteActivate() method.
-    }
-
-    public function copyInDB()
+    public function updateDB(bool $bypassAuth): bool
     {
         return false;
     }
 
-    public function getTotalCount()
+    public function deleteFromDB():bool
     {
-        // TODO: Implement getTotalCount() method.
+        return false;
     }
 
-    public function setupHandlers($dsn = false)
+    public function getFieldInfo(string $dataSourceName):?array
     {
-        // TODO: Implement setupHandlers() method.
+        return null;
     }
 
-    public function normalizedCondition($condition)
+    public function setupConnection(): bool
     {
-        // TODO: Implement normalizedCondition() method.
+        // TODO: Implement setupConnection() method.
     }
 
-    public function setDataToUpdatedRecord($field, $value, $index = 0)
+    public function isPossibleOperator(string $operator): bool
     {
-        // TODO: Implement setDataToUpdatedRecord() method.
+        return in_array(strtoupper($operator), array('='));
     }
 
-    public function queryForTest($table, $conditions = null)
+    public function isPossibleOrderSpecifier(string $specifier):bool
     {
-        // TODO: Implement queryForTest() method.
+        return in_array(strtoupper($specifier), array('ASC', 'DESC'));
     }
 
-    public function deleteForTest($table, $conditions = null)
+    public function requireUpdatedRecord(bool $value): void
     {
-        // TODO: Implement deleteForTest() method.
+        // TODO: Implement requireUpdatedRecord() method.
+    }
+
+    public function getUpdatedRecord(): ?array
+    {
+        // TODO: Implement getUpdatedRecord() method.
+    }
+
+    public function updatedRecord(): ?array
+    {
+        // TODO: Implement getUpdatedRecord() method.
+    }
+
+    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
+    {
+        // TODO: Implement getUpdatedRecord() method.
+    }
+
+    public function createInDB(bool $isReplace = false):?string
+    {
+        // TODO: Implement newToDB() method.
+    }
+
+    public function softDeleteActivate(string $field, string $value): void
+    {
+        // TODO: Implement softDeleteActivate() method.
+    }
+
+    public function copyInDB():?string
+    {
+        return null;
+    }
+
+    public function getTotalCount(): int
+    {
+        return 0;
+    }
+
+    public function setupHandlers(?string $dsn = null): void
+    {
+    }
+
+    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0):void
+    {
+    }
+
+    public function queryForTest(string $table, ?array $conditions = null):?array
+    {
+        return null;
+    }
+
+    public function deleteForTest(string $table, ?array $conditions = null): bool
+    {
+        return false;
     }
 
     /*
 * Transaction
 */
-    public function hasTransaction()
+    public function hasTransaction():bool
     {
         return false;
     }
 
-    public function inTransaction()
+    public function inTransaction():bool
     {
         return false;
     }
 
-    public function beginTransaction()
+    public function beginTransaction():void
     {
     }
 
-    public function commitTransaction()
+    public function commitTransaction():void
     {
     }
 
-    public function rollbackTransaction()
+    public function rollbackTransaction():void
     {
     }
 
-    public function getUseSetDataToUpdatedRecord()
+    public function getUseSetDataToUpdatedRecord():bool
     {
-        // TODO: Implement getUseSetDataToUpdatedRecord() method.
+        return false;
     }
 
-    public function clearUseSetDataToUpdatedRecord()
+    public function clearUseSetDataToUpdatedRecord():void
     {
-        // TODO: Implement clearUseSetDataToUpdatedRecord() method.
+    }
+
+    public function closeDBOperation()
+    {
     }
 }

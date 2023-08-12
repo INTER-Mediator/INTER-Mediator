@@ -67,6 +67,8 @@ trait DB_PDO_Test_UserGroup
     {
         $this->dbProxySetupForAuth();
 
+//        $this->db_proxy->logger->clearLogs();
+
         $testName = "Simulation of Authentication";
         $username = 'user1';
         $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
@@ -86,7 +88,12 @@ trait DB_PDO_Test_UserGroup
         $this->db_proxy->setParamResponse([$calcuratedHash]);
         $this->db_proxy->setClientId_forTest("TEST");
         $this->db_proxy->setHashedPassword_forTest($hpw);
-        $this->assertTrue($this->db_proxy->checkAuthorization($username), $testName);
+        $resultAuth = $this->db_proxy->checkAuthorization($username);
+
+//        var_export($this->db_proxy->logger->getErrorMessages());
+//        var_export($this->db_proxy->logger->getDebugMessages());
+
+        $this->assertTrue($resultAuth, $testName);
     }
 
     public function testAuthByValidUser()
@@ -157,11 +164,17 @@ trait DB_PDO_Test_UserGroup
     {
         $this->dbProxySetupForAuth();
 
+//        $this->db_proxy->logger->clearLogs();
+
         $testName = "Create New User and Authenticate";
         $username = "testuser1";
         $password = "testuser1";
 
         [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password);
+
+//        var_export($this->db_proxy->logger->getErrorMessages());
+//        var_export($this->db_proxy->logger->getDebugMessages());
+
         $this->assertTrue($addUserResult, $testName);
 
         $hpw = $this->db_proxy->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
@@ -188,9 +201,6 @@ trait DB_PDO_Test_UserGroup
         $this->db_proxy->setClientId_forTest($clientId);
         $this->db_proxy->setHashedPassword_forTest($hpw);
         $checkResult = $this->db_proxy->checkAuthorization($username);
-
-//        var_export($this->db_proxy->logger->getErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessages());
 
         $this->assertTrue($checkResult, $testName);
     }

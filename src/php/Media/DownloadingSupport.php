@@ -15,22 +15,24 @@
 
 namespace INTERMediator\Media;
 
+use INTERMediator\DB\Proxy;
+
+/**
+ *
+ */
 interface DownloadingSupport
 {
     /**
-     * @param $db
-     * @param $url
-     * @param $options
-     * @param $files
-     * @param $noOutput
-     * @param $field
-     * @param $contextname
-     * @param $keyfield
-     * @param $keyvalue
-     * @param $datasource
-     * @param $dbspec
-     * @param $debug
+     * @param string $file
+     * @param string $target
+     * @param Proxy $dbProxyInstance
+     * @return mixed
      */
-    public function getMedia($file, $target, $dbProxyInstance);
-    public function getFileName($file);
+    public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string;
+
+    /**
+     * @param string $file
+     * @return mixed
+     */
+    public function getFileName(string $file): string;
 }

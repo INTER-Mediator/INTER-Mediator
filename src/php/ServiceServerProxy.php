@@ -12,66 +12,134 @@ namespace INTERMediator;
 use DateTime;
 use INTERMediator\DB\Logger;
 
-$gSSPInstance = null;
-
+/**
+ *
+ */
 class ServiceServerProxy
 {
-    private $paramsHost;
-    private $paramsPort;
-    private $paramsQuit;
-    private $paramsBoot;
-    private $dontUse;
-    private $errors = [];
-    private $messages = [];
-    private $messageHead = "[ServiceServerProxy] ";
-    private $dontAutoBoot;
-    private $foreverLog;
-    private $serviceServerKey = "";  // Path of Key file for wss protocol
-    private $serviceServerCert = ""; // Path of Cert file for wss protocol
-    private $serviceServerCA = ""; // Path of CA file for wss protocol
+    /**
+     * @var string|mixed
+     */
+    private string $paramsHost;
+    /**
+     * @var int|mixed
+     */
+    private int $paramsPort;
+    /**
+     * @var bool|mixed
+     */
+    private bool $paramsQuit;
+    /**
+     * @var bool|mixed
+     */
+    private bool $paramsBoot;
+    /**
+     * @var bool|mixed
+     */
+    private bool $dontUse;
+    /**
+     * @var array
+     */
+    private array $errors = [];
+    /**
+     * @var array
+     */
+    private array $messages = [];
+    /**
+     * @var string
+     */
+    private string $messageHead = "[ServiceServerProxy] ";
+    /**
+     * @var bool|mixed
+     */
+    private bool $dontAutoBoot;
+    /**
+     * @var string|mixed
+     */
+    private ?string $foreverLog;
+    /**
+     * @var string
+     */
+    private string $serviceServerKey = "";  // Path of Key file for wss protocol
+    /**
+     * @var string|mixed
+     */
+    private string $serviceServerCert = ""; // Path of Cert file for wss protocol
+    /**
+     * @var string|mixed
+     */
+    private string $serviceServerCA = ""; // Path of CA file for wss protocol
 
+    /**
+     * @var ServiceServerProxy|null
+     */
+    static private ?ServiceServerProxy $gSSPInstance = null;
+
+    /**
+     * Returns the singleton instance.
+     * @return ServiceServerProxy|null
+     */
     static public function instance(): ?ServiceServerProxy
     {
-        global $gSSPInstance;
-        if (is_null($gSSPInstance)) {
-            $gSSPInstance = new ServiceServerProxy();
+        if (is_null(ServiceServerProxy::$gSSPInstance)) {
+            ServiceServerProxy::$gSSPInstance = new ServiceServerProxy();
         }
-        return $gSSPInstance;
+        return ServiceServerProxy::$gSSPInstance;
     }
 
+    /**
+     * Constructor of this class.
+     */
     private function __construct()
     {
-        [$this->paramsHost, $this->paramsPort, $this->paramsQuit, $this->paramsBoot,
-            $this->dontAutoBoot, $this->dontUse, $this->foreverLog, $this->serviceServerKey,
-            $this->serviceServerCert, $this->serviceServerCA]
-            = Params::getParameterValue([
-            "serviceServerConnect", "serviceServerPort", "stopSSEveryQuit", "bootWithInstalledNode",
-            "preventSSAutoBoot", "notUseServiceServer", "foreverLog", "serviceServerKey",
-            "serviceServerCert", "serviceServerCA",],
-            ["http://localhost", 11478, false, false, false, true, null, '', '', '']);
+        $this->paramsHost= Params::getParameterValue("serviceServerConnect","http://localhost");
+        $this->paramsPort= Params::getParameterValue("serviceServerPort", 11478);
+        $this->paramsQuit= Params::getParameterValue("stopSSEveryQuit", false);
+        $this->paramsBoot= Params::getParameterValue("bootWithInstalledNode", false);
+        $this->dontAutoBoot= Params::getParameterValue("preventSSAutoBoot", false);
+        $this->dontUse= Params::getParameterValue("notUseServiceServer", true);
+        $this->foreverLog= Params::getParameterValue("foreverLog", null);
+        $this->serviceServerKey= Params::getParameterValue("serviceServerKey", '');
+        $this->serviceServerCert= Params::getParameterValue("serviceServerCert", '');
+        $this->serviceServerCA= Params::getParameterValue("serviceServerCA", '');
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
     }
 
-    public function clearMessages()
+    /**
+     * @return void
+     */
+    public function clearMessages(): void
     {
         $this->messages = [];
     }
 
-    public function clearErrors()
+    /**
+     * @return void
+     */
+    public function clearErrors(): void
     {
         $this->errors = [];
     }
 
+    /**
+     * @return array
+     */
     public function getMessages(): array
     {
         return $this->messages;
     }
 
+    /**
+     * @return array
+     */
     public function getErrors(): array
     {
         return $this->errors;
     }
 
+    /**
+     * @return bool
+     */
     public function checkServiceServer(): bool
     {
         if ($this->dontAutoBoot || $this->dontUse) {
@@ -129,6 +197,9 @@ class ServiceServerProxy
         }
     }
 
+    /**
+     * @return bool
+     */
     public function isActive(): bool
     {
         if ($this->dontUse) {
@@ -169,7 +240,13 @@ class ServiceServerProxy
         return true;
     }
 
-    private function callServer($path, $postData = false, $ignoreError = false)
+    /**
+     * @param string $path
+     * @param array|null $postData
+     * @param bool $ignoreError
+     * @return string|null
+     */
+    private function callServer(string $path, ?array $postData = null, bool $ignoreError = false): ?string
     {
         $url = "{$this->paramsHost}:{$this->paramsPort}/{$path}";
         $ch = curl_init($url);
@@ -194,11 +271,13 @@ class ServiceServerProxy
             return false;
         }
         return $result;
-
-        //
     }
 
-    private function executeCommand($command)
+    /**
+     * @param string $command
+     * @return void
+     */
+    private function executeCommand(string $command): void
     {
         $imPath = IMUtil::pathToINTERMediator();
         putenv('FOREVER_ROOT=' . IMUtil::getServerUserHome());
@@ -221,6 +300,9 @@ class ServiceServerProxy
         error_log("Service Server tried to boot: {$command}");
     }
 
+    /**
+     * @return bool
+     */
     private function isServerStartable(): bool
     {
         $homeDir = IMUtil::getServerUserHome();
@@ -230,7 +312,10 @@ class ServiceServerProxy
         return false;
     }
 
-    private function startServer()
+    /**
+     * @return void
+     */
+    private function startServer(): void
     {
         $dq = '"';
         $this->messages[] = $this->messageHead . "startServer() called";
@@ -253,7 +338,10 @@ class ServiceServerProxy
         $this->executeCommand($cmd);
     }
 
-    private function restartServer()
+    /**
+     * @return void
+     */
+    private function restartServer(): void
     {
         $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
         $scriptPath = "src/js/Service_Server.js";
@@ -264,7 +352,10 @@ class ServiceServerProxy
         $this->executeCommand($cmd);
     }
 
-    public function stopServer()
+    /**
+     * @return void
+     */
+    public function stopServer(): void
     {
         $this->messages[] = $this->messageHead . "stopServer() called";
         if (!$this->paramsQuit) {
@@ -273,7 +364,10 @@ class ServiceServerProxy
         $this->stopServerCommand();
     }
 
-    private function stopServerCommand()
+    /**
+     * @return void
+     */
+    private function stopServerCommand(): void
     {
         $this->messages[] = $this->messageHead . "stopServerCommand() called";
         $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
@@ -282,7 +376,12 @@ class ServiceServerProxy
         //sleep(1);
     }
 
-    public function validate($expression, $values): bool
+    /**
+     * @param string $expression
+     * @param array $values
+     * @return bool
+     */
+    public function validate(string $expression, array $values): bool
     {
         if ($this->dontUse) {
             $this->messages[] = $this->messageHead . 'Service Server is NOT used.';
@@ -302,7 +401,13 @@ class ServiceServerProxy
         return true;
     }
 
-    public function sync($channels, $operation, $data): bool
+    /**
+     * @param array $channels
+     * @param string $operation
+     * @param array $data
+     * @return bool
+     */
+    public function sync(array $channels, string $operation, array $data): bool
     {
         $logger = Logger::getInstance();
         $logger->setDebugMessage("[ServiceServerProxy] sync");
@@ -315,6 +420,9 @@ class ServiceServerProxy
         return true;
     }
 
+    /**
+     * @return string
+     */
     private function getSSVersionCode(): string
     {
         $composer = json_decode(file_get_contents(IMUtil::pathToINTERMediator() . "/composer.json"));

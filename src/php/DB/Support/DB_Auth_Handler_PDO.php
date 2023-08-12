@@ -32,25 +32,25 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'issuedhash'
      */
-    public function authSupportStoreChallenge($uid, $challenge, $clientId)
+    public function authSupportStoreChallenge(string $uid, string $challenge, string $clientId): void
     {
         $this->logger->setDebugMessage("[authSupportStoreChallenge] $uid, $challenge, $clientId");
 
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
-            return false;
+            return;
         }
         if ($uid < 1) {
             $uid = 0;
         }
         if (!$this->dbClass->setupConnection()) { //Establish the connection
-            return false;
+            return;
         }
         $sql = "select id from {$hashTable} where user_id={$uid} and clienthost=" . $this->dbClass->link->quote($clientId);
         $result = $this->dbClass->link->query($sql);
-        if ($result === false) {
+        if (!$result) {
             $this->dbClass->errorMessageStore('Select:' . $sql);
-            return false;
+            return;
         }
         $this->logger->setDebugMessage("[authSupportStoreChallenge] {$sql}");
         $currentDTFormat = IMUtil::currentDTString();
@@ -61,10 +61,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             $result = $this->dbClass->link->query($sql);
             if ($result === false) {
                 $this->dbClass->errorMessageStore('UPDATE:' . $sql);
-                return false;
+                return;
             }
             $this->logger->setDebugMessage("[authSupportStoreChallenge] {$sql}");
-            return true;
+            return;
         }
         $tableRef = "{$hashTable} (user_id, clienthost, hash, expired)";
         $setClause = "VALUES ({$uid},{$this->dbClass->link->quote($clientId)},"
@@ -73,10 +73,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Select:' . $sql);
-            return false;
+            return;
         }
         $this->logger->setDebugMessage("[authSupportStoreChallenge] {$sql}");
-        return true;
+        return;
     }
 
     /**
@@ -85,26 +85,26 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'issuedhash'
      */
-    public function authSupportCheckMediaToken($uid)
+    public function authSupportCheckMediaToken(string $uid): ?string
     {
         $this->logger->setDebugMessage("[authSupportCheckMediaToken] {$uid}", 2);
 
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
-            return false;
+            return null;
         }
         if ($uid < 0) {
             $uid = 0;
         }
         if (!$this->dbClass->setupConnection()) { //Establish the connection
-            return false;
+            return null;
         }
         $sql = "{$this->dbClass->handler->sqlSELECTCommand()}id,hash,expired FROM {$hashTable} "
             . "WHERE user_id={$uid} and clienthost=" . $this->dbClass->link->quote('_im_media');
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Select:' . $sql);
-            return false;
+            return null;
         }
         $this->logger->setDebugMessage("[authSupportCheckMediaToken] {$sql}");
 
@@ -112,11 +112,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             $hashValue = $row['hash'];
             $seconds = IMUtil::secondsFromNow($row['expired']);
             if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
-                return false;
+                return null;
             }
             return $hashValue;
         }
-        return false;
+        return null;
     }
 
     /**
@@ -127,11 +127,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'issuedhash'
      */
-    public function authSupportRetrieveChallenge($uid, $clientId, $isDelete = true)
+    public function authSupportRetrieveChallenge(string $uid, string $clientId, bool $isDelete = true): ?string
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
-            return false;
+            return null;
         }
         if ($uid < 1) {
             $uid = 0;
@@ -145,7 +145,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Select:' . $sql);
-            return false;
+            return null;
         }
         $this->logger->setDebugMessage("[authSupportRetrieveChallenge] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
@@ -156,17 +156,17 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
                 $result = $this->dbClass->link->query($sql);
                 if ($result === false) {
                     $this->dbClass->errorMessageStore('Delete:' . $sql);
-                    return false;
+                    return null;
                 }
                 $this->logger->setDebugMessage("[authSupportRetrieveChallenge] {$sql}");
             }
             $seconds = IMUtil::secondsFromNow($row['expired']);
             if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
-                return false;
+                return null;
             }
             return $hashValue;
         }
-        return false;
+        return null;
     }
 
     /**
@@ -174,7 +174,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'issuedhash'
      */
-    public function authSupportRemoveOutdatedChallenges()
+    public function authSupportRemoveOutdatedChallenges(): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -204,7 +204,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      * @param $credential
      * @return bool(true: create user, false: reuse user)|null in error
      */
-    public function authSupportOAuthUserHandling($keyValues)
+    public function authSupportOAuthUserHandling($keyValues): bool
     {
         $user_id = $this->authSupportGetUserIdFromUsername($keyValues["username"]);
 
@@ -252,24 +252,24 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'authuser'
      */
-    public function authSupportRetrieveHashedPassword($username)
+    public function authSupportRetrieveHashedPassword(string $username): ?string
     {
         $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
 
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
-            return false;
+            return null;
         }
 
         if (!$this->dbClass->setupConnection()) { //Establish the connection
-            return false;
+            return null;
         }
         $sql = "{$this->dbClass->handler->sqlSELECTCommand()}hashedpasswd FROM {$userTable} WHERE username = "
             . $this->dbClass->link->quote($signedUser);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Select:' . $sql);
-            return false;
+            return null;
         }
         $this->logger->setDebugMessage("[authSupportRetrieveHashedPassword] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
@@ -277,11 +277,14 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
             if (isset($row['limitdt']) && !is_null($row['limitdt'])
                 && IMUtil::secondsFromNow($row['limitdt']) < $limitSeconds
             ) {
-                return false;
+                $this->logger->setDebugMessage("[authSupportRetrieveHashedPassword] returns null");
+                return null;
             }
+            $this->logger->setDebugMessage("[authSupportRetrieveHashedPassword] {$row['hashedpasswd']}");
             return $row['hashedpasswd'];
         }
-        return false;
+        $this->logger->setDebugMessage("[authSupportRetrieveHashedPassword] returns null");
+        return null;
     }
 
     /**
@@ -292,14 +295,14 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'authuser'
      */
-    public function authSupportCreateUser(
-        $username, $hashedpassword, $isSAML = false, $ldapPassword = null, $attrs = null)
+    public function authSupportCreateUser(string  $username, string $hashedpassword, bool $isSAML = false,
+                                          ?string $ldapPassword = null, ?array $attrs = null): bool
     {
         $this->logger->setDebugMessage("[authSupportCreateUser] username ={$username}, isSAML ={$isSAML}", 2);
 
         $userTable = $this->dbSettings->getUserTable();
         if ($isSAML !== true) {
-            if ($this->authSupportRetrieveHashedPassword($username) !== false) {
+            if ($this->authSupportRetrieveHashedPassword($username)) {
                 $this->logger->setErrorMessage('User Already exist: ' . $username);
                 return false;
             }
@@ -411,7 +414,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'authuser'
      */
-    public function authSupportChangePassword($username, $hashednewpassword)
+    public function authSupportChangePassword(string $username, string $hashednewpassword): bool
     {
         $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
 
@@ -434,17 +437,17 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return true;
     }
 
-    public function authTableGetUserIdFromUsername($username)
+    public function authTableGetUserIdFromUsername(string $username): string
     {
         return $this->privateGetUserIdFromUsername($username, false);
     }
 
-    public function authSupportGetUserIdFromUsername($username)
+    public function authSupportGetUserIdFromUsername(string $username): string
     {
         return $this->privateGetUserIdFromUsername($username, true);
     }
 
-    private function privateGetUserIdFromUsername($username, $isCheckLimit)
+    private function privateGetUserIdFromUsername(?string $username, bool $isCheckLimit): ?string
     {
         $this->logger->setDebugMessage("[privateGetUserIdFromUsername]username ={$username}", 2);
 
@@ -485,7 +488,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'authgroup'
      */
-    public function authSupportGetGroupNameFromGroupId($groupid)
+    public function authSupportGetGroupNameFromGroupId(string $groupid): ?string
     {
         $groupTable = $this->dbSettings->getGroupTable();
         if ($groupTable === null) {
@@ -515,7 +518,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'authcor'
      */
-    public function authSupportGetGroupsOfUser($user)
+    public function authSupportGetGroupsOfUser(?string $user): array
     {
         $oAuth = new OAuthAuth();
         if ($oAuth->isActive) {
@@ -525,12 +528,12 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         }
     }
 
-    public function authTableGetGroupsOfUser($user)
+    public function authTableGetGroupsOfUser(string $user): ?array
     {
         return $this->privateGetGroupsOfUser($user, false);
     }
 
-    private function privateGetGroupsOfUser($user, $isCheckLimit)
+    private function privateGetGroupsOfUser(?string $user, bool $isCheckLimit): ?array
     {
         $corrTable = $this->dbSettings->getCorrTable();
         if ($corrTable == null) {
@@ -545,7 +548,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $this->logger->setDebugMessage("[authSupportGetGroupsOfUser]user ={$user}, userid ={$userid}");
 
         if (!$this->dbClass->setupConnection()) { //Establish the connection
-            return false;
+            return null;
         }
         $this->firstLevel = true;
         $this->belongGroups = array();
@@ -568,13 +571,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
     /**
      * @var
      */
-    private
-        $belongGroups;
+    private array $belongGroups;
     /**
      * @var
      */
-    private
-        $firstLevel;
+    private bool $firstLevel;
 
     /**
      * @param $groupid
@@ -582,7 +583,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'authcor'
      */
-    private function resolveGroup($groupid)
+    private function resolveGroup(string $groupid): void
     {
         if (strlen($groupid) < 1) {
             return;
@@ -601,11 +602,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->logger->setDebugMessage('Select:' . $sql);
-            return false;
+            return;
         }
         $this->logger->setDebugMessage("[resolveGroup] {$sql}");
         if ($result->columnCount() === 0) {
-            return false;
+            return;
         }
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             if (!in_array($row['dest_group_id'], $this->belongGroups)) {
@@ -625,13 +626,14 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using any table.
      */
-    public function authSupportCheckMediaPrivilege($tableName, $targeting, $userField, $user, $keyField, $keyValue)
+    public function authSupportCheckMediaPrivilege(
+        string $tableName, string $targeting, string $userField, string $user, string $keyField, string $keyValue): ?array
     {
-        if (strlen($user) == 0) {
-            return false;
+        if (strlen($user) == 0 || is_null($user)) {
+            return null;
         }
         if (!$this->dbClass->setupConnection()) { //Establish the connection
-            return false;
+            return null;
         }
 
         $user = $this->authSupportUnifyUsernameAndEmail($user);
@@ -660,13 +662,13 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore("[authSupportCheckMediaPrivilege] {$sql}");
-            return false;
+            return null;
         }
         $this->logger->setDebugMessage("[authSupportCheckMediaPrivilege] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             return $row;
         }
-        return false;
+        return null;
     }
 
     private $userCache = []; // Cache for authSupportGetUserIdFromEmail method.
@@ -677,34 +679,37 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'authuser'
      */
-    public function authSupportGetUserIdFromEmail($email)
+    public function authSupportGetUserIdFromEmail(string $email): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
-            return false;
+            return null;
         }
         if ($email === 0) {
             return 0;
+        }
+        if (is_null($email)) {
+            return null;
         }
         if (isset($this->userCache[$email])) {
             return $this->userCache[$email];
         }
         if (!$this->dbClass->setupConnection()) { //Establish the connection
-            return false;
+            return null;
         }
         $sql = "{$this->dbClass->handler->sqlSELECTCommand()}id FROM {$userTable} WHERE email = "
             . $this->dbClass->link->quote($email);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Select:' . $sql);
-            return false;
+            return null;
         }
         $this->logger->setDebugMessage("[authSupportGetUserIdFromEmail] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $this->userCache[$email] = $row['id'];
             return $row['id'];
         }
-        return false;
+        return null;
     }
 
     /**
@@ -713,30 +718,33 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'authuser'
      */
-    public function authSupportGetUsernameFromUserId($userid)
+    public function authSupportGetUsernameFromUserId(string $userid): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
-            return false;
+            return null;
         }
         if ($userid === 0) {
             return 0;
         }
+        if (is_null($userid)) {
+            return null;
+        }
         if (!$this->dbClass->setupConnection()) { //Establish the connection
-            return false;
+            return null;
         }
         $sql = "{$this->dbClass->handler->sqlSELECTCommand()}username FROM {$userTable} WHERE id = "
             . $this->dbClass->link->quote($userid);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Select:' . $sql);
-            return false;
+            return null;
         }
         $this->logger->setDebugMessage("[authSupportGetUsernameFromUserId] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             return $row['username'];
         }
-        return false;
+        return null;
     }
 
     /**
@@ -745,24 +753,24 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'authuser'
      */
-    public function authSupportUnifyUsernameAndEmail($username)
+    public function authSupportUnifyUsernameAndEmail(?string $username): ?string
     {
-        if (!$this->dbSettings->getEmailAsAccount() || strlen($username) == 0) {
+        if (!$this->dbSettings->getEmailAsAccount() || strlen($username) == 0 || is_null($username)) {
             return $username;
         }
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
-            return false;
+            return null;
         }
         if (!$this->dbClass->setupConnection()) { //Establish the connection
-            return false;
+            return null;
         }
         $sql = "{$this->dbClass->handler->sqlSELECTCommand()}username,email FROM {$userTable} WHERE username = " .
             $this->dbClass->link->quote($username) . " or email = " . $this->dbClass->link->quote($username);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Select:' . $sql);
-            return false;
+            return null;
         }
         $this->logger->setDebugMessage("[authSupportUnifyUsernameAndEmail] {$sql}");
         $usernameCandidate = '';
@@ -790,7 +798,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'issuedhash'
      */
-    public function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)
+    public function authSupportStoreIssuedHashForResetPassword(string $userid, string $clienthost, string $hash): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -823,7 +831,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'issuedhash'
      */
-    public function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
+    public function authSupportCheckIssuedHashForResetPassword(string $userid, string $randdata, string $hash): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -853,7 +861,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return false;
     }
 
-    public function authSupportUserEnrollmentStart($userid, $hash)
+    public function authSupportUserEnrollmentStart(string $userid, string $hash): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -877,14 +885,14 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return true;
     }
 
-    public function authSupportUserEnrollmentEnrollingUser($hash)
+    public function authSupportUserEnrollmentEnrollingUser(string $hash): ?string
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
-            return false;
+            return null;
         }
         if (!$this->dbClass->setupConnection()) { //Establish the connection
-            return false;
+            return null;
         }
         $currentDTFormat = IMUtil::currentDTString(3600);
         $sql = "{$this->dbClass->handler->sqlSELECTCommand()}user_id FROM {$hashTable} WHERE hash = "
@@ -893,32 +901,33 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $resultHash = $this->dbClass->link->query($sql);
         if ($resultHash === false) {
             $this->dbClass->errorMessageStore('Select:' . $sql);
-            return false;
+            return null;
         }
         $this->logger->setDebugMessage("[authSupportUserEnrollmentEnrollingUser] {$sql}");
         foreach ($resultHash->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $userID = $row['user_id'];
             if ($userID < 1) {
-                return false;
+                return null;
             }
             return $userID;
         }
-        return false;
+        return null;
     }
 
-    public function authSupportUserEnrollmentActivateUser($userID, $password, $rawPWField, $rawPW)
+    public function authSupportUserEnrollmentActivateUser(
+        string $userID, string $password, string $rawPWField, string $rawPW): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
-            return false;
+            return null;
         }
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
-            return false;
+            return null;
         }
 
         if (!$this->dbClass->setupConnection()) { //Establish the connection
-            return false;
+            return null;
         }
         $sql = "{$this->dbClass->handler->sqlUPDATECommand()}{$userTable} SET hashedpasswd = "
             . $this->dbClass->link->quote($password)
@@ -927,7 +936,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Update:' . $sql);
-            return false;
+            return null;
         }
         $this->logger->setDebugMessage("[authSupportUserEnrollmentActivateUser] {$sql}");
 
@@ -936,14 +945,14 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
             $this->dbClass->errorMessageStore('Delete:' . $sql);
-            return false;
+            return null;
         }
         $this->logger->setDebugMessage("[authSupportUserEnrollmentActivateUser] {$sql}");
 
         return $userID;
     }
 
-    public function authSupportIsWithinSAMLLimit($userID)
+    public function authSupportIsWithinSAMLLimit(string $userID): bool
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -979,7 +988,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return false;
     }
 
-    public function authSupportCanMigrateSHA256Hash()  // authuser, issuedhash
+    public function authSupportCanMigrateSHA256Hash(): bool // authuser, issuedhash
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {

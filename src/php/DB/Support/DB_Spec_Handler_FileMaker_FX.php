@@ -17,34 +17,34 @@ namespace INTERMediator\DB\Support;
 
 class DB_Spec_Handler_FileMaker_FX implements DB_Spec_Behavior
 {
-    public static function defaultKey()
+    public static function defaultKey(): string
     {
         return "-recid";
     }
 
-    public function getDefaultKey()
+    public function getDefaultKey(): string
     {
         return "-recid";
     }
 
-    public function isOperatorWithoutValue($operator)
+    public function isOperatorWithoutValue(string $operator): bool
     {
         return false;
     }
 
-    public function isPossibleOperator($operator)
+    public function isPossibleOperator(string $operator): bool
     {
         return !(!in_array(strtoupper($operator), array(
             'EQ', 'CN', 'BW', 'EW', 'GT', 'GTE', 'LT', 'LTE', 'NEQ', 'AND', 'OR', 'ASIS',
         )));
     }
 
-    public function isPossibleOrderSpecifier($specifier)
+    public function isPossibleOrderSpecifier(string $specifier): bool
     {
         return !(!in_array(strtoupper($specifier), array('ASCEND', 'DESCEND', 'ASC', 'DESC')));
     }
 
-    public function isContainingFieldName($fname, $fieldnames)
+    public function isContainingFieldName(string $fname,array $fieldnames): bool
     {
         if (in_array($fname, $fieldnames)) {
             return true;
@@ -64,12 +64,12 @@ class DB_Spec_Handler_FileMaker_FX implements DB_Spec_Behavior
         return false;
     }
 
-    public function isNullAcceptable()
+    public function isNullAcceptable(): bool
     {
         return false;
     }
 
-    public function isSupportAggregation()
+    public function isSupportAggregation(): bool
     {
         return false;
     }

@@ -11,12 +11,27 @@ namespace INTERMediator\Media;
 
 use Iterator;
 
+/**
+ *
+ */
 class LineDivider implements Iterator
 {
-    private $data;
-    private $pos;
-    private $key;
+    /**
+     * @var string
+     */
+    private string $data;
+    /**
+     * @var int
+     */
+    private int $pos;
+    /**
+     * @var int
+     */
+    private int $key;
 
+    /**
+     * @param $d
+     */
     function __construct($d)
     {
         $this->data = $d;
@@ -24,7 +39,10 @@ class LineDivider implements Iterator
         $this->key = 0;
     }
 
-    private function getNextLinePosition()
+    /**
+     * @return array|int[]
+     */
+    private function getNextLinePosition(): array
     {
         $gotEOL = false;
         $hasNextLine = false;
@@ -50,8 +68,11 @@ class LineDivider implements Iterator
         }
     }
 
+    /**
+     * @return string
+     */
     #[\ReturnTypeWillChange]
-    public function current()
+    public function current(): string
     {
         list($prevCRLF, $nextPos) = $this->getNextLinePosition();
         if ($prevCRLF > 0) {
@@ -61,18 +82,27 @@ class LineDivider implements Iterator
         }
     }
 
+    /**
+     * @return void
+     */
     public function next(): void
     {
         $this->key++;
         list($prevCRLF, $this->pos) = $this->getNextLinePosition();
     }
 
+    /**
+     * @return int
+     */
     #[\ReturnTypeWillChange]
-    public function key()
+    public function key(): int
     {
         return $this->key;
     }
 
+    /**
+     * @return bool
+     */
     public function valid(): bool
     {
         if ($this->pos < 0) {
@@ -81,6 +111,9 @@ class LineDivider implements Iterator
         return strlen($this->data) > $this->pos;
     }
 
+    /**
+     * @return void
+     */
     public function rewind(): void
     {
         $this->pos = 0;

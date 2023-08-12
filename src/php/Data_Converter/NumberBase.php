@@ -12,19 +12,44 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\Data_Converter;
 
 use INTERMediator\Locale\IMLocale;
 
+/**
+ *
+ */
 class NumberBase
 {
-    protected $decimalMark = null;
-    protected $thSepMark = null;
-    protected $currencyMark = null;
-    protected $useMbstring;
-    protected $choosenLocale;
-    protected $formatter;
+    /**
+     * @var string
+     */
+    protected string $decimalMark;
+    /**
+     * @var string
+     */
+    protected string $thSepMark;
+    /**
+     * @var string
+     */
+    protected string $currencyMark;
+    /**
+     * @var bool
+     */
+    protected bool $useMbstring;
+    /**
+     * @var string
+     */
+    protected string $choosenLocale;
+    /**
+     * @var object|mixed
+     */
+    protected object $formatter;
 
+    /**
+     *
+     */
     public function __construct()
     {
         IMLocale::setLocale(LC_ALL);
@@ -40,7 +65,11 @@ class NumberBase
         $this->currencyMark = $this->formatter->getTextAttribute(5 /*NumberFormatter::CURRENCY_CODE*/);
     }
 
-    public function converterFromUserToDB($str)
+    /**
+     * @param string $str
+     * @return string
+     */
+    public function converterFromUserToDB(string $str): string
     {
         $str = mb_convert_kana($str, "a");
         $comp = explode($this->decimalMark, $str);

@@ -13,15 +13,20 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\DB\Support;
+
+use INTERMediator\DB\DBClass;
+use INTERMediator\DB\Logger;
+use INTERMediator\DB\Settings;
 
 abstract class DB_Notification_Common
 {
-    protected $dbSettings = null;
-    protected $dbClass = null;
-    protected $logger = null;
+    protected ?Settings $dbSettings = null;
+    protected ?DBClass $dbClass = null;
+    protected ?Logger $logger = null;
 
-    public function __construct($parent)
+    public function __construct(DBClass $parent)
     {
         if ($parent) {
             $this->dbClass = $parent;
@@ -32,41 +37,41 @@ abstract class DB_Notification_Common
         }
     }
 
-    private $queriedEntity = null;
-    private $queriedCondition = null;
-    private $queriedPrimaryKeys = null;
+    private ?string $queriedEntity = null;
+    private ?string $queriedCondition = null;
+    private ?array $queriedPrimaryKeys = null;
 
-    public function queriedEntity()
+    public function queriedEntity(): ?string
     {
         return $this->queriedEntity;
     }
 
-    public function queriedCondition()
+    public function queriedCondition(): ?string
     {
         return $this->queriedCondition;
     }
 
-    public function queriedPrimaryKeys()
+    public function queriedPrimaryKeys(): ?array
     {
         return $this->queriedPrimaryKeys;
     }
 
-    public function setQueriedEntity($name)
+    public function setQueriedEntity(?string $name): void
     {
         $this->queriedEntity = $name;
     }
 
-    public function setQueriedCondition($name)
+    public function setQueriedCondition(?string $name): void
     {
         $this->queriedCondition = $name;
     }
 
-    public function setQueriedPrimaryKeys($name)
+    public function setQueriedPrimaryKeys(?array $name): void
     {
         $this->queriedPrimaryKeys = $name;
     }
 
-    public function addQueriedPrimaryKeys($name)
+    public function addQueriedPrimaryKeys(?string $name): void
     {
         if (!$name) {
             return;

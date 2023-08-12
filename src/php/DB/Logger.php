@@ -144,7 +144,7 @@ class Logger
         }
     }
 
-    function getMessagesForJS()
+    public function getMessagesForJS()
     {
         $q = '"';
         $returnData = array();
@@ -178,7 +178,7 @@ class Logger
         return $this->debugMessage;
     }
 
-    function getAllErrorMessages()
+    public function getAllErrorMessages()
     {
         $returnData = "";
         foreach ($this->errorMessage as $oneError) {

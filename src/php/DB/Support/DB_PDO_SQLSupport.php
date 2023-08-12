@@ -9,12 +9,12 @@ trait DB_PDO_SQLSupport
     /*
       * Generate SQL style WHERE clause.
       */
-    public function getWhereClauseForTest($currentOperation)
+    public function getWhereClauseForTest(string $currentOperation): string
     {
         return $this->getWhereClause($currentOperation);
     }
 
-    private function arrayToClause($queryClauseArray, $insideOp, $outsideOp): string
+    private function arrayToClause(array $queryClauseArray, string $insideOp, string $outsideOp): string
     {
         $oneClause = [];
         foreach ($queryClauseArray as $oneTerm) {
@@ -23,7 +23,7 @@ trait DB_PDO_SQLSupport
         return implode($outsideOp, $oneClause);
     }
 
-    private function determineOperatorsInBlock($term)
+    private function determineOperatorsInBlock(string $term): array
     {
         $divideOp = explode("/", $term);
         $fieldOp = (isset($divideOp[1]) && $this->isTrue($divideOp[1])) ? " AND " : " OR ";
@@ -34,7 +34,7 @@ trait DB_PDO_SQLSupport
         return [$fieldOp, $groupOp, $blockOp];
     }
 
-    private function arrayToItemizedString($value, $isNumeric)
+    private function arrayToItemizedString(string $value, bool $isNumeric): string
     {
         $escapedValue = "(";
         $isFirst = true;
@@ -46,7 +46,8 @@ trait DB_PDO_SQLSupport
         return $escapedValue;
     }
 
-    private function generateWhereClause($conditions, $primaryKey, $numericFields, $isExtra = false, $insideOp = ' AND ', $outsideOp = ' OR ')
+    private function generateWhereClause(array $conditions, string $primaryKey, array $numericFields,
+                                         bool  $isExtra = false, string $insideOp = ' AND ', string $outsideOp = ' OR ')
     {
         $fieldOp = ' OR ';
         $groupOp = ' OR ';
@@ -104,7 +105,7 @@ trait DB_PDO_SQLSupport
                     $result .= ($isMultiValue ? '(' : '') . $resultItem . ($isMultiValue ? ')' : '');
                     $isInBlock += 1;
                 } else if ((!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey)) {
-                    if(!isset($condition['operator'])){
+                    if (!isset($condition['operator'])) {
                         $condition['operator'] = '=';
                     }
                     $escapedField = $this->handler->quotedEntityName($condition['field']);
@@ -144,8 +145,8 @@ trait DB_PDO_SQLSupport
      * @param string $signedUser
      * @return string
      */
-    private function getWhereClause(
-        $currentOperation, $includeContext = true, $includeExtra = true, $signedUser = '', $bypassAuth = false)
+    private function getWhereClause(string $currentOperation, bool $includeContext = true, bool $includeExtra = true,
+                                    ?string $signedUser = '', bool $bypassAuth = false): string
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $queryClause = '';
@@ -242,7 +243,7 @@ trait DB_PDO_SQLSupport
     /**
      * @return string
      */
-    private function getSortClause()
+    private function getSortClause():string
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $sortClause = array();
@@ -272,7 +273,7 @@ trait DB_PDO_SQLSupport
         return implode(',', $sortClause);
     }
 
-    public function normalizedCondition($condition)
+    private function normalizedCondition(array $condition): array
     {
         if (!isset($condition['field'])) {
             $condition['field'] = '';
@@ -310,5 +311,4 @@ trait DB_PDO_SQLSupport
         }
         return $condition;
     }
-
 }

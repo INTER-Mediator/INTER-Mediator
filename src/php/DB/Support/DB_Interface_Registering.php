@@ -17,17 +17,29 @@ namespace INTERMediator\DB\Support;
 
 interface DB_Interface_Registering
 {
-    public function isExistRequiredTable();
-    public function queriedEntity();
-    public function setQueriedEntity($name);
-    public function queriedCondition();
-    public function setQueriedCondition($name);
-    public function queriedPrimaryKeys();
-    public function setQueriedPrimaryKeys($name);
-    public function addQueriedPrimaryKeys($name);
-    public function register($clientId, $entity, $condition, $pkArray);
-    public function unregister($clientId, $tableKeys);
-    public function matchInRegistered($clientId, $entity, $pkArray);
-    public function appendIntoRegistered($clientId, $entity, $pkField, $pkArray);
-    public function removeFromRegistered($clientId, $entity, $pkArray);
+    public function isExistRequiredTable(): bool;
+
+    public function queriedEntity(): ?string;
+
+    public function setQueriedEntity(?string $name): void;
+
+    public function queriedCondition(): ?string;
+
+    public function setQueriedCondition(string $name): void;
+
+    public function queriedPrimaryKeys(): ?array;
+
+    public function setQueriedPrimaryKeys(?array $name): void;
+
+    public function addQueriedPrimaryKeys(string $name): void;
+
+    public function register(string $clientId, string $entity, string $condition, array $pkArray):?string;
+
+    public function unregister(string $clientId, ?array $tableKeys):bool;
+
+    public function matchInRegistered(string $clientId, string $entity, array $pkArray): ?array;
+
+    public function appendIntoRegistered(string $clientId, string $entity, string $pkField, array $pkArray):?array;
+
+    public function removeFromRegistered(string $clientId, string $entity, array $pkArray):?array;
 }

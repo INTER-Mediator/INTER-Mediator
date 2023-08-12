@@ -16,6 +16,8 @@
 namespace INTERMediator;
 
 use Exception;
+use INTERMediator\DB\Proxy;
+use INTERMediator\DB\Logger;
 
 /**
  *
@@ -25,40 +27,40 @@ class MediaAccess
     /**
      * @var string
      */
-    private $disposition = "inline";    // default disposition.
+    private string $disposition = "inline";    // default disposition.
     /**
      * @var
      */
-    private $targetKeyField;    // set with the analyzeTarget method.
+    private ?string $targetKeyField;    // set with the analyzeTarget method.
     /**
      * @var
      */
-    private $targetKeyValue;  // set with the analyzeTarget method.
+    private ?string $targetKeyValue;  // set with the analyzeTarget method.
     /**
      * @var null
      */
-    private $targetContextName = null;  // set with the analyzeTarget method.
+    private ?string $targetContextName = null;  // set with the analyzeTarget method.
     /**
      * @var
      */
-    private $cookieUser;    // set with the checkAuthentication method.
+    private ?string $cookieUser;    // set with the checkAuthentication method.
     /**
      * @var array|mixed
      */
-    private $accessLogLevel = 0;
+    private int $accessLogLevel = 0;
     /**
      * @var array
      */
-    private $outputMessage = [];
+    private array $outputMessage = [];
     /**
      * @var bool
      */
-    private $thrownException = false;
+    private bool $thrownException = false;
 
     /**
      * @var null
      */
-    private $dbProxyInstance = null;
+    private ?Proxy $dbProxyInstance = null;
 
     /**
      *
@@ -84,7 +86,7 @@ class MediaAccess
     /**
      * @return void
      */
-    public function asAttachment()
+    public function asAttachment(): void
     {
         $this->disposition = "attachment";
     }
@@ -93,7 +95,7 @@ class MediaAccess
      * @param $message
      * @return void
      */
-    private function errorHandling($message)
+    private function errorHandling(string $message): void
     {
         error_log($message);
         $this->dbProxyInstance->logger->setErrorMessage($message);
@@ -106,7 +108,7 @@ class MediaAccess
      * @return void
      * @throws Exception
      */
-    public function processing($dbProxyInstance, $options, $file)
+    public function processing(Proxy $dbProxyInstance, ?array $options, string $file)
     {
         $this->dbProxyInstance = $dbProxyInstance;
         $this->thrownException = false;
@@ -119,7 +121,7 @@ class MediaAccess
                 $this->errorHandling($erMessage);
                 $this->exitAsError(200);
             }
-            // If the media parameter is an URL, the variable isURL will be set to true.
+            // If the media parameter is a URL, the variable isURL will be set to true.
             $isURL = $this->isPossibleSchema($file);
             $mediaRootDir = $options['media-root-dir'] ?? Params::getParameterValue('mediaRootDir', null) ?? null;
             if (!$isURL && !$mediaRootDir) {
@@ -133,8 +135,7 @@ class MediaAccess
              * If the FileMaker's object field is storing a PDF, the $file could be "http://server:16000/...
              * style URL. In case of an image, $file is just the path info as like above.
              */
-            list($file, $isURL) = $this->checkForFileMakerMedia($dbProxyInstance, $options, $file, $isURL);
-
+            list($file, $isURL) = $this->checkForFileMakerMedia($dbProxyInstance, $file, $isURL);
             // Set the target variable
             $file = IMUtil::removeNull($file);
             if (strpos($file, '../') !== false) { // Stop for security reason.
@@ -163,7 +164,7 @@ class MediaAccess
                         $tableName = $dbProxyInstance->dbSettings->getEntityForRetrieve();
                         $contextRecord = $dbProxyInstance->dbClass->authHandler->authSupportCheckMediaPrivilege(
                             $tableName, $authResult, $authInfoField, $this->cookieUser, $this->targetKeyField, $this->targetKeyValue);
-                        if ($contextRecord === false) {
+                        if (!$contextRecord || count($contextRecord) < 1) {
                             $this->exitAsError(401);
                         }
                         $contextRecord = [$contextRecord];
@@ -232,7 +233,7 @@ class MediaAccess
      * @return string
      * @throws Exception
      */
-    private function getClassNameForMedia($isURL, $target)
+    private function getClassNameForMedia(bool $isURL, string $target): string
     {
         if (!$isURL) { // File path.
             $className = "FileSystem";
@@ -254,7 +255,7 @@ class MediaAccess
      * @param $file
      * @return bool
      */
-    private function isPossibleSchema($file): bool
+    private function isPossibleSchema(string $file): bool
     {
         $schema = ["https:", "http:", "class:", "s3:", "dropbox:", "file:"];
         foreach ($schema as $scheme) {
@@ -269,7 +270,7 @@ class MediaAccess
      * @param $code int any error code, but supported just 204, 401 and 500.
      * @throws Exception happens anytime.
      */
-    private function exitAsError($code)
+    private function exitAsError(int $code): void
     {
         if ($this->thrownException) {
             return;
@@ -292,12 +293,11 @@ class MediaAccess
 
     /**
      * @param $dbProxyInstance
-     * @param $options
      * @param $file
      * @param $isURL
      * @return array
      */
-    private function checkForFileMakerMedia($dbProxyInstance, $options, $file, $isURL): array
+    private function checkForFileMakerMedia(Proxy $dbProxyInstance, string $file, bool $isURL): array
     {
         if (strpos($file, '/fmi/xml/cnt/') === 0 ||
             strpos($file, '/Streaming_SSL/MainDB') === 0) {
@@ -341,7 +341,7 @@ class MediaAccess
      * 'field_user'
      * 'field_group'
      */
-    private function checkAuthentication($dbProxyInstance, $options): ?string
+    private function checkAuthentication(Proxy $dbProxyInstance, ?array $options): ?string
     {
         $contextDef = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
         $isContextAuth = (isset($contextDef['authentication']) && (isset($contextDef['authentication']['all'])
@@ -392,9 +392,6 @@ class MediaAccess
             }
             return 'context_auth';
         }
-//        file_put_contents('/tmp/2', var_export($cValueUser, true));
-//        file_put_contents('/tmp/3', var_export($cValueToken, true));
-//        file_put_contents('/tmp/4', var_export($cookieNameToken, true));
         return null;
     }
 
@@ -402,7 +399,7 @@ class MediaAccess
      * @param $target
      * @return bool
      */
-    private function analyzeTarget($target): bool
+    private function analyzeTarget(string $target): bool
     {
         // The following properties are the results of this method.
         $this->targetKeyField = null;
@@ -439,7 +436,7 @@ class MediaAccess
      * @param $content
      * @return void
      */
-    private function outputImage($content)
+    private function outputImage(string $content): void
     {
         $rotate = false;
         if (function_exists('exif_imagetype') && function_exists('imagejpeg') &&

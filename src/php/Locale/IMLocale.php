@@ -34,20 +34,20 @@ class IMLocale
         return $cName;
     }
 
-    public static $alwaysIMClasses = false; // for unit testing
-    public static $choosenLocale = 'en';
-    public static $currencyCode = 'USD';
-    public static $useMbstring = false;
-    public static $localForTest = '';
-    public static $options = null;
-    private static $localeConvertTable = array("ja" => "ja_JP");
+    public static bool $alwaysIMClasses = false; // for unit testing
+    public static string $choosenLocale = 'en';
+    public static string $currencyCode = 'USD';
+    public static bool $useMbstring = false;
+    public static string $localForTest = '';
+    public static ?array $options = null;
+    private static array $localeConvertTable = array("ja" => "ja_JP");
 
     /**
      * Set the locale with parameter, for UNIX and Windows OS.
      * @param string locType locale identifier string.
-     * @return boolean If true, strings with locale are possibly multi-byte string.
+     * @return void
      */
-    public static function setLocale($locType, $localeName = '')
+    public static function setLocale(string $locType, string $localeName = ''): void
     {
         $isSetLocale = false;
         $isSetCurrency = false;
@@ -104,7 +104,7 @@ class IMLocale
      * @param string $accept $_SERVER['HTTP_ACCEPT_LANGUAGE']
      * @return string Most prior locale identifier
      */
-    public static function getLocaleFromBrowser($localeString = '')
+    public static function getLocaleFromBrowser(string $localeString = ''): string
     {
         $lstr = $localeString;
         if ($localeString === '') {

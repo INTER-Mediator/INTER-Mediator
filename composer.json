@@ -1,7 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
-  "version": "11",
-  "time": "2023-07-27",
+  "version": "12",
+  "time": "2023-08-11",
   "repositories": [
     {
       "type": "git",
@@ -11,7 +11,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "php": ">=7.1",
+    "php": ">=7.4",
     "ext-mbstring": "*",
     "ext-PDO": "*",
     "ext-curl": "*",

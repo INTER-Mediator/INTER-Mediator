@@ -71,7 +71,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
 
     private $spacialValue = array('IM_TODAY');
 
-    function readFromDB()
+    public function readFromDB(): ?array
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
 
@@ -506,17 +506,17 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
         return $result;
     }
 
-    function countQueryResult()
+    public function countQueryResult(): int
     {
         return $this->recordCount;
     }
 
-    function getTotalCount()
+    public function getTotalCount(): int
     {
         return $this->recordCount;
     }
 
-    function updateDB($bypassAuth)
+    public function updateDB(bool $bypassAuth): bool
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
 
@@ -528,7 +528,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
         if ($fileContent === false) {
             $this->logger->setErrorMessage(
                 "The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
-            return null;
+            return false;
         }
         $funcStartPos = strpos($fileContent, "IM_Entry");
         $convert = str_replace("<?php", "",
@@ -950,14 +950,14 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
             $fileWriteResult = file_put_contents($filePath, $newFileContent);
             if ($fileWriteResult === false) {
                 $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
-                return null;
+                return false;
             }
         }
         $this->updatedRecord = $result;
-        return $result;
+        return true;
     }
 
-    function createInDB($isReplace = false)
+    public function createInDB($isReplace = false):?string
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
         $dataSourceName = $this->dbSettings->getDataSourceName();
@@ -1144,7 +1144,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
         return true;
     }
 
-    function deleteFromDB()
+    public function deleteFromDB():bool
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
 
@@ -1156,7 +1156,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
         if ($fileContent === false) {
             $this->logger->setErrorMessage(
                 "The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
-            return null;
+            return false;
         }
         $funcStartPos = strpos($fileContent, "IM_Entry");
         $convert = str_replace("<?php", "",
@@ -1249,17 +1249,17 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
         $fileWriteResult = file_put_contents($filePath, $newFileContent);
         if ($fileWriteResult === false) {
             $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
-            return null;
+            return false;
         }
         return true;
     }
 
-    public function requireUpdatedRecord($value)
+    public function requireUpdatedRecord(bool $value): void
     {
         $this->isRequiredUpdated = $value;
     }
 
-    public function getUpdatedRecord()
+    public function getUpdatedRecord(): ?array
     {
         return $this->updatedRecord;
     }
@@ -1270,85 +1270,79 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
         return $this->updatedRecord;
     }
 
-    public function softDeleteActivate($field, $value)
+    public function softDeleteActivate(string $field, string $value): void
     {
         // TODO: Implement softDeleteActivate() method.
     }
 
-    public function copyInDB()
+    public function copyInDB():?string
     {
-        return false;
+        return null;
     }
 
-    public function getFieldInfo($dataSourceName)
+    public function getFieldInfo($dataSourceName):?array
     {
-        // TODO: Implement getFieldInfo() method.
+        return null;
     }
 
-    public function setupConnection()
+    public function setupConnection(): bool
     {
         return true;
     }
 
-    public function setupHandlers($dsn = false)
+    public function setupHandlers(?string $dsn = null): void
     {
         // TODO: Implement setupHandlers() method.
     }
 
-    public function normalizedCondition($condition)
-    {
-        // TODO: Implement normalizedCondition() method.
-    }
-
-    public function setDataToUpdatedRecord($field, $value, $index = 0)
+    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0):void
     {
         // TODO: Implement setDataToUpdatedRecord() method.
     }
 
-    public function queryForTest($table, $conditions = null)
+    public function queryForTest(string $table, ?array $conditions = null):?array
     {
-        // TODO: Implement queryForTest() method.
+       return null;
     }
 
-    public function deleteForTest($table, $conditions = null)
+    public function deleteForTest(string $table, ?array $conditions = null): bool
     {
-        // TODO: Implement deleteForTest() method.
+       return false;
     }
 
-    public function setUpdatedRecord($record, $value = false, $index = 0)
+    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
     {
         $this->updatedRecord = $record;
     }
 
-    public function hasTransaction()
+    public function hasTransaction():bool
     {
         return false;
     }
 
-    public function inTransaction()
+    public function inTransaction():bool
     {
         return false;
     }
 
-    public function beginTransaction()
+    public function beginTransaction():void
     {
     }
 
-    public function commitTransaction()
+    public function commitTransaction():void
     {
     }
 
-    public function rollbackTransaction()
+    public function rollbackTransaction():void
     {
     }
 
-    public function getUseSetDataToUpdatedRecord()
+    public function getUseSetDataToUpdatedRecord():bool
     {
-        // TODO: Implement getUseSetDataToUpdatedRecord() method.
+        return false;
     }
 
-    public function clearUseSetDataToUpdatedRecord()
+    public function clearUseSetDataToUpdatedRecord():void
     {
-        // TODO: Implement clearUseSetDataToUpdatedRecord() method.
     }
 }

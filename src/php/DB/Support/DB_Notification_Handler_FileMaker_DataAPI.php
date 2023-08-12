@@ -29,12 +29,12 @@ class DB_Notification_Handler_FileMaker_DataAPI
      * This method is used just from NotifyServer class.
      * Masayuki Nii 2017-07-08
      */
-    public function isExistRequiredTable()
+    public function isExistRequiredTable(): bool
     {
         return true;
     }
 
-    public function register($clientId, $entity, $condition, $pkArray)
+    public function register(string $clientId, string $entity, string $condition, array $pkArray):?string
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -54,7 +54,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
                     "code={$this->dbClass->fmData->errorCode()}, message={$this->dbClass->fmData->errorMessage()}"
                 )
             );
-            return false;
+            return null;
         }
 
         $newContextId = null;
@@ -86,14 +86,14 @@ class DB_Notification_Handler_FileMaker_DataAPI
                             "code={$this->dbClass->fmData->errorCode()}, message={$this->dbClass->fmData->errorMessage()}"
                         )
                     );
-                    return false;
+                    return null;
                 }
             }
         }
         return $newContextId;
     }
 
-    public function unregister($clientId, $tableKeys)
+    public function unregister(string $clientId, ?array $tableKeys):bool
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -136,7 +136,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
         return true;
     }
 
-    public function matchInRegistered($clientId, $entity, $pkArray)
+    public function matchInRegistered(string $clientId, string $entity, array $pkArray): ?array
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -192,7 +192,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
         return array_unique($targetClients);
     }
 
-    public function appendIntoRegistered($clientId, $entity, $pkField, $pkArray)
+    public function appendIntoRegistered(string $clientId, string $entity, string $pkField, array $pkArray):?array
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -212,7 +212,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
                     "code={$this->dbClass->fmData->errorCode()}, message={$this->dbClass->fmData->errorMessage()}"
                 )
             );
-            return false;
+            return null;
         } else {
             if ($this->dbClass->fmData->getFoundCount() > 0) {
                 foreach ($result as $record) {
@@ -231,7 +231,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
                                 "code={$this->dbClass->fmData->errorCode()}, message={$this->dbClass->fmData->errorMessage()}"
                             )
                         );
-                        return false;
+                        return null;
                     }
                     $this->logger->setDebugMessage("Inserted count: " . $result->count(), 2);
                 }
@@ -240,7 +240,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
         return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }
 
-    public function removeFromRegistered($clientId, $entity, $pkArray)
+    public function removeFromRegistered(string $clientId, string $entity, array $pkArray): ?array
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -260,7 +260,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
                     "code={$this->dbClass->fmData->errorCode()}, message={$this->dbClass->fmData->errorMessage()}"
                 )
             );
-            return false;
+            return null;
         } else {
             if ($this->dbClass->fmData->getFoundCount() > 0) {
                 foreach ($result as $record) {

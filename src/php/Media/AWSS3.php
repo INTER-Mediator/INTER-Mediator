@@ -28,39 +28,39 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
     /**
      * @var array|mixed
      */
-    private $accessRegion = null;
+    private ?string $accessRegion = null;
     /**
      * @var array|mixed
      */
-    private $rootBucket = null;
+    private ?string $rootBucket = null;
     /**
      * @var array|mixed
      */
-    private $applyingACL = null;
+    private ?string $applyingACL = null;
     /**
      * @var bool
      */
-    private $isSuppliedSecret = false;
+    private bool $isSuppliedSecret = false;
     /**
      * @var array|mixed
      */
-    private $s3AccessKey = null;
+    private ?string $s3AccessKey = null;
     /**
      * @var array|mixed
      */
-    private $s3AccessSecret = null;
+    private ?string $s3AccessSecret = null;
     /**
      * @var array|mixed
      */
-    private $s3AccessProfile = null;
+    private ?string $s3AccessProfile = null;
     /**
      * @var array|mixed
      */
-    private $s3urlCustomize = null;
+    private bool $s3urlCustomize = true;
     /**
      * @var null
      */
-    private $fileName = null;
+    private ?string $fileName = null;
 
 
     /**
@@ -68,12 +68,12 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
      */
     public function __construct()
     {
-        $this->accessRegion = Params::getParameterValue("accessRegion", false);
-        $this->rootBucket = Params::getParameterValue("rootBucket", false);
-        $this->applyingACL = Params::getParameterValue("applyingACL", false);
-        $this->s3AccessProfile = Params::getParameterValue("s3AccessProfile", false);
-        $this->s3AccessKey = Params::getParameterValue("s3AccessKey", false);
-        $this->s3AccessSecret = Params::getParameterValue("s3AccessSecret", false);
+        $this->accessRegion = Params::getParameterValue("accessRegion", null);
+        $this->rootBucket = Params::getParameterValue("rootBucket", null);
+        $this->applyingACL = Params::getParameterValue("applyingACL", null);
+        $this->s3AccessProfile = Params::getParameterValue("s3AccessProfile", null);
+        $this->s3AccessKey = Params::getParameterValue("s3AccessKey", null);
+        $this->s3AccessSecret = Params::getParameterValue("s3AccessSecret", null);
         $this->s3urlCustomize = Params::getParameterValue("s3urlCustomize", true);
         $this->isSuppliedSecret = $this->s3AccessKey && $this->s3AccessSecret;
     }
@@ -86,7 +86,7 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
      * @param $content
      * @return mixed|null
      */
-    public function getMedia($file, $target, $dbProxyInstance)
+    public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string
     {
         $startOfPath = strpos($target, "/", 5);
         $urlPath = substr($target, $startOfPath + 1);
@@ -116,7 +116,7 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
      * @param $file
      * @return null
      */
-    public function getFileName($file)
+    public function getFileName(string $file): string
     {
         return $this->fileName;
     }
@@ -136,8 +136,9 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
      * @param $debug
      * @return void
      */
-    public function processing($db, $url, $options, $files, $noOutput, $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug)
-    {
+    public function processing(Proxy $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
+                               string  $contextname, ?string $keyfield, ?string $keyvalue,
+                               ?array  $datasource, ?array $dbspec, int $debug):void    {
         $dbAlt = new Proxy();
 
         $counter = -1;

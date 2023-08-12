@@ -31,9 +31,9 @@ class MessageStrings_ja_Test extends TestCase
 
     public function test_getCustomizedMessages()
     {
-        $expected = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
+        $expected = '変更した';
         $messages = $this->messagestrings->getMessages();
-        $number = 1022;
+        $number = 9999;
         $this->assertEquals($expected, $messages[$number]);
     }
 

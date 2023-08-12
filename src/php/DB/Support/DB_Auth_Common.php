@@ -16,13 +16,17 @@
 
 namespace INTERMediator\DB\Support;
 
+use INTERMediator\DB\DBClass;
+use INTERMediator\DB\Logger;
+use INTERMediator\DB\Settings;
+
 abstract class DB_Auth_Common implements Auth_Interface_CommonDB
 {
-    protected $dbSettings = null;
-    protected $dbClass = null;
-    protected $logger = null;
+    protected ?Settings $dbSettings = null;
+    protected ?DBClass $dbClass = null;
+    protected ?Logger $logger = null;
 
-    public function __construct($parent)
+    public function __construct(?DBClass $parent)
     {
         if ($parent) {
             $this->dbClass = $parent;
@@ -33,7 +37,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         }
     }
 
-    private function getOperationSeries($operation)
+    private function getOperationSeries(string $operation): array
     {
         $operations = array();
         if (($operation === 'select') || ($operation === 'load') || ($operation === 'read')) {
@@ -48,7 +52,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return $operations;
     }
 
-    function getFieldForAuthorization($operation)
+    public function getFieldForAuthorization(string $operation): ?string
     {
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -65,7 +69,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return $authInfoField;
     }
 
-    function getTargetForAuthorization($operation)
+    public function getTargetForAuthorization(string $operation): ?string
     {
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -82,7 +86,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return $authInfoTarget;
     }
 
-    function getNoSetForAuthorization($operation)
+    function getNoSetForAuthorization(string $operation): ?string
     {
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -99,7 +103,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return $authInfoNoSet;
     }
 
-    function getAuthorizedUsers($operation = null)
+    function getAuthorizedUsers(?string $operation = null): array
     {
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -119,7 +123,7 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return array_values(array_unique($usersArray));
     }
 
-    function getAuthorizedGroups($operation = null)
+    function getAuthorizedGroups(?string $operation = null): array
     {
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -138,5 +142,4 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         }
         return array_values(array_unique($groupsArray));
     }
-
 }

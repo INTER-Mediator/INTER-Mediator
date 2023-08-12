@@ -15,27 +15,52 @@
 
 namespace INTERMediator\DB\Support;
 
-interface Auth_Interface_DB					// with using table for authentication/authorization
+interface Auth_Interface_DB                    // with using table for authentication/authorization
 {
-    public function authSupportStoreChallenge($uid, $challenge, $clientId);	// issuedhash
-    public function authSupportRemoveOutdatedChallenges();							// issuedhash
-    public function authSupportRetrieveChallenge($uid, $clientId, $isDelete = true);	// issuedhash
-    public function authSupportCheckMediaToken($uid);								// issuedhash
-    public function authSupportRetrieveHashedPassword($username);					// authuser
-    public function authSupportCreateUser($username, $hashedpassword, $isSAML = false, $ldapPassword = null, $attrs=null);	// authuser
-    public function authSupportChangePassword($username, $hashednewpassword);		// authuser
-    public function authSupportCheckMediaPrivilege($tableName, $targeting, $userField, $user, $keyField, $keyValue);	// (any table)
-    public function authSupportGetUserIdFromEmail($email);							// authuser
-    public function authSupportGetUserIdFromUsername($username);					// authuser
-    public function authSupportGetUsernameFromUserId($userid);						// authuser
-    public function authSupportGetGroupNameFromGroupId($groupid);					// authgroup
-    public function authSupportGetGroupsOfUser($user);								// authcor
-    public function authSupportUnifyUsernameAndEmail($username);					// authuser
-    public function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash);	// issuedhash
-    public function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash);		// issuedhash
-    public function authSupportUserEnrollmentStart($userid, $hash);             // issuedhash
-    public function authSupportUserEnrollmentEnrollingUser($hash);                     // issuedhash
-    public function authSupportUserEnrollmentActivateUser($userID, $password, $rawPWField, $rawPW);  // authuser
-    public function authSupportIsWithinSAMLLimit($userID);  // authuser
-    public function authSupportCanMigrateSHA256Hash();  // authuser, issuedhash
+    public function authSupportStoreChallenge(string $uid, string $challenge, string $clientId): void;    // issuedhash
+
+    public function authSupportRemoveOutdatedChallenges();                            // issuedhash
+
+    public function authSupportRetrieveChallenge(string $uid, string $clientId, bool $isDelete = true): ?string;    // issuedhash
+
+    public function authSupportCheckMediaToken(string $uid): ?string;                                // issuedhash
+
+    public function authSupportRetrieveHashedPassword(string $username): ?string;                    // authuser
+
+    public function authSupportCreateUser(string $username, string $hashedpassword, bool $isSAML = false,
+                                          string $ldapPassword = null, ?array $attrs = null): bool;    // authuser
+
+    public function authSupportChangePassword(string $username, string $hashednewpassword): bool;        // authuser
+
+    public function authSupportCheckMediaPrivilege(string $tableName, string $targeting, string $userField,
+                                                   string $user, string $keyField, string $keyValue): ?array;    // (any table)
+
+    public function authSupportGetUserIdFromEmail(string $email): ?string;                            // authuser
+
+    public function authSupportGetUserIdFromUsername(string $username): string;                    // authuser
+
+    public function authSupportGetUsernameFromUserId(string $userid): ?string;                        // authuser
+
+    public function authSupportGetGroupNameFromGroupId(string $groupid): ?string;                    // authgroup
+
+    public function authSupportGetGroupsOfUser(?string $user): array;                                // authcor
+
+    public function authSupportUnifyUsernameAndEmail(?string $username): ?string;                    // authuser
+
+    public function authSupportStoreIssuedHashForResetPassword(
+        string $userid, string $clienthost, string $hash): bool;    // issuedhash
+
+    public function authSupportCheckIssuedHashForResetPassword(
+        string $userid, string $randdata, string $hash): bool;        // issuedhash
+
+    public function authSupportUserEnrollmentStart(string $userid, string $hash): bool;             // issuedhash
+
+    public function authSupportUserEnrollmentEnrollingUser(string $hash): ?string;                     // issuedhash
+
+    public function authSupportUserEnrollmentActivateUser(
+        string $userID, string $password, string $rawPWField, string $rawPW): ?string;  // authuser
+
+    public function authSupportIsWithinSAMLLimit(string $userID): bool;  // authuser
+
+    public function authSupportCanMigrateSHA256Hash(): bool;  // authuser, issuedhash
 }

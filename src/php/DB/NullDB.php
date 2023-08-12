@@ -15,134 +15,129 @@
 
 namespace INTERMediator\DB;
 
-class NullDB extends UseSharedObjects implements DBClass_Interface
+class NullDB extends DBClass
 {
 
-    public function readFromDB()
+    public function readFromDB(): ?array
     {
         return null;
     }
 
-    public function countQueryResult()
+    public function countQueryResult(): int
     {
         return 0;
     }
 
-    public function getTotalCount()
+    public function getTotalCount(): int
     {
         return 0;
     }
 
-    public function updateDB($bypassAuth)
-    {
-        return null;
-    }
-
-    public function createInDB($isReplace = false)
-    {
-        return null;
-    }
-
-    public function deleteFromDB()
-    {
-        return null;
-    }
-
-    public function getFieldInfo($dataSourceName)
-    {
-        return null;
-    }
-
-    public function setupConnection()
-    {
-        return true;
-    }
-
-    public function requireUpdatedRecord($value)
-    {
-        return null;
-    }
-
-    public function getUpdatedRecord()
-    {
-        return null;
-    }
-
-    public function updatedRecord()
-    {
-        return null;
-    }
-
-    public function setUpdatedRecord($record, $value = false, $index = 0)
-    {
-    }
-
-    public function softDeleteActivate($field, $value)
-    {
-        return null;
-    }
-
-    public function copyInDB()
+    public function updateDB(bool $bypassAuth): bool
     {
         return false;
     }
 
-    public function setupHandlers($dsn = false)
+    public function createInDB(bool $isReplace = false): ?string
+    {
+        return null;
+    }
+
+    public function deleteFromDB(): bool
+    {
+        return false;
+    }
+
+    public function getFieldInfo(string $dataSourceName): ?array
+    {
+        return null;
+    }
+
+    public function setupConnection(): bool
+    {
+        return true;
+    }
+
+    public function requireUpdatedRecord(bool $value): void
+    {
+    }
+
+    public function getUpdatedRecord(): ?array
+    {
+        return null;
+    }
+
+    public function updatedRecord(): ?array
+    {
+        return null;
+    }
+
+    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
+    {
+    }
+
+    public function softDeleteActivate(string $field, string $value): void
     {
 
     }
 
-    public function normalizedCondition($condition)
+    public function copyInDB(): ?string
     {
-
+        return null;
     }
 
-    public function setDataToUpdatedRecord($field, $value, $index = 0)
-    {
-    }
-
-
-    public function getUseSetDataToUpdatedRecord()
+    public function setupHandlers(?string $dsn = null): void
     {
     }
 
-    public function clearUseSetDataToUpdatedRecord()
+    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
     {
     }
 
-    public function queryForTest($table, $conditions = null)
+    public function getUseSetDataToUpdatedRecord(): bool
     {
-
     }
 
-    public function deleteForTest($table, $conditions = null)
+    public function clearUseSetDataToUpdatedRecord(): void
     {
+    }
 
+    public function queryForTest(string $table, ?array $conditions = null):?array
+    {
+        return null;
+    }
+
+    public function deleteForTest(string $table, ?array $conditions = null): bool
+    {
+        return false;
     }
 
     /*
 * Transaction
 */
-    public function hasTransaction()
+    public function hasTransaction():bool
     {
         return false;
     }
 
-    public function inTransaction()
+    public function inTransaction():bool
     {
         return false;
     }
 
-    public function beginTransaction()
+    public function beginTransaction():void
     {
     }
 
-    public function commitTransaction()
+    public function commitTransaction():void
     {
     }
 
-    public function rollbackTransaction()
+    public function rollbackTransaction():void
     {
     }
 
+    public function closeDBOperation():void
+    {
+    }
 }

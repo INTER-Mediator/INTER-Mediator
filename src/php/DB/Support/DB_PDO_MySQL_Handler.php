@@ -21,52 +21,52 @@ use PDO;
 
 class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 {
-    protected $tableInfo = array();
-    protected $fieldNameForField = 'Field';
-    protected $fieldNameForType = 'Type';
-    protected $fieldNameForNullable = 'Null';
-    protected $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
+    protected array $tableInfo = array();
+    protected string $fieldNameForField = 'Field';
+    protected string $fieldNameForType = 'Type';
+    protected string $fieldNameForNullable = 'Null';
+    protected array $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
         'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision', 'year',];
-    protected $timeFieldTypes = ['datetime', 'time', 'timestamp'];
-    protected $dateFieldTypes = ['datetime', 'date', 'timestamp'];
-    protected $booleanFieldTypes = ['boolean', 'bool'];
+    protected array $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+    protected array $dateFieldTypes = ['datetime', 'date', 'timestamp'];
+    protected array $booleanFieldTypes = ['boolean', 'bool'];
 
-    public function sqlSELECTCommand()
+    public function sqlSELECTCommand(): string
     {
         return "SELECT ";
     }
 
-    public function sqlLimitCommand($param)
+    public function sqlLimitCommand(string $param): string
     {
         return "LIMIT {$param}";
     }
 
-    public function sqlOffsetCommand($param)
+    public function sqlOffsetCommand(string $param): string
     {
         return "OFFSET {$param}";
     }
 
-    public function sqlDELETECommand()
+    public function sqlDELETECommand(): string
     {
         return "DELETE FROM ";
     }
 
-    public function sqlUPDATECommand()
+    public function sqlUPDATECommand(): string
     {
         return "UPDATE IGNORE ";
     }
 
-    public function sqlINSERTCommand($tableRef, $setClause)
+    public function sqlINSERTCommand(string $tableRef, string $setClause): string
     {
         return "INSERT IGNORE INTO {$tableRef} {$setClause}";
     }
 
-    public function sqlREPLACECommand($tableRef, $setClause)
+    public function sqlREPLACECommand(array $tableRef, string $setClause): string
     {
         return "REPLACE INTO {$tableRef} {$setClause}";
     }
 
-    public function sqlSETClause($tableName, $setColumnNames, $keyField, $setValues)
+    public function sqlSETClause(string $tableName, array $setColumnNames, string $keyField, array $setValues): string
     {
         [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $setValues);
         return (count($setColumnNames) == 0) ? "SET {$keyField}=DEFAULT" :
@@ -89,17 +89,17 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 //        return $fieldArray;
 //    }
 
-    public function dateResetForNotNull()
+    public function dateResetForNotNull(): string
     {
         return '1000-01-01';
     }
 
-    protected function checkNullableField($info)
+    protected function checkNullableField($info): bool
     {
         return $info == 'YES';
     }
 
-    protected function getAutoIncrementField($tableName)
+    protected function getAutoIncrementField(string $tableName): ?string
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -114,7 +114,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return null;
     }
 
-    protected function getTalbeInfoSQL($tableName)
+    protected function getTalbeInfoSQL(string $tableName): string
     {
         return "SHOW COLUMNS FROM " . $this->quotedEntityName($tableName);
     }
@@ -168,7 +168,8 @@ mysql> show columns from item_display;
     In case of calculation field of a view, the type column is going to be ''.
     */
 
-    protected function getFieldListsForCopy($tableName, $keyField, $assocField, $assocValue, $defaultValues)
+    protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
+                                            ?array  $defaultValues): array
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -195,7 +196,7 @@ mysql> show columns from item_display;
     }
 
 
-    public function quotedEntityName($entityName)
+    public function quotedEntityName(string $entityName): ?string
     {
         if (!$entityName) {
             return null;
@@ -211,14 +212,14 @@ mysql> show columns from item_display;
         return "`{$entityName}`";
     }
 
-    public function optionalOperationInSetup()
+    public function optionalOperationInSetup(): void
     {
         $this->dbClassObj->link->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
     }
 
-    public function authSupportCanMigrateSHA256Hash($userTable, $hashTable)  // authuser, issuedhash
+    public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable):?array // authuser, issuedhash
     {
-        $checkFieldDefinition = function ($type, $min) {
+        $checkFieldDefinition = function (string $type, int $min):bool {
             $fDef = strtolower($type);
             if ($fDef != 'text' && strpos($fDef, 'varchar') !== false) {
                 $openParen = strpos($fDef, '(');
@@ -274,7 +275,7 @@ mysql> show columns from item_display;
 1 row in set (0.00 sec)
 
   */
-    public function specialErrorHandling($sql)
+    public function specialErrorHandling(string $sql): void
     {
         if ($this->dbClassObj->link) {
             $warnings = $this->dbClassObj->link->query('SHOW COUNT(*) WARNINGS');
@@ -299,7 +300,7 @@ mysql> show columns from item_display;
         }
     }
 
-    public function getLastInsertId($seqObject)
+    public function getLastInsertId(string $seqObject): ?string
     {
         if ($this->dbClassObj->link) {
             $warnings = $this->dbClassObj->link->query('SELECT LAST_INSERT_ID() AS ID');

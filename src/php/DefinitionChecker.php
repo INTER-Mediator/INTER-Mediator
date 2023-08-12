@@ -16,10 +16,19 @@
 
 namespace INTERMediator;
 
+/**
+ *
+ */
 class DefinitionChecker
 {
 
-    public function checkDefinitions($datasource, $options, $dbspecification): string
+    /**
+     * @param array|null $datasource
+     * @param array|null $options
+     * @param array|null $dbspecification
+     * @return string
+     */
+    public function checkDefinitions(?array $datasource, ?array $options, ?array $dbspecification): string
     {
 //        if ($dbspecification['db-class'] == 'FileMaker_FX') {
 //            require_once('FileMaker_FX.php');
@@ -43,7 +52,12 @@ class DefinitionChecker
         return $allMessage;
     }
 
-    public function checkDefinition($definition, $prohibit)
+    /**
+     * @param array|null $definition
+     * @param array $prohibit
+     * @return void
+     */
+    public function checkDefinition(?array $definition, array $prohibit): void
     {
         if ($definition === NULL) {
             return;
@@ -54,7 +68,11 @@ class DefinitionChecker
         $this->moveChildren($definition);
     }
 
-    private function moveChildren($items)
+    /**
+     * @param array|string $items
+     * @return void
+     */
+    private function moveChildren($items): void
     {
         $endPoint = $this->currentProhibit;
         $currentPath = '';
@@ -109,7 +127,7 @@ class DefinitionChecker
                 $possibleString = substr($endPoint, $openParen + 1, $closeParen - $openParen - 1);
                 $possibleValues = explode("|", $possibleString);
                 $possibleWilds = array();
-                foreach ($possibleString as $str) {
+                foreach ($possibleValues as $str) {
                     if (strpos($str, '*') !== false) {
                         $possibleWilds[] = $str;
                     }
@@ -131,6 +149,9 @@ class DefinitionChecker
         }
     }
 
+    /**
+     *
+     */
     function __construct()
     {
         $this->prohibitKeywordsForDataSource['*']['send-mail'] = array(
@@ -152,10 +173,22 @@ class DefinitionChecker
         );
     }
 
-    private $message;
-    private $path;
-    private $currentProhibit;
-    private $prohibitKeywordsForDBSpec = array(
+    /**
+     * @var string|null
+     */
+    private ?string $message;
+    /**
+     * @var array
+     */
+    private array $path = [];
+    /**
+     * @var array|null
+     */
+    private ?array $currentProhibit;
+    /**
+     * @var array
+     */
+    private array $prohibitKeywordsForDBSpec = array(
         'db-class' => 'string',
         'dsn' => 'string',
         'option' => 'array',
@@ -169,7 +202,10 @@ class DefinitionChecker
         'external-db' => array('#' => 'string'),
         'cert-verifying' => 'boolean',
     );
-    private $prohibitKeywordsForOption = array(
+    /**
+     * @var array
+     */
+    private array $prohibitKeywordsForOption = array(
         'separator' => 'string',
         'formatter' => array(
             '*' => array(
@@ -236,9 +272,12 @@ class DefinitionChecker
             'convert-date' => array('*' => 'string'),
             'convert-datetime' => array('*' => 'string'),
         ],
-        'terms'=> 'array',
+        'terms' => 'array',
     );
-    private $prohibitKeywordsMessaging = [
+    /**
+     * @var array|string[]
+     */
+    private array $prohibitKeywordsMessaging = [
         'from' => 'string',
         'to' => 'string',
         'cc' => 'string',
@@ -259,7 +298,10 @@ class DefinitionChecker
         'attachment' => 'string',
         'template-context' => 'string',
     ];
-    private $prohibitKeywordsForDataSource = [
+    /**
+     * @var array|array[]
+     */
+    private array $prohibitKeywordsForDataSource = [
         '*' => array(
             'name' => 'string',
             'table' => 'string',

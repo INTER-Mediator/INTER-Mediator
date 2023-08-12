@@ -8,19 +8,19 @@ use League\Csv\CharsetConverter;
 
 class Export
 {
-    protected $keysAndLabels = []; // array of field name => column name
+    protected array $keysAndLabels = []; // array of field name => column name
 
-    protected $fileNamePrefix = "Exported-";
-    protected $fileExtension = "csv";
-    protected $encoding = "UTF-8";
-    protected $fieldSeparator = ',';
-    protected $quote = '"';
-    protected $endOfLine = "\n";
+    protected string $fileNamePrefix = "Exported-";
+    protected string $fileExtension = "csv";
+    protected string $encoding = "UTF-8";
+    protected string $fieldSeparator = ',';
+    protected string $quote = '"';
+    protected string $endOfLine = "\n";
 
-    public function processing($contextData, $options)
+    public function processing(array $contextData, ?array $options): void
     {
         $qH = '"'; // Double quote in header
-        header('Content-Type: data:application/octet-stream');
+        header('Content-Type: application/octet-stream');
         $filename = $this->fileNamePrefix . (new DateTime())->format('Ymd') . ".{$this->fileExtension}";
         header("Content-Disposition: attachment; filename={$qH}{$filename}{$qH}");
 

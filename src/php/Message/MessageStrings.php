@@ -18,10 +18,17 @@ namespace INTERMediator\Message;
 
 use INTERMediator\Params;
 
+/**
+ *
+ */
 class MessageStrings
 {
 
-    public function getTerms($options)
+    /**
+     * @param array|null $options
+     * @return array
+     */
+    public function getTerms(?array $options): array
     {
         $className = get_class($this);
         $underLine = strpos($className, '_');
@@ -39,7 +46,10 @@ class MessageStrings
         return $termList;
     }
 
-    public function getMessages()
+    /**
+     * @return array|string[]
+     */
+    public function getMessages(): array
     {
         $altMessages = Params::getParameterValue("messages", null);
         $className = get_class($this);
@@ -57,7 +67,12 @@ class MessageStrings
         return $this->messages;
     }
 
-    public function getMessageAs($num, $appending = null)
+    /**
+     * @param int $num
+     * @param array|null $appending
+     * @return string
+     */
+    public function getMessageAs(int $num, ?array $appending = null): string
     {
         $msg = $this->messages[$num];
         $index = 1;
@@ -70,7 +85,10 @@ class MessageStrings
         return $msg;
     }
 
-    public $messages = array(
+    /**
+     * @var array|string[]
+     */
+    public array $messages = array(
         1 => 'Record #',
         2 => 'Refresh',
         3 => 'Add Record',
@@ -107,7 +125,7 @@ class MessageStrings
         1019 => "On calling db_delete, Required parameter 'name' doesn't specified",
         1020 => "On calling db_delete, Required parameter 'conditions' doesn't specified",
         1021 => "On calling db_createRecord, Required parameter 'name' doesn't specified",
-        1022 => 'Using Unsupported Browser (Try not to use the compatibility mode of Internet Explorer)',
+        1022 => 'Using Unsupported Browser',
         1023 => '[This site uses INTER-Mediator.]',
         1024 => 'Multiple records are going to be updated. The key field might be wrong. Are you sure?',
         1025 => 'Are you sure to delete?',
@@ -138,6 +156,7 @@ class MessageStrings
         1052 => "Summary",
         1053 => "Unregister Multi-client Synchronization",
         1054 => "Connection Error in unregister=@1@/@2@",
+        1055 => "Slack sending error: ",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',
@@ -178,5 +197,6 @@ class MessageStrings
         3210 => "Selected File: ",
         3211 => "Upload",
         3212 => "File uploading failed for corrupted files.",
+        9999 => "For testing to customize this message",
     );
 }

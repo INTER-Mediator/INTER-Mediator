@@ -15,10 +15,15 @@
 
 namespace INTERMediator\Message;
 
+/**
+ *
+ */
 class MessageStrings_ja extends MessageStrings
 {
-
-    public $messages = array(
+    /**
+     * @var array|string[]
+     */
+    public array $messages = array(
         1 => 'レコード番号',
         2 => '更新',
         3 => 'レコード追加',
@@ -55,7 +60,7 @@ class MessageStrings_ja extends MessageStrings
         1019 => "db_delete関数の呼び出しで、必須のプロパティ'name'が指定されていません",
         1020 => "db_delete関数の呼び出しで、必須のプロパティ'conditions'が指定されていません",
         1021 => "db_createRecord関数の呼び出しで、必須のプロパティ'name'が指定されていません",
-        1022 => 'ご使用のWebブラウザには対応していません。（Internet Explorerで互換モードを使用している場合は使用しないでください）',
+        1022 => 'ご使用のWebブラウザには対応していません',
         1023 => '[このサイトはINTER-Mediatorを利用して構築しています。]',
         1024 => '複数のレコードが更新される可能性があります。keyフィールドの指定は適切でないかもしれません。そのまま進めてかまいませんか? ',
         1025 => 'レコードを本当に削除していいですか?',
@@ -86,6 +91,7 @@ class MessageStrings_ja extends MessageStrings
         1052 => "合計",
         1053 => "クライアント間同期登録解除",
         1054 => "unregister関数での通信時のエラー=@1@/@2@",
+        1055 => "Slack送信エラー: ",
         2001 => '認証エラー!',
         2002 => 'ユーザー名:',
         2003 => 'パスワード:',
@@ -126,5 +132,6 @@ class MessageStrings_ja extends MessageStrings
         3210 => "選択ファイル：",
         3211 => "アップロード",
         3212 => "ファイルが壊れているためファイルのアップロードに失敗しました。",
+        9999 => "For testing to customize this message",
     );
 }

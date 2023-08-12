@@ -31,27 +31,27 @@ class Dropbox implements UploadingSupport, DownloadingSupport
     /**
      * @var array|mixed
      */
-    private $appKey = null;
+    private ?string $appKey = null;
     /**
      * @var array|mixed
      */
-    private $appSecret = null;
+    private ?string $appSecret = null;
     /**
      * @var array|mixed
      */
-    private $refreshToken = null;
+    private ?string $refreshToken = null;
     /**
      * @var array|mixed
      */
-    private $accessTokenPath = null;
+    private ?string $accessTokenPath = null;
     /**
      * @var array|mixed
      */
-    private $rootInDropbox = null;
+    private ?string $rootInDropbox = null;
     /**
      * @var null
      */
-    private $fileName = null;
+    private ?string $fileName = null;
 
     /**
      *
@@ -74,7 +74,7 @@ class Dropbox implements UploadingSupport, DownloadingSupport
      * @return string
      * @throws Exception
      */
-    public function getMedia($file, $target, $dbProxyInstance)
+    public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string
     {
         $startOfPath = strpos($target, "/", 5);
         $urlPath = substr($target, $startOfPath + 2);
@@ -94,7 +94,7 @@ class Dropbox implements UploadingSupport, DownloadingSupport
      * @param $file
      * @return null|string
      */
-    public function getFileName($file)
+    public function getFileName(string $file): string
     {
         return $this->fileName;
     }
@@ -114,8 +114,9 @@ class Dropbox implements UploadingSupport, DownloadingSupport
      * @param $debug
      * @return void
      */
-    public function processing($db, $url, $options, $files, $noOutput, $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug)
-    {
+    public function processing(Proxy $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
+                               string  $contextname, ?string $keyfield, ?string $keyvalue,
+                               ?array  $datasource, ?array $dbspec, int $debug):void    {
         $dbAlt = new Proxy();
         $counter = -1;
         foreach ($files as $fn => $fileInfo) { // Single file only

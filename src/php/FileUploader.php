@@ -16,21 +16,24 @@
 
 namespace INTERMediator;
 
+use INTERMediator\DB\Proxy;
+use INTERMediator\DB\DBClass;
+
 class FileUploader
 {
-    private $db;
-    private $url = NULL;
-    private $accessLogLevel = 0;
-    private $outputMessage = [];
+    private ?Proxy $db;
+    private ?string $url = NULL;
+    private int $accessLogLevel = 0;
+    private array $outputMessage = [];
 
-    public $dbresult = null;
+    public ?array $dbresult = null;
 
     public function __construct()
     {
         $this->accessLogLevel = Params::getParameterValue("accessLogLevel", false);
     }
 
-    public function getResultForLog()
+    public function getResultForLog(): array
     {
         if ($this->accessLogLevel < 1) {
             return [];
@@ -40,7 +43,7 @@ class FileUploader
         return $this->outputMessage;
     }
 
-    public function finishCommunication()
+    public function finishCommunication(): void
     {
         $this->db->finishCommunication();
     }
@@ -50,9 +53,9 @@ class FileUploader
 
     */
 
-    public function processingAsError($datasource, $options, $dbspec, $debug, $contextname, $noOutput)
+    public function processingAsError(?array $datasource, ?array $options, ?array $dbspec, int $debug, ?string $contextname, bool $noOutput): void
     {
-        $this->db = new DB\Proxy();
+        $this->db = new Proxy();
         $this->db->initialize($datasource, $options, $dbspec, $debug, $contextname);
 
         $messages = IMUtil::getMessageClassInstance();
@@ -96,7 +99,7 @@ class FileUploader
         }
     }
 
-    public function processing($datasource, $options, $dbspec, $debug)
+    public function processing(?array $datasource, ?array $options, ?array $dbspec, int $debug): void
     {
         $contextname = $_POST["_im_contextname"];
         $keyfield = $_POST["_im_keyfield"];
@@ -113,8 +116,9 @@ class FileUploader
         $this->db->exportOutputDataAsJSON();
     }
 
-    public function processingWithParameters($datasource, $options, $dbspec, $debug,
-                                             $contextname, $keyfield, $keyvalue, $field, $files, $noOutput)
+    public function processingWithParameters(?array  $datasource, ?array $options, ?array $dbspec, int $debug,
+                                             ?string $contextname, ?string $keyfield, ?string $keyvalue, ?array $field,
+                                             ?array  $files, bool $noOutput): void
     {
         $this->db = new DB\Proxy();
         $this->db->initialize($datasource, $options, $dbspec, $debug, $contextname);
@@ -164,7 +168,7 @@ class FileUploader
     }
 
     //
-    public function processInfo()
+    public function processInfo(): void
     {
         if (function_exists('apc_fetch')) {
             $onloadScript = "window.onload=function(){setInterval(\"location.reload()\",500);};";
@@ -183,7 +187,7 @@ class FileUploader
         }
     }
 
-    protected function getRedirectUrl($url)
+    protected function getRedirectUrl(?string $url): ?string
     {
         if (strpos(strtolower($url), '%0a') !== false || strpos(strtolower($url), '%0d') !== false) {
             return NULL;
@@ -218,7 +222,7 @@ class FileUploader
         return NULL;
     }
 
-    protected function checkRedirectUrl($url, $webServerName)
+    protected function checkRedirectUrl(?string $url, ?string $webServerName): bool
     {
         if (strpos($url, 'http://') === 0 || strpos($url, 'https://') === 0) {
             $parsedUrl = parse_url($url);
@@ -237,7 +241,7 @@ class FileUploader
      * @param $dbclass
      * @return string
      */
-    private function getClassNameForMedia($dbclass): string
+    private function getClassNameForMedia(string $dbclass): string
     {
         $className = "FileSystem";
         $contextDef = $this->db->dbSettings->getDataSourceTargetArray();
@@ -261,7 +265,7 @@ class FileUploader
                 } else if (isset($item['container']) && (strtolower($item['container']) === 'dropbox')) {
                     $className = "Dropbox";
                     break;
-                }else if (isset($item['container']) && (strtolower($item['container']) === 'fileurl')) {
+                } else if (isset($item['container']) && (strtolower($item['container']) === 'fileurl')) {
                     $className = "FileURL";
                     break;
                 }

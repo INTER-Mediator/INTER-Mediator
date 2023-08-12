@@ -13,13 +13,16 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\DB\Support;
+
+use INTERMediator\DB\DBClass;
 
 class DB_Spec_Handler_PDO implements DB_Spec_Behavior
 {
-    public $dbClassObj = null;
+    public ?DBClass $dbClassObj = null;
 
-    public static function generateHandler($dbObj, $dsn)
+    public static function generateHandler(?DBClass $dbObj, string $dsn): ?DB_Spec_Handler_PDO
     {
         if (is_null($dbObj)) {
             return null;
@@ -44,32 +47,32 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
         return null;
     }
 
-    public static function defaultKey()
+    public static function defaultKey(): string
     {
         return "id";
     }
 
-    public function getDefaultKey()
+    public function getDefaultKey(): string
     {
         return "id";
     }
 
-    public function isSupportAggregation()
+    public function isSupportAggregation(): bool
     {
         return true;
     }
 
-    public function isContainingFieldName($fname, $fieldnames)
+    public function isContainingFieldName(string $fname, array $fieldnames): bool
     {
         return in_array($fname, $fieldnames);
     }
 
-    public function isNullAcceptable()
+    public function isNullAcceptable(): bool
     {
         return true;
     }
 
-    public function isOperatorWithoutValue($operator)
+    public function isOperatorWithoutValue(string $operator): bool
     {
         return in_array(strtoupper($operator), array(
             'IS NOT NULL', //	NOT NULL value test
@@ -77,7 +80,7 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
         ));
     }
 
-    public function isPossibleOperator($operator)
+    public function isPossibleOperator(string $operator): bool
     {
         return in_array(strtoupper($operator), array(
             'AND', '&&', //Logical AND
@@ -124,7 +127,7 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
         ));
     }
 
-    public function isPossibleOrderSpecifier($specifier)
+    public function isPossibleOrderSpecifier(string $specifier): bool
     {
         return in_array(strtoupper($specifier), array('ASC', 'DESC'));
     }

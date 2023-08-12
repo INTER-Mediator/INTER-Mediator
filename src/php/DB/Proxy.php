@@ -28,47 +28,131 @@ use INTERMediator\NotifyServer;
 use INTERMediator\ServiceServerProxy;
 use INTERMediator\Params;
 
+/**
+ *
+ */
 class Proxy extends UseSharedObjects implements Proxy_Interface
 {
 //    public ?string $dbClass = null; // declared in UseSharedObjects
-    private $authDbClass = null; // for issuedhash context
-    private $userExpanded = null;
-    public $outputOfProcessing = null;
-    public $paramAuthUser = null;
-    public $hashedPassword = null;
+    /**
+     * @var DBClass|null
+     */
+    private ?DBClass $authDbClass = null; // for issuedhash context
+    /**
+     * @var object|null
+     */
+    private ?object $userExpanded = null;
+    /**
+     * @var array|null
+     */
+    public ?array $outputOfProcessing = null;
+    /**
+     * @var string|null
+     */
+    public ?string $paramAuthUser = null;
+    /**
+     * @var string|null
+     */
+    public ?string $hashedPassword = null;
 
-    private $paramResponse = null;
-    private $paramResponse2m = null;
-    private $paramResponse2 = null;
-    private $credential = null;
-    private $authSucceed = false;
-    private $clientId;
-    private $passwordHash;
-    private $alwaysGenSHA2;
-    private $originalAccess;
-    private $clientSyncAvailable;
+    /**
+     * @var string|null
+     */
+    private ?string $paramResponse = null;
+    /**
+     * @var string|null
+     */
+    private ?string $paramResponse2m = null;
+    /**
+     * @var string|null
+     */
+    private ?string $paramResponse2 = null;
+    /**
+     * @var string|null
+     */
+    private ?string $credential = null;
+    /**
+     * @var bool
+     */
+    private bool $authSucceed = false;
+    /**
+     * @var string|null
+     */
+    private ?string $clientId;
+    /**
+     * @var string|null
+     */
+    private ?string $passwordHash;
+    /**
+     * @var bool
+     */
+    private bool $alwaysGenSHA2;
+    /**
+     * @var string|null
+     */
+    private ?string $originalAccess;
+    /**
+     * @var bool
+     */
+    private bool $clientSyncAvailable;
 
-    private $ignorePost = false;
-    private $PostData = null;
+    /**
+     * @var bool
+     */
+    private bool $ignorePost = false;
+    /**
+     * @var array|null
+     */
+    private ?array $PostData = null;
 
-    private $accessLogLevel;
-    private $result4Log = [];
-    private $isStopNotifyAndMessaging = false;
-    private $suppressMediaToken = false;
-    private $migrateSHA1to2;
-    private $credentialCookieDomain;
+    /**
+     * @var int
+     */
+    private int $accessLogLevel;
+    /**
+     * @var array
+     */
+    private array $result4Log = [];
+    /**
+     * @var bool
+     */
+    private bool $isStopNotifyAndMessaging = false;
+    /**
+     * @var bool
+     */
+    private bool $suppressMediaToken = false;
+    /**
+     * @var bool
+     */
+    private bool $migrateSHA1to2;
+    /**
+     * @var string|null
+     */
+    private ?string $credentialCookieDomain;
 
-    public function setClientId_forTest($cid) // For testing
+    /**
+     * @param string $cid
+     * @return void
+     */
+    public function setClientId_forTest(string $cid): void // For testing
     {
         $this->clientId = $cid;
     }
 
-    public function setHashedPassword_forTest($hpw) // For testing
+    /**
+     * @param string $hpw
+     * @return void
+     */
+    public function setHashedPassword_forTest(string $hpw): void // For testing
     {
         $this->hashedPassword = $hpw;
     }
 
-    public function setParamResponse($res) // For testing
+    /**
+     * @param $res
+     * @return void
+     */
+    public function setParamResponse($res): void // For testing, $res could be array or string
     {
         if (is_array($res)) {
             $this->paramResponse = $res[0] ?? null;
@@ -79,23 +163,37 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
     }
 
-    public static function defaultKey()
+    /**
+     * @return string|null
+     */
+    public static function defaultKey(): ?string
     {
         trigger_error("Don't call the static method defaultKey of Proxy class.");
         return null;
     }
 
-    public function getDefaultKey()
+    /**
+     * @return string|null
+     */
+    public function getDefaultKey(): ?string
     {
         return $this->dbClass->specHandler->getDefaultKey();
     }
 
-    public function setStopNotifyAndMessaging()
+    /**
+     * @return void
+     */
+    public function setStopNotifyAndMessaging(): void
     {
         $this->isStopNotifyAndMessaging = true;
     }
 
-    public function addOutputData($key, $value)
+    /**
+     * @param string $key
+     * @param $value
+     * @return void
+     */
+    public function addOutputData(string $key, $value): void // $value could be array or string.
     {
         if (!isset($this->outputOfProcessing[$key])) {
             $this->outputOfProcessing[$key] = $value;
@@ -112,7 +210,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
     }
 
-    public function exportOutputDataAsJSON()
+    /**
+     * @return void
+     */
+    public function exportOutputDataAsJSON(): void
     {
         $jsonOptions = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP;
         if (IMUtil::phpVersion() >= 7.2) {
@@ -126,12 +227,18 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         echo $jsonString;
     }
 
-    public function exportOutputDataAsJason()
+    /**
+     * @return void
+     */
+    public function exportOutputDataAsJason(): void
     {
         $this->exportOutputDataAsJSON();
     }
 
-    public function getResultForLog()
+    /**
+     * @return array|null
+     */
+    public function getResultForLog(): ?array
     {
         if ($this->accessLogLevel < 1) {
             return [];
@@ -184,12 +291,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return mixed
      */
-    function readFromDB()
+    public function readFromDB(): ?array
     {
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
-            $className = is_null($this->userExpanded) ? null : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeReadFromDB")) {
+                $className = get_class((object)$this->userExpanded);
                 $this->logger->setDebugMessage("The method 'doBeforeReadFromDB' of the class '{$className}' is calling.", 2);
                 $returnBefore = $this->userExpanded->doBeforeReadFromDB();
                 if ($returnBefore === false) {
@@ -198,7 +305,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     // Pass through for 'return' doesn't exist.
                 } else if (is_string($returnBefore)) {
                     if (strlen($returnBefore) === 0) {
-                        return false; // Silent stop
+                        return null; // Silent stop
                     }
                     throw new Exception($returnBefore); // Just message as error.
                 }
@@ -211,7 +318,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     if (is_string($tableInfo['soft-delete'])) {
                         $delFlagField = $tableInfo['soft-delete'];
                     }
-                    $this->dbClass->softDeleteActivate($delFlagField, 1);
+                    $this->softDeleteActivate($delFlagField, 1);
                     $this->logger->setDebugMessage(
                         "The soft-delete applies to this query with '{$delFlagField}' field.", 2);
                 }
@@ -221,6 +328,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 }
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterReadFromDB")) {
+                $className = get_class($this->userExpanded);
                 $this->logger->setDebugMessage("The method 'doAfterReadFromDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterReadFromDB($result);
             }
@@ -243,16 +351,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $driver = $msgEntry['driver'] ?? "mail";
                     $msgProxy = new MessagingProxy($driver);
                     $msgResult = $msgProxy->processing($this, $msgArray, $result);
-                    if ($msgResult !== true) {
-                        $messageClass = IMUtil::getMessageClassInstance();
-                        $headMsg = $messageClass->getMessageAs(1051);
-                        $this->logger->setWarningMessage("{$headMsg}{$msgResult}");
-                    }
                 }
             }
         } catch (Exception $e) {
-            $this->logger->setErrorMessage("Exception:[1] {$e->getMessage()}");
-            return false;
+            $this->logger->setErrorMessage("Exception:[1] {$e->getMessage()} ###{$e->getTraceAsString()}");
+            return null;
         }
         return $result;
     }
@@ -260,11 +363,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return mixed
      */
-    function countQueryResult()
+    public function countQueryResult(): int
     {
         $result = null;
-        $className = is_null($this->userExpanded) ? null : get_class($this->userExpanded);
         if ($this->userExpanded && method_exists($this->userExpanded, "countQueryResult")) {
+            $className = get_class($this->userExpanded);
             $this->logger->setDebugMessage("The method 'countQueryResult' of the class '{$className}' is calling.", 2);
             $result = $this->userExpanded->countQueryResult();
         }
@@ -277,11 +380,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return mixed
      */
-    function getTotalCount()
+    public function getTotalCount(): int
     {
         $result = null;
-        $className = is_null($this->userExpanded) ? null : get_class($this->userExpanded);
         if ($this->userExpanded && method_exists($this->userExpanded, "getTotalCount")) {
+            $className = get_class($this->userExpanded);
             $this->logger->setDebugMessage("The method 'getTotalCount' of the class '{$className}' is calling.", 2);
             $result = $this->userExpanded->getTotalCount();
         }
@@ -295,13 +398,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $bypassAuth
      * @return mixed
      */
-    function updateDB($bypassAuth)
+    public function updateDB(bool $bypassAuth): bool
     {
         $resultOfUpdate = null;
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
-            $className = is_null($this->userExpanded) ? "" : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeUpdateDB")) {
+                $className = get_class((object)$this->userExpanded);
                 $this->logger->setDebugMessage(
                     "[Proxy::updateDB] The method 'doBeforeUpdateDB' of the class '{$className}' is calling.", 2);
                 $returnBefore = $this->userExpanded->doBeforeUpdateDB(false);
@@ -325,11 +428,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $result = $this->getUpdatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterUpdateToDB")) {
+                $className = get_class((object)$this->userExpanded);
                 $this->logger->setDebugMessage(
                     "[Proxy::updateDB] The method 'doAfterUpdateToDB' of the class '{$className}' is calling.", 2);
-                $this->dbClass->clearUseSetDataToUpdatedRecord();
+                $this->clearUseSetDataToUpdatedRecord();
                 $result = $this->userExpanded->doAfterUpdateToDB($result);
-                if (!$this->dbClass->getUseSetDataToUpdatedRecord()) {
+                if (!$this->getUseSetDataToUpdatedRecord()) {
                     $this->setUpdatedRecord($result);
                 }
             }
@@ -364,12 +468,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $this->logger->setDebugMessage("Try to send a message.", 2);
                     $driver = $msgEntry['driver'] ?? "mail";
                     $msgProxy = new MessagingProxy($driver);
-                    $msgResult = $msgProxy->processing($this, $msgArray, $result);
-                    if ($msgResult !== true) {
-                        $messageClass = IMUtil::getMessageClassInstance();
-                        $headMsg = $messageClass->getMessageAs(1051);
-                        $this->logger->setWarningMessage("{$headMsg}{$msgResult}");
-                    }
+                    $msgResult = $msgProxy->processing($this, $msgArray, $this->dbClass->getUpdatedRecord());
                 }
             }
 
@@ -384,13 +483,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $isReplace
      * @return mixed
      */
-    public function createInDB($isReplace = false)
+    public function createInDB(bool $isReplace = false): ?string
     {
         $resultOfCreate = null;
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
-            $className = is_null($this->userExpanded) ? "" : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeCreateToDB")) {
+                $className = get_class((object)$this->userExpanded);
                 $this->logger->setDebugMessage(
                     "[Proxy::createInDB] The method 'doBeforeCreateToDB' of the class '{$className}' is calling.", 2);
                 $returnBefore = $this->userExpanded->doBeforeCreateToDB();
@@ -400,7 +499,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     // Pass through for 'return' doesn't exist.
                 } else if (is_string($returnBefore)) {
                     if (strlen($returnBefore) === 0) {
-                        return false; // Silent stop
+                        return null; // Silent stop
                     }
                     throw new Exception($returnBefore); // Just message as error.
                 }
@@ -414,11 +513,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $result = $this->getUpdatedRecord();
             }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterCreateToDB")) {
+                $className = get_class((object)$this->userExpanded);
                 $this->logger->setDebugMessage(
                     "[Proxy::createInDB] The method 'doAfterCreateToDB' of the class '{$className}' is calling.", 2);
-                $this->dbClass->clearUseSetDataToUpdatedRecord();
+                $this->clearUseSetDataToUpdatedRecord();
                 $result = $this->userExpanded->doAfterCreateToDB($result);
-                if (!$this->dbClass->getUseSetDataToUpdatedRecord()) {
+                if (!$this->getUseSetDataToUpdatedRecord()) {
                     $this->setUpdatedRecord($result);
                 }
             }
@@ -449,17 +549,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                         $driver = $msgEntry['driver'] ?? "mail";
                         $msgProxy = new MessagingProxy($driver);
                         $msgResult = $msgProxy->processing($this, $msgArray, $result);
-                        if ($msgResult !== true) {
-                            $messageClass = IMUtil::getMessageClassInstance();
-                            $headMsg = $messageClass->getMessageAs(1051);
-                            $this->logger->setWarningMessage("{$headMsg}{$msgResult}");
-                        }
                     }
                 }
             }
         } catch (Exception $e) {
             $this->logger->setErrorMessage("Exception:[3] {$e->getMessage()}");
-            return false;
+            return null;
         }
         return $resultOfCreate;
 
@@ -468,11 +563,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return mixed
      */
-    function deleteFromDB()
+    public function deleteFromDB(): bool
     {
         $result = null;
         try {
-            $className = is_null($this->userExpanded) ? "" : get_class($this->userExpanded);
+            $className = is_null($this->userExpanded) ? "" : get_class((object)$this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeDeleteFromDB")) {
                 $this->logger->setDebugMessage("[Proxy::deleteFromDB] The method 'doBeforeDeleteFromDB' of the class '{$className}' is calling.", 2);
                 $returnBefore = $this->userExpanded->doBeforeDeleteFromDB();
@@ -532,7 +627,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return mixed
      */
-    function copyInDB()
+    public function copyInDB(): ?string
     {
         $result = null;
         $resultOfCopy = null;
@@ -547,7 +642,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     // Pass through for 'return' doesn't exist.
                 } else if (is_string($returnBefore)) {
                     if (strlen($returnBefore) === 0) {
-                        return false; // Silent stop
+                        return null; // Silent stop
                     }
                     throw new Exception($returnBefore); // Just message as error.
                 }
@@ -591,16 +686,22 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $dataSourceName
      * @return mixed
      */
-    function getFieldInfo($dataSourceName)
+    public function getFieldInfo(string $dataSourceName): ?array
     {
         return $this->dbClass ? $this->dbClass->getFieldInfo($dataSourceName) : null;
     }
 
+    /**
+     * @return void
+     */
     public function ignoringPost()
     {
         $this->ignorePost = true;
     }
 
+    /**
+     * @return void
+     */
     public function ignorePost()
     {
         $this->ignorePost = true;
@@ -614,7 +715,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param null $target
      * @return bool
      */
-    function initialize($datasource, $options, $dbspec, $debug, $target = null)
+    function initialize(?array $datasource, ?array $options, ?array $dbspec, ?int $debug, ?string $target = null): bool
     {
         $this->PostData = $this->ignorePost ? array() : $_POST;
         $this->setUpSharedObjects();
@@ -820,8 +921,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
 
         $this->dbSettings->setSAMLAuthSource(Params::getParameterValue('samlAuthSource', null));
-        $this->dbSettings->setSAMLAttrRules(Params::getParameterValue("samlAttrRules", false));
-        $this->dbSettings->setSAMLAdditionalRules(Params::getParameterValue("samlAdditionalRules", false));
+        $this->dbSettings->setSAMLAttrRules(Params::getParameterValue("samlAttrRules", null));
+        $this->dbSettings->setSAMLAdditionalRules(Params::getParameterValue("samlAdditionalRules", null));
         return true;
     }
 
@@ -844,7 +945,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param null $access
      * @param bool $bypassAuth
      */
-    function processingRequest($access = null, $bypassAuth = false, $ignoreFiles = false)
+    public function processingRequest(?string $access = null, bool $bypassAuth = false, bool $ignoreFiles = false): void
     {
         $this->logger->setDebugMessage("[processingRequest]", 2);
         $authOptions = $this->dbSettings->getAuthentication();
@@ -938,6 +1039,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->hashedPassword = $this->dbClass->authHandler->authSupportRetrieveHashedPassword($signedUser);
                 if ($this->dbSettings->getIsSAML()) { // Set up as SAML
                     if ($this->checkAuthorization($signedUser, true)) {
+                        $this->dbSettings->setCurrentUser($signedUser);
                         $this->logger->setDebugMessage("IM-built-in Authentication for SAML user succeed.");
                         $this->authSucceed = true;
                     } else { // Timeout with SAML
@@ -971,6 +1073,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 } else { // Normal Login process
                     if ($this->checkAuthorization($signedUser, false)) {
+                        $this->dbSettings->setCurrentUser($signedUser);
                         $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
                         $this->authSucceed = true;
                     }
@@ -1092,7 +1195,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                                 $counter = 0;
                                 foreach ($uploadFiles as $oneFile) {
                                     $dbresult[] = $this->getUpdatedRecord()[0];
-                                    if ($result !== false) {
+                                    if ($result) {
                                         $fileUploader->processingWithParameters(
                                             $this->dbSettings->getDataSource(),
                                             $this->dbSettings->getOptions(),
@@ -1181,7 +1284,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @param bool $notFinish
      */
-    function finishCommunication($notFinish = false)
+    function finishCommunication($notFinish = false): void
     {
         $this->logger->setDebugMessage(
             "[finishCommunication]getRequireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
@@ -1240,12 +1343,21 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->addOutputData('debugMessages', $this->logger->getDebugMessages());
     }
 
-    private function generateCredential($generatedChallenge, $generatedUID, $pwHash)
+    /**
+     * @param string $generatedChallenge
+     * @param string $generatedUID
+     * @param string $pwHash
+     * @return string
+     */
+    private function generateCredential(string $generatedChallenge, string $generatedUID, string $pwHash): string
     {
         return hash("sha256", $generatedChallenge . $generatedUID . $pwHash);
     }
 
-    public function getDatabaseResult()
+    /**
+     * @return array|null
+     */
+    public function getDatabaseResult(): ?array
     {
         if (isset($this->outputOfProcessing['dbresult'])) {
             return $this->outputOfProcessing['dbresult'];
@@ -1253,23 +1365,32 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return null;
     }
 
-    public function getDatabaseResultCount()
+    /**
+     * @return int
+     */
+    public function getDatabaseResultCount(): int
     {
         if (isset($this->outputOfProcessing['resultCount'])) {
             return $this->outputOfProcessing['resultCount'];
         }
-        return null;
+        return 0;
     }
 
-    public function getDatabaseTotalCount()
+    /**
+     * @return int
+     */
+    public function getDatabaseTotalCount(): int
     {
         if (isset($this->outputOfProcessing['totalCount'])) {
             return $this->outputOfProcessing['totalCount'];
         }
-        return null;
+        return 0;
     }
 
-    public function getDatabaseNewRecordKey()
+    /**
+     * @return string|null
+     */
+    public function getDatabaseNewRecordKey(): ?string
     {
         if (isset($this->outputOfProcessing['newRecordKeyValue'])) {
             return $this->outputOfProcessing['newRecordKeyValue'];
@@ -1282,10 +1403,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $username
      * @return string
      */
-    function authSupportGetSalt($username)
+    function authSupportGetSalt(string $username): ?string
     {
         $hashedpw = $this->hashedPassword ?? $this->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
-        return substr($hashedpw, -8);
+        if ($hashedpw) {
+            return substr($hashedpw, -8);
+        }
+        return null;
     }
 
     /* returns user's hash salt.*/
@@ -1295,7 +1419,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $clientId
      * @return string
      */
-    function saveChallenge($username, $challenge, $clientId)
+    function saveChallenge(string $username, string $challenge, string $clientId): ?string
     {
         $this->logger->setDebugMessage(
             "[saveChallenge]user={$username}, challenge={$challenge}, clientid={$clientId}", 2);
@@ -1310,7 +1434,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $isSAML
      * @return bool
      */
-    function checkAuthorization($username, $isSAML = false): bool
+    function checkAuthorization(string $username, bool $isSAML = false): bool
     {
         $falseHash = hash("sha256", uniqid("", true)); // for failing auth.
         $hashedvalue = $this->paramResponse ?? $falseHash;
@@ -1332,7 +1456,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
         $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge($uid, $this->clientId);
         $this->logger->setDebugMessage("[checkAuthorization]storedChallenge={$storedChallenge}/{$this->credential}", 2);
-        if (strlen($storedChallenge) == 48) { // ex.fc0d54312ce33c2fac19d758
+        if ($storedChallenge && strlen($storedChallenge) == 48) { // ex.fc0d54312ce33c2fac19d758
             if ($this->credential == $this->generateCredential($storedChallenge, $this->clientId, $this->hashedPassword)) {
                 // Credential Auth passed
                 $this->logger->setDebugMessage("[checkAuthorization]Credential auth passed.", 2);
@@ -1375,13 +1499,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $clientId
      * @return bool
      */
-    function checkChallenge($challenge, $clientId)
+    function checkChallenge(string $challenge, string $clientId): bool
     {
         $returnValue = false;
         $this->authDbClass->authHandler->authSupportRemoveOutdatedChallenges();
         // Database user mode is user_id=0
         $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge(0, $clientId);
-        if (strlen($storedChallenge) == 48 && $storedChallenge == $challenge) { // ex.fc0d54312ce33c2fac19d758
+        if ($storedChallenge && strlen($storedChallenge) == 48 && $storedChallenge == $challenge) { // ex.fc0d54312ce33c2fac19d758
             $returnValue = true;
         }
         return $returnValue;
@@ -1392,7 +1516,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $token
      * @return bool
      */
-    public function checkMediaToken($user, $token)
+    public function checkMediaToken(string $user, string $token): bool
     {
         $this->logger->setDebugMessage("[checkMediaToken] user={$user}, token={$token}", 2);
         $returnValue = false;
@@ -1413,7 +1537,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $password
      * @return mixed
      */
-    function addUser($username, $password, $isSAML = false, $attrs = null)
+    function addUser(string $username, string $password, bool $isSAML = false, ?array $attrs = null): array
     {
         $this->logger->setDebugMessage("[addUser] username={$username}, isSAML={$isSAML}", 2);
         $hashedPw = IMUtil::convertHashedPassword($password, $this->passwordHash, $this->alwaysGenSHA2);
@@ -1427,7 +1551,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $newpassword
      * @return mixed
      */
-    function changePassword($username, $newpassword)
+    function changePassword(string $username, string $newpassword): bool
     {
         return $this->dbClass->authHandler->authSupportChangePassword($username, $newpassword);
     }
@@ -1436,14 +1560,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $email
      * @return array|bool
      */
-    function resetPasswordSequenceStart($email)
+    function resetPasswordSequenceStart(string $email): bool
     {
         if ($email === false || $email == '') {
             return false;
         }
         $userid = $this->dbClass->authHandler->authSupportGetUserIdFromEmail($email);
         $username = $this->dbClass->authHandler->authSupportGetUsernameFromUserId($userid);
-        if ($username === false || $username == '') {
+        if ($username === false || $username == '' || is_null($username)) {
             return false;
         }
         $clienthost = IMUtil::generateChallenge();
@@ -1463,13 +1587,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      *
      * Using
      */
-    function resetPasswordSequenceReturnBack($username, $email, $randdata, $newpassword)
+    function resetPasswordSequenceReturnBack(string $username, string $email, string $randdata, string $newpassword): bool
     {
         if (is_null($username) && !is_null($email)) {
             $userid = $this->dbClass->authHandler->authSupportGetUserIdFromEmail($email);
             $username = $this->dbClass->authHandler->authSupportGetUsernameFromUserId($userid);
         }
-        if ($email === false || $email == '' || $username === false || $username == '') {
+        if ($email === false || $email == '' || is_null($userid)
+            || $username === false || $username == '' || is_null($username)) {
             return false;
         }
         $userid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
@@ -1482,17 +1607,27 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return false;
     }
 
-    function userEnrollmentStart($userID)
+    /**
+     * @param string $userID
+     * @return string
+     */
+    function userEnrollmentStart(string $userID): string
     {
         $hash = IMUtil::generateChallenge();
         $this->authDbClass->authHandler->authSupportUserEnrollmentStart($userID, $hash);
         return $hash;
     }
 
-    function userEnrollmentActivateUser($challenge, $password, $rawPWField = false)
+    /**
+     * @param string $challenge
+     * @param string $password
+     * @param bool $rawPWField
+     * @return string|null
+     */
+    function userEnrollmentActivateUser(string $challenge, string $password, bool $rawPWField = false): ?string
     {
         $userID = $this->authDbClass->authHandler->authSupportUserEnrollmentEnrollingUser($challenge);
-        if ($userID < 1) {
+        if (!$userID) {
             return false;
         }
         return $this->dbClass->authHandler->authSupportUserEnrollmentActivateUser(
@@ -1500,8 +1635,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $rawPWField, $password);
     }
 
+    /**
+     * @return bool
+     */
     private
-    function checkValidation()
+    function checkValidation(): bool
     {
         $inValid = false;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -1532,34 +1670,50 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return !$inValid;
     }
 
-    public function setupConnection()
+    /**
+     * @return bool
+     */
+    public function setupConnection(): bool
     {
-        // TODO: Implement setupConnection() method.
+        return false;
     }
 
-    public function setupHandlers($dsn = false)
+    /**
+     * @param string|null $dsn
+     * @return void
+     */
+    public function setupHandlers(?string $dsn = null): void
     {
         // TODO: Implement setupHandlers() method.
     }
 
-    public function normalizedCondition($condition)
+    /**
+     * @param string $field
+     * @param string $value
+     * @return void
+     */
+    function softDeleteActivate(string $field, string $value): void
     {
-        // TODO: Implement normalizedCondition() method.
+        if ($this->dbClass) {
+            $this->dbClass->softDeleteActivate($field, $value);
+        }
     }
 
-    public function softDeleteActivate($field, $value)
-    {
-        // TODO: Implement softDeleteActivate() method.
-    }
-
-    public function requireUpdatedRecord($value)
+    /**
+     * @param bool $value
+     * @return void
+     */
+    public function requireUpdatedRecord(bool $value): void
     {
         if ($this->dbClass) {
             $this->dbClass->requireUpdatedRecord($value);
         }
     }
 
-    public function getUpdatedRecord()
+    /**
+     * @return array|null
+     */
+    public function getUpdatedRecord(): ?array
     {
         if ($this->dbClass) {
             return $this->dbClass->getUpdatedRecord();
@@ -1567,74 +1721,128 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return null;
     }
 
-    public function updatedRecord()
+    /**
+     * @return array|null
+     */
+    public function updatedRecord(): ?array
     {
         return $this->getUpdatedRecord();
     }
 
-    public function setUpdatedRecord($record, $value = false, $index = 0)
+    /**
+     * @param array $record
+     * @param string|null $value
+     * @param int $index
+     * @return void
+     */
+    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
     {
-        if ($value === false) {
+        if (!$value) {
             $this->dbClass->setUpdatedRecord($record);
         } else { // Previous use of this method redirect to setDataToUpdatedRecord
             $this->setDataToUpdatedRecord($record, $value, $index);
         }
     }
 
-    public function setDataToUpdatedRecord($field, $value, $index = 0)
+    /**
+     * @param string $field
+     * @param string $value
+     * @param int $index
+     * @return void
+     */
+    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
     {
         $this->dbClass->setDataToUpdatedRecord($field, $value, $index);
     }
 
-    public function getUseSetDataToUpdatedRecord()
+    /**
+     * @return bool
+     */
+    public function getUseSetDataToUpdatedRecord(): bool
     {
-        return $this->dbClass->getUseSetDataToUpdatedRecord();
+        if ($this->dbClass) {
+            return $this->dbClass->getUseSetDataToUpdatedRecord();
+        }
+        return false;
     }
 
-    public function clearUseSetDataToUpdatedRecord()
+    /**
+     * @return void
+     */
+    public function clearUseSetDataToUpdatedRecord(): void
     {
-        $this->dbClass->clearUseSetDataToUpdatedRecord();
+        if ($this->dbClass) {
+            $this->dbClass->clearUseSetDataToUpdatedRecord();
+        }
     }
 
-    public function queryForTest($table, $conditions = null)
+    /**
+     * @param string $table
+     * @param array|null $conditions
+     * @return array|null
+     */
+    public function queryForTest(string $table, ?array $conditions = null): ?array
     {
-        // TODO: Implement queryForTest() method.
+        return null;
     }
 
-    public function deleteForTest($table, $conditions = null)
+    /**
+     * @param string $table
+     * @param array|null $conditions
+     * @return bool
+     */
+    public function deleteForTest(string $table, ?array $conditions = null): bool
     {
-        // TODO: Implement deleteForTest() method.
+        return false;
     }
 
     /*
      * Transaction
      */
-    public function hasTransaction()
+    /**
+     * @return bool
+     */
+    public function hasTransaction(): bool
     {
         return $this->dbClass->hasTransaction();
     }
 
-    public function inTransaction()
+    /**
+     * @return bool
+     */
+    public function inTransaction(): bool
     {
         return $this->dbClass->inTransaction();
     }
 
-    public function beginTransaction()
+    /**
+     * @return void
+     */
+    public function beginTransaction(): void
     {
         $this->dbClass->beginTransaction();
     }
 
-    public function commitTransaction()
+    /**
+     * @return void
+     */
+    public function commitTransaction(): void
     {
         $this->dbClass->commitTransaction();
     }
 
-    public function rollbackTransaction()
+    /**
+     * @return void
+     */
+    public function rollbackTransaction(): void
     {
         $this->dbClass->rollbackTransaction();
     }
 
-    public function closeDBOperation()
+    /**
+     * @return void
+     */
+    public function closeDBOperation(): void
     {
         $this->dbClass->closeDBOperation();
     }

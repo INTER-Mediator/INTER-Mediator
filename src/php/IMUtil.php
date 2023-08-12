@@ -26,7 +26,11 @@ use Symfony\Component\Yaml\Yaml;
  */
 class IMUtil
 {
-    public static function currentDTString($subSeconds = 0): string
+    /**
+     * @param int $subSeconds
+     * @return string
+     */
+    public static function currentDTString(int $subSeconds = 0): string
     {
         $currentDT = new DateTime();
         try {
@@ -40,7 +44,11 @@ class IMUtil
         return $currentDT->format('Y-m-d H:i:s');
     }
 
-    public static function currentDTStringFMS($subSeconds = 0): string
+    /**
+     * @param int $subSeconds
+     * @return string
+     */
+    public static function currentDTStringFMS(int $subSeconds = 0): string
     {
         $currentDT = new DateTime();
         try {
@@ -54,7 +62,11 @@ class IMUtil
         return $currentDT->format('m/d/Y H:i:s');
     }
 
-    public static function secondsFromNow($dtStr): int
+    /**
+     * @param string $dtStr
+     * @return int
+     */
+    public static function secondsFromNow(string $dtStr): int
     {
         $currentDT = new DateTime();
         try {
@@ -65,7 +77,11 @@ class IMUtil
         return 0;
     }
 
-    public static function phpVersion($verStr = '')
+    /**
+     * @param string $verStr
+     * @return float|int
+     */
+    public static function phpVersion(string $verStr = '')
     {
         $vString = explode('.', $verStr == '' ? phpversion() : $verStr);
         $vNum = 0;
@@ -81,11 +97,18 @@ class IMUtil
         return $vNum;
     }
 
+    /**
+     * @return string
+     */
     public static function pathToINTERMediator(): string
     {
         return dirname(__FILE__, 3);
     }
 
+    /**
+     * @param $path
+     * @return string
+     */
     public static function getMIMEType($path): string
     {
         $type = "application/octet-stream";
@@ -144,6 +167,10 @@ class IMUtil
         return $type;
     }
 
+    /**
+     * @param $ar
+     * @return string
+     */
     public static function combinePathComponents($ar): string
     {
         $path = "";
@@ -166,12 +193,18 @@ class IMUtil
         return $path;
     }
 
+    /**
+     * @return bool
+     */
     public static function isPHPExecutingWindows(): bool
     {
         $osName = php_uname("s");
         return $osName == "Windows NT";
     }
 
+    /**
+     * @return string
+     */
     public static function getServerUserHome(): string
     {
         if (IMUtil::isPHPExecutingWindows()) {
@@ -182,6 +215,9 @@ class IMUtil
         return $homeDir;
     }
 
+    /**
+     * @return string
+     */
     public static function getServerUserName(): string
     {
         if (IMUtil::isPHPExecutingWindows()) {
@@ -194,18 +230,29 @@ class IMUtil
         return $homeDir;
     }
 
+    /**
+     * @return bool
+     */
     public static function isPHPExecutingUNIX(): bool
     {
         $osName = php_uname("s");
         return $osName == "Linux" || $osName == "FreeBSD";
     }
 
+    /**
+     * @param $str
+     * @return array|string|string[]
+     */
     public static function removeNull($str)
     {
         return str_replace("\x00", '', $str ?? "");
     }
 
     // Message Class Detection
+
+    /**
+     * @return Message\MessageStrings|null
+     */
     public static function getMessageClassInstance(): ?Message\MessageStrings
     {
         $messageClass = null;
@@ -237,6 +284,10 @@ class IMUtil
     }
 
 // Thanks for http://q.hatena.ne.jp/1193396523
+
+    /**
+     * @return bool
+     */
     public static function guessFileUploadError(): bool
     {
         $postMaxSize = self::return_bytes(ini_get('post_max_size'));
@@ -264,6 +315,11 @@ class IMUtil
     }
 
 // Example in http://php.net/manual/ja/function.ini-get.php.
+
+    /**
+     * @param $val
+     * @return int
+     */
     public static function return_bytes($val): int
     {
         $val = trim($val);
@@ -281,6 +337,9 @@ class IMUtil
         return $val;
     }
 
+    /**
+     * @return bool
+     */
     public function protectCSRF(): bool
     {
         /*
@@ -344,7 +403,12 @@ class IMUtil
         return FALSE;
     }
 
-    public function checkHost($host, $webServerName): bool
+    /**
+     * @param string $host
+     * @param string $webServerName
+     * @return bool
+     */
+    public function checkHost(string $host, string $webServerName): bool
     {
         $host = strtolower($host);
         $webServerName = strtolower($webServerName);
@@ -376,19 +440,20 @@ class IMUtil
     /**
      * @param array for testing only
      */
-    public function outputSecurityHeaders($params = NULL)
+    public function outputSecurityHeaders(?array $params = NULL): void
     {
-        if (is_null($params)) {
-            [$xFrameOptions, $contentSecurityPolicy, $accessControlAllowOrigin]
-                = Params::getParameterValue(['xFrameOptions', 'contentSecurityPolicy', 'accessControlAllowOrigin'], "");
-        } else {
-            $xFrameOptions = $params['xFrameOptions'];
-            $contentSecurityPolicy = $params['contentSecurityPolicy'];
-            $accessControlAllowOrigin = $params['accessControlAllowOrigin'];
-        }
-        $xFrameOptions = str_replace("\r", '', str_replace("\n", '', $xFrameOptions));
-        $contentSecurityPolicy = str_replace("\r", '', str_replace("\n", '', $contentSecurityPolicy));
-        $accessControlAllowOrigin = str_replace("\r", '', str_replace("\n", '', $accessControlAllowOrigin));
+        $xFrameOptions = str_replace("\r", '', str_replace("\n", '',
+            is_null($params)
+                ? Params::getParameterValue('xFrameOptions', '')
+                : $params['xFrameOptions']));
+        $contentSecurityPolicy = str_replace("\r", '', str_replace("\n", '',
+            is_null($params)
+                ? Params::getParameterValue('contentSecurityPolicy', '')
+                : $params['contentSecurityPolicy']));
+        $accessControlAllowOrigin = str_replace("\r", '', str_replace("\n", '',
+            is_null($params)
+                ? Params::getParameterValue('accessControlAllowOrigin', '')
+                : $params['accessControlAllowOrigin']));
 
         if (is_null($xFrameOptions) || empty($xFrameOptions)) {
             $xFrameOptions = 'SAMEORIGIN';
@@ -414,7 +479,7 @@ class IMUtil
      * Contributed by Atsushi Matsuo at Jan 17, 2010
      * @return string strings for JavaScript
      */
-    public static function valueForJSInsert($str): string
+    public static function valueForJSInsert(?string $str): string
     {
         if (is_null($str)) {
             return "";
@@ -437,72 +502,94 @@ class IMUtil
      * @param string prefix strings for the prefix for key
      * @return string JavaScript source
      */
-    public static function arrayToJS($ar, $prefix = ""): string
+    public static function arrayToJS(array $ar, string $prefix = ""): string
     {
-        if (is_array($ar)) {
-            $items = array();
-            foreach ($ar as $key => $value) {
-                $items[] = IMUtil::arrayToJS($value, $key);
-            }
-            $currentKey = (string)$prefix;
-            if ($currentKey == '')
-                $returnStr = "{" . implode(',', $items) . '}';
-            else
-                $returnStr = "'{$currentKey}':{" . implode(',', $items) . '}';
+        $returnStr = '';
+        $items = array();
+        foreach ($ar as $key => $value) {
+            $items[] = is_array($value) ? IMUtil::arrayToJS($value, $key) : IMUtil::stringToJS($value, $key);
+        }
+        $currentKey = (string)$prefix;
+        if ($currentKey == '')
+            $returnStr = "{" . implode(',', $items) . '}';
+        else
+            $returnStr = "'{$currentKey}':{" . implode(',', $items) . '}';
+        return $returnStr;
+    }
+
+    /**
+     * @param string $ar
+     * @param string $prefix
+     * @return string
+     */
+    public static function stringToJS(string $ar, string $prefix = ""): string
+    {
+        $returnStr = '';
+        $currentKey = $prefix;
+        if ($currentKey == '') {
+            $returnStr = "'" . IMUtil::valueForJSInsert($ar) . "'";
         } else {
-            $currentKey = (string)$prefix;
-            if ($currentKey == '') {
-                $returnStr = "'" . IMUtil::valueForJSInsert($ar) . "'";
-            } else {
-                $returnStr = "'{$prefix}':'" . IMUtil::valueForJSInsert($ar) . "'";
-            }
+            $returnStr = "'{$prefix}':'" . IMUtil::valueForJSInsert($ar) . "'";
         }
         return $returnStr;
     }
 
     /**
      * Create JavaScript source from array
-     * @param array ar parameter array
+     * @param array|string array
      * @param string prefix strings for the prefix for key
      * @param array exarray array containing excluding keys
      * @return string JavaScript source
      */
-    public static function arrayToJSExcluding($ar, $prefix, $exarray): string
+    public static function arrayToJSExcluding(array $ar, string $prefix, ?array $exarray): string
     {
         $returnStr = '';
-
-        if (is_array($ar)) {
-            $items = array();
-            foreach ($ar as $key => $value) {
-                $items[] = IMUtil::arrayToJSExcluding($value, $key, $exarray);
-            }
-            $currentKey = (string)$prefix;
-            foreach ($items as $item) {
-                if (!in_array($currentKey, $exarray) && $item != '') {
-                    if ($returnStr == '') {
-                        $returnStr .= $item;
-                    } else {
-                        $returnStr .= ',' . $item;
-                    }
+        $items = array();
+        foreach ($ar as $key => $value) {
+            $items[] = is_array($value) ? IMUtil::arrayToJSExcluding($value, $key, $exarray)
+                : IMUtil::stringToJSExcluding($value, $key, $exarray);
+        }
+        $currentKey = (string)$prefix;
+        foreach ($items as $item) {
+            if (!in_array($currentKey, $exarray) && $item != '') {
+                if ($returnStr == '') {
+                    $returnStr .= $item;
+                } else {
+                    $returnStr .= ',' . $item;
                 }
             }
-            if ($currentKey == '') {
-                $returnStr = '{' . $returnStr . '}';
-            } else {
-                $returnStr = "'{$currentKey}':{" . $returnStr . '}';
-            }
+        }
+        if ($currentKey == '') {
+            $returnStr = '{' . $returnStr . '}';
         } else {
-            $currentKey = (string)$prefix;
-            if ($currentKey == '') {
-                $returnStr = "'" . IMUtil::valueForJSInsert($ar) . "'";
-            } else if (!in_array($currentKey, $exarray)) {
-                $returnStr = "'{$prefix}':'" . IMUtil::valueForJSInsert($ar) . "'";
-            }
+            $returnStr = "'{$currentKey}':{" . $returnStr . '}';
         }
         return $returnStr;
     }
 
-    public static function randomString($digit): string
+    /**
+     * @param string $ar
+     * @param string $prefix
+     * @param array|null $exarray
+     * @return string
+     */
+    public static function stringToJSExcluding(string $ar, string $prefix, ?array $exarray): string
+    {
+        $returnStr = '';
+        $currentKey = (string)$prefix;
+        if ($currentKey == '') {
+            $returnStr = "'" . IMUtil::valueForJSInsert($ar) . "'";
+        } else if (!in_array($currentKey, $exarray)) {
+            $returnStr = "'{$prefix}':'" . IMUtil::valueForJSInsert($ar) . "'";
+        }
+        return $returnStr;
+    }
+
+    /**
+     * @param int $digit
+     * @return string
+     */
+    public static function randomString(int $digit): string
     {
         $resultStr = '';
         for ($i = 0; $i < $digit; $i++) {
@@ -520,7 +607,7 @@ class IMUtil
      * @param $prefix
      * @return string
      */
-    public static function generateClientId($prefix, $passwordHash)
+    public static function generateClientId(string $prefix, string $passwordHash)
     {
         if ($passwordHash == "1") {
             return sha1(uniqid($prefix, true));
@@ -531,7 +618,7 @@ class IMUtil
     /**
      * @return string
      */
-    public static function generateChallenge()
+    public static function generateChallenge(): string
     {
         $str = '';
         for ($i = 0; $i < 24; $i++) {
@@ -544,7 +631,7 @@ class IMUtil
     /**
      * @return string
      */
-    public static function generateSalt()
+    public static function generateSalt(): string
     {
         $str = '';
         for ($i = 0; $i < 4; $i++) {
@@ -554,9 +641,16 @@ class IMUtil
         return $str;
     }
 
-    public static function convertHashedPassword($pw, $passwordHash, $alwaysGenSHA2, $salt = false)
+    /**
+     * @param string $pw
+     * @param string $passwordHash
+     * @param bool $alwaysGenSHA2
+     * @param string $salt
+     * @return string
+     */
+    public static function convertHashedPassword(string $pw, string $passwordHash, bool $alwaysGenSHA2, string $salt = ''): string
     {
-        if ($salt === false) {
+        if ($salt === '') {
             $salt = IMUtil::generateSalt();
         }
         if ($passwordHash == "1" && !$alwaysGenSHA2) {
@@ -569,7 +663,13 @@ class IMUtil
         return hash("sha256", $value, false) . bin2hex($salt);
     }
 
-    public static function generateCredential($digit, $passwordHash, $alwaysGenSHA2)
+    /**
+     * @param int $digit
+     * @param string $passwordHash
+     * @param bool $alwaysGenSHA2
+     * @return string
+     */
+    public static function generateCredential(int $digit, string $passwordHash, bool $alwaysGenSHA2): string
     {
         $password = '';
         for ($i = 0; $i < $digit; $i++) {
@@ -578,7 +678,10 @@ class IMUtil
         return IMUtil::convertHashedPassword($password, $passwordHash, $alwaysGenSHA2);
     }
 
-    public static function generateRandomPW()
+    /**
+     * @return string
+     */
+    public static function generateRandomPW(): string
     {
         $str = '';
         try {
@@ -597,7 +700,12 @@ class IMUtil
         return $str;
     }
 
-    public static function relativePath($fromPath, $toPath)
+    /**
+     * @param string $fromPath
+     * @param string $toPath
+     * @return string|null
+     */
+    public static function relativePath(string $fromPath, string $toPath): ?string
     {
         if (!$fromPath || !$toPath) {
             return null;
@@ -622,7 +730,12 @@ class IMUtil
         return str_replace('//', '/', $path);
     }
 
-    public static function isInsideOf($checkPath, $dir)
+    /**
+     * @param string|null $checkPath
+     * @param string|null $dir
+     * @return bool
+     */
+    public static function isInsideOf(?string $checkPath, ?string $dir): bool
     {
         if (!$checkPath || !$dir) { // Both parameter have not to falsy.
             return false;
@@ -639,7 +752,7 @@ class IMUtil
     /**
      * @throws Exception
      */
-    public static function getYAMLDefContent()
+    public static function getYAMLDefContent(): array
     {
         $defPoolPath = Params::getParameterValue('yamlDefFilePool', false);
         $docRoot = $_SERVER['DOCUMENT_ROOT'];
@@ -684,7 +797,11 @@ class IMUtil
         // OMG! Yaml parser can parse JSON data!! Really??
     }
 
-    public static function getDefinitionFromYAML($yaml)
+    /**
+     * @param string $yaml
+     * @return array|null
+     */
+    public static function getDefinitionFromYAML(string $yaml): ?array
     {
         return Yaml::parse($yaml);
     }

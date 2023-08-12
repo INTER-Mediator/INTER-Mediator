@@ -22,7 +22,7 @@ class PageEditor extends UseSharedObjects implements DBClass_Interface
     private $isRequiredUpdated = false;
     private $updatedRecord = null;
 
-    function readFromDB()
+    public function readFromDB():?array
     {
         $dataSourceName = $this->dbSettings->getDataSourceName();
         $filePath = $this->dbSettings->getCriteriaValue('target');
@@ -40,64 +40,66 @@ class PageEditor extends UseSharedObjects implements DBClass_Interface
         return array(array('id' => 1, 'content' => $fileContent));
     }
 
-    function countQueryResult()
+    public function countQueryResult(): int
     {
         return $this->recordCount;
     }
 
-    function getTotalCount()
+    public function getTotalCount(): int
     {
         return $this->recordCount;
     }
 
-    function updateDB($bypassAuth)
+    public function updateDB(bool $bypassAuth): bool
     {
         $dataSourceName = $this->dbSettings->getDataSourceName();
         $filePath = $this->dbSettings->getValueOfField('target');
         if (substr_count($filePath, '../') > 5) {
             $this->logger->setErrorMessage("You can't access files in inhibit area: {$dataSourceName}.");
-            return null;
+            return false;
         }
 
         $fileContent = file_get_contents($filePath);
         if ($fileContent === false) {
             $this->logger->setErrorMessage("The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
-            return null;
+            return false;
         }
         $fileWriteResult = file_put_contents($filePath, $this->dbSettings->getValueOfField('content'));
         if ($fileWriteResult === false) {
             $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
-            return null;
+            return false;
         }
         $result = array(array('id' => 1, 'content' => $this->dbSettings->getValueOfField('content')));
         $this->updatedRecord = $result;
-        return $result;
+        return true;
     }
 
-    function createInDB($isReplace = false)
+    public function createInDB($isReplace = false):?string
     {
+        return null;
     }
 
-    function deleteFromDB()
+    public function deleteFromDB():bool
     {
+        return false;
     }
 
-    function getFieldInfo($dataSourceName)
+    function getFieldInfo($dataSourceName): ?array
     {
-        // TODO: Implement getFieldInfo() method.
+        return null;
     }
 
-    public function setupConnection()
+    public function setupConnection():bool
     {
         return true;
     }
 
-    public function requireUpdatedRecord($value)
+    public function requireUpdatedRecord(bool $value): void
     {
         $this->isRequiredUpdated = $value;
     }
 
-    public function getUpdatedRecord()
+    public function getUpdatedRecord(): ?array
     {
         return $this->updatedRecord;
     }
@@ -106,75 +108,71 @@ class PageEditor extends UseSharedObjects implements DBClass_Interface
         return $this->updatedRecord;
     }
 
-    public function softDeleteActivate($field, $value)
+    public function softDeleteActivate(string $field, string $value): void
     {
         // TODO: Implement softDeleteActivate() method.
     }
 
-    public function copyInDB()
+    public function copyInDB():?string
+    {
+        return null;
+    }
+
+    public function setupHandlers(?string $dsn = null):void
+    {
+    }
+
+    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0):void
+    {
+    }
+
+    public function queryForTest(string $table, ?array $conditions = null):?array
+    {
+        return null;
+    }
+
+    public function deleteForTest(string $table, ?array $conditions = null): bool
     {
         return false;
     }
 
-    public function setupHandlers($dsn = false)
+    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
     {
-        // TODO: Implement setupHandlers() method.
     }
 
-    public function normalizedCondition($condition)
-    {
-        // TODO: Implement normalizedCondition() method.
-    }
-
-    public function setDataToUpdatedRecord($field, $value, $index = 0)
-    {
-        // TODO: Implement setDataToUpdatedRecord() method.
-    }
-
-    public function queryForTest($table, $conditions = null)
-    {
-        // TODO: Implement queryForTest() method.
-    }
-
-    public function deleteForTest($table, $conditions = null)
-    {
-        // TODO: Implement deleteForTest() method.
-    }
-
-    public function setUpdatedRecord($record, $value = false, $index = 0)
-    {
-        // TODO: Implement setUpdatedRecord() method.
-    }
-
-    public function hasTransaction()
+    public function hasTransaction():bool
     {
         return false;
     }
 
-    public function inTransaction()
+    public function inTransaction():bool
     {
         return false;
     }
 
-    public function beginTransaction()
+    public function beginTransaction():void
     {
     }
 
-    public function commitTransaction()
+    public function commitTransaction():void
     {
     }
 
-    public function rollbackTransaction()
+    public function rollbackTransaction():void
     {
     }
 
-    public function getUseSetDataToUpdatedRecord()
+    public function getUseSetDataToUpdatedRecord():bool
     {
-        // TODO: Implement getUseSetDataToUpdatedRecord() method.
+        return false;
     }
 
-    public function clearUseSetDataToUpdatedRecord()
+    public function clearUseSetDataToUpdatedRecord():void
     {
-        // TODO: Implement clearUseSetDataToUpdatedRecord() method.
+
+    }
+
+    public function closeDBOperation():void
+    {
     }
 }

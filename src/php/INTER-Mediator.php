@@ -31,7 +31,7 @@ if (file_exists($autoLoad)) { // If vendor is inside of INTER-Mediator
     }
 }
 
-spl_autoload_register(function ($className) {
+spl_autoload_register(function (string $className):bool {
     $comps = explode('\\', $className);
     $className = $comps[count($comps) - 1];
     $refPath = dirname(
@@ -87,7 +87,7 @@ define("IM_TODAY", $fmt->format((new DateTime())->getTimestamp()));
  * @param bool $debug
  * @param string $origin The path to the definition file.
  */
-function IM_Entry($datasource, $options, $dbspecification, $debug = false, $origin = null)
+function IM_Entry(?array $datasource, ?array $options, ?array $dbspecification, int $debug = 0, ?string $origin = null): void
 {
     // Read from params.php
     $defaultTimezone = Params::getParameterValue("defaultTimezone", "UTC");

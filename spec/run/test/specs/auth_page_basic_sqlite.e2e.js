@@ -1,21 +1,31 @@
 const AuthPage = require('../pageobjects/auth_page_sqlite.page');
 
 const waiting = 500
+const alwaysEnglish = true
+const alwaysJapaese = false
+let isJapanese = false
+if (alwaysEnglish && !alwaysJapaese) {
+  isJapanese = false
+} else if (!alwaysEnglish && alwaysJapaese) {
+  isJapanese = true
+} else if (process.platform === 'darwin') {
+  isJapanese = true
+}
 
 let pageTitle
-if (/*process.platform === 'darwin'*/ false) {
+if (isJapanese) {
   pageTitle = 'INTER-Mediator - サンプル - フォーム形式/SQLite'
 } else {
   pageTitle = "INTER-Mediator - Sample - Auth/SQLite"
 }
 
 let noInputMsg, failMsg, errorMsg, cantChangePWMsg, changePWMsg
-if (/*process.platform === 'darwin'*/ false) {
+if (isJapanese) {
   noInputMsg = "ユーザー名ないしはパスワードが入力されていません"
   failMsg = "ユーザー名とパスワードを確認して、もう一度ログインをしてください"
   errorMsg = "認証エラー!"
-  cantChangePWMsg = "Failure to change your password. Maybe the old password is not correct."
-  changePWMsg = "Succeed to change your password. Login with the new password."
+  cantChangePWMsg = "パスワードの変更に失敗しました。旧パスワードが違うなどが考えられます"
+  changePWMsg = "パスワードの変更に成功しました。新しいパスワードでログインをしてください"
 } else {
   noInputMsg = "You should input user and/or password."
   failMsg = "Retry to login. You should clarify the user and the password."
@@ -128,9 +138,11 @@ describe('Login required page', () => {
     await expect(AuthPage.authPanel).not.toExist()
 
     await browser.refresh()
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).not.toExist() // Still logging in
 
     await browser.refresh()
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).not.toExist() // Still logging in
 
     await expect(AuthPage.logoutLink).toHaveText("Logout")
@@ -147,6 +159,8 @@ describe('Login required page', () => {
     await AuthPage.authPassword.setValue("user1")
     await AuthPage.authLoginButton.click() // Finally login succeed.
     await browser.pause(waiting)
+    await browser.pause(waiting)
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).not.toExist()
 
     await browser.pause(10000) // Wait for timeout
@@ -157,6 +171,11 @@ describe('Login required page', () => {
 
   it('succeed login with sha-256 hashed users.', async () => {
     await browser.refresh()
+    await expect(AuthPage.authPanel).toExist()
+    await AuthPage.authUsername.setValue("mig2m")
+    await AuthPage.authPassword.setValue("zzzzzz")
+    await AuthPage.authLoginButton.click() // login succeed.
+    await browser.pause(waiting)
     await expect(AuthPage.authPanel).toExist()
     await AuthPage.authUsername.setValue("mig2m")
     await AuthPage.authPassword.setValue("mig2m")
@@ -178,6 +197,8 @@ describe('Login required page', () => {
     await AuthPage.authUsername.setValue("mig2")
     await AuthPage.authPassword.setValue("mig2")
     await AuthPage.authLoginButton.click() // login succeed.
+    await browser.pause(waiting)
+    await browser.pause(waiting)
     await browser.pause(waiting)
     await expect(AuthPage.authPanel).not.toExist()
 

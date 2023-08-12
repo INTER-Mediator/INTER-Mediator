@@ -17,5 +17,5 @@ namespace INTERMediator\DB\Extending;
 
 interface AfterUpdate
 {
-    public function doAfterUpdateToDB($result);
+    public function doAfterUpdateToDB(?array $result): ?array;
 }
