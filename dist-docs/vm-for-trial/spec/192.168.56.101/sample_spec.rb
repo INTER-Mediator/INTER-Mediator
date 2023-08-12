@@ -590,7 +590,7 @@ describe file(WEBROOT + '/INTER-Mediator/spec/INTER-Mediator-UnitTest') do
   it { should be_directory }
 end
 
-describe file(WEBROOT + '/INTER-Mediator/spec/INTER-Mediator-UnitTest/DB_PDO_SQLite_Test.php') do
+describe file(WEBROOT + '/INTER-Mediator/spec/INTER-Mediator-UnitTest/DB-PDO/SQLite/DB_PDO_SQLite_Test.php') do
   it { should be_file }
   its(:content) { should match /sqlite:\/var\/db\/im\/sample.sq3/ }
 end
