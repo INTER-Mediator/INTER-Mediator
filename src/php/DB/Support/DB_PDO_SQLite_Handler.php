@@ -61,7 +61,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return "INSERT INTO {$tableRef} {$setClause}";
     }
 
-    public function sqlREPLACECommand(array $tableRef, string $setClause): string
+    public function sqlREPLACECommand(string $tableRef, string $setClause): string
     {
         return "REPLACE INTO {$tableRef} {$setClause}";
     }

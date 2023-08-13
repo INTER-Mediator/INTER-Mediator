@@ -61,11 +61,11 @@ abstract class DB_FMS_Test_Common extends TestCase
             $layoutName = 'person_layout';
             $this->dbProxySetupForAccess($layoutName, 1);
             $this->db_proxy->readFromDB();
-            $this->reflectionClass = new ReflectionClass(get_class($this->db_proxy->dbClass));
+            $reflectionClass = new ReflectionClass(get_class($this->db_proxy->dbClass));
             if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_FX') {
-                $method = $this->reflectionClass->getMethod('executeScriptsforLoading');
+                $method = $reflectionClass->getMethod('executeScriptsforLoading');
             } else if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {
-                $method = $this->reflectionClass->getMethod('executeScripts');
+                $method = $reflectionClass->getMethod('executeScripts');
             }
             $method->setAccessible(true);
 
@@ -350,8 +350,8 @@ abstract class DB_FMS_Test_Common extends TestCase
             $this->dbProxySetupForAccess($layoutName, 1);
             $this->db_proxy->readFromDB();
 
-            $this->reflectionClass = new ReflectionClass(get_class($this->db_proxy->dbClass));
-            $method = $this->reflectionClass->getMethod('_adjustSortDirection');
+            $reflectionClass = new ReflectionClass(get_class($this->db_proxy->dbClass));
+            $method = $reflectionClass->getMethod('_adjustSortDirection');
             $method->setAccessible(true);
 
             $this->assertEquals('ascend', $method->invokeArgs($this->db_proxy->dbClass, array('ASC')));

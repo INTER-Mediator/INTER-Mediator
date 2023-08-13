@@ -17,14 +17,23 @@
 namespace INTERMediator\DB\Support;
 
 use Exception;
-use PDO;
-use INTERMediator\DB\DBClass;
+use INTERMediator\DB\PDO;
 
 abstract class DB_PDO_Handler
 {
-    protected ?DBClass $dbClassObj = null;
+    protected ?PDO $dbClassObj = null;
 
-    public static function generateHandler(DBClass $dbObj, string $dsn): ?DB_PDO_Handler
+    protected array $tableInfo = array();
+    protected string $fieldNameForField = '';
+    protected string $fieldNameForType = '';
+    protected string $fieldNameForNullable = '';
+    protected array $numericFieldTypes = [];
+    protected array $timeFieldTypes = [];
+    protected array $dateFieldTypes = [];
+    protected array $booleanFieldTypes = [];
+
+
+    public static function generateHandler(?PDO $dbObj, string $dsn): ?DB_PDO_Handler
     {
         if (is_null($dbObj)) {
             return null;
@@ -69,7 +78,7 @@ abstract class DB_PDO_Handler
 
     public abstract function sqlINSERTCommand(string $tableRef, string $setClause): string;
 
-    public function sqlREPLACECommand(array $tableRef, string $setClause): string
+    public function sqlREPLACECommand(string $tableRef, string $setClause): string
     {
         return $this->sqlINSERTCommand($tableRef, $setClause);
     }
@@ -102,7 +111,7 @@ abstract class DB_PDO_Handler
         return [$setNames, $setValuesConv];
     }
 
-    public function copyRecords(array  $tableInfo, ?string $queryClause, ?string $assocField,
+    public function copyRecords(array   $tableInfo, ?string $queryClause, ?string $assocField,
                                 ?string $assocValue, ?array $defaultValues): ?string
     {
         $returnValue = null;
@@ -289,7 +298,7 @@ abstract class DB_PDO_Handler
             }
             $infoResult = [];
             if ($result) {
-                foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
                     $infoResult[] = $row;
                 }
             }
@@ -305,11 +314,11 @@ abstract class DB_PDO_Handler
     protected abstract function getTalbeInfoSQL(string $tableName): string;
 
     protected abstract function getFieldListsForCopy(
-        string $tableName, string $keyField, string $assocField, string $assocValue, array $defaultValues):array;
+        string $tableName, string $keyField, string $assocField, string $assocValue, array $defaultValues): array;
 
-    public abstract function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable):?array;
+    public abstract function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable): ?array;
 
-    private function isTrue(?string $d):bool
+    private function isTrue(?string $d): bool
     {
         if (is_null($d)) {
             return false;
@@ -327,12 +336,12 @@ abstract class DB_PDO_Handler
      * it happens any kind of warning but errorCode returns 00000 which means no error. There is no other way
      * to call SHOW WARNINGS. Other db engines don't do anything here
      */
-    public function specialErrorHandling(string $sql):void
+    public function specialErrorHandling(string $sql): void
     {
 
     }
 
-    public function getLastInsertId(string $seqObject):?string
+    public function getLastInsertId(string $seqObject): ?string
     {
         if (!$this->dbClassObj->link) {
             return null;
@@ -340,7 +349,7 @@ abstract class DB_PDO_Handler
         return $this->dbClassObj->link->lastInsertId($seqObject);
     }
 
-    public function lastInsertIdAlt(string $seqObject, string $tableName):?string
+    public function lastInsertIdAlt(string $seqObject, string $tableName): ?string
     {
         $incrementField = $this->getAutoIncrementField($tableName);
         $contextDef = $this->dbClassObj->dbSettings->getDataSourceTargetArray();
