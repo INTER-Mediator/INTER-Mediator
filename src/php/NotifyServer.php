@@ -22,14 +22,14 @@ use INTERMediator\DB\Logger;
 class NotifyServer
 {
     private DBClass $dbClass;
-    private string $clientId;
+    private ?string $clientId;
 
     /**
      * @param DBClass $dbClass
-     * @param string $clientId
+     * @param ?string $clientId
      * @return bool
      */
-    public function initialize(DBClass $dbClass, string $clientId): bool
+    public function initialize(DBClass $dbClass, ?string $clientId): bool
     {
         $this->dbClass = $dbClass;
         $this->clientId = $clientId;
@@ -68,7 +68,7 @@ class NotifyServer
 
     /**
      * @param string $entity
-     * @param array $condition
+     * @param string $condition
      * @param array $pkArray
      * @return ?string
      */
@@ -99,8 +99,8 @@ class NotifyServer
      * @param string $clientId
      * @param string $entity
      * @param array $pkArray
-     * @param string $field
-     * @param string $value
+     * @param array $field
+     * @param array $value
      * @param bool $isNotify
      */
     public function updated(string $clientId, string $entity, array $pkArray, array $field, array $value, bool $isNotify): void
