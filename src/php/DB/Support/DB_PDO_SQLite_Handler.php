@@ -98,7 +98,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         // SQLite doesn't support to create a record with non AUTOINCREMENT field as the primary key.
     }
 
-    protected function getTalbeInfoSQL(string $tableName): string
+    protected function getTableInfoSQL(string $tableName): string
     {
         return "PRAGMA table_info({$tableName})";
     }

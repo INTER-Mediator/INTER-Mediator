@@ -288,7 +288,7 @@ abstract class DB_PDO_Handler
     protected function getTableInfo(string $tableName): array
     {
         if (!isset($this->tableInfo[$tableName])) {
-            $sql = $this->getTalbeInfoSQL($tableName); // Returns SQL as like 'SHOW COLUMNS FROM $tableName'.
+            $sql = $this->getTableInfoSQL($tableName); // Returns SQL as like 'SHOW COLUMNS FROM $tableName'.
             $result = null;
             $this->dbClassObj->logger->setDebugMessage($sql);
             try {
@@ -311,7 +311,7 @@ abstract class DB_PDO_Handler
 
     protected abstract function getAutoIncrementField(string $tableName): ?string;
 
-    protected abstract function getTalbeInfoSQL(string $tableName): string;
+    protected abstract function getTableInfoSQL(string $tableName): string;
 
     protected abstract function getFieldListsForCopy(
         string $tableName, string $keyField, string $assocField, string $assocValue, array $defaultValues): array;

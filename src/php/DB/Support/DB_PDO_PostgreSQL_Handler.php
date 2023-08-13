@@ -110,7 +110,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return null;
     }
 
-    protected function getTalbeInfoSQL(string $tableName): string
+    protected function getTableInfoSQL(string $tableName): string
     {
         if (strpos($tableName, ".") !== false) {
             $tName = substr($tableName, strpos($tableName, ".") + 1);
