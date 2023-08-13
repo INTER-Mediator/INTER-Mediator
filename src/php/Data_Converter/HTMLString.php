@@ -30,9 +30,9 @@ class HTMLString
     protected bool $noescape = false;
 
     /**
-     * @param bool $option
+     * @param string|bool $option
      */
-    public function __construct(bool $option = false)
+    public function __construct($option = false)
     {
         if ($option) {
             if (in_array(strtolower($option), array('true', 'autolink')) || $option === true) {

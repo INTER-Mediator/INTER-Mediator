@@ -111,7 +111,7 @@ abstract class DB_PDO_Handler
         return [$setNames, $setValuesConv];
     }
 
-    public function copyRecords(array   $tableInfo, ?string $queryClause, ?string $assocField,
+    public function copyRecords(?array   $tableInfo, ?string $queryClause, ?string $assocField,
                                 ?string $assocValue, ?array $defaultValues): ?string
     {
         $returnValue = null;
