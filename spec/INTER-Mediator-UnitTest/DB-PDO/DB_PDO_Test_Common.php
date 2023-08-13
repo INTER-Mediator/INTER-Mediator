@@ -25,15 +25,17 @@ abstract class DB_PDO_Test_Common extends TestCase
 
     public Proxy $db_proxy;
     public string $schemaName = "";
+    public string $dsn = "";
 
-    abstract function dbProxySetupForAccess($contextName, $maxRecord);
+    abstract function dbProxySetupForAccess(string $contextName, int $maxRecord): void;
 
-    abstract function dbProxySetupForAuth();
+    abstract function dbProxySetupForAuth(): void;
 
-    abstract function dbProxySetupForAggregation();
+    abstract function dbProxySetupForAggregation(): void;
 
-    abstract function dbProxySetupForAccessSetKey($contextName, $maxRecord, $keyName);
+    abstract function dbProxySetupForAccessSetKey(string $contextName, int $maxRecord, string $keyName): void;
 
+    abstract function dbProxySetupForCondition(?array $queryArray): void;
 
     function setUp(): void
     {

@@ -436,7 +436,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     {
         $limit = 5;
         $this->dbProxySetupForAccess('postalcode', 1000000);
-        $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'records' => $limit)));
+        $this->db_proxy->dbSettings->setDataSource(array(array('name' => 'postalcode', 'key' => 'id', 'records' => $limit)));
         $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
         $result = $this->db_proxy->readFromDB();
         $totalCount = $this->db_proxy->getTotalCount();
@@ -496,7 +496,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     {
         $limit = 5;
         $this->dbProxySetupForAccess('postalcode', 1000000);
-        $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'records' => $limit)));
+        $this->db_proxy->dbSettings->setDataSource(array(array('name' => 'postalcode', 'key' => 'id', 'records' => $limit)));
         $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
         $this->db_proxy->dbSettings->addExtraCriteria('f3', 'cn', '167');
         $result = $this->db_proxy->readFromDB();

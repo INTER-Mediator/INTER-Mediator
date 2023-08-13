@@ -16,7 +16,7 @@ use INTERMediator\DB\Proxy;
 
 class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
 {
-    public $dsn;
+    public string $dsn;
 
     function setUp(): void
     {
@@ -31,7 +31,7 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
         }
     }
 
-    function dbProxySetupForAccess($contextName, $maxRecord, $subContextName = null)
+    function dbProxySetupForAccess(string $contextName, int $maxRecord, ?string $subContextName = null):void
     {
         $this->schemaName = "";
         $contexts = array(
@@ -72,7 +72,7 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
     }
 
-    function dbProxySetupForAuth()
+    function dbProxySetupForAuth():void
     {
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize(array(
@@ -108,7 +108,7 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
         );
     }
 
-    function dbProxySetupForAggregation()
+    function dbProxySetupForAggregation():void
     {
         $this->db_proxy = new Proxy(true);
         $this->db_proxy->initialize(
@@ -141,7 +141,7 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
         );
     }
 
-    function dbProxySetupForCondition($queryArray)
+    function dbProxySetupForCondition(?array $queryArray):void
     {
         $this->schemaName = "";
         $contextName = 'testtable';
@@ -178,4 +178,8 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
     protected $sqlSETClause3 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
     . "VALUES(0,0,'','','','','','','','','','')";
 
+    function dbProxySetupForAccessSetKey(string $contextName, int $maxRecord, string $keyName): void
+    {
+        // TODO: Implement dbProxySetupForAccessSetKey() method.
+    }
 }
