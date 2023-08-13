@@ -5,11 +5,12 @@
 
 use INTERMediator\IMUtil;
 use PHPUnit\Framework\TestCase;
+use \INTERMediator\DB\Proxy;
 
 class DB_FMS_Test_Common extends TestCase
 {
-    protected $db_proxy;
-    protected $schemaName = "";
+    protected Proxy $db_proxy;
+    protected string $schemaName = "";
 
     function setUp(): void
     {

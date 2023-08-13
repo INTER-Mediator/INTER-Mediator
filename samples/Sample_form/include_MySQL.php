@@ -31,7 +31,7 @@ IM_Entry(array (
       ),
     ),
     'repeat-control' => 'insert copy-contact,history delete',
-    'sync-control' => 'create update delete',
+    'sync-control' => 'create update delete copy',
     'button-names' => 
     array (
       'insert' => 'レコード追加',
@@ -52,7 +52,7 @@ IM_Entry(array (
         'operator' => '=',
       ),
     ),
-    'sync-control' => 'create update delete',
+    'sync-control' => 'create update delete copy',
     'repeat-control' => 'insert-confirm delete-confirm copy',
     'default-values' => 
     array (

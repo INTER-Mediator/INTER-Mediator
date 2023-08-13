@@ -17,13 +17,12 @@
 namespace INTERMediator;
 
 use INTERMediator\DB\Proxy;
-use INTERMediator\DB\DBClass;
 
 class FileUploader
 {
     private ?Proxy $db;
     private ?string $url = NULL;
-    private int $accessLogLevel = 0;
+    private int $accessLogLevel;
     private array $outputMessage = [];
 
     public ?array $dbresult = null;
@@ -62,7 +61,7 @@ class FileUploader
         if (count($_FILES) === 0) {
             $this->db->logger->setErrorMessage($messages->getMessageAs(3201));
         } else {
-            foreach ($_FILES as $fn => $fileInfo) {
+            foreach ($_FILES as $fileInfo) {
                 if (isset($fileInfo["error"])) {
                     switch (is_array($fileInfo["error"]) ? $fileInfo["error"][0] : $fileInfo["error"]) {
                         case UPLOAD_ERR_OK:
@@ -238,7 +237,7 @@ class FileUploader
 
 
     /**
-     * @param $dbclass
+     * @param string $dbclass
      * @return string
      */
     private function getClassNameForMedia(string $dbclass): string

@@ -7,6 +7,7 @@ require_once(dirname(__FILE__, 4) . DIRECTORY_SEPARATOR
 
 class CWPKit_Test extends TestCase
 {
+    private CWPKit $cwpkit;
     public function setUp(): void
     {
         $config = array(
@@ -19,7 +20,7 @@ class CWPKit_Test extends TestCase
         $this->cwpkit = new CWPKit($config);
     }
 
-    public function test_query()
+    public function test_query(): void
     {
         $queryString = '-db=TestDB&-lay=person_layout&-findall&-max=1';
         $xml = $this->cwpkit->query($queryString);
@@ -33,14 +34,14 @@ class CWPKit_Test extends TestCase
         $this->assertEquals($result, $expected);
     }
 
-    public function test_getServerVersion()
+    public function test_getServerVersion(): void
     {
         $expected = '20.1.2.207';
         $result = $this->cwpkit->getServerVersion();
         $this->assertEquals($result, $expected);
     }
 
-    public function test__removeDuplicatedQuery()
+    public function test__removeDuplicatedQuery(): void
     {
         $expected = '-db=TestDB&-lay=person_layout&-find=&name=1&name.op=eq';
         $queryString = '-db=TestDB&-lay=person_layout&-find=&name=1&name.op=eq&name=2&name.op=eq';
@@ -48,7 +49,7 @@ class CWPKit_Test extends TestCase
         $this->assertEquals($result, $expected);
     }
 
-    public function test__checkDuplicatedFXCondition()
+    public function test__checkDuplicatedFXCondition(): void
     {
         $queryString = '-db=TestDB&-lay=person_layout&-find=&name=1&name.op=eq';
         $field = 'name';

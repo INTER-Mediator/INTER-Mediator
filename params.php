@@ -148,9 +148,9 @@ $slackParameters = [
 /* Service Server Behavior
  * ===================
  * Port number and host name for service server */
-$notUseServiceServer = true;  // Default is TRUE!. It has to set false to work every feature with Service Server.
-/*
-$activateClientService = false;  // Default is FLASE!.
+$notUseServiceServer = false;  // Default is TRUE!. It has to set false to work every feature with Service Server.
+
+$activateClientService = true;  // Default is FLASE!.
 $serviceServerProtocol = "ws";  // The Service Server url components to connect from client.
 $serviceServerHost = "localhost";    // "" for public ip address.
 $serviceServerPort = "11478";
@@ -162,7 +162,7 @@ $stopSSEveryQuit = false;
 $bootWithInstalledNode = false;
 $preventSSAutoBoot = false;
 $backSeconds = 3600 * 24 * 2; // The seconds value that detect the outdated registering records.
-*/
+
 /*
  * $foreverLog = '/tmp/forever.log';
 */
@@ -251,7 +251,7 @@ $messages['ja'][9999] = "変更した";
 /* Customizing Server Behavior
  * =================== */
 // Adding class loading path with an absolute path. Please don't terminate with /.
-$loadFrom = '/Users/msyk/Code/INTER-Mediator/samples/Sample_forDebugging/ExtendingClasses';
+//$loadFrom = '/Users/msyk/Code/INTER-Mediator/samples/Sample_forDebugging/ExtendingClasses';
 
 // If you don't set the default timezone in the php.ini file,
 //      activate the line below and specify suitable timezone name.

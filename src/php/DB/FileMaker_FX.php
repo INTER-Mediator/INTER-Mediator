@@ -1530,7 +1530,7 @@ class FileMaker_FX extends DBClass
         return "{$entity}{$this->dbSettings->getSeparator()}{$field}";
     }
 
-    private function normalizedCondition(array $condition): array
+    public function normalizedCondition(array $condition): array
     {
         if (!isset($condition['field'])) {
             $condition['field'] = '';

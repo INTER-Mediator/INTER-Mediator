@@ -35,7 +35,7 @@ if (count($_POST) > 0) {
             2);
         $result = $dbInstance->resetPasswordSequenceStart($_POST['ad1']);
 
-        if ($result === false) {
+        if (!$result) {
             $message .= 'パスワードのリセット処理に問題が発生しました。登録されたメールアドレスでない可能性があります。';
         } else {
             $dbInstance = new Proxy();

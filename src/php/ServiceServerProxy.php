@@ -18,23 +18,23 @@ use INTERMediator\DB\Logger;
 class ServiceServerProxy
 {
     /**
-     * @var string|mixed
+     * @var string
      */
     private string $paramsHost;
     /**
-     * @var int|mixed
+     * @var int
      */
     private int $paramsPort;
     /**
-     * @var bool|mixed
+     * @var bool
      */
     private bool $paramsQuit;
     /**
-     * @var bool|mixed
+     * @var bool
      */
     private bool $paramsBoot;
     /**
-     * @var bool|mixed
+     * @var bool
      */
     private bool $dontUse;
     /**
@@ -50,25 +50,25 @@ class ServiceServerProxy
      */
     private string $messageHead = "[ServiceServerProxy] ";
     /**
-     * @var bool|mixed
+     * @var bool
      */
     private bool $dontAutoBoot;
     /**
-     * @var string|mixed
+     * @var ?string
      */
     private ?string $foreverLog;
     /**
      * @var string
      */
-    private string $serviceServerKey = "";  // Path of Key file for wss protocol
+    private string $serviceServerKey;  // Path of Key file for wss protocol
     /**
-     * @var string|mixed
+     * @var string
      */
-    private string $serviceServerCert = ""; // Path of Cert file for wss protocol
+    private string $serviceServerCert; // Path of Cert file for wss protocol
     /**
-     * @var string|mixed
+     * @var string
      */
-    private string $serviceServerCA = ""; // Path of CA file for wss protocol
+    private string $serviceServerCA; // Path of CA file for wss protocol
 
     /**
      * @var ServiceServerProxy|null
@@ -92,16 +92,16 @@ class ServiceServerProxy
      */
     private function __construct()
     {
-        $this->paramsHost= Params::getParameterValue("serviceServerConnect","http://localhost");
-        $this->paramsPort= Params::getParameterValue("serviceServerPort", 11478);
-        $this->paramsQuit= Params::getParameterValue("stopSSEveryQuit", false);
-        $this->paramsBoot= Params::getParameterValue("bootWithInstalledNode", false);
-        $this->dontAutoBoot= Params::getParameterValue("preventSSAutoBoot", false);
-        $this->dontUse= Params::getParameterValue("notUseServiceServer", true);
-        $this->foreverLog= Params::getParameterValue("foreverLog", null);
-        $this->serviceServerKey= Params::getParameterValue("serviceServerKey", '');
-        $this->serviceServerCert= Params::getParameterValue("serviceServerCert", '');
-        $this->serviceServerCA= Params::getParameterValue("serviceServerCA", '');
+        $this->paramsHost = Params::getParameterValue("serviceServerConnect", "http://localhost");
+        $this->paramsPort = Params::getParameterValue("serviceServerPort", 11478);
+        $this->paramsQuit = Params::getParameterValue("stopSSEveryQuit", false);
+        $this->paramsBoot = Params::getParameterValue("bootWithInstalledNode", false);
+        $this->dontAutoBoot = Params::getParameterValue("preventSSAutoBoot", false);
+        $this->dontUse = Params::getParameterValue("notUseServiceServer", true);
+        $this->foreverLog = Params::getParameterValue("foreverLog", null);
+        $this->serviceServerKey = Params::getParameterValue("serviceServerKey", '');
+        $this->serviceServerCert = Params::getParameterValue("serviceServerCert", '');
+        $this->serviceServerCA = Params::getParameterValue("serviceServerCA", '');
         $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
     }
 
@@ -218,10 +218,10 @@ class ServiceServerProxy
         // Checking both version of the executing and the code
         $keyword = 'Request Version:';
         $rPos = strpos($result, $keyword);
-        $reqVerStr = $rPos >= 0 ? substr($result, $rPos + strlen($keyword), 64) : "aa";
+        $reqVerStr = $rPos !== false ? substr($result, $rPos + strlen($keyword), 64) : "aa";
         $keyword = 'Server Version:';
         $sPos = strpos($result, 'Server Version:');
-        $svrVerStr = $sPos >= 0 ? substr($result, $sPos + strlen($keyword), 64) : "bb";
+        $svrVerStr = $sPos !== false ? substr($result, $sPos + strlen($keyword), 64) : "bb";
         if ($reqVerStr != $svrVerStr) { // If they are different version.
             $this->messages[] = $this->messageHead . "Restart Service Server: reqVerStr={$reqVerStr}, svrVerStr={$svrVerStr}";
             $this->stopServerCommand();
@@ -243,10 +243,9 @@ class ServiceServerProxy
     /**
      * @param string $path
      * @param array|null $postData
-     * @param bool $ignoreError
      * @return string|null
      */
-    private function callServer(string $path, ?array $postData = null, bool $ignoreError = false): ?string
+    private function callServer(string $path, ?array $postData = null): ?string
     {
         $url = "{$this->paramsHost}:{$this->paramsPort}/{$path}";
         $ch = curl_init($url);
@@ -265,7 +264,7 @@ class ServiceServerProxy
         $result = curl_exec($ch);
         $this->messages[] = $this->messageHead . "URL:$url, Result:$result";
         $info = curl_getinfo($ch);
-        if (!$ignoreError && (curl_errno($ch) !== CURLE_OK || $info['http_code'] !== 200)) {
+        if (curl_errno($ch) !== CURLE_OK || $info['http_code'] !== 200) {
             $this->messages[] = $this->messageHead . 'Absent Service Server or Communication Probrems.';
             $this->messages[] = $this->messageHead . curl_error($ch);
             return false;
@@ -322,7 +321,7 @@ class ServiceServerProxy
         $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
         $scriptPath = "src/js/Service_Server.js";
         if (IMUtil::isPHPExecutingWindows()) {
-            $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath ?? "");
+            $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath);
         }
 
         $logFile = $this->foreverLog ?? (tempnam(sys_get_temp_dir(), 'IMSS-') . ".log");
