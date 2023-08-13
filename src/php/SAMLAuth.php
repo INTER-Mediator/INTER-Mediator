@@ -24,9 +24,9 @@ use SimpleSAML\Auth\Simple;
 class SAMLAuth
 {
     /**
-     * @var string|Simple
+     * @var Simple
      */
-    private string $authSimple;
+    private Simple $authSimple;
     /**
      * @var array|null
      */
@@ -45,7 +45,7 @@ class SAMLAuth
     }
 
     /**
-     * @param array $value
+     * @param ?array $value
      * @return void
      */
     public function setSAMLAttrRules(?array $value): void

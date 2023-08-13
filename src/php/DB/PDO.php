@@ -386,13 +386,11 @@ class PDO extends DBClass
         $this->notifyHandler->setQueriedCondition(
             "{$viewOrTableName} {$queryClause} {$this->handler->sqlOrderByCommand($sortClause, $limitParam, $offset)}");
 
-        // Query
         $result = $this->link->query($sql);
-
-
         if (!$this->errorHandlingPDO($sql, $result)) {
             return null;
         }
+
         $this->notifyHandler->setQueriedPrimaryKeys(array());
         $keyField = $this->getKeyFieldOfContext($tableInfo);
         $timeFields = ($this->isFollowingTimezones && !$this->dbSettings->getAggregationFrom())

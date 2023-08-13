@@ -1,10 +1,6 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
 use INTERMediator\DB\Proxy;
-use INTERMediator\DB\UseSharedObjects;
-use INTERMediator\DB\Extending\AfterRead;
-use INTERMediator\DB\Proxy_ExtSupport;
 
 require_once(dirname(__FILE__) . '/../DB_Proxy_Test_Common.php');
 
@@ -21,6 +17,7 @@ class DB_Proxy_PostgreSQL_Test extends DB_Proxy_Test_Common
             'user' => 'web',
             'password' => 'password',
         );
+        $this->schemaName = "im_sample.";
     }
 
     function dbProxySetupForAccess($contextName, $maxRecord, $hasExtend = false)

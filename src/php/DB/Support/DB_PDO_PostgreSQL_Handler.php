@@ -30,7 +30,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         'time', 'time without time zone', 'timestamp', 'timestamp without time zone'];
     protected array $dateFieldTypes = ['datetime', 'datetime without time zone',
         'date', 'date without time zone', 'timestamp', 'timestamp without time zone',];
-    protected $booleanFieldTypes = ['boolean'];
+    protected array $booleanFieldTypes = ['boolean'];
 
     public function sqlSELECTCommand(): string
     {
@@ -110,7 +110,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return null;
     }
 
-    protected function getTalbeInfoSQL(string $tableName): string
+    protected function getTableInfoSQL(string $tableName): string
     {
         if (strpos($tableName, ".") !== false) {
             $tName = substr($tableName, strpos($tableName, ".") + 1);

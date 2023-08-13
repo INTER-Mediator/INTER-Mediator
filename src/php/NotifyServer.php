@@ -16,27 +16,24 @@
 
 namespace INTERMediator;
 
+use INTERMediator\DB\DBClass;
 use INTERMediator\DB\Logger;
 
 class NotifyServer
 {
-    private string $dbClass;
-    private array $dbSettings;
-    private string $clientId;
+    private DBClass $dbClass;
+    private ?string $clientId;
 
     /**
-     * @param $dbClass
-     * @param $dbSettings
-     * @param $clientId
+     * @param DBClass $dbClass
+     * @param ?string $clientId
      * @return bool
      */
-    public function initialize(string $dbClass, array $dbSettings, string $clientId): bool
+    public function initialize(DBClass $dbClass, ?string $clientId): bool
     {
         $this->dbClass = $dbClass;
-        $this->dbSettings = $dbSettings;
         $this->clientId = $clientId;
-        if (is_null($dbClass) || is_null($dbSettings)
-            || !is_subclass_of($dbClass->notifyHandler, 'INTERMediator\DB\Support\DB_Interface_Registering')
+        if (!is_subclass_of($dbClass->notifyHandler, 'INTERMediator\DB\Support\DB_Interface_Registering')
             || !$dbClass->notifyHandler->isExistRequiredTable()
         ) {
             return false;
@@ -70,12 +67,12 @@ class NotifyServer
     }
 
     /**
-     * @param $entity
-     * @param $condition
-     * @param $pkArray
-     * @return mixed
+     * @param string $entity
+     * @param string $condition
+     * @param array $pkArray
+     * @return ?string
      */
-    public function register(string $entity, array $condition, array $pkArray): ?string
+    public function register(string $entity, string $condition, array $pkArray): ?string
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] register", 2);
         if ($this->dbClass->notifyHandler) {
@@ -85,30 +82,31 @@ class NotifyServer
     }
 
     /**
-     * @param $client
-     * @param $tableKeys
-     * @return mixed
+     * @param string $client
+     * @param ?array $tableKeys
+     * @return bool
      */
     public function unregister(string $client, ?array $tableKeys): bool
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] unregister", 2);
-        if ($this->dbClass && $this->dbClass->notifyHandler) {
+        if ($this->dbClass->notifyHandler) {
             return $this->dbClass->notifyHandler->unregister($client, $tableKeys);
         }
         return false;
     }
 
     /**
-     * @param $clientId
-     * @param $entity
-     * @param $pkArray
-     * @param $field
-     * @param $value
+     * @param string $clientId
+     * @param string $entity
+     * @param array $pkArray
+     * @param array $field
+     * @param array $value
+     * @param bool $isNotify
      */
-    public function updated(string $clientId, string $entity, array $pkArray, string $field, string $value, bool $isNotify): void
+    public function updated(string $clientId, string $entity, array $pkArray, array $field, array $value, bool $isNotify): void
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] updated", 2);
-        if ($this->dbClass && $this->dbClass->notifyHandler) {
+        if ($this->dbClass->notifyHandler) {
             $channels = $this->dbClass->notifyHandler->matchInRegistered($clientId, $entity, $pkArray);
             $this->trigger($channels, 'update',
                 ['justnotify' => $isNotify, 'entity' => $entity, 'pkvalue' => $pkArray, 'field' => $field, 'value' => $value]);
@@ -116,15 +114,17 @@ class NotifyServer
     }
 
     /**
-     * @param $clientId
-     * @param $entity
-     * @param $pkArray
-     * @param $record
+     * @param string $clientId
+     * @param string $entity
+     * @param array $pkArray
+     * @param string $pkField
+     * @param array $record
+     * @param bool $isNotify
      */
     public function created(string $clientId, string $entity, array $pkArray, string $pkField, array $record, bool $isNotify): void
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] created", 2);
-        if ($this->dbClass && $this->dbClass->notifyHandler) {
+        if ($this->dbClass->notifyHandler) {
             $channels = $this->dbClass->notifyHandler->appendIntoRegistered($clientId, $entity, $pkField, $pkArray);
             $this->trigger($channels, 'create',
                 ['justnotify' => $isNotify, 'entity' => $entity, 'pkvalue' => $pkArray, 'value' => array_values($record)]);
@@ -132,14 +132,14 @@ class NotifyServer
     }
 
     /**
-     * @param $clientId
-     * @param $entity
-     * @param $pkArray
+     * @param string $clientId
+     * @param string $entity
+     * @param array $pkArray
      */
     public function deleted(string $clientId, string $entity, array $pkArray): void
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] deleted", 2);
-        if ($this->dbClass && $this->dbClass->notifyHandler) {
+        if ($this->dbClass->notifyHandler) {
             $channels = $this->dbClass->notifyHandler->removeFromRegistered($clientId, $entity, $pkArray);
 
             $data = array('entity' => $entity, 'pkvalue' => $pkArray);

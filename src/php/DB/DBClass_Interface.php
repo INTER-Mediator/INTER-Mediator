@@ -35,7 +35,10 @@ interface DBClass_Interface
 
     public function copyInDB(): ?string;
 
-    //private function normalizedCondition(array $condition);
+    /**
+     * Just for FileMaker DBClass. Other classes have not to use this.
+     */
+    public function normalizedCondition(array $condition);
 
     public function softDeleteActivate(string $field, string $value): void;
 

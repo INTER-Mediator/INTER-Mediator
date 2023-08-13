@@ -8,7 +8,7 @@ use INTERMediator\DB\Settings;
 
 class DB_Settings_Test extends TestCase
 {
-    private $settings;
+    private Settings $settings;
 
     public function setUp(): void
     {

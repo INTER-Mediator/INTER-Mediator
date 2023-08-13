@@ -61,7 +61,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "INSERT IGNORE INTO {$tableRef} {$setClause}";
     }
 
-    public function sqlREPLACECommand(array $tableRef, string $setClause): string
+    public function sqlREPLACECommand(string $tableRef, string $setClause): string
     {
         return "REPLACE INTO {$tableRef} {$setClause}";
     }
@@ -114,7 +114,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return null;
     }
 
-    protected function getTalbeInfoSQL(string $tableName): string
+    protected function getTableInfoSQL(string $tableName): string
     {
         return "SHOW COLUMNS FROM " . $this->quotedEntityName($tableName);
     }

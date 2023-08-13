@@ -22,11 +22,11 @@ namespace INTERMediator;
 class Theme
 {
     /**
-     * @var string|array|mixed|null
+     * @var ?string
      */
     private ?string $altThemePath;
     /**
-     * @var bool|array|mixed
+     * @var bool
      */
     private bool $accessLogLevel;
     /**

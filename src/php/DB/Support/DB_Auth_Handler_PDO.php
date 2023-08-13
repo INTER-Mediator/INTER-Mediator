@@ -22,12 +22,15 @@ use INTERMediator\Params;
 use PDO;
 use Exception;
 
+/**
+ *
+ */
 class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
 {
     /**
-     * @param $username
-     * @param $challenge
-     * @param $clientId
+     * @param string $uid
+     * @param string $challenge
+     * @param string $clientId
      * @return bool
      *
      * Using 'issuedhash'
@@ -80,8 +83,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
     }
 
     /**
-     * @param $user
-     * @return bool
+     * @param string $user
+     * @return ?string
      *
      * Using 'issuedhash'
      */
@@ -120,10 +123,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
     }
 
     /**
-     * @param $username
-     * @param $clientId
+     * @param string $username
+     * @param string $clientId
      * @param bool $isDelete
-     * @return bool
+     * @return ?string
      *
      * Using 'issuedhash'
      */
@@ -200,11 +203,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
     }
 
     /**
-     * @param $username
-     * @param $credential
+     * @param array $keyValues
      * @return bool(true: create user, false: reuse user)|null in error
      */
-    public function authSupportOAuthUserHandling($keyValues): bool
+    public function authSupportOAuthUserHandling(array $keyValues): bool
     {
         $user_id = $this->authSupportGetUserIdFromUsername($keyValues["username"]);
 
@@ -247,8 +249,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
     }
 
     /**
-     * @param $username
-     * @return bool
+     * @param string $username
+     * @return ?string
      *
      * Using 'authuser'
      */
@@ -288,9 +290,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
     }
 
     /**
-     * @param $username
-     * @param $hashedpassword
-     * @param $isSAML
+     * @param string $username
+     * @param string $hashedpassword
+     * @param bool $isSAML
+     * @param ?string $ldapPassword
+     * @param ?array $attrs
      * @return bool
      *
      * Using 'authuser'
@@ -408,8 +412,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
     }
 
     /**
-     * @param $username
-     * @param $hashednewpassword
+     * @param string $username
+     * @param string $hashednewpassword
      * @return bool
      *
      * Using 'authuser'
@@ -437,16 +441,29 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return true;
     }
 
+    /**
+     * @param string $username
+     * @return string
+     */
     public function authTableGetUserIdFromUsername(string $username): string
     {
         return $this->privateGetUserIdFromUsername($username, false);
     }
 
+    /**
+     * @param string $username
+     * @return string
+     */
     public function authSupportGetUserIdFromUsername(string $username): string
     {
         return $this->privateGetUserIdFromUsername($username, true);
     }
 
+    /**
+     * @param string|null $username
+     * @param bool $isCheckLimit
+     * @return string|null
+     */
     private function privateGetUserIdFromUsername(?string $username, bool $isCheckLimit): ?string
     {
         $this->logger->setDebugMessage("[privateGetUserIdFromUsername]username ={$username}", 2);
@@ -528,11 +545,20 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         }
     }
 
+    /**
+     * @param string $user
+     * @return array|null
+     */
     public function authTableGetGroupsOfUser(string $user): ?array
     {
         return $this->privateGetGroupsOfUser($user, false);
     }
 
+    /**
+     * @param string|null $user
+     * @param bool $isCheckLimit
+     * @return array|null
+     */
     private function privateGetGroupsOfUser(?string $user, bool $isCheckLimit): ?array
     {
         $corrTable = $this->dbSettings->getCorrTable();
@@ -671,6 +697,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return null;
     }
 
+    /**
+     * @var array
+     */
     private $userCache = []; // Cache for authSupportGetUserIdFromEmail method.
 
     /**
@@ -861,6 +890,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return false;
     }
 
+    /**
+     * @param string $userid
+     * @param string $hash
+     * @return bool
+     */
     public function authSupportUserEnrollmentStart(string $userid, string $hash): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
@@ -885,6 +919,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return true;
     }
 
+    /**
+     * @param string $hash
+     * @return string|null
+     */
     public function authSupportUserEnrollmentEnrollingUser(string $hash): ?string
     {
         $hashTable = $this->dbSettings->getHashTable();
@@ -914,6 +952,13 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return null;
     }
 
+    /**
+     * @param string $userID
+     * @param string $password
+     * @param string $rawPWField
+     * @param string $rawPW
+     * @return string|null
+     */
     public function authSupportUserEnrollmentActivateUser(
         string $userID, string $password, string $rawPWField, string $rawPW): ?string
     {
@@ -952,6 +997,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return $userID;
     }
 
+    /**
+     * @param string $userID
+     * @return bool
+     */
     public function authSupportIsWithinSAMLLimit(string $userID): bool
     {
         $userTable = $this->dbSettings->getUserTable();
@@ -988,6 +1037,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public function authSupportCanMigrateSHA256Hash(): bool // authuser, issuedhash
     {
         $userTable = $this->dbSettings->getUserTable();

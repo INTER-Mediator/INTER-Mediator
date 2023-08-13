@@ -58,7 +58,7 @@ class GenerateJSCode
     {
         $q = '"';
         echo "INTERMediatorLog.setDebugMessage({$q}"
-            . str_replace("\n", " ", addslashes($message) ?? "") . "{$q});\n";
+            . str_replace("\n", " ", addslashes($message)) . "{$q});\n";
     }
 
     /**
@@ -69,7 +69,7 @@ class GenerateJSCode
     {
         $q = '"';
         echo "INTERMediatorLog.setErrorMessage({$q}"
-            . str_replace("\n", " ", addslashes($message) ?? "") . "{$q});";
+            . str_replace("\n", " ", addslashes($message)) . "{$q});";
     }
 
     /**
@@ -112,7 +112,7 @@ class GenerateJSCode
         $isSAML = Params::getParameterValue("isSAML", null);
         $samlWithBuiltInAuth = Params::getParameterValue("samlWithBuiltInAuth", null);
         $credentialCookieDomain = Params::getParameterValue('credentialCookieDomain', NULL);
-
+        $prohibitDebugMode = Params::getParameterValue('prohibitDebugMode', false);
         $resetPage = $options['authentication']['reset-page'] ?? $resetPage ?? null;
         $enrollPage = $options['authentication']['enroll-page'] ?? $enrollPage ?? null;
         $serviceServerHost = $serviceServerHost ?? $_SERVER['SERVER_ADDR'] ?? false;
@@ -178,7 +178,7 @@ class GenerateJSCode
         $dbClassName = 'INTERMediator\\DB\\' . $classBaseName;
         $dbInstance = new $dbClassName();
         $dbInstance->setupHandlers($dbDSN);
-        if ($dbInstance != null && $dbInstance->specHandler != null) {
+        if ($dbInstance->specHandler != null) {
             $defaultKey = $dbInstance->specHandler->getDefaultKey();
         }
         if ($defaultKey !== null) {
@@ -198,8 +198,7 @@ class GenerateJSCode
         if (isset($callURL)) {
             $pathToMySelf = $callURL;
         } else if (isset($scriptPathPrefix) || isset($scriptPathSuffix)) {
-            $pathToMySelf = ($scriptPathPrefix ?? '')
-                . ($_SERVER['SCRIPT_NAME'] ?? null) . (isset($scriptPathSufix) ? $scriptPathSuffix : '');
+            $pathToMySelf = ($scriptPathPrefix ?? '') . ($_SERVER['SCRIPT_NAME'] ?? null) . ($scriptPathSuffix ?? '');
         } else {
             $pathToMySelf = IMUtil::relativePath(
                 parse_url($_SERVER['HTTP_REFERER'] ?? null, PHP_URL_PATH), $_SERVER['SCRIPT_NAME'] ?? null);
@@ -278,7 +277,7 @@ class GenerateJSCode
             $this->generateAssignJS("INTERMediatorLog.debugMode", "false");
         } else {
             $this->generateAssignJS(
-                "INTERMediatorLog.debugMode", ($debug === false) ? "false" : $debug);
+                "INTERMediatorLog.debugMode", !$debug ? "false" : $debug);
         }
 
         if (!is_null($appLocale)) {

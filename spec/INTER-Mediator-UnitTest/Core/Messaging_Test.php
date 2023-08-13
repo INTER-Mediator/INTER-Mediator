@@ -19,18 +19,18 @@ class Messaging_Test extends TestCase
 
         $tempStr = "aa@@email@@bb";
         $result = $sMail->modernTemplating($record, $tempStr);
-        $this->assertEquals($result, "aamsyk@msyk.netbb");
+        $this->assertEquals("aamsyk@msyk.netbb", $result);
 
         $tempStr = "aa@@email@@bb@@id@@cc";
         $result = $sMail->modernTemplating($record, $tempStr);
-        $this->assertEquals($result, "aamsyk@msyk.netbb1cc");
+        $this->assertEquals("aamsyk@msyk.netbb1cc", $result);
 
         $tempStr = "aa@@email@bb";
         $result = $sMail->modernTemplating($record, $tempStr);
-        $this->assertEquals($result, $tempStr);
+        $this->assertEquals($tempStr, $result);
 
         $tempStr = "aa@@nothing@@bb";
         $result = $sMail->modernTemplating($record, $tempStr);
-        $this->assertEquals($result, "aabb");
+        $this->assertEquals("aabb", $result);
     }
 }

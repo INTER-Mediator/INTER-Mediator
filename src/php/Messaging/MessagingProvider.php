@@ -29,8 +29,8 @@ abstract class MessagingProvider
     /**
      * @param $dbProxy Proxy class's instance.
      * @param $contextDef array The context definition array of current context.
-     * @param $result string The result of query or other db operations.
-     * @return string for warning messsage, no messege error or succed return null.
+     * @param $result array The result of query or other db operations.
+     * @return bool for warning messsage, no messege error or succed return null.
      */
     public abstract function processing(Proxy $dbProxy, array $contextDef, array $result): bool;
 

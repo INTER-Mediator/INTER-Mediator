@@ -16,6 +16,7 @@
 
 namespace INTERMediator\Media;
 
+use DateTime;
 use Exception;
 use INTERMediator\IMUtil;
 use INTERMediator\DB\Proxy;
@@ -28,14 +29,12 @@ use INTERMediator\Params;
 class FileSystem implements UploadingSupport, DownloadingSupport
 {
     /**
-     * @param $mediaAccess
-     * @param $file
-     * @param $target
-     * @param string $dq
-     * @return void
+     * @param string $file
+     * @param string $target
+     * @param Proxy $dbProxyInstance
+     * @return string
      * @throws Exception
      */
-
     public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string
     {
         if (!empty($file) && !file_exists($target)) {
@@ -45,8 +44,8 @@ class FileSystem implements UploadingSupport, DownloadingSupport
     }
 
     /**
-     * @param $file
-     * @return false|string
+     * @param string $file
+     * @return string
      */
     public function getFileName(string $file): string
     {
@@ -59,7 +58,7 @@ class FileSystem implements UploadingSupport, DownloadingSupport
     }
 
     /**
-     * @param $info
+     * @param array $info
      * @return array
      */
     private function getFileNames(array $info): array
@@ -75,9 +74,9 @@ class FileSystem implements UploadingSupport, DownloadingSupport
     }
 
     /**
-     * @param $db
-     * @param $noOutput
-     * @param $errorMsg
+     * @param Proxy $db
+     * @param bool $noOutput
+     * @param string $errorMsg
      * @return void
      */
     private function prepareErrorOut(Proxy $db, bool $noOutput, string $errorMsg): void
@@ -91,18 +90,18 @@ class FileSystem implements UploadingSupport, DownloadingSupport
     }
 
     /**
-     * @param $db
-     * @param $noOutput
-     * @param $options
-     * @param $contextname
-     * @param $keyfield
-     * @param $keyvalue
-     * @param $targetFieldName
-     * @param $filePathInfo
+     * @param Proxy $db
+     * @param bool $noOutput
+     * @param ?array $options
+     * @param string $contextname
+     * @param string $keyfield
+     * @param string $keyvalue
+     * @param string $targetFieldName
+     * @param array $filePathInfo
      * @return array
      */
-    private function decideFilePath($db, $noOutput, $options,
-                                    $contextname, $keyfield, $keyvalue, $targetFieldName, $filePathInfo)
+    private function decideFilePath(Proxy  $db, bool $noOutput, ?array $options, string $contextname,
+                                    string $keyfield, string $keyvalue, string $targetFieldName, array $filePathInfo): array
     {
         $result = true;
         $fileRoot = $options['media-root-dir'] ?? Params::getParameterValue('mediaRootDir', null) ?? null;
@@ -139,26 +138,25 @@ class FileSystem implements UploadingSupport, DownloadingSupport
     }
 
     /**
-     * @param $db
-     * @param $url
-     * @param $options
-     * @param $files
-     * @param $noOutput
-     * @param $field
-     * @param $contextname
-     * @param $keyfield
-     * @param $keyvalue
-     * @param $datasource
-     * @param $dbspec
-     * @param $debug
-     * @return void
+     * @param Proxy $db
+     * @param ?string $url
+     * @param array|null $options
+     * @param array $files
+     * @param bool $noOutput
+     * @param array $field
+     * @param string $contextname
+     * @param ?string $keyfield
+     * @param ?string $keyvalue
+     * @param array|null $datasource
+     * @param array|null $dbspec
+     * @param int $debug
      */
-    public function processing(Proxy $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
-                               string  $contextname, ?string $keyfield, ?string $keyvalue,
-                               ?array  $datasource, ?array $dbspec, int $debug): void
+    public function processing(Proxy  $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
+                               string $contextname, ?string $keyfield, ?string $keyvalue,
+                               ?array $datasource, ?array $dbspec, int $debug): void
     {
         $counter = -1;
-        foreach ($files as $fn => $fileInfo) {
+        foreach ($files as $fileInfo) {
             $counter += 1;
             list($fileInfoName, $fileInfoTemp) = $this->getFileNames($fileInfo);
             $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
@@ -242,12 +240,12 @@ class FileSystem implements UploadingSupport, DownloadingSupport
     }
 
     /**
-     * @param $str
-     * @param $mode
-     * @return array|string|string[]
+     * @param string $str
+     * @param string $mode
+     * @return string
      */
     private
-    function justfyPathComponent($str, $mode = "default")
+    function justfyPathComponent(string $str, string $mode = "default"):string
     {
         $jStr = $str;
         switch ($mode) {
@@ -352,7 +350,7 @@ class FileSystem implements UploadingSupport, DownloadingSupport
                     foreach (new FieldDivider($line, $separator) as $index => $value) {
                         if ($index < count($importingFields)) {
                             $field = $importingFields[$index];
-                            if ($field !== '_') { // The '_' field is gonna ignore.
+                            if ($field !== '_') { // The '_' field is going to ignore.
                                 if (in_array($field, $convert2Number)) {
                                     $original = $value;
                                     $value = '';
@@ -365,17 +363,17 @@ class FileSystem implements UploadingSupport, DownloadingSupport
                                 }
                                 if (in_array($field, $convert2Date)) {
                                     try {
-                                        $dt = new \DateTime($value);
+                                        $dt = new DateTime($value);
                                     } catch (Exception $ex) {
-                                        $dt = new \DateTime("0001-01-01 00:00:00");
+                                        $dt = new DateTime("0001-01-01 00:00:00");
                                     }
                                     $value = $dt->format('Y-m-d');
                                 }
                                 if (in_array($field, $convert2DateTime)) {
                                     try {
-                                        $dt = new \DateTime($value);
+                                        $dt = new DateTime($value);
                                     } catch (Exception $ex) {
-                                        $dt = new \DateTime("0001-01-01 00:00:00");
+                                        $dt = new DateTime("0001-01-01 00:00:00");
                                     }
                                     $value = $dt->format('Y-m-d H:i:s');
                                 }

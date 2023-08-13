@@ -27,17 +27,14 @@ use INTERMediator\Params;
 class FileMakerContainer implements UploadingSupport, DownloadingSupport
 {
     /**
-     * @param $target
-     * @param $dbProxyInstance
-     * @param $content
-     * @param $file
-     * @param string $dq
-     * @return void
+     * @param string $file
+     * @param string $target
+     * @param Proxy $dbProxyInstance
+     * @return string
      * @throws Exception
      */
     public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string
     {
-        $dq = '"';
         $parsedUrl = parse_url($target);
         if (get_class($dbProxyInstance->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') { // for FileMaker Data API
             if (isset($parsedUrl['host']) && $parsedUrl['host'] === 'localserver') { // Set As 'localserver'
@@ -95,8 +92,8 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
     }
 
     /**
-     * @param $file
-     * @return array|string|string[]
+     * @param string $file
+     * @return string
      */
     public function getFileName(string $file): string
     {
@@ -109,19 +106,18 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
     }
 
     /**
-     * @param $db
-     * @param $url
-     * @param $options
-     * @param $files
-     * @param $noOutput
-     * @param $field
-     * @param $contextname
-     * @param $keyfield
-     * @param $keyvalue
-     * @param $datasource
-     * @param $dbspec
-     * @param $debug
-     * @return void
+     * @param Proxy $db
+     * @param ?string $url
+     * @param array|null $options
+     * @param array $files
+     * @param bool $noOutput
+     * @param array $field
+     * @param string $contextname
+     * @param ?string $keyfield
+     * @param ?string $keyvalue
+     * @param array|null $datasource
+     * @param array|null $dbspec
+     * @param int $debug
      */
     public function processing(Proxy $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
                                string  $contextname, ?string $keyfield, ?string $keyvalue,

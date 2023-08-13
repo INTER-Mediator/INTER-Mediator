@@ -17,7 +17,6 @@ namespace INTERMediator;
 
 use Exception;
 use INTERMediator\DB\Proxy;
-use INTERMediator\DB\Logger;
 
 /**
  *
@@ -29,25 +28,25 @@ class MediaAccess
      */
     private string $disposition = "inline";    // default disposition.
     /**
-     * @var
+     * @var ?string
      */
     private ?string $targetKeyField;    // set with the analyzeTarget method.
     /**
-     * @var
+     * @var ?string
      */
     private ?string $targetKeyValue;  // set with the analyzeTarget method.
     /**
-     * @var null
+     * @var ?string
      */
     private ?string $targetContextName = null;  // set with the analyzeTarget method.
     /**
-     * @var
+     * @var ?string
      */
     private ?string $cookieUser;    // set with the checkAuthentication method.
     /**
-     * @var array|mixed
+     * @var int
      */
-    private int $accessLogLevel = 0;
+    private int $accessLogLevel;
     /**
      * @var array
      */
@@ -58,7 +57,7 @@ class MediaAccess
     private bool $thrownException = false;
 
     /**
-     * @var null
+     * @var ?Proxy
      */
     private ?Proxy $dbProxyInstance = null;
 
@@ -92,7 +91,7 @@ class MediaAccess
     }
 
     /**
-     * @param $message
+     * @param string $message
      * @return void
      */
     private function errorHandling(string $message): void
@@ -102,13 +101,13 @@ class MediaAccess
     }
 
     /**
-     * @param $dbProxyInstance
-     * @param $options
-     * @param $file
+     * @param Proxy $dbProxyInstance
+     * @param ?array $options
+     * @param string $file
      * @return void
      * @throws Exception
      */
-    public function processing(Proxy $dbProxyInstance, ?array $options, string $file)
+    public function processing(Proxy $dbProxyInstance, ?array $options, string $file): void
     {
         $this->dbProxyInstance = $dbProxyInstance;
         $this->thrownException = false;
@@ -132,7 +131,7 @@ class MediaAccess
                 $this->exitAsError(200); // The file accessing requires the media-root-dir keyed value.
             }
             /*
-             * If the FileMaker's object field is storing a PDF, the $file could be "http://server:16000/...
+             * If the FileMaker's object field is storing a PDF, the $file could be "http://server:16000/..."
              * style URL. In case of an image, $file is just the path info as like above.
              */
             list($file, $isURL) = $this->checkForFileMakerMedia($dbProxyInstance, $file, $isURL);
@@ -198,8 +197,6 @@ class MediaAccess
             }
 
             // Responding the contents
-            $result = null;
-            $content = false;
             $dq = '"';
 
             if (stripos($target, 'class://') === 0) { // class url is special handling.
@@ -219,7 +216,6 @@ class MediaAccess
                 $util = new IMUtil();
                 $util->outputSecurityHeaders();
                 $this->outputImage($content);
-
             }
         } catch (Exception $ex) {
             $this->errorHandling($ex->getMessage());
@@ -228,8 +224,8 @@ class MediaAccess
     }
 
     /**
-     * @param $isURL
-     * @param $target
+     * @param bool $isURL
+     * @param string $target
      * @return string
      * @throws Exception
      */
@@ -252,7 +248,7 @@ class MediaAccess
     }
 
     /**
-     * @param $file
+     * @param string $file
      * @return bool
      */
     private function isPossibleSchema(string $file): bool
@@ -292,9 +288,9 @@ class MediaAccess
     }
 
     /**
-     * @param $dbProxyInstance
-     * @param $file
-     * @param $isURL
+     * @param Proxy $dbProxyInstance
+     * @param string $file
+     * @param bool $isURL
      * @return array
      */
     private function checkForFileMakerMedia(Proxy $dbProxyInstance, string $file, bool $isURL): array
@@ -332,14 +328,10 @@ class MediaAccess
     }
 
     /**
-     * @param $dbProxyInstance
-     * @param $options
-     * @param $target
-     * @return ?string
-     * 'context_auth'
-     * 'no_auth'
-     * 'field_user'
-     * 'field_group'
+     * @param Proxy $dbProxyInstance
+     * @param ?array $options
+     * @return ?string 'context_auth', 'no_auth', 'field_user', 'field_group'
+     * @throws Exception
      */
     private function checkAuthentication(Proxy $dbProxyInstance, ?array $options): ?string
     {
@@ -355,7 +347,7 @@ class MediaAccess
         $cookieNameToken = "_im_mediatoken";
         if (isset($options['authentication']['realm'])) {
             $realm = str_replace(" ", "_",
-                str_replace(".", "_", $options['authentication']['realm'] ?? ""));
+                str_replace(".", "_", $options['authentication']['realm']));
             $cookieNameUser .= ('_' . $realm);
             $cookieNameToken .= ('_' . $realm);
         }
@@ -392,11 +384,10 @@ class MediaAccess
             }
             return 'context_auth';
         }
-        return null;
     }
 
     /**
-     * @param $target
+     * @param string $target
      * @return bool
      */
     private function analyzeTarget(string $target): bool
@@ -433,7 +424,7 @@ class MediaAccess
     }
 
     /**
-     * @param $content
+     * @param string $content
      * @return void
      */
     private function outputImage(string $content): void
@@ -447,7 +438,7 @@ class MediaAccess
                 $tmpDir = sys_get_temp_dir();
             }
             $temp = 'IM_TEMP_' .
-                str_replace(DIRECTORY_SEPARATOR, '-', base64_encode(IMUtil::randomString(12)) ?? "") .
+                str_replace(DIRECTORY_SEPARATOR, '-', base64_encode(IMUtil::randomString(12))) .
                 '.jpg';
             if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
                 $tempPath = $tmpDir . $temp;

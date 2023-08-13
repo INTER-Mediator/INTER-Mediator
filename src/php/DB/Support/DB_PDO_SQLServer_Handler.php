@@ -93,7 +93,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return $info == 0;
     }
 
-    protected function getTalbeInfoSQL(string $tableName): string
+    protected function getTableInfoSQL(string $tableName): string
     {
         $fields = "c.name, t.name type, c.max_length, c.precision, c.scale, c.is_nullable, " .
             "c.is_identity, c.default_object_id, c.is_computed, c.collation_name";

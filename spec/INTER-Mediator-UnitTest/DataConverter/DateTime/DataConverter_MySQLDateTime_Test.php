@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class DataConverter_MySQLDateTime_Test extends TestCase
 {
-    private $dataconverter;
+    private MySQLDateTime $dataconverter;
 
     public function setUp(): void
     {

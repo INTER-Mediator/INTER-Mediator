@@ -251,7 +251,7 @@ $messages['ja'][9999] = "変更した";
 /* Customizing Server Behavior
  * =================== */
 // Adding class loading path with an absolute path. Please don't terminate with /.
-$loadFrom = '/Users/msyk/Code/INTER-Mediator/samples/Sample_forDebugging/ExtendingClasses';
+//$loadFrom = '/Users/msyk/Code/INTER-Mediator/samples/Sample_forDebugging/ExtendingClasses';
 
 // If you don't set the default timezone in the php.ini file,
 //      activate the line below and specify suitable timezone name.

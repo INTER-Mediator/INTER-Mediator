@@ -15,7 +15,7 @@ class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
         date_default_timezone_set('Asia/Tokyo');
     }
 
-    function dbProxySetupForAccess($contextName, $maxRecord)
+    public function dbProxySetupForAccess($contextName, $maxRecord)
     {
         $this->schemaName = "";
         $contexts = array(
@@ -36,14 +36,14 @@ class DB_FMS_DataAPI_Test extends DB_FMS_Test_Common
             'protocol' => 'https',
             'cert-verifying' => false,
         );
-        $this->db_proxy = new \INTERMediator\DB\Proxy(true);
+        $this->db_proxy = new Proxy(true);
         $resultInit = $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
-    function dbProxySetupForAuth()
+    public function dbProxySetupForAuth()
     {
-        $this->db_proxy = new \INTERMediator\DB\Proxy(true);
+        $this->db_proxy = new Proxy(true);
         $resultInit = $this->db_proxy->initialize(array(
             array(
                 'records' => 1000,

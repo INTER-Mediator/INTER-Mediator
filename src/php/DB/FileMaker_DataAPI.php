@@ -1512,7 +1512,7 @@ class FileMaker_DataAPI extends DBClass
      * @param array $condition
      * @return array
      */
-    private function normalizedCondition(array $condition): array
+    public function normalizedCondition(array $condition): array
     {
         if (!isset($condition['field'])) {
             $condition['field'] = '';

@@ -273,7 +273,7 @@ trait DB_PDO_SQLSupport
         return implode(',', $sortClause);
     }
 
-    private function normalizedCondition(array $condition): array
+    public function normalizedCondition(array $condition): array
     {
         if (!isset($condition['field'])) {
             $condition['field'] = '';

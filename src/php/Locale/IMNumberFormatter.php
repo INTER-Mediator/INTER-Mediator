@@ -18,15 +18,13 @@ namespace INTERMediator\Locale;
 
 class IMNumberFormatter
 {
-    private string $locale = '';
-    private string $decimalPoint = '';
-    private string $thSeparator = '';
-    private string $currencySymbol = '';
+    private string $decimalPoint;
+    private string $thSeparator;
+    private string $currencySymbol;
     private int $flactionDigit = 0;
 
-    public function __construct(string $locale, int $style, string $pattern = '')
+    public function __construct(string $locale)
     {
-        $this->locale = $locale;
         setlocale(LC_ALL, $locale . '.UTF-8');
         $locInfo = localeconv();
         if ($locInfo['currency_symbol'] == '') {
@@ -39,7 +37,6 @@ class IMNumberFormatter
 
     public function getSymbol(int $attr):string
     {
-        $locInfo = localeconv();
         $s = '';
         switch ($attr) {
             case 0: /*NumberFormatter::DECIMAL_SEPARATOR_SYMBOL*/
@@ -54,7 +51,6 @@ class IMNumberFormatter
 
     public function getTextAttribute(int $attr):string
     {
-        $locInfo = localeconv();
         $s = '';
         /*NumberFormatter::CURRENCY_CODE*/
         if ($attr == 5) {

@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class DataConverter_FMDateTime_Test extends TestCase
 {
-    private $dataconverter;
+    private FMDateTime $dataconverter;
 
     protected function setUp(): void
     {

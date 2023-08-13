@@ -18,13 +18,13 @@ require_once 'DB_PDO_Test_LocalContextConditions.php';
 
 abstract class DB_PDO_Test_Common extends TestCase
 {
-    protected $db_proxy;
-    protected $schemaName = "";
-
     use DB_PDO_Test_Conditions;
     use DB_PDO_Test_UserGroup;
     use DB_PDO_Test_LocalContextConditions;
     use Proxy_ExtSupport;
+
+    public Proxy $db_proxy;
+    public string $schemaName = "";
 
     abstract function dbProxySetupForAccess($contextName, $maxRecord);
 
@@ -32,18 +32,21 @@ abstract class DB_PDO_Test_Common extends TestCase
 
     abstract function dbProxySetupForAggregation();
 
+    abstract function dbProxySetupForAccessSetKey($contextName, $maxRecord, $keyName);
+
+
     function setUp(): void
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
     }
 
-    public function isMySQL()
+    public function isMySQL(): bool
     {
         return false;
     }
 
-    public function testAggregation()
+    public function testAggregation(): void
     {
         $this->dbProxySetupForAggregation();
 
@@ -56,14 +59,14 @@ abstract class DB_PDO_Test_Common extends TestCase
 //        var_export($this->db_proxy->logger->getDebugMessages());
 
         $this->assertTrue(is_array($result), "After the query, any array should be retrieved.");
-        $this->assertEquals(count($result), 10, "After the query, 10 records should be retrieved.");
-        $this->assertEquals($recordCount, 10, "The aggregation didn't count real record, and should match with records key");
+        $this->assertCount(10, $result, "After the query, 10 records should be retrieved.");
+        $this->assertEquals(10, $recordCount, "The aggregation didn't count real record, and should match with records key");
         $cStr = "Onion";
         $this->assertEquals(substr($result[0]["item_name"], 0, strlen($cStr)), $cStr, "Field value is not same as the definition(1).");
-        $this->assertEquals($result[0]["total"], 219510, "Field value is not same as the definition(2).");
+        $this->assertEquals(219510, $result[0]["total"], "Field value is not same as the definition(2).");
         $cStr = "Broccoli";
         $this->assertEquals(substr($result[9]["item_name"], 0, strlen($cStr)), $cStr, "Field value is not same as the definition(3).");
-        $this->assertEquals($result[9]["total"], 91225, "Field value is not same as the definition(4).");
+        $this->assertEquals(91225, $result[9]["total"], "Field value is not same as the definition(4).");
         // the data in the name filed of the item_master table have trailing garbage. OMG
     }
 
@@ -341,10 +344,10 @@ abstract class DB_PDO_Test_Common extends TestCase
             "registeredpks",
             array("context_id" => $regId));
         $this->assertTrue(count($recSet) == 4, "Count pk values");
-        $this->assertTrue(count(array_diff(
-                $pkArray,
-                array($recSet[0]["pk"], $recSet[1]["pk"], $recSet[2]["pk"], $recSet[3]["pk"])
-            )) == 0, "Stored pk values");
+        $this->assertEmpty(array_diff(
+            $pkArray,
+            array($recSet[0]["pk"], $recSet[1]["pk"], $recSet[2]["pk"], $recSet[3]["pk"])
+        ), "Stored pk values");
 
         $entity = "table2";
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray) !== false,
@@ -359,10 +362,10 @@ abstract class DB_PDO_Test_Common extends TestCase
             "registeredpks",
             array("context_id" => $regId));
         $this->assertTrue(count($recSet) == 4, "Count pk values");
-        $this->assertTrue(count(array_diff(
-                $pkArray,
-                array($recSet[0]["pk"], $recSet[1]["pk"], $recSet[2]["pk"], $recSet[3]["pk"])
-            )) == 0, "Stored pk values");
+        $this->assertEmpty(array_diff(
+            $pkArray,
+            array($recSet[0]["pk"], $recSet[1]["pk"], $recSet[2]["pk"], $recSet[3]["pk"])
+        ), "Stored pk values");
 
         $entity = "table3";
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray) !== false,
@@ -377,16 +380,16 @@ abstract class DB_PDO_Test_Common extends TestCase
             "registeredpks",
             array("context_id" => $regId));
         $this->assertTrue(count($recSet) == 4, "Count pk values");
-        $this->assertTrue(count(array_diff(
-                $pkArray,
-                array($recSet[0]["pk"], $recSet[1]["pk"], $recSet[2]["pk"], $recSet[3]["pk"])
-            )) == 0, "Stored pk values");
+        $this->assertEmpty(array_diff(
+            $pkArray,
+            array($recSet[0]["pk"], $recSet[1]["pk"], $recSet[2]["pk"], $recSet[3]["pk"])
+        ), "Stored pk values");
 
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId, null), $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
-        $this->assertTrue(count($recSet) == 0, "Count table1");
+        $this->assertEmpty($recSet, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
-        $this->assertTrue(count($recSet) == 0, "Count pk values");
+        $this->assertEmpty($recSet, "Count pk values");
 
     }
 
@@ -414,10 +417,10 @@ abstract class DB_PDO_Test_Common extends TestCase
             "registeredpks",
             array("context_id" => $registResult1));
         $this->assertTrue(count($recSet) == 4, "Count pk values");
-        $this->assertTrue(count(array_diff(
-                $pkArray,
-                array($recSet[0]["pk"], $recSet[1]["pk"], $recSet[2]["pk"], $recSet[3]["pk"])
-            )) == 0, "Stored pk values");
+        $this->assertEmpty(array_diff(
+            $pkArray,
+            array($recSet[0]["pk"], $recSet[1]["pk"], $recSet[2]["pk"], $recSet[3]["pk"])
+        ), "Stored pk values");
 
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId, array($registResult2)), $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest(
@@ -427,13 +430,13 @@ abstract class DB_PDO_Test_Common extends TestCase
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredpks",
             array("context_id" => $registResult2));
-        $this->assertTrue(count($recSet) == 0, "Count pk values");
+        $this->assertEmpty($recSet, "Count pk values");
 
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId, null), $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
-        $this->assertTrue(count($recSet) == 0, "Count table1");
+        $this->assertEmpty($recSet, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
-        $this->assertTrue(count($recSet) == 0, "Count pk values");
+        $this->assertEmpty($recSet, "Count pk values");
 
     }
 
@@ -463,17 +466,17 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertTrue($result[0] == $clientId1, "Matched client id");
 
         $result = $this->db_proxy->dbClass->notifyHandler->matchInRegistered($clientId2, $entity, array(4567));
-        $this->assertTrue(count($result) == 0, "Count matching");
+        $this->assertEmpty($result, "Count matching");
 
         $result = $this->db_proxy->dbClass->notifyHandler->matchInRegistered($clientId2, $entity, array(8001));
-        $this->assertTrue(count($result) == 0, "Count matching");
+        $this->assertEmpty($result, "Count matching");
 
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId1, null) !== false, $testName);
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId2, null) !== false, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
-        $this->assertTrue(count($recSet) == 0, "Count table1");
+        $this->assertEmpty($recSet, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
-        $this->assertTrue(count($recSet) == 0, "Count pk values");
+        $this->assertEmpty($recSet, "Count pk values");
     }
 
     /* Testing procedure has to reconsider with updating appendIntoRegistered method. 2023-3-5 by msyk */
@@ -505,12 +508,12 @@ abstract class DB_PDO_Test_Common extends TestCase
         $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId1, $entity, "id", array(1));
         $this->assertTrue($result[0] == $clientId2, "Append to Sync Info");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 1));
-        $this->assertEquals(2, count($recSet), "Check the appended result");
+        $this->assertCount(2, $recSet, "Check the appended result");
 
         $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId2, $entity, "id", array(2));
         $this->assertTrue($result[0] == $clientId1, "Append to Sync Info");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 2));
-        $this->assertEquals(2, count($recSet), "Check the appended result");
+        $this->assertCount(2, $recSet, "Check the appended result");
 
 //        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegistered($clientId3, "testtable", array(3));
 //        $this->assertEquals(0, count($result), $testName);
@@ -529,9 +532,9 @@ abstract class DB_PDO_Test_Common extends TestCase
         $resultRegistering = $this->db_proxy->dbClass->notifyHandler->unregister($clientId3, null);
         $this->assertNotFalse($resultRegistering, "Unregister a client");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
-        $this->assertEquals(0, count($recSet), "Count table1");
+        $this->assertCount(0, $recSet, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
-        $this->assertEquals(0, count($recSet), "Count pk values");
+        $this->assertCount(0, $recSet, "Count pk values");
 
         //$reult = $this->db_proxy->dbClass->notifyHandler->removeFromRegistered($clientId, $entity, $pkArray);
     }
@@ -559,15 +562,15 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertTrue($result[0] == $clientId2, $testName);
 
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 3003));
-        $this->assertTrue(count($recSet) == 0, $testName);
+        $this->assertEmpty($recSet, $testName);
 
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId1, null), $testName);
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId2, null), $testName);
         $this->assertTrue($this->db_proxy->dbClass->notifyHandler->unregister($clientId3, null), $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
-        $this->assertTrue(count($recSet) == 0, "Count table1");
+        $this->assertEmpty($recSet, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
-        $this->assertTrue(count($recSet) == 0, "Count pk values");
+        $this->assertEmpty($recSet, "Count pk values");
     }
 
     public
@@ -576,13 +579,13 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->dbProxySetupForAccess("person", 1);
         $result = $this->db_proxy->readFromDB();
         $aName = $result[0]['name'];
-        $this->assertEquals(count($result), 1, "Just 1 records should be retrieved.");
+        $this->assertCount(1, $result, "Just 1 records should be retrieved.");
 
         $this->dbProxySetupForAccess("person", 1);
         $this->db_proxy->dbSettings->addExtraCriteria("id", "IS NOT NULL", "3");
         $result = $this->db_proxy->readFromDB();
-        $this->assertEquals(is_array($result), true, "The retrieved data has to be array.");
-        $this->assertEquals(count($result), 1, "Just 1 records should be retrieved.");
+        $this->assertTrue(is_array($result), "The retrieved data has to be array.");
+        $this->assertCount(1, $result, "Just 1 records should be retrieved.");
         $this->assertEquals($result[0]['name'], $aName, "Same record should be retrieved.");
     }
 

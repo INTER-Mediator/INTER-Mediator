@@ -46,7 +46,7 @@ class MediaAccess_Test extends TestCase
             $reflectionMethod->invokeArgs($this->mediaaccess, array($code));
             $this->fail('No Exception happens');
         } catch (Exception $e) {
-            $this->assertSame($expected, (string)$e->getMessage());
+            $this->assertSame($expected, $e->getMessage());
         }
     }
 }
