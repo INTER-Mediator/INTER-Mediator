@@ -17,6 +17,7 @@ class DB_Proxy_PostgreSQL_Test extends DB_Proxy_Test_Common
             'user' => 'web',
             'password' => 'password',
         );
+        $this->schemaName = "im_sample.";
     }
 
     function dbProxySetupForAccess($contextName, $maxRecord, $hasExtend = false)

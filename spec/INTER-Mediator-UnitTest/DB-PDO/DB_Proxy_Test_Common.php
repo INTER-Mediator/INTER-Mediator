@@ -12,11 +12,11 @@ abstract class DB_Proxy_Test_Common extends TestCase
 {
     use Proxy_ExtSupport;
 
-    protected string $schemaName;
-    protected Proxy $db_proxy;
-    protected ?array $dataSource;
-    protected ?array $options;
-    protected ?array $dbSpec;
+    public string $schemaName;
+    public Proxy $db_proxy;
+    public ?array $dataSource;
+    public ?array $options;
+    public ?array $dbSpec;
 
     abstract function dbProxySetupForAccess($contextName, $maxRecord, $hasExtend = false);
 

@@ -26,6 +26,7 @@ class DB_Proxy_SQLite_Test extends DB_Proxy_Test_Common
             'user' => 'web',
             'password' => 'password',
         );
+        $this->schemaName = "";
     }
 
     function dbProxySetupForAccess($contextName, $maxRecord, $hasExtend = false)
