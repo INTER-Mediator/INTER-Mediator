@@ -26,42 +26,41 @@ use INTERMediator\Params;
 class AWSS3 implements UploadingSupport, DownloadingSupport
 {
     /**
-     * @var array|mixed
+     * @var ?string
      */
-    private ?string $accessRegion = null;
+    private ?string $accessRegion;
     /**
-     * @var array|mixed
+     * @var ?string
      */
-    private ?string $rootBucket = null;
+    private ?string $rootBucket;
     /**
-     * @var array|mixed
+     * @var ?string
      */
-    private ?string $applyingACL = null;
+    private ?string $applyingACL;
     /**
      * @var bool
      */
-    private bool $isSuppliedSecret = false;
+    private bool $isSuppliedSecret;
     /**
-     * @var array|mixed
+     * @var ?string
      */
-    private ?string $s3AccessKey = null;
+    private ?string $s3AccessKey;
     /**
-     * @var array|mixed
+     * @var ?string
      */
-    private ?string $s3AccessSecret = null;
+    private ?string $s3AccessSecret;
     /**
-     * @var array|mixed
+     * @var ?string
      */
-    private ?string $s3AccessProfile = null;
+    private ?string $s3AccessProfile;
     /**
-     * @var array|mixed
+     * @var bool
      */
-    private bool $s3urlCustomize = true;
+    private bool $s3urlCustomize;
     /**
-     * @var null
+     * @var ?string
      */
     private ?string $fileName = null;
-
 
     /**
      *
@@ -79,12 +78,10 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
     }
 
     /**
-     * @param $mediaAccess
-     * @param $file
-     * @param $target
-     * @param $dbProxyInstance
-     * @param $content
-     * @return mixed|null
+     * @param string $file
+     * @param string $target
+     * @param Proxy $dbProxyInstance
+     * @return string
      */
     public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string
     {
@@ -113,8 +110,8 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
     }
 
     /**
-     * @param $file
-     * @return null
+     * @param string $file
+     * @return string
      */
     public function getFileName(string $file): string
     {
@@ -122,19 +119,19 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
     }
 
     /**
-     * @param $db
-     * @param $url
-     * @param $options
-     * @param $files
-     * @param $noOutput
-     * @param $field
-     * @param $contextname
-     * @param $keyfield
-     * @param $keyvalue
-     * @param $datasource
-     * @param $dbspec
-     * @param $debug
-     * @return void
+     * @param Proxy $db
+     * @param ?string $url
+     * @param array|null $options
+     * @param array $files
+     * @param bool $noOutput
+     * @param array $field
+     * @param string $contextname
+     * @param ?string $keyfield
+     * @param ?string $keyvalue
+     * @param array|null $datasource
+     * @param array|null $dbspec
+     * @param int $debug
+     * @throws
      */
     public function processing(Proxy $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
                                string  $contextname, ?string $keyfield, ?string $keyvalue,
@@ -142,7 +139,7 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
         $dbAlt = new Proxy();
 
         $counter = -1;
-        foreach ($files as $fn => $fileInfo) {
+        foreach ($files as $fileInfo) {
             $counter += 1;
             if (is_array($fileInfo['name'])) {   // JQuery File Upload Style
                 $fileInfoName = $fileInfo['name'][0];

@@ -150,7 +150,7 @@ class SendMail extends MessagingProvider
                                 $dbProxy->dbSettings->getDataSource(),
                                 $dbProxy->dbSettings->getOptions(),
                                 $dbProxy->dbSettings->getDbSpec(),
-                                2, $cParam[0], null);
+                                2, $cParam[0]);
                             $storeContext->dbSettings->setCurrentUser($dbProxy->dbSettings->getCurrentUser());
                             $dbProxy->logger->setDebugMessage("Proxy with the {$cParam[0]} context.", 2);
                             $storeContext->dbSettings->addExtraCriteria($idParam[0], "=", $idParam[1]);
@@ -230,7 +230,7 @@ class SendMail extends MessagingProvider
                             $dbProxy->dbSettings->getDataSource(),
                             $dbProxy->dbSettings->getOptions(),
                             $dbProxy->dbSettings->getDbSpec(),
-                            2, $sendMailParam['store'], null);
+                            2, $sendMailParam['store']);
                         $storeContext->logger->setDebugMessage("Proxy with the {$sendMailParam['store']} context.", 2);
                         $storeContext->dbSettings->setCurrentUser($dbProxy->dbSettings->getCurrentUser());
                         $storeContextInfo = $storeContext->dbSettings->getDataSourceTargetArray();

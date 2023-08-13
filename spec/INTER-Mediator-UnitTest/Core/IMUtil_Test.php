@@ -12,8 +12,7 @@ use INTERMediator\IMUtil;
 
 class IMUtil_Test extends TestCase
 {
-    private $util;
-    private $reflectionMethod;
+    private IMUtil $util;
 
     public function setUp(): void
     {
@@ -87,16 +86,16 @@ class IMUtil_Test extends TestCase
     public function test_removeNull()
     {
         $str = IMUtil::removeNull("INTER\x00-Mediator");
-        $this->assertEquals($str, "INTER-Mediator");
+        $this->assertEquals("INTER-Mediator", $str);
     }
 
     public function test_getParameterValue()
     {
         $webServerName = Params::getParameterValue('webServerName', '');
         if (php_uname('n') === 'inter-mediator-server') {
-            $this->assertEquals($webServerName, '192.168.56.101');
+            $this->assertEquals('192.168.56.101', $webServerName);
         } else {
-            $this->assertEquals(is_array($webServerName), true);
+            $this->assertEquals(true, is_array($webServerName));
         }
     }
 
@@ -128,34 +127,34 @@ class IMUtil_Test extends TestCase
     public function test_checkHost()
     {
         if (((float)phpversion()) >= 5.3) {
-            $this->reflectionMethod = new ReflectionMethod('\INTERMediator\IMUtil', 'checkHost');
-            $this->reflectionMethod->setAccessible(true);
+            $reflectionMethod = new ReflectionMethod('\INTERMediator\IMUtil', 'checkHost');
+            $reflectionMethod->setAccessible(true);
 
-            $result = $this->reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', 'www.inter-mediator.com'));
+            $result = $reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', 'www.inter-mediator.com'));
             $this->assertTrue($result);
 
-            $result = $this->reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', 'inter-mediator.com'));
+            $result = $reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', 'inter-mediator.com'));
             $this->assertTrue($result);
 
-            $result = $this->reflectionMethod->invokeArgs($this->util, array('WWW.inter-mediator.com', 'inter-mediator.com'));
+            $result = $reflectionMethod->invokeArgs($this->util, array('WWW.inter-mediator.com', 'inter-mediator.com'));
             $this->assertTrue($result);
 
-            $result = $this->reflectionMethod->invokeArgs($this->util, array('inter-mediator.com', 'inter-mediator.com'));
+            $result = $reflectionMethod->invokeArgs($this->util, array('inter-mediator.com', 'inter-mediator.com'));
             $this->assertTrue($result);
 
             $_SERVER = array();
             $_SERVER['SERVER_ADDR'] = '192.168.56.101';
-            $result = $this->reflectionMethod->invokeArgs($this->util, array('192.168.56.101', $_SERVER['SERVER_ADDR']));
+            $result = $reflectionMethod->invokeArgs($this->util, array('192.168.56.101', $_SERVER['SERVER_ADDR']));
             $this->assertTrue($result);
 
-            $result = $this->reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', ''));
+            $result = $reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', ''));
             $this->assertFalse($result);
 
-            $result = $this->reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', 'ww.inter-mediator.com'));
+            $result = $reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', 'ww.inter-mediator.com'));
             $this->assertFalse($result);
 
             $_SERVER = array();
-            $result = $this->reflectionMethod->invokeArgs($this->util, array('192.168.56.101', '56.101'));
+            $result = $reflectionMethod->invokeArgs($this->util, array('192.168.56.101', '56.101'));
             $this->assertFalse($result);
         }
     }

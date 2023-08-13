@@ -8,7 +8,7 @@ use INTERMediator\Message\MessageStrings;
 
 class MessageStrings_Test extends TestCase
 {
-    private $messagestrings;
+    private MessageStrings $messagestrings;
 
     public function setUp(): void
     {

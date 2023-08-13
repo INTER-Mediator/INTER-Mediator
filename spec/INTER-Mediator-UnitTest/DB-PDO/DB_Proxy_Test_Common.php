@@ -1,7 +1,7 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
 use INTERMediator\DB\Proxy;
+use PHPUnit\Framework\TestCase;
 use INTERMediator\DB\UseSharedObjects;
 use INTERMediator\DB\Extending\AfterRead;
 use INTERMediator\DB\Extending\AfterUpdate;
@@ -12,12 +12,11 @@ abstract class DB_Proxy_Test_Common extends TestCase
 {
     use Proxy_ExtSupport;
 
-    protected $schemaName;
-
-    protected $db_proxy;
-    protected $dataSource;
-    protected $options;
-    protected $dbSpec;
+    protected string $schemaName;
+    protected Proxy $db_proxy;
+    protected ?array $dataSource;
+    protected ?array $options;
+    protected ?array $dbSpec;
 
     abstract function dbProxySetupForAccess($contextName, $maxRecord, $hasExtend = false);
 
@@ -37,7 +36,6 @@ abstract class DB_Proxy_Test_Common extends TestCase
     function test___construct()
     {
         $this->dbProxySetupForAuthAccess("person", 1);
-        $testName = "Check __construct function in Proxyp.";
         if (function_exists('xdebug_get_headers')) {
             ob_start();
             $this->db_proxy->__construct();
@@ -119,7 +117,7 @@ abstract class DB_Proxy_Test_Common extends TestCase
             'key' => 'id'/*, 'sequence' => "{$this->schemaName}serial"*/]];
 
         $this->dbProxySetupForAccess("person", 1, true);
-        $msg = $this->db_proxy->logger->clearLogs();
+//        $this->db_proxy->logger->clearLogs();
 
         $this->setTestMode();
         $this->setFixedKey('id');

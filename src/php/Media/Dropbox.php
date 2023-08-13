@@ -29,27 +29,27 @@ use INTERMediator\Params;
 class Dropbox implements UploadingSupport, DownloadingSupport
 {
     /**
-     * @var array|mixed
+     * @var ?string
      */
-    private ?string $appKey = null;
+    private ?string $appKey;
     /**
-     * @var array|mixed
+     * @var ?string
      */
-    private ?string $appSecret = null;
+    private ?string $appSecret;
     /**
-     * @var array|mixed
+     * @var ?string
      */
-    private ?string $refreshToken = null;
+    private ?string $refreshToken;
     /**
-     * @var array|mixed
+     * @var ?string
      */
-    private ?string $accessTokenPath = null;
+    private ?string $accessTokenPath;
     /**
-     * @var array|mixed
+     * @var ?string
      */
-    private ?string $rootInDropbox = null;
+    private ?string $rootInDropbox;
     /**
-     * @var null
+     * @var ?string
      */
     private ?string $fileName = null;
 
@@ -66,11 +66,9 @@ class Dropbox implements UploadingSupport, DownloadingSupport
     }
 
     /**
-     * @param $mediaAccess
-     * @param $file
-     * @param $target
-     * @param $dbProxyInstance
-     * @param $content
+     * @param string $file
+     * @param string $target
+     * @param Proxy $dbProxyInstance
      * @return string
      * @throws Exception
      */
@@ -91,7 +89,7 @@ class Dropbox implements UploadingSupport, DownloadingSupport
     }
 
     /**
-     * @param $file
+     * @param string $file
      * @return null|string
      */
     public function getFileName(string $file): string
@@ -100,19 +98,18 @@ class Dropbox implements UploadingSupport, DownloadingSupport
     }
 
     /**
-     * @param $db
-     * @param $url
-     * @param $options
-     * @param $files
-     * @param $noOutput
-     * @param $field
-     * @param $contextname
-     * @param $keyfield
-     * @param $keyvalue
-     * @param $datasource
-     * @param $dbspec
-     * @param $debug
-     * @return void
+     * @param Proxy $db
+     * @param ?string $url
+     * @param array|null $options
+     * @param array $files
+     * @param bool $noOutput
+     * @param array $field
+     * @param string $contextname
+     * @param ?string $keyfield
+     * @param ?string $keyvalue
+     * @param array|null $datasource
+     * @param array|null $dbspec
+     * @param int $debug
      */
     public function processing(Proxy $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
                                string  $contextname, ?string $keyfield, ?string $keyvalue,

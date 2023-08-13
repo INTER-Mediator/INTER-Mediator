@@ -6,6 +6,7 @@
  * Date: 2017/10/08
  * Time: 0:18
  */
+
 use PHPUnit\Framework\TestCase;
 use INTERMediator\Media\LineDivider;
 use INTERMediator\Media\FieldDivider;
@@ -19,10 +20,10 @@ class Line_Field_Divider_Test extends TestCase
         foreach ($d as $line) {
             $ar[] = $line;
         }
-        $this->assertEquals(count($ar), 3);
-        $this->assertEquals($ar[0], "aaa");
-        $this->assertEquals($ar[1], "bbb");
-        $this->assertEquals($ar[2], "ccc");
+        $this->assertCount(3, $ar);
+        $this->assertEquals("aaa", $ar[0]);
+        $this->assertEquals("bbb", $ar[1]);
+        $this->assertEquals("ccc", $ar[2]);
     }
 
     public function testLineDivider()
@@ -45,86 +46,86 @@ class Line_Field_Divider_Test extends TestCase
         foreach ($line as $field) {
             $ar[] = $field;
         }
-        $this->assertEquals(count($ar), 3);
-        $this->assertEquals($ar[0], "aaa");
-        $this->assertEquals($ar[1], "bbb");
-        $this->assertEquals($ar[2], "ccc");
+        $this->assertCount(3, $ar);
+        $this->assertEquals("aaa", $ar[0]);
+        $this->assertEquals("bbb", $ar[1]);
+        $this->assertEquals("ccc", $ar[2]);
 
         $line = new FieldDivider("{$dq}aaa{$dq},{$sq}bbb{$sq},{$sq}ccc{$sq}");
         $ar = array();
         foreach ($line as $field) {
             $ar[] = $field;
         }
-        $this->assertEquals(count($ar), 3);
-        $this->assertEquals($ar[0], "aaa");
-        $this->assertEquals($ar[1], "bbb");
-        $this->assertEquals($ar[2], "ccc");
+        $this->assertCount(3, $ar);
+        $this->assertEquals("aaa", $ar[0]);
+        $this->assertEquals("bbb", $ar[1]);
+        $this->assertEquals("ccc", $ar[2]);
 
         $line = new FieldDivider("aaa,bbb,c{$sq}c{$sq}c");
         $ar = array();
         foreach ($line as $field) {
             $ar[] = $field;
         }
-        $this->assertEquals(count($ar), 3);
-        $this->assertEquals($ar[0], "aaa");
-        $this->assertEquals($ar[1], "bbb");
-        $this->assertEquals($ar[2], "c{$sq}c{$sq}c");
+        $this->assertCount(3, $ar);
+        $this->assertEquals("aaa", $ar[0]);
+        $this->assertEquals("bbb", $ar[1]);
+        $this->assertEquals("c{$sq}c{$sq}c", $ar[2]);
 
         $line = new FieldDivider("aaa,bbb,ccc");
         $ar = array();
         foreach ($line as $field) {
             $ar[] = $field;
         }
-        $this->assertEquals(count($ar), 3);
-        $this->assertEquals($ar[0], "aaa");
-        $this->assertEquals($ar[1], "bbb");
-        $this->assertEquals($ar[2], "ccc");
+        $this->assertCount(3, $ar);
+        $this->assertEquals("aaa", $ar[0]);
+        $this->assertEquals("bbb", $ar[1]);
+        $this->assertEquals("ccc", $ar[2]);
 
         $line = new FieldDivider("aaa,bbb,{$sq}ccc");
         $ar = array();
         foreach ($line as $field) {
             $ar[] = $field;
         }
-        $this->assertEquals(count($ar), 3);
-        $this->assertEquals($ar[0], "aaa");
-        $this->assertEquals($ar[1], "bbb");
-        $this->assertEquals($ar[2], "{$sq}ccc");
+        $this->assertCount(3, $ar);
+        $this->assertEquals("aaa", $ar[0]);
+        $this->assertEquals("bbb", $ar[1]);
+        $this->assertEquals("{$sq}ccc", $ar[2]);
 
         $line = new FieldDivider("aaa,bbb,{$sq}c{$sq}cc");
         $ar = array();
         foreach ($line as $field) {
             $ar[] = $field;
         }
-        $this->assertEquals(count($ar), 3);
-        $this->assertEquals($ar[0], "aaa");
-        $this->assertEquals($ar[1], "bbb");
-        $this->assertEquals($ar[2], "c");
+        $this->assertCount(3, $ar);
+        $this->assertEquals("aaa", $ar[0]);
+        $this->assertEquals("bbb", $ar[1]);
+        $this->assertEquals("c", $ar[2]);
 
         $line = new FieldDivider("aaa,{$sq}bbb,ccc{$sq}");
         $ar = array();
         foreach ($line as $field) {
             $ar[] = $field;
         }
-        $this->assertEquals(count($ar), 2);
-        $this->assertEquals($ar[0], "aaa");
-        $this->assertEquals($ar[1], "bbb,ccc");
+        $this->assertCount(2, $ar);
+        $this->assertEquals("aaa", $ar[0]);
+        $this->assertEquals("bbb,ccc", $ar[1]);
 
         $line = new FieldDivider("a{$sq}a{$dq}a,{$sq}bbb,ccc");
         $ar = array();
         foreach ($line as $field) {
             $ar[] = $field;
         }
-        $this->assertEquals(count($ar), 2);
-        $this->assertEquals($ar[0], "a{$sq}a{$dq}a");
-        $this->assertEquals($ar[1], "{$sq}bbb,ccc");
+        $this->assertCount(2, $ar);
+        $this->assertEquals("a{$sq}a{$dq}a", $ar[0]);
+        $this->assertEquals("{$sq}bbb,ccc", $ar[1]);
 
         $line = new FieldDivider("a{$sq}a{$dq}a{$tab}{$sq}bbb,ccc{$tab}qpqp", $tab);
         $ar = array();
         foreach ($line as $field) {
             $ar[] = $field;
         }
-        $this->assertEquals(count($ar), 2);
-        $this->assertEquals($ar[0], "a{$sq}a{$dq}a");
-        $this->assertEquals($ar[1], "{$sq}bbb,ccc{$tab}qpqp");
+        $this->assertCount(2, $ar);
+        $this->assertEquals("a{$sq}a{$dq}a", $ar[0]);
+        $this->assertEquals("{$sq}bbb,ccc{$tab}qpqp", $ar[1]);
     }
 }

@@ -27,18 +27,18 @@ class DB_ExtSupport_Test extends TestCase
         $this->assertTrue(is_array($result) and count($result) > 0, 'Read from db and got any data.');
 
         $result = $this->dbRead('person', [['field' => 'id', 'operator' => '=', 'value' => '2',]]);
-        $this->assertEquals(1, count($result), 'Read from one record from the person table.');
+        $this->assertCount(1, $result, 'Read from one record from the person table.');
         $this->assertEquals(2, $result[0]['id'], 'The id field of the record is same as query condition.');
 
         $result = $this->dbRead('person', [['field' => 'id', 'operator' => '=', 'value' => '3',]]);
-        $this->assertEquals(1, count($result), 'Read from one record from the person table.');
+        $this->assertCount(1, $result, 'Read from one record from the person table.');
         $this->assertEquals(3, $result[0]['id'], 'The id field of the record is same as query condition.');
 
         $randStr = random_int(10000000, 99999999);
         $result = $this->dbCreate('person', [['field' => 'name', 'value' => $randStr,],]);
         $createdId = $result[0]['id'];
         $result = $this->dbRead('person', [['field' => 'id', 'operator' => '=', 'value' => $createdId,]]);
-        $this->assertEquals(1, count($result), 'Read from one record from the person table.');
+        $this->assertCount(1, $result, 'Read from one record from the person table.');
         $this->assertEquals($createdId, $result[0]['id'], 'The id field of the record is same as query condition.');
         $this->assertEquals($randStr, $result[0]['name'], 'The name field of the record is same as data parameter.');
 
@@ -47,16 +47,16 @@ class DB_ExtSupport_Test extends TestCase
             [['field' => 'id', 'operator' => '=', 'value' => $createdId,]],
             [['field' => 'name', 'value' => $randStr,],]);
         $result = $this->dbRead('person', [['field' => 'id', 'operator' => '=', 'value' => $createdId,]]);
-        $this->assertEquals(1, count($result), 'Read from one record from the person table.');
+        $this->assertCount(1, $result, 'Read from one record from the person table.');
         $this->assertEquals($createdId, $result[0]['id'], 'The id field of the record is same as query condition.');
         $this->assertEquals($randStr, $result[0]['name'], 'The name field of the record is same as data parameter.');
 
         $result = $this->dbDelete('person', [['field' => 'id', 'operator' => '=', 'value' => $createdId,]]);
         $result = $this->dbRead('person', [['field' => 'id', 'operator' => '=', 'value' => $createdId,]]);
-        $this->assertEquals(0, count($result), 'Read from one record from the person table.');
+        $this->assertCount(0, $result, 'Read from one record from the person table.');
 
         $result = $this->dbDelete('person', [['field' => 'id', 'operator' => '=', 'value' => -999,]]);
-        $this->assertEquals(0, count($result), 'Read from one record from the person table.');
+        $this->assertCount(0, $result, 'Read from one record from the person table.');
     }
 
     function testExtSupport2()
@@ -66,18 +66,18 @@ class DB_ExtSupport_Test extends TestCase
         $this->dbInit([['name' => 'person', 'key' => 'id',],], null, $this->dbSpec, 2);
 
         $result = $this->dbRead('person', ['id' => '2',]);
-        $this->assertEquals(1, count($result), 'Read from one record from the person table.');
+        $this->assertCount(1, $result, 'Read from one record from the person table.');
         $this->assertEquals(2, $result[0]['id'], 'The id field of the record is same as query condition.');
 
         $result = $this->dbRead('person', ['id' => '3',]);
-        $this->assertEquals(1, count($result), 'Read from one record from the person table.');
+        $this->assertCount(1, $result, 'Read from one record from the person table.');
         $this->assertEquals(3, $result[0]['id'], 'The id field of the record is same as query condition.');
 
         $randStr = random_int(10000000, 99999999);
         $result = $this->dbCreate('person', ['name' => $randStr,]);
         $createdId = $result[0]['id'];
         $result = $this->dbRead('person', ['id' => $createdId,]);
-        $this->assertEquals(1, count($result), 'Read from one record from the person table.');
+        $this->assertCount(1, $result, 'Read from one record from the person table.');
         $this->assertEquals($createdId, $result[0]['id'], 'The id field of the record is same as query condition.');
         $this->assertEquals($randStr, $result[0]['name'], 'The name field of the record is same as data parameter.');
 
@@ -90,9 +90,9 @@ class DB_ExtSupport_Test extends TestCase
 
         $result = $this->dbDelete('person', [['field' => 'id', 'operator' => '=', 'value' => $createdId,]]);
         $result = $this->dbRead('person', [['field' => 'id', 'operator' => '=', 'value' => $createdId,]]);
-        $this->assertEquals(0, count($result), 'Read from one record from the person table.');
+        $this->assertCount(0, $result, 'Read from one record from the person table.');
 
         $result = $this->dbDelete('person', [['field' => 'id', 'operator' => '=', 'value' => -999,]]);
-        $this->assertEquals(0, count($result), 'Read from one record from the person table.');
+        $this->assertCount(0, $result, 'Read from one record from the person table.');
     }
 }

@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class DB_Formatters_Test extends TestCase
 {
-    private $dataconverter_htmlstring;
+    private Formatters $dataconverter_htmlstring;
 
     public function setUp(): void
     {

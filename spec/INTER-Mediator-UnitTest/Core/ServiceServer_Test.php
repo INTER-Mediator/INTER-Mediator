@@ -16,7 +16,7 @@ class ServiceServer_Test extends TestCase
         $this->assertFalse($checkResult, "Usually the service server is offline.");
 
         $messages = $ssProxy->getMessages();
-        $this->assertTrue(count($messages) > 0, "Some massages have to stored.");
+        $this->assertNotEmpty($messages, "Some massages have to stored.");
     }
 
 }

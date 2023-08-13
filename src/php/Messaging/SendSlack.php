@@ -33,10 +33,10 @@ class SendSlack extends MessagingProvider
     }
 
     /**
-     * @param $dbProxy  INTERMediator\DB\Proxy class's instance.
-     * @param $contextDef  context definition array of current context.
-     * @param $result  result of query or other db operations.
-     * @return mixed (No return)
+     * @param Proxy $dbProxy  Proxy class's instance.
+     * @param array $contextDef  context definition array of current context.
+     * @param array $result  result of query or other db operations.
+     * @return bool (No return)
      */
     public function processing(Proxy $dbProxy, array $contextDef, array $result):bool
     {
@@ -64,7 +64,6 @@ class SendSlack extends MessagingProvider
             $msgURL = "https://slack.com/api/chat.postMessage";
             $header = ["Content-Type: application/json; charset=utf-8", "Authorization: Bearer {$this->token}"];
             $body = json_encode(['channel' => $channel, 'text' => $message]);
-            $error = '';
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $msgURL);
             curl_setopt($ch, CURLOPT_PORT, 443);

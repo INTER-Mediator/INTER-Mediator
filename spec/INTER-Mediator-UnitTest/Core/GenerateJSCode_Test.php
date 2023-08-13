@@ -10,8 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class GenerateJSCode_Test extends TestCase
 {
-    private $generater;
-    private $reflectionMethod;
+    private GenerateJSCode $generater;
 
     protected function setUp(): void
     {
@@ -68,11 +67,11 @@ class GenerateJSCode_Test extends TestCase
     public function test_combineScripts()
     {
         if (((float)phpversion()) >= 5.3) {
-            $this->reflectionMethod = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'combineScripts');
-            $this->reflectionMethod->setAccessible(true);
+            $reflectionMethod = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'combineScripts');
+            $reflectionMethod->setAccessible(true);
             $currentDir = dirname(__FILE__, 4) . DIRECTORY_SEPARATOR .
                 'src' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR;
-            $content = $this->reflectionMethod->invokeArgs($this->generater, array($currentDir));
+            $content = $reflectionMethod->invokeArgs($this->generater, array($currentDir));
             $jsLibDir = dirname($currentDir, 2) . DIRECTORY_SEPARATOR . 'node_modules' . DIRECTORY_SEPARATOR;
             $method = new ReflectionMethod('\INTERMediator\GenerateJSCode', 'readJSSource');
             $method->setAccessible(true);

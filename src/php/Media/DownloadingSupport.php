@@ -26,13 +26,13 @@ interface DownloadingSupport
      * @param string $file
      * @param string $target
      * @param Proxy $dbProxyInstance
-     * @return mixed
+     * @return string
      */
     public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string;
 
     /**
      * @param string $file
-     * @return mixed
+     * @return string
      */
     public function getFileName(string $file): string;
 }

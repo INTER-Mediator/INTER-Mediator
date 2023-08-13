@@ -12,14 +12,14 @@ use INTERMediator\Messaging\OME;
 
 class OME_Test extends TestCase
 {
-    private $mailAddress = "msyk@msyk.net";
-    private $smtpSettings = array(
-        'host' => 's98.coreserver.jp',
-        'port' => 587,
-        'protocol' => 'SMTP_AUTH',
-        'user' => 'msyktest@msyk.net',
-        'pass' => 'msyk27745test',
-    );
+//    private string $mailAddress = "msyk@msyk.net";
+//    private array $smtpSettings = array(
+//        'host' => 's98.coreserver.jp',
+//        'port' => 587,
+//        'protocol' => 'SMTP_AUTH',
+//        'user' => 'msyktest@msyk.net',
+//        'pass' => 'msyk27745test',
+//    );
 
     /*
       * This SMTP account won't access any time. Masayuki Nii has this account, and he will be activate it
@@ -31,7 +31,7 @@ class OME_Test extends TestCase
         $addrString = "Masayuki Nii <msyk@msyk.net>";
         $ome = new OME();
         $ome->setToField($addrString);
-        $this->assertEquals($ome->getToField() === $addrString, true, "[ERROR] in parse mail address string.");
+        $this->assertTrue($ome->getToField() === $addrString, "[ERROR] in parse mail address string.");
     }
     public function testAddressCheck()
     {

@@ -21,7 +21,7 @@ use INTERMediator\Params;
 
 class IMLocale
 {
-    public static function numberFormatterClassName()
+    public static function numberFormatterClassName():string
     {
         $cName = "INTERMediator\Locale\IMNumberFormatter";
         try {   // This exception handling requires just PHP 5.2. On above 5.3 or later, it doesn't need to 'try.'
@@ -44,7 +44,8 @@ class IMLocale
 
     /**
      * Set the locale with parameter, for UNIX and Windows OS.
-     * @param string locType locale identifier string.
+     * @param string $locType locale identifier string.
+     * @param string $localeName
      * @return void
      */
     public static function setLocale(string $locType, string $localeName = ''): void
@@ -101,7 +102,7 @@ class IMLocale
 
     /**
      * Get the locale string (ex. 'ja_JP') from HTTP header from a browser.
-     * @param string $accept $_SERVER['HTTP_ACCEPT_LANGUAGE']
+     * @param string $localeString $_SERVER['HTTP_ACCEPT_LANGUAGE']
      * @return string Most prior locale identifier
      */
     public static function getLocaleFromBrowser(string $localeString = ''): string

@@ -114,9 +114,10 @@ class OME
 
     /**    メールの本文を設定する。既存の本文は置き換えられる。
      *
-     * @param string メールの本文に設定する文字列
+     * @param string $str メールの本文に設定する文字列
+     * @param ?string $type
      */
-    public function setBody(string $str, string $type = null): void
+    public function setBody(string $str, ?string $type = null): void
     {
         $this->body = $str;
         $this->bodyType = $type;
@@ -129,7 +130,7 @@ class OME
 
     /**    メールの本文を追加する。既存の本文の後に追加する。
      *
-     * @param string メールの本文に追加する文字列
+     * @param string $str メールの本文に追加する文字列
      */
     public function appendBody(string $str): void
     {
@@ -138,7 +139,7 @@ class OME
 
     /**    メールの件名を設定する。
      *
-     * @param string メールの件名に設定する文字列
+     * @param string $str メールの件名に設定する文字列
      */
     public function setSubject(string $str): void
     {
@@ -156,8 +157,8 @@ class OME
 
     /**    追加のヘッダを1つ設定する。ただし、Subject、To、From、Cc、Bccは該当するメソッドを使う
      *
-     * @param string    追加するヘッダのフィールド
-     * @param string    フィールドの値。日本語を含める場合は自分でエンコードを行う
+     * @param string $field 追加するヘッダのフィールド
+     * @param string $value フィールドの値。日本語を含める場合は自分でエンコードを行う
      */
     public function setExtraHeader(string $field, string $value): void
     {
@@ -166,7 +167,7 @@ class OME
 
     /**    sendmailコマンドに与える追加のパラメータを指定する
      *
-     * @param string    追加のパラメータ。この文字列がそのままmb_send_mail関数の5つ目の引数となる
+     * @param string $param 追加のパラメータ。この文字列がそのままmb_send_mail関数の5つ目の引数となる
      */
     public function setSendMailParam(string $param): void
     {
@@ -192,7 +193,7 @@ class OME
      *
      *    判断に使う正規表現は「^([a-z0-9_]|\-|\.)+@(([a-z0-9_]|\-)+\.)+[a-z]+$」なので、完全ではないが概ねOKかと。
      *
-     * @param string    チェックするメールアドレス。
+     * @param ?string $address チェックするメールアドレス。
      * @return    boolean    正しい形式ならTRUE、そうではないときはFALSE
      */
     public function checkEmail(?string $address): bool
@@ -211,14 +212,14 @@ class OME
     }
 
     /**    Fromフィールドを設定する。
-     * @param string    送信者のアドレスで、アドレスとして正しいかどうかがチェックされる
-     * @param string    送信者名（日本語の文字列はそのまま指定可能）で、省略しても良い
-     * @param boolean    送信者アドレスを自動的にsendmailの-fパラメータとして与えて、Return-Pathのアドレスとして使用する場合はTRUE。既定値はFALSE
-     * @return    boolean    与えたメールアドレスが正しく、引数が適切に利用されればTRUEを返す。メールアドレスが正しくないとFALSEを戻し、内部変数等には与えた引数のデータは記録されない
+     * @param string $address 送信者のアドレスで、アドレスとして正しいかどうかがチェックされる
+     * @param ?string $name 送信者名（日本語の文字列はそのまま指定可能）で、省略しても良い
+     * @param bool $isSetToParam 送信者アドレスを自動的にsendmailの-fパラメータとして与えて、Return-Pathのアドレスとして使用する場合はTRUE。既定値はFALSE
+     * @return    bool    与えたメールアドレスが正しく、引数が適切に利用されればTRUEを返す。メールアドレスが正しくないとFALSEを戻し、内部変数等には与えた引数のデータは記録されない
      */
     public function setFromField(string $address, ?string $name = null, bool $isSetToParam = FALSE): bool
     {
-        if (is_null($name) || $name === false) {
+        if (is_null($name)) {
             [$address, $name] = $this->divideMailAddress($address);
         }
         if ($this->checkEmail($address)) {
@@ -242,18 +243,18 @@ class OME
 
     /**    Toフィールドを設定する。すでに設定されていれば上書きされ、この引数の定義だけが残る
      *
-     * @param string 送信者のアドレス
-     * @param string 送信者名
-     * @return    boolean    与えたメールアドレスが正しく、引数が適切に利用されればTRUEを返す。メールアドレスが正しくないとFALSEを戻し、内部変数等には与えた引数のデータは記録されない
+     * @param string $address 送信者のアドレス
+     * @param ?string $name 送信者名
+     * @return    bool    与えたメールアドレスが正しく、引数が適切に利用されればTRUEを返す。メールアドレスが正しくないとFALSEを戻し、内部変数等には与えた引数のデータは記録されない
      *
      */
     public function setToField(string $address, ?string $name = null): bool
     {
-        if (is_null($name) || $name === false) {
+        if (is_null($name)) {
             [$address, $name] = $this->divideMailAddress($address);
         }
         if ($this->checkEmail($address)) {
-            if ($name == '' || $name === false) {
+            if ($name == '') {
                 $this->toField = "$address";
             } else {
                 $this->toField = "$name <$address>";
@@ -271,17 +272,17 @@ class OME
 
     /**    Toフィールドに追加する。
      *
-     * @param string    送信者のアドレス
-     * @param string    送信者名。日本語の指定も可能
-     * @return boolean メールアドレスを調べて不正ならfalse（アドレスは追加されない）、そうでなければtrue
+     * @param string $address 送信者のアドレス
+     * @param ?string $name 送信者名。日本語の指定も可能
+     * @return bool メールアドレスを調べて不正ならfalse（アドレスは追加されない）、そうでなければtrue
      */
     public function appendToField(string $address, ?string $name = null): bool
     {
-        if (is_null($name) || $name === false) {
+        if (is_null($name)) {
             [$address, $name] = $this->divideMailAddress($address);
         }
         if ($this->checkEmail($address)) {
-            if ($name == '' || $name === false)
+            if ($name == '')
                 $appendString = "$address";
             else
                 $appendString = "$name <$address>";
@@ -302,17 +303,17 @@ class OME
 
     /**    Ccフィールドを設定する。すでに設定されていれば上書きされ、この引数の定義だけが残る
      *
-     * @param string    送信者のアドレス
-     * @param string    送信者名
-     * @return boolean    メールアドレスを調べて不正ならfalse（アドレスは設定されない）、そうでなければtrue
+     * @param string $address 送信者のアドレス
+     * @param ?string $name 送信者名
+     * @return bool    メールアドレスを調べて不正ならfalse（アドレスは設定されない）、そうでなければtrue
      */
     public function setCcField(string $address, ?string $name = null): bool
     {
-        if (is_null($name) || $name === false) {
+        if (is_null($name)) {
             [$address, $name] = $this->divideMailAddress($address);
         }
         if ($this->checkEmail($address)) {
-            if ($name == '' || $name === false)
+            if ($name == '')
                 $this->ccField = "$address";
             else
                 $this->ccField = "$name <$address>";
@@ -323,17 +324,17 @@ class OME
 
     /**    Ccフィールドに追加する。
      *
-     * @param string 送信者のアドレス
-     * @param string 送信者名
-     * @return boolean    メールアドレスを調べて不正ならfalse（アドレスは追加されない）、そうでなければtrue
+     * @param string $address 送信者のアドレス
+     * @param ?string $name 送信者名
+     * @return bool    メールアドレスを調べて不正ならfalse（アドレスは追加されない）、そうでなければtrue
      */
     public function appendCcField(string $address, ?string $name = null): bool
     {
-        if (is_null($name) || $name === false) {
+        if (is_null($name)) {
             [$address, $name] = $this->divideMailAddress($address);
         }
         if ($this->checkEmail($address)) {
-            if ($name == '' || $name === false)
+            if ($name == '')
                 $appendString = "$address";
             else
                 $appendString = "$name <$address>";
@@ -354,17 +355,17 @@ class OME
 
     /**    Bccフィールドを設定する。すでに設定されていれば上書きされ、この引数の定義だけが残る
      *
-     * @param string 送信者のアドレス
-     * @param string 送信者名
-     * @return boolean メールアドレスを調べて不正ならfalse（アドレスは設定されない）、そうでなければtrue
+     * @param string $address 送信者のアドレス
+     * @param ?string $name = null 送信者名
+     * @return bool メールアドレスを調べて不正ならfalse（アドレスは設定されない）、そうでなければtrue
      */
     public function setBccField(string $address, ?string $name = null): bool
     {
-        if (is_null($name) || $name === false) {
+        if (is_null($name)) {
             [$address, $name] = $this->divideMailAddress($address);
         }
         if ($this->checkEmail($address)) {
-            if ($name == '' || $name === false)
+            if ($name == '')
                 $this->bccField = "$address";
             else
                 $this->bccField = "$name <$address>";
@@ -375,17 +376,17 @@ class OME
 
     /**    Bccフィールドに追加する。
      *
-     * @param string 送信者のアドレス
-     * @param string 送信者名
-     * @return string メールアドレスを調べて不正ならfalse（アドレスは追加されない）、そうでなければtrue
+     * @param string $address 送信者のアドレス
+     * @param ?string $name 送信者名
+     * @return bool メールアドレスを調べて不正ならfalse（アドレスは追加されない）、そうでなければtrue
      */
     public function appendBccField(string $address, ?string $name = null): bool
     {
-        if (is_null($name) || $name === false) {
+        if (is_null($name)) {
             [$address, $name] = $this->divideMailAddress($address);
         }
         if ($this->checkEmail($address)) {
-            if ($name == '' || $name === false)
+            if ($name == '')
                 $appendString = "$address";
             else
                 $appendString = "$name <$address>";
@@ -400,8 +401,8 @@ class OME
 
     /**    指定したファイルをテンプレートとして読み込む。
      *
-     * @param string テンプレートファイル。たとえば、同一のディレクトリにあるファイルなら、ファイル名だけを記述すればよい。
-     * @return boolean ファイルの中身を読み込めた場合true、ファイルがないなどのエラーの場合はfalse
+     * @param string $tfile テンプレートファイル。たとえば、同一のディレクトリにあるファイルなら、ファイル名だけを記述すればよい。
+     * @return bool ファイルの中身を読み込めた場合true、ファイルがないなどのエラーの場合はfalse
      */
     public function setTemplateAsFile(string $tfile): bool
     {
@@ -416,7 +417,7 @@ class OME
 
     /**    文字列そのものをテンプレートして設定する。
      *
-     * @param string    テンプレートとして利用する文字列
+     * @param string $str    テンプレートとして利用する文字列
      */
     public function setTemplateAsString(string $str): void
     {
@@ -432,8 +433,8 @@ class OME
      *    これらは差し込みをしてから強制的に削除される。強制削除があった場合にはfalseを戻すが、
      *    それでも差し込み自体は行われている。
      *
-     * @param array テンプレートに差し込むデータが入っている配列
-     * @return boolean 差し込み処理が問題なく終わればtrue、
+     * @param array $ar テンプレートに差し込むデータが入っている配列
+     * @return bool 差し込み処理が問題なく終わればtrue、
      * そうでなければfalse（たとえばテンプレートに "@@x@@" などの置き換え文字列が残っている場合。
      * それでも可能な限り置き換えを行い、置き換え文字列は削除される）
      */
@@ -457,7 +458,7 @@ class OME
 
     /**    本文の自動改行のバイト数を設定する。初期値は74になっている。
      *
-     * @param integer 改行を行うバイト数。0を指定すると自動改行しない。
+     * @param int $bytes 改行を行うバイト数。0を指定すると自動改行しない。
      */
     public function setBodyWidth(int $bytes): void
     {
@@ -466,8 +467,8 @@ class OME
 
     /**    文字列中にコントロールコードが含まれているかを調べる
      *
-     * @param string 調べる文字列
-     * @return boolean 含まれていたらTRUEを返す
+     * @param string $str 調べる文字列
+     * @return bool 含まれていたらTRUEを返す
      */
     private function checkControlCodeNothing(string $str): bool
     {
@@ -475,7 +476,7 @@ class OME
     }
 
     /**    添付ファイルを指定する
-     * @param string 添付するファイルへのパス
+     * @param string $fpath 添付するファイルへのパス
      */
     public function addAttachment(string $fpath): void
     {
@@ -487,7 +488,8 @@ class OME
      *    念のため、To、Cc、Bccのデータにコントロールコードが入っているかどうかをチェックしている。
      *    コントロールコードが見つかればfalseを返し送信はしないものとする。
      *
-     * @return boolean メールが送信できればtrue、送信できなければFALSE
+     * @return bool メールが送信できればtrue、送信できなければFALSE
+     * @throws
      */
     public function send(): bool
     {
@@ -672,7 +674,7 @@ class OME
 
     /**    文字列を別メソッドで決められたバイト数ごとに分割する。ワードラップ、禁則を考慮する。（内部利用メソッド）
      *
-     * @param string 処理対象の文字列
+     * @param string $str 処理対象の文字列
      * @return string 分割された文字列
      */
     private function devideWithLimitingWidth(string $str): string
@@ -728,8 +730,8 @@ class OME
 
     /**    引数の文字が空白かどうかのチェックを行う。ただ、これは標準の関数を利用すべきかもしれない（内部利用メソッド／devideWithLimitingWidth関数で利用）
      *
-     * @param string 処理対象の文字
-     * @return boolean 空白ならTRUE
+     * @param string $str 処理対象の文字
+     * @return bool 空白ならTRUE
      */
     private function isSpace(string $str): bool
     {
@@ -743,8 +745,8 @@ class OME
 
     /**    引数の文字が単語を構成する文字（アルファベット、あるいは数値）かどうかのチェックを行う（内部利用メソッド／devideWithLimitingWidth関数で利用）
      *
-     * @param string 処理対象の文字
-     * @return boolean 単語を構成する文字ならTRUE
+     * @param string $str 処理対象の文字
+     * @return bool 単語を構成する文字ならTRUE
      */
     private function isWordElement(string $str): bool
     {
@@ -761,8 +763,8 @@ class OME
 
     /**    引数が日本語の文字列かどうかを判断する（内部利用メソッド／devideWithLimitingWidth関数で利用）
      *
-     * @param string 処理対象の文字
-     * @return boolean 日本語ならTRUE
+     * @param string $str 処理対象の文字
+     * @return bool 日本語ならTRUE
      */
     private function isJapanese(string $str): bool
     {
@@ -773,8 +775,8 @@ class OME
 
     /**    引数が日本語の行頭禁則文字かどうかを判断する（内部利用メソッド／devideWithLimitingWidth関数で利用）
      *
-     * @param string 処理対象の文字
-     * @return boolean 行頭禁則文字ならTRUE
+     * @param string $str 処理対象の文字
+     * @return bool 行頭禁則文字ならTRUE
      */
     private function isInhibitLineTopChar(string $str): bool
     {
@@ -815,8 +817,8 @@ class OME
 
     /**    引数が日本語の行末禁則文字かどうかを判断する（内部利用メソッド／devideWithLimitingWidth関数で利用）
      *
-     * @param string 処理対象の文字
-     * @return boolean 行末禁則文字ならTRUE
+     * @param string $str 処理対象の文字
+     * @return bool 行末禁則文字ならTRUE
      */
     private function isInhibitLineEndChar(string $str): bool
     {
@@ -845,8 +847,8 @@ class OME
      *    ヘッダ文字列として利用できるように、文字列内の日本語の部分をMIMEエンコードする。
      *    文字列の中を日本語と英語に分けて、日本語の部分だけをISO-2022-JPでエンコードする。
      *
-     * @param string 処理対象の文字列
-     * @param boolean  日本語と英語の境目を改行する
+     * @param string $str 処理対象の文字列
+     * @param bool $isSeparateLine  日本語と英語の境目を改行する
      * @return string MIMEエンコードした文字列
      */
     private function header_base64_encode(string $str, bool $isSeparateLine): string

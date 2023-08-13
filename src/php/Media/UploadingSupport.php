@@ -24,18 +24,17 @@ interface UploadingSupport
 {
     /**
      * @param Proxy $db
-     * @param string $url
+     * @param ?string $url
      * @param array|null $options
      * @param array $files
      * @param bool $noOutput
-     * @param string $field
+     * @param array $field
      * @param string $contextname
-     * @param string $keyfield
-     * @param string $keyvalue
+     * @param ?string $keyfield
+     * @param ?string $keyvalue
      * @param array|null $datasource
      * @param array|null $dbspec
      * @param int $debug
-     * @return mixed
      */
     public function processing(Proxy $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
                                string  $contextname, ?string $keyfield, ?string $keyvalue,

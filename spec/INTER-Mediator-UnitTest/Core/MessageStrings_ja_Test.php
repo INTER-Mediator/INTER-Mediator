@@ -4,12 +4,11 @@
  */
 
 use PHPUnit\Framework\TestCase;
-use INTERMediator\Message\MessageStrings;
 use INTERMediator\Message\MessageStrings_ja;
 
 class MessageStrings_ja_Test extends TestCase
 {
-    private $messagestrings;
+    private MessageStrings_ja $messagestrings;
 
     public function setUp(): void
     {

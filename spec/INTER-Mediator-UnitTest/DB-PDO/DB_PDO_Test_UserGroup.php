@@ -1,8 +1,6 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
 use INTERMediator\IMUtil;
-use INTERMediator\DB\Proxy;
 
 trait DB_PDO_Test_UserGroup
 {
