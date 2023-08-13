@@ -734,7 +734,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         foreach ($result as $record) {
             $record = array('recordId' => $record->getRecordId(), 'modId' => $record->getModId());
             foreach ($record as $field => $value) {
-                $record[$fieldName] = $record->{$fieldName};
+                $record[$field] = $record->{$field};
             }
             $array[] = $record;
         }

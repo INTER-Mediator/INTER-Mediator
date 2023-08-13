@@ -16,22 +16,39 @@ namespace INTERMediator\Data_Converter;
 
 use INTERMediator\Locale\IMLocale;
 
+/**
+ *
+ */
 class Currency extends NumberBase
 {
+    /**
+     * @var int|mixed
+     */
     private int $d;
 
-    function __construct($digits = 0)
+    /**
+     * @param int $digits
+     */
+    function __construct(int $digits = 0)
     {
         parent::__construct();
         $this->d = $digits;
     }
 
+    /**
+     * @param string|null $str
+     * @return string
+     */
     function converterFromDBtoUser(?string $str):string
     {
         $this->formatter->setAttribute(8 /*NumberFormatter::FRACTION_DIGITS*/, $this->d);
         return $this->formatter->formatCurrency($str, IMLocale::$currencyCode);
     }
 
+    /**
+     * @param string $str
+     * @return string
+     */
     function converterFromUserToDB(string $str):string
     {
         $normalized = str_replace($this->thSepMark, '', mb_convert_kana($str, 'n'));

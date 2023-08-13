@@ -124,14 +124,14 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
                                ?array  $datasource, ?array $dbspec, int $debug):void    {
         $mediaRootDir = $options['media-root-dir'] ?? Params::getParameterValue('mediaRootDir', null) ?? null;
         if (!$mediaRootDir) {
-            if (!is_null($this->url)) {
-                header('Location: ' . $this->url);
+            if (!is_null($url)) {
+                header('Location: ' . $url);
             } else {
-                $this->db->logger->setErrorMessage("'media-root-dir' isn't specified");
-                $this->db->processingRequest("noop");
+                $db->logger->setErrorMessage("'media-root-dir' isn't specified");
+                $db->processingRequest("noop");
                 if (!$noOutput) {
-                    $this->db->finishCommunication();
-                    $this->db->exportOutputDataAsJSON();
+                    $db->finishCommunication();
+                    $db->exportOutputDataAsJSON();
                 }
             }
             return;

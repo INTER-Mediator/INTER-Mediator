@@ -228,19 +228,19 @@ class TextFile extends DBClass
         return false;
     }
 
-    public function deleteFromDB():bool
+    public function deleteFromDB(): bool
     {
         return false;
     }
 
-    public function getFieldInfo(string $dataSourceName):?array
+    public function getFieldInfo(string $dataSourceName): ?array
     {
         return null;
     }
 
     public function setupConnection(): bool
     {
-        // TODO: Implement setupConnection() method.
+        return true;
     }
 
     public function isPossibleOperator(string $operator): bool
@@ -248,7 +248,7 @@ class TextFile extends DBClass
         return in_array(strtoupper($operator), array('='));
     }
 
-    public function isPossibleOrderSpecifier(string $specifier):bool
+    public function isPossibleOrderSpecifier(string $specifier): bool
     {
         return in_array(strtoupper($specifier), array('ASC', 'DESC'));
     }
@@ -260,30 +260,28 @@ class TextFile extends DBClass
 
     public function getUpdatedRecord(): ?array
     {
-        // TODO: Implement getUpdatedRecord() method.
+        return [];
     }
 
     public function updatedRecord(): ?array
     {
-        // TODO: Implement getUpdatedRecord() method.
+        return [];
     }
 
     public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
     {
-        // TODO: Implement getUpdatedRecord() method.
     }
 
-    public function createInDB(bool $isReplace = false):?string
+    public function createInDB(bool $isReplace = false): ?string
     {
-        // TODO: Implement newToDB() method.
+        return "created";
     }
 
     public function softDeleteActivate(string $field, string $value): void
     {
-        // TODO: Implement softDeleteActivate() method.
     }
 
-    public function copyInDB():?string
+    public function copyInDB(): ?string
     {
         return null;
     }
@@ -297,11 +295,11 @@ class TextFile extends DBClass
     {
     }
 
-    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0):void
+    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
     {
     }
 
-    public function queryForTest(string $table, ?array $conditions = null):?array
+    public function queryForTest(string $table, ?array $conditions = null): ?array
     {
         return null;
     }
@@ -314,38 +312,38 @@ class TextFile extends DBClass
     /*
 * Transaction
 */
-    public function hasTransaction():bool
+    public function hasTransaction(): bool
     {
         return false;
     }
 
-    public function inTransaction():bool
+    public function inTransaction(): bool
     {
         return false;
     }
 
-    public function beginTransaction():void
+    public function beginTransaction(): void
     {
     }
 
-    public function commitTransaction():void
+    public function commitTransaction(): void
     {
     }
 
-    public function rollbackTransaction():void
+    public function rollbackTransaction(): void
     {
     }
 
-    public function getUseSetDataToUpdatedRecord():bool
+    public function getUseSetDataToUpdatedRecord(): bool
     {
         return false;
     }
 
-    public function clearUseSetDataToUpdatedRecord():void
+    public function clearUseSetDataToUpdatedRecord(): void
     {
     }
 
-    public function closeDBOperation()
+    public function closeDBOperation(): void
     {
     }
 }

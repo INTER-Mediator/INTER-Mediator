@@ -8,7 +8,7 @@
 
 namespace deprecated;
 
-use LDAPAuth;
+use INTERMediator\LDAPAuth;
 use PHPUnit\Framework\TestCase;
 
 class LDAPAuth_Test extends TestCase

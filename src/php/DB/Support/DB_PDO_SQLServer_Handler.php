@@ -28,7 +28,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         'int', 'money', 'numeric', 'real', 'smallint', 'smallmoney', 'tinyint',);
     protected array $timeFieldTypes = ['datetime', 'datetime2', 'datetimeoffset', 'time', 'smalldatetime'];
     protected array $dateFieldTypes = ['date', 'datetimeoffset', 'smalldatetime'];
-    protected $booleanFieldTypes = [];
+    protected array $booleanFieldTypes = [];
 
     public function sqlSELECTCommand(): string
     {

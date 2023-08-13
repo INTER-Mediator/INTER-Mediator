@@ -17,6 +17,7 @@ namespace INTERMediator\Data_Converter;
 
 use DateTime;
 use DateTimeZone;
+use Exception;
 use INTERMediator\Locale\IMLocale;
 
 /**
@@ -44,9 +45,9 @@ class MySQLDateTime
     }
 
     /**
-     * @param string $str
+     * @param ?string $str
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     function converterFromDBtoUser(?string $str): string
     {
@@ -57,7 +58,7 @@ class MySQLDateTime
         $slash = substr_count($str, '-');
         $colon = substr_count($str, ':');
         $dtObj = false;
-        $fmt = 'Y-m-d H:i:s';
+        $fmt = '';
         if (($sp !== FALSE) && ($slash == 2) && ($colon == 2)) {
             $sep = explode(' ', $str);
             $comp = explode('-', $sep[0]);
@@ -92,7 +93,9 @@ class MySQLDateTime
             return null;
         }
         $dtAr = date_parse(str_replace('.', '-', $str));
-        if ($dtAr === false) return $str;
+        if (!$dtAr) {
+            return $str;
+        }
         $dt = '';
         if ($dtAr['year'] !== false && $dtAr['hour'] !== false)
             $dt = "{$dtAr['year']}-{$dtAr['month']}-{$dtAr['day']} {$dtAr['hour']}:{$dtAr['minute']}:{$dtAr['second']}";
