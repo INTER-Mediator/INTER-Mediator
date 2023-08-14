@@ -9,8 +9,13 @@ on:
 
 jobs:
   run:
-    runs-on: 'ubuntu-latest'
     name: Run PHPStan
+    runs-on: 'ubuntu-latest'
+    strategy:
+      matrix:
+        level: [ 0, 1, 2 ]
+        include:
+          - current-level: 0
     steps:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
 
@@ -24,6 +29,12 @@ jobs:
 
       - name: Run PHPStan
         continue-on-error: true
+        if:  matrix.level == matrix.current-level
+        run: ./vendor/bin/phpstan analyse -c spec/phpstan.neon --memory-limit 512M src spec/INTER-Mediator-UnitTest --level "${{ matrix.level }}"
+
+      - name: Run PHPStan
+        if:  matrix.level > matrix.current-level
+        continue-on-error: true
         run: |
-             ./vendor/bin/phpstan analyse -l 0 --memory-limit 512M src spec/INTER-Mediator-UnitTest
+             ./vendor/bin/phpstan analyse -c spec/phpstan.neon --memory-limit 512M src spec/INTER-Mediator-UnitTest --level "${{ matrix.level }}"
              exit 0
