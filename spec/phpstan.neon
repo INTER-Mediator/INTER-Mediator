@@ -1,0 +1,5 @@
+parameters:
+    fileExtensions:
+        - php
+    ignoreErrors:
+        - '#Instantiated class RetrieveFM7Data not found\.#'
