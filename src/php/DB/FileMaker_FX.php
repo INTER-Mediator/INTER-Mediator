@@ -119,7 +119,7 @@ class FileMaker_FX extends DBClass
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
     }
 
-    private function setupFX_Impl(string $layoutName, int $recordCount, $user, $password)
+    private function setupFX_Impl(string $layoutName, int $recordCount, $user, $password): FX
     {
         $path = __DIR__ . '/../../../vendor/inter-mediator/fxphp' .
             '/lib/datasource_classes/RetrieveFM7Data.class.php';
@@ -148,14 +148,14 @@ class FileMaker_FX extends DBClass
         $this->specHandler = new Support\DB_Spec_Handler_FileMaker_FX();
     }
 
-    public function stringWithoutCredential(string $str): string
+    public function stringWithoutCredential(?string $str): string
     {
         if (is_null($this->fx)) {
             $str = str_replace($this->dbSettings->getDbSpecUser(), "********", $str ?? "");
-            return str_replace($this->dbSettings->getDbSpecPassword(), "********", $str ?? "");
+            return str_replace($this->dbSettings->getDbSpecPassword(), "********", $str);
         } else {
             $str = str_replace($this->dbSettings->getAccessUser(), "********", $str ?? "");
-            return str_replace($this->dbSettings->getAccessPassword(), "********", $str ?? "");
+            return str_replace($this->dbSettings->getAccessPassword(), "********", $str);
         }
     }
 
@@ -164,12 +164,12 @@ class FileMaker_FX extends DBClass
         // Do nothing
     }
 
-    private function stringReturnOnly(string $str): string
+    private function stringReturnOnly(?string $str): string
     {
         return str_replace("\n\r", "\r", str_replace("\n", "\r", $str ?? ""));
     }
 
-    private function unifyCRLF(string $str): string
+    private function unifyCRLF(?string $str): string
     {
         return str_replace("\n", "\r", str_replace("\r\n", "\r", $str ?? ""));
     }
@@ -204,13 +204,11 @@ class FileMaker_FX extends DBClass
         $queryString = '';
         if (is_array($scriptContext)) {
             foreach ($scriptContext as $condition) {
-                if (isset($condition['situation']) &&
-                    isset($condition['definition']) && !empty($condition['definition'])
-                ) {
-                    $scriptName = str_replace('&', '', $condition['definition'] ?? "");
+                if (isset($condition['situation']) && isset($condition['definition'])) {
+                    $scriptName = str_replace('&', '', $condition['definition']);
                     $parameter = '';
-                    if (isset($condition['parameter']) && !empty($condition['parameter'])) {
-                        $parameter = str_replace('&', '', $condition['parameter'] ?? "");
+                    if (isset($condition['parameter'])) {
+                        $parameter = str_replace('&', '', $condition['parameter']);
                     }
                     switch ($condition['situation']) {
                         case 'post':
@@ -243,17 +241,17 @@ class FileMaker_FX extends DBClass
     {
         if ($condition['situation'] == 'pre') {
             $fxphp->PerformFMScriptPrefind($condition['definition']);
-            if (isset($condition['parameter']) && !empty($condition['parameter'])) {
+            if (isset($condition['parameter'])) {
                 $fxphp->AddDBParam('-script.prefind.param', $condition['parameter']);
             }
         } else if ($condition['situation'] == 'presort') {
             $fxphp->PerformFMScriptPresort($condition['definition']);
-            if (isset($condition['parameter']) && !empty($condition['parameter'])) {
+            if (isset($condition['parameter'])) {
                 $fxphp->AddDBParam('-script.presort.param', $condition['parameter']);
             }
         } else if ($condition['situation'] == 'post') {
             $fxphp->PerformFMScript($condition['definition']);
-            if (isset($condition['parameter']) && !empty($condition['parameter'])) {
+            if (isset($condition['parameter'])) {
                 $fxphp->AddDBParam('-script.param', $condition['parameter']);
             }
         }
@@ -287,7 +285,7 @@ class FileMaker_FX extends DBClass
         }
 
         $returnArray = array();
-        foreach ($result['fields'] as $key => $fieldInfo) {
+        foreach ($result['fields'] as $fieldInfo) {
             $returnArray[$fieldInfo['name']] = '';
         }
 
@@ -1623,7 +1621,7 @@ class FileMaker_FX extends DBClass
             return null;
         }
         $recordSet = array();
-        foreach ($result['data'] as $key => $row) {
+        foreach ($result['data'] as $row) {
             $oneRecord = array();
             foreach ($row as $field => $value) {
                 $oneRecord[$field] = $value[0];

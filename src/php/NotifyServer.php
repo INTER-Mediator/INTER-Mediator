@@ -86,7 +86,7 @@ class NotifyServer
      * @param ?array $tableKeys
      * @return bool
      */
-    public function unregister(string $client, ?array $tableKeys): bool
+    public function unregister(?string $client, ?array $tableKeys): bool
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] unregister", 2);
         if ($this->dbClass->notifyHandler) {
@@ -103,7 +103,7 @@ class NotifyServer
      * @param array $value
      * @param bool $isNotify
      */
-    public function updated(string $clientId, string $entity, array $pkArray, array $field, array $value, bool $isNotify): void
+    public function updated(?string $clientId, string $entity, array $pkArray, array $field, array $value, bool $isNotify): void
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] updated", 2);
         if ($this->dbClass->notifyHandler) {
@@ -121,7 +121,7 @@ class NotifyServer
      * @param array $record
      * @param bool $isNotify
      */
-    public function created(string $clientId, string $entity, array $pkArray, string $pkField, array $record, bool $isNotify): void
+    public function created(?string $clientId, string $entity, array $pkArray, string $pkField, array $record, bool $isNotify): void
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] created", 2);
         if ($this->dbClass->notifyHandler) {
@@ -136,7 +136,7 @@ class NotifyServer
      * @param string $entity
      * @param array $pkArray
      */
-    public function deleted(string $clientId, string $entity, array $pkArray): void
+    public function deleted(?string $clientId, string $entity, array $pkArray): void
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] deleted", 2);
         if ($this->dbClass->notifyHandler) {
