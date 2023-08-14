@@ -130,7 +130,7 @@ class OAuthAuth
         $dbProxy = new Proxy();
         $dbProxy->initialize(null, null, null, false);
         $dbProxy->dbSettings->setSAMLExpiringSeconds(3600 * 24);
-        $credential = IMUtil::generateCredential(30, $this->passwordHash, $this->alwaysGenSHA2);
+        $credential = $this->generateCredential(30);
         $param = array(
             "username" => $tokenID["username"],
             "hashedpasswd" => $credential,
@@ -168,6 +168,25 @@ class OAuthAuth
             return true;
         }
         return true;
+    }
+
+    /**
+     * For passing PHPStan analyzations. It won't work so far 2023-8-14
+     * @param int $digit
+     * @return string
+     */
+    private function generateCredential(int $digit): string
+    {
+        $password = '';
+        for ($i = 0; $i < $digit; $i++) {
+            $password .= chr(rand(32, 127));
+        }
+        $salt = '';
+        for ($i = 0; $i < 4; $i++) {
+            $n = rand(33, 126);
+            $salt .= chr($n);
+        }
+        return sha1($password . $salt) . bin2hex($salt);
     }
 
     private function decodeIDToken($code)

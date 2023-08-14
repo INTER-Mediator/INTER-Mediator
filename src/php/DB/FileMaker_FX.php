@@ -15,6 +15,8 @@
 
 namespace INTERMediator\DB;
 
+require_once '../../../vendor/inter-mediator/fxphp/lib/datasource_classes/RetrieveFM7Data.class.php';
+
 use CWPKit;
 use Exception;
 use FX;
