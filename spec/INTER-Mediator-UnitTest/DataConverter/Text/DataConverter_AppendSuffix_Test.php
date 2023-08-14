@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class DataConverter_AppendSuffix_Test extends TestCase
 {
-    private $dataconverter;
+    private AppendSuffix $dataconverter;
 
     public function setUp(): void
     {

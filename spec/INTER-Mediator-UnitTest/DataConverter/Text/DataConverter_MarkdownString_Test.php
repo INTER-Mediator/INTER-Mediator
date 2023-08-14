@@ -10,6 +10,8 @@ use PHPUnit\Framework\TestCase;
 
 class DataConverter_MarkdownString_Test extends TestCase
 {
+    private MarkdownString $dataconverter;
+
     public function setUp(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';

@@ -20,7 +20,7 @@ class DB_Proxy_PostgreSQL_Test extends DB_Proxy_Test_Common
         $this->schemaName = "im_sample.";
     }
 
-    function dbProxySetupForAccess($contextName, $maxRecord, $hasExtend = false)
+    function dbProxySetupForAccess(string $contextName, int $maxRecord, int $hasExtend = 0): void
     {
         $this->schemaName = "im_sample.";
         $this->dataSource = [
@@ -46,7 +46,7 @@ class DB_Proxy_PostgreSQL_Test extends DB_Proxy_Test_Common
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
-    function dbProxySetupForAuthAccess($contextName, $maxRecord, $subContextName = null)
+    function dbProxySetupForAuthAccess(string $contextName, int $maxRecord, $subContextName = null): void
     {
         $this->schemaName = "im_sample.";
         $this->dataSource = [

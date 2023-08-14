@@ -23,11 +23,15 @@ abstract class DB_PDO_Test_Common extends TestCase
     use DB_PDO_Test_LocalContextConditions;
     use Proxy_ExtSupport;
 
-    public Proxy $db_proxy;
-    public string $schemaName = "";
-    public string $dsn = "";
+    protected Proxy $db_proxy;
+    protected string $schemaName = "";
+    protected string $dsn = "";
 
-    abstract function dbProxySetupForAccess(string $contextName, int $maxRecord, ?string $subContextName): void;
+    protected string $sqlSETClause1;
+    protected string $sqlSETClause2;
+    protected string $sqlSETClause3;
+
+    abstract function dbProxySetupForAccess(string $contextName, int $maxRecord, ?string $subContextName = null): void;
 
     abstract function dbProxySetupForAuth(): void;
 

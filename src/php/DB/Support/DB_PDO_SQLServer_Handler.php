@@ -245,6 +245,6 @@ xml
 
     protected function getAutoIncrementField($tableName): ?string
     {
-        // TODO: Implement getAutoIncrementField() method.
+        return "unknown";
     }
 }

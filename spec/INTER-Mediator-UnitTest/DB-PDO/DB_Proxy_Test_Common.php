@@ -18,9 +18,9 @@ abstract class DB_Proxy_Test_Common extends TestCase
     public ?array $options;
     public ?array $dbSpec;
 
-    abstract function dbProxySetupForAccess($contextName, $maxRecord, $hasExtend = false);
+    abstract function dbProxySetupForAccess(string $contextName, int $maxRecord, int $hasExtend = 0): void;
 
-    abstract function dbProxySetupForAuthAccess($contextName, $maxRecord);
+    abstract function dbProxySetupForAuthAccess(string $contextName, int $maxRecord, $subContextName = null): void;
 
     function setUp(): void
     {
