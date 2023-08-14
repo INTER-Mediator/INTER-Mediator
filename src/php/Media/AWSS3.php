@@ -16,6 +16,7 @@
 
 namespace INTERMediator\Media;
 
+use Exception;
 use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
 use Aws\Credentials\Credentials;

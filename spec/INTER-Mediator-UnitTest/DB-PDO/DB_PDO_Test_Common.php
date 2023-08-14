@@ -23,17 +23,23 @@ abstract class DB_PDO_Test_Common extends TestCase
     use DB_PDO_Test_LocalContextConditions;
     use Proxy_ExtSupport;
 
-    public Proxy $db_proxy;
-    public string $schemaName = "";
+    protected Proxy $db_proxy;
+    protected string $schemaName = "";
+    protected string $dsn = "";
 
-    abstract function dbProxySetupForAccess($contextName, $maxRecord);
+    protected string $sqlSETClause1;
+    protected string $sqlSETClause2;
+    protected string $sqlSETClause3;
 
-    abstract function dbProxySetupForAuth();
+    abstract function dbProxySetupForAccess(string $contextName, int $maxRecord, ?string $subContextName = null): void;
 
-    abstract function dbProxySetupForAggregation();
+    abstract function dbProxySetupForAuth(): void;
 
-    abstract function dbProxySetupForAccessSetKey($contextName, $maxRecord, $keyName);
+    abstract function dbProxySetupForAggregation(): void;
 
+    abstract function dbProxySetupForAccessSetKey(string $contextName, int $maxRecord, string $keyName): void;
+
+    abstract function dbProxySetupForCondition(?array $queryArray): void;
 
     function setUp(): void
     {
@@ -233,7 +239,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 //        var_export($this->db_proxy->logger->getErrorMessages());
 //        var_export($this->db_proxy->logger->getDebugMessages());
 
-        $this->dbProxySetupForAccess("person", 1000000, "contact");
+        $this->dbProxySetupForAccess("person", 1000000);
         $result = $this->db_proxy->readFromDB();
         $recordCountAfter = $this->db_proxy->countQueryResult();
         $this->assertTrue($recordCount + 1 == $recordCountAfter,
@@ -706,18 +712,18 @@ abstract class DB_PDO_Test_Common extends TestCase
         $keyField = "id";
         $setColumnNames = ['num1', 'num2', 'date1', 'date2', 'time1', 'time2', 'dt1', 'dt2', 'vc1', 'vc2', 'text1', 'text2'];
 
-        $this->dbProxySetupForCondition($tableName);
+        $this->dbProxySetupForCondition(null);
         $setValues = [100, 200, '2022-04-01', '2022-04-01', '10:21:31', '10:21:31',
             '2022-04-01 10:21:31', '2022-04-01 10:21:31', 'TEST', 'TEST', 'TEST', 'TEST'];
         $sql = $this->db_proxy->dbClass->handler->sqlSETClause($tableName, $setColumnNames, $keyField, $setValues);
         $this->assertEquals($this->sqlSETClause1, $sql, "INSERT's SET clause has to follow the rules 1.");
 
-        $this->dbProxySetupForCondition($tableName);
+        $this->dbProxySetupForCondition(null);
         $setValues = [NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL];
         $sql = $this->db_proxy->dbClass->handler->sqlSETClause($tableName, $setColumnNames, $keyField, $setValues);
         $this->assertEquals($this->sqlSETClause2, $sql, "INSERT's SET clause has to follow the rules 2.");
 
-        $this->dbProxySetupForCondition($tableName);
+        $this->dbProxySetupForCondition(null);
         $setValues = ['', '', '', '', '', '', '', '', '', '', '', ''];
         $sql = $this->db_proxy->dbClass->handler->sqlSETClause($tableName, $setColumnNames, $keyField, $setValues);
         $this->assertEquals($this->sqlSETClause3, $sql, "INSERT's SET clause has to follow the rules 3.");

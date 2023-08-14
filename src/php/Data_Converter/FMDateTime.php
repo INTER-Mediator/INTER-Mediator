@@ -16,6 +16,7 @@
 namespace INTERMediator\Data_Converter;
 
 use DateTime;
+use Exception;
 use INTERMediator\Locale\IMLocale;
 
 /**
@@ -29,40 +30,29 @@ class FMDateTime
      */
     private string $tz = 'Asia/Tokyo'; // Should be custimizable.
     /**
-     * @var bool
-     */
-    private bool $useMbstring;
-    /**
      * @var string
-     */
-    private string $choosenLocale;
-    /**
-     * @var string|int
      */
     private string $fmt;
 
     /**
      *
-     * @param integer $format
-     * @return unknown_type
+     * @param string $format
      */
     public function __construct(string $format = '')
     {
         $this->fmt = $format;
         IMLocale::setLocale(LC_ALL);
-        $this->choosenLocale = IMLocale::$choosenLocale;
-        $this->useMbstring = IMLocale::$useMbstring;
         date_default_timezone_set($this->tz);
     }
 
     /**
-     * @param string $str
+     * @param ?string $str
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function converterFromDBtoUser(?string $str): string
     {
-        if ($str === array()) {
+        if (is_null($str)) {
             return '';
         }
         $str = str_replace(".", "/", $str);
@@ -70,7 +60,7 @@ class FMDateTime
         $slash = substr_count($str, '/');
         $colon = substr_count($str, ':');
         $dtObj = false;
-        $fmt = 'Y-m-d H:i:s';
+        $fmt = null;
         if (($sp !== FALSE) && ($slash === 2) && ($colon === 2)) {
             $sep = explode(' ', $str);
             $comp = explode('/', $sep[0]);
@@ -97,7 +87,9 @@ class FMDateTime
     public function converterFromUserToDB(string $str): string
     {
         $dtAr = date_parse($str);
-        if ($dtAr === false) return $str;
+        if (!$dtAr) {
+            return $str;
+        }
         $dt = '';
         $dateStr = "{$dtAr['month']}/{$dtAr['day']}/{$dtAr['year']}";
         $timeStr = "{$dtAr['hour']}:{$dtAr['minute']}:{$dtAr['second']}";
@@ -114,12 +106,12 @@ class FMDateTime
     /**
      * @param string $d
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
-    public function dateArrayFromFMDate(string $d): array
+    public function dateArrayFromFMDate(string $d): ?array
     {
         if ($d == '') {
-            return '';
+            return null;
         }
         $jYearStartDate = array(
             '2019-5-1' => '令和', '1989-1-8' => '平成', '1926-12-25' => '昭和', '1912-7-30' => '大正', '1868-1-25' => '明治');
@@ -142,7 +134,7 @@ class FMDateTime
             $dtStart = new DateTime($startDate);
             if ($dt->format('U') >= $dtStart->format('U')) {
                 $gengoName = $gengo;
-                $gengoYear = $dt->format('Y') - $dtStart->format('Y') + 1;
+                $gengoYear = (int)($dt->format('Y')) - (int)($dtStart->format('Y')) + 1;
                 $gengoYear = ($gengoYear == 1) ? '元' : $gengoYear;
                 break;
             }

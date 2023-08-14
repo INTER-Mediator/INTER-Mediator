@@ -30,7 +30,7 @@ class HTMLString
     protected bool $noescape = false;
 
     /**
-     * @param bool $option
+     * @param string|bool $option
      */
     public function __construct($option = false)
     {
@@ -54,7 +54,7 @@ class HTMLString
     }
 
     /**
-     * @param string $str
+     * @param ?string $str
      * @return string
      */
     public function converterFromDBtoUser(?string $str): string

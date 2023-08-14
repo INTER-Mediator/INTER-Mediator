@@ -31,7 +31,7 @@ class DB_Proxy_MySQL_Test extends DB_Proxy_Test_Common
         $this->schemaName = "";
     }
 
-    function dbProxySetupForAccess($contextName, $maxRecord, $hasExtend = false)
+    function dbProxySetupForAccess(string $contextName, int $maxRecord, int $hasExtend = 0): void
     {
         $this->schemaName = "";
         $this->dataSource = [
@@ -55,7 +55,7 @@ class DB_Proxy_MySQL_Test extends DB_Proxy_Test_Common
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
-    function dbProxySetupForAuthAccess($contextName, $maxRecord, $subContextName = null)
+    function dbProxySetupForAuthAccess(string $contextName, int $maxRecord, $subContextName = null): void
     {
         $this->schemaName = "";
         $this->dataSource = [

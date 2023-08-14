@@ -27,10 +27,10 @@ class Number extends NumberBase
     /**
      * @var bool
      */
-    private $isZeroNoString = false;
+    private bool $isZeroNoString = false;
 
     /**
-     * @param int $digits
+     * @param int|bool $digits
      */
     function __construct($digits = 0)
     {
@@ -44,14 +44,14 @@ class Number extends NumberBase
     }
 
     /**
-     * @param string $str
+     * @param ?string $str
      * @return string
      */
-    function converterFromDBtoUser(? string $str): string
+    function converterFromDBtoUser(?string $str): string
     {
         if ($this->isZeroNoString && (double)$str == 0) {
             return "";
         }
-        return number_format((double)$str, (int)($this->d), $this->decimalMark, $this->thSepMark);
+        return number_format((double)$str, $this->d, $this->decimalMark, $this->thSepMark);
     }
 }

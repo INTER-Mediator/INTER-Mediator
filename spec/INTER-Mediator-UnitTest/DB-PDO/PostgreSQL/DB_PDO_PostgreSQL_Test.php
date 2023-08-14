@@ -32,7 +32,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         // The sample schema doesn't have a data to check this feature.
     }
 
-    function dbProxySetupForAccess($contextName, $maxRecord, $subContextName = null)
+    function dbProxySetupForAccess(string $contextName, int $maxRecord, ?string $subContextName = null):void
     {
         $this->schemaName = "im_sample.";
         $contexts = array(
@@ -73,7 +73,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
-    function dbProxySetupForAccessSetKey($contextName, $maxRecord, $keyName)
+    function dbProxySetupForAccessSetKey(string $contextName, int $maxRecord, string $keyName):void
     {
         $this->schemaName = "im_sample.";
         $contexts = array(
@@ -100,7 +100,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
-    function dbProxySetupForAuth()
+    function dbProxySetupForAuth():void
     {
         $this->schemaName = "im_sample.";
         $this->db_proxy = new Proxy(true);
@@ -139,7 +139,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
-    function dbProxySetupForAggregation()
+    function dbProxySetupForAggregation():void
     {
         $this->schemaName = "im_sample.";
         $this->db_proxy = new Proxy(true);
@@ -174,7 +174,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
-    function dbProxySetupForCondition($queryArray)
+    function dbProxySetupForCondition(?array $queryArray):void
     {
         $this->schemaName = "im_sample.";
         $contextName = 'testtable';

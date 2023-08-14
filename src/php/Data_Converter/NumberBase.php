@@ -15,6 +15,7 @@
 
 namespace INTERMediator\Data_Converter;
 
+use Exception;
 use INTERMediator\Locale\IMLocale;
 
 /**
@@ -43,7 +44,7 @@ class NumberBase
      */
     protected string $choosenLocale;
     /**
-     * @var object|mixed
+     * @var object
      */
     protected object $formatter;
 
@@ -56,9 +57,10 @@ class NumberBase
         $this->choosenLocale = IMLocale::$choosenLocale;
         $this->useMbstring = IMLocale::$useMbstring;
         $nfClass = IMLocale::numberFormatterClassName();
-        $this->formatter = new $nfClass($this->choosenLocale, 2 /*NumberFormatter::CURRENCY*/);
-        if (!$this->formatter) {
-            return null;
+        try {
+            $this->formatter = new $nfClass($this->choosenLocale, 2 /*NumberFormatter::CURRENCY*/);
+        } catch (Exception $ex) {
+            throw new Exception("Formatter class can not instantiate it.");
         }
         $this->decimalMark = $this->formatter->getSymbol(0 /*NumberFormatter::DECIMAL_SEPARATOR_SYMBOL*/);
         $this->thSepMark = $this->formatter->getSymbol(1 /*NumberFormatter::GROUPING_SEPARATOR_SYMBOL*/);
@@ -75,9 +77,9 @@ class NumberBase
         $comp = explode($this->decimalMark, $str);
         $intPart = intval(str_replace($this->thSepMark, '', $comp[0]));
         if (isset($comp[1])) {
-            return floatval("{$intPart}.{$comp[1]}");
+            return (string)(floatval("{$intPart}.{$comp[1]}"));
         } else {
-            return $intPart;
+            return (string)$intPart;
         }
     }
 }

@@ -24,7 +24,7 @@ class DataConverter_HTMLString_Test extends TestCase
 
         $this->dataconverter = new HTMLString();
         $this->dataconverter2 = new HTMLString(false);
-        $this->dataconverter3 = new HTMLString('false');
+        $this->dataconverter3 = new HTMLString(0);
         $this->dataconverterForLinking = new HTMLString(true);
         $this->dataconverterForLinking2 = new HTMLString('true');
         $this->dataconverterForLinking3 = new HTMLString('autolink');
