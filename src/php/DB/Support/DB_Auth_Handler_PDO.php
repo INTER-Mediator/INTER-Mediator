@@ -25,11 +25,11 @@ use Exception;
 /**
  *
  */
-class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
+class DB_Auth_Handler_PDO extends DB_Auth_Common
 {
     protected \INTERMediator\DB\PDO $pdoDB;
 
-    public function __construct($parent)
+    public function __construct(\INTERMediator\DB\PDO $parent)
     {
         parent::__construct($parent);
         $this->pdoDB = $parent;

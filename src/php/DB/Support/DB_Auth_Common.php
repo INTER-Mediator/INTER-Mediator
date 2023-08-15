@@ -20,7 +20,7 @@ use INTERMediator\DB\DBClass;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\Settings;
 
-abstract class DB_Auth_Common implements Auth_Interface_CommonDB
+abstract class DB_Auth_Common implements Auth_Interface_CommonDB, Auth_Interface_DB
 {
     protected ?Settings $dbSettings = null;
     protected ?DBClass $dbClass = null;

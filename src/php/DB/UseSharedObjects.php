@@ -16,6 +16,11 @@
 
 namespace INTERMediator\DB;
 
+use INTERMediator\DB\Support\DB_Auth_Common;
+use INTERMediator\DB\Support\DB_Notification_Common;
+use INTERMediator\DB\Support\DB_PDO_Handler;
+use INTERMediator\DB\Support\DB_Spec_Behavior;
+
 /**
  *
  */
@@ -44,25 +49,25 @@ abstract class UseSharedObjects
     /**
      * @var null
      */
-    public $handler = null;    // Handle for each database engine. Uses just PDO.
+    public ?DB_PDO_Handler $handler = null;    // Handle for each database engine. Uses just PDO.
     /**
      * @var null
      */
-    public $authHandler = null;
+    public ?DB_Auth_Common $authHandler = null;
     /**
      * @var null
      */
-    public $notifyHandler = null;
+    public ?DB_Notification_Common $notifyHandler = null;
     /**
      * @var null
      */
-    public $specHandler = null;
+    public ?DB_Spec_Behavior $specHandler = null;
 
     /**
-     * @param $obj
+     * @param Proxy|null $obj
      * @return void
      */
-    public function setUpSharedObjects($obj = null)
+    public function setUpSharedObjects(?Proxy $obj = null)
     {
         if (is_null($obj)) {
             $this->setSettings(new Settings());

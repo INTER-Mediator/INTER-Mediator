@@ -23,7 +23,7 @@ use INTERMediator\IMUtil;
 /**
  *
  */
-class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_Interface_DB
+class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
 {
     /**
      * @var FileMaker_DataAPI
