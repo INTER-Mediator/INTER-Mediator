@@ -1148,8 +1148,8 @@ $preventSSAutoBoot = false;
 $serviceServerPort = '11478';
 $stopSSEveryQuit = false;
 $notUseServiceServer = true;
-$messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any other major browsers.';
-$messages['ja'][1022] = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
+$messages['default'][9999] = "Changed";
+$messages['ja'][9999] = "変更した";
 $defaultTimezone = 'Asia/Tokyo';
 EOF
   end
@@ -1176,8 +1176,8 @@ $preventSSAutoBoot = false;
 $serviceServerPort = '11478';
 $stopSSEveryQuit = false;
 $notUseServiceServer = true;
-$messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any other major browsers.';
-$messages['ja'][1022] = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
+$messages['default'][9999] = "Changed";
+$messages['ja'][9999] = "変更した";
 $defaultTimezone = 'Asia/Tokyo';
 EOF
   end
@@ -1203,8 +1203,8 @@ $preventSSAutoBoot = false;
 $serviceServerPort = '11478';
 $stopSSEveryQuit = false;
 $notUseServiceServer = true;
-$messages['default'][1022] = 'We don\\\'t support Internet Explorer. We\\\'d like you to access by Edge or any other major browsers.';
-$messages['ja'][1022] = 'Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。';
+$messages['default'][9999] = "Changed";
+$messages['ja'][9999] = "変更した";
 $activateClientService = false;
 $defaultTimezone = 'Asia/Tokyo';
 EOF
