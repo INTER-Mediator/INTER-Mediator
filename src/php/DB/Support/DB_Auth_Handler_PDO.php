@@ -43,7 +43,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
      *
      * Using 'issuedhash'
      */
-    public function authSupportStoreChallenge(string $uid, string $challenge, string $clientId): void
+    public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId): void
     {
         $this->logger->setDebugMessage("[authSupportStoreChallenge] $uid, $challenge, $clientId");
 

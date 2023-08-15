@@ -45,7 +45,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
      * @param string $clientId
      * @return void
      */
-    public function authSupportStoreChallenge(string $uid, string $challenge, string $clientId): void
+    public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId): void
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {

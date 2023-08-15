@@ -46,7 +46,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
      * @return void
      * @throws Exception
      */
-    public function authSupportStoreChallenge(string $uid, string $challenge, string $clientId): void
+    public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId): void
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {

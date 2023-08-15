@@ -17,7 +17,7 @@ namespace INTERMediator\DB\Support;
 
 interface Auth_Interface_DB                    // with using table for authentication/authorization
 {
-    public function authSupportStoreChallenge(string $uid, string $challenge, string $clientId): void;    // issuedhash
+    public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId): void;    // issuedhash
 
     public function authSupportRemoveOutdatedChallenges();                            // issuedhash
 
