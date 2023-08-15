@@ -23,9 +23,7 @@ use INTERMediator\DB\FileMaker_DataAPI;
 /**
  *
  */
-class DB_Notification_Handler_FileMaker_DataAPI
-    extends DB_Notification_Common
-    implements DB_Interface_Registering
+class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
 {
     /**
      * @var FileMaker_DataAPI
@@ -33,9 +31,9 @@ class DB_Notification_Handler_FileMaker_DataAPI
     protected FileMaker_DataAPI $fmdb;
 
     /**
-     * @param $parent
+     * @param FileMaker_DataAPI $parent
      */
-    public function __construct($parent)
+    public function __construct(FileMaker_DataAPI $parent)
     {
         parent::__construct($parent);
         $this->fmdb = $parent;

@@ -25,7 +25,7 @@ use DateInterval;
 /**
  *
  */
-class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_Interface_Registering
+class DB_Notification_Handler_PDO extends DB_Notification_Common
 {
     /**
      * @var \INTERMediator\DB\PDO
@@ -33,9 +33,9 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
     protected \INTERMediator\DB\PDO $pdoDB;
 
     /**
-     * @param $parent
+     * @param \INTERMediator\DB\PDO $parent
      */
-    public function __construct($parent)
+    public function __construct(\INTERMediator\DB\PDO $parent)
     {
         parent::__construct($parent);
         $this->pdoDB = $parent;

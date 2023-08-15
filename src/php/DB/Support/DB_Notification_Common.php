@@ -23,7 +23,7 @@ use INTERMediator\DB\Settings;
 /**
  *
  */
-abstract class DB_Notification_Common
+abstract class DB_Notification_Common implements DB_Interface_Registering
 {
     /**
      * @var Settings|null

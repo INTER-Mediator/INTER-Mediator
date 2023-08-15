@@ -22,9 +22,7 @@ use INTERMediator\DB\FileMaker_FX;
 /**
  *
  */
-class DB_Notification_Handler_FileMaker_FX
-    extends DB_Notification_Common
-    implements DB_Interface_Registering
+class DB_Notification_Handler_FileMaker_FX extends DB_Notification_Common
 {
     /**
      * @var FileMaker_FX
@@ -32,9 +30,9 @@ class DB_Notification_Handler_FileMaker_FX
     protected FileMaker_FX $fmdb;
 
     /**
-     * @param $parent
+     * @param FileMaker_FX $parent
      */
-    public function __construct($parent)
+    public function __construct(FileMaker_FX $parent)
     {
         parent::__construct($parent);
         $this->fmdb = $parent;
