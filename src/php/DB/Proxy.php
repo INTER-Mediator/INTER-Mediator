@@ -720,6 +720,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param ?int $debug
      * @param ?string $target
      * @return bool
+     * @throws Exception
      */
     function initialize(?array $datasource, ?array $options, ?array $dbspec, ?int $debug, ?string $target = null): bool
     {
@@ -951,6 +952,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param ?string $access
      * @param bool $bypassAuth
      * @param bool $ignoreFiles
+     * @throws Exception
      */
     public function processingRequest(?string $access = null, bool $bypassAuth = false, bool $ignoreFiles = false): void
     {
