@@ -47,19 +47,19 @@ abstract class UseSharedObjects
      */
     public ?Proxy $proxyObject = null;
     /**
-     * @var null
+     * @var DB_PDO_Handler|null
      */
     public ?DB_PDO_Handler $handler = null;    // Handle for each database engine. Uses just PDO.
     /**
-     * @var null
+     * @var DB_Auth_Common|null
      */
     public ?DB_Auth_Common $authHandler = null;
     /**
-     * @var null
+     * @var DB_Notification_Common|null
      */
     public ?DB_Notification_Common $notifyHandler = null;
     /**
-     * @var null
+     * @var DB_Spec_Behavior|null
      */
     public ?DB_Spec_Behavior $specHandler = null;
 

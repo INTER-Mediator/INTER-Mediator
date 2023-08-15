@@ -23,31 +23,31 @@ use INTERMediator\Params;
 class OperationLog
 {
     /**
-     * @var int|array|mixed
+     * @var int
      */
     private int $accessLogLevel;
     /**
-     * @var string|array|mixed|null
+     * @var string|null
      */
     private ?string $dbClassLog;
     /**
-     * @var string|array|mixed|null
+     * @var string|null
      */
     private ?string $dbUserLog;
     /**
-     * @var string|array|mixed|null
+     * @var string|null
      */
     private ?string $dbPasswordLog;
     /**
-     * @var string|array|mixed|null
+     * @var string|null
      */
     private ?string $dbDSNLog;
     /**
-     * @var array|mixed|null
+     * @var array|null
      */
     private ?array $recordingContexts;
     /**
-     * @var array|mixed|null
+     * @var array|null
      */
     private ?array $recordingOperations;
     /**
@@ -55,23 +55,23 @@ class OperationLog
      */
     private ?array $contextOptions;
     /**
-     * @var bool|array|mixed
+     * @var bool
      */
     private bool $dontRecordTheme;
     /**
-     * @var bool|array|mixed
+     * @var bool
      */
     private bool $dontRecordChallenge;
     /**
-     * @var bool|array|mixed
+     * @var bool
      */
     private bool $dontRecordDownload;
     /**
-     * @var bool|array|mixed
+     * @var bool
      */
     private bool $dontRecordDownloadNoGet;
     /**
-     * @var object|array|mixed
+     * @var object
      */
     private object $accessLogExtensionClass;
 
@@ -140,7 +140,7 @@ class OperationLog
                 $cookieNameUser = "_im_username";
                 if (isset($this->contextOptions['authentication']['realm'])) {
                     $cookieNameUser .= ('_' . str_replace(" ", "_",
-                            str_replace(".", "_", $this->contextOptions['authentication']['realm']) ?? ""));
+                            str_replace(".", "_", $this->contextOptions['authentication']['realm'])));
                 }
                 $userValue = $_COOKIE[$cookieNameUser] ?? '';
             }
@@ -184,7 +184,7 @@ class OperationLog
         }
         $result = [];
         foreach ($ar as $k => $v) {
-            if (is_array($k)) {
+            if (is_array($v)) {
                 $v = $this->arrayToString($v);
             }
             if ($this->accessLogLevel < 2 && preg_match("/(value_[0-9]+)/", $k, $matches)) {

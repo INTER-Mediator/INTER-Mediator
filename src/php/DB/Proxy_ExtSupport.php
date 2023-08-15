@@ -10,47 +10,47 @@ namespace INTERMediator\DB;
 trait Proxy_ExtSupport
 {
     /**
-     * @var null
+     * @var Proxy|null
      */
-    private $extProxy = null;
+    private ?Proxy $extProxy = null;
     /**
-     * @var null
+     * @var array|null
      */
-    private $extDataSource = null;
+    private ?array $extDataSource = null;
     /**
-     * @var null
+     * @var array|null
      */
-    private $extOptions = null;
+    private ?array $extOptions = null;
     /**
-     * @var null
+     * @var array|null
      */
-    private $extDBSpec = null;
+    private ?array $extDBSpec = null;
     /**
-     * @var null
+     * @var int
      */
-    private $extDebug = null;
+    private int $extDebug = 0;
     /**
-     * @var null
+     * @var string|null
      */
-    private $fixedKey = null;
+    private ?string $fixedKey = null;
     /**
      * @var bool
      */
-    private $testMode = false;
+    private bool $testMode = false;
 
     /**
-     * @return null
+     * @return ?Proxy
      */
-    public function getExtProxy()
+    public function getExtProxy(): ?Proxy
     {
         return $this->extProxy;
     }
 
     /**
-     * @param $key
+     * @param string|null $key
      * @return void
      */
-    public function setFixedKey($key = null)
+    public function setFixedKey(?string $key = null): void
     {
         $this->fixedKey = $key;
     }
@@ -58,19 +58,19 @@ trait Proxy_ExtSupport
     /**
      * @return void
      */
-    public function setTestMode()
+    public function setTestMode(): void
     {
         $this->testMode = true;
     }
 
     /**
-     * @param $datasource
-     * @param $options
-     * @param $dbspec
-     * @param $debug
+     * @param array|null $datasource
+     * @param array|null $options
+     * @param array|null $dbspec
+     * @param int|null $debug
      * @return void
      */
-    public function dbInit($datasource = null, $options = null, $dbspec = null, $debug = null)
+    public function dbInit(?array $datasource = null, ?array $options = null, ?array $dbspec = null, int $debug = null): void
     {
         if (!$this->extProxy) {
             $this->extProxy = new Proxy($this->testMode);
@@ -83,13 +83,13 @@ trait Proxy_ExtSupport
     }
 
     /**
-     * @param $target
-     * @param $query
-     * @param $sort
-     * @param $spec
+     * @param string $target
+     * @param array|null $query
+     * @param array|null $sort
+     * @param array|null $spec
      * @return mixed
      */
-    public function dbRead($target, $query = null, $sort = null, $spec = null)
+    public function dbRead(string $target, ?array $query = null, ?array $sort = null, ?array $spec = null): ?array
     {
         if (!$this->extProxy) {
             $this->dbInit();
@@ -102,13 +102,13 @@ trait Proxy_ExtSupport
     }
 
     /**
-     * @param $target
-     * @param $query
-     * @param $data
-     * @param $spec
+     * @param string $target
+     * @param array|null $query
+     * @param array|null $data
+     * @param array|null $spec
      * @return mixed
      */
-    public function dbUpdate($target, $query = null, $data = null, $spec = null)
+    public function dbUpdate(string $target, ?array $query = null, ?array $data = null, ?array $spec = null): ?array
     {
         if (!$this->extProxy) {
             $this->dbInit();
@@ -121,12 +121,12 @@ trait Proxy_ExtSupport
     }
 
     /**
-     * @param $target
-     * @param $data
-     * @param $spec
+     * @param string $target
+     * @param array|null $data
+     * @param array|null $spec
      * @return mixed
      */
-    public function dbCreate($target, $data = null, $spec = null)
+    public function dbCreate(string $target, ?array $data = null, ?array $spec = null): ?array
     {
         if (!$this->extProxy) {
             $this->dbInit();
@@ -138,12 +138,12 @@ trait Proxy_ExtSupport
     }
 
     /**
-     * @param $target
-     * @param $query
-     * @param $spec
+     * @param string $target
+     * @param array|null $query
+     * @param array|null $spec
      * @return mixed
      */
-    public function dbDelete($target, $query = null, $spec = null)
+    public function dbDelete(string $target, ?array $query = null, ?array $spec = null): ?array
     {
         if (!$this->extProxy) {
             $this->dbInit();
@@ -155,23 +155,23 @@ trait Proxy_ExtSupport
     }
 
     /**
-     * @param $target
-     * @param $query
-     * @param $sort
-     * @param $spec
+     * @param string $target
+     * @param array|null $query
+     * @param array|null $sort
+     * @param array|null $spec
      * @return void
      */
-    public function dbCopy($target, $query = null, $sort = null, $spec = null)
+    public function dbCopy(string $target, ?array $query = null, ?array $sort = null, ?array $spec = null): ?array
     {
 
     }
 
     /**
-     * @param $target
-     * @param $spec
+     * @param string $target
+     * @param array|null $spec
      * @return bool
      */
-    private function hasTarget($target, $spec = null)
+    private function hasTarget(string $target, ?array $spec = null): bool
     {
         $result = false;
         $targetSpec = $spec ?? $this->extDataSource;
@@ -187,11 +187,11 @@ trait Proxy_ExtSupport
     }
 
     /**
-     * @param $target
-     * @param $spec
+     * @param string $target
+     * @param array|null $spec
      * @return void
      */
-    private function initializeSpec($target, $spec)
+    private function initializeSpec(string $target, ?array $spec): void
     {
         if ($spec && $this->hasTarget($target, $spec)) {
             $this->extProxy->initialize($spec, $this->extOptions, $this->extDBSpec, $this->extDebug, $target);
@@ -206,10 +206,10 @@ trait Proxy_ExtSupport
     }
 
     /**
-     * @param $query
+     * @param array|null $query
      * @return void
      */
-    private function setupQuery($query)
+    private function setupQuery(?array $query): void
     {
         if (!$query) {
             return;
@@ -227,10 +227,10 @@ trait Proxy_ExtSupport
     }
 
     /**
-     * @param $sort
+     * @param array|null $sort
      * @return void
      */
-    private function setupSort($sort)
+    private function setupSort(?array $sort): void
     {
         if (!$sort) {
             return;
@@ -247,10 +247,10 @@ trait Proxy_ExtSupport
     }
 
     /**
-     * @param $data
+     * @param array|null $data
      * @return void
      */
-    private function setupData($data)
+    private function setupData(?array $data): void
     {
         if (!$data) {
             return;

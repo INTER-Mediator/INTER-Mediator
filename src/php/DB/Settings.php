@@ -315,7 +315,7 @@ class Settings
      */
     public function setAttachedFiles(string $contextName, array $files): void
     {
-        if ($contextName && $files && count($files) > 0) {
+        if ($contextName && count($files) > 0) {
             $this->attachedFiles[$contextName] = $files;
             if (isset($_POST['_im_filesfields'])) {
                 $this->attachedFields = explode(',', $_POST['_im_filesfields']);
@@ -511,7 +511,7 @@ class Settings
     }
 
     /**
-     * @param array $foreignFieldAndValue
+     * @param array|null $foreignFieldAndValue
      */
     public function setForeignFieldAndValue(?array $foreignFieldAndValue): void
     {
@@ -721,7 +721,7 @@ class Settings
     /**
      * @return string|null
      */
-    public function getDbSpecDatabase()
+    public function getDbSpecDatabase():?string
     {
         return $this->dbSpecDatabase;
     }
@@ -738,7 +738,7 @@ class Settings
     /**
      * @return string|null
      */
-    public function getDbSpecProtocol()
+    public function getDbSpecProtocol():?string
     {
         return $this->dbSpecProtocol;
     }
@@ -807,7 +807,7 @@ class Settings
     /* Call on INTER-Mediator.php */
 
     /**
-     * @param array $authentication
+     * @param array|null $authentication
      */
     public function setAuthentication(?array $authentication): void
     {
@@ -948,7 +948,7 @@ class Settings
      */
     public function getDataSourceDefinition(?string $dataSourceName): ?array
     {
-        foreach ($this->dataSource as $index => $value) {
+        foreach ($this->dataSource as $value) {
             if ($value['name'] == $dataSourceName) {
                 return $value;
             }

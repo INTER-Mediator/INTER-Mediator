@@ -1431,7 +1431,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $username = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($username);
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
         $this->authDbClass->authHandler->authSupportStoreChallenge($uid, $challenge, $clientId);
-        return $username === 0 ? "" : $this->authSupportGetSalt($username);
+        return !$username ? "" : $this->authSupportGetSalt($username);
     }
 
     /**
@@ -1454,10 +1454,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($signedUser);
         $this->logger->setDebugMessage("[checkAuthorization]uid={$uid}", 2);
         if ($uid <= 0) {
-            return $returnValue;
+            return false;
         }
         if ($isSAML && !$this->dbClass->authHandler->authSupportIsWithinSAMLLimit($uid)) {
-            return $returnValue;
+            return false;
         }
         $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge($uid, $this->clientId);
         $this->logger->setDebugMessage("[checkAuthorization]storedChallenge={$storedChallenge}/{$this->credential}", 2);
@@ -1471,7 +1471,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $hmacValue2m = $this->hashedPassword ? hash_hmac('sha256', $this->hashedPassword, $storedChallenge) : 'no-value';
                 $this->logger->setDebugMessage(
                     "[checkAuthorization]hashedPassword={$this->hashedPassword}/hmac_value={$hmacValue}", 2);
-                if ($this->hashedPassword && strlen($this->hashedPassword) > 0) {
+                if (strlen($this->hashedPassword) > 0) {
                     if ($hashedvalue == $hmacValue) {
                         $this->logger->setDebugMessage("[checkAuthorization]sha1 hash used.", 2);
                         $returnValue = true;

@@ -161,7 +161,7 @@ class NullDB extends DBClass
      */
     public function getUseSetDataToUpdatedRecord(): bool
     {
-        return [];
+        return false;
     }
 
     /**

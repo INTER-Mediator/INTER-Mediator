@@ -30,41 +30,41 @@ class Logger
     /**
      * @var bool
      */
-    private $debugLevel = false;
+    private bool $debugLevel = false;
     /**
      * @var array
      */
-    private $errorMessage = array();
+    private array $errorMessage = array();
     /**
      * @var array
      */
-    private $warningMessage = array();
+    private array $warningMessage = array();
     /**
      * @var array
      */
-    private $debugMessage = array();
+    private array $debugMessage = array();
     /**
      * @var mixed
      */
-    private $errorMessageLogging = false;
+    private $errorMessageLogging;
     /**
      * @var mixed
      */
-    private $warningMessageLogging = false;
+    private $warningMessageLogging;
     /**
      * @var mixed
      */
-    private $debugMessageLogging = false;
+    private $debugMessageLogging;
 
     /**
-     * @var null
+     * @var Logger|null
      */
-    private static $instance = null;
+    private static ?Logger $instance = null;
 
     /**
-     * @return Logger|null
+     * @return Logger
      */
-    public static function getInstance()
+    public static function getInstance(): Logger
     {
         if (!self::$instance) {
             self::$instance = new Logger();
@@ -103,9 +103,9 @@ class Logger
      * @param $setting
      * @return bool
      */
-    private function getCallersNamespace($setting)
+    private function getCallersNamespace(bool $setting): bool
     {
-        if ($setting === true || $setting === "*") {
+        if ($setting === true) { // $setting === "*"
             return true;
         }
         $returnValue = false;
@@ -113,10 +113,8 @@ class Logger
             $bt = debug_backtrace();
             if (count($bt) >= 2 && isset($bt[2]['object'])) {
                 $obj = $bt[2]['object'];
-                if ($obj) {
-                    $ref = new ReflectionClass($obj);
-                    $returnValue = strpos($ref->getNamespaceName(), $setting) === 0;
-                }
+                $ref = new ReflectionClass($obj);
+                $returnValue = strpos($ref->getNamespaceName(), $setting) === 0;
             }
         } catch (ReflectionException $e) {
         }

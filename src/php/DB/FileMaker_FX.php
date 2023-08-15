@@ -70,7 +70,7 @@ class FileMaker_FX extends DBClass
     private bool $useSetDataToUpdatedRecord = false;
 
     /**
-     * @param $str
+     * @param string $str
      */
     public function errorMessageStore(string $str)
     {
@@ -393,14 +393,14 @@ class FileMaker_FX extends DBClass
      * @return array
      * @throws Exception
      */
-    public function getSchema(string $dataSourceName): array
+    public function getSchema(string $dataSourceName): ?array
     {
         $this->fieldInfo = null;
 
         $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), '');
         $this->dbSettings->setDbSpecDataType(
             str_replace('fmpro', 'fmalt',
-                strtolower($this->dbSettings->getDbSpecDataType()) ?? ""));
+                strtolower($this->dbSettings->getDbSpecDataType())));
         $result = $this->fx->FMView();
 
         if (!is_array($result)) {
@@ -410,7 +410,7 @@ class FileMaker_FX extends DBClass
                 $this->logger->setErrorMessage(
                     $this->stringWithoutCredential(get_class($result) . ': ' . $result->getDebugInfo()));
             }
-            return false;
+            return null;
         }
 
         $returnArray = array();

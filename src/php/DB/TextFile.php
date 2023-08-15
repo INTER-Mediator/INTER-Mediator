@@ -24,9 +24,9 @@ use Exception;
 class TextFile extends DBClass
 {
     /**
-     * @var
+     * @var int
      */
-    private $recordCount;
+    private int $recordCount;
 
     /**
      * @return array|null
