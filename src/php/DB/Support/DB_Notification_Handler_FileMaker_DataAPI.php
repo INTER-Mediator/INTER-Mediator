@@ -144,6 +144,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
         $this->dbClass->setupFMDataAPIforDB($regTable, 'all');
         $conditions = array(array('entity' => $entity), array('clientid' => $clientId, "omit" => "true"));
         $sort = array(array('clientid', 'ascend'));
+        $result = null; // For PHPStan level 1
         try {
             $result = $this->dbClass->fmData->{$regTable}->query($conditions, $sort);
         } catch (Exception $e) {
@@ -199,6 +200,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
 
         $this->dbClass->setupFMDataAPIforDB($regTable, 'all');
         $conditions = array(array('entity' => $entity));
+        $result = null; // For PHPStan level 1
         try {
             $result = $this->dbClass->fmData->{$regTable}->query($conditions);
         } catch (Exception $e) {
@@ -246,6 +248,7 @@ class DB_Notification_Handler_FileMaker_DataAPI
         $pksTable = $this->dbSettings->registerPKTableName;
         $this->dbClass->setupFMDataAPIforDB($regTable, 'all');
         $conditions = array(array('entity' => $entity));
+        $result = null; // For PHPStan level 1
         try {
             $result = $this->dbClass->fmData->{$regTable}->query($conditions);
             $this->logger->setDebugMessage(var_export($result, true));

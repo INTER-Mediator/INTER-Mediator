@@ -1066,7 +1066,7 @@ class FileMaker_FX extends DBClass
             if (!$this->dbSettings->getPrimaryKeyOnly() || $value['field'] == $primaryKey) {
                 $value = $this->normalizedCondition($value);
                 if (!$this->specHandler->isPossibleOperator($value['operator'])) {
-                    throw new Exception("Invalid Operator.: {$condition['operator']}");
+                    throw new Exception("Invalid Operator.: {$value['operator']}");
                 }
                 $convertedValue = $this->formatter->formatterToDB(
                     "{$tableSourceName}{$this->dbSettings->getSeparator()}{$value['field']}", $value['value']);

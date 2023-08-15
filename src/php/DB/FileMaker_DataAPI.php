@@ -291,11 +291,11 @@ class FileMaker_DataAPI extends DBClass
     public function stringWithoutCredential(?string $str): string
     {
         if (is_null($this->fmData)) {
-            $str = str_replace($this->dbSettings->getDbSpecUser(), "********", $str ?? "");
-            return str_replace($this->dbSettings->getDbSpecPassword(), "********", $str ?? "");
+            $str = str_replace($this->dbSettings->getDbSpecUser(), "********", $str ?? $str);
+            return str_replace($this->dbSettings->getDbSpecPassword(), "********", $str);
         } else {
             $str = str_replace($this->dbSettings->getAccessUser(), "********", $str ?? "");
-            return str_replace($this->dbSettings->getAccessPassword(), "********", $str ?? "");
+            return str_replace($this->dbSettings->getAccessPassword(), "********", $str);
         }
     }
 
