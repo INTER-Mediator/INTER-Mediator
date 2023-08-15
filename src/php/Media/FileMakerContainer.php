@@ -48,15 +48,14 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
                     $headers = substr($content, 0, $headerSize);
                     curl_close($session);
                     $sessionKey = '';
-                    if ($header = explode("\r\n", $headers)) {
-                        foreach ($header as $line) {
-                            if ($line) {
-                                $h = explode(': ', $line);
-                                if (isset($h[0]) && isset($h[1]) && $h[0] == 'Set-Cookie') {
-                                    $sessionKey = str_replace(
-                                        '; HttpOnly', '', str_replace('X-FMS-Session-Key=', '', $h[1] ?? "")
-                                    );
-                                }
+                    $header = explode("\r\n", $headers);
+                    foreach ($header as $line) {
+                        if ($line) {
+                            $h = explode(': ', $line);
+                            if (isset($h[0]) && isset($h[1]) && $h[0] == 'Set-Cookie') {
+                                $sessionKey = str_replace(
+                                    '; HttpOnly', '', str_replace('X-FMS-Session-Key=', '', $h[1])
+                                );
                             }
                         }
                     }
@@ -100,7 +99,7 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
         $fileName = basename($file);
         $qPos = strpos($fileName, "?");
         if ($qPos !== false) {
-            $fileName = str_replace("%20", " ", substr($fileName, 0, $qPos) ?? "");
+            $fileName = str_replace("%20", " ", substr($fileName, 0, $qPos));
         }
         return $fileName;
     }
@@ -118,10 +117,12 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
      * @param array|null $datasource
      * @param array|null $dbspec
      * @param int $debug
+     * @throws Exception
      */
-    public function processing(Proxy $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
-                               string  $contextname, ?string $keyfield, ?string $keyvalue,
-                               ?array  $datasource, ?array $dbspec, int $debug):void    {
+    public function processing(Proxy  $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
+                               string $contextname, ?string $keyfield, ?string $keyvalue,
+                               ?array $datasource, ?array $dbspec, int $debug): void
+    {
         $mediaRootDir = $options['media-root-dir'] ?? Params::getParameterValue('mediaRootDir', null) ?? null;
         if (!$mediaRootDir) {
             if (!is_null($url)) {
@@ -207,10 +208,6 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
                 base64_encode(file_get_contents($filePath))));
 
             $db->processingRequest("update", true);
-            $dbProxyRecord = $db->getDatabaseResult();
-
-            $relatedContext = null;
-
             if ($dbspec['db-class'] === 'FileMaker_FX') {
                 $db->addOutputData('dbresult',
                     '/fmi/xml/cnt/' . $fileName .
