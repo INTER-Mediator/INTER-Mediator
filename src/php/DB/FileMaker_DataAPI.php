@@ -285,10 +285,10 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /**
-     * @param string $str
+     * @param ?string $str
      * @return array|string|string[]
      */
-    public function stringWithoutCredential(string $str)
+    public function stringWithoutCredential(?string $str): string
     {
         if (is_null($this->fmData)) {
             $str = str_replace($this->dbSettings->getDbSpecUser(), "********", $str ?? "");
@@ -303,7 +303,7 @@ class FileMaker_DataAPI extends DBClass
      * @param string $str
      * @return array|string|string[]
      */
-    private function stringReturnOnly(string $str)
+    private function stringReturnOnly(?string $str): string
     {
         return str_replace("\n\r", "\r", str_replace("\n", "\r", $str ?? ""));
     }
@@ -312,7 +312,7 @@ class FileMaker_DataAPI extends DBClass
      * @param string $str
      * @return array|string|string[]
      */
-    private function unifyCRLF(string $str)
+    private function unifyCRLF(?string $str): string
     {
         return str_replace("\n", "\r", str_replace("\r\n", "\r", $str ?? ""));
     }

@@ -216,6 +216,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
                     $timeValue - $this->dbSettings->getExpiringSeconds()),),
             array('clienthost' => '==', 'omit' => 'true'),
         );
+        $result = null; // For PHPStan level 1
         try {
             $result = $this->dbClass->fmDataAuth->{$hashTable}->query($conditions);
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
@@ -437,6 +438,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
 
         $this->dbClass->setupFMDataAPIforDB($userTable, 1);
         $conditions = array(array('id' => $userid));
+        $result = null; // For PHPStan level 1
         try {
             $result = $this->dbClass->fmData->{$userTable}->query($conditions);
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
@@ -475,6 +477,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
 
         $this->dbClass->setupFMDataAPIforDB_Alt($userTable, 1);
         $conditions = array(array('email' => str_replace('@', '\\@', $email)));
+        $result = null; // For PHPStan level 1
         try {
             $result = $this->dbClass->fmDataAlt->{$userTable}->query($conditions);
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
@@ -553,6 +556,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
 
         $this->dbClass->setupFMDataAPIforDB_Alt($groupTable, 1);
         $conditions = array(array('id' => $groupid));
+        $result = null; // For PHPStan level 1
         try {
             $result = $this->dbClass->fmDataAlt->{$groupTable}->query($conditions);
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
@@ -606,6 +610,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $conditions = array(array('group_id' => $groupid));
             $this->belongGroups[] = $groupid;
         }
+        $result = null; // For PHPStan level 1
         try {
             $result = $this->dbClass->fmDataAlt->{$this->dbSettings->getCorrTable()}->query($conditions);
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
@@ -664,6 +669,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         }
         $this->dbClass->setupFMDataAPIforAuth($hashTable, 1);
         $conditions = array(array('user_id' => $userid, 'clienthost' => $randdata));
+        $result = null; // For PHPStan level 1
         try {
             $result = $this->dbClass->fmDataAuth->{$hashTable}->query($conditions);
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
@@ -713,6 +719,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
 
         $this->dbClass->setupFMDataAPIforAuth($tableName, 1);
         $conditions = array(array($userField => $user), array($keyField => $keyValue));
+        $result = null; // For PHPStan level 1
         try {
             $result = $this->dbClass->fmDataAuth->{$tableName}->query($conditions);
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
@@ -776,6 +783,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         $conditions = array(
             array('hasu' => $hash, 'clienthost' => '=', 'expired' => IMUtil::currentDTStringFMS(3600) . '...')
         );
+        $result = null; // For PHPStan level 1
         try {
             $result = $this->dbClass->fmDataAuth->{$hashTable}->query($conditions);
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
@@ -805,6 +813,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
         }
         $this->dbClass->setupFMDataAPIforDB_Alt($userTable, 1);
         $conditions = array(array('id' => $userID));
+        $result = null; // For PHPStan level 1
         try {
             $result = $this->dbClass->fmDataAlt->{$userTable}->query($conditions);
             if (!isset($_SESSION['X-FM-Data-Access-Token'])) {

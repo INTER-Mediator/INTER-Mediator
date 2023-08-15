@@ -136,7 +136,7 @@ class DefinitionChecker
                     $judge = true;
                 } else {
                     foreach ($possibleWilds as $str) {
-                        if (preg_match($str, $items ?? '')) {
+                        if (preg_match($str, $items)) {
                             $judge = true;
                             break;
                         }

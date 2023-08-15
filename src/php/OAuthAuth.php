@@ -214,9 +214,9 @@ class OAuthAuth
             curl_setopt($session, CURLOPT_POSTFIELDS, $postParam);
             //    curl_setopt($session, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded'));
             $content = curl_exec($session);
-            if (!curl_errno($session)) {
-                $header = curl_getinfo($session);
-            }
+            //if (!curl_errno($session)) {
+            $header = curl_getinfo($session);
+            //}
             curl_close($session);
             $httpCode = $header['http_code'];
         } else {
@@ -276,9 +276,9 @@ class OAuthAuth
             $session = curl_init($accessURL);
             curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
             $content = curl_exec($session);
-            if (!curl_errno($session)) {
-                $header = curl_getinfo($session);
-            }
+            //if (!curl_errno($session)) {
+            $header = curl_getinfo($session);
+            //}
             curl_close($session);
             $httpCode = $header['http_code'];
         } else {

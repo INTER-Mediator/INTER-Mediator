@@ -154,7 +154,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
 
 
     protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
-                                            ?array  $defaultValues): array
+                                            ?array $defaultValues): array
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -195,12 +195,11 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
             $components = explode(".", $entityName);
             $quotedName = array();
             foreach ($components as $item) {
-                $quotedName[] = $q . str_replace($q, $q . $q, $item ?? "") . $q;
+                $quotedName[] = $q . str_replace($q, $q . $q, $item) . $q;
             }
             return implode(".", $quotedName);
         }
-        return $q . str_replace($q, $q . $q, $entityName ?? "") . $q;
-
+        return $q . str_replace($q, $q . $q, $entityName) . $q;
     }
 
     public function optionalOperationInSetup(): void
@@ -208,9 +207,9 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     }
 
 
-    public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable):?array // authuser, issuedhash
+    public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable): ?array // authuser, issuedhash
     {
-        $checkFieldDefinition = function (string $type, int $len, int $min):bool {
+        $checkFieldDefinition = function (string $type, int $len, int $min): bool {
             $fDef = strtolower($type);
             if ($fDef != 'text' && $fDef == 'character varying') {
                 if ($len < $min) {

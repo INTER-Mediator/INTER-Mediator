@@ -478,7 +478,7 @@ class FileMaker_FX extends DBClass
                             "{$tableName}{$this->dbSettings->getSeparator()}{$foreignField}", $foreignValue);
                         if (!$usePortal) {
                             if (!$this->specHandler->isPossibleOperator($foreignOperator)) {
-                                throw new Exception("Invalid Operator.: {$condition['operator']}");
+                                throw new Exception("Invalid Operator.: {$foreignOperator}");
                             }
                             if ($useOrOperation) {
                                 throw new Exception("Condition Incompatible.: The OR operation and foreign key can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
@@ -826,6 +826,7 @@ class FileMaker_FX extends DBClass
                                     $relRecords = array($relatedset['record']);
                                 }
                                 foreach ($relRecords as $relatedrecord) {
+                                    $recId = null; // For PHPStan level 1
                                     if (isset($relatedset['@attributes']) && isset($relatedrecord['@attributes'])) {
                                         $tableOccurrence = $relatedset['@attributes']['table'];
                                         $recId = $relatedrecord['@attributes']['record-id'];
@@ -844,7 +845,7 @@ class FileMaker_FX extends DBClass
                                             $relatedFieldValue = '';
                                             $fullyQualifiedFieldName = explode('::', $relatedFieldName);
                                             $tableOccurrence = $fullyQualifiedFieldName[0];
-                                            if (isset($relatedfield['data']) && !is_null($relatedfield['data'])) {
+                                            if (isset($relatedfield['data'])) {
                                                 if (strpos($relatedFieldName, '::') !== false) {
                                                     $relatedFieldValue = $this->formatter->formatterFromDB(
                                                         "{$tableOccurrence}{$this->dbSettings->getSeparator()}{$relatedFieldName}",
@@ -1211,7 +1212,7 @@ class FileMaker_FX extends DBClass
                         . "code={$result['errorCode']}, url={$result['URL']}<hr>"));
                     return false;
                 }
-                $this->updatedRecord = $this->createRecordset($result['data'], $dataSourceName, null, null, null);
+                $this->updatedRecord = $this->createRecordset($result['data'], $dataSourceName, false, null, null);
                 $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
                 break;
             }
@@ -1346,6 +1347,7 @@ class FileMaker_FX extends DBClass
                 "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>"));
             return null;
         }
+        $keyValue = null; // For PHPStan level 1
         foreach ($result['data'] as $key => $row) {
             if ($keyFieldName == $this->specHandler->getDefaultKey()) {
                 $recId = substr($key, 0, strpos($key, '.'));
@@ -1358,7 +1360,7 @@ class FileMaker_FX extends DBClass
         $this->notifyHandler->setQueriedPrimaryKeys(array($keyValue));
         $this->notifyHandler->setQueriedEntity($this->fx->layout);
 
-        $this->updatedRecord = $this->createRecordset($result['data'], $dataSourceName, null, null, null);
+        $this->updatedRecord = $this->createRecordset($result['data'], $dataSourceName, false, null, null);
 
         return $keyValue;
     }

@@ -493,7 +493,7 @@ class IMUtil
                                 str_replace("\r", "\\r",
                                     str_replace("\xe2\x80\xa8", "\\n",      // U+2028
                                         str_replace("\xe2\x80\xa9", "\\n",  // U+2029
-                                            str_replace("\\", "\\\\", $str ?? ""))))))))));
+                                            str_replace("\\", "\\\\", $str))))))))));
     }
 
     /**

@@ -176,11 +176,11 @@ contact_way|6
             $components = explode(".", $entityName);
             $quotedName = array();
             foreach ($components as $item) {
-                $quotedName[] = $q . str_replace($q, $q . $q, $item ?? "") . $q;
+                $quotedName[] = $q . str_replace($q, $q . $q, $item) . $q;
             }
             return implode(".", $quotedName);
         }
-        return $q . str_replace($q, $q . $q, $entityName ?? "") . $q;
+        return $q . str_replace($q, $q . $q, $entityName) . $q;
 
     }
 

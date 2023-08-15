@@ -13,7 +13,9 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace INTERMediator\DB\Support;
+
 use DateTime;
 
 class DB_Notification_Handler_FileMaker_FX
@@ -38,7 +40,7 @@ class DB_Notification_Handler_FileMaker_FX
         return true;
     }
 
-    public function register(string $clientId, string $entity, string $condition, array $pkArray):?string
+    public function register(string $clientId, string $entity, string $condition, array $pkArray): ?string
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -84,7 +86,7 @@ class DB_Notification_Handler_FileMaker_FX
         return $newContextId;
     }
 
-    public function unregister(string $clientId, ?array $tableKeys):bool
+    public function unregister(string $clientId, ?array $tableKeys): bool
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -127,6 +129,8 @@ class DB_Notification_Handler_FileMaker_FX
         $this->dbClass->fx->AddSortParam('clientid');
         $result = $this->dbClass->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
         $contextIds = array();
+        $targetId = null;
+        $targetClient = null;
         $targetClients = array();
         if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
             $this->dbClass->errorMessageStore(
@@ -167,7 +171,7 @@ class DB_Notification_Handler_FileMaker_FX
         return array_unique($targetClients);
     }
 
-    public function appendIntoRegistered(string $clientId, string $entity, string $pkField, array $pkArray):?array
+    public function appendIntoRegistered(string $clientId, string $entity, string $pkField, array $pkArray): ?array
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -176,6 +180,7 @@ class DB_Notification_Handler_FileMaker_FX
         $this->dbClass->fx->AddDBParam('entity', $entity, 'eq');
         $result = $this->dbClass->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
         $targetClients = array();
+        $targetId = null; // For PHPStan level 1
         if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
             $this->dbClass->errorMessageStore(
                 $this->dbClass->stringWithoutCredential("FX reports error at find action: " .
@@ -218,6 +223,7 @@ class DB_Notification_Handler_FileMaker_FX
         $result = $this->dbClass->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
         $this->logger->setDebugMessage(var_export($result, true));
         $targetClients = array();
+        $targetId = null; // For PHPStan level 1
         if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
             $this->dbClass->errorMessageStore(
                 $this->dbClass->stringWithoutCredential("FX reports error at find action: " .
