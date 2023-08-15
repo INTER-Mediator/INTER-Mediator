@@ -18,10 +18,20 @@ namespace INTERMediator\DB;
 
 use Exception;
 
+/**
+ *
+ */
 class TextFile extends DBClass
 {
-    private $recordCount;
+    /**
+     * @var int
+     */
+    private int $recordCount;
 
+    /**
+     * @return array|null
+     * @throws Exception
+     */
     public function readFromDB(): ?array
     {
         $textFormat = strtolower($this->dbSettings->getDbSpecDataType());
@@ -127,16 +137,26 @@ class TextFile extends DBClass
         }
     }
 
+    /**
+     * @return int
+     */
     public function countQueryResult(): int
     {
         return $this->recordCount;
     }
 
+    /**
+     * @param string $currentOperation
+     * @param bool $includeContext
+     * @param bool $includeExtra
+     * @param string $signedUser
+     * @return array
+     * @throws Exception
+     */
     private function getWhereClause(string $currentOperation, bool $includeContext = true, bool $includeExtra = true,
                                     string $signedUser = ''): array
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $queryClause = '';
         $primaryKey = $tableInfo['key'] ?? 'id';
 
         // 'field' => '__operation__' is not supported.
@@ -192,7 +212,8 @@ class TextFile extends DBClass
 
     /* Genrate SQL Sort and Where clause */
     /**
-     * @return string
+     * @return array
+     * @throws Exception
      */
     private function getSortClause(): array
     {
@@ -223,87 +244,158 @@ class TextFile extends DBClass
         return $sortClause;
     }
 
+    /**
+     * @param bool $bypassAuth
+     * @return bool
+     */
     public function updateDB(bool $bypassAuth): bool
     {
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public function deleteFromDB(): bool
     {
         return false;
     }
 
+    /**
+     * @param string $dataSourceName
+     * @return array|null
+     */
     public function getFieldInfo(string $dataSourceName): ?array
     {
         return null;
     }
 
+    /**
+     * @return bool
+     */
     public function setupConnection(): bool
     {
         return true;
     }
 
+    /**
+     * @param string $operator
+     * @return bool
+     */
     public function isPossibleOperator(string $operator): bool
     {
         return in_array(strtoupper($operator), array('='));
     }
 
+    /**
+     * @param string $specifier
+     * @return bool
+     */
     public function isPossibleOrderSpecifier(string $specifier): bool
     {
         return in_array(strtoupper($specifier), array('ASC', 'DESC'));
     }
 
+    /**
+     * @param bool $value
+     * @return void
+     */
     public function requireUpdatedRecord(bool $value): void
     {
         // TODO: Implement requireUpdatedRecord() method.
     }
 
+    /**
+     * @return array|null
+     */
     public function getUpdatedRecord(): ?array
     {
         return [];
     }
 
+    /**
+     * @return array|null
+     */
     public function updatedRecord(): ?array
     {
         return [];
     }
 
-    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
+    /**
+     * @param array $record
+     * @return void
+     */
+    public function setUpdatedRecord(array $record): void
     {
     }
 
+    /**
+     * @param bool $isReplace
+     * @return string|null
+     */
     public function createInDB(bool $isReplace = false): ?string
     {
         return "created";
     }
 
+    /**
+     * @param string $field
+     * @param string $value
+     * @return void
+     */
     public function softDeleteActivate(string $field, string $value): void
     {
     }
 
+    /**
+     * @return string|null
+     */
     public function copyInDB(): ?string
     {
         return null;
     }
 
+    /**
+     * @return int
+     */
     public function getTotalCount(): int
     {
         return 0;
     }
 
+    /**
+     * @param string|null $dsn
+     * @return void
+     */
     public function setupHandlers(?string $dsn = null): void
     {
     }
 
+    /**
+     * @param string $field
+     * @param string $value
+     * @param int $index
+     * @return void
+     */
     public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
     {
     }
 
+    /**
+     * @param string $table
+     * @param array|null $conditions
+     * @return array|null
+     */
     public function queryForTest(string $table, ?array $conditions = null): ?array
     {
         return null;
     }
 
+    /**
+     * @param string $table
+     * @param array|null $conditions
+     * @return bool
+     */
     public function deleteForTest(string $table, ?array $conditions = null): bool
     {
         return false;
@@ -312,37 +404,61 @@ class TextFile extends DBClass
     /*
 * Transaction
 */
+    /**
+     * @return bool
+     */
     public function hasTransaction(): bool
     {
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public function inTransaction(): bool
     {
         return false;
     }
 
+    /**
+     * @return void
+     */
     public function beginTransaction(): void
     {
     }
 
+    /**
+     * @return void
+     */
     public function commitTransaction(): void
     {
     }
 
+    /**
+     * @return void
+     */
     public function rollbackTransaction(): void
     {
     }
 
+    /**
+     * @return bool
+     */
     public function getUseSetDataToUpdatedRecord(): bool
     {
         return false;
     }
 
+    /**
+     * @return void
+     */
     public function clearUseSetDataToUpdatedRecord(): void
     {
     }
 
+    /**
+     * @return void
+     */
     public function closeDBOperation(): void
     {
     }

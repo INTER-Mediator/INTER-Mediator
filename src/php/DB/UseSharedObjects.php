@@ -16,19 +16,58 @@
 
 namespace INTERMediator\DB;
 
+use INTERMediator\DB\Support\DB_Auth_Common;
+use INTERMediator\DB\Support\DB_Notification_Common;
+use INTERMediator\DB\Support\DB_PDO_Handler;
+use INTERMediator\DB\Support\DB_Spec_Behavior;
+
+/**
+ *
+ */
 abstract class UseSharedObjects
 {
+    /**
+     * @var Settings|null
+     */
     public ?Settings $dbSettings = null;
+    /**
+     * @var Logger|null
+     */
     public ?Logger $logger = null;
+    /**
+     * @var Formatters|null
+     */
     public ?Formatters $formatter = null;
+    /**
+     * @var DBClass|null
+     */
     public ?DBClass $dbClass = null;
+    /**
+     * @var Proxy|null
+     */
     public ?Proxy $proxyObject = null;
-    public $handler = null;    // Handle for each database engine. Uses just PDO.
-    public $authHandler = null;
-    public $notifyHandler = null;
-    public $specHandler = null;
+    /**
+     * @var DB_PDO_Handler|null
+     */
+    public ?DB_PDO_Handler $handler = null;    // Handle for each database engine. Uses just PDO.
+    /**
+     * @var DB_Auth_Common|null
+     */
+    public ?DB_Auth_Common $authHandler = null;
+    /**
+     * @var DB_Notification_Common|null
+     */
+    public ?DB_Notification_Common $notifyHandler = null;
+    /**
+     * @var DB_Spec_Behavior|null
+     */
+    public ?DB_Spec_Behavior $specHandler = null;
 
-    public function setUpSharedObjects($obj = null)
+    /**
+     * @param Proxy|null $obj
+     * @return void
+     */
+    public function setUpSharedObjects(?Proxy $obj = null)
     {
         if (is_null($obj)) {
             $this->setSettings(new Settings());
@@ -44,16 +83,28 @@ abstract class UseSharedObjects
         }
     }
 
+    /**
+     * @param $dbSettings
+     * @return void
+     */
     private function setSettings($dbSettings)
     {
         $this->dbSettings = $dbSettings;
     }
 
+    /**
+     * @param $logger
+     * @return void
+     */
     private function setLogger($logger)
     {
         $this->logger = $logger;
     }
 
+    /**
+     * @param $formatter
+     * @return void
+     */
     private function setFormatter($formatter)
     {
         $this->formatter = $formatter;

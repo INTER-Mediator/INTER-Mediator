@@ -641,14 +641,14 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->dbProxySetupForAccess("person", 1);
         $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id1);
         $this->db_proxy->requireUpdatedRecord(true);
-        $result = $this->db_proxy->processingRequest('read', true);
+        $this->db_proxy->processingRequest('read', true);
         $createdRecord = $this->db_proxy->getDatabaseResult();
         $this->assertEquals($modifiedStr1, $createdRecord[0]['name'], "The updated data has to be modified.");
 
         $this->dbProxySetupForAccess("person", 1);
         $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id2);
         $this->db_proxy->requireUpdatedRecord(true);
-        $result = $this->db_proxy->processingRequest('read', true);
+        $this->db_proxy->processingRequest('read', true);
         $createdRecord = $this->db_proxy->getDatabaseResult();
         $this->assertEquals($modifiedStr2, $createdRecord[0]['name'], "The updated data has to be modified.");
 
@@ -692,14 +692,14 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->dbProxySetupForAccess("person", 1);
         $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id1);
         $this->db_proxy->requireUpdatedRecord(true);
-        $result = $this->db_proxy->processingRequest('read', true);
+        $this->db_proxy->processingRequest('read', true);
         $createdRecord = $this->db_proxy->getDatabaseResult();
         $this->assertEquals($name1, $createdRecord[0]['name'], "The rollbacked data has not to be modified.");
 
         $this->dbProxySetupForAccess("person", 1);
         $this->db_proxy->dbSettings->addExtraCriteria('id', "=", $id2);
         $this->db_proxy->requireUpdatedRecord(true);
-        $result = $this->db_proxy->processingRequest('read', true);
+        $this->db_proxy->processingRequest('read', true);
         $createdRecord = $this->db_proxy->getDatabaseResult();
         $this->assertEquals($name2, $createdRecord[0]['name'], "The rollbacked data has not to be modified.");
 

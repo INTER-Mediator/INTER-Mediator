@@ -76,7 +76,7 @@ class Dropbox implements UploadingSupport, DownloadingSupport
     {
         $startOfPath = strpos($target, "/", 5);
         $urlPath = substr($target, $startOfPath + 2);
-        $this->fileName = str_replace("+", "%20", urlencode(basename($urlPath)) ?? "");
+        $this->fileName = str_replace("+", "%20", urlencode(basename($urlPath)));
         try {
             $tokenProvider = new AutoRefreshingDropBoxTokenService(
                 $this->refreshToken, $this->appKey, $this->appSecret, $this->accessTokenPath);
@@ -90,7 +90,7 @@ class Dropbox implements UploadingSupport, DownloadingSupport
 
     /**
      * @param string $file
-     * @return null|string
+     * @return string
      */
     public function getFileName(string $file): string
     {
@@ -116,7 +116,7 @@ class Dropbox implements UploadingSupport, DownloadingSupport
                                ?array  $datasource, ?array $dbspec, int $debug):void    {
         $dbAlt = new Proxy();
         $counter = -1;
-        foreach ($files as $fn => $fileInfo) { // Single file only
+        foreach ($files as $fileInfo) { // Single file only
             $counter += 1;
             if (is_array($fileInfo['name'])) {   // JQuery File Upload Style
                 $fileInfoName = $fileInfo['name'][0];

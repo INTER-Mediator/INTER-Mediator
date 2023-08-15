@@ -62,6 +62,7 @@ abstract class DB_FMS_Test_Common extends TestCase
             $this->dbProxySetupForAccess($layoutName, 1);
             $this->db_proxy->readFromDB();
             $reflectionClass = new ReflectionClass(get_class($this->db_proxy->dbClass));
+            $method = null; // For PHPStan level 2
             if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_FX') {
                 $method = $reflectionClass->getMethod('executeScriptsforLoading');
             } else if (get_class($this->db_proxy->dbClass) === 'INTERMediator\DB\FileMaker_DataAPI') {

@@ -18,54 +18,116 @@ namespace INTERMediator\DB\Support;
 
 use Exception;
 
+/**
+ *
+ */
 class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 {
+    /**
+     * @var array
+     */
     protected array $tableInfo = array();
+    /**
+     * @var string
+     */
     protected string $fieldNameForField = 'name';
+    /**
+     * @var string
+     */
     protected string $fieldNameForType = 'type';
+    /**
+     * @var string
+     */
     protected string $fieldNameForNullable = 'notnull';
+    /**
+     * @var array|string[]
+     */
     protected array $numericFieldTypes = array('integer', 'int', 'real', 'numeric',
         'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2', 'int8',
         'double', 'double precision', 'float', 'decimal', 'boolean');
+    /**
+     * @var array|string[]
+     */
     protected array $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+    /**
+     * @var array|string[]
+     */
     protected array $dateFieldTypes = ['datetime', 'date', 'timestamp'];
+    /**
+     * @var array
+     */
     protected array $booleanFieldTypes = [];
 
+    /**
+     * @return string
+     */
     public function sqlSELECTCommand(): string
     {
         return "SELECT ";
     }
 
+    /**
+     * @param string $param
+     * @return string
+     */
     public function sqlLimitCommand(string $param): string
     {
         return "LIMIT {$param}";
     }
 
+    /**
+     * @param string $param
+     * @return string
+     */
     public function sqlOffsetCommand(string $param): string
     {
         return "OFFSET {$param}";
     }
 
+    /**
+     * @return string
+     */
     public function sqlDELETECommand(): string
     {
         return "DELETE FROM ";
     }
 
+    /**
+     * @return string
+     */
     public function sqlUPDATECommand(): string
     {
         return "UPDATE ";
     }
 
+    /**
+     * @param string $tableRef
+     * @param string $setClause
+     * @return string
+     */
     public function sqlINSERTCommand(string $tableRef, string $setClause): string
     {
         return "INSERT INTO {$tableRef} {$setClause}";
     }
 
+    /**
+     * @param string $tableRef
+     * @param string $setClause
+     * @return string
+     */
     public function sqlREPLACECommand(string $tableRef, string $setClause): string
     {
         return "REPLACE INTO {$tableRef} {$setClause}";
     }
 
+    /**
+     * @param string $tableName
+     * @param array $setColumnNames
+     * @param string $keyField
+     * @param array $setValues
+     * @return string
+     * @throws Exception
+     */
     public function sqlSETClause(string $tableName, array $setColumnNames, string $keyField, array $setValues): string
     {
         [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $setValues);
@@ -73,16 +135,27 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
+    /**
+     * @return string
+     */
     public function dateResetForNotNull(): string
     {
         return '1970-01-01';
     }
 
+    /**
+     * @param string $info
+     * @return bool
+     */
     protected function checkNullableField(string $info): bool
     {
         return $info == 0;
     }
 
+    /**
+     * @param string $tableName
+     * @return string|null
+     */
     protected function getAutoIncrementField(string $tableName): ?string
     {
 //        if ($this->dbClassObj->link) {
@@ -98,6 +171,10 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         // SQLite doesn't support to create a record with non AUTOINCREMENT field as the primary key.
     }
 
+    /**
+     * @param string $tableName
+     * @return string
+     */
     protected function getTableInfoSQL(string $tableName): string
     {
         return "PRAGMA table_info({$tableName})";
@@ -142,6 +219,15 @@ contact_way|6
 
        */
 
+    /**
+     * @param string $tableName
+     * @param string $keyField
+     * @param string|null $assocField
+     * @param string|null $assocValue
+     * @param array|null $defaultValues
+     * @return array
+     * @throws Exception
+     */
     protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
                                             ?array $defaultValues): array
     {
@@ -169,6 +255,10 @@ contact_way|6
         return array(implode(',', $fieldArray), implode(',', $listArray));
     }
 
+    /**
+     * @param string $entityName
+     * @return string|null
+     */
     public function quotedEntityName(string $entityName): ?string
     {
         $q = '"';
@@ -176,19 +266,27 @@ contact_way|6
             $components = explode(".", $entityName);
             $quotedName = array();
             foreach ($components as $item) {
-                $quotedName[] = $q . str_replace($q, $q . $q, $item ?? "") . $q;
+                $quotedName[] = $q . str_replace($q, $q . $q, $item) . $q;
             }
             return implode(".", $quotedName);
         }
-        return $q . str_replace($q, $q . $q, $entityName ?? "") . $q;
+        return $q . str_replace($q, $q . $q, $entityName) . $q;
 
     }
 
+    /**
+     * @return void
+     */
     public function optionalOperationInSetup(): void
     {
     }
 
 
+    /**
+     * @param string $userTable
+     * @param string $hashTable
+     * @return array|null
+     */
     public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable): ?array  // authuser, issuedhash
     {
         $checkFieldDefinition = function (string $type, int $min): bool {

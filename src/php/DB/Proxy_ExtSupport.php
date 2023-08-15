@@ -4,32 +4,73 @@ namespace INTERMediator\DB;
 
 /* Easy DB Programming Support */
 
+/**
+ *
+ */
 trait Proxy_ExtSupport
 {
-    private $extProxy = null;
-    private $extDataSource = null;
-    private $extOptions = null;
-    private $extDBSpec = null;
-    private $extDebug = null;
-    private $fixedKey = null;
-    private $testMode = false;
+    /**
+     * @var Proxy|null
+     */
+    private ?Proxy $extProxy = null;
+    /**
+     * @var array|null
+     */
+    private ?array $extDataSource = null;
+    /**
+     * @var array|null
+     */
+    private ?array $extOptions = null;
+    /**
+     * @var array|null
+     */
+    private ?array $extDBSpec = null;
+    /**
+     * @var int|null
+     */
+    private ?int $extDebug = 0;
+    /**
+     * @var string|null
+     */
+    private ?string $fixedKey = null;
+    /**
+     * @var bool
+     */
+    private bool $testMode = false;
 
-    public function getExtProxy()
+    /**
+     * @return ?Proxy
+     */
+    public function getExtProxy(): ?Proxy
     {
         return $this->extProxy;
     }
 
-    public function setFixedKey($key = null)
+    /**
+     * @param string|null $key
+     * @return void
+     */
+    public function setFixedKey(?string $key = null): void
     {
         $this->fixedKey = $key;
     }
 
-    public function setTestMode()
+    /**
+     * @return void
+     */
+    public function setTestMode(): void
     {
         $this->testMode = true;
     }
 
-    public function dbInit($datasource = null, $options = null, $dbspec = null, $debug = null)
+    /**
+     * @param array|null $datasource
+     * @param array|null $options
+     * @param array|null $dbspec
+     * @param int|null $debug
+     * @return void
+     */
+    public function dbInit(?array $datasource = null, ?array $options = null, ?array $dbspec = null, ?int $debug = null): void
     {
         if (!$this->extProxy) {
             $this->extProxy = new Proxy($this->testMode);
@@ -41,7 +82,14 @@ trait Proxy_ExtSupport
         $this->extDebug = $debug;
     }
 
-    public function dbRead($target, $query = null, $sort = null, $spec = null)
+    /**
+     * @param string $target
+     * @param array|null $query
+     * @param array|null $sort
+     * @param array|null $spec
+     * @return array|null
+     */
+    public function dbRead(string $target, ?array $query = null, ?array $sort = null, ?array $spec = null): ?array
     {
         if (!$this->extProxy) {
             $this->dbInit();
@@ -53,7 +101,14 @@ trait Proxy_ExtSupport
         return $this->extProxy->getDatabaseResult();
     }
 
-    public function dbUpdate($target, $query = null, $data = null, $spec = null)
+    /**
+     * @param string $target
+     * @param array|null $query
+     * @param array|null $data
+     * @param array|null $spec
+     * @return array|null
+     */
+    public function dbUpdate(string $target, ?array $query = null, ?array $data = null, ?array $spec = null): ?array
     {
         if (!$this->extProxy) {
             $this->dbInit();
@@ -65,7 +120,13 @@ trait Proxy_ExtSupport
         return $this->extProxy->getDatabaseResult();
     }
 
-    public function dbCreate($target, $data = null, $spec = null)
+    /**
+     * @param string $target
+     * @param array|null $data
+     * @param array|null $spec
+     * @return array|null
+     */
+    public function dbCreate(string $target, ?array $data = null, ?array $spec = null): ?array
     {
         if (!$this->extProxy) {
             $this->dbInit();
@@ -76,7 +137,13 @@ trait Proxy_ExtSupport
         return $this->extProxy->getDatabaseResult();
     }
 
-    public function dbDelete($target, $query = null, $spec = null)
+    /**
+     * @param string $target
+     * @param array|null $query
+     * @param array|null $spec
+     * @return array|null
+     */
+    public function dbDelete(string $target, ?array $query = null, ?array $spec = null): ?array
     {
         if (!$this->extProxy) {
             $this->dbInit();
@@ -87,12 +154,24 @@ trait Proxy_ExtSupport
         return $this->extProxy->getDatabaseResult();
     }
 
-    public function dbCopy($target, $query = null, $sort = null, $spec = null)
+    /**
+     * @param string $target
+     * @param array|null $query
+     * @param array|null $sort
+     * @param array|null $spec
+     * @return array|null
+     */
+    public function dbCopy(string $target, ?array $query = null, ?array $sort = null, ?array $spec = null): ?array
     {
-
+        return null;
     }
 
-    private function hasTarget($target, $spec = null)
+    /**
+     * @param string $target
+     * @param array|null $spec
+     * @return bool
+     */
+    private function hasTarget(string $target, ?array $spec = null): bool
     {
         $result = false;
         $targetSpec = $spec ?? $this->extDataSource;
@@ -107,7 +186,12 @@ trait Proxy_ExtSupport
         return $result;
     }
 
-    private function initializeSpec($target, $spec)
+    /**
+     * @param string $target
+     * @param array|null $spec
+     * @return void
+     */
+    private function initializeSpec(string $target, ?array $spec): void
     {
         if ($spec && $this->hasTarget($target, $spec)) {
             $this->extProxy->initialize($spec, $this->extOptions, $this->extDBSpec, $this->extDebug, $target);
@@ -121,7 +205,11 @@ trait Proxy_ExtSupport
         }
     }
 
-    private function setupQuery($query)
+    /**
+     * @param array|null $query
+     * @return void
+     */
+    private function setupQuery(?array $query): void
     {
         if (!$query) {
             return;
@@ -138,7 +226,11 @@ trait Proxy_ExtSupport
         }
     }
 
-    private function setupSort($sort)
+    /**
+     * @param array|null $sort
+     * @return void
+     */
+    private function setupSort(?array $sort): void
     {
         if (!$sort) {
             return;
@@ -154,7 +246,11 @@ trait Proxy_ExtSupport
         }
     }
 
-    private function setupData($data)
+    /**
+     * @param array|null $data
+     * @return void
+     */
+    private function setupData(?array $data): void
     {
         if (!$data) {
             return;

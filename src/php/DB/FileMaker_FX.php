@@ -23,82 +23,148 @@ use FX;
 use INTERMediator\IMUtil;
 use RetrieveFM7Data;
 
+/**
+ *
+ */
 class FileMaker_FX extends DBClass
 {
+    /**
+     * @var FX|null
+     */
     public ?FX $fx = null;
+    /**
+     * @var FX|null
+     */
     public ?FX $fxAuth = null;
+    /**
+     * @var FX|null
+     */
     public ?FX $fxAlt = null;
+    /**
+     * @var int
+     */
     private int $mainTableCount = 0;
+    /**
+     * @var int
+     */
     private int $mainTableTotalCount = 0;
+    /**
+     * @var array|null
+     */
     private ?array $fieldInfo = null;
+    /**
+     * @var array|null
+     */
     private ?array $updatedRecord = null;
+    /**
+     * @var string|null
+     */
     private ?string $softDeleteField = null;
+    /**
+     * @var string|null
+     */
     private ?string $softDeleteValue = null;
+    /**
+     * @var bool
+     */
     private bool $useSetDataToUpdatedRecord = false;
 
     /**
-     * @param $str
+     * @param string $str
      */
-    private function errorMessageStore(string $str)
+    public function errorMessageStore(string $str)
     {
         $this->logger->setErrorMessage("Query Error: [{$str}] Error Code={$this->fx->lastErrorCode}");
     }
 
+    /**
+     * @return bool
+     */
     public function setupConnection(): bool
     {
         return true;
     }
 
+    /**
+     * @param bool $value
+     * @return void
+     */
     public function requireUpdatedRecord(bool $value): void
     {
         // always can get the new record for FileMaker Server.
     }
 
+    /**
+     * @return array|null
+     */
     public function getUpdatedRecord(): ?array
     {
         return $this->updatedRecord;
     }
 
+    /**
+     * @return array|null
+     */
     public function updatedRecord()
     {
         return $this->updatedRecord;
     }
 
-    /* Usually a setter method has just one parameter, but the same named method existed on previous version
-       and possibly calling it from user program. So if it has more than one parameter, it might call old
-       method and redirect to previous one. (msyk, 2021-11-03) */
-    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
+    /**
+     * @param array $record
+     * @return void
+     */
+    public function setUpdatedRecord(array $record): void
     {
-        if (!$value) {
-            $this->updatedRecord = $record;
-        } else { // Previous use of this method redirect to setDataToUpdatedRecord
-            $this->setDataToUpdatedRecord($record, $value, $index);
-        }
+        $this->updatedRecord = $record;
     }
 
+    /**
+     * @param string $field
+     * @param string $value
+     * @param int $index
+     * @return void
+     */
     public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
     {
         $this->updatedRecord[$index][$field] = $value;
         $this->useSetDataToUpdatedRecord = true;
     }
 
+    /**
+     * @return bool
+     */
     public function getUseSetDataToUpdatedRecord(): bool
     {
         return $this->useSetDataToUpdatedRecord;
     }
 
+    /**
+     * @return void
+     */
     public function clearUseSetDataToUpdatedRecord(): void
     {
         $this->useSetDataToUpdatedRecord = false;
     }
 
 
+    /**
+     * @param string $field
+     * @param string $value
+     * @return void
+     */
     public function softDeleteActivate(string $field, string $value): void
     {
         $this->softDeleteField = $field;
         $this->softDeleteValue = $value;
     }
 
+    /**
+     * @param string $layoutName
+     * @param int $recordCount
+     * @return void
+     * @throws Exception
+     */
     public function setupFXforAuth(string $layoutName, int $recordCount): void
     {
         $this->fx = null;
@@ -106,6 +172,12 @@ class FileMaker_FX extends DBClass
             $this->dbSettings->getDbSpecUser(), $this->dbSettings->getDbSpecPassword());
     }
 
+    /**
+     * @param string $layoutName
+     * @param int $recordCount
+     * @return void
+     * @throws Exception
+     */
     public function setupFXforDB(string $layoutName, int $recordCount): void
     {
         $this->fxAuth = null;
@@ -113,12 +185,26 @@ class FileMaker_FX extends DBClass
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
     }
 
+    /**
+     * @param string $layoutName
+     * @param int $recordCount
+     * @return void
+     * @throws Exception
+     */
     public function setupFXforDB_Alt(string $layoutName, int $recordCount): void
     {
         $this->fxAlt = $this->setupFX_Impl($layoutName, $recordCount,
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
     }
 
+    /**
+     * @param string $layoutName
+     * @param int $recordCount
+     * @param $user
+     * @param $password
+     * @return FX
+     * @throws Exception
+     */
     private function setupFX_Impl(string $layoutName, int $recordCount, $user, $password): FX
     {
         $path = __DIR__ . '/../../../vendor/inter-mediator/fxphp' .
@@ -141,6 +227,10 @@ class FileMaker_FX extends DBClass
         return $fxObj;
     }
 
+    /**
+     * @param string|null $dsn
+     * @return void
+     */
     public function setupHandlers(?string $dsn = null): void
     {
         $this->authHandler = new Support\DB_Auth_Handler_FileMaker_FX($this);
@@ -148,6 +238,10 @@ class FileMaker_FX extends DBClass
         $this->specHandler = new Support\DB_Spec_Handler_FileMaker_FX();
     }
 
+    /**
+     * @param string|null $str
+     * @return string
+     */
     public function stringWithoutCredential(?string $str): string
     {
         if (is_null($this->fx)) {
@@ -159,21 +253,38 @@ class FileMaker_FX extends DBClass
         }
     }
 
+    /**
+     * @return void
+     */
     public function closeDBOperation(): void
     {
         // Do nothing
     }
 
+    /**
+     * @param string|null $str
+     * @return string
+     */
     private function stringReturnOnly(?string $str): string
     {
         return str_replace("\n\r", "\r", str_replace("\n", "\r", $str ?? ""));
     }
 
+    /**
+     * @param string|null $str
+     * @return string
+     */
     private function unifyCRLF(?string $str): string
     {
         return str_replace("\n", "\r", str_replace("\r\n", "\r", $str ?? ""));
     }
 
+    /**
+     * @param string $field
+     * @param string $value
+     * @param string|null $operator
+     * @return string[]
+     */
     private function setSearchConditionsForCompoundFound(string $field, string $value, ?string $operator = NULL): array
     {
         if ($operator === NULL || $operator === 'neq') {
@@ -199,6 +310,10 @@ class FileMaker_FX extends DBClass
         }
     }
 
+    /**
+     * @param array|null $scriptContext
+     * @return string
+     */
     private function executeScriptsforLoading(?array $scriptContext): string
     {
         $queryString = '';
@@ -237,6 +352,11 @@ class FileMaker_FX extends DBClass
         return $queryString;
     }
 
+    /**
+     * @param FX $fxphp
+     * @param array $condition
+     * @return FX
+     */
     private function executeScripts(FX $fxphp, array $condition): FX
     {
         if ($condition['situation'] == 'pre') {
@@ -259,19 +379,28 @@ class FileMaker_FX extends DBClass
         return $fxphp;
     }
 
+    /**
+     * @param string $dataSourceName
+     * @return array|null
+     */
     public function getFieldInfo(string $dataSourceName): ?array
     {
         return $this->fieldInfo;
     }
 
-    public function getSchema(string $dataSourceName): array
+    /**
+     * @param string $dataSourceName
+     * @return array
+     * @throws Exception
+     */
+    public function getSchema(string $dataSourceName): ?array
     {
         $this->fieldInfo = null;
 
         $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), '');
         $this->dbSettings->setDbSpecDataType(
             str_replace('fmpro', 'fmalt',
-                strtolower($this->dbSettings->getDbSpecDataType()) ?? ""));
+                strtolower($this->dbSettings->getDbSpecDataType())));
         $result = $this->fx->FMView();
 
         if (!is_array($result)) {
@@ -281,7 +410,7 @@ class FileMaker_FX extends DBClass
                 $this->logger->setErrorMessage(
                     $this->stringWithoutCredential(get_class($result) . ': ' . $result->getDebugInfo()));
             }
-            return false;
+            return null;
         }
 
         $returnArray = array();
@@ -292,6 +421,10 @@ class FileMaker_FX extends DBClass
         return $returnArray;
     }
 
+    /**
+     * @return array|array[]|string[]|null
+     * @throws Exception
+     */
     public function readFromDB(): ?array
     {
         $useOrOperation = false;
@@ -478,7 +611,7 @@ class FileMaker_FX extends DBClass
                             "{$tableName}{$this->dbSettings->getSeparator()}{$foreignField}", $foreignValue);
                         if (!$usePortal) {
                             if (!$this->specHandler->isPossibleOperator($foreignOperator)) {
-                                throw new Exception("Invalid Operator.: {$condition['operator']}");
+                                throw new Exception("Invalid Operator.: {$foreignOperator}");
                             }
                             if ($useOrOperation) {
                                 throw new Exception("Condition Incompatible.: The OR operation and foreign key can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
@@ -826,6 +959,7 @@ class FileMaker_FX extends DBClass
                                     $relRecords = array($relatedset['record']);
                                 }
                                 foreach ($relRecords as $relatedrecord) {
+                                    $recId = null; // For PHPStan level 1
                                     if (isset($relatedset['@attributes']) && isset($relatedrecord['@attributes'])) {
                                         $tableOccurrence = $relatedset['@attributes']['table'];
                                         $recId = $relatedrecord['@attributes']['record-id'];
@@ -844,7 +978,7 @@ class FileMaker_FX extends DBClass
                                             $relatedFieldValue = '';
                                             $fullyQualifiedFieldName = explode('::', $relatedFieldName);
                                             $tableOccurrence = $fullyQualifiedFieldName[0];
-                                            if (isset($relatedfield['data']) && !is_null($relatedfield['data'])) {
+                                            if (isset($relatedfield['data'])) {
                                                 if (strpos($relatedFieldName, '::') !== false) {
                                                     $relatedFieldValue = $this->formatter->formatterFromDB(
                                                         "{$tableOccurrence}{$this->dbSettings->getSeparator()}{$relatedFieldName}",
@@ -912,6 +1046,14 @@ class FileMaker_FX extends DBClass
         return $recordArray;
     }
 
+    /**
+     * @param array $resultData
+     * @param string $dataSourceName
+     * @param bool $usePortal
+     * @param string $childRecordId
+     * @param string $childRecordIdValue
+     * @return array
+     */
     private function createRecordset(array  $resultData, string $dataSourceName, bool $usePortal,
                                      string $childRecordId, string $childRecordIdValue): array
     {
@@ -999,16 +1141,27 @@ class FileMaker_FX extends DBClass
         return $returnArray;
     }
 
+    /**
+     * @return int
+     */
     public function countQueryResult(): int
     {
         return $this->mainTableCount;
     }
 
+    /**
+     * @return int
+     */
     public function getTotalCount(): int
     {
         return $this->mainTableTotalCount;
     }
 
+    /**
+     * @param bool $bypassAuth
+     * @return bool
+     * @throws Exception
+     */
     public function updateDB(bool $bypassAuth): bool
     {
         $this->fieldInfo = null;
@@ -1065,7 +1218,7 @@ class FileMaker_FX extends DBClass
             if (!$this->dbSettings->getPrimaryKeyOnly() || $value['field'] == $primaryKey) {
                 $value = $this->normalizedCondition($value);
                 if (!$this->specHandler->isPossibleOperator($value['operator'])) {
-                    throw new Exception("Invalid Operator.: {$condition['operator']}");
+                    throw new Exception("Invalid Operator.: {$value['operator']}");
                 }
                 $convertedValue = $this->formatter->formatterToDB(
                     "{$tableSourceName}{$this->dbSettings->getSeparator()}{$value['field']}", $value['value']);
@@ -1211,7 +1364,7 @@ class FileMaker_FX extends DBClass
                         . "code={$result['errorCode']}, url={$result['URL']}<hr>"));
                     return false;
                 }
-                $this->updatedRecord = $this->createRecordset($result['data'], $dataSourceName, null, null, null);
+                $this->updatedRecord = $this->createRecordset($result['data'], $dataSourceName, false, null, null);
                 $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
                 break;
             }
@@ -1219,6 +1372,11 @@ class FileMaker_FX extends DBClass
         return true;
     }
 
+    /**
+     * @param bool $isReplace
+     * @return string|null
+     * @throws Exception
+     */
     public function createInDB(bool $isReplace = false): ?string
     {
         $this->fieldInfo = null;
@@ -1346,6 +1504,7 @@ class FileMaker_FX extends DBClass
                 "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>"));
             return null;
         }
+        $keyValue = null; // For PHPStan level 1
         foreach ($result['data'] as $key => $row) {
             if ($keyFieldName == $this->specHandler->getDefaultKey()) {
                 $recId = substr($key, 0, strpos($key, '.'));
@@ -1358,11 +1517,15 @@ class FileMaker_FX extends DBClass
         $this->notifyHandler->setQueriedPrimaryKeys(array($keyValue));
         $this->notifyHandler->setQueriedEntity($this->fx->layout);
 
-        $this->updatedRecord = $this->createRecordset($result['data'], $dataSourceName, null, null, null);
+        $this->updatedRecord = $this->createRecordset($result['data'], $dataSourceName, false, null, null);
 
         return $keyValue;
     }
 
+    /**
+     * @return bool
+     * @throws Exception
+     */
     public function deleteFromDB(): bool
     {
         $this->fieldInfo = null;
@@ -1501,12 +1664,20 @@ class FileMaker_FX extends DBClass
         return true;
     }
 
+    /**
+     * @return string|null
+     */
     public function copyInDB(): ?string
     {
         $this->errorMessageStore("Copy operation is not implemented so far.");
         return null;
     }
 
+    /**
+     * @param string $entity
+     * @param string $field
+     * @return string
+     */
     private function getFieldForFormatter(string $entity, string $field): string
     {
         if (strpos($field, "::") === false) {
@@ -1530,6 +1701,10 @@ class FileMaker_FX extends DBClass
         return "{$entity}{$this->dbSettings->getSeparator()}{$field}";
     }
 
+    /**
+     * @param array $condition
+     * @return array
+     */
     public function normalizedCondition(array $condition): array
     {
         if (!isset($condition['field'])) {
@@ -1600,6 +1775,12 @@ class FileMaker_FX extends DBClass
         }
     }
 
+    /**
+     * @param string $table
+     * @param array|null $conditions
+     * @return array|null
+     * @throws Exception
+     */
     public function queryForTest(string $table, ?array $conditions = null): ?array
     {
         if ($table == null) {
@@ -1631,6 +1812,10 @@ class FileMaker_FX extends DBClass
         return $recordSet;
     }
 
+    /**
+     * @param string $direction
+     * @return string
+     */
     protected function _adjustSortDirection(string $direction): string
     {
         if (strtoupper($direction) == 'ASC') {
@@ -1642,6 +1827,10 @@ class FileMaker_FX extends DBClass
         return $direction;
     }
 
+    /**
+     * @param string $fieldName
+     * @return bool
+     */
     protected function _field_exists(string $fieldName): bool
     {
         $config = array(
@@ -1668,6 +1857,11 @@ class FileMaker_FX extends DBClass
         return false;
     }
 
+    /**
+     * @param string $table
+     * @param array|null $conditions
+     * @return bool
+     */
     public function deleteForTest(string $table, ?array $conditions = null): bool
     {
         return false;
@@ -1676,24 +1870,39 @@ class FileMaker_FX extends DBClass
     /*
  * Transaction
  */
+    /**
+     * @return bool
+     */
     public function inTransaction(): bool
     {
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public function hasTransaction(): bool
     {
         return false;
     }
 
+    /**
+     * @return void
+     */
     public function beginTransaction(): void
     {
     }
 
+    /**
+     * @return void
+     */
     public function commitTransaction(): void
     {
     }
 
+    /**
+     * @return void
+     */
     public function rollbackTransaction(): void
     {
     }

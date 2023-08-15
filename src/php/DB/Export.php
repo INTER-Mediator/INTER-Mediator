@@ -6,17 +6,49 @@ use DateTime;
 use League\Csv\Writer;
 use League\Csv\CharsetConverter;
 
+/**
+ *
+ */
 class Export
 {
+    /**
+     * @var array
+     */
     protected array $keysAndLabels = []; // array of field name => column name
 
+    /**
+     * @var string
+     */
     protected string $fileNamePrefix = "Exported-";
+    /**
+     * @var string
+     */
     protected string $fileExtension = "csv";
+    /**
+     * @var string
+     */
     protected string $encoding = "UTF-8";
+    /**
+     * @var string
+     */
     protected string $fieldSeparator = ',';
+    /**
+     * @var string
+     */
     protected string $quote = '"';
+    /**
+     * @var string
+     */
     protected string $endOfLine = "\n";
 
+    /**
+     * @param array $contextData
+     * @param array|null $options
+     * @return void
+     * @throws \League\Csv\CannotInsertRecord
+     * @throws \League\Csv\Exception
+     * @throws \League\Csv\InvalidArgument
+     */
     public function processing(array $contextData, ?array $options): void
     {
         $qH = '"'; // Double quote in header

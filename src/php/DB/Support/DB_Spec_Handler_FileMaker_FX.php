@@ -15,23 +15,40 @@
  */
 namespace INTERMediator\DB\Support;
 
+/**
+ *
+ */
 class DB_Spec_Handler_FileMaker_FX implements DB_Spec_Behavior
 {
+    /**
+     * @return string
+     */
     public static function defaultKey(): string
     {
         return "-recid";
     }
 
+    /**
+     * @return string
+     */
     public function getDefaultKey(): string
     {
         return "-recid";
     }
 
+    /**
+     * @param string $operator
+     * @return bool
+     */
     public function isOperatorWithoutValue(string $operator): bool
     {
         return false;
     }
 
+    /**
+     * @param string $operator
+     * @return bool
+     */
     public function isPossibleOperator(string $operator): bool
     {
         return !(!in_array(strtoupper($operator), array(
@@ -39,12 +56,21 @@ class DB_Spec_Handler_FileMaker_FX implements DB_Spec_Behavior
         )));
     }
 
+    /**
+     * @param string $specifier
+     * @return bool
+     */
     public function isPossibleOrderSpecifier(string $specifier): bool
     {
         return !(!in_array(strtoupper($specifier), array('ASCEND', 'DESCEND', 'ASC', 'DESC')));
     }
 
-    public function isContainingFieldName(string $fname,array $fieldnames): bool
+    /**
+     * @param string $fname
+     * @param array $fieldnames
+     * @return bool
+     */
+    public function isContainingFieldName(string $fname, array $fieldnames): bool
     {
         if (in_array($fname, $fieldnames)) {
             return true;
@@ -64,11 +90,17 @@ class DB_Spec_Handler_FileMaker_FX implements DB_Spec_Behavior
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public function isNullAcceptable(): bool
     {
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public function isSupportAggregation(): bool
     {
         return false;

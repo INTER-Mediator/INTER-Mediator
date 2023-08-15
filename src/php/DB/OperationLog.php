@@ -17,22 +17,67 @@ namespace INTERMediator\DB;
 
 use INTERMediator\Params;
 
+/**
+ *
+ */
 class OperationLog
 {
+    /**
+     * @var int
+     */
     private int $accessLogLevel;
+    /**
+     * @var string|null
+     */
     private ?string $dbClassLog;
+    /**
+     * @var string|null
+     */
     private ?string $dbUserLog;
+    /**
+     * @var string|null
+     */
     private ?string $dbPasswordLog;
+    /**
+     * @var string|null
+     */
     private ?string $dbDSNLog;
+    /**
+     * @var array|null
+     */
     private ?array $recordingContexts;
+    /**
+     * @var array|null
+     */
     private ?array $recordingOperations;
+    /**
+     * @var array|null
+     */
     private ?array $contextOptions;
+    /**
+     * @var bool
+     */
     private bool $dontRecordTheme;
+    /**
+     * @var bool
+     */
     private bool $dontRecordChallenge;
+    /**
+     * @var bool
+     */
     private bool $dontRecordDownload;
+    /**
+     * @var bool
+     */
     private bool $dontRecordDownloadNoGet;
+    /**
+     * @var object
+     */
     private object $accessLogExtensionClass;
 
+    /**
+     * @param array|null $options
+     */
     public function __construct(?array $options)
     {
         $this->contextOptions = $options;
@@ -50,6 +95,10 @@ class OperationLog
         $this->accessLogExtensionClass = Params::getParameterValue("accessLogExtensionClass", null);
     }
 
+    /**
+     * @param array|null $result
+     * @return void
+     */
     public function setEntry(?array $result): void
     {
 
@@ -91,7 +140,7 @@ class OperationLog
                 $cookieNameUser = "_im_username";
                 if (isset($this->contextOptions['authentication']['realm'])) {
                     $cookieNameUser .= ('_' . str_replace(" ", "_",
-                            str_replace(".", "_", $this->contextOptions['authentication']['realm']) ?? ""));
+                            str_replace(".", "_", $this->contextOptions['authentication']['realm'])));
                 }
                 $userValue = $_COOKIE[$cookieNameUser] ?? '';
             }
@@ -124,6 +173,10 @@ class OperationLog
         }
     }
 
+    /**
+     * @param array|null $ar
+     * @return string|null
+     */
     private function arrayToString(?array $ar): ?string
     {
         if (is_null($ar) || count($ar) === 0) {
@@ -131,7 +184,7 @@ class OperationLog
         }
         $result = [];
         foreach ($ar as $k => $v) {
-            if (is_array($k)) {
+            if (is_array($v)) {
                 $v = $this->arrayToString($v);
             }
             if ($this->accessLogLevel < 2 && preg_match("/(value_[0-9]+)/", $k, $matches)) {

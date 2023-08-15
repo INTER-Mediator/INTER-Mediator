@@ -14,6 +14,7 @@
  */
 namespace INTERMediator\Data_Converter;
 
+use Exception;
 use INTERMediator\Locale\IMLocale;
 
 /**
@@ -22,12 +23,13 @@ use INTERMediator\Locale\IMLocale;
 class Currency extends NumberBase
 {
     /**
-     * @var int|mixed
+     * @var int
      */
     private int $d;
 
     /**
      * @param int $digits
+     * @throws Exception
      */
     function __construct(int $digits = 0)
     {
@@ -63,7 +65,7 @@ class Currency extends NumberBase
                 }
             }
         }
-        return $isPeriod ? floatval($numberString) : intval($numberString);
+        return (string)($isPeriod ? floatval($numberString) : intval($numberString));
     }
 
 }

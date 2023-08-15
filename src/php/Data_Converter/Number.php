@@ -15,6 +15,8 @@
 
 namespace INTERMediator\Data_Converter;
 
+use Exception;
+
 /**
  *
  */
@@ -31,6 +33,7 @@ class Number extends NumberBase
 
     /**
      * @param int|bool $digits
+     * @throws Exception
      */
     function __construct($digits = 0)
     {

@@ -152,7 +152,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $res
      * @return void
      */
-    public function setParamResponse($res): void // For testing, $res could be array or string
+    public function setParamResponse($res): void // For testing, $res could be an array or a string
     {
         if (is_array($res)) {
             $this->paramResponse = $res[0] ?? null;
@@ -193,7 +193,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $value
      * @return void
      */
-    public function addOutputData(string $key, $value): void // $value could be array or string.
+    public function addOutputData(string $key, $value): void // $value could be an array or a string.
     {
         if (!isset($this->outputOfProcessing[$key])) {
             $this->outputOfProcessing[$key] = $value;
@@ -720,6 +720,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param ?int $debug
      * @param ?string $target
      * @return bool
+     * @throws Exception
      */
     function initialize(?array $datasource, ?array $options, ?array $dbspec, ?int $debug, ?string $target = null): bool
     {
@@ -951,6 +952,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param ?string $access
      * @param bool $bypassAuth
      * @param bool $ignoreFiles
+     * @throws Exception
      */
     public function processingRequest(?string $access = null, bool $bypassAuth = false, bool $ignoreFiles = false): void
     {
@@ -1431,7 +1433,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $username = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($username);
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
         $this->authDbClass->authHandler->authSupportStoreChallenge($uid, $challenge, $clientId);
-        return $username === 0 ? "" : $this->authSupportGetSalt($username);
+        return !$username ? "" : $this->authSupportGetSalt($username);
     }
 
     /**
@@ -1454,10 +1456,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($signedUser);
         $this->logger->setDebugMessage("[checkAuthorization]uid={$uid}", 2);
         if ($uid <= 0) {
-            return $returnValue;
+            return false;
         }
         if ($isSAML && !$this->dbClass->authHandler->authSupportIsWithinSAMLLimit($uid)) {
-            return $returnValue;
+            return false;
         }
         $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge($uid, $this->clientId);
         $this->logger->setDebugMessage("[checkAuthorization]storedChallenge={$storedChallenge}/{$this->credential}", 2);
@@ -1471,7 +1473,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $hmacValue2m = $this->hashedPassword ? hash_hmac('sha256', $this->hashedPassword, $storedChallenge) : 'no-value';
                 $this->logger->setDebugMessage(
                     "[checkAuthorization]hashedPassword={$this->hashedPassword}/hmac_value={$hmacValue}", 2);
-                if ($this->hashedPassword && strlen($this->hashedPassword) > 0) {
+                if (strlen($this->hashedPassword) > 0) {
                     if ($hashedvalue == $hmacValue) {
                         $this->logger->setDebugMessage("[checkAuthorization]sha1 hash used.", 2);
                         $returnValue = true;
@@ -1538,9 +1540,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @param string $username
      * @param string $password
-     * @oaram bool $isSAML
+     * @param bool $isSAML
      * @param ?array $attrs
-     * @return mixed
+     * @return array
      */
     function addUser(string $username, string $password, bool $isSAML = false, ?array $attrs = null): array
     {
@@ -1572,7 +1574,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
         $userid = $this->dbClass->authHandler->authSupportGetUserIdFromEmail($email);
         $username = $this->dbClass->authHandler->authSupportGetUsernameFromUserId($userid);
-        if ($username == '') { // checked also is null or is false
+        if (is_null($userid) || is_null($username)) { // checked also is null or is false
             return null;
         }
         $clienthost = IMUtil::generateChallenge();
@@ -1600,7 +1602,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $userid = $this->dbClass->authHandler->authSupportGetUserIdFromEmail($email);
             $username = $this->dbClass->authHandler->authSupportGetUsernameFromUserId($userid);
         }
-        if ($email == '' || is_null($userid) || $username == '') {
+        if ($email == '' || is_null($userid) || is_null($username)) {
             return false;
         }
         $userid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
@@ -1634,7 +1636,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         $userID = $this->authDbClass->authHandler->authSupportUserEnrollmentEnrollingUser($challenge);
         if (!$userID) {
-            return false;
+            return null;
         }
         return $this->dbClass->authHandler->authSupportUserEnrollmentActivateUser(
             $userID, IMUtil::convertHashedPassword($password, $this->passwordHash, $this->alwaysGenSHA2),
@@ -1737,17 +1739,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     /**
      * @param array $record
-     * @param string|null $value
-     * @param int $index
      * @return void
      */
-    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
+    public function setUpdatedRecord(array $record): void
     {
-        if (!$value) {
-            $this->dbClass->setUpdatedRecord($record);
-        } else { // Previous use of this method redirect to setDataToUpdatedRecord
-            $this->setDataToUpdatedRecord($record, $value, $index);
-        }
+        $this->dbClass->setUpdatedRecord($record);
     }
 
     /**

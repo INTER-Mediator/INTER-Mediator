@@ -17,5 +17,5 @@ namespace INTERMediator\DB\Extending;
 
 interface AfterDelete
 {
-    public function doAfterDeleteFromDB(bool $result): bool;
+    public function doAfterDeleteFromDB($result);
 }

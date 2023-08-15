@@ -113,22 +113,13 @@ class FileMaker_DataAPI extends DBClass
         return $this->updatedRecord;
     }
 
-    /* Usually a setter method has just one parameter, but the same named method existed on previous version
-      and possibly calling it from user program. So if it has more than one parameter, it might call old
-      method and redirect to previous one. (msyk, 2021-11-03) */
     /**
      * @param array $record
-     * @param string|null $value
-     * @param int $index
      * @return void
      */
-    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
+    public function setUpdatedRecord(array $record): void
     {
-        if (!$value) {
-            $this->updatedRecord = $record;
-        } else { // Previous use of this method redirect to setDataToUpdatedRecord
-            $this->setDataToUpdatedRecord($record, $value, $index);
-        }
+        $this->updatedRecord = $record;
     }
 
     /**
@@ -285,34 +276,34 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /**
-     * @param string $str
-     * @return array|string|string[]
+     * @param ?string $str
+     * @return string
      */
-    public function stringWithoutCredential(string $str)
+    public function stringWithoutCredential(?string $str): string
     {
         if (is_null($this->fmData)) {
-            $str = str_replace($this->dbSettings->getDbSpecUser(), "********", $str ?? "");
-            return str_replace($this->dbSettings->getDbSpecPassword(), "********", $str ?? "");
+            $str = str_replace($this->dbSettings->getDbSpecUser(), "********", $str ?? $str);
+            return str_replace($this->dbSettings->getDbSpecPassword(), "********", $str);
         } else {
             $str = str_replace($this->dbSettings->getAccessUser(), "********", $str ?? "");
-            return str_replace($this->dbSettings->getAccessPassword(), "********", $str ?? "");
+            return str_replace($this->dbSettings->getAccessPassword(), "********", $str);
         }
     }
 
     /**
-     * @param string $str
-     * @return array|string|string[]
+     * @param string|null $str
+     * @return string
      */
-    private function stringReturnOnly(string $str)
+    private function stringReturnOnly(?string $str): string
     {
         return str_replace("\n\r", "\r", str_replace("\n", "\r", $str ?? ""));
     }
 
     /**
-     * @param string $str
-     * @return array|string|string[]
+     * @param string|null $str
+     * @return string
      */
-    private function unifyCRLF(string $str)
+    private function unifyCRLF(?string $str): string
     {
         return str_replace("\n", "\r", str_replace("\r\n", "\r", $str ?? ""));
     }
@@ -322,9 +313,9 @@ class FileMaker_DataAPI extends DBClass
      * @param string $field
      * @param string $value
      * @param string|null $operator
-     * @return string[]|null
+     * @return ?array
      */
-    private function setSearchConditionsForCompoundFound(string $field, string $value, ?string $operator = NULL)
+    private function setSearchConditionsForCompoundFound(string $field, string $value, ?string $operator = NULL): ?array
     {
         if ($operator === NULL) {
             return array($field, $value);
@@ -360,10 +351,10 @@ class FileMaker_DataAPI extends DBClass
                 if (isset($condition['situation']) &&
                     isset($condition['definition']) && !empty($condition['definition'])
                 ) {
-                    $scriptName = str_replace('&', '', $condition['definition'] ?? "");
+                    $scriptName = str_replace('&', '', $condition['definition']);
                     $parameter = '';
-                    if (isset($condition['parameter']) && !empty($condition['parameter'])) {
-                        $parameter = str_replace('&', '', $condition['parameter'] ?? "");
+                    if (!empty($condition['parameter'])) {
+                        $parameter = str_replace('&', '', $condition['parameter']);
                     }
                     switch ($condition['situation']) {
                         case 'post':

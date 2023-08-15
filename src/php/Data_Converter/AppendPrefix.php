@@ -34,7 +34,7 @@ class AppendPrefix
     }
 
     /**
-     * @param string $str
+     * @param string|null $str
      * @return string
      */
     function converterFromDBtoUser(?string $str): string

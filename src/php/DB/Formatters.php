@@ -15,17 +15,27 @@
 
 namespace INTERMediator\DB;
 
+/**
+ *
+ */
 class Formatters
 {
-    private $formatter = null;
+    /**
+     * @var array
+     */
+    private array $formatter = [];
     /* Formatter processing */
+    /**
+     * @param $fmt
+     * @return void
+     */
     public function setFormatter($fmt)
     {
         if (is_array($fmt)) {
             $this->formatter = array();
             foreach ($fmt as $oneItem) {
                 if (!isset($this->formatter[$oneItem['field']])) {
-                    $cvClassName = "INTERMediator\\Data_Converter\\".$oneItem['converter-class'];
+                    $cvClassName = "INTERMediator\\Data_Converter\\" . $oneItem['converter-class'];
                     $this->formatter[$oneItem['field']]
                         = new $cvClassName($oneItem['parameter'] ?? '');
                 }
@@ -33,22 +43,28 @@ class Formatters
         }
     }
 
+    /**
+     * @param $field
+     * @param $data
+     * @return mixed
+     */
     public function formatterFromDB($field, $data)
     {
-        if (is_array($this->formatter)) {
-            if (isset($this->formatter[$field])) {
-                return $this->formatter[$field]->converterFromDBtoUser($data);
-            }
+        if (isset($this->formatter[$field])) {
+            return $this->formatter[$field]->converterFromDBtoUser($data);
         }
         return $data;
     }
 
+    /**
+     * @param $field
+     * @param $data
+     * @return mixed
+     */
     public function formatterToDB($field, $data)
     {
-        if (is_array($this->formatter)) {
-            if (isset($this->formatter[$field])) {
-                return $this->formatter[$field]->converterFromUserToDB($data);
-            }
+        if (isset($this->formatter[$field])) {
+            return $this->formatter[$field]->converterFromUserToDB($data);
         }
         return $data;
     }

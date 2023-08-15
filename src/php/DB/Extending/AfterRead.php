@@ -17,5 +17,5 @@ namespace INTERMediator\DB\Extending;
 
 interface AfterRead
 {
-    public function doAfterReadFromDB(?array $result): ?array;
+    public function doAfterReadFromDB( $result);
 }
