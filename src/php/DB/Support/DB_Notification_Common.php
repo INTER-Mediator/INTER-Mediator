@@ -20,57 +20,102 @@ use INTERMediator\DB\DBClass;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\Settings;
 
+/**
+ *
+ */
 abstract class DB_Notification_Common
 {
+    /**
+     * @var Settings|null
+     */
     protected ?Settings $dbSettings = null;
+    /**
+     * @var DBClass|null
+     */
     protected ?DBClass $dbClass = null;
+    /**
+     * @var Logger|null
+     */
     protected ?Logger $logger = null;
 
+    /**
+     * @param DBClass $parent
+     */
     public function __construct(DBClass $parent)
     {
-        if ($parent) {
-            $this->dbClass = $parent;
-            $this->dbSettings = $parent->dbSettings;
-            $this->logger = $parent->logger;
-        } else {
-            trigger_error("Misuse of constructor.", E_USER_ERROR);
-        }
+        $this->dbClass = $parent;
+        $this->dbSettings = $parent->dbSettings;
+        $this->logger = $parent->logger;
     }
 
+    /**
+     * @var string|null
+     */
     private ?string $queriedEntity = null;
+    /**
+     * @var string|null
+     */
     private ?string $queriedCondition = null;
+    /**
+     * @var array|null
+     */
     private ?array $queriedPrimaryKeys = null;
 
+    /**
+     * @return string|null
+     */
     public function queriedEntity(): ?string
     {
         return $this->queriedEntity;
     }
 
+    /**
+     * @return string|null
+     */
     public function queriedCondition(): ?string
     {
         return $this->queriedCondition;
     }
 
+    /**
+     * @return array|null
+     */
     public function queriedPrimaryKeys(): ?array
     {
         return $this->queriedPrimaryKeys;
     }
 
+    /**
+     * @param string|null $name
+     * @return void
+     */
     public function setQueriedEntity(?string $name): void
     {
         $this->queriedEntity = $name;
     }
 
+    /**
+     * @param string|null $name
+     * @return void
+     */
     public function setQueriedCondition(?string $name): void
     {
         $this->queriedCondition = $name;
     }
 
+    /**
+     * @param array|null $name
+     * @return void
+     */
     public function setQueriedPrimaryKeys(?array $name): void
     {
         $this->queriedPrimaryKeys = $name;
     }
 
+    /**
+     * @param string|null $name
+     * @return void
+     */
     public function addQueriedPrimaryKeys(?string $name): void
     {
         if (!$name) {

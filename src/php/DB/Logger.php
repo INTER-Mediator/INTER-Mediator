@@ -21,19 +21,49 @@ use DateTime;
 use ReflectionClass;
 use ReflectionException;
 
+/**
+ *
+ */
 class Logger
 {
     /* Debug and Messages */
+    /**
+     * @var bool
+     */
     private $debugLevel = false;
+    /**
+     * @var array
+     */
     private $errorMessage = array();
+    /**
+     * @var array
+     */
     private $warningMessage = array();
+    /**
+     * @var array
+     */
     private $debugMessage = array();
+    /**
+     * @var mixed
+     */
     private $errorMessageLogging = false;
+    /**
+     * @var mixed
+     */
     private $warningMessageLogging = false;
+    /**
+     * @var mixed
+     */
     private $debugMessageLogging = false;
 
+    /**
+     * @var null
+     */
     private static $instance = null;
 
+    /**
+     * @return Logger|null
+     */
     public static function getInstance()
     {
         if (!self::$instance) {
@@ -42,12 +72,18 @@ class Logger
         return self::$instance;
     }
 
+    /**
+     *
+     */
     private function __construct()
     {
         [$this->errorMessageLogging, $this->warningMessageLogging, $this->debugMessageLogging]
             = Params::getParameterValue(["errorMessageLogging", "warningMessageLogging", "debugMessageLogging",], false);
     }
 
+    /**
+     * @return void
+     */
     public function clearLogs()
     {
         $this->errorMessage = array();
@@ -55,11 +91,18 @@ class Logger
         $this->debugMessage = array();
     }
 
+    /**
+     * @return void
+     */
     public function clearErrorLog()
     {
         $this->errorMessage = array();
     }
 
+    /**
+     * @param $setting
+     * @return bool
+     */
     private function getCallersNamespace($setting)
     {
         if ($setting === true || $setting === "*") {
@@ -80,6 +123,11 @@ class Logger
         return $returnValue;
     }
 
+    /**
+     * @param $str
+     * @param $level
+     * @return void
+     */
     public function setDebugMessage($str, $level = 1)
     {
         if ($this->debugLevel !== false && $this->debugLevel >= $level) {
@@ -91,6 +139,11 @@ class Logger
         }
     }
 
+    /**
+     * @param $msgs
+     * @param $level
+     * @return void
+     */
     public function setDebugMessages($msgs, $level = 1)
     {
         if ($this->debugLevel !== false && $this->debugLevel >= $level && is_array($msgs)) {
@@ -104,6 +157,10 @@ class Logger
         }
     }
 
+    /**
+     * @param $str
+     * @return void
+     */
     public function setWarningMessage($str)
     {
         $this->warningMessage[] = $str;
@@ -113,6 +170,10 @@ class Logger
         }
     }
 
+    /**
+     * @param $msgs
+     * @return void
+     */
     public function setWarningMessages($msgs)
     {
         $dt = (new DateTime())->format("y:m:d h:i:s.v");
@@ -124,6 +185,10 @@ class Logger
         }
     }
 
+    /**
+     * @param $str
+     * @return void
+     */
     public function setErrorMessage($str)
     {
         $this->errorMessage[] = $str;
@@ -133,6 +198,10 @@ class Logger
         }
     }
 
+    /**
+     * @param $msgs
+     * @return void
+     */
     public function setErrorMessages($msgs)
     {
         $dt = (new DateTime())->format("y:m:d h:i:s.v");
@@ -144,6 +213,9 @@ class Logger
         }
     }
 
+    /**
+     * @return array
+     */
     public function getMessagesForJS()
     {
         $q = '"';
@@ -163,21 +235,33 @@ class Logger
         return $returnData;
     }
 
+    /**
+     * @return array
+     */
     public function getErrorMessages()
     {
         return $this->errorMessage;
     }
 
+    /**
+     * @return array
+     */
     public function getWarningMessages()
     {
         return $this->warningMessage;
     }
 
+    /**
+     * @return array
+     */
     public function getDebugMessages()
     {
         return $this->debugMessage;
     }
 
+    /**
+     * @return string
+     */
     public function getAllErrorMessages()
     {
         $returnData = "";
@@ -187,6 +271,10 @@ class Logger
         return $returnData;
     }
 
+    /**
+     * @param $val
+     * @return void
+     */
     public function setDebugMode($val)
     {
         if ($val === true) {
@@ -196,11 +284,17 @@ class Logger
         }
     }
 
+    /**
+     * @return array
+     */
     public function getDebugMessage()
     {
         return $this->debugMessage;
     }
 
+    /**
+     * @return bool
+     */
     public function getDebugLevel()
     {
         return $this->debugLevel;

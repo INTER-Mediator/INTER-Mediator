@@ -18,38 +18,85 @@ namespace INTERMediator\DB\Support;
 
 use Exception;
 
+/**
+ *
+ */
 class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
 {
+    /**
+     * @var array
+     */
     protected array $tableInfo = array();
+    /**
+     * @var string
+     */
     protected string $fieldNameForField = 'name';
+    /**
+     * @var string
+     */
     protected string $fieldNameForType = 'type';
+    /**
+     * @var string
+     */
     protected string $fieldNameForNullable = 'is_nullable';
+    /**
+     * @var array|string[]
+     */
     protected array $numericFieldTypes = array('bigint', 'bit', 'decimal', 'float', 'hierarchyid',
         'int', 'money', 'numeric', 'real', 'smallint', 'smallmoney', 'tinyint',);
+    /**
+     * @var array|string[]
+     */
     protected array $timeFieldTypes = ['datetime', 'datetime2', 'datetimeoffset', 'time', 'smalldatetime'];
+    /**
+     * @var array|string[]
+     */
     protected array $dateFieldTypes = ['date', 'datetimeoffset', 'smalldatetime'];
+    /**
+     * @var array
+     */
     protected array $booleanFieldTypes = [];
 
+    /**
+     * @return string
+     */
     public function sqlSELECTCommand(): string
     {
         return "SELECT ";
     }
 
+    /**
+     * @param string $param
+     * @return string
+     */
     public function sqlLimitCommand(string $param): string
     {
         return "LIMIT {$param}";
     }
 
+    /**
+     * @param string $param
+     * @return string
+     */
     public function sqlOffsetCommand(string $param): string
     {
         return "OFFSET {$param}";
     }
 
+    /**
+     * @return string
+     */
     public function dateResetForNotNull(): string
     {
         return '1000-01-01';
     }
 
+    /**
+     * @param string $sortClause
+     * @param string $limit
+     * @param string $offset
+     * @return string
+     */
     public function sqlOrderByCommand(string $sortClause, string $limit, string $offset): string
     {
         if ($sortClause == '') {
@@ -66,21 +113,40 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
             . (strlen($limit) > 0 ? "FETCH NEXT {$limit} ROWS ONLY " : "");
     }
 
+    /**
+     * @return string
+     */
     public function sqlDELETECommand(): string
     {
         return "DELETE ";
     }
 
+    /**
+     * @return string
+     */
     public function sqlUPDATECommand(): string
     {
         return "UPDATE ";
     }
 
+    /**
+     * @param string $tableRef
+     * @param string $setClause
+     * @return string
+     */
     public function sqlINSERTCommand(string $tableRef, string $setClause): string
     {
         return "INSERT INTO {$tableRef} {$setClause}";
     }
 
+    /**
+     * @param string $tableName
+     * @param array $setColumnNames
+     * @param string $keyField
+     * @param array $setValues
+     * @return string
+     * @throws Exception
+     */
     public function sqlSETClause(string $tableName, array $setColumnNames, string $keyField, array $setValues): string
     {
         [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $setValues);
@@ -88,11 +154,19 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
+    /**
+     * @param string $info
+     * @return bool
+     */
     protected function checkNullableField(string $info): bool
     {
         return $info == 0;
     }
 
+    /**
+     * @param string $tableName
+     * @return string
+     */
     protected function getTableInfoSQL(string $tableName): string
     {
         $fields = "c.name, t.name type, c.max_length, c.precision, c.scale, c.is_nullable, " .
@@ -158,6 +232,15 @@ xml
 
     */
 
+    /**
+     * @param string $tableName
+     * @param string $keyField
+     * @param string|null $assocField
+     * @param string|null $assocValue
+     * @param array|null $defaultValues
+     * @return array
+     * @throws Exception
+     */
     protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
                                             ?array $defaultValues): array
     {
@@ -192,16 +275,28 @@ xml
         return array(implode(',', $fieldArray), implode(',', $listArray));
     }
 
+    /**
+     * @param $entityName
+     * @return string|null
+     */
     public function quotedEntityName($entityName): ?string
     {
         return "{$entityName}";
     }
 
+    /**
+     * @return void
+     */
     public function optionalOperationInSetup(): void
     {
     }
 
 
+    /**
+     * @param string $userTable
+     * @param string $hashTable
+     * @return array|null
+     */
     public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable): ?array  // authuser, issuedhash
     {
         $checkFieldDefinition = function (string $type, int $len, int $min): bool {
@@ -243,6 +338,10 @@ xml
         return $returnValue;
     }
 
+    /**
+     * @param $tableName
+     * @return string|null
+     */
     protected function getAutoIncrementField($tableName): ?string
     {
         return "unknown";

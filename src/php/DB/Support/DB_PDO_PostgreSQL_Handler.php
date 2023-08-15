@@ -18,50 +18,107 @@ namespace INTERMediator\DB\Support;
 
 use Exception;
 
+/**
+ *
+ */
 class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
 {
+    /**
+     * @var array
+     */
     protected array $tableInfo = array();
+    /**
+     * @var string
+     */
     protected string $fieldNameForField = 'column_name';
+    /**
+     * @var string
+     */
     protected string $fieldNameForType = 'data_type';
+    /**
+     * @var string
+     */
     protected string $fieldNameForNullable = 'is_nullable';
+    /**
+     * @var array|string[]
+     */
     protected array $numericFieldTypes = ['smallint', 'integer', 'bigint', 'decimal', 'numeric',
         'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money',];
+    /**
+     * @var array|string[]
+     */
     protected array $timeFieldTypes = ['datetime', 'datetime without time zone',
         'time', 'time without time zone', 'timestamp', 'timestamp without time zone'];
+    /**
+     * @var array|string[]
+     */
     protected array $dateFieldTypes = ['datetime', 'datetime without time zone',
         'date', 'date without time zone', 'timestamp', 'timestamp without time zone',];
+    /**
+     * @var array|string[]
+     */
     protected array $booleanFieldTypes = ['boolean'];
 
+    /**
+     * @return string
+     */
     public function sqlSELECTCommand(): string
     {
         return "SELECT ";
     }
 
+    /**
+     * @param string $param
+     * @return string
+     */
     public function sqlLimitCommand(string $param): string
     {
         return "LIMIT {$param}";
     }
 
+    /**
+     * @param string $param
+     * @return string
+     */
     public function sqlOffsetCommand(string $param): string
     {
         return "OFFSET {$param}";
     }
 
+    /**
+     * @return string
+     */
     public function sqlDELETECommand(): string
     {
         return "DELETE FROM ";
     }
 
+    /**
+     * @return string
+     */
     public function sqlUPDATECommand(): string
     {
         return "UPDATE ";
     }
 
+    /**
+     * @param string $tableRef
+     * @param string $setClause
+     * @return string
+     */
     public function sqlINSERTCommand(string $tableRef, string $setClause): string
     {
         return "INSERT INTO {$tableRef} {$setClause}";
     }
 
+    /**
+     * @param string $tableName
+     * @param array $setColumnNames
+     * @param string $keyField
+     * @param array $setValues
+     * @return string
+     * @throws Exception
+     */
     public function sqlSETClause(string $tableName, array $setColumnNames, string $keyField, array $setValues): string
     {
         [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $setValues);
@@ -85,16 +142,28 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
 //        return $fieldArray;
 //    }
 
+    /**
+     * @return string
+     */
     public function dateResetForNotNull(): string
     {
         return '1000-01-01';
     }
 
+    /**
+     * @param string $info
+     * @return bool
+     */
     protected function checkNullableField(string $info): bool
     {
         return $info == 'YES';
     }
 
+    /**
+     * @param string $tableName
+     * @return string|null
+     * @throws Exception
+     */
     protected function getAutoIncrementField(string $tableName): ?string
     {
         try {
@@ -110,6 +179,10 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return null;
     }
 
+    /**
+     * @param string $tableName
+     * @return string
+     */
     protected function getTableInfoSQL(string $tableName): string
     {
         if (strpos($tableName, ".") !== false) {
@@ -153,6 +226,15 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
  */
 
 
+    /**
+     * @param string $tableName
+     * @param string $keyField
+     * @param string|null $assocField
+     * @param string|null $assocValue
+     * @param array|null $defaultValues
+     * @return array
+     * @throws Exception
+     */
     protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
                                             ?array $defaultValues): array
     {
@@ -180,6 +262,11 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return array(implode(',', $fieldArray), implode(',', $listArray));
     }
 
+    /**
+     * @param string $value
+     * @param array $row
+     * @return string
+     */
     protected function setValue(string $value, array $row): string
     {
         if ($row['is_nullable'] && $value == '') {
@@ -188,6 +275,10 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return $this->dbClassObj->link->quote($value);
     }
 
+    /**
+     * @param string $entityName
+     * @return string|null
+     */
     public function quotedEntityName(string $entityName): ?string
     {
         $q = '"';
@@ -202,11 +293,18 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return $q . str_replace($q, $q . $q, $entityName) . $q;
     }
 
+    /**
+     * @return void
+     */
     public function optionalOperationInSetup(): void
     {
     }
 
-
+    /**
+     * @param string $userTable
+     * @param string $hashTable
+     * @return array|null
+     */
     public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable): ?array // authuser, issuedhash
     {
         $checkFieldDefinition = function (string $type, int $len, int $min): bool {

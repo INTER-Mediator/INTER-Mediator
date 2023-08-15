@@ -16,33 +16,57 @@
 
 namespace INTERMediator\DB\Support;
 
+/**
+ *
+ */
 class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
 {
+    /**
+     * @return string
+     */
     public static function defaultKey(): string
     {
         return "id";
     }
 
+    /**
+     * @return string
+     */
     public function getDefaultKey(): string
     {
         return "id";
     }
 
+    /**
+     * @return bool
+     */
     public function isSupportAggregation(): bool
     {
         return true;
     }
 
+    /**
+     * @param string $fname
+     * @param array $fieldnames
+     * @return bool
+     */
     public function isContainingFieldName(string $fname, array $fieldnames): bool
     {
         return in_array($fname, $fieldnames);
     }
 
+    /**
+     * @return bool
+     */
     public function isNullAcceptable(): bool
     {
         return true;
     }
 
+    /**
+     * @param string $operator
+     * @return bool
+     */
     public function isPossibleOperator(string $operator): bool
     {
         return in_array(strtoupper($operator), array(
@@ -61,6 +85,10 @@ class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
         ));
     }
 
+    /**
+     * @param string $specifier
+     * @return bool
+     */
     public function isPossibleOrderSpecifier(string $specifier): bool
     {
         return in_array(strtoupper($specifier), array('ASC', 'DESC'));

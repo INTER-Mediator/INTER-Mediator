@@ -1737,17 +1737,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
 
     /**
      * @param array $record
-     * @param string|null $value
-     * @param int $index
      * @return void
      */
-    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
+    public function setUpdatedRecord(array $record): void
     {
-        if (!$value) {
-            $this->dbClass->setUpdatedRecord($record);
-        } else { // Previous use of this method redirect to setDataToUpdatedRecord
-            $this->setDataToUpdatedRecord($record, $value, $index);
-        }
+        $this->dbClass->setUpdatedRecord($record);
     }
 
     /**

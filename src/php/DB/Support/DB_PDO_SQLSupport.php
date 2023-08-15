@@ -4,16 +4,30 @@ namespace INTERMediator\DB\Support;
 
 use Exception;
 
+/**
+ *
+ */
 trait DB_PDO_SQLSupport
 {
     /*
       * Generate SQL style WHERE clause.
       */
+    /**
+     * @param string $currentOperation
+     * @return string
+     * @throws Exception
+     */
     public function getWhereClauseForTest(string $currentOperation): string
     {
         return $this->getWhereClause($currentOperation);
     }
 
+    /**
+     * @param array $queryClauseArray
+     * @param string $insideOp
+     * @param string $outsideOp
+     * @return string
+     */
     private function arrayToClause(array $queryClauseArray, string $insideOp, string $outsideOp): string
     {
         $oneClause = [];
@@ -23,6 +37,10 @@ trait DB_PDO_SQLSupport
         return implode($outsideOp, $oneClause);
     }
 
+    /**
+     * @param string $term
+     * @return array
+     */
     private function determineOperatorsInBlock(string $term): array
     {
         $divideOp = explode("/", $term);
@@ -34,6 +52,11 @@ trait DB_PDO_SQLSupport
         return [$fieldOp, $groupOp, $blockOp];
     }
 
+    /**
+     * @param string $value
+     * @param bool $isNumeric
+     * @return string
+     */
     private function arrayToItemizedString(string $value, bool $isNumeric): string
     {
         $escapedValue = "(";
@@ -46,6 +69,16 @@ trait DB_PDO_SQLSupport
         return $escapedValue;
     }
 
+    /**
+     * @param array $conditions
+     * @param string $primaryKey
+     * @param array $numericFields
+     * @param bool $isExtra
+     * @param string $insideOp
+     * @param string $outsideOp
+     * @return string
+     * @throws Exception
+     */
     private function generateWhereClause(array $conditions, string $primaryKey, array $numericFields,
                                          bool  $isExtra = false, string $insideOp = ' AND ', string $outsideOp = ' OR ')
     {
@@ -273,6 +306,10 @@ trait DB_PDO_SQLSupport
         return implode(',', $sortClause);
     }
 
+    /**
+     * @param array $condition
+     * @return array
+     */
     public function normalizedCondition(array $condition): array
     {
         if (!isset($condition['field'])) {

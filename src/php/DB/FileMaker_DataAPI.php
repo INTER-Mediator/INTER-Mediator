@@ -113,16 +113,11 @@ class FileMaker_DataAPI extends DBClass
         return $this->updatedRecord;
     }
 
-    /* Usually a setter method has just one parameter, but the same named method existed on previous version
-      and possibly calling it from user program. So if it has more than one parameter, it might call old
-      method and redirect to previous one. (msyk, 2021-11-03) */
     /**
      * @param array $record
-     * @param string|null $value
-     * @param int $index
      * @return void
      */
-    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
+    public function setUpdatedRecord(array $record): void
     {
         if (!$value) {
             $this->updatedRecord = $record;

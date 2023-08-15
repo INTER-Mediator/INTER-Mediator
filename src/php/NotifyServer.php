@@ -82,7 +82,7 @@ class NotifyServer
     }
 
     /**
-     * @param string $client
+     * @param string|null $client
      * @param ?array $tableKeys
      * @return bool
      */
@@ -96,7 +96,7 @@ class NotifyServer
     }
 
     /**
-     * @param string $clientId
+     * @param string|null $clientId
      * @param string $entity
      * @param array $pkArray
      * @param array $field
@@ -114,7 +114,7 @@ class NotifyServer
     }
 
     /**
-     * @param string $clientId
+     * @param string|null $clientId
      * @param string $entity
      * @param array $pkArray
      * @param string $pkField
@@ -132,7 +132,7 @@ class NotifyServer
     }
 
     /**
-     * @param string $clientId
+     * @param string|null $clientId
      * @param string $entity
      * @param array $pkArray
      */

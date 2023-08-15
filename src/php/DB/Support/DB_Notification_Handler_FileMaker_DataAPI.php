@@ -20,6 +20,9 @@ use DateTime;
 use Exception;
 use INTERMediator\DB\FileMaker_DataAPI;
 
+/**
+ *
+ */
 class DB_Notification_Handler_FileMaker_DataAPI
     extends DB_Notification_Common
     implements DB_Interface_Registering
@@ -44,12 +47,23 @@ class DB_Notification_Handler_FileMaker_DataAPI
       * This method is used just from NotifyServer class.
       * Masayuki Nii 2017-07-08
       */
+    /**
+     * @return bool
+     */
     public function isExistRequiredTable(): bool
     {
         return true;
     }
 
-    public function register(string $clientId, string $entity, string $condition, array $pkArray): ?string
+    /**
+     * @param string|null $clientId
+     * @param string $entity
+     * @param string $condition
+     * @param array $pkArray
+     * @return string|null
+     * @throws Exception
+     */
+    public function register(?string $clientId, string $entity, string $condition, array $pkArray): ?string
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -106,10 +120,14 @@ class DB_Notification_Handler_FileMaker_DataAPI
         return $newContextId;
     }
 
-    public function unregister(string $clientId, ?array $tableKeys): bool
+    /**
+     * @param string|null $clientId
+     * @param array|null $tableKeys
+     * @return bool
+     */
+    public function unregister(?string $clientId, ?array $tableKeys): bool
     {
         $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
 
         $this->fmdb->setupFMDataAPIforDB($regTable, 'all');
         $conditions = array('clientid' => $clientId);
@@ -148,7 +166,13 @@ class DB_Notification_Handler_FileMaker_DataAPI
         return true;
     }
 
-    public function matchInRegistered(string $clientId, string $entity, array $pkArray): ?array
+    /**
+     * @param string|null $clientId
+     * @param string $entity
+     * @param array $pkArray
+     * @return array|null
+     */
+    public function matchInRegistered(?string $clientId, string $entity, array $pkArray): ?array
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -205,7 +229,15 @@ class DB_Notification_Handler_FileMaker_DataAPI
         return array_unique($targetClients);
     }
 
-    public function appendIntoRegistered(string $clientId, string $entity, string $pkField, array $pkArray): ?array
+    /**
+     * @param string|null $clientId
+     * @param string $entity
+     * @param string $pkField
+     * @param array $pkArray
+     * @return array|null
+     * @throws Exception
+     */
+    public function appendIntoRegistered(?string $clientId, string $entity, string $pkField, array $pkArray): ?array
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -254,7 +286,13 @@ class DB_Notification_Handler_FileMaker_DataAPI
         return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }
 
-    public function removeFromRegistered(string $clientId, string $entity, array $pkArray): ?array
+    /**
+     * @param string|null $clientId
+     * @param string $entity
+     * @param array $pkArray
+     * @return array|null
+     */
+    public function removeFromRegistered(?string $clientId, string $entity, array $pkArray): ?array
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;

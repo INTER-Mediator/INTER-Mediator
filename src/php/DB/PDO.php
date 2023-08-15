@@ -116,22 +116,13 @@ class PDO extends DBClass
         return $this->updatedRecord;
     }
 
-    /* Usually a setter method has just one parameter, but the same named method existed on previous version
-       and possibly calling it from user program. So if it has more than one parameter, it might call old
-       method and redirect to previous one. (msyk, 2021-11-03) */
     /**
      * @param array $record
-     * @param string|null $value
-     * @param int $index
      * @return void
      */
-    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
+    public function setUpdatedRecord(array $record): void
     {
-        if (!$value) {
-            $this->updatedRecord = $record;
-        } else { // Previous use of this method redirect to setDataToUpdatedRecord
-            $this->setDataToUpdatedRecord($record, $value, $index);
-        }
+        $this->updatedRecord = $record;
     }
 
     /**
@@ -562,7 +553,7 @@ class PDO extends DBClass
         $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityAsSource());
 
         $this->logger->setDebugMessage($prepSQL->queryString
-            . " with " . str_replace("\n", " ", var_export($setParameter, true) ));
+            . " with " . str_replace("\n", " ", var_export($setParameter, true)));
         // Thanks for the following code: https://koyhogetech.hatenablog.com/entry/20101217/pdo_pgsql
         $count = 1;
         foreach ($setParameter as $param) {

@@ -22,16 +22,28 @@ use PDO;
 use DateTime;
 use DateInterval;
 
+/**
+ *
+ */
 class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_Interface_Registering
 {
+    /**
+     * @var \INTERMediator\DB\PDO
+     */
     protected \INTERMediator\DB\PDO $pdoDB;
 
+    /**
+     * @param $parent
+     */
     public function __construct($parent)
     {
         parent::__construct($parent);
         $this->pdoDB = $parent;
     }
 
+    /**
+     * @return bool
+     */
     public function isExistRequiredTable(): bool
     {
         $regTable = $this->pdoDB->handler->quotedEntityName($this->dbSettings->registerTableName);
@@ -56,7 +68,14 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
 
     }
 
-    public function register(string $clientId, string $entity, string $condition, array $pkArray): ?string
+    /**
+     * @param string|null $clientId
+     * @param string $entity
+     * @param string $condition
+     * @param array $pkArray
+     * @return string|null
+     */
+    public function register(?string $clientId, string $entity, string $condition, array $pkArray): ?string
     {
         $regTable = $this->pdoDB->handler->quotedEntityName($this->dbSettings->registerTableName);
         $pksTable = $this->pdoDB->handler->quotedEntityName($this->dbSettings->registerPKTableName);
@@ -136,7 +155,12 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         return $newContextId;
     }
 
-    public function unregister(string $clientId, ?array $tableKeys): bool
+    /**
+     * @param string|null $clientId
+     * @param array|null $tableKeys
+     * @return bool
+     */
+    public function unregister(?string $clientId, ?array $tableKeys): bool
     {
         $regTable = $this->pdoDB->handler->quotedEntityName($this->dbSettings->registerTableName);
         if (!$this->pdoDB->setupConnection()) { //Establish the connection
@@ -179,7 +203,13 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         return true;
     }
 
-    public function matchInRegistered(string $clientId, string $entity, array $pkArray): ?array
+    /**
+     * @param string|null $clientId
+     * @param string $entity
+     * @param array $pkArray
+     * @return array|null
+     */
+    public function matchInRegistered(?string $clientId, string $entity, array $pkArray): ?array
     {
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] matchInRegistered / clientId={$clientId}, entity={$entity}, pkArray=" . var_export($pkArray, true));
 
@@ -209,7 +239,14 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         return array_unique($targetClients);
     }
 
-    public function appendIntoRegistered(string $clientId, string $entity, string $pkField, array $pkArray): ?array
+    /**
+     * @param string|null $clientId
+     * @param string $entity
+     * @param string $pkField
+     * @param array $pkArray
+     * @return array|null
+     */
+    public function appendIntoRegistered(?string $clientId, string $entity, string $pkField, array $pkArray): ?array
     {
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] appendIntoRegistered / clientId={$clientId}, entity={$entity}, pkField={$pkField}, pkArray=" . var_export($pkArray, true));
         //$this->logger->setDebugMessage("[DB_Notification_Handler_PDO] contextDef=" . var_export($this->dbSettings->getDataSourceTargetArray(), true));
@@ -273,7 +310,13 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common implements DB_I
         return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }
 
-    public function removeFromRegistered(string $clientId, string $entity, array $pkArray): ?array
+    /**
+     * @param string|null $clientId
+     * @param string $entity
+     * @param array $pkArray
+     * @return array|null
+     */
+    public function removeFromRegistered(?string $clientId, string $entity, array $pkArray): ?array
     {
         $regTable = $this->pdoDB->handler->quotedEntityName($this->dbSettings->registerTableName);
         $pksTable = $this->pdoDB->handler->quotedEntityName($this->dbSettings->registerPKTableName);

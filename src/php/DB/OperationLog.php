@@ -17,22 +17,67 @@ namespace INTERMediator\DB;
 
 use INTERMediator\Params;
 
+/**
+ *
+ */
 class OperationLog
 {
+    /**
+     * @var int|array|mixed
+     */
     private int $accessLogLevel;
+    /**
+     * @var string|array|mixed|null
+     */
     private ?string $dbClassLog;
+    /**
+     * @var string|array|mixed|null
+     */
     private ?string $dbUserLog;
+    /**
+     * @var string|array|mixed|null
+     */
     private ?string $dbPasswordLog;
+    /**
+     * @var string|array|mixed|null
+     */
     private ?string $dbDSNLog;
+    /**
+     * @var array|mixed|null
+     */
     private ?array $recordingContexts;
+    /**
+     * @var array|mixed|null
+     */
     private ?array $recordingOperations;
+    /**
+     * @var array|null
+     */
     private ?array $contextOptions;
+    /**
+     * @var bool|array|mixed
+     */
     private bool $dontRecordTheme;
+    /**
+     * @var bool|array|mixed
+     */
     private bool $dontRecordChallenge;
+    /**
+     * @var bool|array|mixed
+     */
     private bool $dontRecordDownload;
+    /**
+     * @var bool|array|mixed
+     */
     private bool $dontRecordDownloadNoGet;
+    /**
+     * @var object|array|mixed
+     */
     private object $accessLogExtensionClass;
 
+    /**
+     * @param array|null $options
+     */
     public function __construct(?array $options)
     {
         $this->contextOptions = $options;
@@ -50,6 +95,10 @@ class OperationLog
         $this->accessLogExtensionClass = Params::getParameterValue("accessLogExtensionClass", null);
     }
 
+    /**
+     * @param array|null $result
+     * @return void
+     */
     public function setEntry(?array $result): void
     {
 
@@ -124,6 +173,10 @@ class OperationLog
         }
     }
 
+    /**
+     * @param array|null $ar
+     * @return string|null
+     */
     private function arrayToString(?array $ar): ?string
     {
         if (is_null($ar) || count($ar) === 0) {

@@ -19,6 +19,9 @@ namespace INTERMediator\DB\Support;
 use DateTime;
 use INTERMediator\DB\FileMaker_FX;
 
+/**
+ *
+ */
 class DB_Notification_Handler_FileMaker_FX
     extends DB_Notification_Common
     implements DB_Interface_Registering
@@ -37,10 +40,12 @@ class DB_Notification_Handler_FileMaker_FX
         $this->fmdb = $parent;
     }
 
+    /**
+     * @return bool
+     */
     public function isExistRequiredTable(): bool
     {
         $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
         if ($regTable == null) {
             $this->fmdb->errorMessageStore("The table doesn't specified.");
             return false;
@@ -55,7 +60,14 @@ class DB_Notification_Handler_FileMaker_FX
         return true;
     }
 
-    public function register(string $clientId, string $entity, string $condition, array $pkArray): ?string
+    /**
+     * @param string|null $clientId
+     * @param string $entity
+     * @param string $condition
+     * @param array $pkArray
+     * @return string|null
+     */
+    public function register(?string $clientId, string $entity, string $condition, array $pkArray): ?string
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -99,10 +111,14 @@ class DB_Notification_Handler_FileMaker_FX
         return $newContextId;
     }
 
-    public function unregister(string $clientId, ?array $tableKeys): bool
+    /**
+     * @param string|null $clientId
+     * @param array|null $tableKeys
+     * @return bool
+     */
+    public function unregister(?string $clientId, ?array $tableKeys): bool
     {
         $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
 
         $this->fmdb->setupFXforDB($regTable, 'all');
         $this->fmdb->fx->AddDBParam('clientid', $clientId, 'eq');
@@ -131,7 +147,13 @@ class DB_Notification_Handler_FileMaker_FX
         return true;
     }
 
-    public function matchInRegistered(string $clientId, string $entity, array $pkArray): ?array
+    /**
+     * @param string|null $clientId
+     * @param string $entity
+     * @param array $pkArray
+     * @return array|null
+     */
+    public function matchInRegistered(?string $clientId, string $entity, array $pkArray): ?array
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -184,7 +206,14 @@ class DB_Notification_Handler_FileMaker_FX
         return array_unique($targetClients);
     }
 
-    public function appendIntoRegistered(string $clientId, string $entity, string $pkField, array $pkArray): ?array
+    /**
+     * @param string|null $clientId
+     * @param string $entity
+     * @param string $pkField
+     * @param array $pkArray
+     * @return array|null
+     */
+    public function appendIntoRegistered(?string $clientId, string $entity, string $pkField, array $pkArray): ?array
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
@@ -227,7 +256,13 @@ class DB_Notification_Handler_FileMaker_FX
         return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }
 
-    public function removeFromRegistered(string $clientId, string $entity, array $pkArray): ?array
+    /**
+     * @param string|null $clientId
+     * @param string $entity
+     * @param array $pkArray
+     * @return array|null
+     */
+    public function removeFromRegistered(?string $clientId, string $entity, array $pkArray): ?array
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;

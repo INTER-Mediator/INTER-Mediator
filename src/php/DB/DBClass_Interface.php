@@ -50,7 +50,7 @@ interface DBClass_Interface
 
     public function updatedRecord(); // Same as getUpdatedRecord for compatibiliy; Don't describe type.
 
-    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void;
+    public function setUpdatedRecord(array $record): void;
 
     public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void;
 

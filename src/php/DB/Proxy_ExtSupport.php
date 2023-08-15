@@ -4,31 +4,72 @@ namespace INTERMediator\DB;
 
 /* Easy DB Programming Support */
 
+/**
+ *
+ */
 trait Proxy_ExtSupport
 {
+    /**
+     * @var null
+     */
     private $extProxy = null;
+    /**
+     * @var null
+     */
     private $extDataSource = null;
+    /**
+     * @var null
+     */
     private $extOptions = null;
+    /**
+     * @var null
+     */
     private $extDBSpec = null;
+    /**
+     * @var null
+     */
     private $extDebug = null;
+    /**
+     * @var null
+     */
     private $fixedKey = null;
+    /**
+     * @var bool
+     */
     private $testMode = false;
 
+    /**
+     * @return null
+     */
     public function getExtProxy()
     {
         return $this->extProxy;
     }
 
+    /**
+     * @param $key
+     * @return void
+     */
     public function setFixedKey($key = null)
     {
         $this->fixedKey = $key;
     }
 
+    /**
+     * @return void
+     */
     public function setTestMode()
     {
         $this->testMode = true;
     }
 
+    /**
+     * @param $datasource
+     * @param $options
+     * @param $dbspec
+     * @param $debug
+     * @return void
+     */
     public function dbInit($datasource = null, $options = null, $dbspec = null, $debug = null)
     {
         if (!$this->extProxy) {
@@ -41,6 +82,13 @@ trait Proxy_ExtSupport
         $this->extDebug = $debug;
     }
 
+    /**
+     * @param $target
+     * @param $query
+     * @param $sort
+     * @param $spec
+     * @return mixed
+     */
     public function dbRead($target, $query = null, $sort = null, $spec = null)
     {
         if (!$this->extProxy) {
@@ -53,6 +101,13 @@ trait Proxy_ExtSupport
         return $this->extProxy->getDatabaseResult();
     }
 
+    /**
+     * @param $target
+     * @param $query
+     * @param $data
+     * @param $spec
+     * @return mixed
+     */
     public function dbUpdate($target, $query = null, $data = null, $spec = null)
     {
         if (!$this->extProxy) {
@@ -65,6 +120,12 @@ trait Proxy_ExtSupport
         return $this->extProxy->getDatabaseResult();
     }
 
+    /**
+     * @param $target
+     * @param $data
+     * @param $spec
+     * @return mixed
+     */
     public function dbCreate($target, $data = null, $spec = null)
     {
         if (!$this->extProxy) {
@@ -76,6 +137,12 @@ trait Proxy_ExtSupport
         return $this->extProxy->getDatabaseResult();
     }
 
+    /**
+     * @param $target
+     * @param $query
+     * @param $spec
+     * @return mixed
+     */
     public function dbDelete($target, $query = null, $spec = null)
     {
         if (!$this->extProxy) {
@@ -87,11 +154,23 @@ trait Proxy_ExtSupport
         return $this->extProxy->getDatabaseResult();
     }
 
+    /**
+     * @param $target
+     * @param $query
+     * @param $sort
+     * @param $spec
+     * @return void
+     */
     public function dbCopy($target, $query = null, $sort = null, $spec = null)
     {
 
     }
 
+    /**
+     * @param $target
+     * @param $spec
+     * @return bool
+     */
     private function hasTarget($target, $spec = null)
     {
         $result = false;
@@ -107,6 +186,11 @@ trait Proxy_ExtSupport
         return $result;
     }
 
+    /**
+     * @param $target
+     * @param $spec
+     * @return void
+     */
     private function initializeSpec($target, $spec)
     {
         if ($spec && $this->hasTarget($target, $spec)) {
@@ -121,6 +205,10 @@ trait Proxy_ExtSupport
         }
     }
 
+    /**
+     * @param $query
+     * @return void
+     */
     private function setupQuery($query)
     {
         if (!$query) {
@@ -138,6 +226,10 @@ trait Proxy_ExtSupport
         }
     }
 
+    /**
+     * @param $sort
+     * @return void
+     */
     private function setupSort($sort)
     {
         if (!$sort) {
@@ -154,6 +246,10 @@ trait Proxy_ExtSupport
         }
     }
 
+    /**
+     * @param $data
+     * @return void
+     */
     private function setupData($data)
     {
         if (!$data) {

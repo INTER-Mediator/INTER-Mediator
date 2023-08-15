@@ -16,18 +16,52 @@
 
 namespace INTERMediator\DB;
 
+/**
+ *
+ */
 abstract class UseSharedObjects
 {
+    /**
+     * @var Settings|null
+     */
     public ?Settings $dbSettings = null;
+    /**
+     * @var Logger|null
+     */
     public ?Logger $logger = null;
+    /**
+     * @var Formatters|null
+     */
     public ?Formatters $formatter = null;
+    /**
+     * @var DBClass|null
+     */
     public ?DBClass $dbClass = null;
+    /**
+     * @var Proxy|null
+     */
     public ?Proxy $proxyObject = null;
+    /**
+     * @var null
+     */
     public $handler = null;    // Handle for each database engine. Uses just PDO.
+    /**
+     * @var null
+     */
     public $authHandler = null;
+    /**
+     * @var null
+     */
     public $notifyHandler = null;
+    /**
+     * @var null
+     */
     public $specHandler = null;
 
+    /**
+     * @param $obj
+     * @return void
+     */
     public function setUpSharedObjects($obj = null)
     {
         if (is_null($obj)) {
@@ -44,16 +78,28 @@ abstract class UseSharedObjects
         }
     }
 
+    /**
+     * @param $dbSettings
+     * @return void
+     */
     private function setSettings($dbSettings)
     {
         $this->dbSettings = $dbSettings;
     }
 
+    /**
+     * @param $logger
+     * @return void
+     */
     private function setLogger($logger)
     {
         $this->logger = $logger;
     }
 
+    /**
+     * @param $formatter
+     * @return void
+     */
     private function setFormatter($formatter)
     {
         $this->formatter = $formatter;

@@ -136,7 +136,7 @@ class PageEditor extends UseSharedObjects implements DBClass_Interface
         return false;
     }
 
-    public function setUpdatedRecord(array $record, string $value = null, int $index = 0): void
+    public function setUpdatedRecord(array $record): void
     {
     }
 

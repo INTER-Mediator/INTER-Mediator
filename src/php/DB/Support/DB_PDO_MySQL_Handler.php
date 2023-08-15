@@ -19,53 +19,115 @@ namespace INTERMediator\DB\Support;
 use Exception;
 use PDO;
 
+/**
+ *
+ */
 class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 {
+    /**
+     * @var array
+     */
     protected array $tableInfo = array();
+    /**
+     * @var string
+     */
     protected string $fieldNameForField = 'Field';
+    /**
+     * @var string
+     */
     protected string $fieldNameForType = 'Type';
+    /**
+     * @var string
+     */
     protected string $fieldNameForNullable = 'Null';
+    /**
+     * @var array|string[]
+     */
     protected array $numericFieldTypes = ['int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
         'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision', 'year',];
+    /**
+     * @var array|string[]
+     */
     protected array $timeFieldTypes = ['datetime', 'time', 'timestamp'];
+    /**
+     * @var array|string[]
+     */
     protected array $dateFieldTypes = ['datetime', 'date', 'timestamp'];
+    /**
+     * @var array|string[]
+     */
     protected array $booleanFieldTypes = ['boolean', 'bool'];
 
+    /**
+     * @return string
+     */
     public function sqlSELECTCommand(): string
     {
         return "SELECT ";
     }
 
+    /**
+     * @param string $param
+     * @return string
+     */
     public function sqlLimitCommand(string $param): string
     {
         return "LIMIT {$param}";
     }
 
+    /**
+     * @param string $param
+     * @return string
+     */
     public function sqlOffsetCommand(string $param): string
     {
         return "OFFSET {$param}";
     }
 
+    /**
+     * @return string
+     */
     public function sqlDELETECommand(): string
     {
         return "DELETE FROM ";
     }
 
+    /**
+     * @return string
+     */
     public function sqlUPDATECommand(): string
     {
         return "UPDATE IGNORE ";
     }
 
+    /**
+     * @param string $tableRef
+     * @param string $setClause
+     * @return string
+     */
     public function sqlINSERTCommand(string $tableRef, string $setClause): string
     {
         return "INSERT IGNORE INTO {$tableRef} {$setClause}";
     }
 
+    /**
+     * @param string $tableRef
+     * @param string $setClause
+     * @return string
+     */
     public function sqlREPLACECommand(string $tableRef, string $setClause): string
     {
         return "REPLACE INTO {$tableRef} {$setClause}";
     }
 
+    /**
+     * @param string $tableName
+     * @param array $setColumnNames
+     * @param string $keyField
+     * @param array $setValues
+     * @return string
+     * @throws Exception
+     */
     public function sqlSETClause(string $tableName, array $setColumnNames, string $keyField, array $setValues): string
     {
         [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $setValues);
@@ -89,16 +151,28 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 //        return $fieldArray;
 //    }
 
+    /**
+     * @return string
+     */
     public function dateResetForNotNull(): string
     {
         return '1000-01-01';
     }
 
+    /**
+     * @param $info
+     * @return bool
+     */
     protected function checkNullableField($info): bool
     {
         return $info == 'YES';
     }
 
+    /**
+     * @param string $tableName
+     * @return string|null
+     * @throws Exception
+     */
     protected function getAutoIncrementField(string $tableName): ?string
     {
         try {
@@ -114,6 +188,10 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return null;
     }
 
+    /**
+     * @param string $tableName
+     * @return string
+     */
     protected function getTableInfoSQL(string $tableName): string
     {
         return "SHOW COLUMNS FROM " . $this->quotedEntityName($tableName);
@@ -168,8 +246,17 @@ mysql> show columns from item_display;
     In case of calculation field of a view, the type column is going to be ''.
     */
 
+    /**
+     * @param string $tableName
+     * @param string $keyField
+     * @param string|null $assocField
+     * @param string|null $assocValue
+     * @param array|null $defaultValues
+     * @return array
+     * @throws Exception
+     */
     protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
-                                            ?array  $defaultValues): array
+                                            ?array $defaultValues): array
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -196,6 +283,10 @@ mysql> show columns from item_display;
     }
 
 
+    /**
+     * @param string $entityName
+     * @return string|null
+     */
     public function quotedEntityName(string $entityName): ?string
     {
         if (!$entityName) {
@@ -212,11 +303,19 @@ mysql> show columns from item_display;
         return "`{$entityName}`";
     }
 
+    /**
+     * @return void
+     */
     public function optionalOperationInSetup(): void
     {
         $this->dbClassObj->link->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
     }
 
+    /**
+     * @param string $userTable
+     * @param string $hashTable
+     * @return array|null
+     */
     public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable):?array // authuser, issuedhash
     {
         $checkFieldDefinition = function (string $type, int $min):bool {
@@ -275,6 +374,10 @@ mysql> show columns from item_display;
 1 row in set (0.00 sec)
 
   */
+    /**
+     * @param string $sql
+     * @return void
+     */
     public function specialErrorHandling(string $sql): void
     {
         if ($this->dbClassObj->link) {
@@ -300,6 +403,10 @@ mysql> show columns from item_display;
         }
     }
 
+    /**
+     * @param string $seqObject
+     * @return string|null
+     */
     public function getLastInsertId(string $seqObject): ?string
     {
         if ($this->dbClassObj->link) {
