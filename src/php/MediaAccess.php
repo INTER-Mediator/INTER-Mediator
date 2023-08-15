@@ -183,8 +183,8 @@ class MediaAccess
             $isNoRec = !is_array($contextRecord) || (count($contextRecord) === 0);
             $isOneRec = is_array($contextRecord) && (count($contextRecord) === 1);
             // $condition = !$isOneRec && (!$isClass || ($isClass && $isNoRec));
-            // In case of the "class:" schema, the record set can have 1 or more than 1 records.
-            // In case of non class: schema, the record set has to have just 1 record.
+            // In case of the "class:" schema, the record set can have 1 or more than 1 record.
+            // In case of not class: schema, the record set has to have just 1 record.
             $isNoTarget = !$this->targetContextName;
             $condition = ($isClass && !$isNoRec && !$isNoTarget)
                 || (!$isClass && ((!$isNoRec && $isOneRec && !$isNoTarget) || ($isNoRec && !$isOneRec && $isNoTarget)));
@@ -321,8 +321,7 @@ class MediaAccess
                     $path .= urlencode($key) . '=' . urlencode($value);
                 }
             }
-            $isURL = true;
-            return array($urlHost . $path, $isURL);
+            return array($urlHost . $path, true);
         }
         return array($file, $isURL);
     }
@@ -384,6 +383,7 @@ class MediaAccess
             }
             return 'context_auth';
         }
+        return 'no_auth';
     }
 
     /**
