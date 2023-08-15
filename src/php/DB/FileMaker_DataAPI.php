@@ -119,11 +119,7 @@ class FileMaker_DataAPI extends DBClass
      */
     public function setUpdatedRecord(array $record): void
     {
-        if (!$value) {
-            $this->updatedRecord = $record;
-        } else { // Previous use of this method redirect to setDataToUpdatedRecord
-            $this->setDataToUpdatedRecord($record, $value, $index);
-        }
+        $this->updatedRecord = $record;
     }
 
     /**
