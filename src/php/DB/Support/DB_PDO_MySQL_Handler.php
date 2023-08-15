@@ -305,7 +305,7 @@ mysql> show columns from item_display;
         if ($this->dbClassObj->link) {
             $warnings = $this->dbClassObj->link->query('SELECT LAST_INSERT_ID() AS ID');
             foreach ($warnings->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                return intval($row['ID']);
+                return (string )intval($row['ID']);
             }
         }
         return null;

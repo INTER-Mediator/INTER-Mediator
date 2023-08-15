@@ -37,7 +37,7 @@ interface Auth_Interface_DB                    // with using table for authentic
 
     public function authSupportGetUserIdFromEmail(string $email): ?string;                            // authuser
 
-    public function authSupportGetUserIdFromUsername(string $username): string;                    // authuser
+    public function authSupportGetUserIdFromUsername(string $username): ?string;                    // authuser
 
     public function authSupportGetUsernameFromUserId(string $userid): ?string;                        // authuser
 
@@ -58,7 +58,7 @@ interface Auth_Interface_DB                    // with using table for authentic
     public function authSupportUserEnrollmentEnrollingUser(string $hash): ?string;                     // issuedhash
 
     public function authSupportUserEnrollmentActivateUser(
-        string $userID, string $password, string $rawPWField, string $rawPW): ?string;  // authuser
+        string $userID, ?string $password, ?string $rawPWField, ?string $rawPW): ?string;  // authuser
 
     public function authSupportIsWithinSAMLLimit(string $userID): bool;  // authuser
 

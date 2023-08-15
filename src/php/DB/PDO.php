@@ -70,19 +70,19 @@ class PDO extends DBClass
      */
     private bool $useSetDataToUpdatedRecord = false;
     /**
-     * @var bool|array|mixed
+     * @var bool
      */
     private bool $isFollowingTimezones;
     /**
-     * @var bool|array|mixed
+     * @var bool
      */
     private bool $isSuppressDVOnCopy;
     /**
-     * @var bool|array|mixed
+     * @var bool
      */
     private bool $isSuppressDVOnCopyAssoc;
     /**
-     * @var bool|array|mixed
+     * @var bool
      */
     private bool $isSuppressAuthTargetFillingOnCreate;
 
@@ -183,7 +183,7 @@ class PDO extends DBClass
     }
 
     /**
-     * @param $str
+     * @param string $str
      */
     public function errorMessageStore(string $str): void
     {
@@ -200,10 +200,10 @@ class PDO extends DBClass
      * @param $result
      * @return bool
      */
-    private function errorHandlingPDO(string $sql, $result)
+    private function errorHandlingPDO(string $sql, $result): bool
     {
         $errorCode = $this->link->errorCode();
-        $errorClass = is_null($errorCode) ? "00" : substr($errorCode, 0, 2);
+        $errorClass = strlen($errorCode) < 2 ? "00" : substr($errorCode, 0, 2);
         if ($errorClass != "00") {
             if ($errorClass == "01") {
                 $this->logger->setWarningMessage(var_export($this->link->errorInfo(), true));
@@ -264,6 +264,7 @@ class PDO extends DBClass
     }
 
     /**
+     * @param string $dsnString
      * @return bool
      */
     public function setupWithDSN(string $dsnString): bool
@@ -282,8 +283,8 @@ class PDO extends DBClass
     }
 
     /**
-     * @param $dataSourceName
-     * @return array|bool
+     * @return ?array
+     * @throws Exception
      */
     public function readFromDB(): ?array
     {
@@ -362,7 +363,7 @@ class PDO extends DBClass
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
             if (!$this->errorHandlingPDO($sql, $result)) {
-                return false;
+                return null;
             }
             $this->mainTableCount = $isAggregate ? $result->rowCount() : $result->fetchColumn(0);
 
@@ -374,7 +375,7 @@ class PDO extends DBClass
                 $this->logger->setDebugMessage($sql);
                 $result = $this->link->query($sql);
                 if (!$this->errorHandlingPDO($sql, $result)) {
-                    return false;
+                    return null;
                 }
                 $this->mainTableTotalCount = $isAggregate ? $result->rowCount() : $result->fetchColumn(0);
             }
@@ -446,7 +447,6 @@ class PDO extends DBClass
     }
 
     /**
-     * @param $dataSourceName
      * @return int
      */
     public function countQueryResult(): int
@@ -455,7 +455,6 @@ class PDO extends DBClass
     }
 
     /**
-     * @param $dataSourceName
      * @return int
      */
     public function getTotalCount(): int
@@ -464,8 +463,9 @@ class PDO extends DBClass
     }
 
     /**
-     * @param $dataSourceName
+     * @param bool $bypassAuth
      * @return bool
+     * @throws Exception
      */
     public function updateDB(bool $bypassAuth): bool
     {
@@ -562,7 +562,7 @@ class PDO extends DBClass
         $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityAsSource());
 
         $this->logger->setDebugMessage($prepSQL->queryString
-            . " with " . str_replace("\n", " ", var_export($setParameter, true) ?? ""));
+            . " with " . str_replace("\n", " ", var_export($setParameter, true) ));
         // Thanks for the following code: https://koyhogetech.hatenablog.com/entry/20101217/pdo_pgsql
         $count = 1;
         foreach ($setParameter as $param) {
@@ -632,11 +632,11 @@ class PDO extends DBClass
     }
 
     /**
-     * @param $dataSourceName
-     * @param $bypassAuth
-     * @return bool
+     * @param bool $isReplace
+     * @return string|null
+     * @throws Exception
      */
-    public function createInDB($isReplace = false): ?string
+    public function createInDB(bool $isReplace = false): ?string
     {
         $this->fieldInfo = null;
         if (!$this->setupConnection()) { //Establish the connection
@@ -748,7 +748,7 @@ class PDO extends DBClass
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
             if (!$this->errorHandlingPDO($sql, $result)) {
-                return false;
+                return null;
             }
             $sqlResult = $this->getResultRelation($result, $timeFields);
             $this->updatedRecord = count($sqlResult) ? $sqlResult : null;
@@ -772,8 +772,8 @@ class PDO extends DBClass
     }
 
     /**
-     * @param $dataSourceName
      * @return bool
+     * @throws Exception
      */
     public function deleteFromDB(): bool
     {
@@ -930,7 +930,7 @@ class PDO extends DBClass
     }
 
     /**
-     * @param $dataSourceName
+     * @param string $dataSourceName
      * @return null
      */
     public function getFieldInfo(string $dataSourceName): ?array

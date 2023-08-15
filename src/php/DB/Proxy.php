@@ -152,7 +152,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $res
      * @return void
      */
-    public function setParamResponse($res): void // For testing, $res could be array or string
+    public function setParamResponse($res): void // For testing, $res could be an array or a string
     {
         if (is_array($res)) {
             $this->paramResponse = $res[0] ?? null;
@@ -193,7 +193,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param $value
      * @return void
      */
-    public function addOutputData(string $key, $value): void // $value could be array or string.
+    public function addOutputData(string $key, $value): void // $value could be an array or a string.
     {
         if (!isset($this->outputOfProcessing[$key])) {
             $this->outputOfProcessing[$key] = $value;
@@ -1538,9 +1538,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @param string $username
      * @param string $password
-     * @oaram bool $isSAML
+     * @param bool $isSAML
      * @param ?array $attrs
-     * @return mixed
+     * @return array
      */
     function addUser(string $username, string $password, bool $isSAML = false, ?array $attrs = null): array
     {
@@ -1572,7 +1572,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
         $userid = $this->dbClass->authHandler->authSupportGetUserIdFromEmail($email);
         $username = $this->dbClass->authHandler->authSupportGetUsernameFromUserId($userid);
-        if ($username == '') { // checked also is null or is false
+        if (is_null($userid) || is_null($username)) { // checked also is null or is false
             return null;
         }
         $clienthost = IMUtil::generateChallenge();
@@ -1600,7 +1600,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $userid = $this->dbClass->authHandler->authSupportGetUserIdFromEmail($email);
             $username = $this->dbClass->authHandler->authSupportGetUsernameFromUserId($userid);
         }
-        if ($email == '' || is_null($userid) || $username == '') {
+        if ($email == '' || is_null($userid) || is_null($username)) {
             return false;
         }
         $userid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
@@ -1634,7 +1634,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         $userID = $this->authDbClass->authHandler->authSupportUserEnrollmentEnrollingUser($challenge);
         if (!$userID) {
-            return false;
+            return null;
         }
         return $this->dbClass->authHandler->authSupportUserEnrollmentActivateUser(
             $userID, IMUtil::convertHashedPassword($password, $this->passwordHash, $this->alwaysGenSHA2),

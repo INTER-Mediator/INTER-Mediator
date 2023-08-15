@@ -39,7 +39,7 @@ class FileMaker_FX extends DBClass
     /**
      * @param $str
      */
-    private function errorMessageStore(string $str)
+    public function errorMessageStore(string $str)
     {
         $this->logger->setErrorMessage("Query Error: [{$str}] Error Code={$this->fx->lastErrorCode}");
     }

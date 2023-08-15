@@ -17,24 +17,39 @@
 namespace INTERMediator\DB\Support;
 
 use DateTime;
+use INTERMediator\DB\FileMaker_FX;
 
 class DB_Notification_Handler_FileMaker_FX
     extends DB_Notification_Common
     implements DB_Interface_Registering
 {
+    /**
+     * @var FileMaker_FX
+     */
+    protected FileMaker_FX $fmdb;
+
+    /**
+     * @param $parent
+     */
+    public function __construct($parent)
+    {
+        parent::__construct($parent);
+        $this->fmdb = $parent;
+    }
+
     public function isExistRequiredTable(): bool
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
         if ($regTable == null) {
-            $this->dbClass->errorMessageStore("The table doesn't specified.");
+            $this->fmdb->errorMessageStore("The table doesn't specified.");
             return false;
         }
 
-        $this->dbClass->setupFXforDB($regTable, 1);
-        $this->dbClass->fxResult = $this->dbClass->fx->DoFxAction('show_all', TRUE, TRUE, 'full');
-        if ($this->dbClass->fxResult['errorCode'] != 0 && $this->dbClass->fxResult['errorCode'] != 401) {
-            $this->dbClass->errorMessageStore("The table '{$regTable}' doesn't exist in the database.");
+        $this->fmdb->setupFXforDB($regTable, 1);
+        $fxResult = $this->fmdb->fx->DoFxAction('show_all', TRUE, TRUE, 'full');
+        if ($fxResult['errorCode'] != 0 && $fxResult['errorCode'] != 401) {
+            $this->fmdb->errorMessageStore("The table '{$regTable}' doesn't exist in the database.");
             return false;
         }
         return true;
@@ -46,41 +61,39 @@ class DB_Notification_Handler_FileMaker_FX
         $pksTable = $this->dbSettings->registerPKTableName;
         $currentDT = new DateTime();
         $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
-        $this->dbClass->setupFXforDB($regTable, 1);
-        $this->dbClass->fx->AddDBParam('clientid', $clientId);
-        $this->dbClass->fx->AddDBParam('entity', $entity);
-        $this->dbClass->fx->AddDBParam('conditions', $condition);
-        $this->dbClass->fx->AddDBParam('registereddt', $currentDTFormat);
-        $result = $this->dbClass->fx->DoFxAction('new', TRUE, TRUE, 'full');
+        $this->fmdb->setupFXforDB($regTable, 1);
+        $this->fmdb->fx->AddDBParam('clientid', $clientId);
+        $this->fmdb->fx->AddDBParam('entity', $entity);
+        $this->fmdb->fx->AddDBParam('conditions', $condition);
+        $this->fmdb->fx->AddDBParam('registereddt', $currentDTFormat);
+        $result = $this->fmdb->fx->DoFxAction('new', TRUE, TRUE, 'full');
         if (!is_array($result)) {
-            $this->dbClass->errorMessageStore(
-                $this->dbClass->stringWithoutCredential("FX reports error at insert action: " .
+            $this->fmdb->errorMessageStore(
+                $this->fmdb->stringWithoutCredential("FX reports error at insert action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"));
             return null;
         }
         $newContextId = null;
-        foreach ($result['data'] as $recmodid => $recordData) {
+        foreach ($result['data'] as $recordData) {
             foreach ($recordData as $field => $value) {
                 if ($field == 'id') {
                     $newContextId = $value[0];
                 }
             }
         }
-        if (is_array($pkArray)) {
-            foreach ($pkArray as $pk) {
-                $this->dbClass->setupFXforDB($pksTable, 1);
-                $this->dbClass->fx->AddDBParam('context_id', $newContextId);
-                $this->dbClass->fx->AddDBParam('pk', $pk);
-                $result = $this->dbClass->fx->DoFxAction('new', TRUE, TRUE, 'full');
-                if (!is_array($result)) {
-                    $this->logger->setDebugMessage(
-                        $this->dbClass->stringWithoutCredential("FX reports error at insert action: " .
-                            "code={$result['errorCode']}, url={$result['URL']}"));
-                    $this->dbClass->errorMessageStore(
-                        $this->dbClass->stringWithoutCredential("FX reports error at insert action: " .
-                            "code={$result['errorCode']}, url={$result['URL']}"));
-                    return null;
-                }
+        foreach ($pkArray as $pk) {
+            $this->fmdb->setupFXforDB($pksTable, 1);
+            $this->fmdb->fx->AddDBParam('context_id', $newContextId);
+            $this->fmdb->fx->AddDBParam('pk', $pk);
+            $result = $this->fmdb->fx->DoFxAction('new', TRUE, TRUE, 'full');
+            if (!is_array($result)) {
+                $this->logger->setDebugMessage(
+                    $this->fmdb->stringWithoutCredential("FX reports error at insert action: " .
+                        "code={$result['errorCode']}, url={$result['URL']}"));
+                $this->fmdb->errorMessageStore(
+                    $this->fmdb->stringWithoutCredential("FX reports error at insert action: " .
+                        "code={$result['errorCode']}, url={$result['URL']}"));
+                return null;
             }
         }
         return $newContextId;
@@ -91,27 +104,27 @@ class DB_Notification_Handler_FileMaker_FX
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
 
-        $this->dbClass->setupFXforDB($regTable, 'all');
-        $this->dbClass->fx->AddDBParam('clientid', $clientId, 'eq');
+        $this->fmdb->setupFXforDB($regTable, 'all');
+        $this->fmdb->fx->AddDBParam('clientid', $clientId, 'eq');
         if ($tableKeys) {
             foreach ($tableKeys as $regId) {
-                $this->dbClass->fx->AddDBParam('id', $regId, 'eq');
+                $this->fmdb->fx->AddDBParam('id', $regId, 'eq');
             }
         }
-        $result = $this->dbClass->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
+        $result = $this->fmdb->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
 
         if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
-            $this->dbClass->errorMessageStore(
-                $this->dbClass->stringWithoutCredential("FX reports error at find action: " .
+            $this->fmdb->errorMessageStore(
+                $this->fmdb->stringWithoutCredential("FX reports error at find action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"));
             return false;
         } else {
             if ($result['foundCount'] > 0) {
-                $this->dbClass->setupFXforDB($regTable, '');
+                $this->fmdb->setupFXforDB($regTable, '');
                 foreach ($result['data'] as $key => $row) {
                     $recId = substr($key, 0, strpos($key, '.'));
-                    $this->dbClass->fx->SetRecordID($recId);
-                    $this->dbClass->fx->DoFxAction('delete', TRUE, TRUE, 'full');
+                    $this->fmdb->fx->SetRecordID($recId);
+                    $this->fmdb->fx->DoFxAction('delete', TRUE, TRUE, 'full');
                 }
             }
         }
@@ -123,22 +136,22 @@ class DB_Notification_Handler_FileMaker_FX
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
         $originPK = $pkArray[0];
-        $this->dbClass->setupFXforDB($regTable, 'all');
-        $this->dbClass->fx->AddDBParam('clientid', $clientId, 'neq');
-        $this->dbClass->fx->AddDBParam('entity', $entity, 'eq');
-        $this->dbClass->fx->AddSortParam('clientid');
-        $result = $this->dbClass->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
+        $this->fmdb->setupFXforDB($regTable, 'all');
+        $this->fmdb->fx->AddDBParam('clientid', $clientId, 'neq');
+        $this->fmdb->fx->AddDBParam('entity', $entity, 'eq');
+        $this->fmdb->fx->AddSortParam('clientid');
+        $result = $this->fmdb->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
         $contextIds = array();
         $targetId = null;
         $targetClient = null;
         $targetClients = array();
         if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
-            $this->dbClass->errorMessageStore(
-                $this->dbClass->stringWithoutCredential("FX reports error at find action: " .
+            $this->fmdb->errorMessageStore(
+                $this->fmdb->stringWithoutCredential("FX reports error at find action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"));
         } else {
             if ($result['foundCount'] > 0) {
-                foreach ($result['data'] as $recmodid => $recordData) {
+                foreach ($result['data'] as $recordData) {
                     foreach ($recordData as $field => $value) {
                         if ($field == 'id') {
                             $targetId = $value[0];
@@ -152,14 +165,14 @@ class DB_Notification_Handler_FileMaker_FX
             }
         }
 
-        foreach ($contextIds as $key => $context) {
-            $this->dbClass->setupFXforDB($pksTable, '1');
-            $this->dbClass->fx->AddDBParam('context_id', $context[0], 'eq');
-            $this->dbClass->fx->AddDBParam('pk', $originPK, 'eq');
-            $result = $this->dbClass->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
+        foreach ($contextIds as $context) {
+            $this->fmdb->setupFXforDB($pksTable, '1');
+            $this->fmdb->fx->AddDBParam('context_id', $context[0], 'eq');
+            $this->fmdb->fx->AddDBParam('pk', $originPK, 'eq');
+            $result = $this->fmdb->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
             if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
-                $this->dbClass->errorMessageStore(
-                    $this->dbClass->stringWithoutCredential("FX reports error at find action: " .
+                $this->fmdb->errorMessageStore(
+                    $this->fmdb->stringWithoutCredential("FX reports error at find action: " .
                         "code={$result['errorCode']}, url={$result['URL']}"));
             } else {
                 if ($result['foundCount'] > 0) {
@@ -176,19 +189,19 @@ class DB_Notification_Handler_FileMaker_FX
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
 
-        $this->dbClass->setupFXforDB($regTable, 'all');
-        $this->dbClass->fx->AddDBParam('entity', $entity, 'eq');
-        $result = $this->dbClass->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
+        $this->fmdb->setupFXforDB($regTable, 'all');
+        $this->fmdb->fx->AddDBParam('entity', $entity, 'eq');
+        $result = $this->fmdb->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
         $targetClients = array();
         $targetId = null; // For PHPStan level 1
         if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
-            $this->dbClass->errorMessageStore(
-                $this->dbClass->stringWithoutCredential("FX reports error at find action: " .
+            $this->fmdb->errorMessageStore(
+                $this->fmdb->stringWithoutCredential("FX reports error at find action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"));
             return null;
         } else {
             if ($result['foundCount'] > 0) {
-                foreach ($result['data'] as $recmodid => $recordData) {
+                foreach ($result['data'] as $recordData) {
                     foreach ($recordData as $field => $value) {
                         if ($field == 'id') {
                             $targetId = $value[0];
@@ -197,13 +210,13 @@ class DB_Notification_Handler_FileMaker_FX
                             $targetClients[] = $value[0];
                         }
                     }
-                    $this->dbClass->setupFXforDB($pksTable, 1);
-                    $this->dbClass->fx->AddDBParam('context_id', $targetId);
-                    $this->dbClass->fx->AddDBParam('pk', $pkArray[0]);
-                    $result = $this->dbClass->fx->DoFxAction('new', TRUE, TRUE, 'full');
+                    $this->fmdb->setupFXforDB($pksTable, 1);
+                    $this->fmdb->fx->AddDBParam('context_id', $targetId);
+                    $this->fmdb->fx->AddDBParam('pk', $pkArray[0]);
+                    $result = $this->fmdb->fx->DoFxAction('new', TRUE, TRUE, 'full');
                     if (!is_array($result)) {
-                        $this->dbClass->errorMessageStore(
-                            $this->dbClass->stringWithoutCredential("FX reports error at insert action: " .
+                        $this->fmdb->errorMessageStore(
+                            $this->fmdb->stringWithoutCredential("FX reports error at insert action: " .
                                 "code={$result['errorCode']}, url={$result['URL']}"));
                         return null;
                     }
@@ -218,20 +231,20 @@ class DB_Notification_Handler_FileMaker_FX
     {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
-        $this->dbClass->setupFXforDB($regTable, 'all');
-        $this->dbClass->fx->AddDBParam('entity', $entity, 'eq');
-        $result = $this->dbClass->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
+        $this->fmdb->setupFXforDB($regTable, 'all');
+        $this->fmdb->fx->AddDBParam('entity', $entity, 'eq');
+        $result = $this->fmdb->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
         $this->logger->setDebugMessage(var_export($result, true));
         $targetClients = array();
         $targetId = null; // For PHPStan level 1
         if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
-            $this->dbClass->errorMessageStore(
-                $this->dbClass->stringWithoutCredential("FX reports error at find action: " .
+            $this->fmdb->errorMessageStore(
+                $this->fmdb->stringWithoutCredential("FX reports error at find action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"));
             return null;
         } else {
             if ($result['foundCount'] > 0) {
-                foreach ($result['data'] as $recmodid => $recordData) {
+                foreach ($result['data'] as $recordData) {
                     foreach ($recordData as $field => $value) {
                         if ($field == 'id') {
                             $targetId = $value[0];
@@ -240,16 +253,16 @@ class DB_Notification_Handler_FileMaker_FX
                             $targetClients[] = $value[0];
                         }
                     }
-                    $this->dbClass->setupFXforDB($pksTable, 'all');
-                    $this->dbClass->fx->AddDBParam('context_id', $targetId, 'eq');
-                    $this->dbClass->fx->AddDBParam('pk', $pkArray[0], 'eq');
-                    $resultForRemove = $this->dbClass->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
+                    $this->fmdb->setupFXforDB($pksTable, 'all');
+                    $this->fmdb->fx->AddDBParam('context_id', $targetId, 'eq');
+                    $this->fmdb->fx->AddDBParam('pk', $pkArray[0], 'eq');
+                    $resultForRemove = $this->fmdb->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
                     if ($resultForRemove['foundCount'] > 0) {
-                        $this->dbClass->setupFXforDB($pksTable, '');
+                        $this->fmdb->setupFXforDB($pksTable, '');
                         foreach ($resultForRemove['data'] as $key => $row) {
                             $recId = substr($key, 0, strpos($key, '.'));
-                            $this->dbClass->fx->SetRecordID($recId);
-                            $this->dbClass->fx->DoFxAction('delete', TRUE, TRUE, 'full');
+                            $this->fmdb->fx->SetRecordID($recId);
+                            $this->fmdb->fx->DoFxAction('delete', TRUE, TRUE, 'full');
                         }
                     }
                     $this->logger->setDebugMessage("Deleted count: " . $resultForRemove['foundCount'], 2);
