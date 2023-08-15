@@ -87,7 +87,7 @@ trait Proxy_ExtSupport
      * @param array|null $query
      * @param array|null $sort
      * @param array|null $spec
-     * @return mixed
+     * @return array|null
      */
     public function dbRead(string $target, ?array $query = null, ?array $sort = null, ?array $spec = null): ?array
     {
@@ -106,7 +106,7 @@ trait Proxy_ExtSupport
      * @param array|null $query
      * @param array|null $data
      * @param array|null $spec
-     * @return mixed
+     * @return array|null
      */
     public function dbUpdate(string $target, ?array $query = null, ?array $data = null, ?array $spec = null): ?array
     {
@@ -124,7 +124,7 @@ trait Proxy_ExtSupport
      * @param string $target
      * @param array|null $data
      * @param array|null $spec
-     * @return mixed
+     * @return array|null
      */
     public function dbCreate(string $target, ?array $data = null, ?array $spec = null): ?array
     {
@@ -141,7 +141,7 @@ trait Proxy_ExtSupport
      * @param string $target
      * @param array|null $query
      * @param array|null $spec
-     * @return mixed
+     * @return array|null
      */
     public function dbDelete(string $target, ?array $query = null, ?array $spec = null): ?array
     {
@@ -159,11 +159,11 @@ trait Proxy_ExtSupport
      * @param array|null $query
      * @param array|null $sort
      * @param array|null $spec
-     * @return void
+     * @return array|null
      */
     public function dbCopy(string $target, ?array $query = null, ?array $sort = null, ?array $spec = null): ?array
     {
-
+        return null;
     }
 
     /**
