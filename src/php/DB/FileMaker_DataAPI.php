@@ -286,7 +286,7 @@ class FileMaker_DataAPI extends DBClass
 
     /**
      * @param ?string $str
-     * @return array|string|string[]
+     * @return string
      */
     public function stringWithoutCredential(?string $str): string
     {
@@ -300,8 +300,8 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /**
-     * @param string $str
-     * @return array|string|string[]
+     * @param string|null $str
+     * @return string
      */
     private function stringReturnOnly(?string $str): string
     {
@@ -309,8 +309,8 @@ class FileMaker_DataAPI extends DBClass
     }
 
     /**
-     * @param string $str
-     * @return array|string|string[]
+     * @param string|null $str
+     * @return string
      */
     private function unifyCRLF(?string $str): string
     {
@@ -322,9 +322,9 @@ class FileMaker_DataAPI extends DBClass
      * @param string $field
      * @param string $value
      * @param string|null $operator
-     * @return string[]|null
+     * @return ?array
      */
-    private function setSearchConditionsForCompoundFound(string $field, string $value, ?string $operator = NULL)
+    private function setSearchConditionsForCompoundFound(string $field, string $value, ?string $operator = NULL): ?array
     {
         if ($operator === NULL) {
             return array($field, $value);
@@ -360,10 +360,10 @@ class FileMaker_DataAPI extends DBClass
                 if (isset($condition['situation']) &&
                     isset($condition['definition']) && !empty($condition['definition'])
                 ) {
-                    $scriptName = str_replace('&', '', $condition['definition'] ?? "");
+                    $scriptName = str_replace('&', '', $condition['definition']);
                     $parameter = '';
-                    if (isset($condition['parameter']) && !empty($condition['parameter'])) {
-                        $parameter = str_replace('&', '', $condition['parameter'] ?? "");
+                    if (!empty($condition['parameter'])) {
+                        $parameter = str_replace('&', '', $condition['parameter']);
                     }
                     switch ($condition['situation']) {
                         case 'post':

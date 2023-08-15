@@ -47,6 +47,7 @@ use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
 use Symfony\Component\Mailer\Exception\ExceptionInterface;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Email;
@@ -489,7 +490,7 @@ class OME
      *    コントロールコードが見つかればfalseを返し送信はしないものとする。
      *
      * @return bool メールが送信できればtrue、送信できなければFALSE
-     * @throws
+     * @throws TransportExceptionInterface
      */
     public function send(): bool
     {

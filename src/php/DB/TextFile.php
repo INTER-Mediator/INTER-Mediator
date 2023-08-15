@@ -136,7 +136,6 @@ class TextFile extends DBClass
                                     string $signedUser = ''): array
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $queryClause = '';
         $primaryKey = $tableInfo['key'] ?? 'id';
 
         // 'field' => '__operation__' is not supported.
@@ -192,7 +191,8 @@ class TextFile extends DBClass
 
     /* Genrate SQL Sort and Where clause */
     /**
-     * @return string
+     * @return array
+     * @throws Exception
      */
     private function getSortClause(): array
     {

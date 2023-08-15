@@ -132,7 +132,6 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
      * @param array|null $datasource
      * @param array|null $dbspec
      * @param int $debug
-     * @throws
      */
     public function processing(Proxy $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
                                string  $contextname, ?string $keyfield, ?string $keyvalue,

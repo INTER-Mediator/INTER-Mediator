@@ -63,7 +63,7 @@ class Currency extends NumberBase
                 }
             }
         }
-        return $isPeriod ? floatval($numberString) : intval($numberString);
+        return (string)($isPeriod ? floatval($numberString) : intval($numberString));
     }
 
 }

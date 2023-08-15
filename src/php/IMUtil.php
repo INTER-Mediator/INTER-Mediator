@@ -224,7 +224,7 @@ class IMUtil
             $homeDir = get_current_user();
         } else {
             // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
-            // get_current_user doen't work on the ubuntu 18 of EC2. It returns the user logs in with ssh.
+            // get_current_user doesn't work on the ubuntu 18 of EC2. It returns the user logs in with ssh.
             $homeDir = posix_getpwuid(posix_geteuid())["name"];
         }
         return $homeDir;
@@ -428,7 +428,7 @@ class IMUtil
             return TRUE;
         }
 
-        if (!is_null($webServerName) && substr($host, -($length + 1)) === '.' . $webServerName &&
+        if (substr($host, -($length + 1)) === '.' . $webServerName &&
             strpos($webServerName, '.') !== FALSE && !preg_match('/^[0-9.]+$/', $webServerName)
         ) {
             return TRUE;
@@ -438,7 +438,7 @@ class IMUtil
     }
 
     /**
-     * @param array for testing only
+     * @param array|null $params for testing only
      */
     public function outputSecurityHeaders(?array $params = NULL): void
     {
@@ -455,13 +455,13 @@ class IMUtil
                 ? Params::getParameterValue('accessControlAllowOrigin', '')
                 : $params['accessControlAllowOrigin']));
 
-        if (is_null($xFrameOptions) || empty($xFrameOptions)) {
+        if (empty($xFrameOptions)) {
             $xFrameOptions = 'SAMEORIGIN';
         }
         if ($xFrameOptions !== '') {
             header("X-Frame-Options: {$xFrameOptions}");
         }
-        if (is_null($contentSecurityPolicy) || empty($contentSecurityPolicy)) {
+        if (empty($contentSecurityPolicy)) {
             $contentSecurityPolicy = '';
         }
         if ($contentSecurityPolicy !== '') {
@@ -498,8 +498,8 @@ class IMUtil
 
     /**
      * Create JavaScript source from array
-     * @param array ar parameter array
-     * @param string prefix strings for the prefix for key
+     * @param array $ar ar parameter array
+     * @param string $prefix prefix strings for the prefix for key
      * @return string JavaScript source
      */
     public static function arrayToJS(array $ar, string $prefix = ""): string
@@ -509,7 +509,7 @@ class IMUtil
         foreach ($ar as $key => $value) {
             $items[] = is_array($value) ? IMUtil::arrayToJS($value, $key) : IMUtil::stringToJS($value, $key);
         }
-        $currentKey = (string)$prefix;
+        $currentKey = $prefix;
         if ($currentKey == '')
             $returnStr = "{" . implode(',', $items) . '}';
         else
@@ -536,9 +536,9 @@ class IMUtil
 
     /**
      * Create JavaScript source from array
-     * @param array|string array
-     * @param string prefix strings for the prefix for key
-     * @param array exarray array containing excluding keys
+     * @param array $ar array
+     * @param string $prefix prefix strings for the prefix for key
+     * @param array|null $exarray exarray array containing excluding keys
      * @return string JavaScript source
      */
     public static function arrayToJSExcluding(array $ar, string $prefix, ?array $exarray): string
@@ -607,7 +607,7 @@ class IMUtil
      * @param $prefix
      * @return string
      */
-    public static function generateClientId(string $prefix, string $passwordHash)
+    public static function generateClientId(string $prefix, string $passwordHash): string
     {
         if ($passwordHash == "1") {
             return sha1(uniqid($prefix, true));
@@ -740,7 +740,7 @@ class IMUtil
         if (!$checkPath || !$dir) { // Both parameter have not to falsy.
             return false;
         }
-        if (strlen($dir) > strlen($checkPath)) { // Apparently outside of $dir.
+        if (strlen($dir) > strlen($checkPath)) { // Apparently outside $dir.
             return false;
         }
         if (substr($checkPath, 0, strlen($dir)) == $dir) {

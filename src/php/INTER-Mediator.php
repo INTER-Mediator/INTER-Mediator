@@ -21,7 +21,7 @@ use DateTime;
 // Setup autoloader
 $imRoot = dirname(__FILE__, 3) . DIRECTORY_SEPARATOR;
 $autoLoad = $imRoot . 'vendor/autoload.php';
-if (file_exists($autoLoad)) { // If vendor is inside of INTER-Mediator
+if (file_exists($autoLoad)) { // If vendor is inside INTER-Mediator
     require($autoLoad);
 } else { // If INTER-Mediator is installed with composer.json
     $vendorRoot = dirname($imRoot, 2) . DIRECTORY_SEPARATOR;
@@ -81,11 +81,12 @@ define("IM_TODAY", $fmt->format((new DateTime())->getTimestamp()));
 
 /**
  * INTER-Mediator entry point
- * @param $datasource
- * @param $options
- * @param $dbspecification
- * @param bool $debug
- * @param string $origin The path to the definition file.
+ * @param array|null $datasource
+ * @param array|null $options
+ * @param array|null $dbspecification
+ * @param int $debug
+ * @param string|null $origin The path to the definition file.
+ * @throws \Exception
  */
 function IM_Entry(?array $datasource, ?array $options, ?array $dbspecification, int $debug = 0, ?string $origin = null): void
 {

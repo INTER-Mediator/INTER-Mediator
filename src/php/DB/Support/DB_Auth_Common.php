@@ -23,7 +23,7 @@ use INTERMediator\DB\Settings;
 abstract class DB_Auth_Common implements Auth_Interface_CommonDB
 {
     protected ?Settings $dbSettings = null;
-    //protected ?DBClass $dbClass = null;
+    protected ?DBClass $dbClass = null;
     protected ?Logger $logger = null;
 
     public function __construct(?DBClass $parent)
