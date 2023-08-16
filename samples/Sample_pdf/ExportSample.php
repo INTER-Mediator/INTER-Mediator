@@ -4,7 +4,7 @@ use INTERMediator\DB\Export;
 
 class ExportSample extends Export
 {
-    protected $keysAndLabels = [
+    protected array $keysAndLabels = [
         "unitprice" => "単価",
         "name" => "商品名",
         "taxrate" => "消費税率",
@@ -17,12 +17,12 @@ class ExportSample extends Export
         "category_id" => "カテゴリID",
     ];
 
-//    protected $fileNamePrefix = "Exported-";
-//    protected $fileExtension = "csv";
-    protected $encoding = "SJIS";
-//    protected $fieldSeparator = ',';
-//    protected $quote = '"';
-//    protected $endOfLine = "\n";
+//    protected string $fileNamePrefix = "Exported-";
+//    protected string $fileExtension = "csv";
+    protected string $encoding = "SJIS";
+//    protected string $fieldSeparator = ',';
+//    protected string $quote = '"';
+//    protected string $endOfLine = "\n";
 
 //    public function processing($contextData, $options){}
 }

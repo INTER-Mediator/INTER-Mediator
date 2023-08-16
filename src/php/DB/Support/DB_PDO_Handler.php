@@ -282,7 +282,7 @@ abstract class DB_PDO_Handler
     public function getNullableNumericFields(string $tableName): array
     {
         try {
-            $result = $this->getTableInfo($tableName);
+            $this->getTableInfo($tableName);
         } catch (Exception $ex) {
             throw $ex;
         }

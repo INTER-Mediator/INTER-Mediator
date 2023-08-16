@@ -167,7 +167,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
             return false;
         }
 
-        $criteria = ["clientid = " . $this->pdoDB->link->quote($clientId)];
+        $criteria = ["clientid = " . $this->pdoDB->link->quote($clientId ?? '')];
         if ($tableKeys) {
             $subCriteria = [];
             foreach ($tableKeys as $regId) {
@@ -222,10 +222,11 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
         $originPK = $pkArray[0];
         $regTable = $this->pdoDB->handler->quotedEntityName($this->dbSettings->registerTableName);
         $pksTable = $this->pdoDB->handler->quotedEntityName($this->dbSettings->registerPKTableName);
-        $extraCond = " AND clientid <> {$this->pdoDB->link->quote($clientId)}";
+        $extraCond = " AND clientid <> {$this->pdoDB->link->quote($clientId ?? '')}";
+        $entityValue = $this->pdoDB->link->quote($entity);
+        $pkValue = $this->pdoDB->link->quote($originPK);
         $sql = "SELECT DISTINCT clientid FROM {$pksTable},{$regTable} WHERE context_id = id {$extraCond}"
-            . " AND entity = {$this->pdoDB->link->quote($entity)} AND pk = {$this->pdoDB->link->quote($originPK)}"
-            . " ORDER BY clientid";
+            . " AND entity = {$entityValue} AND pk = {$pkValue} ORDER BY clientid";
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {

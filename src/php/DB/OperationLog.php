@@ -15,6 +15,7 @@
 
 namespace INTERMediator\DB;
 
+use Exception;
 use INTERMediator\Params;
 
 /**
@@ -43,13 +44,13 @@ class OperationLog
      */
     private ?string $dbDSNLog;
     /**
-     * @var array|null
+     * @var bool
      */
-    private ?array $recordingContexts;
+    private bool $recordingContexts;
     /**
-     * @var array|null
+     * @var bool
      */
-    private ?array $recordingOperations;
+    private bool $recordingOperations;
     /**
      * @var array|null
      */
@@ -71,9 +72,9 @@ class OperationLog
      */
     private bool $dontRecordDownloadNoGet;
     /**
-     * @var object
+     * @var ?string
      */
-    private object $accessLogExtensionClass;
+    private ?string $accessLogExtensionClass;
 
     /**
      * @param array|null $options
@@ -86,18 +87,19 @@ class OperationLog
         $this->dbUserLog = Params::getParameterValue("dbUserLog", null);
         $this->dbPasswordLog = Params::getParameterValue("dbPasswordLog", null);
         $this->dbDSNLog = Params::getParameterValue("dbDSNLog", null);
-        $this->recordingContexts = Params::getParameterValue("recordingContexts", null);
+        $this->recordingContexts = Params::getParameterValue("recordingContexts", false);
         $this->dontRecordTheme = Params::getParameterValue("dontRecordTheme", false);
         $this->dontRecordChallenge = Params::getParameterValue("dontRecordChallenge", false);
         $this->dontRecordDownload = Params::getParameterValue("dontRecordDownload", false);
         $this->dontRecordDownloadNoGet = Params::getParameterValue("dontRecordDownloadNoGet", false);
-        $this->recordingOperations = Params::getParameterValue("recordingOperations", null);
+        $this->recordingOperations = Params::getParameterValue("recordingOperations", false);
         $this->accessLogExtensionClass = Params::getParameterValue("accessLogExtensionClass", null);
     }
 
     /**
      * @param array|null $result
      * @return void
+     * @throws Exception
      */
     public function setEntry(?array $result): void
     {
@@ -161,7 +163,7 @@ class OperationLog
             $dbInstance->dbSettings->addValueWithField("error",
                 $this->arrayToString($dbInstance->logger->getErrorMessages()));
 
-            if ($this->accessLogExtensionClass !== false && class_exists($this->accessLogExtensionClass)) {
+            if (!$this->accessLogExtensionClass && class_exists($this->accessLogExtensionClass)) {
                 $extInstance = new $this->accessLogExtensionClass($dbInstance, $result);
                 $fields = $extInstance->extendingFields();
                 foreach ($fields as $field) {

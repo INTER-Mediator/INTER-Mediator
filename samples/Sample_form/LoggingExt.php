@@ -1,13 +1,15 @@
 <?php
 
-class LoggingExt extends INTERMediator\DB\Support\OperationLogExtension
+use INTERMediator\DB\Support\OperationLogExtension;
+
+class LoggingExt extends OperationLogExtension
 {
-    public function extendingFields()
+    public function extendingFields(): array
     {
         return ['field1'];
     }
 
-    public function valueForField($field)
+    public function valueForField(string $field): string
     {
         return "value of {$field}";
     }

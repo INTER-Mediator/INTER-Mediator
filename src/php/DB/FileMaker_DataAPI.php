@@ -72,6 +72,14 @@ class FileMaker_DataAPI extends DBClass
     private bool $useSetDataToUpdatedRecord = false;
 
     /**
+     * @return FMDataAPI
+     */
+    public function getFMDataInstance(): FMDataAPI
+    {
+        return $this->fmData;
+    }
+
+    /**
      * @param string $str
      * @return void
      */

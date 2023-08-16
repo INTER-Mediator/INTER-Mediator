@@ -63,4 +63,10 @@ interface Auth_Interface_DB                    // with using table for authentic
     public function authSupportIsWithinSAMLLimit(string $userID): bool;  // authuser
 
     public function authSupportCanMigrateSHA256Hash(): bool;  // authuser, issuedhash
+
+    /**
+     * @param array $keyValues
+     * @return bool(true: create user, false: reuse user)|null in error
+     */
+    public function authSupportOAuthUserHandling(array $keyValues): bool;
 }
