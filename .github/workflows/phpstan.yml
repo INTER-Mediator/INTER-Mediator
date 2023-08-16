@@ -13,9 +13,9 @@ jobs:
     runs-on: 'ubuntu-latest'
     strategy:
       matrix:
-        level: [ 0, 1, 2 ]
+        level: [ 1, 2, 3 ]
         include:
-          - current-level: 0
+          - current-level: 1
     steps:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
 
