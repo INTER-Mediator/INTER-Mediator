@@ -3,6 +3,7 @@
 namespace INTERMediator\DB;
 
 use Exception;
+use INTERMediator\FileMakerServer\RESTAPI\FMDataAPI;
 
 /**
  *
@@ -64,4 +65,13 @@ abstract class DBClass extends UseSharedObjects implements DBClass_Interface
         throw new Exception("This '{$currentClass}' class doesn't support the setupFMDataAPIforDB method.");
     }
 
+    /**
+     * @return FMDataAPI
+     * @throws Exception
+     */
+    public function getFMDataInstance(): FMDataAPI
+    {
+        $currentClass = get_class($this);
+        throw new Exception("This '{$currentClass}' class doesn't support the getFMDataInstance method.");
+    }
 }

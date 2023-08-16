@@ -72,7 +72,7 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
                 }
             } else { // Other settings
                 $dbProxyInstance->dbClass->setupFMDataAPIforDB(NULL, 1);
-                $content = base64_decode($dbProxyInstance->dbClass->fmData->getContainerData($target));
+                $content = base64_decode($dbProxyInstance->dbClass->getFMDataInstance()->getContainerData($target));
             }
         } else if (intval(get_cfg_var('allow_url_fopen')) === 1) {
             $content = file_get_contents($target);
@@ -139,7 +139,7 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
         }
 
         $counter = -1;
-        foreach ($files as $fn => $fileInfo) {
+        foreach ($files as $fileInfo) {
             $counter += 1;
             if (is_array($fileInfo['name'])) {   // JQuery File Upload Style
                 $fileInfoName = $fileInfo['name'][0];
@@ -218,7 +218,7 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
             } else if ($dbspec['db-class'] === 'FileMaker_DataAPI') {
                 $layout = $datasource[0]['name'];
                 $db->dbClass->setupFMDataAPIforDB($layout, urlencode($targetFieldName));
-                $result = $db->dbClass->fmData->{$layout}->query(NULL, NULL, 1, 1);
+                $result = $db->dbClass->getFMDataInstance()->{$layout}->query(NULL, NULL, 1, 1);
                 $path = '';
                 $host = filter_input(INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_URL);
                 if ($host === NULL || $host === FALSE) {
