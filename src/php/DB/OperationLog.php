@@ -15,6 +15,7 @@
 
 namespace INTERMediator\DB;
 
+use Exception;
 use INTERMediator\Params;
 
 /**
@@ -71,9 +72,9 @@ class OperationLog
      */
     private bool $dontRecordDownloadNoGet;
     /**
-     * @var object
+     * @var ?string
      */
-    private string $accessLogExtensionClass;
+    private ?string $accessLogExtensionClass;
 
     /**
      * @param array|null $options
@@ -98,6 +99,7 @@ class OperationLog
     /**
      * @param array|null $result
      * @return void
+     * @throws Exception
      */
     public function setEntry(?array $result): void
     {

@@ -1597,7 +1597,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     function resetPasswordSequenceReturnBack(?string $username, ?string $email, string $randdata, string $newpassword): bool
     {
         $userid = null;
-        $username = null;
         if (is_null($username) && !is_null($email)) {
             $userid = $this->dbClass->authHandler->authSupportGetUserIdFromEmail($email);
             $username = $this->dbClass->authHandler->authSupportGetUsernameFromUserId($userid);

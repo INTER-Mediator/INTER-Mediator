@@ -40,7 +40,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string $uid
+     * @param string|null $uid
      * @param string $challenge
      * @param string $clientId
      * @return void
@@ -982,5 +982,15 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     public function authSupportCanMigrateSHA256Hash(): bool  // authuser, issuedhash
     {
         return true;
+    }
+
+    /**
+     * @param array $keyValues
+     * @return bool
+     */
+    public function authSupportOAuthUserHandling(array $keyValues): bool
+    {
+        $this->logger->setErrorMessage("DB_Auth_Handler_FileMaker_DataAPI doesn't support the authSupportOAuthUserHandling method.");
+        return false;
     }
 }

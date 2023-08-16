@@ -40,10 +40,11 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     }
 
     /**
-     * @param string $uid
+     * @param string|null $uid
      * @param string $challenge
      * @param string $clientId
      * @return void
+     * @throws Exception
      */
     public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId): void
     {
@@ -132,6 +133,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
      * @param string $clientId
      * @param bool $isDelete
      * @return string|null
+     * @throws Exception
      */
     public function authSupportRetrieveChallenge(string $uid, string $clientId, bool $isDelete = true): ?string
     {
@@ -167,6 +169,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
 
     /**
      * @return bool
+     * @throws Exception
      */
     public function authSupportRemoveOutdatedChallenges(): bool
     {
@@ -204,6 +207,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     /**
      * @param string $username
      * @return string|null
+     * @throws Exception
      */
     public function authSupportRetrieveHashedPassword(string $username): ?string
     {
@@ -239,6 +243,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
      * @param string|null $ldapPassword
      * @param array|null $attrs
      * @return bool
+     * @throws Exception
      */
     public function authSupportCreateUser(string  $username, string $hashedpassword, bool $isSAML = false,
                                           ?string $ldapPassword = null, ?array $attrs = null): bool
@@ -264,6 +269,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
      * @param string $username
      * @param string $hashednewpassword
      * @return bool
+     * @throws Exception
      */
     public function authSupportChangePassword(string $username, string $hashednewpassword): bool
     {
@@ -305,6 +311,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     /**
      * @param string $username
      * @return string|null
+     * @throws Exception
      */
     public function authSupportGetUserIdFromUsername(string $username): ?string
     {
@@ -332,6 +339,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     /**
      * @param string $userid
      * @return string|null
+     * @throws Exception
      */
     public function authSupportGetUsernameFromUserId(string $userid): ?string
     {
@@ -357,6 +365,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     /**
      * @param string $email
      * @return string|null
+     * @throws Exception
      */
     public function authSupportGetUserIdFromEmail(string $email): ?string
     {
@@ -382,6 +391,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     /**
      * @param string|null $username
      * @return string|null
+     * @throws Exception
      */
     public function authSupportUnifyUsernameAndEmail(?string $username): ?string
     {
@@ -418,6 +428,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     /**
      * @param string $groupid
      * @return string|null
+     * @throws Exception
      */
     public function authSupportGetGroupNameFromGroupId(string $groupid): ?string
     {
@@ -443,6 +454,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     /**
      * @param string|null $user
      * @return array
+     * @throws Exception
      */
     public function authSupportGetGroupsOfUser(?string $user): array
     {
@@ -477,6 +489,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     /**
      * @param string $groupid
      * @return void
+     * @throws Exception
      */
     private function resolveGroup(string $groupid): void
     {
@@ -506,6 +519,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
      * @param string $clienthost
      * @param string $hash
      * @return bool
+     * @throws Exception
      */
     public function authSupportStoreIssuedHashForResetPassword(string $userid, string $clienthost, string $hash): bool
     {
@@ -534,6 +548,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
      * @param string $randdata
      * @param string $hash
      * @return bool
+     * @throws Exception
      */
     public function authSupportCheckIssuedHashForResetPassword(string $userid, string $randdata, string $hash): bool
     {
@@ -618,6 +633,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
      * @param string $userid
      * @param string $hash
      * @return bool
+     * @throws Exception
      */
     public function authSupportUserEnrollmentStart(string $userid, string $hash): bool
     {
@@ -641,6 +657,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     /**
      * @param string $hash
      * @return string|null
+     * @throws Exception
      */
     public function authSupportUserEnrollmentEnrollingUser(string $hash): ?string
     {
@@ -672,6 +689,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
      * @param string|null $rawPWField
      * @param string|null $rawPW
      * @return string|null
+     * @throws Exception
      */
     public function authSupportUserEnrollmentActivateUser(
         string $userID, ?string $password, ?string $rawPWField, ?string $rawPW): ?string
@@ -723,5 +741,15 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     public function authSupportCanMigrateSHA256Hash(): bool  // authuser, issuedhash
     {
         return true;
+    }
+
+    /**
+     * @param array $keyValues
+     * @return bool
+     */
+    public function authSupportOAuthUserHandling(array $keyValues): bool
+    {
+        $this->logger->setErrorMessage("DB_Auth_Handler_FileMaker_FX doesn't support the authSupportOAuthUserHandling method.");
+        return false;
     }
 }

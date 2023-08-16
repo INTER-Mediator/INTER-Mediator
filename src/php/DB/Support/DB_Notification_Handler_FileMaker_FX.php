@@ -17,6 +17,7 @@
 namespace INTERMediator\DB\Support;
 
 use DateTime;
+use Exception;
 use INTERMediator\DB\FileMaker_FX;
 
 /**
@@ -40,6 +41,7 @@ class DB_Notification_Handler_FileMaker_FX extends DB_Notification_Common
 
     /**
      * @return bool
+     * @throws Exception
      */
     public function isExistRequiredTable(): bool
     {
@@ -64,6 +66,7 @@ class DB_Notification_Handler_FileMaker_FX extends DB_Notification_Common
      * @param string $condition
      * @param array $pkArray
      * @return string|null
+     * @throws Exception
      */
     public function register(?string $clientId, string $entity, string $condition, array $pkArray): ?string
     {
@@ -113,6 +116,7 @@ class DB_Notification_Handler_FileMaker_FX extends DB_Notification_Common
      * @param string|null $clientId
      * @param array|null $tableKeys
      * @return bool
+     * @throws Exception
      */
     public function unregister(?string $clientId, ?array $tableKeys): bool
     {
@@ -150,6 +154,7 @@ class DB_Notification_Handler_FileMaker_FX extends DB_Notification_Common
      * @param string $entity
      * @param array $pkArray
      * @return array|null
+     * @throws Exception
      */
     public function matchInRegistered(?string $clientId, string $entity, array $pkArray): ?array
     {
@@ -210,6 +215,7 @@ class DB_Notification_Handler_FileMaker_FX extends DB_Notification_Common
      * @param string $pkField
      * @param array $pkArray
      * @return array|null
+     * @throws Exception
      */
     public function appendIntoRegistered(?string $clientId, string $entity, string $pkField, array $pkArray): ?array
     {
@@ -259,6 +265,7 @@ class DB_Notification_Handler_FileMaker_FX extends DB_Notification_Common
      * @param string $entity
      * @param array $pkArray
      * @return array|null
+     * @throws Exception
      */
     public function removeFromRegistered(?string $clientId, string $entity, array $pkArray): ?array
     {
