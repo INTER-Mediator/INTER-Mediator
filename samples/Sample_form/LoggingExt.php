@@ -9,7 +9,7 @@ class LoggingExt extends OperationLogExtension
         return ['field1'];
     }
 
-    public function valueForField($field): string
+    public function valueForField(string $field): string
     {
         return "value of {$field}";
     }

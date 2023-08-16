@@ -17,12 +17,12 @@ class ExportSample extends Export
         "category_id" => "カテゴリID",
     ];
 
-//    protected $fileNamePrefix = "Exported-";
-//    protected $fileExtension = "csv";
+//    protected string $fileNamePrefix = "Exported-";
+//    protected string $fileExtension = "csv";
     protected string $encoding = "SJIS";
-//    protected $fieldSeparator = ',';
-//    protected $quote = '"';
-//    protected $endOfLine = "\n";
+//    protected string $fieldSeparator = ',';
+//    protected string $quote = '"';
+//    protected string $endOfLine = "\n";
 
 //    public function processing($contextData, $options){}
 }
