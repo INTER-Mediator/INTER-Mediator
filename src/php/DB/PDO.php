@@ -505,10 +505,8 @@ class PDO extends DBClass
             $value = (is_array($fieldValues[$counter]))
                 ? implode("\n", $fieldValues[$counter]) : $fieldValues[$counter];
             $counter++;
-            $a = strlen($value);
-            $b = in_array($field, $numericFields);
-            $c = in_array($field, $boolFields);
-            if (strlen($value) == 0) {
+            $valueLen = $value ? strlen($value): 0;
+            if ($valueLen == 0) {
                 if (in_array($field, $nullableFields)) {
                     $value = NULL;
                 } else if (in_array($field, $numericFields) || in_array($field, $boolFields)) {
@@ -536,7 +534,7 @@ class PDO extends DBClass
                 }
             }
             $setParameter[] = $value;
-            $this->logger->setDebugMessage("field={$field}, value={$value}, len={$a}/{$b}/{$c}");
+            $this->logger->setDebugMessage("field={$field}, value={$value}, len={$valueLen}");
         }
         if (count($setClause) < 1) {
             $this->logger->setErrorMessage("No data to update for table {$tableName}.");
@@ -727,7 +725,7 @@ class PDO extends DBClass
         $lastKeyValue = $this->handler->lastInsertIdAlt($seqObject, $tableNameRow); // $this->link->lastInsertId($seqObject);
         if (/* $isReplace && */ $lastKeyValue == 0) { // lastInsertId returns 0 after replace command.
             // Moreover, about MySQL, it returns 0 with the key field without AUTO_INCREMENT.
-            $lastKeyValue = -999; // This means kind of error, so avoid to set non zero value.
+            $lastKeyValue = -999; // This means kind of error, so avoid to set non-zero value.
         }
 
         $this->notifyHandler->setQueriedPrimaryKeys(array($lastKeyValue));
