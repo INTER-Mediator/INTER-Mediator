@@ -320,20 +320,7 @@ class PDO extends DBClass
             : $this->handler->quotedEntityName($this->dbSettings->getEntityForCount());
 
         // Create SQL
-        $limitParam = 100000000;
-        if (isset($tableInfo['maxrecords'])) {
-            if (intval($tableInfo['maxrecords']) < $this->dbSettings->getRecordCount()) {
-                $limitParam = max(intval($tableInfo['maxrecords']), intval($tableInfo['records']));
-            } else {
-                $limitParam = $this->dbSettings->getRecordCount();
-            }
-        } else if (isset($tableInfo['records'])) {
-            if (intval($tableInfo['records']) < $this->dbSettings->getRecordCount()) {
-                $limitParam = intval($tableInfo['records']);
-            } else {
-                $limitParam = $this->dbSettings->getRecordCount();
-            }
-        }
+        $limitParam = $this->getLimitParam($tableInfo);
         $isPaging = (isset($tableInfo['paging']) and $tableInfo['paging'] === true);
         $skipParam = 0;
         if ($isPaging) {
@@ -504,11 +491,10 @@ class PDO extends DBClass
             $setClause[] = $this->handler->quotedEntityName($field) . "=?";
             $value = (is_array($fieldValues[$counter]))
                 ? implode("\n", $fieldValues[$counter]) : $fieldValues[$counter];
+            $origValue = $value;
             $counter++;
-            $a = strlen($value);
-            $b = in_array($field, $numericFields);
-            $c = in_array($field, $boolFields);
-            if (strlen($value) == 0) {
+            $valueLen = ($value || $value === 0 || $value === 0.0) ? strlen((string)$value) : 0;
+            if (is_null($value) || $value === '') {
                 if (in_array($field, $nullableFields)) {
                     $value = NULL;
                 } else if (in_array($field, $numericFields) || in_array($field, $boolFields)) {
@@ -520,6 +506,8 @@ class PDO extends DBClass
                 } else if (in_array($field, $timeFields)) {
                     $value = '00:00:00';
                 }
+//            } else if ($value === '' && in_array($field, $numericFields)) {
+//                $value = in_array($field, $nullableFields) ? NULL : 0;
             } else if (in_array($field, $boolFields)) {
                 $value = $this->isTrue($value);
             } else {
@@ -536,7 +524,7 @@ class PDO extends DBClass
                 }
             }
             $setParameter[] = $value;
-            $this->logger->setDebugMessage("field={$field}, value={$value}, len={$a}/{$b}/{$c}");
+            $this->logger->setDebugMessage("field={$field}, value={$value}/original={$origValue}/, len={$valueLen}");
         }
         if (count($setClause) < 1) {
             $this->logger->setErrorMessage("No data to update for table {$tableName}.");
@@ -585,23 +573,9 @@ class PDO extends DBClass
             $sqlResult = array();
             $isFirstRow = true;
             foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                $rowArray = array();
-                foreach ($row as $field => $val) {
-                    if ($isFirstRow) {
-                        $this->fieldInfo[] = $field;
-                    }
-                    $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
-                    $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
-                    // Convert the time explanation from UTC to server setup timezone
-                    if (in_array($field, $timeFields) && !is_null($rowArray[$field]) && $rowArray[$field] !== '') {
-                        $dt = new DateTime($rowArray[$field], new DateTimeZone(date_default_timezone_get()));
-                        $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $rowArray[$field]);
-                        $dt->setTimezone(new DateTimeZone('UTC'));
-                        $rowArray[$field] = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
-                    }
-                }
-                $sqlResult[] = $rowArray;
-                $this->notifyHandler->addQueriedPrimaryKeys($rowArray[$keyField]);
+                $record = $this->getResultRecord($row, $isFirstRow, $timeFields);
+                $sqlResult[] = $record;
+                $this->notifyHandler->addQueriedPrimaryKeys($record[$keyField]);
                 $isFirstRow = false;
             }
             $this->updatedRecord = count($sqlResult) ? $sqlResult : null;
@@ -727,7 +701,7 @@ class PDO extends DBClass
         $lastKeyValue = $this->handler->lastInsertIdAlt($seqObject, $tableNameRow); // $this->link->lastInsertId($seqObject);
         if (/* $isReplace && */ $lastKeyValue == 0) { // lastInsertId returns 0 after replace command.
             // Moreover, about MySQL, it returns 0 with the key field without AUTO_INCREMENT.
-            $lastKeyValue = -999; // This means kind of error, so avoid to set non zero value.
+            $lastKeyValue = -999; // This means kind of error, so avoid to set non-zero value.
         }
 
         $this->notifyHandler->setQueriedPrimaryKeys(array($lastKeyValue));
@@ -962,18 +936,9 @@ class PDO extends DBClass
             $this->errorMessageStore("Can't open db connection . ");
             return null;
         }
-        $sql = "{$this->handler->sqlSELECTCommand()}* FROM " . $this->handler->quotedEntityName($table);
-        if (is_array($conditions) && count($conditions) > 0) {
-            $sql .= " WHERE ";
-            $first = true;
-            foreach ($conditions as $field => $value) {
-                if (!$first) {
-                    $sql .= " and ";
-                }
-                $sql .= $this->handler->quotedEntityName($field) . " = " . $this->link->quote($value);
-                $first = null;
-            }
-        }
+        $sql = "{$this->handler->sqlSELECTCommand()}* FROM "
+            . $this->handler->quotedEntityName($table)
+            . $this->generateConditions($conditions);
         $result = $this->link->query($sql);
         if ($result === false) {
             var_dump($this->link->errorInfo());
@@ -1007,18 +972,9 @@ class PDO extends DBClass
             $this->errorMessageStore("Can't open db connection . ");
             return false;
         }
-        $sql = "{$this->handler->sqlDELETECommand()}" . $this->handler->quotedEntityName($table);
-        if (is_array($conditions) && count($conditions) > 0) {
-            $sql .= " WHERE ";
-            $first = true;
-            foreach ($conditions as $field => $value) {
-                if (!$first) {
-                    $sql .= " and ";
-                }
-                $sql .= $this->handler->quotedEntityName($field) . " = " . $this->link->quote($value);
-                $first = false;
-            }
-        }
+        $sql = "{$this->handler->sqlDELETECommand()}"
+            . $this->handler->quotedEntityName($table)
+            . $this->generateConditions($conditions);
         $result = $this->link->exec($sql);
         if ($result === false) {
             var_dump($this->link->errorInfo());
@@ -1083,22 +1039,7 @@ class PDO extends DBClass
         $sqlResult = array();
         $isFirstRow = true;
         foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-            $rowArray = array();
-            foreach ($row as $field => $val) {
-                if ($isFirstRow) {
-                    $this->fieldInfo[] = $field;
-                }
-                $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
-                $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
-                // Convert the time explanation from UTC to server setup timezone
-                if (in_array($field, $timeFields) && !is_null($rowArray[$field]) && $rowArray[$field] !== '') {
-                    $dt = new DateTime($rowArray[$field], new DateTimeZone(date_default_timezone_get()));
-                    $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $rowArray[$field]);
-                    $dt->setTimezone(new DateTimeZone('UTC'));
-                    $rowArray[$field] = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
-                }
-            }
-            $sqlResult[] = $rowArray;
+            $sqlResult[] = $this->getResultRecord($row, $isFirstRow, $timeFields);
             $isFirstRow = false;
         }
         return $sqlResult;
@@ -1110,5 +1051,55 @@ class PDO extends DBClass
     public function closeDBOperation(): void
     {
         // Do nothing
+    }
+
+    /**
+     * @param array $row
+     * @param bool $isFirstRow
+     * @param array $timeFields
+     * @return array
+     * @throws Exception
+     */
+    private function getResultRecord(array $row, bool $isFirstRow, array $timeFields): array
+    {
+        $rowArray = array();
+        foreach ($row as $field => $val) {
+            if ($isFirstRow) {
+                $this->fieldInfo[] = $field;
+            }
+            $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
+            $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
+            // Convert the time explanation from UTC to server setup timezone
+            if (in_array($field, $timeFields) && !is_null($rowArray[$field]) && $rowArray[$field] !== '') {
+                $dt = new DateTime($rowArray[$field], new DateTimeZone(date_default_timezone_get()));
+                $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $rowArray[$field]);
+                $dt->setTimezone(new DateTimeZone('UTC'));
+                $rowArray[$field] = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+            }
+        }
+        return $rowArray;
+//        $sqlResult[] = $rowArray;
+//        return array($rowArray, $sqlResult);
+    }
+
+    /**
+     * @param array|null $conditions
+     * @return string
+     */
+    private function generateConditions(?array $conditions): string
+    {
+        $sql = '';
+        if (is_array($conditions) && count($conditions) > 0) {
+            $sql .= " WHERE ";
+            $first = true;
+            foreach ($conditions as $field => $value) {
+                if (!$first) {
+                    $sql .= " and ";
+                }
+                $sql .= $this->handler->quotedEntityName($field) . " = " . $this->link->quote($value);
+                $first = false;
+            }
+        }
+        return $sql;
     }
 }

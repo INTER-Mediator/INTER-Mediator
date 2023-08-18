@@ -453,20 +453,7 @@ class FileMaker_FX extends DBClass
                     strtolower($this->dbSettings->getDbSpecDataType()) ?? ""));
         }
 
-        $limitParam = 100000000;
-        if (isset($context['maxrecords'])) {
-            if (intval($context['maxrecords']) < $this->dbSettings->getRecordCount()) {
-                $limitParam = max(intval($context['maxrecords']), intval($context['records']));
-            } else {
-                $limitParam = $this->dbSettings->getRecordCount();
-            }
-        } else if (isset($context['records'])) {
-            if (intval($context['records']) < $this->dbSettings->getRecordCount()) {
-                $limitParam = intval($context['records']);
-            } else {
-                $limitParam = $this->dbSettings->getRecordCount();
-            }
-        }
+        $limitParam = $this->getLimitParam($context);
         $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), $limitParam);
 
         $this->fx->FMSkipRecords(

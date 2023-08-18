@@ -74,4 +74,28 @@ abstract class DBClass extends UseSharedObjects implements DBClass_Interface
         $currentClass = get_class($this);
         throw new Exception("This '{$currentClass}' class doesn't support the getFMDataInstance method.");
     }
+
+    /**
+     * @param array $tableInfo
+     * @return int
+     */
+    protected function getLimitParam(array $tableInfo): int
+    {
+        $limitParam = 100000000;
+        if (isset($tableInfo['maxrecords'])) {
+            if (intval($tableInfo['maxrecords']) < $this->dbSettings->getRecordCount()) {
+                $limitParam = max(intval($tableInfo['maxrecords']), intval($tableInfo['records']));
+            } else {
+                $limitParam = $this->dbSettings->getRecordCount();
+            }
+        } else if (isset($tableInfo['records'])) {
+            if (intval($tableInfo['records']) < $this->dbSettings->getRecordCount()) {
+                $limitParam = intval($tableInfo['records']);
+            } else {
+                $limitParam = $this->dbSettings->getRecordCount();
+            }
+        }
+        return $limitParam;
+    }
+
 }

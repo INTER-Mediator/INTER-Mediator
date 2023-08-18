@@ -116,7 +116,7 @@ class FileMaker_DataAPI extends DBClass
     /**
      * @return array|null
      */
-    public function updatedRecord()
+    public function updatedRecord(): ?array
     {
         return $this->updatedRecord;
     }
@@ -356,9 +356,7 @@ class FileMaker_DataAPI extends DBClass
         $script = array();
         if (is_array($scriptContext)) {
             foreach ($scriptContext as $condition) {
-                if (isset($condition['situation']) &&
-                    isset($condition['definition']) && !empty($condition['definition'])
-                ) {
+                if (isset($condition['situation']) && isset($condition['definition'])) {
                     $scriptName = str_replace('&', '', $condition['definition']);
                     $parameter = '';
                     if (!empty($condition['parameter'])) {
@@ -434,7 +432,7 @@ class FileMaker_DataAPI extends DBClass
         }
 
         $returnArray = array();
-        foreach ($result->getFieldNames() as $key => $fieldName) {
+        foreach ($result->getFieldNames() as $fieldName) {
             $returnArray[$fieldName] = '';
         }
 
@@ -472,20 +470,7 @@ class FileMaker_DataAPI extends DBClass
             }
         }
 
-        $limitParam = 100000000;
-        if (isset($context['maxrecords'])) {
-            if (intval($context['maxrecords']) < $this->dbSettings->getRecordCount()) {
-                $limitParam = max(intval($context['maxrecords']), intval($context['records']));
-            } else {
-                $limitParam = $this->dbSettings->getRecordCount();
-            }
-        } else if (isset($context['records'])) {
-            if (intval($context['records']) < $this->dbSettings->getRecordCount()) {
-                $limitParam = intval($context['records']);
-            } else {
-                $limitParam = $this->dbSettings->getRecordCount();
-            }
-        }
+        $limitParam = $this->getLimitParam($context);
         $this->setupFMDataAPIforDB($this->dbSettings->getEntityForRetrieve(), $limitParam);
         $layout = $this->targetLayout;
         $skip = (isset($context['paging']) and $context['paging'] === true) ? $this->dbSettings->getStart() : 0;
@@ -743,7 +728,7 @@ class FileMaker_DataAPI extends DBClass
 
             $result = null;
             if ($conditions && count($conditions) === 1 && isset($conditions[0]['recordId'])) {
-                $recordId = str_replace('=', '', $conditions[0]['recordId'] ?? "");
+                $recordId = str_replace('=', '', $conditions[0]['recordId']);
                 if (is_numeric($recordId)) {
                     $conditions[0]['recordId'] = $recordId;
                     $result = $this->fmData->{$layout}->getRecord($recordId);
@@ -787,7 +772,7 @@ class FileMaker_DataAPI extends DBClass
                             'recordId' => $record->getRecordId(),
                         );
                 }
-                foreach ($result->getFieldNames() as $key => $fieldName) {
+                foreach ($result->getFieldNames() as $fieldName) {
                     $dataArray = $dataArray + array(
                             $fieldName => $this->formatter->formatterFromDB(
                                 $this->getFieldForFormatter($tableName, $fieldName), strval($record->{$fieldName})
@@ -798,10 +783,10 @@ class FileMaker_DataAPI extends DBClass
                 $relatedsetArray = array();
                 if (count($portalNames) >= 1) {
                     $relatedArray = array();
-                    foreach ($portalNames as $key => $portalName) {
+                    foreach ($portalNames as $portalName) {
                         foreach ($result->{$portalName} as $portalRecord) {
                             $recId = $portalRecord->getRecordId();
-                            foreach ($result->{$portalName}->getFieldNames() as $key => $relatedFieldName) {
+                            foreach ($result->{$portalName}->getFieldNames() as $relatedFieldName) {
                                 if (strpos($relatedFieldName, '::') !== false) {
                                     $dotPos = strpos($relatedFieldName, '::');
                                     $tableOccurrence = substr($relatedFieldName, 0, $dotPos);
@@ -869,14 +854,13 @@ class FileMaker_DataAPI extends DBClass
             $recId = $resultData->getRecordId();
             $oneRecordArray[$this->specHandler->getDefaultKey()] = $recId;
 
-            $existsRelated = false;
-            foreach ($resultData->getFieldNames() as $key => $field) {
+            foreach ($resultData->getFieldNames() as $field) {
                 $oneRecordArray[$field] = $this->formatter->formatterFromDB(
                     "{$tableName}{$this->dbSettings->getSeparator()}$field", $oneRecord->$field);
                 foreach ($resultData->getPortalNames() as $portalName) {
                     foreach ($resultData->{$portalName} as $relatedRecord) {
                         $oneRecordArray[$portalName][$relatedRecord->getRecordId()] = array();
-                        foreach ($resultData->{$portalName}->getFieldNames() as $relatedKey => $relatedField) {
+                        foreach ($resultData->{$portalName}->getFieldNames() as $relatedField) {
                             if (strpos($relatedField, '::') !== false &&
                                 !in_array($relatedField, array('recordId', 'modId'))) {
                                 $oneRecordArray[$portalName][$relatedRecord->getRecordId()][$this->specHandler->getDefaultKey()] = $relatedRecord->getRecordId();
@@ -916,7 +900,6 @@ class FileMaker_DataAPI extends DBClass
     public function updateDB(bool $bypassAuth): bool
     {
         $this->fieldInfo = null;
-        $dataSourceName = $this->dbSettings->getDataSourceName();
         $tableSourceName = $this->dbSettings->getEntityForUpdate();
         $context = $this->dbSettings->getDataSourceTargetArray();
         $data = array();
@@ -1015,7 +998,7 @@ class FileMaker_DataAPI extends DBClass
         $data = array();
         $portal = array();
         if (isset($condition[0]['recordId']) && count($condition) === 1) {
-            $recordId = str_replace('=', '', $condition[0]['recordId'] ?? "");
+            $recordId = str_replace('=', '', $condition[0]['recordId']);
             if (is_numeric($recordId)) {
                 $result = $this->fmData->{$layout}->getRecord($recordId);
             }
@@ -1202,13 +1185,10 @@ class FileMaker_DataAPI extends DBClass
         $this->fieldInfo = null;
 
         $context = $this->dbSettings->getDataSourceTargetArray();
-        $dataSourceName = $this->dbSettings->getDataSourceName();
 
-        $usePortal = false;
         if (isset($context['relation'])) {
             foreach ($context['relation'] as $relDef) {
                 if (isset($relDef['portal']) && $relDef['portal']) {
-                    $usePortal = true;
                     $context['paging'] = true;
                 }
             }
@@ -1226,7 +1206,7 @@ class FileMaker_DataAPI extends DBClass
             $field = $requiredFields[$i];
             $value = $fieldValues[$i];
             if ($field != $keyFieldName) {
-                if (isset($recordData[$field]) && !empty($recordData[$field])) {
+                if (isset($recordData[$field])) {
                     // for handling checkbox on Post Only mode
                     $value = $recordData[$field] . "\r" . $value;
                     unset($recordData[$field]);
