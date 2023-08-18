@@ -504,9 +504,10 @@ class PDO extends DBClass
             $setClause[] = $this->handler->quotedEntityName($field) . "=?";
             $value = (is_array($fieldValues[$counter]))
                 ? implode("\n", $fieldValues[$counter]) : $fieldValues[$counter];
+            $origValue = $value;
             $counter++;
-            $valueLen = $value ? strlen($value): 0;
-            if ($valueLen == 0) {
+            $valueLen = ($value || $value === 0 || $value === 0.0) ? strlen((string)$value) : 0;
+            if (is_null($value)||$value === '') {
                 if (in_array($field, $nullableFields)) {
                     $value = NULL;
                 } else if (in_array($field, $numericFields) || in_array($field, $boolFields)) {
@@ -518,6 +519,8 @@ class PDO extends DBClass
                 } else if (in_array($field, $timeFields)) {
                     $value = '00:00:00';
                 }
+//            } else if ($value === '' && in_array($field, $numericFields)) {
+//                $value = in_array($field, $nullableFields) ? NULL : 0;
             } else if (in_array($field, $boolFields)) {
                 $value = $this->isTrue($value);
             } else {
@@ -534,7 +537,7 @@ class PDO extends DBClass
                 }
             }
             $setParameter[] = $value;
-            $this->logger->setDebugMessage("field={$field}, value={$value}, len={$valueLen}");
+            $this->logger->setDebugMessage("field={$field}, value={$value}/original={$origValue}/, len={$valueLen}");
         }
         if (count($setClause) < 1) {
             $this->logger->setErrorMessage("No data to update for table {$tableName}.");

@@ -21,7 +21,22 @@ exports.config = {
   // will be called from there.
   //
   specs: [// './test/specs/**/*.js'
-    './test/specs/form_page_mysql.e2e.js', './test/specs/form_page_postgresql.e2e.js', './test/specs/form_page_sqlite.e2e.js', './test/specs/auth_page_basic_mysql.e2e.js', './test/specs/auth_page_basic_postgresql.e2e.js', './test/specs/auth_page_basic_sqlite.e2e.js', './test/specs/editing_page_mysql_numeric.e2e.js', './test/specs/editing_page_mysql_string.e2e.js', './test/specs/editing_page_mysql_datetime.e2e.js', './test/specs/editing_page_postgresql_numeric.e2e.js', './test/specs/editing_page_postgresql_string.e2e.js', './test/specs/editing_page_postgresql_datetime.e2e.js', './test/specs/editing_page_sqlite_numeric.e2e.js', './test/specs/editing_page_sqlite_string.e2e.js', './test/specs/editing_page_sqlite_datetime.e2e.js',], // Patterns to exclude.
+    // './test/specs/form_page_mysql.e2e.js',
+    // './test/specs/form_page_postgresql.e2e.js',
+    // './test/specs/form_page_sqlite.e2e.js',
+    // './test/specs/auth_page_basic_mysql.e2e.js',
+    // './test/specs/auth_page_basic_postgresql.e2e.js',
+    // './test/specs/auth_page_basic_sqlite.e2e.js',
+    // './test/specs/editing_page_mysql_numeric.e2e.js',
+    // './test/specs/editing_page_mysql_string.e2e.js',
+    // './test/specs/editing_page_mysql_datetime.e2e.js',
+    './test/specs/editing_page_postgresql_numeric.e2e.js',
+    // './test/specs/editing_page_postgresql_string.e2e.js',
+    // './test/specs/editing_page_postgresql_datetime.e2e.js',
+    // './test/specs/editing_page_sqlite_numeric.e2e.js',
+    // './test/specs/editing_page_sqlite_string.e2e.js',
+    // './test/specs/editing_page_sqlite_datetime.e2e.js',
+  ], // Patterns to exclude.
   exclude: [], //
   // ============
   // Capabilities
@@ -49,7 +64,9 @@ exports.config = {
     // grid with only 5 firefox instances available you can make sure that not more than
     // 5 instances get started at a time.
     maxInstances: 5, //
-    browserName: 'chrome', acceptInsecureCerts: true, 'goog:chromeOptions': {
+    browserName: 'chrome',
+    acceptInsecureCerts: true,
+    'goog:chromeOptions': {
       args: ['--headless', '--disable-gpu', '--disable-dev-shm-usage'],
     }
   }, {
@@ -57,8 +74,8 @@ exports.config = {
       args: ['-headless']
     }
   }, {
-  //   maxInstances: 5, browserName: 'safari'
-  // }, {
+    //   maxInstances: 5, browserName: 'safari'
+    // }, {
     maxInstances: 5, browserName: 'MicrosoftEdge', 'ms:edgeOptions': {
       args: ['--headless']
     }
