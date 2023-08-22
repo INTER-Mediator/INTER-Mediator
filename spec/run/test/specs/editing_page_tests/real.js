@@ -81,15 +81,15 @@ module.exports = (EditingPage) => {
       await EditingPage.fieldFloat1Checkbox.click() // ON
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
-      await EditingPage.fieldFloat1Checkbox.waitForClickable()
       await browser.pause(waiting)
+      await EditingPage.fieldFloat1Checkbox.waitForEnabled()
       await expect(EditingPage.fieldFloat1Checkbox).toBeSelected()
       await expect(EditingPage.fieldFloat1Textfield).toHaveValue(isSQLITE ? "1.00" : "1")
       await EditingPage.fieldFloat1Checkbox.click() // OFF
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
-      await EditingPage.fieldFloat1Checkbox.waitForClickable()
       await browser.pause(waiting)
+      await EditingPage.fieldFloat1Checkbox.waitForEnabled()
       await expect(EditingPage.fieldFloat1Checkbox).not.toBeSelected()
       await expect(EditingPage.fieldFloat1Textfield).toHaveValue(isSQLITE ? "0.00" : "0")
     })
@@ -110,15 +110,15 @@ module.exports = (EditingPage) => {
       await EditingPage.fieldFloat2Checkbox.click() // ON
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
-      await EditingPage.fieldFloat2Checkbox.waitForClickable()
       await browser.pause(waiting)
+      await EditingPage.fieldFloat2Checkbox.waitForEnabled()
       await expect(EditingPage.fieldFloat2Checkbox).toBeSelected()
       await expect(EditingPage.fieldFloat2Textfield).toHaveValue(isSQLITE ? "1.00" : "1")
       await EditingPage.fieldFloat2Checkbox.click() // OFF
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
-      await EditingPage.fieldFloat2Checkbox.waitForClickable()
       await browser.pause(waiting)
+      await EditingPage.fieldFloat2Checkbox.waitForEnabled()
       await expect(EditingPage.fieldFloat2Checkbox).not.toBeSelected()
       await expect(EditingPage.fieldFloat2Textfield).toHaveValue("")
     })
@@ -145,16 +145,16 @@ module.exports = (EditingPage) => {
       await EditingPage.fieldFloat1Radio[0].click() // First button
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
-      await EditingPage.fieldFloat1Radio[0].waitForClickable()
       await browser.pause(waiting)
+      await EditingPage.fieldFloat1Radio[0].waitForEnabled()
       await expect(EditingPage.fieldFloat1Radio[0]).toBeSelected() // Checking initial value
       await expect(EditingPage.fieldFloat1Radio[1]).not.toBeSelected() // Checking initial value
       await expect(EditingPage.fieldFloat1Textfield).toHaveValue(isSQLITE ? "0.00" : "0")
       await EditingPage.fieldFloat1Radio[1].click() // Second button
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
-      await EditingPage.fieldFloat1Radio[0].waitForClickable()
       await browser.pause(waiting)
+      await EditingPage.fieldFloat1Radio[0].waitForEnabled()
       await expect(EditingPage.fieldFloat1Radio[0]).not.toBeSelected() // Checking initial value
       await expect(EditingPage.fieldFloat1Radio[1]).toBeSelected() // Checking initial value
       await expect(EditingPage.fieldFloat1Textfield).toHaveValue(isSQLITE ? "1.00" : "1")
@@ -182,16 +182,16 @@ module.exports = (EditingPage) => {
       await EditingPage.fieldFloat2Radio[0].click() // First button
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
-      await EditingPage.fieldFloat2Radio[0].waitForClickable()
       await browser.pause(waiting)
+      await EditingPage.fieldFloat2Radio[0].waitForEnabled()
       await expect(EditingPage.fieldFloat2Radio[0]).toBeSelected() // Checking initial value
       await expect(EditingPage.fieldFloat2Radio[1]).not.toBeSelected() // Checking initial value
       await expect(EditingPage.fieldFloat2Textfield).toHaveValue(isSQLITE ? "0.00" : "0")
       await EditingPage.fieldFloat2Radio[1].click() // Second button
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
-      await EditingPage.fieldFloat2Radio[0].waitForClickable()
       await browser.pause(waiting)
+      await EditingPage.fieldFloat2Radio[0].waitForEnabled()
       await expect(EditingPage.fieldFloat2Radio[0]).not.toBeSelected() // Checking initial value
       await expect(EditingPage.fieldFloat2Radio[1]).toBeSelected() // Checking initial value
       await expect(EditingPage.fieldFloat2Textfield).toHaveValue(isSQLITE ? "1.00" : "1")
