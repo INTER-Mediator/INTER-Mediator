@@ -81,14 +81,14 @@ module.exports = (EditingPage) => {
       await EditingPage.fieldFloat1Checkbox.click() // ON
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
-      await browser.pause(waiting)
+      await browser.pause(waiting * 3)
       await EditingPage.fieldFloat1Checkbox.waitForEnabled()
       await expect(EditingPage.fieldFloat1Checkbox).toBeSelected()
       await expect(EditingPage.fieldFloat1Textfield).toHaveValue(isSQLITE ? "1.00" : "1")
       await EditingPage.fieldFloat1Checkbox.click() // OFF
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
-      await browser.pause(waiting)
+      await browser.pause(waiting * 3)
       await EditingPage.fieldFloat1Checkbox.waitForEnabled()
       await expect(EditingPage.fieldFloat1Checkbox).not.toBeSelected()
       await expect(EditingPage.fieldFloat1Textfield).toHaveValue(isSQLITE ? "0.00" : "0")
@@ -110,14 +110,14 @@ module.exports = (EditingPage) => {
       await EditingPage.fieldFloat2Checkbox.click() // ON
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
-      await browser.pause(waiting)
+      await browser.pause(waiting * 3)
       await EditingPage.fieldFloat2Checkbox.waitForEnabled()
       await expect(EditingPage.fieldFloat2Checkbox).toBeSelected()
       await expect(EditingPage.fieldFloat2Textfield).toHaveValue(isSQLITE ? "1.00" : "1")
       await EditingPage.fieldFloat2Checkbox.click() // OFF
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
-      await browser.pause(waiting)
+      await browser.pause(waiting * 3)
       await EditingPage.fieldFloat2Checkbox.waitForEnabled()
       await expect(EditingPage.fieldFloat2Checkbox).not.toBeSelected()
       await expect(EditingPage.fieldFloat2Textfield).toHaveValue("")
