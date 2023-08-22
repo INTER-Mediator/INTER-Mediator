@@ -1,6 +1,6 @@
 # INTER-Mediator End-To-End Test with WebdriverIO
 
-Installation and starging tests are below. The last command can the end-to-end test with WebdriverIO.
+Installation and starting tests are below. The last command can the end-to-end test with WebdriverIO.
 ```
 cd spec/run
 npm update
