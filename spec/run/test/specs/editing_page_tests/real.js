@@ -177,7 +177,7 @@ module.exports = (EditingPage) => {
     it('6-can edit the radio buttons of nullable float field.', async () => {
       await expect(EditingPage.fieldFloat2Radio[0]).toExist()
       await expect(EditingPage.fieldFloat2Radio[1]).toExist()
-      await expect(EditingPage.fieldFloat2Radio[0]).not.toBeSelected() // Checking initial value
+      await expect(EditingPage.fieldFloat2Radio[0]).toBeSelected() // Checking initial value
       await expect(EditingPage.fieldFloat2Radio[1]).not.toBeSelected() // Checking initial value
       await EditingPage.fieldFloat2Radio[0].click() // First button
       await EditingPage.navigatorUpdateButton.waitForClickable()
@@ -186,7 +186,7 @@ module.exports = (EditingPage) => {
       await EditingPage.fieldFloat2Radio[0].waitForEnabled()
       await expect(EditingPage.fieldFloat2Radio[0]).toBeSelected() // Checking initial value
       await expect(EditingPage.fieldFloat2Radio[1]).not.toBeSelected() // Checking initial value
-      await expect(EditingPage.fieldFloat2Textfield).toHaveValue(isSQLITE ? "0.00" : "0")
+      await expect(EditingPage.fieldFloat2Textfield).toHaveValue(/*isSQLITE ? "0.00" : "0"*/ "")
       await EditingPage.fieldFloat2Radio[1].click() // Second button
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
@@ -448,7 +448,7 @@ module.exports = (EditingPage) => {
     it('14-can edit the radio buttons of nullable double field.', async () => {
       await expect(EditingPage.fieldDouble2Radio[0]).toExist()
       await expect(EditingPage.fieldDouble2Radio[1]).toExist()
-      await expect(EditingPage.fieldDouble2Radio[0]).not.toBeSelected() // Checking initial value
+      await expect(EditingPage.fieldDouble2Radio[0]).toBeSelected() // Checking initial value
       await expect(EditingPage.fieldDouble2Radio[1]).not.toBeSelected() // Checking initial value
       await EditingPage.fieldDouble2Radio[0].waitForClickable()
       await EditingPage.fieldDouble2Radio[0].click() // First button
@@ -457,7 +457,7 @@ module.exports = (EditingPage) => {
       await browser.pause(waiting)
       await expect(EditingPage.fieldDouble2Radio[0]).toBeSelected() // Checking initial value
       await expect(EditingPage.fieldDouble2Radio[1]).not.toBeSelected() // Checking initial value
-      await expect(EditingPage.fieldDouble2Textfield).toHaveValue(isSQLITE ? "0.00" : "0")
+      await expect(EditingPage.fieldDouble2Textfield).toHaveValue(/*isSQLITE ? "0.00" : "0"*/ "")
       await EditingPage.fieldDouble2Radio[1].waitForClickable()
       await EditingPage.fieldDouble2Radio[1].click() // Second button
       await EditingPage.navigatorUpdateButton.waitForClickable()

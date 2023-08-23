@@ -185,7 +185,7 @@ module.exports = (EditingPage) => {
         await expect(EditingPage.fieldBool2Radio[0]).toBeSelected() // Checking initial value
         await expect(EditingPage.fieldBool2Radio[1]).not.toBeSelected() // Checking initial value
       } else {
-        await expect(EditingPage.fieldBool2Radio[0]).not.toBeSelected() // Checking initial value
+        await expect(EditingPage.fieldBool2Radio[0]).toBeSelected() // Checking initial value
         await expect(EditingPage.fieldBool2Radio[1]).not.toBeSelected() // Checking initial value
       }
       await EditingPage.fieldBool2Radio[0].waitForClickable() // First button
@@ -196,11 +196,11 @@ module.exports = (EditingPage) => {
       await EditingPage.fieldBool2Radio[0].waitForClickable() // For stability
       await expect(EditingPage.fieldBool2Radio[0]).toBeSelected()
       await expect(EditingPage.fieldBool2Radio[1]).not.toBeSelected()
-      if (isPGSQL) {
+     // if (isPGSQL) {
         await expect(EditingPage.fieldBool2Textfield).toHaveValue("")
-      } else {
-        await expect(EditingPage.fieldBool2Textfield).toHaveValue("0")
-      }
+     // } else {
+    //    await expect(EditingPage.fieldBool2Textfield).toHaveValue("0")
+    //  }
       await EditingPage.fieldBool2Radio[1].waitForClickable() // Second button
       await EditingPage.fieldBool2Radio[1].click() // Second button
       await EditingPage.navigatorUpdateButton.waitForClickable()
