@@ -3,16 +3,16 @@ module.exports = (EditingPage) => {
     const waiting = 500
     let isSQLITE = false
     let phpVersion = 100
-      /*
-      Summary: Text field with non-null float field
-      Condition: The editing test page with new created record opens.
-      Check-with: Exist the text field of the field float1(integer, not null).
-      Check-with: The float1 text field has the value "0".
-      Operation: Set a random number to float1 text field, and reload the page with "Update" button.
-      Check-with: The float1 text field has the value by set on the previous operation.
-      Operation: Set the value "" to float1 text field (i.e. clear it), and reload the page with "Update" button.
-      Check-with: The float1 text field has the value "0" by set on the previous operation.
-       */
+    /*
+    Summary: Text field with non-null float field
+    Condition: The editing test page with new created record opens.
+    Check-with: Exist the text field of the field float1(integer, not null).
+    Check-with: The float1 text field has the value "0".
+    Operation: Set a random number to float1 text field, and reload the page with "Update" button.
+    Check-with: The float1 text field has the value by set on the previous operation.
+    Operation: Set the value "" to float1 text field (i.e. clear it), and reload the page with "Update" button.
+    Check-with: The float1 text field has the value "0" by set on the previous operation.
+     */
     it('1-can edit the text field of float field which is NOT NULL.', async () => {
       const url = await browser.getUrl()
       if (url.indexOf("SQLite") > -1) {
@@ -230,14 +230,14 @@ module.exports = (EditingPage) => {
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
       await browser.pause(waiting)
-      await expect(EditingPage.fieldFloat1Popup).toHaveValue(phpVersion < 8.1 ? "" : "10")
+      await expect(EditingPage.fieldFloat1Popup).toHaveValue((isSQLITE && phpVersion < 8.1) ? "" : "10")
       await expect(EditingPage.fieldFloat1Textfield).toHaveValue(isSQLITE ? "10.00" : "10")
       await EditingPage.fieldFloat1Popup.waitForClickable()
       await EditingPage.fieldFloat1Popup.selectByIndex(2) // Select third item
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
       await browser.pause(waiting)
-      await expect(EditingPage.fieldFloat1Popup).toHaveValue(phpVersion < 8.1 ? "" : "20")
+      await expect(EditingPage.fieldFloat1Popup).toHaveValue((isSQLITE && phpVersion < 8.1) ? "" : "20")
       await expect(EditingPage.fieldFloat1Textfield).toHaveValue(isSQLITE ? "20.00" : "20")
       await EditingPage.fieldFloat1Popup.waitForClickable()
       await EditingPage.fieldFloat1Popup.selectByIndex(0) // Select first item
@@ -271,14 +271,14 @@ module.exports = (EditingPage) => {
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
       await browser.pause(waiting)
-      await expect(EditingPage.fieldFloat2Popup).toHaveValue(phpVersion < 8.1 ? "" : "10")
+      await expect(EditingPage.fieldFloat2Popup).toHaveValue((isSQLITE && phpVersion < 8.1) ? "" : "10")
       await expect(EditingPage.fieldFloat2Textfield).toHaveValue(isSQLITE ? "10.00" : "10")
       await EditingPage.fieldFloat2Popup.waitForClickable()
       await EditingPage.fieldFloat2Popup.selectByIndex(2) // Select third item
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
       await browser.pause(waiting)
-      await expect(EditingPage.fieldFloat2Popup).toHaveValue(phpVersion < 8.1 ? "" : "20")
+      await expect(EditingPage.fieldFloat2Popup).toHaveValue((isSQLITE && phpVersion < 8.1) ? "" : "20")
       await expect(EditingPage.fieldFloat2Textfield).toHaveValue(isSQLITE ? "20.00" : "20")
       await EditingPage.fieldFloat2Popup.waitForClickable()
       await EditingPage.fieldFloat2Popup.selectByIndex(0) // Select first item
@@ -501,14 +501,14 @@ module.exports = (EditingPage) => {
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
       await browser.pause(waiting)
-      await expect(EditingPage.fieldDouble1Popup).toHaveValue(phpVersion < 8.1 ? "" : "10")
+      await expect(EditingPage.fieldDouble1Popup).toHaveValue((isSQLITE && phpVersion < 8.1) ? "" : "10")
       await expect(EditingPage.fieldDouble1Textfield).toHaveValue(isSQLITE ? "10.00" : "10")
       await EditingPage.fieldDouble1Popup.waitForClickable()
       await EditingPage.fieldDouble1Popup.selectByIndex(2) // Select third item
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
       await browser.pause(waiting)
-      await expect(EditingPage.fieldDouble1Popup).toHaveValue(phpVersion < 8.1 ? "" : "20")
+      await expect(EditingPage.fieldDouble1Popup).toHaveValue((isSQLITE && phpVersion < 8.1) ? "" : "20")
       await expect(EditingPage.fieldDouble1Textfield).toHaveValue(isSQLITE ? "20.00" : "20")
       await EditingPage.fieldDouble1Popup.waitForClickable()
       await EditingPage.fieldDouble1Popup.selectByIndex(0) // Select first item
@@ -542,14 +542,14 @@ module.exports = (EditingPage) => {
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
       await browser.pause(waiting)
-      await expect(EditingPage.fieldDouble2Popup).toHaveValue(phpVersion < 8.1 ? "" : "10")
+      await expect(EditingPage.fieldDouble2Popup).toHaveValue((isSQLITE && phpVersion < 8.1) ? "" : "10")
       await expect(EditingPage.fieldDouble2Textfield).toHaveValue(isSQLITE ? "10.00" : "10")
       await EditingPage.fieldDouble2Popup.waitForClickable()
       await EditingPage.fieldDouble2Popup.selectByIndex(2) // Select third item
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
       await browser.pause(waiting)
-      await expect(EditingPage.fieldDouble2Popup).toHaveValue(phpVersion < 8.1 ? "" : "20")
+      await expect(EditingPage.fieldDouble2Popup).toHaveValue((isSQLITE && phpVersion < 8.1) ? "" : "20")
       await expect(EditingPage.fieldDouble2Textfield).toHaveValue(isSQLITE ? "20.00" : "20")
       await EditingPage.fieldDouble2Popup.waitForClickable()
       await EditingPage.fieldDouble2Popup.selectByIndex(0) // Select first item
