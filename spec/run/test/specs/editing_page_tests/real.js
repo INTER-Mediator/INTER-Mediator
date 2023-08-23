@@ -19,14 +19,13 @@ module.exports = (EditingPage) => {
         isSQLITE = true
       }
 
-      const phpVersion = await browser.execute(() => {
+      phpVersion = await browser.execute(() => {
         try {
           return INTERMediatorOnPage.serverPHPVersion // Firefox got error here.
         } catch (e) {
           return 100
         }
       })
-      console.log(`#############${phpVersion}`)
 
       await EditingPage.reopen()
 
