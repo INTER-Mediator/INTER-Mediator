@@ -51,7 +51,7 @@ module.exports = (EditingPage) => {
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
       await browser.pause(waiting)
-      await expect(EditingPage.fieldBool2Textfield).toHaveValue(isPGSQL? "true" : "1")
+      await expect(EditingPage.fieldBool2Textfield).toHaveValue(isPGSQL ? "true" : "1")
       await EditingPage.fieldBool2Textfield.setValue("") // Clear the field
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
@@ -81,7 +81,7 @@ module.exports = (EditingPage) => {
       await browser.pause(waiting)
       await EditingPage.fieldBool1Checkbox.waitForClickable() // For stability
       await expect(EditingPage.fieldBool1Checkbox).toBeSelected()
-      await expect(EditingPage.fieldBool1Textfield).toHaveValue(isPGSQL? "true" : "1")
+      await expect(EditingPage.fieldBool1Textfield).toHaveValue(isPGSQL ? "true" : "1")
       await EditingPage.fieldBool1Checkbox.waitForClickable() // OFF
       await EditingPage.fieldBool1Checkbox.click() // OFF
       await EditingPage.navigatorUpdateButton.waitForClickable()
@@ -181,13 +181,8 @@ module.exports = (EditingPage) => {
       await browser.pause(waiting)
       await expect(EditingPage.fieldBool2Radio[0]).toExist()
       await expect(EditingPage.fieldBool2Radio[1]).toExist()
-      if (isPGSQL) {
-        await expect(EditingPage.fieldBool2Radio[0]).toBeSelected() // Checking initial value
-        await expect(EditingPage.fieldBool2Radio[1]).not.toBeSelected() // Checking initial value
-      } else {
-        await expect(EditingPage.fieldBool2Radio[0]).toBeSelected() // Checking initial value
-        await expect(EditingPage.fieldBool2Radio[1]).not.toBeSelected() // Checking initial value
-      }
+      await expect(EditingPage.fieldBool2Radio[0]).toBeSelected() // Checking initial value
+      await expect(EditingPage.fieldBool2Radio[1]).not.toBeSelected() // Checking initial value
       await EditingPage.fieldBool2Radio[0].waitForClickable() // First button
       await EditingPage.fieldBool2Radio[0].click() // First button
       await EditingPage.navigatorUpdateButton.waitForClickable()
@@ -196,11 +191,7 @@ module.exports = (EditingPage) => {
       await EditingPage.fieldBool2Radio[0].waitForClickable() // For stability
       await expect(EditingPage.fieldBool2Radio[0]).toBeSelected()
       await expect(EditingPage.fieldBool2Radio[1]).not.toBeSelected()
-     // if (isPGSQL) {
-        await expect(EditingPage.fieldBool2Textfield).toHaveValue("")
-     // } else {
-    //    await expect(EditingPage.fieldBool2Textfield).toHaveValue("0")
-    //  }
+      await expect(EditingPage.fieldBool2Textfield).toHaveValue("")
       await EditingPage.fieldBool2Radio[1].waitForClickable() // Second button
       await EditingPage.fieldBool2Radio[1].click() // Second button
       await EditingPage.navigatorUpdateButton.waitForClickable()
@@ -208,11 +199,7 @@ module.exports = (EditingPage) => {
       await browser.pause(waiting)
       await expect(EditingPage.fieldBool2Radio[0]).not.toBeSelected() // Checking initial value
       await expect(EditingPage.fieldBool2Radio[1]).toBeSelected() // Checking initial value
-      if (isPGSQL) {
-        await expect(EditingPage.fieldBool2Textfield).toHaveValue("true")
-      } else {
-        await expect(EditingPage.fieldBool2Textfield).toHaveValue("1")
-      }
+      await expect(EditingPage.fieldBool2Textfield).toHaveValue(isPGSQL ? "true" : "1")
     })
     /*
     Summary: popup menu with non-null boolean field
@@ -238,36 +225,22 @@ module.exports = (EditingPage) => {
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
       await browser.pause(waiting)
-      if (isPGSQL) {
-        await expect(EditingPage.fieldBool1Popup).toHaveValue("")
-        await expect(EditingPage.fieldBool1Textfield).toHaveValue("true")
-      } else {
-        await expect(EditingPage.fieldBool1Popup).toHaveValue("10")
-        await expect(EditingPage.fieldBool1Textfield).toHaveValue("10")
-      }
+      await expect(EditingPage.fieldBool1Popup).toHaveValue(isPGSQL ? "" : "10")
+      await expect(EditingPage.fieldBool1Textfield).toHaveValue(isPGSQL ? "true" : "10")
       await EditingPage.fieldBool1Popup.waitForClickable()
       await EditingPage.fieldBool1Popup.selectByIndex(2) // Select third item
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
       await browser.pause(waiting)
-      if (isPGSQL) {
-        await expect(EditingPage.fieldBool1Popup).toHaveValue("")
-        await expect(EditingPage.fieldBool1Textfield).toHaveValue("true")
-      } else {
-        await expect(EditingPage.fieldBool1Popup).toHaveValue("20")
-        await expect(EditingPage.fieldBool1Textfield).toHaveValue("20")
-      }
+      await expect(EditingPage.fieldBool1Popup).toHaveValue(isPGSQL ? "" : "20")
+      await expect(EditingPage.fieldBool1Textfield).toHaveValue(isPGSQL ? "true" : "20")
       await EditingPage.fieldBool1Popup.waitForClickable()
       await EditingPage.fieldBool1Popup.selectByIndex(0) // Select first item
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
       await browser.pause(waiting)
       await expect(EditingPage.fieldBool1Popup).toHaveValue("")
-      if (isPGSQL) {
-        await expect(EditingPage.fieldBool1Textfield).toHaveValue("")
-      } else {
-        await expect(EditingPage.fieldBool1Textfield).toHaveValue("0")
-      }
+      await expect(EditingPage.fieldBool1Textfield).toHaveValue(isPGSQL ? "" : "0")
     })
     /*
     Summary: popup menu with non-null boolean field
@@ -293,25 +266,15 @@ module.exports = (EditingPage) => {
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
       await browser.pause(waiting)
-      if (isPGSQL) {
-        await expect(EditingPage.fieldBool2Popup).toHaveValue("")
-        await expect(EditingPage.fieldBool2Textfield).toHaveValue("true")
-      } else {
-        await expect(EditingPage.fieldBool2Popup).toHaveValue("10")
-        await expect(EditingPage.fieldBool2Textfield).toHaveValue("10")
-      }
+      await expect(EditingPage.fieldBool2Popup).toHaveValue(isPGSQL ? "" : "10")
+      await expect(EditingPage.fieldBool2Textfield).toHaveValue(isPGSQL ? "true" : "10")
       await EditingPage.fieldBool2Popup.waitForClickable()
       await EditingPage.fieldBool2Popup.selectByIndex(2) // Select third item
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
       await browser.pause(waiting)
-      if (isPGSQL) {
-        await expect(EditingPage.fieldBool2Popup).toHaveValue("")
-        await expect(EditingPage.fieldBool2Textfield).toHaveValue("true")
-      } else {
-        await expect(EditingPage.fieldBool2Popup).toHaveValue("20")
-        await expect(EditingPage.fieldBool2Textfield).toHaveValue("20")
-      }
+      await expect(EditingPage.fieldBool2Popup).toHaveValue(isPGSQL ? "" : "20")
+      await expect(EditingPage.fieldBool2Textfield).toHaveValue(isPGSQL ? "true" : "20")
       await EditingPage.fieldBool2Popup.waitForClickable()
       await EditingPage.fieldBool2Popup.selectByIndex(0) // Select first item
       await EditingPage.navigatorUpdateButton.waitForClickable()
