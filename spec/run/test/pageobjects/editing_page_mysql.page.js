@@ -3,7 +3,7 @@ const EditingPage = require('./editing.page');
 /**
  * sub page containing specific selectors and methods for a specific page
  */
-class FormPageMySQL extends EditingPage {
+class EditPageMySQL extends EditingPage {
 
   open() {
     return super.open('samples/E2E-Test/Editing_MySQL.html');
@@ -16,4 +16,4 @@ class FormPageMySQL extends EditingPage {
 
 }
 
-module.exports = new FormPageMySQL();
+module.exports = new EditPageMySQL();

@@ -9,7 +9,7 @@ if (/*process.platform === 'darwin'*/ false) {
   pageTitle = "INTER-Mediator - Sample - Form Style/MySQL"
 }
 
-describe('Form Page', () => {
+describe('Form Page with MySQL', () => {
   it('can open with the valid title.', async () => {
     await FormPage.open()
     await expect(browser).toHaveTitle(pageTitle)

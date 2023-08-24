@@ -350,13 +350,13 @@ const IMLibElement = {
           }
           if (typeAttr === 'checkbox' && curValues.length > 1) {
             for (let i = 0; i < curValues.length; i += 1) {
-              if (valueAttr === curValues[i] && !INTERMediator.dontSelectRadioCheck) {
+              if (compareAsNumeric(valueAttr, curValues[i]) && !INTERMediator.dontSelectRadioCheck) {
                 // The above operator should be '==' not '==='
                 element.checked = true
               }
             }
           } else {
-            if (valueAttr === curVal && !INTERMediator.dontSelectRadioCheck) {
+            if (compareAsNumeric(valueAttr, curVal) && !INTERMediator.dontSelectRadioCheck) {
               // The above operator should be '==' not '==='
               element.checked = true
             } else {
@@ -435,6 +435,16 @@ const IMLibElement = {
     }
     INTERMediatorLib.markProcessed(element)
     return needPostValueSet
+
+    function compareAsNumeric(a, b) {
+      const comb = new String(a) + new String(b)
+      for (let c = 0; c < comb.length; c += 1) {
+        if ("0123456789.+-".indexOf(comb.substring(c, c + 1)) < 0) { // a or b might not be numeric.
+          return a == b
+        }
+      }
+      return Number(a) == Number(b) // don't set the operator ===
+    }
   },
 
   getValueFromIMNode: function (element) {
