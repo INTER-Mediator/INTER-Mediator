@@ -207,4 +207,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
     protected string $sqlSETClause3 = "(\"num1\",\"num2\",\"date1\",\"date2\",\"time1\",\"time2\",\"dt1\",\"dt2\",\"vc1\",\"vc2\",\"text1\",\"text2\") "
     . "VALUES(0,0,'','','','','','','','','','')";
 
+    protected string $lcConditionLike = '((("num0" = \'100\' OR "num0" < \'300\') AND ("num1" = 100 OR "num1" < 300))'
+    . ' AND ((CAST("num1" AS TEXT) LIKE \'%999%\')))';
+
 }

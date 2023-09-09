@@ -345,4 +345,14 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         }
         return $returnValue;
     }
+
+    /**
+     * @param $field
+     * @param $value
+     * @return string
+     */
+    public function getSQLNumericToLikeOpe($field, $value): string
+    {
+        return "CAST({$field} AS TEXT) LIKE {$value}";
+    }
 }

@@ -26,7 +26,7 @@ The demo with the latest version of INTER-Mediator is here:
 - https://demo.inter-mediator.com/INTER-Mediator/samples/
 
 This demo page works on INTER-Mediator Ver.5.x (Milestone version).
-INTER-Mediator Ver.6 was quite different from previous versions. So we have called the Stable version for the final release of Ver.5.
+INTER-Mediator Ver.6 was quite different from previous versions. So we have called the Milestone version for the final release of Ver.5.
 - https://demo.inter-mediator.com/INTER-Mediator_milestone/Samples/
 
 ## Documentation

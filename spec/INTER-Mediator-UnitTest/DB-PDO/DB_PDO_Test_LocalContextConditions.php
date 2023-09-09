@@ -225,4 +225,18 @@ trait DB_PDO_Test_LocalContextConditions
             '((("num0" = \'100\' OR "num0" < \'300\') AND ("num1" = 100 OR "num1" < 300))'
             . ' AND ((("f1" = \'valueA\' OR "f2" = \'valueA\') OR ("f1" = \'extra\' OR "f2" = \'extra\')) OR ("f1" < \'valueB\' OR "f2" < \'valueB\') OR ("f3" = \'valueC\')))');
     }
+    public function testAddingLCCondtions12()
+    {
+        $this->checkConditions(null,
+            [
+                ['field' => 'num0', 'operator' => '=', 'value' => 100],
+                ['field' => 'num0', 'operator' => '<', 'value' => 300],
+                ['field' => '__operation__', 'operator' => 'ex',],
+                ['field' => 'num1', 'operator' => '=', 'value' => 100],
+                ['field' => 'num1', 'operator' => '<', 'value' => 300],
+                ['field' => '__operation__', 'operator' => 'block/false/false/false'],
+                ['field' => 'num1', 'operator' => '*match*', 'value' => '999'],
+            ],
+            $this->lcConditionLike);
+    }
 }
