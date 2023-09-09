@@ -777,7 +777,7 @@ const INTERMediator_DBAdapter = {
             params += '&condition' + extCount + 'field=__operation__'
             params += '&condition' + extCount + 'operator=block/' + (INTERMediator.lcConditionsOP1AND ? 'T' : 'F')
               + '/' + (INTERMediator.lcConditionsOP2AND ? 'T' : 'F')
-              + '/' + ((INTERMediator.lcConditionsOP3AND && INTERMediator.lcConditionsOP3AND.toUpperCase() === 'AND')
+              + '/' + ((INTERMediator.lcConditionsOP3AND && INTERMediator.lcConditionsOP3AND === 'AND')
                 ? 'AND' : (INTERMediator.lcConditionsOP3AND ? 'T' : 'F'))
             extCount++
             isFirstItem = false

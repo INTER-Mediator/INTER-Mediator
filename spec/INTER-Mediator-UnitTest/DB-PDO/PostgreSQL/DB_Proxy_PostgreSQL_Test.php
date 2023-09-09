@@ -89,5 +89,4 @@ class DB_Proxy_PostgreSQL_Test extends DB_Proxy_Test_Common
         $resultInit = $this->db_proxy->initialize($this->dataSource, $this->options, $this->dbSpec, 2, $contextName);
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
-
 }

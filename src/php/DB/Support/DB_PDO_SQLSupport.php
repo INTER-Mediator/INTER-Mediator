@@ -153,10 +153,24 @@ trait DB_PDO_SQLSupport
                         if ($isINOperator) {
                             $escapedValue = $this->arrayToItemizedString($condition['value'], $isNumeric);
                         }
-                        $queryClauseArray[$chunkCount][]
-                            = (!$isNumeric || $isINOperator)
-                            ? "{$escapedField} {$condition['operator']} {$escapedValue}"
-                            : ("{$escapedField} {$condition['operator']} " . floatval($condition['value']));
+                        if ($isNumeric) {
+                            if ($isINOperator) {
+                                $queryClauseArray[$chunkCount][]
+                                    = "{$escapedField} {$condition['operator']} {$escapedValue}";
+                            } else if (strtolower(trim($condition['operator'])) == "like") {
+                                $queryClauseArray[$chunkCount][]
+                                    = $this->handler->getSQLNumericToLikeOpe($escapedField, $escapedValue);
+                            } else {
+                                $queryClauseArray[$chunkCount][]
+                                    = ("{$escapedField} {$condition['operator']} " . floatval($condition['value']));
+                            }
+                        } else {
+                            $queryClauseArray[$chunkCount][] = "{$escapedField} {$condition['operator']} {$escapedValue}";
+                        }
+//                        $queryClauseArray[$chunkCount][]
+//                            = (!$isNumeric || $isINOperator || $isLIKEOperator)
+//                            ? "{$escapedField} {$condition['operator']} {$escapedValue}"
+//                            : ("{$escapedField} {$condition['operator']} " . floatval($condition['value']));
                     } else {
                         $queryClauseArray[$chunkCount][] = "{$escapedField} {$condition['operator']}";
                     }
@@ -178,7 +192,7 @@ trait DB_PDO_SQLSupport
      * @param string $signedUser
      * @return string
      */
-    private function getWhereClause(string $currentOperation, bool $includeContext = true, bool $includeExtra = true,
+    private function getWhereClause(string  $currentOperation, bool $includeContext = true, bool $includeExtra = true,
                                     ?string $signedUser = '', bool $bypassAuth = false): string
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -276,7 +290,7 @@ trait DB_PDO_SQLSupport
     /**
      * @return string
      */
-    private function getSortClause():string
+    private function getSortClause(): string
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $sortClause = array();

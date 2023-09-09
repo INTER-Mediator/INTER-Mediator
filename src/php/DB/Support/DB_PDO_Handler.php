@@ -545,4 +545,14 @@ abstract class DB_PDO_Handler
         }
         return null;
     }
+
+    /**
+     * @param $field
+     * @param $value
+     * @return string
+     */
+    public function getSQLNumericToLikeOpe($field, $value): string
+    {
+        return "{$field} LIKE {$value}";
+    }
 }
