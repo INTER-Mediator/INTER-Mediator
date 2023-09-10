@@ -1058,11 +1058,11 @@ const INTERMediatorLib = {
   dateTimeStringISO: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
-    if (INTERMediatorOnPage.isFollowingTimezone) {
-      return dt.getUTCFullYear() + '-' + ('0' + (dt.getUTCMonth() + 1)).slice(-2) + '-' +
-        ('0' + dt.getUTCDate()).slice(-2) + ' ' + ('0' + dt.getUTCHours()).slice(-2) + ':' +
-        ('0' + dt.getUTCMinutes()).slice(-2) + ':' + ('0' + dt.getUTCSeconds()).slice(-2)
-    }
+    // if (INTERMediatorOnPage.isFollowingTimezone) {
+    //   return dt.getUTCFullYear() + '-' + ('0' + (dt.getUTCMonth() + 1)).slice(-2) + '-' +
+    //     ('0' + dt.getUTCDate()).slice(-2) + ' ' + ('0' + dt.getUTCHours()).slice(-2) + ':' +
+    //     ('0' + dt.getUTCMinutes()).slice(-2) + ':' + ('0' + dt.getUTCSeconds()).slice(-2)
+    // }
     return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).slice(-2) + '-' +
       ('0' + dt.getDate()).slice(-2) + ' ' + ('0' + dt.getHours()).slice(-2) + ':' +
       ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2)
@@ -1071,11 +1071,11 @@ const INTERMediatorLib = {
   dateTimeStringFileMaker: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
-    if (INTERMediatorOnPage.isFollowingTimezone) {
-      return ('0' + (dt.getUTCMonth() + 1)).slice(-2) + '/' + ('0' + dt.getUTCDate()).slice(-2) + '/' +
-        dt.getUTCFullYear() + ' ' + ('0' + dt.getUTCHours()).slice(-2) + ':' +
-        ('0' + dt.getUTCMinutes()).slice(-2) + ':' + ('0' + dt.getUTCSeconds()).slice(-2)
-    }
+    // if (INTERMediatorOnPage.isFollowingTimezone) {
+    //   return ('0' + (dt.getUTCMonth() + 1)).slice(-2) + '/' + ('0' + dt.getUTCDate()).slice(-2) + '/' +
+    //     dt.getUTCFullYear() + ' ' + ('0' + dt.getUTCHours()).slice(-2) + ':' +
+    //     ('0' + dt.getUTCMinutes()).slice(-2) + ':' + ('0' + dt.getUTCSeconds()).slice(-2)
+    // }
     return ('0' + (dt.getMonth() + 1)).slice(-2) + '/' + ('0' + dt.getDate()).slice(-2) + '/' +
       dt.getFullYear() + ' ' + ('0' + dt.getHours()).slice(-2) + ':' +
       ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2)
@@ -1084,10 +1084,10 @@ const INTERMediatorLib = {
   dateStringISO: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
-    if (INTERMediatorOnPage.isFollowingTimezone) {
-      return dt.getUTCFullYear() + '-' + ('0' + (dt.getUTCMonth() + 1)).slice(-2) +
-        '-' + ('0' + dt.getUTCDate()).slice(-2)
-    }
+    // if (INTERMediatorOnPage.isFollowingTimezone) {
+    //   return dt.getUTCFullYear() + '-' + ('0' + (dt.getUTCMonth() + 1)).slice(-2) +
+    //     '-' + ('0' + dt.getUTCDate()).slice(-2)
+    // }
     return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).slice(-2) +
       '-' + ('0' + dt.getDate()).slice(-2)
   },
@@ -1095,10 +1095,10 @@ const INTERMediatorLib = {
   dateStringFileMaker: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
-    if (INTERMediatorOnPage.isFollowingTimezone) {
-      return ('0' + (dt.getUTCMonth() + 1)).slice(-2) + '/' +
-        ('0' + dt.getUTCDate()).slice(-2) + '/' + dt.getUTCFullYear()
-    }
+    // if (INTERMediatorOnPage.isFollowingTimezone) {
+    //   return ('0' + (dt.getUTCMonth() + 1)).slice(-2) + '/' +
+    //     ('0' + dt.getUTCDate()).slice(-2) + '/' + dt.getUTCFullYear()
+    // }
     return ('0' + (dt.getMonth() + 1)).slice(-2) + '/' +
       ('0' + dt.getDate()).slice(-2) + '/' + dt.getFullYear()
   },

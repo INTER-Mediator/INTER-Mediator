@@ -23,7 +23,8 @@ Ver.12 (In Development)
 - [BUG FIX] The data-im="_@condition:..." way with numeric field and the "match" operator didn't expand the condition
   clause with '%term%' value. As far as PostgreSQL goes, the casting to text is automatically applied it.
 - [BUG FIX] The INPUT[type=datetime-local] elements reported someone edit your modified data, but it was new record data
-  after updateing is not adjusted to UTC correctly.
+  after updateing is not adjusted to UTC correctly. Also INTERMediatorLib.dateTimeStringISO and some method returns
+  browser local date and time.
 
 Ver.11 (July 27, 2023)
 - Generic exporting class prepared as DB\Export.php.
