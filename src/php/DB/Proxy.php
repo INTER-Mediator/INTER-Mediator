@@ -356,7 +356,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 }
             }
         } catch (Exception $e) {
-            $this->logger->setErrorMessage("Exception:[1] {$e->getMessage()} ###{$e->getTraceAsString()}");
+            $this->logger->setErrorMessage("Exception:[1] {$e->getMessage()} \nTrace:{$e->getTraceAsString()}");
             return null;
         }
         return $result;

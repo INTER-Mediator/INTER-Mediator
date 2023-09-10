@@ -465,8 +465,8 @@ class PDO extends DBClass
         $dt->setTimezone(new DateTimeZone($this->defaultTimezone));
         $converted = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
 
-        $this->logger->setDebugMessage("[getDateTimeExpression] datetime={$datetime}->{$converted}, datetime={$datetime}, "
-            . "serverOffset={$serverOffset}, clientOffset={$clientOffset}, shiftSec={$shiftSec}");
+//        $this->logger->setDebugMessage("[getDateTimeExpression] datetime={$datetime}->{$converted}, datetime={$datetime}, "
+//            . "serverOffset={$serverOffset}, clientOffset={$clientOffset}, shiftSec={$shiftSec}");
 
         return $converted;
     }
