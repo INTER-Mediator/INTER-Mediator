@@ -932,7 +932,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->dbSettings->setSAMLAttrRules(Params::getParameterValue("samlAttrRules", null));
         $this->dbSettings->setSAMLAdditionalRules(Params::getParameterValue("samlAdditionalRules", null));
 
-        $this->dbSettings->setClientTZOffset($this->PostData['tzoffset']);
+        $this->dbSettings->setClientTZOffset($this->PostData['tzoffset'] ?? 0);
         return true;
     }
 
