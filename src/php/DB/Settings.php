@@ -222,6 +222,20 @@ class Settings
      * @var bool
      */
     private bool $certVerifying = true;
+    /**
+     * @var int
+     */
+    private int $timezoneOffset = 0;
+
+    public function setClientTZOffset(int $offset): void
+    {
+        $this->timezoneOffset = $offset;
+    }
+
+    public function getClientTZOffset(): int
+    {
+        return $this->timezoneOffset;
+    }
 
     /**
      * @param array|null $value
@@ -721,7 +735,7 @@ class Settings
     /**
      * @return string|null
      */
-    public function getDbSpecDatabase():?string
+    public function getDbSpecDatabase(): ?string
     {
         return $this->dbSpecDatabase;
     }
@@ -738,7 +752,7 @@ class Settings
     /**
      * @return string|null
      */
-    public function getDbSpecProtocol():?string
+    public function getDbSpecProtocol(): ?string
     {
         return $this->dbSpecProtocol;
     }

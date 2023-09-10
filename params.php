@@ -255,7 +255,7 @@ $messages['ja'][9999] = "変更した";
 
 // If you don't set the default timezone in the php.ini file,
 //      activate the line below and specify suitable timezone name.
-$defaultTimezone = 'Asia/Tokyo';
+$defaultTimezone = 'UTC';//''Asia/Tokyo';
 $followingTimezones = true;
 
 // Server side locale for this application. This locale replaces the browser's accepting languages.
