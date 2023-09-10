@@ -91,7 +91,7 @@ class PDO extends DBClass
      */
     public function __construct()
     {
-        $this->isFollowingTimezones = Params::getParameterValue("followingTimezones", false);
+        $this->isFollowingTimezones = Params::getParameterValue("followingTimezones", true);
         $this->isSuppressDVOnCopy
             = Params::getParameterValue("suppressDefaultValuesOnCopy", false);
         $this->isSuppressDVOnCopyAssoc
@@ -517,7 +517,7 @@ class PDO extends DBClass
                 if ($this->isFollowingTimezones && in_array($field, $timeFields) && !is_null($value) && $value !== '') {
                     $dt = new DateTime($value, new DateTimeZone('UTC'));
                     $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $value);
-                    $dt->setTimezone(new DateTimeZone(date_default_timezone_get()));
+                    $dt->setTimezone(new DateTimeZone('UTC'));
                     $value = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
                 } else if (in_array($field, $nullableFields)) {
                     $value = $value ?? NULL;
@@ -653,7 +653,7 @@ class PDO extends DBClass
             if (in_array($field, $timeFields) && !is_null($convertedValue) && $convertedValue !== '') {
                 $dt = new DateTime($convertedValue, new DateTimeZone('UTC'));
                 $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $convertedValue);
-                $dt->setTimezone(new DateTimeZone(date_default_timezone_get()));
+                $dt->setTimezone(new DateTimeZone('UTC'));
                 $convertedValue = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
             }
             $setValues[] = $this->formatter->formatterToDB($filedInForm, $convertedValue);

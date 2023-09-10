@@ -121,7 +121,6 @@ if (window) {
   INTERMediatorLib.addEvent(window, 'load', function () {
     'use strict'
     let key, errorNode
-    IMLibFormat.isFollowTZ = INTERMediatorOnPage.isFollowingTimezone
     if (INTERMediatorOnPage.initLocalContext) {
       for (key in INTERMediatorOnPage.initLocalContext) {
         if (INTERMediatorOnPage.initLocalContext.hasOwnProperty(key)) {
