@@ -85,13 +85,18 @@ class PDO extends DBClass
      * @var bool
      */
     private bool $isSuppressAuthTargetFillingOnCreate;
+    /**
+     * @var string
+     */
+    private string $defaultTimezone;
 
     /**
      *
      */
     public function __construct()
     {
-        $this->isFollowingTimezones = Params::getParameterValue("followingTimezones", false);
+        $this->isFollowingTimezones = Params::getParameterValue("followingTimezones", true);
+        $this->defaultTimezone = Params::getParameterValue("defaultTimezone", date_default_timezone_get());
         $this->isSuppressDVOnCopy
             = Params::getParameterValue("suppressDefaultValuesOnCopy", false);
         $this->isSuppressDVOnCopyAssoc
@@ -389,10 +394,7 @@ class PDO extends DBClass
                 $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
                 // Convert the time explanation from UTC to server setup timezone
                 if (in_array($field, $timeFields) && !is_null($rowArray[$field]) && $rowArray[$field] !== '') {
-                    $dt = new DateTime($rowArray[$field], new DateTimeZone(date_default_timezone_get()));
-                    $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $rowArray[$field]);
-                    $dt->setTimezone(new DateTimeZone('UTC'));
-                    $rowArray[$field] = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+                    $rowArray[$field] = $this->getDateTimeExpression($rowArray[$field]);
                 } else if (in_array($field, $boolFields)) {
                     $rowArray[$field] = $this->isTrue($rowArray[$field]);
                 }
@@ -438,6 +440,35 @@ class PDO extends DBClass
     public function getTotalCount(): int
     {
         return $this->mainTableTotalCount;
+    }
+
+    /**
+     * @param string $datetime
+     * @param bool $isToServer
+     * @return string
+     * @throws Exception
+     */
+    private function getDateTimeExpression(string $datetime, bool $isToServer = false): string
+    {
+        $serverTZ = new DateTimeZone($this->defaultTimezone);
+        $dt = new DateTime($datetime, $serverTZ);
+        $serverOffset = $serverTZ->getOffset($dt); // in minute
+        $clientOffset = $this->dbSettings->getClientTZOffset() * 60; // in Second
+        $shiftSec = $isToServer ? ($serverOffset + $clientOffset) : (-$clientOffset - $serverOffset);
+        if ($shiftSec > 0) {
+            $dt->add(new \DateInterval("PT{$shiftSec}S"));
+        } else {
+            $shiftSec = -$shiftSec;
+            $dt->sub(new \DateInterval("PT{$shiftSec}S"));
+        }
+        $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $datetime);
+        $dt->setTimezone(new DateTimeZone($this->defaultTimezone));
+        $converted = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+
+//        $this->logger->setDebugMessage("[getDateTimeExpression] datetime={$datetime}->{$converted}, datetime={$datetime}, "
+//            . "serverOffset={$serverOffset}, clientOffset={$clientOffset}, shiftSec={$shiftSec}");
+
+        return $converted;
     }
 
     /**
@@ -513,12 +544,8 @@ class PDO extends DBClass
             } else {
                 $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                 $value = $this->formatter->formatterToDB($filedInForm, $value);
-                // Convert the time explanation from UTC to server setup timezone
                 if ($this->isFollowingTimezones && in_array($field, $timeFields) && !is_null($value) && $value !== '') {
-                    $dt = new DateTime($value, new DateTimeZone('UTC'));
-                    $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $value);
-                    $dt->setTimezone(new DateTimeZone(date_default_timezone_get()));
-                    $value = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+                    $value = $this->getDateTimeExpression($value, true);
                 } else if (in_array($field, $nullableFields)) {
                     $value = $value ?? NULL;
                 }
@@ -574,9 +601,9 @@ class PDO extends DBClass
             $isFirstRow = true;
             foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
                 $record = $this->getResultRecord($row, $isFirstRow, $timeFields);
-                $sqlResult[] = $record;
                 $this->notifyHandler->addQueriedPrimaryKeys($record[$keyField]);
                 $isFirstRow = false;
+                $sqlResult[] = $record;
             }
             $this->updatedRecord = count($sqlResult) ? $sqlResult : null;
         }
@@ -651,10 +678,7 @@ class PDO extends DBClass
             $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
             // Convert the time explanation from UTC to server setup timezone
             if (in_array($field, $timeFields) && !is_null($convertedValue) && $convertedValue !== '') {
-                $dt = new DateTime($convertedValue, new DateTimeZone('UTC'));
-                $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $convertedValue);
-                $dt->setTimezone(new DateTimeZone(date_default_timezone_get()));
-                $convertedValue = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+                $convertedValue = $this->getDateTimeExpression($convertedValue);
             }
             $setValues[] = $this->formatter->formatterToDB($filedInForm, $convertedValue);
         }
@@ -888,8 +912,7 @@ class PDO extends DBClass
      * @param array $context
      * @return string
      */
-    private
-    function getKeyFieldOfContext(array $context): string
+    private function getKeyFieldOfContext(array $context): string
     {
         return $context['key'] ?? $this->specHandler->getDefaultKey();
     }
@@ -907,8 +930,7 @@ class PDO extends DBClass
      * @param $d
      * @return bool
      */
-    private
-    function isTrue($d): bool // $d is mixed
+    private function isTrue($d): bool // $d is mixed
     {
         if (is_null($d)) {
             return false;
@@ -1071,15 +1093,10 @@ class PDO extends DBClass
             $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
             // Convert the time explanation from UTC to server setup timezone
             if (in_array($field, $timeFields) && !is_null($rowArray[$field]) && $rowArray[$field] !== '') {
-                $dt = new DateTime($rowArray[$field], new DateTimeZone(date_default_timezone_get()));
-                $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $rowArray[$field]);
-                $dt->setTimezone(new DateTimeZone('UTC'));
-                $rowArray[$field] = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
+                $rowArray[$field] = $this->getDateTimeExpression($rowArray[$field]);
             }
         }
         return $rowArray;
-//        $sqlResult[] = $rowArray;
-//        return array($rowArray, $sqlResult);
     }
 
     /**

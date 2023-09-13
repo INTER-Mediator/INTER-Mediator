@@ -149,6 +149,7 @@ const INTERMediator_DBAdapter = {
       jsonObject, i, /*notifySupport = false, */useNull = false, registeredID = '', alertBackup
     appPath = INTERMediatorOnPage.getEntryPath()
     authParams = INTERMediator_DBAdapter.generate_authParams()
+    authParams += "&tzoffset=" + (new Date()).getTimezoneOffset()
     INTERMediator_DBAdapter.logging_comAction(debugMessageNumber, appPath, accessURL, authParams)
     // INTERMediatorOnPage.notifySupport = notifySupport
     const promise = new Promise((resolve, reject) => {

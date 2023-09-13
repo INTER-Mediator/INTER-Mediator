@@ -356,7 +356,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 }
             }
         } catch (Exception $e) {
-            $this->logger->setErrorMessage("Exception:[1] {$e->getMessage()} ###{$e->getTraceAsString()}");
+            $this->logger->setErrorMessage("Exception:[1] {$e->getMessage()} \nTrace:{$e->getTraceAsString()}");
             return null;
         }
         return $result;
@@ -931,6 +931,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->dbSettings->setSAMLAuthSource(Params::getParameterValue('samlAuthSource', null));
         $this->dbSettings->setSAMLAttrRules(Params::getParameterValue("samlAttrRules", null));
         $this->dbSettings->setSAMLAdditionalRules(Params::getParameterValue("samlAdditionalRules", null));
+
+        $this->dbSettings->setClientTZOffset($this->PostData['tzoffset'] ?? 0);
         return true;
     }
 

@@ -190,14 +190,18 @@ class IMLibContext {
               }
             }
             isOthersModified = checkSameValue(initialvalue, currentFieldVal)
-            if (changedObjectCapt.tagName === 'INPUT' &&
-              changedObjectCapt.getAttribute('type') === 'checkbox') {
-              if (initialvalue === changedObjectCapt.value) {
-                isOthersModified = false
-              } else if (!parseInt(currentFieldVal)) {
-                isOthersModified = false
-                //} else {
-                //isOthersModified = true
+            if (changedObjectCapt.tagName === 'INPUT') {
+              const typeAttr = changedObjectCapt.getAttribute('type');
+              if (typeAttr === 'checkbox') {
+                if (initialvalue === changedObjectCapt.value) {
+                  isOthersModified = false
+                } else if (!parseInt(currentFieldVal)) {
+                  isOthersModified = false
+                  //} else {
+                  //isOthersModified = true
+                }
+              // } else if (typeAttr === 'datetime-local') {
+              //   console.log(initialvalue)
               }
             }
             if (isOthersModified) {

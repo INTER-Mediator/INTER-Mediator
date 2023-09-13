@@ -106,7 +106,7 @@ class GenerateJSCode
         $serviceServerProtocol = Params::getParameterValue("serviceServerProtocol", 'ws');
         $notUseServiceServer = Params::getParameterValue("notUseServiceServer", null);
         $activateClientService = Params::getParameterValue("activateClientService", null);
-        $followingTimezones = Params::getParameterValue("followingTimezones", null);
+        $followingTimezones = Params::getParameterValue("followingTimezones", true);
         $passwordHash = Params::getParameterValue("passwordHash", 1);
         $alwaysGenSHA2 = Params::getParameterValue("alwaysGenSHA2", null);
         $isSAML = Params::getParameterValue("isSAML", null);
