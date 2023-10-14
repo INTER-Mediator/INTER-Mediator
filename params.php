@@ -34,6 +34,10 @@ $dbDSN = 'mysql:host=127.0.0.1;dbname=test_db;charset=utf8mb4';
 //$dbDSN = 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;charset=utf8mb4';
 $dbOption = array();
 
+// Schema Automatic Generating
+//$activateGenerator = true;
+//$generatorUser = $dbUser;
+//$generatorPassword = $dbPassword;
 /* Security
  * ===================
  * Please change the value of $webServerName. FQDN or domain name of your web server for protecting CSRF
@@ -176,8 +180,8 @@ $dbClassLog = $dbClass;
 $dbDSNLog = $dbDSN;
 $dbUserLog = $dbUser;
 $dbPasswordLog = $dbPassword;
-$recordingContexts = false; // false or no-definition: record all context, or an array of context names you want to record.
-$recordingOperations = false; // false or no-definition: record all operation, or an array of operation names you want to record.
+$recordingContexts = false; // []]: record all context, or an array of context names you want to record.
+$recordingOperations = false; // []: record all operation, or an array of operation names you want to record.
 $dontRecordTheme = false;
 $dontRecordChallenge = false;
 $dontRecordDownload = false;
