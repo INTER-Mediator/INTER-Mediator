@@ -42,7 +42,7 @@ class MediaAccess
     /**
      * @var ?string
      */
-    private ?string $cookieUser;    // set with the checkAuthentication method.
+    private ?string $cookieUser = null;    // set with the checkAuthentication method.
     /**
      * @var int
      */

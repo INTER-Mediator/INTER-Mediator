@@ -336,6 +336,11 @@ class ServiceServerProxy
         }
         $this->executeCommand($cmd);
     }
+    /*
+     * About forever on Apr 14, 2019 by Masayuki Nii
+     * The forever-win adds two short-cut links in node_module/.bin, but the forever doesn't.
+     * So we don't execute command in the node_module/.bin directory.
+     */
 
     /**
      * @return void
