@@ -1396,6 +1396,7 @@ const INTERMediator = {
                 'paging': contextObj.contextDefinition.paging,
                 'fields': fieldList,
                 'parentkeyvalue': relationValue,
+                'parentcontext': contextObj.parentContext ? contextObj.parentContext.contextDefinition.name : '',
                 'conditions': null,
                 'useoffset': true,
                 'uselimit': useLimit

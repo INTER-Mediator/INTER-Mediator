@@ -658,6 +658,9 @@ const INTERMediator_DBAdapter = {
         }
       }
     }
+    if (args.parentcontext) {
+      params += '&parent=' + encodeURIComponent(args.parentcontext)
+    }
     if (args.useoffset && INTERMediator.startFrom !== null) {
       params += '&start=' + parseInt(INTERMediator.startFrom)
     } else if (INTERMediator.recordStart && INTERMediator.recordStart[args.name]) {
