@@ -31,7 +31,7 @@ class Generator
     private array $dsnElements;
     private string $dsnPrefix;
     private array $contextDef;
-    private string $parentKey;
+    private ?string $parentKey;
 
     public function __construct(Proxy $proxy)
     {

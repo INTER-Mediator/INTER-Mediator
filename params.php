@@ -35,9 +35,9 @@ $dbDSN = 'mysql:host=127.0.0.1;dbname=test_db;charset=utf8mb4';
 $dbOption = array();
 
 // Schema Automatic Generating
-//$activateGenerator = true;
-//$generatorUser = $dbUser;
-//$generatorPassword = $dbPassword;
+$activateGenerator = true;
+$generatorUser = $dbUser;
+$generatorPassword = $dbPassword;
 /* Security
  * ===================
  * Please change the value of $webServerName. FQDN or domain name of your web server for protecting CSRF
