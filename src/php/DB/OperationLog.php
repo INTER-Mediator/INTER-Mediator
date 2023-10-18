@@ -46,11 +46,11 @@ class OperationLog
     /**
      * @var bool
      */
-    private bool $recordingContexts;
+    private ?array $recordingContexts;
     /**
      * @var bool
      */
-    private bool $recordingOperations;
+    private ?array $recordingOperations;
     /**
      * @var array|null
      */
@@ -87,12 +87,12 @@ class OperationLog
         $this->dbUserLog = Params::getParameterValue("dbUserLog", null);
         $this->dbPasswordLog = Params::getParameterValue("dbPasswordLog", null);
         $this->dbDSNLog = Params::getParameterValue("dbDSNLog", null);
-        $this->recordingContexts = Params::getParameterValue("recordingContexts", false);
+        $this->recordingContexts = Params::getParameterValue("recordingContexts", null);
         $this->dontRecordTheme = Params::getParameterValue("dontRecordTheme", false);
         $this->dontRecordChallenge = Params::getParameterValue("dontRecordChallenge", false);
         $this->dontRecordDownload = Params::getParameterValue("dontRecordDownload", false);
         $this->dontRecordDownloadNoGet = Params::getParameterValue("dontRecordDownloadNoGet", false);
-        $this->recordingOperations = Params::getParameterValue("recordingOperations", false);
+        $this->recordingOperations = Params::getParameterValue("recordingOperations", null);
         $this->accessLogExtensionClass = Params::getParameterValue("accessLogExtensionClass", null);
     }
 
@@ -106,7 +106,7 @@ class OperationLog
 
         $access = $_GET['access'] ?? ($_POST['access'] ?? (isset($_GET['theme']) ? 'theme' : 'download'));
         if (
-            ($this->recordingOperations !== false && !in_array($access, $this->recordingOperations))
+            (!is_null($this->recordingOperations) && !in_array($access, $this->recordingOperations))
             || ($this->dontRecordTheme && $access == 'theme')
             || ($this->dontRecordChallenge && $access == 'challenge')
             || ($this->dontRecordDownload && $access == 'download')
@@ -115,7 +115,7 @@ class OperationLog
             return;
         }
         $targetContext = $_GET['name'] ?? $_POST['name'] ?? $result['name'] ?? (isset($_GET['theme']) ? ($_GET['css'] ?? '') : '');
-        if ($this->recordingContexts !== false && !in_array($targetContext, $this->recordingContexts)) {
+        if (!is_null($this->recordingContexts) && !in_array($targetContext, $this->recordingContexts)) {
             return;
         }
         $dbInstance = new Proxy(true);

@@ -933,6 +933,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->dbSettings->setSAMLAdditionalRules(Params::getParameterValue("samlAdditionalRules", null));
 
         $this->dbSettings->setClientTZOffset($this->PostData['tzoffset'] ?? 0);
+
+        $this->dbSettings->setParentOfTarget($this->PostData['target'] ?? '');
+
+        $activateGenerator = Params::getParameterValue('activateGenerator', false);
+        if ($activateGenerator) {
+            (new Generator($this))->generate();
+        }
+
         return true;
     }
 

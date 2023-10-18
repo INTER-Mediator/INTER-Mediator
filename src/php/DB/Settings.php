@@ -72,7 +72,6 @@ class Settings
      * @var array|null
      */
     private ?array $dbSpec = null;
-//    private $targetDataSource = null;
     /**
      * @var string|null
      */
@@ -226,6 +225,21 @@ class Settings
      * @var int
      */
     private int $timezoneOffset = 0;
+
+    /**
+     * @var string
+     */
+    private string $parentOfTarget = '';
+
+    public function setParentOfTarget(string $cName)
+    {
+        $this->parentOfTarget = $cName;
+    }
+
+    public function getParentOfTarget()
+    {
+        return $this->parentOfTarget;
+    }
 
     public function setClientTZOffset(int $offset): void
     {
