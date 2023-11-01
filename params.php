@@ -30,7 +30,7 @@ $dbProtocol = 'HTTP';
 $certVerifying = false;
 
 // PDO is aware of below:
-$dbDSN = 'mysql:host=127.0.0.1;dbname=test_db2;charset=utf8mb4';
+$dbDSN = 'mysql:host=127.0.0.1;dbname=test_db;charset=utf8mb4';
 $dbOption = array();
 
 /* Schema Automatic Generating
