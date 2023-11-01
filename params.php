@@ -31,7 +31,6 @@ $certVerifying = false;
 
 // PDO is aware of below:
 $dbDSN = 'mysql:host=127.0.0.1;dbname=test_db2;charset=utf8mb4';
-//$dbDSN = 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;charset=utf8mb4';
 $dbOption = array();
 
 /* Schema Automatic Generating
@@ -40,6 +39,7 @@ $dbOption = array();
 // In case of MySQL, the following account is convenient for generating schema.
 //$dbUser = 'root';
 //$dbPassword = '';
+//$dbDSN = 'mysql:host=127.0.0.1;dbname=test_db2;charset=utf8mb4';
 // The generated db user is going to replace below.
 //$dbUser = 'webuser';
 //$dbPassword = '<Bhc)"){3*e3o:cYdhN-';
