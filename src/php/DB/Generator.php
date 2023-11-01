@@ -15,6 +15,7 @@
 
 namespace INTERMediator\DB;
 
+use INTERMediator\IMUtil;
 use INTERMediator\Params;
 use PDOException;
 
@@ -23,53 +24,244 @@ use PDOException;
  */
 class Generator
 {
+    /**
+     * @var string|array|mixed
+     */
     private string $generatorUser;
+    /**
+     * @var string|array|mixed
+     */
     private string $generatorPassword;
+    /**
+     * @var Logger
+     */
     private Logger $logger;
+    /**
+     * @var \PDO
+     */
     private \PDO $link;
+    /**
+     * @var Proxy
+     */
     private Proxy $proxy;
+    /**
+     * @var array
+     */
     private array $dsnElements;
+    /**
+     * @var string
+     */
     private string $dsnPrefix;
-    private array $contextDef;
-    private ?string $parentKey;
+    /**
+     * @var array|null
+     */
+    private ?array $contextDef;
+    /**
+     * @var array|mixed|null
+     */
+    private ?array $schemaInfo;
+    /**
+     * @var array|mixed|null
+     */
+    private ?array $options;
 
+    /**
+     * @param Proxy $proxy
+     */
     public function __construct(Proxy $proxy)
     {
         $this->generatorUser = Params::getParameterValue('generatorUser', '');
         $this->generatorPassword = Params::getParameterValue('generatorPassword', '');
+        $this->options = Params::getParameterValue('generatorOptions', null);
         $this->logger = Logger::getInstance();
         $this->proxy = $proxy;
         $this->parseDSN($this->proxy->dbSettings->getDbSpecDSN());
         $this->contextDef = $this->proxy->dbSettings->getDataSourceTargetArray();
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (!isset($_SESSION['generator_info'])) {
+            $this->schemaInfo = [];
+        } else {
+            $this->schemaInfo = $_SESSION['generator_info'];
+        }
     }
 
+    /**
+     * @return array[]
+     */
+    public function acquire(): array
+    {
+        $this->schemaInfo['dbName'] = $this->dsnElements['dbname'];
+        if (!isset($this->schemaInfo['tables'])) {
+            $this->schemaInfo['tables'] = [];
+        }
+
+        $contextDef = $this->proxy->dbSettings->getDataSourceTargetArray();
+        $fieldList = $this->getFieldList($parentContextDef['key'] ?? null);
+        if (!isset($contextDef['aggregation-select'])) {
+            $targetTable = $this->proxy->dbSettings->getEntityForUpdate();
+            if (!isset($this->schemaInfo['tables'][$targetTable])) {
+                $this->schemaInfo['tables'][$targetTable] = [];
+            }
+            $this->logger->setDebugMessage("[Schema Generator] targetTable = " . $targetTable, 2);
+
+            $this->schemaInfo['tables'][$targetTable]['contextDef-name'] = $contextDef['name'] ?? null;
+            $this->schemaInfo['tables'][$targetTable]['contextDef-key'] = $contextDef['key'] ?? null;
+            $this->schemaInfo['tables'][$targetTable]['contextDef-view'] = $contextDef['view'] ?? null;
+            $this->schemaInfo['tables'][$targetTable]['contextDef-table'] = $contextDef['table'] ?? null;
+            $this->schemaInfo['tables'][$targetTable]['contextDef-source'] = $contextDef['source'] ?? null;
+            $this->schemaInfo['tables'][$targetTable]['contextDef-relation'] = $contextDef['relation'] ?? null;
+            $parentContextName = $this->proxy->dbSettings->getParentOfTarget();
+            $parentContextDef = $this->proxy->dbSettings->getDataSourceDefinition($parentContextName);
+            $this->schemaInfo['tables'][$targetTable]['contextDef-parent-name'] = $parentContextName;
+            $this->schemaInfo['tables'][$targetTable]['contextDef-parent-key'] = $parentContextDef['key'] ?? null;
+            if (isset($this->schemaInfo['tables'][$targetTable]['fieldList'])) {
+                $this->schemaInfo['tables'][$targetTable]['fieldList']
+                    = array_merge($this->schemaInfo['tables'][$targetTable]['fieldList'], $fieldList);
+            } else {
+                $this->schemaInfo['tables'][$targetTable]['fieldList'] = $fieldList;
+            }
+            $_SESSION['generator_info'] = $this->schemaInfo;
+            session_write_close();
+        }
+        return $this->generateDummyData($fieldList);
+    }
+
+    /**
+     * @return void
+     * @throws \Exception
+     */
     public function generate(): void
     {
-        $this->createDBLink();
-        $dbName = $this->dsnElements['dbname'];
-        if (!in_array($dbName, $this->getDatabases())) {
-            $this->createDatabase($dbName);
-        }
-        $this->useDatabase($dbName);
-        $targetTable = $this->proxy->dbSettings->getEntityForUpdate();
-        $parentContextDef = $this->proxy->dbSettings->getDataSourceDefinition($this->proxy->dbSettings->getParentOfTarget());
-        $this->parentKey = $parentContextDef['key'] ?? null;
-        if (!in_array($targetTable, $this->getTables())) {
-            $this->createTable($targetTable);
-        } else {
-            $this->updateTable($targetTable);
-        }
-    }
+        $_SESSION['generator_info'] = [];
+        session_write_close();
 
-    private function createDBLink(): void
-    {
-        try {
+        try {  // Establishing the connection with database
             $this->link = new \PDO($this->generateDSN(), $this->generatorUser, $this->generatorPassword, []);
+            $sql = $this->proxy->dbClass->handler->sqlSELECTDATABASECommand($this->schemaInfo['dbName']);
+            $this->logger->setDebugMessage("[Schema Generator] {$sql}");
+            $result = $this->link->query($sql);
         } catch (PDOException $ex) {
-            $this->logger->setErrorMessage('[Schema Generator] Connection Error: ' . $ex->getMessage());
+            $this->logger->setErrorMessage('[Schema Generator] ' . $ex->getMessage());
+        }
+
+        // Detect foreign key from rom relationship
+        foreach ($this->schemaInfo['tables'] as $table => $info) {
+            if (isset($info['contextDef-relation'])) {
+                $parentContextName = $info['contextDef-parent-name'];
+                foreach ($info['contextDef-relation'] as $item) {
+                    if (($item['foreign-key'] == ($info['contextDef-key'] ?? '_____'))
+                        && (isset($this->schemaInfo['tables'][$parentContextName]))) {
+                        $this->schemaInfo['tables'][$parentContextName]['fieldList'][$item['join-field']]
+                            = $this->options['fk-type'] ?? 'INT';
+                    }
+                }
+            }
+        }
+
+        // Merge infomation of the 'dummy' table
+        $detectedTables = array_keys($this->schemaInfo['tables']);
+        foreach ($this->schemaInfo['tables'] as $table => $info) {
+            if ($table != $this->options['dummy-table'] ?? 'dummy') {
+                $tableName = '__';
+                if (in_array(($info['contextDef-source'] ?? '__'), $detectedTables)) {
+                    $tableName = $info['contextDef-source'];
+                } else if (in_array(($info['contextDef-view'] ?? '__'), $detectedTables)) {
+                    $tableName = $info['contextDef-view'];
+                } else if (in_array(($info['contextDef-name'] ?? '__'), $detectedTables)) {
+                    $tableName = $info['contextDef-name'];
+                }
+                if ($tableName != '__') {
+                    $this->schemaInfo['tables'][$tableName]['fieldList']
+                        = array_merge($this->schemaInfo['tables'][$tableName]['fieldList'], $info['fieldList']);
+                }
+            }
+        }
+
+        $existingTables = $this->getTables();
+        $sql = "";
+        foreach ($this->schemaInfo['tables'] as $table => $info) {
+            if ($table != $this->options['dummy-table'] ?? 'dummy') { // Name is not dummy.
+                if (in_array($table, $existingTables)) { // The table is already defined.
+                    $definedFields = $this->getTableInfo($table);
+                    $this->logger->setDebugMessage("[Schema Generator] definedFields" . var_export($definedFields, true), 2);
+                    foreach ($info['fieldList'] as $field => $type) {
+                        if (!in_array($field, $definedFields)) {
+                            $sql .= $this->proxy->dbClass->handler->sqlADDCOLUMNCommand($table, $field, $type);
+                            $sql .= $this->proxy->dbClass->handler->sqlCREATEINDEXCommand(
+                                $table, $field, $type === 'TEXT' ? 200 : 0);
+                        }
+                        // Don't touch the filed which already exists.
+                    }
+                } else { // The table is not defined.
+                    $sql .= $this->proxy->dbClass->handler->sqlCREATETABLECommandStart($table);
+                    $postAdding = '';
+                    foreach ($info['fieldList'] as $field => $type) {
+                        $sql .= $this->proxy->dbClass->handler->sqlFieldDefinitionCommand($field, $type);
+                        if ($field != $info['contextDef-key']) {
+                            $postAdding .= $this->proxy->dbClass->handler->sqlCREATEINDEXCommand(
+                                $table, $field, $type === 'TEXT' ? 200 : 0);
+                        }
+                    }
+                    $sql .= $this->proxy->dbClass->handler->sqlCREATETABLECommandEnd() . $postAdding;
+                }
+            }
+        }
+        if (!in_array('operationlog', $existingTables)) {
+            $sql .= $this->systemPreparedSchema();
+        }
+
+        $this->logger->setDebugMessage("[Schema Generator] SchemaInfo" . var_export($this->schemaInfo, true), 2);
+        if (strlen($sql) > 0) {
+            try {
+                $this->logger->setDebugMessage("[Schema Generator] Execute SQL:\n{$sql}");
+                $result = $this->link->query($sql);            // Send schema commands
+                if (!$result) {
+                    throw (new \Exception("Failed in schema operations."));
+                }
+                $this->logger->setWarningMessage("[Schema Operations are executed]\n"
+                    . "The SQL command just executed are here but they are stored in the console of your browser for now. \n\n{$sql}");
+            } catch (PDOException $ex) {
+                $this->logger->setErrorMessage('[Schema Generator] ' . $ex->getMessage());
+            }
+        } else {
+            $this->logger->setWarningMessage("There is no operation which has to execute..\n{$sql}");
         }
     }
 
+    public function prepareDatabase(): void
+    {
+        try {        // Establishing the connection with database
+            $this->link = new \PDO($this->generateDSN(), $this->generatorUser, $this->generatorPassword, []);
+            if (!in_array($this->dsnElements['dbname'], $this->getDatabases())) {
+                $dbName = $this->dsnElements['dbname'];
+                $userName = "webuser";
+                $userEntity = "{$userName}@localhost";
+                $password = str_replace("'", "z", IMUtil::randomString(20));
+                $sql = $this->proxy->dbClass->handler->sqlCREATEDATABASECommand($dbName);
+                $sql .= $this->proxy->dbClass->handler->sqlCREATEUSERCommand($dbName, $userEntity, $password);
+                // Can't use $this->proxy->dbClass->handler here, because it's before initializing dbClass property.
+                //$sql = "CREATE DATABASE {$this->dsnElements['dbname']};";
+                $this->logger->setDebugMessage("[Schema Generator] Execute SQL:\n{$sql}", 2);
+                $result = $this->link->query($sql);
+                if (!$result) {
+                    throw (new \Exception("Failed in creating database."));
+                }
+                $this->logger->setWarningMessage("[Database {$dbName} is created]\n"
+                    . "The granted user is generated. You can set it on params.php as:\n\n"
+                    . "\$dbUser = '{$userName}';\n\$dbPassword = '{$password}';\n\n"
+                    . "You can copy this code on your browser's console.\n{$sql}");
+            }
+        } catch (PDOException $ex) {
+            $this->logger->setErrorMessage('[Schema Generator] ' . $ex->getMessage());
+        }
+    }
+
+    /**
+     * @return array
+     */
     private function getDatabases(): array
     {
         $dbs = [];
@@ -82,13 +274,17 @@ class Generator
                     $dbs[] = $row['Database'];
                 }
             }
-            $this->logger->setDebugMessage("[Schema Generator] " . var_export($dbs, true), 2);
+            //$this->logger->setDebugMessage("[Schema Generator] " . var_export($dbs, true), 2);
         } catch (PDOException $ex) {
             $this->logger->setErrorMessage('[Schema Generator] Connection Error: ' . $ex->getMessage());
         }
         return $dbs;
     }
 
+    /**
+     * @param $dsn
+     * @return void
+     */
     private function parseDSN($dsn): void
     {
         $colonPos = strpos($dsn, ":");
@@ -103,10 +299,13 @@ class Generator
                 $this->dsnElements[trim(substr($item, 0, $eqPos))] = trim(substr($item, $eqPos + 1));
             }
         }
-        $this->logger->setDebugMessage("[Schema Generator] {$this->dsnPrefix}/" . var_export($this->dsnElements, true), 2);
+//        $this->logger->setDebugMessage("[Schema Generator] {$this->dsnPrefix}/" . var_export($this->dsnElements, true), 2);
     }
 
-    private function generateDSN(): string
+    /**
+     * @return string
+     */
+    public function generateDSN(): string
     {
         $dsn = '';
         if (isset($this->dsnElements['unix_socket'])) {
@@ -120,36 +319,9 @@ class Generator
         return $dsn;
     }
 
-    private function createDatabase(string $dbName): void
-    {
-        try {
-            $sql = "CREATE DATABASE {$dbName};";
-            $this->logger->setDebugMessage("[Schema Generator] {$sql}");
-            $result = $this->link->query($sql);
-            if (!$result) {
-                throw (new \Exception("[Schema Generator] Failed in creating database."));
-            }
-        } catch (PDOException $ex) {
-            $this->logger->setErrorMessage('[Schema Generator] Error: ' . $ex->getMessage());
-        }
-
-    }
-
-    private function useDatabase(string $dbName): void
-    {
-        try {
-            $sql = "USE {$dbName}";
-            $this->logger->setDebugMessage("[Schema Generator] {$sql}");
-            $result = $this->link->query($sql);
-            if (!$result) {
-                throw (new \Exception("[Schema Generator] Failed in creating database."));
-            }
-        } catch (PDOException $ex) {
-            $this->logger->setErrorMessage('[Schema Generator] Error: ' . $ex->getMessage());
-        }
-
-    }
-
+    /**
+     * @return array
+     */
     private function getTables(): array
     {
         $tables = [];
@@ -162,45 +334,273 @@ class Generator
                     $tables[] = $row[0];
                 }
             }
-            $this->logger->setDebugMessage("[Schema Generator] " . var_export($tables, true), 2);
+            $this->logger->setDebugMessage("[Schema Generator] getTables:" . var_export($tables, true), 2);
         } catch (PDOException $ex) {
             $this->logger->setErrorMessage('[Schema Generator] Connection Error: ' . $ex->getMessage());
         }
         return $tables;
     }
 
-    private function createTable(string $targetTable): void
+    /**
+     * @param string $tableName
+     * @return array
+     */
+    private function getTableInfo(string $tableName): array
     {
-        $fieldList = $this->getFieldList();
-        $this->logger->setDebugMessage("[Schema Generator] createTable({$targetTable}){$fieldList}", 2);
+        $sql = $this->proxy->dbClass->handler->getTableInfoSQL($tableName); // Returns SQL as like 'SHOW COLUMNS FROM $tableName'.
+        $result = null;
+        $this->logger->setDebugMessage($sql);
+        try {
+            $result = $this->link->query($sql);
+        } catch (Exception $ex) { // In case of aggregation-select and aggregation-from keyword appear in context definition.
+            //return []; // do nothing
+        }
+        $infoResult = [];
+        if ($result) {
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $infoResult[] = $row;
+            }
+        }
+        return array_map(function (array $element): string {
+            return $element[$this->proxy->dbClass->handler->fieldNameForField];
+        }, $infoResult);
     }
 
-    private function updateTable(string $targetTable): void
-    {
-        $fieldList = $this->getFieldList();
-        $this->logger->setDebugMessage("[Schema Generator] updateTable({$targetTable}){$fieldList}", 2);
-    }
-
-    private function getFieldList(): string
+    /**
+     * @param string|null $parentKey
+     * @return array
+     */
+    private function getFieldList(?string $parentKey = null): array
     {
         $fields = [];
-        if (isset($this->contextDef['key'])) {
-            $fields[$this->contextDef['key']] = 'INT NOT NULL AUTO_INCREMENT';
+        $contextDef = $this->proxy->dbSettings->getDataSourceTargetArray();
+        $excludeFields = [];
+        if (isset($contextDef['calculation'])) {
+            foreach ($contextDef['calculation'] as $item) {
+                $excludeFields[] = $item['field'];
+            }
         }
-        foreach ($this->proxy->dbSettings->getFieldsRequired() as $field) {
-            $fields[$field] = 'TEXT';
-        }
-        if (isset($this->contextDef['relation'])) {
-            foreach ($this->contextDef['relation'] as $relationDef) {
-                if($relationDef['join-field']==$this->parentKey){
-                    $fields[$relationDef['foreign-key']] = 'INT';
-                } else {
-                    $fields[$relationDef['foreign-key']] = 'TEXT';
+        $keys = ['query', 'sort', 'default-values'];
+        foreach ($keys as $key) {
+            if (isset($contextDef[$key])) {
+                foreach ($contextDef[$key] as $entry) {
+                    $fields[$entry['field']] = $this->decidedFieldType($entry['field']);
                 }
             }
         }
-        return implode(", ",
-            array_map(fn($key, $value): string => "$key $value", array_keys($fields), array_values($fields)));
+        foreach ($this->proxy->dbSettings->getFieldsRequired() as $field) {
+            if (!in_array($field, $excludeFields)) {
+                $fields[$field] = $this->decidedFieldType($field);
+            }
+        }
+        if (isset($this->contextDef['key'])) {
+            $fields[$this->contextDef['key']] = $this->options['pk-type'] ?? 'INT NOT NULL AUTO_INCREMENT PRIMARY KEY';
+        }
+        if (isset($this->contextDef['relation'])) {
+            foreach ($this->contextDef['relation'] as $relationDef) {
+                if ($relationDef['foreign-key'] != ($this->contextDef['key'] ?? '_______')) {
+                    $fields[$relationDef['foreign-key']] = $this->options['fk-type'] ?? 'INT';
+                }
+            }
+        }
         return $fields;
+    }
+
+    /**
+     * @param array $fieldList
+     * @return array[]
+     */
+    private function generateDummyData(array $fieldList): array
+    {
+        $result = [];
+        foreach ($fieldList as $field => $type) {
+            $result[$field] = ($type === 'INT' || $type === 'DOUBLE') ? 1 : 'abcd';
+        }
+        return [$result];
+    }
+
+    /**
+     * @param string $field
+     * @return string
+     */
+    private function decidedFieldType(string $field): string
+    {
+        if (preg_match("/{$this->options['datetime-suffix']}$/", $field)) {
+            return "DATETIME";
+        }
+        if (preg_match("/{$this->options['date-suffix']}$/", $field)) {
+            return "DATE";
+        }
+        if (preg_match("/{$this->options['time-suffix']}$/", $field)) {
+            return "TIME";
+        }
+        if (preg_match("/{$this->options['int-suffix']}$/", $field)) {
+            return "INT";
+        }
+        if (preg_match("/{$this->options['double-suffix']}$/", $field)) {
+            return "DOUBLE";
+        }
+        if (preg_match("/{$this->options['text-suffix']}$/", $field)) {
+            return "TEXT";
+        }
+        if (preg_match("/^{$this->options['datetime-prefix']}/", $field)) {
+            return "DATETIME";
+        }
+        if (preg_match("/^{$this->options['date-prefix']}/", $field)) {
+            return "DATE";
+        }
+        if (preg_match("/^{$this->options['time-prefix']}/", $field)) {
+            return "TIME";
+        }
+        if (preg_match("/^{$this->options['int-prefix']}/", $field)) {
+            return "INT";
+        }
+        if (preg_match("/^{$this->options['double-prefix']}/", $field)) {
+            return "DOUBLE";
+        }
+        if (preg_match("/^{$this->options['text-prefix']}/", $field)) {
+            return "TEXT";
+        }
+        return $this->options['default-type'];
+    }
+
+    /**
+     * @return string
+     */
+    private function systemPreparedSchema(): string
+    {
+        return <<<EOL
+CREATE TABLE registeredcontext
+(
+    id           INT AUTO_INCREMENT,
+    clientid     TEXT,
+    entity       TEXT,
+    conditions   TEXT,
+    registereddt DATETIME,
+    PRIMARY KEY (id)
+) CHARACTER SET utf8mb4,
+  COLLATE utf8mb4_unicode_ci
+  ENGINE = InnoDB;
+
+CREATE TABLE registeredpks
+(
+    context_id INT,
+    pk         INT,
+    PRIMARY KEY (context_id, pk),
+    FOREIGN KEY (context_id) REFERENCES registeredcontext (id) ON DELETE CASCADE
+) CHARACTER SET utf8mb4,
+  COLLATE utf8mb4_unicode_ci
+  ENGINE = InnoDB;
+
+CREATE TABLE authuser
+(
+    id           INT AUTO_INCREMENT,
+    username     VARCHAR(64),
+    hashedpasswd VARCHAR(72),
+    realname     VARCHAR(20),
+    email        VARCHAR(100),
+    limitdt      DATETIME,
+    PRIMARY KEY (id)
+) CHARACTER SET utf8mb4,
+  COLLATE utf8mb4_unicode_ci
+  ENGINE = InnoDB;
+
+CREATE INDEX authuser_username
+    ON authuser (username);
+CREATE INDEX authuser_email
+    ON authuser (email);
+CREATE INDEX authuser_limitdt
+    ON authuser (limitdt);
+
+CREATE TABLE authgroup
+(
+    id        INT AUTO_INCREMENT,
+    groupname VARCHAR(48),
+    PRIMARY KEY (id)
+) CHARACTER SET utf8mb4,
+  COLLATE utf8mb4_unicode_ci
+  ENGINE = InnoDB;
+
+CREATE TABLE authcor
+(
+    id            INT AUTO_INCREMENT,
+    user_id       INT,
+    group_id      INT,
+    dest_group_id INT,
+    privname      VARCHAR(48),
+    PRIMARY KEY (id)
+) CHARACTER SET utf8mb4,
+  COLLATE utf8mb4_unicode_ci
+  ENGINE = InnoDB;
+
+CREATE INDEX authcor_user_id
+    ON authcor (user_id);
+CREATE INDEX authcor_group_id
+    ON authcor (group_id);
+CREATE INDEX authcor_dest_group_id
+    ON authcor (dest_group_id);
+
+CREATE TABLE issuedhash
+(
+    id         INT AUTO_INCREMENT,
+    user_id    INT,
+    clienthost VARCHAR(64),
+    hash       VARCHAR(64),
+    expired    DateTime,
+    PRIMARY KEY (id)
+) CHARACTER SET utf8mb4,
+  COLLATE utf8mb4_unicode_ci
+  ENGINE = InnoDB;
+
+CREATE INDEX issuedhash_user_id
+    ON issuedhash (user_id);
+CREATE INDEX issuedhash_expired
+    ON issuedhash (expired);
+CREATE INDEX issuedhash_clienthost
+    ON issuedhash (clienthost);
+CREATE INDEX issuedhash_user_id_clienthost
+    ON issuedhash (user_id, clienthost);
+
+# Operation Log Store
+CREATE TABLE operationlog
+(
+    id            INT AUTO_INCREMENT,
+    dt            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user          VARCHAR(48),
+    client_id_in  VARCHAR(48),
+    client_id_out VARCHAR(48),
+    require_auth  BIT(1),
+    set_auth      BIT(1),
+    client_ip     VARCHAR(60),
+    path          VARCHAR(256),
+    access        VARCHAR(20),
+    context       VARCHAR(50),
+    get_data      TEXT,
+    post_data     TEXT,
+    result        TEXT,
+    error         TEXT,
+    condition0    VARCHAR(50),
+    condition1    VARCHAR(50),
+    condition2    VARCHAR(50),
+    condition3    VARCHAR(50),
+    condition4    VARCHAR(50),
+    field0        TEXT,
+    field1        TEXT,
+    field2        TEXT,
+    field3        TEXT,
+    field4        TEXT,
+    field5        TEXT,
+    field6        TEXT,
+    field7        TEXT,
+    field8        TEXT,
+    field9        TEXT,
+    PRIMARY KEY (id)
+) CHARACTER SET utf8mb4,
+  COLLATE utf8mb4_unicode_ci
+  ENGINE = InnoDB;
+# In case of real deployment, some indices are required for quick operations.
+
+EOL;
+
     }
 }

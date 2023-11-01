@@ -30,14 +30,42 @@ $dbProtocol = 'HTTP';
 $certVerifying = false;
 
 // PDO is aware of below:
-$dbDSN = 'mysql:host=127.0.0.1;dbname=test_db;charset=utf8mb4';
+$dbDSN = 'mysql:host=127.0.0.1;dbname=test_db2;charset=utf8mb4';
 //$dbDSN = 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;charset=utf8mb4';
 $dbOption = array();
 
-// Schema Automatic Generating
+/* Schema Automatic Generating
+ * ===================
+ */
+// In case of MySQL, the following account is convenient for generating schema.
+//$dbUser = 'root';
+//$dbPassword = '';
+// The generated db user is going to replace below.
+//$dbUser = 'webuser';
+//$dbPassword = '<Bhc)"){3*e3o:cYdhN-';
+
 //$activateGenerator = true;
-//$generatorUser = $dbUser;
-//$generatorPassword = $dbPassword;
+$generatorUser = $dbUser;
+$generatorPassword = $dbPassword;
+$generatorOptions = [
+    'default-type' => "TEXT",
+    'pk-type' => 'INT NOT NULL AUTO_INCREMENT PRIMARY KEY',
+    'fk-type' => 'INT',
+    'datetime-suffix' => '_dt',
+    'date-suffix' => '_date',
+    'time-suffix' => '_time',
+    'int-suffix' => '_int',
+    'double-suffix' => '_double',
+    'text-suffix' => '_text',
+    'datetime-prefix' => 'dt_',
+    'date-prefix' => 'date_',
+    'time-prefix' => 'time_',
+    'int-prefix' => 'int_',
+    'double-prefix' => 'double_',
+    'text-prefix' => 'text_',
+    'dummy-table' => 'dummy'
+];
+
 /* Security
  * ===================
  * Please change the value of $webServerName. FQDN or domain name of your web server for protecting CSRF

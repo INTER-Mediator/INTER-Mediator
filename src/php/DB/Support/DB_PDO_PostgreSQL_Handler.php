@@ -30,7 +30,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     /**
      * @var string
      */
-    protected string $fieldNameForField = 'column_name';
+    public string $fieldNameForField = 'column_name';
     /**
      * @var string
      */
@@ -183,7 +183,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
      * @param string $tableName
      * @return string
      */
-    protected function getTableInfoSQL(string $tableName): string
+    public function getTableInfoSQL(string $tableName): string
     {
         if (strpos($tableName, ".") !== false) {
             $tName = substr($tableName, strpos($tableName, ".") + 1);

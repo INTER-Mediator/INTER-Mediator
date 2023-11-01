@@ -36,7 +36,7 @@ abstract class DB_PDO_Handler
     /**
      * @var string
      */
-    protected string $fieldNameForField = '';
+    public string $fieldNameForField = '';
     /**
      * @var string
      */
@@ -149,6 +149,75 @@ abstract class DB_PDO_Handler
     public function sqlREPLACECommand(string $tableRef, string $setClause): string
     {
         return $this->sqlINSERTCommand($tableRef, $setClause);
+    }
+
+    /**
+     * @var bool
+     */
+    private bool $isFirstColumn;
+
+    public function sqlCREATETABLECommandStart(string $table): string
+    {
+        $this->isFirstColumn = true;
+        return "CREATE TABLE {$this->quotedEntityName($table)} (";
+    }
+
+    public function sqlFieldDefinitionCommand(string $field, string $type): string
+    {
+        $separator = $this->isFirstColumn ? '' : ',';
+        $this->isFirstColumn = false;
+        return "{$separator}\n{$this->quotedEntityName($field)} {$type}";
+    }
+
+    public function sqlCREATETABLECommandEnd(): string
+    {
+        return "\n) CHARACTER SET utf8mb4,\nCOLLATE utf8mb4_unicode_ci\nENGINE = InnoDB;\n";
+    }
+
+    public function sqlADDCOLUMNCommand(string $table, string $field, string $type): string
+    {
+        return "ALTER TABLE {$this->quotedEntityName($table)} ADD COLUMN({$this->quotedEntityName($field)} {$type});\n";
+    }
+
+    public function sqlCREATEINDEXCommand(string $table, string $field, int $length = 0): string
+    {
+        $indexName = $this->quotedEntityName("{$table}_{$field}");
+        $lengthDesc = ($length > 0) ? "({$length})" : '';
+        return "CREATE INDEX  {$indexName} ON {$this->quotedEntityName($table)} ({$this->quotedEntityName($field)}{$lengthDesc});\n";
+    }
+
+    public function sqlCREATEDATABASECommand(string $dbName): string
+    {
+        return "CREATE DATABASE {$this->quotedEntityName($dbName)};\n";
+    }
+
+    public function sqlSELECTDATABASECommand(string $dbName): string
+    {
+        return "USE {$this->quotedEntityName($dbName)};\n";
+    }
+
+    public function sqlCREATEUSERCommand(string $dbName, string $userEntity, string $password): string
+    {
+        $quotedDB = $this->quotedEntityName($dbName);
+        $quotedUser = $this->quotedData($userEntity, "@");
+        $quotedPassword = $this->dbClassObj->link->quote($password);
+        return "CREATE USER IF NOT EXISTS {$quotedUser};\n"
+            . "GRANT SELECT, INSERT, DELETE, UPDATE, SHOW VIEW ON TABLE {$quotedDB}.* TO {$quotedUser};\n"
+            . "SET PASSWORD FOR {$quotedUser} = {$quotedPassword};\n";
+    }
+
+    /**
+     * @param string $data
+     * @param string $separator
+     * @return string|null
+     */
+    public function quotedData(string $data, string $separator = ''): ?string
+    {
+        $pos = strpos($data, $separator);
+        if ($pos !== false) {
+            return "{$this->dbClassObj->link->quote(substr($data, 0, $pos))}{$separator}{$this->dbClassObj->link->quote(substr($data, $pos + 1))}";
+        }
+        return $this->dbClassObj->link->quote($data);
     }
 
     /**
@@ -427,7 +496,7 @@ abstract class DB_PDO_Handler
      * @param string $tableName
      * @return array
      */
-    protected function getTableInfo(string $tableName): array
+    public function getTableInfo(string $tableName): array
     {
         if (!isset($this->tableInfo[$tableName])) {
             $sql = $this->getTableInfoSQL($tableName); // Returns SQL as like 'SHOW COLUMNS FROM $tableName'.
@@ -451,6 +520,16 @@ abstract class DB_PDO_Handler
         return $infoResult;
     }
 
+    public function getFieldList(string $tableName): array
+    {
+        $result = [];
+        $tableInfo = $this->getTableInfo($tableName);
+        foreach ($tableInfo as $fieldInfo) {
+            $result[] = $fieldInfo[$this->fieldNameForField];
+        }
+        return $result;
+    }
+
     /**
      * @param string $tableName
      * @return string|null
@@ -461,7 +540,7 @@ abstract class DB_PDO_Handler
      * @param string $tableName
      * @return string
      */
-    protected abstract function getTableInfoSQL(string $tableName): string;
+    public abstract function getTableInfoSQL(string $tableName): string;
 
     /**
      * @param string $tableName

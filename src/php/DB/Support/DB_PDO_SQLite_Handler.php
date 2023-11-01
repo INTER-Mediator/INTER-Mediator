@@ -30,7 +30,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
     /**
      * @var string
      */
-    protected string $fieldNameForField = 'name';
+    public string $fieldNameForField = 'name';
     /**
      * @var string
      */
@@ -175,7 +175,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
      * @param string $tableName
      * @return string
      */
-    protected function getTableInfoSQL(string $tableName): string
+    public function getTableInfoSQL(string $tableName): string
     {
         return "PRAGMA table_info({$tableName})";
     }

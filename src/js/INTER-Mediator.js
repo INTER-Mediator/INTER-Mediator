@@ -615,6 +615,9 @@ const INTERMediator = {
       IMLibPageNavigation.navigationSetup()
       IMLibLocalContext.archive()
       appendCredit()
+      if (INTERMediatorOnPage.activateMaintenanceCall) {
+        await INTERMediator_DBAdapter.mentenance()
+      }
     }
 
     /** --------------------------------------------------------------------
@@ -788,8 +791,7 @@ const INTERMediator = {
             }
           } else {
             const isExpanding = !IMLibPageNavigation.isNotExpandingContext(currentContextDef)
-            contextObj = IMLibContextPool.generateContextObject(
-              currentContextDef, enclosureNode, repeaters, repeatersOriginal)
+            contextObj = IMLibContextPool.generateContextObject(currentContextDef, enclosureNode, repeaters, repeatersOriginal)
             const calcFields = contextObj.getCalculationFields()
             const fieldList = voteResult.fieldlist.map(function (elm) {
               if (!calcFields[elm]) {
