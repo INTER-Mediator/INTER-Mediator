@@ -375,6 +375,7 @@ const INTERMediator = {
       if (task) {
         task()
       }
+      IMLibLocalContext.unarchive()
       complete()
       location.href = url
     }, false, true)
