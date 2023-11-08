@@ -398,8 +398,7 @@ const INTERMediator = {
     } else {
       INTERMediator.constructMain(indexOfKeyFieldObject)
     }
-  }
-  ,
+  },
 
   /**
    * This method is page generation main method. This will be called with one of the following
