@@ -21,6 +21,6 @@ contexts:
     table: postalcode
     key: id
     records: 1
-    navi-control: detail
+    navi-control: detail-update
 connection:
   db-class: PDO

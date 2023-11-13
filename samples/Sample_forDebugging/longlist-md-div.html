@@ -51,26 +51,25 @@
         </tr>
         </tbody>
     </table>
-    <table id="detailTable">
-        <tbody>
-        <tr>
-            <th>郵便番号</th>
-            <td><input type="text" data-im="detail-md@f3"></td>
-        </tr>
-        <tr>
-            <th>都道府県</th>
-            <td><input type="text" data-im="detail-md@f7"></td>
-        </tr>
-        <tr>
-            <th>市区町村</th>
-            <td><input type="text" data-im="detail-md@f8"></td>
-        </tr>
-        <tr>
-            <th>町域名</th>
-            <td><input type="text" data-im="detail-md@f9"></td>
-        </tr>
-        </tbody>
-    </table>
-</div>
+    <div data-im-control="enclosure">
+        <div style="display: flex; flex-direction: column" data-im-control="repeater">
+            <div>
+                <span>郵便番号</span>
+                <input type="text" data-im="detail-md@f3">
+            </div>
+            <div>
+                <span>都道府県</span>
+                <input type="text" data-im="detail-md@f7">
+            </div>
+            <div>
+                <span>市区町村</span>
+                <input type="text" data-im="detail-md@f8">
+            </div>
+            <div>
+                <span>町域名</span>
+                <input type="text" data-im="detail-md@f9">
+            </div>
+        </div>
+    </div>
 </body>
 </html>
