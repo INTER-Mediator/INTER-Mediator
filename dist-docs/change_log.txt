@@ -16,6 +16,8 @@ Ver.12 (In Development)
   your inherited class has to add them. The extending-class based methods didn't add types.
 - Checking with PHPStan and other static analyser.
 - The schema generating feature works with activating the variable $activateGenerator in params.php.
+- INTERMediator.prepareToScrollBack and scrollBack methods are for retrieving scroll position on backing from detail.
+  samples/Sample_forDebugging/longlist.html is a sample of these methods.
 - [INFO] In the Ver.9, the following change was made with compatibility. The setUpdatedRecord method doesn't call the
   setDataToUpdatedRecord anymore.
   - (Ver.9) The setUpdatedRecord method in database classes renamed to setDataToUpdatedRecord. For the compatibility,

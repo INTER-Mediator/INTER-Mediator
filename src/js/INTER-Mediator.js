@@ -182,7 +182,7 @@ const INTERMediator = {
   /**
    * @type {string}
    */
-  detailNodeOriginalDisplay: 'none',
+  // detailNodeOriginalDisplay: 'none',
   /**
    * @type {boolean}
    */
@@ -379,6 +379,32 @@ const INTERMediator = {
       complete()
       location.href = url
     }, false, true)
+  },
+
+  prepareToScrollBack: (contextName, id) => {
+    IMLibLocalContext.setValue("_im_sb_contextName", contextName)
+    IMLibLocalContext.setValue("_im_sb_cid", id)
+  },
+
+  scrollBack: (bias = 0, dontScroll = false) => {
+    const contextName = IMLibLocalContext.getValue("_im_sb_contextName")
+    const targetId = IMLibLocalContext.getValue("_im_sb_cid")
+    if (targetId && contextName) {
+      const context = IMLibContextPool.contextFromName(contextName)
+      const contextDef = context.getContextDef()
+      const binding = context.binding[`${contextDef.key}=${targetId}`]
+      if (binding) {
+        const target = document.getElementById(binding._im_repeater[0].id)
+        let containingBias = ((target.tagName === "TR") ? target.parentNode.parentNode : target.parentNode).offsetTop
+        if (!dontScroll) {
+          window.scrollTo({top: target.offsetTop + containingBias + bias, left: 0, behavior: 'auto'})
+        }
+        INTERMediator.prepareToScrollBack('', '')
+        target.animate({
+          backgroundColor: [target.style.backgroundColor, "#ffffff", "#7e7e7e", target.style.backgroundColor],
+        }, 1000);
+      }
+    }
   },
 
   /** Construct Page **

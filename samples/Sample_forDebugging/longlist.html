@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ */  -->
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>INTER-Mediator - Sample - Search for Debugging/MySQL</title>
+    <link rel="stylesheet" href="sticky-header-table.css">
+    <script src="../../index.php"></script>
+    <script>
+      INTERMediatorOnPage.doBeforeConstruct = function () {
+        // INTERMediatorLog.errorMessageByAlert = true
+        INTERMediatorLog.suppressDebugMessageOnPage = true
+        // INTERMediatorOnPage.progressStartDelay = 0
+      }
+
+      INTERMediatorOnPage.doAfterConstruct = function () {
+        //document.getElementById('wrapper').style.display = 'block'
+
+        const bias = document.querySelector('.sticky-header-table thead').offsetHeight
+        INTERMediator.scrollBack(-bias)
+        /*
+                const params = INTERMediatorOnPage.getURLParametersAsArray()
+                if (params.id) {
+                  const id = parseInt(params.id)
+                  const context = IMLibContextPool.contextFromName('postalcode')
+                  const binding = context.binding[`id=${id}`]
+                  if (binding) {
+                    const target = document.getElementById(binding._im_repeater[0].id)
+                    // In case of not using sticky header, i.e. a normal table
+                    // window.scrollTo({top: target.offsetTop + 48, left: 0, behavior: 'auto'})
+                    // In case of using sticky header
+                    window.scrollTo({top: target.offsetTop + 48 - 100, left: 0, behavior: 'auto'})
+                    // In case of both using sticky header and not
+                    // 48 = the offsetTop value of the table
+                    // 100 = the offsetHeight of the thead element (or sticky elements)
+                  }
+                }
+         */
+      }
+
+      function moveDetailPage(id) {
+        const contextName = "postalcode"
+        INTERMediator.prepareToScrollBack("postalcode", id)
+        INTERMediator.moveAnotherURL(`longlist-detail.html?id=${id}`)
+      }
+    </script>
+</head>
+<body>
+<div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
+<table class="sticky-header-table">
+    <thead style="height: 100px;">
+    <tr>
+        <th></th>
+        <th>郵便番号</th>
+        <th>都道府県</th>
+        <th>市区町村</th>
+        <th>町域名</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <button data-im="postalcode@id@$onclick" onclick="moveDetailPage($)">詳細</button>
+        </td>
+        <td><span data-im="postalcode@f3"></span></td>
+        <td><span data-im="postalcode@f7"></span></td>
+        <td><span data-im="postalcode@f8"></span></td>
+        <td><span data-im="postalcode@f9"></span></td>
+    </tr>
+    </tbody>
+</table>
+<table id="detailTable">
+    <tbody>
+    <tr>
+        <th>郵便番号</th>
+        <td><input type="text" data-im="detail@f3"></td>
+    </tr>
+    <tr>
+        <th>都道府県</th>
+        <td><input type="text" data-im="detail@f7"></td>
+    </tr>
+    <tr>
+        <th>市区町村</th>
+        <td><input type="text" data-im="detail@f8"></td>
+    </tr>
+    <tr>
+        <th>町域名</th>
+        <td><input type="text" data-im="detail@f9"></td>
+    </tr>
+
+    </tbody>
+</table>
+
+</body>
+</html>

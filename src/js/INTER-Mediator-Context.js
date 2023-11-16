@@ -200,8 +200,8 @@ class IMLibContext {
                   //} else {
                   //isOthersModified = true
                 }
-              // } else if (typeAttr === 'datetime-local') {
-              //   console.log(initialvalue)
+                // } else if (typeAttr === 'datetime-local') {
+                //   console.log(initialvalue)
               }
             }
             if (isOthersModified) {
@@ -1334,6 +1334,13 @@ this.lookingUpInfo
       this.setValue(record, field, origData)
       this.setDataWithKey(record.split('=')[1], field, origData)
     }
+  }
+
+  visiblyEnclosureNode() {
+    if (this.enclosureNode.tagName === 'TBODY') {
+      return this.enclosureNode.parentNode
+    }
+    return this.enclosureNode
   }
 }
 
