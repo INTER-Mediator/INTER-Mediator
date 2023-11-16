@@ -129,6 +129,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @var string|null
      */
     private ?string $credentialCookieDomain;
+    /**
+     * @var bool
+     */
+    private bool $activateGenerator;
 
     /**
      * @param string $cid
@@ -737,6 +741,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->alwaysGenSHA2 = boolval(Params::getParameterValue('alwaysGenSHA2', false));
         $this->migrateSHA1to2 = boolval(Params::getParameterValue('migrateSHA1to2', false));
         $emailAsAliasOfUserName = Params::getParameterValue('emailAsAliasOfUserName', false);
+        $this->activateGenerator = Params::getParameterValue('activateGenerator', false);
 
         $this->dbSettings->setDataSource($datasource);
         $this->dbSettings->setOptions($options);
@@ -789,22 +794,37 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             }
             $this->logger->setDebugMessage("The class '{$dbClassName}' was instanciated.", 2);
         }
+
+        $generator = null;
         $this->dbClass->setUpSharedObjects($this);
         if ($isDBClassNull) {
-            if (!$this->dbClass->setupConnection()) {
-                return false;
+            if ($this->activateGenerator) { // In case of Generator activated
+                $originalDSN = $this->dbSettings->getDbSpecDSN();
+                $generator = new Generator($this);
+                $this->dbSettings->setDbSpecDSN($generator->generateDSN());
+                if (!$this->dbClass->setupConnection()) { // Connection without dbname
+                    return false;
+                }
+                $this->dbClass->setupHandlers();
+                $generator->prepareDatabase(); // If the database doesn't exist, it's going to create here.
+                $this->dbSettings->setDbSpecDSN($originalDSN);
+                if (!$this->dbClass->setupConnection()) { // Recreating database connection
+                    return false;
+                }
+                $this->dbClass->setupHandlers();
+            } else { // Here is normal operations for Database Class.
+                if (!$this->dbClass->setupConnection()) {
+                    return false;
+                }
+                $this->dbClass->setupHandlers();
             }
-            $this->dbClass->setupHandlers();
         }
         if (!Params::getParameterValue('prohibitDebugMode', false) && $debug) {
             $this->logger->setDebugMode($debug);
         }
-        $this->dbSettings->setAggregationSelect(
-            $context['aggregation-select'] ?? null);
-        $this->dbSettings->setAggregationFrom(
-            $context['aggregation-from'] ?? null);
-        $this->dbSettings->setAggregationGroupBy(
-            $context['aggregation-group-by'] ?? null);
+        $this->dbSettings->setAggregationSelect($context['aggregation-select'] ?? null);
+        $this->dbSettings->setAggregationFrom($context['aggregation-from'] ?? null);
+        $this->dbSettings->setAggregationGroupBy($context['aggregation-group-by'] ?? null);
 
         /* Authentication and Authorization Judgement */
         $challengeDSN = $options['authentication']['issuedhash-dsn'] ?? Params::getParameterValue('issuedHashDSN', null);
@@ -933,13 +953,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->dbSettings->setSAMLAdditionalRules(Params::getParameterValue("samlAdditionalRules", null));
 
         $this->dbSettings->setClientTZOffset($this->PostData['tzoffset'] ?? 0);
-
-        $this->dbSettings->setParentOfTarget($this->PostData['target'] ?? '');
-
-        $activateGenerator = Params::getParameterValue('activateGenerator', false);
-        if ($activateGenerator) {
-            (new Generator($this))->generate();
-        }
+        $this->dbSettings->setParentOfTarget($this->PostData['parent'] ?? '');
 
         return true;
     }
@@ -964,7 +978,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param bool $ignoreFiles
      * @throws Exception
      */
-    public function processingRequest(?string $access = null, bool $bypassAuth = false, bool $ignoreFiles = false): void
+    public
+    function processingRequest(?string $access = null, bool $bypassAuth = false, bool $ignoreFiles = false): void
     {
         $this->logger->setDebugMessage("[processingRequest]", 2);
         $authOptions = $this->dbSettings->getAuthentication();
@@ -1120,21 +1135,28 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             case 'read':
             case 'select':
                 $this->logger->setDebugMessage("[processingRequest] start read processing", 2);
-                $result = $this->readFromDB();
-                if (isset($tableInfo['protect-reading']) && is_array($tableInfo['protect-reading'])) {
-                    $recordCount = count($result);
-                    for ($index = 0; $index < $recordCount; $index++) {
-                        foreach ($result[$index] as $field => $value) {
-                            if (in_array($field, $tableInfo['protect-reading'])) {
-                                $result[$index][$field] = "[protected]";
+
+                if ($this->activateGenerator) { // Schema auto generating mode
+                    $this->outputOfProcessing['dbresult'] = (new Generator($this))->acquire();
+                    $this->outputOfProcessing['resultCount'] = 1;
+                    $this->outputOfProcessing['totalCount'] = 1;
+                } else { // normal access
+                    $result = $this->readFromDB();
+                    if (isset($tableInfo['protect-reading']) && is_array($tableInfo['protect-reading'])) {
+                        $recordCount = count($result);
+                        for ($index = 0; $index < $recordCount; $index++) {
+                            foreach ($result[$index] as $field => $value) {
+                                if (in_array($field, $tableInfo['protect-reading'])) {
+                                    $result[$index][$field] = "[protected]";
+                                }
                             }
                         }
                     }
+                    $this->outputOfProcessing['dbresult'] = $result;
+                    $this->outputOfProcessing['resultCount'] = $this->countQueryResult();
+                    $this->outputOfProcessing['totalCount'] = $this->getTotalCount();
+                    $this->suppressMediaToken = false;
                 }
-                $this->outputOfProcessing['dbresult'] = $result;
-                $this->outputOfProcessing['resultCount'] = $this->countQueryResult();
-                $this->outputOfProcessing['totalCount'] = $this->getTotalCount();
-                $this->suppressMediaToken = false;
                 break;
             case
             'update':
@@ -1267,6 +1289,13 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $this->dbSettings->notifyServer->unregister($this->PostData['notifyid'], $tableKeys);
                 }
                 break;
+            case 'maintenance':
+                $this->logger->setDebugMessage("[processingRequest] start maintenance processing", 2);
+                if ($this->activateGenerator) { // Schema auto generating mode
+                    (new Generator($this))->generate();
+                } else { // normal access
+                }
+                break;
         }
         if ($this->logger->getDebugLevel() !== false) {
             $fInfo = $this->getFieldInfo($this->dbSettings->getDataSourceName());
@@ -1366,7 +1395,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param string $pwHash
      * @return string
      */
-    private function generateCredential(string $generatedChallenge, string $generatedUID, string $pwHash): string
+    private
+    function generateCredential(string $generatedChallenge, string $generatedUID, string $pwHash): string
     {
         return hash("sha256", $generatedChallenge . $generatedUID . $pwHash);
     }
@@ -1374,7 +1404,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return array|null
      */
-    public function getDatabaseResult(): ?array
+    public
+    function getDatabaseResult(): ?array
     {
         if (isset($this->outputOfProcessing['dbresult'])) {
             return $this->outputOfProcessing['dbresult'];
@@ -1385,7 +1416,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return int
      */
-    public function getDatabaseResultCount(): int
+    public
+    function getDatabaseResultCount(): int
     {
         if (isset($this->outputOfProcessing['resultCount'])) {
             return $this->outputOfProcessing['resultCount'];
@@ -1396,7 +1428,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return int
      */
-    public function getDatabaseTotalCount(): int
+    public
+    function getDatabaseTotalCount(): int
     {
         if (isset($this->outputOfProcessing['totalCount'])) {
             return $this->outputOfProcessing['totalCount'];
@@ -1407,7 +1440,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return string|null
      */
-    public function getDatabaseNewRecordKey(): ?string
+    public
+    function getDatabaseNewRecordKey(): ?string
     {
         if (isset($this->outputOfProcessing['newRecordKeyValue'])) {
             return $this->outputOfProcessing['newRecordKeyValue'];
@@ -1531,7 +1565,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param string $token
      * @return bool
      */
-    public function checkMediaToken(string $user, string $token): bool
+    public
+    function checkMediaToken(string $user, string $token): bool
     {
         $this->logger->setDebugMessage("[checkMediaToken] user={$user}, token={$token}", 2);
         $returnValue = false;
@@ -1690,7 +1725,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return bool
      */
-    public function setupConnection(): bool
+    public
+    function setupConnection(): bool
     {
         return false;
     }
@@ -1699,7 +1735,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param string|null $dsn
      * @return void
      */
-    public function setupHandlers(?string $dsn = null): void
+    public
+    function setupHandlers(?string $dsn = null): void
     {
         // TODO: Implement setupHandlers() method.
     }
@@ -1720,7 +1757,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param bool $value
      * @return void
      */
-    public function requireUpdatedRecord(bool $value): void
+    public
+    function requireUpdatedRecord(bool $value): void
     {
         if ($this->dbClass) {
             $this->dbClass->requireUpdatedRecord($value);
@@ -1730,7 +1768,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return array|null
      */
-    public function getUpdatedRecord(): ?array
+    public
+    function getUpdatedRecord(): ?array
     {
         if ($this->dbClass) {
             return $this->dbClass->getUpdatedRecord();
@@ -1741,7 +1780,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return array|null
      */
-    public function updatedRecord(): ?array
+    public
+    function updatedRecord(): ?array
     {
         return $this->getUpdatedRecord();
     }
@@ -1750,7 +1790,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param array $record
      * @return void
      */
-    public function setUpdatedRecord(array $record): void
+    public
+    function setUpdatedRecord(array $record): void
     {
         $this->dbClass->setUpdatedRecord($record);
     }
@@ -1761,7 +1802,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param int $index
      * @return void
      */
-    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
+    public
+    function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
     {
         $this->dbClass->setDataToUpdatedRecord($field, $value, $index);
     }
@@ -1769,7 +1811,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return bool
      */
-    public function getUseSetDataToUpdatedRecord(): bool
+    public
+    function getUseSetDataToUpdatedRecord(): bool
     {
         if ($this->dbClass) {
             return $this->dbClass->getUseSetDataToUpdatedRecord();
@@ -1780,7 +1823,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return void
      */
-    public function clearUseSetDataToUpdatedRecord(): void
+    public
+    function clearUseSetDataToUpdatedRecord(): void
     {
         if ($this->dbClass) {
             $this->dbClass->clearUseSetDataToUpdatedRecord();
@@ -1792,7 +1836,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param array|null $conditions
      * @return array|null
      */
-    public function queryForTest(string $table, ?array $conditions = null): ?array
+    public
+    function queryForTest(string $table, ?array $conditions = null): ?array
     {
         return null;
     }
@@ -1802,7 +1847,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param array|null $conditions
      * @return bool
      */
-    public function deleteForTest(string $table, ?array $conditions = null): bool
+    public
+    function deleteForTest(string $table, ?array $conditions = null): bool
     {
         return false;
     }
@@ -1813,7 +1859,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return bool
      */
-    public function hasTransaction(): bool
+    public
+    function hasTransaction(): bool
     {
         return $this->dbClass->hasTransaction();
     }
@@ -1821,7 +1868,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return bool
      */
-    public function inTransaction(): bool
+    public
+    function inTransaction(): bool
     {
         return $this->dbClass->inTransaction();
     }
@@ -1829,7 +1877,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return void
      */
-    public function beginTransaction(): void
+    public
+    function beginTransaction(): void
     {
         $this->dbClass->beginTransaction();
     }
@@ -1837,7 +1886,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return void
      */
-    public function commitTransaction(): void
+    public
+    function commitTransaction(): void
     {
         $this->dbClass->commitTransaction();
     }
@@ -1845,7 +1895,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return void
      */
-    public function rollbackTransaction(): void
+    public
+    function rollbackTransaction(): void
     {
         $this->dbClass->rollbackTransaction();
     }
@@ -1853,7 +1904,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return void
      */
-    public function closeDBOperation(): void
+    public
+    function closeDBOperation(): void
     {
         $this->dbClass->closeDBOperation();
     }
@@ -1863,7 +1915,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @return mixed
      * @throws Exception
      */
-    public function normalizedCondition(array $condition)
+    public
+    function normalizedCondition(array $condition)
     {
         throw new Exception("Don't use normalizedCondition method on DBClass instance without FileMaker ones.");
     }

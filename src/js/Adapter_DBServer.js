@@ -692,6 +692,7 @@ const INTERMediator_DBAdapter = {
     [params, extCountSort] = INTERMediator_DBAdapter.parseAdditionalSortParameter(
       params, INTERMediator.additionalSortKey[args.name], extCountSort);
     params = INTERMediator_DBAdapter.parseLocalContext(args, params, extCount, extCountSort)[0]
+
     return params
   },
 
@@ -1220,6 +1221,12 @@ const INTERMediator_DBAdapter = {
       await INTERMediatorOnPage.retrieveAuthInfo()
       await INTERMediator_DBAdapter.server_access_async(params, 1053, 1054, null, null, null)
     }
+  },
+
+  mentenance: async function () {
+    let params = 'access=maintenance'
+    await INTERMediatorOnPage.retrieveAuthInfo()
+    await INTERMediator_DBAdapter.server_access_async(params, 1056, 1054, null, null, null)
   }
 }
 

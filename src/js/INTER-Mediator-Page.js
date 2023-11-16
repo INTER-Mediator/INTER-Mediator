@@ -95,6 +95,7 @@ let INTERMediatorOnPage = {
   alwaysGenSHA2: false,
   isFollowingTimezone: false,
   isSAML: false,
+  activateMaintenanceCall: false,
   /*
   This method 'getMessages' is going to be replaced valid one with the browser's language.
   Here is defined to prevent the warning of static check.

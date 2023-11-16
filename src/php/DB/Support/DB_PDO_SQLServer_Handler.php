@@ -30,7 +30,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
     /**
      * @var string
      */
-    protected string $fieldNameForField = 'name';
+    public string $fieldNameForField = 'name';
     /**
      * @var string
      */
@@ -167,7 +167,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
      * @param string $tableName
      * @return string
      */
-    protected function getTableInfoSQL(string $tableName): string
+    public function getTableInfoSQL(string $tableName): string
     {
         $fields = "c.name, t.name type, c.max_length, c.precision, c.scale, c.is_nullable, " .
             "c.is_identity, c.default_object_id, c.is_computed, c.collation_name";

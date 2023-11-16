@@ -121,6 +121,7 @@ class GenerateJSCode
         $passwordHash = ($passwordHash === '2m') ? 1.5 : floatval($passwordHash);
         $isSAML = $options['authentication']['is-saml'] ?? $isSAML ?? false;
         $samlWithBuiltInAuth = $options['authentication']['saml-builtin-auth'] ?? $samlWithBuiltInAuth ?? false;
+        $activateGenerator = Params::getParameterValue("activateGenerator", false);
 
         $documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? 'Not_on_web_server';
 
@@ -383,7 +384,9 @@ class GenerateJSCode
         $this->generateAssignJS("INTERMediatorOnPage.alwaysGenSHA2", $alwaysGenSHA2 ? "true" : "false");
         $this->generateAssignJS("INTERMediatorOnPage.serverPHPVersionFull", $q, PHP_VERSION, $q);
         $this->generateAssignJS("INTERMediatorOnPage.serverPHPVersion", PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION);
-
+        if($activateGenerator) {
+            $this->generateAssignJS("INTERMediatorOnPage.activateMaintenanceCall", "true");
+        }
     }
 
     /**
