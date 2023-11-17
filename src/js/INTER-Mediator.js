@@ -386,7 +386,7 @@ const INTERMediator = {
     IMLibLocalContext.setValue("_im_sb_cid", id)
   },
 
-  scrollBack: (bias = 0, dontScroll = false) => {
+  scrollBack: (bias = 0, dontScroll = false, scrollTarget = null) => {
     const contextName = IMLibLocalContext.getValue("_im_sb_contextName")
     const targetId = IMLibLocalContext.getValue("_im_sb_cid")
     if (targetId && contextName) {
@@ -396,8 +396,9 @@ const INTERMediator = {
       if (binding) {
         const target = document.getElementById(binding._im_repeater[0].id)
         let containingBias = ((target.tagName === "TR") ? target.parentNode.parentNode : target.parentNode).offsetTop
+        scrollTarget = scrollTarget ?? window
         if (!dontScroll) {
-          window.scrollTo({top: target.offsetTop + containingBias + bias, left: 0, behavior: 'auto'})
+          scrollTarget.scrollTo({top: target.offsetTop + containingBias + bias, left: 0, behavior: 'auto'})
         }
         INTERMediator.prepareToScrollBack('', '')
         target.animate({
