@@ -1449,7 +1449,7 @@ const IMLibPageNavigation = {
           if (INTERMediatorOnPage.masterScrollPosition) {
             window.scrollTo(INTERMediatorOnPage.masterScrollPosition.x, INTERMediatorOnPage.masterScrollPosition.y)
           }
-          INTERMediator.scrollBack(0, true)
+          // INTERMediator.scrollBack(0, true)
         })
       }
     }
