@@ -149,7 +149,12 @@ trait DB_PDO_SQLSupport
                     if (isset($condition['value'])) {
                         $isNumeric = in_array($condition['field'], $numericFields);
                         $isINOperator = strtolower(trim($condition['operator'])) == "in";
-                        $escapedValue = $this->link->quote($condition['value']);
+                        if (preg_match('/^@(.*)@$/', $condition['value'], $output)) {
+                            $escapedValue = $this->handler->quotedEntityName($output[1]);
+                            $isNumeric = false;
+                        } else {
+                            $escapedValue = $this->link->quote($condition['value']);
+                        }
                         if ($isINOperator) {
                             $escapedValue = $this->arrayToItemizedString($condition['value'], $isNumeric);
                         }
@@ -167,10 +172,6 @@ trait DB_PDO_SQLSupport
                         } else {
                             $queryClauseArray[$chunkCount][] = "{$escapedField} {$condition['operator']} {$escapedValue}";
                         }
-//                        $queryClauseArray[$chunkCount][]
-//                            = (!$isNumeric || $isINOperator || $isLIKEOperator)
-//                            ? "{$escapedField} {$condition['operator']} {$escapedValue}"
-//                            : ("{$escapedField} {$condition['operator']} " . floatval($condition['value']));
                     } else {
                         $queryClauseArray[$chunkCount][] = "{$escapedField} {$condition['operator']}";
                     }
@@ -183,6 +184,11 @@ trait DB_PDO_SQLSupport
             $result .= ")";
         }
         return $result;
+    }
+
+    private function processingValue(string $str)
+    {
+        return $str;
     }
 
     /**
