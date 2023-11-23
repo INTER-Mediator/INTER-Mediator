@@ -70,7 +70,7 @@ spl_autoload_register(function (string $className):bool {
 
 // Define constant
 $fmt = new IntlDateFormatter(
-    Params::getParameterValue("appLocale", "UTC"),
+    Params::getParameterValue("appLocale", locale_get_default()),
     IntlDateFormatter::FULL,
     IntlDateFormatter::NONE,
     Params::getParameterValue("defaultTimezone", "UTC"),
