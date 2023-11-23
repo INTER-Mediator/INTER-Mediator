@@ -1085,8 +1085,8 @@ if node[:platform] == 'ubuntu'
   end
 end
 
-execute "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout master && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git" do
-  command "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout master && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git"
+execute "if [ ! -e /var/www/html/INTER-Mediator ]; then cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout master && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git; fi" do
+  command "if [ ! -e /var/www/html/INTER-Mediator ]; then cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout master && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git; fi"
 end
 
 if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
