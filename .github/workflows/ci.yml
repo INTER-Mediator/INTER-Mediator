@@ -9,19 +9,17 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: CI
         shell: bash
         run: |
           cp .github/workflows/Dockerfile Dockerfile
           docker build -t inter-mediator-ubuntu .
           docker run --privileged -d --name ubuntu --rm inter-mediator-ubuntu
-          docker exec -i ubuntu sh -c "git clone https://github.com/INTER-Mediator/INTER-Mediator"
-          docker exec -i ubuntu sh -c "cd INTER-Mediator; git fetch --all; git checkout master"
           docker exec -i ubuntu sh -c "apt-get update"
-          docker exec -i ubuntu sh -c "cd INTER-Mediator; gem install net-ssh -v 6.1.0 --no-doc; gem install itamae --no-doc"
-          docker exec -i ubuntu sh -c "cd INTER-Mediator; itamae local --node-json dist-docs/vm-for-trial/node.json dist-docs/vm-for-trial/recipe.rb"
-          docker exec -i ubuntu sh -c "cd INTER-Mediator; echo y | sh /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh"
+          docker exec -i ubuntu sh -c "cd /var/www/html/INTER-Mediator; gem install net-ssh -v 6.1.0 --no-doc; gem install itamae --no-doc"
+          docker exec -i ubuntu sh -c "cd /var/www/html/INTER-Mediator; itamae local --node-json dist-docs/vm-for-trial/node.json dist-docs/vm-for-trial/recipe.rb"
+          docker exec -i ubuntu sh -c "echo y | sh /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh"
           docker exec -i ubuntu sh -c "php -v; php -m; locale -a; locale"
           docker exec -i ubuntu sh -c "chown -R www-data /var/www"
           docker exec -i ubuntu sh -c "curl -sS https://getcomposer.org/installer | php ; mv composer.phar /usr/local/bin/composer; chmod +x /usr/local/bin/composer"
