@@ -50,7 +50,7 @@ describe file('/etc/yum.repos.d/mariadb.repo'), :if => os[:family] == 'redhat' &
   its(:content) { should match /baseurl = https:\/\/dlm.mariadb.com\/repo\/mariadb-server\/10.7\/yum\/rhel\/7\/x86_64/ }
 end
 describe file('/etc/yum.repos.d/mariadb.repo'), :if => os[:family] == 'redhat' && os[:release].to_f >= 8 do
-  its(:content) { should match /baseurl = https:\/\/dlm.mariadb.com\/repo\/mariadb-server\/11.1\/yum\/rhel\/8\/x86_64/ }
+  its(:content) { should match /baseurl = https:\/\/dlm.mariadb.com\/repo\/mariadb-server\/11.2\/yum\/rhel\/8\/x86_64/ }
 end
 describe package('MariaDB-server'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
   it { should be_installed }
@@ -428,6 +428,9 @@ describe package('php7.2-intl'), :if => os[:family] == 'ubuntu' && os[:release].
   it { should be_installed }
 end
 describe package('php-intl'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 18 do
+  it { should be_installed }
+end
+describe package('glibc-langpack-ja'), :if => os[:family] == 'redhat' && os[:release].to_f >= 8 do
   it { should be_installed }
 end
 
