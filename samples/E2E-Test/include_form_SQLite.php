@@ -77,7 +77,28 @@ IM_Entry(
             ]
         ],
     ),
-    [],
+    [
+        "terms" => [
+            "en" => [
+                "header" => "INTER-Mediator - Sample - Form Style/SQLite",
+                "category" => "Category",
+                "check" => "Check",
+                "page" => ["title" => "Contact Management (Sample for Several Fundamental Features",],
+                "way" => [
+                    "Calling" => "Telephone",
+                    "Mail" => "Paper Mail",
+                    "Email" => "Electronic Mail",],],
+            "ja" => [
+                "header" => "INTER-Mediator - サンプル - フォーム形式/SQLite",
+                "category" => "カテゴリ",
+                "check" => "チェック",
+                "page" => ["title" => "コンタクト先管理 (さまざまな機能を確認するためのサンプル)"],
+                "way" => [
+                    "Calling" => "電話",
+                    "Mail" => "手紙",
+                    "Email" => "電子メール",],]
+        ],
+    ],
     array(
         'db-class' => 'PDO',
         'dsn' => getenv('GITHUB_ACTIONS')
