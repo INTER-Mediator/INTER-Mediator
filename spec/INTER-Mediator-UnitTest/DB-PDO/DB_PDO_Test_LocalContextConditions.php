@@ -8,15 +8,19 @@ trait DB_PDO_Test_LocalContextConditions
             $conditionExpected = str_replace('"', '`', $conditionExpected);
         }
         $this->dbProxySetupForCondition($query);
-        if(is_array($conditions)) {
+        if (is_array($conditions)) {
             foreach ($conditions as $item) {
                 $this->db_proxy->dbSettings->addExtraCriteria($item['field'],
                     $item['operator'] ?? "=", $item['value'] ?? null);
             }
         }
         $this->db_proxy->dbClass->setupHandlers();
-        $clause = $this->db_proxy->dbClass->getWhereClauseForTest('read');
-        $this->assertEquals($conditionExpected, $clause, "Condition must be followed settings.");
+        try {
+            $clause = $this->db_proxy->dbClass->getWhereClauseForTest('read');
+            $this->assertEquals($conditionExpected, $clause, "Condition must be followed settings.");
+        } catch (Exception $ex) {
+            $this->assertTrue(null, "Exception in getWhereClauseForTest().");
+        }
     }
 
     public function testAddingNoLCCondtions1()
@@ -225,6 +229,7 @@ trait DB_PDO_Test_LocalContextConditions
             '((("num0" = \'100\' OR "num0" < \'300\') AND ("num1" = 100 OR "num1" < 300))'
             . ' AND ((("f1" = \'valueA\' OR "f2" = \'valueA\') OR ("f1" = \'extra\' OR "f2" = \'extra\')) OR ("f1" < \'valueB\' OR "f2" < \'valueB\') OR ("f3" = \'valueC\')))');
     }
+
     public function testAddingLCCondtions12()
     {
         $this->checkConditions(null,

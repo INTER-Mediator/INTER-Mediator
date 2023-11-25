@@ -355,4 +355,35 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     {
         return "CAST({$field} AS TEXT) LIKE {$value}";
     }
+
+    public function sqlCREATEUSERCommand(string $dbName, string $userEntity, string $password): string
+    {
+        $quotedDB = $this->quotedEntityName($dbName);
+        $justUsername = explode("@", $userEntity)[0];
+        $quotedPassword = $this->dbClassObj->link->quote($password);
+        return
+            // "CREATE USER {$justUsername} PASSWORD {$quotedPassword};\n".
+            "DROP SCHEMA IF EXISTS {$quotedDB} CASCADE;"
+            . "CREATE SCHEMA {$quotedDB};"
+            . "SET search_path TO {$quotedDB},public;"
+            . "ALTER USER web SET search_path TO {$quotedDB},public;"
+            . "GRANT ALL PRIVILEGES ON SCHEMA {$quotedDB} TO {$justUsername};";
+    }
+
+    /**
+     * @return string SQL command returns database list
+     */
+    public function sqlLISTDATABASECommand(): string
+    {
+        return "SELECT datname, datdba, encoding, datcollate, datctype FROM pg_database;";
+    }
+
+    /**
+     * @return string The field name for database name in the result of database list
+     */
+    public function sqlLISTDATABASEColumn(): string
+    {
+        return "datname";
+    }
+
 }

@@ -799,25 +799,29 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->dbClass->setUpSharedObjects($this);
         if ($isDBClassNull) {
             if ($this->activateGenerator) { // In case of Generator activated
-                $originalDSN = $this->dbSettings->getDbSpecDSN();
-                $generator = new Generator($this);
-                $this->dbSettings->setDbSpecDSN($generator->generateDSN());
-                if (!$this->dbClass->setupConnection()) { // Connection without dbname
+                try {
+                    $originalDSN = $this->dbSettings->getDbSpecDSN();
+                    $this->logger->setDebugMessage("[Schema Generator]originalDSN " . var_export($originalDSN, true), 2);
+                    $generator = new Generator($this);
+                    $this->dbSettings->setDbSpecDSN($generator->generateDSN(true));
+                    if (!$this->dbClass->setupConnection()) { // Connection without dbname
+                        return false;
+                    }
+                    $this->dbClass->setupHandlers();
+                    $generator->prepareDatabase(); // If the database doesn't exist, it's going to create here.
+                    $this->dbSettings->setDbSpecDSN($originalDSN);
+                    if (!$this->dbClass->setupConnection()) { // Recreating database connection
+                        return false;
+                    }
+                } catch (Exception $ex) { // Catching the exception within Generator class.
                     return false;
                 }
-                $this->dbClass->setupHandlers();
-                $generator->prepareDatabase(); // If the database doesn't exist, it's going to create here.
-                $this->dbSettings->setDbSpecDSN($originalDSN);
-                if (!$this->dbClass->setupConnection()) { // Recreating database connection
-                    return false;
-                }
-                $this->dbClass->setupHandlers();
             } else { // Here is normal operations for Database Class.
                 if (!$this->dbClass->setupConnection()) {
                     return false;
                 }
-                $this->dbClass->setupHandlers();
             }
+            $this->dbClass->setupHandlers();
         }
         if (!Params::getParameterValue('prohibitDebugMode', false) && $debug) {
             $this->logger->setDebugMode($debug);

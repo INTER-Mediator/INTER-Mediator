@@ -417,4 +417,28 @@ mysql> show columns from item_display;
         }
         return null;
     }
+
+    public function sqlCREATEUSERCommand(string $dbName, string $userEntity, string $password): string
+    {
+        $quotedDB = $this->quotedEntityName($dbName);
+        $quotedUser = $this->quotedData($userEntity, "@");
+        $quotedPassword = $this->dbClassObj->link->quote($password);
+        return "CREATE USER IF NOT EXISTS {$quotedUser};\n"
+            . "GRANT SELECT, INSERT, DELETE, UPDATE, SHOW VIEW ON TABLE {$quotedDB}.* TO {$quotedUser};\n"
+            . "SET PASSWORD FOR {$quotedUser} = {$quotedPassword};\n";
+    }
+
+    /**
+     * @return string SQL command returns database list
+     */
+    public function sqlLISTDATABASECommand(): string{
+        return "SHOW DATABASES;";
+    }
+
+    /**
+     * @return string The field name for database name in the result of database list
+     */
+    public function sqlLISTDATABASEColumn(): string{
+        return "Database";
+    }
 }

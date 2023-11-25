@@ -330,4 +330,22 @@ contact_way|6
         }
         return $returnValue;
     }
+
+    public function sqlLISTDATABASECommand(): string
+    {
+        // schema generation does not support.
+        return '';
+    }
+
+    public function sqlLISTDATABASEColumn(): string
+    {
+        // schema generation does not support.
+        return '';
+    }
+
+    public function sqlCREATEUSERCommand(string $dbName, string $userEntity, string $password): string
+    {
+        // schema generation does not support.
+        return '';
+    }
 }

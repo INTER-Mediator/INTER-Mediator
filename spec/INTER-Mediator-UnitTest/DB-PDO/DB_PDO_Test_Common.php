@@ -30,6 +30,7 @@ abstract class DB_PDO_Test_Common extends TestCase
     protected string $sqlSETClause1;
     protected string $sqlSETClause2;
     protected string $sqlSETClause3;
+    protected string $lcConditionLike;
 
     abstract function dbProxySetupForAccess(string $contextName, int $maxRecord, ?string $subContextName = null): void;
 

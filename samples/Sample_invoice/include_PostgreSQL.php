@@ -116,5 +116,5 @@ IM_Entry(
         'db-class' => 'PDO',
         'dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db',
     ),
-    false
+    2
 );

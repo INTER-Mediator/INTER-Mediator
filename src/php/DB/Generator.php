@@ -18,6 +18,7 @@ namespace INTERMediator\DB;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
 use PDOException;
+use Exception;
 
 /**
  *
@@ -25,11 +26,11 @@ use PDOException;
 class Generator
 {
     /**
-     * @var string|array|mixed
+     * @var string
      */
     private string $generatorUser;
     /**
-     * @var string|array|mixed
+     * @var string
      */
     private string $generatorPassword;
     /**
@@ -57,13 +58,15 @@ class Generator
      */
     private ?array $contextDef;
     /**
-     * @var array|mixed|null
+     * @var array|null
      */
     private ?array $schemaInfo;
     /**
-     * @var array|mixed|null
+     * @var array|null
      */
     private ?array $options;
+
+    private array $supportDB = ["mysql",/* "pgsql" */];
 
     /**
      * @param Proxy $proxy
@@ -99,7 +102,7 @@ class Generator
         }
 
         $contextDef = $this->proxy->dbSettings->getDataSourceTargetArray();
-        $fieldList = $this->getFieldList($parentContextDef['key'] ?? null);
+        $fieldList = $this->getFieldList();
         if (!isset($contextDef['aggregation-select'])) {
             $targetTable = $this->proxy->dbSettings->getEntityForUpdate();
             if (!isset($this->schemaInfo['tables'][$targetTable])) {
@@ -131,7 +134,7 @@ class Generator
 
     /**
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function generate(): void
     {
@@ -142,13 +145,13 @@ class Generator
             $this->link = new \PDO($this->generateDSN(), $this->generatorUser, $this->generatorPassword, []);
             $sql = $this->proxy->dbClass->handler->sqlSELECTDATABASECommand($this->schemaInfo['dbName']);
             $this->logger->setDebugMessage("[Schema Generator] {$sql}");
-            $result = $this->link->query($sql);
+            $this->link->query($sql);
         } catch (PDOException $ex) {
             $this->logger->setErrorMessage('[Schema Generator] ' . $ex->getMessage());
         }
 
         // Detect foreign key from rom relationship
-        foreach ($this->schemaInfo['tables'] as $table => $info) {
+        foreach ($this->schemaInfo['tables'] as $info) {
             if (isset($info['contextDef-relation'])) {
                 $parentContextName = $info['contextDef-parent-name'];
                 foreach ($info['contextDef-relation'] as $item) {
@@ -219,7 +222,7 @@ class Generator
                 $this->logger->setDebugMessage("[Schema Generator] Execute SQL:\n{$sql}");
                 $result = $this->link->query($sql);            // Send schema commands
                 if (!$result) {
-                    throw (new \Exception("Failed in schema operations."));
+                    throw (new Exception("Failed in schema operations."));
                 }
                 $this->logger->setWarningMessage("[Schema Operations are executed]\n"
                     . "The SQL command just executed are here but they are stored in the console of your browser for now. \n\n{$sql}");
@@ -234,7 +237,7 @@ class Generator
     public function prepareDatabase(): void
     {
         try {        // Establishing the connection with database
-            $this->link = new \PDO($this->generateDSN(), $this->generatorUser, $this->generatorPassword, []);
+            $this->link = new \PDO($this->generateDSN(true), $this->generatorUser, $this->generatorPassword, []);
             if (!in_array($this->dsnElements['dbname'], $this->getDatabases())) {
                 $dbName = $this->dsnElements['dbname'];
                 $userName = "webuser";
@@ -242,19 +245,17 @@ class Generator
                 $password = str_replace("'", "z", IMUtil::randomString(20));
                 $sql = $this->proxy->dbClass->handler->sqlCREATEDATABASECommand($dbName);
                 $sql .= $this->proxy->dbClass->handler->sqlCREATEUSERCommand($dbName, $userEntity, $password);
-                // Can't use $this->proxy->dbClass->handler here, because it's before initializing dbClass property.
-                //$sql = "CREATE DATABASE {$this->dsnElements['dbname']};";
                 $this->logger->setDebugMessage("[Schema Generator] Execute SQL:\n{$sql}", 2);
-                $result = $this->link->query($sql);
+                $result = $this->link->exec($sql);
                 if (!$result) {
-                    throw (new \Exception("Failed in creating database."));
+                    throw (new Exception("Failed in creating database."));
                 }
                 $this->logger->setWarningMessage("[Database {$dbName} is created]\n"
                     . "The granted user is generated. You can set it on params.php as:\n\n"
                     . "\$dbUser = '{$userName}';\n\$dbPassword = '{$password}';\n\n"
                     . "You can copy this code on your browser's console.\n{$sql}");
             }
-        } catch (PDOException $ex) {
+        } catch (Exception $ex) {
             $this->logger->setErrorMessage('[Schema Generator] ' . $ex->getMessage());
         }
     }
@@ -266,15 +267,16 @@ class Generator
     {
         $dbs = [];
         try {
-            $sql = "SHOW DATABASES;";
+            $sql = $this->proxy->dbClass->handler->sqlLISTDATABASECommand();
+            $field = $this->proxy->dbClass->handler->sqlLISTDATABASEColumn();
             $this->logger->setDebugMessage("[Schema Generator] {$sql}");
             $result = $this->link->query($sql);
             if ($result) {
                 foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                    $dbs[] = $row['Database'];
+                    $dbs[] = $row[$field];
                 }
             }
-            //$this->logger->setDebugMessage("[Schema Generator] " . var_export($dbs, true), 2);
+            $this->logger->setDebugMessage("[Schema Generator] " . var_export($dbs, true), 2);
         } catch (PDOException $ex) {
             $this->logger->setErrorMessage('[Schema Generator] Connection Error: ' . $ex->getMessage());
         }
@@ -295,7 +297,7 @@ class Generator
         $this->dsnPrefix = trim(substr($dsn, 0, $colonPos));
         foreach (explode(';', substr($dsn, $colonPos + 1)) as $item) {
             $eqPos = strpos($item, "=");
-            if ($colonPos !== false) {
+            if ($eqPos !== false) {
                 $this->dsnElements[trim(substr($item, 0, $eqPos))] = trim(substr($item, $eqPos + 1));
             }
         }
@@ -303,10 +305,17 @@ class Generator
     }
 
     /**
+     * @param bool $withInitDB
      * @return string
+     * @throws Exception
      */
-    public function generateDSN(): string
+    public function generateDSN(bool $withInitDB = false): string
     {
+        if (!in_array($this->dsnPrefix, $this->supportDB)) {
+            $msg = "The database '{$this->dsnPrefix}' is NOT supported for Automatic Schema Generation.";
+            $this->logger->setWarningMessage($msg);
+            throw new Exception($msg);
+        }
         $dsn = '';
         if (isset($this->dsnElements['unix_socket'])) {
             $dsn = "{$this->dsnPrefix}:unix_socket={$this->dsnElements['unix_socket']}";
@@ -314,6 +323,12 @@ class Generator
             $dsn = "{$this->dsnPrefix}:host={$this->dsnElements['host']}";
             if (isset($this->dsnElements['port'])) {
                 $dsn .= ";port={$this->dsnElements['port']}";
+            }
+        }
+        if ($withInitDB && $this->dsnPrefix == 'pgsql') {
+            $initDB = Params::getParameterValue('dbInitalDBName', null);
+            if ($initDB) {
+                $dsn .= ";dbname={$initDB}";
             }
         }
         return $dsn;
@@ -367,10 +382,9 @@ class Generator
     }
 
     /**
-     * @param string|null $parentKey
      * @return array
      */
-    private function getFieldList(?string $parentKey = null): array
+    private function getFieldList(): array
     {
         $fields = [];
         $contextDef = $this->proxy->dbSettings->getDataSourceTargetArray();
