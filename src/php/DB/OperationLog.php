@@ -44,11 +44,11 @@ class OperationLog
      */
     private ?string $dbDSNLog;
     /**
-     * @var bool
+     * @var array|null
      */
     private ?array $recordingContexts;
     /**
-     * @var bool
+     * @var array|null
      */
     private ?array $recordingOperations;
     /**
