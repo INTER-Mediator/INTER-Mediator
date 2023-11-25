@@ -665,6 +665,9 @@ elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 8
   execute 'dnf -y install php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap php-intl' do
     command 'dnf -y install php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap php-intl'
   end
+  package 'glibc-langpack-ja' do
+    action :install
+  end
   if node[:platform_version].to_f < 6
     package 'php-mbstring' do
       action :install
