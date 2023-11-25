@@ -1,8 +1,8 @@
 module.exports = (AuthPage) => {
   describe('Login required page', () => {
     const waiting = 500
-    const alwaysEnglish = false
-    const alwaysJapaese = true
+    const alwaysEnglish = true
+    const alwaysJapaese = false
     let isJapanese = false
     if (alwaysEnglish && !alwaysJapaese) {
       isJapanese = false
