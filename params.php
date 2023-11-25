@@ -39,7 +39,8 @@ $dbOption = array();
 // In case of MySQL, the following account is convenient for generating schema.
 //$dbUser = 'root';
 //$dbPassword = '';
-//$dbDSN = 'mysql:host=127.0.0.1;dbname=test_db2;charset=utf8mb4';
+//$dbDSN = 'mysql:host=127.0.0.1;dbname=test_db3;charset=utf8mb4';
+//$dbDSN = 'pgsql:host=localhost;port=5432;dbname=test_db4';
 // The generated db user is going to replace below.
 //$dbUser = 'webuser';
 //$dbPassword = '<Bhc)"){3*e3o:cYdhN-';

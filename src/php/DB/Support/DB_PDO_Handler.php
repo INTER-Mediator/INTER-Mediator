@@ -141,6 +141,13 @@ abstract class DB_PDO_Handler
      */
     public abstract function sqlINSERTCommand(string $tableRef, string $setClause): string;
 
+    public abstract function sqlLISTDATABASECommand(): string;
+
+    /**
+     * @return string The field name for database name in the result of database list
+     */
+    public abstract function sqlLISTDATABASEColumn(): string;
+
     /**
      * @param string $tableRef
      * @param string $setClause
@@ -196,15 +203,7 @@ abstract class DB_PDO_Handler
         return "USE {$this->quotedEntityName($dbName)};\n";
     }
 
-    public function sqlCREATEUSERCommand(string $dbName, string $userEntity, string $password): string
-    {
-        $quotedDB = $this->quotedEntityName($dbName);
-        $quotedUser = $this->quotedData($userEntity, "@");
-        $quotedPassword = $this->dbClassObj->link->quote($password);
-        return "CREATE USER IF NOT EXISTS {$quotedUser};\n"
-            . "GRANT SELECT, INSERT, DELETE, UPDATE, SHOW VIEW ON TABLE {$quotedDB}.* TO {$quotedUser};\n"
-            . "SET PASSWORD FOR {$quotedUser} = {$quotedPassword};\n";
-    }
+    public abstract function sqlCREATEUSERCommand(string $dbName, string $userEntity, string $password): string;
 
     /**
      * @param string $data

@@ -65,6 +65,8 @@ class Generator
      */
     private ?array $options;
 
+    private array $supportDB = ["mysql",/* "pgsql" */];
+
     /**
      * @param Proxy $proxy
      */
@@ -234,7 +236,7 @@ class Generator
     public function prepareDatabase(): void
     {
         try {        // Establishing the connection with database
-            $this->link = new \PDO($this->generateDSN(), $this->generatorUser, $this->generatorPassword, []);
+            $this->link = new \PDO($this->generateDSN(true), $this->generatorUser, $this->generatorPassword, []);
             if (!in_array($this->dsnElements['dbname'], $this->getDatabases())) {
                 $dbName = $this->dsnElements['dbname'];
                 $userName = "webuser";
@@ -242,10 +244,8 @@ class Generator
                 $password = str_replace("'", "z", IMUtil::randomString(20));
                 $sql = $this->proxy->dbClass->handler->sqlCREATEDATABASECommand($dbName);
                 $sql .= $this->proxy->dbClass->handler->sqlCREATEUSERCommand($dbName, $userEntity, $password);
-                // Can't use $this->proxy->dbClass->handler here, because it's before initializing dbClass property.
-                //$sql = "CREATE DATABASE {$this->dsnElements['dbname']};";
                 $this->logger->setDebugMessage("[Schema Generator] Execute SQL:\n{$sql}", 2);
-                $result = $this->link->query($sql);
+                $result = $this->link->exec($sql);
                 if (!$result) {
                     throw (new \Exception("Failed in creating database."));
                 }
@@ -266,15 +266,16 @@ class Generator
     {
         $dbs = [];
         try {
-            $sql = "SHOW DATABASES;";
+            $sql = $this->proxy->dbClass->handler->sqlLISTDATABASECommand();
+            $field = $this->proxy->dbClass->handler->sqlLISTDATABASEColumn();
             $this->logger->setDebugMessage("[Schema Generator] {$sql}");
             $result = $this->link->query($sql);
             if ($result) {
                 foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                    $dbs[] = $row['Database'];
+                    $dbs[] = $row[$field];
                 }
             }
-            //$this->logger->setDebugMessage("[Schema Generator] " . var_export($dbs, true), 2);
+            $this->logger->setDebugMessage("[Schema Generator] " . var_export($dbs, true), 2);
         } catch (PDOException $ex) {
             $this->logger->setErrorMessage('[Schema Generator] Connection Error: ' . $ex->getMessage());
         }
@@ -304,9 +305,15 @@ class Generator
 
     /**
      * @return string
+     * @throws \Exception
      */
-    public function generateDSN(): string
+    public function generateDSN($withInitDB = false): string
     {
+        if(!in_array($this->dsnPrefix, $this->supportDB)){
+            $msg = "The database '{$this->dsnPrefix}' is NOT supported for Automatic Schema Generation.";
+            $this->logger->setWarningMessage($msg);
+            throw new \Exception($msg);
+        }
         $dsn = '';
         if (isset($this->dsnElements['unix_socket'])) {
             $dsn = "{$this->dsnPrefix}:unix_socket={$this->dsnElements['unix_socket']}";
@@ -314,6 +321,12 @@ class Generator
             $dsn = "{$this->dsnPrefix}:host={$this->dsnElements['host']}";
             if (isset($this->dsnElements['port'])) {
                 $dsn .= ";port={$this->dsnElements['port']}";
+            }
+        }
+        if ($withInitDB && $this->dsnPrefix == 'pgsql') {
+            $initDB = Params::getParameterValue('dbInitalDBName', null);
+            if ($initDB) {
+                $dsn .= ";dbname={$initDB}";
             }
         }
         return $dsn;
