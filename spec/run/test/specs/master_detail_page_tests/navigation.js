@@ -104,8 +104,9 @@ module.exports = (mdPage) => {
     })
     it('6-can move to next page of navigator, and checking', async () => {
       await mdPage.navigatorMoveButtonNext.click()
-      expect(await mdPage.firstMasterButtonMoveToDetail).toExist()
-      browser.pause(waiting )
+      browser.pause(waiting)
+      await mdPage.firstMasterButtonMoveToDetail.waitForExist()
+      browser.pause(waiting)
 
       let masterCodes = await mdPage.masterFieldPostalCode
       let masterPrefs = await mdPage.masterFieldPref
@@ -122,6 +123,8 @@ module.exports = (mdPage) => {
 
       const buttons = await mdPage.masterButtonMoveToDetail
       buttons[1].click()
+      browser.pause(waiting)
+      await mdPage.firstMasterButtonMoveToDetail.waitForExist()
       browser.pause(waiting)
 
       expect(mdPage.detailFieldPostalCode).toHaveValue('1006123')
@@ -142,8 +145,10 @@ module.exports = (mdPage) => {
 
       const button = await mdPage.detailButtonMoveToMaster
       button.click()
-      expect(await mdPage.firstMasterButtonMoveToDetail).toExist()
-      browser.pause(waiting )
+      browser.pause(waiting)
+      await mdPage.firstMasterButtonMoveToDetail.waitForExist()
+      browser.pause(waiting)
+
 
       await expect(mdPage.navigator).toExist()
       expect(await mdPage.getNavigatorStyleDisplay()).not.toBe('none')
@@ -167,8 +172,9 @@ module.exports = (mdPage) => {
     })
     it('7-can back to scrolled position', async () => {
       await mdPage.navigatorMoveButtonNext.click()
-      expect(await mdPage.firstMasterButtonMoveToDetail).toExist()
-      browser.pause(waiting )
+      browser.pause(waiting)
+      await mdPage.firstMasterButtonMoveToDetail.waitForExist()
+      browser.pause(waiting)
 
       let masterCodes = await mdPage.masterFieldPostalCode
       let masterPrefs = await mdPage.masterFieldPref
@@ -186,6 +192,8 @@ module.exports = (mdPage) => {
       const buttons = await mdPage.masterButtonMoveToDetail
       buttons[99].click()
       browser.pause(waiting)
+      await mdPage.firstMasterButtonMoveToDetail.waitForExist()
+      browser.pause(waiting)
 
       expect(mdPage.detailFieldPostalCode).toHaveValue('1006633')
       expect(mdPage.detailFieldPref).toHaveValue('東京都')
@@ -201,6 +209,8 @@ module.exports = (mdPage) => {
 
       const button = await mdPage.detailButtonMoveToMaster
       button.click()
+      browser.pause(waiting)
+      await mdPage.firstMasterButtonMoveToDetail.waitForExist()
       browser.pause(waiting)
 
       await expect(mdPage.navigator).toExist()
