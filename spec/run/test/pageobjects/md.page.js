@@ -8,6 +8,10 @@ module.exports = class MasterDetailPage extends IMPage {
     return $$('.IM_Button_Master')
   }
 
+  get firstMasterButtonMoveToDetail() {
+    return $('.IM_Button_Master')
+  }
+
   get masterFieldPostalCode() {
     return $$('._im_test-master_postal_code')
   }
