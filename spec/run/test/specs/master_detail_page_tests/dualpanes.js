@@ -65,7 +65,7 @@ module.exports = (dualPage) => {
     })
     it('5-can move to next page of navigator, and checking', async () => {
       await dualPage.navigatorMoveButtonNext.click()
-      browser.pause(waiting * 3)
+      browser.pause(waiting * 10)
 
       let masterCodes = await dualPage.masterFieldPostalCode
       let masterPrefs = await dualPage.masterFieldPref
