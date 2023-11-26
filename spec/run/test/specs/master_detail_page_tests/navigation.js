@@ -104,7 +104,7 @@ module.exports = (mdPage) => {
     })
     it('6-can move to next page of navigator, and checking', async () => {
       await mdPage.navigatorMoveButtonNext.click()
-      browser.pause(waiting)
+      browser.pause(waiting * 10)
 
       let masterCodes = await mdPage.masterFieldPostalCode
       let masterPrefs = await mdPage.masterFieldPref
@@ -141,7 +141,7 @@ module.exports = (mdPage) => {
 
       const button = await mdPage.detailButtonMoveToMaster
       button.click()
-      browser.pause(waiting)
+      browser.pause(waiting * 10)
 
       await expect(mdPage.navigator).toExist()
       expect(await mdPage.getNavigatorStyleDisplay()).not.toBe('none')
@@ -165,7 +165,7 @@ module.exports = (mdPage) => {
     })
     it('7-can back to scrolled position', async () => {
       await mdPage.navigatorMoveButtonNext.click()
-      browser.pause(waiting)
+      browser.pause(waiting * 10)
 
       let masterCodes = await mdPage.masterFieldPostalCode
       let masterPrefs = await mdPage.masterFieldPref
