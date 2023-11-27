@@ -76,6 +76,38 @@ IM_Entry(
                 ["id" => "select3", "num" => 30]
             ]
         ],
+        [
+            "name" => "postalcode",
+            "view" => "postalcode",
+            "key" => "id",
+            "records" => 100,
+            "paging" => true,
+            "navi-control" => "master-hide",
+            "sort" => [["field" => "f3", "direction" => "asc",],],],
+        [
+            "name" => "detail",
+            "view" => "postalcode",
+            "table" => "postalcode",
+            "key" => "id",
+            "records" => 1,
+            "navi-control" => "detail-update",
+        ],
+        [
+            "name" => "postalcode-dp",
+            "view" => "postalcode",
+            "key" => "id",
+            "records" => 100,
+            "paging" => true,
+            "navi-control" => "master",
+            "sort" => [["field" => "f3", "direction" => "asc",],],],
+        [
+            "name" => "detail-dp",
+            "view" => "postalcode",
+            "table" => "postalcode",
+            "key" => "id",
+            "records" => 1,
+            "navi-control" => "detail",
+        ]
     ),
     [
         "terms" => [

@@ -1,6 +1,10 @@
 const EditingPage = require('../pageobjects/editing_page_postgresql.page');
-const waiting = 500
-let pageTitle = "INTER-Mediator - Sample - Editing/PostgreSQL"
+
+const integerTest = require('./editing_page_tests/integer')
+const realTest = require('./editing_page_tests/real')
+const booleanTest = require('./editing_page_tests/boolean')
+const stringTest = require('./editing_page_tests/string')
+const datetimeTest = require('./editing_page_tests/datetime')
 
 describe('Editing Page with PostgreSQL', () => {
   /*
@@ -11,7 +15,7 @@ describe('Editing Page with PostgreSQL', () => {
    */
   it('1.can open with the valid title.', async () => {
     await EditingPage.open()
-    await expect(browser).toHaveTitle(pageTitle)
+    await expect(browser).toHaveTitle("INTER-Mediator - Sample - Editing/PostgreSQL")
   })
   /*
   Summary: Pagination Control
@@ -45,18 +49,13 @@ describe('Editing Page with PostgreSQL', () => {
     await EditingPage.navigatorInsertButton.click()
     await EditingPage.navigatorUpdateButton.waitForClickable()
     await EditingPage.navigatorUpdateButton.click()
-    await browser.pause(waiting)
+    await browser.pause(500)
     await EditingPage.reopen()
   })
-  const integerTest = require('./editing_page_tests/integer')
   integerTest(EditingPage)
-  const realTest = require('./editing_page_tests/real')
   realTest(EditingPage)
-  const booleanTest = require('./editing_page_tests/boolean')
   booleanTest(EditingPage)
-  const stringTest = require('./editing_page_tests/string')
   stringTest(EditingPage)
-  const datetimeTest = require('./editing_page_tests/datetime')
   datetimeTest(EditingPage)
 })
 
