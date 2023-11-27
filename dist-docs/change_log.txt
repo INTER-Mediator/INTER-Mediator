@@ -30,7 +30,8 @@ Ver.12 (In Development)
 - [BUG FIX] The INPUT[type=datetime-local] elements reported someone edit your modified data, but it was new record data
   after updateing is not adjusted to UTC correctly. Also INTERMediatorLib.dateTimeStringISO and some method returns
   browser local date and time.
-- [BUG FIX] Fix an error when using PHP 8.1.25 or later / PHP 8.2.12 or later / PHP 8.3.0 or later and $appLocale is undefined in params.php.
+- [BUG FIX] Fix an error when using PHP 8.3.0 or later / PHP 8.1.25  / PHP 8.2.12 and $appLocale is undefined in
+  params.php.
 
 Ver.11 (July 27, 2023)
 - Generic exporting class prepared as DB\Export.php.
