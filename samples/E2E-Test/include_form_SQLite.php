@@ -107,6 +107,20 @@ IM_Entry(
             "key" => "id",
             "records" => 1,
             "navi-control" => "detail",
+        ],
+        [
+            "name" => "postalcode-sep",
+            "view" => "postalcode",
+            "key" => "id",
+            "records" => 100,
+            "paging" => true,
+            "sort" => [["field" => "f3", "direction" => "asc",],],],
+        [
+            "name" => "detail-sep",
+            "view" => "postalcode",
+            "table" => "postalcode",
+            "key" => "id",
+            "records" => 1,
         ]
     ),
     [
