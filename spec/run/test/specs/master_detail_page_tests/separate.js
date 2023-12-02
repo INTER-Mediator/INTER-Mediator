@@ -102,7 +102,7 @@ module.exports = (separatePage) => {
       const buttons = await separatePage.masterButtonMoveToDetail
       buttons[1].click()
       browser.pause(waiting)
-      await separatePage.firstMasterButtonMoveToDetail.waitForExist()
+      await separatePage.detailButtonMoveToMaster.waitForExist()
       browser.pause(waiting)
 
       await expect(separatePage.navigator).not.toExist()
@@ -158,7 +158,7 @@ module.exports = (separatePage) => {
       const buttons = await separatePage.masterButtonMoveToDetail
       buttons[99].click()
       browser.pause(waiting)
-      await separatePage.firstMasterButtonMoveToDetail.waitForExist()
+      await separatePage.detailButtonMoveToMaster.waitForExist()
       browser.pause(waiting)
 
       await expect(separatePage.navigator).not.toExist()

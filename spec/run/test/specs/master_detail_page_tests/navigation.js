@@ -124,7 +124,7 @@ module.exports = (mdPage) => {
       const buttons = await mdPage.masterButtonMoveToDetail
       buttons[1].click()
       browser.pause(waiting)
-      await mdPage.firstMasterButtonMoveToDetail.waitForExist()
+      await mdPage.detailButtonMoveToMaster.waitForExist()
       browser.pause(waiting)
 
       expect(mdPage.detailFieldPostalCode).toHaveValue('1006123')
@@ -192,7 +192,7 @@ module.exports = (mdPage) => {
       const buttons = await mdPage.masterButtonMoveToDetail
       buttons[99].click()
       browser.pause(waiting)
-      await mdPage.firstMasterButtonMoveToDetail.waitForExist()
+      await mdPage.detailButtonMoveToMaster.waitForExist()
       browser.pause(waiting)
 
       expect(mdPage.detailFieldPostalCode).toHaveValue('1006633')
