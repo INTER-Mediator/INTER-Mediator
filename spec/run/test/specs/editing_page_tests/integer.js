@@ -1,4 +1,4 @@
-const EditingPage = require("../../pageobjects/editing_page_mysql.page");
+const EditingPage = require("../../pageobjects/EditingPage/editing_page_mysql.page");
 module.exports = (EditingPage) => {
   describe("Integer Field", function () {
     const waiting = 500
