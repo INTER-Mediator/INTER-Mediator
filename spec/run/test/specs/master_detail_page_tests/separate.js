@@ -3,9 +3,9 @@ module.exports = (separatePage) => {
 
   describe('Master-Detail Page', () => {
     it('1-can show the Master area, and disappear the Detail area.', async () => {
-      expect(await separatePage.navigator).toExist()
-      expect(await separatePage.masterTable).toExist()
-      expect(await separatePage.detailTable).not.toExist()
+      await expect(separatePage.navigator).toExist()
+      await expect(separatePage.masterTable).toExist()
+      await expect(separatePage.detailTable).not.toExist()
     });
     it('2-can show the data from database.', async () => {
       expect(await separatePage.masterFieldPostalCode.length).toBe(100)
@@ -34,9 +34,9 @@ module.exports = (separatePage) => {
       buttons[3].click()
       browser.pause(waiting)
 
-      expect(await separatePage.navigator).not.toExist()
-      expect(await separatePage.masterTable).not.toExist()
-      expect(await separatePage.detailTable).toExist()
+      await expect(separatePage.navigator).not.toExist()
+      await expect(separatePage.masterTable).not.toExist()
+      await expect(separatePage.detailTable).toExist()
 
       expect(separatePage.detailFieldPostalCode).toHaveValue('1000003')
       expect(separatePage.detailFieldPref).toHaveValue('東京都')
@@ -48,20 +48,21 @@ module.exports = (separatePage) => {
       button.click()
       browser.pause(waiting)
 
-      expect(await separatePage.navigator).toExist()
-      expect(await separatePage.masterTable).toExist()
-      expect(await separatePage.detailTable).not.toExist()
+      await expect(separatePage.navigator).toExist()
+      await expect(separatePage.masterTable).toExist()
+      await expect(separatePage.detailTable).not.toExist()
+
     })
     it('5-can edit on the detail page and affect to the result of the master page', async () => {
       const buttons = await separatePage.masterButtonMoveToDetail
-      buttons[7].click()
+      buttons[6].click()
       browser.pause(waiting)
 
-      expect(await separatePage.navigator).not.toExist()
-      expect(await separatePage.masterTable).not.toExist()
-      expect(await separatePage.detailTable).toExist()
+      await expect(separatePage.navigator).not.toExist()
+      await expect(separatePage.masterTable).not.toExist()
+      await expect(separatePage.detailTable).toExist()
 
-      expect(separatePage.detailFieldPostalCode).toHaveValue('1000007')
+      expect(separatePage.detailFieldPostalCode).toHaveValue('1000006')
       expect(separatePage.detailFieldPref).toHaveValue('東京都')
       expect(separatePage.detailFieldCity).toHaveValue('千代田区')
       expect(separatePage.detailFieldTown).toHaveValue('有楽町')
@@ -74,11 +75,11 @@ module.exports = (separatePage) => {
       button.click()
       browser.pause(waiting)
 
-       expect(await separatePage.navigator).toExist()
-       expect(await separatePage.masterTable).toExist()
-       expect(await separatePage.detailTable).not.toExist()
+      await expect(separatePage.navigator).toExist()
+      await expect(separatePage.masterTable).toExist()
+      await expect(separatePage.detailTable).not.toExist()
 
-      expect(await separatePage.masterFieldTown[4]).toHaveValue(value)
+      expect(await separatePage.masterFieldTown[6]).toHaveValue(value)
     })
     it('6-can move to next page of navigator, and checking', async () => {
       await separatePage.navigatorMoveButtonNext.click()
@@ -104,9 +105,9 @@ module.exports = (separatePage) => {
       await separatePage.detailButtonMoveToMaster.waitForExist()
       browser.pause(waiting)
 
-      expect(await separatePage.navigator).not.toExist()
-      expect(await separatePage.masterTable).not.toExist()
-      expect(await separatePage.detailTable).toExist()
+      await expect(separatePage.navigator).not.toExist()
+      await expect(separatePage.masterTable).not.toExist()
+      await expect(separatePage.detailTable).toExist()
 
       expect(separatePage.detailFieldPostalCode).toHaveValue('1006123')
       expect(separatePage.detailFieldPref).toHaveValue('東京都')
@@ -123,9 +124,9 @@ module.exports = (separatePage) => {
       await separatePage.firstMasterButtonMoveToDetail.waitForExist()
       browser.pause(waiting)
 
-      expect(await separatePage.navigator).toExist()
-      expect(await separatePage.masterTable).toExist()
-      expect(await separatePage.detailTable).not.toExist()
+      await expect(separatePage.navigator).toExist()
+      await expect(separatePage.masterTable).toExist()
+      await expect(separatePage.detailTable).not.toExist()
 
       expect(await separatePage.masterFieldPostalCode.length).toBe(100)
       expect(await separatePage.masterFieldPref.length).toBe(100)
@@ -160,9 +161,9 @@ module.exports = (separatePage) => {
       await separatePage.detailButtonMoveToMaster.waitForExist()
       browser.pause(waiting)
 
-      expect(await separatePage.navigator).not.toExist()
-      expect(await separatePage.masterTable).not.toExist()
-      expect(await separatePage.detailTable).toExist()
+      await expect(separatePage.navigator).not.toExist()
+      await expect(separatePage.masterTable).not.toExist()
+      await expect(separatePage.detailTable).toExist()
 
       expect(separatePage.detailFieldPostalCode).toHaveValue('1006633')
       expect(separatePage.detailFieldPref).toHaveValue('東京都')
@@ -175,14 +176,12 @@ module.exports = (separatePage) => {
       await separatePage.firstMasterButtonMoveToDetail.waitForExist()
       browser.pause(waiting)
 
-      expect(await separatePage.navigator).toExist()
-      expect(await separatePage.masterTable).toExist()
-      expect(await separatePage.detailTable).not.toExist()
+      await expect(separatePage.navigator).toExist()
+      await expect(separatePage.masterTable).toExist()
+      await expect(separatePage.detailTable).not.toExist()
 
       expect(await await separatePage.masterFieldPostalCode[0].isDisplayedInViewport()).toBe(false)
       expect(await await separatePage.masterFieldPostalCode[99].isDisplayedInViewport()).toBe(true)
     })
   })
 }
-
-

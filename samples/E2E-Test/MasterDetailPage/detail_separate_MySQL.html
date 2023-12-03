@@ -23,9 +23,9 @@
         // INTERMediatorOnPage.progressStartDelay = 0
 
         const params = INTERMediatorOnPage.getURLParametersAsArray()
-        if(params.id){
+        if (params.id) {
           INTERMediator.clearCondition('detail')
-          INTERMediator.addCondition('detail',{field: 'id', operator:'=', value: parseInt(params.id)})
+          INTERMediator.addCondition('detail', {field: 'id', operator: '=', value: parseInt(params.id)})
         }
       }
 
@@ -43,11 +43,7 @@
     <thead>
     <tr>
         <td colspan="100">
-            <span data-im-control="enclosure">
-                <span data-im-control="repeater">
-                    <button class="IM_Button_BackNavi" onclick="moveListPage()">一覧に戻る</button>
-                </span>
-            </span>
+            <button class="IM_Button_BackNavi" onclick="moveListPage()">一覧に戻る</button>
         </td>
     </tr>
     </thead>
