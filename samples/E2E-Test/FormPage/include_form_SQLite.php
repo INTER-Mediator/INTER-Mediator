@@ -121,8 +121,15 @@ IM_Entry(
             "table" => "postalcode",
             "key" => "id",
             "records" => 1,
-        ]
-    ),
+        ],
+        [
+        "name" => "postalcode-search",
+        "view" => "postalcode",
+        "key" => "id",
+        "records" => 1000000,
+        "paging" => true,
+        "sort" => [["field" => "f3", "direction" => "asc",],],],
+   ),
     [
         "terms" => [
             "en" => [
