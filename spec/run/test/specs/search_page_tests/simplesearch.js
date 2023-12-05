@@ -40,12 +40,9 @@ module.exports = (searchPage) => {
       await browser.refresh()
       await searchPage.button1.click() // all global variable are false. OR operation
       await searchPage.searchPostalCode.setValue("1710052")
-      // await searchPage.searchCity.setValue("")
-      // await searchPage.searchTown.setValue("")
-      // await searchPage.searchAll.setValue("")
-      await browser.pause(waiting)
       await searchPage.searchButton.click()
-      await browser.pause(waiting)
+      await expect(searchPage.navigator).toExist()
+      await expect(searchPage.masterTable).toExist()
 
       const masterCodes = await searchPage.masterFieldPostalCode
       const masterPrefs = await searchPage.masterFieldPref
@@ -115,16 +112,17 @@ module.exports = (searchPage) => {
     */
     it('5-can search from a part of string.', async () => {
       await browser.refresh()
-      await searchPage.button2.waitForClickable()
+      await expect(searchPage.navigator).toExist()
+      await expect(searchPage.masterTable).toExist()
+// await searchPage.button2.waitForClickable()
       await searchPage.button2.click() // all global variable are false. AND operation
       await searchPage.searchAll.setValue("中")
-      await browser.pause(waiting)
       await searchPage.searchButton.waitForClickable()
       await searchPage.searchButton.click()
-      await browser.pause(waiting)
       await searchPage.sortAsc.waitForClickable()
       await searchPage.sortAsc.click()
-      await browser.pause(waiting)
+      await expect(searchPage.navigator).toExist()
+      await expect(searchPage.masterTable).toExist()
 
       const masterCodes = await searchPage.masterFieldPostalCode
       const masterPrefs = await searchPage.masterFieldPref
@@ -149,6 +147,8 @@ module.exports = (searchPage) => {
      */
     it('6-can OR search with multiple conditions.', async () => {
       await browser.refresh()
+      await expect(searchPage.navigator).toExist()
+      await expect(searchPage.masterTable).toExist()
       await searchPage.button1.click() // all global variable are false. OR operation
       // await searchPage.searchPostalCode.setValue("")
       await searchPage.searchCity.setValue("中野")
@@ -158,6 +158,8 @@ module.exports = (searchPage) => {
       await searchPage.searchButton.click()
       await searchPage.sortAsc.waitForClickable()
       await searchPage.sortAsc.click()
+      await expect(searchPage.navigator).toExist()
+      await expect(searchPage.masterTable).toExist()
       await browser.pause(waiting)
 
       const masterCodes = await searchPage.masterFieldPostalCode
@@ -185,6 +187,8 @@ module.exports = (searchPage) => {
      */
     it('7-can AND search with multiple conditions.', async () => {
       await browser.refresh()
+      await expect(searchPage.navigator).toExist()
+      await expect(searchPage.masterTable).toExist()
       await searchPage.button3.click() // all global variable are false. AND operation
       // await searchPage.searchPostalCode.setValue("")
       await searchPage.searchCity.setValue("中野")
@@ -192,6 +196,8 @@ module.exports = (searchPage) => {
       // await searchPage.searchAll.setValue("")
       await searchPage.searchButton.click()
       await searchPage.sortAsc.click()
+      await expect(searchPage.navigator).toExist()
+      await expect(searchPage.masterTable).toExist()
       await browser.pause(waiting)
 
       const masterCodes = await searchPage.masterFieldPostalCode
@@ -219,6 +225,8 @@ module.exports = (searchPage) => {
      */
     it('8-can OR search with multiple conditions in one search field.', async () => {
       await browser.refresh()
+      await expect(searchPage.navigator).toExist()
+      await expect(searchPage.masterTable).toExist()
       await searchPage.button4.click() // all global variable are false. AND operation
       // await searchPage.searchPostalCode.setValue("")
       // await searchPage.searchCity.setValue("")
@@ -226,6 +234,8 @@ module.exports = (searchPage) => {
       await searchPage.searchAll.setValue("北 南")
       await searchPage.searchButton.click()
       await searchPage.sortAsc.click()
+      await expect(searchPage.navigator).toExist()
+      await expect(searchPage.masterTable).toExist()
       await browser.pause(waiting)
 
       const masterCodes = await searchPage.masterFieldPostalCode
@@ -251,6 +261,8 @@ module.exports = (searchPage) => {
      */
     it('9-can AND search with multiple conditions in one search field.', async () => {
       await browser.refresh()
+      await expect(searchPage.navigator).toExist()
+      await expect(searchPage.masterTable).toExist()
       await searchPage.button5.click() // all global variable are false. AND operation
       // await searchPage.searchPostalCode.setValue("")
       // await searchPage.searchCity.setValue("")
@@ -258,6 +270,8 @@ module.exports = (searchPage) => {
       await searchPage.searchAll.setValue("北 南")
       await searchPage.searchButton.click()
       await searchPage.sortAsc.click()
+      await expect(searchPage.navigator).toExist()
+      await expect(searchPage.masterTable).toExist()
       await browser.pause(waiting)
 
       const masterCodes = await searchPage.masterFieldPostalCode
