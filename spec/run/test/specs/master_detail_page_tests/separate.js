@@ -124,12 +124,11 @@ module.exports = (separatePage) => {
       const button = await separatePage.detailButtonMoveToMaster
       button.click()
       browser.pause(waiting)
-      await separatePage.firstMasterButtonMoveToDetail.waitForExist()
-      browser.pause(waiting)
 
       await expect(separatePage.navigator).toExist()
       await expect(separatePage.masterTable).toExist()
       await expect(separatePage.detailTable).not.toExist()
+      // await separatePage.firstMasterButtonMoveToDetail.waitForExist()
 
       expect(await separatePage.masterFieldPostalCode.length).toBe(100)
       expect(await separatePage.masterFieldPref.length).toBe(100)
@@ -161,8 +160,8 @@ module.exports = (separatePage) => {
       const buttons = await separatePage.masterButtonMoveToDetail
       buttons[99].click()
       browser.pause(waiting)
-      await separatePage.detailButtonMoveToMaster.waitForExist()
-      browser.pause(waiting)
+      // await separatePage.detailButtonMoveToMaster.waitForExist()
+      // browser.pause(waiting)
 
       await expect(separatePage.navigator).not.toExist()
       await expect(separatePage.masterTable).not.toExist()
@@ -176,8 +175,8 @@ module.exports = (separatePage) => {
       const button = await separatePage.detailButtonMoveToMaster
       button.click()
       browser.pause(waiting)
-      await separatePage.firstMasterButtonMoveToDetail.waitForExist()
-      browser.pause(waiting)
+      // await separatePage.firstMasterButtonMoveToDetail.waitForExist()
+      // browser.pause(waiting)
 
       await expect(separatePage.navigator).toExist()
       await expect(separatePage.masterTable).toExist()
