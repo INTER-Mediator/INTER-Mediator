@@ -43,6 +43,7 @@ module.exports = (searchPage) => {
       await searchPage.searchButton.click()
       await expect(searchPage.navigator).toExist()
       await expect(searchPage.masterTable).toExist()
+      await browser.pause(waiting)
 
       const masterCodes = await searchPage.masterFieldPostalCode
       const masterPrefs = await searchPage.masterFieldPref
