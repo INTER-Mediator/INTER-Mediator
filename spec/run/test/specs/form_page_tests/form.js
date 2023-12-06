@@ -157,7 +157,7 @@ module.exports = (FormPage) => {
       await browser.pause(waiting)
       const value = await FormPage.rowContactSummary[1].getValue()
       await expect(FormPage.contactTableInsertButton).toExist()
-      await FormPage.rowContactDeleteButton[1].waitForClickable()
+      await FormPage.rowContactCopyButton[1].waitForClickable()
       await FormPage.rowContactCopyButton[1].click()
       //await browser.acceptAlert()
       await browser.pause(waiting * 4)
