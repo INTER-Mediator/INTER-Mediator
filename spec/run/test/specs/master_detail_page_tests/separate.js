@@ -48,7 +48,7 @@ module.exports = (separatePage) => {
       button.click()
       browser.pause(waiting)
 
-      await separatePage.navigator.waitForExist()
+      // await separatePage.navigator.waitForExist()
       await expect(separatePage.navigator).toExist()
       await expect(separatePage.masterTable).toExist()
       await expect(separatePage.detailTable).not.toExist()
@@ -59,7 +59,7 @@ module.exports = (separatePage) => {
       buttons[6].click()
       browser.pause(waiting)
 
-      await separatePage.detailTable.waitForExist()
+      // await separatePage.detailTable.waitForExist()
       await expect(separatePage.navigator).not.toExist()
       await expect(separatePage.masterTable).not.toExist()
       await expect(separatePage.detailTable).toExist()
@@ -77,7 +77,7 @@ module.exports = (separatePage) => {
       button.click()
       browser.pause(waiting)
 
-      separatePage.navigator.waitForExist()
+      // separatePage.navigator.waitForExist()
       await expect(separatePage.navigator).toExist()
       await expect(separatePage.masterTable).toExist()
       await expect(separatePage.detailTable).not.toExist()
@@ -87,6 +87,10 @@ module.exports = (separatePage) => {
     it('6-can move to next page of navigator, and checking', async () => {
       await separatePage.navigatorMoveButtonNext.click()
       browser.pause(waiting)
+
+      await expect(separatePage.navigator).toExist()
+      await expect(separatePage.masterTable).toExist()
+      await expect(separatePage.detailTable).not.toExist()
 
       await separatePage.masterFieldPostalCodeFirst.waitForExist()
       await separatePage.masterFieldPrefFirst.waitForExist()
@@ -142,6 +146,10 @@ module.exports = (separatePage) => {
     it('7-can back to scrolled position', async () => {
       await separatePage.navigatorMoveButtonNext.click()
       browser.pause(waiting)
+
+      await expect(separatePage.navigator).toExist()
+      await expect(separatePage.masterTable).toExist()
+      await expect(separatePage.detailTable).not.toExist()
 
       await separatePage.masterFieldPostalCodeFirst.waitForExist()
       await separatePage.masterFieldPrefFirst.waitForExist()
