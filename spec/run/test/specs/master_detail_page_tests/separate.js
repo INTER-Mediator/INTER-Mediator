@@ -48,6 +48,7 @@ module.exports = (separatePage) => {
       button.click()
       browser.pause(waiting)
 
+      await separatePage.navigator.waitForExist()
       await expect(separatePage.navigator).toExist()
       await expect(separatePage.masterTable).toExist()
       await expect(separatePage.detailTable).not.toExist()
@@ -58,6 +59,7 @@ module.exports = (separatePage) => {
       buttons[6].click()
       browser.pause(waiting)
 
+      await separatePage.navigator.waitForExist()
       await expect(separatePage.navigator).not.toExist()
       await expect(separatePage.masterTable).not.toExist()
       await expect(separatePage.detailTable).toExist()
