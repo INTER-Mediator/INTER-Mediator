@@ -139,10 +139,10 @@ module.exports = (FormPage) => {
       await browser.acceptAlert()
       await browser.pause(waiting * 4)
 
-      const rows = FormPage.rowContact
-      await rows[0].waitForExist()
-      await rows[1].waitForExist()
-      await rows[2].waitForExist()
+      const rows = await FormPage.rowContact
+      // await rows[0].waitForExist()
+      // await rows[1].waitForExist()
+      // await rows[2].waitForExist()
       await expect(rows[0]).toExist() // There has three lines
       await expect(rows[1]).toExist()
       await expect(rows[2]).toExist()
@@ -162,11 +162,11 @@ module.exports = (FormPage) => {
       //await browser.acceptAlert()
       await browser.pause(waiting * 4)
 
-      const rows = FormPage.rowContact
-      await rows[0].waitForExist()
-      await rows[1].waitForExist()
-      await rows[2].waitForExist()
-      await rows[3].waitForExist()
+      const rows = await FormPage.rowContact
+      // await rows[0].waitForExist()
+      // await rows[1].waitForExist()
+      // await rows[2].waitForExist()
+      // await rows[3].waitForExist()
       await expect(rows[0]).toExist() // There has three lines
       await expect(rows[1]).toExist()
       await expect(rows[2]).toExist()
