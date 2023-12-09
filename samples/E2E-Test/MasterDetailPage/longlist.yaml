@@ -1,0 +1,26 @@
+contexts:
+  - name: postalcode
+    key: id
+    records: 100
+    paging: true
+  #    navi-control: master-hide
+  - name: detail
+    view: postalcode
+    table: postalcode
+    key: id
+    records: 1
+#    navi-control: detail
+  - name: postalcode-md
+    view: postalcode
+    key: id
+    records: 100
+    paging: true
+    navi-control: master-hide
+  - name: detail-md
+    view: postalcode
+    table: postalcode
+    key: id
+    records: 1
+    navi-control: detail-update
+connection:
+  db-class: PDO

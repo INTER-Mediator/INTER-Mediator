@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ */  -->
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>INTER-Mediator - Sample - Separate Master Page/MySQL</title>
+    <style>
+        .sticky-header-table {
+            overflow: auto;
+            width: 100%;
+            margin: 0;
+            border-spacing: 0;
+            border-collapse: separate;
+        }
+
+        .sticky-header-table thead {
+            background: #f2f2f2;
+            position: sticky;
+            top: 0;
+            left: 0;
+            height: 100px;
+        }
+
+        .sticky-header-table th {
+            white-space: nowrap;
+        }
+
+        .sticky-header-table td {
+            border-top: none;
+        }
+    </style>
+    <script src="../../../index.php"></script>
+    <script>
+      INTERMediatorOnPage.doBeforeConstruct = function () {
+        // INTERMediatorLog.errorMessageByAlert = true
+        INTERMediatorLog.suppressDebugMessageOnPage = true
+        // INTERMediatorOnPage.progressStartDelay = 0
+      }
+
+      INTERMediatorOnPage.doAfterConstruct = function () {
+        //document.getElementById('wrapper').style.display = 'block'
+
+        const bias = document.querySelector('.sticky-header-table thead').offsetHeight
+        INTERMediator.scrollBack(-bias)
+      }
+
+      function moveDetailPage(id) {
+        const contextName = "postalcode"
+        INTERMediator.prepareToScrollBack("postalcode", id)
+        INTERMediator.moveAnotherURL(`detail_separate_MySQL.html?id=${id}`)
+      }
+    </script>
+</head>
+<body>
+<div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
+<table id="master-table" class="sticky-header-table">
+    <thead style="height: 100px;">
+    <tr>
+        <th></th>
+        <th>郵便番号</th>
+        <th>都道府県</th>
+        <th>市区町村</th>
+        <th>町域名</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <button class="IM_Button_Master" data-im="postalcode@id@$onclick" onclick="moveDetailPage($)">詳細</button>
+        </td>
+        <td><span data-im="postalcode@f3" class="_im_test-master_postal_code"></span></td>
+        <td><span data-im="postalcode@f7" class="_im_test-master_pref"></span></td>
+        <td><span data-im="postalcode@f8" class="_im_test-master_city"></span></td>
+        <td><span data-im="postalcode@f9" class="_im_test-master_town"></span></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

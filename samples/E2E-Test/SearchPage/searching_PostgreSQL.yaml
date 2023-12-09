@@ -1,0 +1,12 @@
+contexts:
+  - name: postalcode
+    view: postalcode
+    key: id
+    records: 1000000
+    paging: true
+    sort:
+      - field: f3
+        direction: asc
+connection:
+  db-class: PDO
+  dsn: pgsql:host=localhost;port=5432;dbname=test_db

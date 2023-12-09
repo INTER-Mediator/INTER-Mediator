@@ -2,7 +2,7 @@ module.exports = (FormPage) => {
   const waiting = 500
 
   describe('Form Page with Detail Area', () => {
-     it('1-can edit the first record.', async () => {
+    it('1-can edit the first record.', async () => {
       await FormPage.navigatorUpdateButton.waitForClickable();
       await FormPage.navigatorUpdateButton.click();
       await browser.pause(waiting)
@@ -40,7 +40,7 @@ module.exports = (FormPage) => {
       await browser.pause(waiting * 3)
 
       await expect(FormPage.contactTable).toExist() // check the detailed Contact table
-      const rows = FormPage.rowContact
+      const rows = await FormPage.rowContact
       await expect(rows[0]).toExist() // There has three lines
       await expect(rows[1]).toExist()
       await expect(rows[2]).toExist()
@@ -116,7 +116,7 @@ module.exports = (FormPage) => {
       await FormPage.contactTableInsertButton.click()
       await browser.acceptAlert()
       await browser.pause(waiting * 2)
-      const rows = FormPage.rowContact
+      const rows = await FormPage.rowContact
       await rows[0].waitForExist()
       await rows[1].waitForExist()
       await rows[2].waitForExist()
@@ -131,18 +131,18 @@ module.exports = (FormPage) => {
     it('6-can delete a row in detail area.', async () => {
       // await FormPage.open()
       // await browser.pause(waiting)
-      await FormPage.navigatorUpdateButton.waitForClickable()
-      await FormPage.navigatorUpdateButton.click();
-      await browser.pause(waiting)
+      // await FormPage.navigatorUpdateButton.waitForClickable()
+      // await FormPage.navigatorUpdateButton.click();
+      // await browser.pause(waiting)
       await FormPage.rowContactDeleteButton[1].waitForClickable()
       await FormPage.rowContactDeleteButton[1].click()
       await browser.acceptAlert()
       await browser.pause(waiting * 4)
 
-      const rows = FormPage.rowContact
-      await rows[0].waitForExist()
-      await rows[1].waitForExist()
-      await rows[2].waitForExist()
+      const rows = await FormPage.rowContact
+      // await rows[0].waitForExist()
+      // await rows[1].waitForExist()
+      // await rows[2].waitForExist()
       await expect(rows[0]).toExist() // There has three lines
       await expect(rows[1]).toExist()
       await expect(rows[2]).toExist()
@@ -152,21 +152,21 @@ module.exports = (FormPage) => {
     it('7-can copy a row in detail area.', async () => {
       // await FormPage.open()
       // await browser.pause(waiting)
-      await FormPage.navigatorUpdateButton.waitForClickable();
-      await FormPage.navigatorUpdateButton.click();
-      await browser.pause(waiting)
+      // await FormPage.navigatorUpdateButton.waitForClickable();
+      // await FormPage.navigatorUpdateButton.click();
+      // await browser.pause(waiting)
       const value = await FormPage.rowContactSummary[1].getValue()
       await expect(FormPage.contactTableInsertButton).toExist()
-      await FormPage.rowContactDeleteButton[1].waitForClickable()
+      await FormPage.rowContactCopyButton[1].waitForClickable()
       await FormPage.rowContactCopyButton[1].click()
       //await browser.acceptAlert()
       await browser.pause(waiting * 4)
 
-      const rows = FormPage.rowContact
-      await rows[0].waitForExist()
-      await rows[1].waitForExist()
-      await rows[2].waitForExist()
-      await rows[3].waitForExist()
+      const rows = await FormPage.rowContact
+      // await rows[0].waitForExist()
+      // await rows[1].waitForExist()
+      // await rows[2].waitForExist()
+      // await rows[3].waitForExist()
       await expect(rows[0]).toExist() // There has three lines
       await expect(rows[1]).toExist()
       await expect(rows[2]).toExist()

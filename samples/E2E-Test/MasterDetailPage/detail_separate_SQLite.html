@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ */  -->
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--<link rel="stylesheet" type="text/css" hrtable_with_calculation.php.php?themes=default&type=css">-->
+    <title>INTER-Mediator - Sample - Separate Detail Page/SQLite</title>
+    <script src="../FormPage/include_form_SQLite.php"></script>
+    <script>
+      INTERMediatorOnPage.doBeforeConstruct = function () {
+        INTERMediatorLog.errorMessageByAlert = true
+        INTERMediatorLog.suppressDebugMessageOnPage = true
+        // INTERMediatorOnPage.progressStartDelay = 0
+
+        const params = INTERMediatorOnPage.getURLParametersAsArray()
+        if (params.id) {
+          INTERMediator.clearCondition('detail-sep')
+          INTERMediator.addCondition('detail-sep', {field: 'id', operator: '=', value: parseInt(params.id)})
+        }
+      }
+
+      INTERMediatorOnPage.doAfterConstruct = function () {
+        //document.getElementById('wrapper').style.display = 'block'
+      }
+
+      function moveListPage() {
+        INTERMediator.moveAnotherURL(`master_separate_SQLite.html`)
+      }
+    </script>
+</head>
+<body>
+<table id="detail-table">
+    <thead>
+    <tr>
+        <td colspan="100">
+            <button class="IM_Button_BackNavi" onclick="moveListPage()">一覧に戻る</button>
+        </td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <th>郵便番号</th>
+        <td><input type="text" data-im="detail-sep@f3" class="_im_test-detail_postal_code"></td>
+    </tr>
+    <tr>
+        <th>都道府県</th>
+        <td><input type="text" data-im="detail-sep@f7" class="_im_test-detail_pref"></td>
+    </tr>
+    <tr>
+        <th>市区町村</th>
+        <td><input type="text" data-im="detail-sep@f8" class="_im_test-detail_city"></td>
+    </tr>
+    <tr>
+        <th>町域名</th>
+        <td><input type="text" data-im="detail-sep@f9" class="_im_test-detail_town"></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

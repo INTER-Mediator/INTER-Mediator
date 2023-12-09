@@ -1,4 +1,4 @@
-const EditingPage = require('../pageobjects/editing_page_sqlite.page');
+const EditingPage = require('../pageobjects/EditingPage/editing_page_sqlite.page');
 
 const integerTest = require('./editing_page_tests/integer')
 const realTest = require('./editing_page_tests/real')
