@@ -28,7 +28,7 @@ class ServiceServerProxy
     /**
      * @var bool
      */
-    private bool $paramsQuit;
+    //private bool $paramsQuit;
     /**
      * @var bool
      */
@@ -69,7 +69,14 @@ class ServiceServerProxy
      * @var string
      */
     private string $serviceServerCA; // Path of CA file for wss protocol
-
+    /**
+     * @var DateTime|null
+     */
+    private ?DateTime $serverInfoCachedDT = null;
+    /**
+     * @var bool
+     */
+    private bool $serverInfoCached = false;
     /**
      * @var ServiceServerProxy|null
      */
@@ -94,7 +101,7 @@ class ServiceServerProxy
     {
         $this->paramsHost = Params::getParameterValue("serviceServerConnect", "http://localhost");
         $this->paramsPort = Params::getParameterValue("serviceServerPort", 11478);
-        $this->paramsQuit = Params::getParameterValue("stopSSEveryQuit", false);
+//        $this->paramsQuit = Params::getParameterValue("stopSSEveryQuit", false);
         $this->paramsBoot = Params::getParameterValue("bootWithInstalledNode", false);
         $this->dontAutoBoot = Params::getParameterValue("preventSSAutoBoot", false);
         $this->dontUse = Params::getParameterValue("notUseServiceServer", true);
@@ -143,14 +150,15 @@ class ServiceServerProxy
     public function checkServiceServer(): bool
     {
         if ($this->dontAutoBoot || $this->dontUse) {
-            $ssStatus = $this->isActive();
-            if (!$ssStatus) {
-                $message = $this->messageHead . 'Service Server is NOT working so far.';
-                $this->messages[] = $message;
-                $logger = Logger::getInstance();
-                $logger->setDebugMessage("[ServiceServerProxy] {$message}");
-            }
-            return $ssStatus;
+            return false;
+//            $ssStatus = $this->isActive();
+//            if (!$ssStatus) {
+//                $message = $this->messageHead . 'Service Server is NOT working so far.';
+//                $this->messages[] = $message;
+//                $logger = Logger::getInstance();
+//                $logger->setDebugMessage("[ServiceServerProxy] {$message}");
+//            }
+//            return $ssStatus;
         } else {
             if (!$this->isServerStartable()) { // Check the home directory can be writable.
                 $userName = IMUtil::getServerUserName();
@@ -198,6 +206,7 @@ class ServiceServerProxy
     }
 
     /**
+     * This method just checks whether the Service Server respond.
      * @return bool
      */
     public function isActive(): bool
@@ -207,37 +216,50 @@ class ServiceServerProxy
             return false;
         }
 
+        if (!is_null($this->serverInfoCachedDT)) {
+            return $this->serverInfoCached;
+        }
+        $this->serverInfoCachedDT = new DateTime();
+
         $this->messages[] = $this->messageHead . 'Check server working:';
 
         $result = $this->callServer("info", []);
-        $this->messages[] = $this->messageHead . 'Server returns:' . $result;
+        //$this->messages[] = $this->messageHead . 'Server returns:' . $result;
         /*
          * Request Version:f413bb8852485e3dccdf04d76a95b1afb6b6cf601fdd26e33f87ce6b75460780
          * Server Version:f413bb8852485e3dccdf04d76a95b1afb6b6cf601fdd26e33f87ce6b75460780
          */
         // Checking both version of the executing and the code
-        $keyword = 'Request Version:';
-        $rPos = strpos($result, $keyword);
-        $reqVerStr = $rPos !== false ? substr($result, $rPos + strlen($keyword), 64) : "aa";
-        $keyword = 'Server Version:';
-        $sPos = strpos($result, 'Server Version:');
-        $svrVerStr = $sPos !== false ? substr($result, $sPos + strlen($keyword), 64) : "bb";
-        if ($reqVerStr != $svrVerStr) { // If they are different version.
-            $this->messages[] = $this->messageHead . "Restart Service Server: reqVerStr={$reqVerStr}, svrVerStr={$svrVerStr}";
-            $this->stopServerCommand();
-            //$this->restartServer(); // Restart is going to fail. Why??
-            //throw new \Exception('Different version server is executing.');
+        if (!$result) { // Apparently Service Server doesn't boot.
             //$this->startServer();
-            return false;
+            $this->serverInfoCached = false;
+        } else { // Service Server is booted.
+            $this->serverInfoCached = true;
+            /* nodemon is going to take care of booted daemon is alive or not.
+              So cheking of Service Server version  doesn't need. */
+//            $keyword = 'Request Version:';
+//            $rPos = strpos($result, $keyword);
+//            $reqVerStr = $rPos !== false ? substr($result, $rPos + strlen($keyword), 64) : "aa";
+//            $keyword = 'Server Version:';
+//            $sPos = strpos($result, 'Server Version:');
+//            $svrVerStr = $sPos !== false ? substr($result, $sPos + strlen($keyword), 64) : "bb";
+//            if ($reqVerStr != $svrVerStr) { // If they are different version. Server code might be old one.
+//                $this->messages[] = $this->messageHead . "Restart Service Server: reqVerStr={$reqVerStr}, svrVerStr={$svrVerStr}";
+//                //$this->stopServerCommand();
+//                //$this->restartServer(); // Restart is going to fail. Why??
+//                //throw new \Exception('Different version server is executing.');
+//                //$this->startServer();
+//                return false;
+//            }
+//            if (!$result) {
+//                return false;
+//            }
+            if (strpos($result, "Service Server is active.") === false) {
+                $this->errors[] = $this->messageHead . 'Server respond an irregular message.';
+                $this->serverInfoCached = false;
+            }
         }
-        if (!$result) {
-            return false;
-        }
-        if (strpos($result, "Service Server is active.") === false) {
-            $this->errors[] = $this->messageHead . 'Server respond an irregular message.';
-            return false;
-        }
-        return true;
+        return $this->serverInfoCached;
     }
 
     /**
@@ -318,23 +340,26 @@ class ServiceServerProxy
     {
         $dq = '"';
         $this->messages[] = $this->messageHead . "startServer() called";
-        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
+//        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
+        $nodemon = IMUtil::isPHPExecutingWindows() ? "nodemon.cmd" : "nodemon";
         $scriptPath = "src/js/Service_Server.js";
         if (IMUtil::isPHPExecutingWindows()) {
             $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath);
         }
 
         $logFile = $this->foreverLog ?? (tempnam(sys_get_temp_dir(), 'IMSS-') . ".log");
-        $options = "-a -l {$logFile} --minUptime 5000 --spinSleepTime 5000";
+//        $options = "-a -l {$logFile} --minUptime 5000 --spinSleepTime 5000";
+        $options = "";
         $hostName = $_SERVER['HTTP_HOST'] ?? '*';
         $originURL = (isset($_SERVER['HTTPS']) ? "https://" : "http://") . $hostName;
-        $cmd = "{$forever} start {$options} {$scriptPath} {$this->paramsPort} {$dq}{$originURL}{$dq}";
+//        $cmd = "{$forever} start {$options} {$scriptPath} {$this->paramsPort} {$dq}{$originURL}{$dq}";
+        $cmd = "{$nodemon} {$options} {$scriptPath} {$this->paramsPort} {$dq}{$originURL}{$dq}";
         if ($this->serviceServerKey && $this->serviceServerCert) {
             $cmd .= " {$dq}{$this->serviceServerKey}{$dq} ";
             $cmd .= " {$dq}{$this->serviceServerCert}{$dq}";
             $cmd .= "  {$dq}{$this->serviceServerCA}{$dq}";
         }
-        $this->executeCommand($cmd);
+        $this->executeCommand("$cmd >> {$logFile} &");
     }
     /*
      * About forever on Apr 14, 2019 by Masayuki Nii
@@ -343,42 +368,46 @@ class ServiceServerProxy
      */
 
     /**
+     * nodemon is going to restart with modifying ServiceServer.js, so this method won't be called.
      * @return void
      */
-    private function restartServer(): void
-    {
-        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
-        $scriptPath = "src/js/Service_Server.js";
-        if (IMUtil::isPHPExecutingWindows()) {
-            $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath);
-        }
-        $cmd = "{$forever} restart {$scriptPath}";
-        $this->executeCommand($cmd);
-    }
+//    private function restartServer(): void
+//    {
+////        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
+//        $nodemon = IMUtil::isPHPExecutingWindows() ? "nodemon.cmd" : "nodemon";
+//        $scriptPath = "src/js/Service_Server.js";
+//        if (IMUtil::isPHPExecutingWindows()) {
+//            $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath);
+//        }
+//        $cmd = "{$nodemon} --signal SIGHUP {$scriptPath}";
+//        $this->executeCommand($cmd);
+//    }
 
     /**
      * @return void
      */
-    public function stopServer(): void
-    {
-        $this->messages[] = $this->messageHead . "stopServer() called";
-        if (!$this->paramsQuit) {
-            return;
-        }
-        $this->stopServerCommand();
-    }
+//    public function stopServer(): void
+//    {
+//        $this->messages[] = $this->messageHead . "stopServer() called";
+//        if (!$this->paramsQuit) {
+//            return;
+//        }
+//        $this->stopServerCommand();
+//    }
 
     /**
      * @return void
      */
-    private function stopServerCommand(): void
-    {
-        $this->messages[] = $this->messageHead . "stopServerCommand() called";
-        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
-        $cmd = "{$forever} stopall";
-        $this->executeCommand($cmd);
-        //sleep(1);
-    }
+//    private function stopServerCommand(): void
+//    {
+//        $this->messages[] = $this->messageHead . "stopServerCommand() called";
+////        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
+//        $nodemon = IMUtil::isPHPExecutingWindows() ? "nodemon.cmd" : "nodemon";
+//        $scriptPath = "src/js/Service_Server.js";
+//        $cmd = "{$nodemon} --signal SIGUSR2 {$scriptPath} &";
+//        $this->executeCommand($cmd);
+//        //sleep(1);
+//    }
 
     /**
      * @param string $expression

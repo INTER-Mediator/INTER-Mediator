@@ -183,6 +183,19 @@ function getVersionCode() {
   return hash.digest('hex')
 }
 
+/* Signal handling */
+process.once("SIGHUP", function () {
+  //reloadSomeConfiguration();
+  console.log("Try to RESTART with SIGHUP signal")
+})
+
+process.once('SIGUSR2', function () {
+  console.log("Try to STOP with SIGUSR2 signal")
+  // gracefulShutdown(function () {
+  //   process.kill(process.pid, 'SIGUSR2');
+  // });
+});
+
 /*
   Automatic processing
  */

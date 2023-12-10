@@ -58,7 +58,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
         $sql = $this->pdoDB->handler->sqlSELECTCommand() . "id FROM {$regTable} " .
             $this->pdoDB->handler->sqlOrderByCommand("id", 1, 0);
         //$sql = "SELECT id FROM {$regTable} LIMIT 1";
-        $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
+        $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] Checking the table exists: {$sql}");
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
             $this->pdoDB->errorMessageStore("[DB_Notification_Handler_PDO] The table '{$regTable}' doesn't exist in the database.");
