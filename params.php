@@ -181,7 +181,7 @@ $slackParameters = [
 /* Service Server Behavior
  * ===================
  * Port number and host name for service server */
-$notUseServiceServer = true;  // Default is TRUE!. It has to set false to work every feature with Service Server.
+$notUseServiceServer = TRUE;  // Default is TRUE!. It has to set false to work every feature with Service Server.
 /*
 $activateClientService = false;  // Default is FLASE!.
 $serviceServerProtocol = "ws";  // The Service Server url components to connect from client.
@@ -191,13 +191,11 @@ $serviceServerKey = "";  // Path of Key file for wss protocol **** wss protocol 
 $serviceServerCert = ""; // Path of Cert file for wss protocol
 $serviceServerCA = ""; // Path of CA file for wss protocol
 $serviceServerConnect = "http://localhost"; // The Service Server host name to connect from the INTER-Mediator server
-$stopSSEveryQuit = false;
+$stopSSEveryQuit = false; // This doesn't work on Ver.12.
 $bootWithInstalledNode = false;
 $preventSSAutoBoot = false;
 $backSeconds = 3600 * 24 * 2; // The seconds value that detect the outdated registering records.
-*/
-/*
- * $foreverLog = '/tmp/forever.log';
+$foreverLog = '/tmp/nodemon.log';
 */
 /* Operation Log
  * ===================

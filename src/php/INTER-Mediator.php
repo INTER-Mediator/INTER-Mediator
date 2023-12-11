@@ -168,7 +168,7 @@ function IM_Entry(?array $datasource, ?array $options, ?array $dbspecification, 
         foreach (ServiceServerProxy::instance()->getMessages() as $message) {
             $generator->generateDebugMessageJS($message);
         }
-        ServiceServerProxy::instance()->stopServer();
+//        ServiceServerProxy::instance()->stopServer();
     } else {    // Database accessing
         ServiceServerProxy::instance()->checkServiceServer();
         $dbInstance = new DB\Proxy();
@@ -191,7 +191,7 @@ function IM_Entry(?array $datasource, ?array $options, ?array $dbspecification, 
         $dbInstance->exportOutputDataAsJSON();
         $resultLog = $dbInstance->getResultForLog();
         $dbInstance->closeDBOperation();
-        ServiceServerProxy::instance()->stopServer();
+//        ServiceServerProxy::instance()->stopServer();
     }
     if ($accessLogLevel) {
         $logging = new DB\OperationLog($options);

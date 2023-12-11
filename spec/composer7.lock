@@ -187,16 +187,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.293.6",
+            "version": "3.293.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "1e01734856f8ec2b6d525d1c99c5a34029217598"
+                "reference": "3bf86ba8b9bbea2b298f89e6f5edc58de276690b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/1e01734856f8ec2b6d525d1c99c5a34029217598",
-                "reference": "1e01734856f8ec2b6d525d1c99c5a34029217598",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3bf86ba8b9bbea2b298f89e6f5edc58de276690b",
+                "reference": "3bf86ba8b9bbea2b298f89e6f5edc58de276690b",
                 "shasum": ""
             },
             "require": {
@@ -276,9 +276,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.293.6"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.293.7"
             },
-            "time": "2023-12-07T19:29:50+00:00"
+            "time": "2023-12-08T19:11:21+00:00"
         },
         {
             "name": "composer/ca-bundle",
@@ -431,16 +431,16 @@
         },
         {
             "name": "composer/composer",
-            "version": "2.6.5",
+            "version": "2.6.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "4b0fe89db9e65b1e64df633a992e70a7a215ab33"
+                "reference": "683557bd2466072777309d039534bb1332d0dda5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/4b0fe89db9e65b1e64df633a992e70a7a215ab33",
-                "reference": "4b0fe89db9e65b1e64df633a992e70a7a215ab33",
+                "url": "https://api.github.com/repos/composer/composer/zipball/683557bd2466072777309d039534bb1332d0dda5",
+                "reference": "683557bd2466072777309d039534bb1332d0dda5",
                 "shasum": ""
             },
             "require": {
@@ -458,7 +458,7 @@
                 "seld/jsonlint": "^1.4",
                 "seld/phar-utils": "^1.2",
                 "seld/signal-handler": "^2.0",
-                "symfony/console": "^5.4.11 || ^6.0.11 || ^7",
+                "symfony/console": "^5.4.11 || ^6.0.11",
                 "symfony/filesystem": "^5.4 || ^6.0 || ^7",
                 "symfony/finder": "^5.4 || ^6.0 || ^7",
                 "symfony/polyfill-php73": "^1.24",
@@ -525,7 +525,7 @@
                 "irc": "ircs://irc.libera.chat:6697/composer",
                 "issues": "https://github.com/composer/composer/issues",
                 "security": "https://github.com/composer/composer/security/policy",
-                "source": "https://github.com/composer/composer/tree/2.6.5"
+                "source": "https://github.com/composer/composer/tree/2.6.6"
             },
             "funding": [
                 {
@@ -541,7 +541,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-10-06T08:11:52+00:00"
+            "time": "2023-12-08T17:32:26+00:00"
         },
         {
             "name": "composer/metadata-minifier",
@@ -3537,16 +3537,16 @@
         },
         {
             "name": "simplesamlphp/simplesamlphp-assets-base",
-            "version": "v2.1.6",
+            "version": "v2.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/simplesamlphp/simplesamlphp-assets-base.git",
-                "reference": "ab7fdad861877ab439860ec5f77727ff2dc99327"
+                "reference": "f2124342aaa213eb14eb1533d6d274bea7007596"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/simplesamlphp/simplesamlphp-assets-base/zipball/ab7fdad861877ab439860ec5f77727ff2dc99327",
-                "reference": "ab7fdad861877ab439860ec5f77727ff2dc99327",
+                "url": "https://api.github.com/repos/simplesamlphp/simplesamlphp-assets-base/zipball/f2124342aaa213eb14eb1533d6d274bea7007596",
+                "reference": "f2124342aaa213eb14eb1533d6d274bea7007596",
                 "shasum": ""
             },
             "require": {
@@ -3567,9 +3567,9 @@
             "description": "Assets for the SimpleSAMLphp main repository",
             "support": {
                 "issues": "https://github.com/simplesamlphp/simplesamlphp-assets-base/issues",
-                "source": "https://github.com/simplesamlphp/simplesamlphp-assets-base/tree/v2.1.6"
+                "source": "https://github.com/simplesamlphp/simplesamlphp-assets-base/tree/v2.1.7"
             },
-            "time": "2023-10-26T09:03:43+00:00"
+            "time": "2023-12-10T01:00:49+00:00"
         },
         {
             "name": "smalot/pdfparser",
