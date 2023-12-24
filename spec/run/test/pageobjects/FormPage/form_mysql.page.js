@@ -5,8 +5,8 @@ const FormPage = require('./form.page');
  */
 class FormPageMySQL extends FormPage {
 
-  open() {
-    return super.open('samples/E2E-Test/FormPage/form_MySQL.html');
+  open(isNewWindow = false) {
+    return super.open('samples/E2E-Test/FormPage/form_MySQL.html', isNewWindow);
   }
 }
 

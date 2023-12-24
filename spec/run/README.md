@@ -41,3 +41,10 @@ Just run the test with Safari. This test works on the /spec/run-safari directory
 cd /spec/run-safari
 npx wdio wdio-safari.conf.js 
 ```
+
+Another syncing between clients test.
+
+```
+npx wdio wdio-sync-chrome.conf.jp
+```
+
