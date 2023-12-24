@@ -6,6 +6,7 @@ const waiting = 500
 describe('Form Page with MySQL', () => {
   it('can open two tabs for the same url.', async () => {
     await FormPage.open()
+    await browser.pause(waiting * 20) // Extra waiting
     await FormPage.setTitle('page1')
     await FormPage.open(true)
     await FormPage.setTitle('page2')
