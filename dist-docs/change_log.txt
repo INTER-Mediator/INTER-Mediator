@@ -21,6 +21,7 @@ Ver.12 (In Development)
 - On query condition, the value surrounded by @ is handled with the field name. For example, {field: "a", value: "b"}
   generates the where clause `a` = "b", othewise {field: "a", value: "@b@"} generates `a` = `b`.
 - Forever booted the service server, but it replaced with nodaemon. $stopSSEveryQuit in params.php doesn't work anymore.
+- /spec/Manual-Tests/End-to-End-Test.md is added, and it records the result of manual end-to-end tests.
 - [INFO] In the Ver.9, the following change was made with compatibility. The setUpdatedRecord method doesn't call the
   setDataToUpdatedRecord anymore.
   - (Ver.9) The setUpdatedRecord method in database classes renamed to setDataToUpdatedRecord. For the compatibility,

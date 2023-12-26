@@ -76,13 +76,21 @@ module.exports = (FormPage) => {
       await browser.pause(waiting * 4)
 
       await expect(FormPage.rowContact[0]).toExist()
-      await expect(FormPage.rowContactWay[0]).toHaveText("Direct\nIndirect\nOthers")
-      await expect(FormPage.rowContactKind[0]).toHaveText("Talk\nMeet\nMeeting")
-
+      if (process.platform === 'darwin') {
+        await expect(FormPage.rowContactWay[0]).toHaveText("Direct\nIndirect\nOthers")
+        await expect(FormPage.rowContactKind[0]).toHaveText("Talk\nMeet\nMeeting")
+      } else {
+        await expect(FormPage.rowContactWay[0]).toHaveText("Direct\nIndirect\nOthers")
+        await expect(FormPage.rowContactKind[0]).toHaveText("Talk\nMeet\nMeeting")
+      }
       await FormPage.rowContactWay[0].selectByIndex(1)
       await browser.pause(waiting)
       await expect(FormPage.rowContactWay[0]).toHaveValue('5')
-      await expect(FormPage.rowContactKind[0]).toHaveText("Telephone\nPaper Mail\nElectronic Mail\nSee on Chat\nTwitter")
+      if (process.platform === 'darwin') {
+        await expect(FormPage.rowContactKind[0]).toHaveText("電話\n手紙\n電子メール\nSee on Chat\nTwitter")
+      } else {
+        await expect(FormPage.rowContactKind[0]).toHaveText("Telephone\nPaper Mail\nElectronic Mail\nSee on Chat\nTwitter")
+      }
       await expect(FormPage.rowContactKind[0]).toHaveValue('')
       await FormPage.rowContactKind[0].selectByIndex(1)
       await browser.pause(waiting)

@@ -4,7 +4,7 @@ const syncTest = require('./form_page_tests/sync')
 const waiting = 500
 
 describe('Form Page with MySQL', () => {
-  it('can open two tabs for the same url.', async () => {
+  it('can open four tabs for the same url.', async () => {
     await FormPage.open()
     await browser.pause(waiting * 20) // Extra waiting
     await FormPage.setTitle('page1')

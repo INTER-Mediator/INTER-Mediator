@@ -4,15 +4,15 @@ module.exports = (EditingPage) => {
     const waiting = 500
 
     let initDateTime, initTime, zeroDateTime
-    if (process.platform === 'darwin') {
-      initDateTime = "2000-12-31 15:00:00" // For Asia/Tokyo server
-      initTime = "15:00:00" // For Asia/Tokyo server
-      zeroDateTime = "0999-12-31 14:41:01"
-    } else {
-      initDateTime = "2001-01-01 00:00:00" // For UCT server
-      initTime = "00:00:00" // For UCT server
-      zeroDateTime = "1000-01-01 00:00:00"
-    }
+    // if (process.platform === 'darwin') {
+    //   initDateTime = "2000-12-31 15:00:00" // For Asia/Tokyo server
+    //   initTime = "15:00:00" // For Asia/Tokyo server
+    //   zeroDateTime = "0999-12-31 14:41:01"
+    // } else {
+    initDateTime = "2001-01-01 00:00:00" // For UCT server
+    initTime = "00:00:00" // For UCT server
+    zeroDateTime = "1000-01-01 00:00:00"
+    // }
 
     /*
     Summary: Text field with non-null datetime field

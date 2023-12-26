@@ -23,8 +23,8 @@ exports.config = {
   specs: [
     // './test/specs/**/*.js'
     './test/specs/sync_mysql.e2e.js',
-    // './test/specs/sync_postgresql.e2e.js',
-    //'./test/specs/sync_sqlite.e2e.js',
+    './test/specs/sync_postgresql.e2e.js',
+    './test/specs/sync_sqlite.e2e.js',
   ],
   // Patterns to exclude.
   exclude: [],
@@ -44,7 +44,7 @@ exports.config = {
   // and 30 processes will get spawned. The property handles how many capabilities
   // from the same test should run tests.
   //
-  maxInstances: 6,
+  maxInstances: 1,
   //
   // If you have trouble getting all important capabilities together, check out the
   // Sauce Labs platform configurator - a great tool to configure your capabilities:
@@ -55,13 +55,13 @@ exports.config = {
     // maxInstances can get overwritten per capability. So if you have an in-house Selenium
     // grid with only 5 firefox instances available you can make sure that not more than
     // 5 instances get started at a time.
-    maxInstances: 6,
+    maxInstances: 1, // Don't do them pararelly.
     //
     browserName: 'chrome',
     acceptInsecureCerts: true,
-    'goog:chromeOptions': {
-      args: ['--headless', '--disable-gpu', '--disable-dev-shm-usage'],
-    }
+    // 'goog:chromeOptions': {
+    //   args: ['--headless', '--disable-gpu', '--disable-dev-shm-usage'],
+    // } // It's stable with head-existing mode.
   }
     // If outputDir is provided WebdriverIO can capture driver session logs
     // it is possible to configure which logTypes to include/exclude.
