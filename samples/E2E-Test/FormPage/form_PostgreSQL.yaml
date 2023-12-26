@@ -9,6 +9,7 @@ contexts:
       - field: id
         direction: asc
     repeat-control: insert delete copy-contact,history,
+    sync-control: create update delete
     button-names:
       insert: レコード追加,
       delete: レコード削除,
@@ -23,6 +24,7 @@ contexts:
         join-field: id
         operator: =
     repeat-control: insert-confirm delete-confirm copy
+    sync-control: create update delete
   - name: contact_way
     view: im_sample.contact_way
     table: im_sample.contact_way

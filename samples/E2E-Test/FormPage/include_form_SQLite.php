@@ -30,6 +30,7 @@ IM_Entry(
                 'delete' => 'レコード削除',
                 'copy' => 'レコード複製',
             ),
+            'sync-control' => "create update delete",
         ],
         [
             'name' => 'contact',
@@ -37,8 +38,9 @@ IM_Entry(
             'relation' => array(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
-            'repeat-control' => 'insert-confirm delete-confirm copy',],
-
+            'repeat-control' => 'insert-confirm delete-confirm copy',
+            'sync-control' => "create update delete",
+        ],
         [
             'name' => 'contact_way',
             'key' => 'id',
@@ -123,13 +125,13 @@ IM_Entry(
             "records" => 1,
         ],
         [
-        "name" => "postalcode-search",
-        "view" => "postalcode",
-        "key" => "id",
-        "records" => 1000000,
-        "paging" => true,
-        "sort" => [["field" => "f3", "direction" => "asc",],],],
-   ),
+            "name" => "postalcode-search",
+            "view" => "postalcode",
+            "key" => "id",
+            "records" => 1000000,
+            "paging" => true,
+            "sort" => [["field" => "f3", "direction" => "asc",],],],
+    ),
     [
         "terms" => [
             "en" => [

@@ -1,14 +1,8 @@
 module.exports = (AuthPage) => {
   describe('Login required page', () => {
     const waiting = 500
-    const alwaysEnglish = true
-    const alwaysJapaese = false
     let isJapanese = false
-    if (alwaysEnglish && !alwaysJapaese) {
-      isJapanese = false
-    } else if (!alwaysEnglish && alwaysJapaese) {
-      isJapanese = true
-    } else if (process.platform === 'darwin') {
+    if (process.platform === 'darwin') {
       isJapanese = true
     }
 

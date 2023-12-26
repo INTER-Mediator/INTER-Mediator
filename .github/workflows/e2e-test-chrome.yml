@@ -110,3 +110,24 @@ jobs:
 
       - name: Starting End-to-End Tests with Google Chrome
         run: cd spec/run;npx wdio wdio-chrome.conf.js
+
+#      - name: Modify params.php file for clinet-sync
+#        run: |
+#          GHPORTNUM=`expr 33451 + \`echo -n ${{ matrix.php-versions }} | sed -e "s/\.//g"\``
+#          echo "" >> params.php
+#          echo "$notUseServiceServer = false;" >> params.php
+#          echo "$activateClientService = true; " >> params.php
+#          echo "$serviceServerProtocol = \"ws\";" >> params.php
+#          echo "$serviceServerHost = \"localhost\";" >> params.php
+#          echo "$serviceServerPort = \"${GHPORTNUM}\";" >> params.php
+#          echo "$serviceServerConnect = \"http://localhost\";" >> params.php
+#          echo "$bootWithInstalledNode = false;" >> params.php
+#          echo "$preventSSAutoBoot = false;" >> params.php
+#          echo "$backSeconds = 3600 * 24 * 2;" >> params.php
+#          echo "$foreverLog = '/tmp/nodemon.log';" >> params.php
+#          echo "" >> params.php
+#
+#      - name: Starting End-to-End Tests about Clinet Synchronization with Google Chrome
+#        run: cd spec/run;npx wdio wdio-sync-chrome.conf.js
+
+

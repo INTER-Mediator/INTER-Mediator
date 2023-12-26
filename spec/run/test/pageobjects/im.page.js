@@ -7,11 +7,19 @@ module.exports = class IMPage {
    * Opens a sub page of the page
    * @param path path of the sub page (e.g. /path/to/page.html)
    */
-  open(path) {
-    //return browser.url(`http://localhost:9000/vendor/inter-mediator/inter-mediator/${path}`)
+  async open(path,isNewWindow=false)  {
+    if(isNewWindow){
+      await browser.newWindow(path)
+    }
     return browser.url(path)
   }
 
+  async setTitle(title){
+    await browser.execute((title) => {
+      window.document.title = title
+      return true
+    }, title)
+  }
   /**
    * define selectors using getter methods
    */

@@ -45,6 +45,9 @@ $dbOption = array();
 //$dbUser = 'webuser';
 //$dbPassword = '<Bhc)"){3*e3o:cYdhN-';
 
+//$dbUser = 'webuser';
+//$dbPassword = 'l{OVBu":DoX#D,+\hu*S';
+
 //$activateGenerator = true;
 $generatorUser = $dbUser;
 $generatorPassword = $dbPassword;
@@ -181,7 +184,7 @@ $slackParameters = [
 /* Service Server Behavior
  * ===================
  * Port number and host name for service server */
-$notUseServiceServer = TRUE;  // Default is TRUE!. It has to set false to work every feature with Service Server.
+$notUseServiceServer = true;  // Default is TRUE!. It has to set false to work every feature with Service Server.
 /*
 $activateClientService = false;  // Default is FLASE!.
 $serviceServerProtocol = "ws";  // The Service Server url components to connect from client.
