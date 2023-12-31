@@ -75,7 +75,7 @@ $fmt = new IntlDateFormatter(
     IntlDateFormatter::NONE,
     Params::getParameterValue("defaultTimezone", "UTC"),
     IntlDateFormatter::GREGORIAN,
-    'Y-MM-dd'
+    'yyyy-MM-dd'
 );
 define("IM_TODAY", $fmt->format((new DateTime())->getTimestamp()));
 
