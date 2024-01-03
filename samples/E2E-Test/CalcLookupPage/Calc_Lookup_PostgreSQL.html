@@ -10,13 +10,12 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 -->
-<html>
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>INTER-Mediator - Sample - Client-Side Calculation/MySQL</title>
-    <link rel="stylesheet" type="text/css" href="invoice.css">
-    <script type="text/javascript" src="include_MySQL.php"></script>
+    <title>INTER-Mediator - Sample - Calculation and Lookup/PostgreSQL</title>
+    <script type="text/javascript" src="../../../index.php"></script>
     <script>
       INTERMediatorOnPage.doBeforeConstruct = function () {
         INTERMediatorLog.suppressDebugMessageOnPage = true;
@@ -24,9 +23,6 @@
     </script>
 </head>
 <body>
-<header>
-    <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
-</header>
 <div id="wrapper">
     <h1>Invoice (Sample for Calculation)</h1>
     <div class="sub_title" id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
@@ -34,7 +30,7 @@
         <tbody>
         <tr>
             <th>id</th>
-            <td><input type="text" data-im="invoice@id" class="_im_test-invoice-id"></td>
+            <td><span data-im="invoice@id" class="_im_test-invoice-id"></span></td>
         </tr>
         <tr>
             <th>issued</th>
@@ -46,12 +42,8 @@
         </tr>
         <tr>
             <th>title</th>
-            <td><input type="text" data-im="invoice@title" class="_im_test-invoice-title"></td>
+            <td><input class="_im_test-invoice-title" data-im="invoice@title" type="text"></td>
         </tr>
-<!--        <tr>-->
-<!--            <th>sibtitle</th>-->
-<!--            <td><input type="text" data-im="invoice@subtitle" class="_im_test-invoice-title"></td>-->
-<!--        </tr>-->
         <tr>
             <td colspan="2">
                 <table class="_im_test-item-table">
@@ -69,14 +61,14 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <td>
+                        <td style="white-space: nowrap">
                             <div>
                                 <input type="text" data-im="item@product_id" size="2" class="_im_test-item-product_id">
-                            </div>
-                            <div class="inline" data-im-control="enclosure">
-                                <div class="inline" data-im-control="repeater">
-                                    <span data-im="product@name" class="_im_test-product-name"></span>
-                                </div>
+                                <span class="inline" data-im-control="enclosure">
+                                    <span class="inline" data-im-control="repeater">
+                                        <span data-im="product@name" class="_im_test-product-name"></span>
+                                    </span>
+                                </span>
                             </div>
                             <select data-im="item@product_id" class="_im_test-product-id">
                                 <option data-im="productlist@id@value productlist@name"
@@ -84,18 +76,18 @@
                             </select>
                         </td>
                         <td>
-                            <input class="price" type="text" size="5"
+                            <input type="text" size="5"
                                    data-im="item@qty item@qty_color@style.color" class="_im_test-item-qty">
                         </td>
                         <td>
-                            <div><input type="text" size="20"
+                            <div><input type="text" size="10"
                                         data-im="item@product_name"
                                         data-im-control="lookup:item@product_id:product@name"
                                         class="_im_test-item-puroduct_name"></div>
                         </td>
                         <td>
                             <div>
-                                <input class="price" type="text" size="8"
+                                <input type="text" size="5"
                                        data-im="item@product_unitprice"
                                        data-im-control="lookup:item@product_id:product@unitprice"
                                        data-im-format="number()"
@@ -112,7 +104,7 @@
                         <td style="text-align: right">
                             <span data-im="item@amount_calc" data-im-format="number()"
                                   data-im-format-options="useseparator" class="_im_test-item-amount_calc"></span></td>
-                        <td></td>
+                        <td style="white-space: nowrap"></td>
                     </tr>
                     </tbody>
                 </table>

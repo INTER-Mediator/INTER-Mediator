@@ -34,7 +34,9 @@ SET search_path TO im_sample,public;
 ALTER USER web SET search_path TO im_sample,public;
 
 /*  The schema for the "Sample_form" and "Sample_Auth" sample set. */
-CREATE SEQUENCE serial START 1000;
+CREATE
+SEQUENCE serial START
+1000;
 CREATE TABLE person
 (
     id       SERIAL PRIMARY KEY,
@@ -211,15 +213,17 @@ GRANT ALL PRIVILEGES ON im_sample.invoice_id_seq TO web;
 
 CREATE TABLE item
 (
-    id          SERIAL PRIMARY KEY,
-    invoice_id  INTEGER,
-    category_id INTEGER,
-    product_id  INTEGER,
-    qty         INTEGER,
-    unitprice   NUMERIC(10, 2),
-    user_id     INTEGER,
-    group_id    INTEGER,
-    priv_id     INTEGER
+    id                SERIAL PRIMARY KEY,
+    invoice_id        INTEGER,
+    category_id       INTEGER,
+    product_id        INTEGER,
+    qty               INTEGER,
+    product_unitprice FLOAT,
+    product_name      TEXT,
+    product_taxrate   FLOAT,
+    user_id           INTEGER,
+    group_id          INTEGER,
+    priv_id           INTEGER
 );
 GRANT ALL PRIVILEGES ON im_sample.item_id_seq TO web;
 
@@ -667,7 +671,7 @@ VALUES (3, '2010-2-14', 'Invoice');
 
 INSERT INTO item(invoice_id, product_id, qty)
 VALUES (1, 1, 12);
-INSERT INTO item(invoice_id, product_id, qty, unitprice)
+INSERT INTO item(invoice_id, product_id, qty, product_unitprice)
 VALUES (1, 2, 12, 1340);
 INSERT INTO item(invoice_id, product_id, qty)
 VALUES (1, 3, 12);

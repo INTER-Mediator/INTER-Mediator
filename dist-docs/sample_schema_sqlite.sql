@@ -188,15 +188,17 @@ CREATE TABLE invoice
 
 CREATE TABLE item
 (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    invoice_id  INTEGER,
-    category_id INTEGER,
-    product_id  INTEGER,
-    qty         INTEGER,
-    unitprice   REAL,
-    user_id     INTEGER,
-    group_id    INTEGER,
-    priv_id     INTEGER
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    invoice_id        INTEGER,
+    category_id       INTEGER,
+    product_id        INTEGER,
+    qty               INTEGER,
+    product_unitprice FLOAT,
+    product_name      TEXT,
+    product_taxrate   FLOAT,
+    user_id           INTEGER,
+    group_id          INTEGER,
+    priv_id           INTEGER
 );
 
 CREATE TABLE product
@@ -572,7 +574,7 @@ CREATE TABLE testtable
     time1   Time         NOT NULL DEFAULT '00:00:00',
     time2   Time,
     ts1     Timestamp    NOT NULL DEFAULT '2001-01-01 00:00:00',
-    ts2     Timestamp  ,
+    ts2     Timestamp,
     vc1     VARCHAR(100) NOT NULL DEFAULT '',
     vc2     VARCHAR(100),
     vc3     VARCHAR(100),
@@ -583,7 +585,7 @@ CREATE TABLE testtable
     double1 DOUBLE       NOT NULL DEFAULT 0,
     double2 DOUBLE,
     bool1   BOOLEAN      NOT NULL DEFAULT FALSE,
-    bool2   BOOLEAN  /* SQLite doesn't have the 'BOOLEAN' type, it's just synonym of INTEGER.*/
+    bool2   BOOLEAN /* SQLite doesn't have the 'BOOLEAN' type, it's just synonym of INTEGER.*/
 );
 
 /* # Sample Data */
@@ -612,7 +614,7 @@ VALUES (3, '2010-02-14', 'Invoice');
 
 INSERT INTO item(invoice_id, product_id, qty)
 VALUES (1, 1, 12);
-INSERT INTO item(invoice_id, product_id, qty, unitprice)
+INSERT INTO item(invoice_id, product_id, qty, product_unitprice)
 VALUES (1, 2, 12, 1340);
 INSERT INTO item(invoice_id, product_id, qty)
 VALUES (1, 3, 12);
