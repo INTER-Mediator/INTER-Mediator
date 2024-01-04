@@ -2,7 +2,7 @@ const Key = require('webdriverio')
 
 module.exports = (page) => {
   describe('Calculation Test', () => {
-    const waiting = 500
+    const waiting = 1000
     let isJapanese = false
     if (process.platform === 'darwin') {
       isJapanese = true
@@ -21,7 +21,8 @@ module.exports = (page) => {
       await expect(page.fieldsItemProductId).toBeElementsArrayOfSize(1)
 
       await page.fieldsItemProductId[0].setValue(1)
-      await browser.keys("\ue004") //Tab https://stackoverflow.com/questions/58621349/webdriverio-how-to-do-a-tab-key-action
+      await browser.keys("\ue004")
+      //Tab https://stackoverflow.com/questions/58621349/webdriverio-how-to-do-a-tab-key-action
       await browser.pause(waiting)
       await expect(page.fieldsProductName[0]).toHaveText("Apple")
       await expect(page.popupProductId[0]).toHaveValue("1")
@@ -34,21 +35,21 @@ module.exports = (page) => {
       await expect(page.fieldsItemAmountCalc[0]).toHaveText("0")
 
       await page.fieldsQty[0].setValue("4")
-      await browser.keys("\ue004") //Tab https://stackoverflow.com/questions/58621349/webdriverio-how-to-do-a-tab-key-action
+      await browser.keys("\ue004") //Tab
       await browser.pause(waiting)
       await expect(page.fieldsItemNetPrice[0]).toHaveText("1,360")
       await expect(page.fieldsItemTaxPrice[0]).toHaveText("0")
       await expect(page.fieldsItemAmountCalc[0]).toHaveText("1,360")
 
       await page.fieldTaxRate.setValue("0.1")
-      await browser.keys("\ue004") //Tab https://stackoverflow.com/questions/58621349/webdriverio-how-to-do-a-tab-key-action
+      await browser.keys("\ue004") //Tab
       await browser.pause(waiting)
       await expect(page.fieldsItemNetPrice[0]).toHaveText("1,360")
       await expect(page.fieldsItemTaxPrice[0]).toHaveText("136")
       await expect(page.fieldsItemAmountCalc[0]).toHaveText("1,496")
 
       await page.fieldsItemUnitprice[0].setValue("100")
-      await browser.keys("\ue004") //Tab https://stackoverflow.com/questions/58621349/webdriverio-how-to-do-a-tab-key-action
+      await browser.keys("\ue004") //Tab
       await browser.pause(waiting)
       await expect(page.fieldsItemNetPrice[0]).toHaveText("400")
       await expect(page.fieldsItemTaxPrice[0]).toHaveText("40")
@@ -59,7 +60,7 @@ module.exports = (page) => {
       await page.itemInsertButton.click()
       await expect(page.fieldsItemProductId).toBeElementsArrayOfSize(2)
       await page.fieldsItemProductId[1].setValue(2)
-      await browser.keys("\ue004") //Tab https://stackoverflow.com/questions/58621349/webdriverio-how-to-do-a-tab-key-action
+      await browser.keys("\ue004") //Tab
       await browser.pause(waiting)
       await expect(page.fieldsProductName[1]).toHaveText("Orange")
       await expect(page.popupProductId[1]).toHaveValue("2")
@@ -72,7 +73,7 @@ module.exports = (page) => {
       await expect(page.fieldsItemAmountCalc[1]).toHaveText("0")
 
       await page.fieldsQty[1].setValue("10")
-      await browser.keys("\ue004") //Tab https://stackoverflow.com/questions/58621349/webdriverio-how-to-do-a-tab-key-action
+      await browser.keys("\ue004") //Tab
       await browser.pause(waiting)
       await expect(page.fieldsItemNetPrice[1]).toHaveText("15,400")
       await expect(page.fieldsItemTaxPrice[1]).toHaveText("1,540")
@@ -83,7 +84,7 @@ module.exports = (page) => {
       await page.itemInsertButton.click()
       await expect(page.fieldsItemProductId).toBeElementsArrayOfSize(3)
       await page.fieldsItemProductId[2].setValue(4)
-      await browser.keys("\ue004") //Tab https://stackoverflow.com/questions/58621349/webdriverio-how-to-do-a-tab-key-action
+      await browser.keys("\ue004") //Tab
       await browser.pause(waiting)
       await expect(page.fieldsProductName[2]).toHaveText("Tomato")
       await expect(page.popupProductId[2]).toHaveValue("4")
@@ -96,7 +97,7 @@ module.exports = (page) => {
       await expect(page.fieldsItemAmountCalc[2]).toHaveText("0")
 
       await page.fieldsQty[2].setValue("10")
-      await browser.keys("\ue004") //Tab https://stackoverflow.com/questions/58621349/webdriverio-how-to-do-a-tab-key-action
+      await browser.keys("\ue004") //Tab
       await browser.pause(waiting)
       await expect(page.fieldsItemNetPrice[2]).toHaveText("24,400")
       await expect(page.fieldsItemTaxPrice[2]).toHaveText("2,440")
@@ -107,12 +108,12 @@ module.exports = (page) => {
       await expect(page.fieldTotalCalc).toHaveText(isJapanese ? "¥44,220.00" : "44,220.00¥")
 
       await page.fieldTaxRate.setValue("0")
-      await browser.keys("\ue004") //Tab https://stackoverflow.com/questions/58621349/webdriverio-how-to-do-a-tab-key-action
+      await browser.keys("\ue004") //Tab
       await browser.pause(waiting * 4)
       await expect(page.fieldTotalCalc).toHaveText(isJapanese ? "¥40,200.00" : "40,200.00¥")
 
       await page.fieldsItemUnitprice[0].setValue("2500")
-      await browser.keys("\ue004") //Tab https://stackoverflow.com/questions/58621349/webdriverio-how-to-do-a-tab-key-action
+      await browser.keys("\ue004") //Tab
       await browser.pause(waiting)
       await expect(page.fieldTotalCalc).toHaveText(isJapanese ? "¥49,800.00" : "49,800.00¥")
 
