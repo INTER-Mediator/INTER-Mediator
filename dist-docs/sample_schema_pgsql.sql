@@ -662,12 +662,12 @@ INSERT INTO product(name, id, category_id, unitprice, photofile, acknowledgement
 VALUES ('Onion', 5, 1, 21340, 'onion2.png', 'Image: FreeDigitalPhotos.net',
         'http://www.freedigitalphotos.net');
 
-INSERT INTO invoice(id, issued, title)
-VALUES (1, '2010-2-4', 'Invoice');
-INSERT INTO invoice(id, issued, title)
-VALUES (2, '2010-2-6', 'Invoice');
-INSERT INTO invoice(id, issued, title)
-VALUES (3, '2010-2-14', 'Invoice');
+INSERT INTO invoice(issued, title)
+VALUES ('2010-2-4', 'Invoice');
+INSERT INTO invoice( issued, title)
+VALUES ('2010-2-6', 'Invoice');
+INSERT INTO invoice( issued, title)
+VALUES ('2010-2-14', 'Invoice');
 
 INSERT INTO item(invoice_id, product_id, qty)
 VALUES (1, 1, 12);
