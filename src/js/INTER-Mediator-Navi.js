@@ -25,6 +25,7 @@
  */
 const IMLibPageNavigation = {
   deleteInsertOnNavi: [],
+  deleteInsertOnNaviBackup: [],
   isKeepOnNaviArray: false,
   previousModeDetail: null,
   stepNavigation: [],
@@ -38,6 +39,10 @@ const IMLibPageNavigation = {
 
   navigationSetup: function () {
     'use strict'
+    if(INTERMediator.partialConstructing){
+      IMLibPageNavigation.deleteInsertOnNavi = IMLibPageNavigation.deleteInsertOnNaviBackup
+    }
+
     const allNavNodes = allNavigator()
     for (let ix = 0; ix < allNavNodes.length; ix++) {
       const navigation = allNavNodes[ix]
@@ -296,6 +301,9 @@ const IMLibPageNavigation = {
             }, false, true)
           })
         }
+      }
+      if(!INTERMediator.partialConstructing){
+        IMLibPageNavigation.deleteInsertOnNaviBackup = IMLibPageNavigation.deleteInsertOnNavi
       }
     }
 
