@@ -104,21 +104,21 @@ module.exports = (page) => {
 
     })
     it('5-can calcurate total value', async () => {
-      await expect(page.fieldTotalCalc).toHaveText("¥44,220.00")
+      await expect(page.fieldTotalCalc).toHaveText(isJapanese ? "¥44,220.00" : "44,220.00¥")
 
       await page.fieldTaxRate.setValue("0")
       await browser.keys("\ue004") //Tab https://stackoverflow.com/questions/58621349/webdriverio-how-to-do-a-tab-key-action
-      await browser.pause(waiting*4)
-      await expect(page.fieldTotalCalc).toHaveText("¥40,200.00")
+      await browser.pause(waiting * 4)
+      await expect(page.fieldTotalCalc).toHaveText(isJapanese ? "¥40,200.00" : "40,200.00¥")
 
       await page.fieldsItemUnitprice[0].setValue("2500")
       await browser.keys("\ue004") //Tab https://stackoverflow.com/questions/58621349/webdriverio-how-to-do-a-tab-key-action
       await browser.pause(waiting)
-      await expect(page.fieldTotalCalc).toHaveText("¥49,800.00")
+      await expect(page.fieldTotalCalc).toHaveText(isJapanese ? "¥49,800.00" : "49,800.00¥")
 
       await page.popupProductId[2].selectByVisibleText("Onion")
       await browser.pause(waiting)
-      await expect(page.fieldTotalCalc).toHaveText("¥238,800.00")
+      await expect(page.fieldTotalCalc).toHaveText(isJapanese ? "¥238,800.00" : "238,800.00¥")
     })
   })
 }
