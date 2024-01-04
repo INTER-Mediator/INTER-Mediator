@@ -2,7 +2,8 @@ const Key = require('webdriverio')
 
 module.exports = (page) => {
   describe('Calculation Test', () => {
-    const waiting = 1000
+    const waiting = 2000
+    // on 500, firefox with psql and sqlite are failed. on 100 firefox with psql is failed.
     let isJapanese = false
     if (process.platform === 'darwin') {
       isJapanese = true
