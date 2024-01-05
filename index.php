@@ -9,7 +9,8 @@ require_once('./INTER-Mediator.php');
 try {
     [$yamlContent, $defFile] = IMUtil::getYAMLDefContent();
 } catch (Exception $ex) {
-    echo "console.error('{$ex->getMessage()}')\nwindow.alert('{$ex->getMessage()}')\n\n";
+    header("Content-Type: text/html");
+    echo "<script>console.error('{$ex->getMessage()}')\nwindow.alert('{$ex->getMessage()}')</script>\n\n";
     exit;
 }
 IM_Entry(

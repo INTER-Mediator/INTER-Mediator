@@ -1,0 +1,58 @@
+contexts:
+  - name: invoice
+    records: 1
+    paging: true
+    key: id
+    sort:
+      - field: id
+        direction: ASC
+    repeat-control: insert delete 
+    calculation:
+      - field: total_calc
+        expression: sum(item@amount_calc)
+  - name: item
+    key: id 
+    relation:
+      - foreign-key: invoice_id
+        join-field: id
+        operator: =
+    repeat-control: insert delete copy
+    sort:
+      - field: id
+        direction: ASC
+    default-values:
+      - field: product_id
+        value: 3
+    validation:
+      - field: qty 
+        rule: value>=0 && value < 100
+        message: Quantity should be between 1..99.
+        notify: inline 
+      - field: unitprice
+        rule: value>=0 && value<10000
+        message: Unit price should be between 1.. 9999.
+        notify: end-of-sibling
+    calculation:
+      - field: net_price
+        expression: qty * if(product_unitprice,product_unitprice,product@unitprice)
+      - field: tax_price
+        expression: net_price * _@taxRate
+      - field: amount_calc
+        expression: net_price + tax_price
+      - field: qty_color
+        expression: if (qty >= 10,'red','black')
+  - name: product
+    key: id
+    relation:
+      - foreign-key: id
+        join-field: product_id
+        operator: =
+    records: 1000
+  - name: productlist
+    view: product
+    table: dummy
+    key: id
+options: [ ]
+connection:
+  db-class: PDO
+debug: 2
