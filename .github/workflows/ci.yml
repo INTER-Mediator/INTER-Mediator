@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - "*"
+  pull_request:
+    branches: [ master ]
 
 jobs:
   ci:
@@ -27,4 +29,4 @@ jobs:
           docker exec -i ubuntu sh -c "cd /var/www/html/INTER-Mediator; composer update --with-dependencies; git log -n 1"
           docker exec -e CIRCLECI=true -i ubuntu sh -c "cd /var/www/html/INTER-Mediator; ./vendor/bin/phpunit --bootstrap ./vendor/autoload.php --configuration /var/www/html/INTER-Mediator/spec/INTER-Mediator-UnitTest/phpunit.xml"
           docker exec -i ubuntu sh -c "cd /var/www/html/INTER-Mediator && composer jest"
-          docker exec -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile -e DISPLAY=:99.0 -i ubuntu sh -c "apt-get -y install ruby-dev firefox xvfb; gem install bundler --no-doc; bundle; curl -L https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz > /tmp/geckodriver-v0.33.0-linux64.tar.gz; cd /usr/bin/; sudo tar xzvf /tmp/geckodriver-v0.33.0-linux64.tar.gz; /etc/rc.local; xvfb-run -e /dev/stdout --auto-servernum --server-num=99 rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec -f doc -c /var/www/html/INTER-Mediator/dist-docs/docker/spec/samples/samples_spec.rb"
+          docker exec -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile -e DISPLAY=:99.0 -i ubuntu sh -c "apt-get -y install ruby-dev firefox xvfb; gem install bundler -v 2.4.22 --no-doc; bundle; curl -L https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz > /tmp/geckodriver-v0.33.0-linux64.tar.gz; cd /usr/bin/; sudo tar xzvf /tmp/geckodriver-v0.33.0-linux64.tar.gz; /etc/rc.local; xvfb-run -e /dev/stdout --auto-servernum --server-num=99 rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec -f doc -c /var/www/html/INTER-Mediator/dist-docs/docker/spec/samples/samples_spec.rb"

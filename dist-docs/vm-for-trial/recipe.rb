@@ -2213,8 +2213,8 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem install rspec -N' do
       command 'gem install rspec -N'
     end
-    execute 'gem install bundler -N' do
-      command 'gem install bundler -N'
+    execute 'gem install bundler -v 2.4.22 -N' do
+      command 'gem install bundler -v 2.4.22 -N'
     end
     execute 'gem install ffi -N' do
       command 'gem install ffi -N'
