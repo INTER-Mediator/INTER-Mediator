@@ -14,6 +14,7 @@ class GenerateJSCode_Test extends TestCase
 
     protected function setUp(): void
     {
+        $_SERVER = [];
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         $this->generater = new GenerateJSCode();
     }
@@ -36,6 +37,57 @@ class GenerateJSCode_Test extends TestCase
     {
         $this->expectOutputString('INTERMediatorLog.setErrorMessage("PHP extension \"mbstring\" is required for running INTER-Mediator. ");');
         $this->generater->generateErrorMessageJS('PHP extension "mbstring" is required for running INTER-Mediator.' . "\n");
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    function test_generateInitialJSCode()
+    {
+        $_SERVER = [];
+        $_SERVER['HTTP_REFERER'] = '';
+        $_SERVER['HTTP_HOST'] = 'localhost';
+        $_SERVER['DOCUMENT_ROOT'] = '/tmp';
+        $_SERVER['SCRIPT_NAME'] = __FILE__;
+        $_SERVER['REMOTE_ADDR'] = '';
+        $this->expectOutputRegex('/INTERMediatorLog.debugMode=false;/');
+        $this->expectOutputRegex('/INTERMediatorOnPage.serviceServerURL="ws:\/\/localhost:/');
+        $this->generater->generateInitialJSCode([], [], [], 0);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    function test_generateInitialJSCode2()
+    {
+        $_SERVER = [];
+        $_SERVER['HTTP_REFERER'] = '';
+        $_SERVER['HTTP_HOST'] = 'localhost:80';
+        $_SERVER['DOCUMENT_ROOT'] = '/tmp';
+        $_SERVER['SCRIPT_NAME'] = __FILE__;
+        $_SERVER['REMOTE_ADDR'] = '';
+        $this->expectOutputRegex('/INTERMediatorLog.debugMode=false;/');
+        $this->expectOutputRegex('/INTERMediatorOnPage.serviceServerURL="ws:\/\/localhost:/');
+        $this->generater->generateInitialJSCode([], [], [], 0);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    function test_generateInitialJSCode3()
+    {
+        $_SERVER = [];
+        $_SERVER['HTTP_REFERER'] = '';
+        //$_SERVER['HTTP_HOST'] = '';
+        $_SERVER['DOCUMENT_ROOT'] = '/tmp';
+        $_SERVER['SCRIPT_NAME'] = __FILE__;
+        $_SERVER['REMOTE_ADDR'] = '';
+        $this->expectOutputRegex('/INTERMediatorLog.debugMode=false;/');
+        $this->expectOutputRegex('/INTERMediatorOnPage.serviceServerURL="ws:\/\/localhost:/');
+        $this->generater->generateInitialJSCode([], [], [], 0);
     }
 
     /**
