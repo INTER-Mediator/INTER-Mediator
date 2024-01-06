@@ -14,7 +14,6 @@ class GenerateJSCode_Test extends TestCase
 
     protected function setUp(): void
     {
-        $_SERVER = [];
         $_SERVER['SCRIPT_NAME'] = __FILE__;
         $this->generater = new GenerateJSCode();
     }
@@ -45,15 +44,11 @@ class GenerateJSCode_Test extends TestCase
      */
     function test_generateInitialJSCode()
     {
-        $_SERVER = [];
-        $_SERVER['HTTP_REFERER'] = '';
         $_SERVER['HTTP_HOST'] = 'localhost';
-        $_SERVER['DOCUMENT_ROOT'] = '/tmp';
-        $_SERVER['SCRIPT_NAME'] = __FILE__;
+        $_SERVER['HTTP_REFERER'] = '';
         $_SERVER['REMOTE_ADDR'] = '';
-        $this->expectOutputRegex('/INTERMediatorLog.debugMode=false;/');
         $this->expectOutputRegex('/INTERMediatorOnPage.serviceServerURL="ws:\/\/localhost:/');
-        $this->generater->generateInitialJSCode([], [], [], 0);
+        $this->generater->generateInitialJSCode([], [], ['db-class' => 'PDO'], false);
     }
 
     /**
@@ -62,15 +57,11 @@ class GenerateJSCode_Test extends TestCase
      */
     function test_generateInitialJSCode2()
     {
-        $_SERVER = [];
-        $_SERVER['HTTP_REFERER'] = '';
         $_SERVER['HTTP_HOST'] = 'localhost:80';
-        $_SERVER['DOCUMENT_ROOT'] = '/tmp';
-        $_SERVER['SCRIPT_NAME'] = __FILE__;
+        $_SERVER['HTTP_REFERER'] = '';
         $_SERVER['REMOTE_ADDR'] = '';
-        $this->expectOutputRegex('/INTERMediatorLog.debugMode=false;/');
         $this->expectOutputRegex('/INTERMediatorOnPage.serviceServerURL="ws:\/\/localhost:/');
-        $this->generater->generateInitialJSCode([], [], [], 0);
+        $this->generater->generateInitialJSCode([], [], ['db-class' => 'PDO'], false);
     }
 
     /**
@@ -79,15 +70,11 @@ class GenerateJSCode_Test extends TestCase
      */
     function test_generateInitialJSCode3()
     {
-        $_SERVER = [];
-        $_SERVER['HTTP_REFERER'] = '';
         //$_SERVER['HTTP_HOST'] = '';
-        $_SERVER['DOCUMENT_ROOT'] = '/tmp';
-        $_SERVER['SCRIPT_NAME'] = __FILE__;
+        $_SERVER['HTTP_REFERER'] = '';
         $_SERVER['REMOTE_ADDR'] = '';
-        $this->expectOutputRegex('/INTERMediatorLog.debugMode=false;/');
         $this->expectOutputRegex('/INTERMediatorOnPage.serviceServerURL="ws:\/\/localhost:/');
-        $this->generater->generateInitialJSCode([], [], [], 0);
+        $this->generater->generateInitialJSCode([], [], ['db-class' => 'PDO'], false);
     }
 
     /**
