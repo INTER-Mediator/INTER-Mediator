@@ -610,7 +610,7 @@ class FileMaker_FX extends DBClass
 
                             $queryValues[] = 'q' . $qNum;
                             $qNum++;
-                            if (isset($foreignOperator) && $foreignOperator === 'neq') {
+                            if ($foreignOperator === 'neq') {
                                 $neqConditions[] = TRUE;
                             } else {
                                 $neqConditions[] = FALSE;

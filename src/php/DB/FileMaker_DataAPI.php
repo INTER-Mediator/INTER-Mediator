@@ -559,7 +559,7 @@ class FileMaker_DataAPI extends DBClass
                         $searchConditions[] = $this->setSearchConditionsForCompoundFound(
                             $foreignField, $formattedValue, $foreignOperator);
 
-                        if (isset($foreignOperator) && $foreignOperator === 'neq') {
+                        if ($foreignOperator === 'neq') {
                             $neqConditions[] = TRUE;
                         } else {
                             $neqConditions[] = FALSE;

@@ -42,6 +42,45 @@ class GenerateJSCode_Test extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
+    function test_generateInitialJSCode()
+    {
+        $_SERVER['HTTP_HOST'] = 'localhost';
+        $_SERVER['HTTP_REFERER'] = '';
+        $_SERVER['REMOTE_ADDR'] = '';
+        $this->expectOutputRegex('/INTERMediatorOnPage.serviceServerURL="ws:\/\/localhost:/');
+        $this->generater->generateInitialJSCode([], [], ['db-class' => 'PDO'], false);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    function test_generateInitialJSCode2()
+    {
+        $_SERVER['HTTP_HOST'] = 'localhost:80';
+        $_SERVER['HTTP_REFERER'] = '';
+        $_SERVER['REMOTE_ADDR'] = '';
+        $this->expectOutputRegex('/INTERMediatorOnPage.serviceServerURL="ws:\/\/localhost:/');
+        $this->generater->generateInitialJSCode([], [], ['db-class' => 'PDO'], false);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    function test_generateInitialJSCode3()
+    {
+        //$_SERVER['HTTP_HOST'] = '';
+        $_SERVER['HTTP_REFERER'] = '';
+        $_SERVER['REMOTE_ADDR'] = '';
+        $this->expectOutputRegex('/INTERMediatorOnPage.serviceServerURL="ws:\/\/localhost:/');
+        $this->generater->generateInitialJSCode([], [], ['db-class' => 'PDO'], false);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     function test___construct()
     {
         if (function_exists('xdebug_get_headers')) {
