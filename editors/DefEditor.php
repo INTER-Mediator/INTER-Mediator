@@ -1345,4 +1345,12 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
     public function clearUseSetDataToUpdatedRecord():void
     {
     }
+
+    public function normalizedCondition(array $condition)
+    {
+    }
+
+    public function closeDBOperation(): void
+    {
+    }
 }

@@ -34,6 +34,9 @@ exports.config = {
     './test/specs/editing_page_mysql.e2e.js',
     './test/specs/editing_page_postgresql.e2e.js',
     './test/specs/editing_page_sqlite.e2e.js',
+    './test/specs/search_page_mysql.e2e.js',
+    './test/specs/search_page_postgresql.e2e.js',
+    './test/specs/search_page_sqlite.e2e.js',
     './test/specs/calc_lookup_page_mysql.e2e.js',
     './test/specs/calc_lookup_page_postgresql.e2e.js',
     './test/specs/calc_lookup_page_sqlite.e2e.js',
@@ -56,7 +59,7 @@ exports.config = {
   // and 30 processes will get spawned. The property handles how many capabilities
   // from the same test should run tests.
   //
-  maxInstances: 5,
+  maxInstances: 9,
   //
   // If you have trouble getting all important capabilities together, check out the
   // Sauce Labs platform configurator - a great tool to configure your capabilities:
@@ -67,7 +70,7 @@ exports.config = {
     // maxInstances can get overwritten per capability. So if you have an in-house Selenium
     // grid with only 5 firefox instances available you can make sure that not more than
     // 5 instances get started at a time.
-    maxInstances: 3,
+    maxInstances: 1,
     //
     browserName: 'MicrosoftEdge',
     // 'ms:edgeOptions': {

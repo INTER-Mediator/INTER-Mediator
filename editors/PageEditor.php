@@ -175,4 +175,8 @@ class PageEditor extends UseSharedObjects implements DBClass_Interface
     public function closeDBOperation():void
     {
     }
+
+    public function normalizedCondition(array $condition)
+    {
+    }
 }
