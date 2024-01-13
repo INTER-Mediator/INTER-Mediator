@@ -89,6 +89,12 @@ else
     fi
 fi
 
+if [ ! -e "${originalPath}/node_modules/jssha/dist/sha.js" ];then
+    /bin/echo "========================"
+    /bin/echo "Before using this buildup.sh script, you have to execute 'composer update' first of all."
+    exit 0;
+fi
+
 /bin/echo "-------------------------------------------------"
 /bin/echo "Choose the build result from these:"
 /bin/echo ' (1) Complete (everything contains)'
