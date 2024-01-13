@@ -115,8 +115,14 @@ class GenerateJSCode
         $prohibitDebugMode = Params::getParameterValue('prohibitDebugMode', false);
         $resetPage = $options['authentication']['reset-page'] ?? $resetPage ?? null;
         $enrollPage = $options['authentication']['enroll-page'] ?? $enrollPage ?? null;
-        $serviceServerHost = $serviceServerHost ?? $_SERVER['SERVER_ADDR'] ?? false;
-        $serviceServerHost = $serviceServerHost ?? parse_url($_SERVER['HTTP_HOST'], PHP_URL_HOST) ?? false;
+        $serviceServerHost = $serviceServerHost ?? $_SERVER['SERVER_ADDR'] ?? null;
+        if (isset($_SERVER['HTTP_HOST']) && !empty($_SERVER['HTTP_HOST'])) {
+            if (strpos($_SERVER['HTTP_HOST'], ':') === false) {
+                $serviceServerHost = $serviceServerHost ?? $_SERVER['HTTP_HOST'] ?? null;
+            } else {
+                $serviceServerHost = $serviceServerHost ?? parse_url($_SERVER['HTTP_HOST'], PHP_URL_HOST) ?? null;
+            }
+        }
         $serviceServerHost = $serviceServerHost ?? 'localhost';
         $passwordHash = ($passwordHash === '2m') ? 1.5 : floatval($passwordHash);
         $isSAML = $options['authentication']['is-saml'] ?? $isSAML ?? false;
