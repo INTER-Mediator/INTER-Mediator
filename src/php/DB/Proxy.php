@@ -1162,8 +1162,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $this->suppressMediaToken = false;
                 }
                 break;
-            case
-            'update':
+            case 'update':
                 $this->logger->setDebugMessage("[processingRequest] start update processing", 2);
                 if ($this->checkValidation()) {
                     if (isset($tableInfo['protect-writing']) && is_array($tableInfo['protect-writing'])) {

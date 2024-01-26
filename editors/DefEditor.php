@@ -63,7 +63,7 @@ function changeIncludeIMPath($src, $validStatement)
     }
 }
 
-class DefEditor extends UseSharedObjects implements DBClass_Interface
+class DefEditor extends DBClass
 {
     private $recordCount;
     private $isRequiredUpdated = false;
@@ -957,7 +957,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
         return true;
     }
 
-    public function createInDB($isReplace = false):?string
+    public function createInDB($isReplace = false): ?string
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
         $dataSourceName = $this->dbSettings->getDataSourceName();
@@ -1144,7 +1144,7 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
         return true;
     }
 
-    public function deleteFromDB():bool
+    public function deleteFromDB(): bool
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
 
@@ -1275,12 +1275,12 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
         // TODO: Implement softDeleteActivate() method.
     }
 
-    public function copyInDB():?string
+    public function copyInDB(): ?string
     {
         return null;
     }
 
-    public function getFieldInfo($dataSourceName):?array
+    public function getFieldInfo($dataSourceName): ?array
     {
         return null;
     }
@@ -1295,19 +1295,19 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
         // TODO: Implement setupHandlers() method.
     }
 
-    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0):void
+    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
     {
         // TODO: Implement setDataToUpdatedRecord() method.
     }
 
-    public function queryForTest(string $table, ?array $conditions = null):?array
+    public function queryForTest(string $table, ?array $conditions = null): ?array
     {
-       return null;
+        return null;
     }
 
     public function deleteForTest(string $table, ?array $conditions = null): bool
     {
-       return false;
+        return false;
     }
 
     public function setUpdatedRecord(array $record): void
@@ -1315,34 +1315,34 @@ class DefEditor extends UseSharedObjects implements DBClass_Interface
         $this->updatedRecord = $record;
     }
 
-    public function hasTransaction():bool
+    public function hasTransaction(): bool
     {
         return false;
     }
 
-    public function inTransaction():bool
+    public function inTransaction(): bool
     {
         return false;
     }
 
-    public function beginTransaction():void
+    public function beginTransaction(): void
     {
     }
 
-    public function commitTransaction():void
+    public function commitTransaction(): void
     {
     }
 
-    public function rollbackTransaction():void
+    public function rollbackTransaction(): void
     {
     }
 
-    public function getUseSetDataToUpdatedRecord():bool
+    public function getUseSetDataToUpdatedRecord(): bool
     {
         return false;
     }
 
-    public function clearUseSetDataToUpdatedRecord():void
+    public function clearUseSetDataToUpdatedRecord(): void
     {
     }
 

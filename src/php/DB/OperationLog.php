@@ -163,7 +163,7 @@ class OperationLog
             $dbInstance->dbSettings->addValueWithField("error",
                 $this->arrayToString($dbInstance->logger->getErrorMessages()));
 
-            if (!$this->accessLogExtensionClass && class_exists($this->accessLogExtensionClass)) {
+            if ($this->accessLogExtensionClass && class_exists($this->accessLogExtensionClass)) {
                 $extInstance = new $this->accessLogExtensionClass($dbInstance, $result);
                 $fields = $extInstance->extendingFields();
                 foreach ($fields as $field) {
