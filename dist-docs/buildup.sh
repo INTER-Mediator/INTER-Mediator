@@ -8,7 +8,7 @@
 # Please see the full license for details:
 # https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
 
-version="11"
+version="12"
 
 # The file of minify <http://www.minifier.org> can be downloaded from below.
 # git clone https://github.com/matthiasmullie/minify
@@ -87,6 +87,12 @@ else
             /bin/echo "*** JaveScript code won't minify, i.e. stay as original. ***"
         fi
     fi
+fi
+
+if [ ! -e "${originalPath}/node_modules/jssha/dist/sha.js" ];then
+    /bin/echo "========================"
+    /bin/echo "Before using this buildup.sh script, you have to execute 'composer update' first of all."
+    exit 0;
 fi
 
 /bin/echo "-------------------------------------------------"

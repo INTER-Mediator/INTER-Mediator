@@ -16,7 +16,7 @@
 
 namespace INTERMediator\DB;
 
-class PageEditor extends UseSharedObjects implements DBClass_Interface
+class PageEditor extends DBClass
 {
     private $recordCount;
     private $isRequiredUpdated = false;

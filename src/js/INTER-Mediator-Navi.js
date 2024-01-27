@@ -18,6 +18,7 @@
  * @fileoverview IMLibPageNavigation class is defined here.
  */
 //const INTERMediator_DBAdapter = require("./Adapter_DBServer");
+//const IMLibLocalContext = require("./INTER-Mediator-LocalContext");
 /**
  *
  * Usually you don't have to instanciate this class with new operator.
@@ -39,7 +40,7 @@ const IMLibPageNavigation = {
 
   navigationSetup: function () {
     'use strict'
-    if(INTERMediator.partialConstructing){
+    if (INTERMediator.partialConstructing) {
       IMLibPageNavigation.deleteInsertOnNavi = IMLibPageNavigation.deleteInsertOnNaviBackup
     }
 
@@ -302,7 +303,7 @@ const IMLibPageNavigation = {
           })
         }
       }
-      if(!INTERMediator.partialConstructing){
+      if (!INTERMediator.partialConstructing) {
         IMLibPageNavigation.deleteInsertOnNaviBackup = IMLibPageNavigation.deleteInsertOnNavi
       }
     }
@@ -1456,6 +1457,19 @@ const IMLibPageNavigation = {
           }
           if (INTERMediatorOnPage.masterScrollPosition) {
             window.scrollTo(INTERMediatorOnPage.masterScrollPosition.x, INTERMediatorOnPage.masterScrollPosition.y)
+            // const contextName = IMLibLocalContext.getValue("_im_sb_contextName")
+            // const targetId = IMLibLocalContext.getValue("_im_sb_cid")
+            // if (targetId && contextName) {
+            //   const context = IMLibContextPool.contextFromName(contextName)
+            //   const contextDef = context.getContextDef()
+            //   const binding = context.binding[`${contextDef.key}=${targetId}`]
+            //   if (binding) {
+            //     const target = document.getElementById(binding._im_repeater[0].id)
+            //     target.animate({
+            //       backgroundColor: [target.style.backgroundColor, "#ffffff", "#7e7e7e", target.style.backgroundColor],
+            //     }, 1000);
+            //   }
+            // }
           }
           // INTERMediator.scrollBack(0, true)
         })
