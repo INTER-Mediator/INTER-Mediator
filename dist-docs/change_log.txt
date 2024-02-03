@@ -34,6 +34,7 @@ Ver.12 (In Development)
   browser local date and time.
 - [BUG FIX] Fix an error when using PHP 8.3.0 or later / PHP 8.1.25  / PHP 8.2.12 and $appLocale is undefined in
   params.php.
+- [BUG FIX] Wrong spelling instanciate are changed to instantiate.
 
 Ver.11 (July 27, 2023)
 - Generic exporting class prepared as DB\Export.php.

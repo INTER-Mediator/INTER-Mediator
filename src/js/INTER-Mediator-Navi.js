@@ -21,7 +21,7 @@
 //const IMLibLocalContext = require("./INTER-Mediator-LocalContext");
 /**
  *
- * Usually you don't have to instanciate this class with new operator.
+ * Usually you don't have to instantiate this class with new operator.
  * @constructor
  */
 const IMLibPageNavigation = {
