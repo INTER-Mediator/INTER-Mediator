@@ -49,26 +49,26 @@ $dbOption = array();
 //$dbPassword = 'l{OVBu":DoX#D,+\hu*S';
 
 //$activateGenerator = true;
-$generatorUser = $dbUser;
-$generatorPassword = $dbPassword;
-$generatorOptions = [
-    'default-type' => "TEXT",
-    'pk-type' => 'INT NOT NULL AUTO_INCREMENT PRIMARY KEY',
-    'fk-type' => 'INT',
-    'datetime-suffix' => '_dt',
-    'date-suffix' => '_date',
-    'time-suffix' => '_time',
-    'int-suffix' => '_int',
-    'double-suffix' => '_double',
-    'text-suffix' => '_text',
-    'datetime-prefix' => 'dt_',
-    'date-prefix' => 'date_',
-    'time-prefix' => 'time_',
-    'int-prefix' => 'int_',
-    'double-prefix' => 'double_',
-    'text-prefix' => 'text_',
-    'dummy-table' => 'dummy'
-];
+//$generatorUser = $dbUser;
+//$generatorPassword = $dbPassword;
+//$generatorOptions = [
+//    'default-type' => "TEXT",
+//    'pk-type' => 'INT NOT NULL AUTO_INCREMENT PRIMARY KEY',
+//    'fk-type' => 'INT',
+//    'datetime-suffix' => '_dt',
+//    'date-suffix' => '_date',
+//    'time-suffix' => '_time',
+//    'int-suffix' => '_int',
+//    'double-suffix' => '_double',
+//    'text-suffix' => '_text',
+//    'datetime-prefix' => 'dt_',
+//    'date-prefix' => 'date_',
+//    'time-prefix' => 'time_',
+//    'int-prefix' => 'int_',
+//    'double-prefix' => 'double_',
+//    'text-prefix' => 'text_',
+//    'dummy-table' => 'dummy'
+//];
 
 /* Security
  * ===================
@@ -120,16 +120,16 @@ $browserCompatibility = array(
 /* Messaging Settings
  * =================== */
 // If you want to specify the smtp server info, set them below.
-$sendMailSMTP = array(
-    'server' => 'msyk.sakura.ne.jp',
-    'port' => '587',
-    'username' => 'user01@msyk.net',
-    'password' => '*********',
-);
+//$sendMailSMTP = array(
+//    'server' => 'msyk.sakura.ne.jp',
+//    'port' => '587',
+//    'username' => 'user01@msyk.net',
+//    'password' => '*********',
+//);
 // $waitAfterMail = 20;  // Wait after send email with smtp server. Unit is Millisecond.
 
 // Sending email features compatibility with INTER-Mediator v5 unless 'template-context' key isn't specified.
-$sendMailCompatibilityMode = false;  // default is false (Until Ver.9 the default value was true.)
+//$sendMailCompatibilityMode = false;  // default is false (Until Ver.9 the default value was true.)
 
 // Error/Warning/Debug messages can write to the PHP's error log. The default values are false
 //$errorMessageLogging = false;
@@ -137,10 +137,10 @@ $sendMailCompatibilityMode = false;  // default is false (Until Ver.9 the defaul
 //$debugMessageLogging = 'INTERMediator\DB'; // Messages from specified namespace are going to write error log.
 
 // Slack posting token and channel. You must create the Slack App permitting 'chat:write:bot' and generate OAuth2 token.
-$slackParameters = [
-    "token" => 'xoxp-XXXXXXXXXXX-XXXXXXXXXXX-XXXXXXXXXXXX-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-    "channel" => 'message-posting-test',
-];
+//$slackParameters = [
+//    "token" => 'xoxp-XXXXXXXXXXX-XXXXXXXXXXX-XXXXXXXXXXXX-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+//    "channel" => 'message-posting-test',
+//];
 
 /* Authorization
  * =================== */
@@ -204,8 +204,8 @@ $foreverLog = '/tmp/nodemon.log';
  * ===================
  * the table named 'operationlog' is required.
  * The schema of the table describes in dist-docs/sample_schema_*.txt files. */
-$accessLogLevel = true;    // false: No logging, 1: without data, 2: with data
-
+$accessLogLevel = false;    // false: No logging, 1: without data, 2: with data
+/*
 $dbClassLog = $dbClass;
 $dbDSNLog = $dbDSN;
 $dbUserLog = $dbUser;
@@ -215,7 +215,7 @@ $recordingOperations = null; // null: record all operation, or an array of opera
 $dontRecordTheme = false;
 $dontRecordChallenge = false;
 $dontRecordDownload = false;
-$dontRecordDownloadNoGet = false;
+$dontRecordDownloadNoGet = false; */
 //$accessLogExtensionClass = 'LoggingExt'; // Processing for some extending fields.
 
 /* Media File Support
@@ -273,8 +273,8 @@ $dontRecordDownloadNoGet = false;
 //$messages['ja'][1022] = "Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。";
 // These messages are for sample purpose but they are used for unit tests. If you modify them, you have to care about the test code.
 // Following two lines are using on unit test.
-$messages['default'][9999] = "Changed";
-$messages['ja'][9999] = "変更した";
+//$messages['default'][9999] = "Changed";
+//$messages['ja'][9999] = "変更した";
 
 /* Initial values for local context with their keys. */
 //$valuesForLocalContext = array(
@@ -302,7 +302,7 @@ $appCurrency = "JP";    // Locale for currency has to be specified the country c
  * field and value, but the string encoding is convert to sjis or ucs-4 and back to utf-8.
  * As the default, the string is going to be encoded with the urlencode function.
  */
-$uploadFilePathMode = "";
+//$uploadFilePathMode = "";
 
 /* Other settings
  * =================== */
