@@ -42,10 +42,10 @@
     "wdio": "npx wdio run wdio.conf.js"
   },
   "devDependencies": {
-    "@wdio/cli": "^8.24.0",
-    "@wdio/local-runner": "^8.24.0",
-    "@wdio/mocha-framework": "^8.24.0",
-    "@wdio/spec-reporter": "^8.24.0",
+    "@wdio/cli": "*",
+    "@wdio/local-runner": "*",
+    "@wdio/mocha-framework": "*",
+    "@wdio/spec-reporter": "*",
     "chromedriver": "*",
     "geckodriver": "*",
     "msedgedriver": "*",
