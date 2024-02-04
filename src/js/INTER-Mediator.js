@@ -33,7 +33,7 @@
 
 /**
  * Web page generator main class. This class has just static methods and properties.
- * Usually you don't have to instanciate this class with new operator.
+ * Usually you don't have to instantiate this class with new operator.
  * @constructor
  */
 const INTERMediator = {
@@ -736,7 +736,7 @@ const INTERMediator = {
             if (INTERMediatorLib.isWidgetElement(node)) {
               const wInfo = INTERMediatorLib.getWidgetInfo(node)
               if (wInfo[0]) {
-                IMParts_Catalog[wInfo[0]].instanciate(node)
+                IMParts_Catalog[wInfo[0]].instantiate(node)
                 if (imPartsShouldFinished.indexOf(IMParts_Catalog[wInfo[0]]) < 0) {
                   imPartsShouldFinished.push(IMParts_Catalog[wInfo[0]])
                 }
@@ -1185,7 +1185,7 @@ const INTERMediator = {
           for (let k = 0; k < currentWidgetNodes.length; k++) {
             const wInfo = INTERMediatorLib.getWidgetInfo(currentWidgetNodes[k])
             if (wInfo[0]) {
-              IMParts_Catalog[wInfo[0]].instanciate(currentWidgetNodes[k])
+              IMParts_Catalog[wInfo[0]].instantiate(currentWidgetNodes[k])
               if (imPartsShouldFinished.indexOf(IMParts_Catalog[wInfo[0]]) < 0) {
                 imPartsShouldFinished.push(IMParts_Catalog[wInfo[0]])
               }

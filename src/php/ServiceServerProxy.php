@@ -109,7 +109,7 @@ class ServiceServerProxy
         $this->serviceServerKey = Params::getParameterValue("serviceServerKey", '');
         $this->serviceServerCert = Params::getParameterValue("serviceServerCert", '');
         $this->serviceServerCA = Params::getParameterValue("serviceServerCA", '');
-        $this->messages[] = $this->messageHead . 'Instanciated the ServiceServerProxy class';
+        $this->messages[] = $this->messageHead . 'instantiated the ServiceServerProxy class';
     }
 
     /**

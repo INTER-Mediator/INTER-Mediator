@@ -44,7 +44,7 @@ module.exports = (FormPage) => {
       await expect(rows[0]).toExist() // There has three lines
       await expect(rows[1]).toExist()
       await expect(rows[2]).toExist()
-      await expect(rows[3]).not.toExist()
+      await expect(rows).toBeElementsArrayOfSize(3)
 
       await expect(FormPage.rowContactDateTime[0]).toHaveValue('2009-12-01T15:23')
       await expect(FormPage.rowContactSummary[0]).toHaveValue('Telephone')
@@ -133,7 +133,7 @@ module.exports = (FormPage) => {
       await expect(rows[1]).toExist()
       await expect(rows[2]).toExist()
       await expect(rows[3]).toExist()
-      await expect(rows[4]).not.toExist()
+      await expect(rows).toBeElementsArrayOfSize(4)
       await expect(FormPage.rowContactSummary[3]).toHaveValue('')
     })
     it('6-can delete a row in detail area.', async () => {
@@ -154,8 +154,7 @@ module.exports = (FormPage) => {
       await expect(rows[0]).toExist() // There has three lines
       await expect(rows[1]).toExist()
       await expect(rows[2]).toExist()
-      await expect(rows[3]).not.toExist()
-      await expect(rows[4]).not.toExist()
+      await expect(rows).toBeElementsArrayOfSize(3)
     })
     it('7-can copy a row in detail area.', async () => {
       // await FormPage.open()
@@ -179,7 +178,7 @@ module.exports = (FormPage) => {
       await expect(rows[1]).toExist()
       await expect(rows[2]).toExist()
       await expect(rows[3]).toExist()
-      await expect(rows[4]).not.toExist()
+      await expect(rows).toBeElementsArrayOfSize(4)
       await expect(FormPage.rowContactSummary[3]).toHaveValue(value)
     })
   })

@@ -792,7 +792,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 echo implode('', $this->logger->getMessagesForJS());
                 return false;
             }
-            $this->logger->setDebugMessage("The class '{$dbClassName}' was instanciated.", 2);
+            $this->logger->setDebugMessage("The class '{$dbClassName}' was instantiated.", 2);
         }
 
         $generator = null;
@@ -838,7 +838,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->authDbClass->setupWithDSN($challengeDSN);
             $this->authDbClass->setupHandlers($challengeDSN);
             $this->logger->setDebugMessage(
-                "The class 'PDO' was instanciated for issuedhash with {$challengeDSN}.", 2);
+                "The class 'PDO' was instantiated for issuedhash with {$challengeDSN}.", 2);
         } else {
             $this->authDbClass = $this->dbClass;
         }
@@ -848,7 +848,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->dbSettings->notifyServer = new NotifyServer();
             $nid = $this->PostData['notifyid'] ?? null;
             if ($this->dbSettings->notifyServer->initialize($this->authDbClass, $nid)) {
-                $this->logger->setDebugMessage("The NotifyServer was instanciated.", 2);
+                $this->logger->setDebugMessage("The NotifyServer was instantiated.", 2);
             } else {
                 $this->logger->setDebugMessage("The NotifyServer failed to initialize.", 2);
                 $this->dbSettings->notifyServer = null;
@@ -861,9 +861,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $className = $context['extending-class'];
             try {
                 $this->userExpanded = new $className();
-                $this->logger->setDebugMessage("The class '{$className}' was instanciated.", 2);
+                $this->logger->setDebugMessage("The class '{$className}' was instantiated.", 2);
             } catch (Exception $e) {
-                $this->logger->setErrorMessage("The class '{$className}' wasn't instanciated.");
+                $this->logger->setErrorMessage("The class '{$className}' wasn't instantiated.");
             }
             if (is_subclass_of($this->userExpanded, '\INTERMediator\DB\UseSharedObjects')) {
                 $this->userExpanded->setUpSharedObjects($this);
