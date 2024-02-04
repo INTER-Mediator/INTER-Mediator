@@ -48,7 +48,7 @@
   },
   "require-dev": {
     "phpunit/phpunit": "*",
-    "phpstan/phpstan": "*"
+    "phpstan/phpstan": "@stable"
   },
   "autoload": {
     "psr-4": {
@@ -81,6 +81,9 @@
     "manual": "http://inter-mediator.info/"
   },
   "scripts": {
+    "scripts": {
+      "phpstan": "vendor/bin/phpstan -c spec/phpstan.neon"
+    },
     "test": [
       "./vendor/bin/phpunit --bootstrap ./vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit.xml"
     ],
