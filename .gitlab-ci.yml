@@ -39,7 +39,7 @@ pages:
     - docker exec --privileged -i php73-alpine sh -c "curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer"
     - docker exec --privileged -i php73-alpine sh -c "apk add --no-cache git bash zip nodejs-npm"
     - docker exec --privileged -i php73-alpine sh -c "ls minify || git clone https://github.com/matthiasmullie/minify"
-    - docker exec --privileged -i php73-alpine sh -c "git clone https://github.com/INTER-Mediator/INTER-Mediator && cd INTER-Mediator && ./dist-docs/buildup.sh --core && cd ../im_build/ && zip -r INTER-Mediator-master.zip ./INTER-Mediator/ && mv INTER-Mediator-master.zip /public/"
+    - docker exec --privileged -i php73-alpine sh -c "git clone https://github.com/INTER-Mediator/INTER-Mediator && cd INTER-Mediator && composer update && ./dist-docs/buildup.sh --core && cd ../im_build/ && zip -r INTER-Mediator-master.zip ./INTER-Mediator/ && mv INTER-Mediator-master.zip /public/"
     - docker exec --privileged -i php73-alpine sh -c "ls -al; ls -al /; ls -al /public/"
     - ls -al
     - ls -al public
