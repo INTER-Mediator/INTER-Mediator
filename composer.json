@@ -71,14 +71,14 @@
   "authors": [
     {
       "name": "INTER-Mediator Directive Committee",
-      "homepage": "http://inter-mediator.org/"
+      "homepage": "https://inter-mediator.org/"
     }
   ],
   "support": {
     "community-jp": "https://www.facebook.com/groups/233378356708157/",
     "community-en": "https://www.facebook.com/groups/254446237922985/",
     "source": "https://github.com/INTER-Mediator/INTER-Mediator",
-    "manual": "http://inter-mediator.info/"
+    "manual": "https://inter-mediator.info/"
   },
   "scripts": {
     "scripts": {
