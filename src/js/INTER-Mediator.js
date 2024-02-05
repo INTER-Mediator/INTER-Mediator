@@ -1961,29 +1961,30 @@ const INTERMediator = {
     IMLibLocalContext.archive()
   },
 
-  clearCondition: (contextName, label) => {
-    'use strict'
-    let value = INTERMediator.additionalCondition
-    if (!value) {
-      value = {}
-    }
-    if (typeof label === 'undefined') {
+  clearCondition: (contextName = false, label = false) => {
+    if (contextName) {
+      let value = INTERMediator.additionalCondition ?? {}
       if (value[contextName]) {
-        delete value[contextName]
-        INTERMediator.additionalCondition = value
-        IMLibLocalContext.archive()
-      }
-    } else {
-      if (value[contextName]) {
-        for (let i = 0; i < value[contextName].length; i++) {
-          if (value[contextName][i].label === label) {
-            value[contextName].splice(i, 1)
-            i--
+        if (!label) {
+          delete value[contextName]
+        } else {
+          for (let i = 0; i < value[contextName].length; i++) {
+            if (value[contextName][i].label === label) {
+              value[contextName].splice(i, 1)
+              i--
+            }
           }
         }
         INTERMediator.additionalCondition = value
         IMLibLocalContext.archive()
       }
+      if (INTERMediatorOnPage.getContextInfo(contextName) && INTERMediatorOnPage.getContextInfo(contextName).paging) {
+        INTERMediator.startFrom = 0
+      }
+    } else { // In case of no parameter.
+      INTERMediator.additionalCondition = {}
+      IMLibLocalContext.archive()
+      INTERMediator.startFrom = 0
     }
   },
 
@@ -2009,78 +2010,84 @@ const INTERMediator = {
     }
   },
 
-  setRecordLimit: (contextName, limit) => {
-    'use strict'
-    const value = INTERMediator.recordLimit
-    value[contextName] = limit
-    INTERMediator.recordLimit = value
-    IMLibLocalContext.archive()
-  },
-
-  clearRecordLimit: (contextName) => {
-    'use strict'
-    const value = INTERMediator.recordLimit
-    if (value[contextName]) {
-      delete value[contextName]
+  setRecordLimit:
+    (contextName, limit) => {
+      'use strict'
+      const value = INTERMediator.recordLimit
+      value[contextName] = limit
       INTERMediator.recordLimit = value
       IMLibLocalContext.archive()
-    }
-  },
+    },
 
-  setRecordStart: (contextName, limit) => {
-    'use strict'
-    const value = INTERMediator.recordStart
-    value[contextName] = limit
-    INTERMediator.recordStart = value
-    IMLibLocalContext.archive()
-  },
+  clearRecordLimit:
+    (contextName) => {
+      'use strict'
+      const value = INTERMediator.recordLimit
+      if (value[contextName]) {
+        delete value[contextName]
+        INTERMediator.recordLimit = value
+        IMLibLocalContext.archive()
+      }
+    },
 
-  clearRecordStart: (contextName) => {
-    'use strict'
-    const value = INTERMediator.recordStart
-    if (value[contextName]) {
-      delete value[contextName]
+  setRecordStart:
+    (contextName, limit) => {
+      'use strict'
+      const value = INTERMediator.recordStart
+      value[contextName] = limit
       INTERMediator.recordStart = value
       IMLibLocalContext.archive()
-    }
-  },
+    },
 
-  localizing: () => {
-    const targetNodes = document.querySelectorAll("*[data-im-locale]");
-    for (const node of targetNodes) {
-      const localeValue = node.getAttribute("data-im-locale")
-      const bindValue = node.getAttribute("data-im")
-      if (!bindValue) {
-        const value = INTERMediator.getLocalizedString(localeValue)
-        if (value) { // If the value is null, do nothing anyway.
-          const bros = node.childNodes
-          for (const item of bros) {
-            if (item.nodeType === Node.TEXT_NODE) {
-              node.removeChild(item)
+  clearRecordStart:
+    (contextName) => {
+      'use strict'
+      const value = INTERMediator.recordStart
+      if (value[contextName]) {
+        delete value[contextName]
+        INTERMediator.recordStart = value
+        IMLibLocalContext.archive()
+      }
+    },
+
+  localizing:
+    () => {
+      const targetNodes = document.querySelectorAll("*[data-im-locale]");
+      for (const node of targetNodes) {
+        const localeValue = node.getAttribute("data-im-locale")
+        const bindValue = node.getAttribute("data-im")
+        if (!bindValue) {
+          const value = INTERMediator.getLocalizedString(localeValue)
+          if (value) { // If the value is null, do nothing anyway.
+            const bros = node.childNodes
+            for (const item of bros) {
+              if (item.nodeType === Node.TEXT_NODE) {
+                node.removeChild(item)
+              }
             }
+            node.appendChild(document.createTextNode(value))
           }
-          node.appendChild(document.createTextNode(value))
         }
       }
-    }
-  },
+    },
 
-  getLocalizedString: (localeValue) => {
-    const terms = INTERMediatorOnPage.getTerms()
-    if (!terms || !localeValue) {
-      return null;
-    }
-    const localeKey = localeValue.split('|')
-    let value = terms
-    for (const key of localeKey) {
-      if (!value[key]) {
-        value = null
-        break;
+  getLocalizedString:
+    (localeValue) => {
+      const terms = INTERMediatorOnPage.getTerms()
+      if (!terms || !localeValue) {
+        return null;
       }
-      value = value[key]
-    }
-    return value
-  },
+      const localeKey = localeValue.split('|')
+      let value = terms
+      for (const key of localeKey) {
+        if (!value[key]) {
+          value = null
+          break;
+        }
+        value = value[key]
+      }
+      return value
+    },
 
   ignoreDataInContext(contextName, flag = true) {
     const check = INTERMediator.ignoringDataContexts.indexOf(contextName)
@@ -2093,7 +2100,8 @@ const INTERMediator = {
         INTERMediator.ignoringDataContexts.splice(check, 1)
       }
     }
-  },
+  }
+  ,
 
   /* Compatibility for previous version. These methos are defined here ever.
    * Now these are defined in INTERMediatorLog object. */
@@ -2101,17 +2109,20 @@ const INTERMediator = {
     'use strict'
     INTERMediatorLog.flushMessage()
   },
-  setErrorMessage: (ex, moreMessage) => {
-    'use strict'
-    INTERMediatorLog.setErrorMessage(ex, moreMessage)
-  },
-  setDebugMessage: (message, level) => {
-    'use strict'
-    INTERMediatorLog.setDebugMessage(message, level)
-  }
+  setErrorMessage:
+    (ex, moreMessage) => {
+      'use strict'
+      INTERMediatorLog.setErrorMessage(ex, moreMessage)
+    },
+  setDebugMessage:
+    (message, level) => {
+      'use strict'
+      INTERMediatorLog.setDebugMessage(message, level)
+    }
 }
 
 // @@IM@@IgnoringRestOfFile
 module.exports = INTERMediator
 const INTERMediator_DBAdapter = require('../../src/js/Adapter_DBServer')
 const IMLibLocalContext = require('../../src/js/INTER-Mediator-LocalContext')
+const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')

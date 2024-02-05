@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f47dbc1750d350ad2f63056f439be32e",
+    "content-hash": "981133a80ff92972ff93ca7c227c2f7f",
     "packages": [
         {
             "name": "async-aws/core",
@@ -3537,16 +3537,16 @@
         },
         {
             "name": "simplesamlphp/simplesamlphp-assets-base",
-            "version": "v2.1.9",
+            "version": "v2.1.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/simplesamlphp/simplesamlphp-assets-base.git",
-                "reference": "df9073ea42a6d9b64e1e35350910bf9f16cc0049"
+                "reference": "5d3cd9102879e33d6ff1215b902ab07578df3d83"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/simplesamlphp/simplesamlphp-assets-base/zipball/df9073ea42a6d9b64e1e35350910bf9f16cc0049",
-                "reference": "df9073ea42a6d9b64e1e35350910bf9f16cc0049",
+                "url": "https://api.github.com/repos/simplesamlphp/simplesamlphp-assets-base/zipball/5d3cd9102879e33d6ff1215b902ab07578df3d83",
+                "reference": "5d3cd9102879e33d6ff1215b902ab07578df3d83",
                 "shasum": ""
             },
             "require": {
@@ -3567,9 +3567,9 @@
             "description": "Assets for the SimpleSAMLphp main repository",
             "support": {
                 "issues": "https://github.com/simplesamlphp/simplesamlphp-assets-base/issues",
-                "source": "https://github.com/simplesamlphp/simplesamlphp-assets-base/tree/v2.1.9"
+                "source": "https://github.com/simplesamlphp/simplesamlphp-assets-base/tree/v2.1.10"
             },
-            "time": "2024-01-16T23:19:02+00:00"
+            "time": "2024-02-04T00:57:31+00:00"
         },
         {
             "name": "smalot/pdfparser",
@@ -8890,7 +8890,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "phpstan/phpstan": 0
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

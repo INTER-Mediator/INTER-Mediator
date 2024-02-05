@@ -61,6 +61,12 @@
             break;
         }
       }
+
+      function clearConditions() {
+        IMLibLocalContext.clearAllConditions()
+        INTERMediator.clearCondition('postalcode-search')
+        INTERMediator.constructMain(IMLibContextPool.contextFromName('postalcode-search'))
+      }
     </script>
 </head>
 <body>
@@ -90,6 +96,7 @@
                     <option value="1000000">1000000</option>
                 </select>
                 <button id="_im_test_button_search" data-im="_@update:postalcode-search">Search</button>
+                <button onclick="clearConditions()">Clear</button>
             </th>
         </tr>
         <tr>
