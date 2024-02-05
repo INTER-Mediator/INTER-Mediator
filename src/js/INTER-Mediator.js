@@ -1962,7 +1962,7 @@ const INTERMediator = {
   },
 
   clearCondition: (contextName = false, label = false) => {
-    if(contextName) {
+    if (contextName) {
       let value = INTERMediator.additionalCondition ?? {}
       if (value[contextName]) {
         if (!label) {
@@ -1978,7 +1978,7 @@ const INTERMediator = {
         INTERMediator.additionalCondition = value
         IMLibLocalContext.archive()
       }
-      if (INTERMediatorOnPage.getContextInfo(contextName).paging) {
+      if (INTERMediatorOnPage.getContextInfo(contextName) && INTERMediatorOnPage.getContextInfo(contextName).paging) {
         INTERMediator.startFrom = 0
       }
     } else { // In case of no parameter.

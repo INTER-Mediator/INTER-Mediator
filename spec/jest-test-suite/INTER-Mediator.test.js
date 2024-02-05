@@ -5,6 +5,10 @@
 /* global INTERMediator,buster,INTERMediatorLib,INTERMediatorOnPage,IMLibElement */
 
 const INTERMediator = require('../../src/js/INTER-Mediator')
+const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
+INTERMediatorOnPage.getDataSources = () => {
+  return {}
+}
 
 beforeEach(() => {
   INTERMediator.clearCondition('context1')
