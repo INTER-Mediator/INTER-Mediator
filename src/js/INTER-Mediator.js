@@ -2125,3 +2125,4 @@ const INTERMediator = {
 module.exports = INTERMediator
 const INTERMediator_DBAdapter = require('../../src/js/Adapter_DBServer')
 const IMLibLocalContext = require('../../src/js/INTER-Mediator-LocalContext')
+const INTERMediatorOnPage = require('../../src/js/INTER-Mediator-Page')
