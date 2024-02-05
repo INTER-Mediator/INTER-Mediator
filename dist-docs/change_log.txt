@@ -10,7 +10,9 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.12 (In Development)
+Ver.13 (In Development)
+
+Ver.12 (Februrary xx, 2024)
 - PHP Ver.7.4 is the minimum version.
 - Type description added to most PHP code. The Export class and the OperationLogExtension class are added types, and
   your inherited class has to add them. The extending-class based methods didn't add types.
@@ -19,9 +21,10 @@ Ver.12 (In Development)
 - INTERMediator.prepareToScrollBack and scrollBack methods are for retrieving scroll position on backing from detail.
   samples/Sample_forDebugging/longlist.html is a sample of these methods.
 - On query condition, the value surrounded by @ is handled with the field name. For example, {field: "a", value: "b"}
-  generates the where clause `a` = "b", othewise {field: "a", value: "@b@"} generates `a` = `b`.
+  generates the where clause `a` = "b", otherwise {field: "a", value: "@b@"} generates `a` = `b`.
 - Forever booted the service server, but it replaced with nodaemon. $stopSSEveryQuit in params.php doesn't work anymore.
 - /spec/Manual-Tests/End-to-End-Test.md is added, and it records the result of manual end-to-end tests.
+- INTERMediator.clearCondition method clears page number of pagination. Also no parameter clears all conditions.
 - [INFO] In the Ver.9, the following change was made with compatibility. The setUpdatedRecord method doesn't call the
   setDataToUpdatedRecord anymore.
   - (Ver.9) The setUpdatedRecord method in database classes renamed to setDataToUpdatedRecord. For the compatibility,
@@ -30,7 +33,7 @@ Ver.12 (In Development)
 - [BUG FIX] The data-im="_@condition:..." way with numeric field and the "match" operator didn't expand the condition
   clause with '%term%' value. As far as PostgreSQL goes, the casting to text is automatically applied it.
 - [BUG FIX] The INPUT[type=datetime-local] elements reported someone edit your modified data, but it was new record data
-  after updateing is not adjusted to UTC correctly. Also INTERMediatorLib.dateTimeStringISO and some method returns
+  after updating is not adjusted to UTC correctly. Also INTERMediatorLib.dateTimeStringISO and some method returns
   browser local date and time.
 - [BUG FIX] Fix an error when using PHP 8.3.0 or later / PHP 8.1.25  / PHP 8.2.12 and $appLocale is undefined in
   params.php.
