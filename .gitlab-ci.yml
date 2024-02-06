@@ -34,7 +34,7 @@ pages:
     - ls -al /
     - docker run -v "/builds/INTER-Mediator/INTER-Mediator/public:/public" -e "container=docker" --privileged -d --name php81-alpine php:8.1-fpm-alpine /sbin/init
     - docker exec --privileged -i php81-alpine sh -c "apk update"
-    - docker exec --privileged -i php81-alpine sh -c "apk add --no-cache git bash zip nodejs zlib-dev libpng-dev icu-dev"
+    - docker exec --privileged -i php81-alpine sh -c "apk add --no-cache git bash zip nodejs npm zlib-dev libpng-dev icu-dev"
     - docker exec --privileged -i php81-alpine sh -c "docker-php-ext-install bcmath exif gd intl"
     - docker exec --privileged -i php81-alpine sh -c "apk add --no-cache curl"
     - docker exec --privileged -i php81-alpine sh -c "curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer"
