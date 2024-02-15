@@ -378,7 +378,8 @@ class IMUtil
 
         if (isset($_SERVER['HTTP_HOST']) &&
             isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-            $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest' &&
+            ($_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest'||
+                $_SERVER['HTTP_X_REQUESTED_WITH'] === 'fetch') &&
             isset($_SERVER['HTTP_X_FROM']) &&
             (!isset($_SERVER['HTTP_ORIGIN']) ||
                 $from['scheme'] . '://' . $from['host'] . $fromPort ===

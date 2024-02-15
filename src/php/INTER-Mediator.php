@@ -184,8 +184,8 @@ function IM_Entry(?array $datasource, ?array $options, ?array $dbspecification, 
                 $dbInstance->processingRequest();
                 $dbInstance->finishCommunication(false);
             } else {
-                $dbInstance->addOutputData('debugMessages', 'Invalid Request Error.');
-                $dbInstance->addOutputData('errorMessages', array('Invalid Request Error.'));
+                $dbInstance->addOutputData('debugMessages', ['Invalid Request Error.']);
+                $dbInstance->addOutputData('errorMessages', ['Invalid Request Error.']);
             }
         }
         $dbInstance->exportOutputDataAsJSON();

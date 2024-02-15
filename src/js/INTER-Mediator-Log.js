@@ -95,11 +95,10 @@ const INTERMediatorLog = {
     }
   },
 
-  setErrorMessage: function (ex, moreMessage) {
-    'use strict'
+  setErrorMessage: function (ex, moreMessage, notShow = false) {
     moreMessage = (typeof moreMessage === 'undefined') ? '' : (' - ' + moreMessage)
 
-    if (INTERMediatorLog.errorMessageByAlert) {
+    if (INTERMediatorLog.errorMessageByAlert || notShow) {
       window.alert(INTERMediatorLog.errorMessageOnAlert === null ? (ex + moreMessage) : INTERMediatorLog.errorMessageOnAlert)
     }
 
@@ -117,6 +116,30 @@ const INTERMediatorLog = {
       }
       if (ex.stack && typeof console !== 'undefined') {
         console.error(ex.stack)
+      }
+    }
+  },
+
+  setErrorMessages: function (messages, notShow = false) {
+    if (messages) {
+      for (const message of messages) {
+        INTERMediatorLog.setErrorMessage(message, '', notShow)
+      }
+    }
+  },
+
+  setDebugMessages: function (messages) {
+    if (messages) {
+      for (const message of messages) {
+        INTERMediatorLog.setDebugMessage(message)
+      }
+    }
+  },
+
+  setWarningMessages: function (messages) {
+    if (messages) {
+      for (const message of messages) {
+        INTERMediatorLog.setWarningMessage(message)
       }
     }
   },
