@@ -20,6 +20,8 @@
 /**
  * @fileoverview INTERMediator_DBAdapter class is defined here.
  */
+// const INTERMediatorLib = require("./INTER-Mediator-Lib");
+// const INTERMediator = require("./INTER-Mediator");
 /**
  *
  * Usually you don't have to instantiate this class with new operator.
@@ -27,8 +29,7 @@
  */
 const INTERMediator_DBAdapter = {
 
-  eliminateDuplicatedConditions: false,
-  /*
+  eliminateDuplicatedConditions: false, /*
    If this property is set to true, the dupilicate conditions in query is going to eliminate before
    submitting to the server. This behavior is required in some case of FileMaker Server, but it can resolve
    by using the id=>-recid in a context. 2015-4-19 Masayuki Nii.
@@ -38,21 +39,11 @@ const INTERMediator_DBAdapter = {
   generate_authParams: function () {
     'use strict'
     let authParams = ''
-    // if (!INTERMediatorOnPage.authHashedPassword()
-    //   && !INTERMediatorOnPage.authHashedPassword2m()
-    //   && !INTERMediatorOnPage.authHashedPassword2()) {
-    //   INTERMediatorOnPage.authUser (null)
-    //   INTERMediatorOnPage.authChallenge = null
-    //   INTERMediatorOnPage.clientId = null
-    // }
 
     if (INTERMediatorOnPage.authUser() && INTERMediatorOnPage.authUser().length > 0) {
       authParams = '&clientid=' + encodeURIComponent(INTERMediatorOnPage.clientId())
       authParams += '&authuser=' + encodeURIComponent(INTERMediatorOnPage.authUser())
-      if ((INTERMediatorOnPage.authHashedPassword()
-          || INTERMediatorOnPage.authHashedPassword2m()
-          || INTERMediatorOnPage.authHashedPassword2())
-        && INTERMediatorOnPage.authChallenge) {
+      if ((INTERMediatorOnPage.authHashedPassword() || INTERMediatorOnPage.authHashedPassword2m() || INTERMediatorOnPage.authHashedPassword2()) && INTERMediatorOnPage.authChallenge) {
         if (INTERMediatorOnPage.passwordHash < 1.1 && INTERMediatorOnPage.authHashedPassword()) {
           const shaObj = new jsSHA('SHA-256', 'TEXT')
           shaObj.setHMACKey(INTERMediatorOnPage.authChallenge, 'TEXT')
@@ -75,10 +66,8 @@ const INTERMediator_DBAdapter = {
           authParams += '&response2=' + encodeURIComponent(hmacValue)
         }
         if (INTERMediator_DBAdapter.debugMessage) {
-          INTERMediatorLog.setDebugMessage('generate_authParams/authHashedPassword=' +
-            INTERMediatorOnPage.authHashedPassword())
-          INTERMediatorLog.setDebugMessage('generate_authParams/authChallenge=' +
-            INTERMediatorOnPage.authChallenge)
+          INTERMediatorLog.setDebugMessage('generate_authParams/authHashedPassword=' + INTERMediatorOnPage.authHashedPassword())
+          INTERMediatorLog.setDebugMessage('generate_authParams/authChallenge=' + INTERMediatorOnPage.authChallenge)
         }
       } else {
         authParams += '&response=dummy'
@@ -87,6 +76,7 @@ const INTERMediator_DBAdapter = {
 
     authParams += '&notifyid='
     authParams += encodeURIComponent(INTERMediatorOnPage.clientNotificationIdentifier())
+    authParams += "&tzoffset=" + (new Date()).getTimezoneOffset()
     return authParams
   },
 
@@ -96,11 +86,7 @@ const INTERMediator_DBAdapter = {
       const len = 48
       INTERMediatorOnPage.authChallenge = challenge.substr(0, len)
       INTERMediatorOnPage.authUserHexSalt = challenge.substr(len, len + 8)
-      INTERMediatorOnPage.authUserSalt = String.fromCharCode(
-        parseInt(challenge.substr(len, 2), 16),
-        parseInt(challenge.substr(len + 2, 2), 16),
-        parseInt(challenge.substr(len + 4, 2), 16),
-        parseInt(challenge.substr(len + 6, 2), 16))
+      INTERMediatorOnPage.authUserSalt = String.fromCharCode(parseInt(challenge.substr(len, 2), 16), parseInt(challenge.substr(len + 2, 2), 16), parseInt(challenge.substr(len + 4, 2), 16), parseInt(challenge.substr(len + 6, 2), 16))
       if (INTERMediator_DBAdapter.debugMessage) {
         INTERMediatorLog.setDebugMessage('store_challenge/authChallenge=' + INTERMediatorOnPage.authChallenge)
         INTERMediatorLog.setDebugMessage('store_challenge/authUserHexSalt=' + INTERMediatorOnPage.authUserHexSalt)
@@ -114,28 +100,31 @@ const INTERMediator_DBAdapter = {
 
   logging_comAction: function (debugMessageNumber, appPath, accessURL, authParams) {
     'use strict'
-    INTERMediatorLog.setDebugMessage(
-      INTERMediatorOnPage.getMessages()[debugMessageNumber] +
-      'Accessing:' + decodeURI(appPath) + ', Parameters:' + decodeURI(accessURL + authParams))
+    INTERMediatorLog.setDebugMessage(INTERMediatorOnPage.getMessages()[debugMessageNumber] + 'Accessing:' + decodeURI(appPath) + ', Parameters:' + decodeURI(accessURL + authParams))
   },
 
-  logging_comResult: function (myRequest, resultCount, dbresult, requireAuth, challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken) {
-    'use strict'
+  logging_comResult: function (responseText) {
     let responseTextTrancated
     if (INTERMediatorLog.debugMode > 1) {
-      if (myRequest.responseText.length > 1000) {
-        responseTextTrancated = myRequest.responseText.substr(0, 1000) + ' ...[trancated]'
+      const jsonObject = JSON.parse(responseText)
+      const resultCount = jsonObject.resultCount ?? 0
+      const dbresult = jsonObject.dbresult ?? null
+      const requireAuth = jsonObject.requireAuth ?? false
+      const challenge = jsonObject.challenge ?? null
+      const clientid = jsonObject.clientid ?? null
+      const newRecordKeyValue = jsonObject.newRecordKeyValue ?? ''
+      const changePasswordResult = jsonObject.changePasswordResult ?? null
+
+      if (responseText.length > 1000) {
+        responseTextTrancated = responseText.substring(0, 1000) + ' ...[trancated]'
       } else {
-        responseTextTrancated = myRequest.responseText
+        responseTextTrancated = responseText
       }
-      INTERMediatorLog.setDebugMessage('myRequest.responseText=' + responseTextTrancated)
-      INTERMediatorLog.setDebugMessage('Return: resultCount=' + resultCount +
-        ', dbresult=' + INTERMediatorLib.objectToString(dbresult) + IMLib.nl_char +
-        'Return: requireAuth=' + requireAuth +
-        ', challenge=' + challenge + ', clientid=' + clientid + IMLib.nl_char +
-        'Return: newRecordKeyValue=' + newRecordKeyValue +
-        ', changePasswordResult=' + changePasswordResult + ', mediatoken=' + mediatoken
-      )
+      INTERMediatorLog.setDebugMessage('responseText=' + responseTextTrancated)
+      INTERMediatorLog.setDebugMessage('Return: resultCount=' + resultCount
+        + ', dbresult=' + INTERMediatorLib.objectToString(dbresult) + IMLib.nl_char
+        + 'Return: requireAuth=' + requireAuth + ', challenge=' + challenge + ', clientid=' + clientid + IMLib.nl_char
+        + 'Return: newRecordKeyValue=' + newRecordKeyValue + ', changePasswordResult=' + changePasswordResult)
     }
   },
 
@@ -143,391 +132,286 @@ const INTERMediator_DBAdapter = {
   server_access_async: async function (accessURL, debugMessageNumber, errorMessageNumber,
                                        successProc = null, failedProc = null, authAgainProc = null,
                                        fData = null) {
-    // 'use strict'
-    let newRecordKeyValue = '', dbresult = '', resultCount = 0, totalCount = null, challenge = null, clientid = null,
-      requireAuth = false, myRequest = null, changePasswordResult = null, mediatoken = null, appPath, authParams,
-      jsonObject, i, /*notifySupport = false, */useNull = false, registeredID = '', alertBackup
-    appPath = INTERMediatorOnPage.getEntryPath()
-    authParams = INTERMediator_DBAdapter.generate_authParams()
-    authParams += "&tzoffset=" + (new Date()).getTimezoneOffset()
+    const appPath = INTERMediatorOnPage.getEntryPath()
+    const authParams = INTERMediator_DBAdapter.generate_authParams()
     INTERMediator_DBAdapter.logging_comAction(debugMessageNumber, appPath, accessURL, authParams)
-    // INTERMediatorOnPage.notifySupport = notifySupport
-    const promise = new Promise((resolve, reject) => {
-      try {
-        myRequest = new XMLHttpRequest()
-        myRequest.open('POST', appPath, true, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd)
-        myRequest.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
-        myRequest.setRequestHeader('X-From', location.href)
-        myRequest.setRequestHeader('charset', 'utf-8')
-        myRequest.onreadystatechange = () => {
-          switch (myRequest.readyState) {
-            case 0: // Unsent
-              break
-            case 1: // Opened
-              break
-            case 2: // Headers Received
-              break
-            case 3: // Loading
-              break
-            case 4:
-              try {
-                jsonObject = JSON.parse(myRequest.responseText)
-              } catch (ex) {
-                INTERMediatorLog.setErrorMessage('Communication Error: ' + myRequest.responseText)
-                if (failedProc) {
-                  failedProc(new Error('_im_communication_error_'))
-                }
-                INTERMediatorLog.flushMessage()
-                return
-              }
-              resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0
-              totalCount = jsonObject.totalCount ? jsonObject.totalCount : null
-              dbresult = jsonObject.dbresult ? jsonObject.dbresult : null
-              requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false
-              challenge = jsonObject.challenge ? jsonObject.challenge : null
-              clientid = jsonObject.clientid ? jsonObject.clientid : null
-              newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : ''
-              changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null
-              //mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null
-              //notifySupport = jsonObject.notifySupport
-              alertBackup = INTERMediatorLog.errorMessageByAlert
-              INTERMediatorLog.errorMessageByAlert = false
-              for (i = 0; i < jsonObject.errorMessages.length; i++) {
-                INTERMediatorLog.setErrorMessage(jsonObject.errorMessages[i])
-              }
-              INTERMediatorLog.errorMessageByAlert = alertBackup
-              for (i = 0; i < jsonObject.debugMessages.length; i++) {
-                INTERMediatorLog.setDebugMessage(jsonObject.debugMessages[i])
-              }
-              useNull = jsonObject.usenull
-              registeredID = jsonObject.hasOwnProperty('registeredid') ? jsonObject.registeredid : ''
+    const headers = new Headers()
+    headers.append('X-Requested-With', 'fetch')
+    headers.append('X-From', location.href)
+    if (INTERMediatorOnPage.httpuser && INTERMediatorOnPage.httppasswd) {
+      headers.append('Authorization', btoa(`${INTERMediatorOnPage.httpuser}:${INTERMediatorOnPage.httppasswd}`))
+    }
+    if (fData) {
+      for (const param of authParams.split('&')) {
+        const comp = param.split('=')
+        if (comp.length === 2 && comp[0].length > 0) {
+          fData.append(comp[0], decodeURIComponent(comp[1]))
+        }
+      }
+    } else {
+      headers.append("Content-Type", 'application/x-www-form-urlencoded; charset=UTF-8')
+    }
+    const initParam = {
+      method: "POST",
+      headers: headers,
+      mode: "same-origin",
+      credentials: "include",
+      cache: "no-cache",
+      body: fData ? fData : (accessURL + authParams)
+    }
+    await fetch(new Request(appPath, initParam)).then((response) => {
+      if (!response.ok) {
+        throw 'Communication Error'
+      }
+      return response.text()
+    }).then((responseText) => {
+      const jsonObject = JSON.parse(responseText)
+      INTERMediatorLog.setErrorMessages(jsonObject.errorMessages, true)
+      INTERMediatorLog.setDebugMessages(jsonObject.debugMessages)
+      INTERMediatorLog.setWarningMessages(jsonObject.warningMessages)
+      if (jsonObject.errorMessages && jsonObject.errorMessages.length > 0) {
+        throw 'Communication Error'
+      }
 
-              if (jsonObject.errorMessages.length > 0) {
-                INTERMediatorLog.setErrorMessage('Communication Error: ' + jsonObject.errorMessages)
-                if (failedProc) {
-                  failedProc()
-                }
-                throw 'Communication Error'
-              }
-
-              if (jsonObject.warningMessages.length > 0) {
-                INTERMediatorLog.setWarningMessage(jsonObject.warningMessages)
-              }
-
-              INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
-                challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken)
-              INTERMediator_DBAdapter.store_challenge(challenge, accessURL.match(/access=challenge/))
-              if (clientid !== null) {
-                INTERMediatorOnPage.clientId(clientid)
-              }
-              if (INTERMediatorOnPage.isSAML) {
-                if (jsonObject.samluser) {
-                  INTERMediatorOnPage.authUser(jsonObject.samluser)
-                  if (INTERMediatorOnPage.authStoring !== 'credential') {
-                    INTERMediatorOnPage.authHashedPassword(jsonObject.temppw)
-                    INTERMediatorOnPage.authHashedPassword2m(jsonObject.temppw)
-                    INTERMediatorOnPage.authHashedPassword2(jsonObject.temppw)
-                  }
-                }
-                if (jsonObject.samlloginurl) {
-                  INTERMediatorOnPage.loginURL = jsonObject.samlloginurl
-                }
-                if (jsonObject.samllogouturl) {
-                  INTERMediatorOnPage.logoutURL = jsonObject.samllogouturl
-                }
-                if (jsonObject.samladditionalfail) {
-                  IMLibQueue.setTask((complete) => {
-                    complete()
-                    if (confirm(INTERMediatorLib.getInsertedStringFromErrorNumber(2027))) {
-                      location.href = jsonObject.samladditionalfail
-                    }
-                  }, false, true)
-
-                }
-              }
-              if (accessURL.indexOf('access=changepassword&newpass=') === 0) {
-                if (successProc) {
-                  successProc({
-                    dbresult: dbresult,
-                    resultCount: resultCount,
-                    totalCount: totalCount,
-                    newRecordKeyValue: newRecordKeyValue,
-                    newPasswordResult: changePasswordResult,
-                    registeredId: registeredID,
-                    nullAcceptable: useNull
-                  })
-                }
-                resolve()
-                return
-              }
-              if (requireAuth) {
-                INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
-                INTERMediatorOnPage.clearCredentials()
-                if (INTERMediatorOnPage.isSAML && !INTERMediatorOnPage.samlWithBuiltInAuth) {
-                  if (!jsonObject.samladditionalfail) {
-                    location.href = INTERMediatorOnPage.loginURL
-                  }
-                }
-                if (INTERMediatorOnPage.updatingWithSynchronize > 0 || INTERMediator.partialConstructing) {
-                  location.reload() // It might stop here.
-                }
-                if (authAgainProc) {
-                  authAgainProc(myRequest)
-                } else if (!accessURL.match(/access=challenge/)) {
-                  INTERMediator.constructMain()
-                }
-                resolve()
-                return
-              }
-              if (!accessURL.match(/access=challenge/)) {
-                INTERMediatorOnPage.authCount = 0
-              }
-              // INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
-              //INTERMediatorOnPage.notifySupport = notifySupport
-              if (successProc) {
-                successProc({
-                  dbresult: dbresult,
-                  resultCount: resultCount,
-                  totalCount: totalCount,
-                  newRecordKeyValue: newRecordKeyValue,
-                  newPasswordResult: changePasswordResult,
-                  registeredId: registeredID,
-                  nullAcceptable: useNull
-                })
-              }
-              resolve()
-              break
+      INTERMediator_DBAdapter.logging_comResult(responseText)
+      INTERMediator_DBAdapter.store_challenge(jsonObject.challenge ?? null, accessURL.match(/access=challenge/))
+      if (jsonObject.clientid) {
+        INTERMediatorOnPage.clientId(jsonObject.clientid)
+      }
+      if (INTERMediatorOnPage.isSAML) {
+        if (jsonObject.samluser) {
+          INTERMediatorOnPage.authUser(jsonObject.samluser)
+          if (INTERMediatorOnPage.authStoring !== 'credential') {
+            INTERMediatorOnPage.authHashedPassword(jsonObject.temppw)
+            INTERMediatorOnPage.authHashedPassword2m(jsonObject.temppw)
+            INTERMediatorOnPage.authHashedPassword2(jsonObject.temppw)
           }
         }
-        if (fData) {
-          for (const param of authParams.split('&')) {
-            const comp = param.split('=')
-            if (comp.length === 2 && comp[0].length > 0) {
-              fData.append(comp[0], decodeURIComponent(comp[1]))
+        if (jsonObject.samlloginurl) {
+          INTERMediatorOnPage.loginURL = jsonObject.samlloginurl
+        }
+        if (jsonObject.samllogouturl) {
+          INTERMediatorOnPage.logoutURL = jsonObject.samllogouturl
+        }
+        if (jsonObject.samladditionalfail) {
+          IMLibQueue.setTask((complete) => {
+            complete()
+            if (confirm(INTERMediatorLib.getInsertedStringFromErrorNumber(2027))) {
+              location.href = jsonObject.samladditionalfail
+            }
+          }, false, true)
+        }
+      }
+      if (accessURL.indexOf('access=changepassword&newpass=') !== 0) {
+        if (jsonObject.requireAuth) {
+          INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
+          INTERMediatorOnPage.clearCredentials()
+          if (INTERMediatorOnPage.isSAML && !INTERMediatorOnPage.samlWithBuiltInAuth) {
+            if (!jsonObject.samladditionalfail) {
+              location.href = INTERMediatorOnPage.loginURL
             }
           }
-          //myRequest.setRequestHeader('Content-Type', 'multipart/form-data')
-          myRequest.send(fData)
-        } else {
-          myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-          myRequest.send(accessURL + authParams)
+          if (INTERMediatorOnPage.updatingWithSynchronize > 0 || INTERMediator.partialConstructing) {
+            location.reload() // It might stop here.
+          }
+          if (authAgainProc) {
+            authAgainProc()
+          } else if (!accessURL.match(/access=challenge/)) {
+            INTERMediator.constructMain()
+          }
+          return
         }
-      } catch (e) {
-        INTERMediatorLog.setErrorMessage(e,
-          INTERMediatorLib.getInsertedString(
-            INTERMediatorOnPage.getMessages()[errorMessageNumber], [e, myRequest.responseText]))
-        if (failedProc) {
-          failedProc()
+        if (!accessURL.match(/access=challenge/)) {
+          INTERMediatorOnPage.authCount = 0
         }
-        reject()
       }
+      if (successProc) {
+        successProc({
+          dbresult: jsonObject.dbresult ?? null,
+          resultCount: jsonObject.resultCount ?? 0,
+          totalCount: jsonObject.totalCount ?? null,
+          newRecordKeyValue: jsonObject.newRecordKeyValue ?? '',
+          newPasswordResult: jsonObject.changePasswordResult ?? null,
+          registeredId: jsonObject.registeredid ?? '',
+          nullAcceptable: jsonObject.usenull
+        })
+      }
+      INTERMediatorLog.flushMessage()
+    }).catch(reason => {
+      INTERMediatorLog.setErrorMessage('Communication Error: ' + reason)
+      if (failedProc) {
+        failedProc(new Error('_im_communication_error_'))
+      }
+      INTERMediatorLog.flushMessage()
     })
-    return promise
   },
 
   changePassword: async function (username, oldpassword, newpassword, doSucceed, doFail) {
     'use strict'
-    let params
 
-    return new Promise(async (resolve, reject) => {
-      if (!username || !oldpassword) {
-        reject(new Error('_im_changepw_noparams'))
-        return
-      }
-      INTERMediatorOnPage.authUser(username)
-      if (username !== '' && // No usename and no challenge, get a challenge.
-        (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 48)) {
-        INTERMediatorOnPage.authHashedPassword('need-hash-pls') // Dummy Hash for getting a challenge
-        INTERMediatorOnPage.authHashedPassword2m('need-hash-pls') // Dummy Hash for getting a challenge
-        INTERMediatorOnPage.authHashedPassword2('need-hash-pls') // Dummy Hash for getting a challenge
-        try {
-          await INTERMediator_DBAdapter.getChallenge()
-//          await INTERMediator_DBAdapter.getCredential()
-        } catch (er) {
-          reject(er)
-          return
+    if (!username || !oldpassword) {
+      throw new Error('_im_changepw_noparams')
+    }
+    INTERMediatorOnPage.authUser(username)
+    if (username !== '' && // No usename and no challenge, get a challenge.
+      (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 48)) {
+      INTERMediatorOnPage.authHashedPassword('need-hash-pls') // Dummy Hash for getting a challenge
+      INTERMediatorOnPage.authHashedPassword2m('need-hash-pls') // Dummy Hash for getting a challenge
+      INTERMediatorOnPage.authHashedPassword2('need-hash-pls') // Dummy Hash for getting a challenge
+      await INTERMediator_DBAdapter.getChallenge()
+    }
+    INTERMediatorOnPage.authHashedPassword('')
+    INTERMediatorOnPage.authHashedPassword2m('')
+    INTERMediatorOnPage.authHashedPassword2('')
+    if (INTERMediatorOnPage.passwordHash < 1.1) {
+      let shaObj = new jsSHA('SHA-1', 'TEXT')
+      shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
+      let hash = shaObj.getHash('HEX')
+      INTERMediatorOnPage.authHashedPassword(hash + INTERMediatorOnPage.authUserHexSalt)
+    }
+    if (INTERMediatorOnPage.passwordHash < 1.6) {
+      let shaObj = new jsSHA('SHA-1', 'TEXT')
+      shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
+      let hash = shaObj.getHash('HEX')
+      shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
+      shaObj.update(hash + INTERMediatorOnPage.authUserSalt)
+      let hashNext = shaObj.getHash('HEX')
+      INTERMediatorOnPage.authHashedPassword2m(hashNext + INTERMediatorOnPage.authUserHexSalt)
+    }
+    if (INTERMediatorOnPage.passwordHash < 2.1) {
+      let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
+      shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
+      let hash = shaObj.getHash('HEX')
+      INTERMediatorOnPage.authHashedPassword2(hash + INTERMediatorOnPage.authUserHexSalt)
+    }
+    const params = 'access=changepassword&newpass=' + INTERMediatorLib.generatePasswordHash(newpassword)
+    return INTERMediator_DBAdapter.server_access_async(params, 1029, 1030, (result) => {
+      if (result.newPasswordResult) {
+        if (INTERMediatorOnPage.passwordHash < 1.1) {
+          let shaObj = new jsSHA('SHA-1', 'TEXT')
+          shaObj.update(newpassword + INTERMediatorOnPage.authUserSalt)
+          let hash = shaObj.getHash('HEX')
+          INTERMediatorOnPage.authHashedPassword(hash + INTERMediatorOnPage.authUserHexSalt)
         }
-      }
-      INTERMediatorOnPage.authHashedPassword('')
-      INTERMediatorOnPage.authHashedPassword2m('')
-      INTERMediatorOnPage.authHashedPassword2('')
-      if (INTERMediatorOnPage.passwordHash < 1.1) {
-        let shaObj = new jsSHA('SHA-1', 'TEXT')
-        shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
-        let hash = shaObj.getHash('HEX')
-        INTERMediatorOnPage.authHashedPassword(hash + INTERMediatorOnPage.authUserHexSalt)
-      }
-      if (INTERMediatorOnPage.passwordHash < 1.6) {
-        let shaObj = new jsSHA('SHA-1', 'TEXT')
-        shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
-        let hash = shaObj.getHash('HEX')
-        shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
-        shaObj.update(hash + INTERMediatorOnPage.authUserSalt)
-        let hashNext = shaObj.getHash('HEX')
-        INTERMediatorOnPage.authHashedPassword2m(hashNext + INTERMediatorOnPage.authUserHexSalt)
-      }
-      if (INTERMediatorOnPage.passwordHash < 2.1) {
-        let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
-        shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
-        let hash = shaObj.getHash('HEX')
-        INTERMediatorOnPage.authHashedPassword2(hash + INTERMediatorOnPage.authUserHexSalt)
-      }
-      params = 'access=changepassword&newpass=' + INTERMediatorLib.generatePasswordHash(newpassword)
-      this.server_access_async(params, 1029, 1030,
-        (result) => {
-          if (result.newPasswordResult) {
-            if (INTERMediatorOnPage.passwordHash < 1.1) {
-              let shaObj = new jsSHA('SHA-1', 'TEXT')
-              shaObj.update(newpassword + INTERMediatorOnPage.authUserSalt)
-              let hash = shaObj.getHash('HEX')
-              INTERMediatorOnPage.authHashedPassword(hash + INTERMediatorOnPage.authUserHexSalt)
-            }
-            if (INTERMediatorOnPage.passwordHash < 2.1) {
-              let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
-              shaObj.update(newpassword + INTERMediatorOnPage.authUserSalt)
-              let hash = shaObj.getHash('HEX')
-              INTERMediatorOnPage.authHashedPassword2(hash + INTERMediatorOnPage.authUserHexSalt)
-            }
-            // INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
-            doSucceed()
-          } else {
-            doFail()
-          }
-        },
-        (er) => {
-          doFail()
+        if (INTERMediatorOnPage.passwordHash < 2.1) {
+          let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
+          shaObj.update(newpassword + INTERMediatorOnPage.authUserSalt)
+          let hash = shaObj.getHash('HEX')
+          INTERMediatorOnPage.authHashedPassword2(hash + INTERMediatorOnPage.authUserHexSalt)
         }
-      )
-    }).catch((er) => {
-      throw er
+        doSucceed()
+      } else {
+        doFail()
+      }
+    }, (er) => {
+      doFail()
     })
   },
 
   getChallenge: async function () {
     'use strict'
-    await INTERMediator_DBAdapter.server_access_async(
-      'access=challenge', 1027, 1028,
+    return INTERMediator_DBAdapter.server_access_async('access=challenge', 1027, 1028,
       null, null, null)
   },
 
   getCredential: async function () {
     'use strict'
     INTERMediatorOnPage.succeedCredential = false
-    await INTERMediator_DBAdapter.server_access_async(
-      'access=credential', 1048, 1049,
+    return INTERMediator_DBAdapter.server_access_async('access=credential', 1048, 1049,
       function () {
         INTERMediatorOnPage.succeedCredential = true
         INTERMediatorOnPage.clearCredentials()
       }, function () {
         INTERMediatorOnPage.clearCredentials()
-      },
-      INTERMediator_DBAdapter.createExceptionFunc(
-        1016, function () {
-          // INTERMediatorOnPage.hideProgress(true)
-          INTERMediator.constructMain()
-        }
-      ))
+      }, INTERMediator_DBAdapter.createExceptionFunc(1016, function () {
+        INTERMediator.constructMain()
+      }))
   },
 
   uploadFile: function (parameters, uploadingFile, doItOnFinish, exceptionProc) {
     'use strict'
     let myRequest = null
-    let appPath, authParams, accessURL, i
     // let result = this.server_access('access=uploadfile' + parameters, 1031, 1032, uploadingFile)
-    appPath = INTERMediatorOnPage.getEntryPath()
-    authParams = INTERMediator_DBAdapter.generate_authParams()
-    accessURL = 'access=uploadfile' + parameters
+    const appPath = INTERMediatorOnPage.getEntryPath()
+    const authParams = INTERMediator_DBAdapter.generate_authParams()
+    const accessURL = 'access=uploadfile' + parameters
     INTERMediator_DBAdapter.logging_comAction(1031, appPath, accessURL, authParams)
-    try {
-      myRequest = new XMLHttpRequest()
-      myRequest.open('POST', appPath, true, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd)
-      myRequest.setRequestHeader('charset', 'utf-8')
-      let params = (accessURL + authParams).split('&')
-      let fd = new FormData()
-      for (i = 0; i < params.length; i++) {
-        let valueset = params[i].split('=')
-        fd.append(valueset[0], decodeURIComponent(valueset[1]))
-      }
-      fd.append('_im_uploadfile', uploadingFile.content)
-      myRequest.onreadystatechange = function () {
-        switch (myRequest.readyState) {
-          case 3:
-            break
-          case 4:
-            INTERMediator_DBAdapter.uploadFileAfterSucceed(myRequest, doItOnFinish, exceptionProc, false)
-            break
+
+    const headers = new Headers()
+    headers.append('X-Requested-With', 'fetch')
+    headers.append('X-From', location.href)
+    if (INTERMediatorOnPage.httpuser && INTERMediatorOnPage.httppasswd) {
+      headers.append('Authorization', btoa(`${INTERMediatorOnPage.httpuser}:${INTERMediatorOnPage.httppasswd}`))
+    }
+    if (fData) {
+      for (const param of authParams.split('&')) {
+        const comp = param.split('=')
+        if (comp.length === 2 && comp[0].length > 0) {
+          fData.append(comp[0], decodeURIComponent(comp[1]))
         }
       }
-      myRequest.send(fd)
-    } catch (e) {
-      INTERMediatorLog.setErrorMessage(e,
-        INTERMediatorLib.getInsertedString(
-          INTERMediatorOnPage.getMessages()[1032], [e, myRequest.responseText]))
-      exceptionProc()
+    } else {
+      headers.append("Content-Type", 'application/x-www-form-urlencoded; charset=UTF-8')
     }
+    let params = (accessURL + authParams).split('&')
+    let fd = new FormData()
+    for (let i = 0; i < params.length; i++) {
+      let valueset = params[i].split('=')
+      fd.append(valueset[0], decodeURIComponent(valueset[1]))
+    }
+    fd.append('_im_uploadfile', uploadingFile.content)
+    const initParam = {
+      method: "POST",
+      headers: headers,
+      mode: "same-origin",
+      credentials: "include",
+      cache: "no-cache",
+      body: fd
+    }
+
+    fetch(new Request(appPath, initParam)).then((response) => {
+      if (!response.ok) {
+        throw 'Communication Error'
+      }
+      return response.text()
+    }).then((responseText) => {
+      INTERMediator_DBAdapter.uploadFileAfterSucceed(responseText, doItOnFinish, exceptionProc, false)
+    })
   },
 
-  uploadFileAfterSucceed: function (myRequest, doItOnFinish, exceptionProc, isErrorDialog) {
+  uploadFileAfterSucceed: function (responseText, doItOnFinish, exceptionProc, isErrorDialog) {
     'use strict'
-    let newRecordKeyValue = ''
-    let dbresult = ''
-    let resultCount = 0
-    let challenge = null
-    let clientid = null
-    let requireAuth = false
-    let changePasswordResult = null
-    let mediatoken = null
-    let jsonObject, i
-    let returnValue = true
+    let jsonObject
     try {
-      jsonObject = JSON.parse(myRequest.responseText)
+      jsonObject = JSON.parse(responseText)
     } catch (ex) {
-      INTERMediatorLog.setErrorMessage(ex,
-        INTERMediatorLib.getInsertedString(
-          INTERMediatorOnPage.getMessages()[1032], ['', '']))
+      INTERMediatorLog.setErrorMessage(ex, INTERMediatorLib.getInsertedString(
+        INTERMediatorOnPage.getMessages()[1032], ['']))
       INTERMediatorLog.flushMessage()
-      exceptionProc()
+      if (exceptionProc) {
+        exceptionProc()
+      }
       return false
     }
-    resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0
-    dbresult = jsonObject.dbresult ? jsonObject.dbresult : null
-    requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false
-    challenge = jsonObject.challenge ? jsonObject.challenge : null
-    clientid = jsonObject.clientid ? jsonObject.clientid : null
-    newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : ''
-    changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null
-    //mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null
-    for (i = 0; i < jsonObject.errorMessages.length; i++) {
-      if (isErrorDialog) {
-        window.alert(jsonObject.errorMessages[i])
-      } else {
-        INTERMediatorLog.setErrorMessage(jsonObject.errorMessages[i])
-      }
-      returnValue = false
-    }
-    for (i = 0; i < jsonObject.debugMessages.length; i++) {
-      INTERMediatorLog.setDebugMessage(jsonObject.debugMessages[i])
-    }
-
-    INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
-      challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken)
-    INTERMediator_DBAdapter.store_challenge(challenge, false)
-    if (clientid !== null) {
-      INTERMediatorOnPage.clientId(clientid)
-    }
-    // if (mediatoken !== null) {
-    //   INTERMediatorOnPage.mediaToken = mediatoken
-    // }
-    if (requireAuth) {
+    INTERMediator_DBAdapter.logging_comResult(responseText)
+    INTERMediatorLog.setErrorMessages(jsonObject.errorMessages, !isErrorDialog)
+    INTERMediatorLog.setDebugMessages(jsonObject.debugMessages)
+    INTERMediatorLog.setWarningMessages(jsonObject.warningMessages)
+    INTERMediator_DBAdapter.store_challenge(jsonObject.challenge ?? null, false)
+    INTERMediatorOnPage.clientId(jsonObject.clientid ?? '')
+    if (jsonObject.requireAuth) {
       INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
       INTERMediatorOnPage.clearCredentials()
-      // throw new Error('_im_requath_request_')
-      exceptionProc()
+      if (exceptionProc) {
+        exceptionProc()
+      }
+      return false
     }
     INTERMediatorOnPage.authCount = 0
-    // INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
-    doItOnFinish(dbresult)
-    return returnValue
+    if (doItOnFinish) {
+      doItOnFinish(jsonObject.dbresult ?? null)
+    }
+    return true
   },
 
   /*
@@ -553,49 +437,39 @@ const INTERMediator_DBAdapter = {
     }
     params = INTERMediator_DBAdapter.db_queryParameters(args)
     return new Promise((resolve, reject) => {
-        this.server_access_async(params, 1012, 1004,
-          (() => {
-            let contextDef
-            let contextName = args.name
-            let recordsNumber = Number(args.records)
-            let resolveCapt = resolve
-            return (result) => {
-              result.count = result.dbresult ? Object.keys(result.dbresult).length : 0
-              contextDef = IMLibContextPool.getContextDef(contextName)
-              if (!contextDef.relation &&
-                args.paging && Boolean(args.paging) === true) {
-                INTERMediator.pagedAllCount = parseInt(result.resultCount, 10)
-                if (result.totalCount) {
-                  INTERMediator.totalRecordCount = parseInt(result.totalCount, 10)
-                }
-              }
-              if ((args.paging !== null) && (Boolean(args.paging) === true)) {
-                INTERMediator.pagination = true
-                if (!(recordsNumber >= Number(INTERMediator.pagedSize) &&
-                  Number(INTERMediator.pagedSize) > 0)) {
-                  INTERMediator.pagedSize = parseInt(recordsNumber, 10)
-                }
-              }
-              successProc ? successProc(result) : false
-              resolveCapt(result)
+      this.server_access_async(params, 1012, 1004, (() => {
+        let contextDef
+        let contextName = args.name
+        let recordsNumber = Number(args.records)
+        let resolveCapt = resolve
+        return (result) => {
+          result.count = result.dbresult ? Object.keys(result.dbresult).length : 0
+          contextDef = IMLibContextPool.getContextDef(contextName)
+          if (!contextDef.relation && args.paging && Boolean(args.paging) === true) {
+            INTERMediator.pagedAllCount = parseInt(result.resultCount, 10)
+            if (result.totalCount) {
+              INTERMediator.totalRecordCount = parseInt(result.totalCount, 10)
             }
-          })(),
-          failedProc,
-          INTERMediator_DBAdapter.createExceptionFunc(
-            1016,
-            (function () {
-              return function () {
-                if (INTERMediator.currentContext === true) {
-                  location.reload()
-                } else {
-                  INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
-                }
-              }
-            })()
-          )
-        )
-      }
-    ).catch((err) => {
+          }
+          if ((args.paging !== null) && (Boolean(args.paging) === true)) {
+            INTERMediator.pagination = true
+            if (!(recordsNumber >= Number(INTERMediator.pagedSize) && Number(INTERMediator.pagedSize) > 0)) {
+              INTERMediator.pagedSize = parseInt(recordsNumber, 10)
+            }
+          }
+          successProc ? successProc(result) : false
+          resolveCapt(result)
+        }
+      })(), failedProc, INTERMediator_DBAdapter.createExceptionFunc(1016, (function () {
+        return function () {
+          if (INTERMediator.currentContext === true) {
+            location.reload()
+          } else {
+            INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+          }
+        }
+      })()))
+    }).catch((err) => {
       throw err
     })
   },
@@ -617,16 +491,12 @@ const INTERMediator_DBAdapter = {
     if (args.records === null) {
       params = 'access=read&name=' + encodeURIComponent(args.name)
     } else {
-      if (parseInt(args.records, 10) === 0 &&
-        (INTERMediatorOnPage.dbClassName.match(/FileMaker_FX/) ||
-          INTERMediatorOnPage.dbClassName.match(/FileMaker_DataAPI/))) {
+      if (parseInt(args.records, 10) === 0 && (INTERMediatorOnPage.dbClassName.match(/FileMaker_FX/) || INTERMediatorOnPage.dbClassName.match(/FileMaker_DataAPI/))) {
         params = 'access=describe&name=' + encodeURIComponent(args.name)
       } else {
         params = 'access=read&name=' + encodeURIComponent(args.name)
       }
-      if (Boolean(args.uselimit) === true &&
-        parseInt(args.records, 10) >= INTERMediator.pagedSize &&
-        parseInt(INTERMediator.pagedSize, 10) > 0) {
+      if (Boolean(args.uselimit) === true && parseInt(args.records, 10) >= INTERMediator.pagedSize && parseInt(INTERMediator.pagedSize, 10) > 0) {
         recordLimit = INTERMediator.pagedSize
       } else {
         recordLimit = args.records
@@ -671,9 +541,7 @@ const INTERMediator_DBAdapter = {
     extCountSort = 0;
     conditions = []
     while (args.conditions && args.conditions[extCount]) {
-      conditionSign = args.conditions[extCount].field + '#' +
-        args.conditions[extCount].operator + '#' +
-        args.conditions[extCount].value
+      conditionSign = args.conditions[extCount].field + '#' + args.conditions[extCount].operator + '#' + args.conditions[extCount].value
       if (!INTERMediator_DBAdapter.eliminateDuplicatedConditions || conditions.indexOf(conditionSign) < 0) {
         params += '&condition' + extCount
         params += 'field=' + encodeURIComponent(args.conditions[extCount].field)
@@ -687,10 +555,8 @@ const INTERMediator_DBAdapter = {
     }
     params += '&records=' + encodeURIComponent(recordLimit);
 
-    [params, conditions, extCount] = INTERMediator_DBAdapter.parseAdditionalCriteria(
-      params, INTERMediator.additionalCondition[args.name], conditions, extCount);
-    [params, extCountSort] = INTERMediator_DBAdapter.parseAdditionalSortParameter(
-      params, INTERMediator.additionalSortKey[args.name], extCountSort);
+    [params, conditions, extCount] = INTERMediator_DBAdapter.parseAdditionalCriteria(params, INTERMediator.additionalCondition[args.name], conditions, extCount);
+    [params, extCountSort] = INTERMediator_DBAdapter.parseAdditionalSortParameter(params, INTERMediator.additionalSortKey[args.name], extCountSort);
     params = INTERMediator_DBAdapter.parseLocalContext(args, params, extCount, extCountSort)[0]
 
     return params
@@ -705,10 +571,7 @@ const INTERMediator_DBAdapter = {
       }
       for (let index = 0; index < criteriaObject.length; index++) {
         if (criteriaObject[index] && criteriaObject[index].field) {
-          const conditionSign =
-            criteriaObject[index].field + '#' +
-            ((typeof (criteriaObject[index].operator) !== 'undefined') ? criteriaObject[index].operator : '') + '#' +
-            ((typeof (criteriaObject[index].value) !== 'undefined') ? criteriaObject[index].value : '')
+          const conditionSign = criteriaObject[index].field + '#' + ((typeof (criteriaObject[index].operator) !== 'undefined') ? criteriaObject[index].operator : '') + '#' + ((typeof (criteriaObject[index].value) !== 'undefined') ? criteriaObject[index].value : '')
           if (!INTERMediator_DBAdapter.eliminateDuplicatedConditions || conditions.indexOf(conditionSign) < 0) {
             params += '&condition' + extCount
             params += 'field=' + encodeURIComponent(criteriaObject[index].field)
@@ -780,15 +643,11 @@ const INTERMediator_DBAdapter = {
         if (keyParams[0].trim() === 'condition' && keyParams.length >= 4) {
           if (isFirstItem) {
             params += '&condition' + extCount + 'field=__operation__'
-            params += '&condition' + extCount + 'operator=block/' + (INTERMediator.lcConditionsOP1AND ? 'T' : 'F')
-              + '/' + (INTERMediator.lcConditionsOP2AND ? 'T' : 'F')
-              + '/' + ((INTERMediator.lcConditionsOP3AND && INTERMediator.lcConditionsOP3AND.toString().toUpperCase() === 'AND')
-                ? 'AND' : (INTERMediator.lcConditionsOP3AND ? 'T' : 'F'))
+            params += '&condition' + extCount + 'operator=block/' + (INTERMediator.lcConditionsOP1AND ? 'T' : 'F') + '/' + (INTERMediator.lcConditionsOP2AND ? 'T' : 'F') + '/' + ((INTERMediator.lcConditionsOP3AND && INTERMediator.lcConditionsOP3AND.toString().toUpperCase() === 'AND') ? 'AND' : (INTERMediator.lcConditionsOP3AND ? 'T' : 'F'))
             extCount++
             isFirstItem = false
           }
-          params += '&condition' + extCount +
-            'field=' + encodeURIComponent(keyParams[2].trim().replace(';;', '::').trim())
+          params += '&condition' + extCount + 'field=' + encodeURIComponent(keyParams[2].trim().replace(';;', '::').trim())
           params += '&condition' + extCount + 'operator=' + encodeURIComponent(keyParams[3].trim())
           params += '&condition' + extCount + 'value=' + encodeURIComponent(value)
           extCount++
@@ -804,8 +663,7 @@ const INTERMediator_DBAdapter = {
       extCountSort++
     }
     return [params, extCount, extCountSort];
-  },
-  /*
+  }, /*
    db_update
    Update the database. The parameter of this function should be the object as below:
 
@@ -824,8 +682,7 @@ const INTERMediator_DBAdapter = {
     }
     contextDef = IMLibContextPool.getContextDef(args.name)
     if (!contextDef.key) {
-      INTERMediatorLog.setErrorMessage(
-        INTERMediatorLib.getInsertedStringFromErrorNumber(1045, [args.name]))
+      INTERMediatorLog.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1045, [args.name]))
       noError = false
     }
     if (args.dataset === null) {
@@ -840,8 +697,7 @@ const INTERMediator_DBAdapter = {
     let params, extCount, counter, index, addedObject
     params = 'access=update&name=' + encodeURIComponent(args.name)
     counter = 0
-    if (INTERMediator.additionalFieldValueOnUpdate &&
-      INTERMediator.additionalFieldValueOnUpdate[args.name]) {
+    if (INTERMediator.additionalFieldValueOnUpdate && INTERMediator.additionalFieldValueOnUpdate[args.name]) {
       addedObject = INTERMediator.additionalFieldValueOnUpdate[args.name]
       if (addedObject.field) {
         addedObject = [addedObject]
@@ -884,25 +740,15 @@ const INTERMediator_DBAdapter = {
     params = INTERMediator_DBAdapter.db_updateParameters(args)
     if (params) {
       await INTERMediatorOnPage.retrieveAuthInfo()
-      INTERMediator_DBAdapter.server_access_async(
-        params,
-        1013,
-        1014,
-        successProc,
-        failedProc,
-        INTERMediator_DBAdapter.createExceptionFunc(
-          1016,
-          (function () {
-            return function () {
-              if (INTERMediator.currentContext === true) {
-                location.reload()
-              } else {
-                INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
-              }
-            }
-          })()
-        )
-      )
+      INTERMediator_DBAdapter.server_access_async(params, 1013, 1014, successProc, failedProc, INTERMediator_DBAdapter.createExceptionFunc(1016, (function () {
+        return function () {
+          if (INTERMediator.currentContext === true) {
+            location.reload()
+          } else {
+            INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+          }
+        }
+      })()))
     }
   },
 
@@ -924,8 +770,7 @@ const INTERMediator_DBAdapter = {
     }
     contextDef = IMLibContextPool.getContextDef(args.name)
     if (!contextDef.key) {
-      INTERMediatorLog.setErrorMessage(
-        INTERMediatorLib.getInsertedStringFromErrorNumber(1045, [args.name]))
+      INTERMediatorLog.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1045, [args.name]))
       noError = false
     }
     if (args.conditions === null) {
@@ -940,8 +785,7 @@ const INTERMediator_DBAdapter = {
     let params, i, counter, index, addedObject
     params = 'access=delete&name=' + encodeURIComponent(args.name)
     counter = 0
-    if (INTERMediator.additionalFieldValueOnDelete &&
-      INTERMediator.additionalFieldValueOnDelete[args.name]) {
+    if (INTERMediator.additionalFieldValueOnDelete && INTERMediator.additionalFieldValueOnDelete[args.name]) {
       addedObject = INTERMediator.additionalFieldValueOnDelete[args.name]
       if (addedObject.field) {
         addedObject = [addedObject]
@@ -973,25 +817,15 @@ const INTERMediator_DBAdapter = {
     params = INTERMediator_DBAdapter.db_deleteParameters(args)
     if (params) {
       await INTERMediatorOnPage.retrieveAuthInfo()
-      INTERMediator_DBAdapter.server_access_async(
-        params,
-        1017,
-        1015,
-        successProc,
-        failedProc,
-        INTERMediator_DBAdapter.createExceptionFunc(
-          1016,
-          (function () {
-            return function () {
-              if (INTERMediator.currentContext === true) {
-                location.reload()
-              } else {
-                INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
-              }
-            }
-          })()
-        )
-      )
+      INTERMediator_DBAdapter.server_access_async(params, 1017, 1015, successProc, failedProc, INTERMediator_DBAdapter.createExceptionFunc(1016, (function () {
+        return function () {
+          if (INTERMediator.currentContext === true) {
+            location.reload()
+          } else {
+            INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+          }
+        }
+      })()))
     }
   },
 
@@ -1018,23 +852,15 @@ const INTERMediator_DBAdapter = {
     }
     if (paramsStr) {
       await INTERMediatorOnPage.retrieveAuthInfo()
-      INTERMediator_DBAdapter.server_access_async(
-        paramsStr,
-        1018,
-        1016,
-        successProc,
-        failedProc,
-        INTERMediator_DBAdapter.createExceptionFunc(1016, (function () {
-          return function () {
-            if (INTERMediator.currentContext === true) {
-              location.reload()
-            } else {
-              INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
-            }
+      INTERMediator_DBAdapter.server_access_async(paramsStr, 1018, 1016, successProc, failedProc, INTERMediator_DBAdapter.createExceptionFunc(1016, (function () {
+        return function () {
+          if (INTERMediator.currentContext === true) {
+            location.reload()
+          } else {
+            INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
           }
-        })()),
-        paramsFD
-      )
+        }
+      })()), paramsFD)
     }
   },
 
@@ -1048,14 +874,12 @@ const INTERMediator_DBAdapter = {
     }
     contextDef = IMLibContextPool.getContextDef(args.name)
     if (!contextDef.key) {
-      INTERMediatorLog.setErrorMessage(
-        INTERMediatorLib.getInsertedStringFromErrorNumber(1045, [args.name]))
+      INTERMediatorLog.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1045, [args.name]))
       return false
     }
     params = 'access=create&name=' + encodeURIComponent(args.name)
     counter = 0
-    if (INTERMediator.additionalFieldValueOnNewRecord &&
-      INTERMediator.additionalFieldValueOnNewRecord[args.name]) {
+    if (INTERMediator.additionalFieldValueOnNewRecord && INTERMediator.additionalFieldValueOnNewRecord[args.name]) {
       addedObject = INTERMediator.additionalFieldValueOnNewRecord[args.name]
       if (addedObject.field) {
         addedObject = [addedObject]
@@ -1082,8 +906,7 @@ const INTERMediator_DBAdapter = {
     fields = ''
     counter = 0
     counterAttach = 0
-    if (INTERMediator.additionalFieldValueOnNewRecord &&
-      INTERMediator.additionalFieldValueOnNewRecord[args.name]) {
+    if (INTERMediator.additionalFieldValueOnNewRecord && INTERMediator.additionalFieldValueOnNewRecord[args.name]) {
       addedObject = INTERMediator.additionalFieldValueOnNewRecord[args.name]
       if (addedObject.field) {
         addedObject = [addedObject]
@@ -1091,8 +914,7 @@ const INTERMediator_DBAdapter = {
       for (index in addedObject) {
         if (addedObject.hasOwnProperty(index)) {
           let oneDefinition = addedObject[index]
-          if (oneDefinition.value && oneDefinition.value.file
-            && oneDefinition.value.kind && oneDefinition.value.kind === 'attached') {
+          if (oneDefinition.value && oneDefinition.value.file && oneDefinition.value.kind && oneDefinition.value.kind === 'attached') {
             params.append('value_' + counterAttach, oneDefinition.value.name)
             fields += (fields.length === 0 ? '' : ',') + oneDefinition.field
             counterAttach++
@@ -1105,8 +927,7 @@ const INTERMediator_DBAdapter = {
       }
     }
     for (i = 0; i < args.dataset.length; i++) {
-      if (args.dataset[i].value && args.dataset[i].value.file
-        && args.dataset[i].value.kind && args.dataset[i].value.kind === 'attached') {
+      if (args.dataset[i].value && args.dataset[i].value.file && args.dataset[i].value.kind && args.dataset[i].value.kind === 'attached') {
         params.append('attach_' + counterAttach, args.dataset[i].value.file, args.dataset[i].value.file.name)
         fields += (fields.length === 0 ? '' : ',') + args.dataset[i].field
         counterAttach++
@@ -1139,25 +960,15 @@ const INTERMediator_DBAdapter = {
     let params = INTERMediator_DBAdapter.db_copyParameters(args)
     if (params) {
       await INTERMediatorOnPage.retrieveAuthInfo()
-      INTERMediator_DBAdapter.server_access_async(
-        params,
-        1017,
-        1015,
-        successProc,
-        failedProc,
-        INTERMediator_DBAdapter.createExceptionFunc(
-          1016,
-          (function () {
-            return function () {
-              if (INTERMediator.currentContext === true) {
-                location.reload()
-              } else {
-                INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
-              }
-            }
-          })()
-        )
-      )
+      INTERMediator_DBAdapter.server_access_async(params, 1017, 1015, successProc, failedProc, INTERMediator_DBAdapter.createExceptionFunc(1016, (function () {
+        return function () {
+          if (INTERMediator.currentContext === true) {
+            location.reload()
+          } else {
+            INTERMediator.constructMain(INTERMediator.currentContext, INTERMediator.currentRecordset)
+          }
+        }
+      })()))
     }
   },
 
@@ -1204,10 +1015,7 @@ const INTERMediator_DBAdapter = {
           INTERMediatorOnPage.authenticating(AuthProc)
         }
       } else {
-        INTERMediatorLog.setErrorMessage('Communication Error',
-          INTERMediatorLib.getInsertedString(
-            INTERMediatorOnPage.getMessages()[errorNumCapt],
-            ['Communication Error', myRequest.responseText]))
+        INTERMediatorLog.setErrorMessage('Communication Error', INTERMediatorLib.getInsertedString(INTERMediatorOnPage.getMessages()[errorNumCapt], ['Communication Error', myRequest.responseText]))
       }
     }
   },

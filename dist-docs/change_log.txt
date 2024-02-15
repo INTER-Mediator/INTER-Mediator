@@ -12,7 +12,7 @@ Also the Migration Guide (Japanese) might be informative:
 
 Ver.13 (In Development)
 
-Ver.12 (Februrary xx, 2024)
+Ver.12 (Februrary 06, 2024)
 - PHP Ver.7.4 is the minimum version.
 - Type description added to most PHP code. The Export class and the OperationLogExtension class are added types, and
   your inherited class has to add them. The extending-class based methods didn't add types.

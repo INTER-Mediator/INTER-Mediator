@@ -1,7 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
-  "version": "12",
-  "time": "2024-02-04",
+  "version": "13",
+  "time": "2024-02-15",
   "repositories": [
     {
       "type": "git",
@@ -21,10 +21,10 @@
     "ext-exif": "*",
     "ext-gd": "*",
     "ext-intl": "*",
-    "mouf/nodejs-installer": ">=1.0",
+    "mouf/nodejs-installer": "*",
     "paragonie/constant_time_encoding": "*",
     "inter-mediator/fxphp": "*",
-    "inter-mediator/fmdataapi": ">=30",
+    "inter-mediator/fmdataapi": "*",
     "tecnickcom/tcpdf": "*",
     "setasign/fpdi": "*",
     "smalot/pdfparser": "*",

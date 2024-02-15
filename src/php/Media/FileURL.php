@@ -247,7 +247,7 @@ class FileURL implements UploadingSupport, DownloadingSupport
      * @return string
      */
     private
-    function justfyPathComponent(string $str, string $mode = "default"): string
+    function justfyPathComponent(string $str, ?string $mode = "default"): string
     {
         $jStr = $str;
         switch ($mode) {
