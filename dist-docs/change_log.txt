@@ -11,7 +11,7 @@ Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.13 (In Development)
-- In the INTERMediator_DBAdapter, XMLHttpRequest programs are replaced with fetch function.
+- In the INTERMediator_DBAdapter, Codes using XMLHttpRequest are replaced with fetch function.
 
 Ver.12 (Februrary 06, 2024)
 - PHP Ver.7.4 is the minimum version.

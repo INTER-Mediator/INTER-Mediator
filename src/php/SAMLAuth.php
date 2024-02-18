@@ -54,10 +54,10 @@ class SAMLAuth
     }
 
     /**
-     * @param array $value
+     * @param null|array $value
      * @return void
      */
-    public function setSAMLAdditionalRules(array $value): void
+    public function setSAMLAdditionalRules(?array $value): void
     {
         $this->samlAdditionalRules = $value;
     }
