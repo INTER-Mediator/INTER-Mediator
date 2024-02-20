@@ -32,7 +32,8 @@ committee.
 
 Set the SAML is active ($isSAML = true;), but the built-in auth is inactive ($samlWithBuiltInAuth = false;).
 
-- Open the web app page, and check to show the IdP's login page not the built-in login page.
+- Open the web app page(https://demo.inter-mediator.com/saml-trial/chat.html), 
+  and check to show the IdP's login page not the built-in login page.
 - Try to the wrong account, and check not to log in and repeatedly show the login panel.
 - Try to the valid built-in account, and check not to log in.
 - Try to the valid SAML account, and check to log in correctly.
