@@ -313,7 +313,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
      * @return string|null
      * @throws Exception
      */
-    public function authSupportGetUserIdFromUsername(string $username): ?string
+    public function authSupportGetUserIdFromUsername(?string $username): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
         if (!$userTable || !$username) {

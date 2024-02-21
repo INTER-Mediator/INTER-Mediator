@@ -37,7 +37,7 @@ interface Auth_Interface_DB                    // with using table for authentic
 
     public function authSupportGetUserIdFromEmail(string $email): ?string;                            // authuser
 
-    public function authSupportGetUserIdFromUsername(string $username): ?string;                    // authuser
+    public function authSupportGetUserIdFromUsername(?string $username): ?string;                    // authuser
 
     public function authSupportGetUsernameFromUserId(string $userid): ?string;                        // authuser
 

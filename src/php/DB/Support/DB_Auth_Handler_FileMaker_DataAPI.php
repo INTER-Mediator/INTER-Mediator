@@ -444,7 +444,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @param string $username
      * @return string|null
      */
-    public function authSupportGetUserIdFromUsername(string $username): ?string
+    public function authSupportGetUserIdFromUsername(?string $username): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null || !$username) {
