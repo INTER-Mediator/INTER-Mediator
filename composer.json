@@ -29,7 +29,7 @@
     "setasign/fpdi": "*",
     "smalot/pdfparser": "*",
     "aws/aws-sdk-php": "*",
-    "simplesamlphp/simplesamlphp": "*",
+    "simplesamlphp/simplesamlphp": "2.0.10",
     "matthiasmullie/minify": "*",
     "msyk/dropbox-api-shortlivedtoken": ">=5",
     "league/csv": "*",
