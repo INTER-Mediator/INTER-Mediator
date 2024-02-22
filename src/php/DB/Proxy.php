@@ -1473,7 +1473,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param string $clientId
      * @return string
      */
-    function saveChallenge(string $username, string $challenge, string $clientId): ?string
+    function saveChallenge(?string $username, string $challenge, string $clientId): ?string
     {
         $this->logger->setDebugMessage(
             "[saveChallenge]user={$username}, challenge={$challenge}, clientid={$clientId}", 2);

@@ -460,7 +460,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * @param string $username
      * @return string
      */
-    public function authSupportGetUserIdFromUsername(string $username): ?string
+    public function authSupportGetUserIdFromUsername(?string $username): ?string
     {
         return $this->privateGetUserIdFromUsername($username, true);
     }
