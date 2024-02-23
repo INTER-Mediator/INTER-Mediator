@@ -53,12 +53,14 @@ jobs:
         run: printenv
       - name: PHP Module Checking
         run: php -m
-      - name: "Cache dependencies installed with composer"
-        uses: "actions/cache@v2.0.0"
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v3
         with:
-          path: "${{ steps.determine-composer-cache-directory.outputs.directory }}"
-          key: "php-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-${{ hashFiles('composer.lock') }}"
-          restore-keys: "php-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-"
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
 
 #      - name: Cache Composer packages
 #        id: composer-cache
@@ -70,9 +72,7 @@ jobs:
 #            ${{ runner.os }}-php-
 
       - name: Update dependencies
-        run: |
-          rm -rf composer.lock
-          composer update
+        run: composer update
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
