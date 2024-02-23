@@ -91,6 +91,8 @@ jobs:
         # E2E test with WebdriverIO
       - name: Setup Headless Chrome
         uses: browser-actions/setup-chromium@latest
+        with:
+          chromium-version: 122
 
       - name: Setup WebdriverIO
         run: cd spec/run;npm update
