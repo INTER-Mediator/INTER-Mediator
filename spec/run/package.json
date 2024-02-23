@@ -46,7 +46,7 @@
     "@wdio/local-runner": "*",
     "@wdio/mocha-framework": "*",
     "@wdio/spec-reporter": "*",
-    "chromedriver": "*",
+    "chromedriver": "121.0.2",
     "geckodriver": "*",
     "msedgedriver": "*",
     "wdio-chromedriver-service": "*",

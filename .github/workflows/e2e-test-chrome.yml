@@ -38,11 +38,7 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-
-#      - name: Validate composer.json and composer.lock
-#        run: composer validate --strict
-
+      - uses: actions/checkout@v4 # v4.1.1
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -53,16 +49,14 @@ jobs:
         run: printenv
       - name: PHP Module Checking
         run: php -m
-
-      - name: Cache Composer packages
+      - name: Get Composer Cache Directory
         id: composer-cache
-        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v4
         with:
-          path: vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php-
-
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
       - name: Update dependencies
         run: composer update
       - name: Install dependencies
@@ -96,7 +90,9 @@ jobs:
 
         # E2E test with WebdriverIO
       - name: Setup Headless Chrome
-        uses: browser-actions/setup-chrome@v1
+        uses: browser-actions/setup-chromium@latest
+        with:
+          chromium-version: latest
 
       - name: Setup WebdriverIO
         run: cd spec/run;npm update

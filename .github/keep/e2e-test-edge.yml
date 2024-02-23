@@ -98,7 +98,7 @@ jobs:
 
         # E2E test with WebdriverIO
       - name: Setup Microsoft Edge
-        uses: browser-actions/setup-edge@v1
+        uses: browser-actions/setup-edge@latest
 
       - name: Setup WebdriverIO
         run: cd spec/run;npm update
