@@ -44,7 +44,7 @@ jobs:
       #        run: composer validate --strict
 
       - name: Install PHP
-        uses: shivammathur/setup-php@latest
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: intl #optional

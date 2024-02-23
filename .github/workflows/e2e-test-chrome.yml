@@ -40,7 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4 # v4.1.1
       - name: Install PHP
-        uses: shivammathur/setup-php@latest
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: intl #optional
