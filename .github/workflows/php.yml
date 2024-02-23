@@ -38,13 +38,13 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      - uses: actions/checkout@v4 # v4.1.1
+      - uses: actions/checkout@latest # v4.1.1
 
       #      - name: Validate composer.json and composer.lock
       #        run: composer validate --strict
 
       - name: Install PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@latest
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: intl #optional
@@ -56,7 +56,7 @@ jobs:
       - name: Get Composer Cache Directory
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v4
+      - uses: actions/cache@latest
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}

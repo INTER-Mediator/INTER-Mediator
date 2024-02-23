@@ -11,7 +11,7 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4 # v4.1.1
+      - uses: actions/checkout@latest # v4.1.1
       - name: CI
         shell: bash
         run: |
