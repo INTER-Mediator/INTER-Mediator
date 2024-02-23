@@ -64,7 +64,9 @@ jobs:
             ${{ runner.os }}-php-
 
       - name: Update dependencies
-        run: composer update
+        run: |
+          rm -rf composer.lock
+          composer update
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
