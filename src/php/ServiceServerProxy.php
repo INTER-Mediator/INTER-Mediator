@@ -301,7 +301,7 @@ class ServiceServerProxy
     private function executeCommand(string $command): void
     {
         $imPath = IMUtil::pathToINTERMediator();
-        putenv('FOREVER_ROOT=' . IMUtil::getServerUserHome());
+        //putenv('FOREVER_ROOT=' . IMUtil::getServerUserHome());
         if ($this->paramsBoot) {
             putenv('PATH=' . realpath($imPath . "/node_modules/.bin") .
                 (IMUtil::isPHPExecutingWindows() ? ';' : ':') . getenv('PATH'));
@@ -341,9 +341,11 @@ class ServiceServerProxy
         $dq = '"';
         $this->messages[] = $this->messageHead . "startServer() called";
 //        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
-        $nodemon = IMUtil::isPHPExecutingWindows() ? "nodemon.cmd" : "nodemon";
-        $scriptPath = "src/js/Service_Server.js";
+        $nodemon = IMUtil::pathToINTERMediator() . "/node_modules/.bin/"
+            . (IMUtil::isPHPExecutingWindows() ? "nodemon.cmd" : "nodemon");
+        $scriptPath = IMUtil::pathToINTERMediator() . "/src/js/Service_Server.js";
         if (IMUtil::isPHPExecutingWindows()) {
+            $nodemon = str_replace("/", DIRECTORY_SEPARATOR, $nodemon);
             $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath);
         }
 
