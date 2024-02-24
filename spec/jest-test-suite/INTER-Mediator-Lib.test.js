@@ -112,3 +112,17 @@ test('INTERMediatorLib.normalizeNumerics(str) should return the numeric characte
   expect(INTERMediatorLib.normalizeNumerics('４３０')).toBe(430)
   expect(INTERMediatorLib.normalizeNumerics('４３０．９９９')).toBe(430.999)
 })
+
+test('stringToHex returns valid hex strings.', function () {
+  'use strict'
+  expect(INTERMediatorLib.stringToHex("1234")).toBe("31323334")
+  expect(INTERMediatorLib.stringToHex("abABzZ")).toBe("616241427a5a")
+  expect(INTERMediatorLib.stringToHex("C\nC\n")).toBe("430a430a")
+})
+
+test('HexToString returns valid strings from hex strings.', function () {
+  'use strict'
+  expect(INTERMediatorLib.hexToString("31323334")).toBe("1234")
+  expect(INTERMediatorLib.hexToString("616241427a5a")).toBe("abABzZ")
+  expect(INTERMediatorLib.hexToString("430a430a")).toBe("C\nC\n")
+})

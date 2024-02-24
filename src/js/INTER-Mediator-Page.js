@@ -255,6 +255,12 @@ let INTERMediatorOnPage = {
     }
   },
 
+  storedHashedPasswordAllClear: (value) => {
+    INTERMediatorOnPage.authHashedPassword(value)
+    INTERMediatorOnPage.authHashedPassword2m(value)
+    INTERMediatorOnPage.authHashedPassword2(value)
+  },
+
   storeSessionStorageWithFallDown: function (key, value) {
     'use strict'
     if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
@@ -672,27 +678,31 @@ let INTERMediatorOnPage = {
       bodyNode.removeChild(backBox)
       if (inputUsername !== '' && // No usename and no challenge, get a challenge.
         (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 48)) {
-        INTERMediatorOnPage.authHashedPassword('need-hash-pls') // Dummy Hash for getting a challenge
-        INTERMediatorOnPage.authHashedPassword2m('need-hash-pls') // Dummy Hash for getting a challenge
-        INTERMediatorOnPage.authHashedPassword2('need-hash-pls') // Dummy Hash for getting a challenge
+        INTERMediatorOnPage.storedHashedPasswordAllClear('need-hash-pls')
         await INTERMediator_DBAdapter.getChallenge()
       }
       if (INTERMediatorOnPage.passwordHash < 1.1) {
-        let shaObj = new jsSHA('SHA-1', 'TEXT')
-        shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
-        INTERMediatorOnPage.authHashedPassword(shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt)
+        // let shaObj = new jsSHA('SHA-1', 'TEXT')
+        // shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
+        // INTERMediatorOnPage.authHashedPassword(shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt)
+        INTERMediatorOnPage.authHashedPassword(
+          INTERMediatorLib.generatePasswrdHashV1(inputPassword, INTERMediatorOnPage.authUserSalt))
       }
       if (INTERMediatorOnPage.passwordHash < 1.6) {
-        let shaObj = new jsSHA('SHA-1', 'TEXT')
-        let shaObjMore = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
-        shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
-        shaObjMore.update(shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt + INTERMediatorOnPage.authUserSalt)
-        INTERMediatorOnPage.authHashedPassword2m(shaObjMore.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt)
+        // let shaObj = new jsSHA('SHA-1', 'TEXT')
+        // let shaObjMore = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
+        // shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
+        // shaObjMore.update(shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt + INTERMediatorOnPage.authUserSalt)
+        // INTERMediatorOnPage.authHashedPassword2m(shaObjMore.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt)
+        INTERMediatorOnPage.authHashedPassword2m(
+          INTERMediatorLib.generatePasswrdHashV2m(inputPassword, INTERMediatorOnPage.authUserSalt))
       }
       if (INTERMediatorOnPage.passwordHash < 2.1) {
-        let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
-        shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
-        INTERMediatorOnPage.authHashedPassword2(shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt)
+        // let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
+        // shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
+        // INTERMediatorOnPage.authHashedPassword2(shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt)
+        INTERMediatorOnPage.authHashedPassword2(
+          INTERMediatorLib.generatePasswrdHashV2(inputPassword, INTERMediatorOnPage.authUserSalt))
       }
       // if (INTERMediatorOnPage.authUser() && INTERMediatorOnPage.authUser().length > 0) { // Authentication succeed, Store cookies.
       //   INTERMediatorOnPage.storeCredentialsToCookieOrStorage()

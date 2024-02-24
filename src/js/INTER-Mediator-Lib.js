@@ -143,13 +143,60 @@ const INTERMediatorLib = {
     return [salt, saltHex]
   },
 
-  generatePasswordHash: function (password) {
-    'use strict'
-    let shaObj = (INTERMediatorOnPage.passwordHash > 1.4 || INTERMediatorOnPage.alwaysGenSHA2)
+  generatePasswrdHashV1: (password, salt) => {
+    let shaObj = new jsSHA('SHA-1', 'TEXT')
+    shaObj.update(password + salt)
+    let hash = shaObj.getHash('HEX')
+    return hash + INTERMediatorLib.stringToHex(salt)
+  },
+  generatePasswrdHashV2m: (password, salt) => {
+    let shaObj = new jsSHA('SHA-1', 'TEXT')
+    shaObj.update(password + salt)
+    let hash = shaObj.getHash('HEX')
+    shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
+    shaObj.update(hash + salt)
+    let hashNext = shaObj.getHash('HEX')
+    return hashNext + INTERMediatorLib.stringToHex(salt)
+  },
+  generatePasswrdHashV2: (password, salt) => {
+    let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
+    shaObj.update(password + salt)
+    let hash = shaObj.getHash('HEX')
+    return hash + INTERMediatorLib.stringToHex(salt)
+  },
+
+  generatePasswordHash: function (password, saltHex = false) {
+    let salt = null
+    const shaObj = (INTERMediatorOnPage.passwordHash > 1.4 || INTERMediatorOnPage.alwaysGenSHA2)
       ? new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000}) : new jsSHA('SHA-1', 'TEXT')
-    const [salt, saltHex] = INTERMediatorLib.generateSalt()
+    if (salt) {
+      salt = INTERMediatorLib.hexToString(saltHex)
+    } else {
+      const [saltValue, saltValueHex] = INTERMediatorLib.generateSalt()
+      salt = saltValue
+      saltHex = saltValueHex
+    }
     shaObj.update(password + salt)
     return encodeURIComponent(shaObj.getHash('HEX') + saltHex)
+  },
+
+  generateHexHash: (d, key) => {
+    const shaObj = new jsSHA('SHA-256', 'TEXT')
+    shaObj.setHMACKey(key, 'TEXT')
+    shaObj.update(d)
+    return shaObj.getHMAC('HEX')
+  },
+
+  stringToHex: (str) => {
+    return str.split('').reduce((acc, cur) => {
+      return acc + cur.charCodeAt(0).toString(16).padStart(2, '0');
+    }, "")
+  },
+
+  hexToString: (str) => {
+    return str.match(/.{2}/g).reduce((acc, cur) => {
+      return acc + String.fromCharCode(parseInt(cur, 16));
+    }, "")
   },
 
   getParentRepeater: function (node) {
