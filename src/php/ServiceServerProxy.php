@@ -341,17 +341,18 @@ class ServiceServerProxy
         $dq = '"';
         $this->messages[] = $this->messageHead . "startServer() called";
 //        $forever = IMUtil::isPHPExecutingWindows() ? "forever.cmd" : "forever";
-        $nodemon = IMUtil::pathToINTERMediator() . "/node_modules/.bin/"
-            . (IMUtil::isPHPExecutingWindows() ? "nodemon.cmd" : "nodemon");
-        $scriptPath = IMUtil::pathToINTERMediator() . "/src/js/Service_Server.js";
+        $nodemon = /* IMUtil::pathToINTERMediator() .  "/node_modules/.bin/"
+            . */(IMUtil::isPHPExecutingWindows() ? "nodemon.cmd" : "nodemon");
+        $scriptPath = /* IMUtil::pathToINTERMediator() . */  "src/js/Service_Server.js";
         if (IMUtil::isPHPExecutingWindows()) {
             $nodemon = str_replace("/", DIRECTORY_SEPARATOR, $nodemon);
             $scriptPath = str_replace("/", DIRECTORY_SEPARATOR, $scriptPath);
         }
+        $scriptDir = dirname($scriptPath);
 
         $logFile = $this->foreverLog ?? (tempnam(sys_get_temp_dir(), 'IMSS-') . ".log");
 //        $options = "-a -l {$logFile} --minUptime 5000 --spinSleepTime 5000";
-        $options = "";
+        $options = "--watch {$scriptDir}";
         $hostName = $_SERVER['HTTP_HOST'] ?? '*';
         $originURL = (isset($_SERVER['HTTPS']) ? "https://" : "http://") . $hostName;
 //        $cmd = "{$forever} start {$options} {$scriptPath} {$this->paramsPort} {$dq}{$originURL}{$dq}";
