@@ -10,6 +10,9 @@ which just have test accounts. After someone tests the SAML features, the result
 
 The format of below is: [commit code from git log], [Version from composer.json], [Checker name], [Result]
 
+- commit 7ff364c4b07b4a862534b4ccfbb25f8b2986baed (Sat Feb 24 12:21:26 2024 +0900), INTER-Mediator Ver.13(2024-02-15) with SimpleSAMLphp Ver.2.1.3,
+  by Masayuki Nii(2024-02-24 12:30), OK
+
 - commit 103f3886a530f1fbb39619d7be234ef1f0e6cedf (Mon Jul 10 07:35:31 2023 +0900), INTER-Mediator Ver.11(2023-05-31) with SimpleSAMLphp Ver.2.0.4,
   by Masayuki Nii(2023-07-10 11:10), OK
 
@@ -27,7 +30,7 @@ The format of below is: [commit code from git log], [Version from composer.json]
 
 ## Test Procedure
 
-If you test as following, you need some urls. We are going to tell them personally, so please contact the
+If you test as following, you need some urls and accounts. We are going to tell them personally, so please contact the
 committee.
 
 Set the SAML is active ($isSAML = true;), but the built-in auth is inactive ($samlWithBuiltInAuth = false;).

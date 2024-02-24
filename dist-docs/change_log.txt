@@ -12,6 +12,8 @@ Also the Migration Guide (Japanese) might be informative:
 
 Ver.13 (In Development)
 - In the INTERMediator_DBAdapter, Codes using XMLHttpRequest are replaced with fetch function.
+- [BUG FIX] On the Ver.12, SAML authentication didn't work in spite of Ver.11 can do. It didn't check with SAML manual
+  test on Ver.12 after added types to php codes. Ver.13 works SAML.
 
 Ver.12 (Februrary 06, 2024)
 - PHP Ver.7.4 is the minimum version.
