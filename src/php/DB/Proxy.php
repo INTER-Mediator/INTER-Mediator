@@ -1399,7 +1399,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @return string
      */
     private
-    function generateCredential(string $generatedChallenge, string $generatedUID, string $pwHash): string
+    function generateCredential(string $generatedChallenge, string $generatedUID, ?string $pwHash): string
     {
         return hash("sha256", $generatedChallenge . $generatedUID . $pwHash);
     }
