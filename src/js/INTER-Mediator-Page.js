@@ -202,7 +202,6 @@ let INTERMediatorOnPage = {
     INTERMediatorOnPage.authHashedPassword('')
     INTERMediatorOnPage.authHashedPassword2m('')
     INTERMediatorOnPage.authHashedPassword2('')
-    // INTERMediatorOnPage.authCryptedPassword('')
   },
 
   isComplementAuthData: function () {

@@ -20,8 +20,6 @@
 /**
  * @fileoverview INTERMediator_DBAdapter class is defined here.
  */
-// const INTERMediatorLib = require("./INTER-Mediator-Lib");
-// const INTERMediator = require("./INTER-Mediator");
 /**
  *
  * Usually you don't have to instantiate this class with new operator.
@@ -45,26 +43,14 @@ const INTERMediator_DBAdapter = {
       authParams += '&authuser=' + encodeURIComponent(INTERMediatorOnPage.authUser())
       if ((INTERMediatorOnPage.authHashedPassword() || INTERMediatorOnPage.authHashedPassword2m() || INTERMediatorOnPage.authHashedPassword2()) && INTERMediatorOnPage.authChallenge) {
         if (INTERMediatorOnPage.passwordHash < 1.1 && INTERMediatorOnPage.authHashedPassword()) {
-          // const shaObj = new jsSHA('SHA-256', 'TEXT')
-          // shaObj.setHMACKey(INTERMediatorOnPage.authChallenge, 'TEXT')
-          // shaObj.update(INTERMediatorOnPage.authHashedPassword())
-          // const hmacValue = shaObj.getHMAC('HEX')
           authParams += '&response=' + encodeURIComponent(
             INTERMediatorLib.generateHexHash(INTERMediatorOnPage.authHashedPassword(), INTERMediatorOnPage.authChallenge))
         }
         if (INTERMediatorOnPage.passwordHash < 1.6 && INTERMediatorOnPage.authHashedPassword2m()) {
-          // const shaObj = new jsSHA('SHA-256', 'TEXT')
-          // shaObj.setHMACKey(INTERMediatorOnPage.authChallenge, 'TEXT')
-          // shaObj.update(INTERMediatorOnPage.authHashedPassword2m())
-          // const hmacValue = shaObj.getHMAC('HEX')
           authParams += '&response2m=' + encodeURIComponent(
             INTERMediatorLib.generateHexHash(INTERMediatorOnPage.authHashedPassword2m(), INTERMediatorOnPage.authChallenge))
         }
         if (INTERMediatorOnPage.passwordHash < 2.1 && INTERMediatorOnPage.authHashedPassword2()) {
-          // const shaObj = new jsSHA('SHA-256', 'TEXT')
-          // shaObj.setHMACKey(INTERMediatorOnPage.authChallenge, 'TEXT')
-          // shaObj.update(INTERMediatorOnPage.authHashedPassword2())
-          // const hmacValue = shaObj.getHMAC('HEX')
           authParams += '&response2=' + encodeURIComponent(
             INTERMediatorLib.generateHexHash(INTERMediatorOnPage.authHashedPassword2(), INTERMediatorOnPage.authChallenge))
         }
@@ -263,29 +249,14 @@ const INTERMediator_DBAdapter = {
     }
     INTERMediatorOnPage.storedHashedPasswordAllClear('')
     if (INTERMediatorOnPage.passwordHash < 1.1) {
-      // let shaObj = new jsSHA('SHA-1', 'TEXT')
-      // shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
-      // let hash = shaObj.getHash('HEX')
-      // INTERMediatorOnPage.authHashedPassword(hash + INTERMediatorOnPage.authUserHexSalt)
       INTERMediatorOnPage.authHashedPassword(
         INTERMediatorLib.generatePasswrdHashV1(oldpassword, INTERMediatorOnPage.authUserSalt))
     }
     if (INTERMediatorOnPage.passwordHash < 1.6) {
-      // let shaObj = new jsSHA('SHA-1', 'TEXT')
-      // shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
-      // let hash = shaObj.getHash('HEX')
-      // shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
-      // shaObj.update(hash + INTERMediatorOnPage.authUserSalt)
-      // let hashNext = shaObj.getHash('HEX')
-      // INTERMediatorOnPage.authHashedPassword2m(hashNext + INTERMediatorOnPage.authUserHexSalt)
       INTERMediatorOnPage.authHashedPassword2m(
         INTERMediatorLib.generatePasswrdHashV2m(oldpassword, INTERMediatorOnPage.authUserSalt))
     }
     if (INTERMediatorOnPage.passwordHash < 2.1) {
-      // let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
-      // shaObj.update(oldpassword + INTERMediatorOnPage.authUserSalt)
-      // let hash = shaObj.getHash('HEX')
-      // INTERMediatorOnPage.authHashedPassword2(hash + INTERMediatorOnPage.authUserHexSalt)
       INTERMediatorOnPage.authHashedPassword2(
         INTERMediatorLib.generatePasswrdHashV2(oldpassword, INTERMediatorOnPage.authUserSalt))
     }
@@ -293,27 +264,25 @@ const INTERMediator_DBAdapter = {
     return INTERMediator_DBAdapter.server_access_async(params, 1029, 1030, (result) => {
       if (result.newPasswordResult) {
         if (INTERMediatorOnPage.passwordHash < 1.1) {
-          // let shaObj = new jsSHA('SHA-1', 'TEXT')
-          // shaObj.update(newpassword + INTERMediatorOnPage.authUserSalt)
-          // let hash = shaObj.getHash('HEX')
-          // INTERMediatorOnPage.authHashedPassword(hash + INTERMediatorOnPage.authUserHexSalt)
           INTERMediatorOnPage.authHashedPassword(
             INTERMediatorLib.generatePasswrdHashV1(newpassword, INTERMediatorOnPage.authUserSalt))
         }
         if (INTERMediatorOnPage.passwordHash < 2.1) {
-          // let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
-          // shaObj.update(newpassword + INTERMediatorOnPage.authUserSalt)
-          // let hash = shaObj.getHash('HEX')
-          // INTERMediatorOnPage.authHashedPassword2(hash + INTERMediatorOnPage.authUserHexSalt)
           INTERMediatorOnPage.authHashedPassword2(
             INTERMediatorLib.generatePasswrdHashV2(newpassword, INTERMediatorOnPage.authUserSalt))
         }
-        doSucceed()
+        if (doSucceed) {
+          doSucceed()
+        }
       } else {
-        doFail()
+        if (doFail) {
+          doFail()
+        }
       }
     }, (er) => {
-      doFail()
+      if (doFail) {
+        doFail()
+      }
     })
   },
 
