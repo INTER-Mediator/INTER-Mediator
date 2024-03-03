@@ -26,7 +26,7 @@ class GenerateJSCode
      */
     public function __construct()
     {
-        if (!isset($_SESSION)) {
+        if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
         header('Content-Type: text/javascript;charset="UTF-8"');
@@ -393,7 +393,7 @@ class GenerateJSCode
         $this->generateAssignJS("INTERMediatorOnPage.alwaysGenSHA2", $alwaysGenSHA2 ? "true" : "false");
         $this->generateAssignJS("INTERMediatorOnPage.serverPHPVersionFull", $q, PHP_VERSION, $q);
         $this->generateAssignJS("INTERMediatorOnPage.serverPHPVersion", PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION);
-        if($activateGenerator) {
+        if ($activateGenerator) {
             $this->generateAssignJS("INTERMediatorOnPage.activateMaintenanceCall", "true");
         }
     }
