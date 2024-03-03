@@ -160,8 +160,8 @@ class IMUtil_Test extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * #[runInSeparateProcess]
+     * #[preserveGlobalState(false)]
      */
     public function test_outputSecurityHeaders()
     {

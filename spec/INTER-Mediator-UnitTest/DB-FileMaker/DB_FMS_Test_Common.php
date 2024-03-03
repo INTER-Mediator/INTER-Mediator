@@ -23,7 +23,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     abstract public function dbProxySetupForAuth();
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testQueriedEntity()
     {
@@ -37,7 +37,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testQueriedCondition()
     {
@@ -53,7 +53,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testExecuteScriptsforLoading()
     {
@@ -215,7 +215,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testIsPossibleOperator()
     {
@@ -239,7 +239,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testIsPossibleOrderSpecifier()
     {
@@ -256,7 +256,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testNormalizedCondition()
     {
@@ -341,7 +341,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testAdjustSortDirection()
     {
@@ -365,7 +365,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testIsNullAcceptable()
     {
@@ -378,7 +378,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testQuery1_singleRecord()
     {
@@ -399,7 +399,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testQuery2_multipleRecord()
     {
@@ -417,7 +417,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testQuery_findPostalCodeWithSimpleSearchCriteria()
     {
@@ -431,7 +431,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testQuery_findPostalCodeWithLimit()
     {
@@ -448,7 +448,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testQuery_findPostalCodeWithQueryKey()
     {
@@ -474,7 +474,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testQuery_findPostalCodeWithQueryKeyAndSearchCriteria()
     {
@@ -491,7 +491,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testQuery_findPostalCodeWithSimpleSearchCriteriaAndLimit()
     {
@@ -509,7 +509,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testQuery_findPostalCodeWithSimpleSearchCriteriaAndSorting()
     {
@@ -525,7 +525,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testQuery_findPostalCodeWithAndSearchCriteria()
     {
@@ -540,7 +540,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testQuery_findPostalCodeWithOrSearchCriteria()
     {
@@ -556,7 +556,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testQuery_findPostalCodeWithSearchCriteriaByRecId()
     {
@@ -591,7 +591,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testQuery_findPostalCodeWithOrSearchCriteriaWithSameField()
     {
@@ -607,7 +607,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testInsertAndUpdateRecord()
     {
@@ -659,8 +659,8 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * #[runInSeparateProcess]
+     * #[preserveGlobalState(false)]
      */
     public function testAuthUser1()
     {
@@ -677,8 +677,8 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * #[runInSeparateProcess]
+     * #[preserveGlobalState(false)]
      */
     public function testAuthUser2()
     {
@@ -695,8 +695,8 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * #[runInSeparateProcess]
+     * #[preserveGlobalState(false)]
      */
     public function testAuthUser3()
     {
@@ -710,8 +710,8 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * #[runInSeparateProcess]
+     * #[preserveGlobalState(false)]
      */
     public function testAuthUser4()
     {
@@ -732,8 +732,8 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * #[runInSeparateProcess]
+     * #[preserveGlobalState(false)]
      */
     public function testAuthUser5()
     {
@@ -770,7 +770,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testAuthByValidUser()
     {
@@ -823,7 +823,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testAuthByInvalidUser()
     {
@@ -857,8 +857,8 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * #[runInSeparateProcess]
+     * #[preserveGlobalState(false)]
      */
     public function testAuthUser6()
     {
@@ -906,8 +906,8 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * #[runInSeparateProcess]
+     * #[preserveGlobalState(false)]
      */
     function testUserGroup()
     {
@@ -921,8 +921,8 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * #[runInSeparateProcess]
+     * #[preserveGlobalState(false)]
      */
 //    public function testNativeUser()
 //    {
@@ -974,7 +974,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testMultiClientSyncRegisterAndUnregister()
     {
@@ -1050,7 +1050,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testMultiClientSyncRegisterAndUnregisterPartial()
     {
@@ -1106,7 +1106,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testMultiClientSyncMatching()
     {
@@ -1152,7 +1152,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testMultiClientSyncAppend()
     {
@@ -1205,7 +1205,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
+     * #[runInSeparateProcess]
      */
     public function testMultiClientSyncRemove()
     {

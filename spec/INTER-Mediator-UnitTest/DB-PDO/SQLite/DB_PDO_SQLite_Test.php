@@ -21,7 +21,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
     }
 
     /**
-     * @doesNotPerformAssertions
+     * #[doesNotPerformAssertions]
      */
     public function testAggregation(): void
     {
@@ -129,7 +129,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
     }
 
     /**
-     * @doesNotPerformAssertions
+     * #[doesNotPerformAssertions]
      */
     public function testNativeUser()
     {

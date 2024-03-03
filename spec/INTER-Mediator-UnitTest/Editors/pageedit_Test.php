@@ -17,9 +17,9 @@ class pageedit_Test extends TestCase
     }
 
     /**
-     * @backupGlobals enabled
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * #[backupGlobals(true)]
+     * #[runInSeparateProcess]
+     * #[preserveGlobalState(false)]
      */
     public function test___construct()
     {

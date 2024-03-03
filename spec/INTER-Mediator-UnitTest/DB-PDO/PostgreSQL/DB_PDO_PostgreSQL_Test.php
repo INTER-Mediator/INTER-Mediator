@@ -25,7 +25,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
     }
 
     /**
-     * @doesNotPerformAssertions
+     * #[doesNotPerformAssertions]
      */
     public function testAggregation():void
     {

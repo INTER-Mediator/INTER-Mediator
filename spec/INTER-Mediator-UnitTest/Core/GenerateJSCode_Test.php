@@ -19,8 +19,8 @@ class GenerateJSCode_Test extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * #[runInSeparateProcess]
+     * #[preserveGlobalState(false)]
      */
     function test_generateAssignJS()
     {
@@ -29,8 +29,8 @@ class GenerateJSCode_Test extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * #[runInSeparateProcess]
+     * #[preserveGlobalState(false)]
      */
     function test_generateErrorMessageJS()
     {
@@ -39,8 +39,8 @@ class GenerateJSCode_Test extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * #[runInSeparateProcess]
+     * #[preserveGlobalState(false)]
      */
     function test_generateInitialJSCode()
     {
@@ -52,8 +52,8 @@ class GenerateJSCode_Test extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * #[runInSeparateProcess]
+     * #[preserveGlobalState(false)]
      */
     function test_generateInitialJSCode2()
     {
@@ -65,8 +65,8 @@ class GenerateJSCode_Test extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * #[runInSeparateProcess]
+     * #[preserveGlobalState(false)]
      */
     function test_generateInitialJSCode3()
     {
@@ -78,8 +78,8 @@ class GenerateJSCode_Test extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * #[runInSeparateProcess]
+     * #[preserveGlobalState(false)]
      */
     function test___construct()
     {
@@ -100,8 +100,8 @@ class GenerateJSCode_Test extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * #[runInSeparateProcess]
+     * #[preserveGlobalState(false)]
      */
     public function test_combineScripts()
     {
