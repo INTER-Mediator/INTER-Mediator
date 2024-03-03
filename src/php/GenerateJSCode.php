@@ -128,6 +128,7 @@ class GenerateJSCode
         $isSAML = $options['authentication']['is-saml'] ?? $isSAML ?? false;
         $samlWithBuiltInAuth = $options['authentication']['saml-builtin-auth'] ?? $samlWithBuiltInAuth ?? false;
         $activateGenerator = Params::getParameterValue("activateGenerator", false);
+        $extraButtons = Params::getParameterValue("extraButtons", []);
 
         $documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? 'Not_on_web_server';
 
@@ -320,6 +321,8 @@ class GenerateJSCode
         if (!is_null($resetPage)) {
             $this->generateAssignJS("INTERMediatorOnPage.resetPageURL", $q, $resetPage, $q);
         }
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.extraButtons", IMUtil::arrayToJS($extraButtons));
 
         $this->generateAssignJS(
             "INTERMediatorOnPage.isOAuthAvailable", isset($oAuthProvider) ? "true" : "false");

@@ -89,8 +89,8 @@ class Params
                 $count += 1;
             }
             return $arValue;
-        } else if (is_array($defValue)) {
-            return self::$vars[$vName] ?? $defValue[0];
+//        } else if (is_array($defValue)) {
+//            return self::$vars[$vName] ?? $defValue[0];
         } else {
             return self::$vars[$vName] ?? $defValue;
         }
