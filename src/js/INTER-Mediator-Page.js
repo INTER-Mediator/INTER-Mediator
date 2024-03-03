@@ -598,7 +598,7 @@ let INTERMediatorOnPage = {
         newPasswordMessage.id = '_im_newpass_message'
         frontPanel.appendChild(newPasswordMessage)
       }
-      if (Object.keys(INTERMediatorOnPage.extraButtons).length > 0
+      if ((INTERMediatorOnPage.extraButtons && Object.keys(INTERMediatorOnPage.extraButtons).length > 0)
         || this.isOAuthAvailable || (INTERMediatorOnPage.isSAML && INTERMediatorOnPage.samlWithBuiltInAuth)) {
         breakLine = document.createElement('HR')
         frontPanel.appendChild(breakLine)
