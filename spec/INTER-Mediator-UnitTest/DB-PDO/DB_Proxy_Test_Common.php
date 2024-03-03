@@ -30,8 +30,8 @@ abstract class DB_Proxy_Test_Common extends TestCase
     }
 
 
-      #[runInSeparateProcess]
-      #[preserveGlobalState(false)]
+    #[runInSeparateProcess]
+    #[preserveGlobalState(false)]
     function test___construct()
     {
         $this->dbProxySetupForAuthAccess("person", 1);
