@@ -24,9 +24,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $this->dsn = 'pgsql:host=localhost;port=5432;dbname=test_db';
     }
 
-    /**
-     * #[doesNotPerformAssertions]
-     */
+    #[doesNotPerformAssertions]
     public function testAggregation():void
     {
         // The sample schema doesn't have a data to check this feature.

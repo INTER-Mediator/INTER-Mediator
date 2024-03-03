@@ -2,6 +2,7 @@
 /**
  * GenerateJSCode_Test file
  */
+
 use INTERMediator\GenerateJSCode;
 use PHPUnit\Framework\TestCase;
 
@@ -18,30 +19,24 @@ class GenerateJSCode_Test extends TestCase
         $this->generater = new GenerateJSCode();
     }
 
-    /**
-     * #[runInSeparateProcess]
-     * #[preserveGlobalState(false)]
-     */
+    #[runInSeparateProcess]
+    #[preserveGlobalState(false)]
     function test_generateAssignJS()
     {
         $this->expectOutputString('INTERMediatorOnPage.getEditorPath=function(){return \'\';};' . "\n");
         $this->generater->generateAssignJS('INTERMediatorOnPage.getEditorPath', 'function(){return \'\';}');
     }
 
-    /**
-     * #[runInSeparateProcess]
-     * #[preserveGlobalState(false)]
-     */
+    #[runInSeparateProcess]
+    #[preserveGlobalState(false)]
     function test_generateErrorMessageJS()
     {
         $this->expectOutputString('INTERMediatorLog.setErrorMessage("PHP extension \"mbstring\" is required for running INTER-Mediator. ");');
         $this->generater->generateErrorMessageJS('PHP extension "mbstring" is required for running INTER-Mediator.' . "\n");
     }
 
-    /**
-     * #[runInSeparateProcess]
-     * #[preserveGlobalState(false)]
-     */
+    #[runInSeparateProcess]
+    #[preserveGlobalState(false)]
     function test_generateInitialJSCode()
     {
         $_SERVER['HTTP_HOST'] = 'localhost';
@@ -51,10 +46,8 @@ class GenerateJSCode_Test extends TestCase
         $this->generater->generateInitialJSCode([], [], ['db-class' => 'PDO'], false);
     }
 
-    /**
-     * #[runInSeparateProcess]
-     * #[preserveGlobalState(false)]
-     */
+    #[runInSeparateProcess]
+    #[preserveGlobalState(false)]
     function test_generateInitialJSCode2()
     {
         $_SERVER['HTTP_HOST'] = 'localhost:80';
@@ -64,10 +57,8 @@ class GenerateJSCode_Test extends TestCase
         $this->generater->generateInitialJSCode([], [], ['db-class' => 'PDO'], false);
     }
 
-    /**
-     * #[runInSeparateProcess]
-     * #[preserveGlobalState(false)]
-     */
+    #[runInSeparateProcess]
+    #[preserveGlobalState(false)]
     function test_generateInitialJSCode3()
     {
         //$_SERVER['HTTP_HOST'] = '';
@@ -77,10 +68,8 @@ class GenerateJSCode_Test extends TestCase
         $this->generater->generateInitialJSCode([], [], ['db-class' => 'PDO'], false);
     }
 
-    /**
-     * #[runInSeparateProcess]
-     * #[preserveGlobalState(false)]
-     */
+    #[runInSeparateProcess]
+    #[preserveGlobalState(false)]
     function test___construct()
     {
         if (function_exists('xdebug_get_headers')) {
@@ -99,10 +88,8 @@ class GenerateJSCode_Test extends TestCase
         }
     }
 
-    /**
-     * #[runInSeparateProcess]
-     * #[preserveGlobalState(false)]
-     */
+    #[runInSeparateProcess]
+    #[preserveGlobalState(false)]
     public function test_combineScripts()
     {
         if (((float)phpversion()) >= 5.3) {

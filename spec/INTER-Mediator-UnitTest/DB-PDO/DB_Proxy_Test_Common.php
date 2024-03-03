@@ -29,10 +29,9 @@ abstract class DB_Proxy_Test_Common extends TestCase
         date_default_timezone_set('Asia/Tokyo');
     }
 
-    /**
-     * #[runInSeparateProcess]
-     * #[preserveGlobalState(false)]
-     */
+
+      #[runInSeparateProcess]
+      #[preserveGlobalState(false)]
     function test___construct()
     {
         $this->dbProxySetupForAuthAccess("person", 1);
@@ -203,7 +202,7 @@ abstract class DB_Proxy_Test_Common extends TestCase
         $testResult = $this->dbRead("testtable", null, null,
             $isPgsql ? $dataSrcPgsql : $dataSrcOthers);
 
-        $countTTBefore = count($testResult);
+        $countTTBefore = $testResult ? count($testResult) : 0;
         $this->assertTrue($countTTBefore >= 0, "Exist test table.");
 
         $nameValue = random_int(10000000, 99999999);
