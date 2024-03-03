@@ -26,7 +26,7 @@ class GenerateJSCode
      */
     public function __construct()
     {
-        if (session_status() === PHP_SESSION_NONE) {
+        if (IMUtil::isRunAsWebApp()) {
             session_start();
         }
         header('Content-Type: text/javascript;charset="UTF-8"');

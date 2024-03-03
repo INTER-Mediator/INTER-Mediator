@@ -81,7 +81,7 @@ class Generator
         $this->parseDSN($this->proxy->dbSettings->getDbSpecDSN());
         $this->contextDef = $this->proxy->dbSettings->getDataSourceTargetArray();
 
-        if (session_status() === PHP_SESSION_NONE) {
+        if (IMUtil::isRunAsWebApp()) {
             session_start();
         }
         if (!isset($_SESSION['generator_info'])) {

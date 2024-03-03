@@ -214,7 +214,7 @@ class FileMaker_DataAPI extends DBClass
     private function setupFMDataAPI_Impl(string $layoutName, int $recordCount, string $user, string $password): FMDataAPI
     {
         $this->targetLayout = $layoutName;
-        if (session_status() === PHP_SESSION_NONE) {
+        if (IMUtil::isRunAsWebApp()) {
             session_start();
         }
         if (in_array($layoutName, array($this->dbSettings->getUserTable(), $this->dbSettings->getHashTable()))) {

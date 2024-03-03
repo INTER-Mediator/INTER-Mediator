@@ -809,9 +809,9 @@ class IMUtil
 
     public static function isRunAsWebApp(): bool
     {
-        if (strpos(php_sapi_name(), 'server') !== false) {
-            return true;
+        if (php_sapi_name() != 'cli') {
+            return false;
         }
-        return false;
+        return true;
     }
 }
