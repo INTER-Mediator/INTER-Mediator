@@ -455,23 +455,24 @@ class IMUtil
             is_null($params)
                 ? Params::getParameterValue('accessControlAllowOrigin', '')
                 : $params['accessControlAllowOrigin']));
-
-        if (empty($xFrameOptions)) {
-            $xFrameOptions = 'SAMEORIGIN';
+        if (IMUtil::isRunAsWebApp()) {
+            if (empty($xFrameOptions)) {
+                $xFrameOptions = 'SAMEORIGIN';
+            }
+            if ($xFrameOptions !== '') {
+                header("X-Frame-Options: {$xFrameOptions}");
+            }
+            if (empty($contentSecurityPolicy)) {
+                $contentSecurityPolicy = '';
+            }
+            if ($contentSecurityPolicy !== '') {
+                header("Content-Security-Policy: {$contentSecurityPolicy}");
+            }
+            if ($accessControlAllowOrigin !== '') {
+                header("Access-Control-Allow-Origin: {$accessControlAllowOrigin}");
+            }
+            header('X-XSS-Protection: 1; mode=block');
         }
-        if ($xFrameOptions !== '') {
-            header("X-Frame-Options: {$xFrameOptions}");
-        }
-        if (empty($contentSecurityPolicy)) {
-            $contentSecurityPolicy = '';
-        }
-        if ($contentSecurityPolicy !== '') {
-            header("Content-Security-Policy: {$contentSecurityPolicy}");
-        }
-        if ($accessControlAllowOrigin !== '') {
-            header("Access-Control-Allow-Origin: {$accessControlAllowOrigin}");
-        }
-        header('X-XSS-Protection: 1; mode=block');
     }
 
 

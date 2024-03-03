@@ -279,15 +279,17 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->outputOfProcessing = [];
         if (!$testmode) {
             $cacheMediaAccess = Params::getParameterValue("cacheMediaAccess", false);
-            header('Content-Type: text/javascript;charset="UTF-8"');
-            if (!$noCache && $cacheMediaAccess) {
-                $dt = (new DateTime('UTC'))->add(DateInterval::createFromDateString('1 month'));
-                header("Expires: {$dt->format('D, d M Y H:i:s \G\M\T')}");
-            } else {
-                header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
-                header('Expires: 0');
+            if (IMUtil::isRunAsWebApp()) {
+                header('Content-Type: text/javascript;charset="UTF-8"');
+                if (!$noCache && $cacheMediaAccess) {
+                    $dt = (new DateTime('UTC'))->add(DateInterval::createFromDateString('1 month'));
+                    header("Expires: {$dt->format('D, d M Y H:i:s \G\M\T')}");
+                } else {
+                    header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
+                    header('Expires: 0');
+                }
+                header('X-Content-Type-Options: nosniff');
             }
-            header('X-Content-Type-Options: nosniff');
             $util = new IMUtil();
             $util->outputSecurityHeaders();
         }
