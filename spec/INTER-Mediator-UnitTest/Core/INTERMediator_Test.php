@@ -9,9 +9,6 @@ use INTERMediator\Params;
 use INTERMediator\Locale\IMLocale;
 use PHPUnit\Framework\TestCase;
 
-//require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-//spl_autoload_register('loadClass');
-
 class INTERMediator_Test extends TestCase
 {
 

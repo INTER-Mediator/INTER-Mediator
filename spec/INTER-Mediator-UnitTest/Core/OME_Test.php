@@ -8,7 +8,6 @@
 
 use PHPUnit\Framework\TestCase;
 use INTERMediator\Messaging\OME;
-//require_once(dirname(__FILE__) . '/../../src/php/Messaging/OME.php');
 
 class OME_Test extends TestCase
 {

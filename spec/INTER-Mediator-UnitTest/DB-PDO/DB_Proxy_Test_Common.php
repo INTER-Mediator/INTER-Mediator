@@ -29,9 +29,8 @@ abstract class DB_Proxy_Test_Common extends TestCase
         date_default_timezone_set('Asia/Tokyo');
     }
 
-
-    #[runInSeparateProcess]
-    #[preserveGlobalState(false)]
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     function test___construct()
     {
         $this->dbProxySetupForAuthAccess("person", 1);
