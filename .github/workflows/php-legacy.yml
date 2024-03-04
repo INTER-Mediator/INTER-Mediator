@@ -14,7 +14,7 @@ jobs:
       matrix:
         operating-system: [ ubuntu-latest ]
         #        operating-system: [ubuntu-latest, macos-latest, windows-latest]
-        php-versions: [ '8.1','8.2','8.3' ]
+        php-versions: [ '7.4','8.0' ]
     name: Unit Test on ${{ matrix.operating-system }} with PHP ${{ matrix.php-versions }}
     services:
       mysql: # https://qiita.com/sayama0402/items/e863ffb597ce87bf2e2f
@@ -102,7 +102,7 @@ jobs:
           echo "" >> params.php
 
       - name: Test of PHP Code
-        run: composer test
+        run: composer test-legacy
 
       - name: Test of JavaScript Code
         run: composer jest
