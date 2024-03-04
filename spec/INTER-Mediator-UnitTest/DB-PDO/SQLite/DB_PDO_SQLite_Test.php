@@ -20,9 +20,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
         }
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    #[DoesNotPerformAssertions]
     public function testAggregation(): void
     {
         // The sample schema doesn't have a data to check this feature.
@@ -128,9 +126,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
         $this->assertNotFalse($resultInit, 'Proxy::initialize must return true.');
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    #[DoesNotPerformAssertions]
     public function testNativeUser()
     {
         // SQLite doesn't have native users.

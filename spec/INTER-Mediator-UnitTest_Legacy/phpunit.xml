@@ -1,0 +1,31 @@
+<phpunit>
+    <testsuites>
+        <testsuite name="core">
+            <directory>Core</directory>
+        </testsuite>
+        <testsuite name="data-converter-currency">
+            <directory>DataConverter/Currency</directory>
+        </testsuite>
+        <testsuite name="data-converter-datetime">
+            <directory>DataConverter/DateTime</directory>
+        </testsuite>
+        <testsuite name="data-converter-number">
+            <directory>DataConverter/Number</directory>
+        </testsuite>
+        <testsuite name="data-converter-test">
+            <directory>DataConverter/Text</directory>
+        </testsuite>
+        <testsuite name="db-pdo-mysql">
+            <directory>DB-PDO/MySQL</directory>
+        </testsuite>
+        <testsuite name="db-pdo-postgresql">
+            <directory>DB-PDO/PostgreSQL</directory>
+        </testsuite>
+        <testsuite name="db-pdo-sqlite">
+            <directory>DB-PDO/SQLite</directory>
+        </testsuite>
+        <testsuite name="editors">
+            <directory>Editors</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

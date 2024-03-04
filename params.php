@@ -181,6 +181,21 @@ $browserCompatibility = array(
 //$samlAttrRules = ['username' => 'uid|0', 'realname' => 'eduPersonAffiliation|0'];
 //$samlAdditionalRules = ['username' => '(user02|user03)'];
 
+// $extraButtons for additional buttons followed by the "SAML" button of authenticating panel.
+//$clientId = "353910848422-e08dmcn6s8pc43a94d22s5510b8mnrqj.apps.googleusercontent.com";
+//$redirectURI = "https://demo.inter-mediator.com/saml-trial/lib/src/INTER-Mediator/vendor/simplesamlphp/simplesamlphp/public/module.php/authoauth2/linkback.php";
+//$appURL = "https://demo.inter-mediator.com/saml-trial/chat.html";
+//$extraButtons = [
+////    "About this application" => "https://inter-mediator.com",
+//    "Google" => "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&access_type=offline&"
+//        . "client_id={$clientId}&"
+//        . "scope=openid%20email&"
+//        . "redirect_uri={$redirectURI}&"
+//        . "state=authoauth2|security_token%3D333344445555%26url%3D{$appURL}&"
+//        . "nonce=0394852-3190485-2490358&"
+//        . "hd=gmail.com",
+//];
+
 /* Service Server Behavior
  * ===================
  * Port number and host name for service server */

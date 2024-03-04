@@ -96,6 +96,7 @@ let INTERMediatorOnPage = {
   isFollowingTimezone: false,
   isSAML: false,
   activateMaintenanceCall: false,
+  extraButtons: null,
   /*
   This method 'getMessages' is going to be replaced valid one with the browser's language.
   Here is defined to prevent the warning of static check.
@@ -443,7 +444,7 @@ let INTERMediatorOnPage = {
       return
     }
 
-    let userBox, passwordBox, authButton, oAuthButton, chgpwButton, breakLine, samlButton
+    let userBox, passwordBox, authButton, oAuthButton, chgpwButton, breakLine, samlButton, extButtons = {}
     const bodyNode = document.getElementsByTagName('BODY')[0]
     const backBox = document.createElement('div')
     backBox.id = '_im_authpback'
@@ -597,9 +598,12 @@ let INTERMediatorOnPage = {
         newPasswordMessage.id = '_im_newpass_message'
         frontPanel.appendChild(newPasswordMessage)
       }
-      if (this.isOAuthAvailable) {
+      if ((INTERMediatorOnPage.extraButtons && Object.keys(INTERMediatorOnPage.extraButtons).length > 0)
+        || this.isOAuthAvailable || (INTERMediatorOnPage.isSAML && INTERMediatorOnPage.samlWithBuiltInAuth)) {
         breakLine = document.createElement('HR')
         frontPanel.appendChild(breakLine)
+      }
+      if (this.isOAuthAvailable) {
         oAuthButton = document.createElement('BUTTON')
         oAuthButton.id = '_im_oauthbutton'
         oAuthButton.appendChild(document.createTextNode(
@@ -607,13 +611,24 @@ let INTERMediatorOnPage = {
         frontPanel.appendChild(oAuthButton)
       }
       if (INTERMediatorOnPage.isSAML && INTERMediatorOnPage.samlWithBuiltInAuth) {
-        breakLine = document.createElement('HR')
-        frontPanel.appendChild(breakLine)
         samlButton = document.createElement('BUTTON')
         samlButton.id = '_im_samlbutton'
         samlButton.appendChild(document.createTextNode(
           INTERMediatorLib.getInsertedStringFromErrorNumber(2026)))
         frontPanel.appendChild(samlButton)
+      }
+      for (const key in INTERMediatorOnPage.extraButtons) {
+        extButtons[key] = document.createElement('BUTTON')
+        const key4id = [...key.matchAll(/(\w)/g)].reduce((acc, cur) => {
+          return acc + cur[0]
+        }, "")
+        extButtons[key].id = `_im_extbutton_${key4id}`
+        extButtons[key].appendChild(document.createTextNode(key))
+        const moveURL = INTERMediatorOnPage.extraButtons[key]
+        extButtons[key].onclick = function () {
+          location.href = moveURL
+        }
+        frontPanel.appendChild(extButtons[key])
       }
       if (INTERMediatorOnPage.enrollPageURL) {
         breakLine = document.createElement('HR')
@@ -681,31 +696,17 @@ let INTERMediatorOnPage = {
         await INTERMediator_DBAdapter.getChallenge()
       }
       if (INTERMediatorOnPage.passwordHash < 1.1) {
-        // let shaObj = new jsSHA('SHA-1', 'TEXT')
-        // shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
-        // INTERMediatorOnPage.authHashedPassword(shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt)
         INTERMediatorOnPage.authHashedPassword(
           INTERMediatorLib.generatePasswrdHashV1(inputPassword, INTERMediatorOnPage.authUserSalt))
       }
       if (INTERMediatorOnPage.passwordHash < 1.6) {
-        // let shaObj = new jsSHA('SHA-1', 'TEXT')
-        // let shaObjMore = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
-        // shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
-        // shaObjMore.update(shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt + INTERMediatorOnPage.authUserSalt)
-        // INTERMediatorOnPage.authHashedPassword2m(shaObjMore.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt)
         INTERMediatorOnPage.authHashedPassword2m(
           INTERMediatorLib.generatePasswrdHashV2m(inputPassword, INTERMediatorOnPage.authUserSalt))
       }
       if (INTERMediatorOnPage.passwordHash < 2.1) {
-        // let shaObj = new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000})
-        // shaObj.update(inputPassword + INTERMediatorOnPage.authUserSalt)
-        // INTERMediatorOnPage.authHashedPassword2(shaObj.getHash('HEX') + INTERMediatorOnPage.authUserHexSalt)
         INTERMediatorOnPage.authHashedPassword2(
           INTERMediatorLib.generatePasswrdHashV2(inputPassword, INTERMediatorOnPage.authUserSalt))
       }
-      // if (INTERMediatorOnPage.authUser() && INTERMediatorOnPage.authUser().length > 0) { // Authentication succeed, Store cookies.
-      //   INTERMediatorOnPage.storeCredentialsToCookieOrStorage()
-      // }
       if (INTERMediatorOnPage.authStoring === 'credential') {
         await INTERMediator_DBAdapter.getCredential()
       }

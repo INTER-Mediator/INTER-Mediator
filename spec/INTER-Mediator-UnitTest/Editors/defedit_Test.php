@@ -17,11 +17,9 @@ class defedit_Test extends TestCase
         $_SERVER['REQUEST_TIME_FLOAT'] = microtime(true);
     }
 
-    /**
-     * @backupGlobals enabled
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
+    #[BackupGlobals(true)]
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function test___construct()
     {
         ob_start();

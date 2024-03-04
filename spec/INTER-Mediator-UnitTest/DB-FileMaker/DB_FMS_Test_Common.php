@@ -22,9 +22,7 @@ abstract class DB_FMS_Test_Common extends TestCase
 
     abstract public function dbProxySetupForAuth();
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testQueriedEntity()
     {
         $layoutName = 'person_layout';
@@ -36,9 +34,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testQueriedCondition()
     {
         $layoutName = 'person_layout';
@@ -52,9 +48,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testExecuteScriptsforLoading()
     {
         if ((float)phpversion() >= 5.3) {
@@ -214,9 +208,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         }
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testIsPossibleOperator()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
@@ -238,9 +230,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testIsPossibleOrderSpecifier()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
@@ -255,9 +245,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testNormalizedCondition()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
@@ -340,9 +328,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testAdjustSortDirection()
     {
         if ((float)phpversion() >= 5.3) {
@@ -364,9 +350,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         }
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testIsNullAcceptable()
     {
         $layoutName = 'person_layout';
@@ -377,9 +361,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testQuery1_singleRecord()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
@@ -398,9 +380,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testQuery2_multipleRecord()
     {
         $this->dbProxySetupForAccess("person_layout", 1000000);
@@ -416,9 +396,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testQuery_findPostalCodeWithSimpleSearchCriteria()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -430,9 +408,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testQuery_findPostalCodeWithLimit()
     {
         $limit = 5;
@@ -447,9 +423,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testQuery_findPostalCodeWithQueryKey()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -473,9 +447,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testQuery_findPostalCodeWithQueryKeyAndSearchCriteria()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -490,9 +462,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testQuery_findPostalCodeWithSimpleSearchCriteriaAndLimit()
     {
         $limit = 5;
@@ -508,9 +478,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testQuery_findPostalCodeWithSimpleSearchCriteriaAndSorting()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -524,9 +492,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testQuery_findPostalCodeWithAndSearchCriteria()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -539,9 +505,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testQuery_findPostalCodeWithOrSearchCriteria()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -555,9 +519,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testQuery_findPostalCodeWithSearchCriteriaByRecId()
     {
         $this->dbProxySetupForAccess('postalcode', 1);
@@ -590,9 +552,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testQuery_findPostalCodeWithOrSearchCriteriaWithSameField()
     {
         $this->dbProxySetupForAccess('postalcode', 1000000);
@@ -606,9 +566,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testInsertAndUpdateRecord()
     {
         $this->dbProxySetupForAccess("contact_to", 1000000);
@@ -658,10 +616,8 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAuthUser1()
     {
         $testName = "Check time calc feature of PHP";
@@ -676,10 +632,8 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->assertTrue($calc === (11 + 3600 * 24), $testName);
     }
 
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAuthUser2()
     {
         $this->dbProxySetupForAuth();
@@ -694,10 +648,8 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAuthUser3()
     {
         $this->dbProxySetupForAuth();
@@ -709,10 +661,9 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAuthUser4()
     {
         $this->dbProxySetupForAuth();
@@ -731,10 +682,9 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAuthUser5()
     {
         $this->dbProxySetupForAuth();
@@ -769,9 +719,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testAuthByValidUser()
     {
         $this->dbProxySetupForAuth();
@@ -822,9 +770,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testAuthByInvalidUser()
     {
         $this->dbProxySetupForAuth();
@@ -856,10 +802,8 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAuthUser6()
     {
         $this->dbProxySetupForAuth();
@@ -905,10 +849,8 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     function testUserGroup()
     {
         $this->dbProxySetupForAuth();
@@ -920,10 +862,10 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
+
+//      #[RunInSeparateProcess]
+//      #[PreserveGlobalState(false)]
+
 //    public function testNativeUser()
 //    {
 //        $this->dbProxySetupForAuth();
@@ -973,9 +915,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testMultiClientSyncRegisterAndUnregister()
     {
         $testName = "Register and Unregister.";
@@ -1049,9 +989,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testMultiClientSyncRegisterAndUnregisterPartial()
     {
         $testName = "Register and Unregister partically.";
@@ -1105,9 +1043,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testMultiClientSyncMatching()
     {
         $this->dbProxySetupForAuth();
@@ -1151,9 +1087,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testMultiClientSyncAppend()
     {
         $testName = "Append Sync Info.";
@@ -1204,9 +1138,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-    /**
-     * @runInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testMultiClientSyncRemove()
     {
         $testName = "Remove Sync Info.";

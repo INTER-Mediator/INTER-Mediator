@@ -1,0 +1,7 @@
+<phpunit>
+    <testsuites>
+        <testsuite name="filemaker">
+            <directory>DB-FileMaker</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

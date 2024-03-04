@@ -87,6 +87,9 @@
     "test": [
       "./vendor/bin/phpunit --bootstrap ./vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit.xml"
     ],
+    "test-legacy": [
+      "./vendor/bin/phpunit --bootstrap ./vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest_Legacy/phpunit.xml"
+    ],
     "test-fms": [
       "./vendor/bin/phpunit --bootstrap ./vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit-fms.xml --process-isolation"
     ],

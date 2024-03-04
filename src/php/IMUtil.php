@@ -378,7 +378,7 @@ class IMUtil
 
         if (isset($_SERVER['HTTP_HOST']) &&
             isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-            ($_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest'||
+            ($_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest' ||
                 $_SERVER['HTTP_X_REQUESTED_WITH'] === 'fetch') &&
             isset($_SERVER['HTTP_X_FROM']) &&
             (!isset($_SERVER['HTTP_ORIGIN']) ||
@@ -455,7 +455,6 @@ class IMUtil
             is_null($params)
                 ? Params::getParameterValue('accessControlAllowOrigin', '')
                 : $params['accessControlAllowOrigin']));
-
         if (empty($xFrameOptions)) {
             $xFrameOptions = 'SAMEORIGIN';
         }
@@ -805,5 +804,13 @@ class IMUtil
     public static function getDefinitionFromYAML(string $yaml): ?array
     {
         return Yaml::parse($yaml);
+    }
+
+    public static function isRunAsWebApp(): bool
+    {
+        if (php_sapi_name() == 'cli') {
+            return false;
+        }
+        return true;
     }
 }

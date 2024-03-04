@@ -7,9 +7,6 @@ use INTERMediator\Params;
 use PHPUnit\Framework\TestCase;
 use INTERMediator\IMUtil;
 
-//$imRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
-//require "{$imRoot}" . DIRECTORY_SEPARATOR .'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
-
 class IMUtil_Test extends TestCase
 {
     private IMUtil $util;
@@ -159,10 +156,8 @@ class IMUtil_Test extends TestCase
         }
     }
 
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function test_outputSecurityHeaders()
     {
         $params = array();

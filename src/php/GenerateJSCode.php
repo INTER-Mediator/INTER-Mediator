@@ -26,7 +26,7 @@ class GenerateJSCode
      */
     public function __construct()
     {
-        if (!isset($_SESSION)) {
+        if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
         header('Content-Type: text/javascript;charset="UTF-8"');
@@ -128,6 +128,7 @@ class GenerateJSCode
         $isSAML = $options['authentication']['is-saml'] ?? $isSAML ?? false;
         $samlWithBuiltInAuth = $options['authentication']['saml-builtin-auth'] ?? $samlWithBuiltInAuth ?? false;
         $activateGenerator = Params::getParameterValue("activateGenerator", false);
+        $extraButtons = Params::getParameterValue("extraButtons", []);
 
         $documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? 'Not_on_web_server';
 
@@ -320,6 +321,8 @@ class GenerateJSCode
         if (!is_null($resetPage)) {
             $this->generateAssignJS("INTERMediatorOnPage.resetPageURL", $q, $resetPage, $q);
         }
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.extraButtons", IMUtil::arrayToJS($extraButtons));
 
         $this->generateAssignJS(
             "INTERMediatorOnPage.isOAuthAvailable", isset($oAuthProvider) ? "true" : "false");
@@ -390,7 +393,7 @@ class GenerateJSCode
         $this->generateAssignJS("INTERMediatorOnPage.alwaysGenSHA2", $alwaysGenSHA2 ? "true" : "false");
         $this->generateAssignJS("INTERMediatorOnPage.serverPHPVersionFull", $q, PHP_VERSION, $q);
         $this->generateAssignJS("INTERMediatorOnPage.serverPHPVersion", PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION);
-        if($activateGenerator) {
+        if ($activateGenerator) {
             $this->generateAssignJS("INTERMediatorOnPage.activateMaintenanceCall", "true");
         }
     }

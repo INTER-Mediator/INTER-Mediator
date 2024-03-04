@@ -12,6 +12,8 @@ Also the Migration Guide (Japanese) might be informative:
 
 Ver.13 (In Development)
 - In the INTERMediator_DBAdapter, Codes using XMLHttpRequest are replaced with fetch function.
+- Variable $extraButtons in the params.php file adds buttons on the authentication panel. The value has to be associated
+  array, and the key is button name and the value is moving URL. It assumes that the OAuth button to authenticating.
 - [BUG FIX] On the Ver.12, SAML authentication didn't work in spite of Ver.11 can do. It didn't check with SAML manual
   test on Ver.12 after added types to php codes. Ver.13 works SAML.
 

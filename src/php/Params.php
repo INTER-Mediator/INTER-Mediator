@@ -90,7 +90,7 @@ class Params
             }
             return $arValue;
         } else if (is_array($defValue)) {
-            return self::$vars[$vName] ?? $defValue[0];
+            return self::$vars[$vName] ?? $defValue[0] ?? $defValue;
         } else {
             return self::$vars[$vName] ?? $defValue;
         }
