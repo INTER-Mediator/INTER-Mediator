@@ -1,4 +1,4 @@
-name: unit-test
+name: unit-test-legacy
 
 on:
   push:
