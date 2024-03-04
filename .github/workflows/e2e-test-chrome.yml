@@ -92,7 +92,7 @@ jobs:
       - name: Setup Headless Chrome
         uses: browser-actions/setup-chromium@latest
         with:
-          chromium-version: latest
+          chrome-version: latest
 
       - name: Setup WebdriverIO
         run: cd spec/run;npm update
