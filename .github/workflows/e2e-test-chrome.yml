@@ -84,7 +84,7 @@ jobs:
       - name: Modify params.php file
         run: |
           echo "" >> params.php
-          echo "\$defaultTimezone = 'UCT';" >> params.php
+          echo "\$defaultTimezone = 'UTC';" >> params.php
           echo "\$followingTimezones = true;" >> params.php
           echo "" >> params.php
 
