@@ -336,19 +336,24 @@ class GenerateJSCode
                 $q, $oAuthRedirect, $q);
             $this->generateAssignJS("INTERMediatorOnPage.oAuthScope",
                 $q, implode(' ', $authObj->infoScope()), $q);
-        }
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.authStoring",
-            $q, (isset($options['authentication']['storing'])) ?
-            $options['authentication']['storing'] : 'credential', $q);
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.authExpired",
-            (isset($options['authentication']['authexpired'])) ?
-                $options['authentication']['authexpired'] : '3600');
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.realm", $q,
-            (isset($options['authentication']['realm'])) ?
-                $options['authentication']['realm'] : '', $q);
+        };
+
+        $authStoringValue = $options['authentication']['storing']
+            ?? Params::getParameterValue("authStoring", 'credential');
+        $this->generateAssignJS("INTERMediatorOnPage.authStoring", $q, $authStoringValue, $q);
+        $authExpiredValue = $options['authentication']['authexpired']
+            ?? Params::getParameterValue("authExpired", 3600);
+        $this->generateAssignJS("INTERMediatorOnPage.authExpired", intval($authExpiredValue));
+        $realmValue = $options['authentication']['realm']
+            ?? Params::getParameterValue("authRealm", '');
+        $this->generateAssignJS("INTERMediatorOnPage.realm", $q, $realmValue, $q);
+        $req2FAValue = $options['authentication']['is-required-2FA']
+            ?? Params::getParameterValue("isRequired2FA", '');
+        $this->generateAssignJS("INTERMediatorOnPage.isRequired2FA", $q, $req2FAValue, $q);
+        $digitsOf2FACodeValue = $options['authentication']['digits-of-2FA-Code']
+            ?? Params::getParameterValue("digitsOf2FACode", '');
+        $this->generateAssignJS("INTERMediatorOnPage.digitsOf2FACode", intval($digitsOf2FACodeValue));
+
         if (isset($passwordPolicy)) {
             $this->generateAssignJS(
                 "INTERMediatorOnPage.passwordPolicy", $q, $passwordPolicy, $q);

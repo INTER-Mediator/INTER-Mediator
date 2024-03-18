@@ -135,6 +135,27 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     private bool $activateGenerator;
 
     /**
+     * @var bool
+     */
+    private string $authStoring;
+    /**
+     * @var int
+     */
+    private int $authExpired;
+    /**
+     * @var string
+     */
+    private string $realm;
+    /**
+     * @var bool
+     */
+    private bool $required2FA;
+    /**
+     * @var int
+     */
+    private int $digitsOf2FACode;
+
+    /**
      * @param string $cid
      * @return void
      */
@@ -742,6 +763,16 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->migrateSHA1to2 = boolval(Params::getParameterValue('migrateSHA1to2', false));
         $emailAsAliasOfUserName = Params::getParameterValue('emailAsAliasOfUserName', false);
         $this->activateGenerator = Params::getParameterValue('activateGenerator', false);
+        $this->authStoring = $options['authentication']['storing']
+            ?? Params::getParameterValue("authStoring", 'credential');
+        $this->authExpired = $options['authentication']['authexpired']
+            ?? Params::getParameterValue("authExpired", 3600);
+        $this->realm = $options['authentication']['realm']
+            ?? Params::getParameterValue("authRealm", '');
+        $this->required2FA = $options['authentication']['is-required-2FA']
+            ?? Params::getParameterValue("isRequired2FA", '');
+        $this->digitsOf2FACode = $options['authentication']['digits-of-2FA-Code']
+            ?? Params::getParameterValue("digitsOf2FACode", '');
 
         $this->dbSettings->setDataSource($datasource);
         $this->dbSettings->setOptions($options);
@@ -1340,8 +1371,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->outputOfProcessing['usenull'] = false;
         if (!$notFinish && $this->dbSettings->getRequireAuthorization()) {
             $generatedChallenge = IMUtil::generateChallenge();
-            $generatedUID = IMUtil::generateClientId('', $this->passwordHash);
             $this->logger->setDebugMessage("generatedChallenge = $generatedChallenge", 2);
+            $generatedUID = IMUtil::generateClientId('', $this->passwordHash);
             $userSalt = $this->saveChallenge(
                 $this->dbSettings->isDBNative() ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
             $authStoring = $this->dbSettings->getAuthenticationItem('storing');

@@ -306,6 +306,20 @@ const INTERMediator_DBAdapter = {
       }))
   },
 
+  getCredential2FA: async function () {
+    'use strict'
+    INTERMediatorOnPage.succeedCredential = false
+    return INTERMediator_DBAdapter.server_access_async('access=authenticated', 1057, 1058,
+      function () {
+        INTERMediatorOnPage.succeedCredential = true
+        INTERMediatorOnPage.clearCredentials()
+      }, function () {
+        INTERMediatorOnPage.clearCredentials()
+      }, INTERMediator_DBAdapter.createExceptionFunc(1016, function () {
+        INTERMediator.constructMain()
+      }))
+  },
+
   uploadFile: function (parameters, uploadingFile, doItOnFinish, exceptionProc) {
     'use strict'
     let myRequest = null

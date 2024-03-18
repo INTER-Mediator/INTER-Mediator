@@ -29,7 +29,7 @@ let INTERMediatorOnPage = {
   authChallenge: '',
   requireAuthentication: false,
   authRequiredContext: null,
-  authStoring: 'cookie',
+  authStoring: 'credential',
   authExpired: 3600,
   publickey: null,
   httpuser: null,
@@ -49,6 +49,7 @@ let INTERMediatorOnPage = {
   isShowChangePassword: true,
   isSetDefaultStyle: false,
   authPanelTitle: null,
+  authPanelTitle2FA: null,
   isOAuthAvailable: false, // @Private
   oAuthClientID: null, // @Private
   oAuthClientSecret: null, // @Private
@@ -97,6 +98,8 @@ let INTERMediatorOnPage = {
   isSAML: false,
   activateMaintenanceCall: false,
   extraButtons: null,
+  digitsOf2FACode: null,
+  isRequired2FA: false,
   /*
   This method 'getMessages' is going to be replaced valid one with the browser's language.
   Here is defined to prevent the warning of static check.
@@ -486,12 +489,7 @@ let INTERMediatorOnPage = {
       frontPanel.id = '_im_authpanel'
       backBox.appendChild(frontPanel)
 
-      let panelTitle = ''
-      if (INTERMediatorOnPage.authPanelTitle && INTERMediatorOnPage.authPanelTitle.length > 0) {
-        panelTitle = INTERMediatorOnPage.authPanelTitle
-      } else if (INTERMediatorOnPage.realm && INTERMediatorOnPage.realm.length > 0) {
-        panelTitle = INTERMediatorOnPage.realm
-      }
+      const panelTitle = INTERMediatorOnPage.authPanelTitle ?? INTERMediatorOnPage.realm ?? ''
       if (panelTitle && panelTitle.length > 0) {
         const realmBox = document.createElement('DIV')
         realmBox.appendChild(document.createTextNode(panelTitle))
@@ -711,7 +709,11 @@ let INTERMediatorOnPage = {
         await INTERMediator_DBAdapter.getCredential()
       }
       if (INTERMediatorOnPage.succeedCredential) {
-        doAfterAuth() // Retry.
+        if (INTERMediatorOnPage.isRequired2FA) {
+          INTERMediatorOnPage.show2FAPanel()
+        } else {
+          doAfterAuth() // Retry.
+        }
       }
       INTERMediatorLog.flushMessage()
       INTERMediatorOnPage.hideProgress(true)
@@ -786,7 +788,7 @@ let INTERMediatorOnPage = {
     userBox.focus()
     INTERMediatorOnPage.authCount++
     if (INTERMediatorOnPage.doAfterLoginPanel) {
-      INTERMediatorOnPage.doAfterLoginPanel()
+      INTERMediatorOnPage.doAfterLoginPanel(false)
     }
   },
 
@@ -834,6 +836,76 @@ let INTERMediatorOnPage = {
     frontPanel.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2001)))
   },
 
+  show2FAPanel: () => {
+    let authButton, breakLine
+    const bodyNode = document.getElementsByTagName('BODY')[0]
+    const backBox = document.createElement('div')
+    backBox.id = '_im_authpback_2FA'
+    bodyNode.insertBefore(backBox, bodyNode.childNodes[0])
+    const frontPanel = document.createElement('div')
+    frontPanel.id = '_im_authpanel_2FA'
+    backBox.appendChild(frontPanel)
+
+    if (INTERMediatorOnPage.authPanelTitle2FA || INTERMediatorOnPage.realm) {
+      const realmBox = document.createElement('DIV')
+      realmBox.appendChild(document.createTextNode(INTERMediatorOnPage.authPanelTitle ?? INTERMediatorOnPage.realm))
+      realmBox.id = '_im_authrealm_2FA'
+      frontPanel.appendChild(realmBox)
+      breakLine = document.createElement('HR')
+      frontPanel.appendChild(breakLine)
+    }
+    const userLabel = document.createElement('LABEL')
+    frontPanel.appendChild(userLabel)
+
+    const codeSpan = document.createElement('span')
+    codeSpan.setAttribute('class', '_im_authlabel_2FA')
+    codeSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2028)))
+    userLabel.appendChild(codeSpan)
+
+    const codeBox = document.createElement('INPUT')
+    codeBox.type = 'text'
+    codeBox.id = '_im_code_2FA'
+    codeBox.size = '10'
+    codeBox.setAttribute('autocapitalize', 'off')
+    userLabel.appendChild(codeBox)
+
+    authButton = document.createElement('BUTTON')
+    authButton.id = '_im_authbutton_2FA'
+    authButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2029)))
+    frontPanel.appendChild(authButton)
+
+    const explain = document.createElement('div')
+    explain.setAttribute('class', '_im_explain_2FA')
+    explain.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2030)))
+    frontPanel.appendChild(explain)
+
+    window.scrollTo(0, 0)
+    codeBox.focus()
+    INTERMediatorOnPage.authCount++
+    if (INTERMediatorOnPage.doAfterLoginPanel) {
+      INTERMediatorOnPage.doAfterLoginPanel(true)
+    }
+
+    authButton.onclick = async function () {
+      await INTERMediatorOnPage.hideProgress()
+      const inputCode = document.getElementById('_im_explain_2FA').value
+      if (inputCode === '' || inputCode.length !== INTERMediatorOnPage.digitsOf2FACode) {
+        messageNode = document.getElementById('_im_login_message')
+        INTERMediatorLib.removeChildNodes(messageNode)
+        messageNode.appendChild(
+          document.createTextNode(
+            INTERMediatorLib.getInsertedStringFromErrorNumber(2031)))
+        return
+      }
+      bodyNode.removeChild(backBox)
+      await INTERMediator_DBAdapter.getCredential2FA()
+      if (INTERMediatorOnPage.succeedCredential) {
+        doAfterAuth() // Retry.
+      }
+      INTERMediatorLog.flushMessage()
+      INTERMediatorOnPage.hideProgress(true)
+    }
+  },
   /**
    *
    * @param deleteNode
