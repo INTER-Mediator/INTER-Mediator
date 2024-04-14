@@ -232,12 +232,12 @@ class Settings
 
     public function getExpiringSeconds2FA(): int
     {
-        return $this->timezoneOffset;
+        return $this->expiringSeconds2FA;
     }
 
     public function setExpiringSeconds2FA(int $n): void
     {
-        $this->timezoneOffset = $n;
+        $this->expiringSeconds2FA = $n;
     }
 
     /**
