@@ -266,7 +266,7 @@ module.exports = (AuthPage, is2FA = false) => {
       await AuthPage.authUsername.setValue("user1")
       await AuthPage.authPassword.setValue("user1")
       await AuthPage.authLoginButton.click() // Finally login succeed.
-      await browser.pause(waiting)
+      await browser.pause(waiting * 3)
       if (!is2FA) {
         await expect(AuthPage.auth2FAPanel).not.toExist()
       } else {
