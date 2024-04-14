@@ -1342,3 +1342,4 @@ let INTERMediatorOnPage = {
 module.exports = INTERMediatorOnPage
 // const JSEncrypt = require('../../node_modules/jsencrypt/bin/jsencrypt.js')
 const INTERMediatorLib = require('../../src/js/INTER-Mediator-Lib')
+const IMLibLocalContext = require('../../src/js/INTER-Mediator-LocalContext')
