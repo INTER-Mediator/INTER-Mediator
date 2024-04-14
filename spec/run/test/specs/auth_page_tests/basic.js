@@ -1,6 +1,6 @@
 module.exports = (AuthPage, is2FA = false) => {
   describe('Login required page', () => {
-    const waiting = 500
+    const waiting = 1500
     let isJapanese = false
     if (process.platform === 'darwin') {
       isJapanese = true
@@ -81,7 +81,7 @@ module.exports = (AuthPage, is2FA = false) => {
       await AuthPage.authUsername.setValue("user1")
       await AuthPage.authPassword.setValue("user1")
       await AuthPage.authLoginButton.click() // Finally login succeed.
-      await browser.pause(waiting * 5)
+      await browser.pause(waiting)
       if (!is2FA) {
         await expect(AuthPage.auth2FAPanel).not.toExist()
       } else {
@@ -90,17 +90,17 @@ module.exports = (AuthPage, is2FA = false) => {
 
         await AuthPage.auth2FACode.setValue("99999999")
         await AuthPage.auth2FAButton.click() // One mistake to login
-        await browser.pause(waiting * 5)
+        await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(failMsg2FA)
         await AuthPage.auth2FACode.setValue("4444")
         await AuthPage.auth2FAButton.click() // One mistake to login
-        await browser.pause(waiting * 5)
+        await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(wrongMsg2FA)
         await AuthPage.auth2FACode.setValue("5555")
         await AuthPage.auth2FAButton.click() // Succeed to login
-        await browser.pause(waiting * 5)
+        await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
       }
       await expect(AuthPage.logoutLink).toHaveText("Logout")
@@ -130,7 +130,7 @@ module.exports = (AuthPage, is2FA = false) => {
       await AuthPage.authUsername.setValue("user1")
       await AuthPage.authPassword.setValue("user1")
       await AuthPage.authLoginButton.click() // Finally login succeed.
-      await browser.pause(waiting * 5)
+      await browser.pause(waiting)
       if (!is2FA) {
         await expect(AuthPage.auth2FAPanel).not.toExist()
       } else {
@@ -139,17 +139,17 @@ module.exports = (AuthPage, is2FA = false) => {
 
         await AuthPage.auth2FACode.setValue("99999999")
         await AuthPage.auth2FAButton.click() // One mistake to login
-        await browser.pause(waiting * 5)
+        await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(failMsg2FA)
         await AuthPage.auth2FACode.setValue("4444")
         await AuthPage.auth2FAButton.click() // One mistake to login
-        await browser.pause(waiting * 5)
+        await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(wrongMsg2FA)
         await AuthPage.auth2FACode.setValue("5555")
         await AuthPage.auth2FAButton.click() // Succeed to login
-        await browser.pause(waiting * 5)
+        await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
       }
 
@@ -175,7 +175,7 @@ module.exports = (AuthPage, is2FA = false) => {
         await expect(AuthPage.auth2FAMessage).toHaveText(successMsg2FA)
         await AuthPage.auth2FACode.setValue("5555")
         await AuthPage.auth2FAButton.click() // Succeed to login
-        await browser.pause(waiting * 5)
+        await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
       }
 
@@ -209,7 +209,7 @@ module.exports = (AuthPage, is2FA = false) => {
         await expect(AuthPage.auth2FAMessage).toHaveText(successMsg2FA)
         await AuthPage.auth2FACode.setValue("5555")
         await AuthPage.auth2FAButton.click() // Succeed to login
-        await browser.pause(waiting * 5)
+        await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
       }
 
@@ -238,17 +238,17 @@ module.exports = (AuthPage, is2FA = false) => {
 
         await AuthPage.auth2FACode.setValue("99999999")
         await AuthPage.auth2FAButton.click() // One mistake to login
-        await browser.pause(waiting * 5)
+        await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(failMsg2FA)
         await AuthPage.auth2FACode.setValue("4444")
         await AuthPage.auth2FAButton.click() // One mistake to login
-        await browser.pause(waiting * 5)
+        await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(wrongMsg2FA)
         await AuthPage.auth2FACode.setValue("5555")
         await AuthPage.auth2FAButton.click() // Succeed to login
-        await browser.pause(waiting * 5)
+        await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
       }
 
@@ -275,17 +275,17 @@ module.exports = (AuthPage, is2FA = false) => {
 
         await AuthPage.auth2FACode.setValue("99999999")
         await AuthPage.auth2FAButton.click() // One mistake to login
-        await browser.pause(waiting * 5)
+        await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(failMsg2FA)
         await AuthPage.auth2FACode.setValue("4444")
         await AuthPage.auth2FAButton.click() // One mistake to login
-        await browser.pause(waiting * 5)
+        await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(wrongMsg2FA)
         await AuthPage.auth2FACode.setValue("5555")
         await AuthPage.auth2FAButton.click() // Succeed to login
-        await browser.pause(waiting * 5)
+        await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
       }
 
@@ -337,7 +337,7 @@ module.exports = (AuthPage, is2FA = false) => {
         await expect(AuthPage.auth2FAMessage).toHaveText(successMsg2FA)
         await AuthPage.auth2FACode.setValue("5555")
         await AuthPage.auth2FAButton.click() // Succeed to login
-        await browser.pause(waiting * 5)
+        await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
       }
 
