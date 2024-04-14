@@ -107,6 +107,7 @@ IM_Entry(
             'challenge-table' => 'issuedhash',
             'authexpired' => '100000', // Set as seconds.
             'storing' => 'credential', // session-storage, 'cookie'(default), 'cookie-domainwide', 'none'
+            'is-required-2FA' => false,
         ),
     ),
     array('db-class' => 'PDO'),

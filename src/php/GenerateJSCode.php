@@ -349,9 +349,9 @@ class GenerateJSCode
         $this->generateAssignJS("INTERMediatorOnPage.realm", $q, $realmValue, $q);
         $req2FAValue = $options['authentication']['is-required-2FA']
             ?? Params::getParameterValue("isRequired2FA", '');
-        $this->generateAssignJS("INTERMediatorOnPage.isRequired2FA", $q, $req2FAValue, $q);
+        $this->generateAssignJS("INTERMediatorOnPage.isRequired2FA", $req2FAValue? "true" : "false");
         $digitsOf2FACodeValue = $options['authentication']['digits-of-2FA-Code']
-            ?? Params::getParameterValue("digitsOf2FACode", '');
+            ?? Params::getParameterValue("digitsOf2FACode", 4);
         $this->generateAssignJS("INTERMediatorOnPage.digitsOf2FACode", intval($digitsOf2FACodeValue));
 
         if (isset($passwordPolicy)) {

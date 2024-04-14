@@ -17,11 +17,11 @@ namespace INTERMediator\DB\Support;
 
 interface Auth_Interface_DB                    // with using table for authentication/authorization
 {
-    public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId): void;    // issuedhash
+    public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId, string $prefix=""): void;    // issuedhash
 
     public function authSupportRemoveOutdatedChallenges();                            // issuedhash
 
-    public function authSupportRetrieveChallenge(string $uid, string $clientId, bool $isDelete = true): ?string;    // issuedhash
+    public function authSupportRetrieveChallenge(string $uid, string $clientId, bool $isDelete = true, string $prefix=""): ?string;    // issuedhash
 
     public function authSupportCheckMediaToken(string $uid): ?string;                                // issuedhash
 
@@ -46,6 +46,8 @@ interface Auth_Interface_DB                    // with using table for authentic
     public function authSupportGetGroupsOfUser(?string $user): array;                                // authcor
 
     public function authSupportUnifyUsernameAndEmail(?string $username): ?string;                    // authuser
+
+    public function authSupportEmailFromUnifiedUsername(?string $username): ?string;                    // authuser
 
     public function authSupportStoreIssuedHashForResetPassword(
         string $userid, string $clienthost, string $hash): bool;    // issuedhash

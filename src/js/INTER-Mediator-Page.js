@@ -23,7 +23,7 @@
  */
 let INTERMediatorOnPage = {
   authCountLimit: 4,
-  authCount: 0,
+  _authCount: 0,
   authUserSalt: '',
   authUserHexSalt: '',
   authChallenge: '',
@@ -100,6 +100,17 @@ let INTERMediatorOnPage = {
   extraButtons: null,
   digitsOf2FACode: null,
   isRequired2FA: false,
+  authedUser: null,
+
+  get authCount() {
+    this._authCount = IMLibLocalContext.getValue('_im_authcount')
+    return this._authCount
+  },
+  set authCount(v) {
+    this._authCount = v
+    IMLibLocalContext.setValue('_im_authcount', v)
+  },
+
   /*
   This method 'getMessages' is going to be replaced valid one with the browser's language.
   Here is defined to prevent the warning of static check.
@@ -440,6 +451,9 @@ let INTERMediatorOnPage = {
       }
       return message
     }
+    if (!INTERMediatorOnPage.authedUser) {
+      INTERMediatorOnPage.authCount = 0
+    }
     if (INTERMediatorOnPage.authCount > INTERMediatorOnPage.authCountLimit) {
       INTERMediatorOnPage.authenticationError()
       INTERMediatorOnPage.logout()
@@ -639,6 +653,10 @@ let INTERMediatorOnPage = {
           location.href = INTERMediatorOnPage.enrollPageURL
         }
         frontPanel.appendChild(addingButton)
+        if (INTERMediatorOnPage.authedUser && INTERMediatorOnPage.authStoring === 'session-storage') {
+          const messageNode = document.getElementById('_im_login_message')
+          INTERMediatorLib.removeChildNodesAppendText(messageNode, 2012)
+        }
       }
       if (INTERMediatorOnPage.resetPageURL) {
         breakLine = document.createElement('HR')
@@ -705,15 +723,18 @@ let INTERMediatorOnPage = {
         INTERMediatorOnPage.authHashedPassword2(
           INTERMediatorLib.generatePasswrdHashV2(inputPassword, INTERMediatorOnPage.authUserSalt))
       }
+      INTERMediatorOnPage.succeedCredential = false
       if (INTERMediatorOnPage.authStoring === 'credential') {
         await INTERMediator_DBAdapter.getCredential()
-      }
-      if (INTERMediatorOnPage.succeedCredential) {
-        if (INTERMediatorOnPage.isRequired2FA) {
-          INTERMediatorOnPage.show2FAPanel()
-        } else {
-          doAfterAuth() // Retry.
+        if (INTERMediatorOnPage.succeedCredential) {
+          if (INTERMediatorOnPage.isRequired2FA) {
+            INTERMediatorOnPage.show2FAPanel(doAfterAuth)
+          } else {
+            doAfterAuth() // Retry.
+          }
         }
+      } else if (INTERMediatorOnPage.authStoring === 'session-storage') {
+        doAfterAuth() // Retry.
       }
       INTERMediatorLog.flushMessage()
       INTERMediatorOnPage.hideProgress(true)
@@ -731,10 +752,7 @@ let INTERMediatorOnPage = {
         const inputNewPassword = document.getElementById('_im_newpassword').value
         if (inputUsername === '' || inputPassword === '' || inputNewPassword === '') {
           messageNode = document.getElementById('_im_newpass_message')
-          INTERMediatorLib.removeChildNodes(messageNode)
-          messageNode.appendChild(
-            document.createTextNode(
-              INTERMediatorLib.getInsertedStringFromErrorNumber(2007)))
+          INTERMediatorLib.removeChildNodesAppendText(messageNode2007)
           return
         }
 
@@ -779,9 +797,7 @@ let INTERMediatorOnPage = {
 
     if (INTERMediatorOnPage.authCount > 0) {
       const messageNode = document.getElementById('_im_login_message')
-      INTERMediatorLib.removeChildNodes(messageNode)
-      messageNode.appendChild(document.createTextNode(
-        INTERMediatorLib.getInsertedStringFromErrorNumber(2012)))
+      INTERMediatorLib.removeChildNodesAppendText(messageNode, 2012)
     }
 
     window.scrollTo(0, 0)
@@ -836,7 +852,7 @@ let INTERMediatorOnPage = {
     frontPanel.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2001)))
   },
 
-  show2FAPanel: () => {
+  show2FAPanel: (doAfterAuth) => {
     let authButton, breakLine
     const bodyNode = document.getElementsByTagName('BODY')[0]
     const backBox = document.createElement('div')
@@ -875,7 +891,7 @@ let INTERMediatorOnPage = {
     frontPanel.appendChild(authButton)
 
     const explain = document.createElement('div')
-    explain.setAttribute('class', '_im_explain_2FA')
+    explain.setAttribute('id', '_im_explain_2FA')
     explain.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2030)))
     frontPanel.appendChild(explain)
 
@@ -886,21 +902,27 @@ let INTERMediatorOnPage = {
       INTERMediatorOnPage.doAfterLoginPanel(true)
     }
 
+    codeBox.onkeydown = function (event) {
+      if (event.code === 'Enter') {
+        authButton.onclick()
+      }
+    }
     authButton.onclick = async function () {
       await INTERMediatorOnPage.hideProgress()
-      const inputCode = document.getElementById('_im_explain_2FA').value
+      const inputCode = document.getElementById('_im_code_2FA').value
       if (inputCode === '' || inputCode.length !== INTERMediatorOnPage.digitsOf2FACode) {
-        messageNode = document.getElementById('_im_login_message')
-        INTERMediatorLib.removeChildNodes(messageNode)
-        messageNode.appendChild(
-          document.createTextNode(
-            INTERMediatorLib.getInsertedStringFromErrorNumber(2031)))
+        messageNode = document.getElementById('_im_explain_2FA')
+        INTERMediatorLib.removeChildNodesAppendText(messageNode, 2031)
         return
       }
-      bodyNode.removeChild(backBox)
+      INTERMediatorOnPage.authHashedPassword2(inputCode)
       await INTERMediator_DBAdapter.getCredential2FA()
       if (INTERMediatorOnPage.succeedCredential) {
-        doAfterAuth() // Retry.
+        bodyNode.removeChild(backBox)
+        doAfterAuth()
+      } else {
+        messageNode = document.getElementById('_im_explain_2FA')
+        INTERMediatorLib.removeChildNodesAppendText(messageNode, 2032)
       }
       INTERMediatorLog.flushMessage()
       INTERMediatorOnPage.hideProgress(true)

@@ -1,4 +1,4 @@
-const AuthPage = require('../pageobjects/AuthPage/auth_page_sqlite.page');
+const AuthPage = require('../pageobjects/AuthPage/auth_page_session-storage_sqlite.page');
 
 const basicTest = require('./auth_page_tests/basic')
 

@@ -41,7 +41,8 @@ const INTERMediator_DBAdapter = {
     if (INTERMediatorOnPage.authUser() && INTERMediatorOnPage.authUser().length > 0) {
       authParams = '&clientid=' + encodeURIComponent(INTERMediatorOnPage.clientId())
       authParams += '&authuser=' + encodeURIComponent(INTERMediatorOnPage.authUser())
-      if ((INTERMediatorOnPage.authHashedPassword() || INTERMediatorOnPage.authHashedPassword2m() || INTERMediatorOnPage.authHashedPassword2()) && INTERMediatorOnPage.authChallenge) {
+      if ((INTERMediatorOnPage.authHashedPassword() || INTERMediatorOnPage.authHashedPassword2m()
+        || INTERMediatorOnPage.authHashedPassword2()) && INTERMediatorOnPage.authChallenge) {
         if (INTERMediatorOnPage.passwordHash < 1.1 && INTERMediatorOnPage.authHashedPassword()) {
           authParams += '&response=' + encodeURIComponent(
             INTERMediatorLib.generateHexHash(INTERMediatorOnPage.authHashedPassword(), INTERMediatorOnPage.authChallenge))
@@ -71,7 +72,7 @@ const INTERMediator_DBAdapter = {
 
   store_challenge: function (challenge, isChallenge) {
     'use strict'
-    if (challenge !== null) {
+    if (challenge) {
       const len = 48
       INTERMediatorOnPage.authChallenge = challenge.substr(0, len)
       INTERMediatorOnPage.authUserHexSalt = challenge.substr(len, len + 8)
@@ -103,6 +104,7 @@ const INTERMediator_DBAdapter = {
       const clientid = jsonObject.clientid ?? null
       const newRecordKeyValue = jsonObject.newRecordKeyValue ?? ''
       const changePasswordResult = jsonObject.changePasswordResult ?? null
+      const authUser = jsonObject.authUser ?? null
 
       if (responseText.length > 1000) {
         responseTextTrancated = responseText.substring(0, 1000) + ' ...[trancated]'
@@ -113,7 +115,8 @@ const INTERMediator_DBAdapter = {
       INTERMediatorLog.setDebugMessage('Return: resultCount=' + resultCount
         + ', dbresult=' + INTERMediatorLib.objectToString(dbresult) + IMLib.nl_char
         + 'Return: requireAuth=' + requireAuth + ', challenge=' + challenge + ', clientid=' + clientid + IMLib.nl_char
-        + 'Return: newRecordKeyValue=' + newRecordKeyValue + ', changePasswordResult=' + changePasswordResult)
+        + 'Return: newRecordKeyValue=' + newRecordKeyValue + ', changePasswordResult=' + changePasswordResult
+        + ', authUser=' + authUser)
     }
   },
 
@@ -163,7 +166,10 @@ const INTERMediator_DBAdapter = {
       }
 
       INTERMediator_DBAdapter.logging_comResult(responseText)
-      INTERMediator_DBAdapter.store_challenge(jsonObject.challenge ?? null, accessURL.match(/access=challenge/))
+      INTERMediator_DBAdapter.store_challenge(jsonObject.challenge ?? null,
+        accessURL.match(/access=challenge/)
+        || (INTERMediatorOnPage.isRequired2FA && (accessURL.match(/access=credential/)
+          || accessURL.match(/access=authenticated/))))
       if (jsonObject.clientid) {
         INTERMediatorOnPage.clientId(jsonObject.clientid)
       }
@@ -191,7 +197,9 @@ const INTERMediator_DBAdapter = {
           }, false, true)
         }
       }
-      if (accessURL.indexOf('access=changepassword&newpass=') !== 0) {
+      if (accessURL.indexOf('access=changepassword&newpass=') !== 0
+        && accessURL.indexOf('access=authenticated') !== 0
+        && accessURL.indexOf('access=challenge') !== 0) {
         if (jsonObject.requireAuth) {
           INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
           INTERMediatorOnPage.clearCredentials()
@@ -214,6 +222,8 @@ const INTERMediator_DBAdapter = {
           INTERMediatorOnPage.authCount = 0
         }
       }
+      INTERMediatorOnPage.authedUser = jsonObject.authUser ?? null
+      INTERMediatorOnPage.succeedCredential = !jsonObject.requireAuth ?? false
       if (successProc) {
         successProc({
           dbresult: jsonObject.dbresult ?? null,
@@ -222,7 +232,8 @@ const INTERMediator_DBAdapter = {
           newRecordKeyValue: jsonObject.newRecordKeyValue ?? '',
           newPasswordResult: jsonObject.changePasswordResult ?? null,
           registeredId: jsonObject.registeredid ?? '',
-          nullAcceptable: jsonObject.usenull
+          nullAcceptable: jsonObject.usenull,
+          succeed_2FA: jsonObject.succeed_2FA
         })
       }
       INTERMediatorLog.flushMessage()
@@ -296,9 +307,11 @@ const INTERMediator_DBAdapter = {
     'use strict'
     INTERMediatorOnPage.succeedCredential = false
     return INTERMediator_DBAdapter.server_access_async('access=credential', 1048, 1049,
-      function () {
-        INTERMediatorOnPage.succeedCredential = true
-        INTERMediatorOnPage.clearCredentials()
+      function (result) {
+        //INTERMediatorOnPage.succeedCredential = !result.requireAuth
+        if (!INTERMediatorOnPage.isRequired2FA) {
+          INTERMediatorOnPage.clearCredentials()
+        }
       }, function () {
         INTERMediatorOnPage.clearCredentials()
       }, INTERMediator_DBAdapter.createExceptionFunc(1016, function () {
@@ -310,9 +323,11 @@ const INTERMediator_DBAdapter = {
     'use strict'
     INTERMediatorOnPage.succeedCredential = false
     return INTERMediator_DBAdapter.server_access_async('access=authenticated', 1057, 1058,
-      function () {
-        INTERMediatorOnPage.succeedCredential = true
-        INTERMediatorOnPage.clearCredentials()
+      function (result) {
+        INTERMediatorOnPage.succeedCredential = result.succeed_2FA
+        if (result.succeed_2FA) {
+          INTERMediatorOnPage.clearCredentials()
+        }
       }, function () {
         INTERMediatorOnPage.clearCredentials()
       }, INTERMediator_DBAdapter.createExceptionFunc(1016, function () {

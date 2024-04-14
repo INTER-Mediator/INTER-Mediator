@@ -6,7 +6,7 @@ const AuthPage = require('./auth.page');
 class AuthPagePostgreSQL extends AuthPage {
 
   open() {
-    return super.open('samples/E2E-Test/AuthPage/Auth_Basic_PostgreSQL.html');
+    return super.open('samples/E2E-Test/AuthPage/Auth_session-storage_PostgreSQL.html');
   }
 }
 

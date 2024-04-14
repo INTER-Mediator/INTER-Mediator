@@ -19,7 +19,11 @@ namespace INTERMediator\DB;
 use Exception;
 use DateTime;
 use DateInterval;
-use INTERMediator\FileUploader;
+use INTERMediator\DB\Support\Proxy_Auth;
+use INTERMediator\DB\Support\Proxy_Operations;
+use INTERMediator\DB\Support\ProxyElements\DataOperationElement;
+use INTERMediator\DB\Support\ProxyElements\HandleChallengeElement;
+use INTERMediator\DB\Support\ProxyVisitors\OperationVisitor;
 use INTERMediator\IMUtil;
 use INTERMediator\SAMLAuth;
 use INTERMediator\Locale\IMLocale;
@@ -33,11 +37,12 @@ use INTERMediator\Params;
  */
 class Proxy extends UseSharedObjects implements Proxy_Interface
 {
-//    public ?string $dbClass = null; // declared in UseSharedObjects
+    use Proxy_Auth;
+
     /**
      * @var DBClass|null
      */
-    private ?DBClass $authDbClass = null; // for issuedhash context
+    public ?DBClass $authDbClass = null; // for issuedhash context
     /**
      * @var object|null
      */
@@ -58,31 +63,35 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @var string|null
      */
-    private ?string $paramResponse = null;
+    public ?string $paramResponse = null;
     /**
      * @var string|null
      */
-    private ?string $paramResponse2m = null;
+    public ?string $paramResponse2m = null;
     /**
      * @var string|null
      */
-    private ?string $paramResponse2 = null;
+    public ?string $paramResponse2 = null;
     /**
      * @var string|null
      */
-    private ?string $credential = null;
+    public ?string $credential = null;
+    /**
+     * @var string|null
+     */
+    public ?string $credential2FA = null;
     /**
      * @var bool
      */
-    private bool $authSucceed = false;
+    public bool $authSucceed = false;
     /**
      * @var string|null
      */
-    private ?string $clientId;
+    public ?string $clientId;
     /**
      * @var string|null
      */
-    private ?string $passwordHash;
+    public ?string $passwordHash;
     /**
      * @var bool
      */
@@ -94,7 +103,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @var bool
      */
-    private bool $clientSyncAvailable;
+    public bool $clientSyncAvailable;
 
     /**
      * @var bool
@@ -103,8 +112,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @var array|null
      */
-    private ?array $PostData;
-
+    public ?array $PostData;
+    /**
+     * @var string
+     */
+    public string $access;
     /**
      * @var int
      */
@@ -120,24 +132,24 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @var bool
      */
-    private bool $suppressMediaToken = false;
+    public bool $suppressMediaToken = false;
     /**
      * @var bool
      */
-    private bool $migrateSHA1to2;
+    public bool $migrateSHA1to2;
     /**
      * @var string|null
      */
-    private ?string $credentialCookieDomain;
+    public ?string $credentialCookieDomain;
     /**
      * @var bool
      */
-    private bool $activateGenerator;
+    public bool $activateGenerator;
 
     /**
      * @var bool
      */
-    private string $authStoring;
+    public string $authStoring;
     /**
      * @var int
      */
@@ -149,11 +161,39 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @var bool
      */
-    private bool $required2FA;
+    public bool $required2FA;
     /**
      * @var int
      */
-    private int $digitsOf2FACode;
+    public int $digitsOf2FACode;
+    /**
+     * @var string
+     */
+    public string $mailContext2FA;
+    /**
+     * @var string
+     */
+    public string $code2FA;
+    /**
+     * @var OperationVisitor
+     */
+    private OperationVisitor $visitor;
+    /**
+     * @var bool
+     */
+    public bool $bypassAuth;
+    /**
+     * @var bool
+     */
+    public bool $ignoreFiles;
+    /**
+     * @var ?string
+     */
+    public ?string $signedUser = "";
+    /**
+     * @var ?string
+     */
+    public ?string $generatedClientID = null;
 
     /**
      * @param string $cid
@@ -747,32 +787,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @return bool
      * @throws Exception
      */
-    function initialize(?array $datasource, ?array $options, ?array $dbspec, ?int $debug, ?string $target = null): bool
+    public function initialize(?array $datasource, ?array $options, ?array $dbspec, ?int $debug, ?string $target = null): bool
     {
         $this->PostData = $this->ignorePost ? array() : $_POST;
         $this->setUpSharedObjects();
         $this->logger->setDebugMessage("Start to initialize the DB\Proxy class instance.", 2);
-        $this->dbSettings->setSAMLExpiringSeconds(Params::getParameterValue('ldapExpiringSeconds', 600));
-        $this->dbSettings->setSAMLExpiringSeconds(Params::getParameterValue('samlExpiringSeconds', 600));
-        $this->credentialCookieDomain = Params::getParameterValue('credentialCookieDomain', "");
-
         $this->accessLogLevel = intval(Params::getParameterValue('accessLogLevel', false));
         $this->clientSyncAvailable = boolval(Params::getParameterValue("activateClientService", false));
-        $this->passwordHash = Params::getParameterValue('passwordHash', 1);
-        $this->alwaysGenSHA2 = boolval(Params::getParameterValue('alwaysGenSHA2', false));
-        $this->migrateSHA1to2 = boolval(Params::getParameterValue('migrateSHA1to2', false));
-        $emailAsAliasOfUserName = Params::getParameterValue('emailAsAliasOfUserName', false);
         $this->activateGenerator = Params::getParameterValue('activateGenerator', false);
-        $this->authStoring = $options['authentication']['storing']
-            ?? Params::getParameterValue("authStoring", 'credential');
-        $this->authExpired = $options['authentication']['authexpired']
-            ?? Params::getParameterValue("authExpired", 3600);
-        $this->realm = $options['authentication']['realm']
-            ?? Params::getParameterValue("authRealm", '');
-        $this->required2FA = $options['authentication']['is-required-2FA']
-            ?? Params::getParameterValue("isRequired2FA", '');
-        $this->digitsOf2FACode = $options['authentication']['digits-of-2FA-Code']
-            ?? Params::getParameterValue("digitsOf2FACode", '');
 
         $this->dbSettings->setDataSource($datasource);
         $this->dbSettings->setOptions($options);
@@ -861,19 +883,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->dbSettings->setAggregationFrom($context['aggregation-from'] ?? null);
         $this->dbSettings->setAggregationGroupBy($context['aggregation-group-by'] ?? null);
 
-        /* Authentication and Authorization Judgement */
-        $challengeDSN = $options['authentication']['issuedhash-dsn'] ?? Params::getParameterValue('issuedHashDSN', null);
-        if (!is_null($challengeDSN)) {
-            $this->authDbClass = new PDO();
-            $this->authDbClass->setUpSharedObjects($this);
-            $this->authDbClass->setupWithDSN($challengeDSN);
-            $this->authDbClass->setupHandlers($challengeDSN);
-            $this->logger->setDebugMessage(
-                "The class 'PDO' was instantiated for issuedhash with {$challengeDSN}.", 2);
-        } else {
-            $this->authDbClass = $this->dbClass;
-        }
-
         $this->dbSettings->notifyServer = null;
         if ($this->clientSyncAvailable) {
             $this->dbSettings->notifyServer = new NotifyServer();
@@ -947,11 +956,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $value = IMUtil::removeNull(filter_var($this->PostData["value_{$i}"]));
             $this->dbSettings->addValue($value);
         }
-        if (isset($options['authentication']['email-as-username'])) {
-            $this->dbSettings->setEmailAsAccount($options['authentication']['email-as-username']);
-        } else if (isset($emailAsAliasOfUserName) && $emailAsAliasOfUserName) {
-            $this->dbSettings->setEmailAsAccount($emailAsAliasOfUserName);
-        }
         for ($i = 0; $i < 1000; $i++) {
             if (!isset($this->PostData["assoc{$i}"])) {
                 break;
@@ -965,36 +969,15 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->dbSettings->setSmtpConfiguration(Params::getParameterValue('sendMailSMTP', null));
         }
 
-        $this->paramAuthUser = $this->PostData['authuser'] ?? "";
-        $this->paramResponse = $this->PostData['response'] ?? "";
-        $this->paramResponse2m = $this->PostData['response2m'] ?? "";
-        $this->paramResponse2 = $this->PostData['response2'] ?? "";
-        $this->credential = $_COOKIE['_im_credential_token'] ?? "";
-        $this->clientId = $this->PostData['clientid'] ?? ($_SERVER['REMOTE_ADDR'] ?? "Non-browser-client");
-
-        $this->dbSettings->setMediaRoot($options['media-root-dir']
-            ?? Params::getParameterValue('mediaRootDir', null) ?? null);
-
-        $this->logger->setDebugMessage("Server side locale: " . setlocale(LC_ALL, "0"), 2);
-
-        if (isset($options['authentication']['is-saml'])) {
-            $this->dbSettings->setIsSAML($options['authentication']['is-saml']);
-        } else {
-            $this->dbSettings->setIsSAML(Params::getParameterValue('isSAML', false));
-        }
-
-        $this->dbSettings->setSAMLAuthSource(Params::getParameterValue('samlAuthSource', null));
-        $this->dbSettings->setSAMLAttrRules(Params::getParameterValue("samlAttrRules", null));
-        $this->dbSettings->setSAMLAdditionalRules(Params::getParameterValue("samlAdditionalRules", null));
-
         $this->dbSettings->setClientTZOffset($this->PostData['tzoffset'] ?? 0);
         $this->dbSettings->setParentOfTarget($this->PostData['parent'] ?? '');
 
+        $this->collectAuthInfo($options); // Calling the method in the Support\Proxy_Auth trait.
         return true;
     }
 
     /*
-    * POST
+    * POST example.
     * ?access=select
     * &name=<table name>
     * &start=<record number to start>
@@ -1013,352 +996,24 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param bool $ignoreFiles
      * @throws Exception
      */
-    public
-    function processingRequest(?string $access = null, bool $bypassAuth = false, bool $ignoreFiles = false): void
+    public function processingRequest(?string $access = null, bool $bypassAuth = false, bool $ignoreFiles = false): void
     {
         $this->logger->setDebugMessage("[processingRequest]", 2);
-        $authOptions = $this->dbSettings->getAuthentication();
-        $messageClass = IMUtil::getMessageClassInstance();
-        /* Aggregation Judgement */
-        $isSelect = $this->dbSettings->getAggregationSelect();
-        $isFrom = $this->dbSettings->getAggregationFrom();
-        $isGroupBy = $this->dbSettings->getAggregationGroupBy();
-        $isDBSupport = false;
-        if ($this->dbClass->specHandler) {
-            $isDBSupport = $this->dbClass->specHandler->isSupportAggregation();
-        }
-        if (!$isDBSupport && ($isSelect || $isFrom || $isGroupBy)) {
-            $this->logger->setErrorMessage($messageClass->getMessageAs(1042));
-            $access = "do nothing";
-        } else if ($isDBSupport && (($isSelect && !$isFrom) || (!$isSelect && $isFrom))) {
-            $this->logger->setErrorMessage($messageClass->getMessageAs(1043));
-            $access = "do nothing";
-        } else if ($isDBSupport && $isSelect && $isFrom
-            && in_array($access, array("update", "new", "create", "delete", "copy"))
-        ) {
-            $this->logger->setErrorMessage($messageClass->getMessageAs(1044));
-            $access = "do nothing";
-        }
-
-        // Authentication and Authorization
-        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $access = is_null($access) ? $this->PostData['access'] : $access;
-        $access = (($access == "select") || ($access == "load")) ? "read" : $access;
-
-        $this->dbSettings->setRequireAuthentication(false);
-        $this->dbSettings->setRequireAuthorization(false);
-        $this->dbSettings->setDBNative(false);
-        if (!is_null($authOptions)
-            || $access == 'challenge' || $access == 'changepassword' || $access == 'credential'
-            || (isset($tableInfo['authentication'])
-                && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$access])))
-        ) {
-            if ($this->logger->getDebugLevel()
-                && ($this->passwordHash != '1' || $this->alwaysGenSHA2)) {
-                $this->dbClass->authHandler->authSupportCanMigrateSHA256Hash();
-            }
-            $this->dbSettings->setRequireAuthorization(true);
-        }
+        $this->bypassAuth = $bypassAuth;
+        $this->ignoreFiles = $ignoreFiles;
+        $this->suppressMediaToken = true;
 
         $this->originalAccess = $access;
-        $this->authSucceed = false;
-        if (!$bypassAuth && $this->dbSettings->getRequireAuthorization()) { // Authentication required
-            if (strlen($this->paramAuthUser) == 0
-                || (strlen($this->paramResponse) == 0
-                    && strlen($this->paramResponse2m) == 0
-                    && strlen($this->paramResponse2) == 0
-                    && strlen($this->credential) == 0)
-            ) { // No username or password
-                $access = "do nothing";
-                $this->dbSettings->setRequireAuthentication(true);
-            }
-            // User and Password are suppried but...
-            if ($access != 'challenge') { // Not accessing getting a challenge.
-                $noAuthorization = true;
-                $authorizedGroups = $this->dbClass->authHandler->getAuthorizedGroups($access);
-                $authorizedUsers = $this->dbClass->authHandler->getAuthorizedUsers($access);
+        $this->access = is_null($access) ? $this->PostData['access'] : $access;
+        $this->access = (($this->access == "select") || ($this->access == "load")) ? "read" : $this->access;
+        $this->logger->setDebugMessage("[processingRequest] decided access={$this->access}", 2);
+        $this->access = $this->aggregationJudgement($this->access);
 
-                $this->logger->setDebugMessage(str_replace("\n", "",
-                        ("contextName={$this->dbSettings->getDataSourceName()}/access={$access}/"
-                            . "authorizedUsers=" . var_export($authorizedUsers, true)
-                            . "/authorizedGroups=" . var_export($authorizedGroups, true)))
-                    , 2);
-                if ((count($authorizedUsers) == 0 && count($authorizedGroups) == 0)) {
-                    $noAuthorization = false;
-                } else {
-                    $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
-                    if (in_array($signedUser, $authorizedUsers)) {
-                        $noAuthorization = false;
-                    } else {
-                        if (count($authorizedGroups) > 0) {
-                            $belongGroups = $this->dbClass->authHandler->authSupportGetGroupsOfUser($signedUser);
-                            $this->logger->setDebugMessage($signedUser . "=belongGroups=" . var_export($belongGroups, true), 2);
-                            if (count(array_intersect($belongGroups, $authorizedGroups)) != 0) {
-                                $noAuthorization = false;
-                            }
-                        }
-                    }
-                }
-                if ($noAuthorization) {
-                    $this->logger->setDebugMessage("Authorization doesn't meet the settings.");
-                    $access = "do nothing";
-                    $this->dbSettings->setRequireAuthentication(true);
-                }
-                $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($this->paramAuthUser);
-                $this->hashedPassword = $this->dbClass->authHandler->authSupportRetrieveHashedPassword($signedUser);
-                if ($this->dbSettings->getIsSAML()) { // Set up as SAML
-                    if ($this->checkAuthorization($signedUser, true)) {
-                        $this->dbSettings->setCurrentUser($signedUser);
-                        $this->logger->setDebugMessage("IM-built-in Authentication for SAML user succeed.");
-                        $this->authSucceed = true;
-                    } else { // Timeout with SAML
-                        $SAMLAuth = new SAMLAuth($this->dbSettings->getSAMLAuthSource());
-                        $SAMLAuth->setSAMLAttrRules($this->dbSettings->getSAMLAttrRules());
-                        $SAMLAuth->setSAMLAdditionalRules($this->dbSettings->getSAMLAdditionalRules());
-                        [$additional, $signedUser] = $SAMLAuth->samlLoginCheck();
-                        $this->logger->setDebugMessage("SAML Auth result: user={$signedUser}, additional={$additional}, attributes="
-                            . var_export($SAMLAuth->getAttributes(), true));
-                        $this->outputOfProcessing['samlloginurl'] = $SAMLAuth->samlLoginURL($_SERVER['HTTP_REFERER']);
-                        $this->outputOfProcessing['samllogouturl'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
-                        if (!$additional) {
-                            $this->outputOfProcessing['samladditionalfail'] = $SAMLAuth->samlLogoutURL($_SERVER['HTTP_REFERER']);
-                        }
-                        $this->paramAuthUser = $signedUser;
-                        if ($signedUser) {
-                            $attrs = $SAMLAuth->getValuesFromAttributes();
-                            $this->logger->setDebugMessage(
-                                "SAML Authentication succeed. Attributes=" . var_export($attrs, true));
-                            $this->authSucceed = true;
-                            $password = IMUtil::generateRandomPW();
-                            [$addResult, $hashedpw] = $this->addUser($signedUser, $password, true, $attrs);
-                            if ($addResult) {
-                                $this->dbSettings->setRequireAuthentication(false);
-                                $this->dbSettings->setCurrentUser($signedUser);
-                                $access = $this->originalAccess;
-                                $this->outputOfProcessing['samluser'] = $signedUser;
-                                $this->outputOfProcessing['temppw'] = $hashedpw;
-                            }
-                        }
-                    }
-                } else { // Normal Login process
-                    if ($this->checkAuthorization($signedUser, false)) {
-                        $this->dbSettings->setCurrentUser($signedUser);
-                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
-                        $this->authSucceed = true;
-                    }
-                }
-
-                if (!$this->authSucceed) {
-                    $this->logger->setDebugMessage(
-                        "Authentication doesn't meet valid.{$signedUser}/{$this->paramResponse}/{$this->clientId}");
-                    // Not Authenticated!
-                    $access = "do nothing";
-                    $this->dbSettings->setRequireAuthentication(true);
-                }
-            }
-        }
-        $this->suppressMediaToken = true;
-        // Come here access=challenge or authenticated access
-        switch ($access) {
-            case 'describe':
-                $this->logger->setDebugMessage("[processingRequest] start describe processing", 2);
-                $result = $this->dbClass->getSchema($this->dbSettings->getDataSourceName());
-                $this->outputOfProcessing['dbresult'] = $result;
-                $this->outputOfProcessing['resultCount'] = 0;
-                $this->outputOfProcessing['totalCount'] = 0;
-                break;
-            case 'read':
-            case 'select':
-                $this->logger->setDebugMessage("[processingRequest] start read processing", 2);
-
-                if ($this->activateGenerator) { // Schema auto generating mode
-                    $this->outputOfProcessing['dbresult'] = (new Generator($this))->acquire();
-                    $this->outputOfProcessing['resultCount'] = 1;
-                    $this->outputOfProcessing['totalCount'] = 1;
-                } else { // normal access
-                    $result = $this->readFromDB();
-                    if (isset($tableInfo['protect-reading']) && is_array($tableInfo['protect-reading'])) {
-                        $recordCount = count($result);
-                        for ($index = 0; $index < $recordCount; $index++) {
-                            foreach ($result[$index] as $field => $value) {
-                                if (in_array($field, $tableInfo['protect-reading'])) {
-                                    $result[$index][$field] = "[protected]";
-                                }
-                            }
-                        }
-                    }
-                    $this->outputOfProcessing['dbresult'] = $result;
-                    $this->outputOfProcessing['resultCount'] = $this->countQueryResult();
-                    $this->outputOfProcessing['totalCount'] = $this->getTotalCount();
-                    $this->suppressMediaToken = false;
-                }
-                break;
-            case 'update':
-                $this->logger->setDebugMessage("[processingRequest] start update processing", 2);
-                if ($this->checkValidation()) {
-                    if (isset($tableInfo['protect-writing']) && is_array($tableInfo['protect-writing'])) {
-                        $fieldArray = array();
-                        $valueArray = array();
-                        $counter = 0;
-                        $fieldValues = $this->dbSettings->getValue();
-                        foreach ($this->dbSettings->getFieldsRequired() as $field) {
-                            if (!in_array($field, $tableInfo['protect-writing'])) {
-                                $fieldArray[] = $field;
-                                $valueArray[] = $fieldValues[$counter];
-                            }
-                            $counter++;
-                        }
-                        $this->dbSettings->setFieldsRequired($fieldArray);
-                        $this->dbSettings->setValue($valueArray);
-                    }
-                    $this->dbClass->requireUpdatedRecord(true);
-                    $this->updateDB($bypassAuth);
-                    $this->outputOfProcessing['dbresult'] = $this->getUpdatedRecord();
-                } else {
-                    $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
-                }
-                break;
-            case 'new':
-            case 'create':
-            case 'replace':
-                $this->logger->setDebugMessage("[processingRequest] start create processing", 2);
-                $attachedFields = $this->dbSettings->getAttachedFields();
-                if (!$ignoreFiles && isset($attachedFields) && $attachedFields[0] == '_im_csv_upload') {
-                    $this->logger->setDebugMessage("CSV File importing operation gets stated.", 2);
-                    $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
-                    if ($uploadFiles && count($tableInfo) > 0) {
-                        $fileUploader = new FileUploader();
-                        if (IMUtil::guessFileUploadError()) {
-                            $fileUploader->processingAsError(
-                                $this->dbSettings->getDataSource(),
-                                $this->dbSettings->getOptions(),
-                                $this->dbSettings->getDbSpec(), true,
-                                $this->dbSettings->getDataSourceName(), true);
-                        } else {
-                            $fileUploader->processingWithParameters(
-                                $this->dbSettings->getDataSource(),
-                                $this->dbSettings->getOptions(),
-                                $this->dbSettings->getDbSpec(),
-                                $this->logger->getDebugLevel(),
-                                $tableInfo['name'], $tableInfo['key'], null,
-                                $this->dbSettings->getAttachedFields(), $uploadFiles, true
-                            );
-                            $this->outputOfProcessing['dbresult'] = $fileUploader->dbresult;
-                        }
-                    }
-                } else {
-                    if ($this->checkValidation()) {
-                        $uploadFiles = $this->dbSettings->getAttachedFiles($tableInfo['name']);
-                        if ($ignoreFiles || !$uploadFiles || count($tableInfo) < 1) { // No attached file.
-                            $result = $this->createInDB($access == 'replace');
-                            $this->outputOfProcessing['newRecordKeyValue'] = $result;
-                            $this->outputOfProcessing['dbresult'] = $this->getUpdatedRecord();
-                        } else { // Some files are attached.
-                            $fileUploader = new FileUploader();
-                            if (IMUtil::guessFileUploadError()) { // Detect file upload error.
-                                $fileUploader->processingAsError(
-                                    $this->dbSettings->getDataSource(),
-                                    $this->dbSettings->getOptions(),
-                                    $this->dbSettings->getDbSpec(), true,
-                                    $this->dbSettings->getDataSourceName(), true);
-                            } else { // No file upload error.
-                                $dbresult = [];
-                                $result = $this->createInDB($access == 'replace');
-                                $this->outputOfProcessing['newRecordKeyValue'] = $result;
-                                $counter = 0;
-                                foreach ($uploadFiles as $oneFile) {
-                                    $dbresult[] = $this->getUpdatedRecord()[0];
-                                    if ($result) {
-                                        $fileUploader->processingWithParameters(
-                                            $this->dbSettings->getDataSource(),
-                                            $this->dbSettings->getOptions(),
-                                            $this->dbSettings->getDbSpec(),
-                                            $this->logger->getDebugLevel(),
-                                            $tableInfo['name'], $tableInfo['key'], $result,
-                                            [$attachedFields[$counter]], [$oneFile], true
-                                        );
-                                    }
-                                    $this->outputOfProcessing['dbresult'] = $dbresult;
-                                    $counter += 1;
-                                }
-                            }
-                        }
-                    } else {
-                        $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
-                    }
-                }
-                break;
-            case 'delete':
-                $this->logger->setDebugMessage("[processingRequest] start delete processing", 2);
-                $this->deleteFromDB();
-                break;
-            case 'copy':
-                $this->logger->setDebugMessage("[processingRequest] start copy processing", 2);
-                if ($this->checkValidation()) {
-                    $result = $this->copyInDB();
-                    $this->outputOfProcessing['newRecordKeyValue'] = $result;
-                    $this->outputOfProcessing['dbresult'] = $this->getUpdatedRecord();
-                } else {
-                    $this->logger->setErrorMessage("Invalid data. Any validation rule was violated.");
-                }
-                break;
-            case 'challenge':
-                break;
-            case 'changepassword':
-                $this->logger->setDebugMessage("[processingRequest] start changepassword processing", 2);
-                if (isset($this->PostData['newpass'])) {
-                    $changeResult = $this->changePassword($this->paramAuthUser, $this->PostData['newpass']);
-                    $this->outputOfProcessing['changePasswordResult'] = $changeResult;
-                } else {
-                    $this->outputOfProcessing['changePasswordResult'] = false;
-                }
-                break;
-            case 'unregister':
-                $this->logger->setDebugMessage("[processingRequest] start unregister processing", 2);
-                if (!is_null($this->dbSettings->notifyServer) && $this->clientSyncAvailable) {
-                    $tableKeys = null;
-                    if (isset($this->PostData['pks'])) {
-                        $tableKeys = json_decode($this->PostData['pks'], true);
-                    }
-                    $this->dbSettings->notifyServer->unregister($this->PostData['notifyid'], $tableKeys);
-                }
-                break;
-            case 'maintenance':
-                $this->logger->setDebugMessage("[processingRequest] start maintenance processing", 2);
-                if ($this->activateGenerator) { // Schema auto generating mode
-                    (new Generator($this))->generate();
-                } else { // normal access
-                }
-                break;
-        }
-        if ($this->logger->getDebugLevel() !== false) {
-            $fInfo = $this->getFieldInfo($this->dbSettings->getDataSourceName());
-            if ($fInfo != null) {
-                $ds = $this->dbSettings->getDataSourceTargetArray();
-                if (isset($ds["calculation"])) {
-                    foreach ($ds["calculation"] as $def) {
-                        $fInfo[] = $def["field"];
-                    }
-                }
-                $calcFields = [];
-                if (isset($this->dbSettings->getDataSourceTargetArray()['calculation'])) {
-                    foreach ($this->dbSettings->getDataSourceTargetArray()['calculation'] as $entry) {
-                        $calcFields[] = $entry['field'];
-                    }
-                }
-                $ignoringField = isset($this->dbSettings->getDataSourceTargetArray()['ignoring-field']) ?
-                    $this->dbSettings->getDataSourceTargetArray()['ignoring-field'] : [];
-                if ($access == 'read' || $access == 'select') {
-                    foreach ($this->dbSettings->getFieldsRequired() as $fieldName) {
-                        if (!$this->dbClass->specHandler->isContainingFieldName($fieldName, $fInfo)
-                            && !in_array($fieldName, $calcFields)
-                            && !in_array($fieldName, $ignoringField)) {
-                            $this->logger->setErrorMessage($messageClass->getMessageAs(1033, array($fieldName)));
-                        }
-                    }
-                }
-            }
-        }
+        $visitorClasName = IMUtil::getVisitorClassName($this->access);
+        $this->visitor = new $visitorClasName($this);
+        $this->authenticationAndAuthorization(); // Calling the method in the Support\Proxy_Auth trait.
+        (new DataOperationElement())->acceptDataOperation($this->visitor);
+        $this->checkIrrelevantFields($this->access); // Working only for debug mode.
     }
 
     /**
@@ -1370,69 +1025,15 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             "[finishCommunication]getRequireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
         $this->outputOfProcessing['usenull'] = false;
         if (!$notFinish && $this->dbSettings->getRequireAuthorization()) {
-            $generatedChallenge = IMUtil::generateChallenge();
-            $this->logger->setDebugMessage("generatedChallenge = $generatedChallenge", 2);
-            $generatedUID = IMUtil::generateClientId('', $this->passwordHash);
-            $userSalt = $this->saveChallenge(
-                $this->dbSettings->isDBNative() ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
-            $authStoring = $this->dbSettings->getAuthenticationItem('storing');
-            if ($authStoring == 'credential') {
-                if ($this->authSucceed) {
-                    setcookie('_im_credential_token',
-                        $this->generateCredential($generatedChallenge, $generatedUID, $this->hashedPassword),
-                        time() + $this->dbSettings->getAuthenticationItem('authexpired'), '/',
-                        $this->credentialCookieDomain, false, true);
-                } else {
-                    setcookie("_im_credential_token", "", time() - 3600); // Should be removed.
-                }
-                if ($this->originalAccess == 'challenge') {
-                    $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";
-                }
-            } else {
-                $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";
-            }
-            $this->outputOfProcessing['clientid'] = $generatedUID;
-            if ($this->dbSettings->getRequireAuthentication()) {
-                $this->outputOfProcessing['requireAuth'] = true;
-            }
-            $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-            if (isset($tableInfo['authentication']['media-handling']) && $tableInfo['authentication']['media-handling'] === true && !$this->suppressMediaToken
-            ) {
-                $generatedChallenge = IMUtil::generateChallenge();
-                $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
-                //$this->outputOfProcessing['mediatoken'] = $generatedChallenge;
-                $cookieNameUser = '_im_username';
-                $cookieNameToken = '_im_mediatoken';
-                $realm = $this->dbSettings->getAuthenticationItem('realm');
-                if ($realm) {
-                    $realm = str_replace(" ", "_", str_replace(".", "_", $realm));
-                    $cookieNameUser .= ('_' . $realm);
-                    $cookieNameToken .= ('_' . $realm);
-                }
-                setcookie($cookieNameToken, $generatedChallenge,
-                    time() + $this->dbSettings->getAuthenticationItem('authexpired'), '/',
-                    $this->credentialCookieDomain, false, true);
-                setcookie($cookieNameUser, $this->paramAuthUser,
-                    time() + $this->dbSettings->getAuthenticationItem('authexpired'), '/',
-                    $this->credentialCookieDomain, false, false);
-                $this->logger->setDebugMessage("mediatoken stored", 2);
-            }
+            (new HandleChallengeElement())->acceptHandleChallenge($this->visitor);
+            $this->outputOfProcessing['clientid'] = $this->generatedClientID;
+            $this->outputOfProcessing['requireAuth'] = $this->dbSettings->getRequireAuthentication();
+            $this->outputOfProcessing['authUser'] = $this->dbSettings->getCurrentUser();
+            $this->handleMediaToken(); // Calling the method in the Support\Proxy_Auth trait.
         }
         $this->addOutputData('errorMessages', $this->logger->getErrorMessages());
         $this->addOutputData('warningMessages', $this->logger->getWarningMessages());
         $this->addOutputData('debugMessages', $this->logger->getDebugMessages());
-    }
-
-    /**
-     * @param string $generatedChallenge
-     * @param string $generatedUID
-     * @param string $pwHash
-     * @return string
-     */
-    private
-    function generateCredential(string $generatedChallenge, string $generatedUID, ?string $pwHash): string
-    {
-        return hash("sha256", $generatedChallenge . $generatedUID . $pwHash);
     }
 
     /**
@@ -1483,155 +1084,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         return null;
     }
 
-    /* Authentication support */
-    /**
-     * @param string $username
-     * @return string
-     */
-    function authSupportGetSalt(string $username): ?string
-    {
-        $hashedpw = $this->hashedPassword ?? $this->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
-        if ($hashedpw) {
-            return substr($hashedpw, -8);
-        }
-        return null;
-    }
-
-    /* returns user's hash salt.*/
-    /**
-     * @param string $username
-     * @param string $challenge
-     * @param string $clientId
-     * @return string
-     */
-    function saveChallenge(?string $username, string $challenge, string $clientId): ?string
-    {
-        $this->logger->setDebugMessage(
-            "[saveChallenge]user={$username}, challenge={$challenge}, clientid={$clientId}", 2);
-        $username = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($username);
-        $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
-        $this->authDbClass->authHandler->authSupportStoreChallenge($uid, $challenge, $clientId);
-        return !$username ? "" : $this->authSupportGetSalt($username);
-    }
-
-    /**
-     * @param string $username
-     * @param bool $isSAML
-     * @return bool
-     */
-    function checkAuthorization(string $username, bool $isSAML = false): bool
-    {
-        $falseHash = hash("sha256", uniqid("", true)); // for failing auth.
-        $hashedvalue = $this->paramResponse ?? $falseHash;
-        $hashedvalue2m = $this->paramResponse2m ?? $falseHash;
-        $hashedvalue2 = $this->paramResponse2 ?? $falseHash;
-        $this->logger->setDebugMessage("[checkAuthorization]user={$username}, paramResponse={$hashedvalue}, "
-            . "paramResponse2m={$hashedvalue2m}, paramResponse2={$hashedvalue2}, clientid={$this->clientId}", 2);
-
-        $returnValue = false;
-        $this->authDbClass->authHandler->authSupportRemoveOutdatedChallenges();
-        $signedUser = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($username);
-        $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($signedUser);
-        $this->logger->setDebugMessage("[checkAuthorization]uid={$uid}", 2);
-        if ($uid <= 0) {
-            return false;
-        }
-        if ($isSAML && !$this->dbClass->authHandler->authSupportIsWithinSAMLLimit($uid)) {
-            return false;
-        }
-        $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge($uid, $this->clientId);
-        $this->logger->setDebugMessage("[checkAuthorization]storedChallenge={$storedChallenge}/{$this->credential}", 2);
-        if ($storedChallenge && strlen($storedChallenge) == 48) { // ex.fc0d54312ce33c2fac19d758
-            if ($this->credential == $this->generateCredential($storedChallenge, $this->clientId, $this->hashedPassword)) {
-                // Credential Auth passed
-                $this->logger->setDebugMessage("[checkAuthorization]Credential auth passed.", 2);
-                $returnValue = true;
-            } else { // Hash Auth checking
-                $hmacValue = $this->hashedPassword ? hash_hmac('sha256', $this->hashedPassword, $storedChallenge) : 'no-value';
-                $hmacValue2m = $this->hashedPassword ? hash_hmac('sha256', $this->hashedPassword, $storedChallenge) : 'no-value';
-                $this->logger->setDebugMessage(
-                    "[checkAuthorization]hashedPassword={$this->hashedPassword}/hmac_value={$hmacValue}", 2);
-                if (strlen($this->hashedPassword) > 0) {
-                    if ($hashedvalue == $hmacValue) {
-                        $this->logger->setDebugMessage("[checkAuthorization]sha1 hash used.", 2);
-                        $returnValue = true;
-                        if ($this->migrateSHA1to2) {
-                            $salt = hex2bin(substr($this->hashedPassword, -8));
-                            $hashedPw = IMUtil::convertHashedPassword($this->hashedPassword, $this->passwordHash, true, $salt);
-                            $this->dbClass->authHandler->authSupportChangePassword($signedUser, $hashedPw);
-                        }
-                    } else if ($hashedvalue2m == $hmacValue2m) {
-                        $this->logger->setDebugMessage("[checkAuthorization]sha2 hash from sha1 hash used.", 2);
-                        $returnValue = true;
-                    } else if ($hashedvalue2 == $hmacValue) {
-                        $this->logger->setDebugMessage("[checkAuthorization]sha2 hash used.", 2);
-                        $returnValue = true;
-                    } else {
-                        $this->logger->setDebugMessage("[checkAuthorization]Built-in authorization fail.", 2);
-                    }
-                }
-            }
-        }
-        return $returnValue;
-    }
-
-    // This method is just used to authenticate with database user
-
-    /**
-     * @param string $challenge
-     * @param string $clientId
-     * @return bool
-     */
-    function checkChallenge(string $challenge, string $clientId): bool
-    {
-        $returnValue = false;
-        $this->authDbClass->authHandler->authSupportRemoveOutdatedChallenges();
-        // Database user mode is user_id=0
-        $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge(0, $clientId);
-        if ($storedChallenge && strlen($storedChallenge) == 48 && $storedChallenge == $challenge) { // ex.fc0d54312ce33c2fac19d758
-            $returnValue = true;
-        }
-        return $returnValue;
-    }
-
-    /**
-     * @param string $user
-     * @param string $token
-     * @return bool
-     */
-    public
-    function checkMediaToken(string $user, string $token): bool
-    {
-        $this->logger->setDebugMessage("[checkMediaToken] user={$user}, token={$token}", 2);
-        $returnValue = false;
-        $this->authDbClass->authHandler->authSupportRemoveOutdatedChallenges();
-        // Database user mode is user_id=0
-        $user = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($user);
-        $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($user);
-        $storedChallenge = $this->authDbClass->authHandler->authSupportCheckMediaToken($uid);
-        if (strlen($storedChallenge) == 48 && $storedChallenge == $token) { // ex.fc0d54312ce33c2fac19d758
-            $returnValue = true;
-        }
-        return $returnValue;
-    }
-
-
-    /**
-     * @param string $username
-     * @param string $password
-     * @param bool $isSAML
-     * @param ?array $attrs
-     * @return array
-     */
-    function addUser(string $username, string $password, bool $isSAML = false, ?array $attrs = null): array
-    {
-        $this->logger->setDebugMessage("[addUser] username={$username}, isSAML={$isSAML}", 2);
-        $hashedPw = IMUtil::convertHashedPassword($password, $this->passwordHash, $this->alwaysGenSHA2);
-        $returnValue = $this->dbClass->authHandler->authSupportCreateUser($username, $hashedPw, $isSAML, $password, $attrs);
-        $this->logger->setDebugMessage("[addUser] authSupportCreateUser returns: {$returnValue}", 2);
-        return [$returnValue, $hashedPw];
-    }
-
     /**
      * @param string $username
      * @param string $newpassword
@@ -1646,7 +1098,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param string $email
      * @return ?array
      */
-    function resetPasswordSequenceStart(string $email): ?array
+    public function resetPasswordSequenceStart(string $email): ?array
     {
         if ($email == '') { // checked also is null or is false
             return null;
@@ -1673,7 +1125,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      *
      * Using
      */
-    function resetPasswordSequenceReturnBack(?string $username, ?string $email, string $randdata, string $newpassword): bool
+    public function resetPasswordSequenceReturnBack(?string $username, ?string $email, string $randdata, string $newpassword): bool
     {
         $userid = null;
         if (is_null($username) && !is_null($email)) {
@@ -1697,7 +1149,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param string $userID
      * @return string
      */
-    function userEnrollmentStart(string $userID): string
+    public function userEnrollmentStart(string $userID): string
     {
         $hash = IMUtil::generateChallenge();
         $this->authDbClass->authHandler->authSupportUserEnrollmentStart($userID, $hash);
@@ -1710,7 +1162,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param bool $rawPWField
      * @return string|null
      */
-    function userEnrollmentActivateUser(string $challenge, string $password, bool $rawPWField = false): ?string
+    public function userEnrollmentActivateUser(string $challenge, string $password, bool $rawPWField = false): ?string
     {
         $userID = $this->authDbClass->authHandler->authSupportUserEnrollmentEnrollingUser($challenge);
         if (!$userID) {
@@ -1722,10 +1174,46 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /**
+     * @param string $access
+     * @return void
+     */
+    public function checkIrrelevantFields(string $access): void
+    {
+        if ($this->logger->getDebugLevel() !== false) {
+            $fInfo = $this->getFieldInfo($this->dbSettings->getDataSourceName());
+            if ($fInfo != null) {
+                $ds = $this->dbSettings->getDataSourceTargetArray();
+                if (isset($ds["calculation"])) {
+                    foreach ($ds["calculation"] as $def) {
+                        $fInfo[] = $def["field"];
+                    }
+                }
+                $calcFields = [];
+                if (isset($this->dbSettings->getDataSourceTargetArray()['calculation'])) {
+                    foreach ($this->dbSettings->getDataSourceTargetArray()['calculation'] as $entry) {
+                        $calcFields[] = $entry['field'];
+                    }
+                }
+                $ignoringField = isset($this->dbSettings->getDataSourceTargetArray()['ignoring-field']) ?
+                    $this->dbSettings->getDataSourceTargetArray()['ignoring-field'] : [];
+                if ($access == 'read' || $access == 'select') {
+                    foreach ($this->dbSettings->getFieldsRequired() as $fieldName) {
+                        if (!$this->dbClass->specHandler->isContainingFieldName($fieldName, $fInfo)
+                            && !in_array($fieldName, $calcFields)
+                            && !in_array($fieldName, $ignoringField)) {
+                            $this->logger->setErrorMessage(IMUtil::getMessageClassInstance()->getMessageAs(1033, array($fieldName)));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    /**
      * @return bool
      */
-    private
-    function checkValidation(): bool
+    public function checkValidation(): bool
     {
         $inValid = false;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -1954,4 +1442,34 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     {
         throw new Exception("Don't use normalizedCondition method on DBClass instance without FileMaker ones.");
     }
+
+    /**
+     * @param string $access
+     * @return string
+     */
+    private function aggregationJudgement(string $access): string
+    {
+        $isSelect = $this->dbSettings->getAggregationSelect();
+        $isFrom = $this->dbSettings->getAggregationFrom();
+        $isGroupBy = $this->dbSettings->getAggregationGroupBy();
+        $isDBSupport = false;
+        if ($this->dbClass->specHandler) {
+            $isDBSupport = $this->dbClass->specHandler->isSupportAggregation();
+        }
+        if (!$isDBSupport && ($isSelect || $isFrom || $isGroupBy)) {
+            $this->logger->setErrorMessage(IMUtil::getMessageClassInstance()->getMessageAs(1042));
+            $access = "nothing";
+        } else if ($isDBSupport && (($isSelect && !$isFrom) || (!$isSelect && $isFrom))) {
+            $this->logger->setErrorMessage(IMUtil::getMessageClassInstance()->getMessageAs(1043));
+            $access = "nothing";
+        } else if ($isDBSupport && $isSelect && $isFrom
+            && in_array($access, array("update", "new", "create", "delete", "copy"))
+        ) {
+            $this->logger->setErrorMessage(IMUtil::getMessageClassInstance()->getMessageAs(1044));
+            $access = "nothing";
+        }
+        return $access;
+    }
+
+
 }

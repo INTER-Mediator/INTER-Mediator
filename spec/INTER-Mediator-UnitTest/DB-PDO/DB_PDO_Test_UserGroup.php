@@ -1,5 +1,6 @@
 <?php
 
+use INTERMediator\DB\Support\ProxyElements\CheckAuthenticationElement;
 use INTERMediator\IMUtil;
 
 trait DB_PDO_Test_UserGroup
@@ -69,24 +70,30 @@ trait DB_PDO_Test_UserGroup
 
         $testName = "Simulation of Authentication";
         $username = 'user1';
-        $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
+        $password = 'user1';
         $uid = $this->db_proxy->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
         $hpw = $this->db_proxy->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
 
+        $clientId = "TEST";
         $challenge = IMUtil::generateChallenge();
-        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
-
-        //        $challenge = $this->db_pdo->authHandler->authSupportRetrieveChallenge($username, "TEST");
+        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST", "#");
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
-
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
-        $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
 
-        $this->db_proxy->setParamResponse([$calcuratedHash]);
+//        $this->db_proxy->logger->setDebugMessage("challenge=$challenge clientId=$clientId hashedvalue=$hashedvalue",2);
+
+        $this->db_proxy->credential = hash("sha256", $challenge . $clientId . $hashedvalue);
         $this->db_proxy->setClientId_forTest("TEST");
         $this->db_proxy->setHashedPassword_forTest($hpw);
-        $resultAuth = $this->db_proxy->checkAuthorization($username);
+        $this->db_proxy->dbSettings->setCurrentUser($username);
+        $this->db_proxy->access = "read";
+        $this->db_proxy->authUser = $username;
+        $visitorClasName = IMUtil::getVisitorClassName($this->db_proxy->access);
+        $visitor = new $visitorClasName($this->db_proxy);
+        $process = new CheckAuthenticationElement();
+        $process->acceptCheckAuthentication($visitor);
+        $resultAuth = $process->resultOfCheckAuthentication;
 
 //        var_export($this->db_proxy->logger->getErrorMessages());
 //        var_export($this->db_proxy->logger->getDebugMessages());
@@ -98,27 +105,32 @@ trait DB_PDO_Test_UserGroup
     {
         $this->dbProxySetupForAuth();
 
+//        $this->db_proxy->logger->clearLogs();
+
         $testName = "Simulation of Authentication by Valid User";
         $username = 'user1';
         $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
         $clientId = 'test1234test1234';
 
         $challenge = IMUtil::generateChallenge();
-        $this->db_proxy->saveChallenge($username, $challenge, $clientId);
+        $this->db_proxy->saveChallenge($username, $challenge, $clientId,"#");
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
-        $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
 
+        $this->db_proxy->credential = hash("sha256", $challenge . $clientId . $hashedvalue);
         $this->db_proxy->dbSettings->setCurrentUser($username);
         $this->db_proxy->dbSettings->setDataSourceName("person");
         $this->db_proxy->paramAuthUser = $username;
         $this->db_proxy->setClientId_forTest($clientId);
-        $this->db_proxy->setParamResponse([$calcuratedHash]);
 
         $this->db_proxy->processingRequest("read");
         $result = $this->db_proxy->getDatabaseResult();
-        $this->assertTrue((is_array($result) ? count($result) : -1) == $this->db_proxy->getDatabaseResultCount(), $testName);
+
+//        var_export($this->db_proxy->logger->getErrorMessages());
+//        var_export($this->db_proxy->logger->getDebugMessages());
+
+        $this->assertEquals(is_array($result) ? count($result) : -1, $this->db_proxy->getDatabaseResultCount(), $testName);
 
         foreach ($result as $record) {
             $this->assertIsString($record["name"], $testName);
@@ -142,6 +154,7 @@ trait DB_PDO_Test_UserGroup
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
         $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
 
+        $this->db_proxy->credential = hash("sha256", $challenge . $clientId . $hashedvalue);
         $this->db_proxy->dbSettings->setCurrentUser($username);
         $this->db_proxy->dbSettings->setDataSourceName("person");
         $this->db_proxy->paramAuthUser = $username;
@@ -198,7 +211,15 @@ trait DB_PDO_Test_UserGroup
         ]);
         $this->db_proxy->setClientId_forTest($clientId);
         $this->db_proxy->setHashedPassword_forTest($hpw);
-        $checkResult = $this->db_proxy->checkAuthorization($username);
+
+        $visitorClasName = IMUtil::getVisitorClassName("read");
+        $visitor = new $visitorClasName($this->db_proxy);
+        $process = new CheckAuthenticationElement();
+        $this->db_proxy->signedUser = $username;
+        $process->acceptCheckAuthentication($visitor);
+        $checkResult = $process->resultOfCheckAuthentication;
+
+//        $checkResult = $this->db_proxy->checkAuthorization($username);
 
         $this->assertTrue($checkResult, $testName);
     }
@@ -263,20 +284,20 @@ trait DB_PDO_Test_UserGroup
         $this->assertTrue(in_array("group3", $groupArray), $testName);
     }
 
-    public function testNativeUser()
-    {
-        $this->dbProxySetupForAuth();
-
-        $testName = "Native User Challenge Check";
-        $cliendId = "12345";
-
-        $challenge = IMUtil::generateChallenge();
-        //echo "\ngenerated=", $challenge;
-        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge(0, $challenge, $cliendId);
-
-        $result = $this->db_proxy->checkChallenge($challenge, $cliendId);
-        $this->assertTrue($result, $testName);
-
-    }
+//    public function testNativeUser()
+//    {
+//        $this->dbProxySetupForAuth();
+//
+//        $testName = "Native User Challenge Check";
+//        $cliendId = "12345";
+//
+//        $challenge = IMUtil::generateChallenge();
+//        //echo "\ngenerated=", $challenge;
+//        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge(0, $challenge, $cliendId);
+//
+//        $result = $this->db_proxy->checkChallenge($challenge, $cliendId);
+//        $this->assertTrue($result, $testName);
+//
+//    }
 
 }

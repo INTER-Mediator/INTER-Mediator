@@ -25,7 +25,7 @@ IM_Entry(
             'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
             'repeat-control' => 'insert delete',
-            'sync-control'=> 'create update delete',
+            'sync-control' => 'create update delete',
             'button-names' => array(
                 'insert' => 'レコード追加',
                 'delete' => 'レコード削除',
@@ -116,6 +116,11 @@ IM_Entry(
 //                ),
 //            ),
         ),
+//        [
+//            'name' => 'mailtemplate',
+//            'key' => 'id',
+//            'records' => 1,
+//        ],
     ),
     array(
         'formatter' => array(),

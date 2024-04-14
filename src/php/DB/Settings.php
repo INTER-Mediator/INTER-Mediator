@@ -225,6 +225,20 @@ class Settings
      * @var int
      */
     private int $timezoneOffset = 0;
+    /**
+     * @var int
+     */
+    private int $expiringSeconds2FA = 100000;
+
+    public function getExpiringSeconds2FA(): int
+    {
+        return $this->timezoneOffset;
+    }
+
+    public function setExpiringSeconds2FA(int $n): void
+    {
+        $this->timezoneOffset = $n;
+    }
 
     /**
      * @var string
@@ -475,6 +489,19 @@ class Settings
     public function setDataSourceName(string $dataSourceName): void
     {
         $this->dataSourceName = $dataSourceName;
+    }
+
+    public function isExistContext(string $contextName): bool
+    {
+        if(!$this->dataSourceName || ! is_array($this->dataSourceName)){
+            return false;
+        }
+        foreach($this->dataSourceName as $contextDef){
+            if(isset($contextDef['name']) && $contextDef['name'] == $contextName) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

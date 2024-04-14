@@ -120,12 +120,12 @@ $browserCompatibility = array(
 /* Messaging Settings
  * =================== */
 // If you want to specify the smtp server info, set them below.
-//$sendMailSMTP = array(
-//    'server' => 'msyk.sakura.ne.jp',
-//    'port' => '587',
-//    'username' => 'user01@msyk.net',
-//    'password' => '*********',
-//);
+$sendMailSMTP = array(
+    'server' => 'msyk.sakura.ne.jp',
+    'port' => '587',
+    'username' => 'user01@msyk.net',
+    'password' => 'ELDeA3-DxEyQix-',
+);
 // $waitAfterMail = 20;  // Wait after send email with smtp server. Unit is Millisecond.
 
 // Sending email features compatibility with INTER-Mediator v5 unless 'template-context' key isn't specified.
@@ -145,17 +145,19 @@ $browserCompatibility = array(
 /* Authorization
  * =================== */
 
-$authStoring = 'credential';
+$authStoring = 'credential'; // 'session-storage' or 'credential'
 $authExpired = 3600;
-$authRealm = '';
-$passwordHash = '2';  // '2m' supports SHA-256 and Wrapping SHA-1 with SHA-256, '2' supports SHA-256 password hash only,
+//$authRealm = '';
+//$passwordHash = '1';  // '2m' supports SHA-256 and Wrapping SHA-1 with SHA-256, '2' supports SHA-256 password hash only,
 // No specification or other string support SHA-1, SHA-256, and wrapping.
 //$alwaysGenSHA2 = true; // On the password changing, generate SHA-2 hash. The default is false.
 //$migrateSHA1to2 = true;// If the login account relays on SHA-a, exchange it with 2m style SHA-2 hash. The default is false.
 //$credentialCookieDomain = ""; // The domain information of the cookie for 'credential' auth. Falsy value means no domain, also the default.
-$isRequired2FA = true; // Default is false.
-$digitsOf2FACode = true; // Default is false.
-$expiringSeconds2FA = 1000; // 2FA effective seconds from code input.
+//$isRequired2FA = true; // Default is false.
+//$mailContext2FA = "mailtemplate@id=995"; // Template record for the mail to send the 2FA code.
+//$digitsOf2FACode = 4; // Default is false.
+//$expiringSeconds2FA = 1000; // 2FA effective seconds from code input.
+$fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real system, this has to comment out.
 
 // The 'issuedhash' table for storing challenges of authentication can be use another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';

@@ -246,6 +246,7 @@ class DefinitionChecker
             'saml-builtin-auth' => 'boolean',
             'is-required-2FA' => 'boolean',
             'digits-of-2FA-Code' => 'integer',
+            'mail-context-2FA' => 'string',
             'expiring-seconds-2FA' => 'interger',
         ),
         'media-root-dir' => 'string',

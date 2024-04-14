@@ -18,11 +18,11 @@ namespace INTERMediator\DB;
 interface Auth_Interface_Communication
 {
     // The followings are used in Proxy::processingRequest.
-    public function saveChallenge(?string $username, string $challenge, string $clientId): ?string;
+    public function saveChallenge(?string $username, string $challenge, string $clientId, string $prefix = ""): void;
 
-    public function checkAuthorization(string $username, bool $isSAML = false): bool;
+//    public function checkAuthorization(string $username, bool $isSAML = false): bool;
 
-    public function checkChallenge(string $challenge, string $clientId): bool;
+//    public function checkChallenge(string $challenge, string $clientId): bool;
 
     public function checkMediaToken(string $user, string $token): bool;
 

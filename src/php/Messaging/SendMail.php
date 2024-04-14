@@ -144,10 +144,14 @@ class SendMail extends MessagingProvider
                     if (count($cParam) == 2) {  // Specify a context and target record criteria
                         $idParam = explode('=', $cParam[1]);
                         if (count($idParam) == 2) {
+                            $currentDataSource = $dbProxy->dbSettings->getDataSource();
+                            if (!$dbProxy->dbSettings->isExistContext($cParam[0])) {
+                                $currentDataSource[] = ['name' => $cParam[0], 'key' => $idParam[0], 'records' => 1];
+                            }
                             $storeContext = new Proxy();
                             $storeContext->ignoringPost();
                             $storeContext->initialize(
-                                $dbProxy->dbSettings->getDataSource(),
+                                $currentDataSource,
                                 $dbProxy->dbSettings->getOptions(),
                                 $dbProxy->dbSettings->getDbSpec(),
                                 2, $cParam[0]);
