@@ -120,12 +120,12 @@ $browserCompatibility = array(
 /* Messaging Settings
  * =================== */
 // If you want to specify the smtp server info, set them below.
-$sendMailSMTP = array(
-    'server' => 'msyk.sakura.ne.jp',
-    'port' => '587',
-    'username' => 'user01@msyk.net',
-    'password' => 'ELDeA3-DxEyQix-',
-);
+//$sendMailSMTP = array(
+//    'server' => 'msyk.sakura.ne.jp',
+//    'port' => '587',
+//    'username' => 'user01@msyk.net',
+//    'password' => 'anypassword',
+//);
 // $waitAfterMail = 20;  // Wait after send email with smtp server. Unit is Millisecond.
 
 // Sending email features compatibility with INTER-Mediator v5 unless 'template-context' key isn't specified.
