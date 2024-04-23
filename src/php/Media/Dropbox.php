@@ -200,7 +200,7 @@ class Dropbox implements UploadingSupport, DownloadingSupport
                     header('Location: ' . $url);
                 } else {
                     $db->logger->setErrorMessage($ex->getMessage());
-                    $db->processingRequest("noop");
+                    $db->processingRequest("nothing");
                     if (!$noOutput) {
                         $db->finishCommunication();
                         $db->exportOutputDataAsJSON();

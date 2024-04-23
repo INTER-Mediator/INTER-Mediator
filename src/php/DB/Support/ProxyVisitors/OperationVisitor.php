@@ -388,6 +388,7 @@ abstract class OperationVisitor
      */
     protected function setCookieOfChallenge(string $key, string $challenge, string $generatedClientID, string $hashedPassword): void
     {
+        Logger::getInstance()->setDebugMessage("[setCookieOfChallenge] key={$key} value{$challenge}/{$generatedClientID}/{$hashedPassword}", 2);
         $proxy = $this->proxy;
         $dbSettings = $proxy->dbSettings;
         setcookie($key,

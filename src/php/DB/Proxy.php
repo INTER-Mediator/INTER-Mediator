@@ -173,7 +173,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @var string
      */
-    public string $code2FA;
+    public string $code2FA = "";
     /**
      * @var OperationVisitor
      */
@@ -1026,14 +1026,15 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->outputOfProcessing['usenull'] = false;
         if (!$notFinish && $this->dbSettings->getRequireAuthorization()) {
             (new HandleChallengeElement())->acceptHandleChallenge($this->visitor);
-            $this->outputOfProcessing['clientid'] = $this->generatedClientID;
-            $this->outputOfProcessing['requireAuth'] = $this->dbSettings->getRequireAuthentication();
-            $this->outputOfProcessing['authUser'] = $this->dbSettings->getCurrentUser();
             $this->handleMediaToken(); // Calling the method in the Support\Proxy_Auth trait.
         }
+        $this->outputOfProcessing['clientid'] = $this->generatedClientID;
+        $this->outputOfProcessing['requireAuth'] = $this->dbSettings->getRequireAuthentication();
+        $this->outputOfProcessing['authUser'] = $this->dbSettings->getCurrentUser();
         $this->addOutputData('errorMessages', $this->logger->getErrorMessages());
         $this->addOutputData('warningMessages', $this->logger->getWarningMessages());
         $this->addOutputData('debugMessages', $this->logger->getDebugMessages());
+        $this->logger->clearLogs();
     }
 
     /**

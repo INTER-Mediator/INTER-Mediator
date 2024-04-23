@@ -48,7 +48,6 @@ class AuthenticatedVisitor extends OperationVisitor
         Logger::getInstance()->setDebugMessage("[handleChallenge] access={$proxy->access}, succeed={$proxy->authSucceed}", 2);
 
         $proxy->generatedClientID = IMUtil::generateClientId('', $proxy->passwordHash);
-        $userSalt = $proxy->authSupportGetSalt($proxy->signedUser);
 
         if ($proxy->authSucceed) {
             $challenge = $this->generateAndSaveChallenge($proxy->signedUser, $proxy->generatedClientID, "+");
@@ -61,6 +60,7 @@ class AuthenticatedVisitor extends OperationVisitor
 
             $proxy->outputOfProcessing['succeed_2FA'] = "1";
         } else { // Retry 2FA
+            $userSalt = $proxy->signedUser ? $proxy->authSupportGetSalt($proxy->signedUser) : "0000";
             $challenge = $this->generateAndSaveChallenge(
                 $proxy->signedUser, $proxy->generatedClientID, "+", $proxy->code2FA);
             $proxy->outputOfProcessing['challenge'] = "{$challenge}{$userSalt}";

@@ -183,7 +183,7 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
                     header('Location: ' . $url);
                 } else {
                     $db->logger->setErrorMessage($e->getMessage());
-                    $db->processingRequest("noop");
+                    $db->processingRequest("nothing");
                     if (!$noOutput) {
                         $db->finishCommunication();
                         $db->exportOutputDataAsJSON();

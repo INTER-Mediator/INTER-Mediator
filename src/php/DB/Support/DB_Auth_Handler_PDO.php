@@ -277,8 +277,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      *
      * Using 'authuser'
      */
-    public
-    function authSupportRetrieveHashedPassword(string $username): ?string
+    public function authSupportRetrieveHashedPassword(string $username): ?string
     {
         $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
 
@@ -812,11 +811,6 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             if ($row['email'] == $username) {
                 $usernameCandidate = $row['username'];
             }
-//            $limitSeconds = $this->dbSettings->getSAMLExpiringSeconds();
-//            if (isset($row['limitdt']) && !is_null($row['limitdt'])
-//                && IMUtil::secondsFromNow($row['limitdt']) < $limitSeconds) {
-//                return "_im_auth_failed_";
-//            }
         }
         return $usernameCandidate;
     }

@@ -142,7 +142,7 @@ function IM_Entry(?array $datasource, ?array $options, ?array $dbspecification, 
             $db->initialize($datasource, $options, $dbspecification, $debug, '');
             $messages = IMUtil::getMessageClassInstance();
             $db->logger->setErrorMessage($messages->getMessageAs(3212));
-            $db->processingRequest("noop");
+            $db->processingRequest("nothing");
             $db->finishCommunication();
             $db->exportOutputDataAsJSON();
             return;

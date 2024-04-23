@@ -129,7 +129,7 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
                 header('Location: ' . $url);
             } else {
                 $db->logger->setErrorMessage("'media-root-dir' isn't specified");
-                $db->processingRequest("noop");
+                $db->processingRequest("nothing");
                 if (!$noOutput) {
                     $db->finishCommunication();
                     $db->exportOutputDataAsJSON();
@@ -169,7 +169,7 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
                     header('Location: ' . $url);
                 } else {
                     $db->logger->setErrorMessage("Fail to move the uploaded file in the media folder.");
-                    $db->processingRequest("noop");
+                    $db->processingRequest("nothing");
                     if (!$noOutput) {
                         $db->finishCommunication();
                         $db->exportOutputDataAsJSON();

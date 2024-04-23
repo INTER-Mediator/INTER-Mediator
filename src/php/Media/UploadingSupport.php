@@ -20,23 +20,77 @@ use INTERMediator\DB\Proxy;
 /**
  *
  */
-interface UploadingSupport
+abstract class UploadingSupport
 {
     /**
      * @param Proxy $db
-     * @param ?string $url
      * @param array|null $options
-     * @param array $files
-     * @param bool $noOutput
-     * @param array $field
+     * @param string $filePath
+     * @param string $filePartialPath
+     * @param string $targetFieldName
      * @param string $contextname
-     * @param ?string $keyfield
-     * @param ?string $keyvalue
+     * @param string|null $keyfield
+     * @param string|null $keyvalue
      * @param array|null $datasource
      * @param array|null $dbspec
      * @param int $debug
      */
-    public function processing(Proxy $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
-                               string  $contextname, ?string $keyfield, ?string $keyvalue,
-                               ?array  $datasource, ?array $dbspec, int $debug):void;
+    public function processingFile(Proxy   $db, ?array $options, string $filePath,
+                                   string  $filePartialPath, string $targetFieldName, string $contextname,
+                                   ?string $keyfield, ?string $keyvalue, ?array $datasource, ?array $dbspec, int $debug): void
+    {
+        $dbProxyContext = $db->dbSettings->getDataSourceTargetArray();
+        if (isset($dbProxyContext['file-upload'])) {
+            foreach ($dbProxyContext['file-upload'] as $item) {
+                if (isset($item['field']) && !isset($item['context'])) {
+                    $targetFieldName = $item['field'];
+                }
+            }
+        }
+
+        $db->dbSettings->addExtraCriteria($keyfield, "=", $keyvalue);
+        $db->dbSettings->setFieldsRequired(array($targetFieldName));
+        $db->dbSettings->setValue(array($filePartialPath));
+        $db->processingRequest("update"/*,true*/);
+        $dbProxyRecord = $db->getDatabaseResult();
+
+        $db->logger->setDebugMessage("[FileSystem::processing] dbProxyRecord=" . var_export($dbProxyRecord, true), 2);
+        $db->logger->setDebugMessage("[FileSystem::processing] dbProxyContext=" . var_export($dbProxyContext, true), 2);
+
+        $db->addOutputData('dbresult', $filePath);
+        $db->finishCommunication();
+        if (isset($dbProxyContext['file-upload'])) {
+            foreach ($dbProxyContext['file-upload'] as $item) {
+                if ($item['field'] == $targetFieldName) {
+                    $relatedContext = new Proxy();
+                    $relatedContext->initialize($datasource, $options, $dbspec, $debug, $item['context'] ?? null);
+                    $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
+                    $db->logger->setDebugMessage("[FileSystem::processing] context={$item['context']} relatedContextInfo=" . var_export($relatedContextInfo, true), 2);
+                    $fields = array();
+                    $values = array();
+                    if (isset($relatedContextInfo["query"])) {
+                        foreach ($relatedContextInfo["query"] as $cItem) {
+                            if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
+                                $fields[] = $cItem['field'];
+                                $values[] = $cItem['value'];
+                            }
+                        }
+                    }
+                    if (isset($relatedContextInfo["relation"])) {
+                        foreach ($relatedContextInfo["relation"] as $cItem) {
+                            if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
+                                $fields[] = $cItem['foreign-key'];
+                                $values[] = $dbProxyRecord[0][$cItem['join-field']];
+                            }
+                        }
+                    }
+                    $fields[] = "path";
+                    $values[] = $filePartialPath;
+                    $relatedContext->dbSettings->setFieldsRequired($fields);
+                    $relatedContext->dbSettings->setValue($values);
+                    $relatedContext->processingRequest("create", true, true);
+                }
+            }
+        }
+    }
 }

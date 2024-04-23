@@ -285,9 +285,11 @@ trait Proxy_Auth
         // Database user mode is user_id=0
         $user = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($user);
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($user);
-        $storedChallenge = $this->authDbClass->authHandler->authSupportCheckMediaToken($uid);
-        if (strlen($storedChallenge) == 48 && $storedChallenge == $token) { // ex.fc0d54312ce33c2fac19d758
-            $returnValue = true;
+        if($uid) {
+            $storedChallenge = $this->authDbClass->authHandler->authSupportCheckMediaToken($uid);
+            if (strlen($storedChallenge) == 48 && $storedChallenge == $token) { // ex.fc0d54312ce33c2fac19d758
+                $returnValue = true;
+            }
         }
         return $returnValue;
     }

@@ -51,8 +51,8 @@ class CredentialVisitor extends OperationVisitor
                     $challenge = $this->generateAndSaveChallenge($proxy->signedUser, $proxy->generatedClientID, "+",
                         ($proxy->required2FA ? $code2FA : ""));
                     $proxy->outputOfProcessing['challenge'] = "{$challenge}{$userSalt}";
-                    $this->setCookieOfChallenge(
-                        '_im_credential_token', $challenge, $proxy->generatedClientID, $proxy->hashedPassword);
+                    $this->setCookieOfChallenge('_im_credential_token',
+                        $challenge, $proxy->generatedClientID, $proxy->hashedPassword);
                     if ($proxy->required2FA && !Params::getParameterValue("fixed2FACode",false)) { // Send mail containing 2FA code.
                         $proxy->logger->setDebugMessage("Try to send a message.", 2);
                         $email = $proxy->dbClass->authHandler->authSupportEmailFromUnifiedUsername($proxy->signedUser);

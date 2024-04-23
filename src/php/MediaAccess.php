@@ -113,7 +113,7 @@ class MediaAccess
         $this->thrownException = false;
         $contextRecord = null;
         try {
-            // It the $file ('media'parameter) isn't specified, it doesn't respond an error.
+            // If the $file ('media'parameter) isn't specified, it doesn't respond an error.
             if (strlen($file) === 0) {
                 $erMessage = "[INTER-Mediator] The value of the 'media' key in url isn't specified.";
                 echo $erMessage;

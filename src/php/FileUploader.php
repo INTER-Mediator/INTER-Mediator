@@ -92,7 +92,7 @@ class FileUploader
             }
         }
         if (!$noOutput) {
-            $this->db->processingRequest("noop");
+            $this->db->processingRequest("nothing");
             $this->db->finishCommunication();
             $this->db->exportOutputDataAsJSON();
         }
@@ -122,33 +122,20 @@ class FileUploader
         $this->db = new DB\Proxy();
         $this->db->initialize($datasource, $options, $dbspec, $debug, $contextname);
 
-        $this->db->logger->setDebugMessage("FileUploader class's processing starts: files=" . str_replace("\n", "", var_export($files, true)));
+        $this->db->logger->setDebugMessage("[FileUploader] FileUploader class's processing starts: files="
+            . str_replace(["\n", " "], ["", ""], var_export($files, true)), 2);
 
         $contextDef = $this->db->dbSettings->getDataSourceTargetArray();
         $dbClass = ($contextDef['db-class'] ?? ($dbspec['db-class'] ?? Params::getParameterValue('dbClass', '')));
-        $className = $this->getClassNameForMedia($dbClass);
+        $className = $this->getClassNameForMedia($dbClass); // Decided media class name
 
-        if (isset($_POST['_im_redirect'])) {
-            $this->url = $this->getRedirectUrl($_POST['_im_redirect']);
-            if (is_null($this->url)) {
-                header("HTTP/1.1 500 Internal Server Error");
-                $this->db->logger->setErrorMessage('Header may not contain more than a single header, new line detected.');
-                $this->db->processingRequest('noop');
-                if (!$noOutput) {
-                    $this->db->finishCommunication();
-                    $this->db->exportOutputDataAsJSON();
-                }
-                return;
-            }
-        }
-
-        if (count($files) < 1) {
+        if (count($files) < 1) { // If no file is uploaded.
             if (!is_null($this->url)) {
                 header('Location: ' . $this->url);
             } else {
                 $messages = IMUtil::getMessageClassInstance();
                 $this->db->logger->setErrorMessage($messages->getMessageAs(3202));
-                $this->db->processingRequest("noop");
+                $this->db->processingRequest("nothing");
                 if (!$noOutput) {
                     $this->db->finishCommunication();
                     $this->db->exportOutputDataAsJSON();
@@ -157,13 +144,11 @@ class FileUploader
             return;
         }
 
-        $className = "INTERMediator\\Media\\{$className}";
+        $className = "INTERMediator\\Media\\{$className}"; // Instantiated media class object.
         $this->db->logger->setDebugMessage("Instantiate the class '{$className}'", 2);
-        $processing = new $className();
-        $processing->processing($this->db, $this->url, $options, $files, $noOutput, $field, $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug);
-        if (isset($this->db->outputOfProcessing['dbresult'])) { // For CSV importing
-            $this->dbresult = $this->db->outputOfProcessing['dbresult'];
-        }
+        $mediaClassObj = new $className();
+        $mediaClassObj->processing($this->db, $this->url, $options, $files, $noOutput, $field,
+            $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug);
     }
 
     //
