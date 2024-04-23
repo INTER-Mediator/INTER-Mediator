@@ -32,15 +32,15 @@ pages:
     - mkdir public
     - ls -al
     - ls -al /
-    - docker run -v "/builds/INTER-Mediator/INTER-Mediator/public:/public" -e "container=docker" --privileged -d --name php81-alpine php:8.1-fpm-alpine /sbin/init
-    - docker exec --privileged -i php81-alpine sh -c "apk update"
-    - docker exec --privileged -i php81-alpine sh -c "apk add --no-cache git bash zip nodejs npm zlib-dev libpng-dev icu-dev"
-    - docker exec --privileged -i php81-alpine sh -c "docker-php-ext-install bcmath exif gd intl"
-    - docker exec --privileged -i php81-alpine sh -c "apk add --no-cache curl"
-    - docker exec --privileged -i php81-alpine sh -c "curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer"
-    - docker exec --privileged -i php81-alpine sh -c "ls minify || git clone https://github.com/matthiasmullie/minify"
-    - docker exec --privileged -i php81-alpine sh -c "git clone https://github.com/INTER-Mediator/INTER-Mediator && cd INTER-Mediator && composer update && ./dist-docs/buildup.sh --core && cd ../im_build/ && zip -r INTER-Mediator-master.zip ./INTER-Mediator/ && mv INTER-Mediator-master.zip /public/"
-    - docker exec --privileged -i php81-alpine sh -c "ls -al; ls -al /; ls -al /public/"
+    - docker run -v "/builds/INTER-Mediator/INTER-Mediator/public:/public" -e "container=docker" --privileged -d --name php82-alpine php:8.2-fpm-alpine /sbin/init
+    - docker exec --privileged -i php82-alpine sh -c "apk update"
+    - docker exec --privileged -i php82-alpine sh -c "apk add --no-cache git bash zip nodejs npm zlib-dev libpng-dev icu-dev"
+    - docker exec --privileged -i php82-alpine sh -c "docker-php-ext-install bcmath exif gd intl"
+    - docker exec --privileged -i php82-alpine sh -c "apk add --no-cache curl"
+    - docker exec --privileged -i php82-alpine sh -c "curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer"
+    - docker exec --privileged -i php82-alpine sh -c "ls minify || git clone https://github.com/matthiasmullie/minify"
+    - docker exec --privileged -i php82-alpine sh -c "git clone https://github.com/INTER-Mediator/INTER-Mediator && cd INTER-Mediator && npm install && npm update && rm -f __Did_you_run_composer_update.txt && ./dist-docs/buildup.sh --core && cd ../im_build/ && zip -r INTER-Mediator-master.zip ./INTER-Mediator/ && mv INTER-Mediator-master.zip /public/"
+    - docker exec --privileged -i php82-alpine sh -c "ls -al; ls -al /; ls -al /public/"
     - ls -al
     - ls -al public
   artifacts:
