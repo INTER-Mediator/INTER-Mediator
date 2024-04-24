@@ -779,15 +779,15 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     }
 
     /**
-     * @param ?array $datasource
+     * @param ?array $dataSource
      * @param ?array $options
-     * @param ?array $dbspec
+     * @param ?array $dbSpec
      * @param ?int $debug
      * @param ?string $target
      * @return bool
      * @throws Exception
      */
-    public function initialize(?array $datasource, ?array $options, ?array $dbspec, ?int $debug, ?string $target = null): bool
+    public function initialize(?array $dataSource, ?array $options, ?array $dbSpec, ?int $debug, ?string $target = null): bool
     {
         $this->PostData = $this->ignorePost ? array() : $_POST;
         $this->setUpSharedObjects();
@@ -796,10 +796,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->clientSyncAvailable = boolval(Params::getParameterValue("activateClientService", false));
         $this->activateGenerator = Params::getParameterValue('activateGenerator', false);
 
-        $this->dbSettings->setDataSource($datasource);
+        $this->dbSettings->setDataSource($dataSource);
         $this->dbSettings->setOptions($options);
         IMLocale::$options = $options;
-        $this->dbSettings->setDbSpec($dbspec);
+        $this->dbSettings->setDbSpec($dbSpec);
 
         $this->dbSettings->setSeparator($options['separator'] ?? '@');
         $this->formatter->setFormatter($options['formatter'] ?? null);
@@ -810,30 +810,30 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
 
         $dbClassName = '\\INTERMediator\\DB\\' .
-            ($context['db-class'] ?? ($dbspec['db-class'] ?? Params::getParameterValue('dbClass', '')));
+            ($context['db-class'] ?? ($dbSpec['db-class'] ?? Params::getParameterValue('dbClass', '')));
         $this->dbSettings->setDbSpecServer(
-            $context['server'] ?? ($dbspec['server'] ?? Params::getParameterValue('dbServer', '')));
+            $context['server'] ?? ($dbSpec['server'] ?? Params::getParameterValue('dbServer', '')));
         $this->dbSettings->setDbSpecPort(
-            $context['port'] ?? ($dbspec['port'] ?? Params::getParameterValue('dbPort', '')));
+            $context['port'] ?? ($dbSpec['port'] ?? Params::getParameterValue('dbPort', '')));
         $this->dbSettings->setDbSpecUser(
-            $context['user'] ?? ($dbspec['user'] ?? Params::getParameterValue('dbUser', '')));
+            $context['user'] ?? ($dbSpec['user'] ?? Params::getParameterValue('dbUser', '')));
         $this->dbSettings->setDbSpecPassword(
-            $context['password'] ?? ($dbspec['password'] ?? Params::getParameterValue('dbPassword', '')));
+            $context['password'] ?? ($dbSpec['password'] ?? Params::getParameterValue('dbPassword', '')));
         $this->dbSettings->setDbSpecDataType(
-            $context['datatype'] ?? ($dbspec['datatype'] ?? Params::getParameterValue('dbDataType', '')));
+            $context['datatype'] ?? ($dbSpec['datatype'] ?? Params::getParameterValue('dbDataType', '')));
         $this->dbSettings->setDbSpecDatabase(
-            $context['database'] ?? ($dbspec['database'] ?? Params::getParameterValue('dbDatabase', '')));
+            $context['database'] ?? ($dbSpec['database'] ?? Params::getParameterValue('dbDatabase', '')));
         $this->dbSettings->setDbSpecProtocol(
-            $context['protocol'] ?? ($dbspec['protocol'] ?? Params::getParameterValue('dbProtocol', '')));
+            $context['protocol'] ?? ($dbSpec['protocol'] ?? Params::getParameterValue('dbProtocol', '')));
         $this->dbSettings->setDbSpecOption(
-            $context['option'] ?? ($dbspec['option'] ?? Params::getParameterValue('dbOption', '')));
+            $context['option'] ?? ($dbSpec['option'] ?? Params::getParameterValue('dbOption', '')));
         $this->dbSettings->setCertVerifying(
-            $context['cert-verifying'] ?? ($dbspec['cert-verifying'] ?? Params::getParameterValue('certVerifying', true)));
+            $context['cert-verifying'] ?? ($dbSpec['cert-verifying'] ?? Params::getParameterValue('certVerifying', true)));
         if (isset($options['authentication']['issuedhash-dsn'])) {
             $this->dbSettings->setDbSpecDSN($options['authentication']['issuedhash-dsn']);
         } else {
             $this->dbSettings->setDbSpecDSN(
-                $context['dsn'] ?? ($dbspec['dsn'] ?? Params::getParameterValue('dbDSN', '')));
+                $context['dsn'] ?? ($dbSpec['dsn'] ?? Params::getParameterValue('dbDSN', '')));
         }
 
         /* Setup Database Class's Object */

@@ -7,8 +7,15 @@ use INTERMediator\DB\Support\ProxyElements\DataOperationElement;
 use INTERMediator\DB\Support\ProxyElements\HandleChallengeElement;
 use INTERMediator\DB\Logger;
 
+/**
+ *
+ */
 class UpdateVisitor extends OperationVisitor
 {
+    /**
+     * @param CheckAuthenticationElement $e
+     * @return void
+     */
     public function visitCheckAuthentication(CheckAuthenticationElement $e): void
     {
         $e->resultOfCheckAuthentication
@@ -16,6 +23,10 @@ class UpdateVisitor extends OperationVisitor
     }
 
 
+    /**
+     * @param DataOperationElement $e
+     * @return void
+     */
     public function visitDataOperation(DataOperationElement $e): void
     {
         Logger::getInstance()->setDebugMessage("[processingRequest] start update processing", 2);
@@ -45,6 +56,10 @@ class UpdateVisitor extends OperationVisitor
     }
 
 
+    /**
+     * @param HandleChallengeElement $e
+     * @return void
+     */
     public function visitHandleChallenge(HandleChallengeElement $e): void
     {
         $this->defaultHandleChallenge();

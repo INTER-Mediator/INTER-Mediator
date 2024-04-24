@@ -234,7 +234,7 @@ class INTERMediator_Test extends TestCase
 //        $this->assertTrue($locStr == "en", $testName);
     }
     /*
-    function IM_Entry($datasource, $options, $dbspecification, $debug = false)
+    function IM_Entry($dataSource, $options, $dbSpecification, $debug = false)
     function loadClass($className)
     function arrayToJS($ar, $prefix)
     function arrayToJSExcluding($ar, $prefix, $exarray)

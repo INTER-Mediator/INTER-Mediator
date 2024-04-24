@@ -15,12 +15,12 @@
 
 namespace INTERMediator\DB;
 
-function IM_Dummy_Entry($datasource, $options, $dbspecification, $debug = false)
+function IM_Dummy_Entry($dataSource, $options, $dbSpecification, $debug = false)
 {
     global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
-    $globalDataSource = $datasource;
+    $globalDataSource = $dataSource;
     $globalOptions = $options;
-    $globalDBSpecs = $dbspecification;
+    $globalDBSpecs = $dbSpecification;
     $globalDebug = $debug;
 }
 

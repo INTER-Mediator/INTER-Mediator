@@ -17,9 +17,9 @@
 
 require_once('src/php/INTER-Mediator.php');
 
-function IM_Entry($datasource, $options, $dbspecification, $debug = false)
+function IM_Entry($dataSource, $options, $dbSpecification, $debug = false)
 {
-    INTERMediator\IM_Entry($datasource, $options, $dbspecification, $debug, $_SERVER['SCRIPT_FILENAME']);
+    INTERMediator\IM_Entry($dataSource, $options, $dbSpecification, $debug, $_SERVER['SCRIPT_FILENAME']);
 }
 
 function IM_Entry_YAML($yaml, $defFile = null) {

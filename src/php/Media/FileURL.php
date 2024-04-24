@@ -35,16 +35,17 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      * @param array $files
      * @param bool $noOutput
      * @param array $field
-     * @param string $contextname
-     * @param ?string $keyfield
-     * @param ?string $keyvalue
-     * @param array|null $datasource
-     * @param array|null $dbspec
+     * @param string $contextName
+     * @param ?string $keyField
+     * @param ?string $keyValue
+     * @param array|null $dataSource
+     * @param array|null $dbSpec
      * @param int $debug
+     * @throws Exception
      */
     public function processing(Proxy  $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
-                               string $contextname, ?string $keyfield, ?string $keyvalue,
-                               ?array $datasource, ?array $dbspec, int $debug): void
+                               string $contextName, ?string $keyField, ?string $keyValue,
+                               ?array $dataSource, ?array $dbSpec, int $debug): void
     {
         $counter = -1;
         foreach ($files as $fileInfo) {
@@ -54,10 +55,10 @@ class FileURL extends UploadingSupport implements DownloadingSupport
             $targetFieldName = $field[$counter];
 
             if ($targetFieldName == "_im_csv_upload") {    // CSV File uploading
-                $this->csvImportOperation($db, $datasource, $options, $dbspec, $debug, $contextname, $fileInfoTemp);
+                $this->csvImportOperation($db, $dataSource, $options, $dbSpec, $debug, $contextName, $fileInfoTemp);
             } else {
                 list($result, $filePath, $filePartialPath) = $this->decideFilePath($db, $noOutput, $options,
-                    $contextname, $keyfield, $keyvalue, $targetFieldName, $filePathInfo);
+                    $contextName, $keyField, $keyValue, $targetFieldName, $filePathInfo);
                 if ($result === false) {
                     return;
                 }
@@ -70,8 +71,8 @@ class FileURL extends UploadingSupport implements DownloadingSupport
                     }
                     return;
                 }
-                $this->processingFile($db, $options, $filePath, $filePartialPath, $targetFieldName, $contextname,
-                    $keyfield, $keyvalue, $datasource, $dbspec, $debug);
+                $this->processingFile($db, $options, $filePath, $filePartialPath, $targetFieldName,
+                    $keyField, $keyValue, $dataSource, $dbSpec, $debug);
             }
         }
     }
@@ -126,6 +127,7 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      * @param bool $noOutput
      * @param string $errorMsg
      * @return void
+     * @throws Exception
      */
     private function prepareErrorOut(Proxy $db, bool $noOutput, string $errorMsg)
     {
@@ -141,15 +143,16 @@ class FileURL extends UploadingSupport implements DownloadingSupport
      * @param Proxy $db
      * @param bool $noOutput
      * @param ?array $options
-     * @param string $contextname
-     * @param string $keyfield
-     * @param string $keyvalue
+     * @param string $contextName
+     * @param string $keyField
+     * @param string $keyValue
      * @param string $targetFieldName
      * @param array $filePathInfo
      * @return array
+     * @throws Exception
      */
     private function decideFilePath(Proxy  $db, bool $noOutput, ?array $options,
-                                    string $contextname, string $keyfield, string $keyvalue,
+                                    string $contextName, string $keyField, string $keyValue,
                                     string $targetFieldName, array $filePathInfo): array
     {
         $result = true;
@@ -159,10 +162,10 @@ class FileURL extends UploadingSupport implements DownloadingSupport
         }
         $uploadFilePathMode = Params::getParameterValue("uploadFilePathMode", null);
 
-        $dirPath = $this->justfyPathComponent($contextname, $uploadFilePathMode) . DIRECTORY_SEPARATOR
-            . $this->justfyPathComponent($keyfield, $uploadFilePathMode) . "="
-            . $this->justfyPathComponent($keyvalue, $uploadFilePathMode) . DIRECTORY_SEPARATOR
-            . $this->justfyPathComponent($targetFieldName, $uploadFilePathMode);
+        $dirPath = $this->justifyPathComponent($contextName, $uploadFilePathMode) . DIRECTORY_SEPARATOR
+            . $this->justifyPathComponent($keyField, $uploadFilePathMode) . "="
+            . $this->justifyPathComponent($keyValue, $uploadFilePathMode) . DIRECTORY_SEPARATOR
+            . $this->justifyPathComponent($targetFieldName, $uploadFilePathMode);
         try {
             $rand4Digits = random_int(1000, 9999);
         } catch (Exception $ex) {
@@ -189,11 +192,11 @@ class FileURL extends UploadingSupport implements DownloadingSupport
 
     /**
      * @param string $str
-     * @param string $mode
+     * @param string|null $mode
      * @return string
      */
     private
-    function justfyPathComponent(string $str, ?string $mode = "default"): string
+    function justifyPathComponent(string $str, ?string $mode = "default"): string
     {
         $jStr = $str;
         switch ($mode) {
@@ -216,16 +219,17 @@ class FileURL extends UploadingSupport implements DownloadingSupport
 
     /**
      * @param Proxy $db
-     * @param ?array $datasource
+     * @param ?array $dataSource
      * @param ?array $options
-     * @param ?array $dbspec
+     * @param ?array $dbSpec
      * @param int $debug
-     * @param string $contextname
+     * @param string $contextName
      * @param string $fileInfoTemp
+     * @throws Exception
      */
     private
-    function csvImportOperation(Proxy  $db, ?array $datasource, ?array $options, ?array $dbspec, int $debug,
-                                string $contextname, string $fileInfoTemp): void
+    function csvImportOperation(Proxy  $db, ?array $dataSource, ?array $options, ?array $dbSpec, int $debug,
+                                string $contextName, string $fileInfoTemp): void
     {
         $dbContext = $db->dbSettings->getDataSourceTargetArray();
         [$import1stLine, $importSkipLines, $importFormat, $useReplace, $convert2Number, $convert2Date, $convert2DateTime]
@@ -275,7 +279,7 @@ class FileURL extends UploadingSupport implements DownloadingSupport
         $nineCode = ord('9');
 
         $db->ignoringPost();
-        $db->initialize($datasource, $options, $dbspec, $debug, $contextname);
+        $db->initialize($dataSource, $options, $dbSpec, $debug, $contextName);
 
         $importingFields = [];
         if (is_string($import1stLine)) {
@@ -299,7 +303,7 @@ class FileURL extends UploadingSupport implements DownloadingSupport
                     foreach (new FieldDivider($line, $separator) as $index => $value) {
                         if ($index < count($importingFields)) {
                             $field = $importingFields[$index];
-                            if ($field !== '_') { // The '_' field is gonna ignore.
+                            if ($field !== '_') { // The '_' field has to be ignored.
                                 if (in_array($field, $convert2Number)) {
                                     $original = $value;
                                     $value = '';

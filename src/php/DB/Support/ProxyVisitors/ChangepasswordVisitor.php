@@ -7,14 +7,21 @@ use INTERMediator\DB\Support\ProxyElements\DataOperationElement;
 use INTERMediator\DB\Support\ProxyElements\HandleChallengeElement;
 use INTERMediator\DB\Logger;
 
+/**
+ *
+ */
 class ChangepasswordVisitor extends OperationVisitor
 {
+    /**
+     * @param CheckAuthenticationElement $e
+     * @return void
+     */
     public function visitCheckAuthentication(CheckAuthenticationElement $e): void
     {
         $proxy = $this->proxy;
         if ($this->prepareCheckAuthentication($e)) {
-            if ($proxy->credential == $proxy->generateCredential(
-                    $this->storedChallenge, $proxy->clientId, $proxy->hashedPassword)) {
+            if ($proxy->credential
+                == $proxy->generateCredential($this->storedChallenge, $proxy->clientId, $proxy->hashedPassword)) {
                 Logger::getInstance()->setDebugMessage("[visitCheckAuthentication] Credential (SHA-256) auth passed.", 2);
                 $e->resultOfCheckAuthentication = true;
             } else { // Hash Auth checking
@@ -24,6 +31,10 @@ class ChangepasswordVisitor extends OperationVisitor
     }
 
 
+    /**
+     * @param DataOperationElement $e
+     * @return void
+     */
     public function visitDataOperation(DataOperationElement $e): void
     {
         $proxy = $this->proxy;
@@ -38,6 +49,10 @@ class ChangepasswordVisitor extends OperationVisitor
     }
 
 
+    /**
+     * @param HandleChallengeElement $e
+     * @return void
+     */
     public function visitHandleChallenge(HandleChallengeElement $e): void
     {
         $this->defaultHandleChallenge();

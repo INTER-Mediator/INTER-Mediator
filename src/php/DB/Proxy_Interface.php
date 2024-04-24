@@ -20,7 +20,7 @@ namespace INTERMediator\DB;
  */
 interface Proxy_Interface extends DBClass_Interface, Auth_Interface_Communication
 {
-    function initialize(?array $datasource, ?array $options, ?array $dbspec, ?int $debug, ?string $target = null): bool;
+    function initialize(?array $dataSource, ?array $options, ?array $dbSpec, ?int $debug, ?string $target = null): bool;
 
     public function processingRequest(?string $access = null, bool $bypassAuth = false, bool $ignoreFiles = false): void;
 

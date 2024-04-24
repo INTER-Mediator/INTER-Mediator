@@ -10,8 +10,15 @@ use INTERMediator\IMUtil;
 use INTERMediator\Messaging\MessagingProxy;
 use INTERMediator\Params;
 
+/**
+ *
+ */
 class CredentialVisitor extends OperationVisitor
 {
+    /**
+     * @param CheckAuthenticationElement $e
+     * @return void
+     */
     public function visitCheckAuthentication(CheckAuthenticationElement $e): void
     {
         $proxy = $this->proxy;
@@ -31,11 +38,19 @@ class CredentialVisitor extends OperationVisitor
     }
 
 
+    /**
+     * @param DataOperationElement $e
+     * @return void
+     */
     public function visitDataOperation(DataOperationElement $e): void
     {
     }
 
 
+    /**
+     * @param HandleChallengeElement $e
+     * @return void
+     */
     public function visitHandleChallenge(HandleChallengeElement $e): void
     {
         $proxy = $this->proxy;
@@ -57,7 +72,7 @@ class CredentialVisitor extends OperationVisitor
                         $proxy->logger->setDebugMessage("Try to send a message.", 2);
                         $email = $proxy->dbClass->authHandler->authSupportEmailFromUnifiedUsername($proxy->signedUser);
                         if(!$email) {
-                            $proxy->logger->setWarningMessage("The logging-in user has no email info.", 2);
+                            $proxy->logger->setWarningMessage("The logging-in user has no email info.");
                             break;
                         }
                         $msgProxy = new MessagingProxy("mail");

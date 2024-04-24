@@ -5,11 +5,9 @@ namespace INTERMediator\DB\Support\ProxyVisitors;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\Proxy;
 use INTERMediator\DB\Support\ProxyElements\CheckAuthenticationElement;
-use INTERMediator\DB\Support\ProxyElements\DataOperationElement;
-use INTERMediator\DB\Support\ProxyElements\HandleChallengeElement;
+use INTERMediator\DB\Support\ProxyElements\OperationElement;
 use INTERMediator\FileUploader;
 use INTERMediator\IMUtil;
-use INTERMediator\SAMLAuth;
 
 /**
  *
@@ -35,22 +33,22 @@ abstract class OperationVisitor
     // Visitor methods
 
     /**
-     * @param CheckAuthenticationElement $e
+     * @param OperationElement $e
      * @return void
      */
-    abstract public function visitCheckAuthentication(CheckAuthenticationElement $e): void;
+    abstract public function visitCheckAuthentication(OperationElement $e): void;
 
     /**
-     * @param DataOperationElement $e
+     * @param OperationElement $e
      * @return void
      */
-    abstract public function visitDataOperation(DataOperationElement $e): void;
+    abstract public function visitDataOperation(OperationElement $e): void;
 
     /**
-     * @param HandleChallengeElement $e
+     * @param OperationElement $e
      * @return void
      */
-    abstract public function visitHandleChallenge(HandleChallengeElement $e): void;
+    abstract public function visitHandleChallenge(OperationElement $e): void;
 
     // ==== Service methods for the visitCheckAuthentication method. ====
 
@@ -132,7 +130,7 @@ abstract class OperationVisitor
     /**
      * @return bool
      */
-    private function checkAuthorization()
+    private function checkAuthorization(): bool
     {
         $proxy = $this->proxy;
         $authHandler = $proxy->dbClass->authHandler;
@@ -212,7 +210,6 @@ abstract class OperationVisitor
                     return false;
                 }
                 return $this->sessionStorageCheckAuth();
-                break;
         }
         Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] Credential failed.", 2);
         return false;

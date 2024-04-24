@@ -7,15 +7,25 @@ use INTERMediator\DB\Support\ProxyElements\DataOperationElement;
 use INTERMediator\DB\Support\ProxyElements\HandleChallengeElement;
 use INTERMediator\DB\Logger;
 
+/**
+ *
+ */
 class UnregisterVisitor extends OperationVisitor
 {
+    /**
+     * @param CheckAuthenticationElement $e
+     * @return void
+     */
     public function visitCheckAuthentication(CheckAuthenticationElement $e): void
     {
         $e->resultOfCheckAuthentication
             = $this->prepareCheckAuthentication($e) && $this->checkAuthenticationCommon($e);
     }
 
-
+    /**
+     * @param DataOperationElement $e
+     * @return void
+     */
     public function visitDataOperation(DataOperationElement $e): void
     {
         Logger::getInstance()->setDebugMessage("[processingRequest] start unregister processing", 2);
@@ -28,7 +38,10 @@ class UnregisterVisitor extends OperationVisitor
         }
     }
 
-
+    /**
+     * @param HandleChallengeElement $e
+     * @return void
+     */
     public function visitHandleChallenge(HandleChallengeElement $e): void
     {
         $this->defaultHandleChallenge();

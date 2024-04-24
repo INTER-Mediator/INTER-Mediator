@@ -8,8 +8,15 @@ use INTERMediator\DB\Support\ProxyElements\HandleChallengeElement;
 use INTERMediator\IMUtil;
 use INTERMediator\DB\Logger;
 
+/**
+ *
+ */
 class ChallengeVisitor extends OperationVisitor
 {
+    /**
+     * @param CheckAuthenticationElement $e
+     * @return void
+     */
     public function visitCheckAuthentication(CheckAuthenticationElement $e): void
     {
         $this->proxy->dbSettings->setRequireAuthorization(true);
@@ -18,11 +25,19 @@ class ChallengeVisitor extends OperationVisitor
     }
 
 
+    /**
+     * @param DataOperationElement $e
+     * @return void
+     */
     public function visitDataOperation(DataOperationElement $e): void
     {
     }
 
 
+    /**
+     * @param HandleChallengeElement $e
+     * @return void
+     */
     public function visitHandleChallenge(HandleChallengeElement $e): void
     {
         $proxy = $this->proxy;

@@ -16,7 +16,9 @@
 
 namespace INTERMediator\DB\Support;
 
+use Exception;
 use INTERMediator\DB\Logger;
+use INTERMediator\DB\PDO;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
 use INTERMediator\SAMLAuth;
@@ -60,7 +62,7 @@ trait Proxy_Auth
         /* Authentication and Authorization Judgement */
         $challengeDSN = $options['authentication']['issuedhash-dsn'] ?? Params::getParameterValue('issuedHashDSN', null);
         if (!is_null($challengeDSN)) {
-            $this->authDbClass = new \INTERMediator\DB\PDO();
+            $this->authDbClass = new PDO();
             $this->authDbClass->setUpSharedObjects($this);
             $this->authDbClass->setupWithDSN($challengeDSN);
             $this->authDbClass->setupHandlers($challengeDSN);
@@ -172,6 +174,9 @@ trait Proxy_Auth
     }
 
 
+    /**
+     * @return void
+     */
     public function accessSetToNothing()
     {
         $this->dbSettings->setRequireAuthentication(true);
@@ -240,9 +245,11 @@ trait Proxy_Auth
     }
 
     /**
-     * @param string $username
+     * @param string|null $username
      * @param string $challenge
      * @param string $clientId
+     * @param string $prefix
+     * @return void
      */
     public function saveChallenge(?string $username, string $challenge, string $clientId, string $prefix = ""): void
     {
@@ -285,7 +292,7 @@ trait Proxy_Auth
         // Database user mode is user_id=0
         $user = $this->dbClass->authHandler->authSupportUnifyUsernameAndEmail($user);
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($user);
-        if($uid) {
+        if ($uid) {
             $storedChallenge = $this->authDbClass->authHandler->authSupportCheckMediaToken($uid);
             if (strlen($storedChallenge) == 48 && $storedChallenge == $token) { // ex.fc0d54312ce33c2fac19d758
                 $returnValue = true;
@@ -295,15 +302,13 @@ trait Proxy_Auth
     }
 
     /**
-     * @param string $generatedChallenge
-     * @param string $generatedUID
-     * @param string $pwHash
+     * @param string|null $s1
+     * @param string|null $s2
+     * @param string|null $s3
      * @return string
      */
     public function generateCredential(?string $s1, ?string $s2, ?string $s3): string
     {
-        $value = hash("sha256", $s1 . $s2 . $s3);
-        // $this->logger->setDebugMessage("[generateCredential] cred={$value}, from={$s1}.{$s2}.{$s3}", 2);
-        return $value;
+        return hash("sha256", $s1 . $s2 . $s3);
     }
 }

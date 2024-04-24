@@ -64,21 +64,21 @@ trait Proxy_ExtSupport
     }
 
     /**
-     * @param array|null $datasource
+     * @param array|null $dataSource
      * @param array|null $options
-     * @param array|null $dbspec
+     * @param array|null $dbSpec
      * @param int|null $debug
      * @return void
      */
-    public function dbInit(?array $datasource = null, ?array $options = null, ?array $dbspec = null, ?int $debug = null): void
+    public function dbInit(?array $dataSource = null, ?array $options = null, ?array $dbSpec = null, ?int $debug = null): void
     {
         if (!$this->extProxy) {
             $this->extProxy = new Proxy($this->testMode);
             $this->extProxy->ignorePost();
         }
-        $this->extDataSource = $datasource;
+        $this->extDataSource = $dataSource;
         $this->extOptions = $options;
-        $this->extDBSpec = $dbspec;
+        $this->extDBSpec = $dbSpec;
         $this->extDebug = $debug;
     }
 

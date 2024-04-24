@@ -15,6 +15,7 @@
 
 namespace INTERMediator\Media;
 
+use Exception;
 use INTERMediator\DB\Proxy;
 
 /**
@@ -28,16 +29,16 @@ abstract class UploadingSupport
      * @param string $filePath
      * @param string $filePartialPath
      * @param string $targetFieldName
-     * @param string $contextname
-     * @param string|null $keyfield
-     * @param string|null $keyvalue
-     * @param array|null $datasource
-     * @param array|null $dbspec
+     * @param string|null $keyField
+     * @param string|null $keyValue
+     * @param array|null $dataSource
+     * @param array|null $dbSpec
      * @param int $debug
+     * @throws Exception
      */
-    public function processingFile(Proxy   $db, ?array $options, string $filePath,
-                                   string  $filePartialPath, string $targetFieldName, string $contextname,
-                                   ?string $keyfield, ?string $keyvalue, ?array $datasource, ?array $dbspec, int $debug): void
+    public function processingFile(Proxy  $db, ?array $options, string $filePath, string $filePartialPath,
+                                   string $targetFieldName, ?string $keyField, ?string $keyValue,
+                                   ?array $dataSource, ?array $dbSpec, int $debug): void
     {
         $dbProxyContext = $db->dbSettings->getDataSourceTargetArray();
         if (isset($dbProxyContext['file-upload'])) {
@@ -48,7 +49,7 @@ abstract class UploadingSupport
             }
         }
 
-        $db->dbSettings->addExtraCriteria($keyfield, "=", $keyvalue);
+        $db->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
         $db->dbSettings->setFieldsRequired(array($targetFieldName));
         $db->dbSettings->setValue(array($filePartialPath));
         $db->processingRequest("update"/*,true*/);
@@ -63,7 +64,7 @@ abstract class UploadingSupport
             foreach ($dbProxyContext['file-upload'] as $item) {
                 if ($item['field'] == $targetFieldName) {
                     $relatedContext = new Proxy();
-                    $relatedContext->initialize($datasource, $options, $dbspec, $debug, $item['context'] ?? null);
+                    $relatedContext->initialize($dataSource, $options, $dbSpec, $debug, $item['context'] ?? null);
                     $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
                     $db->logger->setDebugMessage("[FileSystem::processing] context={$item['context']} relatedContextInfo=" . var_export($relatedContextInfo, true), 2);
                     $fields = array();

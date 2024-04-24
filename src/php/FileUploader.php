@@ -52,10 +52,10 @@ class FileUploader
 
     */
 
-    public function processingAsError(?array $datasource, ?array $options, ?array $dbspec, int $debug, ?string $contextname, bool $noOutput): void
+    public function processingAsError(?array $dataSource, ?array $options, ?array $dbSpec, int $debug, ?string $contextName, bool $noOutput): void
     {
         $this->db = new Proxy();
-        $this->db->initialize($datasource, $options, $dbspec, $debug, $contextname);
+        $this->db->initialize($dataSource, $options, $dbSpec, $debug, $contextName);
 
         $messages = IMUtil::getMessageClassInstance();
         if (count($_FILES) === 0) {
@@ -98,16 +98,16 @@ class FileUploader
         }
     }
 
-    public function processing(?array $datasource, ?array $options, ?array $dbspec, int $debug): void
+    public function processing(?array $dataSource, ?array $options, ?array $dbSpec, int $debug): void
     {
-        $contextname = $_POST["_im_contextname"];
-        $keyfield = $_POST["_im_keyfield"];
-        $keyvalue = $_POST["_im_keyvalue"];
+        $contextName = $_POST["_im_contextname"];
+        $keyField = $_POST["_im_keyfield"];
+        $keyValue = $_POST["_im_keyvalue"];
         $field = [$_POST["_im_field"]];
         $files = $_FILES;
 
-        $this->processingWithParameters($datasource, $options, $dbspec, $debug,
-            $contextname, $keyfield, $keyvalue, $field, $files, false);
+        $this->processingWithParameters($dataSource, $options, $dbSpec, $debug,
+            $contextName, $keyField, $keyValue, $field, $files, false);
         $this->db->finishCommunication();
         if (!is_null($this->url)) {
             header('Location: ' . $this->url);
@@ -115,18 +115,18 @@ class FileUploader
         $this->db->exportOutputDataAsJSON();
     }
 
-    public function processingWithParameters(?array  $datasource, ?array $options, ?array $dbspec, int $debug,
-                                             ?string $contextname, ?string $keyfield, ?string $keyvalue, ?array $field,
+    public function processingWithParameters(?array  $dataSource, ?array $options, ?array $dbSpec, int $debug,
+                                             ?string $contextName, ?string $keyField, ?string $keyValue, ?array $field,
                                              ?array  $files, bool $noOutput): void
     {
         $this->db = new DB\Proxy();
-        $this->db->initialize($datasource, $options, $dbspec, $debug, $contextname);
+        $this->db->initialize($dataSource, $options, $dbSpec, $debug, $contextName);
 
         $this->db->logger->setDebugMessage("[FileUploader] FileUploader class's processing starts: files="
             . str_replace(["\n", " "], ["", ""], var_export($files, true)), 2);
 
         $contextDef = $this->db->dbSettings->getDataSourceTargetArray();
-        $dbClass = ($contextDef['db-class'] ?? ($dbspec['db-class'] ?? Params::getParameterValue('dbClass', '')));
+        $dbClass = ($contextDef['db-class'] ?? ($dbSpec['db-class'] ?? Params::getParameterValue('dbClass', '')));
         $className = $this->getClassNameForMedia($dbClass); // Decided media class name
 
         if (count($files) < 1) { // If no file is uploaded.
@@ -148,7 +148,7 @@ class FileUploader
         $this->db->logger->setDebugMessage("Instantiate the class '{$className}'", 2);
         $mediaClassObj = new $className();
         $mediaClassObj->processing($this->db, $this->url, $options, $files, $noOutput, $field,
-            $contextname, $keyfield, $keyvalue, $datasource, $dbspec, $debug);
+            $contextName, $keyField, $keyValue, $dataSource, $dbSpec, $debug);
     }
 
     //
