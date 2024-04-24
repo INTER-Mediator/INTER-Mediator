@@ -62,7 +62,7 @@ abstract class UploadingSupport
         $db->finishCommunication();
         if (isset($dbProxyContext['file-upload'])) {
             foreach ($dbProxyContext['file-upload'] as $item) {
-                if ($item['field'] == $targetFieldName) {
+                if (isset($item['field']) && $item['field'] == $targetFieldName) {
                     $relatedContext = new Proxy();
                     $relatedContext->initialize($dataSource, $options, $dbSpec, $debug, $item['context'] ?? null);
                     $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
