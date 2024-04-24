@@ -3,9 +3,7 @@
 namespace INTERMediator\DB\Support\ProxyVisitors;
 
 use Exception;
-use INTERMediator\DB\Support\ProxyElements\CheckAuthenticationElement;
-use INTERMediator\DB\Support\ProxyElements\DataOperationElement;
-use INTERMediator\DB\Support\ProxyElements\HandleChallengeElement;
+use INTERMediator\DB\Support\ProxyElements\OperationElement;
 use INTERMediator\DB\Logger;
 
 /**
@@ -14,10 +12,10 @@ use INTERMediator\DB\Logger;
 class DescribeVisitor extends OperationVisitor
 {
     /**
-     * @param CheckAuthenticationElement $e
+     * @param OperationElement $e
      * @return void
      */
-    public function visitCheckAuthentication(CheckAuthenticationElement $e): void
+    public function visitCheckAuthentication(OperationElement $e): void
     {
         $e->resultOfCheckAuthentication
             = $this->prepareCheckAuthentication($e) && $this->checkAuthenticationCommon($e);
@@ -25,11 +23,11 @@ class DescribeVisitor extends OperationVisitor
 
 
     /**
-     * @param DataOperationElement $e
+     * @param OperationElement $e
      * @return void
      * @throws Exception
      */
-    public function visitDataOperation(DataOperationElement $e): void
+    public function visitDataOperation(OperationElement $e): void
     {
         Logger::getInstance()->setDebugMessage("[processingRequest] start describe processing", 2);
         $result = $this->proxy->dbClass->getSchema($this->proxy->dbSettings->getDataSourceName());
@@ -40,10 +38,10 @@ class DescribeVisitor extends OperationVisitor
 
 
     /**
-     * @param HandleChallengeElement $e
+     * @param OperationElement $e
      * @return void
      */
-    public function visitHandleChallenge(HandleChallengeElement $e): void
+    public function visitHandleChallenge(OperationElement $e): void
     {
         $this->defaultHandleChallenge();
     }

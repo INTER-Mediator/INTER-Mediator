@@ -66,10 +66,10 @@ abstract class OperationVisitor
     protected ?string $stored2FAuth;
 
     /**
-     * @param CheckAuthenticationElement $e
+     * @param OperationElement $e
      * @return bool
      */
-    protected function prepareCheckAuthentication(CheckAuthenticationElement $e): bool
+    protected function prepareCheckAuthentication(OperationElement $e): bool
     {
         $proxy = $this->proxy;
         $authHandler = $proxy->dbClass->authHandler;
@@ -163,10 +163,10 @@ abstract class OperationVisitor
     }
 
     /**
-     * @param CheckAuthenticationElement $e
+     * @param OperationElement $e
      * @return bool
      */
-    protected function checkAuthenticationCommon(CheckAuthenticationElement $e): bool
+    protected function checkAuthenticationCommon(OperationElement $e): bool
     {
         $proxy = $this->proxy;
         Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] authStoring={$proxy->authStoring} required2FA={$proxy->required2FA}.", 2);

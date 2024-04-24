@@ -3,9 +3,7 @@
 namespace INTERMediator\DB\Support\ProxyVisitors;
 
 use INTERMediator\DB\Logger;
-use INTERMediator\DB\Support\ProxyElements\CheckAuthenticationElement;
-use INTERMediator\DB\Support\ProxyElements\DataOperationElement;
-use INTERMediator\DB\Support\ProxyElements\HandleChallengeElement;
+use INTERMediator\DB\Support\ProxyElements\OperationElement;
 use INTERMediator\IMUtil;
 
 /**
@@ -14,10 +12,10 @@ use INTERMediator\IMUtil;
 class AuthenticatedVisitor extends OperationVisitor
 {
     /**
-     * @param CheckAuthenticationElement $e
+     * @param OperationElement $e
      * @return void
      */
-    public function visitCheckAuthentication(CheckAuthenticationElement $e): void
+    public function visitCheckAuthentication(OperationElement $e): void
     {
         $proxy = $this->proxy;
 
@@ -45,19 +43,19 @@ class AuthenticatedVisitor extends OperationVisitor
 
 
     /**
-     * @param DataOperationElement $e
+     * @param OperationElement $e
      * @return void
      */
-    public function visitDataOperation(DataOperationElement $e): void
+    public function visitDataOperation(OperationElement $e): void
     {
     }
 
 
     /**
-     * @param HandleChallengeElement $e
+     * @param OperationElement $e
      * @return void
      */
-    public function visitHandleChallenge(HandleChallengeElement $e): void
+    public function visitHandleChallenge(OperationElement $e): void
     {
         $proxy = $this->proxy;
         Logger::getInstance()->setDebugMessage("[handleChallenge] access={$proxy->access}, succeed={$proxy->authSucceed}", 2);

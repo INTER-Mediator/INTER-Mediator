@@ -2,9 +2,7 @@
 
 namespace INTERMediator\DB\Support\ProxyVisitors;
 
-use INTERMediator\DB\Support\ProxyElements\CheckAuthenticationElement;
-use INTERMediator\DB\Support\ProxyElements\DataOperationElement;
-use INTERMediator\DB\Support\ProxyElements\HandleChallengeElement;
+use INTERMediator\DB\Support\ProxyElements\OperationElement;
 use INTERMediator\DB\Logger;
 
 /**
@@ -13,20 +11,20 @@ use INTERMediator\DB\Logger;
 class UnregisterVisitor extends OperationVisitor
 {
     /**
-     * @param CheckAuthenticationElement $e
+     * @param OperationElement $e
      * @return void
      */
-    public function visitCheckAuthentication(CheckAuthenticationElement $e): void
+    public function visitCheckAuthentication(OperationElement $e): void
     {
         $e->resultOfCheckAuthentication
             = $this->prepareCheckAuthentication($e) && $this->checkAuthenticationCommon($e);
     }
 
     /**
-     * @param DataOperationElement $e
+     * @param OperationElement $e
      * @return void
      */
-    public function visitDataOperation(DataOperationElement $e): void
+    public function visitDataOperation(OperationElement $e): void
     {
         Logger::getInstance()->setDebugMessage("[processingRequest] start unregister processing", 2);
         if (!is_null($this->proxy->dbSettings->notifyServer) && $this->proxy->clientSyncAvailable) {
@@ -39,10 +37,10 @@ class UnregisterVisitor extends OperationVisitor
     }
 
     /**
-     * @param HandleChallengeElement $e
+     * @param OperationElement $e
      * @return void
      */
-    public function visitHandleChallenge(HandleChallengeElement $e): void
+    public function visitHandleChallenge(OperationElement $e): void
     {
         $this->defaultHandleChallenge();
     }
