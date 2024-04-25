@@ -149,6 +149,11 @@ class FileUploader
         $mediaClassObj = new $className();
         $mediaClassObj->processing($this->db, $this->url, $options, $files, $noOutput, $field,
             $contextName, $keyField, $keyValue, $dataSource, $dbSpec, $debug);
+        if ($field[0] == "_im_csv_upload") {    // CSV File uploading
+            if (isset($this->db->outputOfProcessing['dbresult'])) { // For CSV importing
+                $this->dbresult = $this->db->outputOfProcessing['dbresult'];
+            }
+        }
     }
 
     //
