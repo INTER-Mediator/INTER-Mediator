@@ -883,6 +883,8 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->dbSettings->setAggregationFrom($context['aggregation-from'] ?? null);
         $this->dbSettings->setAggregationGroupBy($context['aggregation-group-by'] ?? null);
 
+        $this->collectAuthInfo($options); // Calling the method in the Support\Proxy_Auth trait.
+
         $this->dbSettings->notifyServer = null;
         if ($this->clientSyncAvailable) {
             $this->dbSettings->notifyServer = new NotifyServer();
@@ -972,7 +974,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->dbSettings->setClientTZOffset($this->PostData['tzoffset'] ?? 0);
         $this->dbSettings->setParentOfTarget($this->PostData['parent'] ?? '');
 
-        $this->collectAuthInfo($options); // Calling the method in the Support\Proxy_Auth trait.
         return true;
     }
 

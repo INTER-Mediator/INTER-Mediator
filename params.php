@@ -204,11 +204,12 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 //        . "hd=gmail.com",
 //];
 https://https://accounts.google.com/o/oauth2/v2/auth?state=invalid-state&scope=openid&response_type=code&redirect_uri=https://demo.inter-mediator.com/saml-trial/lib/src/INTER-Mediator/vendor/simplesamlphp/simplesamlphp/public/module.php/authoauth2/linkback.php&client_id=353910848422-e08dmcn6s8pc43a94d22s5510b8mnrqj.apps.googleusercontent.com
+
 /* Service Server Behavior
  * ===================
  * Port number and host name for service server */
-$notUseServiceServer = true;  // Default is TRUE!. It has to set false to work every feature with Service Server.
-/*
+$notUseServiceServer = false;  // Default is TRUE!. It has to set false to work every feature with Service Server.
+
 $activateClientService = true;  // Default is FLASE!.
 $serviceServerProtocol = "ws";  // The Service Server url components to connect from client.
 $serviceServerHost = "localhost";    // "" for public ip address.
@@ -222,7 +223,7 @@ $bootWithInstalledNode = false;
 $preventSSAutoBoot = false;
 $backSeconds = 3600 * 24 * 2; // The seconds value that detect the outdated registering records.
 $foreverLog = '/tmp/nodemon.log';
-*/
+
 /* Operation Log
  * ===================
  * the table named 'operationlog' is required.
