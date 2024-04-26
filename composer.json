@@ -1,7 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
   "version": "13",
-  "time": "2024-02-15",
+  "time": "2024-04-26",
   "repositories": [
     {
       "type": "git",
@@ -41,7 +41,7 @@
   "extra": {
     "mouf": {
       "nodejs": {
-        "version": "20.11.1",
+        "version": "20.12.2",
         "includeBinInPath": true
       }
     }
