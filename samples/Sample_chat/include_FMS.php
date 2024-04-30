@@ -45,6 +45,7 @@ IM_Entry(
             'challenge-table' => 'issuedhash',
             'authexpired' => '300', // Set as seconds.
             'storing' => 'credential',
+            'is-required-2FA' => false,
         ),
     ),
     array('db-class' => 'FileMaker_FX'),

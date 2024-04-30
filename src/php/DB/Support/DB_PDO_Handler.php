@@ -301,7 +301,7 @@ abstract class DB_PDO_Handler
      * @return array
      * @throws Exception
      */
-    public function getNumericFields(string $tableName): array
+    public function getNumericFields(?string $tableName): array
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -405,7 +405,7 @@ abstract class DB_PDO_Handler
      * @param string $tableName
      * @return array
      */
-    public function getBooleanFields(string $tableName): array
+    public function getBooleanFields(?string $tableName): array
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -495,8 +495,11 @@ abstract class DB_PDO_Handler
      * @param string $tableName
      * @return array
      */
-    public function getTableInfo(string $tableName): array
+    public function getTableInfo(?string $tableName): array
     {
+        if (is_null($tableName)){
+            return [];
+        }
         if (!isset($this->tableInfo[$tableName])) {
             $sql = $this->getTableInfoSQL($tableName); // Returns SQL as like 'SHOW COLUMNS FROM $tableName'.
             $result = null;

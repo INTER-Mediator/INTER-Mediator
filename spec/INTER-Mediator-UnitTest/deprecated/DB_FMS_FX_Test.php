@@ -67,6 +67,7 @@ class DB_FMS_FX_Test extends DB_FMS_Test_Common
                     'challenge-table' => 'issuedhash',
                     'authexpired' => '300', // Set as seconds.
                     'storing' => 'credential', // 'cookie'(default), 'cookie-domainwide', 'none'
+                    'is-required-2FA' => false,
                 ),
             ),
             array(

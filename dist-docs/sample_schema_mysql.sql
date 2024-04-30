@@ -820,31 +820,38 @@ CREATE INDEX authuser_limitdt
 INSERT authuser
 SET id=1,
     `username`='user1',
-    hashedpasswd='d83eefa0a9bd7190c94e7911688503737a99db0154455354';
+    hashedpasswd='d83eefa0a9bd7190c94e7911688503737a99db0154455354',
+    email='msyk@msyk.net';
 INSERT authuser
 SET id=2,
     `username`='user2',
-    hashedpasswd='5115aba773983066bcf4a8655ddac8525c1d3c6354455354';
+    hashedpasswd='5115aba773983066bcf4a8655ddac8525c1d3c6354455354',
+    email='msyk@msyk.net';
 INSERT authuser
 SET id=3,
     `username`='user3',
-    hashedpasswd='d1a7981108a73e9fbd570e23ecca87c2c5cb967554455354';
+    hashedpasswd='d1a7981108a73e9fbd570e23ecca87c2c5cb967554455354',
+    email='msyk@msyk.net';
 INSERT authuser
 SET id=4,
     `username`='user4',
-    hashedpasswd='8c1b394577d0191417e8d962c5f6e3ca15068f8254455354';
+    hashedpasswd='8c1b394577d0191417e8d962c5f6e3ca15068f8254455354',
+    email='msyk@msyk.net';
 INSERT authuser
 SET id=5,
     `username`='user5',
-    hashedpasswd='ee403ef2642f2e63dca12af72856620e6a24102d54455354';
+    hashedpasswd='ee403ef2642f2e63dca12af72856620e6a24102d54455354',
+    email='msyk@msyk.net';
 INSERT authuser
 SET id=6,
     `username`='mig2m',
-    hashedpasswd='cd85a299c154c4714b23ce4b63618527289296ba6642c2685651ad8b9f20ce02285d7b34';
+    hashedpasswd='cd85a299c154c4714b23ce4b63618527289296ba6642c2685651ad8b9f20ce02285d7b34',
+    email='msyk@msyk.net';
 INSERT authuser
 SET id=7,
     `username`='mig2',
-    hashedpasswd='b7d863d29021fc96de261da6a5dfb6c4c28d3d43c75ad5ddddea4ec8716bdaf074675473';
+    hashedpasswd='b7d863d29021fc96de261da6a5dfb6c4c28d3d43c75ad5ddddea4ec8716bdaf074675473',
+    email='msyk@msyk.net';
 
 # The user1 has the password 'user1'. It's salted with the string 'TEXT'.
 # All users have the password the same as user name. All are salted with 'TEXT'
@@ -985,6 +992,40 @@ VALUES (1, '@@Q2@@', '', '', 'msyk@msyk.net', 'ご意見承りました',
 INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
 VALUES (2, '@@mail@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'テストメール2',
         'テストメールです。@@name@@様宛で、送信先は@@mail@@です。');
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (991, '@@mail@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'ユーザ登録の確認', CONCAT(
+        '@@2@@ 様（@@1@@）\n\nユーザ登録を受け付けました。1時間以内に、以下のリンクのサイトに接続してください。\n\n',
+        '接続後にアカウントを発行してご指定のメールアドレスに送付します。\n\n<< Path to the script >>/confirm.php?c=@@3@@\n\n',
+        '___________________________________\ninfo@msyk.net - Masayuki Nii'));
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (992, '@@mail@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'ユーザ登録の完了', CONCAT(
+        '@@2@@ 様（@@1@@）\n\nユーザ登録が完了しました。こちらのページにログインできるようになりました。',
+        'ログインページ：\n<< URL to any page >>\n\nユーザ名： @@1@@\n初期パスワード： @@3@@\n\n',
+        '※ 初期パスワードは極力早めに変更してください。\n',
+        '___________________________________\ninfo@msyk.net - Masayuki Nii'));
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (993, '@@mail@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'パスワードのリセットを受け付けました',
+        CONCAT(
+                'パスワードのリセットを受け付けました。\n\nメールアドレス：@@1@@\n\n',
+                '以下のリンクをクリックし、新しいパスワードをご入力ください。\n\n',
+                '<< Path to the script >>/resetpassword.php?c=@@2@@\n\n',
+                '___________________________________\ninfo@msyk.net - Masayuki Nii'));
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (994, '@@mail@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'パスワードをリセットしました', CONCAT(
+        '以下のアカウントのパスワードをリセットしました。\n\nアカウント（メールアドレス）：@@1@@\n\n',
+        '以下のリンクをクリックし、新しいパスワードでマイページにログインしてください。\n\n<< Path to any page >>\n\n',
+        '___________________________________\ninfo@msyk.net - Masayuki Nii'));
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (995, '@@mail@@', 'msyk@msyk.net', null, 'msyk@msyk.net', '認証コードを送付します', CONCAT(
+        'ユーザ名とパスワードによるログインが成功したので、メールの内容と照らし合わせての再度の認証を行います。\n\n',
+        'メールアドレス：@@mail@@\n認証コード：@@code@@\n\n',
+        'ログインを行った画面に入力可能なパネルが表示されています。上記の認証コードを入力してください。\n\n',
+        '___________________________________\ninfo@msyk.net - Masayuki Nii'));
 
 # Storing Sent Mail
 CREATE TABLE maillog

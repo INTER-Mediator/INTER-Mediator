@@ -103,4 +103,18 @@ module.exports = class IMPage {
     return $('#_im_newpass_message')
   }
 
+  get auth2FAPanel(){
+    return $('#_im_authpanel_2FA')
+  }
+
+  get auth2FACode(){
+    return $('#_im_code_2FA')
+  }
+
+  get auth2FAButton(){
+    return $('#_im_authbutton_2FA')
+  }
+  get auth2FAMessage(){
+    return $('#_im_explain_2FA')
+  }
 }

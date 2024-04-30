@@ -24,7 +24,7 @@ use INTERMediator\DB\Proxy;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
-class AWSS3 implements UploadingSupport, DownloadingSupport
+class AWSS3 extends UploadingSupport implements DownloadingSupport
 {
     /**
      * @var ?string
@@ -97,11 +97,7 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
         }
         $s3 = new S3Client($clientArgs);
         $objectSpec = ['Bucket' => $this->rootBucket, 'Key' => $urlPath,];
-        try {
-            $result = $s3->getObject($objectSpec);
-        } catch (S3Exception $e) {
-            throw $e;
-        }
+        $result = $s3->getObject($objectSpec);
         if (interface_exists($result['Body'], 'Psr\Http\Message\StreamInterface')) {
             $content = $result['Body']->getContents();
         } else {
@@ -126,18 +122,20 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
      * @param array $files
      * @param bool $noOutput
      * @param array $field
-     * @param string $contextname
-     * @param ?string $keyfield
-     * @param ?string $keyvalue
-     * @param array|null $datasource
-     * @param array|null $dbspec
+     * @param string $contextName
+     * @param ?string $keyField
+     * @param ?string $keyValue
+     * @param array|null $dataSource
+     * @param array|null $dbSpec
      * @param int $debug
+     * @throws Exception
      */
-    public function processing(Proxy $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
-                               string  $contextname, ?string $keyfield, ?string $keyvalue,
-                               ?array  $datasource, ?array $dbspec, int $debug):void    {
-        $dbAlt = new Proxy();
-
+    public function processing(Proxy  $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
+                               string $contextName, ?string $keyField, ?string $keyValue,
+                               ?array $dataSource, ?array $dbSpec, int $debug): void
+    {
+//        $dbAlt = new Proxy();
+//
         $counter = -1;
         foreach ($files as $fileInfo) {
             $counter += 1;
@@ -153,8 +151,8 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
             }
             $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
             $targetFieldName = $field[$counter];
-            $dirPath = $contextname . DIRECTORY_SEPARATOR
-                . $keyfield . "=" . $keyvalue . DIRECTORY_SEPARATOR . $targetFieldName;
+            $dirPath = $contextName . DIRECTORY_SEPARATOR
+                . $keyField . "=" . $keyValue . DIRECTORY_SEPARATOR . $targetFieldName;
             try {
                 $rand4Digits = random_int(1000, 9999);
             } catch (Exception $ex) {
@@ -183,7 +181,7 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
                     header('Location: ' . $url);
                 } else {
                     $db->logger->setErrorMessage($e->getMessage());
-                    $db->processingRequest("noop");
+                    $db->processingRequest("nothing");
                     if (!$noOutput) {
                         $db->finishCommunication();
                         $db->exportOutputDataAsJSON();
@@ -199,55 +197,57 @@ class AWSS3 implements UploadingSupport, DownloadingSupport
             } else {
                 $storedURL = $result['ObjectURL'];
             }
-
-            $dbProxyContext = $db->dbSettings->getDataSourceTargetArray();
-            if (isset($dbProxyContext['file-upload'])) {
-                foreach ($dbProxyContext['file-upload'] as $item) {
-                    if (isset($item['field']) && !isset($item['context'])) {
-                        $targetFieldName = $item['field'];
-                    }
-                }
-            }
-
-            $dbAlt->initialize($datasource, $options, $dbspec, $debug, $contextname);
-            $dbAlt->dbSettings->addExtraCriteria($keyfield, "=", $keyvalue);
-            $dbAlt->dbSettings->setFieldsRequired(array($targetFieldName));
-            $dbAlt->dbSettings->setValue(array($storedURL));
-            $dbAlt->processingRequest("update", true);
-            $dbProxyRecord = $dbAlt->getDatabaseResult();
-
-            if (isset($dbProxyContext['file-upload'])) {
-                foreach ($dbProxyContext['file-upload'] as $item) {
-                    if (isset($item['field']) && $item['field'] == $targetFieldName) {
-                        $dbAlt->initialize($datasource, $options, $dbspec, $debug, $item['context'] ?? null);
-                        $relatedContextInfo = $dbAlt->dbSettings->getDataSourceTargetArray();
-                        $fields = array();
-                        $values = array();
-                        if (isset($relatedContextInfo["query"])) {
-                            foreach ($relatedContextInfo["query"] as $cItem) {
-                                if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
-                                    $fields[] = $cItem['field'];
-                                    $values[] = $cItem['value'];
-                                }
-                            }
-                        }
-                        if (isset($relatedContextInfo["relation"])) {
-                            foreach ($relatedContextInfo["relation"] as $cItem) {
-                                if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
-                                    $fields[] = $cItem['foreign-key'];
-                                    $values[] = $dbProxyRecord[0][$cItem['join-field']];
-                                }
-                            }
-                        }
-                        $fields[] = "path";
-                        $values[] = $storedURL;
-                        $dbAlt->dbSettings->setFieldsRequired($fields);
-                        $dbAlt->dbSettings->setValue($values);
-                        $dbAlt->processingRequest("create", true, true);
-                    }
-                }
-            }
-            $dbAlt->addOutputData('dbresult', $storedURL);
+            $this->processingFile($db, $options, $storedURL, $storedURL, $targetFieldName,
+                $keyField, $keyValue, $dataSource, $dbSpec, $debug);
+//
+//            $dbProxyContext = $db->dbSettings->getDataSourceTargetArray();
+//            if (isset($dbProxyContext['file-upload'])) {
+//                foreach ($dbProxyContext['file-upload'] as $item) {
+//                    if (isset($item['field']) && !isset($item['context'])) {
+//                        $targetFieldName = $item['field'];
+//                    }
+//                }
+//            }
+//
+//            $dbAlt->initialize($dataSource, $options, $dbSpec, $debug, $contextName);
+//            $dbAlt->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
+//            $dbAlt->dbSettings->setFieldsRequired(array($targetFieldName));
+//            $dbAlt->dbSettings->setValue(array($storedURL));
+//            $dbAlt->processingRequest("update", true);
+//            $dbProxyRecord = $dbAlt->getDatabaseResult();
+//
+//            if (isset($dbProxyContext['file-upload'])) {
+//                foreach ($dbProxyContext['file-upload'] as $item) {
+//                    if (isset($item['field']) && $item['field'] == $targetFieldName) {
+//                        $dbAlt->initialize($dataSource, $options, $dbSpec, $debug, $item['context'] ?? null);
+//                        $relatedContextInfo = $dbAlt->dbSettings->getDataSourceTargetArray();
+//                        $fields = array();
+//                        $values = array();
+//                        if (isset($relatedContextInfo["query"])) {
+//                            foreach ($relatedContextInfo["query"] as $cItem) {
+//                                if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
+//                                    $fields[] = $cItem['field'];
+//                                    $values[] = $cItem['value'];
+//                                }
+//                            }
+//                        }
+//                        if (isset($relatedContextInfo["relation"])) {
+//                            foreach ($relatedContextInfo["relation"] as $cItem) {
+//                                if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
+//                                    $fields[] = $cItem['foreign-key'];
+//                                    $values[] = $dbProxyRecord[0][$cItem['join-field']];
+//                                }
+//                            }
+//                        }
+//                        $fields[] = "path";
+//                        $values[] = $storedURL;
+//                        $dbAlt->dbSettings->setFieldsRequired($fields);
+//                        $dbAlt->dbSettings->setValue($values);
+//                        $dbAlt->processingRequest("create", true, true);
+//                    }
+//                }
+//            }
+//            $dbAlt->addOutputData('dbresult', $storedURL);
         }
     }
 }

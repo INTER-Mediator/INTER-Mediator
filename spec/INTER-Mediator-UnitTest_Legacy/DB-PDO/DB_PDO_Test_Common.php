@@ -327,7 +327,7 @@ abstract class DB_PDO_Test_Common extends TestCase
     public
     function testMultiClientSyncRegisterAndUnregister()
     {
-        $testName = "Register and Unregister.";
+        $testName = "Register and UnregisterVisitor.";
         $this->dbProxySetupForAuth();
         $this->db_proxy->dbClass->deleteForTest("registeredcontext");
         $this->db_proxy->dbClass->deleteForTest("registeredpks");
@@ -403,7 +403,7 @@ abstract class DB_PDO_Test_Common extends TestCase
     public
     function testMultiClientSyncRegisterAndUnregisterPartial()
     {
-        $testName = "Register and Unregister partically.";
+        $testName = "Register and UnregisterVisitor partically.";
         $this->dbProxySetupForAuth();
         $this->db_proxy->dbClass->deleteForTest("registeredcontext");
         $this->db_proxy->dbClass->deleteForTest("registeredpks");
@@ -533,11 +533,11 @@ abstract class DB_PDO_Test_Common extends TestCase
 //        var_dump($result);
 
         $resultRegistering = $this->db_proxy->dbClass->notifyHandler->unregister($clientId1, null);
-        $this->assertNotFalse($resultRegistering, "Unregister a client");
+        $this->assertNotFalse($resultRegistering, "UnregisterVisitor a client");
         $resultRegistering = $this->db_proxy->dbClass->notifyHandler->unregister($clientId2, null);
-        $this->assertNotFalse($resultRegistering, "Unregister a client");
+        $this->assertNotFalse($resultRegistering, "UnregisterVisitor a client");
         $resultRegistering = $this->db_proxy->dbClass->notifyHandler->unregister($clientId3, null);
-        $this->assertNotFalse($resultRegistering, "Unregister a client");
+        $this->assertNotFalse($resultRegistering, "UnregisterVisitor a client");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
         $this->assertCount(0, $recSet, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");

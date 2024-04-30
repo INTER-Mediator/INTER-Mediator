@@ -42,13 +42,13 @@ abstract class MessagingProvider
         $logger->setWarningMessage("{$headMsg} {$message}");
     }
 
-    public function modernTemplating(array $record, string $tempStr, bool $ignoreField = false): string
+    public function modernTemplating(array $record, ?string $tempStr, bool $ignoreField = false): string
     {
-        $bodyStr = $tempStr;
+        $bodyStr = $tempStr ?? "";
         if (!$ignoreField && isset($record[$tempStr])) {
             $bodyStr = $record[$tempStr];
         }
-        if (strlen($tempStr) > 5) {
+        if (strlen($bodyStr) > 5) {
             $startPos = strpos($bodyStr, '@@', 0);
             $endPos = strpos($bodyStr, '@@', $startPos + 2);
             while ($startPos !== false && $endPos !== false) {

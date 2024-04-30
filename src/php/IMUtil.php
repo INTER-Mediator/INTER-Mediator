@@ -589,6 +589,24 @@ class IMUtil
      * @param int $digit
      * @return string
      */
+    public static function randomDigit(int $digit): string
+    {
+        $resultStr = '';
+        for ($i = 0; $i < $digit; $i++) {
+            try {
+                $code = random_int(0, 9);
+            } catch (Exception $ex) {
+                $code = intval(rand(0, 10));
+            }
+            $resultStr .= $code;
+        }
+        return $resultStr;
+    }
+
+    /**
+     * @param int $digit
+     * @return string
+     */
     public static function randomString(int $digit): string
     {
         $resultStr = '';
@@ -669,7 +687,7 @@ class IMUtil
      * @param bool $alwaysGenSHA2
      * @return string
      */
-    public static function generateCredential(int $digit, string $passwordHash, bool $alwaysGenSHA2): string
+    public static function generateCredentialWithRandomPW(int $digit, string $passwordHash, bool $alwaysGenSHA2): string
     {
         $password = '';
         for ($i = 0; $i < $digit; $i++) {
@@ -698,6 +716,17 @@ class IMUtil
             $str .= chr($n);
         }
         return $str;
+    }
+
+    /**
+     * @param string $access
+     * @return string
+     */
+    public static function getVisitorClassName(string $access): string
+    {
+        return "INTERMediator\\DB\\Support\\ProxyVisitors\\"
+            . strtoupper(substr($access, 0, 1)) . strtolower(substr($access, 1))
+            . "Visitor";
     }
 
     /**
@@ -806,6 +835,9 @@ class IMUtil
         return Yaml::parse($yaml);
     }
 
+    /**
+     * @return bool
+     */
     public static function isRunAsWebApp(): bool
     {
         if (php_sapi_name() == 'cli') {

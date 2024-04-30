@@ -91,7 +91,7 @@ IM_Entry(
     ),
     array(
         'authentication' => array( // table only, for all operations
-            'user' => array('user1'), // Itemize permitted users
+            'user' => array('user1', 'mig2'), // Itemize permitted users
             'group' => array('group2'), // Itemize permitted groups
             'user-table' => 'authuser', // Default value
             'group-table' => 'authgroup',
@@ -99,6 +99,7 @@ IM_Entry(
             'challenge-table' => 'issuedhash',
             'authexpired' => '1000', // Set as seconds.
             'storing' => 'credential', // session-storage, 'cookie'(default), 'cookie-domainwide', 'none'
+            'is-required-2FA' => false,
         ),
     ),
     array('db-class' => 'PDO'),

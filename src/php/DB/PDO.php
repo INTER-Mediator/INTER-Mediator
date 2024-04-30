@@ -405,6 +405,7 @@ class PDO extends DBClass
             }
             $isFirstRow = false;
         }
+        //Logger::getInstance()->setDebugMessage("#####" . str_replace("\n", "",var_export($sqlResult, true)),2);
         if ($isAggregate && !$isPaging) {
             $this->mainTableCount = count($sqlResult);
             $this->mainTableTotalCount = count($sqlResult);
@@ -423,6 +424,7 @@ class PDO extends DBClass
                 }
             }
         }
+
         return $sqlResult;
     }
 
@@ -466,7 +468,7 @@ class PDO extends DBClass
         $converted = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
 
 //        $this->logger->setDebugMessage("[getDateTimeExpression] datetime={$datetime}->{$converted}, datetime={$datetime}, "
-//            . "serverOffset={$serverOffset}, clientOffset={$clientOffset}, shiftSec={$shiftSec}");
+//            . "serverOffset={$serverOffset}, clientOffset={$clientOffset}, shiftSec={$shiftSec}",2);
 
         return $converted;
     }

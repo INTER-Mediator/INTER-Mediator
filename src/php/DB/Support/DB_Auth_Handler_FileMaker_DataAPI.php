@@ -46,7 +46,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @return void
      * @throws Exception
      */
-    public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId): void
+    public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId, string $prefix = ""): void
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -181,7 +181,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @param bool $isDelete
      * @return string|null
      */
-    public function authSupportRetrieveChallenge(string $uid, string $clientId, bool $isDelete = true): ?string
+    public function authSupportRetrieveChallenge(string $uid, string $clientId, bool $isDelete = true, string $prefix = ""): ?string
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -603,6 +603,11 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         return $usernameCandidate;
     }
 
+    public function authSupportEmailFromUnifiedUsername(?string $username): ?string
+    {
+        return null;
+    }
+
     /**
      * @param $groupid
      * @return string|null
@@ -674,7 +679,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @param string $groupid
      * @return void
      */
-    private function resolveGroup(string $groupid): void
+    private function resolveGroup(?string $groupid): void
     {
         $this->fmdb->setupFMDataAPIforDB_Alt($this->dbSettings->getCorrTable(), 1);
         if ($this->firstLevel) {

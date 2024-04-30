@@ -24,7 +24,7 @@ use INTERMediator\Params;
 /**
  *
  */
-class FileMakerContainer implements UploadingSupport, DownloadingSupport
+class FileMakerContainer extends UploadingSupport implements  DownloadingSupport
 {
     /**
      * @param string $file
@@ -111,17 +111,17 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
      * @param array $files
      * @param bool $noOutput
      * @param array $field
-     * @param string $contextname
-     * @param ?string $keyfield
-     * @param ?string $keyvalue
-     * @param array|null $datasource
-     * @param array|null $dbspec
+     * @param string $contextName
+     * @param ?string $keyField
+     * @param ?string $keyValue
+     * @param array|null $dataSource
+     * @param array|null $dbSpec
      * @param int $debug
      * @throws Exception
      */
     public function processing(Proxy  $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
-                               string $contextname, ?string $keyfield, ?string $keyvalue,
-                               ?array $datasource, ?array $dbspec, int $debug): void
+                               string $contextName, ?string $keyField, ?string $keyValue,
+                               ?array $dataSource, ?array $dbSpec, int $debug): void
     {
         $mediaRootDir = $options['media-root-dir'] ?? Params::getParameterValue('mediaRootDir', null) ?? null;
         if (!$mediaRootDir) {
@@ -129,7 +129,7 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
                 header('Location: ' . $url);
             } else {
                 $db->logger->setErrorMessage("'media-root-dir' isn't specified");
-                $db->processingRequest("noop");
+                $db->processingRequest("nothing");
                 if (!$noOutput) {
                     $db->finishCommunication();
                     $db->exportOutputDataAsJSON();
@@ -169,7 +169,7 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
                     header('Location: ' . $url);
                 } else {
                     $db->logger->setErrorMessage("Fail to move the uploaded file in the media folder.");
-                    $db->processingRequest("noop");
+                    $db->processingRequest("nothing");
                     if (!$noOutput) {
                         $db->finishCommunication();
                         $db->exportOutputDataAsJSON();
@@ -179,8 +179,8 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
             }
 
             $db = new Proxy();
-            $db->initialize($datasource, $options, $dbspec, $debug, $contextname);
-            $db->dbSettings->addExtraCriteria($keyfield, "=", $keyvalue);
+            $db->initialize($dataSource, $options, $dbSpec, $debug, $contextName);
+            $db->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
             $db->dbSettings->setFieldsRequired(array($targetFieldName));
 
             // If the file content is base64 encoded url starting with 'data:,', decode it and store a file.
@@ -208,15 +208,15 @@ class FileMakerContainer implements UploadingSupport, DownloadingSupport
                 base64_encode(file_get_contents($filePath))));
 
             $db->processingRequest("update", true);
-            if ($dbspec['db-class'] === 'FileMaker_FX') {
+            if ($dbSpec['db-class'] === 'FileMaker_FX') {
                 $db->addOutputData('dbresult',
                     '/fmi/xml/cnt/' . $fileName .
                     '?-db=' . urlencode($db->dbSettings->getDbSpecDatabase()) .
-                    '&-lay=' . urlencode($datasource[0]['name']) .
-                    '&-recid=' . intval($keyvalue) .
+                    '&-lay=' . urlencode($dataSource[0]['name']) .
+                    '&-recid=' . intval($keyValue) .
                     '&-field=' . urlencode($targetFieldName));
-            } else if ($dbspec['db-class'] === 'FileMaker_DataAPI') {
-                $layout = $datasource[0]['name'];
+            } else if ($dbSpec['db-class'] === 'FileMaker_DataAPI') {
+                $layout = $dataSource[0]['name'];
                 $db->dbClass->setupFMDataAPIforDB($layout, urlencode($targetFieldName));
                 $result = $db->dbClass->getFMDataInstance()->{$layout}->query(NULL, NULL, 1, 1);
                 $path = '';

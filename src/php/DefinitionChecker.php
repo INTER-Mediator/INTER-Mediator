@@ -23,21 +23,21 @@ class DefinitionChecker
 {
 
     /**
-     * @param array|null $datasource
+     * @param array|null $dataSource
      * @param array|null $options
-     * @param array|null $dbspecification
+     * @param array|null $dbSpecification
      * @return string
      */
-    public function checkDefinitions(?array $datasource, ?array $options, ?array $dbspecification): string
+    public function checkDefinitions(?array $dataSource, ?array $options, ?array $dbSpecification): string
     {
-//        if ($dbspecification['db-class'] == 'FileMaker_FX') {
+//        if ($dbSpecification['db-class'] == 'FileMaker_FX') {
 //            require_once('FileMaker_FX.php');
 //        }
         $allMessage = '';
-        if ($datasource === NULL) {
+        if ($dataSource === NULL) {
             $allMessage .= "*** The Data Sources of the Definition must be specified. ***";
         }
-        $this->checkDefinition($datasource, $this->prohibitKeywordsForDataSource);
+        $this->checkDefinition($dataSource, $this->prohibitKeywordsForDataSource);
         if (strlen($this->message) > 0) {
             $allMessage .= "The Data Sources of the Definition: " . $this->message;
         }
@@ -45,7 +45,7 @@ class DefinitionChecker
         if (strlen($this->message) > 0) {
             $allMessage .= "The Options of the Definition: " . $this->message;
         }
-        $this->checkDefinition($dbspecification, $this->prohibitKeywordsForDBSpec);
+        $this->checkDefinition($dbSpecification, $this->prohibitKeywordsForDBSpec);
         if (strlen($this->message) > 0) {
             $allMessage .= "The DB Specification of the Definition: " . $this->message;
         }
@@ -244,6 +244,10 @@ class DefinitionChecker
             'reset-page' => 'string',
             'is-saml' => 'boolean',
             'saml-builtin-auth' => 'boolean',
+            'is-required-2FA' => 'boolean',
+            'digits-of-2FA-Code' => 'integer',
+            'mail-context-2FA' => 'string',
+            'expiring-seconds-2FA' => 'interger',
         ),
         'media-root-dir' => 'string',
 //        'media-context' => 'string',

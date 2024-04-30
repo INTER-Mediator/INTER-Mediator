@@ -918,7 +918,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     #[RunInSeparateProcess]
     public function testMultiClientSyncRegisterAndUnregister()
     {
-        $testName = "Register and Unregister.";
+        $testName = "Register and UnregisterVisitor.";
         $this->dbProxySetupForAuth();
         //$this->db_proxy->dbClass->deleteForTest("registeredcontext");
         //$this->db_proxy->dbClass->deleteForTest("registeredpks");
@@ -992,7 +992,7 @@ abstract class DB_FMS_Test_Common extends TestCase
     #[RunInSeparateProcess]
     public function testMultiClientSyncRegisterAndUnregisterPartial()
     {
-        $testName = "Register and Unregister partically.";
+        $testName = "Register and UnregisterVisitor partically.";
         //$this->db_proxy->dbClass->deleteForTest("registeredcontext");
         //$this->db_proxy->dbClass->deleteForTest("registeredpks");
         $clientId = "123456789ABCDEF";
@@ -1077,9 +1077,9 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->assertEmpty($result, "Count matching 4");
 
         $resultRegistering = $this->db_proxy->dbClass->notifyHandler->unregister($clientId1, null);
-        $this->assertNotFalse($resultRegistering, "Unregister a client");
+        $this->assertNotFalse($resultRegistering, "UnregisterVisitor a client");
         $resultRegistering = $this->db_proxy->dbClass->notifyHandler->unregister($clientId2, null);
-        $this->assertNotFalse($resultRegistering, "Unregister a client");
+        $this->assertNotFalse($resultRegistering, "UnregisterVisitor a client");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
         $this->assertCount(0, $recSet, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");

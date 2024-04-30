@@ -89,7 +89,8 @@ class DB_Proxy_MySQL_Test extends DB_Proxy_Test_Common
                 'corresponding-table' => 'authcor',
                 'challenge-table' => 'issuedhash',
                 'authexpired' => '300', // Set as seconds.
-                'storing' => 'credential', // 'cookie'(default), 'cookie-domainwide', 'none'
+                'storing' => 'credential',
+                'is-required-2FA' => false,
             ),
         );
         $this->db_proxy = new Proxy(true);

@@ -87,7 +87,7 @@ const INTERMediatorLog = {
     if (!INTERMediatorLog.warningMessagePrevent) {
       IMLibQueue.setTask((complete) => {
         complete()
-        window.alert(ex.join(', '))
+        window.alert(ex)
       })
     }
     if (typeof console !== 'undefined') {

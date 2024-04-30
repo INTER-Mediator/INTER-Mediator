@@ -73,13 +73,13 @@ class GenerateJSCode
     }
 
     /**
-     * @param array|null $datasource
+     * @param array|null $dataSource
      * @param array|null $options
-     * @param array|null $dbspecification
+     * @param array|null $dbSpecification
      * @param int $debug
      * @return void
      */
-    public function generateInitialJSCode(?array $datasource, ?array $options, ?array $dbspecification, int $debug): void
+    public function generateInitialJSCode(?array $dataSource, ?array $options, ?array $dbSpecification, int $debug): void
     {
         $q = '"';
         $ds = DIRECTORY_SEPARATOR;
@@ -133,7 +133,7 @@ class GenerateJSCode
         $documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? 'Not_on_web_server';
 
         $hasSyncControl = false;
-        foreach ($datasource as $contextDef) {
+        foreach ($dataSource as $contextDef) {
             if (isset($contextDef['sync-control'])) {
                 $hasSyncControl = true;
                 break;
@@ -182,7 +182,7 @@ class GenerateJSCode
          * from db-class, determine the default key field string
          */
         $defaultKey = null;
-        $classBaseName = $dbspecification['db-class'] ?? $dbClass ?? '';
+        $classBaseName = $dbSpecification['db-class'] ?? $dbClass ?? '';
         $dbClassName = 'INTERMediator\\DB\\' . $classBaseName;
         $dbInstance = new $dbClassName();
         $dbInstance->setupHandlers($dbDSN);
@@ -191,13 +191,13 @@ class GenerateJSCode
         }
         if ($defaultKey !== null) {
             $items = array();
-            foreach ($datasource as $context) {
+            foreach ($dataSource as $context) {
                 if (!array_key_exists('key', $context)) {
                     $context['key'] = $defaultKey;
                 }
                 $items[] = $context;
             }
-            $datasource = $items;
+            $dataSource = $items;
         }
 
         /*
@@ -224,7 +224,7 @@ class GenerateJSCode
             $options['theme'] ?? $themeName, "{$q};}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getDataSources", "function(){return ",
-            IMUtil::arrayToJSExcluding($datasource, '', array('password')), ";}");
+            IMUtil::arrayToJSExcluding($dataSource, '', array('password')), ";}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getOptionsAliases",
             "function(){return ", IMUtil::arrayToJS($options['aliases'] ?? array()), ";}");
@@ -303,7 +303,7 @@ class GenerateJSCode
         if (isset($options['authentication'])) {
             $boolValue = "true";
         }
-        foreach ($datasource as $aContext) {
+        foreach ($dataSource as $aContext) {
             if (isset($aContext['authentication'])) {
                 $boolValue = "true";
                 $requireAuthenticationContext[] = $aContext['name'];
@@ -336,19 +336,24 @@ class GenerateJSCode
                 $q, $oAuthRedirect, $q);
             $this->generateAssignJS("INTERMediatorOnPage.oAuthScope",
                 $q, implode(' ', $authObj->infoScope()), $q);
-        }
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.authStoring",
-            $q, (isset($options['authentication']['storing'])) ?
-            $options['authentication']['storing'] : 'credential', $q);
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.authExpired",
-            (isset($options['authentication']['authexpired'])) ?
-                $options['authentication']['authexpired'] : '3600');
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.realm", $q,
-            (isset($options['authentication']['realm'])) ?
-                $options['authentication']['realm'] : '', $q);
+        };
+
+        $authStoringValue = $options['authentication']['storing']
+            ?? Params::getParameterValue("authStoring", 'credential');
+        $this->generateAssignJS("INTERMediatorOnPage.authStoring", $q, $authStoringValue, $q);
+        $authExpiredValue = $options['authentication']['authexpired']
+            ?? Params::getParameterValue("authExpired", 3600);
+        $this->generateAssignJS("INTERMediatorOnPage.authExpired", intval($authExpiredValue));
+        $realmValue = $options['authentication']['realm']
+            ?? Params::getParameterValue("authRealm", '');
+        $this->generateAssignJS("INTERMediatorOnPage.realm", $q, $realmValue, $q);
+        $req2FAValue = $options['authentication']['is-required-2FA']
+            ?? Params::getParameterValue("isRequired2FA", '');
+        $this->generateAssignJS("INTERMediatorOnPage.isRequired2FA", $req2FAValue? "true" : "false");
+        $digitsOf2FACodeValue = $options['authentication']['digits-of-2FA-Code']
+            ?? Params::getParameterValue("digitsOf2FACode", 4);
+        $this->generateAssignJS("INTERMediatorOnPage.digitsOf2FACode", intval($digitsOf2FACodeValue));
+
         if (isset($passwordPolicy)) {
             $this->generateAssignJS(
                 "INTERMediatorOnPage.passwordPolicy", $q, $passwordPolicy, $q);

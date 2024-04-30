@@ -6,7 +6,7 @@ const AuthPage = require('./auth.page');
 class AuthPageMySQL extends AuthPage {
 
   open() {
-    return super.open('samples/E2E-Test/AuthPage/Auth_Basic_MySQL.html');
+    return super.open('samples/E2E-Test/AuthPage/Auth_credential_basic_MySQL.html');
   }
 }
 

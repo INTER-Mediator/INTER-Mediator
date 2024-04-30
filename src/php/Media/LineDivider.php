@@ -54,7 +54,7 @@ class LineDivider implements Iterator
                 if ($startNextLine == -1) {
                     $startNextLine = $i;
                 }
-            } else if ($gotEOL && $c != 10 && $c != 13) {
+            } else if ($gotEOL) {
                 $hasNextLine = true;
                 break;
             }

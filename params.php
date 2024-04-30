@@ -124,7 +124,7 @@ $browserCompatibility = array(
 //    'server' => 'msyk.sakura.ne.jp',
 //    'port' => '587',
 //    'username' => 'user01@msyk.net',
-//    'password' => '*********',
+//    'password' => 'anypassword',
 //);
 // $waitAfterMail = 20;  // Wait after send email with smtp server. Unit is Millisecond.
 
@@ -144,12 +144,20 @@ $browserCompatibility = array(
 
 /* Authorization
  * =================== */
-//$passwordHash = '1';  // '2m' supports SHA-256 and Wrapping SHA-1 with SHA-256,
-// '2' supports SHA-256 password hash only,
+
+$authStoring = 'credential'; // 'session-storage' or 'credential'
+$authExpired = 3600;
+//$authRealm = '';
+//$passwordHash = '1';  // '2m' supports SHA-256 and Wrapping SHA-1 with SHA-256, '2' supports SHA-256 password hash only,
 // No specification or other string support SHA-1, SHA-256, and wrapping.
 //$alwaysGenSHA2 = true; // On the password changing, generate SHA-2 hash. The default is false.
 //$migrateSHA1to2 = true;// If the login account relays on SHA-a, exchange it with 2m style SHA-2 hash. The default is false.
 //$credentialCookieDomain = ""; // The domain information of the cookie for 'credential' auth. Falsy value means no domain, also the default.
+//$isRequired2FA = true; // Default is false.
+//$mailContext2FA = "mailtemplate@id=995"; // Template record for the mail to send the 2FA code.
+//$digitsOf2FACode = 4; // Default is false.
+//$expiringSeconds2FA = 1000; // 2FA effective seconds from code input.
+$fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real system, this has to comment out.
 
 // The 'issuedhash' table for storing challenges of authentication can be use another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
@@ -195,6 +203,7 @@ $browserCompatibility = array(
 //        . "nonce=0394852-3190485-2490358&"
 //        . "hd=gmail.com",
 //];
+https://https://accounts.google.com/o/oauth2/v2/auth?state=invalid-state&scope=openid&response_type=code&redirect_uri=https://demo.inter-mediator.com/saml-trial/lib/src/INTER-Mediator/vendor/simplesamlphp/simplesamlphp/public/module.php/authoauth2/linkback.php&client_id=353910848422-e08dmcn6s8pc43a94d22s5510b8mnrqj.apps.googleusercontent.com
 
 /* Service Server Behavior
  * ===================

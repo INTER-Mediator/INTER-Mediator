@@ -6,7 +6,7 @@ const AuthPage = require('./auth.page');
 class AuthPageSQLite extends AuthPage {
 
   open() {
-    return super.open('samples/E2E-Test/AuthPage/Auth_Basic_SQLite.html');
+    return super.open('samples/E2E-Test/AuthPage/Auth_credential_basic_SQLite.html');
   }
 }
 

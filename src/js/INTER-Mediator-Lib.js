@@ -1092,6 +1092,16 @@ const INTERMediatorLib = {
     }
   },
 
+  removeChildNodesAppendText: function (node, textNum) {
+    'use strict'
+    if (node) {
+      while (node.childNodes.length > 0) {
+        node.removeChild(node.childNodes[0])
+      }
+    }
+    node.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(textNum)))
+  },
+
   clearErrorMessage: function (node) {
     'use strict'
     if (node) {

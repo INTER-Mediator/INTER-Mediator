@@ -81,14 +81,14 @@ define("IM_TODAY", $fmt->format((new DateTime())->getTimestamp()));
 
 /**
  * INTER-Mediator entry point
- * @param array|null $datasource
+ * @param array|null $dataSource
  * @param array|null $options
- * @param array|null $dbspecification
+ * @param array|null $dbSpecification
  * @param int $debug
  * @param string|null $origin The path to the definition file.
  * @throws \Exception
  */
-function IM_Entry(?array $datasource, ?array $options, ?array $dbspecification, int $debug = 0, ?string $origin = null): void
+function IM_Entry(?array $dataSource, ?array $options, ?array $dbSpecification, int $debug = 0, ?string $origin = null): void
 {
     // Read from params.php
     $defaultTimezone = Params::getParameterValue("defaultTimezone", "UTC");
@@ -118,7 +118,7 @@ function IM_Entry(?array $datasource, ?array $options, ?array $dbspecification, 
         $resultLog = $fileUploader->getResultForLog();
     } else if (!isset($_POST['access']) && isset($_GET['media'])) { // Media accessing
         $dbProxyInstance = new DB\Proxy(false, false);
-        $dbProxyInstance->initialize($datasource, $options, $dbspecification, $debug);
+        $dbProxyInstance->initialize($dataSource, $options, $dbSpecification, $debug);
         $mediaHandler = new MediaAccess();
         if (isset($_GET['attach'])) {
             $mediaHandler->asAttachment();
@@ -131,28 +131,28 @@ function IM_Entry(?array $datasource, ?array $options, ?array $dbspecification, 
         $fileUploader = new FileUploader();
         if (IMUtil::guessFileUploadError()) {
             $fileUploader->processingAsError(
-                $datasource, $options, $dbspecification, $debug, $_POST["_im_contextname"], false);
+                $dataSource, $options, $dbSpecification, $debug, $_POST["_im_contextname"], false);
         } else {
-            $fileUploader->processing($datasource, $options, $dbspecification, $debug);
+            $fileUploader->processing($dataSource, $options, $dbSpecification, $debug);
         }
         $resultLog = $fileUploader->getResultForLog();
     } else if (!isset($_POST['access']) && !isset($_GET['media'])) {    // Download JS module to client
         if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             $db = new DB\Proxy();
-            $db->initialize($datasource, $options, $dbspecification, $debug, '');
+            $db->initialize($dataSource, $options, $dbSpecification, $debug, '');
             $messages = IMUtil::getMessageClassInstance();
             $db->logger->setErrorMessage($messages->getMessageAs(3212));
-            $db->processingRequest("noop");
+            $db->processingRequest("nothing");
             $db->finishCommunication();
             $db->exportOutputDataAsJSON();
             return;
         }
         if ($debug) {
             $dc = new DefinitionChecker();
-            $defErrorMessage = $dc->checkDefinitions($datasource, $options, $dbspecification);
+            $defErrorMessage = $dc->checkDefinitions($dataSource, $options, $dbSpecification);
             if (strlen($defErrorMessage) > 0) {
                 $generator = new GenerateJSCode();
-                $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
+                $generator->generateInitialJSCode($dataSource, $options, $dbSpecification, $debug);
                 $generator->generateErrorMessageJS($defErrorMessage);
                 return;
             }
@@ -161,7 +161,7 @@ function IM_Entry(?array $datasource, ?array $options, ?array $dbspecification, 
         ServiceServerProxy::instance()->checkServiceServer();
 
         $generator = new GenerateJSCode();
-        $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
+        $generator->generateInitialJSCode($dataSource, $options, $dbSpecification, $debug);
         foreach (ServiceServerProxy::instance()->getErrors() as $message) {
             $generator->generateErrorMessageJS($message);
         }
@@ -172,7 +172,7 @@ function IM_Entry(?array $datasource, ?array $options, ?array $dbspecification, 
     } else {    // Database accessing
         ServiceServerProxy::instance()->checkServiceServer();
         $dbInstance = new DB\Proxy();
-        $isInitialized = $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
+        $isInitialized = $dbInstance->initialize($dataSource, $options, $dbSpecification, $debug);
         $dbInstance->logger->setDebugMessage("Definition File: {$origin}", 1);
         $dbInstance->logger->setErrorMessages(ServiceServerProxy::instance()->getErrors());
         $dbInstance->logger->setDebugMessages(ServiceServerProxy::instance()->getMessages());
