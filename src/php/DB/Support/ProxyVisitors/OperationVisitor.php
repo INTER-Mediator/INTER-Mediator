@@ -340,21 +340,27 @@ abstract class OperationVisitor
         $proxy = $this->proxy;
         Logger::getInstance()->setDebugMessage("[handleChallenge] access={$proxy->access}, succeed={$proxy->authSucceed}", 2);
 
-        $userSalt = $proxy->authSupportGetSalt($proxy->signedUser);
-        $proxy->generatedClientID = IMUtil::generateClientId('', $proxy->passwordHash);
-        $challenge = $this->generateAndSaveChallenge($proxy->signedUser, $proxy->generatedClientID, "#");
-        $proxy->outputOfProcessing['challenge'] = "{$challenge}{$userSalt}";
-        if ($proxy->authSucceed) {
-             $challenge = $this->generateAndSaveChallenge($proxy->signedUser, $proxy->generatedClientID, "+");
-            if ($proxy->authStoring == 'credential') {
-                $this->setCookieOfChallenge('_im_credential_token',
-                    $challenge, $proxy->generatedClientID, $proxy->hashedPassword);
+        if ($proxy->signedUser) {
+            $userSalt = $proxy->authSupportGetSalt($proxy->signedUser);
+            $proxy->generatedClientID = IMUtil::generateClientId('', $proxy->passwordHash);
+            $challenge = $this->generateAndSaveChallenge($proxy->signedUser, $proxy->generatedClientID, "#");
+            $proxy->outputOfProcessing['challenge'] = "{$challenge}{$userSalt}";
+            if ($proxy->authSucceed) {
+                $challenge = $this->generateAndSaveChallenge($proxy->signedUser, $proxy->generatedClientID, "+");
+                if (!$proxy->hashedPassword) {
+                    $proxy->hashedPassword = $proxy->dbClass->authHandler->authSupportRetrieveHashedPassword($proxy->signedUser);
+                }
+                if ($proxy->authStoring == 'credential') {
+                    $this->setCookieOfChallenge('_im_credential_token',
+                        $challenge, $proxy->generatedClientID, $proxy->hashedPassword);
+                }
+                if ($proxy->required2FA) { // 2FA final step
+                    $challenge = $this->generateAndSaveChallenge($proxy->signedUser, $proxy->generatedClientID, "=");
+                    $this->setCookieOfChallenge('_im_credential_2FA', $challenge, $proxy->generatedClientID, $proxy->hashedPassword);
+                }
             }
-            if ($proxy->required2FA) { // 2FA final step
-                $challenge = $this->generateAndSaveChallenge($proxy->signedUser, $proxy->generatedClientID, "=");
-                $this->setCookieOfChallenge('_im_credential_2FA', $challenge, $proxy->generatedClientID, $proxy->hashedPassword);
-            }
-        } else {
+        }
+        if (!$proxy->authSucceed) {
             $this->clearAuthenticationCookies();
         }
     }

@@ -44,7 +44,7 @@ class ChallengeVisitor extends OperationVisitor
         $proxy->generatedClientID = IMUtil::generateClientId('', $proxy->passwordHash);
         $userSalt = $proxy->authSupportGetSalt($proxy->paramAuthUser);
 
-        $challenge = $this->generateAndSaveChallenge($proxy->paramAuthUser, $proxy->generatedClientID, "#");
+        $challenge = $this->generateAndSaveChallenge($proxy->paramAuthUser ?? "", $proxy->generatedClientID, "#");
         $proxy->outputOfProcessing['challenge'] = "{$challenge}{$userSalt}";
     }
 
