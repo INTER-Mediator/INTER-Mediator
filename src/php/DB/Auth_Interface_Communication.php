@@ -28,7 +28,7 @@ interface Auth_Interface_Communication
 
     public function addUser(string $username, string $password, bool $isSAML = false, ?array $attrs = null): array;
 
-    public function authSupportGetSalt(string $username): ?string;
+    public function authSupportGetSalt(?string $username): ?string;
 
     public function changePassword(string $username, string $newpassword): bool;
 }

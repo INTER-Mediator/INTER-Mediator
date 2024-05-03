@@ -1004,9 +1004,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->ignoreFiles = $ignoreFiles;
         $this->suppressMediaToken = true;
 
-        $this->originalAccess = $access;
         $this->access = is_null($access) ? $this->PostData['access'] : $access;
         $this->access = (($this->access == "select") || ($this->access == "load")) ? "read" : $this->access;
+        $this->originalAccess = $this->access;
         $this->logger->setDebugMessage("[processingRequest] decided access={$this->access}", 2);
         $this->access = $this->aggregationJudgement($this->access);
 

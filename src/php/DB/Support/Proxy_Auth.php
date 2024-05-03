@@ -111,8 +111,7 @@ trait Proxy_Auth
         $this->dbSettings->setRequireAuthentication(false);
         $this->dbSettings->setRequireAuthorization(false);
         $this->dbSettings->setDBNative(false);
-        if (!is_null($authOptions)
-            || $this->access == 'challenge' || $this->access == 'changepassword' || $this->access == 'credential'
+        if (!is_null($authOptions) || $this->isAuthAccessing()
             || (isset($tableInfo['authentication'])
                 && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$this->access])))
         ) {
@@ -132,15 +131,14 @@ trait Proxy_Auth
                 $this->logger->setDebugMessage("[authenticationAndAuthorization] IM-built-in Authentication succeed.");
                 $this->authSucceed = true;
             } else { // Timeout with SAML or Authentication failed
+                $this->dbSettings->setRequireAuthentication(true);
                 if (!$this->dbSettings->getIsSAML()) { // NOT Set up as SAML
-                    $this->dbSettings->setRequireAuthentication(true);
                     $this->logger->setDebugMessage("[authenticationAndAuthorization] Authentication doesn't meet valid."
                         . "{$this->signedUser}/{$this->paramResponse}/{$this->clientId}");
-                    if ($this->access != 'challenge' && $this->access != 'credential'
-                        && $this->access != 'authenticated' && $this->access != 'changepassword') {
+                    if (!$this->isAuthAccessing()) {
                         $this->accessSetToNothing();  // Not Authenticated!
                     }
-                } else {  // Set yp as SAML
+                } else if (!$this->isAuthAccessing()) {  // Set yp as SAML
                     $SAMLAuth = new SAMLAuth($this->dbSettings->getSAMLAuthSource());
                     $SAMLAuth->setSAMLAttrRules($this->dbSettings->getSAMLAttrRules());
                     $SAMLAuth->setSAMLAdditionalRules($this->dbSettings->getSAMLAdditionalRules());
@@ -173,6 +171,11 @@ trait Proxy_Auth
         }
     }
 
+    private function isAuthAccessing()
+    {
+        return $this->access == 'challenge' || $this->access == 'changepassword'
+            || $this->access == 'credential' || $this->access == 'authenticated';
+    }
 
     /**
      * @return void
@@ -235,8 +238,11 @@ trait Proxy_Auth
      * @param string $username The username as the username field of authuser table.
      * @return string
      */
-    public function authSupportGetSalt(string $username): ?string
+    public function authSupportGetSalt(?string $username): ?string
     {
+        if (is_null($username)) {
+            return "";
+        }
         $hashedpw = $this->proxy->hashedPassword ?? $this->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
         if ($hashedpw) {
             return substr($hashedpw, -8);
