@@ -10,22 +10,32 @@ which just have test accounts. After someone tests the SAML features, the result
 
 The format of below is: [commit code from git log], [Version from composer.json], [Checker name], [Result]
 
-- commit 7ff364c4b07b4a862534b4ccfbb25f8b2986baed (Sat Feb 24 12:21:26 2024 +0900), INTER-Mediator Ver.13(2024-02-15) with SimpleSAMLphp Ver.2.1.3,
+- commit d1f52043b2670c518c7bd5c81e9997d5007afbc8 (Fri May 3 09:20:41 2024 +0900), 
+  INTER-Mediator Ver.13(2024-04-26) with SimpleSAMLphp Ver.2.2.2,
+  by Masayuki Nii(2024-05-03 12:30), OK
+
+- commit 7ff364c4b07b4a862534b4ccfbb25f8b2986baed (Sat Feb 24 12:21:26 2024 +0900),
+  INTER-Mediator Ver.13(2024-02-15) with SimpleSAMLphp Ver.2.1.3,
   by Masayuki Nii(2024-02-24 12:30), OK
 
-- commit 103f3886a530f1fbb39619d7be234ef1f0e6cedf (Mon Jul 10 07:35:31 2023 +0900), INTER-Mediator Ver.11(2023-05-31) with SimpleSAMLphp Ver.2.0.4,
+- commit 103f3886a530f1fbb39619d7be234ef1f0e6cedf (Mon Jul 10 07:35:31 2023 +0900), 
+  INTER-Mediator Ver.11(2023-05-31) with SimpleSAMLphp Ver.2.0.4,
   by Masayuki Nii(2023-07-10 11:10), OK
 
-- commit d2c2dae28fa2caf9a28662172de797a83c1dd0fe (Sun Jul 2 11:49:42 2023 +0900), INTER-Mediator Ver.11(2023-05-31) with SimpleSAMLphp Ver.2.0.4, 
+- commit d2c2dae28fa2caf9a28662172de797a83c1dd0fe (Sun Jul 2 11:49:42 2023 +0900),
+  INTER-Mediator Ver.11(2023-05-31) with SimpleSAMLphp Ver.2.0.4, 
   by Masayuki Nii(2023-07-05 11:30), OK
 
-- commit 9e71362ba2ca277987e55ee7a517a027f2b1453a (Wed Oct 12 08:09:56 2022 +0900), INTER-Mediator Ver.10(2022-10-01),
+- commit 9e71362ba2ca277987e55ee7a517a027f2b1453a (Wed Oct 12 08:09:56 2022 +0900), 
+  INTER-Mediator Ver.10(2022-10-01),
   by Masayuki Nii(2022-10-12 11:45), OK
 
-- commit ce1b3167d04a8767480c40da99d3cdb90a4a9f76 (Tue Apr 12 11:07:50 2022 +0900), INTER-Mediator Ver.10(2022-04-08),
+- commit ce1b3167d04a8767480c40da99d3cdb90a4a9f76 (Tue Apr 12 11:07:50 2022 +0900), 
+  INTER-Mediator Ver.10(2022-04-08),
   by Masayuki Nii(2022-04-12 15:30), OK
 
-- commit 1146c962dd1d42115cf9537b09fae951681e0fbc(Sat Jan 29 21:22:06 2022 +0900), INTER-Mediator Ver.9(2022-01-29),
+- commit 1146c962dd1d42115cf9537b09fae951681e0fbc(Sat Jan 29 21:22:06 2022 +0900), 
+  INTER-Mediator Ver.9(2022-01-29),
   by Masayuki Nii(2022-01-30 9:00), OK
 
 ## Test Procedure
