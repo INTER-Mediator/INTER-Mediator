@@ -1318,8 +1318,10 @@ const INTERMediator = {
           keyingValue = keyField + '=' + keyValue
         }
         let idValuesForFieldName = setupLinkedNode(repeatersOneRec, contextObj, targetRecordset, ix, keyingValue)
-        contextObj.setValue(keyingValue, "_im_seq", ix + 1);
-        contextObj.setValue(keyingValue, "_im_count", countRecord);
+        contextObj.setValue(keyingValue, "_im_seq", ix + 1)
+        contextObj.setValue(keyingValue, "_im_count", countRecord)
+        contextObj.count = countRecord
+        contextObj.totalCount = targetTotalCount
         IMLibPageNavigation.setupDeleteButton(encNodeTag, repeatersOneRec, contextObj, keyField, keyValue)
         IMLibPageNavigation.setupNavigationButton(encNodeTag, repeatersOneRec, currentContextDef, keyField, keyValue, contextObj)
         IMLibPageNavigation.setupCopyButton(encNodeTag, repNodeTag, repeatersOneRec, contextObj, targetRecordset[ix])

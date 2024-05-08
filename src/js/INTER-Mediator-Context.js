@@ -51,7 +51,8 @@ class IMLibContext {
     this.dependingParentObjectInfo = null
     this.isPortal = false
     this.potalContainingRecordKV = null
-
+    this.count = null
+    this.totalCount = null
     /*
      * Initialize this object
      */

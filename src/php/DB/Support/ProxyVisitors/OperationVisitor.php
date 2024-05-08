@@ -91,7 +91,7 @@ abstract class OperationVisitor
         $proxy->paramResponse2 ??= $falseHash;
         Logger::getInstance()->setDebugMessage("[prepareCheckAuthentication] user={$proxy->signedUser}, "
             . "paramResponse={$proxy->paramResponse}, paramResponse2m={$proxy->paramResponse2m}, "
-            . "paramResponse2={$proxy->paramResponse}, clientid={$proxy->clientId}", 2);
+            . "paramResponse2={$proxy->paramResponse2}, clientid={$proxy->clientId}", 2);
 
         $authDBHandler->authSupportRemoveOutdatedChallenges();
         $realUsername = $authHandler->authSupportUnifyUsernameAndEmail($proxy->signedUser);
