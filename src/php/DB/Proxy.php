@@ -147,7 +147,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     public bool $activateGenerator;
 
     /**
-     * @var bool
+     * @var string
      */
     public string $authStoring;
     /**

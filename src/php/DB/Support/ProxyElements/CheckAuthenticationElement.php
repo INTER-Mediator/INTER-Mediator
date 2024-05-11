@@ -10,5 +10,4 @@ class CheckAuthenticationElement extends OperationElement
     /**
      * @var bool
      */
-    public bool $resultOfCheckAuthentication = false;
 }
