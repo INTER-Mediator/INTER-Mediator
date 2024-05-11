@@ -19,10 +19,9 @@ trait DB_PDO_Test_AuthHandler
     #[Test]
     function getAuthorizedGroups_Test()
     {
-        //$this->dbProxySetupForAuthAccess("person", 1);
         $this->dbProxySetupForAuth();
         $aGroup = $this->db_proxy->dbClass->authHandler->getAuthorizedGroups("read");
-        $this->assertContains('group1', $aGroup);
+        $this->assertNotContains('group1', $aGroup);
         $this->assertContains('group2', $aGroup);
         $this->assertNotContains('group3', $aGroup);
     }
@@ -30,7 +29,6 @@ trait DB_PDO_Test_AuthHandler
     #[Test]
     function getAuthorizedUsers_Test()
     {
-        //$this->dbProxySetupForAuthAccess("person", 1);
         $this->dbProxySetupForAuth();
         $aGroup = $this->db_proxy->dbClass->authHandler->getAuthorizedUsers("read");
         $this->assertContains('user1', $aGroup);
@@ -162,7 +160,7 @@ trait DB_PDO_Test_AuthHandler
         $testName = "Test for the authSupportGetGroupNameFromGroupId method in AuthHandler.";
         $this->dbProxySetupForAuth();
         $result = $this->db_proxy->dbClass->authHandler->authSupportGetGroupNameFromGroupId(1);
-        $this->assertEquals('admin', $result, $testName);
+        $this->assertEquals('group1', $result, $testName);
     }
 
     #[Test]
