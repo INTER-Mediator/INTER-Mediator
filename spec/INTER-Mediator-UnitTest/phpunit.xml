@@ -24,6 +24,9 @@
         <testsuite name="db-pdo-sqlite">
             <directory>DB-PDO/SQLite</directory>
         </testsuite>
+        <testsuite name="db-others">
+            <directory>DB-PDO/Others</directory>
+        </testsuite>
         <testsuite name="editors">
             <directory>Editors</directory>
         </testsuite>

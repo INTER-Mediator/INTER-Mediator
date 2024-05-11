@@ -196,6 +196,30 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     public ?string $generatedClientID = null;
 
     /**
+     * @param bool $testmode
+     * @param bool $noCache
+     */
+    function __construct(bool $testmode = false, bool $noCache = true)
+    {
+        $this->PostData = $_POST;
+        $this->outputOfProcessing = [];
+        if (!$testmode) {
+            $cacheMediaAccess = Params::getParameterValue("cacheMediaAccess", false);
+            header('Content-Type: text/javascript;charset="UTF-8"');
+            if (!$noCache && $cacheMediaAccess) {
+                $dt = (new DateTime('UTC'))->add(DateInterval::createFromDateString('1 month'));
+                header("Expires: {$dt->format('D, d M Y H:i:s \G\M\T')}");
+            } else {
+                header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
+                header('Expires: 0');
+            }
+            header('X-Content-Type-Options: nosniff');
+            $util = new IMUtil();
+            $util->outputSecurityHeaders();
+        }
+    }
+
+    /**
      * @param string $cid
      * @return void
      */
@@ -328,30 +352,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $setToArray('clientid');
         $setToArray('requireAuth', $this->dbSettings->getRequireAuthentication());
         return $this->result4Log;
-    }
-
-    /**
-     * @param bool $testmode
-     * @param bool $noCache
-     */
-    function __construct(bool $testmode = false, bool $noCache = true)
-    {
-        $this->PostData = $_POST;
-        $this->outputOfProcessing = [];
-        if (!$testmode) {
-            $cacheMediaAccess = Params::getParameterValue("cacheMediaAccess", false);
-            header('Content-Type: text/javascript;charset="UTF-8"');
-            if (!$noCache && $cacheMediaAccess) {
-                $dt = (new DateTime('UTC'))->add(DateInterval::createFromDateString('1 month'));
-                header("Expires: {$dt->format('D, d M Y H:i:s \G\M\T')}");
-            } else {
-                header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
-                header('Expires: 0');
-            }
-            header('X-Content-Type-Options: nosniff');
-            $util = new IMUtil();
-            $util->outputSecurityHeaders();
-        }
     }
 
     /**
