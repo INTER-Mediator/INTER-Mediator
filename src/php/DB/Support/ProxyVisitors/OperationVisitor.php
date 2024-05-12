@@ -376,7 +376,7 @@ abstract class OperationVisitor
     {
         $proxy = $this->proxy;
         $generated = IMUtil::generateChallenge();
-        $generatedChallenge = $generated . ($suffix ?? "");
+        $generatedChallenge = $generated . $suffix;
         $proxy->saveChallenge($user, $generatedChallenge, $generatedClientID, $prefix);
         Logger::getInstance()->setDebugMessage("[generateAndSaveChallenge] challenge = {$prefix}{$generatedChallenge}", 2);
         return $generated;

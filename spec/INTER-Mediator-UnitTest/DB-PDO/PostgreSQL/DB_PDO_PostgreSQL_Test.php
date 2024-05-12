@@ -124,6 +124,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
                     'challenge-table' => 'im_sample.issuedhash',
                     'authexpired' => '300', // Set as seconds.
                     'storing' => 'credential', // 'cookie'(default), 'cookie-domainwide', 'none'
+                    'email-as-username' => true,
                 ),
             ),
             array(

@@ -198,9 +198,10 @@ trait DB_PDO_Test_AuthHandler
         $this->dbProxySetupForAuth();
         $result = $this->db_proxy->dbClass->authHandler->authSupportEmailFromUnifiedUsername('user1');
         $this->assertEquals('user1@msyk.net', $result, $testName);
+        $result = $this->db_proxy->dbClass->authHandler->authSupportEmailFromUnifiedUsername('dummy-user');
+        $this->assertNull($result, $testName);
         $result = $this->db_proxy->dbClass->authHandler->authSupportEmailFromUnifiedUsername('xxxxxxx@msyk.net');
-        $this->assertEquals('', $result, $testName);
-
+        $this->assertNull($result, $testName);
     }
 
     #[Test]
