@@ -1,6 +1,8 @@
 <?php
 
 use INTERMediator\DB\Proxy;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 use INTERMediator\DB\UseSharedObjects;
 use INTERMediator\DB\Extending\AfterRead;
@@ -50,25 +52,6 @@ abstract class DB_Proxy_Test_Common extends TestCase
         }
     }
 
-    function testAuthGroup()
-    {
-        $this->dbProxySetupForAuthAccess("person", 1);
-        $aGroup = $this->db_proxy->dbClass->authHandler->getAuthorizedGroups("read");
-        $this->assertContains('group1', $aGroup);
-        $this->assertContains('group2', $aGroup);
-        $this->assertNotContains('group3', $aGroup);
-    }
-
-    function testAuthUser()
-    {
-        $this->dbProxySetupForAuthAccess("person", 1);
-        $aGroup = $this->db_proxy->dbClass->authHandler->getAuthorizedUsers("read");
-        $this->assertContains('user1', $aGroup);
-        $this->assertNotContains('user2', $aGroup);
-        $this->assertNotContains('user3', $aGroup);
-        $this->assertNotContains('user4', $aGroup);
-        $this->assertNotContains('user5', $aGroup);
-    }
 
     function testAdvisorClassOnRead()
     {

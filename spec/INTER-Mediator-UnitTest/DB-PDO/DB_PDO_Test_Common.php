@@ -15,12 +15,14 @@ use INTERMediator\DB\Proxy_ExtSupport;
 require_once 'DB_PDO_Test_Conditions.php';
 require_once 'DB_PDO_Test_UserGroup.php';
 require_once 'DB_PDO_Test_LocalContextConditions.php';
+require_once 'DB_PDO_Test_AuthHandler.php';
 
 abstract class DB_PDO_Test_Common extends TestCase
 {
     use DB_PDO_Test_Conditions;
     use DB_PDO_Test_UserGroup;
     use DB_PDO_Test_LocalContextConditions;
+    use DB_PDO_Test_AuthHandler;
     use Proxy_ExtSupport;
 
     protected Proxy $db_proxy;

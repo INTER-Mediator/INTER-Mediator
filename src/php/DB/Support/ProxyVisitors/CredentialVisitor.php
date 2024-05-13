@@ -19,19 +19,10 @@ class CredentialVisitor extends OperationVisitor
      */
     public function visitCheckAuthentication(OperationElement $e): void
     {
-        $proxy = $this->proxy;
-
         $e->resultOfCheckAuthentication = $this->prepareCheckAuthentication($e);
         if ($e->resultOfCheckAuthentication) {
-            $referingCredential = $proxy->generateCredential($this->storedChallenge, $proxy->clientId, $proxy->hashedPassword);
-            Logger::getInstance()->setDebugMessage("[visitCheckAuthentication] Credential "
-                . "send={$proxy->credential}, refer={$referingCredential}", 2);
-            if ($proxy->credential == $referingCredential) {
-                Logger::getInstance()->setDebugMessage("[visitCheckAuthentication] Credential (SHA-256) auth passed.", 2);
-                $e->resultOfCheckAuthentication = true;
-            } else { // Hash Auth checking
-                $e->resultOfCheckAuthentication = $this->sessionStorageCheckAuth();
-            }
+            $e->resultOfCheckAuthentication = $this->sessionStorageCheckAuth();
+            // Hash Auth checking. Here comes not only 'session-storage' but also 'credential'.
         }
     }
 
@@ -66,16 +57,16 @@ class CredentialVisitor extends OperationVisitor
                     $proxy->outputOfProcessing['challenge'] = "{$challenge}{$userSalt}";
                     $this->setCookieOfChallenge('_im_credential_token',
                         $challenge, $proxy->generatedClientID, $proxy->hashedPassword);
-                    if ($proxy->required2FA && !Params::getParameterValue("fixed2FACode",false)) { // Send mail containing 2FA code.
+                    if ($proxy->required2FA && !Params::getParameterValue("fixed2FACode", false)) { // Send mail containing 2FA code.
                         $proxy->logger->setDebugMessage("Try to send a message.", 2);
                         $email = $proxy->dbClass->authHandler->authSupportEmailFromUnifiedUsername($proxy->signedUser);
-                        if(!$email) {
+                        if (!$email) {
                             $proxy->logger->setWarningMessage("The logging-in user has no email info.");
                             break;
                         }
                         $msgProxy = new MessagingProxy("mail");
-                        $msgProxy->processing($proxy, ['template-context'=>$proxy->mailContext2FA],
-                            [['mail'=>$email,'code'=>$code2FA]]);
+                        $msgProxy->processing($proxy, ['template-context' => $proxy->mailContext2FA],
+                            [['mail' => $email, 'code' => $code2FA]]);
                     }
                     break;
                 case

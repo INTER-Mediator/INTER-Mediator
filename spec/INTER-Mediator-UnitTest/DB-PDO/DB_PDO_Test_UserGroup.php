@@ -14,53 +14,6 @@ trait DB_PDO_Test_UserGroup
         $this->assertTrue($calc === (11 + 3600 * 24), $testName);
     }
 
-    public function testAuthUser2()
-    {
-        $this->dbProxySetupForAuth();
-
-        $testName = "Password Retrieving";
-        $username = 'user1';
-        $expectedPasswd = 'd83eefa0a9bd7190c94e7911688503737a99db0154455354';
-
-        $retrievedPasswd = $this->db_proxy->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
-        $this->assertEquals($expectedPasswd, $retrievedPasswd, $testName);
-    }
-
-    public function testAuthUser3()
-    {
-        $this->dbProxySetupForAuth();
-
-        $testName = "Salt retrieving";
-        $username = 'user1';
-        $retrievedSalt = $this->db_proxy->authSupportGetSalt($username);
-        $this->assertEquals('54455354', $retrievedSalt, $testName);
-    }
-
-    public function testAuthUser4()
-    {
-        $this->dbProxySetupForAuth();
-
-//        $this->db_proxy->logger->clearLogs();
-
-        $testName = "Generate Challenge and Retrieve it";
-        $uid = 1;
-        $challenge = IMUtil::generateChallenge();
-        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
-        $retrieved = $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($uid, "TEST");
-
-//        var_export($this->db_proxy->logger->getErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessages());
-
-        $this->assertEquals($challenge, $retrieved, $testName);
-
-        $challenge = IMUtil::generateChallenge();
-        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
-        $this->assertEquals($challenge, $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($uid, "TEST"), $testName);
-
-        $challenge = IMUtil::generateChallenge();
-        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
-        $this->assertEquals($challenge, $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($uid, "TEST"), $testName);
-    }
 
 //    public function testAuthUser5()
 //    {
@@ -100,7 +53,7 @@ trait DB_PDO_Test_UserGroup
 //
 //        $this->assertTrue($resultAuth, $testName);
 //    }
-//
+
 //    public function testAuthByValidUser()
 //    {
 //        $this->dbProxySetupForAuth();
@@ -228,7 +181,6 @@ trait DB_PDO_Test_UserGroup
     {
         $this->dbProxySetupForAuth();
 
-        $testName = "Create New User and Authenticate";
         $username = "testuser2";
         $password = "testuser2";
 
@@ -268,20 +220,6 @@ trait DB_PDO_Test_UserGroup
         $readResult = $this->dbRead('authuser', ["username" => $username]);
         $this->assertEquals('test123', $readResult[0]['realname'], 'The realname is supplied with parameter.');
         $this->assertEquals($username, $readResult[0]['username'], 'The username has to be keep.');
-    }
-
-    function testUserGroup()
-    {
-        $this->dbProxySetupForAuth();
-
-        $testName = "Resolve containing group";
-        $groupArray = $this->db_proxy->dbClass->authHandler->authSupportGetGroupsOfUser('user1');
-//        var_export($this->db_proxy->logger->getErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessages());
-        $this->assertTrue(count($groupArray) > 0, $testName);
-        $this->assertTrue(in_array("group1", $groupArray), $testName);
-        $this->assertFalse(in_array("group2", $groupArray), $testName);
-        $this->assertTrue(in_array("group3", $groupArray), $testName);
     }
 
 //    public function testNativeUser()

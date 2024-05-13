@@ -442,19 +442,19 @@ CREATE INDEX authuser_username ON authuser (username);
 CREATE INDEX authuser_email ON authuser (email);
 CREATE INDEX authuser_limitdt ON authuser (limitdt);
 INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('user1', 'd83eefa0a9bd7190c94e7911688503737a99db0154455354', 'msyk@msyk.net');
+VALUES ('user1', 'd83eefa0a9bd7190c94e7911688503737a99db0154455354', 'user1@msyk.net');
 INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('user2', '5115aba773983066bcf4a8655ddac8525c1d3c6354455354', 'msyk@msyk.net');
+VALUES ('user2', '5115aba773983066bcf4a8655ddac8525c1d3c6354455354', 'user2@msyk.net');
 INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('user3', 'd1a7981108a73e9fbd570e23ecca87c2c5cb967554455354', 'msyk@msyk.net');
+VALUES ('user3', 'd1a7981108a73e9fbd570e23ecca87c2c5cb967554455354', 'user3@msyk.net');
 INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('user4', '8c1b394577d0191417e8d962c5f6e3ca15068f8254455354', 'msyk@msyk.net');
+VALUES ('user4', '8c1b394577d0191417e8d962c5f6e3ca15068f8254455354', 'user4@msyk.net');
 INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('user5', 'ee403ef2642f2e63dca12af72856620e6a24102d54455354', 'msyk@msyk.net');
+VALUES ('user5', 'ee403ef2642f2e63dca12af72856620e6a24102d54455354', 'user5@msyk.net');
 INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('mig2m', 'cd85a299c154c4714b23ce4b63618527289296ba6642c2685651ad8b9f20ce02285d7b34', 'msyk@msyk.net');
+VALUES ('mig2m', 'cd85a299c154c4714b23ce4b63618527289296ba6642c2685651ad8b9f20ce02285d7b34', 'mig2m@msyk.net');
 INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('mig2', 'fcc2ab4678963966614b5544a40f4b814ba3da41b3b69df6622e51b74818232864235970', 'msyk@msyk.net');
+VALUES ('mig2', 'fcc2ab4678963966614b5544a40f4b814ba3da41b3b69df6622e51b74818232864235970', 'mig2@msyk.net');
 /*
 # The user1 has the password 'user1'. It's salted with the string 'NTEXT'.
 # All users have the password the same as user name. All are salted with 'NTEXT'

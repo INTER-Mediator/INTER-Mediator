@@ -134,6 +134,7 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
                     'authexpired' => '300', // Set as seconds.
                     'storing' => 'credential', // 'cookie'(default), 'cookie-domainwide', 'none'
                     'is-required-2FA' => false,
+                    'email-as-username' => true,
                 ),
             ),
             array(

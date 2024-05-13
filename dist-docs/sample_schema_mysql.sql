@@ -821,37 +821,37 @@ INSERT authuser
 SET id=1,
     `username`='user1',
     hashedpasswd='d83eefa0a9bd7190c94e7911688503737a99db0154455354',
-    email='msyk@msyk.net';
+    email='user1@msyk.net';
 INSERT authuser
 SET id=2,
     `username`='user2',
     hashedpasswd='5115aba773983066bcf4a8655ddac8525c1d3c6354455354',
-    email='msyk@msyk.net';
+    email='user2@msyk.net';
 INSERT authuser
 SET id=3,
     `username`='user3',
     hashedpasswd='d1a7981108a73e9fbd570e23ecca87c2c5cb967554455354',
-    email='msyk@msyk.net';
+    email='user3@msyk.net';
 INSERT authuser
 SET id=4,
     `username`='user4',
     hashedpasswd='8c1b394577d0191417e8d962c5f6e3ca15068f8254455354',
-    email='msyk@msyk.net';
+    email='user4@msyk.net';
 INSERT authuser
 SET id=5,
     `username`='user5',
     hashedpasswd='ee403ef2642f2e63dca12af72856620e6a24102d54455354',
-    email='msyk@msyk.net';
+    email='user5@msyk.net';
 INSERT authuser
 SET id=6,
     `username`='mig2m',
     hashedpasswd='cd85a299c154c4714b23ce4b63618527289296ba6642c2685651ad8b9f20ce02285d7b34',
-    email='msyk@msyk.net';
+    email='mig2m@msyk.net';
 INSERT authuser
 SET id=7,
     `username`='mig2',
     hashedpasswd='b7d863d29021fc96de261da6a5dfb6c4c28d3d43c75ad5ddddea4ec8716bdaf074675473',
-    email='msyk@msyk.net';
+    email='mig2@msyk.net';
 
 # The user1 has the password 'user1'. It's salted with the string 'TEXT'.
 # All users have the password the same as user name. All are salted with 'TEXT'

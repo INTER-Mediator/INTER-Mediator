@@ -162,7 +162,7 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 // The 'issuedhash' table for storing challenges of authentication can be use another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
 
-//$emailAsAliasOfUserName = true;
+$emailAsAliasOfUserName = true;
 //$passwordPolicy = "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName";
 //$defaultGroupName = "users"; // For the user who doesn't belong to any group, this group automatically attach to such a user
 

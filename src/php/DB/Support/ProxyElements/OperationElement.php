@@ -9,6 +9,8 @@ use INTERMediator\DB\Support\ProxyVisitors\OperationVisitor;
  */
 abstract class OperationElement
 {
+    public bool $resultOfCheckAuthentication = false;
+
     /**
      * @param OperationVisitor $v
      * @return void
