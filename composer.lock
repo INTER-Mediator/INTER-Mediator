@@ -76,16 +76,16 @@
         },
         {
             "name": "async-aws/ses",
-            "version": "1.7.0",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/async-aws/ses.git",
-                "reference": "3aed25813b21aeab96a60a658edf1e23531d2011"
+                "reference": "9bf4873210cfc8b86e4abb18d1d707f9ae247ace"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/async-aws/ses/zipball/3aed25813b21aeab96a60a658edf1e23531d2011",
-                "reference": "3aed25813b21aeab96a60a658edf1e23531d2011",
+                "url": "https://api.github.com/repos/async-aws/ses/zipball/9bf4873210cfc8b86e4abb18d1d707f9ae247ace",
+                "reference": "9bf4873210cfc8b86e4abb18d1d707f9ae247ace",
                 "shasum": ""
             },
             "require": {
@@ -96,7 +96,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.7-dev"
+                    "dev-master": "1.8-dev"
                 }
             },
             "autoload": {
@@ -117,7 +117,7 @@
                 "ses"
             ],
             "support": {
-                "source": "https://github.com/async-aws/ses/tree/1.7.0"
+                "source": "https://github.com/async-aws/ses/tree/1.8.0"
             },
             "funding": [
                 {
@@ -129,7 +129,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-12-13T20:52:19+00:00"
+            "time": "2024-05-14T07:34:42+00:00"
         },
         {
             "name": "aws/aws-crt-php",
@@ -187,16 +187,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.306.4",
+            "version": "3.306.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "f50ff987dbe6d3e60d68794970422eae71ffb525"
+                "reference": "79a618bb5624e52f31de7083a26d1749050aa5a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/f50ff987dbe6d3e60d68794970422eae71ffb525",
-                "reference": "f50ff987dbe6d3e60d68794970422eae71ffb525",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/79a618bb5624e52f31de7083a26d1749050aa5a0",
+                "reference": "79a618bb5624e52f31de7083a26d1749050aa5a0",
                 "shasum": ""
             },
             "require": {
@@ -276,9 +276,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.306.4"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.306.6"
             },
-            "time": "2024-05-10T18:23:57+00:00"
+            "time": "2024-05-14T18:05:44+00:00"
         },
         {
             "name": "doctrine/lexer",
@@ -6042,16 +6042,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v3.10.0",
+            "version": "v3.10.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "34422f90043aba75e419dd77ee0a86e1688c28ee"
+                "reference": "7aaed0b8311a557cc8c4047a71fd03153a00e755"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/34422f90043aba75e419dd77ee0a86e1688c28ee",
-                "reference": "34422f90043aba75e419dd77ee0a86e1688c28ee",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/7aaed0b8311a557cc8c4047a71fd03153a00e755",
+                "reference": "7aaed0b8311a557cc8c4047a71fd03153a00e755",
                 "shasum": ""
             },
             "require": {
@@ -6105,7 +6105,7 @@
             ],
             "support": {
                 "issues": "https://github.com/twigphp/Twig/issues",
-                "source": "https://github.com/twigphp/Twig/tree/v3.10.0"
+                "source": "https://github.com/twigphp/Twig/tree/v3.10.2"
             },
             "funding": [
                 {
@@ -6117,7 +6117,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-05-11T07:44:16+00:00"
+            "time": "2024-05-14T06:04:16+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -6416,16 +6416,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.10.67",
+            "version": "1.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "16ddbe776f10da6a95ebd25de7c1dbed397dc493"
+                "reference": "666cb1703742cea9cc80fee631f0940e1592fa6e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/16ddbe776f10da6a95ebd25de7c1dbed397dc493",
-                "reference": "16ddbe776f10da6a95ebd25de7c1dbed397dc493",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/666cb1703742cea9cc80fee631f0940e1592fa6e",
+                "reference": "666cb1703742cea9cc80fee631f0940e1592fa6e",
                 "shasum": ""
             },
             "require": {
@@ -6470,7 +6470,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-04-16T07:22:02+00:00"
+            "time": "2024-05-13T06:02:22+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",

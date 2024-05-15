@@ -229,9 +229,10 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
     function csvImportOperation($db, $dataSource, $options, $dbSpec, $debug, $contextName, $fileInfoTemp)
     {
         $dbContext = $db->dbSettings->getDataSourceTargetArray();
-        [$import1stLine, $importSkipLines, $importFormat, $useReplace, $convert2Number, $convert2Date, $convert2DateTime]
+        [$import1stLine, $importSkipLines, $importFormat, $useReplace,
+            $convert2Number, $convert2Date, $convert2DateTime, $encoding]
             = Params::getParameterValue(["import1stLine", "importSkipLines", "importFormat", "useReplace",
-            "convert2Number", "convert2Date", "convert2DateTime"], [true, 0, 'CSV', false, [], [], [],]);
+            "convert2Number", "convert2Date", "convert2DateTime", "encoding"], [true, 0, 'CSV', false, [], [], [], null,]);
         $import1stLine = (isset($dbContext['import']['1st-line']))
             ? $dbContext['import']['1st-line']
             : ((isset($options['import']['1st-line']))
@@ -264,6 +265,13 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
             : ((isset($options['import']['convert-datetime']))
                 ? $options['import']['convert-datetime'] : $convert2DateTime);
         $convert2DateTime = is_array($convert2DateTime) ? $convert2DateTime : [];
+        $encoding = (isset($dbContext['import']['encoding']))
+            ? $dbContext['import']['encoding']
+            : ((isset($options['import']['encoding']))
+                ? $options['import']['encoding'] : $encoding);
+        if ($encoding) {
+            $db->logger->setDebugMessage("[FileSystem::csvImportOperation] Encoding {$encoding} is selected.", 2);
+        }
 
         $decimalPoint = ord(IMLocaleFormatTable::getCurrentLocaleFormat()['mon_decimal_point']);
         if (!$decimalPoint) {
@@ -300,6 +308,9 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
                     foreach (new FieldDivider($line, $separator) as $index => $value) {
                         if ($index < count($importingFields)) {
                             $field = $importingFields[$index];
+                            if ($encoding) {
+                                $value = mb_convert_encoding($value, "UTF-8", $encoding);
+                            }
                             if ($field !== '_') { // The '_' field is going to ignore.
                                 if (in_array($field, $convert2Number)) {
                                     $original = $value;
