@@ -292,6 +292,9 @@ const IMLibContextPool = {
           }
         }
       }
+      sameOriginContexts[i].count--
+      sameOriginContexts[i].resultCount--
+      sameOriginContexts[i].totalCount--
 
       if (INTERMediatorOnPage.dbClassName.match(/FileMaker_FX/) ||
         INTERMediatorOnPage.dbClassName.match(/FileMaker_DataAPI/)) {
