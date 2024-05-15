@@ -32,10 +32,10 @@ check_arg_exit(){
 
 # generate_hash_passwd username password
 generate_hash_passwd(){
-    VALUE=$(${ECHO} -n "$2${SOLT}" | openssl sha256 -sha256)
+    VALUE=$(${ECHO} -n "$2${SOLT}" | openssl sha256 -sha256 | awk '{print $2}')
     for i in {1..4999}
     do
-      VALUE=$(${ECHO} -n "${VALUE}" | xxd -r -p | openssl sha256 -sha256)
+      VALUE=$(${ECHO} -n "${VALUE}" | xxd -r -p | openssl sha256 -sha256 | awk '{print $2}')
     done
     SOLTHEX=$(${ECHO} -n "${SOLT}" | xxd -ps)
     if [ ${optSQL} -eq 1 ]
