@@ -1266,6 +1266,7 @@ const INTERMediator = {
       const repeatersOriginal = contextObj.original
       const currentContextDef = contextObj.getContextDef()
       const targetTotalCount = targetRecords.totalCount
+      const targetResultCount = targetRecords.resultCount
 
       let hasData = currentContextDef.data
       if (INTERMediator.ignoringDataContexts.indexOf(currentContextDef.name) > -1) {
@@ -1322,6 +1323,7 @@ const INTERMediator = {
         contextObj.setValue(keyingValue, "_im_count", countRecord)
         contextObj.count = countRecord
         contextObj.totalCount = targetTotalCount
+        contextObj.resultCount = targetResultCount
         IMLibPageNavigation.setupDeleteButton(encNodeTag, repeatersOneRec, contextObj, keyField, keyValue)
         IMLibPageNavigation.setupNavigationButton(encNodeTag, repeatersOneRec, currentContextDef, keyField, keyValue, contextObj)
         IMLibPageNavigation.setupCopyButton(encNodeTag, repNodeTag, repeatersOneRec, contextObj, targetRecordset[ix])

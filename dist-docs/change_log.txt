@@ -15,7 +15,7 @@ Ver.13 (In Development)
 - Variable $extraButtons in the params.php file adds buttons on the authentication panel. The value has to be associated
   array, and the key is button name and the value is moving URL. It assumes that the OAuth button to authenticating.
 - 2-factor authentication is supported with e-mail notification. Also the authentication processes are refactored.
-- The IMLibContext class has new property 'count' and 'totalCount' about results of queried recordset.
+- The IMLibContext class has new property 'count', 'resultCount' and 'totalCount' about results of queried recordset.
 - [BUG FIX] On the Ver.12, SAML authentication didn't work in spite of Ver.11 can do. It didn't check with SAML manual
   test on Ver.12 after added types to php codes. Ver.13 works SAML.
 

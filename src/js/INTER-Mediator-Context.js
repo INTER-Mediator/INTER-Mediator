@@ -51,8 +51,9 @@ class IMLibContext {
     this.dependingParentObjectInfo = null
     this.isPortal = false
     this.potalContainingRecordKV = null
-    this.count = null
-    this.totalCount = null
+    this.count = 0
+    this.totalCount = 0
+    this.resultCount = 0
     /*
      * Initialize this object
      */
@@ -469,6 +470,9 @@ class IMLibContext {
     'use strict'
     this.store = {}
     this.binding = {}
+    this.count = 0
+    this.resultCount = 0
+    this.totalCount = 0
   }
 
   setContextName(name) {
