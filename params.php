@@ -157,7 +157,7 @@ $authExpired = 3600;
 //$mailContext2FA = "mailtemplate@id=995"; // Template record for the mail to send the 2FA code.
 //$digitsOf2FACode = 6; // Default is 4.
 //$expiringSeconds2FA = 1000; // 2FA effective seconds from code input.
-//$fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real system, this has to comment out.
+$fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real system, this has to comment out.
 
 // The 'issuedhash' table for storing challenges of authentication can be use another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
