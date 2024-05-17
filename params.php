@@ -120,12 +120,12 @@ $browserCompatibility = array(
 /* Messaging Settings
  * =================== */
 // If you want to specify the smtp server info, set them below.
-//$sendMailSMTP = array(
-//    'server' => 'msyk.sakura.ne.jp',
-//    'port' => '587',
-//    'username' => 'user01@msyk.net',
-//    'password' => 'anypassword',
-//);
+$sendMailSMTP = array(
+    'server' => 'msyk.sakura.ne.jp',
+    'port' => '587',
+    'username' => 'user1@msyk.net',
+    'password' => 'eith8Ien',
+);
 // $waitAfterMail = 20;  // Wait after send email with smtp server. Unit is Millisecond.
 
 // Sending email features compatibility with INTER-Mediator v5 unless 'template-context' key isn't specified.
@@ -155,9 +155,9 @@ $authExpired = 3600;
 //$credentialCookieDomain = ""; // The domain information of the cookie for 'credential' auth. Falsy value means no domain, also the default.
 //$isRequired2FA = true; // Default is false.
 //$mailContext2FA = "mailtemplate@id=995"; // Template record for the mail to send the 2FA code.
-//$digitsOf2FACode = 4; // Default is false.
+//$digitsOf2FACode = 6; // Default is 4.
 //$expiringSeconds2FA = 1000; // 2FA effective seconds from code input.
-$fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real system, this has to comment out.
+//$fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real system, this has to comment out.
 
 // The 'issuedhash' table for storing challenges of authentication can be use another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';

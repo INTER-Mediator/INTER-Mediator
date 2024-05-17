@@ -116,7 +116,7 @@ abstract class OperationVisitor
             "[prepareCheckAuthentication] storedCredential={$this->storedCredential}", 2);
 
         if ($proxy->required2FA) {
-            $proxy->code2FA = $this->storedCredential ? substr($this->storedCredential, 48, 4) : "";
+            $proxy->code2FA = $this->storedCredential ? substr($this->storedCredential, 48, $proxy->digitsOf2FACode) : "";
             $this->storedCredential = $this->storedCredential ? substr($this->storedCredential, 0, 48) : "";
 
             $this->stored2FAuth = $authDBHandler->authSupportRetrieveChallenge(

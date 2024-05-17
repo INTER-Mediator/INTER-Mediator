@@ -38,9 +38,11 @@ const INTERMediator_DBAdapter = {
     'use strict'
     let authParams = ''
 
-    const user = INTERMediatorOnPage.authUser() ?? INTERMediatorOnPage.authedUser ?? null
+    const user = !!INTERMediatorOnPage.authUser() ? INTERMediatorOnPage.authUser() : (INTERMediatorOnPage.authedUser ?? null)
+    const clientId = !!INTERMediatorOnPage.clientId() ? INTERMediatorOnPage.clientId() : INTERMediatorOnPage.authedClientId
+
     if (user) {
-      authParams = '&clientid=' + encodeURIComponent(INTERMediatorOnPage.clientId())
+      authParams = '&clientid=' + encodeURIComponent(clientId)
       authParams += '&authuser=' + encodeURIComponent(user)
       if ((INTERMediatorOnPage.authHashedPassword() || INTERMediatorOnPage.authHashedPassword2m()
         || INTERMediatorOnPage.authHashedPassword2()) && INTERMediatorOnPage.authChallenge) {
@@ -173,6 +175,7 @@ const INTERMediator_DBAdapter = {
           || accessURL.match(/access=authenticated/))))
       if (jsonObject.clientid) {
         INTERMediatorOnPage.clientId(jsonObject.clientid)
+        INTERMediatorOnPage.authedClientId = jsonObject.clientid ?? null
       }
       if (INTERMediatorOnPage.isSAML) {
         if (jsonObject.samluser) {

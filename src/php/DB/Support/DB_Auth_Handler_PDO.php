@@ -58,7 +58,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         if (!$this->pdoDB->setupConnection()) { //Establish the connection
             return;
         }
-        $expSeconds = $prefix == "" ? $this->dbSettings->getExpiringSeconds() : 0;
+        $expSeconds = $prefix == "" ? $this->dbSettings->getExpiringSeconds() :
+            ($prefix == "#" ? $this->dbSettings->getExpiringSeconds() :
+                ($prefix == "+" ? $this->dbSettings->getExpiringSeconds() :
+                    ($prefix == "=" ? $this->dbSettings->getExpiringSeconds2FA() :
+                        $this->dbSettings->getExpiringSeconds())));
 
         // Retrieving issuedhash records that are same user_id and clientID.
         $sql = "SELECT id FROM {$hashTable} WHERE user_id={$uid} AND clienthost={$this->pdoDB->link->quote($clientId)}";
@@ -68,9 +72,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             return;
         }
         $this->logger->setDebugMessage("[authSupportStoreChallenge] {$sql}");
-        // Calculating expiring date and tim.e
-        $expiringDT = IMUtil::currentDTString($prefix == "="
-            ? -$this->dbSettings->getExpiringSeconds2FA() : -$this->dbSettings->getExpiringSeconds());
+        // Calculating expiring date and time.
+        $expiringDT = IMUtil::currentDTString(-$expSeconds);
         // Checking wheather here are any records that are same user_id and ClientID
         $didUpdate = false;
         foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {

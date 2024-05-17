@@ -55,6 +55,7 @@ class CredentialVisitor extends OperationVisitor
                     $challenge = $this->generateAndSaveChallenge($proxy->signedUser, $proxy->generatedClientID, "+",
                         ($proxy->required2FA ? $code2FA : ""));
                     $proxy->outputOfProcessing['challenge'] = "{$challenge}{$userSalt}";
+                    $proxy->outputOfProcessing['authUser'] = $proxy->signedUser;
                     $this->setCookieOfChallenge('_im_credential_token',
                         $challenge, $proxy->generatedClientID, $proxy->hashedPassword);
                     if ($proxy->required2FA && !Params::getParameterValue("fixed2FACode", false)) { // Send mail containing 2FA code.
@@ -64,9 +65,14 @@ class CredentialVisitor extends OperationVisitor
                             $proxy->logger->setWarningMessage("The logging-in user has no email info.");
                             break;
                         }
-                        $msgProxy = new MessagingProxy("mail");
-                        $msgProxy->processing($proxy, ['template-context' => $proxy->mailContext2FA],
-                            [['mail' => $email, 'code' => $code2FA]]);
+                        if ($proxy->mailContext2FA) {
+                            $msgProxy = new MessagingProxy("mail");
+                            $msgProxy->processing($proxy, ['template-context' => $proxy->mailContext2FA],
+                                [['mail' => $email, 'code' => $code2FA]]);
+                        } else {
+                            $messageClass = IMUtil::getMessageClassInstance();
+                            $proxy->logger->setWarningMessage($messageClass->getMessageAs(2033));
+                        }
                     }
                     break;
                 case
