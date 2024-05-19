@@ -380,7 +380,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
                 if (isset($row['limitdt'])) {
                     if (IMUtil::secondsFromNow($row['limitdt']) > $this->dbSettings->getSAMLExpiringSeconds()) {
-                        $this->logger->setDebugMessage("[authSupportCreateUser - SAML] Over Limit Datetime . ");
+                        $this->logger->setDebugMessage("[authSupportCreateUser - SAML] Over Limit Datetime.");
                         $timeUp = true;
                         $hpw = $row['hashedpasswd'];
                         $this->logger->setDebugMessage("[authSupportCreateUser - SAML] Detect hashedpasswd ={$hpw}");

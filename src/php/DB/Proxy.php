@@ -855,7 +855,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->dbClass = new $dbClassName();
             if ($this->dbClass == null) {
                 $this->logger->setErrorMessage("The database class [{
-                $dbClassName}] that you specify is not valid . ");
+                $dbClassName}] that you specify is not valid.");
                 echo implode('', $this->logger->getMessagesForJS());
                 return false;
             }
@@ -937,7 +937,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             if (isset($this->PostData["condition{$count}field"])) {
                 $this->dbSettings->addExtraCriteria(
                     $this->PostData["condition{$count}field"],
-                    $this->PostData["condition{$count}operator"] ?? ' = ',
+                    $this->PostData["condition{$count}operator"] ?? '=',
                     $this->PostData["condition{$count}value"] ?? null);
             } else {
                 break;

@@ -957,7 +957,7 @@ class PDO extends DBClass
             return null;
         }
         if (!$this->setupConnection()) { //Establish the connection
-            $this->errorMessageStore("Can't open db connection . ");
+            $this->errorMessageStore("Can't open db connection.");
             return null;
         }
         $sql = "{$this->handler->sqlSELECTCommand()}* FROM "
@@ -993,7 +993,7 @@ class PDO extends DBClass
             return false;
         }
         if (!$this->setupConnection()) { //Establish the connection
-            $this->errorMessageStore("Can't open db connection . ");
+            $this->errorMessageStore("Can't open db connection.");
             return false;
         }
         $sql = "{$this->handler->sqlDELETECommand()}"
