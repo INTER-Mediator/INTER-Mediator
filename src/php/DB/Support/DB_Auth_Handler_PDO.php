@@ -17,7 +17,6 @@
 namespace INTERMediator\DB\Support;
 
 use DateTime;
-use INTERMediator\DB\DBClass;
 use INTERMediator\IMUtil;
 use INTERMediator\OAuthAuth;
 use INTERMediator\Params;
@@ -37,9 +36,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string $uid
+     * @param string|null $uid
      * @param string $challenge
      * @param string $clientId
+     * @param string $prefix
      * @return void
      *
      * Using 'issuedhash'
@@ -79,7 +79,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             // if it exists, updateging the record with hash and expired fields.
             if (substr($row['hash'] ?? "", 0, 1) == $prefix) {
-                $didUpdate = false;
+                $didUpdate = true;
                 $sql = "{$this->pdoDB->handler->sqlUPDATECommand()}{$hashTable}"
                     . " SET hash={$this->pdoDB->link->quote($challenge)}"
                     . ",expired={$this->pdoDB->link->quote($expiringDT)}"
@@ -111,6 +111,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * @return ?string
      *
      * Using 'issuedhash'
+     * @throws Exception
      */
     public
     function authSupportCheckMediaToken(string $uid): ?string
@@ -149,9 +150,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * @param string $uid
      * @param string $clientId
      * @param bool $isDelete
+     * @param string $prefix
      * @return ?string
      *
      * Using 'issuedhash'
+     * @throws Exception
      */
     public function authSupportRetrieveChallenge(
         string $uid, string $clientId, bool $isDelete = true, string $prefix = ""): ?string
@@ -247,12 +250,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         $keys = array("limitdt");
         $values = array($currentDTFormat);
         $updates = array("limitdt=" . $currentDTFormat);
-        if (is_array($keyValues)) {
-            foreach ($keyValues as $key => $value) {
-                $keys[] = $key;
-                $values[] = $this->pdoDB->link->quote($value);
-                $updates[] = "$key=" . $this->pdoDB->link->quote($value);
-            }
+        foreach ($keyValues as $key => $value) {
+            $keys[] = $key;
+            $values[] = $this->pdoDB->link->quote($value);
+            $updates[] = "$key=" . $this->pdoDB->link->quote($value);
         }
         if ($user_id > 0) {
             $returnValue = false;
@@ -996,9 +997,14 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         if (!$this->pdoDB->setupConnection()) { //Establish the connection
             return null;
         }
-        $sql = "{$this->pdoDB->handler->sqlUPDATECommand()}{$userTable} SET hashedpasswd = "
-            . $this->pdoDB->link->quote($password) . "," . $rawPWField . " = " . $this->pdoDB->link->quote($rawPW)
-            . " WHERE id = " . $this->pdoDB->link->quote($userID);
+        if ($rawPWField) {
+            $sql = "{$this->pdoDB->handler->sqlUPDATECommand()}{$userTable} SET hashedpasswd = "
+                . $this->pdoDB->link->quote($password) . "," . $rawPWField . " = " . $this->pdoDB->link->quote($rawPW)
+                . " WHERE id = " . $this->pdoDB->link->quote($userID);
+        } else {
+            $sql = "{$this->pdoDB->handler->sqlUPDATECommand()}{$userTable} SET hashedpasswd = "
+                . $this->pdoDB->link->quote($password) . " WHERE id = " . $this->pdoDB->link->quote($userID);
+        }
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
             $this->pdoDB->errorMessageStore('Update:' . $sql);

@@ -20,12 +20,11 @@ use Exception;
 use DateTime;
 use DateInterval;
 use INTERMediator\DB\Support\Proxy_Auth;
-use INTERMediator\DB\Support\Proxy_Operations;
 use INTERMediator\DB\Support\ProxyElements\DataOperationElement;
 use INTERMediator\DB\Support\ProxyElements\HandleChallengeElement;
 use INTERMediator\DB\Support\ProxyVisitors\OperationVisitor;
+use INTERMediator\DB\Support\StopOperationException;
 use INTERMediator\IMUtil;
-use INTERMediator\SAMLAuth;
 use INTERMediator\Locale\IMLocale;
 use INTERMediator\Messaging\MessagingProxy;
 use INTERMediator\NotifyServer;
@@ -367,14 +366,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doBeforeReadFromDB' of the class '{$className}' is calling.", 2);
                 $returnBefore = $this->userExpanded->doBeforeReadFromDB();
                 if ($returnBefore === false) {
-                    throw new Exception("[Proxy::readFromDB] The method 'doBeforeReadFromDB' reports an error.");
+                    throw new StopOperationException("[Proxy::readFromDB] The method 'doBeforeReadFromDB' reports an error.");
                     //} else if (is_null($returnBefore)) {
                     // Pass through for 'return' doesn't exist.
                 } else if (is_string($returnBefore)) {
                     if (strlen($returnBefore) === 0) {
                         return null; // Silent stop
                     }
-                    throw new Exception($returnBefore); // Just message as error.
+                    throw new StopOperationException($returnBefore); // Just message as error.
                 }
             }
 
@@ -420,6 +419,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $msgProxy->processing($this, $msgArray, $result);
                 }
             }
+        } catch (StopOperationException $e) {
+            $this->logger->setWarningMessage($e->getMessage());
+            return null;
         } catch (Exception $e) {
             $this->logger->setErrorMessage("Exception:[1] {$e->getMessage()} \nTrace:{$e->getTraceAsString()}");
             return null;
@@ -477,14 +479,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     "[Proxy::updateDB] The method 'doBeforeUpdateDB' of the class '{$className}' is calling.", 2);
                 $returnBefore = $this->userExpanded->doBeforeUpdateDB(false);
                 if ($returnBefore === false) {
-                    throw new Exception("[Proxy::updateDB] The method 'doBeforeUpdateDB' reports an error.");
+                    throw new StopOperationException("[Proxy::updateDB] The method 'doBeforeUpdateDB' reports an error.");
                     //} else if (is_null($returnBefore)) {
                     // Pass through for 'return' doesn't exist.
                 } else if (is_string($returnBefore)) {
                     if (strlen($returnBefore) === 0) {
                         return false; // Silent stop
                     }
-                    throw new Exception($returnBefore); // Just message as error.
+                    throw new StopOperationException($returnBefore); // Just message as error.
                 }
             }
             if ($this->dbClass) {
@@ -539,7 +541,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     $msgProxy->processing($this, $msgArray, $this->dbClass->getUpdatedRecord());
                 }
             }
-
+        } catch (StopOperationException $e) {
+            $this->logger->setWarningMessage($e->getMessage());
+            return false;
         } catch (Exception $e) {
             $this->logger->setErrorMessage("Exception:[2] {$e->getMessage()}");
             return false;
@@ -563,14 +567,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     "[Proxy::createInDB] The method 'doBeforeCreateToDB' of the class '{$className}' is calling.", 2);
                 $returnBefore = $this->userExpanded->doBeforeCreateToDB();
                 if ($returnBefore === false) {
-                    throw new Exception("[Proxy::createInDB] The method 'doBeforeCreateToDB' reports an error.");
+                    throw new StopOperationException("[Proxy::createInDB] The method 'doBeforeCreateToDB' reports an error.");
                     //} else if (is_null($returnBefore)) {
                     // Pass through for 'return' doesn't exist.
                 } else if (is_string($returnBefore)) {
                     if (strlen($returnBefore) === 0) {
                         return null; // Silent stop
                     }
-                    throw new Exception($returnBefore); // Just message as error.
+                    throw new StopOperationException($returnBefore); // Just message as error.
                 }
             }
             if ($this->dbClass) {
@@ -621,6 +625,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     }
                 }
             }
+        } catch (StopOperationException $e) {
+            $this->logger->setWarningMessage($e->getMessage());
+            return null;
         } catch (Exception $e) {
             $this->logger->setErrorMessage("Exception:[3] {$e->getMessage()}");
             return null;
@@ -641,14 +648,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("[Proxy::deleteFromDB] The method 'doBeforeDeleteFromDB' of the class '{$className}' is calling.", 2);
                 $returnBefore = $this->userExpanded->doBeforeDeleteFromDB();
                 if ($returnBefore === false) {
-                    throw new Exception("[Proxy::deleteFromDB] The method 'doBeforeDeleteFromDB' reports an error.");
+                    throw new StopOperationException("[Proxy::deleteFromDB] The method 'doBeforeDeleteFromDB' reports an error.");
                     //} else if (is_null($returnBefore)) {
                     // Pass through for 'return' doesn't exist.
                 } else if (is_string($returnBefore)) {
                     if (strlen($returnBefore) === 0) {
                         return false; // Silent stop
                     }
-                    throw new Exception($returnBefore); // Just message as error.
+                    throw new StopOperationException($returnBefore); // Just message as error.
                 }
             }
             if ($this->dbClass) {
@@ -685,6 +692,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     throw $ex;
                 }
             }
+        } catch (StopOperationException $e) {
+            $this->logger->setWarningMessage($e->getMessage());
+            return false;
         } catch (Exception $e) {
             $this->logger->setErrorMessage("Exception:[4] {$e->getMessage()}");
             return false;
@@ -707,14 +717,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 $this->logger->setDebugMessage("[Proxy::copyInDB] The method 'doBeforeCopyInDB' of the class '{$className}' is calling.", 2);
                 $returnBefore = $this->userExpanded->doBeforeCopyInDB();
                 if ($returnBefore === false) {
-                    throw new Exception("[Proxy::copyInDB] The method 'doBeforeCopyInDB' reports an error.");
+                    throw new StopOperationException("[Proxy::copyInDB] The method 'doBeforeCopyInDB' reports an error.");
                     //} else if (is_null($returnBefore)) {
                     // Pass through for 'return' doesn't exist.
                 } else if (is_string($returnBefore)) {
                     if (strlen($returnBefore) === 0) {
                         return null; // Silent stop
                     }
-                    throw new Exception($returnBefore); // Just message as error.
+                    throw new StopOperationException($returnBefore); // Just message as error.
                 }
             }
             if ($this->dbClass) {
@@ -746,6 +756,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     throw $ex;
                 }
             }
+        } catch (StopOperationException $e) {
+            $this->logger->setWarningMessage($e->getMessage());
+            return null;
         } catch (Exception $e) {
             $this->logger->setErrorMessage("Exception:[5] {$e->getMessage()}");
             return null;
@@ -841,11 +854,12 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         if ($isDBClassNull) {
             $this->dbClass = new $dbClassName();
             if ($this->dbClass == null) {
-                $this->logger->setErrorMessage("The database class [{$dbClassName}] that you specify is not valid.");
+                $this->logger->setErrorMessage("The database class [{
+                $dbClassName}] that you specify is not valid . ");
                 echo implode('', $this->logger->getMessagesForJS());
                 return false;
             }
-            $this->logger->setDebugMessage("The class '{$dbClassName}' was instantiated.", 2);
+            $this->logger->setDebugMessage("The class '{$dbClassName}' was instantiated . ", 2);
         }
 
         $generator = null;
@@ -890,9 +904,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->dbSettings->notifyServer = new NotifyServer();
             $nid = $this->PostData['notifyid'] ?? null;
             if ($this->dbSettings->notifyServer->initialize($this->authDbClass, $nid)) {
-                $this->logger->setDebugMessage("The NotifyServer was instantiated.", 2);
+                $this->logger->setDebugMessage("The NotifyServer was instantiated . ", 2);
             } else {
-                $this->logger->setDebugMessage("The NotifyServer failed to initialize.", 2);
+                $this->logger->setDebugMessage("The NotifyServer failed to initialize . ", 2);
                 $this->dbSettings->notifyServer = null;
             }
         }
@@ -903,7 +917,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $className = $context['extending-class'];
             try {
                 $this->userExpanded = new $className();
-                $this->logger->setDebugMessage("The class '{$className}' was instantiated.", 2);
+                $this->logger->setDebugMessage("The class '{$className}' was instantiated . ", 2);
             } catch (Exception $e) {
                 $this->logger->setErrorMessage("The class '{$className}' wasn't instantiated.");
             }
@@ -923,7 +937,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             if (isset($this->PostData["condition{$count}field"])) {
                 $this->dbSettings->addExtraCriteria(
                     $this->PostData["condition{$count}field"],
-                    $this->PostData["condition{$count}operator"] ?? '=',
+                    $this->PostData["condition{$count}operator"] ?? ' = ',
                     $this->PostData["condition{$count}value"] ?? null);
             } else {
                 break;
@@ -985,10 +999,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     * &records=<how many records should it return>
     * &field_<N>=<field name>
     * &value_<N>=<value of the field>
-    * &condition<N>field=<Extra criteria's field name>
-    * &condition<N>operator=<Extra criteria's operator>
-    * &condition<N>value=<Extra criteria's value>
-    * &parent_keyval=<value of the foreign key field>
+    * &condition<N>field=<Extra criteria's field name >
+    * &condition < N>operator =<Extra criteria's operator>
+    * &condition<N>value=<Extra criteria's value >
+    * &parent_keyval =<value of the foreign key field >
     */
 
     /**
@@ -1132,6 +1146,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $userid = null;
         if (is_null($username) && !is_null($email)) {
             $userid = $this->dbClass->authHandler->authSupportGetUserIdFromEmail($email);
+            if (!$userid) {
+                return false;
+            }
             $username = $this->dbClass->authHandler->authSupportGetUsernameFromUserId($userid);
         }
         if ($email == '' || is_null($userid) || is_null($username)) {
@@ -1161,10 +1178,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @param string $challenge
      * @param string $password
-     * @param bool $rawPWField
+     * @param string|null $rawPWField
      * @return string|null
      */
-    public function userEnrollmentActivateUser(string $challenge, string $password, bool $rawPWField = false): ?string
+    public function userEnrollmentActivateUser(string $challenge, string $password, ?string $rawPWField = null): ?string
     {
         $userID = $this->authDbClass->authHandler->authSupportUserEnrollmentEnrollingUser($challenge);
         if (!$userID) {

@@ -91,7 +91,7 @@ $webServerName = array('');
 /* Customize the Content-Security-Policy header
  *
  * The Content-Security-Policy header contains with the value of variable $contentSecurityPolicy.
- * If this variable isn't specified or "", the Content-Security-Policy header doesn't contains.
+ * If this variable isn't specified or "", the Content-Security-Policy header doesn't contain.
  * See below about Content-Security-Policy header.
  * https://developer.mozilla.org/ja/docs/Web/Security/CSP/Using_Content_Security_Policy
  */
@@ -124,7 +124,7 @@ $browserCompatibility = array(
 //    'server' => 'msyk.sakura.ne.jp',
 //    'port' => '587',
 //    'username' => 'user1@msyk.net',
-//    'password' => 'yourpassword',
+//    'password' => 'anypassword',
 //);
 // $waitAfterMail = 20;  // Wait after send email with smtp server. Unit is Millisecond.
 
@@ -162,7 +162,7 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 // The 'issuedhash' table for storing challenges of authentication can be use another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
 
-$emailAsAliasOfUserName = true;
+//$emailAsAliasOfUserName = true;
 //$passwordPolicy = "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName";
 //$defaultGroupName = "users"; // For the user who doesn't belong to any group, this group automatically attach to such a user
 
@@ -295,7 +295,7 @@ $dontRecordDownloadNoGet = false; */
 // Altering messages, overwrite and/or adding new messages. The first index is a language, and the second is the error number.
 //$messages['default'][1022] = "We don't support Internet Explorer. We'd like you to access by Edge or any other major browsers.";
 //$messages['ja'][1022] = "Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。";
-// These messages are for sample purpose but they are used for unit tests. If you modify them, you have to care about the test code.
+// These messages are for sample purpose, but they are used for unit tests. If you modify them, you have to care about the test code.
 // Following two lines are using on unit test.
 $messages['default'][9999] = "Changed";
 $messages['ja'][9999] = "変更した";
@@ -348,7 +348,7 @@ $prohibitDebugMode = false;
 // INTER-Mediator client should call the definition file to work fine.
 // Usually $_SERVER['SCRIPT_NAME'] is the url to request from client.
 // In case of using INTER-Mediator with other frameworks, you might specify any special URL to call.
-// So you can set the another url to the $callURL variables and it can be replaced with $_SERVER['SCRIPT_NAME'].
+// So you can set the another url to the $callURL variables, and it can be replaced with $_SERVER['SCRIPT_NAME'].
 //$callURL = "http://yourdomai/your/path/to/definition-file.php"
 
 /* Localizing

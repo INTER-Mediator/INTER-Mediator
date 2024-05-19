@@ -230,11 +230,18 @@ class Settings
      */
     private int $expiringSeconds2FA = 100000;
 
+    /**
+     * @return int
+     */
     public function getExpiringSeconds2FA(): int
     {
         return $this->expiringSeconds2FA;
     }
 
+    /**
+     * @param int $n
+     * @return void
+     */
     public function setExpiringSeconds2FA(int $n): void
     {
         $this->expiringSeconds2FA = $n;
@@ -245,21 +252,35 @@ class Settings
      */
     private string $parentOfTarget = '';
 
+    /**
+     * @param string $cName
+     * @return void
+     */
     public function setParentOfTarget(string $cName)
     {
         $this->parentOfTarget = $cName;
     }
 
-    public function getParentOfTarget()
+    /**
+     * @return string
+     */
+    public function getParentOfTarget(): string
     {
         return $this->parentOfTarget;
     }
 
+    /**
+     * @param int $offset
+     * @return void
+     */
     public function setClientTZOffset(int $offset): void
     {
         $this->timezoneOffset = $offset;
     }
 
+    /**
+     * @return int
+     */
     public function getClientTZOffset(): int
     {
         return $this->timezoneOffset;
@@ -491,13 +512,17 @@ class Settings
         $this->dataSourceName = $dataSourceName;
     }
 
+    /**
+     * @param string $contextName
+     * @return bool
+     */
     public function isExistContext(string $contextName): bool
     {
-        if(!$this->dataSourceName || ! is_array($this->dataSourceName)){
+        if (!$this->dataSourceName || !is_array($this->dataSourceName)) {
             return false;
         }
-        foreach($this->dataSourceName as $contextDef){
-            if(isset($contextDef['name']) && $contextDef['name'] == $contextName) {
+        foreach ($this->dataSourceName as $contextDef) {
+            if (isset($contextDef['name']) && $contextDef['name'] == $contextName) {
                 return true;
             }
         }

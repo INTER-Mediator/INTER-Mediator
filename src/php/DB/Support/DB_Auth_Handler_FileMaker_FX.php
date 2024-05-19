@@ -43,6 +43,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
      * @param string|null $uid
      * @param string $challenge
      * @param string $clientId
+     * @param string $prefix
      * @return void
      * @throws Exception
      */
@@ -132,6 +133,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
      * @param string $uid
      * @param string $clientId
      * @param bool $isDelete
+     * @param string $prefix
      * @return string|null
      * @throws Exception
      */
@@ -309,7 +311,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     }
 
     /**
-     * @param string $username
+     * @param string|null $username
      * @return string|null
      * @throws Exception
      */
@@ -492,7 +494,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     private bool $firstLevel;
 
     /**
-     * @param string $groupid
+     * @param string|null $groupid
      * @return void
      * @throws Exception
      */

@@ -258,6 +258,7 @@ abstract class OperationVisitor
      */
     protected function CreateReplaceImpl(string $access): void
     {
+        try{
         Logger::getInstance()->setDebugMessage("[processingRequest] start create processing", 2);
         $proxy = $this->proxy;
         $dbSettings = $proxy->dbSettings;
@@ -327,6 +328,9 @@ abstract class OperationVisitor
             } else {
                 Logger::getInstance()->setErrorMessage("Invalid data. Any validation rule was violated.");
             }
+        }
+        } catch (\Exception $ex) {
+            throw $ex;
         }
     }
 

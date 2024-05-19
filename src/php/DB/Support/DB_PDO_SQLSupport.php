@@ -80,7 +80,7 @@ trait DB_PDO_SQLSupport
      * @throws Exception
      */
     private function generateWhereClause(array $conditions, string $primaryKey, array $numericFields,
-                                         bool  $isExtra = false, string $insideOp = ' AND ', string $outsideOp = ' OR ')
+                                         bool  $isExtra = false, string $insideOp = ' AND ', string $outsideOp = ' OR '): string
     {
         $fieldOp = ' OR ';
         $groupOp = ' OR ';
@@ -186,17 +186,19 @@ trait DB_PDO_SQLSupport
         return $result;
     }
 
-    private function processingValue(string $str)
+    private function processingValue(string $str): string
     {
         return $str;
     }
 
     /**
-     * @param $currentOperation
+     * @param string $currentOperation
      * @param bool $includeContext
      * @param bool $includeExtra
-     * @param string $signedUser
+     * @param string|null $signedUser
+     * @param bool $bypassAuth
      * @return string
+     * @throws Exception
      */
     private function getWhereClause(string  $currentOperation, bool $includeContext = true, bool $includeExtra = true,
                                     ?string $signedUser = '', bool $bypassAuth = false): string
@@ -295,6 +297,7 @@ trait DB_PDO_SQLSupport
     /* Genrate SQL Sort and Where clause */
     /**
      * @return string
+     * @throws Exception
      */
     private function getSortClause(): string
     {

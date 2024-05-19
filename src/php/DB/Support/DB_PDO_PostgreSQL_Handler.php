@@ -360,9 +360,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     {
         $quotedDB = $this->quotedEntityName($dbName);
         $justUsername = explode("@", $userEntity)[0];
-        $quotedPassword = $this->dbClassObj->link->quote($password);
         return
-            // "CREATE USER {$justUsername} PASSWORD {$quotedPassword};\n".
             "DROP SCHEMA IF EXISTS {$quotedDB} CASCADE;"
             . "CREATE SCHEMA {$quotedDB};"
             . "SET search_path TO {$quotedDB},public;"

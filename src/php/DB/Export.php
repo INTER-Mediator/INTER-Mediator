@@ -3,6 +3,9 @@
 namespace INTERMediator\DB;
 
 use DateTime;
+use League\Csv\CannotInsertRecord;
+use League\Csv\Exception;
+use League\Csv\InvalidArgument;
 use League\Csv\Writer;
 use League\Csv\CharsetConverter;
 
@@ -45,9 +48,9 @@ class Export
      * @param array $contextData
      * @param array|null $options
      * @return void
-     * @throws \League\Csv\CannotInsertRecord
-     * @throws \League\Csv\Exception
-     * @throws \League\Csv\InvalidArgument
+     * @throws CannotInsertRecord
+     * @throws Exception
+     * @throws InvalidArgument
      */
     public function processing(array $contextData, ?array $options): void
     {
@@ -66,7 +69,7 @@ class Export
         $writer->setDelimiter($this->fieldSeparator);
         $writer->setEscape('\\');
         $writer->setEnclosure($this->quote);
-        $writer->setNewline($this->endOfLine);
+        $writer->setEndOfLine($this->endOfLine);
         if ($existKeysLabels) {
             $keysArray = array_keys($this->keysAndLabels);
             $fieldArray = array_values($this->keysAndLabels);

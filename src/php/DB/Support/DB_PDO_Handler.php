@@ -297,7 +297,7 @@ abstract class DB_PDO_Handler
     }
 
     /**
-     * @param string $tableName
+     * @param string|null $tableName
      * @return array
      * @throws Exception
      */
@@ -402,7 +402,7 @@ abstract class DB_PDO_Handler
     }
 
     /**
-     * @param string $tableName
+     * @param string|null $tableName
      * @return array
      */
     public function getBooleanFields(?string $tableName): array
@@ -492,7 +492,7 @@ abstract class DB_PDO_Handler
     protected abstract function checkNullableField(string $info): bool;
 
     /**
-     * @param string $tableName
+     * @param string|null $tableName
      * @return array
      */
     public function getTableInfo(?string $tableName): array

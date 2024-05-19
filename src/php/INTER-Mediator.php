@@ -15,8 +15,9 @@
 
 namespace INTERMediator;
 
-use IntlDateFormatter;
 use DateTime;
+use Exception;
+use IntlDateFormatter;
 
 // Setup autoloader
 $imRoot = dirname(__FILE__, 3) . DIRECTORY_SEPARATOR;
@@ -31,12 +32,14 @@ if (file_exists($autoLoad)) { // If vendor is inside INTER-Mediator
     }
 }
 
-spl_autoload_register(function (string $className):bool {
+spl_autoload_register(function (string $className): bool {
     $comps = explode('\\', $className);
     $className = $comps[count($comps) - 1];
-    $refPath = dirname(
-        IMUtil::relativePath($_SERVER['SCRIPT_NAME'],
-            parse_url($_SERVER['HTTP_REFERER'] ?? null, PHP_URL_PATH)));
+    $refPath = '';
+    if (isset($_SERVER['SCRIPT_NAME']) && isset($_SERVER['HTTP_REFERER'])) {
+        $refPath = dirname(IMUtil::relativePath($_SERVER['SCRIPT_NAME'],
+            parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH)));
+    }
     $paramPath = Params::getParameterValue("loadFrom", false);
     $searchDirs = [
         // Load from the file located on the same directory as the definition file.
@@ -86,7 +89,7 @@ define("IM_TODAY", $fmt->format((new DateTime())->getTimestamp()));
  * @param array|null $dbSpecification
  * @param int $debug
  * @param string|null $origin The path to the definition file.
- * @throws \Exception
+ * @throws Exception
  */
 function IM_Entry(?array $dataSource, ?array $options, ?array $dbSpecification, int $debug = 0, ?string $origin = null): void
 {
@@ -168,7 +171,6 @@ function IM_Entry(?array $dataSource, ?array $options, ?array $dbSpecification, 
         foreach (ServiceServerProxy::instance()->getMessages() as $message) {
             $generator->generateDebugMessageJS($message);
         }
-//        ServiceServerProxy::instance()->stopServer();
     } else {    // Database accessing
         ServiceServerProxy::instance()->checkServiceServer();
         $dbInstance = new DB\Proxy();
@@ -191,7 +193,6 @@ function IM_Entry(?array $dataSource, ?array $options, ?array $dbSpecification, 
         $dbInstance->exportOutputDataAsJSON();
         $resultLog = $dbInstance->getResultForLog();
         $dbInstance->closeDBOperation();
-//        ServiceServerProxy::instance()->stopServer();
     }
     if ($accessLogLevel) {
         $logging = new DB\OperationLog($options);

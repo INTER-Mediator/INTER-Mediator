@@ -14,36 +14,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>User Enrollment - INTER-Mediator</title>
-    <script type="text/javascript" src="context.php"></script>
-    <script type="text/javascript">
-      INTERMediatorOnPage.processingBeforePostOnlyContext = function (target) {
-        const email = document.getElementById('email').value;
-        const mailCount = checkExistsMailAddress(email);
-        if (mailCount.message != '') {
-          alert(mailCount.message);
-          return false;
-        }
-        return true;
-      };
-      function checkExistsMailAddress(addr) {
-        const com = new XMLHttpRequest();
-        let msg = '';
-        com.open('get', 'accountcheck.php?m=' + encodeURIComponent(addr), false);
-        com.send(null);
-        let cnt = parseInt(com.responseText);
-        if (com.status != 200) {
-          msg = 'サーバエラーです：' + com.statusText;
-          cnt = -2;
-        } else if (cnt == -3) {
-          msg = 'メールアドレス存在チェックのスクリプトのパラメータが指定されていません。';
-        } else if (cnt == -1) {
-          msg = 'データベースの設定が正しくないか、データベースが稼働していません。';
-        } else if (cnt > 0) {
-          msg = 'メールアドレスはすでに登録されています。';
-        }
-        return {count: cnt, message: msg};
-      }
-    </script>
+    <script src="enrollcontext.php"></script>
+    <script src="enroll.js"></script>
 </head>
 <body>
 <h1>ユーザ登録</h1>
@@ -59,7 +31,7 @@
     </tr>
     <tr>
         <th></th>
-        <td><input type="button" data-im-control="post" value="登録する"/></td>
+        <td><button id="button" data-im-control="post">登録する</button></td>
     </tr>
     </tbody>
 </table>
