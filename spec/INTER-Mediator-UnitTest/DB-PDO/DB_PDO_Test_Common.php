@@ -216,6 +216,9 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->db_proxy->requireUpdatedRecord(true);
         $newKeyValue = $this->db_proxy->createInDB();
 
+        // echo " Returns {$newKeyValue}\n";
+        //var_export($this->db_proxy->logger->getDebugMessages());
+
         $this->assertTrue($newKeyValue == -999, "Record wasn't created.");
         $createdRecord = $this->db_proxy->getUpdatedRecord();
         $this->assertNull($createdRecord, "Record wasn't created.");

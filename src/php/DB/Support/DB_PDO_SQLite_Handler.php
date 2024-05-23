@@ -149,7 +149,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
      */
     protected function checkNullableField(string $info): bool
     {
-        return $info === 0;
+        return intval($info) === 0;
     }
 
     /**

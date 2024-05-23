@@ -725,7 +725,7 @@ class PDO extends DBClass
         }
         $seqObject = $tableInfo['sequence'] ?? "{$this->dbSettings->getEntityForUpdate()}_{$keyField}_seq";
         $lastKeyValue = $this->handler->lastInsertIdAlt($seqObject, $tableNameRow); // $this->link->lastInsertId($seqObject);
-        if (/* $isReplace && */ $lastKeyValue === 0) { // lastInsertId returns 0 after replace command.
+        if (/* $isReplace && */ !$lastKeyValue) { // lastInsertId returns 0 after replace command.
             // Moreover, about MySQL, it returns 0 with the key field without AUTO_INCREMENT.
             $lastKeyValue = -999; // This means kind of error, so avoid to set non-zero value.
         }

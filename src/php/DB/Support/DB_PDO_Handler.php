@@ -17,6 +17,7 @@
 namespace INTERMediator\DB\Support;
 
 use Exception;
+use INTERMediator\DB\Logger;
 use INTERMediator\DB\PDO;
 
 /**
