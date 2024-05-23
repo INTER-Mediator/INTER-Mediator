@@ -46,7 +46,7 @@ class DB_Notification_Handler_FileMaker_FX extends DB_Notification_Common
     public function isExistRequiredTable(): bool
     {
         $regTable = $this->dbSettings->registerTableName;
-        if ($regTable == null) {
+        if (is_null($regTable)) {
             $this->fmdb->errorMessageStore("The table doesn't specified.");
             return false;
         }

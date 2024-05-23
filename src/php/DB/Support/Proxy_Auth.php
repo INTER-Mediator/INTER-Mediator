@@ -173,8 +173,8 @@ trait Proxy_Auth
 
     private function isAuthAccessing(): bool
     {
-        return $this->access == 'challenge' || $this->access == 'changepassword'
-            || $this->access == 'credential' || $this->access == 'authenticated';
+        return $this->access === 'challenge' || $this->access === 'changepassword'
+            || $this->access === 'credential' || $this->access === 'authenticated';
     }
 
     /**
@@ -279,7 +279,7 @@ trait Proxy_Auth
 //        $this->authDbClass->authHandler->authSupportRemoveOutdatedChallenges();
 //        // Database user mode is user_id=0
 //        $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge(0, $clientId);
-//        if ($storedChallenge && strlen($storedChallenge) == 48 && $storedChallenge == $challenge) { // ex.fc0d54312ce33c2fac19d758
+//        if ($storedChallenge && strlen($storedChallenge) === 48 && $storedChallenge === $challenge) { // ex.fc0d54312ce33c2fac19d758
 //            $returnValue = true;
 //        }
 //        return $returnValue;
@@ -300,7 +300,7 @@ trait Proxy_Auth
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($user);
         if ($uid) {
             $storedChallenge = $this->authDbClass->authHandler->authSupportCheckMediaToken($uid);
-            if (strlen($storedChallenge) == 48 && $storedChallenge == $token) { // ex.fc0d54312ce33c2fac19d758
+            if (strlen($storedChallenge) === 48 && $storedChallenge === $token) { // ex.fc0d54312ce33c2fac19d758
                 $returnValue = true;
             }
         }

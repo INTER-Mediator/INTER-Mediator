@@ -514,7 +514,7 @@ class OME
             $headerField .= "Cc: {$this->ccField}\n";
         if ($this->toField != '')
             $headerField .= "To: {$this->toField}\n";
-        if ($this->smtpInfo === null) {
+        if (is_null($this->smtpInfo)) {
             if ($this->bccField != '')
                 $headerField .= "Bcc: {$this->bccField}\n";
         }
@@ -527,7 +527,7 @@ class OME
             $headerField .= $this->extHeaders;
 
         $bodyString = '';
-        if ($this->smtpInfo === null) {
+        if (is_null($this->smtpInfo)) {
             $bodyString = $this->devideWithLimitingWidth($this->body);
             if ($this->mailEncoding != 'UTF-8') {
                 $bodyString = mb_convert_encoding($bodyString, $this->mailEncoding);

@@ -83,7 +83,7 @@ ioServer.on('connection', (socket) => {
   })
   socket.on('disconnect', function () {
     for (const oneClient of Object.keys(watching)) {
-      if (watching[oneClient].socketid == socket.id) {
+      if (watching[oneClient].socketid === socket.id) {
         delete watching[oneClient]
         break
       }
@@ -107,14 +107,14 @@ function handler(req, res) {
     return
   }
   let postData = ''
-  if (req.method == 'POST') {
+  if (req.method === 'POST') {
     req.on('data', function (data) {
       postData += data
     })
     req.on('end', function () {
       requestProcessing(reqParams, res, postData)
     })
-  } else if (req.method == 'GET') {
+  } else if (req.method === 'GET') {
     requestProcessing(reqParams, res, postData)
   } else {
     res.writeHead(405, {'Content-Type': 'text/html; charset=utf-8'})
@@ -139,7 +139,7 @@ requestBroker['/info'] = function (params, res, postData) {
   }
 
   //res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
-  if (data.vcode != verCode) {
+  if (data.vcode !== verCode) {
     res.write('Different version of Server Server requested, and Service Server should be shutdown.')
   } else {
     res.write('Service Server is active.')

@@ -143,7 +143,7 @@ abstract class OperationVisitor
                 . "signedUser={$proxy->signedUser}/authorizedUsers=" . var_export($authorizedUsers, true)
                 . "/authorizedGroups=" . var_export($authorizedGroups, true))), 2);
 
-        if ((count($authorizedUsers) == 0 && count($authorizedGroups) == 0)) { // No user and group settings.
+        if ((count($authorizedUsers) === 0 && count($authorizedGroups) === 0)) { // No user and group settings.
             return true;
         } else {
             if (in_array($proxy->signedUser, $authorizedUsers)) {
@@ -171,7 +171,7 @@ abstract class OperationVisitor
         $proxy = $this->proxy;
         Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] authStoring={$proxy->authStoring} required2FA={$proxy->required2FA}.", 2);
 
-        if (strlen($proxy->signedUser) == 0) // Parameters required
+        if (strlen($proxy->signedUser) === 0) // Parameters required
         { // No username
             Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] Credential failed. No user info.", 2);
             $proxy->accessSetToNothing();  // Not Authenticated!
@@ -180,7 +180,7 @@ abstract class OperationVisitor
 
         switch ($proxy->authStoring) {
             case 'credential':
-                if (strlen($proxy->credential) == 0) // Parameters required
+                if (strlen($proxy->credential) === 0) // Parameters required
                 { // No username or password
                     Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] Credential failed. No credential.", 2);
                     $proxy->accessSetToNothing();  // Not Authenticated!
@@ -190,9 +190,9 @@ abstract class OperationVisitor
                     $this->storedCredential, $proxy->clientId, $proxy->hashedPassword);
                 Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] credential={$proxy->credential} "
                     . "storedChallenge={$this->storedChallenge} clientId={$proxy->clientId} hashedPassword={$proxy->hashedPassword}", 2);
-                if ($proxy->credential == $referingCredential) {
+                if ($proxy->credential === $referingCredential) {
                     if ($proxy->required2FA) {
-                        if ($proxy->credential2FA == $proxy->generateCredential(
+                        if ($proxy->credential2FA === $proxy->generateCredential(
                                 $this->stored2FAuth, $proxy->clientId, $proxy->hashedPassword)) {
                             Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] Credential and 2FA passed.", 2);
                             return true;
@@ -204,7 +204,7 @@ abstract class OperationVisitor
                 }
                 break;
             case 'session-storage':
-                if (strlen($proxy->paramResponse) == 0 && strlen($proxy->paramResponse2m) == 0 && strlen($proxy->paramResponse2) == 0) { // password hash on
+                if (strlen($proxy->paramResponse) === 0 && strlen($proxy->paramResponse2m) === 0 && strlen($proxy->paramResponse2) === 0) { // password hash on
                     Logger::getInstance()->setDebugMessage("[checkAuthenticationCommon] Credential failed. No parameters.", 2);
                     $proxy->accessSetToNothing();  // Not Authenticated!
                     return false;
@@ -228,7 +228,7 @@ abstract class OperationVisitor
         Logger::getInstance()->setDebugMessage(
             "[sessionStorageCheckAuth] hashedPassword={$proxy->hashedPassword}/hmac_value={$hmacValue}", 2);
         if (strlen($proxy->hashedPassword) > 0) {
-            if ($proxy->paramResponse == $hmacValue) {
+            if ($proxy->paramResponse === $hmacValue) {
                 Logger::getInstance()->setDebugMessage("[sessionStorageCheckAuth] sha1 hash used.", 2);
                 if ($proxy->migrateSHA1to2) {
                     $salt = hex2bin(substr($proxy->hashedPassword, -8));
@@ -237,10 +237,10 @@ abstract class OperationVisitor
                     $proxy->dbClass->authHandler->authSupportChangePassword($proxy->signedUser, $hashedPw);
                 }
                 return true;
-            } else if ($proxy->paramResponse2m == $hmacValue2m) {
+            } else if ($proxy->paramResponse2m === $hmacValue2m) {
                 Logger::getInstance()->setDebugMessage("[sessionStorageCheckAuth] sha2 hash from sha1 hash used.", 2);
                 return true;
-            } else if ($proxy->paramResponse2 == $hmacValue) {
+            } else if ($proxy->paramResponse2 === $hmacValue) {
                 Logger::getInstance()->setDebugMessage("[sessionStorageCheckAuth] sha2 hash used.", 2);
                 return true;
             } else {
@@ -265,7 +265,7 @@ abstract class OperationVisitor
 
         $tableInfo = $dbSettings->getDataSourceTargetArray();
         $attachedFields = $dbSettings->getAttachedFields();
-        if (!$proxy->ignoreFiles && isset($attachedFields) && $attachedFields[0] == '_im_csv_upload') {
+        if (!$proxy->ignoreFiles && isset($attachedFields) && $attachedFields[0] === '_im_csv_upload') {
             Logger::getInstance()->setDebugMessage("CSV File importing operation gets stated.", 2);
             $uploadFiles = $dbSettings->getAttachedFiles($tableInfo['name']);
             if ($uploadFiles && count($tableInfo) > 0) {
@@ -292,7 +292,7 @@ abstract class OperationVisitor
             if ($proxy->checkValidation()) {
                 $uploadFiles = $dbSettings->getAttachedFiles($tableInfo['name']);
                 if ($proxy->ignoreFiles || !$uploadFiles || count($tableInfo) < 1) { // No attached file.
-                    $result = $proxy->createInDB($access == 'replace');
+                    $result = $proxy->createInDB($access === 'replace');
                     $proxy->outputOfProcessing['newRecordKeyValue'] = $result;
                     $proxy->outputOfProcessing['dbresult'] = $proxy->getUpdatedRecord();
                 } else { // Some files are attached.

@@ -78,10 +78,10 @@ class DefinitionChecker
         $currentPath = '';
         foreach ($this->path as $value) {
             $nextEndPoint = $endPoint[$value] ?? null;
-            if ($nextEndPoint === null && is_integer($value)) {
+            if (is_null($nextEndPoint) && is_integer($value)) {
                 $nextEndPoint = $endPoint['*'] ?? null;
             }
-            if ($nextEndPoint === null && is_string($value)) {
+            if (is_null($nextEndPoint) && is_string($value)) {
                 $nextEndPoint = $endPoint['#'] ?? null;
             }
             $endPoint = $nextEndPoint;
@@ -99,7 +99,7 @@ class DefinitionChecker
             }
         } else {
             $judge = false;
-            if ($endPoint === null) {
+            if (is_null($endPoint)) {
                 $this->message .= "$currentPath includes an undefined keyword. ";
             } else if ($endPoint === 'string') {
                 if (!is_string($items)) {

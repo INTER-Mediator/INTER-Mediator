@@ -133,7 +133,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 
         $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
         $createdRecord = $this->db_proxy->getUpdatedRecord();
-        $this->assertTrue($createdRecord != null, "Created record should be exists.");
+        $this->assertTrue(!is_null($createdRecord), "Created record should be exists.");
         $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");
 
         $this->dbProxySetupForAccess("person", 1000000);
@@ -141,7 +141,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $newKeyValue = $this->db_proxy->createInDB();
         $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
         $createdRecord = $this->db_proxy->getUpdatedRecord();
-        $this->assertTrue($createdRecord != null, "Created record should be exists.");
+        $this->assertTrue(!is_null($createdRecord), "Created record should be exists.");
         $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");
 
         $nameValue = "unknown, oh mygod!";
@@ -155,7 +155,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->db_proxy->requireUpdatedRecord(true);
         $result = $this->db_proxy->updateDB(false);
         $createdRecord = $this->db_proxy->getUpdatedRecord();
-        $this->assertTrue($createdRecord != null, "Update record should be exists.");
+        $this->assertTrue(!is_null($createdRecord), "Update record should be exists.");
         $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");
         $this->assertTrue($createdRecord[0]["name"] === $nameValue, "Field value is not same as the definition.");
         $this->assertTrue($createdRecord[0]["address"] === $addressValue, "Field value is not same as the definition.");

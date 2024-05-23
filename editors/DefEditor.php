@@ -31,11 +31,11 @@ function getValueFromArray($ar, $index1, $index2 = null, $index3 = null)
         if (isset($ar[$index1][$index2][$index3])) {
             $value = $ar[$index1][$index2][$index3];
         }
-    } else if ($index1 !== null && $index2 !== null && $index3 === null) {
+    } else if (!is_null($index1) && !is_null($index2) && is_null($index3)) {
         if (isset($ar[$index1][$index2])) {
             $value = $ar[$index1][$index2];
         }
-    } else if ($index1 !== null && $index2 === null && $index3 === null) {
+    } else if (!is_null($index1) && is_null($index2) && is_null($index3)) {
         if (isset($ar[$index1])) {
             $value = $ar[$index1];
         }

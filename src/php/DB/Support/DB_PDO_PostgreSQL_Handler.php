@@ -122,7 +122,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     public function sqlSETClause(string $tableName, array $setColumnNames, string $keyField, array $setValues): string
     {
         [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $setValues);
-        return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
+        return (count($setColumnNames) === 0) ? "DEFAULT VALUES" :
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
@@ -135,7 +135,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
 //        }
 //        $fieldArray = [];
 //        foreach ($result as $row) {
-//            if ($row[$this->fieldNameForNullable] == "YES") {
+//            if ($row[$this->fieldNameForNullable] === "YES") {
 //                $fieldArray[] = $row[$this->fieldNameForField];
 //            }
 //        }
@@ -156,7 +156,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
      */
     protected function checkNullableField(string $info): bool
     {
-        return $info == 'YES';
+        return $info === 'YES';
     }
 
     /**
@@ -269,7 +269,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
      */
     protected function setValue(string $value, array $row): string
     {
-        if ($row['is_nullable'] && $value == '') {
+        if ($row['is_nullable'] && $value === '') {
             return 'NULL';
         }
         return $this->dbClassObj->link->quote($value);
@@ -309,7 +309,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     {
         $checkFieldDefinition = function (string $type, int $len, int $min): bool {
             $fDef = strtolower($type);
-            if ($fDef != 'text' && $fDef == 'character varying') {
+            if ($fDef != 'text' && $fDef === 'character varying') {
                 if ($len < $min) {
                     return false;
                 }
@@ -323,7 +323,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         if ($infoAuthUser) {
             foreach ($infoAuthUser as $fieldInfo) {
                 if (isset($fieldInfo['column_name'])
-                    && $fieldInfo['column_name'] == 'hashedpasswd'
+                    && $fieldInfo['column_name'] === 'hashedpasswd'
                     && !$checkFieldDefinition($fieldInfo['data_type'], $fieldInfo['character_maximum_length'], 72)) {
                     $returnValue[] = "The hashedpassword field of the authuser table has to be longer than 72 characters.";
                 }
@@ -332,12 +332,12 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         if ($infoIssuedHash) {
             foreach ($infoIssuedHash as $fieldInfo) {
                 if (isset($fieldInfo['column_name'])
-                    && $fieldInfo['column_name'] == 'clienthost'
+                    && $fieldInfo['column_name'] === 'clienthost'
                     && !$checkFieldDefinition($fieldInfo['data_type'], $fieldInfo['character_maximum_length'], 64)) {
                     $returnValue[] = "The clienthost field of the issuedhash table has to be longer than 64 characters.";
                 }
                 if (isset($fieldInfo['column_name'])
-                    && $fieldInfo['column_name'] == 'hash'
+                    && $fieldInfo['column_name'] === 'hash'
                     && !$checkFieldDefinition($fieldInfo['data_type'], $fieldInfo['character_maximum_length'], 64)) {
                     $returnValue[] = "The hash field of the issuedhash table has to be longer than 64 characters.";
                 }
