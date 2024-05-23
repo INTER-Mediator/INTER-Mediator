@@ -2,6 +2,7 @@
 
 namespace INTERMediator\DB\Support\ProxyVisitors;
 
+use Exception;
 use INTERMediator\DB\Support\ProxyElements\OperationElement;
 use INTERMediator\DB\Logger;
 

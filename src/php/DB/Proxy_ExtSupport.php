@@ -4,6 +4,8 @@ namespace INTERMediator\DB;
 
 /* Easy DB Programming Support */
 
+use Exception;
+
 /**
  *
  */
@@ -40,9 +42,13 @@ trait Proxy_ExtSupport
 
     /**
      * @return ?Proxy
+     * @throws Exception
      */
     public function getExtProxy(): ?Proxy
     {
+        if(!$this->extProxy){
+            throw new Exception("The proxy object doesn't instanciate so far.");
+        }
         return $this->extProxy;
     }
 
@@ -88,6 +94,7 @@ trait Proxy_ExtSupport
      * @param array|null $sort
      * @param array|null $spec
      * @return array|null
+     * @throws Exception
      */
     public function dbRead(string $target, ?array $query = null, ?array $sort = null, ?array $spec = null): ?array
     {
@@ -107,6 +114,7 @@ trait Proxy_ExtSupport
      * @param array|null $data
      * @param array|null $spec
      * @return array|null
+     * @throws Exception
      */
     public function dbUpdate(string $target, ?array $query = null, ?array $data = null, ?array $spec = null): ?array
     {
@@ -125,6 +133,7 @@ trait Proxy_ExtSupport
      * @param array|null $data
      * @param array|null $spec
      * @return array|null
+     * @throws Exception
      */
     public function dbCreate(string $target, ?array $data = null, ?array $spec = null): ?array
     {
@@ -142,6 +151,7 @@ trait Proxy_ExtSupport
      * @param array|null $query
      * @param array|null $spec
      * @return array|null
+     * @throws Exception
      */
     public function dbDelete(string $target, ?array $query = null, ?array $spec = null): ?array
     {
@@ -163,6 +173,7 @@ trait Proxy_ExtSupport
      */
     public function dbCopy(string $target, ?array $query = null, ?array $sort = null, ?array $spec = null): ?array
     {
+        // To be implemented.
         return null;
     }
 
@@ -190,6 +201,7 @@ trait Proxy_ExtSupport
      * @param string $target
      * @param array|null $spec
      * @return void
+     * @throws Exception
      */
     private function initializeSpec(string $target, ?array $spec): void
     {

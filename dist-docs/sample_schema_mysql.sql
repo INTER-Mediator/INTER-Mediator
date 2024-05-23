@@ -799,12 +799,13 @@ CREATE TABLE registeredpks
 
 CREATE TABLE authuser
 (
-    id           INT AUTO_INCREMENT,
-    username     VARCHAR(64),
-    hashedpasswd VARCHAR(72),
-    realname     VARCHAR(20),
-    email        VARCHAR(100),
-    limitdt      DATETIME,
+    id              INT AUTO_INCREMENT,
+    username        VARCHAR(64),
+    hashedpasswd    VARCHAR(72),
+    realname        VARCHAR(20),
+    email           VARCHAR(100),
+    limitdt         DATETIME,
+    initialPassword VARCHAR(30),
     PRIMARY KEY (id)
 ) CHARACTER SET utf8mb4,
   COLLATE utf8mb4_unicode_ci
@@ -994,29 +995,29 @@ VALUES (2, '@@mail@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'テス
         'テストメールです。@@name@@様宛で、送信先は@@mail@@です。');
 
 INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
-VALUES (991, '@@mail@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'ユーザ登録の確認', CONCAT(
-        '@@2@@ 様（@@1@@）\n\nユーザ登録を受け付けました。1時間以内に、以下のリンクのサイトに接続してください。\n\n',
-        '接続後にアカウントを発行してご指定のメールアドレスに送付します。\n\n<< Path to the script >>/confirm.php?c=@@3@@\n\n',
+VALUES (991, '@@email@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'ユーザ登録の確認', CONCAT(
+        '@@realname@@ 様（@@email@@）\n\nユーザ登録を受け付けました。1時間以内に、以下のリンクのサイトに接続してください。\n\n',
+        '接続後にアカウントを発行してご指定のメールアドレスに送付します。\n\n<< Path to the script >>/confirm.php?c=@@hash@@\n\n',
         '___________________________________\ninfo@msyk.net - Masayuki Nii'));
 
 INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
-VALUES (992, '@@mail@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'ユーザ登録の完了', CONCAT(
-        '@@2@@ 様（@@1@@）\n\nユーザ登録が完了しました。こちらのページにログインできるようになりました。',
-        'ログインページ：\n<< URL to any page >>\n\nユーザ名： @@1@@\n初期パスワード： @@3@@\n\n',
+VALUES (992, '@@email@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'ユーザ登録の完了', CONCAT(
+        '@@realname@@ 様（@@email@@）\n\nユーザ登録が完了しました。こちらのページにログインできるようになりました。',
+        'ログインページ：\n<< URL to any page >>\n\nユーザ名： @@username@@\n初期パスワード： @@initialPassword@@\n\n',
         '※ 初期パスワードは極力早めに変更してください。\n',
         '___________________________________\ninfo@msyk.net - Masayuki Nii'));
 
 INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
-VALUES (993, '@@mail@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'パスワードのリセットを受け付けました',
+VALUES (993, '@@email@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'パスワードのリセットを受け付けました',
         CONCAT(
-                'パスワードのリセットを受け付けました。\n\nメールアドレス：@@1@@\n\n',
+                'パスワードのリセットを受け付けました。\n\nメールアドレス：@@email@@\n\n',
                 '以下のリンクをクリックし、新しいパスワードをご入力ください。\n\n',
-                '<< Path to the script >>/resetpassword.php?c=@@2@@\n\n',
+                '<< Path to the script >>/resetpassword.html?c=@@hash@@\n\n',
                 '___________________________________\ninfo@msyk.net - Masayuki Nii'));
 
 INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
-VALUES (994, '@@mail@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'パスワードをリセットしました', CONCAT(
-        '以下のアカウントのパスワードをリセットしました。\n\nアカウント（メールアドレス）：@@1@@\n\n',
+VALUES (994, '@@email@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'パスワードをリセットしました', CONCAT(
+        '以下のアカウントのパスワードをリセットしました。\n\nアカウント（メールアドレス）：@@email@@\n\n',
         '以下のリンクをクリックし、新しいパスワードでマイページにログインしてください。\n\n<< Path to any page >>\n\n',
         '___________________________________\ninfo@msyk.net - Masayuki Nii'));
 

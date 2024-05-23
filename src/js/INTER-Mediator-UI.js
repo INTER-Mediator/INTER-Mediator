@@ -142,7 +142,6 @@ const IMLibUI = {
             let contextInfoCapt = contextInfo
             let newValueCapt = newValue
             let completeTaskCapt = completeTask
-            let nodeInfoCapt = nodeInfo
             return async function (result) {
               let updateRequiredContext, currentValue, associatedNode, field, node, children, delNodes,
                 recordObj, keepProp
@@ -227,7 +226,6 @@ const IMLibUI = {
             return response
           },
           (function () {
-            let changedObjectCapt = changedObj
             let completeTaskCapt = completeTask
             return function (initialvalue, newValue, currentFieldVal) {
               if (completeTaskCapt) {
@@ -235,10 +233,6 @@ const IMLibUI = {
               }
               if (!window.confirm(INTERMediatorLib.getInsertedString(
                 INTERMediatorOnPage.getMessages()[1001], [initialvalue, newValue, currentFieldVal]))) {
-                window.setTimeout(function () {
-                  //changedObjectCapt.focus()
-                }, 0)
-
                 INTERMediatorOnPage.hideProgress()
                 return false
               }
@@ -800,6 +794,9 @@ const IMLibUI = {
 
     if (INTERMediatorOnPage.processingBeforePostOnlyContext) {
       hasInvalid = !INTERMediatorOnPage.processingBeforePostOnlyContext(targetNode)
+      if(hasInvalid){
+        return
+      }
     }
 
     INTERMediatorOnPage.showProgress()

@@ -43,13 +43,14 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
      * @param string|null $uid
      * @param string $challenge
      * @param string $clientId
+     * @param string $prefix
      * @return void
      * @throws Exception
      */
     public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId, string $prefix = ""): void
     {
         $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
+        if (is_null($hashTable)) {
             return;
         }
         if ($uid < 1) {
@@ -132,6 +133,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
      * @param string $uid
      * @param string $clientId
      * @param bool $isDelete
+     * @param string $prefix
      * @return string|null
      * @throws Exception
      */
@@ -174,7 +176,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     public function authSupportRemoveOutdatedChallenges(): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
+        if (is_null($hashTable)) {
             return false;
         }
 
@@ -212,7 +214,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     public function authSupportRetrieveHashedPassword(string $username): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
-        if ($userTable == null) {
+        if (is_null($userTable)) {
             return null;
         }
 
@@ -274,7 +276,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     public function authSupportChangePassword(string $username, string $hashednewpassword): bool
     {
         $userTable = $this->dbSettings->getUserTable();
-        if ($userTable == null) {
+        if (is_null($userTable)) {
             return false;
         }
 
@@ -309,7 +311,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     }
 
     /**
-     * @param string $username
+     * @param string|null $username
      * @return string|null
      * @throws Exception
      */
@@ -415,7 +417,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
         $this->logger->setDebugMessage($this->fmdb->stringWithoutCredential($result['URL']));
         $usernameCandidate = '';
         foreach ($result['data'] as $row) {
-            if ($row['username'][0] == $username) {
+            if ($row['username'][0] === $username) {
                 $usernameCandidate = $username;
             }
             if ($row['email'][0] == $username) {
@@ -492,7 +494,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     private bool $firstLevel;
 
     /**
-     * @param string $groupid
+     * @param string|null $groupid
      * @return void
      * @throws Exception
      */
@@ -529,7 +531,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     public function authSupportStoreIssuedHashForResetPassword(string $userid, string $clienthost, string $hash): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
+        if (is_null($hashTable)) {
             return false;
         }
         $currentDT = new DateTime();
@@ -558,7 +560,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     public function authSupportCheckIssuedHashForResetPassword(string $userid, string $randdata, string $hash): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
+        if (is_null($hashTable)) {
             return false;
         }
         $this->fmdb->setupFXforAuth($hashTable, 1);
@@ -643,7 +645,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     public function authSupportUserEnrollmentStart(string $userid, string $hash): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
+        if (is_null($hashTable)) {
             return false;
         }
         $this->fmdb->setupFXforAuth($hashTable, 1);

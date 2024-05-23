@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ */  -->
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <title>INTER-Mediator - Account</title>
+    <script src="MySQL_contexts.php"></script>
+</head>
+<body>
+<h1 style="font-weight:bold;color:blueviolet">Mail Template Management System</h1>
+<div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
+<table>
+    <tbody>
+    <tr>
+        <th colspan="4">&nbsp;</th>
+        <th></th>
+    </tr>
+    <tr>
+        <th>id</th>
+        <td>
+            <span data-im="mailtemplate@id"></span>
+        </td>
+        <th>subject</th>
+        <td colspan="2">
+            <input data-im="mailtemplate@subject" type="text" size="60">
+        </td>
+    </tr>
+    <tr>
+        <th>to</th>
+        <td>
+            <input data-im="mailtemplate@to_field" type="text">
+        </td>
+        <th rowspan="4">body</th>
+        <td rowspan="4">
+            <textarea data-im="mailtemplate@body" style="width: 400px; height: 200px"></textarea>
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <th>cc</th>
+        <td>
+            <input data-im="mailtemplate@cc_field" type="text">
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <th>bcc</th>
+        <td>
+            <input data-im="mailtemplate@bcc_field" type="text">
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <th>from</th>
+        <td>
+            <input data-im="mailtemplate@from_field" type="text">
+        </td>
+        <td></td>
+    </tr>
+
+    </tbody>
+</table>
+</body>
+</html>

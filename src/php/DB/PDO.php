@@ -200,8 +200,8 @@ class PDO extends DBClass
     {
         $errorCode = $this->link->errorCode();
         $errorClass = strlen($errorCode) < 2 ? "00" : substr($errorCode, 0, 2);
-        if ($errorClass != "00") {
-            if ($errorClass == "01") {
+        if ($errorClass !== "00") {
+            if ($errorClass === "01") {
                 $this->logger->setWarningMessage(var_export($this->link->errorInfo(), true));
             } else {
                 $this->errorMessageStore('[ERROR] SQL:' . $sql);
@@ -299,8 +299,8 @@ class PDO extends DBClass
 
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
-                if ($condition['db-operation'] == 'load' || $condition['db-operation'] == 'read') {
-                    if ($condition['situation'] == 'pre') {
+                if ($condition['db-operation'] === 'load' || $condition['db-operation'] === 'read') {
+                    if ($condition['situation'] === 'pre') {
                         $sql = $condition['definition'];
                         $this->logger->setDebugMessage($sql);
                         $result = $this->link->query($sql);
@@ -412,8 +412,8 @@ class PDO extends DBClass
         }
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
-                if ($condition['db-operation'] == 'load' || $condition['db-operation'] == 'read') {
-                    if ($condition['situation'] == 'post') {
+                if ($condition['db-operation'] === 'load' || $condition['db-operation'] === 'read') {
+                    if ($condition['situation'] === 'post') {
                         $sql = $condition['definition'];
                         $this->logger->setDebugMessage($sql);
                         $result = $this->link->query($sql);
@@ -504,7 +504,7 @@ class PDO extends DBClass
 
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
-                if ($condition['db-operation'] == 'update' && $condition['situation'] == 'pre') {
+                if ($condition['db-operation'] === 'update' && $condition['situation'] === 'pre') {
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
@@ -612,7 +612,7 @@ class PDO extends DBClass
 
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
-                if ($condition['db-operation'] == 'update' && $condition['situation'] == 'post') {
+                if ($condition['db-operation'] === 'update' && $condition['situation'] === 'post') {
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
@@ -656,8 +656,8 @@ class PDO extends DBClass
         $setValues = array();
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
-                if (($condition['db-operation'] == 'new' || $condition['db-operation'] == 'create')
-                    && $condition['situation'] == 'pre'
+                if (($condition['db-operation'] === 'new' || $condition['db-operation'] === 'create')
+                    && $condition['situation'] === 'pre'
                 ) {
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
@@ -700,13 +700,13 @@ class PDO extends DBClass
             $authInfoField = $this->authHandler->getFieldForAuthorization("create");
             $authInfoTarget = $this->authHandler->getTargetForAuthorization("create");
             if (!$this->authHandler->getNoSetForAuthorization("create")) {
-                if ($authInfoTarget == 'field-user') {
+                if ($authInfoTarget === 'field-user') {
                     $setColumnNames[] = $authInfoField;
-                    $setValues[] = strlen($signedUser) == 0 ? IMUtil::randomString(10) : $signedUser;
-                } else if ($authInfoTarget == 'field-group') {
+                    $setValues[] = strlen($signedUser) === 0 ? IMUtil::randomString(10) : $signedUser;
+                } else if ($authInfoTarget === 'field-group') {
                     $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($signedUser);
                     $setColumnNames[] = $authInfoField;
-                    $setValues[] = strlen($belongGroups[0]) == 0 ? IMUtil::randomString(10) : $belongGroups[0];
+                    $setValues[] = strlen($belongGroups[0]) === 0 ? IMUtil::randomString(10) : $belongGroups[0];
                 }
             }
         }
@@ -725,7 +725,7 @@ class PDO extends DBClass
         }
         $seqObject = $tableInfo['sequence'] ?? "{$this->dbSettings->getEntityForUpdate()}_{$keyField}_seq";
         $lastKeyValue = $this->handler->lastInsertIdAlt($seqObject, $tableNameRow); // $this->link->lastInsertId($seqObject);
-        if (/* $isReplace && */ $lastKeyValue == 0) { // lastInsertId returns 0 after replace command.
+        if (/* $isReplace && */ !$lastKeyValue) { // lastInsertId returns 0 after replace command.
             // Moreover, about MySQL, it returns 0 with the key field without AUTO_INCREMENT.
             $lastKeyValue = -999; // This means kind of error, so avoid to set non-zero value.
         }
@@ -747,8 +747,8 @@ class PDO extends DBClass
 
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
-                if (($condition['db-operation'] == 'new' || $condition['db-operation'] == 'create')
-                    && $condition['situation'] == 'post'
+                if (($condition['db-operation'] === 'new' || $condition['db-operation'] === 'create')
+                    && $condition['situation'] === 'post'
                 ) {
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
@@ -779,7 +779,7 @@ class PDO extends DBClass
 
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
-                if ($condition['db-operation'] == 'delete' && $condition['situation'] == 'pre') {
+                if ($condition['db-operation'] === 'delete' && $condition['situation'] === 'pre') {
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
@@ -957,7 +957,7 @@ class PDO extends DBClass
             return null;
         }
         if (!$this->setupConnection()) { //Establish the connection
-            $this->errorMessageStore("Can't open db connection . ");
+            $this->errorMessageStore("Can't open db connection.");
             return null;
         }
         $sql = "{$this->handler->sqlSELECTCommand()}* FROM "
@@ -993,7 +993,7 @@ class PDO extends DBClass
             return false;
         }
         if (!$this->setupConnection()) { //Establish the connection
-            $this->errorMessageStore("Can't open db connection . ");
+            $this->errorMessageStore("Can't open db connection.");
             return false;
         }
         $sql = "{$this->handler->sqlDELETECommand()}"

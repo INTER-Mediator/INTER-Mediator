@@ -80,7 +80,7 @@ trait DB_PDO_SQLSupport
      * @throws Exception
      */
     private function generateWhereClause(array $conditions, string $primaryKey, array $numericFields,
-                                         bool  $isExtra = false, string $insideOp = ' AND ', string $outsideOp = ' OR ')
+                                         bool  $isExtra = false, string $insideOp = ' AND ', string $outsideOp = ' OR '): string
     {
         $fieldOp = ' OR ';
         $groupOp = ' OR ';
@@ -91,13 +91,13 @@ trait DB_PDO_SQLSupport
         $isInBlock = false;
         foreach ($conditions as $condition) {
             if (isset($condition['field'])) {
-                if ($isExtra && $condition['field'] == $primaryKey && isset($condition['value'])) {
+                if ($isExtra && $condition['field'] === $primaryKey && isset($condition['value'])) {
                     $this->notifyHandler->setQueriedPrimaryKeys(array($condition['value']));
                 }
-                if ($condition['field'] == '__operation__') {
+                if ($condition['field'] === '__operation__') {
                     $chunkCount++;
                     if (isset($condition['operator'])) {
-                        if ($condition['operator'] == 'ex') {
+                        if ($condition['operator'] === 'ex') {
                             $insideOp = ' OR ';
                             $outsideOp = ' AND ';
                         } else if (strpos($condition['operator'], 'block') === 0) {
@@ -137,7 +137,7 @@ trait DB_PDO_SQLSupport
                     }
                     $result .= ($isMultiValue ? '(' : '') . $resultItem . ($isMultiValue ? ')' : '');
                     $isInBlock += 1;
-                } else if ((!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey)) {
+                } else if ((!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] === $primaryKey)) {
                     if (!isset($condition['operator'])) {
                         $condition['operator'] = '=';
                     }
@@ -148,7 +148,7 @@ trait DB_PDO_SQLSupport
                     }
                     if (isset($condition['value'])) {
                         $isNumeric = in_array($condition['field'], $numericFields);
-                        $isINOperator = strtolower(trim($condition['operator'])) == "in";
+                        $isINOperator = strtolower(trim($condition['operator'])) === "in";
                         if (preg_match('/^@(.*)@$/', $condition['value'], $output)) {
                             $escapedValue = $this->handler->quotedEntityName($output[1]);
                             $isNumeric = false;
@@ -162,7 +162,7 @@ trait DB_PDO_SQLSupport
                             if ($isINOperator) {
                                 $queryClauseArray[$chunkCount][]
                                     = "{$escapedField} {$condition['operator']} {$escapedValue}";
-                            } else if (strtolower(trim($condition['operator'])) == "like") {
+                            } else if (strtolower(trim($condition['operator'])) === "like") {
                                 $queryClauseArray[$chunkCount][]
                                     = $this->handler->getSQLNumericToLikeOpe($escapedField, $escapedValue);
                             } else {
@@ -186,17 +186,19 @@ trait DB_PDO_SQLSupport
         return $result;
     }
 
-    private function processingValue(string $str)
+    private function processingValue(string $str): string
     {
         return $str;
     }
 
     /**
-     * @param $currentOperation
+     * @param string $currentOperation
      * @param bool $includeContext
      * @param bool $includeExtra
-     * @param string $signedUser
+     * @param string|null $signedUser
+     * @param bool $bypassAuth
      * @return string
+     * @throws Exception
      */
     private function getWhereClause(string  $currentOperation, bool $includeContext = true, bool $includeExtra = true,
                                     ?string $signedUser = '', bool $bypassAuth = false): string
@@ -204,7 +206,7 @@ trait DB_PDO_SQLSupport
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $queryClause = '';
         $primaryKey = $tableInfo['key'] ?? 'id';
-        if ($currentOperation == 'read' || $currentOperation == 'query') {
+        if ($currentOperation === 'read' || $currentOperation === 'query') {
             $targetEntity = $this->dbSettings->getEntityForRetrieve();
         } else {
             $targetEntity = $this->dbSettings->getEntityForUpdate();
@@ -218,13 +220,13 @@ trait DB_PDO_SQLSupport
         }
         $exCriteria = $this->dbSettings->getExtraCriteria();
         if ($includeExtra && isset($exCriteria[0])) {
-            $queryClause = ($queryClause == '' ? '' : "($queryClause) AND ")
+            $queryClause = ($queryClause === '' ? '' : "($queryClause) AND ")
                 . '(' . $this->generateWhereClause($exCriteria, $primaryKey, $numericFields, true) . ')';
         }
         if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
             foreach ($tableInfo['relation'] as $relDef) {
                 foreach ($this->dbSettings->getForeignFieldAndValue() as $foreignDef) {
-                    if ($relDef['join-field'] == $foreignDef['field']) {
+                    if ($relDef['join-field'] === $foreignDef['field']) {
                         $escapedField = $this->handler->quotedEntityName($relDef['foreign-key']);
                         $escapedValue = $this->link->quote($foreignDef['value']);
                         $op = $relDef['operator'] ?? '=';
@@ -232,14 +234,14 @@ trait DB_PDO_SQLSupport
                             throw new Exception("Invalid Operator.");
                         }
                         $queryClause = (($queryClause != '') ? "({$queryClause}) AND " : '')
-                            . ((!in_array($relDef['foreign-key'], $numericFields) || strtolower($op) == 'in')
+                            . ((!in_array($relDef['foreign-key'], $numericFields) || strtolower($op) === 'in')
                                 ? "{$escapedField}{$op}{$escapedValue}"
                                 : ("{$escapedField}{$op}" . floatval($foreignDef['value'])));
                     }
                 }
             }
         }
-        $keywordAuth = (($currentOperation == "load") || ($currentOperation == "select"))
+        $keywordAuth = (($currentOperation === "load") || ($currentOperation === "select"))
             ? "read" : $currentOperation;
         if (isset($tableInfo['authentication'])
             && ((isset($tableInfo['authentication']['all'])
@@ -295,6 +297,7 @@ trait DB_PDO_SQLSupport
     /* Genrate SQL Sort and Where clause */
     /**
      * @return string
+     * @throws Exception
      */
     private function getSortClause(): string
     {

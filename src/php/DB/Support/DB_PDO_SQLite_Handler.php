@@ -131,7 +131,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
     public function sqlSETClause(string $tableName, array $setColumnNames, string $keyField, array $setValues): string
     {
         [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $setValues);
-        return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
+        return (count($setColumnNames) === 0) ? "DEFAULT VALUES" :
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
@@ -149,7 +149,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
      */
     protected function checkNullableField(string $info): bool
     {
-        return $info == 0;
+        return intval($info) === 0;
     }
 
     /**
@@ -308,7 +308,7 @@ contact_way|6
         if ($infoAuthUser) {
             foreach ($infoAuthUser as $fieldInfo) {
                 if (isset($fieldInfo['name'])
-                    && $fieldInfo['name'] == 'hashedpasswd'
+                    && $fieldInfo['name'] === 'hashedpasswd'
                     && !$checkFieldDefinition($fieldInfo['type'], 72)) {
                     $returnValue[] = "The hashedpassword field of the authuser table has to be longer than 72 characters.";
                 }
@@ -317,12 +317,12 @@ contact_way|6
         if ($infoIssuedHash) {
             foreach ($infoIssuedHash as $fieldInfo) {
                 if (isset($fieldInfo['name'])
-                    && $fieldInfo['name'] == 'clienthost'
+                    && $fieldInfo['name'] === 'clienthost'
                     && !$checkFieldDefinition($fieldInfo['type'], 64)) {
                     $returnValue[] = "The clienthost field of the issuedhash table has to be longer than 64 characters.";
                 }
                 if (isset($fieldInfo['name'])
-                    && $fieldInfo['name'] == 'hash'
+                    && $fieldInfo['name'] === 'hash'
                     && !$checkFieldDefinition($fieldInfo['type'], 64)) {
                     $returnValue[] = "The hash field of the issuedhash table has to be longer than 64 characters.";
                 }

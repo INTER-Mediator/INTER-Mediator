@@ -43,13 +43,14 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @param string|null $uid
      * @param string $challenge
      * @param string $clientId
+     * @param string $prefix
      * @return void
      * @throws Exception
      */
     public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId, string $prefix = ""): void
     {
         $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
+        if (is_null($hashTable)) {
             return;
         }
         if ($uid < 1) {
@@ -133,7 +134,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     public function authSupportCheckMediaToken(string $uid): ?string
     {
         $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
+        if (is_null($hashTable)) {
             return null;
         }
         if ($uid < 1) {
@@ -179,12 +180,13 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
      * @param string $uid
      * @param string $clientId
      * @param bool $isDelete
+     * @param string $prefix
      * @return string|null
      */
     public function authSupportRetrieveChallenge(string $uid, string $clientId, bool $isDelete = true, string $prefix = ""): ?string
     {
         $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
+        if (is_null($hashTable)) {
             return null;
         }
         if ($uid < 1) {
@@ -242,7 +244,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     public function authSupportRemoveOutdatedChallenges(): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
+        if (is_null($hashTable)) {
             return false;
         }
 
@@ -301,7 +303,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     public function authSupportRetrieveHashedPassword(string $username): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
-        if ($userTable == null) {
+        if (is_null($userTable)) {
             return null;
         }
 
@@ -393,7 +395,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     public function authSupportChangePassword(string $username, string $hashednewpassword): bool
     {
         $userTable = $this->dbSettings->getUserTable();
-        if ($userTable == null) {
+        if (is_null($userTable)) {
             return false;
         }
 
@@ -441,13 +443,13 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string $username
+     * @param string|null $username
      * @return string|null
      */
     public function authSupportGetUserIdFromUsername(?string $username): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
-        if ($userTable == null || !$username) {
+        if (is_null($userTable) || !$username) {
             return null;
         }
         $username = $this->authSupportUnifyUsernameAndEmail($username);
@@ -487,7 +489,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     public function authSupportGetUsernameFromUserId(string $userid): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
-        if ($userTable == null || !$userid) {
+        if (is_null($userTable) || !$userid) {
             return null;
         }
         $this->fmdb->setupFMDataAPIforDB($userTable, 1);
@@ -526,7 +528,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     public function authSupportGetUserIdFromEmail(string $email): ?string
     {
         $userTable = $this->dbSettings->getUserTable();
-        if ($userTable == null || !$email) {
+        if (is_null($userTable) || !$email) {
             return null;
         }
         $this->fmdb->setupFMDataAPIforDB_Alt($userTable, 1);
@@ -568,7 +570,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             return $username;
         }
         $userTable = $this->dbSettings->getUserTable();
-        if ($userTable == null || $username == 0 || $username === '') {
+        if (is_null($userTable) || $username === 0 || $username === '') {
             return null;
         }
         $this->fmdb->setupFMDataAPIforDB_Alt($userTable, 55555);
@@ -676,7 +678,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     private bool $firstLevel;
 
     /**
-     * @param string $groupid
+     * @param string|null $groupid
      * @return void
      */
     private function resolveGroup(?string $groupid): void
@@ -723,7 +725,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     public function authSupportStoreIssuedHashForResetPassword(string $userid, string $clienthost, string $hash): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
+        if (is_null($hashTable)) {
             return false;
         }
         $currentDT = new DateTime();
@@ -756,7 +758,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     public function authSupportCheckIssuedHashForResetPassword(string $userid, string $randdata, string $hash): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
+        if (is_null($hashTable)) {
             return false;
         }
         $this->fmdb->setupFMDataAPIforAuth($hashTable, 1);
@@ -859,7 +861,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     public function authSupportUserEnrollmentStart(string $userid, string $hash): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
+        if (is_null($hashTable)) {
             return false;
         }
         $this->fmdb->setupFMDataAPIforAuth($hashTable, 1);
@@ -888,7 +890,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     {
         $hashTable = $this->dbSettings->getHashTable();
         $userTable = $this->dbSettings->getUserTable();
-        if ($hashTable == null || $userTable == null) {
+        if (is_null($hashTable) || is_null($userTable)) {
             return null;
         }
         $this->fmdb->setupFMDataAPIforAuth($hashTable, 1);
@@ -928,7 +930,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     {
         $hashTable = $this->dbSettings->getHashTable();
         $userTable = $this->dbSettings->getUserTable();
-        if ($hashTable == null || $userTable == null) {
+        if (is_null($hashTable) || is_null($userTable)) {
             return null;
         }
         $this->fmdb->setupFMDataAPIforDB_Alt($userTable, 1);

@@ -50,7 +50,7 @@ trait Proxy_Auth
             ?? Params::getParameterValue("authExpired", 3600);
         $this->realm = $options['authentication']['realm']
             ?? Params::getParameterValue("authRealm", '');
-        $this->required2FA = isset($options['authentication']['is-required-2FA'])
+        $this->required2FA = isset($options['authentication']['is-required-2FA']) // Don't replace with ??
             ? $options['authentication']['is-required-2FA'] : Params::getParameterValue("isRequired2FA", '');
         $this->digitsOf2FACode = $options['authentication']['digits-of-2FA-Code']
             ?? Params::getParameterValue("digitsOf2FACode", 4);
@@ -171,10 +171,10 @@ trait Proxy_Auth
         }
     }
 
-    private function isAuthAccessing()
+    private function isAuthAccessing(): bool
     {
-        return $this->access == 'challenge' || $this->access == 'changepassword'
-            || $this->access == 'credential' || $this->access == 'authenticated';
+        return $this->access === 'challenge' || $this->access === 'changepassword'
+            || $this->access === 'credential' || $this->access === 'authenticated';
     }
 
     /**
@@ -235,7 +235,7 @@ trait Proxy_Auth
     }
 
     /**
-     * @param string $username The username as the username field of authuser table.
+     * @param string|null $username The username as the username field of authuser table.
      * @return string
      */
     public function authSupportGetSalt(?string $username): ?string
@@ -279,7 +279,7 @@ trait Proxy_Auth
 //        $this->authDbClass->authHandler->authSupportRemoveOutdatedChallenges();
 //        // Database user mode is user_id=0
 //        $storedChallenge = $this->authDbClass->authHandler->authSupportRetrieveChallenge(0, $clientId);
-//        if ($storedChallenge && strlen($storedChallenge) == 48 && $storedChallenge == $challenge) { // ex.fc0d54312ce33c2fac19d758
+//        if ($storedChallenge && strlen($storedChallenge) === 48 && $storedChallenge === $challenge) { // ex.fc0d54312ce33c2fac19d758
 //            $returnValue = true;
 //        }
 //        return $returnValue;
@@ -300,7 +300,7 @@ trait Proxy_Auth
         $uid = $this->dbClass->authHandler->authSupportGetUserIdFromUsername($user);
         if ($uid) {
             $storedChallenge = $this->authDbClass->authHandler->authSupportCheckMediaToken($uid);
-            if (strlen($storedChallenge) == 48 && $storedChallenge == $token) { // ex.fc0d54312ce33c2fac19d758
+            if (strlen($storedChallenge) === 48 && $storedChallenge === $token) { // ex.fc0d54312ce33c2fac19d758
                 $returnValue = true;
             }
         }

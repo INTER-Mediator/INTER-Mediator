@@ -437,13 +437,13 @@ const IMLibElement = {
     return needPostValueSet
 
     function compareAsNumeric(a, b) {
-      const comb = new String(a) + new String(b)
+      const comb = String(a) + String(b)
       for (let c = 0; c < comb.length; c += 1) {
         if ("0123456789.+-".indexOf(comb.substring(c, c + 1)) < 0) { // a or b might not be numeric.
-          return a == b
+          return a === b
         }
       }
-      return Number(a) == Number(b) // don't set the operator ===
+      return Number(a) === Number(b) // don't set the operator ===
     }
   },
 

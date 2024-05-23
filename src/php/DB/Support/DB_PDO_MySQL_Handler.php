@@ -131,7 +131,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
     public function sqlSETClause(string $tableName, array $setColumnNames, string $keyField, array $setValues): string
     {
         [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $setValues);
-        return (count($setColumnNames) == 0) ? "SET {$keyField}=DEFAULT" :
+        return (count($setColumnNames) === 0) ? "SET {$keyField}=DEFAULT" :
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 

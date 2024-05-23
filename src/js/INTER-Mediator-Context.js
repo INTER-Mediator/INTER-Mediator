@@ -218,7 +218,7 @@ class IMLibContext {
             newValue = IMLibElement.getValueFromIMNode(changedObjectCapt)
             if (newValue !== null) {
               if (targetContextCapt.isPortal) {
-                if (targetContextCapt.potalContainingRecordKV == null) {
+                if (targetContextCapt.potalContainingRecordKV === null) {
                   criteria = Object.keys(targetContextCapt.foreignValue)
                   criteria[1] = targetContextCapt.foreignValue[criteria[0]]
                 } else {

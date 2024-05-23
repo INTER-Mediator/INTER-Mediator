@@ -99,7 +99,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
      */
     public function sqlOrderByCommand(string $sortClause, string $limit, string $offset): string
     {
-        if ($sortClause == '') {
+        if ($sortClause === '') {
             $tableInfo = $this->dbClassObj->dbSettings->getDataSourceTargetArray();
             if ($tableInfo["key"]) {
                 $sortClause = $tableInfo["key"];
@@ -150,7 +150,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
     public function sqlSETClause(string $tableName, array $setColumnNames, string $keyField, array $setValues): string
     {
         [$setNames, $setValuesConv] = $this->sqlSETClauseData($tableName, $setColumnNames, $setValues);
-        return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
+        return (count($setColumnNames) === 0) ? "DEFAULT VALUES" :
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
@@ -160,7 +160,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
      */
     protected function checkNullableField(string $info): bool
     {
-        return $info == 0;
+        return $info === 0;
     }
 
     /**
@@ -301,7 +301,7 @@ xml
     {
         $checkFieldDefinition = function (string $type, int $len, int $min): bool {
             $fDef = strtolower($type);
-            if ($fDef != 'text' && $fDef == 'varchar') {
+            if ($fDef != 'text' && $fDef === 'varchar') {
                 if ($len < $min) {
                     return false;
                 }
@@ -315,7 +315,7 @@ xml
         if ($infoAuthUser) {
             foreach ($infoAuthUser as $fieldInfo) {
                 if (isset($fieldInfo['name'])
-                    && $fieldInfo['name'] == 'hashedpasswd'
+                    && $fieldInfo['name'] === 'hashedpasswd'
                     && !$checkFieldDefinition($fieldInfo['type'], $fieldInfo['max_length'], 72)) {
                     $returnValue[] = "The hashedpassword field of the authuser table has to be longer than 72 characters.";
                 }
@@ -324,12 +324,12 @@ xml
         if ($infoIssuedHash) {
             foreach ($infoIssuedHash as $fieldInfo) {
                 if (isset($fieldInfo['name'])
-                    && $fieldInfo['name'] == 'clienthost'
+                    && $fieldInfo['name'] === 'clienthost'
                     && !$checkFieldDefinition($fieldInfo['type'], $fieldInfo['max_length'], 64)) {
                     $returnValue[] = "The clienthost field of the issuedhash table has to be longer than 64 characters.";
                 }
                 if (isset($fieldInfo['name'])
-                    && $fieldInfo['name'] == 'hash'
+                    && $fieldInfo['name'] === 'hash'
                     && !$checkFieldDefinition($fieldInfo['type'], $fieldInfo['max_length'], 64)) {
                     $returnValue[] = "The hash field of the issuedhash table has to be longer than 64 characters.";
                 }

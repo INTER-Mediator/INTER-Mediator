@@ -30,7 +30,7 @@ class Logger
     /**
      * @var bool
      */
-    private bool $debugLevel = false;
+    private $debugLevel = false;
     /**
      * @var array
      */
@@ -100,7 +100,7 @@ class Logger
     }
 
     /**
-     * @param $setting
+     * @param bool $setting
      * @return bool
      */
     private function getCallersNamespace(bool $setting): bool
@@ -122,11 +122,11 @@ class Logger
     }
 
     /**
-     * @param $str
-     * @param $level
+     * @param string $str
+     * @param int $level
      * @return void
      */
-    public function setDebugMessage($str, $level = 1)
+    public function setDebugMessage(string $str, int $level = 1):void
     {
         if ($this->debugLevel !== false && $this->debugLevel >= $level) {
             $this->debugMessage[] = $str;
@@ -138,13 +138,13 @@ class Logger
     }
 
     /**
-     * @param $msgs
-     * @param $level
+     * @param array $msgs
+     * @param int $level
      * @return void
      */
-    public function setDebugMessages($msgs, $level = 1)
+    public function setDebugMessages(array $msgs, int $level = 1):void
     {
-        if ($this->debugLevel !== false && $this->debugLevel >= $level && is_array($msgs)) {
+        if ($this->debugLevel !== false && $this->debugLevel >= $level) {
             $dt = (new DateTime())->format("y:m:d h:i:s.v");
             foreach ($msgs as $msg) {
                 $this->debugMessage[] = $msg;
@@ -156,10 +156,10 @@ class Logger
     }
 
     /**
-     * @param $str
+     * @param string $str
      * @return void
      */
-    public function setWarningMessage($str)
+    public function setWarningMessage(string $str):void
     {
         $this->warningMessage[] = $str;
         if ($this->warningMessageLogging) {
@@ -169,10 +169,10 @@ class Logger
     }
 
     /**
-     * @param $msgs
+     * @param array $msgs
      * @return void
      */
-    public function setWarningMessages($msgs)
+    public function setWarningMessages(array $msgs):void
     {
         $dt = (new DateTime())->format("y:m:d h:i:s.v");
         foreach ($msgs as $msg) {
@@ -184,10 +184,10 @@ class Logger
     }
 
     /**
-     * @param $str
+     * @param string $str
      * @return void
      */
-    public function setErrorMessage($str)
+    public function setErrorMessage(string $str):void
     {
         $this->errorMessage[] = $str;
         if ($this->errorMessageLogging) {
@@ -197,10 +197,10 @@ class Logger
     }
 
     /**
-     * @param $msgs
+     * @param array $msgs
      * @return void
      */
-    public function setErrorMessages($msgs)
+    public function setErrorMessages(array $msgs):void
     {
         $dt = (new DateTime())->format("y:m:d h:i:s.v");
         foreach ($msgs as $msg) {
@@ -214,7 +214,7 @@ class Logger
     /**
      * @return array
      */
-    public function getMessagesForJS()
+    public function getMessagesForJS():array
     {
         $q = '"';
         $returnData = array();
@@ -236,7 +236,7 @@ class Logger
     /**
      * @return array
      */
-    public function getErrorMessages()
+    public function getErrorMessages():array
     {
         return $this->errorMessage;
     }
@@ -244,7 +244,7 @@ class Logger
     /**
      * @return array
      */
-    public function getWarningMessages()
+    public function getWarningMessages():array
     {
         return $this->warningMessage;
     }
@@ -252,7 +252,7 @@ class Logger
     /**
      * @return array
      */
-    public function getDebugMessages()
+    public function getDebugMessages():array
     {
         return $this->debugMessage;
     }
@@ -260,7 +260,7 @@ class Logger
     /**
      * @return string
      */
-    public function getAllErrorMessages()
+    public function getAllErrorMessages():string
     {
         $returnData = "";
         foreach ($this->errorMessage as $oneError) {
@@ -273,7 +273,7 @@ class Logger
      * @param $val
      * @return void
      */
-    public function setDebugMode($val)
+    public function setDebugMode($val): void
     {
         if ($val === true) {
             $this->debugLevel = 1;
@@ -285,7 +285,7 @@ class Logger
     /**
      * @return array
      */
-    public function getDebugMessage()
+    public function getDebugMessage():array
     {
         return $this->debugMessage;
     }

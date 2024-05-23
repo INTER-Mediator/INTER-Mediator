@@ -524,6 +524,74 @@ CREATE INDEX issuedhash_clienthost
 CREATE INDEX issuedhash_user_id_clienthost
     ON issuedhash (user_id, clienthost);
 
+# Mail Template
+CREATE TABLE mailtemplate
+(
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    to_field   TEXT,
+    bcc_field  TEXT,
+    cc_field   TEXT,
+    from_field TEXT,
+    subject    TEXT,
+    body       TEXT
+);
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (1, '@@Q2@@', '', '', 'msyk@msyk.net', 'ご意見承りました',
+        'ご意見を投稿していただき、ありがとうございます。伺った内容は以下の通りです。よろしくお願いします。\n\nお名前：@@Q1@@\nメールアドレス：@@Q2@@\nご意見：@@Q3@@\n\n====\nINTER-Mediator本部事務局');
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (2, '@@mail@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'テストメール2',
+        'テストメールです。@@name@@様宛で、送信先は@@mail@@です。');
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (991, '@@email@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'ユーザ登録の確認',
+        '@@realname@@ 様（@@email@@）\n\nユーザ登録を受け付けました。1時間以内に、以下のリンクのサイトに接続してください。\n\n'
+        ||'接続後にアカウントを発行してご指定のメールアドレスに送付します。\n\n<< Path to the script >>/confirm.php?c=@@hash@@\n\n'
+        ||'___________________________________\ninfo@msyk.net - Masayuki Nii');
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (992, '@@email@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'ユーザ登録の完了',
+        '@@realname@@ 様（@@email@@）\n\nユーザ登録が完了しました。こちらのページにログインできるようになりました。'
+        ||'ログインページ：\n<< URL to any page >>\n\nユーザ名： @@username@@\n初期パスワード： @@initialPassword@@\n\n'
+        ||'※ 初期パスワードは極力早めに変更してください。\n'
+        ||'___________________________________\ninfo@msyk.net - Masayuki Nii');
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (993, '@@email@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'パスワードのリセットを受け付けました',
+                'パスワードのリセットを受け付けました。\n\nメールアドレス：@@email@@\n\n'
+                ||'以下のリンクをクリックし、新しいパスワードをご入力ください。\n\n'
+                ||'<< Path to the script >>/resetpassword.html?c=@@hash@@\n\n'
+                ||'___________________________________\ninfo@msyk.net - Masayuki Nii');
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (994, '@@email@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'パスワードをリセットしました',
+        '以下のアカウントのパスワードをリセットしました。\n\nアカウント（メールアドレス）：@@email@@\n\n'
+        ||'以下のリンクをクリックし、新しいパスワードでマイページにログインしてください。\n\n<< Path to any page >>\n\n'
+        ||'___________________________________\ninfo@msyk.net - Masayuki Nii');
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (995, '@@mail@@', 'msyk@msyk.net', null, 'msyk@msyk.net', '認証コードを送付します',
+        'ユーザ名とパスワードによるログインが成功したので、メールの内容と照らし合わせての再度の認証を行います。\n\n'
+        ||'メールアドレス：@@mail@@\n認証コード：@@code@@\n\n'
+        ||'ログインを行った画面に入力可能なパネルが表示されています。上記の認証コードを入力してください。\n\n'
+        ||'___________________________________\ninfo@msyk.net - Masayuki Nii');
+
+# Storing Sent Mail
+CREATE TABLE maillog
+(
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    to_field   TEXT,
+    bcc_field  TEXT,
+    cc_field   TEXT,
+    from_field TEXT,
+    subject    TEXT,
+    body       TEXT,
+    errors     TEXT,
+    dt         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    foreign_id INT
+);
+
 /* Operation Log Store */
 CREATE TABLE operationlog
 (

@@ -156,7 +156,7 @@ const IMLibCalc = {
                 vArray.push((record && record[fName]) ? record[fName] : null)
               } else {  // Other context
                 const expCName = field.substr(0, field.indexOf('@'))
-                if (expCName == '_') { // Local Context
+                if (expCName === '_') { // Local Context
                   if (IMLibLocalContext.store.hasOwnProperty(fName)) {
                     vArray.push(IMLibLocalContext.store[fName])
                   }
@@ -226,11 +226,11 @@ const IMLibCalc = {
   },
 
   isIncludeInRecord: function (obj, key, value) {
-    if (value === '' || value == null || isNaN(value) || typeof value === 'undefined') {
+    if (value === '' || value === null || isNaN(value) || typeof value === 'undefined') {
       return false
     }
     for (const index of Object.keys(obj)) {
-      if (obj[index] && obj[index] && obj[index][key] == value) {
+      if (obj[index] && obj[index] && obj[index][key] === value) {
         return true
       }
     }
@@ -296,7 +296,7 @@ const IMLibCalc = {
                 vArray.push((record && record[fName]) ? record[fName] : null)
               } else {  // Other context
                 const expCName = field.substr(0, field.indexOf('@'))
-                if (expCName == '_') { // Local Context
+                if (expCName === '_') { // Local Context
                   if (IMLibLocalContext.store.hasOwnProperty(fName)) {
                     vArray.push(IMLibLocalContext.store[fName])
                   }
@@ -455,7 +455,7 @@ const IMLibCalc = {
           calcObject.referes[field] = []
           calcObject.values[field] = []
           for (let ix = 0; ix < targetIds.length; ix++) {
-            if (typeof (targetIds[ix]) == 'string' || targetIds[ix] instanceof String) {
+            if (typeof (targetIds[ix]) === 'string' || targetIds[ix] instanceof String) {
               calcObject.referes[field].push(targetIds[ix])
               calcObject.values[field].push(undefined)
             }

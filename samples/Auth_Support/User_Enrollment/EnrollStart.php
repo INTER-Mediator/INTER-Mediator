@@ -12,25 +12,33 @@
 use INTERMediator\DB\Extending\AfterCreate;
 use INTERMediator\DB\Extending\BeforeCreate;
 use INTERMediator\DB\UseSharedObjects;
+use INTERMediator\DB\Proxy_ExtSupport;
 
 class EnrollStart extends UseSharedObjects implements BeforeCreate, AfterCreate
 {
+    use Proxy_ExtSupport;
+
     public function doBeforeCreateToDB()
     {
         $currentDT = time() + 3600;
         $currentDTFormat = date('YmdHis', $currentDT);
-
         $dataFromClient = $this->dbSettings->getValuesWithFields();
-        $this->dbSettings->addValueWithField("username", $currentDTFormat . $dataFromClient['email']);
-        // This username format is supposed to the email address can be as an username.
+        $email = $dataFromClient['email'];
+        $result = $this->dbRead('authuser', ['email' => $email]);
+        if (count($result) > 0) {
+            return 'メールアドレスはすでに登録されています。';
+        }
+        $generatedUsername = $currentDTFormat . $email; // This username format is supposed to the email address can be as a username.
+        $this->dbSettings->addValueWithField("username", $generatedUsername);
         $this->dbSettings->addValueWithField("hashedpasswd", "dummydummydummy");
     }
 
     public function doAfterCreateToDB($result): ?array
     {
-        $createdRecord = $this->dbClass->getUpdatedRecord();
-        $hash = $this->proxyObject->userEnrollmentStart($createdRecord[0]["id"]);
-        $this->dbClass->setDataToUpdatedRecord("hash", $hash);
-        return $this->dbClass->getUpdatedRecord();
+        if (isset($result[0])) {
+            $hash = $this->proxyObject->userEnrollmentStart($result[0]["id"]);
+            $result[0]['hash'] = $hash;
+        }
+        return $result;
     }
 }

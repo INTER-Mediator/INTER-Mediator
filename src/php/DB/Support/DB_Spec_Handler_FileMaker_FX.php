@@ -84,7 +84,7 @@ class DB_Spec_Handler_FileMaker_FX implements DB_Spec_Behavior
                 }
             }
         }
-        if ($fname == "-delete.related") {
+        if ($fname === "-delete.related") {
             return true;
         }
         return false;

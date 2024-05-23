@@ -263,7 +263,7 @@ class SendMail extends MessagingProvider
                         $storeContext->processingRequest("create", true);
                     }
                 } else {
-                    $dbProxy->logger->setDebugMessage("[Messaging\SendMail] !!! Fail to send mail. "
+                    $dbProxy->logger->setDebugMessage("[Messaging\SendMail] !!! Fail to send mail."
                         . $ome->getErrorMessage(), 2);
                     $this->setWarningMessage(1051, $ome->getErrorMessage());
                     $returnValue = false;

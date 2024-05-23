@@ -465,19 +465,19 @@ CREATE INDEX authuser_limitdt ON authuser (limitdt);
 GRANT ALL PRIVILEGES ON im_sample.authuser_id_seq TO web;
 
 INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('user1', 'd83eefa0a9bd7190c94e7911688503737a99db0154455354','user1@msyk.net');
+VALUES ('user1', 'd83eefa0a9bd7190c94e7911688503737a99db0154455354', 'user1@msyk.net');
 INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('user2', '5115aba773983066bcf4a8655ddac8525c1d3c6354455354','user2@msyk.net');
+VALUES ('user2', '5115aba773983066bcf4a8655ddac8525c1d3c6354455354', 'user2@msyk.net');
 INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('user3', 'd1a7981108a73e9fbd570e23ecca87c2c5cb967554455354','user3@msyk.net');
+VALUES ('user3', 'd1a7981108a73e9fbd570e23ecca87c2c5cb967554455354', 'user3@msyk.net');
 INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('user4', '8c1b394577d0191417e8d962c5f6e3ca15068f8254455354','user4@msyk.net');
+VALUES ('user4', '8c1b394577d0191417e8d962c5f6e3ca15068f8254455354', 'user4@msyk.net');
 INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('user5', 'ee403ef2642f2e63dca12af72856620e6a24102d54455354','user5@msyk.net');
+VALUES ('user5', 'ee403ef2642f2e63dca12af72856620e6a24102d54455354', 'user5@msyk.net');
 INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('mig2m', 'cd85a299c154c4714b23ce4b63618527289296ba6642c2685651ad8b9f20ce02285d7b34','mig2m@msyk.net');
+VALUES ('mig2m', 'cd85a299c154c4714b23ce4b63618527289296ba6642c2685651ad8b9f20ce02285d7b34', 'mig2m@msyk.net');
 INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('mig2', 'b7d863d29021fc96de261da6a5dfb6c4c28d3d43c75ad5ddddea4ec8716bdaf074675473','mig2@msyk.net');
+VALUES ('mig2', 'b7d863d29021fc96de261da6a5dfb6c4c28d3d43c75ad5ddddea4ec8716bdaf074675473', 'mig2@msyk.net');
 /*
 # The user1 has the password 'user1'. It's salted with the string 'TEXT'.
 # All users have the password the same as user name. All are salted with 'TEXT'
@@ -548,6 +548,79 @@ CREATE INDEX issuedhash_expired ON issuedhash (expired);
 CREATE INDEX issuedhash_clienthost ON issuedhash (clienthost);
 CREATE INDEX issuedhash_user_id_clienthost ON issuedhash (user_id, clienthost);
 GRANT ALL PRIVILEGES ON im_sample.issuedhash_id_seq TO web;
+
+/* Mail Template */
+CREATE TABLE mailtemplate
+(
+    id         SERIAL PRIMARY KEY,
+    to_field   TEXT,
+    bcc_field  TEXT,
+    cc_field   TEXT,
+    from_field TEXT,
+    subject    TEXT,
+    body       TEXT
+);
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (1, '@@Q2@@', '', '', 'msyk@msyk.net', 'ご意見承りました',
+        'ご意見を投稿していただき、ありがとうございます。伺った内容は以下の通りです。よろしくお願いします。\n\nお名前：@@Q1@@\nメールアドレス：@@Q2@@\nご意見：@@Q3@@\n\n====\nINTER-Mediator本部事務局');
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (2, '@@mail@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'テストメール2',
+        'テストメールです。@@name@@様宛で、送信先は@@mail@@です。');
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (991, '@@email@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'ユーザ登録の確認', CONCAT(
+        '@@realname@@ 様（@@email@@）\n\nユーザ登録を受け付けました。1時間以内に、以下のリンクのサイトに接続してください。\n\n',
+        '接続後にアカウントを発行してご指定のメールアドレスに送付します。\n\n<< Path to the script >>/confirm.php?c=@@hash@@\n\n',
+        '___________________________________\ninfo@msyk.net - Masayuki Nii'));
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (992, '@@email@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'ユーザ登録の完了', CONCAT(
+        '@@realname@@ 様（@@email@@）\n\nユーザ登録が完了しました。こちらのページにログインできるようになりました。',
+        'ログインページ：\n<< URL to any page >>\n\nユーザ名： @@username@@\n初期パスワード： @@initialPassword@@\n\n',
+        '※ 初期パスワードは極力早めに変更してください。\n',
+        '___________________________________\ninfo@msyk.net - Masayuki Nii'));
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (993, '@@email@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'パスワードのリセットを受け付けました',
+        CONCAT(
+                'パスワードのリセットを受け付けました。\n\nメールアドレス：@@email@@\n\n',
+                '以下のリンクをクリックし、新しいパスワードをご入力ください。\n\n',
+                '<< Path to the script >>/resetpassword.html?c=@@hash@@\n\n',
+                '___________________________________\ninfo@msyk.net - Masayuki Nii'));
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (994, '@@email@@', 'msyk@msyk.net', 'nii@msyk.net', 'msyk@msyk.net', 'パスワードをリセットしました', CONCAT(
+        '以下のアカウントのパスワードをリセットしました。\n\nアカウント（メールアドレス）：@@email@@\n\n',
+        '以下のリンクをクリックし、新しいパスワードでマイページにログインしてください。\n\n<< Path to any page >>\n\n',
+        '___________________________________\ninfo@msyk.net - Masayuki Nii'));
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (995, '@@mail@@', 'msyk@msyk.net', null, 'msyk@msyk.net', '認証コードを送付します', CONCAT(
+        'ユーザ名とパスワードによるログインが成功したので、メールの内容と照らし合わせての再度の認証を行います。\n\n',
+        'メールアドレス：@@mail@@\n認証コード：@@code@@\n\n',
+        'ログインを行った画面に入力可能なパネルが表示されています。上記の認証コードを入力してください。\n\n',
+        '___________________________________\ninfo@msyk.net - Masayuki Nii'));
+
+GRANT ALL PRIVILEGES ON im_sample.mailtemplate_id_seq TO web;
+
+/* Storing Sent Mail */
+CREATE TABLE maillog
+(
+    id         SERIAL PRIMARY KEY,
+    to_field   TEXT,
+    bcc_field  TEXT,
+    cc_field   TEXT,
+    from_field TEXT,
+    subject    TEXT,
+    body       TEXT,
+    errors     TEXT,
+    dt         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    foreign_id INT
+);
+
+GRANT ALL PRIVILEGES ON im_sample.maillog_id_seq TO web;
 
 /* Operation Log Store */
 CREATE TABLE operationlog
@@ -664,9 +737,9 @@ VALUES ('Onion', 5, 1, 21340, 'onion2.png', 'Image: FreeDigitalPhotos.net',
 
 INSERT INTO invoice(issued, title)
 VALUES ('2010-2-4', 'Invoice');
-INSERT INTO invoice( issued, title)
+INSERT INTO invoice(issued, title)
 VALUES ('2010-2-6', 'Invoice');
-INSERT INTO invoice( issued, title)
+INSERT INTO invoice(issued, title)
 VALUES ('2010-2-14', 'Invoice');
 
 INSERT INTO item(invoice_id, product_id, qty)

@@ -17,6 +17,7 @@
 namespace INTERMediator\DB\Support;
 
 use Exception;
+use INTERMediator\DB\Logger;
 use INTERMediator\DB\PDO;
 
 /**
@@ -297,7 +298,7 @@ abstract class DB_PDO_Handler
     }
 
     /**
-     * @param string $tableName
+     * @param string|null $tableName
      * @return array
      * @throws Exception
      */
@@ -402,7 +403,7 @@ abstract class DB_PDO_Handler
     }
 
     /**
-     * @param string $tableName
+     * @param string|null $tableName
      * @return array
      */
     public function getBooleanFields(?string $tableName): array
@@ -492,7 +493,7 @@ abstract class DB_PDO_Handler
     protected abstract function checkNullableField(string $info): bool;
 
     /**
-     * @param string $tableName
+     * @param string|null $tableName
      * @return array
      */
     public function getTableInfo(?string $tableName): array
@@ -571,7 +572,7 @@ abstract class DB_PDO_Handler
         if (is_null($d)) {
             return false;
         }
-        if (strtolower($d) == 'true' || strtolower($d) == 't') {
+        if (strtolower($d) === 'true' || strtolower($d) === 't') {
             return true;
         } else if (intval($d) > 0) {
             return true;
@@ -615,7 +616,7 @@ abstract class DB_PDO_Handler
         $incrementField = $this->getAutoIncrementField($tableName);
         $contextDef = $this->dbClassObj->dbSettings->getDataSourceTargetArray();
         $keyField = $contextDef['key'] ?? null;
-        if ($incrementField && ($incrementField == $keyField || $incrementField == '_CANCEL_THE_INCR_FIELD_DETECT_')) {
+        if ($incrementField && ($incrementField === $keyField || $incrementField === '_CANCEL_THE_INCR_FIELD_DETECT_')) {
             // Exists AUTO_INCREMENT field
             return $this->getLastInsertId($seqObject);
         } else {  // Not exist AUTO_INCREMENT field

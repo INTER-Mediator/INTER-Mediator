@@ -47,7 +47,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
     public function isExistRequiredTable(): bool
     {
         $regTable = $this->pdoDB->handler->quotedEntityName($this->dbSettings->registerTableName);
-        if ($regTable == null) {
+        if (is_null($regTable)) {
             $this->pdoDB->errorMessageStore("[DB_Notification_Handler_PDO] The table doesn't specified.");
             return false;
         }
