@@ -51,10 +51,13 @@ const IMLibPageNavigation = {
         navigation.style.display = 'none'
         return
       }
-      const insideNav = navigation.childNodes
-      for (let i = 0; i < insideNav.length; i += 1) {
-        navigation.removeChild(insideNav[i])
+      while(navigation.firstChild){
+        navigation.removeChild(navigation.lastChild)
       }
+      // const insideNav = navigation.childNodes
+      // for (let i = 0; i < insideNav.length; i += 1) {
+      //   navigation.removeChild(insideNav[i])
+      // }
       navigation.innerHTML = ''
       navigation.setAttribute('class', navigation.getAttribute('class') + ' IM_NAV_panel')
       const navLabel = INTERMediator.navigationLabel

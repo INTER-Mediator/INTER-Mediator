@@ -1053,9 +1053,12 @@ let INTERMediatorOnPage = {
       childElm.appendChild(document.createElement('br'))
       childElm.appendChild(document.createTextNode(navigator.userAgent))
       elm.appendChild(childElm)
-      for (let i = bodyNode.childNodes.length - 1; i >= 0; i--) {
-        bodyNode.removeChild(bodyNode.childNodes[i])
+      while(bodyNode.firstChild){
+        bodyNode.removeChild(bodyNode.firstChild)
       }
+      // for (let i = bodyNode.childNodes.length - 1; i >= 0; i--) {
+      //   bodyNode.removeChild(bodyNode.childNodes[i])
+      // }
       bodyNode.appendChild(elm)
     }
     return judge

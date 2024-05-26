@@ -1086,8 +1086,8 @@ const INTERMediatorLib = {
   removeChildNodes: function (node) {
     'use strict'
     if (node) {
-      while (node.childNodes.length > 0) {
-        node.removeChild(node.childNodes[0])
+      while (node.firstChild) {
+        node.removeChild(node.lastChild)
       }
     }
   },
@@ -1095,8 +1095,8 @@ const INTERMediatorLib = {
   removeChildNodesAppendText: function (node, textNum) {
     'use strict'
     if (node) {
-      while (node.childNodes.length > 0) {
-        node.removeChild(node.childNodes[0])
+      while (node.firstChild) {
+        node.removeChild(node.lastChild)
       }
     }
     node.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(textNum)))
