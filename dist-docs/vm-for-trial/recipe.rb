@@ -2295,9 +2295,6 @@ if node[:platform] == 'alpine'
 end
 
 
-execute 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd' do
-  command 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd'
-end
 if node[:platform] == 'alpine'
   execute "chmod 755 \"#{WEBROOT}\"/INTER-Mediator/node_modules/jest/bin/jest.js" do
     command "chmod 755 \"#{WEBROOT}\"/INTER-Mediator/node_modules/jest/bin/jest.js"
