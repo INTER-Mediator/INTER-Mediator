@@ -258,7 +258,7 @@ module.exports = (AuthPage, is2FA = false) => {
       await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist() // logged out
     })
-/*
+
     it('8-works timeout to login.', async () => {
       await browser.refresh()
       await browser.pause(waiting)
@@ -351,7 +351,5 @@ module.exports = (AuthPage, is2FA = false) => {
       await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist()
     })
-
- */
   })
 }
