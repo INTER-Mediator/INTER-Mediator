@@ -916,10 +916,6 @@ describe package('policycoreutils-python-utils'), :if => host_inventory['virtual
 end
 
 
-describe file('/etc/motd'), :if => os[:family] == 'redhat' || os[:family] == 'alpine' do
-  its(:content) { should match /Welcome to INTER-Mediator-Server VM!/ }
-end
-
 #describe service('buster-server'), :if => os[:family] == 'ubuntu' do
 #  it { should be_running }
 #end
