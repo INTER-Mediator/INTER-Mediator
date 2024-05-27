@@ -952,9 +952,12 @@ const INTERMediator = {
           throw new Error('Exception-xx: Cross Table Components aren\'t prepared.')
         }
         // Remove all nodes under the TBODY tagged node.
-        while (node.childNodes.length > 0) {
-          node.removeChild(node.childNodes[0])
+        while(node.firstChild){
+          node.removeChild(node.lastChild)
         }
+        // while (node.childNodes.length > 0) {
+        //   node.removeChild(node.childNodes[0])
+        // }
 
         // Decide the context for cross point cell
         const repeaters = collectRepeaters([ctComponentNodes[3].cloneNode(true)])

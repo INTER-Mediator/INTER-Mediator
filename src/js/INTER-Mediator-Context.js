@@ -540,7 +540,7 @@ class IMLibContext {
     seekRemovingContext(this)
     regIds = IMLibContextPool.removeContextsFromPool(childContexts)
     while (this.enclosureNode.firstChild) {
-      this.enclosureNode.removeChild(this.enclosureNode.firstChild)
+      this.enclosureNode.removeChild(this.enclosureNode.lastChild)
     }
     await INTERMediator_DBAdapter.unregister(regIds)
 
