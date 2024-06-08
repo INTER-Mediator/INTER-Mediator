@@ -26,7 +26,10 @@ IM_Entry(
             "records" => 10000,
             "sort" => [["field" => "dt1", "direction" => "DESC",],],
             "file-upload" => [["field" => "text1", "context" => "fileupload"],],
-            "authentication" => ["media-handling" => true],
+            "authentication" => [
+                "media-handling" => true,
+                "all" => ["target" => "field-user", "field" => "text2"],
+            ],
         ],
         [
             "name" => "fileupload",
