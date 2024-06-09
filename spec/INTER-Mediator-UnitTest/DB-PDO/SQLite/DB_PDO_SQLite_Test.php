@@ -5,6 +5,7 @@
 require_once(dirname(__FILE__) . '/../DB_PDO_Test_Common.php');
 
 use INTERMediator\DB\Proxy;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
 {

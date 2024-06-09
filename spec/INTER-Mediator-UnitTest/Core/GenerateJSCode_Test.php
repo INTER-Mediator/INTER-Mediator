@@ -4,6 +4,8 @@
  */
 
 use INTERMediator\GenerateJSCode;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 
 class GenerateJSCode_Test extends TestCase

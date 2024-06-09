@@ -6,6 +6,9 @@
 namespace Editors;
 
 use INTERMediator\IMUtil;
+use PHPUnit\Framework\Attributes\BackupGlobals;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 
 class defedit_Test extends TestCase

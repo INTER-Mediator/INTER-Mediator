@@ -4,6 +4,8 @@
  */
 
 use INTERMediator\IMUtil;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 use INTERMediator\DB\Proxy;
 
