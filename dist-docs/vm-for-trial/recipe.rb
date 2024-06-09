@@ -2216,8 +2216,8 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem install bundler -v 2.4.22 -N' do
       command 'gem install bundler -v 2.4.22 -N'
     end
-    execute 'gem install ffi -N' do
-      command 'gem install ffi -N'
+    execute 'gem install ffi -v 1.16.3 -N' do
+      command 'gem install ffi -v 1.16.3 -N'
     end
     execute 'gem install childprocess -v "1.0.1" -N' do
       command 'gem install childprocess -v "1.0.1" -N'
