@@ -176,13 +176,17 @@ const IMLibLocalContext = {
               IMLibKeyDownEventDispatch.setExecuteByCode(idValue, 'Enter', (function () {
                 const contextName = params[1]
                 return async function (event) {
-                  if (event.keyCode === 13) {
+                  if (!event.isComposing && (event.code === 'Enter' || event.code === "NumpadEnter")) {
                     updateFirstContext(contextName)
                   }
-                  /* We understand the keyCode property is already deprecated. But the code property is "Enter" for
-                     both Enter key and the finalize key of an input method, and there is no way to distinguish these
-                     keys. The keyCode property is 13 for Enter and 229 for the finalize key, and it's a better way
-                     to prevent the context updating for the finalize key. msyk 2019-12-28 */
+                }
+              })())
+              IMLibKeyDownEventDispatch.setExecuteByCode(idValue, 'NumpadEnter', (function () {
+                const contextName = params[1]
+                return async function (event) {
+                  if (!event.isComposing && (event.code === 'Enter' || event.code === "NumpadEnter")) {
+                    updateFirstContext(contextName)
+                  }
                 }
               })())
             } else if ((nodeIsInput && attrType && (attrType === 'checkbox' || attrType === 'radio'))
