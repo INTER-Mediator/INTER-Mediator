@@ -243,6 +243,7 @@ Ver.7 (March 20, 2021)
 - [BUG FIX] A calculation which refers to other context as like 'product@unitprice' detected wrong record.
   Now any term in expressions having 'context@field' style refers to the 'relation' setting in the context definition.
   If there is no associated record, It corrects any 'context' in the page.
+- [BUG FIX] In seach field, the enter key on main keyboard works but the enter on mumeric pad didn't work.
 
 Ver.6 (November 21, 2020)
 - All communications went async.
