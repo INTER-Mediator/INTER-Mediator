@@ -169,14 +169,12 @@ const IMLibLocalContext = {
             })())
             break
           case 'condition':
-            const nodeIsInput = (node.tagName === 'INPUT')
-            const nodeIsSelect = (node.tagName === 'SELECT')
             const attrType = node.getAttribute('type')
-            if (nodeIsInput && attrType && IMLibLocalContext.keyRespondTypes.indexOf(attrType) > -1) {
+            if (node.tagName === 'INPUT' && attrType && IMLibLocalContext.keyRespondTypes.indexOf(attrType) > -1) {
               IMLibKeyDownEventDispatch.setExecuteByCode(idValue, 'Enter', (function () {
                 const contextName = params[1]
                 return async function (event) {
-                  if (!event.isComposing && (event.code === 'Enter' || event.code === "NumpadEnter")) {
+                  if (!event.isComposing && event.code === 'Enter') {
                     updateFirstContext(contextName)
                   }
                 }
@@ -184,13 +182,13 @@ const IMLibLocalContext = {
               IMLibKeyDownEventDispatch.setExecuteByCode(idValue, 'NumpadEnter', (function () {
                 const contextName = params[1]
                 return async function (event) {
-                  if (!event.isComposing && (event.code === 'Enter' || event.code === "NumpadEnter")) {
+                  if (!event.isComposing && event.code === 'NumpadEnter') {
                     updateFirstContext(contextName)
                   }
                 }
               })())
-            } else if ((nodeIsInput && attrType && (attrType === 'checkbox' || attrType === 'radio'))
-              || nodeIsSelect) {
+            } else if ((node.tagName === 'INPUT' && attrType && (attrType === 'checkbox' || attrType === 'radio'))
+              || node.tagName === 'SELECT') {
               IMLibChangeEventDispatch.setExecute(idValue, (function () {
                 const contextName = params[1]
                 return async function () {
