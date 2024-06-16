@@ -30,7 +30,9 @@ elif [ ${SAMLLIBVER} = 2 ]; then
   cp "${DIR}/acl.php" "${SAMLPATH}/config"
   cp "${DIR}/authsources.php" "${SAMLPATH}/config"
   cp "${DIR}/config.php" "${SAMLPATH}/config"
+  cp "${DIR}/saml20-idp-hosted.php" "${SAMLPATH}/metadata"
   cp "${DIR}/saml20-idp-remote.php" "${SAMLPATH}/metadata"
+  cp "${DIR}/saml20-sp-remote.php" "${SAMLPATH}/metadata"
   if [ -e "${DIR}/sp.crt" ]; then
     cp "${DIR}/sp.crt" "${SAMLPATH}/cert"
   fi
