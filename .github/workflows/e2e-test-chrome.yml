@@ -97,7 +97,7 @@ jobs:
           #chrome-version: latest
 
       - name: Setup WebdriverIO
-        run: cd spec/run; npm install; npm update
+        run: cd spec/run; npm install
 
       - name: Boot the web server with php server mode
         run: |
