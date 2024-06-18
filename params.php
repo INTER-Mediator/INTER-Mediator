@@ -187,6 +187,7 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 //$samlExpiringSeconds = 1800;
 //$samlWithBuiltInAuth = true;
 //$samlAttrRules = ['username' => 'uid|0', 'realname' => 'eduPersonAffiliation|0'];
+// for Active Directory LDAP ['username' => 'cn|0', 'realname' => ['sn|0','givenName|0'], 'email' => 'mail|0']
 //$samlAdditionalRules = ['username' => '(user02|user03)'];
 
 // $extraButtons for additional buttons followed by the "SAML" button of authenticating panel.
