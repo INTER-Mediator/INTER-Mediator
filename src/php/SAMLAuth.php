@@ -128,7 +128,7 @@ class SAMLAuth
                 $returnValue = ((strlen($returnValue) > 0) ? ' ' : '') . $returnValue;
                 $returnValue .= $this->getValuesWithRule($item);
             }
-        } else if (isset($attributes[$comps[0]][$comps[1]]) && count($comps) == 2) {
+        } else if (isset($attributes[$comps[0]][$comps[1]]) && count($comps) === 2) {
             $returnValue = $attributes[$comps[0]][$comps[1]];
         } else if (isset($attributes[$rule])) {
             $returnValue = $attributes[$rule];
