@@ -121,17 +121,19 @@ class SAMLAuth
     {
         $returnValue = null;
         $attributes = $this->authSimple->getAttributes();
-        $comps = explode('|', $rule);
         if (is_array($rule)) {
             $returnValue = '';
             foreach ($rule as $item) {
                 $returnValue = ((strlen($returnValue) > 0) ? ' ' : '') . $returnValue;
                 $returnValue .= $this->getValuesWithRule($item);
             }
-        } else if (isset($attributes[$comps[0]][$comps[1]]) && count($comps) === 2) {
-            $returnValue = $attributes[$comps[0]][$comps[1]];
-        } else if (isset($attributes[$rule])) {
-            $returnValue = $attributes[$rule];
+        } else {
+            $comps = explode('|', $rule);
+            if (isset($attributes[$comps[0]][$comps[1]]) && count($comps) === 2) {
+                $returnValue = $attributes[$comps[0]][$comps[1]];
+            } else if (isset($attributes[$rule])) {
+                $returnValue = $attributes[$rule];
+            }
         }
         if (is_null($returnValue)) {
             Logger::getInstance()->setWarningMessage('You have to set up the variable $samlAttrRules in params.php'
