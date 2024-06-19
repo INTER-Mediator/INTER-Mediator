@@ -114,10 +114,10 @@ class SAMLAuth
     }
 
     /**
-     * @param string $rule
+     * @param string|array $rule
      * @return string
      */
-    private function getValuesWithRule(string $rule): string
+    private function getValuesWithRule(string|array $rule): string
     {
         $returnValue = null;
         $attributes = $this->authSimple->getAttributes();
