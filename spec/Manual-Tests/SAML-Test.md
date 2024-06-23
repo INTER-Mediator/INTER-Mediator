@@ -10,6 +10,10 @@ which just have test accounts. After someone tests the SAML features, the result
 
 The format of below is: [commit code from git log], [Version from composer.json], [Checker name], [Result]
 
+- commit 1f0eca34f4e4e859a5533cf3a7c9a3306f0903f0 (Wed Jun 19 12:19:35 2024 +0900),
+  INTER-Mediator Ver.13(2024-04-26) with SimpleSAMLphp Ver.2.2.2,
+  by Masayuki Nii(2024-06-22 11:00), OK
+
 - commit d1f52043b2670c518c7bd5c81e9997d5007afbc8 (Fri May 3 09:20:41 2024 +0900), 
   INTER-Mediator Ver.13(2024-04-26) with SimpleSAMLphp Ver.2.2.2,
   by Masayuki Nii(2024-05-03 12:30), OK

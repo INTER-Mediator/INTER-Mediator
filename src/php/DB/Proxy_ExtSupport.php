@@ -47,7 +47,8 @@ trait Proxy_ExtSupport
     public function getExtProxy(): ?Proxy
     {
         if(!$this->extProxy){
-            throw new Exception("The proxy object doesn't instanciate so far.");
+            $this->dbInit();
+            $this->initializeSpec("", null);
         }
         return $this->extProxy;
     }

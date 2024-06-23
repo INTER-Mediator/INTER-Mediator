@@ -48,10 +48,8 @@ class DBAccess
                 "records" => 1,
             ],
         ];
-        $this->dbInit($dSource, [], ["db-class" => "PDO"], 2);
-        $this->dbRead('mailtemplate'); // Dummy read for setting up the Proxy object.
-
         $proxy = $this->getExtProxy();
+        $this->dbInit($dSource, [], ["db-class" => "PDO"], 2);
         $result = $proxy->userEnrollmentActivateUser($_GET['c'], $password, 'initialPassword');
         return $result;
     }
@@ -59,6 +57,7 @@ class DBAccess
     public function updateUserRecord(string $userId): void
     {
         $this->dbRead('authuser', ["id" => $userId]);
+        // For additional processing after creating user record.
     }
 }
 
