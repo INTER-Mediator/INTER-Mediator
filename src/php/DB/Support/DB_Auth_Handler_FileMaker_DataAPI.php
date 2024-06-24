@@ -19,6 +19,7 @@ use Datetime;
 use Exception;
 use INTERMediator\DB\FileMaker_DataAPI;
 use INTERMediator\IMUtil;
+use INTERMediator\Params;
 
 /**
  *
@@ -786,7 +787,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
                 $expired['tm_mon'] + 1, $expired['tm_mday'], $expired['tm_year'] + 1900);
             $currentDT = new DateTime();
             $timeValue = $currentDT->format("U");
-            if ($timeValue > $expiredValue + 3600) {
+            if ($timeValue > $expiredValue + Params::getParameterValue('limitPwChangeSecond', 3600)) {
                 return false;
             }
             if ($hash == $hashValue) {
@@ -894,8 +895,11 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             return null;
         }
         $this->fmdb->setupFMDataAPIforAuth($hashTable, 1);
-        $conditions = array(
-            array('hash' => $hash, 'clienthost' => '=', 'expired' => IMUtil::currentDTStringFMS(3600) . '...')
+        $conditions = array(array(
+            'hash' => $hash,
+            'clienthost' => '=',
+            'expired' => IMUtil::currentDTStringFMS(Params::getParameterValue('limitEnrollSecond', 3600)) . '...'
+        )
         );
         $result = null; // For PHPStan level 1
         try {

@@ -19,6 +19,8 @@ Ver.13 (In Development)
 - The enrollment and password reset samples are updated. They are in samples/Auth_Support/User_Enrollment and PasswordReset.
 - The mailtemplate editing page is added in samples/Mail_Support/MySQL_mailtemplate.html
 - Field values from SAML attributes can merge from multiple entries.
+- Variables $limitEnrollSecond and $limitPwChangeSecond in the params.php file can specify the limit seconds for
+  the enrollment mail and password reset mail.
 - [BUG FIX] On the Ver.12, SAML authentication didn't work in spite of Ver.11 can do. It didn't check with SAML manual
   test on Ver.12 after added types to php codes. Ver.13 works SAML.
 

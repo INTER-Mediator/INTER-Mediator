@@ -19,6 +19,7 @@ use Datetime;
 use Exception;
 use INTERMediator\DB\FileMaker_FX;
 use INTERMediator\IMUtil;
+use INTERMediator\Params;
 
 /**
  *
@@ -581,7 +582,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
                 $expired['tm_mon'] + 1, $expired['tm_mday'], $expired['tm_year'] + 1900);
             $currentDT = new DateTime();
             $timeValue = $currentDT->format("U");
-            if ($timeValue > $expiredValue + 3600) {
+            if ($timeValue > $expiredValue + Params::getParameterValue('limitPwChangeSecond', 3600)) {
                 return false;
             }
             if ($hash == $hashValue) {
@@ -676,7 +677,8 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
         $this->fmdb->setupFXforAuth($hashTable, 1);
         $this->fmdb->fxAuth->AddDBParam("hash", $hash, "eq");
         $this->fmdb->fxAuth->AddDBParam("clienthost", "", "eq");
-        $this->fmdb->fxAuth->AddDBParam("expired", IMUtil::currentDTStringFMS(3600), "gt");
+        $this->fmdb->fxAuth->AddDBParam("expired",
+            IMUtil::currentDTStringFMS(Params::getParameterValue('limitEnrollSecond', 3600)), "gt");
         $result = $this->fmdb->fxAuth->DoFxAction('perform_find', TRUE, TRUE, 'full');
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
