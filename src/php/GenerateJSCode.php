@@ -349,7 +349,7 @@ class GenerateJSCode
         $this->generateAssignJS("INTERMediatorOnPage.realm", $q, $realmValue, $q);
         $req2FAValue = $options['authentication']['is-required-2FA']
             ?? Params::getParameterValue("isRequired2FA", '');
-        $this->generateAssignJS("INTERMediatorOnPage.isRequired2FA", $req2FAValue? "true" : "false");
+        $this->generateAssignJS("INTERMediatorOnPage.isRequired2FA", $req2FAValue ? "true" : "false");
         $digitsOf2FACodeValue = $options['authentication']['digits-of-2FA-Code']
             ?? Params::getParameterValue("digitsOf2FACode", 4);
         $this->generateAssignJS("INTERMediatorOnPage.digitsOf2FACode", intval($digitsOf2FACodeValue));
@@ -401,6 +401,15 @@ class GenerateJSCode
         if ($activateGenerator) {
             $this->generateAssignJS("INTERMediatorOnPage.activateMaintenanceCall", "true");
         }
+
+        $this->generateAssignJS("INTERMediatorOnPage.authPanelTitle",
+            $q, Params::getParameterValue('authPanelTitle', ""), $q);
+        $this->generateAssignJS("INTERMediatorOnPage.authPanelTitle2FA", $q,
+            Params::getParameterValue('authPanelTitle2FA', ""), $q);
+        $this->generateAssignJS("INTERMediatorOnPage.authPanelExp",
+            $q, Params::getParameterValue('authPanelExp', ""), $q);
+        $this->generateAssignJS("INTERMediatorOnPage.authPanelExp2FA",
+            $q, Params::getParameterValue('authPanelExp2FA', ""), $q);
     }
 
     /**

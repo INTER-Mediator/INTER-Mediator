@@ -323,7 +323,7 @@ span.IM_POSTMESSAGE {
     color: #50506c;
 }
 
-#_im_authpback,#_im_authpback_2FA {
+#_im_authpback, #_im_authpback_2FA {
     position: absolute;
     height: 100%;
     width: 100%;
@@ -357,7 +357,7 @@ span.IM_POSTMESSAGE {
     text-align: center;
 }
 
-._im_authlabel,._im_authlabel_2FA {
+._im_authlabel, ._im_authlabel_2FA {
     text-align: right;
     float: left;
     color: #bdbdee;
@@ -432,6 +432,11 @@ span.IM_POSTMESSAGE {
 ._im_alertmessage {
     color: red;
 }
+
+._im_auth_exp_2fa, ._im_auth_exp {
+    font-size: 85%;
+}
+
 
 /* Widget Pop-up Panel */
 ._im_widget_popup_panelback {

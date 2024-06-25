@@ -153,11 +153,16 @@ $authExpired = 3600;
 //$alwaysGenSHA2 = true; // On the password changing, generate SHA-2 hash. The default is false.
 //$migrateSHA1to2 = true;// If the login account relays on SHA-a, exchange it with 2m style SHA-2 hash. The default is false.
 //$credentialCookieDomain = ""; // The domain information of the cookie for 'credential' auth. Falsy value means no domain, also the default.
-//$isRequired2FA = true; // Default is false.
+$isRequired2FA = true; // Default is false.
 //$mailContext2FA = "mailtemplate@id=995"; // Template record for the mail to send the 2FA code.
 //$digitsOf2FACode = 6; // Default is 4.
 //$expiringSeconds2FA = 1000; // 2FA effective seconds from code input.
 $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real system, this has to comment out.
+
+$authPanelTitle= "そうだ";  // Auth Panel's title
+$authPanelTitle2FA= null;   // 2FA Auth Panel's title
+$authPanelExp= "温泉に行こう";  // Auth Panel's explanations
+$authPanelExp2FA= null;   // 2FA Auth Panel's explanations
 
 // The 'issuedhash' table for storing challenges of authentication can be use another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
