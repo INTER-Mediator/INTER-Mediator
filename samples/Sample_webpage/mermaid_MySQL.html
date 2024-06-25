@@ -16,11 +16,17 @@
     <title>INTER-Mediator - Sample - Authorized Chat / MySQL</title>
     <script type="text/javascript" src="include_MySQL.php"></script>
     <script type="text/javascript" src="../../node_modules/inter-mediator-plugin-mermaid/index.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>
+
+    </script>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+
       INTERMediatorOnPage.doBeforeConstruct = function () {
         INTERMediatorLog.suppressDebugMessageOnPage = true
+        IMParts_Catalog.mermaid.lib = mermaid
       };
+
     </script>
 </head>
 <body>
