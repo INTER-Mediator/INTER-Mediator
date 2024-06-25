@@ -903,7 +903,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         $this->logger->setDebugMessage("[authSupportCheckIssuedHashForResetPassword] {$sql}");
         foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             $hashValue = $row['hash'];
-            if (IMUtil::secondsFromNow($row['expired']) > 3600) {
+            if (IMUtil::secondsFromNow($row['expired']) > Params::getParameterValue('limitPwChangeSecond', 3600)) {
                 return false;
             }
             if ($hash === $hashValue) {
@@ -955,7 +955,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         if (!$this->pdoDB->setupConnection()) { //Establish the connection
             return null;
         }
-        $currentDTFormat = IMUtil::currentDTString(3600);
+
+        $currentDTFormat = IMUtil::currentDTString(Params::getParameterValue('limitEnrollSecond', 3600));
         $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}user_id FROM {$hashTable} WHERE hash = "
             . $this->pdoDB->link->quote($hash) .
             " and clienthost IS NULL and expired > " . $this->pdoDB->link->quote($currentDTFormat);

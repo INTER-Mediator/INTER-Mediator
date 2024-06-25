@@ -206,6 +206,10 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 //];
 https://https://accounts.google.com/o/oauth2/v2/auth?state=invalid-state&scope=openid&response_type=code&redirect_uri=https://demo.inter-mediator.com/saml-trial/lib/src/INTER-Mediator/vendor/simplesamlphp/simplesamlphp/public/module.php/authoauth2/linkback.php&client_id=353910848422-e08dmcn6s8pc43a94d22s5510b8mnrqj.apps.googleusercontent.com
 
+/* User Enrollment */
+$limitEnrollSecond = 3600;
+$limitPwChangeSecond = 3600;
+
 /* Service Server Behavior
  * ===================
  * Port number and host name for service server */
