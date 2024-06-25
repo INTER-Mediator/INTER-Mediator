@@ -895,7 +895,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         }
         $this->fmdb->setupFMDataAPIforAuth($hashTable, 1);
         $conditions = array(
-            array('hasu' => $hash, 'clienthost' => '=', 'expired' => IMUtil::currentDTStringFMS(3600) . '...')
+            array('hash' => $hash, 'clienthost' => '=', 'expired' => IMUtil::currentDTStringFMS(3600) . '...')
         );
         $result = null; // For PHPStan level 1
         try {
