@@ -50,6 +50,8 @@ let INTERMediatorOnPage = {
   isSetDefaultStyle: false,
   authPanelTitle: null,
   authPanelTitle2FA: null,
+  authPanelExp: null,
+  authPanelExp2FA: null,
   isOAuthAvailable: false, // @Private
   oAuthClientID: null, // @Private
   oAuthClientSecret: null, // @Private
@@ -674,6 +676,14 @@ let INTERMediatorOnPage = {
           INTERMediatorLib.getInsertedStringFromErrorNumber(2024)))
         frontPanel.appendChild(resetMessage)
       }
+      if(INTERMediatorOnPage.authPanelExp){
+        breakLine = document.createElement('HR')
+        frontPanel.appendChild(breakLine)
+        const addingNode = document.createElement('DIV')
+        addingNode.className = '_im_auth_exp'
+        addingNode.innerHTML = INTERMediatorOnPage.authPanelExp
+        frontPanel.appendChild(addingNode)
+      }
     }
     passwordBox.onkeydown = function (event) {
       if (event.code === 'Enter') {
@@ -894,6 +904,15 @@ let INTERMediatorOnPage = {
     explain.setAttribute('id', '_im_explain_2FA')
     explain.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2030)))
     frontPanel.appendChild(explain)
+
+    if(INTERMediatorOnPage.authPanelExp2FA){
+      breakLine = document.createElement('HR')
+      frontPanel.appendChild(breakLine)
+      const addingNode = document.createElement('DIV')
+      addingNode.className = '_im_auth_exp_2fa'
+      addingNode.innerHTML = INTERMediatorOnPage.authPanelExp2FA
+      frontPanel.appendChild(addingNode)
+    }
 
     window.scrollTo(0, 0)
     codeBox.focus()

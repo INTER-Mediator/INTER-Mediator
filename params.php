@@ -144,7 +144,6 @@ $browserCompatibility = array(
 
 /* Authorization
  * =================== */
-
 $authStoring = 'credential'; // 'session-storage' or 'credential'
 $authExpired = 3600;
 //$authRealm = '';
@@ -158,6 +157,12 @@ $authExpired = 3600;
 //$digitsOf2FACode = 6; // Default is 4.
 //$expiringSeconds2FA = 1000; // 2FA effective seconds from code input.
 $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real system, this has to comment out.
+
+/* Authentication panels customizing */
+//$authPanelTitle= "そうだ";  // Auth Panel's title
+//$authPanelTitle2FA= null;   // 2FA Auth Panel's title
+//$authPanelExp= "温泉に行こう";  // Auth Panel's explanations
+//$authPanelExp2FA= null;   // 2FA Auth Panel's explanations
 
 // The 'issuedhash' table for storing challenges of authentication can be use another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
