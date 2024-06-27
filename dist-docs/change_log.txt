@@ -21,6 +21,11 @@ Ver.13 (In Development)
 - Field values from SAML attributes can merge from multiple entries.
 - Variables $limitEnrollSecond and $limitPwChangeSecond in the params.php file can specify the limit seconds for
   the enrollment mail and password reset mail.
+- INTERMediatorOnPage.authPanelExp and INTERMediatorOnPage.authPanelExp2FA can display any explanation
+  on authentication panels.
+- In the params.php file, variables $authPanelTitle, $authPanelTitle2FA, $authPanelExp and $authPanelExp2FA can
+  describe and set any strings including html. These are elements of auth panels as the same name properties of
+  INTERMediatorOnPage object.
 - [BUG FIX] On the Ver.12, SAML authentication didn't work in spite of Ver.11 can do. It didn't check with SAML manual
   test on Ver.12 after added types to php codes. Ver.13 works SAML.
 
