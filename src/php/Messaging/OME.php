@@ -556,7 +556,6 @@ class OME
             $userPart = urlencode($user) . ":" . urlencode($pass) . "@";
             if ($user == '' || $pass == '') {
                 $userPart = "";
-                $portPart = "";
             }
             if ($host == 'default' || strpos($host, 'default?') === 0) {
                 $portPart = "";
