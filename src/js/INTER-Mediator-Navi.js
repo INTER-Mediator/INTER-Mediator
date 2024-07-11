@@ -297,11 +297,6 @@ const IMLibPageNavigation = {
               complete()
               const url = INTERMediatorOnPage.logoutURL
               INTERMediatorOnPage.logout()
-              if (INTERMediatorOnPage.logoutURL) {
-                location.href = url
-              } else {
-                location.reload()
-              }
             }, false, true)
           })
         }
