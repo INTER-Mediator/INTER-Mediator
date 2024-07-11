@@ -237,7 +237,6 @@ let INTERMediatorOnPage = {
   },
 
   logout: function (move = false) {
-    'use strict'
     const logoutURL = INTERMediatorOnPage.logoutURL
     INTERMediatorOnPage.authUserSalt = ''
     INTERMediatorOnPage.authChallenge = ''
