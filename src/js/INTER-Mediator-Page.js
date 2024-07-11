@@ -223,12 +223,7 @@ let INTERMediatorOnPage = {
 
   isComplementAuthData: function () {
     'use strict'
-    return INTERMediatorOnPage.authUser() !== null && INTERMediatorOnPage.authUser().length > 0 &&
-      ((INTERMediatorOnPage.authHashedPassword() !== null && INTERMediatorOnPage.authHashedPassword().length > 0)
-        || (INTERMediatorOnPage.authHashedPassword2m() !== null && INTERMediatorOnPage.authHashedPassword2m().length > 0)
-        || (INTERMediatorOnPage.authHashedPassword2() !== null && INTERMediatorOnPage.authHashedPassword2().length > 0)) &&
-      INTERMediatorOnPage.authUserSalt !== null && INTERMediatorOnPage.authUserSalt.length > 0 &&
-      INTERMediatorOnPage.authChallenge !== null && INTERMediatorOnPage.authChallenge.length > 0
+    return INTERMediatorOnPage.authUser() !== null && INTERMediatorOnPage.authUser().length > 0 && ((INTERMediatorOnPage.authHashedPassword() !== null && INTERMediatorOnPage.authHashedPassword().length > 0) || (INTERMediatorOnPage.authHashedPassword2m() !== null && INTERMediatorOnPage.authHashedPassword2m().length > 0) || (INTERMediatorOnPage.authHashedPassword2() !== null && INTERMediatorOnPage.authHashedPassword2().length > 0)) && INTERMediatorOnPage.authUserSalt !== null && INTERMediatorOnPage.authUserSalt.length > 0 && INTERMediatorOnPage.authChallenge !== null && INTERMediatorOnPage.authChallenge.length > 0
   },
 
   retrieveAuthInfo: async function () {
@@ -241,8 +236,9 @@ let INTERMediatorOnPage = {
     }
   },
 
-  logout: function () {
+  logout: function (move = false) {
     'use strict'
+    const logoutURL = INTERMediatorOnPage.logoutURL
     INTERMediatorOnPage.authUserSalt = ''
     INTERMediatorOnPage.authChallenge = ''
     INTERMediatorOnPage.loginURL = null
@@ -268,6 +264,13 @@ let INTERMediatorOnPage = {
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_credential2')
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_mediatoken')
         break
+    }
+    if (logoutURL) { // For SAML auth.
+      href.location = logoutURL
+    } else if (move) { // built-in auth
+      href.location = move
+    } else {
+      location.reload()
     }
   },
 
@@ -320,9 +323,7 @@ let INTERMediatorOnPage = {
 
   removeFromSessionStorageWithFallDown: function (key) {
     'use strict'
-    if (INTERMediator.useSessionStorage === true &&
-      typeof sessionStorage !== 'undefined' &&
-      sessionStorage !== null) {
+    if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
       try {
         sessionStorage.removeItem(INTERMediatorOnPage.getKeyWithRealm(key))
       } catch (ex) {
@@ -445,8 +446,7 @@ let INTERMediatorOnPage = {
             if (terms[i].toUpperCase().indexOf('LENGTH') === 0) {
               const minLen = terms[i].match(/[0-9]+/)[0]
               if (newPassword.length < minLen) {
-                message.push(
-                  INTERMediatorLib.getInsertedStringFromErrorNumber(2021, [minLen]))
+                message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2021, [minLen]))
               }
             }
         }
@@ -591,8 +591,7 @@ let INTERMediatorOnPage = {
         }
         newPasswordSpan.setAttribute('class', '_im_authlabel_pwchange')
         newPasswordLabel.appendChild(newPasswordSpan)
-        newPasswordSpan.appendChild(
-          document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2006)))
+        newPasswordSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2006)))
         const newPasswordBox = document.createElement('INPUT')
         newPasswordBox.type = 'password'
         newPasswordBox.id = '_im_newpassword'
@@ -612,23 +611,20 @@ let INTERMediatorOnPage = {
         newPasswordMessage.id = '_im_newpass_message'
         frontPanel.appendChild(newPasswordMessage)
       }
-      if ((INTERMediatorOnPage.extraButtons && Object.keys(INTERMediatorOnPage.extraButtons).length > 0)
-        || this.isOAuthAvailable || (INTERMediatorOnPage.isSAML && INTERMediatorOnPage.samlWithBuiltInAuth)) {
+      if ((INTERMediatorOnPage.extraButtons && Object.keys(INTERMediatorOnPage.extraButtons).length > 0) || this.isOAuthAvailable || (INTERMediatorOnPage.isSAML && INTERMediatorOnPage.samlWithBuiltInAuth)) {
         breakLine = document.createElement('HR')
         frontPanel.appendChild(breakLine)
       }
       if (this.isOAuthAvailable) {
         oAuthButton = document.createElement('BUTTON')
         oAuthButton.id = '_im_oauthbutton'
-        oAuthButton.appendChild(document.createTextNode(
-          INTERMediatorLib.getInsertedStringFromErrorNumber(2014)))
+        oAuthButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2014)))
         frontPanel.appendChild(oAuthButton)
       }
       if (INTERMediatorOnPage.isSAML && INTERMediatorOnPage.samlWithBuiltInAuth) {
         samlButton = document.createElement('BUTTON')
         samlButton.id = '_im_samlbutton'
-        samlButton.appendChild(document.createTextNode(
-          INTERMediatorLib.getInsertedStringFromErrorNumber(2026)))
+        samlButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2026)))
         frontPanel.appendChild(samlButton)
       }
       for (const key in INTERMediatorOnPage.extraButtons) {
@@ -649,8 +645,7 @@ let INTERMediatorOnPage = {
         frontPanel.appendChild(breakLine)
         const addingButton = document.createElement('BUTTON')
         addingButton.id = '_im_enrollbutton'
-        addingButton.appendChild(document.createTextNode(
-          INTERMediatorLib.getInsertedStringFromErrorNumber(2022)))
+        addingButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2022)))
         addingButton.onclick = function () {
           location.href = INTERMediatorOnPage.enrollPageURL
         }
@@ -665,18 +660,16 @@ let INTERMediatorOnPage = {
         frontPanel.appendChild(breakLine)
         const addingButton = document.createElement('BUTTON')
         addingButton.id = '_im_resetbutton'
-        addingButton.appendChild(document.createTextNode(
-          INTERMediatorLib.getInsertedStringFromErrorNumber(2023)))
+        addingButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2023)))
         addingButton.onclick = function () {
           location.href = INTERMediatorOnPage.resetPageURL
         }
         frontPanel.appendChild(addingButton)
         const resetMessage = document.createElement('div')
-        resetMessage.appendChild(document.createTextNode(
-          INTERMediatorLib.getInsertedStringFromErrorNumber(2024)))
+        resetMessage.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2024)))
         frontPanel.appendChild(resetMessage)
       }
-      if(INTERMediatorOnPage.authPanelExp){
+      if (INTERMediatorOnPage.authPanelExp) {
         breakLine = document.createElement('HR')
         frontPanel.appendChild(breakLine)
         const addingNode = document.createElement('DIV')
@@ -709,9 +702,7 @@ let INTERMediatorOnPage = {
       if (inputUsername === '' || inputPassword === '') {
         messageNode = document.getElementById('_im_login_message')
         INTERMediatorLib.removeChildNodes(messageNode)
-        messageNode.appendChild(
-          document.createTextNode(
-            INTERMediatorLib.getInsertedStringFromErrorNumber(2013)))
+        messageNode.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2013)))
         return
       }
       INTERMediatorOnPage.authUser(inputUsername)
@@ -722,16 +713,13 @@ let INTERMediatorOnPage = {
         await INTERMediator_DBAdapter.getChallenge()
       }
       if (INTERMediatorOnPage.passwordHash < 1.1) {
-        INTERMediatorOnPage.authHashedPassword(
-          INTERMediatorLib.generatePasswrdHashV1(inputPassword, INTERMediatorOnPage.authUserSalt))
+        INTERMediatorOnPage.authHashedPassword(INTERMediatorLib.generatePasswrdHashV1(inputPassword, INTERMediatorOnPage.authUserSalt))
       }
       if (INTERMediatorOnPage.passwordHash < 1.6) {
-        INTERMediatorOnPage.authHashedPassword2m(
-          INTERMediatorLib.generatePasswrdHashV2m(inputPassword, INTERMediatorOnPage.authUserSalt))
+        INTERMediatorOnPage.authHashedPassword2m(INTERMediatorLib.generatePasswrdHashV2m(inputPassword, INTERMediatorOnPage.authUserSalt))
       }
       if (INTERMediatorOnPage.passwordHash < 2.1) {
-        INTERMediatorOnPage.authHashedPassword2(
-          INTERMediatorLib.generatePasswrdHashV2(inputPassword, INTERMediatorOnPage.authUserSalt))
+        INTERMediatorOnPage.authHashedPassword2(INTERMediatorLib.generatePasswrdHashV2(inputPassword, INTERMediatorOnPage.authUserSalt))
       }
       INTERMediatorOnPage.succeedCredential = false
       if (INTERMediatorOnPage.authStoring === 'credential') {
@@ -772,18 +760,13 @@ let INTERMediatorOnPage = {
           return
         }
 
-        INTERMediator_DBAdapter.changePassword(inputUsername, inputPassword, inputNewPassword,
-          () => {
-            messageNode.appendChild(document.createTextNode(
-              INTERMediatorLib.getInsertedStringFromErrorNumber(2009)))
-            INTERMediatorLog.flushMessage()
-          },
-          () => {
-            messageNode.appendChild(document.createTextNode(
-              INTERMediatorLib.getInsertedStringFromErrorNumber(2010)))
-            INTERMediatorLog.flushMessage()
-          }
-        )
+        INTERMediator_DBAdapter.changePassword(inputUsername, inputPassword, inputNewPassword, () => {
+          messageNode.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2009)))
+          INTERMediatorLog.flushMessage()
+        }, () => {
+          messageNode.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2010)))
+          INTERMediatorLog.flushMessage()
+        })
       }
     }
     if (this.isOAuthAvailable && oAuthButton) {
@@ -792,11 +775,7 @@ let INTERMediatorOnPage = {
         INTERMediatorOnPage.setCookieDomainWide('_im_oauth_realm', INTERMediatorOnPage.realm, true)
         INTERMediatorOnPage.setCookieDomainWide('_im_oauth_expired', INTERMediatorOnPage.authExpired, true)
         INTERMediatorOnPage.setCookieDomainWide('_im_oauth_storing', INTERMediatorOnPage.authStoring, true)
-        location.href = INTERMediatorOnPage.oAuthBaseURL +
-          '?scope=' + encodeURIComponent(INTERMediatorOnPage.oAuthScope) +
-          '&redirect_uri=' + encodeURIComponent(INTERMediatorOnPage.oAuthRedirect) +
-          '&response_type=code' +
-          '&client_id=' + encodeURIComponent(INTERMediatorOnPage.oAuthClientID)
+        location.href = INTERMediatorOnPage.oAuthBaseURL + '?scope=' + encodeURIComponent(INTERMediatorOnPage.oAuthScope) + '&redirect_uri=' + encodeURIComponent(INTERMediatorOnPage.oAuthRedirect) + '&response_type=code' + '&client_id=' + encodeURIComponent(INTERMediatorOnPage.oAuthClientID)
       }
     }
     if (INTERMediatorOnPage.isSAML && samlButton) {
@@ -905,7 +884,7 @@ let INTERMediatorOnPage = {
     explain.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2030)))
     frontPanel.appendChild(explain)
 
-    if(INTERMediatorOnPage.authPanelExp2FA){
+    if (INTERMediatorOnPage.authPanelExp2FA) {
       breakLine = document.createElement('HR')
       frontPanel.appendChild(breakLine)
       const addingNode = document.createElement('DIV')
@@ -963,8 +942,7 @@ let INTERMediatorOnPage = {
       positiveList = {'trident': positiveList.trident}
     } else if (positiveList.msie && navigator.userAgent.indexOf('MSIE ') > -1) {
       positiveList = {'msie': positiveList.msie}
-    } else if (positiveList.opera &&
-      (navigator.userAgent.indexOf('Opera/') > -1 || navigator.userAgent.indexOf('OPR/') > -1)) {
+    } else if (positiveList.opera && (navigator.userAgent.indexOf('Opera/') > -1 || navigator.userAgent.indexOf('OPR/') > -1)) {
       positiveList = {'opera': positiveList.opera, 'opr': positiveList.opera}
     }
 
@@ -977,8 +955,7 @@ let INTERMediatorOnPage = {
           matchAgent = true
           if (positiveList[agent] instanceof Object) {
             for (const os in positiveList[agent]) {
-              if (positiveList[agent].hasOwnProperty(os) &&
-                navigator.platform.toUpperCase().indexOf(os.toUpperCase()) > -1) {
+              if (positiveList[agent].hasOwnProperty(os) && navigator.platform.toUpperCase().indexOf(os.toUpperCase()) > -1) {
                 matchOS = true
                 versionStr = positiveList[agent][os]
                 break
@@ -1008,8 +985,7 @@ let INTERMediatorOnPage = {
         agentPos = navigator.appVersion.indexOf('Opera/') + 6
       } else if (navigator.appVersion.indexOf('Chrome/') > -1) {
         agentPos = navigator.appVersion.indexOf('Chrome/') + 7
-      } else if (navigator.appVersion.indexOf('Safari/') > -1 &&
-        navigator.appVersion.indexOf('Version/') > -1) {
+      } else if (navigator.appVersion.indexOf('Safari/') > -1 && navigator.appVersion.indexOf('Version/') > -1) {
         agentPos = navigator.appVersion.indexOf('Version/') + 8
       } else if (navigator.userAgent.indexOf('Firefox/') > -1) {
         agentPos = navigator.userAgent.indexOf('Firefox/') + 8
@@ -1072,7 +1048,7 @@ let INTERMediatorOnPage = {
       childElm.appendChild(document.createElement('br'))
       childElm.appendChild(document.createTextNode(navigator.userAgent))
       elm.appendChild(childElm)
-      while(bodyNode.firstChild){
+      while (bodyNode.firstChild) {
         bodyNode.removeChild(bodyNode.firstChild)
       }
       // for (let i = bodyNode.childNodes.length - 1; i >= 0; i--) {
@@ -1088,8 +1064,7 @@ let INTERMediatorOnPage = {
    */
   getNodeIdFromIMDefinition: function (imDefinition, fromNode, justFromNode) {
     'use strict'
-    console.error('INTERMediatorOnPage.getNodeIdFromIMDefinition method in INTER-Mediator-Page.js will be removed in Ver.6.0. ' +
-      'The alternative method is getNodeIdsHavingTargetFromNode or getNodeIdsHavingTargetFromRepeater.')
+    console.error('INTERMediatorOnPage.getNodeIdFromIMDefinition method in INTER-Mediator-Page.js will be removed in Ver.6.0. ' + 'The alternative method is getNodeIdsHavingTargetFromNode or getNodeIdsHavingTargetFromRepeater.')
     let repeaterNode
     if (justFromNode) {
       repeaterNode = fromNode
@@ -1125,8 +1100,7 @@ let INTERMediatorOnPage = {
 
   getNodeIdFromIMDefinitionOnEnclosure: function (imDefinition, fromNode) {
     'use strict'
-    console.error('INTERMediatorOnPage.getNodeIdFromIMDefinitionOnEnclosure method in INTER-Mediator-Page.js will be removed in Ver.6.0. ' +
-      'The alternative method is getNodeIdsHavingTargetFromEnclosure.')
+    console.error('INTERMediatorOnPage.getNodeIdFromIMDefinitionOnEnclosure method in INTER-Mediator-Page.js will be removed in Ver.6.0. ' + 'The alternative method is getNodeIdsHavingTargetFromEnclosure.')
     const repeaterNode = INTERMediatorLib.getParentEnclosure(fromNode)
     return seekNode(repeaterNode, imDefinition)
 
@@ -1307,8 +1281,7 @@ let INTERMediatorOnPage = {
         frontPanel.appendChild(imageIM)
         const imageProgress = document.createElement('img')
         imageProgress.setAttribute('id', '_im_animatedimage')
-        imageProgress.setAttribute('src', INTERMediatorOnPage.getEntryPath() +
-          '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=inprogress.gif')
+        imageProgress.setAttribute('src', INTERMediatorOnPage.getEntryPath() + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=inprogress.gif')
         frontPanel.appendChild(imageProgress)
         const brNode = document.createElement('BR')
         brNode.setAttribute('clear', 'all')
@@ -1344,10 +1317,7 @@ let INTERMediatorOnPage = {
     linkElement.setAttribute('type', 'text/css')
     let styleIndex = -1
     for (let i = 0; i < headNode.childNodes.length; i++) {
-      if (headNode.childNodes[i] &&
-        headNode.childNodes[i].nodeType === 1 &&
-        headNode.childNodes[i].tagName === 'LINK' &&
-        headNode.childNodes[i].rel === 'stylesheet') {
+      if (headNode.childNodes[i] && headNode.childNodes[i].nodeType === 1 && headNode.childNodes[i].tagName === 'LINK' && headNode.childNodes[i].rel === 'stylesheet') {
         styleIndex = i
         break
       }

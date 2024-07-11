@@ -186,8 +186,8 @@ function IM_Entry(?array $dataSource, ?array $options, ?array $dbSpecification, 
                 $dbInstance->processingRequest();
                 $dbInstance->finishCommunication(false);
             } else {
-                $dbInstance->addOutputData('debugMessages', ['Invalid Request Error.']);
-                $dbInstance->addOutputData('errorMessages', ['Invalid Request Error.']);
+                $dbInstance->addOutputData('debugMessages', ['Invalid Request Error. Check the $webServerName in the params.php.']);
+                $dbInstance->addOutputData('errorMessages', ['Invalid Request Error. Check the $webServerName in the params.php.']);
             }
         }
         $dbInstance->exportOutputDataAsJSON();
