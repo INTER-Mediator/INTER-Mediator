@@ -236,7 +236,7 @@ let INTERMediatorOnPage = {
     }
   },
 
-  logout: function (move = false) {
+  logout: function (move = false, dontMove = false) {
     const logoutURL = INTERMediatorOnPage.logoutURL
     INTERMediatorOnPage.authUserSalt = ''
     INTERMediatorOnPage.authChallenge = ''
@@ -264,12 +264,14 @@ let INTERMediatorOnPage = {
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_mediatoken')
         break
     }
-    if (logoutURL) { // For SAML auth.
-      href.location = logoutURL
-    } else if (move) { // built-in auth
-      href.location = move
-    } else {
-      location.reload()
+    if(!dontMove) {
+      if (logoutURL) { // For SAML auth.
+        href.location = logoutURL
+      } else if (move) { // built-in auth
+        href.location = move
+      } else {
+        location.reload()
+      }
     }
   },
 
@@ -457,7 +459,7 @@ let INTERMediatorOnPage = {
     }
     if (INTERMediatorOnPage.authCount > INTERMediatorOnPage.authCountLimit) {
       INTERMediatorOnPage.authenticationError()
-      INTERMediatorOnPage.logout()
+      INTERMediatorOnPage.logout(false, true)
       INTERMediatorLog.flushMessage()
       return
     }
