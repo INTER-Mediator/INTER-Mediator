@@ -26,6 +26,8 @@ Ver.13 (In Development)
 - In the params.php file, variables $authPanelTitle, $authPanelTitle2FA, $authPanelExp and $authPanelExp2FA can
   describe and set any strings including html. These are elements of auth panels as the same name properties of
   INTERMediatorOnPage object.
+- INTERMediatorOnPage.loguout(url) clears all credential info, also move to url or reload current page. On using SAML,
+  moving to logoutURL from SAML SP.
 - [BUG FIX] On the Ver.12, SAML authentication didn't work in spite of Ver.11 can do. It didn't check with SAML manual
   test on Ver.12 after added types to php codes. Ver.13 works SAML.
 
