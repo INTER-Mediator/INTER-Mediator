@@ -266,9 +266,9 @@ let INTERMediatorOnPage = {
     }
     if(!dontMove) {
       if (logoutURL) { // For SAML auth.
-        href.location = logoutURL
+        location.href = logoutURL
       } else if (move) { // built-in auth
-        href.location = move
+        location.href = move
       } else {
         location.reload()
       }
