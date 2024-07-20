@@ -1,0 +1,32 @@
+name: phpcs-security-audit
+
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches: [ 'master', 'main' ]
+
+jobs:
+  run:
+    name: phpcs-security-audit
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231 # v2.31.1
+        with:
+          php-version: '8.3'
+
+      - name: Install phpcs-security-audit
+        run: |
+          composer require --dev pheromone/phpcs-security-audit
+          composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer require --dev dealerdirect/phpcodesniffer-composer-installer:"^1.0"
+
+      - name: Run phpcs
+        continue-on-error: true
+        run: |
+          ./vendor/bin/phpcs --extensions=php,inc,lib,module,info --standard=./vendor/pheromone/phpcs-security-audit/example_base_ruleset.xml --warning-severity=6 src
+          exit 0
