@@ -1,6 +1,6 @@
 module.exports = (AuthPage, isUserAuth = false) => {
   describe('Login required page with images', () => {
-    const waiting = 1500
+    const waiting = 1000
 
     const filePath1 = '../../samples/Sample_products/images/tomatos.png'
     const filePath2 = '../../samples/Sample_products/images/galia-melon.png'
