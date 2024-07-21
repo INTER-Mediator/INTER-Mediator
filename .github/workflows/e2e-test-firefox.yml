@@ -13,13 +13,13 @@ jobs:
 #    continue-on-error: true
     strategy:
       matrix:
-        operating-system: [ubuntu-latest]
+        operating-system: [ 'ubuntu-latest' ]
 #        operating-system: [ubuntu-latest, macos-latest, windows-latest]
-        php-versions: ['8.2']
+        php-versions: [ '8.1', '8.2', '8.3', '8.4' ]
     name: End-to-End Test for Firefox on ${{ matrix.operating-system }} with PHP ${{ matrix.php-versions }}
     services:
       mysql: # https://qiita.com/sayama0402/items/e863ffb597ce87bf2e2f
-        image: mysql:5.7
+        image: mysql:8.0
         ports:
           - 3306:3306
         env:
@@ -27,7 +27,7 @@ jobs:
         options: --health-cmd "mysqladmin ping -h localhost" --health-interval 20s --health-timeout 10s --health-retries 10
 
       postgres:
-        image: postgres:12
+        image: postgres:16
         ports:
           - 5432:5432
         env:
@@ -39,7 +39,7 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      - uses: actions/checkout@v4 # v4.1.1
+      - uses: actions/checkout@v4
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -105,4 +105,3 @@ jobs:
 
       - name: Starting End-to-End Tests with Firefox
         run: cd spec/run;npx wdio wdio-firefox.conf.js
-
