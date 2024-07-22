@@ -31,7 +31,7 @@ let INTERMediatorOnPage = {
   authRequiredContext: null,
   authStoring: 'credential',
   authExpired: 3600,
-  publickey: null,
+  //publickey: null,
   httpuser: null,
   httppasswd: null,
   mediaToken: null,
@@ -264,7 +264,7 @@ let INTERMediatorOnPage = {
         INTERMediatorOnPage.removeFromSessionStorageWithFallDown('_im_mediatoken')
         break
     }
-    if(!dontMove) {
+    if (!dontMove) {
       if (logoutURL) { // For SAML auth.
         location.href = logoutURL
       } else if (move) { // built-in auth
@@ -506,7 +506,8 @@ let INTERMediatorOnPage = {
       frontPanel.id = '_im_authpanel'
       backBox.appendChild(frontPanel)
 
-      const panelTitle = INTERMediatorOnPage.authPanelTitle ?? INTERMediatorOnPage.realm ?? ''
+      const panelTitle = INTERMediatorOnPage.authPanelTitle ? INTERMediatorOnPage.authPanelTitle
+        : (INTERMediatorOnPage.realm ? INTERMediatorOnPage.realm : '')
       if (panelTitle && panelTitle.length > 0) {
         const realmBox = document.createElement('DIV')
         realmBox.appendChild(document.createTextNode(panelTitle))
@@ -854,7 +855,9 @@ let INTERMediatorOnPage = {
 
     if (INTERMediatorOnPage.authPanelTitle2FA || INTERMediatorOnPage.realm) {
       const realmBox = document.createElement('DIV')
-      realmBox.appendChild(document.createTextNode(INTERMediatorOnPage.authPanelTitle ?? INTERMediatorOnPage.realm))
+      realmBox.appendChild(document.createTextNode(
+        INTERMediatorOnPage.authPanelTitle ? INTERMediatorOnPage.authPanelTitle
+          : (INTERMediatorOnPage.realm ? INTERMediatorOnPage.realm : '')))
       realmBox.id = '_im_authrealm_2FA'
       frontPanel.appendChild(realmBox)
       breakLine = document.createElement('HR')

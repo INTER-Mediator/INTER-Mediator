@@ -295,7 +295,6 @@ const IMLibPageNavigation = {
           IMLibMouseEventDispatch.setExecute(node.id, function () {
             IMLibQueue.setTask((complete) => {
               complete()
-              const url = INTERMediatorOnPage.logoutURL
               INTERMediatorOnPage.logout()
             }, false, true)
           })
