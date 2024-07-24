@@ -664,7 +664,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         $this->resolveGroup($userid);
         $candidateGroups = array();
         foreach ($this->belongGroups as $groupid) {
-            $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
+            if($groupid) {
+                $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
+            }
         }
         return $candidateGroups;
     }
