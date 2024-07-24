@@ -604,7 +604,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
 
         $candidateGroups = array();
         foreach ($this->belongGroups as $groupid) {
-            $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
+            if($groupid) {
+                $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
+            }
         }
         if (count($candidateGroups) === 0) {
             $defaultGroup = Params::getParameterValue("defaultGroupName", false);
