@@ -138,7 +138,7 @@ trait Proxy_Auth
                     if (!$this->isAuthAccessing()) {
                         $this->accessSetToNothing();  // Not Authenticated!
                     }
-                } else if (!$this->isAuthAccessing()) {  // Set yp as SAML
+                } else if (!$this->isAuthAccessing()) {  // Set up as SAML
                     $SAMLAuth = new SAMLAuth($this->dbSettings->getSAMLAuthSource());
                     $SAMLAuth->setSAMLAttrRules($this->dbSettings->getSAMLAttrRules());
                     $SAMLAuth->setSAMLAdditionalRules($this->dbSettings->getSAMLAdditionalRules());
