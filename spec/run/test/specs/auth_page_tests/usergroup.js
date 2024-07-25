@@ -1,6 +1,6 @@
 module.exports = (AuthPage) => {
   describe('Login required page', () => {
-    const waiting = 1500
+    const waiting = 1000
     let isJapanese = false
     if (process.platform === 'darwin') {
       isJapanese = true
@@ -44,13 +44,13 @@ module.exports = (AuthPage) => {
       await AuthPage.authUsername.setValue("user1")
       await AuthPage.authPassword.setValue("user1")
       await AuthPage.authLoginButton.click() // login succeed.
-//      await browser.pause(waiting)
+      await browser.pause(waiting)
       await expect(AuthPage.authPanel).not.toExist()
       await expect(AuthPage.auth2FAPanel).not.toExist()
       await expect(AuthPage.logoutLink).toHaveText("Logout")
       await AuthPage.logoutLink.waitForClickable()
       await AuthPage.logoutLink.click()
-//      await browser.pause(waiting)
+      await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist()
     })
 
@@ -61,13 +61,13 @@ module.exports = (AuthPage) => {
       await AuthPage.authUsername.setValue("user4")
       await AuthPage.authPassword.setValue("user4") // user4 belongs to group2.
       await AuthPage.authLoginButton.click() // login succeed.
-//      await browser.pause(waiting)
+      await browser.pause(waiting)
       await expect(AuthPage.authPanel).not.toExist()
       await expect(AuthPage.auth2FAPanel).not.toExist()
       await expect(AuthPage.logoutLink).toHaveText("Logout")
       await AuthPage.logoutLink.waitForClickable()
       await AuthPage.logoutLink.click()
-//      await browser.pause(waiting)
+      await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist()
     })
 
