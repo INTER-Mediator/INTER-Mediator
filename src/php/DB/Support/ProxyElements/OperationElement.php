@@ -13,11 +13,29 @@ abstract class OperationElement
 
     /**
      * @param OperationVisitor $v
+     * @return bool
+     */
+    public function acceptIsAuthAccessing(OperationVisitor $v): bool
+    {
+        return $v->visitIsAuthAccessing($this);
+    }
+
+    /**
+     * @param OperationVisitor $v
      * @return void
      */
-    public function acceptCheckAuthentication(OperationVisitor $v): void
+    public function acceptCheckAuthentication(OperationVisitor $v): bool
     {
-        $v->visitCheckAuthentication($this);
+        return $v->visitCheckAuthentication($this);
+    }
+
+    /**
+     * @param OperationVisitor $v
+     * @return bool
+     */
+    public function acceptCheckAuthorization(OperationVisitor $v): bool
+    {
+        return $v->visitCheckAuthorization($this);
     }
 
     /**

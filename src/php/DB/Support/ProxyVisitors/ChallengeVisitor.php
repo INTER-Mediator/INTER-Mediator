@@ -13,15 +13,32 @@ class ChallengeVisitor extends OperationVisitor
 {
     /**
      * @param OperationElement $e
+     * @return bool
+     */
+    public function visitIsAuthAccessing(OperationElement $e): bool
+    {
+        return true;
+    }
+
+    /**
+     * @param OperationElement $e
      * @return void
      */
-    public function visitCheckAuthentication(OperationElement $e): void
+    public function visitCheckAuthentication(OperationElement $e): bool
     {
         $this->proxy->dbSettings->setRequireAuthorization(true);
-        // It just returns 'false' to the property $resultOfCheckAuthentication in CheckAuthenticationElement
+        return false;
         // DO NOT CALL the prepareCheckAuthentication method for the challenge accessing.
     }
 
+    /**
+     * @param OperationElement $e
+     * @return bool
+     */
+    public function visitCheckAuthorization(OperationElement $e): bool
+    {
+        return true;
+    }
 
     /**
      * @param OperationElement $e

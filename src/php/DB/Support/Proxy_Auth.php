@@ -19,6 +19,8 @@ namespace INTERMediator\DB\Support;
 use Exception;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\PDO;
+use INTERMediator\DB\Support\ProxyElements\CheckAuthorizationElement;
+use INTERMediator\DB\Support\ProxyElements\IsAuthAccessingElement;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
 use INTERMediator\SAMLAuth;
@@ -106,27 +108,16 @@ trait Proxy_Auth
      */
     public function authenticationAndAuthorization(): void
     {
-        $authOptions = $this->dbSettings->getAuthentication();
-        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $this->dbSettings->setRequireAuthentication(false);
-        $this->dbSettings->setRequireAuthorization(false);
-        $this->dbSettings->setDBNative(false);
-        if (!is_null($authOptions) || $this->isAuthAccessing()
-            || (isset($tableInfo['authentication'])
-                && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$this->access])))
-        ) {
-            if ($this->logger->getDebugLevel()
-                && ($this->passwordHash != '1' || $this->alwaysGenSHA2)) {
-                $this->dbClass->authHandler->authSupportCanMigrateSHA256Hash();
-            }
-            $this->dbSettings->setRequireAuthorization(true);
-        }
+        $isAuthAccessing = (new IsAuthAccessingElement())->acceptIsAuthAccessing($this->visitor);
+        $this->dbSettings->setRequireAuthorization($isAuthAccessing || $this->checkAuthSettings());
         $this->authSucceed = false;
         if (!$this->bypassAuth && $this->dbSettings->getRequireAuthorization()) { // Authentication required
             $this->logger->setDebugMessage("[authenticationAndAuthorization] Authentication process started.");
-            $process = new CheckAuthenticationElement();
-            $process->acceptCheckAuthentication($this->visitor); // Checking authentication.
-            if ($process->resultOfCheckAuthentication) {
+            if ($this->passwordHash != '1' || $this->alwaysGenSHA2) {
+                $this->dbClass->authHandler->authSupportCanMigrateSHA256Hash();
+            }
+            if ((new CheckAuthenticationElement())->acceptCheckAuthentication($this->visitor)) {
                 $this->dbSettings->setCurrentUser($this->signedUser);
                 $this->logger->setDebugMessage("[authenticationAndAuthorization] IM-built-in Authentication succeed.");
                 $this->authSucceed = true;
@@ -135,10 +126,10 @@ trait Proxy_Auth
                 if (!$this->dbSettings->getIsSAML()) { // NOT Set up as SAML
                     $this->logger->setDebugMessage("[authenticationAndAuthorization] Authentication doesn't meet valid."
                         . "{$this->signedUser}/{$this->paramResponse}/{$this->clientId}");
-                    if (!$this->isAuthAccessing()) {
+                    if (!$isAuthAccessing) {
                         $this->accessSetToNothing();  // Not Authenticated!
                     }
-                } else if (!$this->isAuthAccessing()) {  // Set up as SAML
+                } else if (!$isAuthAccessing) {  // Set up as SAML
                     $SAMLAuth = new SAMLAuth($this->dbSettings->getSAMLAuthSource());
                     $SAMLAuth->setSAMLAttrRules($this->dbSettings->getSAMLAttrRules());
                     $SAMLAuth->setSAMLAdditionalRules($this->dbSettings->getSAMLAdditionalRules());
@@ -168,14 +159,32 @@ trait Proxy_Auth
                     }
                 }
             }
+            if (!(new CheckAuthorizationElement())->acceptCheckAuthorization($this->visitor) && $this->authSucceed) {// Checking authorization.
+                Logger::getInstance()->setDebugMessage(
+                    "[authenticationAndAuthorization] Authorization doesn't meet the settings.");
+                $this->accessSetToNothing();  // Not Authenticated!
+                $this->dbSettings->setRequireAuthentication(true);
+                $this->authSucceed = false;
+            }
         }
     }
 
-    private function isAuthAccessing(): bool
+    private function checkAuthSettings(): bool
     {
-        return $this->access === 'challenge' || $this->access === 'changepassword'
-            || $this->access === 'credential' || $this->access === 'authenticated';
+        $authOptions = $this->dbSettings->getAuthentication();
+        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
+        $rule1 = !is_null($authOptions);
+        //$rule2 = $this->isAuthAccessing();
+        $rule3 = isset($tableInfo['authentication']) && isset($tableInfo['authentication']['all']);
+        $rule4 = isset($tableInfo['authentication']) && isset($tableInfo['authentication'][$this->access]);
+        return $rule1 /*|| $rule2 */ || $rule3 || $rule4;
     }
+
+//    private function isAuthAccessing(): bool
+//    {
+//        return $this->access === 'challenge' || $this->access === 'changepassword'
+//            || $this->access === 'credential' || $this->access === 'authenticated';
+//    }
 
     /**
      * @return void

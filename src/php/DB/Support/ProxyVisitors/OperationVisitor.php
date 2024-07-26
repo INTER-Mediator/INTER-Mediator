@@ -36,7 +36,19 @@ abstract class OperationVisitor
      * @param OperationElement $e
      * @return void
      */
-    abstract public function visitCheckAuthentication(OperationElement $e): void;
+    abstract public function visitIsAuthAccessing(OperationElement $e): bool;
+
+    /**
+     * @param OperationElement $e
+     * @return void
+     */
+    abstract public function visitCheckAuthentication(OperationElement $e): bool;
+
+    /**
+     * @param OperationElement $e
+     * @return void
+     */
+    abstract public function visitCheckAuthorization(OperationElement $e): bool;
 
     /**
      * @param OperationElement $e
@@ -77,12 +89,6 @@ abstract class OperationVisitor
         $authDBHandler = $proxy->authDbClass->authHandler;
 
         $proxy->signedUser = $authHandler->authSupportUnifyUsernameAndEmail($dbSettings->getCurrentUser());
-        if (!$this->checkAuthorization()) {
-            Logger::getInstance()->setDebugMessage("[prepareCheckAuthentication] Authorization doesn't meet the settings.");
-            $proxy->accessSetToNothing();  // Not Authenticated!
-            return false;
-        }
-
         $proxy->hashedPassword = $authHandler->authSupportRetrieveHashedPassword($proxy->signedUser ?? "");
 
         $falseHash = hash("sha256", uniqid("", true)); // for failing auth.
@@ -125,41 +131,6 @@ abstract class OperationVisitor
                 "[prepareCheckAuthentication] stored2FAuth={$this->stored2FAuth}", 2);
         }
         return true;
-    }
-
-    /**
-     * @return bool
-     */
-    private function checkAuthorization(): bool
-    {
-        $proxy = $this->proxy;
-        $authHandler = $proxy->dbClass->authHandler;
-        $dbSettings = $proxy->dbSettings;
-        $authorizedGroups = $authHandler->getAuthorizedGroups($proxy->access);
-        $authorizedUsers = $authHandler->getAuthorizedUsers($proxy->access);
-
-        Logger::getInstance()->setDebugMessage(str_replace("\n", "",
-            ("[checkAuthorization] contextName={$dbSettings->getDataSourceName()}/access={$proxy->access}/"
-                . "signedUser={$proxy->signedUser}/authorizedUsers=" . var_export($authorizedUsers, true)
-                . "/authorizedGroups=" . var_export($authorizedGroups, true))), 2);
-
-        if ((count($authorizedUsers) === 0 && count($authorizedGroups) === 0)) { // No user and group settings.
-            return true;
-        } else {
-            if (in_array($proxy->signedUser, $authorizedUsers)) {
-                return true;
-            } else {
-                if (count($authorizedGroups) > 0) {
-                    $belongGroups = $authHandler->authSupportGetGroupsOfUser($proxy->signedUser);
-                    Logger::getInstance()->setDebugMessage("[checkAuthorization] " . $proxy->signedUser
-                        . "=belongGroups=" . var_export($belongGroups, true), 2);
-                    if (count(array_intersect($belongGroups, $authorizedGroups)) != 0) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
     }
 
     /**
@@ -218,7 +189,48 @@ abstract class OperationVisitor
     /**
      * @return bool
      */
-    protected function sessionStorageCheckAuth(): bool
+    protected function checkAuthorization(): bool
+    {
+        $proxy = $this->proxy;
+        $authHandler = $proxy->dbClass->authHandler;
+        $dbSettings = $proxy->dbSettings;
+        $authorizedGroups = $authHandler->getAuthorizedGroups($proxy->access);
+        $authorizedUsers = $authHandler->getAuthorizedUsers($proxy->access);
+
+        if ((count($authorizedUsers) === 0 && count($authorizedGroups) === 0)) { // No user and group settings.
+            Logger::getInstance()->setDebugMessage("[checkAuthorization] return true", 2);
+            return true;
+        } else {
+            $belongGroups = $authHandler->authSupportGetGroupsOfUser($proxy->signedUser);
+
+            Logger::getInstance()->setDebugMessage(str_replace("\n", "",
+                ("[checkAuthorization] contextName={$dbSettings->getDataSourceName()}/access={$proxy->access}/"
+                    . "signedUser={$proxy->signedUser}"
+                    . " belongGroups=" . var_export($belongGroups, true))
+                . "/authorizedUsers=" . var_export($authorizedUsers, true)
+                . "/authorizedGroups=" . var_export($authorizedGroups, true)
+            ), 2);
+
+            if (in_array($proxy->signedUser, $authorizedUsers)) {
+                Logger::getInstance()->setDebugMessage("[checkAuthorization] return true", 2);
+                return true;
+            } else {
+                if (count($authorizedGroups) > 0 && count(array_intersect($belongGroups, $authorizedGroups)) != 0) {
+                    Logger::getInstance()->setDebugMessage("[checkAuthorization] return true", 2);
+                    return true;
+                }
+            }
+        }
+        Logger::getInstance()->setDebugMessage("[checkAuthorization] return false", 2);
+        return false;
+    }
+
+
+    /**
+     * @return bool
+     */
+    protected
+    function sessionStorageCheckAuth(): bool
     {
         $proxy = $this->proxy;
         $hmacValue = ($proxy->hashedPassword && $this->storedChallenge)
@@ -250,96 +262,98 @@ abstract class OperationVisitor
         return false;
     }
 
-    // ==== Service methods for the visitDataOperation method. ====
+// ==== Service methods for the visitDataOperation method. ====
 
     /**
      * @param string $access
      * @return void
      */
-    protected function CreateReplaceImpl(string $access): void
+    protected
+    function CreateReplaceImpl(string $access): void
     {
-        try{
-        Logger::getInstance()->setDebugMessage("[processingRequest] start create processing", 2);
-        $proxy = $this->proxy;
-        $dbSettings = $proxy->dbSettings;
+        try {
+            Logger::getInstance()->setDebugMessage("[processingRequest] start create processing", 2);
+            $proxy = $this->proxy;
+            $dbSettings = $proxy->dbSettings;
 
-        $tableInfo = $dbSettings->getDataSourceTargetArray();
-        $attachedFields = $dbSettings->getAttachedFields();
-        if (!$proxy->ignoreFiles && isset($attachedFields) && $attachedFields[0] === '_im_csv_upload') {
-            Logger::getInstance()->setDebugMessage("CSV File importing operation gets stated.", 2);
-            $uploadFiles = $dbSettings->getAttachedFiles($tableInfo['name']);
-            if ($uploadFiles && count($tableInfo) > 0) {
-                $fileUploader = new FileUploader();
-                if (IMUtil::guessFileUploadError()) {
-                    $fileUploader->processingAsError(
-                        $dbSettings->getDataSource(),
-                        $dbSettings->getOptions(),
-                        $dbSettings->getDbSpec(), true,
-                        $dbSettings->getDataSourceName(), true);
-                } else {
-                    $fileUploader->processingWithParameters(
-                        $dbSettings->getDataSource(),
-                        $dbSettings->getOptions(),
-                        $dbSettings->getDbSpec(),
-                        Logger::getInstance()->getDebugLevel(),
-                        $tableInfo['name'], $tableInfo['key'], null,
-                        $dbSettings->getAttachedFields(), $uploadFiles, true
-                    );
-                    $proxy->outputOfProcessing['dbresult'] = $fileUploader->dbresult;
-                }
-            }
-        } else {
-            if ($proxy->checkValidation()) {
+            $tableInfo = $dbSettings->getDataSourceTargetArray();
+            $attachedFields = $dbSettings->getAttachedFields();
+            if (!$proxy->ignoreFiles && isset($attachedFields) && $attachedFields[0] === '_im_csv_upload') {
+                Logger::getInstance()->setDebugMessage("CSV File importing operation gets stated.", 2);
                 $uploadFiles = $dbSettings->getAttachedFiles($tableInfo['name']);
-                if ($proxy->ignoreFiles || !$uploadFiles || count($tableInfo) < 1) { // No attached file.
-                    $result = $proxy->createInDB($access === 'replace');
-                    $proxy->outputOfProcessing['newRecordKeyValue'] = $result;
-                    $proxy->outputOfProcessing['dbresult'] = $proxy->getUpdatedRecord();
-                } else { // Some files are attached.
+                if ($uploadFiles && count($tableInfo) > 0) {
                     $fileUploader = new FileUploader();
-                    if (IMUtil::guessFileUploadError()) { // Detect file upload error.
+                    if (IMUtil::guessFileUploadError()) {
                         $fileUploader->processingAsError(
                             $dbSettings->getDataSource(),
                             $dbSettings->getOptions(),
                             $dbSettings->getDbSpec(), true,
                             $dbSettings->getDataSourceName(), true);
-                    } else { // No file upload error.
-                        $dbresult = [];
-                        $result = $proxy->createInDB($access == 'replace');
-                        $proxy->outputOfProcessing['newRecordKeyValue'] = $result;
-                        $counter = 0;
-                        foreach ($uploadFiles as $oneFile) {
-                            $dbresult[] = $proxy->getUpdatedRecord()[0];
-                            if ($result) {
-                                $fileUploader->processingWithParameters(
-                                    $dbSettings->getDataSource(),
-                                    $dbSettings->getOptions(),
-                                    $dbSettings->getDbSpec(),
-                                    Logger::getInstance()->getDebugLevel(),
-                                    $tableInfo['name'], $tableInfo['key'], $result,
-                                    [$attachedFields[$counter]], [$oneFile], true
-                                );
-                            }
-                            $proxy->outputOfProcessing['dbresult'] = $dbresult;
-                            $counter += 1;
-                        }
+                    } else {
+                        $fileUploader->processingWithParameters(
+                            $dbSettings->getDataSource(),
+                            $dbSettings->getOptions(),
+                            $dbSettings->getDbSpec(),
+                            Logger::getInstance()->getDebugLevel(),
+                            $tableInfo['name'], $tableInfo['key'], null,
+                            $dbSettings->getAttachedFields(), $uploadFiles, true
+                        );
+                        $proxy->outputOfProcessing['dbresult'] = $fileUploader->dbresult;
                     }
                 }
             } else {
-                Logger::getInstance()->setErrorMessage("Invalid data. Any validation rule was violated.");
+                if ($proxy->checkValidation()) {
+                    $uploadFiles = $dbSettings->getAttachedFiles($tableInfo['name']);
+                    if ($proxy->ignoreFiles || !$uploadFiles || count($tableInfo) < 1) { // No attached file.
+                        $result = $proxy->createInDB($access === 'replace');
+                        $proxy->outputOfProcessing['newRecordKeyValue'] = $result;
+                        $proxy->outputOfProcessing['dbresult'] = $proxy->getUpdatedRecord();
+                    } else { // Some files are attached.
+                        $fileUploader = new FileUploader();
+                        if (IMUtil::guessFileUploadError()) { // Detect file upload error.
+                            $fileUploader->processingAsError(
+                                $dbSettings->getDataSource(),
+                                $dbSettings->getOptions(),
+                                $dbSettings->getDbSpec(), true,
+                                $dbSettings->getDataSourceName(), true);
+                        } else { // No file upload error.
+                            $dbresult = [];
+                            $result = $proxy->createInDB($access == 'replace');
+                            $proxy->outputOfProcessing['newRecordKeyValue'] = $result;
+                            $counter = 0;
+                            foreach ($uploadFiles as $oneFile) {
+                                $dbresult[] = $proxy->getUpdatedRecord()[0];
+                                if ($result) {
+                                    $fileUploader->processingWithParameters(
+                                        $dbSettings->getDataSource(),
+                                        $dbSettings->getOptions(),
+                                        $dbSettings->getDbSpec(),
+                                        Logger::getInstance()->getDebugLevel(),
+                                        $tableInfo['name'], $tableInfo['key'], $result,
+                                        [$attachedFields[$counter]], [$oneFile], true
+                                    );
+                                }
+                                $proxy->outputOfProcessing['dbresult'] = $dbresult;
+                                $counter += 1;
+                            }
+                        }
+                    }
+                } else {
+                    Logger::getInstance()->setErrorMessage("Invalid data. Any validation rule was violated.");
+                }
             }
-        }
         } catch (\Exception $ex) {
             throw $ex;
         }
     }
 
-    // ==== Service methods for the visitHandleChallenge method. ====
+// ==== Service methods for the visitHandleChallenge method. ====
 
     /**
      * @return void
      */
-    protected function defaultHandleChallenge()
+    protected
+    function defaultHandleChallenge()
     {
         $proxy = $this->proxy;
         Logger::getInstance()->setDebugMessage("[handleChallenge] access={$proxy->access}, succeed={$proxy->authSucceed}", 2);
@@ -376,7 +390,8 @@ abstract class OperationVisitor
      * @param string $suffix
      * @return string
      */
-    public function generateAndSaveChallenge(string $user, string $generatedClientID, string $prefix, string $suffix = ""): string
+    public
+    function generateAndSaveChallenge(string $user, string $generatedClientID, string $prefix, string $suffix = ""): string
     {
         $proxy = $this->proxy;
         $generated = IMUtil::generateChallenge();
@@ -393,7 +408,8 @@ abstract class OperationVisitor
      * @param string $hashedPassword
      * @return void
      */
-    protected function setCookieOfChallenge(string $key, string $challenge, string $generatedClientID, string $hashedPassword): void
+    protected
+    function setCookieOfChallenge(string $key, string $challenge, string $generatedClientID, string $hashedPassword): void
     {
         Logger::getInstance()->setDebugMessage("[setCookieOfChallenge] key={$key} value{$challenge}/{$generatedClientID}/{$hashedPassword}", 2);
         $proxy = $this->proxy;
@@ -418,7 +434,8 @@ abstract class OperationVisitor
     /**
      * @return void
      */
-    protected function clearAuthenticationCookies(): void
+    protected
+    function clearAuthenticationCookies(): void
     {
         setcookie("_im_credential_token", "", time() - 3600); // Should be removed.
         setcookie("_im_credential_2FA", "", time() - 3600); // Should be removed.
