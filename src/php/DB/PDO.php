@@ -15,6 +15,7 @@
 
 namespace INTERMediator\DB;
 
+use DateInterval;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -454,23 +455,18 @@ class PDO extends DBClass
     {
         $serverTZ = new DateTimeZone($this->defaultTimezone);
         $dt = new DateTime($datetime, $serverTZ);
-        $serverOffset = $serverTZ->getOffset($dt); // in minute
+        $serverOffset = $serverTZ->getOffset($dt); // in a minute
         $clientOffset = $this->dbSettings->getClientTZOffset() * 60; // in Second
         $shiftSec = $isToServer ? ($serverOffset + $clientOffset) : (-$clientOffset - $serverOffset);
         if ($shiftSec > 0) {
-            $dt->add(new \DateInterval("PT{$shiftSec}S"));
+            $dt->add(new DateInterval("PT{$shiftSec}S"));
         } else {
             $shiftSec = -$shiftSec;
-            $dt->sub(new \DateInterval("PT{$shiftSec}S"));
+            $dt->sub(new DateInterval("PT{$shiftSec}S"));
         }
         $isTime = preg_match('/^\d{2}:\d{2}:\d{2}/', $datetime);
         $dt->setTimezone(new DateTimeZone($this->defaultTimezone));
-        $converted = $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
-
-//        $this->logger->setDebugMessage("[getDateTimeExpression] datetime={$datetime}->{$converted}, datetime={$datetime}, "
-//            . "serverOffset={$serverOffset}, clientOffset={$clientOffset}, shiftSec={$shiftSec}",2);
-
-        return $converted;
+        return $dt->format($isTime ? 'H:i:s' : 'Y-m-d H:i:s');
     }
 
     /**
@@ -727,7 +723,7 @@ class PDO extends DBClass
         $lastKeyValue = $this->handler->lastInsertIdAlt($seqObject, $tableNameRow); // $this->link->lastInsertId($seqObject);
         if (/* $isReplace && */ !$lastKeyValue) { // lastInsertId returns 0 after replace command.
             // Moreover, about MySQL, it returns 0 with the key field without AUTO_INCREMENT.
-            $lastKeyValue = -999; // This means kind of error, so avoid to set non-zero value.
+            $lastKeyValue = -999; // This means kind of error, so avoid it to set non-zero value.
         }
 
         $this->notifyHandler->setQueriedPrimaryKeys(array($lastKeyValue));

@@ -517,18 +517,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 && $this->clientSyncAvailable
                 && isset($currentDataSource['sync-control'])
                 && strpos(strtolower($currentDataSource['sync-control']), 'update') !== false) {
-                try {
-                    $this->dbSettings->notifyServer->updated(
-                        $this->PostData['notifyid'] ?? null,
-                        $this->dbClass->notifyHandler->queriedEntity(),
-                        $this->dbClass->notifyHandler->queriedPrimaryKeys(),
-                        $this->dbSettings->getFieldsRequired(),
-                        $this->dbSettings->getValue(),
-                        strpos(strtolower($currentDataSource['sync-control']), 'update-notify') !== false
-                    );
-                } catch (Exception $ex) {
-                    throw $ex;
-                }
+                $this->dbSettings->notifyServer->updated(
+                    $this->PostData['notifyid'] ?? null,
+                    $this->dbClass->notifyHandler->queriedEntity(),
+                    $this->dbClass->notifyHandler->queriedPrimaryKeys(),
+                    $this->dbSettings->getFieldsRequired(),
+                    $this->dbSettings->getValue(),
+                    strpos(strtolower($currentDataSource['sync-control']), 'update-notify') !== false
+                );
             }
             // Messaging
             $msgEntry = $currentDataSource['send-mail'] ?? ($currentDataSource['messaging'] ?? null);
@@ -600,18 +596,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                     && $this->clientSyncAvailable
                     && isset($currentDataSource['sync-control'])
                     && strpos(strtolower($currentDataSource['sync-control']), 'create') !== false) {
-                    try {
-                        $this->dbSettings->notifyServer->created(
-                            $this->PostData['notifyid'] ?? null,
-                            $this->dbClass->notifyHandler->queriedEntity(),
-                            $this->dbClass->notifyHandler->queriedPrimaryKeys(),
-                            $currentDataSource['key'],
-                            $result,
-                            strpos(strtolower($currentDataSource['sync-control']), 'create-notify') !== false
-                        );
-                    } catch (Exception $ex) {
-                        throw $ex;
-                    }
+                    $this->dbSettings->notifyServer->created(
+                        $this->PostData['notifyid'] ?? null,
+                        $this->dbClass->notifyHandler->queriedEntity(),
+                        $this->dbClass->notifyHandler->queriedPrimaryKeys(),
+                        $currentDataSource['key'],
+                        $result,
+                        strpos(strtolower($currentDataSource['sync-control']), 'create-notify') !== false
+                    );
                 }
                 // Messaging
                 $msgEntry = $currentDataSource['send-mail'] ?? ($currentDataSource['messaging'] ?? null);
@@ -682,15 +674,11 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 && $this->clientSyncAvailable
                 && isset($currentDataSource['sync-control'])
                 && strpos(strtolower($currentDataSource['sync-control']), 'delete') !== false) {
-                try {
-                    $this->dbSettings->notifyServer->deleted(
-                        $this->PostData['notifyid'] ?? null,
-                        $this->dbClass->notifyHandler->queriedEntity(),
-                        $this->dbClass->notifyHandler->queriedPrimaryKeys()
-                    );
-                } catch (Exception $ex) {
-                    throw $ex;
-                }
+                $this->dbSettings->notifyServer->deleted(
+                    $this->PostData['notifyid'] ?? null,
+                    $this->dbClass->notifyHandler->queriedEntity(),
+                    $this->dbClass->notifyHandler->queriedPrimaryKeys()
+                );
             }
         } catch (StopOperationException $e) {
             $this->logger->setWarningMessage($e->getMessage());
@@ -743,18 +731,14 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
                 && $this->clientSyncAvailable
                 && isset($currentDataSource['sync-control'])
                 && strpos(strtolower($currentDataSource['sync-control']), 'create') !== false) {
-                try {
-                    $this->dbSettings->notifyServer->created(
-                        $this->PostData['notifyid'] ?? null,
-                        $this->dbClass->notifyHandler->queriedEntity(),
-                        $this->dbClass->notifyHandler->queriedPrimaryKeys(),
-                        $currentDataSource['key'],
-                        $result,
-                        strpos(strtolower($currentDataSource['sync-control']), 'create-notify') !== false
-                    );
-                } catch (Exception $ex) {
-                    throw $ex;
-                }
+                $this->dbSettings->notifyServer->created(
+                    $this->PostData['notifyid'] ?? null,
+                    $this->dbClass->notifyHandler->queriedEntity(),
+                    $this->dbClass->notifyHandler->queriedPrimaryKeys(),
+                    $currentDataSource['key'],
+                    $result,
+                    strpos(strtolower($currentDataSource['sync-control']), 'create-notify') !== false
+                );
             }
         } catch (StopOperationException $e) {
             $this->logger->setWarningMessage($e->getMessage());
@@ -862,7 +846,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $this->logger->setDebugMessage("The class '{$dbClassName}' was instantiated . ", 2);
         }
 
-        $generator = null;
         $this->dbClass->setUpSharedObjects($this);
         if ($isDBClassNull) {
             if ($this->activateGenerator) { // In case of Generator activated

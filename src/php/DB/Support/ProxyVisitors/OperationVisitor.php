@@ -2,6 +2,7 @@
 
 namespace INTERMediator\DB\Support\ProxyVisitors;
 
+use Exception;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\Proxy;
 use INTERMediator\DB\Support\ProxyElements\CheckAuthenticationElement;
@@ -15,7 +16,7 @@ use INTERMediator\IMUtil;
 abstract class OperationVisitor
 {
     /**
-     * Refers the Proxy object which is calling visitor methods.
+     * Refers the Proxy object, which is calling visitor methods.
      * @var Proxy
      */
     protected Proxy $proxy;
@@ -267,83 +268,80 @@ abstract class OperationVisitor
     /**
      * @param string $access
      * @return void
+     * @throws Exception
      */
     protected
     function CreateReplaceImpl(string $access): void
     {
-        try {
-            Logger::getInstance()->setDebugMessage("[processingRequest] start create processing", 2);
-            $proxy = $this->proxy;
-            $dbSettings = $proxy->dbSettings;
+        Logger::getInstance()->setDebugMessage("[processingRequest] start create processing", 2);
+        $proxy = $this->proxy;
+        $dbSettings = $proxy->dbSettings;
 
-            $tableInfo = $dbSettings->getDataSourceTargetArray();
-            $attachedFields = $dbSettings->getAttachedFields();
-            if (!$proxy->ignoreFiles && isset($attachedFields) && $attachedFields[0] === '_im_csv_upload') {
-                Logger::getInstance()->setDebugMessage("CSV File importing operation gets stated.", 2);
+        $tableInfo = $dbSettings->getDataSourceTargetArray();
+        $attachedFields = $dbSettings->getAttachedFields();
+        if (!$proxy->ignoreFiles && isset($attachedFields) && $attachedFields[0] === '_im_csv_upload') {
+            Logger::getInstance()->setDebugMessage("CSV File importing operation gets stated.", 2);
+            $uploadFiles = $dbSettings->getAttachedFiles($tableInfo['name']);
+            if ($uploadFiles && count($tableInfo) > 0) {
+                $fileUploader = new FileUploader();
+                if (IMUtil::guessFileUploadError()) {
+                    $fileUploader->processingAsError(
+                        $dbSettings->getDataSource(),
+                        $dbSettings->getOptions(),
+                        $dbSettings->getDbSpec(), true,
+                        $dbSettings->getDataSourceName(), true);
+                } else {
+                    $fileUploader->processingWithParameters(
+                        $dbSettings->getDataSource(),
+                        $dbSettings->getOptions(),
+                        $dbSettings->getDbSpec(),
+                        Logger::getInstance()->getDebugLevel(),
+                        $tableInfo['name'], $tableInfo['key'], null,
+                        $dbSettings->getAttachedFields(), $uploadFiles, true
+                    );
+                    $proxy->outputOfProcessing['dbresult'] = $fileUploader->dbresult;
+                }
+            }
+        } else {
+            if ($proxy->checkValidation()) {
                 $uploadFiles = $dbSettings->getAttachedFiles($tableInfo['name']);
-                if ($uploadFiles && count($tableInfo) > 0) {
+                if ($proxy->ignoreFiles || !$uploadFiles || count($tableInfo) < 1) { // No attached file.
+                    $result = $proxy->createInDB($access === 'replace');
+                    $proxy->outputOfProcessing['newRecordKeyValue'] = $result;
+                    $proxy->outputOfProcessing['dbresult'] = $proxy->getUpdatedRecord();
+                } else { // Some files are attached.
                     $fileUploader = new FileUploader();
-                    if (IMUtil::guessFileUploadError()) {
+                    if (IMUtil::guessFileUploadError()) { // Detect file upload error.
                         $fileUploader->processingAsError(
                             $dbSettings->getDataSource(),
                             $dbSettings->getOptions(),
                             $dbSettings->getDbSpec(), true,
                             $dbSettings->getDataSourceName(), true);
-                    } else {
-                        $fileUploader->processingWithParameters(
-                            $dbSettings->getDataSource(),
-                            $dbSettings->getOptions(),
-                            $dbSettings->getDbSpec(),
-                            Logger::getInstance()->getDebugLevel(),
-                            $tableInfo['name'], $tableInfo['key'], null,
-                            $dbSettings->getAttachedFields(), $uploadFiles, true
-                        );
-                        $proxy->outputOfProcessing['dbresult'] = $fileUploader->dbresult;
+                    } else { // No file upload error.
+                        $dbresult = [];
+                        $result = $proxy->createInDB($access == 'replace');
+                        $proxy->outputOfProcessing['newRecordKeyValue'] = $result;
+                        $counter = 0;
+                        foreach ($uploadFiles as $oneFile) {
+                            $dbresult[] = $proxy->getUpdatedRecord()[0];
+                            if ($result) {
+                                $fileUploader->processingWithParameters(
+                                    $dbSettings->getDataSource(),
+                                    $dbSettings->getOptions(),
+                                    $dbSettings->getDbSpec(),
+                                    Logger::getInstance()->getDebugLevel(),
+                                    $tableInfo['name'], $tableInfo['key'], $result,
+                                    [$attachedFields[$counter]], [$oneFile], true
+                                );
+                            }
+                            $proxy->outputOfProcessing['dbresult'] = $dbresult;
+                            $counter += 1;
+                        }
                     }
                 }
             } else {
-                if ($proxy->checkValidation()) {
-                    $uploadFiles = $dbSettings->getAttachedFiles($tableInfo['name']);
-                    if ($proxy->ignoreFiles || !$uploadFiles || count($tableInfo) < 1) { // No attached file.
-                        $result = $proxy->createInDB($access === 'replace');
-                        $proxy->outputOfProcessing['newRecordKeyValue'] = $result;
-                        $proxy->outputOfProcessing['dbresult'] = $proxy->getUpdatedRecord();
-                    } else { // Some files are attached.
-                        $fileUploader = new FileUploader();
-                        if (IMUtil::guessFileUploadError()) { // Detect file upload error.
-                            $fileUploader->processingAsError(
-                                $dbSettings->getDataSource(),
-                                $dbSettings->getOptions(),
-                                $dbSettings->getDbSpec(), true,
-                                $dbSettings->getDataSourceName(), true);
-                        } else { // No file upload error.
-                            $dbresult = [];
-                            $result = $proxy->createInDB($access == 'replace');
-                            $proxy->outputOfProcessing['newRecordKeyValue'] = $result;
-                            $counter = 0;
-                            foreach ($uploadFiles as $oneFile) {
-                                $dbresult[] = $proxy->getUpdatedRecord()[0];
-                                if ($result) {
-                                    $fileUploader->processingWithParameters(
-                                        $dbSettings->getDataSource(),
-                                        $dbSettings->getOptions(),
-                                        $dbSettings->getDbSpec(),
-                                        Logger::getInstance()->getDebugLevel(),
-                                        $tableInfo['name'], $tableInfo['key'], $result,
-                                        [$attachedFields[$counter]], [$oneFile], true
-                                    );
-                                }
-                                $proxy->outputOfProcessing['dbresult'] = $dbresult;
-                                $counter += 1;
-                            }
-                        }
-                    }
-                } else {
-                    Logger::getInstance()->setErrorMessage("Invalid data. Any validation rule was violated.");
-                }
+                Logger::getInstance()->setErrorMessage("Invalid data. Any validation rule was violated.");
             }
-        } catch (\Exception $ex) {
-            throw $ex;
         }
     }
 
@@ -419,17 +417,6 @@ abstract class OperationVisitor
             time() + $dbSettings->getAuthenticationItem('authexpired'), '/',
             $proxy->credentialCookieDomain, false, true);
     }
-
-    /**
-     * @param string $generatedChallenge
-     * @param string $generatedUID
-     * @param string $pwHash
-     * @return string
-     */
-//    protected function generateCredential(string $generatedChallenge, string $generatedUID, ?string $pwHash): string
-//    {
-//        return hash("sha256", $generatedChallenge . $generatedUID . $pwHash);
-//    }
 
     /**
      * @return void

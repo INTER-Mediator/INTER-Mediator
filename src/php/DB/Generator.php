@@ -186,7 +186,7 @@ class Generator
         $existingTables = $this->getTables();
         $sql = "";
         foreach ($this->schemaInfo['tables'] as $table => $info) {
-            if ($table != $this->options['dummy-table'] ?? 'dummy') { // Name is not dummy.
+            if ($table != $this->options['dummy-table'] ?? 'dummy') { // Name is not "dummy".
                 if (in_array($table, $existingTables)) { // The table is already defined.
                     $definedFields = $this->getTableInfo($table);
                     $this->logger->setDebugMessage("[Schema Generator] definedFields" . var_export($definedFields, true), 2);
@@ -367,7 +367,7 @@ class Generator
         $this->logger->setDebugMessage($sql);
         try {
             $result = $this->link->query($sql);
-        } catch (Exception $ex) { // In case of aggregation-select and aggregation-from keyword appear in context definition.
+        } catch (Exception $ex) { // In the case of aggregation-select and aggregation-from keyword appear in context definition.
             //return []; // do nothing
         }
         $infoResult = [];

@@ -35,6 +35,7 @@ class ChangepasswordVisitor extends OperationVisitor
                 return $this->sessionStorageCheckAuth();
             }
         }
+        return false;
     }
 
     /**

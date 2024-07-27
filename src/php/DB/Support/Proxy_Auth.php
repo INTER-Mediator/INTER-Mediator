@@ -52,8 +52,8 @@ trait Proxy_Auth
             ?? Params::getParameterValue("authExpired", 3600);
         $this->realm = $options['authentication']['realm']
             ?? Params::getParameterValue("authRealm", '');
-        $this->required2FA = isset($options['authentication']['is-required-2FA']) // Don't replace with ??
-            ? $options['authentication']['is-required-2FA'] : Params::getParameterValue("isRequired2FA", '');
+        $this->required2FA = $options['authentication']['is-required-2FA']
+            ?? Params::getParameterValue("isRequired2FA", '');
         $this->digitsOf2FACode = $options['authentication']['digits-of-2FA-Code']
             ?? Params::getParameterValue("digitsOf2FACode", 4);
         $this->mailContext2FA = $options['authentication']['mail-context-2FA']
@@ -61,7 +61,7 @@ trait Proxy_Auth
         $this->dbSettings->setExpiringSeconds2FA($options['authentication']['expiring-seconds-2FA']
             ?? Params::getParameterValue("expiringSeconds2FA", 100000));
 
-        /* Authentication and Authorization Judgement */
+        /* Authentication and Authorization Judgment */
         $challengeDSN = $options['authentication']['issuedhash-dsn'] ?? Params::getParameterValue('issuedHashDSN', null);
         if (!is_null($challengeDSN)) {
             $this->authDbClass = new PDO();
@@ -175,8 +175,8 @@ trait Proxy_Auth
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $rule1 = !is_null($authOptions);
         //$rule2 = $this->isAuthAccessing();
-        $rule3 = isset($tableInfo['authentication']) && isset($tableInfo['authentication']['all']);
-        $rule4 = isset($tableInfo['authentication']) && isset($tableInfo['authentication'][$this->access]);
+        $rule3 = isset($tableInfo['authentication']['all']);
+        $rule4 = isset($tableInfo['authentication'][$this->access]);
         return $rule1 /*|| $rule2 */ || $rule3 || $rule4;
     }
 

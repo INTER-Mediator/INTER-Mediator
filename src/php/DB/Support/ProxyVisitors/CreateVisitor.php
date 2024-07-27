@@ -2,6 +2,7 @@
 
 namespace INTERMediator\DB\Support\ProxyVisitors;
 
+use Exception;
 use INTERMediator\DB\Support\ProxyElements\OperationElement;
 
 /**
@@ -39,6 +40,7 @@ class CreateVisitor extends OperationVisitor
     /**
      * @param OperationElement $e
      * @return void
+     * @throws Exception
      */
     public function visitDataOperation(OperationElement $e): void
     {
