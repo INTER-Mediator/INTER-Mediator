@@ -11,14 +11,30 @@ class CreateVisitor extends OperationVisitor
 {
     /**
      * @param OperationElement $e
+     * @return bool
+     */
+    public function visitIsAuthAccessing(OperationElement $e): bool
+    {
+        return false;
+    }
+    /**
+     * @param OperationElement $e
      * @return void
      */
-    public function visitCheckAuthentication(OperationElement $e): void
+    public function visitCheckAuthentication(OperationElement $e): bool
     {
-        $e->resultOfCheckAuthentication
-            = $this->prepareCheckAuthentication($e) && $this->checkAuthenticationCommon($e);
+        return $this->prepareCheckAuthentication($e) && $this->checkAuthenticationCommon($e);
     }
 
+    /**
+     * @param OperationElement $e
+     * @return bool
+     */
+    public function visitCheckAuthorization(OperationElement $e): bool
+    {
+        $proxy = $this->proxy;
+        return $proxy->authSucceed && $this->checkAuthorization();
+    }
 
     /**
      * @param OperationElement $e

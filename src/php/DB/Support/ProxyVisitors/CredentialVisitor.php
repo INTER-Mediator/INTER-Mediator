@@ -15,15 +15,35 @@ class CredentialVisitor extends OperationVisitor
 {
     /**
      * @param OperationElement $e
+     * @return bool
+     */
+    public function visitIsAuthAccessing(OperationElement $e): bool
+    {
+        return true;
+    }
+
+    /**
+     * @param OperationElement $e
      * @return void
      */
-    public function visitCheckAuthentication(OperationElement $e): void
+    public function visitCheckAuthentication(OperationElement $e): bool
     {
-        $e->resultOfCheckAuthentication = $this->prepareCheckAuthentication($e);
-        if ($e->resultOfCheckAuthentication) {
-            $e->resultOfCheckAuthentication = $this->sessionStorageCheckAuth();
+        $result = $this->prepareCheckAuthentication($e);
+        if ($result) {
+            $result = $this->sessionStorageCheckAuth();
             // Hash Auth checking. Here comes not only 'session-storage' but also 'credential'.
         }
+        return $result;
+    }
+
+    /**
+     * @param OperationElement $e
+     * @return bool
+     */
+    public function visitCheckAuthorization(OperationElement $e): bool
+    {
+        $proxy = $this->proxy;
+        return $proxy->authSucceed && $this->checkAuthorization();
     }
 
 

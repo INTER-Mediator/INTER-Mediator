@@ -11,12 +11,30 @@ class NothingVisitor extends OperationVisitor
 {
     /**
      * @param OperationElement $e
-     * @return void
+     * @return bool
      */
-    public function visitCheckAuthentication(OperationElement $e): void
+    public function visitIsAuthAccessing(OperationElement $e): bool
     {
+        return false;
     }
 
+    /**
+     * @param OperationElement $e
+     * @return void
+     */
+    public function visitCheckAuthentication(OperationElement $e): bool
+    {
+        return true;
+    }
+
+    /**
+     * @param OperationElement $e
+     * @return bool
+     */
+    public function visitCheckAuthorization(OperationElement $e): bool
+    {
+        return true;
+    }
 
     /**
      * @param OperationElement $e

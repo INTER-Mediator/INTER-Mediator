@@ -13,15 +13,23 @@ class AuthenticatedVisitor extends OperationVisitor
 {
     /**
      * @param OperationElement $e
+     * @return bool
+     */
+    public function visitIsAuthAccessing(OperationElement $e): bool
+    {
+        return true;
+    }
+
+    /**
+     * @param OperationElement $e
      * @return void
      */
-    public function visitCheckAuthentication(OperationElement $e): void
+    public function visitCheckAuthentication(OperationElement $e): bool
     {
         $proxy = $this->proxy;
 
         $proxy->dbSettings->setRequireAuthorization(true);
-        $e->resultOfCheckAuthentication = $this->prepareCheckAuthentication($e);
-        if ($e->resultOfCheckAuthentication) {
+        if ($this->prepareCheckAuthentication($e)) {
             Logger::getInstance()->setDebugMessage(
                 "[visitCheckAuthentication] 2FA code={$proxy->code2FA}", 2);
             $authCredential = $proxy->generateCredential($this->storedCredential, $proxy->clientId, $proxy->hashedPassword);
@@ -31,18 +39,26 @@ class AuthenticatedVisitor extends OperationVisitor
                     "[visitCheckAuthentication] 2FA paramResponse2={$proxy->paramResponse2}/hmac_value={$hmacValue}", 2);
                 if ($proxy->paramResponse2 === $hmacValue) {
                     Logger::getInstance()->setDebugMessage("[visitCheckAuthentication] 2FA authentication succeed.", 2);
-                    $e->resultOfCheckAuthentication = true;
-                    return;
+                    return true;
                 } else {
                     Logger::getInstance()->setDebugMessage("[visitCheckAuthentication] 2FA authentication failed.", 2);
                 }
             }
         }
-        $e->resultOfCheckAuthentication = false;
+        return false;
     }
 
-
     /**
+     * @param OperationElement $e
+     * @return bool
+     */
+    public function visitCheckAuthorization(OperationElement $e): bool
+    {
+        $proxy = $this->proxy;
+        return $proxy->authSucceed && $this->checkAuthorization();
+    }
+
+     /**
      * @param OperationElement $e
      * @return void
      */

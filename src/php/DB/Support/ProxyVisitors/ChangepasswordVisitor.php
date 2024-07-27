@@ -12,22 +12,40 @@ class ChangepasswordVisitor extends OperationVisitor
 {
     /**
      * @param OperationElement $e
+     * @return bool
+     */
+    public function visitIsAuthAccessing(OperationElement $e): bool
+    {
+        return true;
+    }
+
+    /**
+     * @param OperationElement $e
      * @return void
      */
-    public function visitCheckAuthentication(OperationElement $e): void
+    public function visitCheckAuthentication(OperationElement $e): bool
     {
         $proxy = $this->proxy;
         if ($this->prepareCheckAuthentication($e)) {
             if ($proxy->credential
                 == $proxy->generateCredential($this->storedChallenge, $proxy->clientId, $proxy->hashedPassword)) {
                 Logger::getInstance()->setDebugMessage("[visitCheckAuthentication] Credential (SHA-256) auth passed.", 2);
-                $e->resultOfCheckAuthentication = true;
+                return true;
             } else { // Hash Auth checking
-                $e->resultOfCheckAuthentication = $this->sessionStorageCheckAuth();
+                return $this->sessionStorageCheckAuth();
             }
         }
     }
 
+    /**
+     * @param OperationElement $e
+     * @return bool
+     */
+    public function visitCheckAuthorization(OperationElement $e): bool
+    {
+        $proxy = $this->proxy;
+        return $proxy->authSucceed && $this->checkAuthorization();
+    }
 
     /**
      * @param OperationElement $e
