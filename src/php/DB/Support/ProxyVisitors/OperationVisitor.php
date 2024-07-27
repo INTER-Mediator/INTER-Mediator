@@ -40,7 +40,7 @@ abstract class OperationVisitor
 
     /**
      * @param OperationElement $e
-     * @return void
+     * @return bool
      */
     abstract public function visitCheckAuthentication(OperationElement $e): bool;
 

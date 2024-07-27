@@ -22,7 +22,7 @@ class ChallengeVisitor extends OperationVisitor
 
     /**
      * @param OperationElement $e
-     * @return void
+     * @return bool
      */
     public function visitCheckAuthentication(OperationElement $e): bool
     {

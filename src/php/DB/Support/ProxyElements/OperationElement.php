@@ -22,7 +22,7 @@ abstract class OperationElement
 
     /**
      * @param OperationVisitor $v
-     * @return void
+     * @return bool
      */
     public function acceptCheckAuthentication(OperationVisitor $v): bool
     {
