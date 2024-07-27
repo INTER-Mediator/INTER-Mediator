@@ -2,7 +2,6 @@
 
 namespace INTERMediator\DB\Support\ProxyVisitors;
 
-use Exception;
 use INTERMediator\DB\Support\ProxyElements\OperationElement;
 use INTERMediator\DB\Logger;
 
@@ -22,7 +21,7 @@ class UpdateVisitor extends OperationVisitor
 
     /**
      * @param OperationElement $e
-     * @return void
+     * @return bool
      */
     public function visitCheckAuthentication(OperationElement $e): bool
     {

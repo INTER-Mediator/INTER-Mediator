@@ -21,7 +21,7 @@ class ChangepasswordVisitor extends OperationVisitor
 
     /**
      * @param OperationElement $e
-     * @return void
+     * @return bool
      */
     public function visitCheckAuthentication(OperationElement $e): bool
     {
@@ -35,6 +35,7 @@ class ChangepasswordVisitor extends OperationVisitor
                 return $this->sessionStorageCheckAuth();
             }
         }
+        return false;
     }
 
     /**

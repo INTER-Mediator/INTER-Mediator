@@ -2,6 +2,7 @@
 
 namespace INTERMediator\DB\Support\ProxyVisitors;
 
+use Exception;
 use INTERMediator\DB\Support\ProxyElements\OperationElement;
 
 /**
@@ -20,7 +21,7 @@ class ReplaceVisitor extends OperationVisitor
 
     /**
      * @param OperationElement $e
-     * @return void
+     * @return bool
      */
     public function visitCheckAuthentication(OperationElement $e): bool
     {
@@ -40,6 +41,7 @@ class ReplaceVisitor extends OperationVisitor
     /**
      * @param OperationElement $e
      * @return void
+     * @throws Exception
      */
     public function visitDataOperation(OperationElement $e): void
     {
