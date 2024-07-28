@@ -59,6 +59,9 @@ class HTMLString
      */
     public function converterFromDBtoUser(?string $str): string
     {
+        if (is_null($str)) {
+            return "";
+        }
         if (!$this->noescape) {
             $str = $this->replaceTags($str);
         }

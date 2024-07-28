@@ -27,6 +27,9 @@ class MarkdownString extends HTMLString
      */
     public function converterFromDBtoUser(?string $str): string
     {
+        if (is_null($str)) {
+            return "";
+        }
         $str = $this->replaceTags($str);
         $str = $this->taggingAsMarkdown($str);
         return $this->replaceLinkToATag($str);
