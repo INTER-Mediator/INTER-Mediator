@@ -51,7 +51,7 @@ const IMLibPageNavigation = {
         navigation.style.display = 'none'
         return
       }
-      while(navigation.firstChild){
+      while (navigation.firstChild) {
         navigation.removeChild(navigation.lastChild)
       }
       // const insideNav = navigation.childNodes
@@ -93,7 +93,13 @@ const IMLibPageNavigation = {
         }
         node = document.createElement('SPAN')
         navigation.appendChild(node)
-        node.appendChild(document.createTextNode(((navLabel === null || navLabel[4] === null) ? INTERMediatorOnPage.getMessages()[1] : navLabel[4]) + (allCount === 0 ? 0 : start + 1) + ((Math.min(start + pageSize, allCount) - start > 1) ? (((navLabel === null || navLabel[5] === null) ? '-' : navLabel[5]) + Math.min(start + pageSize, allCount)) : '') + ((navLabel === null || navLabel[6] === null) ? ' / ' : navLabel[6]) + (allCount) + ((navLabel === null || navLabel[7] === null) ? '' : navLabel[7])))
+        node.appendChild(document.createTextNode(
+          ((navLabel === null || navLabel[4] === null) ? INTERMediatorOnPage.getMessages()[1]
+            : navLabel[4]) + (allCount === 0 ? 0 : start + 1)
+          + ((Math.min(start + pageSize, allCount) - start > 1) ? (((navLabel === null || navLabel[5] === null) ? '-'
+            : navLabel[5]) + Math.min(start + pageSize, allCount)) : '')
+          + ((navLabel === null || navLabel[6] === null) ? ' / ' : navLabel[6])
+          + (allCount) + ((navLabel === null || navLabel[7] === null) ? '' : navLabel[7])))
         node.setAttribute('class', 'IM_NAV_info')
       }
 
@@ -172,7 +178,8 @@ const IMLibPageNavigation = {
         node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[10]))
         const c_node = document.createElement('INPUT')
         c_node.setAttribute('class', 'IM_NAV_JUMP')
-        c_node.setAttribute('type', 'text')
+        c_node.setAttribute('type', 'number')
+        c_node.setAttribute('min', 1)
         if (!c_node.id) {
           c_node.id = INTERMediator.nextIdValue()
         }

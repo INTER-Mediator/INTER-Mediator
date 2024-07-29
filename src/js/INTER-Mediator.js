@@ -63,7 +63,7 @@ const INTERMediator = {
    * @public
    * @type {object}
    */
-  navigationLabel: null,
+  navigationLabel: [null, null, null, null, null, null, null, null, false],
   /**
    * Storing the id value of linked elements.
    * @private

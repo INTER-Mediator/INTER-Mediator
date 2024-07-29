@@ -28,6 +28,9 @@ Ver.13 (In Development)
   INTERMediatorOnPage object.
 - INTERMediatorOnPage.loguout(url) clears all credential info, also move to url or reload current page. On using SAML,
   moving to logoutURL from SAML SP.
+- The "choice" function's spec was changed, if the first parameter is null/undefined, it handles as 0.
+- The "Update" button in pagination doesn't shown in default. It can show with customizing INTERMediator.navigationLabel.
+- The page number text field in pagination has the up and down button. It means the type of it set to "number".
 - [BUG FIX] On the Ver.12, SAML authentication didn't work in spite of Ver.11 can do. It didn't check with SAML manual
   test on Ver.12 after added types to php codes. Ver.13 works SAML.
 
