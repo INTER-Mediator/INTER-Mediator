@@ -17,6 +17,7 @@
     <script>
       INTERMediatorOnPage.doBeforeConstruct = function () {
         INTERMediatorLog.suppressDebugMessageOnPage = true
+        INTERMediator.navigationLabel = [null, null, null, null, null, null, null, null, "Update"]
         const params = INTERMediatorOnPage.getURLParametersAsArray()
         if (params['id']) {
           INTERMediator.clearCondition('testtable')
