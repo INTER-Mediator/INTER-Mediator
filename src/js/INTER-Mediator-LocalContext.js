@@ -28,7 +28,6 @@ const IMLibLocalContext = {
   binding: {},
   keyRespondTypes: ['text', 'date', 'datetime-local', 'email', 'month', 'number', 'password', 'search', 'tel', 'time', 'url', 'week'],
 
-
   clearAll: function () {
     'use strict'
     this.store = {}
@@ -44,19 +43,17 @@ const IMLibLocalContext = {
 
   setValue: function (key, value, withoutArchive) {
     'use strict'
-    let i, hasUpdated, refIds, node
-
-    hasUpdated = false
+    let hasUpdated = false
     if (key) {
       if (typeof value === 'undefined' || value === null) {
         delete this.store[key]
       } else {
         this.store[key] = value
         hasUpdated = true
-        refIds = this.binding[key]
+        const refIds = this.binding[key]
         if (refIds) {
-          for (i = 0; i < refIds.length; i += 1) {
-            node = document.getElementById(refIds[i])
+          for (let i = 0; i < refIds.length; i += 1) {
+            const node = document.getElementById(refIds[i])
             IMLibElement.setValueToIMNode(node, '', value, true)
           }
         }
@@ -74,18 +71,16 @@ const IMLibLocalContext = {
   },
 
   getHostNameForKey: function () {
-    let key, searchLen, hashLen, trailLen
-    searchLen = location.search ? location.search.length : 0
-    hashLen = location.hash ? location.hash.length : 0
-    trailLen = searchLen + hashLen
-    key = '_im_localcontext' + document.URL.toString()
+    const searchLen = location.search ? location.search.length : 0
+    const hashLen = location.hash ? location.hash.length : 0
+    const trailLen = searchLen + hashLen
+    let key = '_im_localcontext' + document.URL.toString()
     key = (trailLen > 0) ? key.slice(0, -trailLen) : key
     return key
   },
 
   archive: function () {
     'use strict'
-    // const x = INTERMediator.getLocalProperty('_im_startFrom', 0)
     INTERMediatorOnPage.removeCookie('_im_localcontext')
     let jsonString = JSON.stringify(this.store)
     if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
@@ -234,13 +229,12 @@ const IMLibLocalContext = {
 
   updateFromNodeValue: function (idValue) {
     'use strict'
-    let node, nodeValue, linkInfos, nodeInfo, i
-    node = document.getElementById(idValue)
-    nodeValue = IMLibElement.getValueFromIMNode(node)
-    linkInfos = INTERMediatorLib.getLinkedElementInfo(node)
-    for (i = 0; i < linkInfos.length; i += 1) {
+    const node = document.getElementById(idValue)
+    const nodeValue = IMLibElement.getValueFromIMNode(node)
+    const linkInfos = INTERMediatorLib.getLinkedElementInfo(node)
+    for (let i = 0; i < linkInfos.length; i += 1) {
       IMLibLocalContext.store[linkInfos[i]] = nodeValue
-      nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos[i])
+      const nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos[i])
       if (nodeInfo.table === IMLibLocalContext.contextName) {
         IMLibLocalContext.setValue(nodeInfo.field, nodeValue)
       }
@@ -250,16 +244,15 @@ const IMLibLocalContext = {
 
   updateFromStore: function (idValue) {
     'use strict'
-    let node, nodeValue, linkInfos, nodeInfo, i, target, comp
-    node = document.getElementById(idValue)
-    target = node.getAttribute('data-im')
-    comp = target.split(INTERMediator.separator)
+    const node = document.getElementById(idValue)
+    const target = node.getAttribute('data-im')
+    const comp = target.split(INTERMediator.separator)
     if (comp[1]) {
-      nodeValue = IMLibLocalContext.store[comp[1]]
-      linkInfos = INTERMediatorLib.getLinkedElementInfo(node)
-      for (i = 0; i < linkInfos.length; i += 1) {
+      const nodeValue = IMLibLocalContext.store[comp[1]]
+      const linkInfos = INTERMediatorLib.getLinkedElementInfo(node)
+      for (let i = 0; i < linkInfos.length; i += 1) {
         IMLibLocalContext.store[linkInfos[i]] = nodeValue
-        nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos[i])
+        const nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos[i])
         if (nodeInfo.table === IMLibLocalContext.contextName) {
           IMLibLocalContext.setValue(nodeInfo.field, nodeValue)
         }
@@ -269,13 +262,12 @@ const IMLibLocalContext = {
 
   updateAll: function (isStore) {
     'use strict'
-    let index, key, nodeIds, idValue, targetNode
-    for (key in IMLibLocalContext.binding) {
+    for (const key in IMLibLocalContext.binding) {
       if (IMLibLocalContext.binding.hasOwnProperty(key)) {
-        nodeIds = IMLibLocalContext.binding[key]
-        for (index = 0; index < nodeIds.length; index++) {
-          idValue = nodeIds[index]
-          targetNode = document.getElementById(idValue)
+        const nodeIds = IMLibLocalContext.binding[key]
+        for (let index = 0; index < nodeIds.length; index++) {
+          const idValue = nodeIds[index]
+          const targetNode = document.getElementById(idValue)
           if (targetNode &&
             (targetNode.tagName === 'INPUT' ||
               targetNode.tagName === 'TEXTAREA' ||
@@ -301,16 +293,15 @@ const IMLibLocalContext = {
     IMLibLocalContext.checkedBinding.push(rootNode)
 
     function seek(node) {
-      let children, i
       if (node !== rootNode && IMLibLocalContext.checkedBinding.indexOf(node) > -1) {
         return // Stop on already checked enclosure nodes.
       }
       if (node.nodeType === 1) { // Work for an element
         try {
           self.bindingNode(node)
-          children = node.childNodes // Check all child nodes.
+          const children = node.childNodes // Check all child nodes.
           if (children) {
-            for (i = 0; i < children.length; i += 1) {
+            for (let i = 0; i < children.length; i += 1) {
               seek(children[i])
             }
           }
