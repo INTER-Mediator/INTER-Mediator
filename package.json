@@ -50,7 +50,7 @@
     "cors": "*",
     "express": "*",
     "nodemon": ">=3.0.2",
-    "inter-mediator-expressionparser": "1.2.1",
+    "inter-mediator-expressionparser": "1.2.2",
     "inter-mediator-formatter": "1.0.19",
     "inter-mediator-locale": "1.0.4",
     "inter-mediator-nodegraph": "1.0.6",
