@@ -35,7 +35,7 @@ abstract class OperationVisitor
 
     /**
      * @param OperationElement $e
-     * @return void
+     * @return bool
      */
     abstract public function visitIsAuthAccessing(OperationElement $e): bool;
 
