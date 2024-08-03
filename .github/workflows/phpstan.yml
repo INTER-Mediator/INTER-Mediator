@@ -26,12 +26,35 @@ jobs:
         run: composer require --dev phpstan/phpstan
 
       - name: Run PHPStan
-        if:  matrix.level == matrix.current-level
+        if: matrix.level == matrix.current-level
         run: ./vendor/bin/phpstan analyse -c spec/phpstan.neon --memory-limit 1024M src spec/INTER-Mediator-UnitTest --level "${{ matrix.level }}"
 
       - name: Run PHPStan
-        if:  matrix.level > matrix.current-level
+        if: matrix.level > matrix.current-level && github.event_name != 'pull_request'
         continue-on-error: true
         run: |
-             ./vendor/bin/phpstan analyse -c spec/phpstan.neon --memory-limit 1024M src spec/INTER-Mediator-UnitTest --level "${{ matrix.level }}"
-             exit 0
+          ./vendor/bin/phpstan analyse -c spec/phpstan.neon --memory-limit 1024M src spec/INTER-Mediator-UnitTest --level "${{ matrix.level }}"
+          exit 0
+
+      - uses: actions/checkout@v4
+        name: checkout "${{ github.base_ref }}"
+        if: matrix.level > matrix.current-level && github.event_name == 'pull_request'
+        with:
+          fetch-depth: 1
+          ref: ${{ github.base_ref }}
+
+      - uses: actions/checkout@v4
+        name: checkout "${{ github.head_ref }}"
+        if: matrix.level > matrix.current-level && github.event_name == 'pull_request'
+        with:
+          fetch-depth: 1
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Run PHPStan for pull request event
+        if: matrix.level > matrix.current-level && github.event_name == 'pull_request'
+        shell: bash
+        continue-on-error: true
+        run: |
+          FILES=(`git diff origin/${{ github.base_ref }} --name-only src spec/INTER-Mediator-UnitTest | tr '\n' ' '`)
+          if [[ "$FILES" != "" ]]; then composer require --dev phpstan/phpstan; ./vendor/bin/phpstan analyse -c spec/phpstan.neon --memory-limit 1024M ${FILES} --level "${{ matrix.level }}"; fi
+          exit 0
