@@ -7,7 +7,7 @@ https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.t
 
 MIT License
 
-Copyright (c) 2010-2021 INTER-Mediator
+Copyright (c) 2010-2024 INTER-Mediator
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
