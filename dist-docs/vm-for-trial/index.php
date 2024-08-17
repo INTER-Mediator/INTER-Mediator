@@ -3,7 +3,7 @@
 /*
  * INTER-Mediator Server VM for Trial
  *
- *   Copyright (c) 2010-2022 INTER-Mediator Directive Committee
+ *   Copyright (c) 2010-2024 INTER-Mediator Directive Committee
  *
  *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
  *   INTER-Mediator is supplied under MIT License.

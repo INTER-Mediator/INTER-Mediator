@@ -2,7 +2,7 @@ INTER-Mediator is supplied under MIT License.
 
 The MIT License / http://www.opensource.org/licenses/mit-license.php
 
-Copyright (c) 2010-2020 INTER-Mediator Directive Committee
+Copyright (c) 2010-2024 INTER-Mediator Directive Committee
 http://inter-mediator.org/
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
