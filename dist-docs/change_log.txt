@@ -31,6 +31,7 @@ Ver.13 (In Development)
 - The "choice" function's spec was changed, if the first parameter is null/undefined, it handles as 0.
 - The "Update" button in pagination doesn't shown in default. It can show with customizing INTERMediator.navigationLabel.
 - The page number text field in pagination has the up and down button. It means the type of it set to "number".
+- Apache2 conf file for hiding some files as like *.yaml and .git directory. It stored in dist-docs/apache2-config.
 - [BUG FIX] On the Ver.12, SAML authentication didn't work in spite of Ver.11 can do. It didn't check with SAML manual
   test on Ver.12 after added types to php codes. Ver.13 works SAML.
 
