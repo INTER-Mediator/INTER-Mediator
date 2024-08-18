@@ -141,10 +141,12 @@ const INTERMediator = {
   ieVersion: -1,
   /**
    * @type {boolean}
+   * @deprecated
    */
   titleAsLinkInfo: true,
   /**
    * @type {boolean}
+   * @deprecated
    */
   classAsLinkInfo: true,
   /**
