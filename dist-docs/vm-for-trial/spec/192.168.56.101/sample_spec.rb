@@ -50,7 +50,7 @@ describe file('/etc/yum.repos.d/mariadb.repo'), :if => os[:family] == 'redhat' &
   its(:content) { should match /baseurl = https:\/\/dlm.mariadb.com\/repo\/mariadb-server\/10.7\/yum\/rhel\/7\/x86_64/ }
 end
 describe file('/etc/yum.repos.d/mariadb.repo'), :if => os[:family] == 'redhat' && os[:release].to_f >= 8 do
-  its(:content) { should match /baseurl = https:\/\/dlm.mariadb.com\/repo\/mariadb-server\/11.5\/yum\/rhel\/8\/x86_64/ }
+  its(:content) { should match /baseurl = https:\/\/dlm.mariadb.com\/repo\/mariadb-server\/11.rolling\/yum\/rhel\/8\/x86_64/ }
 end
 describe package('MariaDB-server'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
   it { should be_installed }
