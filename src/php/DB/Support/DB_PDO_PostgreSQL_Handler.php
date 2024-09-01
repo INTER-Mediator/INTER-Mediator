@@ -246,7 +246,7 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         $fieldArray = array();
         $listArray = array();
         foreach ($result as $row) {
-            if ($keyField === $row['column_name'] || !is_null($row['column_default'])) {
+            if ($keyField === $row['column_name']) {
 
             } else if ($assocField === $row['column_name']) {
                 $fieldArray[] = $this->quotedEntityName($row['column_name']);
@@ -254,6 +254,8 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
             } else if (isset($defaultValues[$row['column_name']])) {
                 $fieldArray[] = $this->quotedEntityName($row['column_name']);
                 $listArray[] = $this->setValue($defaultValues[$row['column_name']], $row);
+            } else if (!is_null($row['column_default'])){
+
             } else {
                 $fieldArray[] = $this->quotedEntityName($row['column_name']);
                 $listArray[] = $this->quotedEntityName($row['column_name']);
