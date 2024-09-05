@@ -1,7 +1,8 @@
 # INTER-Mediator 
 [![Build Status](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/php.yml/badge.svg)](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/php.yml)
-[![Build Status](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/e2e-test-chrome.yml/badge.svg)](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/php.yml)
-[![Build Status](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/e2e-test-firefox.yml/badge.svg)](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/php.yml)
+[![Build Status](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/e2e-test-chrome-auth.yml/badge.svg)](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/e2e-test-chrome-auth.yml)
+[![Build Status](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/e2e-test-chrome-form.yml/badge.svg)](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/e2e-test-chrome-form.yml)
+[![Build Status](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/e2e-test-firefox.yml/badge.svg)](https://github.com/INTER-Mediator/INTER-Mediator/actions/workflows/e2e-test-firefox.yml)
 [![Pipeline Status](https://gitlab.com/INTER-Mediator/INTER-Mediator/badges/master/pipeline.svg)](https://gitlab.com/INTER-Mediator/INTER-Mediator/-/pipelines)
 
 by INTER-Mediator Directive Committee (https://inter-mediator.org)
