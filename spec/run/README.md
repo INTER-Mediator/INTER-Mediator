@@ -20,7 +20,7 @@ The samples/E2E-Test directory has the target pages for these tests.
 Just run the test with Google Chrome
 
 ```
-npx wdio wdio-chrome.conf.js 
+npx wdio wdio-auth-chrome.conf.js 
 ```
 
 Just run the test with Microsoft Edge

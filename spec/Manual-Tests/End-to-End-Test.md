@@ -11,7 +11,7 @@ In this document, we report the result of end-to-end tests rest of GitHUb Action
 The format of below is: [commit code from git log], [Version from composer.json], [Passed Test], [Environment], [Checker name], [Result].
 
 The test is identified by .conf.js files in the /spec/run directory.
-The test 'wdio-chrome.conf.js' and 'wdio-firefox.conf.js' are running on GitHub Actions.
+The test 'wdio-auth-chrome.conf.js' and 'wdio-firefox.conf.js' are running on GitHub Actions.
 
 - commit f9e4c32c37fcec902822b8297a2d61bd9c305060 (Fri Apr 26 09:35:19 2024 +0900)
   INTER-Mediator Ver.13 (2024-02-24),
