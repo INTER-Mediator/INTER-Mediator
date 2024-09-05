@@ -184,7 +184,7 @@ module.exports = (separatePage) => {
       button.click()
       browser.pause(waiting)
       // await separatePage.firstMasterButtonMoveToDetail.waitForExist()
-      // browser.pause(waiting)
+      browser.pause(waiting)
 
       await expect(separatePage.navigator).toExist()
       await expect(separatePage.masterTable).toExist()
