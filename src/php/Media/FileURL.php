@@ -232,9 +232,9 @@ class FileURL extends UploadingSupport implements DownloadingSupport
                                 string $contextName, string $fileInfoTemp): void
     {
         $dbContext = $db->dbSettings->getDataSourceTargetArray();
-        [$import1stLine, $importSkipLines, $importFormat, $useReplace, $convert2Number, $convert2Date, $convert2DateTime]
+        [$import1stLine, $importSkipLines, $importFormat, $useReplace, $convert2Number, $convert2Date, $convert2DateTime, $encoding]
             = Params::getParameterValue(["import1stLine", "importSkipLines", "importFormat", "useReplace",
-            "convert2Number", "convert2Date", "convert2DateTime"], [true, 0, 'CSV', false, [], [], [],]);
+            "convert2Number", "convert2Date", "convert2DateTime", "encoding"], [true, 0, 'CSV', false, [], [], [], null]);
         $import1stLine = (isset($dbContext['import']['1st-line']))
             ? $dbContext['import']['1st-line']
             : ((isset($options['import']['1st-line']))
