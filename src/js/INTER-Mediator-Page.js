@@ -103,6 +103,7 @@ let INTERMediatorOnPage = {
   digitsOf2FACode: null,
   isRequired2FA: false,
   authedUser: null,
+  userNameJustASCII: true,
 
   get authCount() {
     this._authCount = IMLibLocalContext.getValue('_im_authcount')
@@ -698,8 +699,17 @@ let INTERMediatorOnPage = {
         INTERMediatorLib.removeChildNodes(messageNode)
       }
 
-      const inputUsername = document.getElementById('_im_username').value
+      let inputUsername = document.getElementById('_im_username').value
       const inputPassword = document.getElementById('_im_password').value
+      if(INTERMediatorOnPage.userNameJustASCII) {
+        let modUsername = ""
+        for (let i = 0 ; i < inputUsername.length ; i+=1){
+          if(inputUsername.charCodeAt(i) <= 127) {
+            modUsername += inputUsername.charAt(i)
+          }
+        }
+        inputUsername = modUsername
+      }
 
       if (inputUsername === '' || inputPassword === '') {
         messageNode = document.getElementById('_im_login_message')
