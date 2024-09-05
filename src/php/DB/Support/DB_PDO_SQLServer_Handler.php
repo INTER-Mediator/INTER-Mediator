@@ -253,7 +253,7 @@ xml
         $listArray = array();
         foreach ($result as $row) {
             $quatedFieldName = $this->quotedEntityName($row['name']);
-            if ($keyField === $row['name'] || $row['is_identity'] === 1) {
+            if ($keyField === $row['name']) {
                 // skip key field to asign value.
             } else if ($assocField === $row['name']) {
                 if (!in_array($quatedFieldName, $fieldArray)) {
@@ -265,6 +265,8 @@ xml
                     $fieldArray[] = $quatedFieldName;
                     $listArray[] = $this->dbClassObj->link->quote($defaultValues[$row['name']]);
                 }
+            } else if ($row['is_identity'] === 1) {
+
             } else {
                 if (!in_array($quatedFieldName, $fieldArray)) {
                     $fieldArray[] = $quatedFieldName;

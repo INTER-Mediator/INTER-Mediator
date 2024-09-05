@@ -239,7 +239,7 @@ contact_way|6
         $fieldArray = array();
         $listArray = array();
         foreach ($result as $row) {
-            if ($keyField === $row['name'] || !is_null($row['dflt_value'])) {
+            if ($keyField === $row['name']) {
 
             } else if ($assocField === $row['name']) {
                 $fieldArray[] = $this->quotedEntityName($row['name']);
@@ -247,6 +247,8 @@ contact_way|6
             } else if (isset($defaultValues[$row['name']])) {
                 $fieldArray[] = $this->quotedEntityName($row['name']);
                 $listArray[] = $this->dbClassObj->link->quote($defaultValues[$row['name']]);
+            } else if (!is_null($row['dflt_value'])) {
+
             } else {
                 $fieldArray[] = $this->quotedEntityName($row['name']);
                 $listArray[] = $this->quotedEntityName($row['name']);

@@ -266,7 +266,7 @@ mysql> show columns from item_display;
         $fieldArray = array();
         $listArray = array();
         foreach ($result as $row) {
-            if ($keyField === $row['Field'] || !is_null($row['Default'])) {
+            if ($keyField === $row['Field']) {
                 // skip key field to assign value.
             } else if ($assocField === $row['Field']) {
                 $fieldArray[] = $this->quotedEntityName($row['Field']);
@@ -274,6 +274,8 @@ mysql> show columns from item_display;
             } else if (isset($defaultValues[$row['Field']])) {
                 $fieldArray[] = $this->quotedEntityName($row['Field']);
                 $listArray[] = $this->dbClassObj->link->quote($defaultValues[$row['Field']]);
+            } else if (!is_null($row['Default'])){
+                // skip if field has a default value
             } else {
                 $fieldArray[] = $this->quotedEntityName($row['Field']);
                 $listArray[] = $this->quotedEntityName($row['Field']);

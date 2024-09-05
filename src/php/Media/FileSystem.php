@@ -56,7 +56,7 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
 
             if ($targetFieldName == "_im_csv_upload") {    // CSV File uploading
                 $this->csvImportOperation($db, $dataSource, $options, $dbSpec, $debug, $contextName, $fileInfoTemp);
-            } else {  // Any kind of files are uploaded.
+            } else {  // Any kind of files uploaded.
                 list($result, $filePath, $filePartialPath) = $this->decideFilePath($db, $noOutput, $options,
                     $contextName, $keyField, $keyValue, $targetFieldName, $filePathInfo);
                 if ($result === false) {
@@ -294,7 +294,11 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
         }
         $is1stLine = true;
         $createdKeys = [];
-        foreach (new LineDivider(file_get_contents(IMUtil::removeNull($fileInfoTemp))) as $line) {
+        $fileContent = file_get_contents(IMUtil::removeNull($fileInfoTemp));
+        if ($encoding) {
+            $fileContent = mb_convert_encoding($fileContent, "UTF-8", $encoding);
+        }
+        foreach (new LineDivider($fileContent) as $line) {
             if ($importSkipLines > 0) {
                 $importSkipLines -= 1;
             } else {
@@ -308,9 +312,6 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
                     foreach (new FieldDivider($line, $separator) as $index => $value) {
                         if ($index < count($importingFields)) {
                             $field = $importingFields[$index];
-                            if ($encoding) {
-                                $value = mb_convert_encoding($value, "UTF-8", $encoding);
-                            }
                             if ($field !== '_') { // The '_' field is going to ignore.
                                 if (in_array($field, $convert2Number)) {
                                     $original = $value;
