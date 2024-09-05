@@ -267,6 +267,13 @@ class FileURL extends UploadingSupport implements DownloadingSupport
             : ((isset($options['import']['convert-datetime']))
                 ? $options['import']['convert-datetime'] : $convert2DateTime);
         $convert2DateTime = is_array($convert2DateTime) ? $convert2DateTime : [];
+        $encoding = (isset($dbContext['import']['encoding']))
+            ? $dbContext['import']['encoding']
+            : ((isset($options['import']['encoding']))
+                ? $options['import']['encoding'] : $encoding);
+        if ($encoding) {
+            $db->logger->setDebugMessage("[FileSystem::csvImportOperation] Encoding {$encoding} is selected.", 2);
+        }
 
         $decimalPoint = ord(IMLocaleFormatTable::getCurrentLocaleFormat()['mon_decimal_point']);
         if (!$decimalPoint) {
@@ -289,7 +296,11 @@ class FileURL extends UploadingSupport implements DownloadingSupport
         }
         $is1stLine = true;
         $createdKeys = [];
-        foreach (new LineDivider(file_get_contents(IMUtil::removeNull($fileInfoTemp))) as $line) {
+        $fileContent = file_get_contents(IMUtil::removeNull($fileInfoTemp));
+        if ($encoding) {
+            $fileContent = mb_convert_encoding($fileContent, "UTF-8", $encoding);
+        }
+        foreach (new LineDivider($fileContent) as $line) {
             if ($importSkipLines > 0) {
                 $importSkipLines -= 1;
             } else {

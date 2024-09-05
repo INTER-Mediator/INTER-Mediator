@@ -56,7 +56,7 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
 
             if ($targetFieldName == "_im_csv_upload") {    // CSV File uploading
                 $this->csvImportOperation($db, $dataSource, $options, $dbSpec, $debug, $contextName, $fileInfoTemp);
-            } else {  // Any kind of files are uploaded.
+            } else {  // Any kind of files uploaded.
                 list($result, $filePath, $filePartialPath) = $this->decideFilePath($db, $noOutput, $options,
                     $contextName, $keyField, $keyValue, $targetFieldName, $filePathInfo);
                 if ($result === false) {
