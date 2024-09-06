@@ -90,6 +90,7 @@ abstract class OperationVisitor
         $authDBHandler = $proxy->authDbClass->authHandler;
 
         $proxy->signedUser = $authHandler->authSupportUnifyUsernameAndEmail($dbSettings->getCurrentUser());
+        $dbSettings->setCurrentUser($proxy->signedUser);
         $proxy->hashedPassword = $authHandler->authSupportRetrieveHashedPassword($proxy->signedUser ?? "");
 
         $falseHash = hash("sha256", uniqid("", true)); // for failing auth.
