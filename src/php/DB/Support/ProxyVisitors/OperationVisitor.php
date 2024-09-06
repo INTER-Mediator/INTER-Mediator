@@ -93,7 +93,8 @@ abstract class OperationVisitor
 //        authSupportRetrieveHashedPassword
 //        authSupportGetUserIdFromUsername
 //
-        [$uid,$proxy->signedUser, $proxy->hashedPassword ] = authSupportUnifyUsernameAndEmailAndGetInfo($dbSettings->getCurrentUser());
+        [$uid, $proxy->signedUser, $proxy->hashedPassword]
+            = $authHandler->authSupportUnifyUsernameAndEmailAndGetInfo($dbSettings->getCurrentUser());
 
 //        $proxy->signedUser = $authHandler->authSupportUnifyUsernameAndEmail($dbSettings->getCurrentUser());
         $dbSettings->setCurrentUser($proxy->signedUser);

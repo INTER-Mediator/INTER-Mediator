@@ -796,5 +796,6 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
             }
             return [$row['id'][0], $usernameCandidate, $row['hashedpasswd'][0]];
         }
+        return [null, null, null];
     }
 }
