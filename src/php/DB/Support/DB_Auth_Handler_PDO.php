@@ -1115,10 +1115,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string $userID
+     * @param null|string $userID
      * @return array 3 elements array as like: [UserID, username, hashedpasswd].
      */
-    public function authSupportUnifyUsernameAndEmailAndGetInfo(string $userID): array
+    public function authSupportUnifyUsernameAndEmailAndGetInfo(?string $userID): array
     {
         if (!$userID) {
             return [null, null, null];

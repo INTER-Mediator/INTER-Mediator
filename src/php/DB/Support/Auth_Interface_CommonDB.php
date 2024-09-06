@@ -239,9 +239,9 @@ interface Auth_Interface_CommonDB
 
     /** This method merged following methods authSupportUnifyUsernameAndEmail,
      * authSupportRetrieveHashedPassword and authSupportGetUserIdFromUsername
-     * @param string $userID
+     * @param null|string $userID
      * @return array
      */
-    public function authSupportUnifyUsernameAndEmailAndGetInfo(string $userID): array;
+    public function authSupportUnifyUsernameAndEmailAndGetInfo(?string $userID): array;
 
 }
