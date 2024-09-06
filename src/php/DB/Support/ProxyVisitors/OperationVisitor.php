@@ -89,9 +89,15 @@ abstract class OperationVisitor
         $dbSettings = $proxy->dbSettings;
         $authDBHandler = $proxy->authDbClass->authHandler;
 
-        $proxy->signedUser = $authHandler->authSupportUnifyUsernameAndEmail($dbSettings->getCurrentUser());
+//        authSupportUnifyUsernameAndEmail
+//        authSupportRetrieveHashedPassword
+//        authSupportGetUserIdFromUsername
+//
+        [$uid,$proxy->signedUser, $proxy->hashedPassword ] = authSupportUnifyUsernameAndEmailAndGetInfo($dbSettings->getCurrentUser());
+
+//        $proxy->signedUser = $authHandler->authSupportUnifyUsernameAndEmail($dbSettings->getCurrentUser());
         $dbSettings->setCurrentUser($proxy->signedUser);
-        $proxy->hashedPassword = $authHandler->authSupportRetrieveHashedPassword($proxy->signedUser ?? "");
+//        $proxy->hashedPassword = $authHandler->authSupportRetrieveHashedPassword($proxy->signedUser ?? "");
 
         $falseHash = hash("sha256", uniqid("", true)); // for failing auth.
         $proxy->paramResponse ??= $falseHash;
@@ -102,9 +108,9 @@ abstract class OperationVisitor
             . "paramResponse2={$proxy->paramResponse2}, clientid={$proxy->clientId}", 2);
 
         $authDBHandler->authSupportRemoveOutdatedChallenges();
-        $uid = $authHandler->authSupportGetUserIdFromUsername($proxy->signedUser);
+//        $uid = $authHandler->authSupportGetUserIdFromUsername($proxy->signedUser);
         Logger::getInstance()->setDebugMessage("[prepareCheckAuthentication] uid={$uid}", 2);
-        if ($uid <= 0) {
+        if (is_null($uid) || $uid <= 0) {
             return false;
         }
         if ($dbSettings->getIsSAML() && !$authHandler->authSupportIsWithinSAMLLimit($uid)) {
