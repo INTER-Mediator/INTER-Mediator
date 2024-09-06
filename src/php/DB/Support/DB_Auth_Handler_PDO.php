@@ -802,9 +802,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             return null;
         }
 
-        if (!$this->dbSettings->getEmailAsAccount()) {
-            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " username FROM {$userTable} WHERE username = " .
-                $this->pdoDB->link->quote($username);
+        if (!$this->dbSettings->getEmailAsAccount()) { // In case of $this->dbSettings->getEmailAsAccount() is false
+            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " username FROM {$userTable} WHERE username = "
+                . $this->pdoDB->link->quote($username);
             $result = $this->pdoDB->link->query($sql);
             if ($result === false) {
                 $this->pdoDB->errorMessageStore('Select:' . $sql);
@@ -816,14 +816,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             }
             return null;
         }
-
+        // In case of $this->dbSettings->getEmailAsAccount() is true
         $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}username,email FROM {$userTable} WHERE username = " .
             $this->pdoDB->link->quote($username) . " or email = " . $this->pdoDB->link->quote($username);
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}username FROM {$userTable} WHERE username = " .
-                $this->pdoDB->link->quote($username) . "" . $this->pdoDB->link->quote($username);
-            $result = $this->pdoDB->link->query($sql);
             $this->pdoDB->errorMessageStore('Select:' . $sql);
             return null;
         }
