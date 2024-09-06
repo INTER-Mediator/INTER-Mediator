@@ -604,7 +604,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
 
         $candidateGroups = array();
         foreach ($this->belongGroups as $groupid) {
-            if($groupid) {
+            if ($groupid) {
                 $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
             }
         }
@@ -794,17 +794,36 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      */
     public function authSupportUnifyUsernameAndEmail(?string $username): ?string
     {
-        if (!$this->dbSettings->getEmailAsAccount() || !$username) {
-            return $username;
+        if (!$username) {
+            return null;
         }
         $userTable = $this->dbSettings->getUserTable();
         if (is_null($userTable) || !$this->pdoDB->setupConnection()) {
             return null;
         }
+
+        if (!$this->dbSettings->getEmailAsAccount()) {
+            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " username FROM {$userTable} WHERE username = " .
+                $this->pdoDB->link->quote($username);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                $this->pdoDB->errorMessageStore('Select:' . $sql);
+                return null;
+            }
+            $this->logger->setDebugMessage("[authSupportUnifyUsernameAndEmail] {$sql}");
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                return $row['username'];
+            }
+            return null;
+        }
+
         $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}username,email FROM {$userTable} WHERE username = " .
             $this->pdoDB->link->quote($username) . " or email = " . $this->pdoDB->link->quote($username);
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
+            $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}username FROM {$userTable} WHERE username = " .
+                $this->pdoDB->link->quote($username) . "" . $this->pdoDB->link->quote($username);
+            $result = $this->pdoDB->link->query($sql);
             $this->pdoDB->errorMessageStore('Select:' . $sql);
             return null;
         }

@@ -101,14 +101,12 @@ abstract class OperationVisitor
             . "paramResponse2={$proxy->paramResponse2}, clientid={$proxy->clientId}", 2);
 
         $authDBHandler->authSupportRemoveOutdatedChallenges();
-        $realUsername = $authHandler->authSupportUnifyUsernameAndEmail($proxy->signedUser);
-        $uid = $authHandler->authSupportGetUserIdFromUsername($realUsername);
+        $uid = $authHandler->authSupportGetUserIdFromUsername($proxy->signedUser);
         Logger::getInstance()->setDebugMessage("[prepareCheckAuthentication] uid={$uid}", 2);
         if ($uid <= 0) {
             return false;
         }
-        if ($dbSettings->getIsSAML()
-            && !$authHandler->authSupportIsWithinSAMLLimit($uid)) {
+        if ($dbSettings->getIsSAML() && !$authHandler->authSupportIsWithinSAMLLimit($uid)) {
             return false;
         }
 
