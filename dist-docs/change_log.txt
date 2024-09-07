@@ -35,8 +35,9 @@ Ver.13 (In Development)
 - In case of copy, the default-values are prior to the defaults of schema.
 - The username of the login panel is filtered just ASCII characters. If INTERMediatorOnPage.userNameJustASCII set false,
   The username is going to be same as input.
+- The logged in username is over-written with the valid name in the authuser table, and it can get by getCurrentUser().
 - [BUG FIX] On the Ver.12, SAML authentication didn't work in spite of Ver.11 can do. It didn't check with SAML manual
-  test on Ver.12 after added types to php codes. Ver.13 works SAML.
+  test on Ver.12 after added types to php codes. Anyway, SAML works on Ver.13.
 
 Ver.12 (Februrary 06, 2024)
 - PHP Ver.7.4 is the minimum version.

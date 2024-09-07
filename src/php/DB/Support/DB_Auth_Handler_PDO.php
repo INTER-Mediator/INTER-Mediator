@@ -28,8 +28,14 @@ use Exception;
  */
 class DB_Auth_Handler_PDO extends DB_Auth_Common
 {
+    /**
+     * @var PDO
+     */
     protected PDO $pdoDB;
 
+    /**
+     * @param PDO $parent
+     */
     public function __construct(PDO $parent)
     {
         parent::__construct($parent);
@@ -604,7 +610,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
 
         $candidateGroups = array();
         foreach ($this->belongGroups as $groupid) {
-            if($groupid) {
+            if ($groupid) {
                 $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
             }
         }
@@ -794,13 +800,29 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      */
     public function authSupportUnifyUsernameAndEmail(?string $username): ?string
     {
-        if (!$this->dbSettings->getEmailAsAccount() || !$username) {
-            return $username;
+        if (!$username) {
+            return null;
         }
         $userTable = $this->dbSettings->getUserTable();
         if (is_null($userTable) || !$this->pdoDB->setupConnection()) {
             return null;
         }
+
+        if (!$this->dbSettings->getEmailAsAccount()) { // In case of $this->dbSettings->getEmailAsAccount() is false
+            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " username FROM {$userTable} WHERE username = "
+                . $this->pdoDB->link->quote($username);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                $this->pdoDB->errorMessageStore('Select:' . $sql);
+                return null;
+            }
+            $this->logger->setDebugMessage("[authSupportUnifyUsernameAndEmail] {$sql}");
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                return $row['username'];
+            }
+            return null;
+        }
+        // In case of $this->dbSettings->getEmailAsAccount() is true
         $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}username,email FROM {$userTable} WHERE username = " .
             $this->pdoDB->link->quote($username) . " or email = " . $this->pdoDB->link->quote($username);
         $result = $this->pdoDB->link->query($sql);
@@ -821,6 +843,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return $usernameCandidate;
     }
 
+    /**
+     * @param string|null $username
+     * @return string|null
+     */
     public function authSupportEmailFromUnifiedUsername(?string $username): ?string
     {
         if (!$username) {
@@ -1086,5 +1112,55 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             return false;
         }
         return true;
+    }
+
+    /**
+     * @param null|string $userID
+     * @return array 3 elements array as like: [UserID, username, hashedpasswd].
+     */
+    public function authSupportUnifyUsernameAndEmailAndGetInfo(?string $userID): array
+    {
+        if (!$userID) {
+            return [null, null, null];
+        }
+        $userTable = $this->dbSettings->getUserTable();
+        if (is_null($userTable) || !$this->pdoDB->setupConnection()) {
+            return [null, null, null];
+        }
+
+        if (!$this->dbSettings->getEmailAsAccount()) { // In the case of $this->dbSettings->getEmailAsAccount() is false
+            $sql = $this->pdoDB->handler->sqlSELECTCommand() . " id,username,hashedpasswd FROM {$userTable} WHERE username = "
+                . $this->pdoDB->link->quote($userID);
+            $result = $this->pdoDB->link->query($sql);
+            if ($result === false) {
+                $this->pdoDB->errorMessageStore('Select:' . $sql);
+                return [null, null, null];
+            }
+            $this->logger->setDebugMessage("[authSupportUnifyUsernameAndEmail] {$sql}");
+            foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                return [$row['id'], $row['username'], $row['hashedpasswd']];
+            }
+            return [null, null, null];
+        }
+        // In the case of $this->dbSettings->getEmailAsAccount() is true
+        $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}id,username,email,hashedpasswd FROM {$userTable} WHERE username = " .
+            $this->pdoDB->link->quote($userID) . " or email = " . $this->pdoDB->link->quote($userID);
+        $result = $this->pdoDB->link->query($sql);
+        if ($result === false) {
+            $this->pdoDB->errorMessageStore('Select:' . $sql);
+            return [null, null, null];
+        }
+        $this->logger->setDebugMessage("[authSupportUnifyUsernameAndEmail] {$sql}");
+        $usernameCandidate = '';
+        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+            if ($row['username'] === $userID) {
+                $usernameCandidate = $userID;
+            }
+            if ($row['email'] === $userID) {
+                $usernameCandidate = $row['username'];
+            }
+            return [$row['id'], $usernameCandidate, $row['hashedpasswd']];
+        }
+        return [null, null, null];
     }
 }

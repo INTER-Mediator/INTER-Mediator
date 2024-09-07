@@ -664,7 +664,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         $this->resolveGroup($userid);
         $candidateGroups = array();
         foreach ($this->belongGroups as $groupid) {
-            if($groupid) {
+            if ($groupid) {
                 $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
             }
         }
@@ -1005,5 +1005,51 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     {
         $this->logger->setErrorMessage("DB_Auth_Handler_FileMaker_DataAPI doesn't support the authSupportOAuthUserHandling method.");
         return false;
+    }
+
+    /**
+     * @param null|string $userID
+     * @return array 3 elements array as like: [UserID, username, hashedpasswd].
+     */
+    public function authSupportUnifyUsernameAndEmailAndGetInfo(?string $userID): array
+    {
+        if (!$userID) {
+            return [null, null, null];
+        }
+        $userTable = $this->dbSettings->getUserTable();
+        if (is_null($userTable)) {
+            return [null, null, null];
+        }
+        $this->fmdb->setupFMDataAPIforDB_Alt($userTable, 55555);
+        $conditions = [];
+        $conditions[] = ['username' => str_replace("@", "\\@", $userID)];
+        if ($this->dbSettings->getEmailAsAccount()) {
+            $conditions[] = ['email' => str_replace("@", "\\@", $userID)];
+        }
+        $result = NULL;
+        try {
+            $result = $this->fmdb->fmDataAlt->{$userTable}->query($conditions);
+            if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
+                $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmDataAlt->getSessionToken();
+            }
+            $this->logger->setDebugMessage(
+                $this->fmdb->stringWithoutCredential($this->fmdb->fmDataAlt->{$userTable}->getDebugInfo()));
+            $usernameCandidate = '';
+            foreach ($result as $record) {
+                if ($record->username == $userID) {
+                    $usernameCandidate = $userID;
+                }
+                if ($record->email == $userID) {
+                    $usernameCandidate = $record->username;
+                }
+                return [$record->id, $usernameCandidate, $record->hashedpasswd];
+            }
+        } catch (Exception $e) {
+            $className = is_object($result) ? get_class($result) : "NULL";
+            $this->logger->setDebugMessage(
+                $this->fmdb->stringWithoutCredential($className . ': ' .
+                    $this->fmdb->fmDataAlt->{$userTable}->getDebugInfo()));
+        }
+        return [null, null, null];
     }
 }

@@ -480,7 +480,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
         $this->resolveGroup($userid);
         $candidateGroups = array();
         foreach ($this->belongGroups as $groupid) {
-            if($groupid) {
+            if ($groupid) {
                 $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
             }
         }
@@ -762,5 +762,44 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
     {
         $this->logger->setErrorMessage("DB_Auth_Handler_FileMaker_FX doesn't support the authSupportOAuthUserHandling method.");
         return false;
+    }
+
+    /**
+     * @param null|string $userID
+     * @return array 3 elements array as like: [UserID, username, hashedpasswd].
+     */
+    public function authSupportUnifyUsernameAndEmailAndGetInfo(?string $userID): array
+    {
+        if (!$userID) {
+            return [null, null, null];
+        }
+        $userTable = $this->dbSettings->getUserTable();
+        if (!$userTable || !$userID) {
+            return [null, null, null];
+        }
+
+        $this->fmdb->setupFXforDB_Alt($userTable, 55555);
+        $this->fmdb->fxAlt->AddDBParam('username', str_replace("@", "\\@", $userID), "eq");
+        if ($this->dbSettings->getEmailAsAccount()) {
+            $this->fmdb->fxAlt->AddDBParam('email', str_replace("@", "\\@", $userID), "eq");
+            $this->fmdb->fxAlt->SetLogicalOR();
+        }
+        $result = $this->fmdb->fxAlt->DoFxAction('perform_find', TRUE, TRUE, 'full');
+        if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
+            return [null, null, null];
+        }
+        $this->logger->setDebugMessage($this->fmdb->stringWithoutCredential($result['URL']));
+        $usernameCandidate = '';
+        foreach ($result['data'] as $row) {
+            if ($row['username'][0] === $userID) {
+                $usernameCandidate = $userID;
+            }
+            if ($row['email'][0] == $userID) {
+                $usernameCandidate = $row['username'][0];
+            }
+            return [$row['id'][0], $usernameCandidate, $row['hashedpasswd'][0]];
+        }
+        return [null, null, null];
     }
 }

@@ -23,26 +23,19 @@
  * @constructor
  */
 const IMLib = {
-  nl_char: '\n',
-  cr_char: '\r',
-  tab_char: '\t',
-  singleQuote_char: '\'',
-  doubleQuote_char: '"',
-  backSlash_char: '\\',
+  nl_char: '\n', cr_char: '\r', tab_char: '\t', singleQuote_char: '\'', doubleQuote_char: '"', backSlash_char: '\\',
 
   get zerolength_str() {
     'use strict'
     return ''
-  },
-  set zerolength_str(value) {
+  }, set zerolength_str(value) {
     // do nothing
   },
 
   get crlf_str() {
     'use strict'
     return '\r\n'
-  },
-  set crlf_str(value) {
+  }, set crlf_str(value) {
     // do nothing
   }
 }
@@ -167,8 +160,7 @@ const INTERMediatorLib = {
 
   generatePasswordHash: function (password, saltHex = false) {
     let salt = null
-    const shaObj = (INTERMediatorOnPage.passwordHash > 1.4 || INTERMediatorOnPage.alwaysGenSHA2)
-      ? new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000}) : new jsSHA('SHA-1', 'TEXT')
+    const shaObj = (INTERMediatorOnPage.passwordHash > 1.4 || INTERMediatorOnPage.alwaysGenSHA2) ? new jsSHA('SHA-256', 'TEXT', {"numRounds": 5000}) : new jsSHA('SHA-1', 'TEXT')
     if (salt) {
       salt = INTERMediatorLib.hexToString(saltHex)
     } else {
@@ -201,8 +193,7 @@ const INTERMediatorLib = {
 
   getParentRepeater: function (node) {
     'use strict'
-    console.error('INTERMediatorLib.getParentRepeater method in INTER-Mediator-Lib.js will be removed in Ver.6.0. ' +
-      'The alternative method is getParentRepeaters.')
+    console.error('INTERMediatorLib.getParentRepeater method in INTER-Mediator-Lib.js will be removed in Ver.6.0. ' + 'The alternative method is getParentRepeaters.')
     let currentNode = node
     while (currentNode !== null) {
       if (INTERMediatorLib.isRepeater(currentNode, true)) {
@@ -250,8 +241,7 @@ const INTERMediatorLib = {
         if (INTERMediatorLib.isRepeater(currentNode, true)) {
           for (let i = 0; i < IMLibContextPool.poolingContexts.length; i++) {
             for (let j in IMLibContextPool.poolingContexts[i].binding) {
-              if (IMLibContextPool.poolingContexts[i].binding.hasOwnProperty(j) &&
-                IMLibContextPool.poolingContexts[i].binding[j].hasOwnProperty('_im_repeater')) {
+              if (IMLibContextPool.poolingContexts[i].binding.hasOwnProperty(j) && IMLibContextPool.poolingContexts[i].binding[j].hasOwnProperty('_im_repeater')) {
                 for (let k = 0; k < IMLibContextPool.poolingContexts[i].binding[j]._im_repeater.length; k++) {
                   if (IMLibContextPool.poolingContexts[i].binding[j]._im_repeater[k].id === currentNode.id) {
                     return IMLibContextPool.poolingContexts[i].binding[j]._im_repeater
@@ -293,15 +283,7 @@ const INTERMediatorLib = {
       return false
     }
     const tagName = node.tagName
-    if ((tagName === 'TBODY') ||
-      (tagName === 'UL') ||
-      (tagName === 'OL') ||
-      (tagName === 'SELECT') ||
-      ((tagName === 'DIV' || tagName === 'SPAN') &&
-        className &&
-        className.indexOf(INTERMediatorLib.roleAsEnclosureClassName) >= 0) ||
-      (controlAttr &&
-        controlAttr.indexOf(INTERMediatorLib.roleAsEnclosureDataControlName) >= 0)) {
+    if ((tagName === 'TBODY') || (tagName === 'UL') || (tagName === 'OL') || (tagName === 'SELECT') || ((tagName === 'DIV' || tagName === 'SPAN') && className && className.indexOf(INTERMediatorLib.roleAsEnclosureClassName) >= 0) || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsEnclosureDataControlName) >= 0)) {
       if (nodeOnly) {
         return true
       } else {
@@ -330,14 +312,7 @@ const INTERMediatorLib = {
       return false
     }
     const tagName = node.tagName
-    if ((tagName === 'TR') || (tagName === 'LI') || (tagName === 'OPTION') ||
-      (className && className.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0) ||
-      (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0) ||
-      (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0) ||
-      (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0) ||
-      (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0) ||
-      (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) >= 0)
-    ) {
+    if ((tagName === 'TR') || (tagName === 'LI') || (tagName === 'OPTION') || (className && className.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0) || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0) || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0) || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0) || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0) || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) >= 0)) {
       if (nodeOnly) {
         return true
       } else {
@@ -465,30 +440,19 @@ const INTERMediatorLib = {
       }
       const repeaterTag = repeater.tagName
       const enclosureTag = enclosure.tagName
-      if ((repeaterTag === 'TR' && enclosureTag === 'TBODY') ||
-        (repeaterTag === 'OPTION' && enclosureTag === 'SELECT') ||
-        (repeaterTag === 'LI' && enclosureTag === 'OL') ||
-        (repeaterTag === 'LI' && enclosureTag === 'UL')) {
+      if ((repeaterTag === 'TR' && enclosureTag === 'TBODY') || (repeaterTag === 'OPTION' && enclosureTag === 'SELECT') || (repeaterTag === 'LI' && enclosureTag === 'OL') || (repeaterTag === 'LI' && enclosureTag === 'UL')) {
         return true
       }
       const enclosureClass = enclosure.getAttribute('class')
       const enclosureDataAttr = enclosure.getAttribute('data-im-control')
-      if ((enclosureClass && enclosureClass.indexOf(INTERMediatorLib.roleAsEnclosureClassName) >= 0) ||
-        (enclosureDataAttr && enclosureDataAttr.indexOf('enclosure') >= 0)) {
+      if ((enclosureClass && enclosureClass.indexOf(INTERMediatorLib.roleAsEnclosureClassName) >= 0) || (enclosureDataAttr && enclosureDataAttr.indexOf('enclosure') >= 0)) {
         const repeaterClass = repeater.getAttribute('class')
         const repeaterDataAttr = repeater.getAttribute('data-im-control')
-        if ((repeaterClass && repeaterClass.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0) ||
-          (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0) ||
-          (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0) ||
-          (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0) ||
-          (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0) ||
-          (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) >= 0)
-        ) {
+        if ((repeaterClass && repeaterClass.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0) || (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0) || (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0) || (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0) || (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0) || (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) >= 0)) {
           return true
         } else if (repeaterTag === 'INPUT') {
           const repeaterType = repeater.getAttribute('type')
-          if (repeaterType &&
-            ((repeaterType.indexOf('radio') >= 0 || repeaterType.indexOf('check') >= 0))) {
+          if (repeaterType && ((repeaterType.indexOf('radio') >= 0 || repeaterType.indexOf('check') >= 0))) {
             return true
           }
         }
@@ -610,11 +574,7 @@ const INTERMediatorLib = {
     'use strict'
     if (!nodeInfo || !nodeInfo.split) {
       return {
-        'table': null,
-        'field': null,
-        'target': null,
-        'tableindex': null,
-        'crossTable': false
+        'table': null, 'field': null, 'target': null, 'tableindex': null, 'crossTable': false
       }
     }
     const comps = nodeInfo.split(INTERMediator.separator)
@@ -655,8 +615,7 @@ const INTERMediatorLib = {
    */
   getCalcNodeInfoArray: function (idValue) {
     'use strict'
-    console.error('INTERMediatorLib.getCalcNodeInfoArray method in INTER-Mediator-Page.js will be removed in Ver.6.0. ' +
-      'Here is no alternative method.')
+    console.error('INTERMediatorLib.getCalcNodeInfoArray method in INTER-Mediator-Page.js will be removed in Ver.6.0. ' + 'Here is no alternative method.')
     if (!idValue) {
       return null
     }
@@ -683,10 +642,7 @@ const INTERMediatorLib = {
       fieldName = attribute
     }
     return {
-      'table': tableName,
-      'field': fieldName,
-      'target': targetName,
-      'tableindex': '_im_index_' + tableName
+      'table': tableName, 'field': fieldName, 'target': targetName, 'tableindex': '_im_index_' + tableName
     }
   },
 
@@ -717,8 +673,7 @@ const INTERMediatorLib = {
     str = str.toString()
     for (let i = 0; i < str.length; i += 1) {
       const c = str.charAt(i)
-      if ((c >= '0' && c <= '9') || c === '.' || c === '-' ||
-        c === dp) {
+      if ((c >= '0' && c <= '9') || c === '.' || c === '-' || c === dp) {
         s += c
       } else if (c >= '０' && c <= '９') {
         s += String.fromCharCode(c.charCodeAt(0) - '０'.charCodeAt(0) + '0'.charCodeAt(0))
@@ -870,11 +825,7 @@ const INTERMediatorLib = {
 
   is_array: function (target) {
     'use strict'
-    return target &&
-      typeof target === 'object' &&
-      typeof target.length === 'number' &&
-      typeof target.splice === 'function' &&
-      !(target.propertyIsEnumerable('length'))
+    return target && typeof target === 'object' && typeof target.length === 'number' && typeof target.splice === 'function' && !(target.propertyIsEnumerable('length'))
   },
 
   getNamedValuesInObject: function (ar, key1, named1, key2, named2, retrieveKey) {
@@ -1120,9 +1071,7 @@ const INTERMediatorLib = {
     //     ('0' + dt.getUTCDate()).slice(-2) + ' ' + ('0' + dt.getUTCHours()).slice(-2) + ':' +
     //     ('0' + dt.getUTCMinutes()).slice(-2) + ':' + ('0' + dt.getUTCSeconds()).slice(-2)
     // }
-    return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).slice(-2) + '-' +
-      ('0' + dt.getDate()).slice(-2) + ' ' + ('0' + dt.getHours()).slice(-2) + ':' +
-      ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2)
+    return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).slice(-2) + '-' + ('0' + dt.getDate()).slice(-2) + ' ' + ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2)
   },
 
   dateTimeStringFileMaker: function (dt) {
@@ -1133,9 +1082,7 @@ const INTERMediatorLib = {
     //     dt.getUTCFullYear() + ' ' + ('0' + dt.getUTCHours()).slice(-2) + ':' +
     //     ('0' + dt.getUTCMinutes()).slice(-2) + ':' + ('0' + dt.getUTCSeconds()).slice(-2)
     // }
-    return ('0' + (dt.getMonth() + 1)).slice(-2) + '/' + ('0' + dt.getDate()).slice(-2) + '/' +
-      dt.getFullYear() + ' ' + ('0' + dt.getHours()).slice(-2) + ':' +
-      ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2)
+    return ('0' + (dt.getMonth() + 1)).slice(-2) + '/' + ('0' + dt.getDate()).slice(-2) + '/' + dt.getFullYear() + ' ' + ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2)
   },
 
   dateStringISO: function (dt) {
@@ -1145,8 +1092,7 @@ const INTERMediatorLib = {
     //   return dt.getUTCFullYear() + '-' + ('0' + (dt.getUTCMonth() + 1)).slice(-2) +
     //     '-' + ('0' + dt.getUTCDate()).slice(-2)
     // }
-    return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).slice(-2) +
-      '-' + ('0' + dt.getDate()).slice(-2)
+    return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).slice(-2) + '-' + ('0' + dt.getDate()).slice(-2)
   },
 
   dateStringFileMaker: function (dt) {
@@ -1156,16 +1102,13 @@ const INTERMediatorLib = {
     //   return ('0' + (dt.getUTCMonth() + 1)).slice(-2) + '/' +
     //     ('0' + dt.getUTCDate()).slice(-2) + '/' + dt.getUTCFullYear()
     // }
-    return ('0' + (dt.getMonth() + 1)).slice(-2) + '/' +
-      ('0' + dt.getDate()).slice(-2) + '/' + dt.getFullYear()
+    return ('0' + (dt.getMonth() + 1)).slice(-2) + '/' + ('0' + dt.getDate()).slice(-2) + '/' + dt.getFullYear()
   },
 
   timeString: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
-    return ('0' + dt.getHours()).slice(-2) + ':' +
-      ('0' + dt.getMinutes()).slice(-2) + ':' +
-      ('0' + dt.getSeconds()).slice(-2)
+    return ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2)
   },
 
   mergeURLParameter: function (url, key, value) {
@@ -1174,6 +1117,19 @@ const INTERMediatorLib = {
     } else {
       return `${url}?${key}=${value}`
     }
+  },
+
+  justfyUsername: function (uname) {
+    const allHankaku = uname.replace(/[Ａ-Ｚａ-ｚ０-９]/g, function (s) {
+      return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+    });
+    let modUsername = ""
+    for (let i = 0; i < allHankaku.length; i += 1) {
+      if (allHankaku.charCodeAt(i) <= 127) {
+        modUsername += allHankaku.charAt(i)
+      }
+    }
+    return modUsername
   }
 }
 

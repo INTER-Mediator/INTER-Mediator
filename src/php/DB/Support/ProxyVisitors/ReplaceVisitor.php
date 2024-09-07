@@ -25,6 +25,9 @@ class ReplaceVisitor extends OperationVisitor
      */
     public function visitCheckAuthentication(OperationElement $e): bool
     {
+        if ($this->proxy->bypassAuth) {
+            return true;
+        }
         return $this->prepareCheckAuthentication($e) && $this->checkAuthenticationCommon($e);
     }
 
@@ -35,6 +38,9 @@ class ReplaceVisitor extends OperationVisitor
     public function visitCheckAuthorization(OperationElement $e): bool
     {
         $proxy = $this->proxy;
+        if ($proxy->bypassAuth) {
+            return true;
+        }
         return $proxy->authSucceed && $this->checkAuthorization();
     }
 
@@ -55,6 +61,9 @@ class ReplaceVisitor extends OperationVisitor
      */
     public function visitHandleChallenge(OperationElement $e): void
     {
+        if ($this->proxy->bypassAuth) {
+            return;
+        }
         $this->defaultHandleChallenge();
     }
 
