@@ -1066,42 +1066,26 @@ const INTERMediatorLib = {
   dateTimeStringISO: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
-    // if (INTERMediatorOnPage.isFollowingTimezone) {
-    //   return dt.getUTCFullYear() + '-' + ('0' + (dt.getUTCMonth() + 1)).slice(-2) + '-' +
-    //     ('0' + dt.getUTCDate()).slice(-2) + ' ' + ('0' + dt.getUTCHours()).slice(-2) + ':' +
-    //     ('0' + dt.getUTCMinutes()).slice(-2) + ':' + ('0' + dt.getUTCSeconds()).slice(-2)
-    // }
-    return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).slice(-2) + '-' + ('0' + dt.getDate()).slice(-2) + ' ' + ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2)
+    return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).slice(-2) + '-' + ('0' + dt.getDate()).slice(-2)
+      + ' ' + ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2)
   },
 
   dateTimeStringFileMaker: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
-    // if (INTERMediatorOnPage.isFollowingTimezone) {
-    //   return ('0' + (dt.getUTCMonth() + 1)).slice(-2) + '/' + ('0' + dt.getUTCDate()).slice(-2) + '/' +
-    //     dt.getUTCFullYear() + ' ' + ('0' + dt.getUTCHours()).slice(-2) + ':' +
-    //     ('0' + dt.getUTCMinutes()).slice(-2) + ':' + ('0' + dt.getUTCSeconds()).slice(-2)
-    // }
-    return ('0' + (dt.getMonth() + 1)).slice(-2) + '/' + ('0' + dt.getDate()).slice(-2) + '/' + dt.getFullYear() + ' ' + ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2)
+    return ('0' + (dt.getMonth() + 1)).slice(-2) + '/' + ('0' + dt.getDate()).slice(-2) + '/' + dt.getFullYear()
+      + ' ' + ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2)
   },
 
   dateStringISO: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
-    // if (INTERMediatorOnPage.isFollowingTimezone) {
-    //   return dt.getUTCFullYear() + '-' + ('0' + (dt.getUTCMonth() + 1)).slice(-2) +
-    //     '-' + ('0' + dt.getUTCDate()).slice(-2)
-    // }
     return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).slice(-2) + '-' + ('0' + dt.getDate()).slice(-2)
   },
 
   dateStringFileMaker: function (dt) {
     'use strict'
     dt = (!dt) ? new Date() : dt
-    // if (INTERMediatorOnPage.isFollowingTimezone) {
-    //   return ('0' + (dt.getUTCMonth() + 1)).slice(-2) + '/' +
-    //     ('0' + dt.getUTCDate()).slice(-2) + '/' + dt.getUTCFullYear()
-    // }
     return ('0' + (dt.getMonth() + 1)).slice(-2) + '/' + ('0' + dt.getDate()).slice(-2) + '/' + dt.getFullYear()
   },
 
@@ -1120,8 +1104,8 @@ const INTERMediatorLib = {
   },
 
   justfyUsername: function (uname) {
-    const allHankaku = uname.replace(/[Ａ-Ｚａ-ｚ０-９]/g, function (s) {
-      return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+    const allHankaku = uname.replaceAll(/[Ａ-Ｚａ-ｚ０-９]/g, (s) => {
+      return String.fromCharCode(s.charCodeAt(0) - 0xFEE0)
     });
     let modUsername = ""
     for (let i = 0; i < allHankaku.length; i += 1) {
