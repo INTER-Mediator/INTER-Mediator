@@ -688,7 +688,7 @@ let INTERMediatorOnPage = {
     }
     userBox.value = INTERMediatorOnPage.authUser()
     userBox.onkeydown = function (event) {
-      if (event.code === 'Enter') {
+      if (event.code === 'Enter' && !event.isComposing) {
         passwordBox.focus()
       }
     }
@@ -701,7 +701,7 @@ let INTERMediatorOnPage = {
 
       let inputUsername = document.getElementById('_im_username').value
       const inputPassword = document.getElementById('_im_password').value
-      if(INTERMediatorOnPage.userNameJustASCII) {
+      if (INTERMediatorOnPage.userNameJustASCII) {
         inputUsername = INTERMediatorLib.justfyUsername(inputUsername)
       }
 
