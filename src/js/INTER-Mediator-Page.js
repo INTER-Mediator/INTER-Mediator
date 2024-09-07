@@ -702,13 +702,7 @@ let INTERMediatorOnPage = {
       let inputUsername = document.getElementById('_im_username').value
       const inputPassword = document.getElementById('_im_password').value
       if(INTERMediatorOnPage.userNameJustASCII) {
-        let modUsername = ""
-        for (let i = 0 ; i < inputUsername.length ; i+=1){
-          if(inputUsername.charCodeAt(i) <= 127) {
-            modUsername += inputUsername.charAt(i)
-          }
-        }
-        inputUsername = modUsername
+        inputUsername = INTERMediatorLib.justfyUsername(inputUsername)
       }
 
       if (inputUsername === '' || inputPassword === '') {

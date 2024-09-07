@@ -126,3 +126,13 @@ test('HexToString returns valid strings from hex strings.', function () {
   expect(INTERMediatorLib.hexToString("616241427a5a")).toBe("abABzZ")
   expect(INTERMediatorLib.hexToString("430a430a")).toBe("C\nC\n")
 })
+
+test("justfyUsername doesn't return Zenkaku characters.", function(){
+  expect(INTERMediatorLib.justfyUsername("aa12BB")).toBe("aa12BB")
+  expect(INTERMediatorLib.justfyUsername("ＡＡ１２ＢＢ")).toBe("AA12BB")
+  expect(INTERMediatorLib.justfyUsername("ａａ１２ｂｂ")).toBe("aa12bb")
+  expect(INTERMediatorLib.justfyUsername("ＹＹ９８ＺＺ")).toBe("YY98ZZ")
+  expect(INTERMediatorLib.justfyUsername("ｙｙ９８ｚｚ")).toBe("yy98zz")
+  expect(INTERMediatorLib.justfyUsername("test１２３わお")).toBe("test123")
+  expect(INTERMediatorLib.justfyUsername("おおまい！god")).toBe("god")
+})
