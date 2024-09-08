@@ -108,11 +108,14 @@ trait Proxy_Auth
      */
     public function authenticationAndAuthorization(): void
     {
+        if($this->bypassAuth) {
+            return;
+        }
         $this->dbSettings->setRequireAuthentication(false);
         $isAuthAccessing = (new IsAuthAccessingElement())->acceptIsAuthAccessing($this->visitor);
         $this->dbSettings->setRequireAuthorization($isAuthAccessing || $this->checkAuthSettings());
         $this->authSucceed = false;
-        if (!$this->bypassAuth && $this->dbSettings->getRequireAuthorization()) { // Authentication required
+        if ($this->dbSettings->getRequireAuthorization()) { // Authentication required
             $this->logger->setDebugMessage("[authenticationAndAuthorization] Authentication process started.");
             if ($this->passwordHash != '1' || $this->alwaysGenSHA2) {
                 $this->dbClass->authHandler->authSupportCanMigrateSHA256Hash();
