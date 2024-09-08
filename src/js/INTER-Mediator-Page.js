@@ -688,7 +688,7 @@ let INTERMediatorOnPage = {
     }
     userBox.value = INTERMediatorOnPage.authUser()
     userBox.onkeydown = function (event) {
-      if (event.code === 'Enter' && !event.isComposing) {
+      if ((event.code === 'Enter' || event.code === 'NumpadEnter') && !event.isComposing) {
         passwordBox.focus()
       }
     }
