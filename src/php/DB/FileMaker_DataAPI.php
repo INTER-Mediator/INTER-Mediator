@@ -585,7 +585,7 @@ class FileMaker_DataAPI extends DBClass
                     if ($useOrOperation) {
                         throw new Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
                     }
-                    $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+                    $signedUser = $this->dbSettings->getCurrentUser();
                     $searchConditions[] = $this->setSearchConditionsForCompoundFound(
                         $authInfoField, '=' . $signedUser, 'eq');
                     $neqConditions[] = FALSE;
@@ -960,7 +960,7 @@ class FileMaker_DataAPI extends DBClass
                 if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;
                 } else {
-                    $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+                    $signedUser = $this->dbSettings->getCurrentUser();
                     $data += array($authInfoField => '=' . $signedUser);
                 }
             } else if ($authInfoTarget == 'field-group') {
@@ -1238,7 +1238,7 @@ class FileMaker_DataAPI extends DBClass
             $authInfoField = $this->authHandler->getFieldForAuthorization("create");
             $authInfoTarget = $this->authHandler->getTargetForAuthorization("create");
             if ($authInfoTarget == 'field-user') {
-                $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+                $signedUser = $this->dbSettings->getCurrentUser();
                 $recordData += array(
                     $authInfoField =>
                         strlen($this->dbSettings->getCurrentUser()) == 0 ? IMUtil::randomString(10) : $signedUser
@@ -1353,7 +1353,7 @@ class FileMaker_DataAPI extends DBClass
                 if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;
                 } else {
-                    $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+                    $signedUser = $this->dbSettings->getCurrentUser();
                     $condition += array($authInfoField => '=' . $signedUser);
                 }
             } else if ($authInfoTarget == 'field-group') {
