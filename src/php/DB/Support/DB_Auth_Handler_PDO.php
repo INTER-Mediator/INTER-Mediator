@@ -290,6 +290,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     public function authSupportRetrieveHashedPassword(string $username): ?string
     {
         $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
+        if(is_null($signedUser)) {
+            $signedUser = "";
+        }
 
         $userTable = $this->dbSettings->getUserTable();
         if (is_null($userTable)) {
@@ -454,6 +457,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     function authSupportChangePassword(string $username, string $hashednewpassword): bool
     {
         $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
+        if(is_null($signedUser)) {
+            $signedUser = "";
+        }
 
         $userTable = $this->dbSettings->getUserTable();
         if (is_null($userTable)) {

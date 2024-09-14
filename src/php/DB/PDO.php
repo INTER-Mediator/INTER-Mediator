@@ -293,7 +293,7 @@ class PDO extends DBClass
         }
 
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+        $signedUser = $this->dbSettings->getCurrentUser();
         $updatingTable = $this->dbSettings->getEntityForUpdate();
         $sourceTable = $this->dbSettings->getEntityAsSource();
         $boolFields = $this->handler->getBooleanFields($updatingTable);
@@ -496,7 +496,7 @@ class PDO extends DBClass
         if (isset($tableInfo['time-fields']) && is_array($tableInfo['time-fields'])) {
             $timeFields = array_merge($timeFields, $tableInfo['time-fields']);
         }
-        $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+        $signedUser = $this->dbSettings->getCurrentUser();
 
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
@@ -645,7 +645,7 @@ class PDO extends DBClass
 
         $signedUser = null;
         if (isset($tableInfo['authentication'])) {
-            $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+            $signedUser = $this->dbSettings->getCurrentUser();
         }
 
         $setColumnNames = array();
@@ -771,7 +771,7 @@ class PDO extends DBClass
 
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
-        $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+        $signedUser = $this->dbSettings->getCurrentUser();
 
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
@@ -826,7 +826,7 @@ class PDO extends DBClass
 
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->dbSettings->getEntityForUpdate();
-        $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+        $signedUser = $this->dbSettings->getCurrentUser();
         $timeFields = $this->isFollowingTimezones
             ? $this->handler->getTimeFields($this->dbSettings->getEntityForUpdate()) : [];
         if (isset($tableInfo['time-fields']) && is_array($tableInfo['time-fields'])) {

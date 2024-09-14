@@ -640,7 +640,7 @@ class FileMaker_FX extends DBClass
                     if ($useOrOperation) {
                         throw new Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
                     }
-                    $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+                    $signedUser = $this->dbSettings->getCurrentUser();
                     $this->fx->AddDBParam($authInfoField, $signedUser, 'eq');
                     $searchConditions[] = $this->setSearchConditionsForCompoundFound(
                         $authInfoField, '=' . $signedUser, 'eq');
@@ -1228,7 +1228,7 @@ class FileMaker_FX extends DBClass
                 if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;
                 } else {
-                    $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+                    $signedUser = $this->dbSettings->getCurrentUser();
                     if ($cwpkit->_checkDuplicatedFXCondition($fxUtility->CreateCurrentSearch(), $authInfoField, $signedUser) === TRUE) {
                         $this->fx->AddDBParam($authInfoField, '=' . $signedUser, 'eq');
                     }
@@ -1440,7 +1440,7 @@ class FileMaker_FX extends DBClass
                 $authFailure = TRUE;
             }
             if ($authInfoTarget == 'field-user' && $authFailure === FALSE) {
-                $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+                $signedUser = $this->dbSettings->getCurrentUser();
                 $this->fx->AddDBParam($authInfoField,
                     strlen($this->dbSettings->getCurrentUser()) == 0 ? IMUtil::randomString(10) : $signedUser);
             } else if ($authInfoTarget == 'field-group') {
@@ -1559,7 +1559,7 @@ class FileMaker_FX extends DBClass
                 if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;
                 } else {
-                    $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+                    $signedUser = $this->dbSettings->getCurrentUser();
                     $this->fx->AddDBParam($authInfoField, '=' . $signedUser, 'eq');
                 }
             } else if ($authInfoTarget == 'field-group') {

@@ -13,6 +13,30 @@ The format of below is: [commit code from git log], [Version from composer.json]
 The test is identified by .conf.js files in the /spec/run directory.
 The test 'wdio-auth-chrome.conf.js' and 'wdio-firefox.conf.js' are running on GitHub Actions.
 
+- commit defe0266d3a6fa4a91690c9784fb3ba02fc9adb0 (Fri Sep 13 10:57:39 2024 +0900)
+  INTER-Mediator Ver.13 (2024-07-26),
+  wdio-edge.conf.js,
+  PHP 8.3.11 (Homebrew based)+MySQL 8.4.2/PostgreSQL 14.13/SQLite 3.43.2+MicrosoftEdge (128.0.2739.79) on mac,
+  by Masayuki Nii <nii@msyk.net>, OK
+
+- commit defe0266d3a6fa4a91690c9784fb3ba02fc9adb0 (Fri Sep 13 10:57:39 2024 +0900)
+  INTER-Mediator Ver.13 (2024-07-26),
+  wdio-search-chrome.conf.js,
+  PHP 8.3.11 (Homebrew based)+MySQL 8.4.2/PostgreSQL 14.13/SQLite 3.43.2+Chrome (128.0.6613.138) on mac,
+  by Masayuki Nii <nii@msyk.net>, OK
+
+- commit defe0266d3a6fa4a91690c9784fb3ba02fc9adb0 (Fri Sep 13 10:57:39 2024 +0900)
+  INTER-Mediator Ver.13 (2024-07-26),
+  wdio-sync-edge.conf.js,
+  PHP 8.3.11 (Homebrew based)+MySQL 8.4.2/PostgreSQL 14.13/SQLite 3.43.2+MicrosoftEdge (128.0.2739.79) on mac,
+  by Masayuki Nii <nii@msyk.net>, OK
+
+- commit defe0266d3a6fa4a91690c9784fb3ba02fc9adb0 (Fri Sep 13 10:57:39 2024 +0900)
+  INTER-Mediator Ver.13 (2024-07-26),
+  wdio-sync-chrome.conf.js,
+  PHP 8.3.11 (Homebrew based)+MySQL 8.4.2/PostgreSQL 14.13/SQLite 3.43.2+Chrome (128.0.6613.138) on mac,
+  by Masayuki Nii <nii@msyk.net>, OK
+
 - commit f9e4c32c37fcec902822b8297a2d61bd9c305060 (Fri Apr 26 09:35:19 2024 +0900)
   INTER-Mediator Ver.13 (2024-02-24),
   wdio-search-chrome.conf.js,

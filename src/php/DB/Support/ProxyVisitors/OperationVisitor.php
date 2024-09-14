@@ -89,34 +89,24 @@ abstract class OperationVisitor
         $dbSettings = $proxy->dbSettings;
         $authDBHandler = $proxy->authDbClass->authHandler;
 
-//        authSupportUnifyUsernameAndEmail
-//        authSupportRetrieveHashedPassword
-//        authSupportGetUserIdFromUsername
-//
         [$uid, $proxy->signedUser, $proxy->hashedPassword]
             = $authHandler->authSupportUnifyUsernameAndEmailAndGetInfo($dbSettings->getCurrentUser());
-
-//        $proxy->signedUser = $authHandler->authSupportUnifyUsernameAndEmail($dbSettings->getCurrentUser());
         $dbSettings->setCurrentUser($proxy->signedUser);
-//        $proxy->hashedPassword = $authHandler->authSupportRetrieveHashedPassword($proxy->signedUser ?? "");
-
-        $falseHash = hash("sha256", uniqid("", true)); // for failing auth.
-        $proxy->paramResponse ??= $falseHash;
-        $proxy->paramResponse2m ??= $falseHash;
-        $proxy->paramResponse2 ??= $falseHash;
-        Logger::getInstance()->setDebugMessage("[prepareCheckAuthentication] user={$proxy->signedUser}, "
-            . "paramResponse={$proxy->paramResponse}, paramResponse2m={$proxy->paramResponse2m}, "
-            . "paramResponse2={$proxy->paramResponse2}, clientid={$proxy->clientId}", 2);
-
         $authDBHandler->authSupportRemoveOutdatedChallenges();
-//        $uid = $authHandler->authSupportGetUserIdFromUsername($proxy->signedUser);
-        Logger::getInstance()->setDebugMessage("[prepareCheckAuthentication] uid={$uid}", 2);
         if (is_null($uid) || $uid <= 0) {
             return false;
         }
         if ($dbSettings->getIsSAML() && !$authHandler->authSupportIsWithinSAMLLimit($uid)) {
             return false;
         }
+
+        $falseHash = hash("sha256", uniqid("", true)); // for failing auth.
+        $proxy->paramResponse ??= $falseHash;
+        $proxy->paramResponse2m ??= $falseHash;
+        $proxy->paramResponse2 ??= $falseHash;
+        Logger::getInstance()->setDebugMessage("[prepareCheckAuthentication] user={$proxy->signedUser},  uid={$uid},"
+            . "paramResponse={$proxy->paramResponse}, paramResponse2m={$proxy->paramResponse2m}, "
+            . "paramResponse2={$proxy->paramResponse2}, clientid={$proxy->clientId}", 2);
 
         $this->storedChallenge = $authDBHandler->authSupportRetrieveChallenge(
             $uid, $proxy->clientId, true, "#");
