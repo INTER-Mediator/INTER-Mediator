@@ -24,7 +24,7 @@
     "mouf/nodejs-installer": "*",
     "paragonie/constant_time_encoding": "*",
     "inter-mediator/fxphp": "*",
-    "inter-mediator/fmdataapi": "*",
+    "inter-mediator/fmdataapi": "31",
     "tecnickcom/tcpdf": "*",
     "setasign/fpdi": "*",
     "smalot/pdfparser": "*",
