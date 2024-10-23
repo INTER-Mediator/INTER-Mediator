@@ -36,11 +36,7 @@ abstract class DB_Proxy_Test_Common extends TestCase
     function test___construct()
     {
         $this->dbProxySetupForAuthAccess("person", 1);
-        if (function_exists('xdebug_get_headers') && false) {
-            /*
-             * 2024-10-23 msyk: xdebug_get_headers function doesn't work in GitHub actions.
-             * So the process of checking header is temporally detouring. These tests are passed on locally.
-             */
+        if (function_exists('xdebug_get_headers')) {
             ob_start();
             $this->db_proxy->__construct();
             $headers = xdebug_get_headers();
