@@ -74,10 +74,6 @@ class GenerateJSCode_Test extends TestCase
     function test___construct()
     {
         if (function_exists('xdebug_get_headers') && false) {
-            /*
-             * 2024-10-23 msyk: xdebug_get_headers function doesn't work in GitHub actions.
-             * So the process of checking header is temporally detouring. These tests are passed on locally.
-             */
             ob_start();
             $this->generater->__construct();
             $headers = xdebug_get_headers();
