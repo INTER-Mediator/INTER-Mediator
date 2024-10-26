@@ -10,6 +10,10 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
+Ver.14 (in Development)
+- From this version, minimum supporting PHP version is 8.1.
+- GitHub Action php-legacy.yml was deleted. Also the INTER-Mediator-UnitTest_Legacy the unit test with PHP 7 was removed.
+
 Ver.13 (October 26, 2024)
 - In the INTERMediator_DBAdapter, Codes using XMLHttpRequest are replaced with fetch function.
 - Variable $extraButtons in the params.php file adds buttons on the authentication panel. The value has to be associated
