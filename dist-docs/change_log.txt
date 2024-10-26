@@ -10,7 +10,7 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.13 (In Development)
+Ver.13 (October 26, 2024)
 - In the INTERMediator_DBAdapter, Codes using XMLHttpRequest are replaced with fetch function.
 - Variable $extraButtons in the params.php file adds buttons on the authentication panel. The value has to be associated
   array, and the key is button name and the value is moving URL. It assumes that the OAuth button to authenticating.

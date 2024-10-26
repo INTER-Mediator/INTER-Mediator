@@ -49,6 +49,7 @@ jobs:
           php-version: ${{ matrix.php-versions }}
           extensions: intl #optional
           ini-values: "post_max_size=256M" #optional
+          coverage: xdebug
       - name: Print Env Varialbles
         run: printenv
       - name: PHP Module Checking
