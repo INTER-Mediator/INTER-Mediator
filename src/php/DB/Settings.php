@@ -493,16 +493,23 @@ class Settings
      */
     public function setSmtpConfiguration(?array $config): void
     {
-        if(is_null($config)) {
+        if (is_null($config)) {
             $this->smtpConfiguration = null;
             return;
         }
-        $this->smtpConfiguration = [
-            "server" => $config["server"],
-            "port" => $config["port"],
-            "username" => IMUtil::getFromProfileIfAvailable($config["username"]),
-            "password" => IMUtil::getFromProfileIfAvailable($config["password"]),
-        ];
+        $this->smtpConfiguration = [];
+        if (isset($config["server"])) {
+            $this->smtpConfiguration["server"] = $config["server"];
+        }
+        if (isset($config["port"])) {
+            $this->smtpConfiguration["port"] = $config["port"];
+        }
+        if (isset($config["username"])) {
+            $this->smtpConfiguration["username"] = IMUtil::getFromProfileIfAvailable($config["username"]);
+        }
+        if (isset($config["password"])) {
+            $this->smtpConfiguration["password"] = IMUtil::getFromProfileIfAvailable($config["password"]);
+        }
     }
 
     /**
