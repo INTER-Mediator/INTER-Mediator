@@ -493,6 +493,10 @@ class Settings
      */
     public function setSmtpConfiguration(?array $config): void
     {
+        if(is_null($config)) {
+            $this->smtpConfiguration = null;
+            return;
+        }
         $this->smtpConfiguration = [
             "server" => $config["server"],
             "port" => $config["port"],

@@ -1,4 +1,8 @@
-<phpunit>
+<phunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
+        displayDetailsOnTestsThatTriggerWarnings="true"
+        colors="true">
     <testsuites>
         <testsuite name="core">
             <directory>Core</directory>
@@ -31,4 +35,4 @@
             <directory>Editors</directory>
         </testsuite>
     </testsuites>
-</phpunit>
+</phunit>
