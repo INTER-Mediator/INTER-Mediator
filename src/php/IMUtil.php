@@ -243,7 +243,7 @@ class IMUtil
      * @param $str
      * @return array|string
      */
-    public static function removeNull($str):array|string
+    public static function removeNull($str): array|string
     {
         return str_replace("\x00", '', $str ?? "");
     }
@@ -846,8 +846,15 @@ class IMUtil
         return true;
     }
 
-    public static function getFromProfileIfAvailable(string $str): string
+    /**
+     * @param string|null $str
+     * @return string|null
+     */
+    public static function getFromProfileIfAvailable(?string $str): string|null
     {
+        if (is_null($str)) {
+            return null;
+        }
         $comp = array_map(function ($elm) {
             return strtolower(trim($elm));
         }, explode('|', $str));

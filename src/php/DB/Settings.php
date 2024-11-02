@@ -915,7 +915,7 @@ class Settings
      * @param string|null $key
      * @return float|int|mixed|string|null
      */
-    public function getAuthenticationItem(?string $key) :mixed
+    public function getAuthenticationItem(?string $key): mixed
     {
         if (isset($this->authentication[$key])) {
             return $this->authentication[$key];

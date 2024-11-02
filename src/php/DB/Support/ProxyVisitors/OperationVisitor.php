@@ -5,7 +5,6 @@ namespace INTERMediator\DB\Support\ProxyVisitors;
 use Exception;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\Proxy;
-use INTERMediator\DB\Support\ProxyElements\CheckAuthenticationElement;
 use INTERMediator\DB\Support\ProxyElements\OperationElement;
 use INTERMediator\FileUploader;
 use INTERMediator\IMUtil;
@@ -346,8 +345,7 @@ abstract class OperationVisitor
     /**
      * @return void
      */
-    protected
-    function defaultHandleChallenge()
+    protected function defaultHandleChallenge(): void
     {
         $proxy = $this->proxy;
         Logger::getInstance()->setDebugMessage("[handleChallenge] access={$proxy->access}, succeed={$proxy->authSucceed}", 2);

@@ -57,7 +57,7 @@ class Params
     }
 
     /**
-     * @param mixed $vName
+     * @param string|array $vName
      * @param mixed $defValue
      * @return mixed
      */
