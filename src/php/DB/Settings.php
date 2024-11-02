@@ -255,9 +255,9 @@ class Settings
 
     /**
      * @param string $cName
-     * @return string
+     * @return void
      */
-    public function setParentOfTarget(string $cName): string
+    public function setParentOfTarget(string $cName): void
     {
         $this->parentOfTarget = $cName;
     }
