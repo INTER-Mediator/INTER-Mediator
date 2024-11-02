@@ -20,6 +20,13 @@ $dbClass = 'PDO';
 // Common settings for FileMaker_FX and PDO:
 $dbUser = 'web';
 $dbPassword = 'password';
+//$dbPassword = 'Profile|IM|test_db|db_password';
+/*
+For using profile to hide the password, the file '~/.im/credentials' has the contents like this:
+-----------------------
+[test_db]
+db_password = password
+*/
 
 // FileMaker_FX/DataAPI are aware of below:
 $dbServer = '10.211.56.2'; //'127.0.0.1'; //
