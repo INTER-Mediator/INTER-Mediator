@@ -16,6 +16,7 @@
 namespace INTERMediator\DB;
 
 use Exception;
+use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
 /**

@@ -35,9 +35,9 @@ class IMUtil
         $currentDT = new DateTime();
         try {
             if ($subSeconds >= 0) {
-                $currentDT->sub(new DateInterval("PT" . intval($subSeconds) . "S"));
+                $currentDT->sub(new DateInterval("PT" . $subSeconds . "S"));
             } else {
-                $currentDT->add(new DateInterval("PT" . -intval($subSeconds) . "S"));
+                $currentDT->add(new DateInterval("PT" . -$subSeconds . "S"));
             }
         } catch (Exception $e) {
         }
@@ -53,9 +53,9 @@ class IMUtil
         $currentDT = new DateTime();
         try {
             if ($subSeconds >= 0) {
-                $currentDT->sub(new DateInterval("PT" . intval($subSeconds) . "S"));
+                $currentDT->sub(new DateInterval("PT" . $subSeconds . "S"));
             } else {
-                $currentDT->add(new DateInterval("PT" . -intval($subSeconds) . "S"));
+                $currentDT->add(new DateInterval("PT" . -$subSeconds . "S"));
             }
         } catch (Exception $e) {
         }
@@ -79,9 +79,9 @@ class IMUtil
 
     /**
      * @param string $verStr
-     * @return float|int
+     * @return int|float
      */
-    public static function phpVersion(string $verStr = '')
+    public static function phpVersion(string $verStr = ''): int|float
     {
         $vString = explode('.', $verStr == '' ? phpversion() : $verStr);
         $vNum = 0;
@@ -241,9 +241,9 @@ class IMUtil
 
     /**
      * @param $str
-     * @return array|string|string[]
+     * @return array|string
      */
-    public static function removeNull($str)
+    public static function removeNull($str):array|string
     {
         return str_replace("\x00", '', $str ?? "");
     }
@@ -271,7 +271,7 @@ class IMUtil
                         $messageClass = new $messageClass();
                         break;
                     } catch (Exception $ex) {
-                        $messageClass = null;
+
                     }
                 }
                 $messageClass = null;
@@ -549,7 +549,7 @@ class IMUtil
             $items[] = is_array($value) ? IMUtil::arrayToJSExcluding($value, $key, $exarray)
                 : IMUtil::stringToJSExcluding($value, $key, $exarray);
         }
-        $currentKey = (string)$prefix;
+        $currentKey = $prefix;
         foreach ($items as $item) {
             if (!in_array($currentKey, $exarray) && $item != '') {
                 if ($returnStr == '') {
@@ -576,7 +576,7 @@ class IMUtil
     public static function stringToJSExcluding(string $ar, string $prefix, ?array $exarray): string
     {
         $returnStr = '';
-        $currentKey = (string)$prefix;
+        $currentKey = $prefix;
         if ($currentKey == '') {
             $returnStr = "'" . IMUtil::valueForJSInsert($ar) . "'";
         } else if (!in_array($currentKey, $exarray)) {
@@ -596,7 +596,7 @@ class IMUtil
             try {
                 $code = random_int(0, 9);
             } catch (Exception $ex) {
-                $code = intval(rand(0, 10));
+                $code = rand(0, 10);
             }
             $resultStr .= $code;
         }
@@ -772,7 +772,7 @@ class IMUtil
         if (strlen($dir) > strlen($checkPath)) { // Apparently outside $dir.
             return false;
         }
-        if (substr($checkPath, 0, strlen($dir)) == $dir) {
+        if (str_starts_with($checkPath, $dir)) {
             return true;
         }
         return false;
