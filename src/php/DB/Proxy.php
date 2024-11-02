@@ -812,10 +812,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $context['server'] ?? ($dbSpec['server'] ?? Params::getParameterValue('dbServer', '')));
         $this->dbSettings->setDbSpecPort(
             $context['port'] ?? ($dbSpec['port'] ?? Params::getParameterValue('dbPort', '')));
-        $this->dbSettings->setDbSpecUser(
-            $context['user'] ?? ($dbSpec['user'] ?? Params::getParameterValue('dbUser', '')));
-        $this->dbSettings->setDbSpecPassword(
-            $context['password'] ?? ($dbSpec['password'] ?? Params::getParameterValue('dbPassword', '')));
+        $this->dbSettings->setDbSpecUser(IMUtil::getFromProfileIfAvailable(
+        $context['user'] ?? ($dbSpec['user'] ?? Params::getParameterValue('dbUser', ''))));
+        $this->dbSettings->setDbSpecPassword(IMUtil::getFromProfileIfAvailable(
+            $context['password'] ?? ($dbSpec['password'] ?? Params::getParameterValue('dbPassword', ''))));
         $this->dbSettings->setDbSpecDataType(
             $context['datatype'] ?? ($dbSpec['datatype'] ?? Params::getParameterValue('dbDataType', '')));
         $this->dbSettings->setDbSpecDatabase(

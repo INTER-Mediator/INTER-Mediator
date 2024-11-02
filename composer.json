@@ -21,6 +21,7 @@
     "ext-exif": "*",
     "ext-gd": "*",
     "ext-intl": "*",
+    "ext-posix": "*",
     "mouf/nodejs-installer": "*",
     "paragonie/constant_time_encoding": "*",
     "inter-mediator/fxphp": "*",

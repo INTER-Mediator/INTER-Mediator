@@ -72,7 +72,12 @@ $dbOption = array();
 
 /* Security
  * ===================
- * Please change the value of $webServerName. FQDN or domain name of your web server for protecting CSRF
+ * For putting the sensitive information to outside of repository, Profile is one of the solution.
+ * You can specify the path to arbitrary place to store the profile file.
+ */
+//$profileRoot = "path to profile's root directory.";
+
+/* Please change the value of $webServerName. FQDN or domain name of your web server for protecting CSRF
  * Example:
  *  $webServerName = array('www.inter-mediator.com');
  *  $webServerName = array('inter-mediator.com', 'example.jp');
@@ -209,7 +214,7 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 //        . "nonce=0394852-3190485-2490358&"
 //        . "hd=gmail.com",
 //];
-https://https://accounts.google.com/o/oauth2/v2/auth?state=invalid-state&scope=openid&response_type=code&redirect_uri=https://demo.inter-mediator.com/saml-trial/lib/src/INTER-Mediator/vendor/simplesamlphp/simplesamlphp/public/module.php/authoauth2/linkback.php&client_id=353910848422-e08dmcn6s8pc43a94d22s5510b8mnrqj.apps.googleusercontent.com
+// https://https://accounts.google.com/o/oauth2/v2/auth?state=invalid-state&scope=openid&response_type=code&redirect_uri=https://demo.inter-mediator.com/saml-trial/lib/src/INTER-Mediator/vendor/simplesamlphp/simplesamlphp/public/module.php/authoauth2/linkback.php&client_id=353910848422-e08dmcn6s8pc43a94d22s5510b8mnrqj.apps.googleusercontent.com
 
 /* User Enrollment */
 $limitEnrollSecond = 3600;

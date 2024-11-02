@@ -41,8 +41,12 @@ class OAuthAuth
 
     public function __construct()
     {
-        [$this->clientId, $this->clientSecret, $this->redirectURL, $this->provider]
-            = Params::getParameterValue(["oAuthClientID", "oAuthClientSecret", "oAuthRedirect", "oAuthProvider"], false);
+        $this->clientId = IMUtil::getFromProfileIfAvailable(
+            Params::getParameterValue("oAuthClientID", false));
+        $this->clientSecret = IMUtil::getFromProfileIfAvailable(
+            Params::getParameterValue("oAuthClientSecret", false));
+        $this->redirectURL = Params::getParameterValue("oAuthRedirect", false);
+        $this->provider = Params::getParameterValue("oAuthProvider", false);
         switch (strtolower($this->provider ?? "")) {
             case "google":
                 $this->baseURL = 'https://accounts.google.com/o/oauth2/auth';

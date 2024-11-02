@@ -845,4 +845,68 @@ class IMUtil
         }
         return true;
     }
+
+    public static function getFromProfileIfAvailable(string $str): string
+    {
+        $comp = array_map(function ($elm) {
+            return strtolower(trim($elm));
+        }, explode('|', $str));
+        if (count($comp) <= 3 || $comp[0] !== "profile") { // It's not profile description.
+            return $str;
+        }
+        $category = $comp[1];
+        $section = $comp[2];
+        $key = $comp[3];
+
+        $profileRoot = Params::getParameterValue("profileRoot", null);
+        $home = posix_getpwnam(get_current_user())["dir"];
+        $path = [$profileRoot, $home];
+        $suffix = "credentials";
+        if ($category === "aws") {
+            $suffix = "/.aws/{$suffix}";
+        } else if ($category === "im") {
+            $suffix = "/.im/{$suffix}";
+        }
+        $targetFile = "";
+        foreach ($path as $pathItem) {
+            if (!is_null($pathItem)) {
+                $candidatePath = "{$pathItem}{$suffix}";
+                if (file_exists($candidatePath)) {
+                    $targetFile = $candidatePath;
+                    break;
+                }
+            }
+        }
+        if ($targetFile === "") {
+            return $str;
+        }
+        $fileContents = array_map(function ($elm) {
+            return strtolower(trim($elm));
+        }, explode("\n", str_replace("\r", "\n", file_get_contents($targetFile))));
+        $targetValue = "";
+        $sectionCandidate = "[{$section}]";
+        $inTargetSection = false;
+        foreach ($fileContents as $line) {
+            if (preg_match("/^\[.+]$/", $line)) {
+                $inTargetSection = false;
+            }
+            if ($line === $sectionCandidate) {
+                $inTargetSection = true;
+            } else if ($inTargetSection) {
+                $lineComps = array_values(array_filter(array_map(function ($elm) {
+                    return strtolower(trim($elm));
+                }, explode(" ", str_replace("\t", " ", $line))), function ($elm) {
+                    return strlen($elm) > 0;
+                }));
+                if (count($lineComps) == 3 && $lineComps[0] === $key && $lineComps[1] === "=") {
+                    $targetValue = $lineComps[2];
+                    break;
+                }
+            }
+        }
+        if ($targetValue === "") {
+            return $str;
+        }
+        return $targetValue;
+    }
 }

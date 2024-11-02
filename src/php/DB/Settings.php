@@ -492,7 +492,12 @@ class Settings
      */
     public function setSmtpConfiguration(?array $config): void
     {
-        $this->smtpConfiguration = $config;
+        $this->smtpConfiguration = [
+            "server" => $config["server"],
+            "port" => $config["port"],
+            "username" => IMUtil::getFromProfileIfAvailable($config["username"]),
+            "password" => IMUtil::getFromProfileIfAvailable($config["password"]),
+        ];
     }
 
     /**

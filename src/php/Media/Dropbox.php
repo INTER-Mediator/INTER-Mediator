@@ -58,8 +58,10 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
      */
     public function __construct()
     {
-        $this->appKey = Params::getParameterValue('dropboxAppKey', '');
-        $this->appSecret = Params::getParameterValue('dropboxAppSecret', '');
+        $this->appKey = IMUtil::getFromProfileIfAvailable(
+            Params::getParameterValue('dropboxAppKey', ''));
+        $this->appSecret = IMUtil::getFromProfileIfAvailable(
+            Params::getParameterValue('dropboxAppSecret', ''));
         $this->refreshToken = Params::getParameterValue('dropboxRefreshToken', '');
         $this->accessTokenPath = Params::getParameterValue('dropboxAccessTokenPath', '');
         $this->rootInDropbox = Params::getParameterValue('rootInDropbox', '/');

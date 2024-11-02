@@ -317,4 +317,61 @@ class IMUtil_Test extends TestCase
         $this->assertNotNull($home, "IMUtil::getServerUserHome has to return any strings.");
     }
 
+    public function test_Profile() {
+        $tempDir = sys_get_temp_dir();
+        Params::setVar("profileRoot", $tempDir);
+        $profileRoot = Params::getParameterValue("profileRoot", null);
+        $this->assertEquals($profileRoot, $tempDir);
+
+        $fileContent = [
+            "[Tochigi]",
+            "aaaa = bbbb",
+            "",
+            "[Gunma]",
+            "aaaaa",
+            "",
+            "[Ibaragi]",
+            "mysecret = 1234",
+            "your-secret = 9876",
+            "big_city        = \t 1919",
+            "noone-knows = 4567",  "",  "",
+        ];
+        mkdir("$tempDir/.im");
+        mkdir("$tempDir/.aws");
+        file_put_contents("$tempDir/.im/credentials", implode("\n", $fileContent));
+        file_put_contents("$tempDir/.aws/credentials", implode("\n", $fileContent));
+
+        $profDesc = "Profile|AWS|Ibaragi|mysecret";
+        $this->assertEquals("1234", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|AWS|Ibarakii|mysecret";
+        $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "PROFILE|AWS|IBARAGI|MYSECRET";
+        $this->assertEquals("1234", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Ibaragi|noone-knows";
+        $this->assertEquals("4567", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Ibaragi|big_city";
+        $this->assertEquals("1919", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Gunma|noone-knows";
+        $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Tokyo|noone-knows";
+        $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|im|ibaragi|mysecret";
+        $this->assertEquals("1234", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|im|ibaraki|mysecret";
+        $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "PROFILE|IM|IBARAGI|MYSECRET";
+        $this->assertEquals("1234", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|im|Ibaragi|noone-knows";
+        $this->assertEquals("4567", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|im|Ibaragi|big_city";
+        $this->assertEquals("1919", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|im|Gunma|noone-knows";
+        $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|im|Tokyo|noone-knows";
+        $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "mysecretpassword";
+        $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "dfas3j5fd#'ajds*;dkalj";
+        $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
+    }
 }

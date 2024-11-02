@@ -50,8 +50,8 @@ describe "INTER-Mediator-Server VM" do
     @driver.manage.timeouts.page_load = 10
   end
 
-  it "The title of the first page should be 'INTER-Mediator 13 - VM for Trial'." do
-    expect(@driver.title).to eq("INTER-Mediator 13 - VM for Trial")
+  it "The title of the first page should be 'INTER-Mediator 14 - VM for Trial'." do
+    expect(@driver.title).to eq("INTER-Mediator 14 - VM for Trial")
   end
 
   it "Page File Editor should be working" do
