@@ -72,8 +72,8 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
         $this->rootBucket = Params::getParameterValue("rootBucket", null);
         $this->applyingACL = Params::getParameterValue("applyingACL", null);
         $this->s3AccessProfile = Params::getParameterValue("s3AccessProfile", null);
-        $this->s3AccessKey = Params::getParameterValue("s3AccessKey", null);
-        $this->s3AccessSecret = Params::getParameterValue("s3AccessSecret", null);
+        $this->s3AccessKey = IMUtil::getFromProfileIfAvailable(Params::getParameterValue("s3AccessKey", null));
+        $this->s3AccessSecret = IMUtil::getFromProfileIfAvailable(Params::getParameterValue("s3AccessSecret", null));
         $this->s3urlCustomize = Params::getParameterValue("s3urlCustomize", true);
         $this->isSuppliedSecret = $this->s3AccessKey && $this->s3AccessSecret;
     }

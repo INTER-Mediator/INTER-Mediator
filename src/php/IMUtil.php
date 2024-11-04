@@ -35,9 +35,9 @@ class IMUtil
         $currentDT = new DateTime();
         try {
             if ($subSeconds >= 0) {
-                $currentDT->sub(new DateInterval("PT" . intval($subSeconds) . "S"));
+                $currentDT->sub(new DateInterval("PT" . $subSeconds . "S"));
             } else {
-                $currentDT->add(new DateInterval("PT" . -intval($subSeconds) . "S"));
+                $currentDT->add(new DateInterval("PT" . -$subSeconds . "S"));
             }
         } catch (Exception $e) {
         }
@@ -53,9 +53,9 @@ class IMUtil
         $currentDT = new DateTime();
         try {
             if ($subSeconds >= 0) {
-                $currentDT->sub(new DateInterval("PT" . intval($subSeconds) . "S"));
+                $currentDT->sub(new DateInterval("PT" . $subSeconds . "S"));
             } else {
-                $currentDT->add(new DateInterval("PT" . -intval($subSeconds) . "S"));
+                $currentDT->add(new DateInterval("PT" . -$subSeconds . "S"));
             }
         } catch (Exception $e) {
         }
@@ -79,9 +79,9 @@ class IMUtil
 
     /**
      * @param string $verStr
-     * @return float|int
+     * @return int|float
      */
-    public static function phpVersion(string $verStr = '')
+    public static function phpVersion(string $verStr = ''): int|float
     {
         $vString = explode('.', $verStr == '' ? phpversion() : $verStr);
         $vNum = 0;
@@ -241,9 +241,9 @@ class IMUtil
 
     /**
      * @param $str
-     * @return array|string|string[]
+     * @return array|string
      */
-    public static function removeNull($str)
+    public static function removeNull($str): array|string
     {
         return str_replace("\x00", '', $str ?? "");
     }
@@ -271,7 +271,7 @@ class IMUtil
                         $messageClass = new $messageClass();
                         break;
                     } catch (Exception $ex) {
-                        $messageClass = null;
+
                     }
                 }
                 $messageClass = null;
@@ -549,7 +549,7 @@ class IMUtil
             $items[] = is_array($value) ? IMUtil::arrayToJSExcluding($value, $key, $exarray)
                 : IMUtil::stringToJSExcluding($value, $key, $exarray);
         }
-        $currentKey = (string)$prefix;
+        $currentKey = $prefix;
         foreach ($items as $item) {
             if (!in_array($currentKey, $exarray) && $item != '') {
                 if ($returnStr == '') {
@@ -576,7 +576,7 @@ class IMUtil
     public static function stringToJSExcluding(string $ar, string $prefix, ?array $exarray): string
     {
         $returnStr = '';
-        $currentKey = (string)$prefix;
+        $currentKey = $prefix;
         if ($currentKey == '') {
             $returnStr = "'" . IMUtil::valueForJSInsert($ar) . "'";
         } else if (!in_array($currentKey, $exarray)) {
@@ -596,7 +596,7 @@ class IMUtil
             try {
                 $code = random_int(0, 9);
             } catch (Exception $ex) {
-                $code = intval(rand(0, 10));
+                $code = rand(0, 10);
             }
             $resultStr .= $code;
         }
@@ -772,7 +772,7 @@ class IMUtil
         if (strlen($dir) > strlen($checkPath)) { // Apparently outside $dir.
             return false;
         }
-        if (substr($checkPath, 0, strlen($dir)) == $dir) {
+        if (str_starts_with($checkPath, $dir)) {
             return true;
         }
         return false;
@@ -844,5 +844,76 @@ class IMUtil
             return false;
         }
         return true;
+    }
+
+    /**
+     * @param string|null $str
+     * @return string|null
+     */
+    public static function getFromProfileIfAvailable(?string $str): string|null
+    {
+        if (is_null($str)) {
+            return null;
+        }
+        $comp = array_map(function ($elm) {
+            return strtolower(trim($elm));
+        }, explode('|', $str));
+        if (count($comp) <= 3 || $comp[0] !== "profile") { // It's not profile description.
+            return $str;
+        }
+        $category = $comp[1];
+        $section = $comp[2];
+        $key = $comp[3];
+
+        $profileRoot = Params::getParameterValue("profileRoot", null);
+        $home = posix_getpwnam(get_current_user())["dir"];
+        $path = [$profileRoot, $home];
+        $suffix = "credentials";
+        if ($category === "aws") {
+            $suffix = "/.aws/{$suffix}";
+        } else if ($category === "im") {
+            $suffix = "/.im/{$suffix}";
+        }
+        $targetFile = "";
+        foreach ($path as $pathItem) {
+            if (!is_null($pathItem)) {
+                $candidatePath = "{$pathItem}{$suffix}";
+                if (file_exists($candidatePath)) {
+                    $targetFile = $candidatePath;
+                    break;
+                }
+            }
+        }
+        if ($targetFile === "") {
+            return $str;
+        }
+        $fileContents = array_map(function ($elm) {
+            return strtolower(trim($elm));
+        }, explode("\n", str_replace("\r", "\n", file_get_contents($targetFile))));
+        $targetValue = "";
+        $sectionCandidate = "[{$section}]";
+        $inTargetSection = false;
+        foreach ($fileContents as $line) {
+            if (preg_match("/^\[.+]$/", $line)) {
+                $inTargetSection = false;
+            }
+            if ($line === $sectionCandidate) {
+                $inTargetSection = true;
+            } else if ($inTargetSection) {
+                $lineComps = array_values(array_filter(array_map(function ($elm) {
+                    return strtolower(trim($elm));
+                }, explode(" ", str_replace("\t", " ", $line))), function ($elm) {
+                    return strlen($elm) > 0;
+                }));
+                if (count($lineComps) == 3 && $lineComps[0] === $key && $lineComps[1] === "=") {
+                    $targetValue = $lineComps[2];
+                    break;
+                }
+            }
+        }
+        if ($targetValue === "") {
+            return $str;
+        }
+        return $targetValue;
     }
 }

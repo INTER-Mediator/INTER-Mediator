@@ -20,6 +20,13 @@ $dbClass = 'PDO';
 // Common settings for FileMaker_FX and PDO:
 $dbUser = 'web';
 $dbPassword = 'password';
+//$dbPassword = 'Profile|IM|test_db|db_password';
+/*
+For using profile to hide the password, the file '~/.im/credentials' has the contents like this:
+-----------------------
+[test_db]
+db_password = password
+*/
 
 // FileMaker_FX/DataAPI are aware of below:
 $dbServer = '10.211.56.2'; //'127.0.0.1'; //
@@ -36,7 +43,7 @@ $dbOption = array();
 /* Schema Automatic Generating
  * ===================
  */
-// In case of MySQL, the following account is convenient for generating schema.
+// In the case of MySQL, the following account is convenient for generating schema.
 //$dbUser = 'root';
 //$dbPassword = '';
 //$dbDSN = 'mysql:host=127.0.0.1;dbname=test_db2;charset=utf8mb4';
@@ -72,7 +79,12 @@ $dbOption = array();
 
 /* Security
  * ===================
- * Please change the value of $webServerName. FQDN or domain name of your web server for protecting CSRF
+ * For putting the sensitive information to outside of repository, Profile is one of the solutions.
+ * You can specify the path to arbitrary place to store the profile file.
+ */
+//$profileRoot = "path to profile's root directory.";
+
+/* Please change the value of $webServerName. FQDN or domain name of your web server for protecting CSRF
  * Example:
  *  $webServerName = array('www.inter-mediator.com');
  *  $webServerName = array('inter-mediator.com', 'example.jp');
@@ -164,12 +176,12 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 //$authPanelExp= "温泉に行こう";  // Auth Panel's explanations
 //$authPanelExp2FA= null;   // 2FA Auth Panel's explanations
 
-// The 'issuedhash' table for storing challenges of authentication can be use another database.
+// The 'issuedhash' table for storing challenges of authentication can be using another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
 
 //$emailAsAliasOfUserName = true;
 //$passwordPolicy = "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName";
-//$defaultGroupName = "users"; // For the user who doesn't belong to any group, this group automatically attach to such a user
+//$defaultGroupName = "users"; // For the user who doesn't belong to any group, this group automatically attaches to such a user
 
 // An enrollment page and a password reset page are going to show on login panel.
 //$resetPage = '...url...';
@@ -186,7 +198,7 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 // $oAuthRedirect = 'http://localhost:7001/Auth_Support/OAuthCatcher.php';
 
 /* SAML Support
-   Information about setting up an SAML Service Provider exists in the samples/saml-config directory. */
+   Information about setting up a SAML Service Provider exists in the samples/saml-config directory. */
 //$isSAML = true; # The default value of isSAML is false.
 //$samlAuthSource = 'default-sp';
 //$samlExpiringSeconds = 1800;
@@ -209,7 +221,7 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 //        . "nonce=0394852-3190485-2490358&"
 //        . "hd=gmail.com",
 //];
-https://https://accounts.google.com/o/oauth2/v2/auth?state=invalid-state&scope=openid&response_type=code&redirect_uri=https://demo.inter-mediator.com/saml-trial/lib/src/INTER-Mediator/vendor/simplesamlphp/simplesamlphp/public/module.php/authoauth2/linkback.php&client_id=353910848422-e08dmcn6s8pc43a94d22s5510b8mnrqj.apps.googleusercontent.com
+// https://https://accounts.google.com/o/oauth2/v2/auth?state=invalid-state&scope=openid&response_type=code&redirect_uri=https://demo.inter-mediator.com/saml-trial/lib/src/INTER-Mediator/vendor/simplesamlphp/simplesamlphp/public/module.php/authoauth2/linkback.php&client_id=353910848422-e08dmcn6s8pc43a94d22s5510b8mnrqj.apps.googleusercontent.com
 
 /* User Enrollment */
 $limitEnrollSecond = 3600;
@@ -221,7 +233,7 @@ $limitPwChangeSecond = 3600;
 $notUseServiceServer = true;  // Default is TRUE!. It has to set false to work every feature with Service Server.
 /*
 $activateClientService = true;  // Default is FLASE!.
-$serviceServerProtocol = "ws";  // The Service Server url components to connect from client.
+$serviceServerProtocol = "ws";  // The Service Server url components to connect from a client.
 $serviceServerHost = "localhost";    // "" for public ip address.
 $serviceServerPort = "11478";
 $serviceServerKey = "";  // Path of Key file for wss protocol **** wss protocol doesn't work so far.
@@ -231,7 +243,7 @@ $serviceServerConnect = "http://localhost"; // The Service Server host name to c
 $stopSSEveryQuit = false; // This doesn't work on Ver.12.
 $bootWithInstalledNode = false;
 $preventSSAutoBoot = false;
-$backSeconds = 3600 * 24 * 2; // The seconds value that detect the outdated registering records.
+$backSeconds = 3600 * 24 * 2; // The second value that detects the outdated registering records.
 $foreverLog = '/tmp/nodemon.log';
 */
 /* Operation Log
@@ -245,7 +257,7 @@ $dbDSNLog = $dbDSN;
 $dbUserLog = $dbUser;
 $dbPasswordLog = $dbPassword;
 $recordingContexts = null; // null: record all context, or an array of context names you want to record.
-$recordingOperations = null; // null: record all operation, or an array of operation names you want to record.
+$recordingOperations = null; // null: record all operations, or an array of operation names you want to record.
 $dontRecordTheme = false;
 $dontRecordChallenge = false;
 $dontRecordDownload = false;
@@ -268,7 +280,7 @@ $dontRecordDownloadNoGet = false; */
 //$s3AccessProfile = "default";
 //$s3AccessKey = "";
 //$s3AccessSecret = "";
-// Profile can push any credentials out of codes. The profile is prior than key/secret.
+// Profile can push any credentials out of codes. The profile is prior to key/secret.
 // https://docs.aws.amazon.com/ja_jp/sdk-for-php/v3/developer-guide/guide_credentials_profiles.html
 //$s3urlCustomize = true; // The default value is TRUE.
 // Replacing the string "https://" to "s3://" of the object url for working with the MediaAccess class.
@@ -280,11 +292,11 @@ $dontRecordDownloadNoGet = false; */
 //$dropboxRefreshToken= ''; // Refresh token generated by something
 // (ex. https://towardsdev.com/dropbox-api-short-lived-tokens-and-refresh-tokens-spring-java-application-fc7264dcdcbd)
 //$dropboxAccessTokenPath= '/tmp/dropbox-access-token.txt'; // Writable file path to store the access token
-//$rootInDropbox= '/'; // The prefix of the Dropbox path to store the file. The default is '/', but don't end with /.
+//$rootInDropbox= '/'; // The prefix of the Dropbox path to store the file. The default is '/', but doesn't end with /.
 
 /* Importing CSV file.
  * ===================
- The field names list can place on the first line of original csv file. */
+ The field names list can place on the first line of the original csv file. */
 //$import1stLine = 'num1 ,num2 ,num3 ,dt1 ,vc1 ,vc2 , vc3 ,text1 ,text2 ,'; // Field names list
 //$importSkipLines = 3; // Skipping lines from the start of csv file.
 //$importFormat = "TSV";  // or "TSV", the default is "CSV".
@@ -306,7 +318,7 @@ $dontRecordDownloadNoGet = false; */
 //$messages['default'][1022] = "We don't support Internet Explorer. We'd like you to access by Edge or any other major browsers.";
 //$messages['ja'][1022] = "Internet Explorerは使用できません。Edgeあるいは他の一般的なブラウザをご利用ください。";
 // These messages are for sample purpose, but they are used for unit tests. If you modify them, you have to care about the test code.
-// Following two lines are using on unit test.
+// The Following two lines are used on unit test.
 $messages['default'][9999] = "Changed";
 $messages['ja'][9999] = "変更した";
 
@@ -318,11 +330,11 @@ $messages['ja'][9999] = "変更した";
 
 /* Customizing Server Behavior
  * =================== */
-// Adding class loading path with an absolute path. Please don't terminate with /.
+// Adding a class loading path with an absolute path. Please don't terminate with /.
 //$loadFrom = '/Users/msyk/Code/INTER-Mediator/samples/Sample_forDebugging/ExtendingClasses';
 
 // If you don't set the default timezone in the php.ini file,
-//      activate the line below and specify suitable timezone name.
+//      activate the line below and specify a suitable timezone name.
 $defaultTimezone = 'Asia/Tokyo';
 $followingTimezones = true;
 
@@ -333,7 +345,7 @@ $appCurrency = "JP";    // Locale for currency has to be specified the country c
 /* Customize the path generation in uploading file
  *
  * The value "assjis" and "asucs4" are supported. This is not convert path string from key
- * field and value, but the string encoding is convert to sjis or ucs-4 and back to utf-8.
+ * field and value, but the string encoding is converted to sjis or ucs-4 and back to utf-8.
  * As the default, the string is going to be encoded with the urlencode function.
  */
 //$uploadFilePathMode = "";
@@ -350,15 +362,15 @@ $prohibitDebugMode = false;
 // is set before the result of DOCUMENT_ROOT.
 //$documentRootPrefix = "/usr/local/chroot";
 
-// in case of $_SERVER['SCRIPT_NAME'] didn't return the valid path.
+// in the case of $_SERVER['SCRIPT_NAME'] didn't return the valid path.
 // These are added before/after the path.
 //$scriptPathPrefix = "";
 //$scriptPathSuffix = "";
 
 // INTER-Mediator client should call the definition file to work fine.
-// Usually $_SERVER['SCRIPT_NAME'] is the url to request from client.
+// Usually $_SERVER['SCRIPT_NAME'] is the url to request from a client.
 // In case of using INTER-Mediator with other frameworks, you might specify any special URL to call.
-// So you can set the another url to the $callURL variables, and it can be replaced with $_SERVER['SCRIPT_NAME'].
+// So you can set another url to the $callURL variables, and it can be replaced with $_SERVER['SCRIPT_NAME'].
 //$callURL = "http://yourdomai/your/path/to/definition-file.php"
 
 /* Localizing

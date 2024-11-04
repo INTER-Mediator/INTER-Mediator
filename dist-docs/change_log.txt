@@ -10,6 +10,13 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
+Ver.14 (in Development)
+- From this version, minimum supporting PHP version is 8.1.
+- GitHub Action php-legacy.yml was deleted. Also the INTER-Mediator-UnitTest_Legacy the unit test with PHP 7 was removed.
+- Any sensitive information as like a password or a key can store on any place other than repository. The variable $profileRoot
+  of the params.php file specifies any path, and home directory are search path. For example, the ~/.im/credentials file
+  is a example of profile and you can refer the $dbPassword variable in the params.php file.
+
 Ver.13 (October 26, 2024)
 - In the INTERMediator_DBAdapter, Codes using XMLHttpRequest are replaced with fetch function.
 - Variable $extraButtons in the params.php file adds buttons on the authentication panel. The value has to be associated

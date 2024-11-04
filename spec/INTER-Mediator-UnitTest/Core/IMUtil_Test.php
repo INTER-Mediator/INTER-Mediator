@@ -125,37 +125,35 @@ class IMUtil_Test extends TestCase
 
     public function test_checkHost()
     {
-        if (((float)phpversion()) >= 5.3) {
-            $reflectionMethod = new ReflectionMethod('\INTERMediator\IMUtil', 'checkHost');
-            $reflectionMethod->setAccessible(true);
+        $reflectionMethod = new ReflectionMethod('\INTERMediator\IMUtil', 'checkHost');
+        $reflectionMethod->setAccessible(true);
 
-            $result = $reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', 'www.inter-mediator.com'));
-            $this->assertTrue($result);
+        $result = $reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', 'www.inter-mediator.com'));
+        $this->assertTrue($result);
 
-            $result = $reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', 'inter-mediator.com'));
-            $this->assertTrue($result);
+        $result = $reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', 'inter-mediator.com'));
+        $this->assertTrue($result);
 
-            $result = $reflectionMethod->invokeArgs($this->util, array('WWW.inter-mediator.com', 'inter-mediator.com'));
-            $this->assertTrue($result);
+        $result = $reflectionMethod->invokeArgs($this->util, array('WWW.inter-mediator.com', 'inter-mediator.com'));
+        $this->assertTrue($result);
 
-            $result = $reflectionMethod->invokeArgs($this->util, array('inter-mediator.com', 'inter-mediator.com'));
-            $this->assertTrue($result);
+        $result = $reflectionMethod->invokeArgs($this->util, array('inter-mediator.com', 'inter-mediator.com'));
+        $this->assertTrue($result);
 
-            $_SERVER = array();
-            $_SERVER['SERVER_ADDR'] = '192.168.56.101';
-            $result = $reflectionMethod->invokeArgs($this->util, array('192.168.56.101', $_SERVER['SERVER_ADDR']));
-            $this->assertTrue($result);
+        $_SERVER = array();
+        $_SERVER['SERVER_ADDR'] = '192.168.56.101';
+        $result = $reflectionMethod->invokeArgs($this->util, array('192.168.56.101', $_SERVER['SERVER_ADDR']));
+        $this->assertTrue($result);
 
-            $result = $reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', ''));
-            $this->assertFalse($result);
+        $result = $reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', ''));
+        $this->assertFalse($result);
 
-            $result = $reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', 'ww.inter-mediator.com'));
-            $this->assertFalse($result);
+        $result = $reflectionMethod->invokeArgs($this->util, array('www.inter-mediator.com', 'ww.inter-mediator.com'));
+        $this->assertFalse($result);
 
-            $_SERVER = array();
-            $result = $reflectionMethod->invokeArgs($this->util, array('192.168.56.101', '56.101'));
-            $this->assertFalse($result);
-        }
+        $_SERVER = array();
+        $result = $reflectionMethod->invokeArgs($this->util, array('192.168.56.101', '56.101'));
+        $this->assertFalse($result);
     }
 
     #[RunInSeparateProcess]
@@ -317,4 +315,66 @@ class IMUtil_Test extends TestCase
         $this->assertNotNull($home, "IMUtil::getServerUserHome has to return any strings.");
     }
 
+    public function test_Profile()
+    {
+        $tempDir = sys_get_temp_dir();
+        Params::setVar("profileRoot", $tempDir);
+        $profileRoot = Params::getParameterValue("profileRoot", null);
+        $this->assertEquals($profileRoot, $tempDir);
+
+        $fileContent = [
+            "[Tochigi]",
+            "aaaa = bbbb",
+            "",
+            "[Gunma]",
+            "aaaaa",
+            "",
+            "[Ibaragi]",
+            "mysecret = 1234",
+            "your-secret = 9876",
+            "big_city        = \t 1919",
+            "noone-knows = 4567", "", "",
+        ];
+        if (!file_exists("$tempDir/.im")) {
+            mkdir("$tempDir/.im");
+        }
+        if (!file_exists("$tempDir/.aws")) {
+            mkdir("$tempDir/.aws");
+        }
+        file_put_contents("$tempDir/.im/credentials", implode("\n", $fileContent));
+        file_put_contents("$tempDir/.aws/credentials", implode("\n", $fileContent));
+
+        $profDesc = "Profile|AWS|Ibaragi|mysecret";
+        $this->assertEquals("1234", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|AWS|Ibarakii|mysecret";
+        $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "PROFILE|AWS|IBARAGI|MYSECRET";
+        $this->assertEquals("1234", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Ibaragi|noone-knows";
+        $this->assertEquals("4567", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Ibaragi|big_city";
+        $this->assertEquals("1919", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Gunma|noone-knows";
+        $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Tokyo|noone-knows";
+        $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|im|ibaragi|mysecret";
+        $this->assertEquals("1234", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|im|ibaraki|mysecret";
+        $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "PROFILE|IM|IBARAGI|MYSECRET";
+        $this->assertEquals("1234", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|im|Ibaragi|noone-knows";
+        $this->assertEquals("4567", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|im|Ibaragi|big_city";
+        $this->assertEquals("1919", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|im|Gunma|noone-knows";
+        $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|im|Tokyo|noone-knows";
+        $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "mysecretpassword";
+        $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "dfas3j5fd#'ajds*;dkalj";
+        $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
+    }
 }

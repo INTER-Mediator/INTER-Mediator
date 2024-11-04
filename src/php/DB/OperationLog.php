@@ -16,6 +16,7 @@
 namespace INTERMediator\DB;
 
 use Exception;
+use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
 /**
@@ -84,8 +85,10 @@ class OperationLog
         $this->contextOptions = $options;
         $this->accessLogLevel = Params::getParameterValue("accessLogLevel", false);
         $this->dbClassLog = Params::getParameterValue("dbClassLog", null);
-        $this->dbUserLog = Params::getParameterValue("dbUserLog", null);
-        $this->dbPasswordLog = Params::getParameterValue("dbPasswordLog", null);
+        $this->dbUserLog = IMUtil::getFromProfileIfAvailable(
+            Params::getParameterValue("dbUserLog", null));
+        $this->dbPasswordLog = IMUtil::getFromProfileIfAvailable(
+            Params::getParameterValue("dbPasswordLog", null));
         $this->dbDSNLog = Params::getParameterValue("dbDSNLog", null);
         $this->recordingContexts = Params::getParameterValue("recordingContexts", null);
         $this->dontRecordTheme = Params::getParameterValue("dontRecordTheme", false);

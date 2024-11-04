@@ -89,7 +89,8 @@ class GenerateJSCode
         $scriptPathPrefix = Params::getParameterValue("scriptPathPrefix", null);
         $scriptPathSuffix = Params::getParameterValue("scriptPathSuffix", null);
         $oAuthProvider = Params::getParameterValue("oAuthProvider", null);
-        $oAuthClientID = Params::getParameterValue("oAuthClientID", null);
+        $oAuthClientID = IMUtil::getFromProfileIfAvailable(
+            Params::getParameterValue("oAuthClientID", null));
         $oAuthRedirect = Params::getParameterValue("oAuthRedirect", null);
         $passwordPolicy = Params::getParameterValue("passwordPolicy", null);
         $dbClass = Params::getParameterValue("dbClass", null);

@@ -16,6 +16,7 @@
 
 namespace INTERMediator\DB;
 
+use INTERMediator\IMUtil;
 use INTERMediator\NotifyServer;
 
 /**
@@ -256,7 +257,7 @@ class Settings
      * @param string $cName
      * @return void
      */
-    public function setParentOfTarget(string $cName)
+    public function setParentOfTarget(string $cName): void
     {
         $this->parentOfTarget = $cName;
     }
@@ -492,7 +493,23 @@ class Settings
      */
     public function setSmtpConfiguration(?array $config): void
     {
-        $this->smtpConfiguration = $config;
+        if (is_null($config)) {
+            $this->smtpConfiguration = null;
+            return;
+        }
+        $this->smtpConfiguration = [];
+        if (isset($config["server"])) {
+            $this->smtpConfiguration["server"] = $config["server"];
+        }
+        if (isset($config["port"])) {
+            $this->smtpConfiguration["port"] = $config["port"];
+        }
+        if (isset($config["username"])) {
+            $this->smtpConfiguration["username"] = IMUtil::getFromProfileIfAvailable($config["username"]);
+        }
+        if (isset($config["password"])) {
+            $this->smtpConfiguration["password"] = IMUtil::getFromProfileIfAvailable($config["password"]);
+        }
     }
 
     /**
@@ -518,9 +535,9 @@ class Settings
      */
     public function isExistContext(string $contextName): bool
     {
-        if (!$this->dataSourceName || !is_array($this->dataSourceName)) {
-            return false;
-        }
+//        if (!$this->dataSourceName || !is_array($this->dataSourceName)) {
+//            return false;
+//        }
         foreach ($this->dataSourceName as $contextDef) {
             if (isset($contextDef['name']) && $contextDef['name'] == $contextName) {
                 return true;
@@ -599,7 +616,7 @@ class Settings
     }
 
     /**
-     * @return array
+     * @return null|array
      */
     public function getForeignFieldAndValue(): ?array
     {
@@ -898,7 +915,7 @@ class Settings
     }
 
     /**
-     * @return array
+     * @return null|array
      */
     public function getAuthentication(): ?array
     {
@@ -909,26 +926,20 @@ class Settings
      * @param string|null $key
      * @return float|int|mixed|string|null
      */
-    public function getAuthenticationItem(?string $key)
+    public function getAuthenticationItem(?string $key): mixed
     {
         if (isset($this->authentication[$key])) {
             return $this->authentication[$key];
         }
-        switch ($key) {
-            case 'user-table':
-                return 'authuser';
-            case 'group-table':
-                return 'authgroup';
-            case 'corresponding-table':
-                return 'authcor';
-            case 'challenge-table':
-                return 'issuedhash';
-            case 'authexpired':
-                return 3600 * 8;
-            case 'storing':
-                return 'credential';
-        }
-        return null;
+        return match ($key) {
+            'user-table' => 'authuser',
+            'group-table' => 'authgroup',
+            'corresponding-table' => 'authcor',
+            'challenge-table' => 'issuedhash',
+            'authexpired' => 3600 * 8,
+            'storing' => 'credential',
+            default => null,
+        };
     }
 
     /**
