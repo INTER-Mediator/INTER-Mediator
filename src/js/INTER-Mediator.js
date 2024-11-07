@@ -63,7 +63,7 @@ const INTERMediator = {
    * @public
    * @type {object}
    */
-  navigationLabel: [null, null, null, null, null, null, null, null, false],
+  navigationLabel: [null, null, null, null, null, null, null, null, null, null, null],
   /**
    * Storing the id value of linked elements.
    * @private
@@ -601,7 +601,7 @@ const INTERMediator = {
       INTERMediator.elementIds = []
 
       // Restoring original HTML Document from backup data.
-      const bodyNode = document.getElementsByTagName('BODY')[0]
+      const bodyNode = await INTERMediator.insertHTMLParts(document.getElementsByTagName('BODY')[0])
       if (INTERMediator.rootEnclosure === null) {
         INTERMediator.rootEnclosure = bodyNode.innerHTML
       } else {
@@ -649,6 +649,25 @@ const INTERMediator = {
       }
     }
 
+    async function insertHTMLParts(rootNode) {
+      if (!INTERMediatorOnPage.including) {
+        return rootNode;
+      }
+      const attr = "data-im-include"
+      const jsProtocol = "javascript:"
+      const nodes = rootNode.querySelectorAll(`[${attr}]`)
+      for node in nodes {
+        const incAttr = node.getAttribute89(attr).trim()
+        if incAttr.indexOf(jsProtocol) === 0 {
+          const key = incAttr.substring(jsProtocol.length).trim()
+          const insertParts = INTERMediatorOnPage.includingParts[key]
+          node.innerHTML = insertParts
+        } else {
+          
+        }
+      }
+      return rootNode
+    }
     /** --------------------------------------------------------------------
      * Seeking nodes and if a node is an enclosure, proceed repeating.
      */
