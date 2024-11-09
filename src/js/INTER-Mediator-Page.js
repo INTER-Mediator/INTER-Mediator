@@ -104,7 +104,6 @@ let INTERMediatorOnPage = {
   isRequired2FA: false,
   authedUser: null,
   userNameJustASCII: true,
-  including: false,
   includingParts: [],
 
   get authCount() {
