@@ -358,11 +358,10 @@ $prohibitDebugMode = false;
 // YAML files can be stored in the path of the following variable.
 //$yamlDefFilePool = "/Users/msyk/Code/INTER-Mediator/samples/defpool";
 
-// The DOCUMENT_ROOT isn't full path on a rental server, this variable
-// is set before the result of DOCUMENT_ROOT.
+// The DOCUMENT_ROOT isn't full path on a rental server, this variable is set before the result of DOCUMENT_ROOT.
 //$documentRootPrefix = "/usr/local/chroot";
 
-// in the case of $_SERVER['SCRIPT_NAME'] didn't return the valid path.
+// In the case of $_SERVER['SCRIPT_NAME'] didn't return the valid path.
 // These are added before/after the path.
 //$scriptPathPrefix = "";
 //$scriptPathSuffix = "";

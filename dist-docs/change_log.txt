@@ -16,6 +16,9 @@ Ver.14 (in Development)
 - Any sensitive information as like a password or a key can store on any place other than repository. The variable $profileRoot
   of the params.php file specifies any path, and home directory are search path. For example, the ~/.im/credentials file
   is a example of profile and you can refer the $dbPassword variable in the params.php file.
+- HTML code can include in a HTML page. The "data-im-include" attribute of a page file inserts the html parts.
+  If the value of its attribute is "include:<keyword>", the INTERMediatorOnPage.includingParts[<keyword>] is going to
+  insert in the node. If the value is just a file name, it is going to insert the contents of the file.
 
 Ver.13 (October 26, 2024)
 - In the INTERMediator_DBAdapter, Codes using XMLHttpRequest are replaced with fetch function.

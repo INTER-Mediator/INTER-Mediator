@@ -104,6 +104,7 @@ let INTERMediatorOnPage = {
   isRequired2FA: false,
   authedUser: null,
   userNameJustASCII: true,
+  includingParts: [],
 
   get authCount() {
     this._authCount = IMLibLocalContext.getValue('_im_authcount')

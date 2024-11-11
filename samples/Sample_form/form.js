@@ -16,6 +16,7 @@ INTERMediatorOnPage.doBeforeConstruct = function () {
   INTERMediatorLog.errorMessageByAlert = true
   INTERMediatorLog.suppressDebugMessageOnPage = true
   // INTERMediatorOnPage.progressStartDelay = 0
+  INTERMediatorOnPage.includingParts["page_footer"] = "<small>INTER-Mediator ©2024</small>"
 }
 
 INTERMediatorOnPage.doAfterConstruct = function () {

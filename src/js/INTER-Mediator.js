@@ -26,14 +26,14 @@
 /**
  * @typedef {Object} IMType_VariablePropertiesClass
  * @property {string} __case_by_case__ The property name varies as case by case.
- * This means this object will have multiple properties, and their name don't fixed.
+ * This means this object will have multiple properties, and their name doesn't be fixed.
  * Each property has a value and should be described as the generic notation.
  * Anyway, this class is JavaScript's typical object.
  */
 
 /**
  * Web page generator main class. This class has just static methods and properties.
- * Usually you don't have to instantiate this class with new operator.
+ * Usually you don't have to instantiate this class with a new operator.
  * @constructor
  */
 const INTERMediator = {
@@ -63,7 +63,7 @@ const INTERMediator = {
    * @public
    * @type {object}
    */
-  navigationLabel: [null, null, null, null, null, null, null, null, false],
+  navigationLabel: [null, null, null, null, null, null, null, null, false, null, null],
   /**
    * Storing the id value of linked elements.
    * @private
@@ -591,7 +591,7 @@ const INTERMediator = {
     INTERMediatorLog.flushMessage() // Show messages
 
     /* --------------------------------------------------------------------
-     This function is called on case of below.
+     This function is called on a case of below.
 
      [1] INTERMediator.constructMain() or INTERMediator.constructMain(true)
      */
@@ -601,7 +601,7 @@ const INTERMediator = {
       INTERMediator.elementIds = []
 
       // Restoring original HTML Document from backup data.
-      const bodyNode = document.getElementsByTagName('BODY')[0]
+      const bodyNode = await insertHTMLParts(document.getElementsByTagName('BODY')[0])
       if (INTERMediator.rootEnclosure === null) {
         INTERMediator.rootEnclosure = bodyNode.innerHTML
       } else {
@@ -647,6 +647,40 @@ const INTERMediator = {
       if (INTERMediatorOnPage.activateMaintenanceCall) {
         await INTERMediator_DBAdapter.mentenance()
       }
+    }
+
+    async function insertHTMLParts(rootNode) {
+      const attr = "data-im-include"
+      const jsProtocol = "include:"
+      const nodes = rootNode.querySelectorAll(`[${attr}]`)
+      for (const node of nodes) {
+        const incAttr = node.getAttribute(attr).trim()
+        if (incAttr.indexOf(jsProtocol) === 0) {
+          const key = incAttr.substring(jsProtocol.length).trim()
+          if (INTERMediatorOnPage.includingParts[key]) {
+            node.innerHTML = INTERMediatorOnPage.includingParts[key]
+          }
+        } else {
+          const initParam = {
+            method: "GET",
+            headers: [],
+            mode: "same-origin",
+            credentials: "include",
+            cache: "no-cache"
+          }
+          await fetch(new Request(incAttr, initParam)).then((response) => {
+            if (!response.ok) {
+              throw 'Communication Error'
+            }
+            return response.text()
+          }).then((responseText) => {
+            node.innerHTML = responseText
+          }).catch((reason) => {
+            console.log(reason)
+          })
+        }
+      }
+      return rootNode
     }
 
     /** --------------------------------------------------------------------
@@ -954,7 +988,7 @@ const INTERMediator = {
           throw new Error('Exception-xx: Cross Table Components aren\'t prepared.')
         }
         // Remove all nodes under the TBODY tagged node.
-        while(node.firstChild){
+        while (node.firstChild) {
           node.removeChild(node.lastChild)
         }
         // while (node.childNodes.length > 0) {
