@@ -6,8 +6,7 @@
 namespace deprecated;
 use DB_FMS_Test_Common;
 
-require_once('DB_FMS_Test_Common.php');
-
+require_once(dirname(__FILE__) . '/DB-FileMaker/DB_FMS_Test_Common.php');
 class DB_FMS_FX_Test extends DB_FMS_Test_Common
 {
     function setUp(): void
