@@ -74,42 +74,42 @@ class OAuthAuth
         }
     }
 
-    public function oAuthBaseURL()
+    public function oAuthBaseURL(): string
     {
         return $this->baseURL;
     }
 
-    public function oAuthProvider()
+    public function oAuthProvider(): string
     {
         return $this->provider;
     }
 
-    public function infoScope()
+    public function infoScope(): array
     {
         return $this->infoScope;
     }
 
-    public function javaScriptCode()
+    public function javaScriptCode(): string
     {
         return $this->jsCode;
     }
 
-    public function errorMessages()
+    public function errorMessages(): array
     {
         return implode(", ", $this->errorMessage);
     }
 
-    public function setDoRedirect($val)
+    public function setDoRedirect(bool $val): void
     {
         $this->doRedirect = $val;
     }
 
-    public function isCreate()
+    public function isCreate(): ?bool
     {
         return $this->isCreate;
     }
 
-    public function afterAuth()
+    public function afterAuth(): bool
     {
         $this->errorMessage = array();
         $this->userInfo = $this->getUserInfo();
@@ -185,8 +185,8 @@ class OAuthAuth
                 //        var_export($tokenID);
                 /*
                     array (
-                        'realname' => '新居雅行',
-                        'username' => '113160982833865516666',
+                        'realname' => 'ABCD',
+                        'username' => '1131609....',
                         'email' => 'xxxx....xxxx3@gmail.com',
                     )
                  */
@@ -205,7 +205,7 @@ class OAuthAuth
         }
         return [];
     }
-    private function decodeIDToken($code)
+    private function decodeIDToken(string $code): array
     {
         $tokenparams = array(
             'code' => $code,
@@ -230,11 +230,12 @@ class OAuthAuth
             curl_setopt($session, CURLOPT_POSTFIELDS, $postParam);
             //    curl_setopt($session, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded'));
             $content = curl_exec($session);
+            $header = [];
             if (!curl_errno($session)) {
                 $header = curl_getinfo($session);
             }
             curl_close($session);
-            $httpCode = $header['http_code'];
+            $httpCode = $header['http_code'] ?? null;
         } else {
             $this->errorMessage[] = "Couldn't get information with the access token.";
             return false;
@@ -292,10 +293,10 @@ class OAuthAuth
             'email' => 'msyk.nii83@gmail.com',
             'email_verified' => true,
             'at_hash' => 'ixQDR3JF.....',
-            'name' => '新居雅行',
+            'name' => 'ABCD',
             'picture' => 'https://lh3.googleusercontent.com/a/.....',
-            'given_name' => '雅行',
-            'family_name' => '新居',
+            'given_name' => 'CD',
+            'family_name' => 'AB',
             'iat' => 17126....,
             'exp' => 171265..., ),
             2 => NULL,
