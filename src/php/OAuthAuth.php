@@ -16,43 +16,49 @@
 
 namespace INTERMediator;
 
+use INTERMediator\DB\Logger;
 use INTERMediator\DB\Proxy;
 
 class OAuthAuth
 {
-    public $isActive = false;
+    public bool $isActive;
 
-    private $baseURL;
-    private $getTokenURL;
-    private $getInfoURL;
-    private $clientId;
-    private $clientSecret;
-    private $redirectURL;
-    private $infoScope;
-    private $errorMessage = array();
-    private $jsCode = '';
-    private $id_token;
-    private $provider = "unspecified";
-    private $doRedirect = true;
-    private $isCreate = null;
-    private $userInfo = null;
+    private string $baseURL;
+    private string $getTokenURL;
+    private string $getInfoURL;
+    private ?string $clientId;
+    private ?string $clientSecret;
+    private ?string $redirectURL;
+    private array $errorMessage = array();
+    private string $jsCode = '';
+    private string $id_token;
+    private ?string $provider;
+    private bool $doRedirect = true;
+    private ?bool $isCreate = null;
+    private ?array $userInfo = null;
+    private ?array $infoScope = null;
 
-    public $debugMode = false;
+    public bool $debugMode = false;
 
     public function __construct()
     {
-        $this->clientId = IMUtil::getFromProfileIfAvailable(
-            Params::getParameterValue("oAuthClientID", false));
-        $this->clientSecret = IMUtil::getFromProfileIfAvailable(
-            Params::getParameterValue("oAuthClientSecret", false));
-        $this->redirectURL = Params::getParameterValue("oAuthRedirect", false);
-        $this->provider = Params::getParameterValue("oAuthProvider", false);
-        switch (strtolower($this->provider ?? "")) {
+        $this->isActive = false;
+        $this->clientId = Params::getParameterValue("oAuthClientID", null);
+        $this->clientSecret = Params::getParameterValue("oAuthClientSecret", null);
+        $this->redirectURL = Params::getParameterValue("oAuthRedirect", null);
+        $this->provider = Params::getParameterValue("oAuthProvider", null);
+
+        if (!($this->clientId && $this->clientSecret && $this->redirectURL && $this->provider)) {
+            $this->errorMessage[] = "Wrong Paramters";
+            $this->provider = "unspecified";
+            return;
+        }
+
+        switch (strtolower($this->provider)) {
             case "google":
                 $this->baseURL = 'https://accounts.google.com/o/oauth2/auth';
-                //    $this->getTokenURL = 'https://accounts.google.com/o/oauth2/token';
                 $this->getTokenURL = 'https://www.googleapis.com/oauth2/v4/token';
-                $this->getInfoURL = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
+                $this->getInfoURL = 'https://www.googleapis.com/oauth2/v1/userinfo';
                 $this->infoScope = array('openid', 'profile', 'email');
 
                 /* Set up for Google
@@ -66,9 +72,6 @@ class OAuthAuth
             default:
                 break;
         }
-//        $this->clientId = $params["oAuthClientID"];
-//        $this->clientSecret = $params["oAuthClientSecret"];
-//        $this->redirectURL = $params["oAuthRedirect"];
     }
 
     public function oAuthBaseURL()
@@ -106,93 +109,102 @@ class OAuthAuth
         return $this->isCreate;
     }
 
-    public function getUserInfo()
-    {
-        return $this->userInfo;
-    }
-
     public function afterAuth()
     {
         $this->errorMessage = array();
-        if (!isset($_REQUEST['code'])) {
-            $this->errorMessage[] = "This isn't redirected from the providers site.";
+        $this->userInfo = $this->getUserInfo();
+        if (count($this->userInfo) == 0) {
             return false;
         }
-        $tokenID = $this->decodeIDToken($_REQUEST['code']);
-        if ($tokenID === false || strlen($tokenID["username"]) < 1 || strlen($tokenID["email"]) < 1) {
-            $this->errorMessage[] = "Nothing to get from the authenticating server. tokenID="
-                . var_export($tokenID, true);
-            return false;
-        }
-
-        $this->userInfo = array(
-            "username" => $tokenID["username"],
-            "realname" => $tokenID["realname"],
-            "email" => $tokenID["email"]
-        );
+        $oAuthStoring = isset($_COOKIE["_im_oauth_storing"]) ? $_COOKIE["_im_oauth_storing"] : "";
+        $oAuthStoring = $oAuthStoring == 'session-storage' ? "true" : "false";
+        $oAuthRealm = isset($_COOKIE["_im_oauth_realm"]) ? $_COOKIE["_im_oauth_realm"] : "";
 
         $dbProxy = new Proxy();
-        $dbProxy->initialize(null, null, null, false);
-        $dbProxy->dbSettings->setSAMLExpiringSeconds(3600 * 24);
-        $credential = $this->generateCredential(30);
+        $dbProxy->initialize(null,
+            ['authentication' => ['authexpired' => 3600, 'storing' => $oAuthStoring]],
+            ['db-class' => 'PDO'],
+            $this->debugMode ? 2 : false);
+        $credential = IMUtil::convertHashedPassword(IMUtil::randomString(30), "1", false);
         $param = array(
-            "username" => $tokenID["username"],
+            "username" => $this->userInfo["username"],
             "hashedpasswd" => $credential,
-            "realname" => $tokenID["realname"],
-            "email" => $tokenID["email"]
+            "realname" => $this->userInfo["realname"],
+            "email" => $this->userInfo["email"]
         );
         $this->isCreate = $dbProxy->dbClass->authHandler->authSupportOAuthUserHandling($param);
+
+        $generatedClientID = IMUtil::generateClientId('', $credential);
+        $challenge = IMUtil::generateChallenge();
+        $dbProxy->saveChallenge($this->userInfo["username"], $challenge, $generatedClientID,  "+");
+        setcookie('_im_credential_token',
+            $dbProxy->generateCredential($challenge, $generatedClientID, $credential),
+            time() + 3600, '/', "", false, true);
+        setcookie("_im_username_{$oAuthRealm}",
+            $this->userInfo["username"], time() + 3600, '/', "", false, false);
+        setcookie("_im_clientid_{$oAuthRealm}",
+            $generatedClientID, time() + 3600, '/', "", false, false);
+
         if ($this->debugMode) {
             $this->errorMessage[] = "authSupportOAuthUserHandling sends "
                 . var_export($param, true) . ", returns {$this->isCreate}.";
             $this->errorMessage = array_merge($this->errorMessage, $dbProxy->logger->getDebugMessages());
         }
         $this->errorMessage = array_merge($this->errorMessage, $dbProxy->logger->getErrorMessages());
-
-        $oAuthStoring = $_COOKIE["_im_oauth_storing"] ?? "";
-        $oAuthStoring = $oAuthStoring == 'session-storage' ? "true" : "false";
-        $oAuthRealm = $_COOKIE["_im_oauth_realm"] ?? "";
-
-        $this->jsCode = 'function setAnyStore(key, val) {';
-        $this->jsCode .= "let isSession = {$oAuthStoring}, realm = '{$oAuthRealm}';";
-        $this->jsCode .= 'let d, isFinish = false, ex = 3600, authKey;';
-        $this->jsCode .= 'd = new Date();d.setTime(d.getTime() + ex * 1000);';
-        $this->jsCode .= 'authKey = key + ((realm.length > 0) ? ("_" + realm) : "");';
-        $this->jsCode .= 'try {if (isSession){sessionStorage.setItem(authKey, val);isFinish = true;}}';
-        $this->jsCode .= 'catch(ex){}';
-        $this->jsCode .= 'if (!isFinish) {document.cookie = authKey + "=" + encodeURIComponent(val)';
-        $this->jsCode .= '+ ";path=/;" + "max-age=" + ex + ";expires=" + d.toUTCString() + ";"';
-        $this->jsCode .= '+ ((document.URL.substring(0, 8) == "https://") ? "secure;" : "")}}';
-
-        $this->jsCode .= "setAnyStore('_im_username', '" . $tokenID["username"] . "');";
-        $this->jsCode .= "setAnyStore('_im_credential', '" . $credential . "');";
-        $this->jsCode .= "setAnyStore('_im_openidtoken', '" . $this->id_token . "');";
         if (count($this->errorMessage) < 1 && !(!$this->doRedirect && $this->isCreate)) {
-            $this->jsCode .= "location.href = '" . $_COOKIE["_im_oauth_backurl"] . "';";
+            $this->jsCode = "location.href = '" . $_COOKIE["_im_oauth_backurl"] . "';";
             return true;
         }
         return true;
     }
+    // Previously this class suported just storing=session-storage, and following JS code.
+//        $this->jsCode .= 'function setAnyStore(key, val) {';
+//        $this->jsCode .= "var isSession = {$oAuthStoring}, realm = '{$oAuthRealm}';";
+//        $this->jsCode .= 'var d, isFinish = false, ex = 3600, authKey;';
+//        $this->jsCode .= 'd = new Date();d.setTime(d.getTime() + ex * 1000);';
+//        $this->jsCode .= 'authKey = key + ((realm.length > 0) ? ("_" + realm) : "");';
+//        $this->jsCode .= 'try {if (isSession){sessionStorage.setItem(authKey, val);isFinish = true;}}';
+//        $this->jsCode .= 'catch(ex){}';
+//        $this->jsCode .= 'if (!isFinish) {document.cookie = authKey + "=" + encodeURIComponent(val)';
+//        $this->jsCode .= '+ ";path=/;" + "max-age=" + ex + ";expires=" + d.toUTCString() + ";"';
+//        $this->jsCode .= '+ ((document.URL.substring(0, 8) == "https://") ? "secure;" : "")}}';
+//
+//        $this->jsCode .= "setAnyStore('_im_username', '" . $this->userInfo["username"] . "');";
+//        $this->jsCode .= "setAnyStore('_im_credential', '" . $credential . "');";
+//        $this->jsCode .= "setAnyStore('_im_openidtoken', '" . $this->id_token . "');";
+//        $this->jsCode .= "setAnyStore('_im_clientid', '');";
 
-    /**
-     * For passing PHPStan analyzations. It won't work so far 2023-8-14
-     * @param int $digit
-     * @return string
-     */
-    private function generateCredential(int $digit): string
-    {
-        $password = '';
-        for ($i = 0; $i < $digit; $i++) {
-            $password .= chr(rand(32, 127));
+    private function getUserInfo(): array {
+        switch (strtolower($this->provider)) {
+            case "google":
+                if (!isset($_REQUEST['code'])) {
+                    $this->errorMessage[] = "This isn't redirected from the providers site.";
+                    return [];
+                }
+                $tokenID = $this->decodeIDToken($_REQUEST['code']);
+                //        var_export($tokenID);
+                /*
+                    array (
+                        'realname' => '新居雅行',
+                        'username' => '113160982833865516666',
+                        'email' => 'xxxx....xxxx3@gmail.com',
+                    )
+                 */
+                if ($tokenID === false || strlen($tokenID["username"]) < 1 || strlen($tokenID["email"]) < 1) {
+                    $this->errorMessage[] = "Nothing to get from the authenticating server. tokenID="
+                        . var_export($tokenID, true);
+                    return [];
+                }
+
+                return array(
+                    "username" => $tokenID["username"],
+                    "realname" => $tokenID["realname"],
+                    "email" => $tokenID["email"]
+                );
+                break;
         }
-        $salt = '';
-        for ($i = 0; $i < 4; $i++) {
-            $n = rand(33, 126);
-            $salt .= chr($n);
-        }
-        return sha1($password . $salt) . bin2hex($salt);
+        return [];
     }
-
     private function decodeIDToken($code)
     {
         $tokenparams = array(
@@ -218,9 +230,9 @@ class OAuthAuth
             curl_setopt($session, CURLOPT_POSTFIELDS, $postParam);
             //    curl_setopt($session, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded'));
             $content = curl_exec($session);
-            //if (!curl_errno($session)) {
-            $header = curl_getinfo($session);
-            //}
+            if (!curl_errno($session)) {
+                $header = curl_getinfo($session);
+            }
             curl_close($session);
             $httpCode = $header['http_code'];
         } else {
@@ -232,12 +244,18 @@ class OAuthAuth
             return false;
         }
         $response = json_decode($content);
+
+
         /* The example of Google in case of no error.
-        $response: {
-        "access_token" : "ya29.9AG4QGFUvt7Daoys1BHPszeXqrw3zPLMmYIdCxQ7eS3fGhOSE3LwZAUOskW-eowbDZIA",
-        "token_type" : "Bearer",
-        "expires_in" : 3599,
-        "id_token" : "eyJhbGciOiJSUzI1.....OZm9XnugiIg" } */
+        echo "#### response ####";var_export($response);echo "<hr>";
+    (object) array(
+            'access_token' => 'ya29.....',
+            'expires_in' => 3599,
+            'scope' => 'https://www.googleapis.com/auth/userinfo.profile openid https://www.googleapis.com/auth/userinfo.email',
+            'token_type' => 'Bearer',
+            'id_token' => 'eyJhbGciO.....',
+            }
+        */
 
         if (isset($response->error)) {
             /* The example of Google in case of error
@@ -256,33 +274,46 @@ class OAuthAuth
         $this->id_token = $response->id_token;
         $jWebToken = explode(".", $response->id_token);
         for ($i = 0; $i < count($jWebToken); $i++) {
-            $jWebToken[$i] = json_decode(base64_decode($jWebToken[$i]));
+            $jWebToken[$i] = json_decode(base64_decode(strtr($jWebToken[$i], '-_', '+/')));
         }
+
         /* The example for Google: First two elements of $jWebToken
-         * {
-         * "alg":"RS256",
-         * "kid":"0352564c1a4ac6c5097d4c5dee238b6de2cdf16e"}
-         * "{
-         * "iss":"accounts.google.com",
-         * "at_hash":"4aebaXtoEE_o-eq23l2tug",
-         * "aud":"1044341943970-3q053ucl9i8882m56fpm6dqg93julckv.apps.googleusercontent.com",
-         * "sub":"113160982833865516666",
-         * "email_verified":true,
-         * "azp":"1044341943970-3q053ucl9i8882m56fpm6dqg93julckv.apps.googleusercontent.com",
-         * "email":"msyk.nii83@gmail.com",
-         * "iat":1442762077,
-         * "exp":1442765677} */
-        $username = $jWebToken[1]->sub . "@" . $jWebToken[1]->iss;
+        var_export($jWebToken);echo "<hr>";
+            array (
+            0 => (object) array(
+            'alg' => 'RS256',
+            'kid' => '93b495162af0c87....',
+            'typ' => 'JWT', ),
+            1 => (object) array(
+            'iss' => 'https://accounts.google.com',
+            'azp' => '2829817.....',
+            'aud' => '2829817.....',
+            'sub' => '1131609828.....',
+            'email' => 'msyk.nii83@gmail.com',
+            'email_verified' => true,
+            'at_hash' => 'ixQDR3JF.....',
+            'name' => '新居雅行',
+            'picture' => 'https://lh3.googleusercontent.com/a/.....',
+            'given_name' => '雅行',
+            'family_name' => '新居',
+            'iat' => 17126....,
+            'exp' => 171265..., ),
+            2 => NULL,
+            )
+          */
+        $username = $jWebToken[1]->sub /*. "@" . $jWebToken[1]->iss*/
+        ;
         $email = $jWebToken[1]->email;
 
-        $accessURL = $this->getInfoURL . '?access_token=' . $response->access_token;
+        //$accessURL = $this->getInfoURL . '?access_token=' . $response->access_token;
         if (function_exists('curl_init')) {
-            $session = curl_init($accessURL);
+            $session = curl_init($this->getInfoURL);
             curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($session, CURLOPT_HTTPHEADER, ["Authorization: Bearer {$response->access_token}"]);
             $content = curl_exec($session);
-            //if (!curl_errno($session)) {
-            $header = curl_getinfo($session);
-            //}
+            if (!curl_errno($session)) {
+                $header = curl_getinfo($session);
+            }
             curl_close($session);
             $httpCode = $header['http_code'];
         } else {
@@ -290,33 +321,36 @@ class OAuthAuth
             return false;
         }
         if ($httpCode != 200) {
-            $this->errorMessage[] = "Error: {$accessURL}<br/>Description: {$content}";
+            $this->errorMessage[] = "Error: {$this->getInfoURL}<br/>Description: {$content}";
             return false;
         }
         $userInfo = json_decode($content);
         if ($this->debugMode) {
             $this->errorMessage[] = var_export($userInfo, true);
         }
+
 //        $userInfo = json_decode(
 //            $userInfo = file_get_contents(
 //                $this->getInfoURL . '?access_token=' . $response->access_token)
 //        );
         /* The example of $userInfo about Google.
-         object(stdClass)#2 (10) {
-        ["id"]=> string(21) "113160982833865516666"
-        ["email"]=> string(20) "msyk.nii83@gmail.com"
-        ["verified_email"]=> bool(true)
-        ["name"]=> string(12) "新居雅行"
-        ["given_name"]=> string(6) "雅行"
-        ["family_name"]=> string(6) "新居"
-        ["link"]=> string(45) "https://plus.google.com/113160982833865516666"
-        ["picture"]=> string(92) "https://lh5.googleusercontent.com/-pVUMKEVd13Y/AAAAAAAAAAI/AAAAAAAAAD8/cn7jkZa6adc/photo.jpg"
-        ["gender"]=> string(4) "male"
-        ["locale"]=> string(2) "ja" } */
+        var_export($userInfo);echo "<hr>";
+            (object) array(
+            'id' => '113160982.....',
+            'email' => 'xxxx...xxxx@gmail.com',
+            'verified_email' => true,
+            'name' => 'AB CD',
+            'given_name' => 'CD',
+            'family_name' => 'AB',
+            'picture' => 'https://lh3.googleusercontent.com/a/ACg8oc....',
+            'locale' => 'ja',
+            )
+        */
 
         $realname = $userInfo->name;
         if (strlen($username) < 2) {
-            $username = $userInfo->sub . "@" . $userInfo->hd;
+            $username = $userInfo->sub /*. "@" . $userInfo->hd*/
+            ;
             if (strlen($username) < 2) {
                 $this->errorMessage[] = "Error: User subject didn't get from: {$this->getTokenURL}.";
             }
@@ -332,3 +366,4 @@ class OAuthAuth
         );
     }
 }
+

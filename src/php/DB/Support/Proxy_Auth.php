@@ -39,8 +39,8 @@ trait Proxy_Auth
      */
     public function collectAuthInfo(?array $options): void
     {
-        $this->dbSettings->setSAMLExpiringSeconds(Params::getParameterValue('ldapExpiringSeconds', 600));
-        $this->dbSettings->setSAMLExpiringSeconds(Params::getParameterValue('samlExpiringSeconds', 600));
+        $this->dbSettings->setSAMLExpiringSeconds(Params::getParameterValue('ldapExpiringSeconds', 3600));
+        $this->dbSettings->setSAMLExpiringSeconds(Params::getParameterValue('samlExpiringSeconds', 3600));
         $this->credentialCookieDomain = Params::getParameterValue('credentialCookieDomain', "");
         $this->passwordHash = Params::getParameterValue('passwordHash', 1);
         $this->alwaysGenSHA2 = boolval(Params::getParameterValue('alwaysGenSHA2', false));

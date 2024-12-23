@@ -192,16 +192,16 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 //$suppressAuthTargetFillingOnCreate = false; // If you don't want to set the target field of authentication on carete operation, set this true.
 
 /* OAuth Support */
-// $oAuthProvider = 'Google';
-// $oAuthClientID = '';
-// $oAuthClientSecret = '';
-// $oAuthRedirect = 'http://localhost:7001/Auth_Support/OAuthCatcher.php';
+//$oAuthProvider = 'Google';
+//$oAuthClientID = '1084721348801....';
+//$oAuthClientSecret = 'GOCSPX....';
+//$oAuthRedirect = 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php';
 
 /* SAML Support
    Information about setting up a SAML Service Provider exists in the samples/saml-config directory. */
 //$isSAML = true; # The default value of isSAML is false.
 //$samlAuthSource = 'default-sp';
-//$samlExpiringSeconds = 1800;
+//$samlExpiringSeconds = 3600;
 //$samlWithBuiltInAuth = true;
 //$samlAttrRules = ['username' => 'uid|0', 'realname' => 'eduPersonAffiliation|0'];
 // for Active Directory LDAP ['username' => 'cn|0', 'realname' => ['sn|0','givenName|0'], 'email' => 'mail|0']

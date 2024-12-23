@@ -81,7 +81,11 @@ abstract class UploadingSupport
                         foreach ($relatedContextInfo["relation"] as $cItem) {
                             if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
                                 $fields[] = $cItem['foreign-key'];
-                                $values[] = $dbProxyRecord[0][$cItem['join-field']];
+                                if (isset($dbProxyRecord[0][$cItem['join-field']])) {
+                                    $values[] = $dbProxyRecord[0][$cItem['join-field']];
+                                } else {
+                                    $values[] = null;
+                                }
                             }
                         }
                     }
