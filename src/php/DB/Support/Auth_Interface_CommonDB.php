@@ -100,7 +100,7 @@ interface Auth_Interface_CommonDB
      * @return bool
      */
     public function authSupportCreateUser(string $username, string $hashedpassword, bool $isSAML = false,
-                                          string $ldapPassword = null, ?array $attrs = null): bool;
+                                          string|null $ldapPassword = null, ?array $attrs = null): bool;
 
     /**
      * handling auth table: authuser
