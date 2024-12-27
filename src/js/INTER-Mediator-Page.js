@@ -474,7 +474,7 @@ let INTERMediatorOnPage = {
       return
     }
 
-    let userBox, passwordBox, authButton, oAuthButton, chgpwButton, breakLine, samlButton, extButtons = {}
+    let userBox, passwordBox, authButton, oAuthButton=[], chgpwButton, breakLine, samlButton, extButtons = {}
     const bodyNode = document.getElementsByTagName('BODY')[0]
     const backBox = document.createElement('div')
     backBox.id = '_im_authpback'
@@ -500,7 +500,9 @@ let INTERMediatorOnPage = {
       userBox = document.getElementById('_im_username')
       authButton = document.getElementById('_im_authbutton')
       chgpwButton = document.getElementById('_im_changebutton')
-      oAuthButton = document.getElementById('_im_oauthbutton')
+      for (let provider in INTERMediatorOnPage.oAuth) {
+        oAuthButton[provider] = document.getElementById(`_im_oauthbutton-${provider}`)
+      }
       samlButton = document.getElementById('_im_samlbutton')
     } else {
       const frontPanel = document.createElement('div')
@@ -628,10 +630,12 @@ let INTERMediatorOnPage = {
         frontPanel.appendChild(breakLine)
       }
       if (this.isOAuthAvailable) {
-        oAuthButton = document.createElement('BUTTON')
-        oAuthButton.id = '_im_oauthbutton'
-        oAuthButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2014)))
-        frontPanel.appendChild(oAuthButton)
+        for (let provider in INTERMediatorOnPage.oAuth) {
+        oAuthButton[provider] = document.createElement('BUTTON')
+        oAuthButton[provider].id = '_im_oauthbutton'
+        oAuthButton[provider].appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2014)))
+        frontPanel.appendChild(oAuthButton[provider])
+        }
       }
       if (INTERMediatorOnPage.isSAML && INTERMediatorOnPage.samlWithBuiltInAuth) {
         samlButton = document.createElement('BUTTON')
@@ -785,12 +789,14 @@ let INTERMediatorOnPage = {
       }
     }
     if (this.isOAuthAvailable && oAuthButton) {
-      oAuthButton.onclick = function () {
-        INTERMediatorOnPage.setCookieDomainWide('_im_oauth_backurl', location.href, true)
+      for (let provider in INTERMediatorOnPage.oAuth) {
+      oAuthButton[provider].onclick = function () {
+      INTERMediatorOnPage.setCookieDomainWide('_im_oauth_backurl', location.href, true)
         INTERMediatorOnPage.setCookieDomainWide('_im_oauth_realm', INTERMediatorOnPage.realm, true)
         INTERMediatorOnPage.setCookieDomainWide('_im_oauth_expired', INTERMediatorOnPage.authExpired, true)
         INTERMediatorOnPage.setCookieDomainWide('_im_oauth_storing', INTERMediatorOnPage.authStoring, true)
-        location.href = INTERMediatorOnPage.oAuthBaseURL + '?scope=' + encodeURIComponent(INTERMediatorOnPage.oAuthScope) + '&redirect_uri=' + encodeURIComponent(INTERMediatorOnPage.oAuthRedirect) + '&response_type=code' + '&client_id=' + encodeURIComponent(INTERMediatorOnPage.oAuthClientID)
+        location.href = INTERMediatorOnPage[provider].authenticateURL
+      }
       }
     }
     if (INTERMediatorOnPage.isSAML && samlButton) {
