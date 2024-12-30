@@ -23,6 +23,7 @@ Ver.14 (in Development)
 - OAuth returned! A sample of redirect url is samples/Auth_Support/OAuthCatcher.php. The authentication method
   specified by authentication/storing value or $authStoring in the params.php must be 'credential'. The session-storage
   doesn't support anymore.
+- Update libraries for security fixes.
 
 Ver.13 (October 26, 2024)
 - In the INTERMediator_DBAdapter, Codes using XMLHttpRequest are replaced with fetch function.
