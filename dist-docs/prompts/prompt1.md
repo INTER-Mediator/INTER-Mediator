@@ -28,9 +28,11 @@ Windsurfを利用して、INTER-Mediatorのアプリケーションを、全く�
 - プロジェクトのルートにlibディレクトリを作成してください。
 - vendor/inter-mediator/inter-mediator/params.phpというファイルを、libにコピーしてください。
 - コピーした lib/params.phpファイルの中身を以下のように編集します。
+  - \$dbClass変数は、'PDO'を代入します。
   - \$dbUser変数は、データベースに接続する場合のユーザ名を指定します。
   - \$dbPassword変数は、データベースに接続する場合のパスワードを指定します。
   - \$dbDSN変数は、PDOでの接続に必要な接続文字列を指定します。
+  - \$dbOption変数は、要素のない配列を代入します。
 
 # 定義ファイルの作成
 - 定義ファイルは、ルートにdeffile.phpという名称で、ファイルを作ってください。
@@ -70,4 +72,3 @@ INTERMediatorOnPage.doBeforeConstruct = function () {
 }
 ```
 - ページファイルで、SCRIPTタグを用いて、このapp.jsファイルを読み込みます。
-- 
