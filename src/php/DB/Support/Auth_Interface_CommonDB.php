@@ -58,7 +58,7 @@ interface Auth_Interface_CommonDB
      * @param string $prefix
      * @return void
      */
-    public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId, string $prefix = ""): void;
+    public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId, string $prefix = "", bool $alwaysInsert = false): void;
 
     /**
      * handling auth table: issuedhash
@@ -74,7 +74,8 @@ interface Auth_Interface_CommonDB
      * @param string $prefix
      * @return string|null
      */
-    public function authSupportRetrieveChallenge(string $uid, string $clientId, bool $isDelete = true, string $prefix = ""): ?string;
+    public function authSupportRetrieveChallenge(
+        string $uid, string $clientId, bool $isDelete = true, string $prefix = "", $isMulti = false): ?string;
 
     /**
      * handling auth table: issuedhash

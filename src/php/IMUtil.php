@@ -622,6 +622,26 @@ class IMUtil
     }
 
     /**
+     * @param int $digit
+     * @return string
+     */
+    public static function challengeString(int $digit): string
+    {
+        $chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-.~";
+        $len = strlen($chars);
+        $resultStr = '';
+        for ($i = 0; $i < $digit; $i++) {
+            try {
+                $code = random_int(0, $len-1);
+            } catch (Exception $ex) {
+                $code = rand(0, $len-1);
+            }
+            $resultStr .= $chars[$code];
+        }
+        return $resultStr;
+    }
+
+    /**
      * @param $prefix
      * @return string
      */
