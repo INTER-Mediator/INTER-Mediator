@@ -159,7 +159,7 @@ $browserCompatibility = array(
 $authStoring = 'credential'; // 'session-storage' or 'credential'
 $authExpired = 3600;
 $authRealm = 'INTER-Mediator_Samples';
-//$passwordHash = '1';  // '2m' supports SHA-256 and Wrapping SHA-1 with SHA-256, '2' supports SHA-256 password hash only,
+//$passwordHash = '2';  // '2m' supports SHA-256 and Wrapping SHA-1 with SHA-256, '2' supports SHA-256 password hash only,
 // No specification or other string support SHA-1, SHA-256, and wrapping.
 //$alwaysGenSHA2 = true; // On the password changing, generate SHA-2 hash. The default is false.
 //$migrateSHA1to2 = true;// If the login account relays on SHA-a, exchange it with 2m style SHA-2 hash. The default is false.
@@ -192,10 +192,19 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 //$suppressAuthTargetFillingOnCreate = false; // If you don't want to set the target field of authentication on carete operation, set this true.
 
 /* OAuth Support */
-//$oAuthProvider = 'Google';
-//$oAuthClientID = '1084721348801....';
-//$oAuthClientSecret = 'GOCSPX....';
-//$oAuthRedirect = 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php';
+//$oAuth = [
+//    'Google' => [
+//        'AuthButton' => 'Google Auth',
+//        'ClientID' => 'xxxxxxxx',
+//        'ClientSecret' => 'xxxxxx',
+//        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
+//    ],
+//    'MyNumberCard-Sandbox' => [
+//        'AuthButton' => 'My Number Card',
+//        'ClientID' => 'TESTCLIENT01',
+//        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
+//    ],
+//];
 
 /* SAML Support
    Information about setting up a SAML Service Provider exists in the samples/saml-config directory. */

@@ -40,39 +40,6 @@ class OAuthAuth
 
     public bool $debugMode = false;
 
-    public function __construct()
-    {
-        $this->isActive = false;
-        $this->clientId = Params::getParameterValue("oAuthClientID", null);
-        $this->clientSecret = Params::getParameterValue("oAuthClientSecret", null);
-        $this->redirectURL = Params::getParameterValue("oAuthRedirect", null);
-        $this->provider = Params::getParameterValue("oAuthProvider", null);
-
-        if (!($this->clientId && $this->clientSecret && $this->redirectURL && $this->provider)) {
-            $this->errorMessage[] = "Wrong Paramters";
-            $this->provider = "unspecified";
-            return;
-        }
-
-        switch (strtolower($this->provider)) {
-            case "google":
-                $this->baseURL = 'https://accounts.google.com/o/oauth2/auth';
-                $this->getTokenURL = 'https://www.googleapis.com/oauth2/v4/token';
-                $this->getInfoURL = 'https://www.googleapis.com/oauth2/v1/userinfo';
-                $this->infoScope = array('openid', 'profile', 'email');
-
-                /* Set up for Google
-                 * 1. Go to https://console.developers.google.com.
-                 * 2. Create a project.
-                 */
-                $this->isActive = true;
-                $this->provider = "Google";
-
-                break;
-            default:
-                break;
-        }
-    }
 
     public function oAuthBaseURL(): string
     {
@@ -94,7 +61,7 @@ class OAuthAuth
         return $this->jsCode;
     }
 
-    public function errorMessages(): array
+    public function errorMessages(): string
     {
         return implode(", ", $this->errorMessage);
     }
@@ -109,6 +76,93 @@ class OAuthAuth
         return $this->isCreate;
     }
 
+    public function __construct(string $provider)
+    {
+        $oAuthIngo = Params::getParameterValue("oAuth", null);
+
+        $this->isActive = false;
+        $this->provider = $provider;
+        $this->clientId = $oAuthIngo[$provider]["ClientID"] ?? null;
+        $this->clientSecret = $oAuthIngo[$provider]["ClientSecret"] ?? null;
+        $this->redirectURL = $oAuthIngo[$provider]["RedirectURL"] ?? null;
+
+        switch (strtolower($this->provider)) {
+            case "google":
+                if (!($this->clientId && $this->clientSecret && $this->redirectURL)) {
+                    $this->errorMessage[] = "Wrong Paramters";
+                    $this->provider = "unspecified";
+                    return;
+                }
+
+                $this->baseURL = 'https://accounts.google.com/o/oauth2/auth';
+                $this->getTokenURL = "https://oauth2.googleapis.com/token";
+                $this->getInfoURL = 'https://www.googleapis.com/oauth2/v3/userinfo';
+                $this->infoScope = array('openid', 'profile', 'email');
+
+                /* Set up for Google
+                 * 1. Go to https://console.developers.google.com.
+                 * 2. Create a project.
+                 */
+                $this->isActive = true;
+                $this->provider = "Google";
+
+                break;
+            case "mynumbercard-sandbox":
+                if (!($this->clientId && $this->redirectURL)) {
+                    $this->errorMessage[] = "Wrong Paramters";
+                    $this->provider = "unspecified";
+                    return;
+                }
+                $this->baseURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/auth';
+                $this->getTokenURL = "https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/token";
+                $this->getInfoURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/userinfo';
+                $this->infoScope = array('openid', 'name', 'address', 'birthdate', 'gender' /*, 'sign'*/);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public function getAuthRequestURL(): string
+    {
+        $state = IMUtil::randomString(32);
+        $dbProxy = new Proxy();
+        $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
+        $dbProxy->authDbClass->authHandler->authSupportStoreChallenge(
+            0, $state, substr($this->clientId, 0, 64), "@G:state@", true);
+        switch (strtolower($this->provider)) {
+            case "google":
+                return $this->baseURL . '?response_type=code&scope=' . urlencode(implode(" ", $this->infoScope))
+                    . '&redirect_uri=' . urlencode($this->redirectURL)
+                    . '&client_id=' . urlencode($this->clientId)
+                    . '&state=' . urlencode($state);
+                break;
+            case "mynumbercard-sandbox":
+                $nonce = IMUtil::randomString(32);
+                $challenge = base64_encode(hash('sha256', IMUtil::challengeString(64), true));
+                return $this->baseURL . '?response_type=code&scope=' . urlencode(implode(" ", $this->infoScope))
+                    . '&client_id=' . urlencode($this->clientId)
+                    . '&redirect_uri=' . urlencode($this->redirectURL)
+                    . '&state=' . urlencode($state)
+                    . '&nonce=' . urlencode($nonce)
+                    . '&code_challenge' . urlencode($nonce)
+                    . '&code_challenge_method=S256&acr_values=aal3 crl';
+        }
+        return "";
+    }
+
+    public function isValidState(string $state): bool
+    {
+        if ($state === "") {
+            return false;
+        }
+        $dbProxy = new Proxy();
+        $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
+        $challenges = $dbProxy->authDbClass->authHandler->authSupportRetrieveChallenge(
+            0, substr($this->clientId, 0, 64), false, "@G:state@", true);
+        return array_search($state, explode("\n", $challenges)) !== false;
+    }
+
     public function afterAuth(): bool
     {
         $this->errorMessage = array();
@@ -116,16 +170,17 @@ class OAuthAuth
         if (count($this->userInfo) == 0) {
             return false;
         }
-        $oAuthStoring = isset($_COOKIE["_im_oauth_storing"]) ? $_COOKIE["_im_oauth_storing"] : "";
-        $oAuthStoring = $oAuthStoring == 'session-storage' ? "true" : "false";
-        $oAuthRealm = isset($_COOKIE["_im_oauth_realm"]) ? $_COOKIE["_im_oauth_realm"] : "";
+        $oAuthStoring = $_COOKIE["_im_oauth_storing"] ?? "";
+        $oAuthRealm = $_COOKIE["_im_oauth_realm"] ?? "";
 
         $dbProxy = new Proxy();
         $dbProxy->initialize(null,
             ['authentication' => ['authexpired' => 3600, 'storing' => $oAuthStoring]],
             ['db-class' => 'PDO'],
             $this->debugMode ? 2 : false);
-        $credential = IMUtil::convertHashedPassword(IMUtil::randomString(30), "1", false);
+        $passwordHash = Params::getParameterValue("passwordHash", 1);
+        $alwaysGenSHA2 = Params::getParameterValue("alwaysGenSHA2", false);
+        $credential = IMUtil::convertHashedPassword(IMUtil::randomString(30), $passwordHash, $alwaysGenSHA2);
         $param = array(
             "username" => $this->userInfo["username"],
             "hashedpasswd" => $credential,
@@ -136,7 +191,7 @@ class OAuthAuth
 
         $generatedClientID = IMUtil::generateClientId('', $credential);
         $challenge = IMUtil::generateChallenge();
-        $dbProxy->saveChallenge($this->userInfo["username"], $challenge, $generatedClientID,  "+");
+        $dbProxy->saveChallenge($this->userInfo["username"], $challenge, $generatedClientID, "+");
         setcookie('_im_credential_token',
             $dbProxy->generateCredential($challenge, $generatedClientID, $credential),
             time() + 3600, '/', "", false, true);
@@ -174,7 +229,8 @@ class OAuthAuth
 //        $this->jsCode .= "setAnyStore('_im_openidtoken', '" . $this->id_token . "');";
 //        $this->jsCode .= "setAnyStore('_im_clientid', '');";
 
-    private function getUserInfo(): array {
+    private function getUserInfo(): array
+    {
         switch (strtolower($this->provider)) {
             case "google":
                 if (!isset($_REQUEST['code'])) {
@@ -205,6 +261,7 @@ class OAuthAuth
         }
         return [];
     }
+
     private function decodeIDToken(string $code): array
     {
         $tokenparams = array(
@@ -302,11 +359,9 @@ class OAuthAuth
             2 => NULL,
             )
           */
-        $username = $jWebToken[1]->sub /*. "@" . $jWebToken[1]->iss*/
-        ;
+        $username = $jWebToken[1]->sub;
         $email = $jWebToken[1]->email;
 
-        //$accessURL = $this->getInfoURL . '?access_token=' . $response->access_token;
         if (function_exists('curl_init')) {
             $session = curl_init($this->getInfoURL);
             curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
@@ -350,8 +405,7 @@ class OAuthAuth
 
         $realname = $userInfo->name;
         if (strlen($username) < 2) {
-            $username = $userInfo->sub /*. "@" . $userInfo->hd*/
-            ;
+            $username = $userInfo->sub;
             if (strlen($username) < 2) {
                 $this->errorMessage[] = "Error: User subject didn't get from: {$this->getTokenURL}.";
             }
@@ -362,7 +416,7 @@ class OAuthAuth
 
         return array(
             "realname" => $realname,
-            "username" => $username,
+            "username" => "{$username}@{$this->provider}",
             "email" => $email,
         );
     }

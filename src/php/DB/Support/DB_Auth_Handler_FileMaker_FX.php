@@ -48,7 +48,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
      * @return void
      * @throws Exception
      */
-    public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId, string $prefix = ""): void
+    public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId, string $prefix = "", bool $alwaysInsert = false): void
     {
         $hashTable = $this->dbSettings->getHashTable();
         if (is_null($hashTable)) {
@@ -138,7 +138,8 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common
      * @return string|null
      * @throws Exception
      */
-    public function authSupportRetrieveChallenge(string $uid, string $clientId, bool $isDelete = true, string $prefix = ""): ?string
+    public function authSupportRetrieveChallenge(
+        string $uid, string $clientId, bool $isDelete = true, string $prefix = "", $isMulti = false): ?string
     {
         $hashTable = $this->dbSettings->getHashTable();
         if (!$hashTable || $uid < 1) {
