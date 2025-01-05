@@ -19,63 +19,135 @@ namespace INTERMediator;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\Proxy;
 
+/**
+ *
+ */
 class OAuthAuth
 {
+    /**
+     * @var bool
+     */
     public bool $isActive;
 
+    /**
+     * @var string
+     */
     private string $baseURL;
+    /**
+     * @var string
+     */
     private string $getTokenURL;
+    /**
+     * @var string
+     */
     private string $getInfoURL;
+    /**
+     * @var string|mixed|null
+     */
     private ?string $clientId;
+    /**
+     * @var string|mixed|null
+     */
     private ?string $clientSecret;
+    /**
+     * @var string|mixed|null
+     */
     private ?string $redirectURL;
+    /**
+     * @var array
+     */
     private array $errorMessage = array();
+    /**
+     * @var string
+     */
     private string $jsCode = '';
-    private string $id_token;
+    /**
+     * @var string|null
+     */
     private ?string $provider;
+    /**
+     * @var bool
+     */
     private bool $doRedirect = true;
+    /**
+     * @var bool|null
+     */
     private ?bool $isCreate = null;
+    /**
+     * @var array|null
+     */
     private ?array $userInfo = null;
+    /**
+     * @var array|string[]|null
+     */
     private ?array $infoScope = null;
 
+    /**
+     * @var bool
+     */
     public bool $debugMode = false;
 
 
+    /**
+     * @return string
+     */
     public function oAuthBaseURL(): string
     {
         return $this->baseURL;
     }
 
+    /**
+     * @return string
+     */
     public function oAuthProvider(): string
     {
         return $this->provider;
     }
 
+    /**
+     * @return array|string[]
+     */
     public function infoScope(): array
     {
         return $this->infoScope;
     }
 
+    /**
+     * @return string
+     */
     public function javaScriptCode(): string
     {
         return $this->jsCode;
     }
 
+    /**
+     * @return string
+     */
     public function errorMessages(): string
     {
         return implode(", ", $this->errorMessage);
     }
 
+    /**
+     * @param bool $val
+     * @return void
+     */
     public function setDoRedirect(bool $val): void
     {
         $this->doRedirect = $val;
     }
 
+    /**
+     * @return bool|null
+     */
     public function isCreate(): ?bool
     {
         return $this->isCreate;
     }
 
+    /**
+     * @param string $provider
+     */
     public function __construct(string $provider)
     {
         $oAuthIngo = Params::getParameterValue("oAuth", null);
@@ -97,7 +169,7 @@ class OAuthAuth
                 $this->baseURL = 'https://accounts.google.com/o/oauth2/auth';
                 $this->getTokenURL = "https://oauth2.googleapis.com/token";
                 $this->getInfoURL = 'https://www.googleapis.com/oauth2/v3/userinfo';
-                $this->infoScope = array('openid', 'profile', 'email');
+                $this->infoScope = ['openid', 'profile', 'email'];
 
                 /* Set up for Google
                  * 1. Go to https://console.developers.google.com.
@@ -105,7 +177,6 @@ class OAuthAuth
                  */
                 $this->isActive = true;
                 $this->provider = "Google";
-
                 break;
             case "mynumbercard-sandbox":
                 if (!($this->clientId && $this->redirectURL)) {
@@ -116,42 +187,34 @@ class OAuthAuth
                 $this->baseURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/auth';
                 $this->getTokenURL = "https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/token";
                 $this->getInfoURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/userinfo';
-                $this->infoScope = array('openid', 'name', 'address', 'birthdate', 'gender' /*, 'sign'*/);
+                $this->infoScope = ['openid', 'name', 'address', 'birthdate', 'gender' /*, 'sign'*/];
+                $this->isActive = true;
+                $this->provider = "MyNumberCard-Sandbox";
+                break;
+            case "facebook":
+                if (!($this->clientId && $this->clientSecret && $this->redirectURL)) {
+                    $this->errorMessage[] = "Wrong Paramters";
+                    $this->provider = "unspecified";
+                    return;
+                }
+                $this->baseURL = 'https://www.facebook.com/v21.0/dialog/oauth';
+                $this->getTokenURL = "https://graph.facebook.com/v21.0/oauth/access_token";
+                $this->getInfoURL = "https://graph.facebook.com/{$this->clientId}";
+                $this->infoScope = ['email', 'name', 'id', 'public_profile'];
+                $this->isActive = true;
+                $this->provider = "Facebook";
                 break;
             default:
                 break;
         }
     }
 
-    public function getAuthRequestURL(): string
-    {
-        $state = IMUtil::randomString(32);
-        $dbProxy = new Proxy();
-        $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
-        $dbProxy->authDbClass->authHandler->authSupportStoreChallenge(
-            0, $state, substr($this->clientId, 0, 64), "@G:state@", true);
-        switch (strtolower($this->provider)) {
-            case "google":
-                return $this->baseURL . '?response_type=code&scope=' . urlencode(implode(" ", $this->infoScope))
-                    . '&redirect_uri=' . urlencode($this->redirectURL)
-                    . '&client_id=' . urlencode($this->clientId)
-                    . '&state=' . urlencode($state);
-                break;
-            case "mynumbercard-sandbox":
-                $nonce = IMUtil::randomString(32);
-                $challenge = base64_encode(hash('sha256', IMUtil::challengeString(64), true));
-                return $this->baseURL . '?response_type=code&scope=' . urlencode(implode(" ", $this->infoScope))
-                    . '&client_id=' . urlencode($this->clientId)
-                    . '&redirect_uri=' . urlencode($this->redirectURL)
-                    . '&state=' . urlencode($state)
-                    . '&nonce=' . urlencode($nonce)
-                    . '&code_challenge' . urlencode($nonce)
-                    . '&code_challenge_method=S256&acr_values=aal3 crl';
-        }
-        return "";
-    }
-
-    public function isValidState(string $state): bool
+    /**
+     * @param string $state
+     * @return bool
+     * @throws \Exception
+     */
+    private function isValidState(string $state): bool
     {
         if ($state === "") {
             return false;
@@ -163,19 +226,31 @@ class OAuthAuth
         return array_search($state, explode("\n", $challenges)) !== false;
     }
 
+    /**
+     * @return bool
+     * @throws \Exception
+     */
     public function afterAuth(): bool
     {
         $this->errorMessage = array();
+        if (!$this->isValidState($_GET["state"] ?? "")) {
+            $this->errorMessage[] = "Failed with security issue.";
+            return false;
+        }
         $this->userInfo = $this->getUserInfo();
         if (count($this->userInfo) == 0) {
             return false;
         }
         $oAuthStoring = $_COOKIE["_im_oauth_storing"] ?? "";
+        if ($oAuthStoring !== "credential") {
+            $this->errorMessage[] = "The 'storing' parameter has to be 'credential.";
+            return false;
+        }
         $oAuthRealm = $_COOKIE["_im_oauth_realm"] ?? "";
 
         $dbProxy = new Proxy();
-        $dbProxy->initialize(null,
-            ['authentication' => ['authexpired' => 3600, 'storing' => $oAuthStoring]],
+        $dbProxy->initialize(null, null,
+//            ['authentication' => ['authexpired' => 3600, 'storing' => $oAuthStoring]],
             ['db-class' => 'PDO'],
             $this->debugMode ? 2 : false);
         $passwordHash = Params::getParameterValue("passwordHash", 1);
@@ -184,8 +259,8 @@ class OAuthAuth
         $param = array(
             "username" => $this->userInfo["username"],
             "hashedpasswd" => $credential,
-            "realname" => $this->userInfo["realname"],
-            "email" => $this->userInfo["email"]
+            "realname" => $this->userInfo["realname"] ?? "",
+            "email" => $this->userInfo["email"] ?? ""
         );
         $this->isCreate = $dbProxy->dbClass->authHandler->authSupportOAuthUserHandling($param);
 
@@ -212,23 +287,47 @@ class OAuthAuth
         }
         return true;
     }
-    // Previously this class suported just storing=session-storage, and following JS code.
-//        $this->jsCode .= 'function setAnyStore(key, val) {';
-//        $this->jsCode .= "var isSession = {$oAuthStoring}, realm = '{$oAuthRealm}';";
-//        $this->jsCode .= 'var d, isFinish = false, ex = 3600, authKey;';
-//        $this->jsCode .= 'd = new Date();d.setTime(d.getTime() + ex * 1000);';
-//        $this->jsCode .= 'authKey = key + ((realm.length > 0) ? ("_" + realm) : "");';
-//        $this->jsCode .= 'try {if (isSession){sessionStorage.setItem(authKey, val);isFinish = true;}}';
-//        $this->jsCode .= 'catch(ex){}';
-//        $this->jsCode .= 'if (!isFinish) {document.cookie = authKey + "=" + encodeURIComponent(val)';
-//        $this->jsCode .= '+ ";path=/;" + "max-age=" + ex + ";expires=" + d.toUTCString() + ";"';
-//        $this->jsCode .= '+ ((document.URL.substring(0, 8) == "https://") ? "secure;" : "")}}';
-//
-//        $this->jsCode .= "setAnyStore('_im_username', '" . $this->userInfo["username"] . "');";
-//        $this->jsCode .= "setAnyStore('_im_credential', '" . $credential . "');";
-//        $this->jsCode .= "setAnyStore('_im_openidtoken', '" . $this->id_token . "');";
-//        $this->jsCode .= "setAnyStore('_im_clientid', '');";
 
+    /**
+     * @return string
+     * @throws \Exception
+     */
+    public function getAuthRequestURL(): string
+    {
+        $state = IMUtil::randomString(32);
+        $dbProxy = new Proxy();
+        $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
+        $dbProxy->authDbClass->authHandler->authSupportStoreChallenge(
+            0, $state, substr($this->clientId, 0, 64), "@G:state@", true);
+        switch (strtolower($this->provider)) {
+            case "google":
+                return $this->baseURL . '?response_type=code&scope=' . urlencode(implode(" ", $this->infoScope))
+                    . '&redirect_uri=' . urlencode($this->redirectURL)
+                    . '&client_id=' . urlencode($this->clientId)
+                    . '&state=' . urlencode($state);
+                break;
+            case "facebook":
+                return $this->baseURL . '?redirect_uri=' . urlencode($this->redirectURL)
+                    . '&client_id=' . urlencode($this->clientId)
+                    . '&state=' . urlencode($state);
+                break;
+            case "mynumbercard-sandbox":
+                $nonce = IMUtil::randomString(32);
+                $challenge = base64_encode(hash('sha256', IMUtil::challengeString(64), true));
+                return $this->baseURL . '?response_type=code&scope=' . urlencode(implode(" ", $this->infoScope))
+                    . '&client_id=' . urlencode($this->clientId)
+                    . '&redirect_uri=' . urlencode($this->redirectURL)
+                    . '&state=' . urlencode($state)
+                    . '&nonce=' . urlencode($nonce)
+                    . '&code_challenge' . urlencode($nonce)
+                    . '&code_challenge_method=S256&acr_values=aal3 crl';
+        }
+        return "";
+    }
+
+    /**
+     * @return array
+     */
     private function getUserInfo(): array
     {
         switch (strtolower($this->provider)) {
@@ -237,16 +336,44 @@ class OAuthAuth
                     $this->errorMessage[] = "This isn't redirected from the providers site.";
                     return [];
                 }
-                $tokenID = $this->decodeIDToken($_REQUEST['code']);
-                //        var_export($tokenID);
-                /*
-                    array (
-                        'realname' => 'ABCD',
-                        'username' => '1131609....',
-                        'email' => 'xxxx....xxxx3@gmail.com',
-                    )
-                 */
-                if ($tokenID === false || strlen($tokenID["username"]) < 1 || strlen($tokenID["email"]) < 1) {
+                $tokenparams = array(
+                    'code' => $_REQUEST['code'],
+                    'client_id' => $this->clientId,
+                    'client_secret' => $this->clientSecret,
+                    'grant_type' => 'authorization_code',
+                    'redirect_uri' => $this->redirectURL,
+                );
+                $response = $this->communication($this->getTokenURL, true, $tokenparams);
+                if (!$response) {
+                    return [];
+                }
+                if (strlen($response->access_token) < 1) {
+                    $this->errorMessage[] = "Error: Access token didn't get from: {$this->getTokenURL}.";
+                }
+                $id_token = $response->id_token;
+                $jWebToken = explode(".", $id_token);
+                for ($i = 0; $i < count($jWebToken); $i++) {
+                    $jWebToken[$i] = json_decode(base64_decode(strtr($jWebToken[$i], '-_', '+/')));
+                }
+                $username = $jWebToken[1]->sub ?? "";
+                $email = $jWebToken[1]->email ?? "";
+                $userInfo = $this->communication($this->getInfoURL, false, null, $response->access_token);
+                $realname = $userInfo->name ?? "";
+                if (strlen($username) < 2) {
+                    $username = $userInfo->sub ?? "";
+                    if (strlen($username) < 2) {
+                        $this->errorMessage[] = "Error: User subject couldn't get from: {$this->getTokenURL}.";
+                    }
+                }
+                if (strlen($email) < 1) {
+                    $email = $userInfo->email ?? "";
+                }
+                $tokenID = array(
+                    "realname" => $realname,
+                    "username" => "{$username}@{$this->provider}",
+                    "email" => $email,
+                );
+                if (is_null($tokenID) || strlen($tokenID["username"]) < 1 || strlen($tokenID["email"]) < 1) {
                     $this->errorMessage[] = "Nothing to get from the authenticating server. tokenID="
                         . var_export($tokenID, true);
                     return [];
@@ -258,114 +385,75 @@ class OAuthAuth
                     "email" => $tokenID["email"]
                 );
                 break;
+            case "facebook":
+                $input_token = $_REQUEST['code'] ?? "";
+                if (!$input_token) {
+                    $this->errorMessage[] = "This isn't redirected from the providers site.";
+                    return [];
+                }
+                $tokenparams = array(
+                    'code' => $input_token,
+                    'client_id' => $this->clientId,
+                    'client_secret' => $this->clientSecret,
+                    'redirect_uri' => $this->redirectURL,
+                );
+                $response = $this->communication($this->getTokenURL, false, $tokenparams);
+                if (!$response) {
+                    return [];
+                }
+                $access_token = $response->access_token ?? "";
+                if (strlen($access_token) < 1) {
+                    $this->errorMessage[] = "Error: Access token couldn't get from: {$this->getTokenURL}.";
+                    return [];
+                }
+                $userInfo = $this->communication($this->getInfoURL, false,
+                    [/*"fields" => "=name,email",*/ "access_token" => $access_token]);
+                if (!$userInfo) {
+                    return [];
+                }
+                $username = $userInfo->id;
+                return ["username" => "{$username}@{$this->provider}",];
+                break;
         }
         return [];
     }
 
-    private function decodeIDToken(string $code): array
+    /**
+     * @param string $url
+     * @param bool $isPost
+     * @param array|null $params
+     * @param string|null $access_token
+     * @return mixed
+     */
+    private function communication(string  $url,
+                                   bool    $isPost = false,
+                                   ?array  $params = null,
+                                   ?string $access_token = null): mixed
     {
-        $tokenparams = array(
-            'code' => $code,
-            'client_id' => $this->clientId,
-            'client_secret' => $this->clientSecret,
-            'grant_type' => 'authorization_code',
-            'redirect_uri' => $this->redirectURL,
-        );
         $postParam = "";
-        $isFirstTime = true;
-        foreach ($tokenparams as $key => $value) {
-            if (!$isFirstTime) {
-                $postParam .= "&";
+        if ($params) {
+            $isFirstTime = true;
+            foreach ($params as $key => $value) {
+                if (!$isFirstTime) {
+                    $postParam .= "&";
+                }
+                $postParam .= "{$key}=" . urlencode($value);
+                $isFirstTime = false;
             }
-            $postParam .= "{$key}=" . urlencode($value);
-            $isFirstTime = false;
+            if (!$isPost) {
+                $url .= "?{$postParam}";
+            }
         }
         if (function_exists('curl_init')) {
-            $session = curl_init($this->getTokenURL);
+            $session = curl_init($url);
             curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($session, CURLOPT_POST, true);
-            curl_setopt($session, CURLOPT_POSTFIELDS, $postParam);
-            //    curl_setopt($session, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded'));
-            $content = curl_exec($session);
-            $header = [];
-            if (!curl_errno($session)) {
-                $header = curl_getinfo($session);
+            if ($access_token) {
+                curl_setopt($session, CURLOPT_HTTPHEADER, ["Authorization: Bearer {$access_token}"]);
             }
-            curl_close($session);
-            $httpCode = $header['http_code'] ?? null;
-        } else {
-            $this->errorMessage[] = "Couldn't get information with the access token.";
-            return false;
-        }
-        if ($httpCode != 200) {
-            $this->errorMessage[] = "Error: {$this->getTokenURL}<br/>Description: {$content}";
-            return false;
-        }
-        $response = json_decode($content);
-
-
-        /* The example of Google in case of no error.
-        echo "#### response ####";var_export($response);echo "<hr>";
-    (object) array(
-            'access_token' => 'ya29.....',
-            'expires_in' => 3599,
-            'scope' => 'https://www.googleapis.com/auth/userinfo.profile openid https://www.googleapis.com/auth/userinfo.email',
-            'token_type' => 'Bearer',
-            'id_token' => 'eyJhbGciO.....',
+            if ($isPost) {
+                curl_setopt($session, CURLOPT_POST, true);
+                curl_setopt($session, CURLOPT_POSTFIELDS, $postParam);
             }
-        */
-
-        if (isset($response->error)) {
-            /* The example of Google in case of error
-            { "error" : "invalid_grant", "error_description" : "Code was already redeemed." }
-            */
-            $this->errorMessage[] = "Error: {$response->error}<br/>Description: {$response->error_description}";
-            return false;
-        }
-        if (strlen($response->access_token) < 1) {
-            $this->errorMessage[] = "Error: Access token didn't get from: {$this->getTokenURL}.";
-        }
-        if ($this->debugMode) {
-            $this->errorMessage[] = $content;
-        }
-
-        $this->id_token = $response->id_token;
-        $jWebToken = explode(".", $response->id_token);
-        for ($i = 0; $i < count($jWebToken); $i++) {
-            $jWebToken[$i] = json_decode(base64_decode(strtr($jWebToken[$i], '-_', '+/')));
-        }
-
-        /* The example for Google: First two elements of $jWebToken
-        var_export($jWebToken);echo "<hr>";
-            array (
-            0 => (object) array(
-            'alg' => 'RS256',
-            'kid' => '93b495162af0c87....',
-            'typ' => 'JWT', ),
-            1 => (object) array(
-            'iss' => 'https://accounts.google.com',
-            'azp' => '2829817.....',
-            'aud' => '2829817.....',
-            'sub' => '1131609828.....',
-            'email' => 'msyk.nii83@gmail.com',
-            'email_verified' => true,
-            'at_hash' => 'ixQDR3JF.....',
-            'name' => 'ABCD',
-            'picture' => 'https://lh3.googleusercontent.com/a/.....',
-            'given_name' => 'CD',
-            'family_name' => 'AB',
-            'iat' => 17126....,
-            'exp' => 171265..., ),
-            2 => NULL,
-            )
-          */
-        $username = $jWebToken[1]->sub;
-        $email = $jWebToken[1]->email;
-
-        if (function_exists('curl_init')) {
-            $session = curl_init($this->getInfoURL);
-            curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($session, CURLOPT_HTTPHEADER, ["Authorization: Bearer {$response->access_token}"]);
             $content = curl_exec($session);
             if (!curl_errno($session)) {
                 $header = curl_getinfo($session);
@@ -373,52 +461,84 @@ class OAuthAuth
             curl_close($session);
             $httpCode = $header['http_code'];
         } else {
-            $this->errorMessage[] = "Couldn't get information with the access token.";
+            $this->errorMessage[] = "Couldn't get call api (curl is NOT installed).";
             return false;
         }
         if ($httpCode != 200) {
             $this->errorMessage[] = "Error: {$this->getInfoURL}<br/>Description: {$content}";
             return false;
         }
-        $userInfo = json_decode($content);
+        if (isset($response->error)) {
+            $this->errorMessage[] = "Error: {$response->error}<br/>Description: {$response->error_description}";
+            return false;
+        }
+        $response = json_decode($content);
+        var_export($response, true);
+
         if ($this->debugMode) {
-            $this->errorMessage[] = var_export($userInfo, true);
+            $this->errorMessage[] = var_export($response, true);
         }
-
-//        $userInfo = json_decode(
-//            $userInfo = file_get_contents(
-//                $this->getInfoURL . '?access_token=' . $response->access_token)
-//        );
-        /* The example of $userInfo about Google.
-        var_export($userInfo);echo "<hr>";
-            (object) array(
-            'id' => '113160982.....',
-            'email' => 'xxxx...xxxx@gmail.com',
-            'verified_email' => true,
-            'name' => 'AB CD',
-            'given_name' => 'CD',
-            'family_name' => 'AB',
-            'picture' => 'https://lh3.googleusercontent.com/a/ACg8oc....',
-            'locale' => 'ja',
-            )
-        */
-
-        $realname = $userInfo->name;
-        if (strlen($username) < 2) {
-            $username = $userInfo->sub;
-            if (strlen($username) < 2) {
-                $this->errorMessage[] = "Error: User subject didn't get from: {$this->getTokenURL}.";
-            }
-        }
-        if (strlen($email) < 1) {
-            $email = $userInfo->email;
-        }
-
-        return array(
-            "realname" => $realname,
-            "username" => "{$username}@{$this->provider}",
-            "email" => $email,
-        );
+        return $response;
     }
 }
+
+/* The Responses from Google
+
+** https://accounts.google.com/o/oauth2/auth
+(object) array(
+    'access_token' => 'ya29.....',
+    'expires_in' => 3599,
+    'scope' => 'https://www.googleapis.com/auth/userinfo.profile openid https://www.googleapis.com/auth/userinfo.email',
+    'token_type' => 'Bearer',
+    'id_token' => 'eyJhbGciO.....',
+)
+
+** https://oauth2.googleapis.com/token
+First two elements of $jWebToken
+array (
+    0 => (object) array(
+    'alg' => 'RS256',
+    'kid' => '93b495162af0c87....',
+    'typ' => 'JWT', ),
+    1 => (object) array(
+    'iss' => 'https://accounts.google.com',
+    'azp' => '2829817.....',
+    'aud' => '2829817.....',
+    'sub' => '1131609828.....',
+    'email' => 'xxxx...xxxx@gmail.com',
+    'email_verified' => true,
+    'at_hash' => 'ixQDR3JF.....',
+    'name' => 'ABCD',
+    'picture' => 'https://lh3.googleusercontent.com/a/.....',
+    'given_name' => 'CD',
+    'family_name' => 'AB',
+    'iat' => 17126....,
+    'exp' => 171265..., ),
+    2 => NULL,
+)
+
+** https://www.googleapis.com/oauth2/v3/userinfo
+(object) array(
+    'id' => '113160982.....',
+    'email' => 'xxxx...xxxx@gmail.com',
+    'verified_email' => true,
+    'name' => 'AB CD',
+    'given_name' => 'CD',
+    'family_name' => 'AB',
+    'picture' => 'https://lh3.googleusercontent.com/a/ACg8oc....',
+    'locale' => 'ja',
+)
+*/
+/*
+ *
+(object) array(
+  'access_token' => 'EAAJLw1YLmZC8BOZCYTRI1xJHmlI5KZCqVyXjHJmUis5ihh4jxlZBNxfCwTjYGI1kCiT3IH4iD7YI3e15HZAKMZC2kslg2nI5SdG4b7mJavahzJhZCXXfq61cZBK0qvkXpQD529lqnwQZCQZCCr9ZAvUYe6Xjo6Bo0bqJN4aNKCirtZBnkT1cRm5bvcxxc8CFrIN4Bm83san6yfmCgOOBbmRZCHOQxiOCvYVJl7KmCPQh3WCDoe9MwazQPuwZDZD',
+  'token_type' => 'bearer',
+  'expires_in' => 5182481,
+)
+(object) array(
+  'link' => 'https://www.facebook.com/games/?app_id=646252287728639',
+  'name' => 'IM-Trial',
+  'id' => '646252287728639', ),
+ */
 
