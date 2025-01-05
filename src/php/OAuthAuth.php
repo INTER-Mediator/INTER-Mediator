@@ -199,7 +199,7 @@ class OAuthAuth
                 }
                 $this->baseURL = 'https://www.facebook.com/v21.0/dialog/oauth';
                 $this->getTokenURL = "https://graph.facebook.com/v21.0/oauth/access_token";
-                $this->getInfoURL = "https://graph.facebook.com/{$this->clientId}";
+                $this->getInfoURL = "https://graph.facebook.com/me";
                 $this->infoScope = ['email', 'name', 'id', 'public_profile'];
                 $this->isActive = true;
                 $this->provider = "Facebook";
@@ -378,12 +378,7 @@ class OAuthAuth
                         . var_export($tokenID, true);
                     return [];
                 }
-
-                return array(
-                    "username" => $tokenID["username"],
-                    "realname" => $tokenID["realname"],
-                    "email" => $tokenID["email"]
-                );
+                return $tokenID;
                 break;
             case "facebook":
                 $input_token = $_REQUEST['code'] ?? "";
@@ -412,7 +407,8 @@ class OAuthAuth
                     return [];
                 }
                 $username = $userInfo->id;
-                return ["username" => "{$username}@{$this->provider}",];
+                $realname = $userInfo->name;
+                return ["username" => "{$username}@{$this->provider}", "realname" => $realname];
                 break;
         }
         return [];
@@ -536,8 +532,7 @@ array (
   'expires_in' => 5182481,
 )
 (object) array(
-  'link' => 'https://www.facebook.com/games/?app_id=646252....',
-  'name' => 'IM-Trial',
-  'id' => '646252287....', ),
+  'name' => '新居 雅行',
+  'id' => '10161084674082992', ),
  */
 
