@@ -88,10 +88,6 @@ class GenerateJSCode
         $callURL = Params::getParameterValue("callURL", null);
         $scriptPathPrefix = Params::getParameterValue("scriptPathPrefix", null);
         $scriptPathSuffix = Params::getParameterValue("scriptPathSuffix", null);
-        $oAuthProvider = Params::getParameterValue("oAuthProvider", null);
-        $oAuthClientID = IMUtil::getFromProfileIfAvailable(
-            Params::getParameterValue("oAuthClientID", null));
-        $oAuthRedirect = Params::getParameterValue("oAuthRedirect", null);
         $passwordPolicy = Params::getParameterValue("passwordPolicy", null);
         $dbClass = Params::getParameterValue("dbClass", null);
         $dbDSN = Params::getParameterValue("dbDSN", '');
@@ -142,9 +138,23 @@ class GenerateJSCode
         }
 
         $pathToIM = IMUtil::pathToINTERMediator();
-        /*
-              * Read the JS programs regarding by the developing or deployed.
-              */
+
+        $oAuth = Params::getParameterValue("oAuth", null);
+        if (!is_null($oAuth)) {
+            $clientOAuthParams = [];
+            $isOAuthAvailable = false;
+            foreach ($oAuth as $provider => $info) {
+                if ($provider) {
+                    $isOAuthAvailable = true;
+                }
+                $clientOAuthParams[$provider] = ['AuthButton' => $info['AuthButton']];
+                $authObj = new OAuthAuth($provider);
+                $clientOAuthParams[$provider]['AuthURL'] = $authObj->getAuthRequestURL();
+            }
+        }
+            /*
+                  * Read the JS programs regarding by the developing or deployed.
+                  */
         $currentDir = "{$pathToIM}{$ds}src{$ds}js{$ds}";
         if (!file_exists($currentDir . 'INTER-Mediator.min.js')) {
             echo $this->combineScripts($activateClientService && $hasSyncControl);
@@ -152,9 +162,22 @@ class GenerateJSCode
             readfile($currentDir . 'INTER-Mediator.min.js');
         }
 
+
+        if (!is_null($oAuth)) {
+           $this->generateAssignJS(
+                "INTERMediatorOnPage.isOAuthAvailable", $isOAuthAvailable ? "true" : "false");
+            $this->generateAssignJS("INTERMediatorOnPage.oAuthParams", "[]");
+            foreach ($clientOAuthParams as $provider => $info) {
+                $this->generateAssignJS("INTERMediatorOnPage.oAuthParams[{$q}{$provider}{$q}]", "[]");
+                $this->generateAssignJS("INTERMediatorOnPage.oAuthParams[{$q}{$provider}{$q}][{$q}AuthButton{$q}]",
+                    $q, $info['AuthButton'], $q);
+                $this->generateAssignJS("INTERMediatorOnPage.oAuthParams[{$q}{$provider}{$q}][{$q}AuthURL{$q}]",
+                    $q, $info['AuthURL'], $q);
+            }
+        }
         /*
-         * Generate the link to the definition file editor
-         */
+            * Generate the link to the definition file editor
+            */
         $relativeToDefFile = '';
         $editorPath = realpath($pathToIM . $ds . 'editors');
         if ($editorPath) { // In case of core only build.
@@ -324,20 +347,6 @@ class GenerateJSCode
         }
         $this->generateAssignJS(
             "INTERMediatorOnPage.extraButtons", IMUtil::arrayToJS($extraButtons));
-
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.isOAuthAvailable", isset($oAuthProvider) ? "true" : "false");
-        $authObj = new OAuthAuth();
-        if ($authObj->isActive) {
-            $this->generateAssignJS("INTERMediatorOnPage.oAuthClientID",
-                $q, $oAuthClientID, $q);
-            $this->generateAssignJS("INTERMediatorOnPage.oAuthBaseURL",
-                $q, $authObj->oAuthBaseURL(), $q);
-            $this->generateAssignJS("INTERMediatorOnPage.oAuthRedirect",
-                $q, $oAuthRedirect, $q);
-            $this->generateAssignJS("INTERMediatorOnPage.oAuthScope",
-                $q, implode(' ', $authObj->infoScope()), $q);
-        };
 
         $authStoringValue = $options['authentication']['storing']
             ?? Params::getParameterValue("authStoring", 'credential');
