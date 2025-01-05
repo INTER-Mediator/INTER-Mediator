@@ -93,9 +93,11 @@ abstract class OperationVisitor
         $dbSettings->setCurrentUser($proxy->signedUser);
         $authDBHandler->authSupportRemoveOutdatedChallenges();
         if (is_null($uid) || $uid <= 0) {
+            Logger::getInstance()->setDebugMessage("[prepareCheckAuthentication] user id couldn't get from " . $dbSettings->getCurrentUser());
             return false;
         }
         if ($dbSettings->getIsSAML() && !$authHandler->authSupportIsWithinSAMLLimit($uid)) {
+            Logger::getInstance()->setDebugMessage("[prepareCheckAuthentication] In case of SAML is active, it's over the limit length. " . $dbSettings->getCurrentUser());
             return false;
         }
 

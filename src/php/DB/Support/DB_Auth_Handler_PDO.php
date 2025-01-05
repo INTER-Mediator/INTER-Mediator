@@ -212,21 +212,29 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      *
      * Using 'issuedhash'
      */
-    public
-    function authSupportRemoveOutdatedChallenges(): bool
+    public function authSupportRemoveOutdatedChallenges(): bool
     {
         $hashTable = $this->dbSettings->getHashTable();
         if (is_null($hashTable)) {
             return false;
         }
 
+        //*******
+//        $sql = "{$this->pdoDB->handler->sqlSelectCommand()} * FROM {$hashTable}";
+//        $result = $this->pdoDB->link->query($sql);
+//        $r = [];
+//        foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+//            $r[] = var_export($row, true);
+//        }
+//        $this->logger->setDebugMessage("[authSupportRemoveOutdatedChallenges] " . var_export($r, true));
+        //*******
+
         if (!$this->pdoDB->setupConnection()) { //Establish the connection
             return false;
         }
         $currentDTStr = $this->pdoDB->link->quote(IMUtil::currentDTString());
-        $longBeforeDTStr = $this->pdoDB->link->quote(IMUtil::currentDTString(3600 * 24 * 3));
-        $sql = "{$this->pdoDB->handler->sqlDELETECommand()}{$hashTable} WHERE" .
-            " (clienthost IS NOT NULL AND expired < {$currentDTStr}) OR (expired < {$longBeforeDTStr})";
+        $sql = "{$this->pdoDB->handler->sqlDELETECommand()}{$hashTable}"
+            . " WHERE clienthost IS NOT NULL AND expired < {$currentDTStr}";
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
             $this->pdoDB->errorMessageStore('Select:' . $sql);
@@ -245,6 +253,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     function authSupportOAuthUserHandling(array $keyValues): bool
     {
         $user_id = $this->authSupportGetUserIdFromUsername($keyValues["username"]);
+        $this->logger->setDebugMessage("[authSupportOAuthUserHandling] start with user id=" . $user_id . " from ".$keyValues["username"]);
 
         $userTable = $this->dbSettings->getUserTable();
         if (!$this->pdoDB->setupConnection()) { //Establish the connection
@@ -290,7 +299,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     public function authSupportRetrieveHashedPassword(string $username): ?string
     {
         $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
-        if(is_null($signedUser)) {
+        if (is_null($signedUser)) {
             $signedUser = "";
         }
 
@@ -333,8 +342,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      *
      * Using 'authuser'
      */
-    public
-    function authSupportCreateUser(string  $username, string $hashedpassword, bool $isSAML = false,
+    public function authSupportCreateUser(string  $username, string $hashedpassword, bool $isSAML = false,
                                    ?string $ldapPassword = null, ?array $attrs = null): bool
     {
         $this->logger->setDebugMessage("[authSupportCreateUser] username ={$username}, isSAML ={$isSAML}", 2);
@@ -457,7 +465,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     function authSupportChangePassword(string $username, string $hashednewpassword): bool
     {
         $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
-        if(is_null($signedUser)) {
+        if (is_null($signedUser)) {
             $signedUser = "";
         }
 

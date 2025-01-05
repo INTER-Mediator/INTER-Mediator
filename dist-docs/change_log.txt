@@ -20,6 +20,9 @@ Ver.14 (in Development)
 - HTML code can include in a HTML page. The "data-im-include" attribute of a page file inserts the html parts.
   If the value of its attribute is "include:<keyword>", the INTERMediatorOnPage.includingParts[<keyword>] is going to
   insert in the node. If the value is just a file name, it is going to insert the contents of the file.
+- OAuth returned! A sample of redirect url is samples/Auth_Support/OAuthCatcher.php. The authentication method
+  specified by authentication/storing value or $authStoring in the params.php must be 'credential'. The session-storage
+  doesn't support anymore.
 - Update libraries for security fixes.
 
 Ver.13 (October 26, 2024)
