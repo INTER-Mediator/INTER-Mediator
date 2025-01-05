@@ -445,6 +445,7 @@ class OAuthAuth
             }
         }
         if (function_exists('curl_init')) {
+            $httpCode = 0;
             $session = curl_init($url);
             curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
             if ($access_token) {
@@ -457,24 +458,22 @@ class OAuthAuth
             $content = curl_exec($session);
             if (!curl_errno($session)) {
                 $header = curl_getinfo($session);
+                $httpCode = $header['http_code'];
             }
             curl_close($session);
-            $httpCode = $header['http_code'];
         } else {
             $this->errorMessage[] = "Couldn't get call api (curl is NOT installed).";
             return false;
         }
         if ($httpCode != 200) {
-            $this->errorMessage[] = "Error: {$this->getInfoURL}<br/>Description: {$content}";
-            return false;
-        }
-        if (isset($response->error)) {
-            $this->errorMessage[] = "Error: {$response->error}<br/>Description: {$response->error_description}";
+            $this->errorMessage[] = "Error: {$url}<br/>Description: {$content}";
             return false;
         }
         $response = json_decode($content);
-        var_export($response, true);
-
+        if (isset($response->error)) {
+            $this->errorMessage[] = "Error: Description: " . var_export($response, true);
+            return false;
+        }
         if ($this->debugMode) {
             $this->errorMessage[] = var_export($response, true);
         }
@@ -532,13 +531,13 @@ array (
 /*
  *
 (object) array(
-  'access_token' => 'EAAJLw1YLmZC8BOZCYTRI1xJHmlI5KZCqVyXjHJmUis5ihh4jxlZBNxfCwTjYGI1kCiT3IH4iD7YI3e15HZAKMZC2kslg2nI5SdG4b7mJavahzJhZCXXfq61cZBK0qvkXpQD529lqnwQZCQZCCr9ZAvUYe6Xjo6Bo0bqJN4aNKCirtZBnkT1cRm5bvcxxc8CFrIN4Bm83san6yfmCgOOBbmRZCHOQxiOCvYVJl7KmCPQh3WCDoe9MwazQPuwZDZD',
+  'access_token' => 'EAAJLw1YLmZC8BOZCYTRI1xJHmlI5KZCqVyXjHJmUis5ihh4jxlZBNxfCwTjY....',
   'token_type' => 'bearer',
   'expires_in' => 5182481,
 )
 (object) array(
-  'link' => 'https://www.facebook.com/games/?app_id=646252287728639',
+  'link' => 'https://www.facebook.com/games/?app_id=646252....',
   'name' => 'IM-Trial',
-  'id' => '646252287728639', ),
+  'id' => '646252287....', ),
  */
 
