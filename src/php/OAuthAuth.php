@@ -154,8 +154,8 @@ class OAuthAuth
 
         $this->isActive = false;
         $this->provider = $provider;
-        $this->clientId = $oAuthIngo[$provider]["ClientID"] ?? null;
-        $this->clientSecret = $oAuthIngo[$provider]["ClientSecret"] ?? null;
+        $this->clientId = IMUtil::getFromProfileIfAvailable($oAuthIngo[$provider]["ClientID"] ?? null);
+        $this->clientSecret = IMUtil::getFromProfileIfAvailable($oAuthIngo[$provider]["ClientSecret"] ?? null);
         $this->redirectURL = $oAuthIngo[$provider]["RedirectURL"] ?? null;
 
         switch (strtolower($this->provider)) {
