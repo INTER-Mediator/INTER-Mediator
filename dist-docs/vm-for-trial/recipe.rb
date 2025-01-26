@@ -409,8 +409,8 @@ default-character-set=utf8
 EOF
     end
   else
-    execute 'curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash' do
-      command 'curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash'
+    execute 'curl -LsS https://r.mariadb.com/downloads/mariadb_repo_setup | sudo bash' do
+      command 'curl -LsS https://r.mariadb.com/downloads/mariadb_repo_setup | sudo bash'
     end
     package 'epel-release' do
       action :install
