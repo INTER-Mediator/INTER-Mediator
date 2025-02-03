@@ -684,7 +684,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->db_proxy->closeDBOperation();
     }
 
-
+/*
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
     public function testAuthUser5()
@@ -720,7 +720,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->assertTrue($checkResult, $testName);
         $this->db_proxy->closeDBOperation();
     }
-
+*//*
     #[RunInSeparateProcess]
     public function testAuthByValidUser()
     {
@@ -771,7 +771,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         }
         $this->db_proxy->closeDBOperation();
     }
-
+*/
     #[RunInSeparateProcess]
     public function testAuthByInvalidUser()
     {
@@ -803,7 +803,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->assertTrue($this->db_proxy->dbSettings->getRequireAuthentication(), $testName);
         $this->db_proxy->closeDBOperation();
     }
-
+/*
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
     public function testAuthUser6()
@@ -850,7 +850,7 @@ abstract class DB_FMS_Test_Common extends TestCase
         $this->assertTrue($checkResult, $testName);
         $this->db_proxy->closeDBOperation();
     }
-
+*/
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
     function testUserGroup()

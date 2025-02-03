@@ -60,14 +60,6 @@ spl_autoload_register(function (string $className): bool {
             }
         }
     }
-    // Load from the file inside files of FX.php.
-    $imRoot = dirname(__FILE__, 3) . DIRECTORY_SEPARATOR;
-    $className = $comps[count($comps) - 1];
-    $path = "{$imRoot}/vendor/yodarunamok/fxphp/lib/datasource_classes/{$className}.class.php";
-    if (file_exists($path)) {
-        require_once $path;
-        return true;
-    }
     return false;
 });
 
