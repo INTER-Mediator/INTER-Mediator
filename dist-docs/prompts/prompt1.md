@@ -17,7 +17,7 @@ Windsurfを利用して、INTER-Mediatorのアプリケーションを、全く�
 - スキーマのフィールドにはNOT NULL制約はつけないでください。
 
 # INTER-Mediatorのインストール
-- INTER-MediatorはComposerでインストール可能です。識別子は```inter-mediator/inter-mediator```です。バージョンは"*"を指定します。
+- INTER-MediatorはComposerでインストール可能です。識別子は```inter-mediator/inter-mediator```です。バージョンは"dev-master"を指定します。
 - Composerでのインストールでは、以下のプラグインの許可が必要です。
   - ```mouf/nodejs-installer```
   - ```simplesamlphp/composer-module-installer```
@@ -33,12 +33,24 @@ Windsurfを利用して、INTER-Mediatorのアプリケーションを、全く�
   - \$dbPassword変数は、データベースに接続する場合のパスワードを指定します。
   - \$dbDSN変数は、PDOでの接続に必要な接続文字列を指定します。
   - \$dbOption変数は、要素のない配列を代入します。
+  - \$browserCompatibility変数には、次の配列を代入します。
+    ```
+    array(
+    'Chrome' => '1+',
+    'Edge' => '12+',
+    'Firefox' => '2+',
+    'Opera' => '1+',
+    'Safari' => '4+',
+    'WebKit' => '1+',
+    );
+    ```
 
 # 定義ファイルの作成
 - 定義ファイルは、ルートにdeffile.phpという名称で、ファイルを作ってください。
 - PHPのプログラムとして、```vendor/inter-mediator/inter-mediator/INTER-Mediator.php``` をrequired_once関数で読み込みます。
 - その後、IM_Entry関数を呼び出します。
-  - IM_Entry関数の1つ目の引数は配列です。配列の要素は、連想配列です。一覧用、詳細表示用の2つの連想配列を用意してください。それぞれ、viewキー、tableキーは、作成したデータベースの主要テーブル名と同一です。nameキーとしては、テーブル名に「_list」を繋げたものと、「_detail」を繋げたものを用意します。
+  - IM_Entry関数の1つ目の引数は配列です。配列の要素は、連想配列です。一覧用、詳細表示用の2つの連想配列を用意してください。
+  - それぞれの連想配列において、viewキーおよび、tableキーは、作成したデータベースの主要テーブル名と同一です。nameキーとしては、一蘭用の連想配列ではテーブル名に「_list」を繋げたものと、詳細用の連想配列では「_detail」を繋げたものを用意します。
   - _listがついた連想配列には、navi-controlキーで「master-hide」という文字列を指定してください。
   - _listの付いた連想配列では、pagingキーに対して値「true」を指定してください。
   - _listの付いた連想配列では、repeat-controlキーに対して文字列の値「insert-confirm delete-confirm」を指定してください。
