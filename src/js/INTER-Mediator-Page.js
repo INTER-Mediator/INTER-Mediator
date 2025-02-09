@@ -961,6 +961,10 @@ let INTERMediatorOnPage = {
     let judge = false
     let positiveList = INTERMediatorOnPage.browserCompatibility()
 
+    if (positiveList === "*") {
+      return true;
+    }
+
     if (positiveList.edge && navigator.userAgent.indexOf('Edge/') > -1) {
       positiveList = {'edge': positiveList.edge}
     } else if (positiveList.trident && navigator.userAgent.indexOf('Trident/') > -1) {

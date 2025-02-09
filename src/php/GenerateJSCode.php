@@ -84,7 +84,7 @@ class GenerateJSCode
         $q = '"';
         $ds = DIRECTORY_SEPARATOR;
 
-        $browserCompatibility = Params::getParameterValue("browserCompatibility", null);
+        $browserCompatibility = Params::getParameterValue("browserCompatibility", "*");
         $callURL = Params::getParameterValue("callURL", null);
         $scriptPathPrefix = Params::getParameterValue("scriptPathPrefix", null);
         $scriptPathSuffix = Params::getParameterValue("scriptPathSuffix", null);
@@ -274,16 +274,19 @@ class GenerateJSCode
         if (isset($options['browser-compatibility'])) {
             $browserCompatibility = $options['browser-compatibility'];
         }
-        foreach ($browserCompatibility as $browser => $browserInfo) {
-            if (strtolower($browser) !== $browser) {
-                $browserCompatibility[strtolower($browser)] = $browserInfo;
-                unset($browserCompatibility[$browser]);
+        if ($browserCompatibility === "*") {
+            $this->generateAssignJS("INTERMediatorOnPage.browserCompatibility", "function(){return '*';}");
+        } else {
+            foreach ($browserCompatibility as $browser => $browserInfo) {
+                if (strtolower($browser) !== $browser) {
+                    $browserCompatibility[strtolower($browser)] = $browserInfo;
+                    unset($browserCompatibility[$browser]);
+                }
             }
+            $this->generateAssignJS(
+                "INTERMediatorOnPage.browserCompatibility",
+                "function(){return ", IMUtil::arrayToJS($browserCompatibility), ";}");
         }
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.browserCompatibility",
-            "function(){return ", IMUtil::arrayToJS($browserCompatibility), ";}");
-
         $remoteAddr = $_SERVER['REMOTE_ADDR'];
         if (is_null($remoteAddr) || $remoteAddr === FALSE) {
             $remoteAddr = '0.0.0.0';
