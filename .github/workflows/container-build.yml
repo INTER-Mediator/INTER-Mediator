@@ -9,8 +9,6 @@ on:
     paths:
       - '.github/workflows/Dockerfile_Container'
   workflow_dispatch:
-    image:
-      - '.github/workflows/Dockerfile_Container'
 
 jobs:
   publish:
@@ -41,7 +39,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile_Container
+          file: '.github/workflows/Dockerfile_Container'
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
