@@ -9,8 +9,6 @@ on:
     paths:
       - '.github/workflows/Dockerfile_Container'
   workflow_dispatch:
-    image:
-      - '.github/workflows/Dockerfile_Container'
 
 jobs:
   publish:
@@ -33,7 +31,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/msyk/php-apache_im
+          images: '.github/workflows/Dockerfile_Container'
           tags: |
             type=raw,value=latest
             type=sha,prefix=,suffix=,format=short
