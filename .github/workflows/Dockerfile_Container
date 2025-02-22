@@ -1,4 +1,4 @@
-FROM --platform=linux/x86_64 php:8.4-apache
+FROM php:8.4-apache
 
 # Refer to https://tt-computing.com/docker-php8_0-lamp, Thanks!
 
@@ -22,6 +22,5 @@ RUN docker-php-ext-install -j1 gd
 # PHP PDO MySQL
 RUN docker-php-ext-install pdo_mysql
 
-RUN rm -rf /var/www/html/* && git clone https://github.com/INTER-Mediator/IMApp_Trial /var/www/html
 RUN chown -R www-data /var/www
-RUN cd /var/www/html; composer update
+RUN chmod -R g+w /var/www
