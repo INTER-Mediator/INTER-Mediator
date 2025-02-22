@@ -9,6 +9,8 @@ on:
     paths:
       - '.github/workflows/Dockerfile_Container'
   workflow_dispatch:
+    image:
+      - '.github/workflows/Dockerfile_Container'
 
 jobs:
   publish:
