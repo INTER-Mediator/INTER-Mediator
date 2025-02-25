@@ -189,7 +189,7 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 
 //$suppressDefaultValuesOnCopy = false; // If you don't want to set default values on copying records, set this true
 //$suppressDefaultValuesOnCopyAssoc = false; // If you don't want to set default values on copying records of the associated records, set this true
-//$suppressAuthTargetFillingOnCreate = false; // If you don't want to set the target field of authentication on carete operation, set this true.
+//$suppressAuthTargetFillingOnCreate = false; // If you don't want to set the target field of authentication on create operation, set this true.
 
 /* OAuth Support */
 //$oAuth = [
