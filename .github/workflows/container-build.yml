@@ -31,7 +31,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/msyk/php-apache_im
+          images: ghcr.io/inter-mediator/php-apache_im
           tags: |
             type=raw,value=latest
             type=sha,prefix=,suffix=,format=short
