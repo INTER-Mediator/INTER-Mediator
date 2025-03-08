@@ -147,4 +147,50 @@ if (window) {
 }
 
 let IMParts_Catalog = {}
+// Developping chart plug-in.
+IMParts_Catalog.chartjs = {
+  requiredParameters: 5,
+  parameter: [],
+  ids: [],
+
+  instantiate: function (targetNode, params) {
+    INTERMediator.setIdValue(targetNode)
+    const canvas = document.createElement("canvas")
+    targetNode.appendChild(canvas)
+    this.ids.push(targetNode.id)
+    this.parameter.push(params)
+  },
+
+  finish: function () {
+    const maxIds = this.ids.length
+    for (var index = 0; index < maxIds; index += 1) {
+      const target = document.getElementById(this.ids[index])
+      const canvas = target.querySelector("canvas")
+      const param = this.parameter[index]
+      const contextName = param[1]
+      const labelName = params[2]
+      const labelField = params[3]
+      const dataName = params[4]
+      const dataFields = params[5].split(',')
+      new Chart(canvas, {
+        type: param[1],
+        data: {
+          labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+          datasets: [{
+            label: '# of Votes',
+            data: [12, 19, 3, 5, 2, 3],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+  }
+}
 // ****** This file should terminate on the new line. INTER-Mediator adds some codes before here. ****
