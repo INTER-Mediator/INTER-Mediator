@@ -120,15 +120,14 @@ if (window) {
 
   INTERMediatorLib.addEvent(window, 'load', function () {
     'use strict'
-    let key, errorNode
     if (INTERMediatorOnPage.initLocalContext) {
-      for (key in INTERMediatorOnPage.initLocalContext) {
+      for (let key in INTERMediatorOnPage.initLocalContext) {
         if (INTERMediatorOnPage.initLocalContext.hasOwnProperty(key)) {
           IMLibLocalContext.setValue(key, INTERMediatorOnPage.initLocalContext[key], true)
         }
       }
     }
-    errorNode = document.getElementById(INTERMediatorOnPage.nonSupportMessageId)
+    let errorNode = document.getElementById(INTERMediatorOnPage.nonSupportMessageId)
 
     // if (INTERMediatorOnPage.dbClassName === 'FileMaker_FX') {
     //   INTERMediator_DBAdapter.eliminateDuplicatedConditions = true

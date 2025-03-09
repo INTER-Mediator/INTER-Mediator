@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ */  -->
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>INTER-Mediator - Sample - Uploading a file / MySQL</title>
+    <script type="text/javascript" src="chart_MySQL.php"></script>
+    <script src="../../node_modules/inter-mediator-plugin-chartjs/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript">
+      INTERMediatorOnPage.doBeforeConstruct = () => {
+        INTERMediatorLog.suppressDebugMessageOnPage = true
+      }
+    </script>
+</head>
+<body>
+<header>
+    <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+</header>
+<div id="wrapper">
+    <h1>Chart.js</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Sales Log</th>
+            <th>Chart</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th>
+                <span data-im="customer@value"></span>
+            </th>
+            <td>
+                <table>
+                    <thead>
+                    <t>
+                        <th>Customer</th>
+                        <th>unitprice</th>
+                        <th>qty</th>
+                        <th>total</th>
+                    </t>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td data-im="saleslog@customer"></td>
+                        <td data-im="saleslog@unitprice"></td>
+                        <td data-im="saleslog@qty"></td>
+                        <td data-im="saleslog@total"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td>
+                <div data-im-widget-alone="chartjs@saleslog|bar|customer|売上|total"></div>
+                <div data-im-widget-alone="chartjs@saleslog|bar|customer|数量,単価|qty,unitprice"></div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<footer>
+    <small>INTER-Mediator ©2024</small>
+</footer>
+</body>
+</html>
