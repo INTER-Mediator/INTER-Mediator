@@ -55,6 +55,7 @@
     "inter-mediator-locale": "1.0.4",
     "inter-mediator-nodegraph": "1.0.6",
     "inter-mediator-plugin-codemirror": "1.1.0",
+    "inter-mediator-plugin-chartjs": "1.0.0",
     "inter-mediator-plugin-flatpickr": "1.1.0",
     "inter-mediator-plugin-jquerydatepicker": "1.1.0",
     "inter-mediator-plugin-jqueryfileupload": "1.6.0",

@@ -15,10 +15,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator - Sample - Uploading a file / MySQL</title>
     <script type="text/javascript" src="chart_MySQL.php"></script>
-<!--    <script src="../../node_modules/inter-mediator-plugin-fileupload/index.js"></script>-->
+    <script src="../../node_modules/inter-mediator-plugin-chartjs/index.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="text/javascript">
-      INTERMediatorLog.suppressDebugMessageOnPage = true
+      INTERMediatorOnPage.doBeforeConstruct = () => {
+        INTERMediatorLog.suppressDebugMessageOnPage = true
+      }
     </script>
 </head>
 <body>
@@ -43,16 +45,27 @@
             </th>
             <td>
                 <table>
+                    <thead>
+                    <t>
+                        <th>Customer</th>
+                        <th>unitprice</th>
+                        <th>qty</th>
+                        <th>total</th>
+                    </t>
+                    </thead>
                     <tbody>
                     <tr>
                         <td data-im="saleslog@customer"></td>
+                        <td data-im="saleslog@unitprice"></td>
+                        <td data-im="saleslog@qty"></td>
                         <td data-im="saleslog@total"></td>
                     </tr>
                     </tbody>
                 </table>
             </td>
             <td>
-                <div data-im-widget-alone="chartjs@saleslog|bar|顧客|customer|売上|total"></div>
+                <div data-im-widget-alone="chartjs@saleslog|bar|customer|売上|total"></div>
+                <div data-im-widget-alone="chartjs@saleslog|bar|customer|数量,単価|qty,unitprice"></div>
             </td>
         </tr>
         </tbody>

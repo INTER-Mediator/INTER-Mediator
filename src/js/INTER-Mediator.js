@@ -664,6 +664,9 @@ const INTERMediator = {
                 attrParts.shift()
                 attrParts.unshift(contextName)
                 IMParts_Catalog[pluginName].instantiate(node, attrParts)
+                if (imPartsShouldFinished.indexOf(IMParts_Catalog[pluginName]) < 0) {
+                  imPartsShouldFinished.push(IMParts_Catalog[pluginName])
+                }
               }
             }
           }
