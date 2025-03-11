@@ -275,7 +275,7 @@ $dontRecordDownloadNoGet = false; */
 
 /* Media File Support
  * =================== */
-//$mediaRootDir = "/var/www/images";
+$mediaRootDir = "/tmp"; // Supposed to macOS
 //$cacheMediaAccess = false;
 
 /* S3 Support

@@ -55,7 +55,7 @@ IM_Entry(
         'formatter' => array(
             array('field' => 'chat@postdt', 'converter-class' => 'MySQLDateTime'),
         ),
-        'media-root-dir' => '/tmp',
+//        'media-root-dir' => '/tmp',
         'authentication' => [
             'authexpired' => '3600',
             'storing' => 'credential',

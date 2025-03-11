@@ -15,6 +15,7 @@ Ver.14 (in Development)
 - Add support for PHP 8.4.
 - FX.php has code that using deprecated way in PHP 8.4, and various adjustments would be needed to make it work with
   PHP 8. However, there are currently no new projects using FX.php, we will discontinue support for FX.php.
+- The prompt for LLM-based AI programming is added to /dist-docs/promputs. You can try it with Windsurf.
 - Charting feature is implemented with chart.js. The new html attribute data-im-widget-alone has to be used for charging,
   and the value should be as like "chartjs@saleslog|bar|customer|数量,単価|qty,unitprice". The sample is
   /sample/Sample_webpage/char_MySQL.*.
