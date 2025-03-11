@@ -608,7 +608,7 @@ class IMLibContext {
     upper = this.recordOrder.length
     for (let i = 0; i < fields.length; i += 1) {
       if (oneRecord[fields[i]]) {
-        index = (upper + lower) / 2
+        index = parseInt((upper + lower) / 2) // parseInt is required to an int value.
         do {
           targetRecord = this.store[this.recordOrder[index]]
           contextValue = targetRecord[fields[i]]
