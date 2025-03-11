@@ -33,7 +33,7 @@
 
 /**
  * Web page generator main class. This class has just static methods and properties.
- * Usually you don't have to instantiate this class with a new operator.
+ * Usually you don't have to instantiate this class with the new operator.
  * @constructor
  */
 const INTERMediator = {

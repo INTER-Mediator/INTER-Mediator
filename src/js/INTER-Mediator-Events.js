@@ -63,7 +63,7 @@ IMLibEventDispatch.prototype.setExecuteByCode = function (idValue, keyCode, exec
 
 /**
  *
- * Usually you don't have to instantiate this class with new operator.
+ * Usually you don't have to instantiate this class with the new operator.
  * @constructor
  */
 let IMLibEventResponder = {

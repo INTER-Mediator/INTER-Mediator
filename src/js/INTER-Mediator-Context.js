@@ -207,7 +207,7 @@ class IMLibContext {
               }
             }
             if (isOthersModified) {
-              // The value of database and the field is different. Others must be changed this field.
+              // The value of the database and the field are different. Others must be changed this field.
               newValue = IMLibElement.getValueFromIMNode(changedObjectCapt)
               if (!warnOthersModifyProc(initialvalue, newValue, currentFieldVal)) {
                 return
@@ -573,12 +573,6 @@ class IMLibContext {
     this.modified = {}
   }
 
-  getContextDef() {
-    'use strict'
-    return INTERMediatorLib.getNamedObject(
-      INTERMediatorOnPage.getDataSources(), 'name', this.contextName)
-  }
-
   /*
    * The isDebug parameter is for debugging and testing. Usually you should not specify it.
    */
@@ -614,7 +608,7 @@ class IMLibContext {
     upper = this.recordOrder.length
     for (let i = 0; i < fields.length; i += 1) {
       if (oneRecord[fields[i]]) {
-        index = parseInt((upper + lower) / 2)
+        index = (upper + lower) / 2
         do {
           targetRecord = this.store[this.recordOrder[index]]
           contextValue = targetRecord[fields[i]]

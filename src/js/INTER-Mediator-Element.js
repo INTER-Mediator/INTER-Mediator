@@ -22,7 +22,7 @@ const IMLibFormat = require('../../node_modules/inter-mediator-formatter/index')
 
 /**
  *
- * Usually you don't have to instantiate this class with new operator.
+ * Usually you don't have to instantiate this class with the new operator.
  * @constructor
  */
 const IMLibElement = {
@@ -131,10 +131,10 @@ const IMLibElement = {
     if (!formatFunc) {
       const firstParen = formatSpec.indexOf('(')
       const lastParen = formatSpec.lastIndexOf(')')
-      const parsed = formatSpec.substr(0, firstParen).match(/[^a-zA-Z]*([a-zA-Z]+).*/)
+      const parsed = formatSpec.substring(0, firstParen).match(/[^a-zA-Z]*([a-zA-Z]+).*/)
       formatFunc = IMLibElement.formatters[parsed[1].toLocaleLowerCase()]
       params = formatSpec.substring(firstParen + 1, lastParen)
-      if (params.length === 0) { // in case of parameter is just ().
+      if (params.length === 0) { // in the case of parameter is just ().
         params = 0
       }
     }
@@ -157,7 +157,7 @@ const IMLibElement = {
       const firstParen = formatSpec.indexOf('(')
       const lastParen = formatSpec.lastIndexOf(')')
       if (firstParen >= 0 && lastParen >= 0) {
-        const parsed = formatSpec.substr(0, firstParen).match(/[^a-zA-Z]*([a-zA-Z]+).*/)
+        const parsed = formatSpec.substring(0, firstParen).match(/[^a-zA-Z]*([a-zA-Z]+).*/)
         unformatFunc = IMLibElement.unformatters[parsed[1].toLocaleLowerCase()]
         params = formatSpec.substring(firstParen + 1, lastParen)
       }
@@ -356,12 +356,7 @@ const IMLibElement = {
               }
             }
           } else {
-            if (compareAsNumeric(valueAttr, curVal) && !INTERMediator.dontSelectRadioCheck) {
-              // The above operator should be '==' not '==='
-              element.checked = true
-            } else {
-              element.checked = false
-            }
+            element.checked = compareAsNumeric(valueAttr, curVal) && !INTERMediator.dontSelectRadioCheck;
           }
         } else if (typeAttr === 'date') {
           element.value = !curVal ? "" : IMLibFormat.dateFormat(curVal, '%Y-%M-%D')
@@ -502,7 +497,7 @@ const IMLibElement = {
   /*
    <<Multiple lines in TEXTAREA before IE 10>> 2017-08-05, Masayuki Nii
 
-   Most of modern browsers can handle the 'next line(\n)' character as the line separator.
+   Most of the modern browsers can handle the 'next line(\n)' character as the line separator.
    Otherwise, IE 9 requires special handling for multiple line strings.
 
    - If such a strings sets to value property, it shows just a single line.
@@ -568,8 +563,8 @@ const IMLibElement = {
   checkingSeconds: 1, // Public
   waitSeconds: 5, // Public
   //ignoreKeys: ['Tab', 'Enter'],
-  isAlreadySaved: false, // Checking within timer process
-  isNonTimerSaved: false, // Checking saving in other process
+  isAlreadySaved: false, // Checking within a timer process
+  isNonTimerSaved: false, // Checking saving in another process
 
   setupSavingTimer: (elementId) => {
     if (!IMLibElement.textAutoSave) {

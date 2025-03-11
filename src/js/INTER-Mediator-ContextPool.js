@@ -19,7 +19,7 @@
  */
 /**
  *
- * Usually you don't have to instantiate this class with new operator.
+ * Usually you don't have to instantiate this class with the new operator.
  * @constructor
  */
 const IMLibContextPool = {
@@ -411,7 +411,7 @@ const IMLibContextPool = {
         const keyField = contextDef.key
         const recKey = keyField + '=' + info.pkvalue[0]
         for (let j = 0; j < info.field.length; j += 1) {
-          if (this.poolingContexts[i].getValue(recKey, info.field[j]) != info.value[j]) {
+          if (this.poolingContexts[i].getValue(recKey, info.field[j]) !== info.value[j]) {
             this.poolingContexts[i].setValue(recKey, info.field[j], info.value[j])
           }
         }
@@ -597,7 +597,7 @@ const IMLibContextPool = {
     function commonLength(path1, path2) {
       const maxLen = Math.min(path1.length, path2.length)
       for (let i = 0; i < maxLen; i += 1) {
-        if (path1.substring(i, i + 1) != path2.substring(i, i + 1)) {
+        if (path1.substring(i, i + 1) !== path2.substring(i, i + 1)) {
           return i;
         }
       }
@@ -613,7 +613,7 @@ const IMLibContextPool = {
 
         for (i = 0; i < element.parentNode.childNodes.length; i++) {
           const e = element.parentNode.childNodes[i];
-          if (e.tagName == element.tagName) {
+          if (e.tagName === element.tagName) {
             s.push(e);
           }
         }
