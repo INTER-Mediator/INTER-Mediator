@@ -24,7 +24,7 @@ and anyone can see sample pages working with database.
 You don't have to deploy the samples if you just want to see this at a glance.
 
 The demo with the latest version of INTER-Mediator is here:
-- https://demo.inter-mediator.com/INTER-Mediator/samples/
+- https://demo.inter-mediator.com/IMApp_Trial/vendor/inter-mediator/inter-mediator/samples/
 
 This demo page works on INTER-Mediator Ver.5.x (Milestone version).
 INTER-Mediator Ver.6 was quite different from previous versions. So we have called the Milestone version for the final release of Ver.5.

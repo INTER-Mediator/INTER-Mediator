@@ -22,14 +22,14 @@
  */
 /**
  *
- * Usually you don't have to instantiate this class with new operator.
+ * Usually you don't have to instantiate this class with the new operator.
  * @constructor
  */
 const INTERMediator_DBAdapter = {
 
   eliminateDuplicatedConditions: false, /*
-   If this property is set to true, the dupilicate conditions in query is going to eliminate before
-   submitting to the server. This behavior is required in some case of FileMaker Server, but it can resolve
+   If this property is set to true, the duplicate conditions in a query are going to eliminate before
+   submitting to the server. This behavior is required in some cases of FileMaker Server, but it can resolve
    by using the id=>-recid in a context. 2015-4-19 Masayuki Nii.
    */
   debugMessage: false,
@@ -428,13 +428,13 @@ const INTERMediator_DBAdapter = {
 
   /*
    db_query
-   Querying from database. The parameter of this function should be the object as below:
+   Querying from a database. The parameter of this function should be the object as below:
 
    {
-   name:<name of the context>
-   records:<the number of retrieving records, could be null>
-   fields:<the array of fields to retrieve, but this parameter is ignored so far.
-   parentkeyvalue:<the value of foreign key field, could be null>
+   name: <name of the context>
+   records: <the number of retrieving records, and it could be null>
+   fields: <the array of fields to retrieve, but this parameter is ignored so far.
+   parentkeyvalue:<the value of foreign key field, and it could be null>
    conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>
    useoffset:<true/false whether the offset parameter is set on the query.>
    uselimit:<true/false whether the limit parameter is set on the query.>
@@ -679,9 +679,9 @@ const INTERMediator_DBAdapter = {
    db_update
    Update the database. The parameter of this function should be the object as below:
 
-   {   name:<Name of the Context>
-   conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records>
-   dataset:<the array of the object {field:xx,value:xx}. each value will be set to the field.> }
+   {name: <Name of the Context>
+   conditions: <the array of the object {field:xx,operator:xx,value:xx} to search records>
+   dataset: <the array of the object {field:xx,value:xx}. each value will be set to the field.> }
    */
   db_updateChecking: function (args) {
     'use strict'
@@ -768,8 +768,8 @@ const INTERMediator_DBAdapter = {
    db_delete
    Delete the record. The parameter of this function should be the object as below:
 
-   {   name:<Name of the Context>
-   conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
+   {name: <Name of the Context>
+   conditions: <the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
    */
   db_deleteChecking: function (args) {
     'use strict'
@@ -845,15 +845,15 @@ const INTERMediator_DBAdapter = {
    db_createRecord
    Create a record. The parameter of this function should be the object as below:
 
-   {   name:<Name of the Context>
-   dataset:<the array of the object {field:xx,value:xx}. Initial value for each field> }
+   {name: <Name of the Context>
+   dataset: <the array of the object {field:xx,value:xx}. Initial value for each field> }
 
    This function returns the value of the key field of the new record.
    */
   db_createRecord_async: async function (args, successProc, failedProc) {
     'use strict'
     let isFormData = false, paramsStr = '', paramsFD = null
-    for (const def of args.dataset) { // Checking the multi parted form data is required.
+    for (const def of args.dataset) { // Checking the multi-parted form data is required.
       if (def.value && def.value.file && def.value.kind && def.value.kind === 'attached') {
         isFormData = true
       }
@@ -959,13 +959,13 @@ const INTERMediator_DBAdapter = {
    {
    name: The name of context,
    conditions: [ {
-   field: Field name, operator: '=', value: Field Value : of the source record
+   field: <ield name>, operator: '=', value: <field value of the source record>
    }],
    associated: Associated Record info.
    [{name: assocDef.name, field: fKey, value: fValue}]
    }
-   {   name:<Name of the Context>
-   conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
+   {name: <Name of the Context>
+   conditions: <the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
    */
   db_copy_async: async function (args, successProc, failedProc) {
     'use strict'

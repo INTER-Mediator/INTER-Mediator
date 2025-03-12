@@ -138,10 +138,10 @@ $browserCompatibility = array(
 //    'username' => 'user1@msyk.net',
 //    'password' => 'anypassword',
 //);
-// $waitAfterMail = 20;  // Wait after send email with smtp server. Unit is Millisecond.
+// $waitAfterMail = 20; // Wait after send email with smtp server. Unit is Millisecond.
 
 // Sending email features compatibility with INTER-Mediator v5 unless 'template-context' key isn't specified.
-//$sendMailCompatibilityMode = false;  // default is false (Until Ver.9 the default value was true.)
+//$sendMailCompatibilityMode = false; // default is false (Until Ver.9 the default value was true.)
 
 // Error/Warning/Debug messages can write to the PHP's error log. The default values are false
 //$errorMessageLogging = false;
@@ -162,7 +162,7 @@ $authRealm = 'INTER-Mediator_Samples';
 //$passwordHash = '2';  // '2m' supports SHA-256 and Wrapping SHA-1 with SHA-256, '2' supports SHA-256 password hash only,
 // No specification or other string support SHA-1, SHA-256, and wrapping.
 //$alwaysGenSHA2 = true; // On the password changing, generate SHA-2 hash. The default is false.
-//$migrateSHA1to2 = true;// If the login account relays on SHA-a, exchange it with 2m style SHA-2 hash. The default is false.
+//$migrateSHA1to2 = true;// If the login account relays on SHA-a, exchange it with '2m' style SHA-2 hash. The default is false.
 //$credentialCookieDomain = ""; // The domain information of the cookie for 'credential' auth. Falsy value means no domain, also the default.
 //$isRequired2FA = true; // Default is false.
 //$mailContext2FA = "mailtemplate@id=995"; // Template record for the mail to send the 2FA code.
@@ -172,9 +172,9 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 
 /* Authentication panels customizing */
 //$authPanelTitle= "そうだ";  // Auth Panel's title
-//$authPanelTitle2FA= null;   // 2FA Auth Panel's title
+//$authPanelTitle2FA= null; // 2FA Auth Panel's title
 //$authPanelExp= "温泉に行こう";  // Auth Panel's explanations
-//$authPanelExp2FA= null;   // 2FA Auth Panel's explanations
+//$authPanelExp2FA= null; // 2FA Auth Panel's explanations
 
 // The 'issuedhash' table for storing challenges of authentication can be using another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
@@ -216,21 +216,10 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 // for Active Directory LDAP ['username' => 'cn|0', 'realname' => ['sn|0','givenName|0'], 'email' => 'mail|0']
 //$samlAdditionalRules = ['username' => '(user02|user03)'];
 
-// $extraButtons for additional buttons followed by the "SAML" button of authenticating panel.
-//$clientId = "353910848422-e08dmcn6s8pc43a94d22s5510b8mnrqj.apps.googleusercontent.com";
-//$redirectURI = "https://demo.inter-mediator.com/saml-trial/lib/src/INTER-Mediator/vendor/simplesamlphp/simplesamlphp/public/module.php/authoauth2/linkback.php";
-//$appURL = "https://demo.inter-mediator.com/saml-trial/chat.html";
+// $extraButtons for additional buttons followed by the "SAML" button of authenticating a panel.
 //$extraButtons = [
-////    "About this application" => "https://inter-mediator.com",
-//    "Google" => "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&access_type=offline&"
-//        . "client_id={$clientId}&"
-//        . "scope=openid%20email&"
-//        . "redirect_uri={$redirectURI}&"
-//        . "state=authoauth2|security_token%3D333344445555%26url%3D{$appURL}&"
-//        . "nonce=0394852-3190485-2490358&"
-//        . "hd=gmail.com",
+//  "About this application" => "https://inter-mediator.com",
 //];
-// https://https://accounts.google.com/o/oauth2/v2/auth?state=invalid-state&scope=openid&response_type=code&redirect_uri=https://demo.inter-mediator.com/saml-trial/lib/src/INTER-Mediator/vendor/simplesamlphp/simplesamlphp/public/module.php/authoauth2/linkback.php&client_id=353910848422-e08dmcn6s8pc43a94d22s5510b8mnrqj.apps.googleusercontent.com
 
 /* User Enrollment */
 $limitEnrollSecond = 3600;
@@ -241,7 +230,7 @@ $limitPwChangeSecond = 3600;
  * Port number and host name for service server */
 $notUseServiceServer = true;  // Default is TRUE!. It has to set false to work every feature with Service Server.
 /*
-$activateClientService = true;  // Default is FLASE!.
+$activateClientService = true; // Default is FLASE!.
 $serviceServerProtocol = "ws";  // The Service Server url components to connect from a client.
 $serviceServerHost = "localhost";    // "" for public ip address.
 $serviceServerPort = "11478";
@@ -275,7 +264,7 @@ $dontRecordDownloadNoGet = false; */
 
 /* Media File Support
  * =================== */
-//$mediaRootDir = "/var/www/images";
+$mediaRootDir = "/tmp"; // Supposed to macOS
 //$cacheMediaAccess = false;
 
 /* S3 Support
@@ -306,7 +295,7 @@ $dontRecordDownloadNoGet = false; */
 /* Importing CSV file.
  * ===================
  The field names list can place on the first line of the original csv file. */
-//$import1stLine = 'num1 ,num2 ,num3 ,dt1 ,vc1 ,vc2 , vc3 ,text1 ,text2 ,'; // Field names list
+//$import1stLine = 'num1 ,num2 ,num3 ,dt1, vc1, vc2, vc3, text1, text2,'; // Field names list
 //$importSkipLines = 3; // Skipping lines from the start of csv file.
 //$importFormat = "TSV";  // or "TSV", the default is "CSV".
 //$useReplace = true; // For MySQL, use REPLACE instead of INSERT
@@ -351,7 +340,7 @@ $followingTimezones = true;
 $appLocale = "ja_JP";   // Locale for application has to be specified the language_country code.
 $appCurrency = "JP";    // Locale for currency has to be specified the country code.
 
-/* Customize the path generation in uploading file
+/* Customize the path generation in uploading a file
  *
  * The value "assjis" and "asucs4" are supported. This is not convert path string from key
  * field and value, but the string encoding is converted to sjis or ucs-4 and back to utf-8.

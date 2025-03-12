@@ -33,27 +33,25 @@
 
 /**
  * Web page generator main class. This class has just static methods and properties.
- * Usually you don't have to instantiate this class with a new operator.
+ * Usually you don't have to instantiate this class with the new operator.
  * @constructor
  */
 const INTERMediator = {
   /**
-   * The separator for target specification.
-   * This must be referred as 'INTERMediator.separator'. Don't use 'this.separator'
+   * The separator for target specification. This must be described to 'INTERMediator.separator'. Don't use 'this.separator'
    * @public
    * @type {string}
    */
   separator: '@',
   /**
-   * The separator for multiple target specifications. The white space characters are
-   * used as it in current version.
+   * The separator for multiple target specifications. The white space character is available in the current version.
    * @deprecated
    * @type {string}
    */
   defDivider: '|',
   /**
-   * If the target (i.e. 3rd component) of the target specification is omitted in generic tags,
-   * the value will set into innerHTML property. Otherwise it's set as a text node.
+   * If the target (i.e., third component) of the target specification is omitted in generic tags,
+   * the value will set into innerHTML property. Otherwise, it's set as a text node.
    * @public
    * @type {boolean}
    */
@@ -71,15 +69,14 @@ const INTERMediator = {
    */
   elementIds: [],
   /**
-   * If this property is true, any radio buttuns aren't set the 'check.'
-   * The default value of false.
+   * If this property is true, any radio buttuns aren't set the 'check.' The default value of false.
    * @public
    * @type {boolean}
    */
   dontSelectRadioCheck: false,
   /**
-   * If this property is true, the optimistic lock in editing field won't work, and update
-   * database without checking of modification by other users.
+   * If this property is true, the optimistic lock in editing field won't work,
+   * and update a database without checking of modification by other users.
    * The default value of false.
    * @public
    * @type {boolean}
@@ -115,7 +112,7 @@ const INTERMediator = {
   /**
    * This property is for FileMaker_FX.
    * @public
-   * @type {int}
+   * @type {null|int}
    */
   totalRecordCount: null,
   /**
@@ -160,7 +157,7 @@ const INTERMediator = {
   /**
    * Storing the innerHTML property of the BODY tagged node to retrieve the page to initial condition.
    * @private
-   * @type {string}
+   * @type {null|string}
    */
   rootEnclosure: null,
   /**
@@ -411,10 +408,10 @@ const INTERMediator = {
   },
 
   /** Construct Page **
-   * Construct the Web Page with DB Data. Usually this method will be called automatically.
+   * Construct the Web Page with DB Data. Usually, this method will be called automatically.
    * @param indexOfKeyFieldObject If this parameter is omitted or set to true,
-   *    INTER-Mediator is going to generate entire page. If ths parameter is set as the Context object,
-   *    INTER-Mediator is going to generate a part of page which relies on just its context.
+   *    INTER-Mediator is going to generate entire page. If the parameter is set as the Context object,
+   *    INTER-Mediator is going to generate a part of the page which relies on just its context.
    */
   construct: (indexOfKeyFieldObject) => {
     'use strict'
@@ -431,23 +428,23 @@ const INTERMediator = {
 
   /**
    * This method is page generation main method. This will be called with one of the following
-   * 3 ways:
+   * three ways:
    * <ol>
    *     <li>INTERMediator.constructMain() or INTERMediator.constructMain(true)<br>
    *         This happens to generate page from scratch.</li>
    *     <li>INTERMediator.constructMain(context)<br>
-   *         This will be reconstracted to nodes of the "context" parameter.
-   *         The context parameter should be refered to a IMLIbContext object.</li>
+   *         This will be reconstructed to nodes of the "context" parameter.
+   *         The context parameter should be referred to a IMLIbContext object.</li>
    *     <li>INTERMediator.constructMain(context, recordset)<br>
-   *         This will append nodes to the enclocure of the "context" as a repeater.
-   *         The context parameter should be refered to a IMLIbContext object.
+   *         This will append nodes to the enclosure of the "context" as a repeater.
+   *         The context parameter should be referred to an IMLIbContext object.
    *         The recordset parameter is the newly created record
-   *         as the form of an array of an dictionary.</li>
+   *         as the form of an array containing a dictionary.</li>
    * </ol>
    * @param updateRequiredContext If this parameter is omitted or set to true,
-   *    INTER-Mediator is going to generate entire page. If ths parameter is set as the Context object,
-   *    INTER-Mediator is going to generate a part of page which relies on just its context.
-   * @param recordset If the updateRequiredContext paramter is set as the Context object,
+   *    INTER-Mediator is going to generate entire page. If the parameter is set as the Context object,
+   *    INTER-Mediator is going to generate a part of the page which relies on just its context.
+   * @param recordset If the updateRequiredContext parameter is set as the Context object,
    *    This parameter is set to newly created record.
    */
   constructMain: async (updateRequiredContext, recordset) => {
@@ -526,7 +523,7 @@ const INTERMediator = {
         IMLibPageNavigation.navigationSetup()
         /*
          If the pagination control should be setup, the property IMLibPageNavigation.deleteInsertOnNavi
-         to maintain to be a valid data.
+         to maintain to be valid data.
          */
       }
     } catch (ex) {
@@ -642,10 +639,38 @@ const INTERMediator = {
       }
       IMLibCalc.updateCalculationFields()
       IMLibPageNavigation.navigationSetup()
+      setUpPlugInNodesOfContextBased()
       IMLibLocalContext.archive()
       appendCredit()
       if (INTERMediatorOnPage.activateMaintenanceCall) {
         await INTERMediator_DBAdapter.mentenance()
+      }
+    }
+
+    function setUpPlugInNodesOfContextBased() {
+      const nodes = document.querySelectorAll('[data-im-widget-alone]')
+      for (const node of nodes) {
+        INTERMediator.currentEncNumber += 1;
+        INTERMediator.linkedElmCounter = 0
+        const attrValue = node.dataset.imWidgetAlone
+        const attrParts = attrValue.split('|')
+        if (attrParts.length > 0) {
+          const attrCore = attrParts[0].split("@")
+          if (attrCore.length === 2) {
+            const pluginName = attrCore[0].trim()
+            const contextName = attrCore[1].trim()
+            if (IMParts_Catalog[pluginName]) {
+              if(attrParts.length >= IMParts_Catalog[pluginName].requiredParameters) {
+                attrParts.shift()
+                attrParts.unshift(contextName)
+                IMParts_Catalog[pluginName].instantiate(node, attrParts)
+                if (imPartsShouldFinished.indexOf(IMParts_Catalog[pluginName]) < 0) {
+                  imPartsShouldFinished.push(IMParts_Catalog[pluginName])
+                }
+              }
+            }
+          }
+        }
       }
     }
 
@@ -684,13 +709,13 @@ const INTERMediator = {
     }
 
     /** --------------------------------------------------------------------
-     * Seeking nodes and if a node is an enclosure, proceed repeating.
+     * Seeking nodes and if a node is an enclosure, proceed to repeat.
      */
 
     async function seekEnclosureNode(node, currentRecord, parentObjectInfo, currentContextObj) {
       if (node.nodeType === 1) { // Work for an element
         try {
-          if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
+          if (INTERMediatorLib.isEnclosure(node, false)) { // Linked an element and an enclosure
             const className = node.getAttribute('class')
             const attr = node.getAttribute('data-im-control')
             if ((className && className.match(/_im_post/)) ||
@@ -777,7 +802,7 @@ const INTERMediator = {
                   imPartsShouldFinished.push(IMParts_Catalog[wInfo[0]])
                 }
               }
-            } else if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
+            } else if (INTERMediatorLib.isEnclosure(node, false)) { // Linked an element and an enclosure
               await expandEnclosure(node, null, null, null)
             } else {
               const children = node.childNodes // Check all child nodes.
@@ -821,7 +846,7 @@ const INTERMediator = {
       IMLibLocalContext.bindingDescendant(node)
 
       /** --------------------------------------------------------------------
-       * Expanding enclosure as usual (means not 'cross table').
+       * Expanding enclosure as usual (means not 'cross-table').
        */
       async function enclosureProcessing(enclosureNode, repeatersOriginal, currentRecord, parentObjectInfo,
                                          currentContextObj, procBeforeRetrieve, customExpandRepeater) {
@@ -979,10 +1004,10 @@ const INTERMediator = {
       }
 
       /** --------------------------------------------------------------------
-       * expanding enclosure for cross table
+       * expanding enclosure for cross-table
        */
       async function expandCrossTableEnclosure(node, parentObjectInfo, currentContextObj) {
-        // Collecting 4 parts of cross table.
+        // Collecting 4 parts of cross-table.
         let ctComponentNodes = crossTableComponents(node)
         if (ctComponentNodes.length !== 4) {
           throw new Error('Exception-xx: Cross Table Components aren\'t prepared.')
@@ -995,7 +1020,7 @@ const INTERMediator = {
         //   node.removeChild(node.childNodes[0])
         // }
 
-        // Decide the context for cross point cell
+        // Decide the context for cross-point cell
         const repeaters = collectRepeaters([ctComponentNodes[3].cloneNode(true)])
         const linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode
         const linkDefs = collectLinkDefinitions(linkedNodes)
@@ -1025,7 +1050,7 @@ const INTERMediator = {
           node, [lineNode], null, parentObjectInfo, currentContextObj)
         const rowArray = rowContext.indexingArray(labelKeyRow)
 
-        // Create all cross point cell
+        // Create all cross-point cells
         INTERMediator.crossTableStage = 3
         targetRepeater = ctComponentNodes[3].cloneNode(true)
         const nodeForKeyValues = {}
@@ -1165,7 +1190,7 @@ const INTERMediator = {
         }
       } // The end of function expandCrossTableEnclosure().
 
-      // Detect cross table components in a tbody enclosure.
+      // Detect cross-table components in a tbody enclosure.
       function crossTableComponents(node) {
         let components = []
         let count = 0
@@ -1250,7 +1275,7 @@ const INTERMediator = {
           // get the tag name of the element
           const typeAttr = currentLinkedNodes[k].getAttribute('type')// type attribute
           const linkInfoArray = INTERMediatorLib.getLinkedElementInfo(currentLinkedNodes[k])
-          // info array for it  set the name attribute of radio button
+          // info array for it set the name attribute of radio button
           // should be different for each group
           if (typeAttr === 'radio') { // set the value to radio button
             const nameTableKey = linkInfoArray.join('|')
@@ -1296,7 +1321,7 @@ const INTERMediator = {
     }
 
     /** --------------------------------------------------------------------
-     * Expanding an repeater.
+     * Expanding a repeater.
      */
     async function expandRepeaters(contextObj, node, targetRecords) {
       const encNodeTag = node.tagName
@@ -1691,7 +1716,7 @@ const INTERMediator = {
      */
     function collectRepeatersOriginal(node, repNodeTag) {
       const repeatersOriginal = []
-      const children = node.childNodes // Check all child node of the enclosure.
+      const children = node.childNodes // Check all child nodes of the enclosure.
       for (let i = 0; i < children.length; i++) {
         if (children[i].nodeType === 1) {
           if (children[i].tagName === repNodeTag) { // If the element is a repeater.
@@ -1758,7 +1783,7 @@ const INTERMediator = {
     function tableVoting(linkDefs) {
       let restDefs = []
       let tableVote = [] // Containing editable elements or not.
-      let fieldList = [] // Create field list for database fetch.
+      let fieldList = [] // Create a field list for a fetching database.
 
       for (let j = 0; j < linkDefs.length; j++) {
         const nodeInfoArray = INTERMediatorLib.getNodeInfoArray(linkDefs[j])
@@ -1833,7 +1858,7 @@ const INTERMediator = {
           }
         }
       }
-      const children = rootNode.childNodes // Check all child node of the enclosure.
+      const children = rootNode.childNodes // Check all child nodes of the enclosure.
       for (let i = 0; i < children.length; i++) {
         const r = getEnclosedNode(children[i], tableName, fieldName)
         if (r) {
@@ -2114,23 +2139,22 @@ const INTERMediator = {
       }
     },
 
-  getLocalizedString:
-    (localeValue) => {
-      const terms = INTERMediatorOnPage.getTerms()
-      if (!terms || !localeValue) {
-        return null;
+  getLocalizedString: (localeValue) => {
+    const terms = INTERMediatorOnPage.getTerms()
+    if (!terms || !localeValue) {
+      return null;
+    }
+    const localeKey = localeValue.split('|')
+    let value = terms
+    for (const key of localeKey) {
+      if (!value[key]) {
+        value = null
+        break;
       }
-      const localeKey = localeValue.split('|')
-      let value = terms
-      for (const key of localeKey) {
-        if (!value[key]) {
-          value = null
-          break;
-        }
-        value = value[key]
-      }
-      return value
-    },
+      value = value[key]
+    }
+    return value
+  },
 
   ignoreDataInContext(contextName, flag = true) {
     const check = INTERMediator.ignoringDataContexts.indexOf(contextName)
@@ -2146,7 +2170,7 @@ const INTERMediator = {
   }
   ,
 
-  /* Compatibility for previous version. These methos are defined here ever.
+  /* Compatibility for a previous version. These methods are defined here ever.
    * Now these are defined in INTERMediatorLog object. */
   flushMessage: () => {
     'use strict'

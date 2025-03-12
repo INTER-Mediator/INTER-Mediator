@@ -53,7 +53,7 @@ IM_Entry(
     ],
     [
         'formatter' => [['field' => 'chat@postdt', 'converter-class' => 'MySQLDateTime'],],
-        'media-root-dir' => '/tmp',
+//        'media-root-dir' => '/tmp',
     ],
     ['db-class' => 'PDO'],
     2

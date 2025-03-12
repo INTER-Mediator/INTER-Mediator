@@ -22,7 +22,7 @@
  * @property {string} field The field name.
  * @property {string} expression The expression which is defined for this field.
  * @property {PrivateNodeInfo} nodeInfo The NodeInfo object for this target node.
- * @property {PrivateVariablePropertiesClass} values This property refers object
+ * @property {PrivateVariablePropertiesClass} values This property refers an object
  * which is each property is the item name in expression, and its value is the real value.
  * If the referring field is for calculation required, the value is 'undefined.'
  * @property {PrivateVariablePropertiesClass} refers TBD
@@ -30,13 +30,13 @@
 
 /**
  *
- * Usually you don't have to instantiate this class with new operator.
+ * Usually you don't have to instantiate this class with the new operator.
  * @constructor
  */
 const IMLibCalc = {
   /**
    * This property stores IMType_CalculateFieldDefinition objects for each calculation required nodes.
-   * The property name is the id attribute of the node which bond to the calculated property
+   * The property name is the id attribute of the node which bonds to the calculated property
    * following 'target' which is the 3rd component of target spec of the node.
    * After calling the INTERMediator.constructMain() method, this property has to be set any array.
    * @type {IMType_VariablePropertiesClass<IMType_CalculateFieldDefinition>}
@@ -47,7 +47,6 @@ const IMLibCalc = {
    *
    * @param contextObj
    * @param keyingValue
-   * @param currentContext
    * @param nodeId
    * @param nInfo
    * @param currentRecord
@@ -152,7 +151,7 @@ const IMLibCalc = {
             fName = field.substr(field.indexOf('@') + 1)
             if (valuesArray.hasOwnProperty(field)) {
               vArray = []
-              if (field.indexOf('@') < 0) { // In same context
+              if (field.indexOf('@') < 0) { // In the same context
                 vArray.push((record && record[fName]) ? record[fName] : null)
               } else {  // Other context
                 const expCName = field.substr(0, field.indexOf('@'))
@@ -239,7 +238,7 @@ const IMLibCalc = {
 
   /**
    * On updating, the updatedNodeId should be set to the updating node id.
-   * On deleting, parameter doesn't required.
+   * On deleting, parameter doesn't be required.
    * @param updatedNodeId
    */
   recalculation: function (updatedNodeId) {
@@ -292,7 +291,7 @@ const IMLibCalc = {
             fName = field.substr(field.indexOf('@') + 1)
             if (valuesArray.hasOwnProperty(field)) {
               vArray = []
-              if (field.indexOf('@') < 0) { // In same context
+              if (field.indexOf('@') < 0) { // In the same context
                 vArray.push((record && record[fName]) ? record[fName] : null)
               } else {  // Other context
                 const expCName = field.substr(0, field.indexOf('@'))

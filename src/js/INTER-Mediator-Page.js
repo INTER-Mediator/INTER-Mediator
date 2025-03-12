@@ -18,7 +18,7 @@
  */
 /**
  *
- * Usually you don't have to instantiate this class with new operator.
+ * Usually you don't have to instantiate this class with the new operator.
  * @constructor
  */
 let INTERMediatorOnPage = {
@@ -105,6 +105,8 @@ let INTERMediatorOnPage = {
   authedUser: null,
   userNameJustASCII: true,
   includingParts: [],
+  serviceServerStatus: false,
+  serviceServerURL: null,
 
   get authCount() {
     this._authCount = IMLibLocalContext.getValue('_im_authcount')
@@ -115,6 +117,10 @@ let INTERMediatorOnPage = {
     IMLibLocalContext.setValue('_im_authcount', v)
   },
 
+  /* This method is going to supply by accessing a definition file. This entry is just a definition for static analyzer. */
+  getTerms: function() {
+    return {dummy: 'dummy'}
+  },
   /*
   This method 'getMessages' is going to be replaced valid one with the browser's language.
   Here is defined to prevent the warning of static check.
@@ -345,7 +351,7 @@ let INTERMediatorOnPage = {
     }
   },
 
-  /* Cookies support */
+  /* Cookie support */
   getKeyWithRealm: function (str) {
     'use strict'
     if (INTERMediatorOnPage.realm.length > 0) {
@@ -1226,7 +1232,7 @@ let INTERMediatorOnPage = {
   /*
    * The hiding process is realized by _im_progress's div elements, but it's quite sensitive.
    * I've tried to set the CSS animations, but it seems to be a reason to stay the progress panel.
-   * So far I gave up to use CSS animations. I think it's matter of handling transitionend event.
+   * So far I gave up to use CSS animations. I think it's a matter of handling transitionend event.
    * Now this method is going to be called multiple times in case of edit text field.
    * But it doesn't work by excluding to call by flag variable. I don't know why.
    * 2017-05-04 Masayuki Nii

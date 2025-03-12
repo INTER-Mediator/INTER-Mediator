@@ -19,7 +19,7 @@
  */
 /**
  *
- * Usually you don't have to instantiate this class with new operator.
+ * Usually you don't have to instantiate this class with the new operator.
  * @constructor
  */
 const IMLib = {
@@ -42,7 +42,7 @@ const IMLib = {
 
 /**
  *
- * Usually you don't have to instantiate this class with new operator.
+ * Usually you don't have to instantiate this class with the new operator.
  * @constructor
  */
 const INTERMediatorLib = {
@@ -462,7 +462,7 @@ const INTERMediatorLib = {
   },
 
   /**
-   * Get the table name / field name information from node as the array of
+   * Get the table name / field name information from the node as the array of
    * definitions.
    */
 

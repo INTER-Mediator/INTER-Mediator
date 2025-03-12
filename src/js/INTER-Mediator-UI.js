@@ -19,7 +19,7 @@
  */
 /**
  *
- * Usually you don't have to instantiate this class with new operator.
+ * Usually you don't have to instantiate this class with the new operator.
  * @constructor
  */
 const IMLibUI = {
@@ -83,7 +83,7 @@ const IMLibUI = {
         linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj)
         nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]) // Suppose to be the first definition.
         contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target)
-        if (!contextInfo) { // In case of local context
+        if (!contextInfo) { // In the case of local context
           targetNode = document.getElementById(idValue)
           targetSpec = targetNode.getAttribute('data-im')
           if (targetSpec && targetSpec.split(INTERMediator.separator)[0] === IMLibLocalContext.contextName) {
@@ -389,7 +389,7 @@ const IMLibUI = {
             let pStart = contextDef['repeat-control'].indexOf('copy-')
             let copyTerm = contextDef['repeat-control'].substr(pStart + 5)
             if ((pStart = copyTerm.search(/\s/)) > -1) {
-              copyTerm = copyTerm.substr(0, pStart)
+              copyTerm = copyTerm.substring(0, pStart)
             }
             const assocContexts = copyTerm.split(',')
             for (let i = 0; i < assocContexts.length; i++) {
@@ -436,7 +436,7 @@ const IMLibUI = {
                   INTERMediator.additionalCondition = restore
                 }
                 IMLibCalc.recalculation()
-                INTERMediatorOnPage.hideProgress()
+                await INTERMediatorOnPage.hideProgress()
                 // IMLibUI.unlockUIElement(contextDefCapt.name)
                 if (INTERMediatorOnPage.doAfterCreateRecord) {
                   INTERMediatorOnPage.doAfterCreateRecord(INTERMediatorOnPage.newRecordId, contextDefCapt.name)
@@ -710,7 +710,7 @@ const IMLibUI = {
           } else {
             INTERMediatorLog.setErrorMessage('Insert Error (Portal Access Mode)', 'EXCEPTION-4')
           }
-        } else { // It's not Portal.
+        } else { // It's not a Portal.
           INTERMediator_DBAdapter.db_createRecord_async(
             {name: targetName, dataset: recordSet},
             (function () {
@@ -985,7 +985,7 @@ const IMLibUI = {
         })
     })
 
-    function seekLinkedElementInThisContext(node) { // Just seek out side of inner enclosure
+    function seekLinkedElementInThisContext(node) { // Seek outside the inner enclosure
       let children, i
       if (node.nodeType === 1) {
         if (INTERMediatorLib.isLinkedElement(node)) {
@@ -1021,7 +1021,7 @@ const IMLibUI = {
     }
   },
 
-  eventAddOrderHandler: async function (e) { // e is mouse event
+  eventAddOrderHandler: async function (e) { // e is a mouse event
     'use strict'
     let targetKey, targetSplit, key, itemSplit, extValue
     if (e.target) {

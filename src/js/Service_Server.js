@@ -29,7 +29,7 @@ const http = require('http')
 const https = require('https')
 
 // Create Server
-let svr = null
+let svr
 if (keyPath && certPath) {
   const options = {key: fs.readFileSync(keyPath), cert: fs.readFileSync(certPath)}
   if (CAPath) {
@@ -40,13 +40,14 @@ if (keyPath && certPath) {
   svr = http.createServer(app)
 }
 svr.listen(port)
-/* Usually body parsing codes below is common pattern of express with json communications.
+/* Usually, the body parsing codes below are common pattern of express with JSON communications.
    I met the trouble with use(cors()) and body parsing codes, so both can't work together.
-   I couldn't write codes for the native express way. 2021-3-8 by msyk.
+   I couldn't write codes for the native expressway.
+   2021-3-8 by msyk.
  */
 //const bodyParser = require('body-parser')
 //app.use(bodyParser.urlencoded({extended: true}))
-//app.use(bodyParser.json()) // This will be stop the CORS module's operation oops.
+//app.use(bodyParser.json()) // This will be stopped the CORS module's operation oops.
 app.use(cors())
 
 app.post('/info', function (req, res, next) {
@@ -196,13 +197,6 @@ process.once('SIGUSR2', function () {
   // });
 });
 
-/*
-  Automatic processing
- */
-//setInterval(function () {
-// process.exit() // This doesn't work because the forever attempts to reboot this.
-//}, 10000)
-
 const watching = {}
 
 /*
@@ -241,8 +235,5 @@ function isIncludeIPAddress(ipaddr, range) {
     Number(rangeIPArray[3])
   const digit = Math.pow(2, 32 - rangeArray[1])
   const ipaddrNet = Math.floor(ipNum / digit) * digit
-  if (ipaddrNet === rangeIpNum) {
-    return true
-  }
-  return false
+  return ipaddrNet === rangeIpNum
 }

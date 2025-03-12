@@ -33,7 +33,7 @@ contexts:
   - name: item_master
     view: product
 options:
-  media-root-dir: /tmp
+#  media-root-dir: /tmp
 connection:
   db-class: PDO
 debug: 2
