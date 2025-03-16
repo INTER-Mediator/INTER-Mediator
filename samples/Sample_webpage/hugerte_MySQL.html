@@ -15,8 +15,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <title>INTER-Mediator - Sample - Authorized Chat / MySQL</title>
     <script src="include_MySQL.php"></script>
-    <script src="../../node_modules/tinymce/tinymce.min.js"></script>
-    <script src="../../node_modules/inter-mediator-plugin-tinymce/index.js"></script>
+    <script src="../../node_modules/hugerte/hugerte.min.js"></script>
+    <script src="../../node_modules/inter-mediator-plugin-hugerte/index.js"></script>
     <script>
       INTERMediatorOnPage.doBeforeConstruct = function () {
         INTERMediatorLog.suppressDebugMessageOnPage = true;
@@ -33,7 +33,7 @@
         <tbody data-im-control="post">
         <tr>
             <td>
-                <div data-im="testtable@text1" id="html1" data-im-widget="tinymce"></div>
+                <div data-im="testtable@text1" id="html1" data-im-widget="hugerte"></div>
             </td>
             <td>
                 <button data-im-control="post">追加</button>
@@ -55,7 +55,7 @@
                 <div data-im="testtable@dt1"></div>
                 <div data-im="testtable@text1@innerHTML"></div>
             </td>
-            <td data-im="testtable@text1" data-im-widget="tinymce"></td>
+            <td data-im="testtable@text1" data-im-widget="hugerte"></td>
             <td></td>
         </tr>
         </tbody>
