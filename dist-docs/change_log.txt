@@ -34,6 +34,7 @@ Ver.14 (in Development)
   can be the value "*" for permitting all browsers. If this parameter doesn't specified, it is same as "*".
 - The GitHub Action "container-build.yml" create the INTER-Mediator ready docker container image when this repository
   accepts pull request or manually run the script.
+- TinyMCE plug-in is replaced with HugeRTE plug-in. The sample is also did.
 
 Ver.13 (October 26, 2024)
 - In the INTERMediator_DBAdapter, Codes using XMLHttpRequest are replaced with fetch function.
