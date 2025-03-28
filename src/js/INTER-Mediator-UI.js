@@ -794,7 +794,7 @@ const IMLibUI = {
 
     if (INTERMediatorOnPage.processingBeforePostOnlyContext) {
       hasInvalid = !INTERMediatorOnPage.processingBeforePostOnlyContext(targetNode)
-      if(hasInvalid){
+      if (hasInvalid) {
         return
       }
     }
@@ -1047,7 +1047,7 @@ const IMLibUI = {
     IMLibLocalContext.setValue('valueof' + targetKey.substring(2), 1)
     IMLibLocalContext.updateAll()
     let context = IMLibContextPool.getContextFromName(targetSplit[1])
-    await INTERMediator.constructMain(context[0])
+    await INTERMediator.constructMain(INTERMediator.hasCrossTable ? null : context[0])
   }
 }
 
