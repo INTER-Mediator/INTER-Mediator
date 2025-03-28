@@ -35,6 +35,8 @@ Ver.14 (in Development)
 - The GitHub Action "container-build.yml" create the INTER-Mediator ready docker container image when this repository
   accepts pull request or manually run the script.
 - TinyMCE plug-in is replaced with HugeRTE plug-in. The sample is also did.
+- [BUG FIX] The cross table feature and search/sort controls with ex. _@addorder didn't compatible. In case of any
+  cross table exists, whole page is going to update after click the search/sort controls.
 
 Ver.13 (October 26, 2024)
 - In the INTERMediator_DBAdapter, Codes using XMLHttpRequest are replaced with fetch function.

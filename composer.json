@@ -24,7 +24,7 @@
     "ext-posix": "*",
     "mouf/nodejs-installer": "*",
     "paragonie/constant_time_encoding": "*",
-    "inter-mediator/fmdataapi": "31",
+    "inter-mediator/fmdataapi": "33",
     "tecnickcom/tcpdf": "*",
     "setasign/fpdi": "*",
     "smalot/pdfparser": "*",
@@ -121,5 +121,8 @@
       "mouf/nodejs-installer": true,
       "simplesamlphp/composer-xmlprovider-installer": true
     }
+  },
+  "github-oauth": {
+    "github.com": "token"
   }
 }
