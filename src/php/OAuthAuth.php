@@ -16,6 +16,7 @@
 
 namespace INTERMediator;
 
+use Exception;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\Proxy;
 
@@ -86,7 +87,6 @@ class OAuthAuth
      * @var bool
      */
     public bool $debugMode = false;
-
 
     /**
      * @return string
@@ -178,19 +178,6 @@ class OAuthAuth
                 $this->isActive = true;
                 $this->provider = "Google";
                 break;
-            case "mynumbercard-sandbox":
-                if (!($this->clientId && $this->redirectURL)) {
-                    $this->errorMessage[] = "Wrong Paramters";
-                    $this->provider = "unspecified";
-                    return;
-                }
-                $this->baseURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/auth';
-                $this->getTokenURL = "https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/token";
-                $this->getInfoURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/userinfo';
-                $this->infoScope = ['openid', 'name', 'address', 'birthdate', 'gender' /*, 'sign'*/];
-                $this->isActive = true;
-                $this->provider = "MyNumberCard-Sandbox";
-                break;
             case "facebook":
                 if (!($this->clientId && $this->clientSecret && $this->redirectURL)) {
                     $this->errorMessage[] = "Wrong Paramters";
@@ -204,43 +191,177 @@ class OAuthAuth
                 $this->isActive = true;
                 $this->provider = "Facebook";
                 break;
+            case "mynumbercard-sandbox":
+                if (!($this->clientId && $this->redirectURL)) {
+                    $this->errorMessage[] = "Wrong Paramters";
+                    $this->provider = "unspecified";
+                    return;
+                }
+                $this->baseURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/auth';
+                $this->getTokenURL = "https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/token";
+                $this->getInfoURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/userinfo';
+                $this->infoScope = ['openid', 'name', 'address', 'birthdate', 'gender' /*, 'sign'*/];
+                $this->isActive = true;
+                $this->provider = "MyNumberCard-Sandbox";
+                break;
             default:
                 break;
         }
     }
 
     /**
-     * @param string $state
-     * @return bool
-     * @throws \Exception
+     * @return string
+     * @throws Exception
      */
-    private function isValidState(string $state): bool
+    public function getAuthRequestURL(): string
     {
-        if ($state === "") {
-            return false;
-        }
+        $state = IMUtil::randomString(32);
         $dbProxy = new Proxy();
         $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
-        $challenges = $dbProxy->authDbClass->authHandler->authSupportRetrieveChallenge(
-            0, substr($this->clientId, 0, 64), false, "@G:state@", true);
-        return array_search($state, explode("\n", $challenges)) !== false;
+        $dbProxy->authDbClass->authHandler->authSupportStoreChallenge(
+            0, $state, substr($this->clientId, 0, 64), "@G:state@", true);
+        switch (strtolower($this->provider)) {
+            case "google":
+                return $this->baseURL . '?response_type=code&scope=' . urlencode(implode(" ", $this->infoScope))
+                    . '&redirect_uri=' . urlencode($this->redirectURL)
+                    . '&client_id=' . urlencode($this->clientId)
+                    . '&state=' . urlencode($state);
+                break;
+            case "facebook":
+                return $this->baseURL . '?redirect_uri=' . urlencode($this->redirectURL)
+                    . '&client_id=' . urlencode($this->clientId)
+                    . '&state=' . urlencode($state);
+                break;
+            case "mynumbercard-sandbox":
+                $nonce = IMUtil::randomString(32);
+                $challenge = base64_encode(hash('sha256', IMUtil::challengeString(64), true));
+                return $this->baseURL . '?response_type=code&scope=' . urlencode(implode(" ", $this->infoScope))
+                    . '&client_id=' . urlencode($this->clientId)
+                    . '&redirect_uri=' . urlencode($this->redirectURL)
+                    . '&state=' . urlencode($state)
+                    . '&nonce=' . urlencode($nonce)
+                    . '&code_challenge' . urlencode($nonce)
+                    . '&code_challenge_method=S256&acr_values=aal3 crl';
+        }
+        return "";
     }
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function afterAuth(): bool
     {
         $this->errorMessage = array();
-        if (!$this->isValidState($_GET["state"] ?? "")) {
-            $this->errorMessage[] = "Failed with security issue.";
-            return false;
+        // Check the provided data is same as requested auth.
+        switch (strtolower($this->provider)) {
+            case "google":
+                if (!isset($_GET["state"])) {
+                    $this->errorMessage[] = "Failed with security issue.";
+                    return false;
+                }
+                $state = $_GET["state"];
+                $dbProxy = new Proxy();
+                $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
+                $challenges = $dbProxy->authDbClass->authHandler->authSupportRetrieveChallenge(
+                    0, substr($this->clientId, 0, 64), false, "@G:state@", true);
+                if (!in_array($state, explode("\n", $challenges))) {
+                    $this->errorMessage[] = "Failed with security issue.";
+                    return false;
+                }
+                break;
+            case "facebook":
+                // Non operations
+                break;
+            case "mynumbercard-sandbox":
+                // TBC
+                break;
         }
-        $this->userInfo = $this->getUserInfo();
-        if (count($this->userInfo) == 0) {
-            return false;
+        // Get the user information
+        switch (strtolower($this->provider)) {
+            case "google":
+                if (!isset($_REQUEST['code'])) {
+                    $this->errorMessage[] = "This isn't redirected from the providers site.";
+                    return false;
+                }
+                $tokenparams = array(
+                    'code' => $_REQUEST['code'],
+                    'client_id' => $this->clientId,
+                    'client_secret' => $this->clientSecret,
+                    'grant_type' => 'authorization_code',
+                    'redirect_uri' => $this->redirectURL,
+                );
+                $response = $this->communication($this->getTokenURL, true, $tokenparams);
+                if (!$response) {
+                    return false;
+                }
+                if (strlen($response->access_token) < 1) {
+                    $this->errorMessage[] = "Error: Access token didn't get from: {$this->getTokenURL}.";
+                }
+                $id_token = $response->id_token;
+                $jWebToken = explode(".", $id_token);
+                for ($i = 0; $i < count($jWebToken); $i++) {
+                    $jWebToken[$i] = json_decode(base64_decode(strtr($jWebToken[$i], '-_', '+/')));
+                }
+                $username = $jWebToken[1]->sub ?? "";
+                $email = $jWebToken[1]->email ?? "";
+                $userInfo = $this->communication($this->getInfoURL, false, null, $response->access_token);
+                $realname = $userInfo->name ?? "";
+                if (strlen($username) < 2) {
+                    $username = $userInfo->sub ?? "";
+                    if (strlen($username) < 2) {
+                        $this->errorMessage[] = "Error: User subject couldn't get from: {$this->getTokenURL}.";
+                    }
+                }
+                if (strlen($email) < 1) {
+                    $email = $userInfo->email ?? "";
+                }
+                $tokenID = array(
+                    "realname" => $realname,
+                    "username" => "{$username}@{$this->provider}",
+                    "email" => $email,
+                );
+                if (strlen($tokenID["username"]) < 1 || strlen($tokenID["email"]) < 1) {
+                    $this->errorMessage[] = "Nothing to get from the authenticating server. tokenID="
+                        . var_export($tokenID, true);
+                    return false;
+                }
+                $this->userInfo = $tokenID;
+                break;
+            case "facebook":
+                $input_token = $_REQUEST['code'] ?? "";
+                if (!$input_token) {
+                    $this->errorMessage[] = "This isn't redirected from the providers site.";
+                    return false;
+                }
+                $tokenparams = array(
+                    'code' => $input_token,
+                    'client_id' => $this->clientId,
+                    'client_secret' => $this->clientSecret,
+                    'redirect_uri' => $this->redirectURL,
+                );
+                $response = $this->communication($this->getTokenURL, false, $tokenparams);
+                if (!$response) {
+                    return false;
+                }
+                $access_token = $response->access_token ?? "";
+                if (strlen($access_token) < 1) {
+                    $this->errorMessage[] = "Error: Access token couldn't get from: {$this->getTokenURL}.";
+                    return false;
+                }
+                $userInfo = $this->communication($this->getInfoURL, false,
+                    [/*"fields" => "=name,email",*/ "access_token" => $access_token]);
+                if (!$userInfo) {
+                    return false;
+                }
+                $username = $userInfo->id;
+                $realname = $userInfo->name;
+                $this->userInfo = ["username" => "{$username}@{$this->provider}", "realname" => $realname];
+                break;
+            case "mynumbercard-sandbox":
+                break;
         }
+
         $oAuthStoring = $_COOKIE["_im_oauth_storing"] ?? "";
         if ($oAuthStoring !== "credential") {
             $this->errorMessage[] = "The 'storing' parameter has to be 'credential.";
@@ -278,140 +399,14 @@ class OAuthAuth
         if ($this->debugMode) {
             $this->errorMessage[] = "authSupportOAuthUserHandling sends "
                 . var_export($param, true) . ", returns {$this->isCreate}.";
-            $this->errorMessage = array_merge($this->errorMessage, $dbProxy->logger->getDebugMessages());
+            $this->errorMessage = array_merge($this->errorMessage, Logger::getInstance()->getDebugMessages());
         }
-        $this->errorMessage = array_merge($this->errorMessage, $dbProxy->logger->getErrorMessages());
+        $this->errorMessage = array_merge($this->errorMessage, Logger::getInstance()->getErrorMessages());
         if (count($this->errorMessage) < 1 && !(!$this->doRedirect && $this->isCreate)) {
             $this->jsCode = "location.href = '" . $_COOKIE["_im_oauth_backurl"] . "';";
             return true;
         }
         return true;
-    }
-
-    /**
-     * @return string
-     * @throws \Exception
-     */
-    public function getAuthRequestURL(): string
-    {
-        $state = IMUtil::randomString(32);
-        $dbProxy = new Proxy();
-        $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
-        $dbProxy->authDbClass->authHandler->authSupportStoreChallenge(
-            0, $state, substr($this->clientId, 0, 64), "@G:state@", true);
-        switch (strtolower($this->provider)) {
-            case "google":
-                return $this->baseURL . '?response_type=code&scope=' . urlencode(implode(" ", $this->infoScope))
-                    . '&redirect_uri=' . urlencode($this->redirectURL)
-                    . '&client_id=' . urlencode($this->clientId)
-                    . '&state=' . urlencode($state);
-                break;
-            case "facebook":
-                return $this->baseURL . '?redirect_uri=' . urlencode($this->redirectURL)
-                    . '&client_id=' . urlencode($this->clientId)
-                    . '&state=' . urlencode($state);
-                break;
-            case "mynumbercard-sandbox":
-                $nonce = IMUtil::randomString(32);
-                $challenge = base64_encode(hash('sha256', IMUtil::challengeString(64), true));
-                return $this->baseURL . '?response_type=code&scope=' . urlencode(implode(" ", $this->infoScope))
-                    . '&client_id=' . urlencode($this->clientId)
-                    . '&redirect_uri=' . urlencode($this->redirectURL)
-                    . '&state=' . urlencode($state)
-                    . '&nonce=' . urlencode($nonce)
-                    . '&code_challenge' . urlencode($nonce)
-                    . '&code_challenge_method=S256&acr_values=aal3 crl';
-        }
-        return "";
-    }
-
-    /**
-     * @return array
-     */
-    private function getUserInfo(): array
-    {
-        switch (strtolower($this->provider)) {
-            case "google":
-                if (!isset($_REQUEST['code'])) {
-                    $this->errorMessage[] = "This isn't redirected from the providers site.";
-                    return [];
-                }
-                $tokenparams = array(
-                    'code' => $_REQUEST['code'],
-                    'client_id' => $this->clientId,
-                    'client_secret' => $this->clientSecret,
-                    'grant_type' => 'authorization_code',
-                    'redirect_uri' => $this->redirectURL,
-                );
-                $response = $this->communication($this->getTokenURL, true, $tokenparams);
-                if (!$response) {
-                    return [];
-                }
-                if (strlen($response->access_token) < 1) {
-                    $this->errorMessage[] = "Error: Access token didn't get from: {$this->getTokenURL}.";
-                }
-                $id_token = $response->id_token;
-                $jWebToken = explode(".", $id_token);
-                for ($i = 0; $i < count($jWebToken); $i++) {
-                    $jWebToken[$i] = json_decode(base64_decode(strtr($jWebToken[$i], '-_', '+/')));
-                }
-                $username = $jWebToken[1]->sub ?? "";
-                $email = $jWebToken[1]->email ?? "";
-                $userInfo = $this->communication($this->getInfoURL, false, null, $response->access_token);
-                $realname = $userInfo->name ?? "";
-                if (strlen($username) < 2) {
-                    $username = $userInfo->sub ?? "";
-                    if (strlen($username) < 2) {
-                        $this->errorMessage[] = "Error: User subject couldn't get from: {$this->getTokenURL}.";
-                    }
-                }
-                if (strlen($email) < 1) {
-                    $email = $userInfo->email ?? "";
-                }
-                $tokenID = array(
-                    "realname" => $realname,
-                    "username" => "{$username}@{$this->provider}",
-                    "email" => $email,
-                );
-                if (is_null($tokenID) || strlen($tokenID["username"]) < 1 || strlen($tokenID["email"]) < 1) {
-                    $this->errorMessage[] = "Nothing to get from the authenticating server. tokenID="
-                        . var_export($tokenID, true);
-                    return [];
-                }
-                return $tokenID;
-                break;
-            case "facebook":
-                $input_token = $_REQUEST['code'] ?? "";
-                if (!$input_token) {
-                    $this->errorMessage[] = "This isn't redirected from the providers site.";
-                    return [];
-                }
-                $tokenparams = array(
-                    'code' => $input_token,
-                    'client_id' => $this->clientId,
-                    'client_secret' => $this->clientSecret,
-                    'redirect_uri' => $this->redirectURL,
-                );
-                $response = $this->communication($this->getTokenURL, false, $tokenparams);
-                if (!$response) {
-                    return [];
-                }
-                $access_token = $response->access_token ?? "";
-                if (strlen($access_token) < 1) {
-                    $this->errorMessage[] = "Error: Access token couldn't get from: {$this->getTokenURL}.";
-                    return [];
-                }
-                $userInfo = $this->communication($this->getInfoURL, false,
-                    [/*"fields" => "=name,email",*/ "access_token" => $access_token]);
-                if (!$userInfo) {
-                    return [];
-                }
-                $username = $userInfo->id;
-                $realname = $userInfo->name;
-                return ["username" => "{$username}@{$this->provider}", "realname" => $realname];
-                break;
-        }
-        return [];
     }
 
     /**

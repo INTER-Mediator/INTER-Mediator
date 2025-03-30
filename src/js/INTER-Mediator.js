@@ -202,6 +202,7 @@ const INTERMediator = {
    * @type {int}
    */
   crossTableStage: 0, // 0: not cross table, 1: column label, 2: row label, 3 interchange cells
+  hasCrossTable: false,
 
   eventListenerPostAdding: null,
   appendingNodesAtLast: null,
@@ -454,6 +455,7 @@ const INTERMediator = {
     let nameAttrCounter = 1
     let imPartsShouldFinished = []
     let postSetFields = []
+    INTERMediator.hasCrossTable = false
     INTERMediator.currentContext = updateRequiredContext
     INTERMediator.currentRecordset = recordset
 
@@ -554,10 +556,10 @@ const INTERMediator = {
     for (let i = 0; i < INTERMediator.appendingNodesAtLast.length; i++) {
       const theNode = INTERMediator.appendingNodesAtLast[i].targetNode
       const parentNode = INTERMediator.appendingNodesAtLast[i].parentNode
-      const sybilingNode = INTERMediator.appendingNodesAtLast[i].siblingNode
+      const siblingNode = INTERMediator.appendingNodesAtLast[i].siblingNode
       if (theNode && parentNode) {
-        if (sybilingNode) {
-          parentNode.insertBefore(theNode, sybilingNode)
+        if (siblingNode) {
+          parentNode.insertBefore(theNode, siblingNode)
         } else {
           parentNode.appendChild(theNode)
         }
@@ -837,6 +839,7 @@ const INTERMediator = {
         currentRecord = currentRecord[currentContextObj.contextName][recId]
       }
       if (imControl && imControl.match(/cross-table/)) { // Cross Table
+        INTERMediator.hasCrossTable = true
         await expandCrossTableEnclosure(node, parentObjectInfo, currentContextObj)
       } else { // Enclosure Processing as usual.
         const repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(node.tagName)

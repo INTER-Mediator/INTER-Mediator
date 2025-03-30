@@ -217,7 +217,7 @@ const IMLibLocalContext = {
       // await IMLibUI.eventUpdateHandler(contextName)
       IMLibLocalContext.updateAll()
       const context = IMLibContextPool.getContextFromName(contextName)
-      await INTERMediator.constructMain(context[0])
+      await INTERMediator.constructMain(INTERMediator.hasCrossTable ? null : context[0])
       //IMLibPageNavigation.navigationSetup()
     }
   },
