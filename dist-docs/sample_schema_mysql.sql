@@ -16,8 +16,8 @@ Enter password:
 */
 SET NAMES 'utf8mb4';
 # Create db user.
-DROP USER IF EXISTS 'web'@'localhost';
-CREATE USER 'web'@'localhost' IDENTIFIED BY 'password';
+# DROP USER IF EXISTS 'web'@'localhost';
+CREATE USER IF NOT EXISTS 'web'@'localhost' IDENTIFIED BY 'password';
 
 # Grant to All operations for all objects with web account.
 GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO 'web'@'localhost';
@@ -24011,3 +24011,48 @@ SET dt=timestamp'2010-1-1 23:52:34',
 INSERT information
 SET id=1,
     lastupdated=CURDATE();
+
+CREATE VIEW saleslog_summary AS
+SELECT SUBSTRING(customer, 1, 1) AS customer,
+       SUBSTRING(item, 1, 1) AS item,
+       SUM(qty) AS qty,
+       SUM(total) AS total
+FROM saleslog
+GROUP BY SUBSTRING(customer, 1, 1), SUBSTRING(item, 1, 1);
+
+CREATE TABLE alphabet
+(
+    id INT AUTO_INCREMENT,
+    c  VARCHAR(1),
+    PRIMARY KEY (id)
+) CHARACTER SET utf8mb4,
+  COLLATE utf8mb4_unicode_ci
+  ENGINE = InnoDB;
+
+INSERT alphabet(c)
+VALUES ('A'),
+       ('B'),
+       ('C'),
+       ('D'),
+       ('E'),
+       ('F'),
+       ('G'),
+       ('H'),
+       ('I'),
+       ('J'),
+       ('K'),
+       ('L'),
+       ('M'),
+       ('N'),
+       ('O'),
+       ('P'),
+       ('Q'),
+       ('R'),
+       ('S'),
+       ('T'),
+       ('U'),
+       ('V'),
+       ('W'),
+       ('X'),
+       ('Y'),
+       ('Z');
