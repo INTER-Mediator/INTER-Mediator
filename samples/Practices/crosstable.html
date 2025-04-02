@@ -55,16 +55,18 @@
     <table>
         <tbody data-im-control="cross-table-sum">
         <tr>
-            <th></th>
             <th>
-                <div data-im="item@id"></div>
-                <div data-im="item@name"></div>
+                Name
+                <span style="cursor: pointer" data-im="_@addorder:customer:c:asc">▲</span>
+                <span style="cursor: pointer" data-im="_@addorder:customer:c:desc">▼</span>
+            </th>
+            <th>
+                item <span data-im="item@c"></span>
             </th>
         </tr>
         <tr>
             <th>
-                <div data-im="customer@id"></div>
-                <div data-im="customer@name"></div>
+                customer <span data-im="customer@c"></span>
             </th>
             <td>
                 <div data-im="salessummary@qty"></div>

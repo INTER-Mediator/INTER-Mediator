@@ -538,7 +538,7 @@ class Settings
 //        if (!$this->dataSourceName || !is_array($this->dataSourceName)) {
 //            return false;
 //        }
-        foreach ($this->dataSourceName as $contextDef) {
+        foreach ($this->dataSource as $contextDef) {
             if (isset($contextDef['name']) && $contextDef['name'] == $contextName) {
                 return true;
             }

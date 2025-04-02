@@ -6,25 +6,25 @@ IM_Entry(array(
     array(
         'name' => 'item',
         'table' => 'dummy',
-        'view' => 'item_master',
+        'view' => 'alphabet',
         'records' => 100000,
         'maxrecords' => 100000,
         'key' => 'id',
         'query' => array(
             array(
                 'field' => 'id',
-                'value' => 25,
+                'value' => '12',
                 'operator' => '>=',
             ),
             array(
                 'field' => 'id',
-                'value' => 35,
+                'value' => '20',
                 'operator' => '<=',
             ),
         ),
         'sort' => array(
             array(
-                'field' => 'id',
+                'field' => 'c',
                 'direction' => 'asc',
             ),
         ),
@@ -38,25 +38,13 @@ IM_Entry(array(
     array(
         'name' => 'customer',
         'table' => 'dummy',
-        'view' => 'customer',
+        'view' => 'alphabet',
         'records' => 100000,
         'maxrecords' => 100000,
         'key' => 'id',
-        'query' => array(
-            array(
-                'field' => 'id',
-                'value' => 250,
-                'operator' => '>=',
-            ),
-            array(
-                'field' => 'id',
-                'value' => 259,
-                'operator' => '<=',
-            ),
-        ),
         'sort' => array(
             array(
-                'field' => 'id',
+                'field' => 'c',
                 'direction' => 'asc',
             ),
         ),
@@ -70,18 +58,18 @@ IM_Entry(array(
     array(
         'name' => 'salessummary',
         'table' => 'dummy',
-        'view' => 'saleslog',
+        'view' => 'saleslog_summary',
         'records' => 100000,
         'key' => 'id',
         'relation' => array(
             array(
-                'foreign-key' => 'item_id',
-                'join-field' => 'id',
+                'foreign-key' => 'item',
+                'join-field' => 'c',
                 'operator' => '=',
             ),
             array(
-                'foreign-key' => 'customer_id',
-                'join-field' => 'id',
+                'foreign-key' => 'customer',
+                'join-field' => 'c',
                 'operator' => '=',
             ),
         ),
