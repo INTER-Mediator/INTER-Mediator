@@ -202,9 +202,27 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 //    'MyNumberCard-Sandbox' => [
 //        'AuthButton' => 'My Number Card',
 //        'ClientID' => 'TESTCLIENT01',
+//        'Scope' => ['openid', 'name', 'address', 'birthdate', 'gender' /*, 'sign'*/],
 //        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
+//        'JWSFile' => '/var/www/',
+//    ],
+//    'MyNumberCard' => [
+//        'AuthButton' => 'My Number Card',
+//        'ClientID' => 'TESTCLIENT01',
+//        'Scope' => ['openid', 'name', 'address', 'birthdate', 'gender' /*, 'sign'*/],
+//        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
+//        'JWSFile' => '/var/www/',
 //    ],
 //];
+/* The system information requires authenticating with My Number Card. */
+$systemInfo = [
+    'title' => 'INTER-Mediator My Number Card Testing',
+    'logoURL' => '/',
+    'Scope' => '名前,住所,誕生日,性別' /*, '署名'*/,
+    'PrivacyPolicyURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
+    'SummaryURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
+    'TOSURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
+];
 
 /* SAML Support
    Information about setting up a SAML Service Provider exists in the samples/saml-config directory. */

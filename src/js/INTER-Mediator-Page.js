@@ -107,6 +107,7 @@ let INTERMediatorOnPage = {
   includingParts: [],
   serviceServerStatus: false,
   serviceServerURL: null,
+  systemInfo: null,
 
   get authCount() {
     this._authCount = IMLibLocalContext.getValue('_im_authcount')
