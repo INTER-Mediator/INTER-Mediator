@@ -53,10 +53,7 @@
   "autoload": {
     "psr-4": {
       "INTERMediator\\": "src/php"
-    },
-    "classmap": [
-      "src/lib/CWPKit/CWPKit.php"
-    ]
+    }
   },
   "description": "The INTER-Mediator is framework for database-driven web application.",
   "type": "library",
