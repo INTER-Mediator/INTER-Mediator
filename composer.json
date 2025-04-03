@@ -1,13 +1,7 @@
 {
   "name": "msyk/inter-mediator",
   "version": "14",
-  "time": "2025-01-19",
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/INTER-Mediator/INTER-Mediator.git"
-    }
-  ],
+  "time": "2025-04-04",
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
@@ -23,7 +17,6 @@
     "ext-intl": "*",
     "ext-posix": "*",
     "mouf/nodejs-installer": "*",
-    "paragonie/constant_time_encoding": "*",
     "inter-mediator/fmdataapi": "33",
     "tecnickcom/tcpdf": "*",
     "setasign/fpdi": "*",
