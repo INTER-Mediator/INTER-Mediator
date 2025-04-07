@@ -200,6 +200,7 @@ class OAuthAuth
                 $this->baseURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/auth';
                 $this->getTokenURL = "https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/token";
                 $this->getInfoURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/userinfo';
+                $this->jswPath = IMUtil::getFromProfileIfAvailable($oAuthIngo[$provider]["JSWPath"] ?? null);;
                 $this->infoScope = IMUtil::getFromProfileIfAvailable($oAuthIngo[$provider]["Scope"] ?? null);;
                 $this->isActive = true;
                 $this->provider = "MyNumberCard-Sandbox";
@@ -216,12 +217,12 @@ class OAuthAuth
     public function getAuthRequestURL(): string
     {
         $state = IMUtil::randomString(32);
-        $dbProxy = new Proxy();
-        $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
-        $dbProxy->authDbClass->authHandler->authSupportStoreChallenge(
-            0, $state, substr($this->clientId, 0, 64), "@G:state@", true);
         switch (strtolower($this->provider)) {
             case "google":
+                $dbProxy = new Proxy();
+                $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
+                $dbProxy->authDbClass->authHandler->authSupportStoreChallenge(
+                    0, $state, substr($this->clientId, 0, 64), "@G:state@", true);
                 return $this->baseURL . '?response_type=code&scope=' . urlencode(implode(" ", $this->infoScope))
                     . '&redirect_uri=' . urlencode($this->redirectURL)
                     . '&client_id=' . urlencode($this->clientId)
@@ -234,13 +235,20 @@ class OAuthAuth
                 break;
             case "mynumbercard-sandbox":
                 $nonce = IMUtil::randomString(32);
-                $challenge = base64_encode(hash('sha256', IMUtil::challengeString(64), true));
+                $verifier = IMUtil::challengeString(64);
+                $challenge = base64_encode(hash('sha256', $verifier, true));
+                $dbProxy = new Proxy();
+                $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
+                $dbProxy->authDbClass->authHandler->authSupportStoreChallenge(
+                    0, $state, substr($this->clientId, 0, 64), "@M:state@", true);
+                $dbProxy->authDbClass->authHandler->authSupportStoreChallenge(
+                    0, $verifier, substr($this->clientId, 0, 64), "@M:verifier@", true);
                 return $this->baseURL . '?response_type=code&scope=' . urlencode(implode(" ", $this->infoScope))
                     . '&client_id=' . urlencode($this->clientId)
                     . '&redirect_uri=' . urlencode($this->redirectURL)
                     . '&state=' . urlencode($state)
                     . '&nonce=' . urlencode($nonce)
-                    . '&code_challenge' . urlencode($nonce)
+                    . '&code_challenge' . urlencode($challenge)
                     . '&code_challenge_method=S256&acr_values=aal3 crl';
         }
         return "";
@@ -252,6 +260,8 @@ class OAuthAuth
      */
     public function afterAuth(): bool
     {
+        $code = '';
+        $verifier = '';
         $this->errorMessage = array();
         // Check the provided data is same as requested auth.
         switch (strtolower($this->provider)) {
@@ -274,8 +284,36 @@ class OAuthAuth
                 // Non operations
                 break;
             case "mynumbercard-sandbox":
-                // TBC
+                if (isset($_GET['code']) && isset($_GET['state']) && isset($_GET['session_state'])) { // Success
+                    $code = $_GET['code'];
+                    $state = $_GET['state'];
+                    $session_state = ['session_state'];
+                    $dbProxy = new Proxy();
+                    $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
+                    $storedStates = $dbProxy->authDbClass->authHandler->authSupportRetrieveChallenge(
+                        0, substr($this->clientId, 0, 64), false, "@M:state@", true);
+                    if (!in_array($state, explode("\n", $storedStates))) {
+                        $this->errorMessage[] = "Failed with security issue.";
+                        return false;
+                    }
+                    $storedVerifiers = explode("\n", $dbProxy->authDbClass->authHandler->authSupportRetrieveChallenge(
+                        0, substr($this->clientId, 0, 64), false, "@M:verifier@", true));
+                    if (count($storedVerifiers) < 1) {
+                        $this->errorMessage[] = "Verifier value isn't stored.";
+                        return false;
+                    }
+                    $verifier = $storedVerifiers[0];
+                } else if (isset($_GET['error']) && isset($_GET['error_description']) && isset($_GET['state'])) { // Error
+                    $this->errorMessage[] = "Error: [{$_GET['error']}] {$_GET['error_description']}";
+                    return false;
+                } else {
+                    $this->errorMessage[] = "Error: This isn't a valid access";
+                    return false;
+                }
                 break;
+            default:
+                $this->errorMessage[] = "Error: Provider name doesn't detected.";
+                return false;
         }
         // Get the user information
         switch (strtolower($this->provider)) {
@@ -295,17 +333,56 @@ class OAuthAuth
                 if (!$response) {
                     return false;
                 }
-                if (strlen($response->access_token) < 1) {
+                $certficate = $this->communication(
+                    "https://auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/certs", false, null);
+                if (!$certficate) {
+                    return false;
+                }
+                $access_token = $response->access_token ?? "";
+                if (strlen($access_token) < 1) {
                     $this->errorMessage[] = "Error: Access token didn't get from: {$this->getTokenURL}.";
                 }
                 $id_token = $response->id_token;
                 $jWebToken = explode(".", $id_token);
-                for ($i = 0; $i < count($jWebToken); $i++) {
-                    $jWebToken[$i] = json_decode(base64_decode(strtr($jWebToken[$i], '-_', '+/')));
+                $headerIDToken = json_decode(base64_decode(strtr($jWebToken[0], '-_', '+/')));
+                $payloadIDToken = json_decode(base64_decode(strtr($jWebToken[1], '-_', '+/')));
+                $kid = $headerIDToken->kid;
+                $publicKey = '';
+                foreach ($certficate->keys as $key) {
+                    if ($key->kid === $kid) {
+                        $publicKey = $key;
+                    }
                 }
+                if ($publicKey === '') {
+                    $this->errorMessage[] = "Invalid Keys. The public key doesn't exist {$kid}";
+                    return false;
+                }
+
+                $message = $jWebToken[0] . "." . $jWebToken[1];
+                $signature = base64_decode(strtr($jWebToken[2], '-_', '+/'));
+                $jswFile = $this->jswPath;
+                $algorithm = "ES256";
+
+                if ($payloadIDToken->iss !== "https://auth-and-sign.go.jp/realms/main/") {
+                    $this->errorMessage[] = "Invalid issuer. {$payloadIDToken->iss}";
+                    return false;
+                }
+                if (!str_contains($payloadIDToken->aud, $this->clientId)) {
+                    $this->errorMessage[] = "Invalid audience. {$payloadIDToken->aud}";
+                    return false;
+                }
+                if ($payloadIDToken->exp < time()) {
+                    $this->errorMessage[] = "Invalid exp. {$payloadIDToken->exp}";
+                    return false;
+                }
+                if ($payloadIDToken->at_hash !== base64_encode(substring(hash('sha256', $access_token, true), 0, 16))) {
+                    $this->errorMessage[] = "Invalid at_hash. {$payloadIDToken->at_hash}";
+                    return false;
+                }
+
                 $username = $jWebToken[1]->sub ?? "";
                 $email = $jWebToken[1]->email ?? "";
-                $userInfo = $this->communication($this->getInfoURL, false, null, $response->access_token);
+                $userInfo = $this->communication($this->getInfoURL, false, null, $access_token);
                 $realname = $userInfo->name ?? "";
                 if (strlen($username) < 2) {
                     $username = $userInfo->sub ?? "";
@@ -359,6 +436,63 @@ class OAuthAuth
                 $this->userInfo = ["username" => "{$username}@{$this->provider}", "realname" => $realname];
                 break;
             case "mynumbercard-sandbox":
+                $tokenparams = array(
+                    'code' => (string)$code,
+                    'client_id' => $this->clientId,
+                    'grant_type' => 'authorization_code',
+                    'redirect_uri' => $this->redirectURL,
+                    'code_verifier' => $verifier,
+                    'client_assertion_type' => "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+                    'client_assertion' => json_encode([
+                        'iss' => (string)$this->clientId,
+                        'sub' => (string)$this->clientId,
+                        'aud' => "https://{FQDN}/api/realms/main/protocol/openid-connect/token",
+                        'jti' => '任意のUUIDや、client_id + timestamp などを組み合わせたトークンを一意に識別するための識別子を設定。',
+                        'exp' => 'JWTの有効期限を設定',
+                    ]),
+                );
+                $response = $this->communication($this->getTokenURL, true, $tokenparams);
+                if (!$response) {
+                    $this->errorMessage[] = "Error: Can't get any response from: {$this->getTokenURL}..";
+                    return false;
+                }
+                if (strlen($response->access_token) < 1) {
+                    $this->errorMessage[] = "Error: Access token didn't get from: {$this->getTokenURL}.";
+                    return false;
+                }
+                $id_token = $response->id_token;
+                $jWebToken = explode(".", $id_token);
+                if (count($jWebToken) !== 3) {
+                    $this->errorMessage[] = "Error: Invalid ID Token..";
+                    return false;
+                }
+                for ($i = 0; $i < count($jWebToken); $i++) {
+                    $jWebToken[$i] = json_decode(base64_decode(strtr($jWebToken[$i], '-_', '+/')));
+                }
+                $username = $jWebToken[1]->sub ?? "";
+                $email = $jWebToken[1]->email ?? "";
+                $userInfo = $this->communication($this->getInfoURL, false, null, $response->access_token);
+                $realname = $userInfo->name ?? "";
+                if (strlen($username) < 2) {
+                    $username = $userInfo->sub ?? "";
+                    if (strlen($username) < 2) {
+                        $this->errorMessage[] = "Error: User subject couldn't get from: {$this->getTokenURL}.";
+                    }
+                }
+                if (strlen($email) < 1) {
+                    $email = $userInfo->email ?? "";
+                }
+                $tokenID = array(
+                    "realname" => $realname,
+                    "username" => "{$username}@{$this->provider}",
+                    "email" => $email,
+                );
+                if (strlen($tokenID["username"]) < 1 || strlen($tokenID["email"]) < 1) {
+                    $this->errorMessage[] = "Nothing to get from the authenticating server. tokenID="
+                        . var_export($tokenID, true);
+                    return false;
+                }
+                $this->userInfo = $tokenID;
                 break;
         }
 

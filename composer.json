@@ -27,7 +27,8 @@
     "symfony/mailer": "*",
     "symfony/amazon-mailer": "*",
     "symfony/google-mailer": "*",
-    "symfony/yaml": "*"
+    "symfony/yaml": "*",
+    "phpseclib/phpseclib": ">=3.0.0"
   },
   "extra": {
     "mouf": {
