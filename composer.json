@@ -28,7 +28,7 @@
     "symfony/amazon-mailer": "*",
     "symfony/google-mailer": "*",
     "symfony/yaml": "*",
-    "phpseclib/phpseclib": ">=3.0.0"
+    "web-token/jwt-framework": "*"
   },
   "extra": {
     "mouf": {
