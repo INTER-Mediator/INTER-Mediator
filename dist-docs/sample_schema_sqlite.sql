@@ -171,10 +171,10 @@ CREATE TABLE postalcode
 CREATE INDEX postalcode_f3 ON postalcode (f3);
 CREATE INDEX postalcode_f8 ON postalcode (f8);
 /*
-# The schema for the "Sample_products" sample set.
-#
-# The sample data for these table, invoice, item and products is another part of this file.
-# Please scroll down to check it.
+ The schema for the "Sample_products" sample set.
+
+ The sample data for these table, invoice, item and products is another part of this file.
+ Please scroll down to check it.
  */
 CREATE TABLE invoice
 (
@@ -453,16 +453,16 @@ VALUES (6, 'mig2m', 'cd85a299c154c4714b23ce4b63618527289296ba6642c2685651ad8b9f2
 INSERT INTO authuser(id, username, hashedpasswd, email)
 VALUES (7, 'mig2', 'b7d863d29021fc96de261da6a5dfb6c4c28d3d43c75ad5ddddea4ec8716bdaf074675473', 'mig2@msyk.net');
 /*
-# The user1 has the password 'user1'. It's salted with the string 'TEXT'.
-# All users have the password the same as user name. All are salted with 'TEXT'
-# The following command lines are used to generate above hashed-hexed-password.
-#
-#  $ echo -n 'user1TEST' | openssl sha1 -sha1
-#  d83eefa0a9bd7190c94e7911688503737a99db01
-#  echo -n 'TEST' | xxd -ps
-#  54455354
-#  - combine above two results:
-#  d83eefa0a9bd7190c94e7911688503737a99db0154455354
+ The user1 has the password 'user1'. It's salted with the string 'TEXT'.
+ All users have the password the same as user name. All are salted with 'TEXT'
+ The following command lines are used to generate above hashed-hexed-password.
+
+  $ echo -n 'user1TEST' | openssl sha1 -sha1
+  d83eefa0a9bd7190c94e7911688503737a99db01
+  echo -n 'TEST' | xxd -ps
+  54455354
+  - combine above two results:
+d  d83eefa0a9bd7190c94e7911688503737a99db0154455354
 */
 CREATE TABLE authgroup
 (
@@ -528,8 +528,7 @@ CREATE INDEX issuedhash_clienthost
 CREATE INDEX issuedhash_user_id_clienthost
     ON issuedhash (user_id, clienthost);
 
-#
-Mail Template
+-- Mail Template
 CREATE TABLE mailtemplate
 (
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -582,8 +581,7 @@ VALUES (995, '@@mail@@', 'msyk@msyk.net', null, 'msyk@msyk.net', '認証コー�
             || 'ログインを行った画面に入力可能なパネルが表示されています。上記の認証コードを入力してください。\n\n'
             || '___________________________________\ninfo@msyk.net - Masayuki Nii');
 
-#
-Storing Sent Mail
+-- Storing Sent Mail
 CREATE TABLE maillog
 (
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -662,7 +660,7 @@ CREATE TABLE testtable
     bool2  BOOLEAN /* SQLite doesn't have the 'BOOLEAN' type, it's just synonym of INTEGER.*/
 );
 
-/* # Sample Data */
+/ Sample Data */
 INSERT INTO product('name', id, category_id, unitprice, photofile, acknowledgement, ack_link)
 VALUES ('Apple', 1, 1, 340, 'mela-verde.png', 'Image: djcodrin / FreeDigitalPhotos.net',
         'http://www.freedigitalphotos.net/images/view_photog.php?photogid=982');

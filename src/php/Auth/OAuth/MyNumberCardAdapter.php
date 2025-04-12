@@ -24,14 +24,15 @@ class MyNumberCardAdapter extends ProviderAdapter
     private bool $isTest = true;
 
     /**
-     *
+     * API Reference
+     * https://developers.digital.go.jp/documents/auth-and-sign/authserver/
      */
     function __construct()
     {
         $this->providerName = 'MyNumberCard';
-        $this->baseURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/auth';
-        $this->getTokenURL = "https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/token";
-        $this->getInfoURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/userinfo';
+        $this->baseURL = 'https://auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/auth';
+        $this->getTokenURL = "https://auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/token";
+        $this->getInfoURL = 'https://auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/userinfo';
         $this->issuer = "https://auth-and-sign.go.jp/realms/main/";
         $this->jwksURL = "https://auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/certs";
     }
@@ -42,6 +43,11 @@ class MyNumberCardAdapter extends ProviderAdapter
     public function setTestMode(): MyNumberCardAdapter
     {
         $this->isTest = true;
+        $this->baseURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/auth';
+        $this->getTokenURL = "https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/token";
+        $this->getInfoURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/userinfo';
+        $this->issuer = "https://auth-and-sign.go.jp/realms/main/";
+        $this->jwksURL = "https://auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/certs";
         return $this;
     }
 

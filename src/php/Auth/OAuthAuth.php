@@ -107,33 +107,10 @@ class OAuthAuth
     {
         $this->provider = $provider;
         $this->initiaizeAdapter();
-//        $this->providerObj = ProviderAdapter::createAdapter($provider);
         if (!$this->providerObj) {
             $this->errorMessage[] = "Provider Adapter for {$provider} couldn't create.";
             $this->isActive = false;
-            return;
         }
-//        $oAuthInfo = Params::getParameterValue("oAuth", null);
-//        $this->isActive = true;
-//        $this->providerObj->setDebugMode($this->debugMode);
-//        $this->provider = $this->providerObj->getProviderName();
-//        if (isset($oAuthInfo[$provider]["ClientID"])) {
-//            $this->providerObj->setClientId(IMUtil::getFromProfileIfAvailable($oAuthInfo[$provider]["ClientID"]) ?? null);
-//        }
-//        if (isset($oAuthInfo[$provider]["ClientSecret"])) {
-//            $this->providerObj->setClientSecret(IMUtil::getFromProfileIfAvailable($oAuthInfo[$provider]["ClientSecret"]) ?? null);
-//        }
-//        if (isset($oAuthInfo[$provider]["Scope"])) {
-//            $this->providerObj->setInfoScope(IMUtil::getFromProfileIfAvailable($oAuthInfo[$provider]["Scope"]) ?? null);
-//        }
-//        if (isset($oAuthInfo[$provider]["RedirectURL"])) {
-//            $this->providerObj->setRedirectURL($oAuthInfo[$provider]["RedirectURL"] ?? null);
-//        }
-//        if (!$this->providerObj->validate()) {
-//            $this->isActive = false;
-//            $this->errorMessage[] = "Wrong Paramters.";
-//            $this->provider = "unspecified";
-//        }
     }
 
     private function initiaizeAdapter(): void
@@ -175,7 +152,10 @@ class OAuthAuth
      */
     public function getAuthRequestURL(): string
     {
-        return $this->providerObj->getAuthRequestURL();
+        if($this->providerObj) {
+            return $this->providerObj->getAuthRequestURL();
+        }
+        return "";
     }
 
     /**

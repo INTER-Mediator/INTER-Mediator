@@ -108,6 +108,7 @@ let INTERMediatorOnPage = {
   serviceServerStatus: false,
   serviceServerURL: null,
   systemInfo: null,
+  oAuthParams: null,
 
   get authCount() {
     this._authCount = IMLibLocalContext.getValue('_im_authcount')
@@ -777,7 +778,7 @@ let INTERMediatorOnPage = {
         const inputNewPassword = document.getElementById('_im_newpassword').value
         if (inputUsername === '' || inputPassword === '' || inputNewPassword === '') {
           messageNode = document.getElementById('_im_newpass_message')
-          INTERMediatorLib.removeChildNodesAppendText(messageNode2007)
+          INTERMediatorLib.removeChildNodesAppendText(messageNode)
           return
         }
 
@@ -799,6 +800,11 @@ let INTERMediatorOnPage = {
     if (this.isOAuthAvailable && oAuthButton) {
       for (let provider in INTERMediatorOnPage.oAuthParams) {
         oAuthButton[provider].onclick = function () {
+          if(!INTERMediatorOnPage.oAuthParams[provider].AuthURL) {
+            const messageNode = document.getElementById('_im_login_message')
+            messageNode.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(1059)))
+            return
+          }
           INTERMediatorOnPage.setCookieDomainWide('_im_oauth_provider', provider, true)
           INTERMediatorOnPage.setCookieDomainWide('_im_oauth_backurl', location.href, true)
           INTERMediatorOnPage.setCookieDomainWide('_im_oauth_realm', INTERMediatorOnPage.realm, true)

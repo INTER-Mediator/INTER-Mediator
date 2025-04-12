@@ -193,12 +193,6 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 
 /* OAuth Support */
 $oAuth = [
-    'Google' => [
-        'AuthButton' => 'Google Auth',
-        'ClientID' => '27962182969-1rrbvjf3m320m5tug9g61om8cles8t8h.apps.googleusercontent.com',
-        'ClientSecret' => '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',
-        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
-    ],
 //    'MyNumberCard-Sandbox' => [
 //        'AuthButton' => 'My Number Card',
 //        'ClientID' => 'TESTCLIENT01',
