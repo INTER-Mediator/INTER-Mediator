@@ -154,7 +154,7 @@ abstract class ProviderAdapter
             case "facebook":
                 return new FacebookAdapter();
             case "mynumbercard-sandbox":
-                return (new MyNumberCardAdapter()).setTestMode();
+                return (new MyNumberCardAdapter())->setTestMode();
             case "mynumbercard":
                 return new MyNumberCardAdapter();
         }
