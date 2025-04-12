@@ -22,6 +22,14 @@ class FacebookAdapter extends ProviderAdapter
     }
 
     /**
+     * @return ProviderAdapter
+     */
+    public function setTestMode(): ProviderAdapter //MyNumberCardAdapter
+    {
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getAuthRequestURL(): string

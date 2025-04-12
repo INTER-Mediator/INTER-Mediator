@@ -97,6 +97,13 @@ class GoogleAdapter extends ProviderAdapter
     }
 
     /**
+     * @return ProviderAdapter
+     */
+    public function setTestMode(): ProviderAdapter //MyNumberCardAdapter
+    {
+        return $this;
+    }
+    /**
      * @return bool
      */
     public function validate(): bool
