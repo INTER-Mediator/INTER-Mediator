@@ -139,6 +139,10 @@ abstract class ProviderAdapter
     public abstract function getUserInfo(): array;
 
     /**
+     * @return ProviderAdapter
+     */
+    public abstract function setTestMode(): ProviderAdapter;
+    /**
      * @param string $provider
      * @return ProviderAdapter|null
      */
@@ -150,7 +154,7 @@ abstract class ProviderAdapter
             case "facebook":
                 return new FacebookAdapter();
             case "mynumbercard-sandbox":
-                return (new MyNumberCardAdapter()) . setTestMode();
+                return (new MyNumberCardAdapter()).setTestMode();
             case "mynumbercard":
                 return new MyNumberCardAdapter();
         }

@@ -2,16 +2,11 @@
 
 namespace INTERMediator\Auth\OAuth;
 
+use DateInterval;
+use DateTime;
 use Exception;
 use INTERMediator\DB\Proxy;
 use INTERMediator\IMUtil;
-use Jose\Component\Core\AlgorithmManager;
-use Jose\Component\Core\JWKSet;
-use Jose\Component\Signature\Algorithm\ES256;
-use Jose\Component\Signature\Algorithm\RS256;
-use Jose\Component\Signature\JWSVerifier;
-use Jose\Component\Signature\Serializer\CompactSerializer;
-use Jose\Component\Signature\Serializer\JWSSerializerManager;
 
 /**
  *
@@ -69,7 +64,7 @@ class MyNumberCardAdapter extends ProviderAdapter
     public function getAuthRequestURL(): string
     {
         if (!$this->infoScope) {
-            $this->infoScope = 'openid nameaddress　birthdate gender'; // Default scope string
+            $this->infoScope = 'openid name address birthdate gender'; // Default scope string
         }
         $state = IMUtil::randomString(32);
         $nonce = IMUtil::randomString(32);
@@ -138,7 +133,7 @@ class MyNumberCardAdapter extends ProviderAdapter
         $access_token = $response->access_token ?? "";
         $promisedScope = $response->scope ?? "";
         if (strlen($access_token) < 1) {
-            $this->errorMessage[] = "Error: Access token didn't get from: {$this->getTokenURL}.";
+            throw new Exception("Error: Access token didn't get from: {$this->getTokenURL}.");
         }
         $id_token = $response->id_token;
         $access_token = $response->access_token;
