@@ -463,7 +463,7 @@ CREATE TABLE authuser
     address      VARCHAR(200),
     birthdate    CHAR(8),
     gender       CHAR(1),
-    sub VRCHAR(255),
+    sub          VARCHAR(255),
     limitdt      TIMESTAMP
 );
 CREATE INDEX authuser_username ON authuser (username);
