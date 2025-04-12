@@ -192,13 +192,13 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 //$suppressAuthTargetFillingOnCreate = false; // If you don't want to set the target field of authentication on create operation, set this true.
 
 /* OAuth Support */
-//$oAuth = [
-//    'Google' => [
-//        'AuthButton' => 'Google Auth',
-//        'ClientID' => 'xxxxxxxx',
-//        'ClientSecret' => 'xxxxxx',
-//        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
-//    ],
+$oAuth = [
+    'Google' => [
+        'AuthButton' => 'Google Auth',
+        'ClientID' => '27962182969-1rrbvjf3m320m5tug9g61om8cles8t8h.apps.googleusercontent.com',
+        'ClientSecret' => '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',
+        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
+    ],
 //    'MyNumberCard-Sandbox' => [
 //        'AuthButton' => 'My Number Card',
 //        'ClientID' => 'TESTCLIENT01',
@@ -213,16 +213,16 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 //        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
 //        'JWSPath' => '/var/www/',
 //    ],
-//];
-/* The system information requires authenticating with My Number Card. */
-$systemInfo = [
-    'title' => 'INTER-Mediator My Number Card Testing',
-    'logoURL' => '/',
-    'Scope' => '名前,住所,誕生日,性別' /*, '署名'*/,
-    'PrivacyPolicyURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
-    'SummaryURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
-    'TOSURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
 ];
+///* The system information requires authenticating with My Number Card. */
+//$systemInfo = [
+//    'title' => 'INTER-Mediator My Number Card Testing',
+//    'logoURL' => '/',
+//    'Scope' => '名前,住所,誕生日,性別' /*, '署名'*/,
+//    'PrivacyPolicyURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
+//    'SummaryURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
+//    'TOSURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
+//];
 
 /* SAML Support
    Information about setting up a SAML Service Provider exists in the samples/saml-config directory. */

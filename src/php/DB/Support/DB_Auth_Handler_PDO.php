@@ -17,11 +17,10 @@
 namespace INTERMediator\DB\Support;
 
 use DateTime;
+use Exception;
 use INTERMediator\DB\PDO;
 use INTERMediator\IMUtil;
-use INTERMediator\OAuthAuth;
 use INTERMediator\Params;
-use Exception;
 
 /**
  *
@@ -263,7 +262,8 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     public function authSupportOAuthUserHandling(array $keyValues): bool
     {
         $user_id = $this->authSupportGetUserIdFromUsername($keyValues["username"]);
-        $this->logger->setDebugMessage("[authSupportOAuthUserHandling] start with user id=" . $user_id . " from " . $keyValues["username"]);
+        $this->logger->setDebugMessage(
+            "[authSupportOAuthUserHandling] start with user id=" . $user_id . " from " . $keyValues["username"]);
 
         $userTable = $this->dbSettings->getUserTable();
         if (!$this->pdoDB->setupConnection()) { //Establish the connection

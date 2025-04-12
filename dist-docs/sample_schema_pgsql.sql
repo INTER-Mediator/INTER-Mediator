@@ -20,7 +20,8 @@ $ psql -f sample_schema_pgsql.sql -h localhost test_db
  *********************************************************************/
 
 -- DROP USER web;
-CREATE USER web PASSWORD 'password';
+CREATE
+USER web PASSWORD 'password';
 /*
 DROP DATABASE IF EXISTS test_db;
 CREATE DATABASE test_db ENCODING 'UTF8';
@@ -30,13 +31,15 @@ VACUUM;
 DROP SCHEMA IF EXISTS im_sample CASCADE;
 CREATE SCHEMA im_sample;
 
-SET search_path TO im_sample,public;
-ALTER USER web SET search_path TO im_sample,public;
+SET
+search_path TO im_sample,public;
+ALTER
+USER web SET search_path TO im_sample,public;
 
 /*  The schema for the "Sample_form" and "Sample_Auth" sample set. */
 CREATE
-SEQUENCE serial START
-1000;
+    SEQUENCE serial START
+    1000;
 CREATE TABLE person
 (
     id       SERIAL PRIMARY KEY,
@@ -456,7 +459,11 @@ CREATE TABLE authuser
     username     VARCHAR(64),
     hashedpasswd VARCHAR(72),
     email        VARCHAR(100),
-    realname     VARCHAR(20),
+    realname     VARCHAR(100),
+    address      VARCHAR(200),
+    birthdate    CHAR(8),
+    gender       CHAR(1),
+    sub VRCHAR(255),
     limitdt      TIMESTAMP
 );
 CREATE INDEX authuser_username ON authuser (username);
@@ -691,7 +698,12 @@ GRANT ALL PRIVILEGES ON im_sample.testtable_id_seq TO web;
 
 /* Grant to All operations for all objects with web account */
 
-GRANT ALL PRIVILEGES ON SCHEMA im_sample TO web;
+GRANT
+ALL
+PRIVILEGES
+ON
+SCHEMA
+im_sample TO web;
 GRANT ALL PRIVILEGES ON im_sample.authcor TO web;
 GRANT ALL PRIVILEGES ON im_sample.authgroup TO web;
 GRANT ALL PRIVILEGES ON im_sample.authuser TO web;

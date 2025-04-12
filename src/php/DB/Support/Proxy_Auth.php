@@ -17,14 +17,14 @@
 namespace INTERMediator\DB\Support;
 
 use Exception;
+use INTERMediator\Auth\SAMLAuth;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\PDO;
+use INTERMediator\DB\Support\ProxyElements\CheckAuthenticationElement;
 use INTERMediator\DB\Support\ProxyElements\CheckAuthorizationElement;
 use INTERMediator\DB\Support\ProxyElements\IsAuthAccessingElement;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
-use INTERMediator\SAMLAuth;
-use INTERMediator\DB\Support\ProxyElements\CheckAuthenticationElement;
 
 /**
  *

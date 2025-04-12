@@ -22,9 +22,9 @@ $pathToIM = "../../";   // Modify this to match your directories.
 
 require_once("{$pathToIM}/INTER-Mediator.php");
 require_once("{$pathToIM}/src/php/DB/PDO.php");
-require_once("{$pathToIM}/src/php/OAuthAuth.php");
+require_once("{$pathToIM}/src/php/Auth/OAuthAuth.php");
 
-$authObj = new INTERMediator\OAuthAuth($_COOKIE["_im_oauth_provider"] ?? "");
+$authObj = new \INTERMediator\Auth\OAuthAuth($_COOKIE["_im_oauth_provider"] ?? "");
 $authObj->debugMode = false; // or comment here
 $authObj->setDoRedirect(true);
 if (is_null($authObj)) {

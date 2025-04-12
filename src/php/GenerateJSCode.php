@@ -16,6 +16,8 @@
 
 namespace INTERMediator;
 
+use INTERMediator\Auth\OAuthAuth;
+
 /**
  *
  */
