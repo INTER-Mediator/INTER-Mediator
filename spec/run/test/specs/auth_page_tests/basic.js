@@ -196,7 +196,7 @@ module.exports = (AuthPage, is2FA = false) => {
 
     it('7-succeed login with sha-256 hashed users.', async () => {
       await browser.refresh()
-      await browser.pause(waiting)
+      await AuthPage.authLoginButton.waitForClickable()
       await expect(AuthPage.authPanel).toExist()
       await AuthPage.authUsername.setValue("mig2m")
       await AuthPage.authPassword.setValue("mig2m")
@@ -298,7 +298,7 @@ module.exports = (AuthPage, is2FA = false) => {
 
     it('9-can change the password.', async () => {
       await browser.refresh()
-      await browser.pause(waiting)
+      await AuthPage.authLoginButton.waitForClickable()
       await expect(AuthPage.authPanel).toExist()
       await AuthPage.authUsername.setValue("user1")
       await AuthPage.authPassword.setValue("dfjdjfadsklfjdksa")
