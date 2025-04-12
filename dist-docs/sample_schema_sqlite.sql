@@ -660,7 +660,7 @@ CREATE TABLE testtable
     bool2  BOOLEAN /* SQLite doesn't have the 'BOOLEAN' type, it's just synonym of INTEGER.*/
 );
 
-/ Sample Data */
+/* Sample Data */
 INSERT INTO product('name', id, category_id, unitprice, photofile, acknowledgement, ack_link)
 VALUES ('Apple', 1, 1, 340, 'mela-verde.png', 'Image: djcodrin / FreeDigitalPhotos.net',
         'http://www.freedigitalphotos.net/images/view_photog.php?photogid=982');
