@@ -137,6 +137,9 @@ class OAuthAuth
         if (isset($oAuthInfo[$this->provider]["RedirectURL"])) {
             $this->providerObj->setRedirectURL($oAuthInfo[$this->provider]["RedirectURL"] ?? null);
         }
+        if (isset($oAuthInfo[$this->provider]["KeyFilePath"])) {
+            $this->providerObj->setKeyFilePath($oAuthInfo[$this->provider]["KeyFilePath"] ?? null);
+        }
         if (!$this->providerObj->validate()) {
             $this->isActive = false;
             $this->errorMessage[] = "Wrong Paramters.";

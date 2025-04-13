@@ -122,13 +122,13 @@ class MyNumberCardAdapter extends ProviderAdapter
             'redirect_uri' => $this->redirectURL,
             'code_verifier' => $verifier,
             'client_assertion_type' => "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-            'client_assertion' => json_encode([
+            'client_assertion' => $this->createJWT(json_encode([
                 'iss' => (string)$this->clientId,
                 'sub' => (string)$this->clientId,
                 'aud' => $this->getTokenURL,
                 'jti' => uniqid(),
                 'exp' => (new DateTime())->add(DateInterval::createFromDateString('1 day'))->format("U"),
-            ]),
+            ])),
         );
         $response = $this->communication($this->getTokenURL, true, $tokenparams);
         $access_token = $response->access_token ?? "";

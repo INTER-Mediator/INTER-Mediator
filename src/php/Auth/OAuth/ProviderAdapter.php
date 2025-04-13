@@ -5,8 +5,11 @@ namespace INTERMediator\Auth\OAuth;
 use Exception;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\JWKSet;
+use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
+use Jose\Component\Signature\Algorithm\HS256;
 use Jose\Component\Signature\Algorithm\RS256;
+use Jose\Component\Signature\JWSBuilder;
 use Jose\Component\Signature\JWSVerifier;
 use Jose\Component\Signature\Serializer\CompactSerializer;
 use Jose\Component\Signature\Serializer\JWSSerializerManager;
@@ -61,6 +64,10 @@ abstract class ProviderAdapter
      * @var string|null
      */
     protected ?string $jwksURL = "";
+    /**
+     * @var string|null
+     */
+    protected ?string $keyFilePath = "";
 
     /**
      * @param string $clientId
@@ -114,6 +121,15 @@ abstract class ProviderAdapter
     public function setInfoScope(string $info): void
     {
         $this->infoScope = $info;
+    }
+
+    /**
+     * @param string $info
+     * @return void
+     */
+    public function setKeyFilePath(string $path): void
+    {
+        $this->keyFilePath = $path;
     }
 
     /**
@@ -220,6 +236,20 @@ abstract class ProviderAdapter
             throw new Exception("Error Response: " . var_export($response, true));
         }
         return $response;
+    }
+
+    /**
+     * @param string $payload JSON format payload
+     * @return string
+     */
+    protected function createJWT(string $payload): string
+    {
+        $algorithmManager = new AlgorithmManager([new HS256(),]);
+        $jwk = JWKFactory::createFromKeyFile($this->keyFilePath, null, ['use' => 'sig']);
+        $jwsBuilder = new JWSBuilder($algorithmManager);
+        $jws = $jwsBuilder->create()->withPayload($payload)->addSignature($jwk, ['alg' => 'HS256'])->build();
+        $serializer = new CompactSerializer(); // The serializer
+        return $serializer->serialize($jws, 0);
     }
 
     /**
