@@ -20,9 +20,7 @@ date_default_timezone_set('Asia/Tokyo');
 $pathToIM = "../../";   // Modify this to match your directories.
 //---------------------------------------------
 
-require_once("{$pathToIM}/INTER-Mediator.php");
-require_once("{$pathToIM}/src/php/DB/PDO.php");
-require_once("{$pathToIM}/src/php/Auth/OAuthAuth.php");
+require_once("{$pathToIM}/INTER-Mediator.php"); // Loading INTER-Mediator and relevant libraries.
 
 $authObj = new \INTERMediator\Auth\OAuthAuth($_COOKIE["_im_oauth_provider"] ?? "");
 $authObj->debugMode = false; // or comment here
