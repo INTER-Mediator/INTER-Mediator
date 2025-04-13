@@ -82,7 +82,7 @@ class MyNumberCardAdapter extends ProviderAdapter
             . '&redirect_uri=' . urlencode($this->redirectURL)
             . '&state=' . urlencode($state)
             . '&nonce=' . urlencode($nonce)
-            . '&code_challenge' . urlencode($challenge)
+            . '&code_challenge=' . urlencode($challenge)
             . '&code_challenge_method=S256&acr_values=aal3 crl';
     }
 
