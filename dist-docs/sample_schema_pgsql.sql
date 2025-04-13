@@ -546,7 +546,7 @@ CREATE TABLE issuedhash
     id         SERIAL PRIMARY KEY,
     user_id    INTEGER,
     clienthost VARCHAR(64),
-    hash       VARCHAR(64),
+    hash       VARCHAR(100),
     expired    TIMESTAMP
 );
 

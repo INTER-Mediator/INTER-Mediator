@@ -947,7 +947,7 @@ CREATE TABLE issuedhash
     id         INT AUTO_INCREMENT,
     user_id    INT,
     clienthost VARCHAR(64),
-    hash       VARCHAR(64),
+    hash       VARCHAR(100),
     expired    DateTime,
     PRIMARY KEY (id)
 ) CHARACTER SET utf8mb4,
