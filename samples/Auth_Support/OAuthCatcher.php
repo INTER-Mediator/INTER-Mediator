@@ -31,7 +31,7 @@ if (is_null($authObj)) {
 }
 $jsCode = "";
 if (!$authObj->isActive) {
-    echo "Missing parameters for OAuth authentication.";
+    echo "Missing parameters for OAuth authentication." . ($_GET['error_description'] ?? "");
     exit;
 }
 $err = "No Error";
