@@ -244,10 +244,10 @@ abstract class ProviderAdapter
      */
     protected function createJWT(string $payload): string
     {
-        $algorithmManager = new AlgorithmManager([new HS256(),]);
+        $algorithmManager = new AlgorithmManager([new RS256(),]);
         $jwk = JWKFactory::createFromKeyFile($this->keyFilePath, null, ['use' => 'sig']);
         $jwsBuilder = new JWSBuilder($algorithmManager);
-        $jws = $jwsBuilder->create()->withPayload($payload)->addSignature($jwk, ['alg' => 'HS256'])->build();
+        $jws = $jwsBuilder->create()->withPayload($payload)->addSignature($jwk, ['alg' => 'RS256'])->build();
         $serializer = new CompactSerializer(); // The serializer
         return $serializer->serialize($jws, 0);
     }

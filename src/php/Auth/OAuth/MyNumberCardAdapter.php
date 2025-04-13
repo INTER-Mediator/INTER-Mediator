@@ -52,7 +52,7 @@ class MyNumberCardAdapter extends ProviderAdapter
      */
     public function validate(): bool
     {
-        if (parent::validate()) {
+        if (parent::validate() && $this->keyFilePath) {
             return true;
         }
         return false;
