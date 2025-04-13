@@ -142,6 +142,7 @@ abstract class ProviderAdapter
      * @return ProviderAdapter
      */
     public abstract function setTestMode(): ProviderAdapter;
+
     /**
      * @param string $provider
      * @return ProviderAdapter|null
@@ -230,8 +231,8 @@ abstract class ProviderAdapter
     {
         $certficate = $this->communication($this->jwksURL, false, null);
         $jWebToken = explode(".", $token);
-        $headerIDToken = json_decode(base64_decode(strtr($jWebToken[0], '-_', '+/')));
-        $payloadIDToken = json_decode(base64_decode(strtr($jWebToken[1], '-_', '+/')));
+        $headerIDToken = json_decode($this->base64url_decode($jWebToken[0]));
+        $payloadIDToken = json_decode($this->base64url_decode($jWebToken[1]));
         $jwkSet = JWKSet::createFromJson(json_encode($certficate));
         $key = $jwkSet->get($headerIDToken->kid);
         $algorithmManager = new AlgorithmManager([new ES256(), new RS256(),]);
@@ -249,12 +250,29 @@ abstract class ProviderAdapter
         if ($payloadIDToken->exp < time()) {
             throw new Exception("Invalid exp. {$payloadIDToken->exp}");
         }
-        $atHashNorm = strtr($payloadIDToken->at_hash, '-_', '+/');
-        $expectedHash = str_replace("=", "",
-            base64_encode(substr(hash('sha256', $access_token, true), 0, 16)));
-        if ($atHashNorm !== $expectedHash) {
+        $expectedHash = $this->base64url_encode(substr(hash('sha256', $access_token, true), 0, 16));
+        if ($payloadIDToken->at_hash !== $expectedHash) {
             throw new Exception("Invalid at_hash. {$payloadIDToken->at_hash} vs {$expectedHash}");
         }
         return $payloadIDToken;
+    }
+
+    /**
+     * https://www.php.net/manual/ja/function.base64-encode.php#103849
+     * @param $data
+     * @return string
+     */
+    protected function base64url_encode($data): string
+    {
+        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
+
+    /**
+     * @param $data
+     * @return string
+     */
+    protected function base64url_decode($data): string
+    {
+        return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT));
     }
 }
