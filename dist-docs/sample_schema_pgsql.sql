@@ -416,8 +416,8 @@ VALUES (2, '共用');
 CREATE TABLE chat
 (
     id        SERIAL PRIMARY KEY,
-    username  VARCHAR(16),
-    groupname VARCHAR(16),
+    username  VARCHAR(64),
+    groupname VARCHAR(64),
     postdt    TIMESTAMP,
     message   VARCHAR(800)
 );

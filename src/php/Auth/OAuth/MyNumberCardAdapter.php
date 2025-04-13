@@ -28,7 +28,7 @@ class MyNumberCardAdapter extends ProviderAdapter
         $this->baseURL = 'https://auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/auth';
         $this->getTokenURL = "https://auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/token";
         $this->getInfoURL = 'https://auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/userinfo';
-        $this->issuer = "https://auth-and-sign.go.jp/realms/main/";
+        $this->issuer = "https://auth-and-sign.go.jp/api/realms/main";
         $this->jwksURL = "https://auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/certs";
     }
 
@@ -42,8 +42,8 @@ class MyNumberCardAdapter extends ProviderAdapter
         $this->baseURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/auth';
         $this->getTokenURL = "https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/token";
         $this->getInfoURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/userinfo';
-        $this->issuer = "https://auth-and-sign.go.jp/realms/main/";
-        $this->jwksURL = "https://auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/certs";
+        $this->issuer = "https://sb-auth-and-sign.go.jp/api/realms/main";
+        $this->jwksURL = "https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/certs";
         return $this;
     }
 
@@ -101,7 +101,7 @@ class MyNumberCardAdapter extends ProviderAdapter
             $storedStates = $dbProxy->authDbClass->authHandler->authSupportRetrieveChallenge(
                 0, substr($this->clientId, 0, 64), false, "@M:state@", true);
             if (!in_array($state, explode("\n", $storedStates))) {
-                throw new Exception("Failed with security issue.");
+                throw new Exception("Failed with security issue. state={$state}, storedStates={$storedStates}");
             }
             $storedVerifiers = explode("\n", $dbProxy->authDbClass->authHandler->authSupportRetrieveChallenge(
                 0, substr($this->clientId, 0, 64), false, "@M:verifier@", true));

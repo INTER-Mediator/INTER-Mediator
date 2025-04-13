@@ -718,8 +718,8 @@ SET category_id=2,
 CREATE TABLE chat
 (
     id        INT AUTO_INCREMENT,
-    user      VARCHAR(16),
-    groupname VARCHAR(16),
+    user      VARCHAR(64),
+    groupname VARCHAR(64),
     postdt    DATETIME,
     message   VARCHAR(800),
     PRIMARY KEY (id)
