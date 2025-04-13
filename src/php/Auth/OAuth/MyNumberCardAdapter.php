@@ -76,7 +76,7 @@ class MyNumberCardAdapter extends ProviderAdapter
             0, $state, substr($this->clientId, 0, 64), "@M:state@", true);
         $dbProxy->authDbClass->authHandler->authSupportStoreChallenge(
             0, $verifier, substr($this->clientId, 0, 64), "@M:verifier@", true);
-        return $this->baseURL . '?response_type=code&scope=' . urlencode(implode(" ", $this->infoScope))
+        return $this->baseURL . '?response_type=code&scope=' . urlencode($this->infoScope)
             . '&client_id=' . urlencode($this->clientId)
             . '&redirect_uri=' . urlencode($this->redirectURL)
             . '&state=' . urlencode($state)
