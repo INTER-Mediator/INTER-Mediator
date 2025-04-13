@@ -38,6 +38,7 @@ class MyNumberCardAdapter extends ProviderAdapter
     public function setTestMode(): ProviderAdapter //MyNumberCardAdapter
     {
         $this->isTest = true;
+        $this->providerName = 'MyNumberCard-Sandbox';
         $this->baseURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/auth';
         $this->getTokenURL = "https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/token";
         $this->getInfoURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/userinfo';
