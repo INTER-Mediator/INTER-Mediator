@@ -70,7 +70,6 @@ class MyNumberCardAdapter extends ProviderAdapter
         $state = IMUtil::randomString(32);
         $nonce = IMUtil::randomString(32);
         $verifier = IMUtil::challengeString(64);
-        $challenge = $this->base64url_encode(hash('sha256', $verifier, true));
         $dbProxy = new Proxy(true);
         $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
         $dbProxy->authDbClass->authHandler->authSupportStoreChallenge(
@@ -82,7 +81,7 @@ class MyNumberCardAdapter extends ProviderAdapter
             . '&redirect_uri=' . urlencode($this->redirectURL)
             . '&state=' . urlencode($state)
             . '&nonce=' . urlencode($nonce)
-            . '&code_challenge=' . urlencode($challenge)
+            . '&code_challenge=' . $this->base64url_encode(hash('sha256', $verifier, true))
             . '&code_challenge_method=S256&acr_values=aal3 crl';
     }
 
