@@ -193,16 +193,32 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 
 /* OAuth Support */
 $oAuth = [
+    'MyNumberCard-Sandbox' => [
+        'AuthButton' => 'マイナンバーカードで認証',
+        'ClientID' => 'code_code_code',
+        'Scope' => 'openid name address birthdate gender',
+        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
+        'JWSFile' => '/var/www/file.pem',
+    ],
+    'MyNumberCard' => [
+        'AuthButton' => 'マイナンバーカードで認証',
+        'ClientID' => 'code_code_code',
+        'Scope' => 'openid name address birthdate gender',
+        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
+        'JWSPath' => '/var/www/file.pem',
+    ],
+    'Google' => [
+        'AuthButton' => 'Sign in with Google',
+        'ClientID' => 'code_code_code',
+        'ClientSecret' => 'code_code_code',
+        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
+    ],
+    'Facebook' => [
+        'AuthButton' => 'Facebook',
+        'ClientID' => 'code_code_code',
+        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
+    ],
 ];
-///* The system information requires authenticating with My Number Card. */
-//$systemInfo = [
-//    'title' => 'INTER-Mediator My Number Card Testing',
-//    'logoURL' => '/',
-//    'Scope' => '名前,住所,誕生日,性別' /*, '署名'*/,
-//    'PrivacyPolicyURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
-//    'SummaryURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
-//    'TOSURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
-//];
 
 /* SAML Support
    Information about setting up a SAML Service Provider exists in the samples/saml-config directory. */

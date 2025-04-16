@@ -175,15 +175,6 @@ class GenerateJSCode
             }
         }
 
-        // System Information
-        $systemInfo = Params::getParameterValue("systemInfo", null);
-        if ($systemInfo) {
-            $this->generateAssignJS("INTERMediatorOnPage.systemInfo", "[]");
-            foreach ($systemInfo as $key => $value) {
-                $this->generateAssignJS("INTERMediatorOnPage.systemInfo[{$q}{$key}{$q}]", $q, $value, $q);
-            }
-        }
-
         // Generate the link to the definition file editor
         $relativeToDefFile = '';
         $editorPath = realpath($pathToIM . $ds . 'editors');
