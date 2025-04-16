@@ -193,20 +193,6 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 
 /* OAuth Support */
 $oAuth = [
-//    'MyNumberCard-Sandbox' => [
-//        'AuthButton' => 'My Number Card',
-//        'ClientID' => 'TESTCLIENT01',
-//        'Scope' => ['openid', 'name', 'address', 'birthdate', 'gender' /*, 'sign'*/],
-//        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
-//        'JWSFile' => '/var/www/',
-//    ],
-//    'MyNumberCard' => [
-//        'AuthButton' => 'My Number Card',
-//        'ClientID' => 'TESTCLIENT01',
-//        'Scope' => ['openid', 'name', 'address', 'birthdate', 'gender' /*, 'sign'*/],
-//        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
-//        'JWSPath' => '/var/www/',
-//    ],
 ];
 ///* The system information requires authenticating with My Number Card. */
 //$systemInfo = [

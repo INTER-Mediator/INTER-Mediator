@@ -109,6 +109,7 @@ let INTERMediatorOnPage = {
   serviceServerURL: null,
   systemInfo: null,
   oAuthParams: null,
+  uiEventDT: null,
 
   get authCount() {
     this._authCount = IMLibLocalContext.getValue('_im_authcount')
@@ -120,7 +121,7 @@ let INTERMediatorOnPage = {
   },
 
   /* This method is going to supply by accessing a definition file. This entry is just a definition for static analyzer. */
-  getTerms: function() {
+  getTerms: function () {
     return {dummy: 'dummy'}
   },
   /*
@@ -130,6 +131,20 @@ let INTERMediatorOnPage = {
   getMessages: function () {
     'use strict'
     return null
+  },
+
+  checkUIEventDT: function () {
+    const prevEventDT = INTERMediatorOnPage.uiEventDT
+    const now = new Date()
+    INTERMediatorOnPage.uiEventDT = now
+    if (!prevEventDT) {
+      return true
+    }
+    const diff = now.getTime() - prevEventDT.getTime()
+    if (diff > 500) {
+      return true
+    }
+    return false
   },
 
   getURLParametersAsArray: function () {
@@ -640,7 +655,8 @@ let INTERMediatorOnPage = {
       if (this.isOAuthAvailable) {
         for (let provider in INTERMediatorOnPage.oAuthParams) {
           oAuthButton[provider] = document.createElement('BUTTON')
-          oAuthButton[provider].id = '_im_oauthbutton'
+          oAuthButton[provider].id = '_im_oauthbutton_' + provider.toLowerCase()
+          oAuthButton[provider].disabled = false
           const buttonLabel = document.createTextNode(INTERMediatorOnPage.oAuthParams[provider].AuthButton)
           oAuthButton[provider].appendChild(buttonLabel)
           frontPanel.appendChild(oAuthButton[provider])
@@ -799,8 +815,11 @@ let INTERMediatorOnPage = {
     }
     if (this.isOAuthAvailable && oAuthButton) {
       for (let provider in INTERMediatorOnPage.oAuthParams) {
-        oAuthButton[provider].onclick = function () {
-          if(!INTERMediatorOnPage.oAuthParams[provider].AuthURL) {
+        oAuthButton[provider].onclick = function (event) {
+          if (!INTERMediatorOnPage.checkUIEventDT()) { // Prevent multiple click
+            return
+          }
+          if (!INTERMediatorOnPage.oAuthParams[provider].AuthURL) {
             const messageNode = document.getElementById('_im_login_message')
             messageNode.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(1059)))
             return

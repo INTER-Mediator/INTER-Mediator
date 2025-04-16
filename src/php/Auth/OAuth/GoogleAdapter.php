@@ -151,7 +151,7 @@ class GoogleAdapter extends ProviderAdapter
         $dbProxy = new Proxy(true);
         $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
         $challenges = $dbProxy->authDbClass->authHandler->authSupportRetrieveChallenge(
-            0, substr($this->clientId, 0, 64), false, "@G:state@", true);
+            0, substr($this->clientId, 0, 64), true, "@G:state@", true);
         if (!in_array($state, explode("\n", $challenges))) {
             throw new Exception("Failed with security issue. The state parameter isn't same as the stored one.");
         }

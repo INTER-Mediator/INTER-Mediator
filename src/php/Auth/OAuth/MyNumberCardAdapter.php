@@ -76,7 +76,7 @@ class MyNumberCardAdapter extends ProviderAdapter
         $dbProxy->authDbClass->authHandler->authSupportStoreChallenge(
             0, $state, substr($this->clientId, 0, 64), "@M:state@", true);
         $dbProxy->authDbClass->authHandler->authSupportStoreChallenge(
-            0, $verifier, substr($this->clientId, 0, 64), "@M:verifier@", true);
+            0, $verifier, $state, "@M:verifier@", true);
         return $this->baseURL . '?response_type=code&scope=' . urlencode($this->infoScope)
             . '&client_id=' . urlencode($this->clientId)
             . '&redirect_uri=' . urlencode($this->redirectURL)
@@ -99,12 +99,13 @@ class MyNumberCardAdapter extends ProviderAdapter
             $dbProxy = new Proxy(true);
             $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
             $storedStates = $dbProxy->authDbClass->authHandler->authSupportRetrieveChallenge(
-                0, substr($this->clientId, 0, 64), false, "@M:state@", true);
+                0, substr($this->clientId, 0, 64), true, "@M:state@", true);
             if (!in_array($state, explode("\n", $storedStates))) {
                 throw new Exception("Failed with security issue. state={$state}, storedStates={$storedStates}");
             }
-            $storedVerifiers = explode("\n", $dbProxy->authDbClass->authHandler->authSupportRetrieveChallenge(
-                0, substr($this->clientId, 0, 64), false, "@M:verifier@", true));
+            $storedVerifiers = explode("\n",
+                $dbProxy->authDbClass->authHandler->authSupportRetrieveChallenge(
+                    0, $state, true, "@M:verifier@", true));
             if (count($storedVerifiers) < 1) {
                 throw new Exception("Verifier value isn't stored.");
             }
