@@ -1,13 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
   "version": "14",
-  "time": "2025-01-19",
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/INTER-Mediator/INTER-Mediator.git"
-    }
-  ],
+  "time": "2025-04-17",
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
@@ -23,11 +17,8 @@
     "ext-intl": "*",
     "ext-posix": "*",
     "mouf/nodejs-installer": "*",
-    "paragonie/constant_time_encoding": "*",
     "inter-mediator/fmdataapi": "33",
     "tecnickcom/tcpdf": "*",
-    "setasign/fpdi": "*",
-    "smalot/pdfparser": "*",
     "aws/aws-sdk-php": "*",
     "simplesamlphp/simplesamlphp": "*",
     "matthiasmullie/minify": "*",
@@ -36,12 +27,13 @@
     "symfony/mailer": "*",
     "symfony/amazon-mailer": "*",
     "symfony/google-mailer": "*",
-    "symfony/yaml": "*"
+    "symfony/yaml": "*",
+    "web-token/jwt-framework": "*"
   },
   "extra": {
     "mouf": {
       "nodejs": {
-        "version": "20.12.2",
+        "version": "22.14.0",
         "includeBinInPath": true
       }
     }

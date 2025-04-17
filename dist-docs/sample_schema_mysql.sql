@@ -718,8 +718,8 @@ SET category_id=2,
 CREATE TABLE chat
 (
     id        INT AUTO_INCREMENT,
-    user      VARCHAR(16),
-    groupname VARCHAR(16),
+    user      VARCHAR(64),
+    groupname VARCHAR(64),
     postdt    DATETIME,
     message   VARCHAR(800),
     PRIMARY KEY (id)
@@ -790,8 +790,12 @@ CREATE TABLE authuser
     id              INT AUTO_INCREMENT,
     username        VARCHAR(64),
     hashedpasswd    VARCHAR(72),
-    realname        VARCHAR(20),
+    realname        VARCHAR(100),
     email           VARCHAR(100),
+    address         VARCHAR(200),
+    birthdate       CHAR(8),
+    gender          CHAR(1),
+    sub             VARCHAR(255),
     limitdt         DATETIME,
     initialPassword VARCHAR(30),
     PRIMARY KEY (id)
@@ -943,7 +947,7 @@ CREATE TABLE issuedhash
     id         INT AUTO_INCREMENT,
     user_id    INT,
     clienthost VARCHAR(64),
-    hash       VARCHAR(64),
+    hash       VARCHAR(100),
     expired    DateTime,
     PRIMARY KEY (id)
 ) CHARACTER SET utf8mb4,
@@ -24014,9 +24018,9 @@ SET id=1,
 
 CREATE VIEW saleslog_summary AS
 SELECT SUBSTRING(customer, 1, 1) AS customer,
-       SUBSTRING(item, 1, 1) AS item,
-       SUM(qty) AS qty,
-       SUM(total) AS total
+       SUBSTRING(item, 1, 1)     AS item,
+       SUM(qty)                  AS qty,
+       SUM(total)                AS total
 FROM saleslog
 GROUP BY SUBSTRING(customer, 1, 1), SUBSTRING(item, 1, 1);
 

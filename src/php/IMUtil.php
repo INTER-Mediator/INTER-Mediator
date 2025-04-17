@@ -632,9 +632,9 @@ class IMUtil
         $resultStr = '';
         for ($i = 0; $i < $digit; $i++) {
             try {
-                $code = random_int(0, $len-1);
+                $code = random_int(0, $len - 1);
             } catch (Exception $ex) {
-                $code = rand(0, $len-1);
+                $code = rand(0, $len - 1);
             }
             $resultStr .= $chars[$code];
         }
@@ -885,9 +885,11 @@ class IMUtil
         $section = $comp[2];
         $key = $comp[3];
 
-        $profileRoot = Params::getParameterValue("profileRoot", null);
-        $home = posix_getpwnam(get_current_user())["dir"];
-        $path = [$profileRoot, $home];
+        $path = [
+            Params::getParameterValue("profileRoot", null),
+            posix_getpwuid(posix_geteuid())["dir"],
+            posix_getpwnam(get_current_user())["dir"],
+        ];
         $suffix = "credentials";
         if ($category === "aws") {
             $suffix = "/.aws/{$suffix}";

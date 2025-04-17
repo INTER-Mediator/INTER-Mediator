@@ -42,19 +42,9 @@
     "wdio": "npx wdio run wdio.conf.js"
   },
   "devDependencies": {
-    "@wdio/cli": "*",
-    "@wdio/local-runner": "*",
-    "@wdio/mocha-framework": "*",
-    "@wdio/spec-reporter": "*",
-    "chromedriver": "*",
-    "geckodriver": "*",
-    "msedgedriver": "*",
-    "wdio-chromedriver-service": "*",
-    "wdio-edgedriver-service": "*",
-    "wdio-geckodriver-service": "*",
-    "wdio-safaridriver-service": "*",
-    "postcss": "*",
-    "postcss-cli": "*",
-    "autoprefixer": "*"
+    "@wdio/cli": "^8.39.1",
+    "@wdio/local-runner": "^8.39.1",
+    "@wdio/mocha-framework": "^8.39.0",
+    "@wdio/spec-reporter": "^8.39.0"
   }
 }

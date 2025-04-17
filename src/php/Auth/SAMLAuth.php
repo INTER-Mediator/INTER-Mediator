@@ -14,7 +14,7 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-namespace INTERMediator;
+namespace INTERMediator\Auth;
 
 use INTERMediator\DB\Logger;
 use SimpleSAML\Auth\Simple;

@@ -193,15 +193,29 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 
 /* OAuth Support */
 //$oAuth = [
+//    'MyNumberCard-Sandbox' => [
+//        'AuthButton' => 'マイナンバーカードで認証',
+//        'ClientID' => 'code_code_code',
+//        'Scope' => 'openid name address birthdate gender',
+//        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
+//        'JWSFile' => '/var/www/file.pem',
+//    ],
+//    'MyNumberCard' => [
+//        'AuthButton' => 'マイナンバーカードで認証',
+//        'ClientID' => 'code_code_code',
+//        'Scope' => 'openid name address birthdate gender',
+//        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
+//        'JWSPath' => '/var/www/file.pem',
+//    ],
 //    'Google' => [
-//        'AuthButton' => 'Google Auth',
-//        'ClientID' => 'xxxxxxxx',
-//        'ClientSecret' => 'xxxxxx',
+//        'AuthButton' => 'Sign in with Google',
+//        'ClientID' => 'code_code_code',
+//        'ClientSecret' => 'code_code_code',
 //        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
 //    ],
-//    'MyNumberCard-Sandbox' => [
-//        'AuthButton' => 'My Number Card',
-//        'ClientID' => 'TESTCLIENT01',
+//    'Facebook' => [
+//        'AuthButton' => 'Facebook',
+//        'ClientID' => 'code_code_code',
 //        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
 //    ],
 //];

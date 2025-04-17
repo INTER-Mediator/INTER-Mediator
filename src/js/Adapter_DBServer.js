@@ -416,6 +416,12 @@ const INTERMediator_DBAdapter = {
       if (exceptionProc) {
         exceptionProc()
       }
+      if (INTERMediatorOnPage.updatingWithSynchronize > 0 || INTERMediator.partialConstructing) {
+        location.reload() // It might stop here.
+      }
+      if (!accessURL.match(/access=challenge/)) {
+        INTERMediator.constructMain()
+      }
       return false
     }
     INTERMediatorLog.flushMessage()

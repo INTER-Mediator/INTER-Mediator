@@ -31,7 +31,7 @@ Vagrant.configure(2) do |config|
   config.vm.provision "file", source: "recipe.rb", destination: "$HOME/recipe.rb"
   config.vm.provision "shell", path: "deploy.sh"
   # Testing by msyk's repository file
-  #config.vm.provision "shell", path: "https://raw.githubusercontent.com/msyk/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh"
+  #config.vm.provision "shell", path: "https://raw.githubusercontent.com/inter-mediator/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh"
 
   ## provisioning by itamae
   #config.vm.provision :itamae do |config|

@@ -160,6 +160,7 @@ class MessageStrings
         1056 => "Maintenance Call",
         1057 => "Two Factor Authentication: ",
         1058 => "Connection Error in getCredential=@1@/@2@",
+        1059 => "The \$oAuth variable in the params.php file has wrong setting values",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',

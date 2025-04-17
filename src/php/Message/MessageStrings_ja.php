@@ -95,6 +95,7 @@ class MessageStrings_ja extends MessageStrings
         1056 => "メンテナンスコール",
         1057 => "2FA取得認証: ",
         1058 => "getCredential関数での通信エラー=@1@/@2@",
+        1059 => "params.phpファイルでの\$oAuth変数の設定に問題があります",
         2001 => '認証エラー!',
         2002 => 'ユーザー名:',
         2003 => 'パスワード:',
