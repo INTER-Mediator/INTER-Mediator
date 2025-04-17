@@ -24,20 +24,43 @@
  * Usually you don't have to instantiate this class with the new operator.
  * @constructor
  */
+/**
+ * IMLibPageNavigation handles page navigation functionality
+ * @type {Object}
+ */
 const IMLibPageNavigation = {
+  /** @type {Array} Stores delete/insert navigation items */
   deleteInsertOnNavi: [],
+
+  /** @type {Array} Backup of delete/insert navigation items */
   deleteInsertOnNaviBackup: [],
+
+  /** @type {boolean} Flag to keep navigation array during operations */
   isKeepOnNaviArray: false,
+
+  /** @type {Object|null} Stores previous detail mode state */
   previousModeDetail: null,
+
+  /** @type {Array} Stores navigation steps */
   stepNavigation: [],
+
+  /** @type {string|null} Current context name in step navigation */
   stepCurrentContextName: null,
+
+  /** @type {string|null} Starting context name in step navigation */
   stepStartContextName: null,
+
+  /** @type {string} Original display style of master node */
   masterNodeOriginalDisplay: 'block',
 
   /**
    * Create Navigation Bar to move previous/next page
    */
 
+  /**
+   * Sets up navigation controls including buttons and event handlers
+   * Creates navigation bar for page movement and handles insert/delete/copy operations
+   */
   navigationSetup: function () {
     'use strict'
     if (INTERMediator.partialConstructing) {
@@ -342,6 +365,12 @@ const IMLibPageNavigation = {
     }
   },
 
+  /**
+   * Moves to specified page in navigation
+   * @param {string} targetName - Target context name
+   * @param {number} page - Page number to move to
+   * @returns {Promise<void>}
+   */
   moveRecordFromNavi: async function (targetName, page) {
     'use strict'
     await INTERMediator_DBAdapter.unregister()
@@ -349,6 +378,12 @@ const IMLibPageNavigation = {
     INTERMediator.constructMain(true)
   },
 
+  /**
+   * Inserts a new record from navigation
+   * @param {string} targetName - Context name to insert into
+   * @param {string} keyField - Key field name
+   * @param {boolean} isConfirm - Whether to show confirmation dialog
+   */
   insertRecordFromNavi: function (targetName, keyField, isConfirm) {
     'use strict'
     const contextDef = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', targetName)
@@ -425,6 +460,13 @@ const IMLibPageNavigation = {
     })())
   },
 
+  /**
+   * Deletes a record from navigation
+   * @param {string} targetName - Context name to delete from
+   * @param {string} keyField - Key field name
+   * @param {string} keyValue - Value of key field
+   * @param {boolean} isConfirm - Whether to show confirmation dialog
+   */
   deleteRecordFromNavi: function (targetName, keyField, keyValue, isConfirm) {
     'use strict'
     const contextDef = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', targetName)
@@ -469,6 +511,11 @@ const IMLibPageNavigation = {
     })())
   },
 
+  /**
+   * Copies a record from navigation
+   * @param {Object} contextDef - Context definition object
+   * @param {string} keyValue - Value of key field
+   */
   copyRecordFromNavi: function (contextDef, keyValue) {
     'use strict'
     if (contextDef['repeat-control'].match(/confirm-copy/)) {
@@ -783,6 +830,13 @@ const IMLibPageNavigation = {
   }, /* --------------------------------------------------------------------
 
    */
+  /**
+   * Sets up insert button
+   * @param {Object} currentContext - Current context object
+   * @param {string} keyValue - Value of key field
+   * @param {HTMLElement} node - DOM node to attach button to
+   * @param {Array} relationValue - Related values array
+   */
   setupInsertButton: function (currentContext, keyValue, node, relationValue) {
     'use strict'
     const encNodeTag = node.tagName
@@ -895,6 +949,15 @@ const IMLibPageNavigation = {
   }, /* --------------------------------------------------------------------
      Handling Detail buttons
      */
+  /**
+   * Sets up navigation button
+   * @param {string} encNodeTag - Enclosing node tag name
+   * @param {Array} repeaters - Array of repeater elements
+   * @param {Object} currentContextDef - Current context definition
+   * @param {string} keyField - Key field name
+   * @param {string} keyValue - Value of key field
+   * @param {Object} contextObj - Context object
+   */
   setupNavigationButton: function (encNodeTag, repeaters, currentContextDef, keyField, keyValue, contextObj) {
     'use strict'
     if (!currentContextDef['navi-control'] || (!currentContextDef['navi-control'].match(/master/i) && !currentContextDef['navi-control'].match(/step/i)) || encNodeTag === 'SELECT') {
@@ -1217,6 +1280,10 @@ const IMLibPageNavigation = {
 
   /* --------------------------------------------------------------------
    */
+  /**
+   * Moves to detail view
+   * @param {string} keying - Key string in format "field=value"
+   */
   moveDetail: (keying) => {
     const keyValue = keying.split('=')
     if (keyValue.length >= 2) {
@@ -1230,6 +1297,14 @@ const IMLibPageNavigation = {
     }
   },
 
+  /**
+   * Creates function to move to detail view
+   * @param {string} keyField - Key field name
+   * @param {string} keyValue - Value of key field
+   * @param {boolean} isHide - Whether to hide master view
+   * @param {boolean} isHidePageNavi - Whether to hide page navigation
+   * @returns {Function} Function that moves to detail view
+   */
   moveToDetail: function (keyField, keyValue, isHide, isHidePageNavi) {
     'use strict'
     const f = keyField
@@ -1288,6 +1363,11 @@ const IMLibPageNavigation = {
     }
   },
 
+  /**
+   * Sets up detail area for first record
+   * @param {Object} currentContextDef - Current context definition
+   * @param {Object} masterContext - Master context object
+   */
   setupDetailAreaToFirstRecord: function (currentContextDef, masterContext) {
     'use strict'
     if (currentContextDef['navi-control'] && currentContextDef['navi-control'].match(/master/i)) {
@@ -1316,6 +1396,11 @@ const IMLibPageNavigation = {
   }, /* --------------------------------------------------------------------
 
      */
+  /**
+   * Sets up back navigation button
+   * @param {Object} currentContext - Current context object
+   * @param {HTMLElement} node - DOM node to attach button to
+   */
   setupBackNaviButton: function (currentContext, node) {
     'use strict'
     // let divNode // Used in a private function

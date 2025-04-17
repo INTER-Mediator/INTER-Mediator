@@ -21,7 +21,13 @@
  * Usually you don't have to instantiate this class with the new operator.
  * @constructor
  */
+/**
+ * Class handling page-level functionality for INTER-Mediator
+ * @type {Object}
+ */
 let INTERMediatorOnPage = {
+  /** Maximum number of authentication attempts allowed
+   * @type {number} */
   authCountLimit: 4,
   _authCount: 0,
   authUserSalt: '',
@@ -133,6 +139,10 @@ let INTERMediatorOnPage = {
     return null
   },
 
+  /**
+   * Check if enough time has passed since last UI event
+   * @returns {boolean} True if enough time has passed or no previous event
+   */
   checkUIEventDT: function () {
     const prevEventDT = INTERMediatorOnPage.uiEventDT
     const now = new Date()
@@ -147,6 +157,10 @@ let INTERMediatorOnPage = {
     return false
   },
 
+  /**
+   * Get URL parameters as an associative array
+   * @returns {Object} Object containing URL parameters as key-value pairs
+   */
   getURLParametersAsArray: function () {
     'use strict'
     const result = {}
@@ -162,6 +176,11 @@ let INTERMediatorOnPage = {
     return result
   },
 
+  /**
+   * Get context information for given context name
+   * @param {string} contextName Name of the context to lookup
+   * @returns {Object|null} Context information object if found, null otherwise
+   */
   getContextInfo: function (contextName) {
     'use strict'
     const dataSources = INTERMediatorOnPage.getDataSources()
@@ -173,6 +192,14 @@ let INTERMediatorOnPage = {
     return null
   },
 
+  /**
+   * Accessor for hashed password. It works as a getter, a setter, or a remover.
+   * If the value is false, it works as a getter. If the value is a string, it works as a setter.
+   * If the value is an empty string, it works as a remover.
+   * @param {string} key - The key for the hashed password
+   * @param {string|false} [value=false] - The value for the hashed password
+   * @returns {string|null} The value of the hashed password if it exists
+   */
   authHashedPasswordWorker: function (key, value = false) {
     let returnVal = null
     if (INTERMediatorOnPage.requireAuthentication) {
@@ -218,14 +245,35 @@ let INTERMediatorOnPage = {
     return returnVal
   },
 
+  /**
+   * Accessor for the client ID. It works as a getter, a setter, or a remover.
+   * If the value is false, it works as a getter. If the value is a string, it works as a setter.
+   * If the value is an empty string, it works as a remover.
+   * @param {string|false} [value=false] - The client ID
+   * @returns {string|null} The client ID if it exists
+   */
   clientId: function (value = false) {
     return INTERMediatorOnPage.authHashedPasswordWorker('_im_clientid', value)
   },
 
+  /**
+   * Accessor for the user ID. It works as a getter, a setter, or a remover.
+   * If the value is false, it works as a getter. If the value is a string, it works as a setter.
+   * If the value is an empty string, it works as a remover.
+   * @param {string|false} [value=false] - The user ID
+   * @returns {string|null} The user ID if it exists
+   */
   authUser: function (value = false) {
     return INTERMediatorOnPage.authHashedPasswordWorker('_im_username', value)
   },
 
+  /**
+   * Accessor for the hashed password. It works as a getter, a setter, or a remover.
+   * If the value is false, it works as a getter. If the value is a string, it works as a setter.
+   * If the value is an empty string, it works as a remover.
+   * @param {string|false} [value=false] - The hashed password
+   * @returns {string|null} The hashed password if it exists
+   */
   authHashedPassword: function (value = false) {
     return INTERMediatorOnPage.authHashedPasswordWorker('_im_credential', value)
   },
@@ -238,6 +286,9 @@ let INTERMediatorOnPage = {
     return INTERMediatorOnPage.authHashedPasswordWorker('_im_credential2', value)
   },
 
+  /**
+   * Clear all stored authentication credentials
+   */
   clearCredentials: function () {
     'use strict'
     INTERMediatorOnPage.authChallenge = ''
@@ -269,6 +320,11 @@ let INTERMediatorOnPage = {
     }
   },
 
+  /**
+   * Perform logout operation
+   * @param {boolean|string} move URL to redirect to after logout, false for no redirect
+   * @param {boolean} dontMove If true, prevents any redirection after logout
+   */
   logout: function (move = false, dontMove = false) {
     const logoutURL = INTERMediatorOnPage.logoutURL
     INTERMediatorOnPage.authUserSalt = ''
@@ -1190,6 +1246,13 @@ let INTERMediatorOnPage = {
     }
   },
 
+  /**
+   * Get node IDs that match the given IM definition
+   * @param {string} imDefinition The IM definition to match
+   * @param {Node} fromNode Starting node for search
+   * @param {boolean|string} justFromNode Search mode - true: just fromNode, false: parent enclosure, 'others': parent repeaters
+   * @returns {Array} Array of matching node IDs
+   */
   getNodeIdsFromIMDefinition: function (imDefinition, fromNode, justFromNode) {
     'use strict'
     let nodeIds = []
@@ -1263,6 +1326,11 @@ let INTERMediatorOnPage = {
    * But it doesn't work by excluding to call by flag variable. I don't know why.
    * 2017-05-04 Masayuki Nii
    */
+  /**
+   * Hide the progress indicator
+   * @param {boolean} force Force hiding even if counter > 0
+   * @returns {Promise<void>}
+   */
   hideProgress: async function (force = false) {
     if (!INTERMediatorOnPage.isShowProgress) {
       return
@@ -1292,6 +1360,10 @@ let INTERMediatorOnPage = {
   },
 
   // Gear SVG was generated on http://loading.io/.
+  /**
+   * Show the progress indicator
+   * @param {boolean} isDelay If true, shows progress after delay
+   */
   showProgress: function (isDelay = true) {
     if (!INTERMediatorOnPage.isShowProgress) {
       return
@@ -1366,6 +1438,9 @@ let INTERMediatorOnPage = {
     INTERMediatorOnPage.progressShowing = true;
   },
 
+  /**
+   * Set reference to theme CSS file in page header
+   */
   setReferenceToTheme: function () {
     'use strict'
     const headNode = document.getElementsByTagName('HEAD')[0]
