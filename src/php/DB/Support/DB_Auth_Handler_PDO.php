@@ -122,8 +122,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * Using 'issuedhash'
      * @throws Exception
      */
-    public
-    function authSupportCheckMediaToken(string $uid): ?string
+    public function authSupportCheckMediaToken(string $uid): ?string
     {
         $this->logger->setDebugMessage("[authSupportCheckMediaToken] {$uid}", 2);
 
@@ -471,8 +470,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      *
      * Using 'authuser'
      */
-    public
-    function authSupportChangePassword(string $username, string $hashednewpassword): bool
+    public function authSupportChangePassword(string $username, string $hashednewpassword): bool
     {
         $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
         if (is_null($signedUser)) {
@@ -502,8 +500,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * @param string $username
      * @return string
      */
-    public
-    function authTableGetUserIdFromUsername(string $username): string
+    public function authTableGetUserIdFromUsername(string $username): string
     {
         return $this->privateGetUserIdFromUsername($username, false);
     }
@@ -555,8 +552,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      *
      * Using 'authgroup'
      */
-    public
-    function authSupportGetGroupNameFromGroupId(string $groupid): ?string
+    public function authSupportGetGroupNameFromGroupId(string $groupid): ?string
     {
         $groupTable = $this->dbSettings->getGroupTable();
         if (is_null($groupTable) || !$this->pdoDB->setupConnection()) {
@@ -582,8 +578,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      *
      * Using 'authcor'
      */
-    public
-    function authSupportGetGroupsOfUser(?string $user): array
+    public function authSupportGetGroupsOfUser(?string $user): array
     {
         return $this->privateGetGroupsOfUser($user, false);
     }
@@ -592,8 +587,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * @param string $user
      * @return array|null
      */
-    public
-    function authTableGetGroupsOfUser(string $user): ?array
+    public function authTableGetGroupsOfUser(string $user): ?array
     {
         return $this->privateGetGroupsOfUser($user, false);
     }
@@ -603,8 +597,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * @param bool $isCheckLimit
      * @return array|null
      */
-    private
-    function privateGetGroupsOfUser(?string $user, bool $isCheckLimit): ?array
+    private function privateGetGroupsOfUser(?string $user, bool $isCheckLimit): ?array
     {
         $corrTable = $this->dbSettings->getCorrTable();
         if (is_null($corrTable)) {
@@ -644,13 +637,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     /**
      * @var array
      */
-    private
-    array $belongGroups;
+    private array $belongGroups;
     /**
      * @var bool
      */
-    private
-    bool $firstLevel;
+    private bool $firstLevel;
 
     /**
      * @param string|null $groupid

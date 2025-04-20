@@ -220,8 +220,7 @@ trait Proxy_Auth
      * Calling from Proxy::finishCommunication method to generate cookies.
      * @return void
      */
-    public
-    function handleMediaToken(): void
+    public function handleMediaToken(): void
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         if (isset($tableInfo['authentication']['media-handling']) && $tableInfo['authentication']['media-handling'] === true && !$this->suppressMediaToken

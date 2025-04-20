@@ -20,8 +20,7 @@ $ psql -f sample_schema_pgsql.sql -h localhost test_db
  *********************************************************************/
 
 -- DROP USER web;
-CREATE
-USER web PASSWORD 'password';
+CREATE USER web PASSWORD 'password';
 /*
 DROP DATABASE IF EXISTS test_db;
 CREATE DATABASE test_db ENCODING 'UTF8';
@@ -31,15 +30,11 @@ VACUUM;
 DROP SCHEMA IF EXISTS im_sample CASCADE;
 CREATE SCHEMA im_sample;
 
-SET
-search_path TO im_sample,public;
-ALTER
-USER web SET search_path TO im_sample,public;
+SET search_path TO im_sample,public;
+ALTER USER web SET search_path TO im_sample,public;
 
 /*  The schema for the "Sample_form" and "Sample_Auth" sample set. */
-CREATE
-    SEQUENCE serial START
-    1000;
+CREATE SEQUENCE serial START 1000;
 CREATE TABLE person
 (
     id       SERIAL PRIMARY KEY,

@@ -813,7 +813,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->dbSettings->setDbSpecPort(
             $context['port'] ?? ($dbSpec['port'] ?? Params::getParameterValue('dbPort', '')));
         $this->dbSettings->setDbSpecUser(IMUtil::getFromProfileIfAvailable(
-        $context['user'] ?? ($dbSpec['user'] ?? Params::getParameterValue('dbUser', ''))));
+            $context['user'] ?? ($dbSpec['user'] ?? Params::getParameterValue('dbUser', ''))));
         $this->dbSettings->setDbSpecPassword(IMUtil::getFromProfileIfAvailable(
             $context['password'] ?? ($dbSpec['password'] ?? Params::getParameterValue('dbPassword', ''))));
         $this->dbSettings->setDbSpecDataType(
@@ -1038,8 +1038,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return array|null
      */
-    public
-    function getDatabaseResult(): ?array
+    public function getDatabaseResult(): ?array
     {
         if (isset($this->outputOfProcessing['dbresult'])) {
             return $this->outputOfProcessing['dbresult'];
@@ -1050,8 +1049,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return int
      */
-    public
-    function getDatabaseResultCount(): int
+    public function getDatabaseResultCount(): int
     {
         if (isset($this->outputOfProcessing['resultCount'])) {
             return $this->outputOfProcessing['resultCount'];
@@ -1062,8 +1060,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return int
      */
-    public
-    function getDatabaseTotalCount(): int
+    public function getDatabaseTotalCount(): int
     {
         if (isset($this->outputOfProcessing['totalCount'])) {
             return $this->outputOfProcessing['totalCount'];
@@ -1074,8 +1071,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return string|null
      */
-    public
-    function getDatabaseNewRecordKey(): ?string
+    public function getDatabaseNewRecordKey(): ?string
     {
         if (isset($this->outputOfProcessing['newRecordKeyValue'])) {
             return $this->outputOfProcessing['newRecordKeyValue'];
@@ -1249,8 +1245,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return bool
      */
-    public
-    function setupConnection(): bool
+    public function setupConnection(): bool
     {
         return false;
     }
@@ -1259,8 +1254,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param string|null $dsn
      * @return void
      */
-    public
-    function setupHandlers(?string $dsn = null): void
+    public function setupHandlers(?string $dsn = null): void
     {
         // TODO: Implement setupHandlers() method.
     }
@@ -1281,8 +1275,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param bool $value
      * @return void
      */
-    public
-    function requireUpdatedRecord(bool $value): void
+    public function requireUpdatedRecord(bool $value): void
     {
         if ($this->dbClass) {
             $this->dbClass->requireUpdatedRecord($value);
@@ -1292,8 +1285,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return array|null
      */
-    public
-    function getUpdatedRecord(): ?array
+    public function getUpdatedRecord(): ?array
     {
         if ($this->dbClass) {
             return $this->dbClass->getUpdatedRecord();
@@ -1304,8 +1296,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return array|null
      */
-    public
-    function updatedRecord(): ?array
+    public function updatedRecord(): ?array
     {
         return $this->getUpdatedRecord();
     }
@@ -1314,8 +1305,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param array $record
      * @return void
      */
-    public
-    function setUpdatedRecord(array $record): void
+    public function setUpdatedRecord(array $record): void
     {
         $this->dbClass->setUpdatedRecord($record);
     }
@@ -1326,8 +1316,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param int $index
      * @return void
      */
-    public
-    function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
+    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
     {
         $this->dbClass->setDataToUpdatedRecord($field, $value, $index);
     }
@@ -1335,8 +1324,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return bool
      */
-    public
-    function getUseSetDataToUpdatedRecord(): bool
+    public function getUseSetDataToUpdatedRecord(): bool
     {
         if ($this->dbClass) {
             return $this->dbClass->getUseSetDataToUpdatedRecord();
@@ -1347,8 +1335,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return void
      */
-    public
-    function clearUseSetDataToUpdatedRecord(): void
+    public function clearUseSetDataToUpdatedRecord(): void
     {
         if ($this->dbClass) {
             $this->dbClass->clearUseSetDataToUpdatedRecord();
@@ -1360,8 +1347,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param array|null $conditions
      * @return array|null
      */
-    public
-    function queryForTest(string $table, ?array $conditions = null): ?array
+    public function queryForTest(string $table, ?array $conditions = null): ?array
     {
         return null;
     }
@@ -1371,8 +1357,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @param array|null $conditions
      * @return bool
      */
-    public
-    function deleteForTest(string $table, ?array $conditions = null): bool
+    public function deleteForTest(string $table, ?array $conditions = null): bool
     {
         return false;
     }
@@ -1383,8 +1368,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return bool
      */
-    public
-    function hasTransaction(): bool
+    public function hasTransaction(): bool
     {
         return $this->dbClass->hasTransaction();
     }
@@ -1392,8 +1376,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return bool
      */
-    public
-    function inTransaction(): bool
+    public function inTransaction(): bool
     {
         return $this->dbClass->inTransaction();
     }
@@ -1401,8 +1384,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return void
      */
-    public
-    function beginTransaction(): void
+    public function beginTransaction(): void
     {
         $this->dbClass->beginTransaction();
     }
@@ -1410,8 +1392,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return void
      */
-    public
-    function commitTransaction(): void
+    public function commitTransaction(): void
     {
         $this->dbClass->commitTransaction();
     }
@@ -1419,8 +1400,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return void
      */
-    public
-    function rollbackTransaction(): void
+    public function rollbackTransaction(): void
     {
         $this->dbClass->rollbackTransaction();
     }
@@ -1428,8 +1408,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * @return void
      */
-    public
-    function closeDBOperation(): void
+    public function closeDBOperation(): void
     {
         $this->dbClass->closeDBOperation();
     }
@@ -1439,8 +1418,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @return mixed
      * @throws Exception
      */
-    public
-    function normalizedCondition(array $condition)
+    public function normalizedCondition(array $condition)
     {
         throw new Exception("Don't use normalizedCondition method on DBClass instance without FileMaker ones.");
     }
@@ -1472,6 +1450,4 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         }
         return $access;
     }
-
-
 }

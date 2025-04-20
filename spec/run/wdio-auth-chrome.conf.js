@@ -21,13 +21,6 @@ exports.config = {
   // will be called from there.
   //
   specs: [
-    // './test/specs/**/*.js'
-    // './test/specs/form_page_mysql.e2e.js',
-    // './test/specs/form_page_postgresql.e2e.js',
-    // './test/specs/form_page_sqlite.e2e.js',
-    // './test/specs/md_page_mysql.e2e.js',
-    // './test/specs/md_page_postgresql.e2e.js',
-    // './test/specs/md_page_sqlite.e2e.js',
     './test/specs/auth_page_credential_basic_mysql.e2e.js',
     './test/specs/auth_page_credential_basic_postgresql.e2e.js',
     './test/specs/auth_page_credential_basic_sqlite.e2e.js',
@@ -43,15 +36,6 @@ exports.config = {
     './test/specs/auth_page_credential_usergroup_mysql.e2e.js',
     './test/specs/auth_page_credential_usergroup_postgresql.e2e.js',
     './test/specs/auth_page_credential_usergroup_sqlite.e2e.js',
-    // './test/specs/editing_page_mysql.e2e.js',
-    // './test/specs/editing_page_postgresql.e2e.js',
-    // './test/specs/editing_page_sqlite.e2e.js',
-    // './test/specs/calc_lookup_page_mysql.e2e.js',
-    // './test/specs/calc_lookup_page_postgresql.e2e.js',
-    // './test/specs/calc_lookup_page_sqlite.e2e.js',
-    // './test/specs/media_mysql.e2e.js',
-    // './test/specs/media_postgresql.e2e.js',
-    // './test/specs/media_sqlite.e2e.js',
   ],
   // Patterns to exclude.
   exclude: [],
@@ -86,9 +70,9 @@ exports.config = {
     //
     browserName: 'chrome',
     acceptInsecureCerts: true,
-    'goog:chromeOptions': {
-      args: ['--headless', '--disable-gpu', '--disable-dev-shm-usage'],
-    }
+    // 'goog:chromeOptions': {
+    //   args: ['--headless', '--disable-gpu', '--disable-dev-shm-usage'],
+    // }
   }
     // If outputDir is provided WebdriverIO can capture driver session logs
     // it is possible to configure which logTypes to include/exclude.

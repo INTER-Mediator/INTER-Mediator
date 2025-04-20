@@ -42,7 +42,8 @@ module.exports = (AuthPage) => {
 //      await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist()
       await AuthPage.authUsername.setValue("user1")
-      await AuthPage.authPassword.setValue("user1")
+      await AuthPage.authPassword.setValue("zuks69#bAkc")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click() // login succeed.
       await browser.pause(waiting)
       await expect(AuthPage.authPanel).not.toExist()
@@ -59,7 +60,8 @@ module.exports = (AuthPage) => {
 //      await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist()
       await AuthPage.authUsername.setValue("user4")
-      await AuthPage.authPassword.setValue("user4") // user4 belongs to group2.
+      await AuthPage.authPassword.setValue("zuks69#bAkc") // user4 belongs to group2.
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click() // login succeed.
       await browser.pause(waiting)
       await expect(AuthPage.authPanel).not.toExist()
@@ -76,7 +78,8 @@ module.exports = (AuthPage) => {
 //      await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist()
       await AuthPage.authUsername.setValue("user2") // not in authentication/user also group
-      await AuthPage.authPassword.setValue("user2")
+      await AuthPage.authPassword.setValue("zuks69#bAkc")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click()
       await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist()

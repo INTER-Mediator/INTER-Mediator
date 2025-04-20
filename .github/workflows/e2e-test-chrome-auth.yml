@@ -65,12 +65,15 @@ jobs:
       - name: Setup MySQL
         run: |
           mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.sql
+          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./spec/run/additionals_mysql.sql
           mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "CREATE USER IF NOT EXISTS 'web'@'%' IDENTIFIED BY 'password';"
           mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO 'web'@'%';"
           mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "GRANT SHOW VIEW ON TABLE test_db.* TO 'web'@'%';"
 
       - name: Setup PostgreSQL
-        run: psql --quiet postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./dist-docs/sample_schema_pgsql.sql
+        run: |
+          psql --quiet postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./dist-docs/sample_schema_pgsql.sql
+          psql --quiet postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./spec/run/additionals_postgresql.sql
 
 #      - name: Check MySQL
 #        run: mysql -h 127.0.0.1 --port 3306 -u web --password=password -e "select * from person;" test_db
@@ -79,6 +82,7 @@ jobs:
         run: |
           touch sample.sq3
           sqlite3 sample.sq3 < ./dist-docs/sample_schema_sqlite.sql
+          sqlite3 sample.sq3 < ./spec/run/additionals_sqlite.sql
           chmod 777 sample.sq3
 #          chown www-data sample.sq3
       - name: Modify params.php file

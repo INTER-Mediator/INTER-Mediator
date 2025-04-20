@@ -38,30 +38,36 @@ module.exports = (AuthPage, is2FA = false) => {
     it('3-declines wrong account.', async () => {
       await AuthPage.authUsername.setValue("")
       await AuthPage.authPassword.setValue("")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click()
       await expect(AuthPage.authPanel).toExist()
       await expect(AuthPage.authLoginMessage).toHaveText(noInputMsg)
 
       await AuthPage.authUsername.setValue("dsakjjljl")
       await AuthPage.authPassword.setValue("dsakjjljl")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click()
       await expect(AuthPage.authPanel).toExist()
       await expect(AuthPage.authLoginMessage).toHaveText(failMsg)
 
       await AuthPage.authUsername.setValue("dsakjjljl")
       await AuthPage.authPassword.setValue("dsakjjljl")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click()
       await expect(AuthPage.authPanel).toExist()
       await AuthPage.authUsername.setValue("dsakjjljl")
       await AuthPage.authPassword.setValue("dsakjjljl")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click()
       await expect(AuthPage.authPanel).toExist()
       await AuthPage.authUsername.setValue("dsakjjljl")
       await AuthPage.authPassword.setValue("dsakjjljl")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click()
       await expect(AuthPage.authPanel).toExist() // Fail to login with wrong account 5 times.
       await AuthPage.authUsername.setValue("dsakjjljl")
       await AuthPage.authPassword.setValue("dsakjjljl")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click() // This is 6th try, and show the message.
       await expect(AuthPage.authPanel).not.toExist()
       await expect(AuthPage.authErrorMessage).toExist()
@@ -74,12 +80,14 @@ module.exports = (AuthPage, is2FA = false) => {
       await expect(AuthPage.authPanel).toExist()
       await AuthPage.authUsername.setValue("dsakjjljl")
       await AuthPage.authPassword.setValue("dsakjjljl")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click() // One mistake to login
       await expect(AuthPage.authPanel).toExist()
       await expect(AuthPage.authLoginMessage).toHaveText(failMsg)
 
       await AuthPage.authUsername.setValue("user1@msyk.net")
-      await AuthPage.authPassword.setValue("user1")
+      await AuthPage.authPassword.setValue("zuks69#bAkc")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click() // Finally login succeed.
       await browser.pause(waiting)
       if (!is2FA) {
@@ -89,16 +97,19 @@ module.exports = (AuthPage, is2FA = false) => {
         await expect(AuthPage.auth2FAMessage).toHaveText(successMsg2FA)
 
         await AuthPage.auth2FACode.setValue("99999999")
+        await AuthPage.auth2FAButton.waitForClickable()
         await AuthPage.auth2FAButton.click() // One mistake to login
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(failMsg2FA)
         await AuthPage.auth2FACode.setValue("4444")
+        await AuthPage.auth2FAButton.waitForClickable()
         await AuthPage.auth2FAButton.click() // One mistake to login
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(wrongMsg2FA)
         await AuthPage.auth2FACode.setValue("5555")
+        await AuthPage.auth2FAButton.waitForClickable()
         await AuthPage.auth2FAButton.click() // Succeed to login
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
@@ -116,19 +127,22 @@ module.exports = (AuthPage, is2FA = false) => {
       await expect(AuthPage.authPanel).toExist()
       await AuthPage.authUsername.setValue("dsakjjljl")
       await AuthPage.authPassword.setValue("dsakjjljl")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click() // One mistake to login
       await expect(AuthPage.authPanel).toExist()
       await expect(AuthPage.authLoginMessage).toHaveText(failMsg)
 
       await AuthPage.authUsername.setValue("dsakjjljl")
       await AuthPage.authPassword.setValue("dsakjjljl")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click() // One more mistake to login
       await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist()
       await expect(AuthPage.authLoginMessage).toHaveText(failMsg)
 
       await AuthPage.authUsername.setValue("user1@msyk.net")
-      await AuthPage.authPassword.setValue("user1")
+      await AuthPage.authPassword.setValue("zuks69#bAkc")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click() // Finally login succeed.
       await browser.pause(waiting)
       if (!is2FA) {
@@ -138,16 +152,19 @@ module.exports = (AuthPage, is2FA = false) => {
         await expect(AuthPage.auth2FAMessage).toHaveText(successMsg2FA)
 
         await AuthPage.auth2FACode.setValue("99999999")
+        await AuthPage.auth2FAButton.waitForClickable()
         await AuthPage.auth2FAButton.click() // One mistake to login
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(failMsg2FA)
         await AuthPage.auth2FACode.setValue("4444")
+        await AuthPage.auth2FAButton.waitForClickable()
         await AuthPage.auth2FAButton.click() // One mistake to login
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(wrongMsg2FA)
         await AuthPage.auth2FACode.setValue("5555")
+        await AuthPage.auth2FAButton.waitForClickable()
         await AuthPage.auth2FAButton.click() // Succeed to login
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
@@ -165,7 +182,8 @@ module.exports = (AuthPage, is2FA = false) => {
       await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist()
       await AuthPage.authUsername.setValue("user1@msyk.net")
-      await AuthPage.authPassword.setValue("user1")
+      await AuthPage.authPassword.setValue("zuks69#bAkc")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click() // Finally login succeed.
       await browser.pause(waiting)
       if (!is2FA) {
@@ -174,6 +192,7 @@ module.exports = (AuthPage, is2FA = false) => {
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(successMsg2FA)
         await AuthPage.auth2FACode.setValue("5555")
+        await AuthPage.auth2FAButton.waitForClickable()
         await AuthPage.auth2FAButton.click() // Succeed to login
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
@@ -199,7 +218,8 @@ module.exports = (AuthPage, is2FA = false) => {
       await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist()
       await AuthPage.authUsername.setValue("mig2m")
-      await AuthPage.authPassword.setValue("mig2m")
+      await AuthPage.authPassword.setValue("zuks69#bAkc")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click() // login succeed.
       await browser.pause(waiting)
       if (!is2FA) {
@@ -208,6 +228,7 @@ module.exports = (AuthPage, is2FA = false) => {
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(successMsg2FA)
         await AuthPage.auth2FACode.setValue("5555")
+        await AuthPage.auth2FAButton.waitForClickable()
         await AuthPage.auth2FAButton.click() // Succeed to login
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
@@ -227,7 +248,8 @@ module.exports = (AuthPage, is2FA = false) => {
       await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist()
       await AuthPage.authUsername.setValue("mig2@msyk.net")
-      await AuthPage.authPassword.setValue("mig2")
+      await AuthPage.authPassword.setValue("zuks69#bAkc")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click() // login succeed.
       await browser.pause(waiting)
       if (!is2FA) {
@@ -237,16 +259,19 @@ module.exports = (AuthPage, is2FA = false) => {
         await expect(AuthPage.auth2FAMessage).toHaveText(successMsg2FA)
 
         await AuthPage.auth2FACode.setValue("99999999")
+        await AuthPage.auth2FAButton.waitForClickable()
         await AuthPage.auth2FAButton.click() // One mistake to login
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(failMsg2FA)
         await AuthPage.auth2FACode.setValue("4444")
+        await AuthPage.auth2FAButton.waitForClickable()
         await AuthPage.auth2FAButton.click() // One mistake to login
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(wrongMsg2FA)
         await AuthPage.auth2FACode.setValue("5555")
+        await AuthPage.auth2FAButton.waitForClickable()
         await AuthPage.auth2FAButton.click() // Succeed to login
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
@@ -264,7 +289,8 @@ module.exports = (AuthPage, is2FA = false) => {
       await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist()
       await AuthPage.authUsername.setValue("user1@msyk.net")
-      await AuthPage.authPassword.setValue("user1")
+      await AuthPage.authPassword.setValue("zuks69#bAkc")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click() // Finally login succeed.
       await browser.pause(waiting * 3)
       if (!is2FA) {
@@ -274,16 +300,19 @@ module.exports = (AuthPage, is2FA = false) => {
         await expect(AuthPage.auth2FAMessage).toHaveText(successMsg2FA)
 
         await AuthPage.auth2FACode.setValue("99999999")
+        await AuthPage.auth2FAButton.waitForClickable()
         await AuthPage.auth2FAButton.click() // One mistake to login
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(failMsg2FA)
         await AuthPage.auth2FACode.setValue("4444")
+        await AuthPage.auth2FAButton.waitForClickable()
         await AuthPage.auth2FAButton.click() // One mistake to login
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(wrongMsg2FA)
         await AuthPage.auth2FACode.setValue("5555")
+        await AuthPage.auth2FAButton.waitForClickable()
         await AuthPage.auth2FAButton.click() // Succeed to login
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
@@ -302,7 +331,8 @@ module.exports = (AuthPage, is2FA = false) => {
       await expect(AuthPage.authPanel).toExist()
       await AuthPage.authUsername.setValue("user1@msyk.net")
       await AuthPage.authPassword.setValue("dfjdjfadsklfjdksa")
-      await AuthPage.authNewPassword.setValue("testtest")
+      await AuthPage.authNewPassword.setValue("Aegae3ae")
+      await AuthPage.authChangePWButton.waitForClickable()
       await AuthPage.authChangePWButton.click() // Change the password with wrong login info.
       await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist()
@@ -312,22 +342,25 @@ module.exports = (AuthPage, is2FA = false) => {
       await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist()
       await AuthPage.authUsername.setValue("user1@msyk.net")
-      await AuthPage.authPassword.setValue("user1")
-      await AuthPage.authNewPassword.setValue("testtest")
+      await AuthPage.authPassword.setValue("zuks69#bAkc")
+      await AuthPage.authNewPassword.setValue("Aegae3ae")
+      await AuthPage.authChangePWButton.waitForClickable()
       await AuthPage.authChangePWButton.click() // Change the password
       await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist()
       await expect(AuthPage.authNewPasswordMessage).toHaveText(changePWMsg) // Succeed to change by this message
 
       await AuthPage.authUsername.setValue("user1@msyk.net")
-      await AuthPage.authPassword.setValue("user1")
+      await AuthPage.authPassword.setValue("zuks69#bAkc")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click() // Fail to login with previous password
       await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist()
       await expect(AuthPage.authLoginMessage).toHaveText(failMsg)
 
       await AuthPage.authUsername.setValue("user1@msyk.net")
-      await AuthPage.authPassword.setValue("testtest")
+      await AuthPage.authPassword.setValue("Aegae3ae")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click() // can login with new password
       await browser.pause(waiting)
       if (!is2FA) {
@@ -336,6 +369,7 @@ module.exports = (AuthPage, is2FA = false) => {
         await expect(AuthPage.auth2FAPanel).toExist()
         await expect(AuthPage.auth2FAMessage).toHaveText(successMsg2FA)
         await AuthPage.auth2FACode.setValue("5555")
+        await AuthPage.auth2FAButton.waitForClickable()
         await AuthPage.auth2FAButton.click() // Succeed to login
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
@@ -345,8 +379,9 @@ module.exports = (AuthPage, is2FA = false) => {
       await AuthPage.logoutLink.click()
       await expect(AuthPage.authPanel).toExist()
       await AuthPage.authUsername.setValue("user1@msyk.net")
-      await AuthPage.authPassword.setValue("testtest")
-      await AuthPage.authNewPassword.setValue("user1")
+      await AuthPage.authPassword.setValue("Aegae3ae")
+      await AuthPage.authNewPassword.setValue("zuks69#bAkc")
+      await AuthPage.authChangePWButton.waitForClickable()
       await AuthPage.authChangePWButton.click() // Back the password to previous one.
       await browser.pause(waiting)
       await expect(AuthPage.authPanel).toExist()

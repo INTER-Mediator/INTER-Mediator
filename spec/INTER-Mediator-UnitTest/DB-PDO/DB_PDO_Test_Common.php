@@ -225,8 +225,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 
     }
 
-    public
-    function testCopySingleRecord()
+    public function testCopySingleRecord()
     {
         $this->dbProxySetupForAccess("person", 1000000);
 //        $this->db_proxy->logger->clearLogs();
@@ -252,8 +251,7 @@ abstract class DB_PDO_Test_Common extends TestCase
             "After copy a record, the count of records should increase one.");
     }
 
-    public
-    function testCopyAssociatedRecords()
+    public function testCopyAssociatedRecords()
     {
         $this->dbProxySetupForAccess("person", 1000000);
         $result = $this->db_proxy->readFromDB();
@@ -293,8 +291,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 
     }
 
-    public
-    function testDefaultKey()
+    public function testDefaultKey()
     {
         $this->dbProxySetupForAccess("person", 1);
 
@@ -302,8 +299,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertEquals('id', call_user_func(array($className, 'defaultKey')));
     }
 
-    public
-    function testGetDefaultKey()
+    public function testGetDefaultKey()
     {
         $this->dbProxySetupForAccess("person", 1);
 
@@ -311,8 +307,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertEquals('id', $value);
     }
 
-    public
-    function testMultiClientSyncTableExsistence()
+    public function testMultiClientSyncTableExsistence()
     {
         $testName = "Tables for storing the context and ids should be existing.";
         $this->dbProxySetupForAuth();
@@ -329,8 +324,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         return "WHERE id=1001 ORDER BY xdate LIMIT 10";
     }
 
-    public
-    function testMultiClientSyncRegisterAndUnregister()
+    public function testMultiClientSyncRegisterAndUnregister()
     {
         $testName = "Register and UnregisterVisitor.";
         $this->dbProxySetupForAuth();
@@ -405,8 +399,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 
     }
 
-    public
-    function testMultiClientSyncRegisterAndUnregisterPartial()
+    public function testMultiClientSyncRegisterAndUnregisterPartial()
     {
         $testName = "Register and UnregisterVisitor partically.";
         $this->dbProxySetupForAuth();
@@ -452,8 +445,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 
     }
 
-    public
-    function testMultiClientSyncMatching()
+    public function testMultiClientSyncMatching()
     {
         $testName = "Match the sync info.";
         $this->dbProxySetupForAuth();
@@ -492,8 +484,7 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
     /* Testing procedure has to reconsider with updating appendIntoRegistered method. 2023-3-5 by msyk */
-    public
-    function testMultiClientSyncAppend()
+    public function testMultiClientSyncAppend()
     {
         $this->dbProxySetupForAuth();
         $this->db_proxy->dbClass->deleteForTest("registeredcontext");
@@ -552,8 +543,7 @@ abstract class DB_PDO_Test_Common extends TestCase
     }
 
 
-    public
-    function testMultiClientSyncRemove()
+    public function testMultiClientSyncRemove()
     {
         $testName = "Remove Sync Info.";
         $this->dbProxySetupForAuth();
@@ -585,8 +575,7 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertEmpty($recSet, "Count pk values");
     }
 
-    public
-    function testIgnoreValuesForSpecificOperators()
+    public function testIgnoreValuesForSpecificOperators()
     {
         $this->dbProxySetupForAccess("person", 1);
         $result = $this->db_proxy->readFromDB();
@@ -601,16 +590,14 @@ abstract class DB_PDO_Test_Common extends TestCase
         $this->assertEquals($result[0]['name'], $aName, "Same record should be retrieved.");
     }
 
-    public
-    function testTransactionFeature()
+    public function testTransactionFeature()
     {
         $this->dbProxySetupForAccess("person", 1);
         $result = $this->db_proxy->hasTransaction();
         $this->assertIsBool($result, "Proxy class has to respond whether it can do transaction.");
     }
 
-    public
-    function testTransactionWithCommit()
+    public function testTransactionWithCommit()
     {
         $this->dbProxySetupForAccess("person", 2);
         $result = $this->db_proxy->readFromDB();
@@ -660,8 +647,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 
     }
 
-    public
-    function testTransactionWithRollback()
+    public function testTransactionWithRollback()
     {
         $this->dbProxySetupForAccess("person", 2);
         $result = $this->db_proxy->readFromDB();
@@ -711,8 +697,7 @@ abstract class DB_PDO_Test_Common extends TestCase
 
     }
 
-    public
-    function testHandlersqlSETClause()
+    public function testHandlersqlSETClause()
     {
         $tableName = "testtable";
         $keyField = "id";
