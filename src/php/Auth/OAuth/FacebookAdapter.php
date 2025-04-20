@@ -31,6 +31,14 @@ class FacebookAdapter extends ProviderAdapter
     }
 
     /**
+     * @return bool
+     */
+    public function validate(): bool
+    {
+        return $this->validate_impl(true);
+    }
+
+    /**
      * @return string
      */
     public function getAuthRequestURL(): string

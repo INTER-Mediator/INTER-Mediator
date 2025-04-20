@@ -165,11 +165,17 @@ abstract class ProviderAdapter
     }
 
     /**
-     * Checks if the adapter is properly configured.
+     * Validates the adapter configuration.
+     * @return bool True if the adapter is properly configured, false otherwise.
+     */
+    public abstract function validate(): bool;
+
+    /**
+     * Checks if the adapter is properly configured. This supposed to be called from the validate() method.
      * @param bool $isRequireSecret Whether the client secret is required.
      * @return bool True if the adapter is properly configured, false otherwise.
      */
-    public function validate(bool $isRequireSecret = true): bool
+    protected function validate_impl(bool $isRequireSecret = true): bool
     {
         if ($this->baseURL && $this->getTokenURL && $this->getInfoURL && $this->clientId && $this->redirectURL) {
             if ($isRequireSecret && !$this->clientSecret) {

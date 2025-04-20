@@ -109,10 +109,7 @@ class GoogleAdapter extends ProviderAdapter
      */
     public function validate(): bool
     {
-        if (parent::validate() && $this->clientSecret) {
-            return true;
-        }
-        return false;
+        return $this->validate_impl(true);
     }
 
     /**
