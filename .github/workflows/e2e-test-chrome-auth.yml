@@ -22,7 +22,7 @@ jobs:
         ports:
           - 3306:3306
         env:
-          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_ROOT_PASSWORD: EeLeBui7%Eesa4oto
         options: --health-cmd "mysqladmin ping -h localhost" --health-interval 20s --health-timeout 10s --health-retries 10
 
       postgres:
@@ -31,7 +31,7 @@ jobs:
           - 5432:5432
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: rootpassword
+          POSTGRES_PASSWORD: EeLeBui7%Eesa4oto
           POSTGRES_DB: test_db
 #        volumes:
 #          - /home/runner/work/INTER-Mediator/INTER-Mediator/dist-docs/sample_schema_pgsql.sql:/docker-entrypoint-initdb.d/sample_schema_pgsql.sql
@@ -64,11 +64,11 @@ jobs:
 
       - name: Setup MySQL
         run: |
-          mysql -h 127.0.0.1 --port 3306 -u root --password=rootpassword < ./dist-docs/sample_schema_mysql.sql
-          mysql -h 127.0.0.1 --port 3306 -u root --password=rootpassword < ./spec/run/additionals_mysql.sql
-          mysql -h 127.0.0.1 --port 3306 -u root --password=rootpassword -e "CREATE USER IF NOT EXISTS 'web'@'%' IDENTIFIED BY 'password';"
-          mysql -h 127.0.0.1 --port 3306 -u root --password=rootpassword -e "GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO 'web'@'%';"
-          mysql -h 127.0.0.1 --port 3306 -u root --password=rootpassword -e "GRANT SHOW VIEW ON TABLE test_db.* TO 'web'@'%';"
+          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.sql
+          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./spec/run/additionals_mysql.sql
+          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "CREATE USER IF NOT EXISTS 'web'@'%' IDENTIFIED BY 'password';"
+          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO 'web'@'%';"
+          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "GRANT SHOW VIEW ON TABLE test_db.* TO 'web'@'%';"
 
       - name: Setup PostgreSQL
         run: |
