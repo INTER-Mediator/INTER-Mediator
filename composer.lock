@@ -6336,16 +6336,16 @@
         },
         {
             "name": "tecnickcom/tcpdf",
-            "version": "6.9.2",
+            "version": "6.9.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/TCPDF.git",
-                "reference": "ea258d4d16e02c799beb58bb75fe192dd26c49d1"
+                "reference": "d0e8dd17f8a1df3c97b94b9af8356e88e811ed59"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/ea258d4d16e02c799beb58bb75fe192dd26c49d1",
-                "reference": "ea258d4d16e02c799beb58bb75fe192dd26c49d1",
+                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/d0e8dd17f8a1df3c97b94b9af8356e88e811ed59",
+                "reference": "d0e8dd17f8a1df3c97b94b9af8356e88e811ed59",
                 "shasum": ""
             },
             "require": {
@@ -6395,7 +6395,7 @@
             ],
             "support": {
                 "issues": "https://github.com/tecnickcom/TCPDF/issues",
-                "source": "https://github.com/tecnickcom/TCPDF/tree/6.9.2"
+                "source": "https://github.com/tecnickcom/TCPDF/tree/6.9.3"
             },
             "funding": [
                 {
@@ -6403,7 +6403,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2025-04-18T16:46:11+00:00"
+            "time": "2025-04-20T15:52:50+00:00"
         },
         {
             "name": "twig/intl-extra",
