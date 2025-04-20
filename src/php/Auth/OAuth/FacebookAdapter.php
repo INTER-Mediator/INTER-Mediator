@@ -3,6 +3,7 @@
 namespace INTERMediator\Auth\OAuth;
 
 use Exception;
+use INTERMediator\DB\Proxy;
 use INTERMediator\IMUtil;
 
 /**
@@ -35,6 +36,7 @@ class FacebookAdapter extends ProviderAdapter
     public function getAuthRequestURL(): string
     {
         $state = IMUtil::randomString(32);
+        $this->storeCode($state, "@F:state@");
         return $this->baseURL . '?redirect_uri=' . urlencode($this->redirectURL)
             . '&client_id=' . urlencode($this->clientId)
             . '&state=' . urlencode($state);
@@ -46,7 +48,14 @@ class FacebookAdapter extends ProviderAdapter
      */
     public function getUserInfo(): array
     {
-        $input_token = $_REQUEST['code'] ?? "";
+        if (!isset($_GET["state"])) {
+            throw new Exception("Failed with security issue. The state parameter doesn't exist in the request.");
+        }
+        $state = $_GET["state"];
+        if(!$this->checkCode($state, "@F:state@")){
+            throw new Exception("Failed with security issue. The state parameter isn't same as the stored one.");
+        }
+        $input_token = $_GET['code'] ?? "";
         if (!$input_token) {
             throw new Exception("This isn't redirected from the providers site.");
         }
@@ -62,6 +71,6 @@ class FacebookAdapter extends ProviderAdapter
             throw new Exception("Error: Access token couldn't get from: {$this->getTokenURL}.");
         }
         $userInfo = $this->communication($this->getInfoURL, false, ["access_token" => $access_token]);
-        return ["username" => "{ $userInfo->id}@{$this->providerName}", "realname" => $userInfo->name];
+        return ["username" => "{$userInfo->id}@{$this->providerName}", "realname" => $userInfo->name];
     }
 }

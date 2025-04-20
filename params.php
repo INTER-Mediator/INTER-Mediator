@@ -192,7 +192,7 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 //$suppressAuthTargetFillingOnCreate = false; // If you don't want to set the target field of authentication on create operation, set this true.
 
 /* OAuth Support */
-//$oAuth = [
+$oAuth = [
 //    'MyNumberCard-Sandbox' => [
 //        'AuthButton' => 'マイナンバーカードで認証',
 //        'ClientID' => 'code_code_code',
@@ -216,9 +216,10 @@ $fixed2FACode = "5555"; // Fixed 2FA code for the testing purpose. On the real s
 //    'Facebook' => [
 //        'AuthButton' => 'Facebook',
 //        'ClientID' => 'code_code_code',
+//        'ClientSecret' => 'code_code_code',
 //        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
 //    ],
-//];
+];
 
 /* SAML Support
    Information about setting up a SAML Service Provider exists in the samples/saml-config directory. */

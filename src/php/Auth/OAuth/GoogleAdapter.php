@@ -103,6 +103,7 @@ class GoogleAdapter extends ProviderAdapter
     {
         return $this;
     }
+
     /**
      * @return bool
      */
@@ -124,13 +125,7 @@ class GoogleAdapter extends ProviderAdapter
             $this->infoScope = 'openid profile email'; // Default scope string
         }
         $state = IMUtil::randomString(32);
-        $dbProxy = new Proxy(true);
-        $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
-        $dbProxy->authDbClass->authHandler->authSupportStoreChallenge(
-            0, $state, substr($this->clientId, 0, 64), "@G:state@", true);
-
-        file_put_contents("/tmp/2.txt", var_export($this, true));
-
+        $this->storeCode($state, "@G:state@");
         return $this->baseURL . '?response_type=code'
             . '&scope=' . urlencode($this->infoScope)
             . '&redirect_uri=' . urlencode($this->redirectURL)
@@ -148,19 +143,14 @@ class GoogleAdapter extends ProviderAdapter
             throw new Exception("Failed with security issue. The state parameter doesn't exist in the request.");
         }
         $state = $_GET["state"];
-        $dbProxy = new Proxy(true);
-        $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
-        $challenges = $dbProxy->authDbClass->authHandler->authSupportRetrieveChallenge(
-            0, substr($this->clientId, 0, 64), true, "@G:state@", true);
-        if (!in_array($state, explode("\n", $challenges))) {
+        if (!$this->checkCode($state, "@G:state@")) {
             throw new Exception("Failed with security issue. The state parameter isn't same as the stored one.");
         }
-
-        if (!isset($_REQUEST['code'])) {
+        if (!isset($_GET['code'])) {
             throw new Exception("This isn't redirected from the providers site.  The code parameter doesn't exist in the request.");
         }
         $tokenparams = array(
-            'code' => $_REQUEST['code'],
+            'code' => $_GET['code'],
             'client_id' => $this->clientId,
             'client_secret' => $this->clientSecret,
             'grant_type' => 'authorization_code',

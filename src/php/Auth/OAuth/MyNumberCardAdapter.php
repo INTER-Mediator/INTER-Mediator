@@ -68,14 +68,10 @@ class MyNumberCardAdapter extends ProviderAdapter
             $this->infoScope = 'openid name address birthdate gender'; // Default scope string
         }
         $state = IMUtil::randomString(32);
+        $this->storeCode($state, "@M:state@");
         $nonce = IMUtil::randomString(32);
         $verifier = IMUtil::challengeString(64);
-        $dbProxy = new Proxy(true);
-        $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
-        $dbProxy->authDbClass->authHandler->authSupportStoreChallenge(
-            0, $state, substr($this->clientId, 0, 64), "@M:state@", true);
-        $dbProxy->authDbClass->authHandler->authSupportStoreChallenge(
-            0, $verifier, $state, "@M:verifier@", true);
+        $this->storeCode($verifier, "@M:verifier@", $state);
         return $this->baseURL . '?response_type=code&scope=' . urlencode($this->infoScope)
             . '&client_id=' . urlencode($this->clientId)
             . '&redirect_uri=' . urlencode($this->redirectURL)
@@ -94,26 +90,19 @@ class MyNumberCardAdapter extends ProviderAdapter
         if (isset($_GET['code']) && isset($_GET['state']) && isset($_GET['session_state'])) { // Success
             $code = $_GET['code'];
             $state = $_GET['state'];
-            $session_state = ['session_state'];
-            $dbProxy = new Proxy(true);
-            $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
-            $storedStates = $dbProxy->authDbClass->authHandler->authSupportRetrieveChallenge(
-                0, substr($this->clientId, 0, 64), true, "@M:state@", true);
-            if (!in_array($state, explode("\n", $storedStates))) {
-                throw new Exception("Failed with security issue. state={$state}, storedStates={$storedStates}");
+            if (!$this->checkCode($state, "@G:state@")) {
+                throw new Exception("Failed with security issue. The state parameter isn't same as the stored one.");
             }
-            $storedVerifiers = explode("\n",
-                $dbProxy->authDbClass->authHandler->authSupportRetrieveChallenge(
-                    0, $state, true, "@M:verifier@", true));
-            if (count($storedVerifiers) < 1) {
-                throw new Exception("Verifier value isn't stored.");
-            }
-            $verifier = $storedVerifiers[0];
         } else if (isset($_GET['error']) && isset($_GET['error_description']) && isset($_GET['state'])) { // Error
             throw new Exception("Error: [{$_GET['error']}] {$_GET['error_description']}");
         } else {
             throw new Exception("Error: This isn't a valid access");
         }
+        $storedVerifiers = $this->retrieveCode($state, "@M:verifier@");
+        if (count($storedVerifiers) < 1) {
+            throw new Exception("Verifier value isn't stored.");
+        }
+        $verifier = $storedVerifiers[0]; // Maybe 0 or 1 elements. The first element has to be latest one.
 
         $tokenparams = array(
             'code' => (string)$code,
@@ -156,7 +145,7 @@ class MyNumberCardAdapter extends ProviderAdapter
         if (str_contains($promisedScope, "gender")) {
             $userInfo["gender"] = $userInfoResult->gender ?? "";
         }
-        if (strlen($userInfo["username"]) < 1) {
+        if (strlen($userInfo["username"]) < 4) {
             throw new Exception("Nothing to get from the authenticating server."
                 . var_export($userInfoResult, true));
         }
