@@ -273,33 +273,28 @@ abstract class ProviderAdapter
                 $url .= "?" . $postParam;
             }
         }
-        if (function_exists('curl_init')) {
-            $httpCode = 0;
-            $session = curl_init($url);
-            curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-            if ($access_token) {
-                curl_setopt($session, CURLOPT_HTTPHEADER, ["Authorization: Bearer {$access_token}"]);
-            }
-            if ($isPost) {
-                curl_setopt($session, CURLOPT_POST, true);
-                curl_setopt($session, CURLOPT_POSTFIELDS, $postParam);
-            }
-            $content = curl_exec($session);
-            $curlError = curl_error($session);
-            if (!$curlError) {
-                $header = curl_getinfo($session);
-                $httpCode = $header['http_code'];
-                curl_close($session);
-            } else {
-                $errorMessage = curl_error($session);
-                throw new Exception("CURL Error[{}]: {$url}\nMessage: {$errorMessage}");
-                curl_close($session);
-            }
+        $session = curl_init($url);
+        curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+        if ($access_token) {
+            curl_setopt($session, CURLOPT_HTTPHEADER, ["Authorization: Bearer {$access_token}"]);
+        }
+        if ($isPost) {
+            curl_setopt($session, CURLOPT_POST, true);
+            curl_setopt($session, CURLOPT_POSTFIELDS, $postParam);
+        }
+        $content = curl_exec($session);
+        $curlError = curl_errno($session);
+        $errorMessage = curl_error($session);
+        $header = curl_getinfo($session);
+        if (!$curlError) {
+            $httpCode = $header['http_code'];
+            curl_close($session);
         } else {
-            throw new Exception("Couldn't get call api (curl is NOT installed).");
+            curl_close($session);
+            throw new Exception("CURL Error[{}]: {$url}, Message: {$errorMessage}, Headers: " . var_export($header, true));
         }
         if ($httpCode != 200) {
-            throw new Exception("Error[{$httpCode}]: {$url}\nDescription: {$content}");
+            throw new Exception("HTTP Error[{$httpCode}]: {$url}\nDescription: {$content}");
         }
         $response = json_decode($content);
         if (!$response) {
