@@ -64,7 +64,7 @@ class MyNumberCardAdapter extends ProviderAdapter
         if (!$this->infoScope) {
             $this->infoScope = 'openid name address birthdate gender'; // Default scope string
         }
-        $state = IMUtil::randomString(32);
+        $state = strtr(IMUtil::randomString(32),";","S"); // Remove ';'. Semicolon doesn't include in redirect URI.
         $this->storeCode($state, "@M:state@");
         $nonce = IMUtil::randomString(32);
         $verifier = IMUtil::challengeString(64);
@@ -87,7 +87,7 @@ class MyNumberCardAdapter extends ProviderAdapter
         if (isset($_GET['code']) && isset($_GET['state']) && isset($_GET['session_state'])) { // Success
             $code = $_GET['code'];
             $state = $_GET['state'];
-            if (!$this->checkCode($state, "@G:state@")) {
+            if (!$this->checkCode($state, "@M:state@")) {
                 throw new Exception("Failed with security issue. The state parameter isn't same as the stored one.");
             }
         } else if (isset($_GET['error']) && isset($_GET['error_description']) && isset($_GET['state'])) { // Error
