@@ -285,11 +285,16 @@ abstract class ProviderAdapter
                 curl_setopt($session, CURLOPT_POSTFIELDS, $postParam);
             }
             $content = curl_exec($session);
-            if (!curl_errno($session)) {
+            $curlError = curl_error($session);
+            if (!$curlError) {
                 $header = curl_getinfo($session);
                 $httpCode = $header['http_code'];
+                curl_close($session);
+            } else {
+                $errorMessage = curl_error($session);
+                throw new Exception("CURL Error[{}]: {$url}\nMessage: {$errorMessage}");
+                curl_close($session);
             }
-            curl_close($session);
         } else {
             throw new Exception("Couldn't get call api (curl is NOT installed).");
         }
