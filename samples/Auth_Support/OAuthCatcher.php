@@ -20,11 +20,9 @@ date_default_timezone_set('Asia/Tokyo');
 $pathToIM = "../../";   // Modify this to match your directories.
 //---------------------------------------------
 
-require_once("{$pathToIM}/INTER-Mediator.php");
-require_once("{$pathToIM}/src/php/DB/PDO.php");
-require_once("{$pathToIM}/src/php/OAuthAuth.php");
+require_once("{$pathToIM}/INTER-Mediator.php"); // Loading INTER-Mediator and relevant libraries.
 
-$authObj = new INTERMediator\OAuthAuth($_COOKIE["_im_oauth_provider"] ?? "");
+$authObj = new \INTERMediator\Auth\OAuthAuth($_COOKIE["_im_oauth_provider"] ?? "");
 $authObj->debugMode = false; // or comment here
 $authObj->setDoRedirect(true);
 if (is_null($authObj)) {
@@ -33,7 +31,7 @@ if (is_null($authObj)) {
 }
 $jsCode = "";
 if (!$authObj->isActive) {
-    echo "Missing parameters for OAuth authentication.";
+    echo "Missing parameters for OAuth authentication. " . ($_GET['error_description'] ?? "");
     exit;
 }
 $err = "No Error";

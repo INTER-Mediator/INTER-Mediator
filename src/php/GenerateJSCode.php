@@ -16,6 +16,8 @@
 
 namespace INTERMediator;
 
+use INTERMediator\Auth\OAuthAuth;
+
 /**
  *
  */
@@ -138,10 +140,18 @@ class GenerateJSCode
         }
 
         $pathToIM = IMUtil::pathToINTERMediator();
+        // Read the JS programs regarding by the developing or deployed.
+        $currentDir = "{$pathToIM}{$ds}src{$ds}js{$ds}";
+        if (!file_exists($currentDir . 'INTER-Mediator.min.js')) {
+            echo $this->combineScripts($activateClientService && $hasSyncControl);
+        } else {
+            readfile($currentDir . 'INTER-Mediator.min.js');
+        }
 
+        // OAuth Provider Information
         $oAuth = Params::getParameterValue("oAuth", null);
+        $clientOAuthParams = [];
         if (!is_null($oAuth)) {
-            $clientOAuthParams = [];
             $isOAuthAvailable = false;
             foreach ($oAuth as $provider => $info) {
                 if ($provider) {
@@ -152,19 +162,8 @@ class GenerateJSCode
                 $clientOAuthParams[$provider]['AuthURL'] = $authObj->getAuthRequestURL();
             }
         }
-            /*
-                  * Read the JS programs regarding by the developing or deployed.
-                  */
-        $currentDir = "{$pathToIM}{$ds}src{$ds}js{$ds}";
-        if (!file_exists($currentDir . 'INTER-Mediator.min.js')) {
-            echo $this->combineScripts($activateClientService && $hasSyncControl);
-        } else {
-            readfile($currentDir . 'INTER-Mediator.min.js');
-        }
-
-
         if (!is_null($oAuth)) {
-           $this->generateAssignJS(
+            $this->generateAssignJS(
                 "INTERMediatorOnPage.isOAuthAvailable", $isOAuthAvailable ? "true" : "false");
             $this->generateAssignJS("INTERMediatorOnPage.oAuthParams", "[]");
             foreach ($clientOAuthParams as $provider => $info) {
@@ -175,9 +174,8 @@ class GenerateJSCode
                     $q, $info['AuthURL'], $q);
             }
         }
-        /*
-            * Generate the link to the definition file editor
-            */
+
+        // Generate the link to the definition file editor
         $relativeToDefFile = '';
         $editorPath = realpath($pathToIM . $ds . 'editors');
         if ($editorPath) { // In case of core only build.
@@ -202,9 +200,8 @@ class GenerateJSCode
         $relativeToIM = substr($pathToIM, strlen($_SERVER['DOCUMENT_ROOT']));
         $this->generateAssignJS("INTERMediatorOnPage.getPathToIMRoot",
             "function(){return {$q}{$relativeToIM}{$q};}");
-        /*
-         * from db-class, determine the default key field string
-         */
+
+        // from db-class, determine the default key field string
         $defaultKey = null;
         $classBaseName = $dbSpecification['db-class'] ?? $dbClass ?? '';
         $dbClassName = 'INTERMediator\\DB\\' . $classBaseName;
@@ -224,9 +221,7 @@ class GenerateJSCode
             $dataSource = $items;
         }
 
-        /*
-         * Determine the uri of myself
-         */
+        // Determine the uri of myself
         if (isset($callURL)) {
             $pathToMySelf = $callURL;
         } else if (isset($scriptPathPrefix) || isset($scriptPathSuffix)) {

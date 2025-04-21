@@ -718,8 +718,8 @@ SET category_id=2,
 CREATE TABLE chat
 (
     id        INT AUTO_INCREMENT,
-    user      VARCHAR(16),
-    groupname VARCHAR(16),
+    user      VARCHAR(64),
+    groupname VARCHAR(64),
     postdt    DATETIME,
     message   VARCHAR(800),
     PRIMARY KEY (id)
@@ -790,8 +790,12 @@ CREATE TABLE authuser
     id              INT AUTO_INCREMENT,
     username        VARCHAR(64),
     hashedpasswd    VARCHAR(72),
-    realname        VARCHAR(20),
+    realname        VARCHAR(100),
     email           VARCHAR(100),
+    address         VARCHAR(200),
+    birthdate       CHAR(8),
+    gender          CHAR(1),
+    sub             VARCHAR(255),
     limitdt         DATETIME,
     initialPassword VARCHAR(30),
     PRIMARY KEY (id)
@@ -859,15 +863,10 @@ SET id=7,
 # % dist-docs/passwdgen.sh '--password=mig2'
 # '','mig2','b7d863d29021fc96de261da6a5dfb6c4c28d3d43c75ad5ddddea4ec8716bdaf074675473'
 
-# The user mig2m is originally SHA-1 hashed password with passowrd 'mig2m' and salt 'HASH' as like first line.
-# The SHA-1 hash value convert with same salt and re-hashed with SH2-256 as like third line.
-# This means SHA-1 based hash value can change to the SHA-256 based one, and INTER-Mediator support this style
-# hash too for migrate SHA-256 from SHA-1 account in the authuser table.
-#
-# % echo -n 'mig2mHASH' | openssl sha1 -sha1
-# 22d1f35b7d35766663c4c2eac7963733f98c94a3
-# % echo -n '22d1f35b7d35766663c4c2eac7963733f98c94a3HASH' | openssl sha256 -sha256
-# cd01079fd3285dbc2b6549864e609edd0a9bacddbc8a9ba54fb9dab72b9c6579
+# The user mig2m is originally SHA-1 hashed password with password 'mig2m' and salt 'HASH' as like first line.
+# The SHA-1 hash value converted with the same salt and re-hashed with SHA-256 as like third line.
+# This means SHA-1 based hash value can change to the SHA-256 based one, and INTER-Mediator supports this style
+# hash too to migrate SHA-256 from an SHA-1 account in the authuser table.
 
 CREATE TABLE authgroup
 (
@@ -943,7 +942,7 @@ CREATE TABLE issuedhash
     id         INT AUTO_INCREMENT,
     user_id    INT,
     clienthost VARCHAR(64),
-    hash       VARCHAR(64),
+    hash       VARCHAR(100),
     expired    DateTime,
     PRIMARY KEY (id)
 ) CHARACTER SET utf8mb4,
@@ -24014,9 +24013,9 @@ SET id=1,
 
 CREATE VIEW saleslog_summary AS
 SELECT SUBSTRING(customer, 1, 1) AS customer,
-       SUBSTRING(item, 1, 1) AS item,
-       SUM(qty) AS qty,
-       SUM(total) AS total
+       SUBSTRING(item, 1, 1)     AS item,
+       SUM(qty)                  AS qty,
+       SUM(total)                AS total
 FROM saleslog
 GROUP BY SUBSTRING(customer, 1, 1), SUBSTRING(item, 1, 1);
 

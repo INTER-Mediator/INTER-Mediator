@@ -15,7 +15,8 @@ module.exports = (AuthPage, isUserAuth = false) => {
     })
     it('2-login successfully.', async () => {
       await AuthPage.authUsername.setValue("user1")
-      await AuthPage.authPassword.setValue("user1")
+      await AuthPage.authPassword.setValue("zuks69#bAkc")
+      await AuthPage.authLoginButton.waitForClickable()
       await AuthPage.authLoginButton.click() // Finally login succeed.
       await browser.pause(waiting)
       await expect(AuthPage.auth2FAPanel).not.toExist()
@@ -48,6 +49,7 @@ module.exports = (AuthPage, isUserAuth = false) => {
       await expect(fileElement).toExist()
       await fileElement.setValue(remoteFilePath)
       const sendButton = await lastWidget.$('.filesend-button')
+      await sendButton.waitForClickable()
       await expect(sendButton).toExist()
       await sendButton.click()
 
@@ -76,10 +78,12 @@ module.exports = (AuthPage, isUserAuth = false) => {
     it('4-logging in another user, and the count of record is keeping in table privilege.', async () => {
       if (!isUserAuth) {
         const currentRecords = await AuthPage.fieldsItemUploading.length
+        await AuthPage.logoutLink.waitForClickable()
         await AuthPage.logoutLink.click()
         await expect(AuthPage.authPanel).toExist()
         await AuthPage.authUsername.setValue("user2")
-        await AuthPage.authPassword.setValue("user2")
+        await AuthPage.authPassword.setValue("zuks69#bAkc")
+        await AuthPage.authLoginButton.waitForClickable()
         await AuthPage.authLoginButton.click() // Finally login succeed.
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
@@ -104,6 +108,7 @@ module.exports = (AuthPage, isUserAuth = false) => {
           await expect(fileElement).toExist()
           await fileElement.setValue(remoteFilePath)
           const sendButton = await lastWidget.$('.filesend-button')
+          await sendButton.waitForClickable()
           await expect(sendButton).toExist()
           await sendButton.click()
           await browser.pause(waiting)
@@ -122,6 +127,7 @@ module.exports = (AuthPage, isUserAuth = false) => {
           await expect(fileElement).toExist()
           await fileElement.setValue(remoteFilePath)
           const sendButton = await lastWidget.$('.filesend-button')
+          await sendButton.waitForClickable()
           await expect(sendButton).toExist()
           await sendButton.click()
           await browser.pause(waiting)
@@ -132,10 +138,12 @@ module.exports = (AuthPage, isUserAuth = false) => {
         await expect(AuthPage.fieldsItemUploading).toBeElementsArrayOfSize(currentRecords + 2)
         await expect(AuthPage.fieldsItemPic).toBeElementsArrayOfSize(currentRecords + 2)
 
+        await AuthPage.logoutLink.waitForClickable()
         await AuthPage.logoutLink.click()
         await expect(AuthPage.authPanel).toExist()
         await AuthPage.authUsername.setValue("user3")
-        await AuthPage.authPassword.setValue("user3")
+        await AuthPage.authPassword.setValue("zuks69#bAkc")
+        await AuthPage.authLoginButton.waitForClickable()
         await AuthPage.authLoginButton.click() // Finally login succeed.
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
@@ -148,10 +156,12 @@ module.exports = (AuthPage, isUserAuth = false) => {
       if (isUserAuth) {
         const href = (await browser.getUrl()).split("/").slice(0, -1).join("/") + "/"
 
+        await AuthPage.logoutLink.waitForClickable()
         await AuthPage.logoutLink.click()
         await expect(AuthPage.authPanel).toExist()
         await AuthPage.authUsername.setValue("user1")
-        await AuthPage.authPassword.setValue("user1")
+        await AuthPage.authPassword.setValue("zuks69#bAkc")
+        await AuthPage.authLoginButton.waitForClickable()
         await AuthPage.authLoginButton.click() // Finally login succeed.
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
@@ -171,6 +181,7 @@ module.exports = (AuthPage, isUserAuth = false) => {
           await expect(fileElement).toExist()
           await fileElement.setValue(remoteFilePath)
           const sendButton = await lastWidget.$('.filesend-button')
+          await sendButton.waitForClickable()
           await expect(sendButton).toExist()
           await sendButton.click()
           await browser.pause(waiting)
@@ -189,6 +200,7 @@ module.exports = (AuthPage, isUserAuth = false) => {
           await expect(fileElement).toExist()
           await fileElement.setValue(remoteFilePath)
           const sendButton = await lastWidget.$('.filesend-button')
+          await sendButton.waitForClickable()
           await expect(sendButton).toExist()
           await sendButton.click()
           await browser.pause(waiting)
@@ -204,10 +216,12 @@ module.exports = (AuthPage, isUserAuth = false) => {
         const user1src = await AuthPage.fieldsItemPic[user1RecCount + 1].getAttribute('src')
         const user1pic = href + user1src
 
+        await AuthPage.logoutLink.waitForClickable()
         await AuthPage.logoutLink.click()
         await expect(AuthPage.authPanel).toExist()
         await AuthPage.authUsername.setValue("user2")
-        await AuthPage.authPassword.setValue("user2")
+        await AuthPage.authPassword.setValue("zuks69#bAkc")
+        await AuthPage.authLoginButton.waitForClickable()
         await AuthPage.authLoginButton.click() // Finally login succeed.
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
@@ -227,6 +241,7 @@ module.exports = (AuthPage, isUserAuth = false) => {
           await expect(fileElement).toExist()
           await fileElement.setValue(remoteFilePath)
           const sendButton = await lastWidget.$('.filesend-button')
+          await sendButton.waitForClickable()
           await expect(sendButton).toExist()
           await sendButton.click()
           await browser.pause(waiting)
@@ -245,6 +260,7 @@ module.exports = (AuthPage, isUserAuth = false) => {
           await expect(fileElement).toExist()
           await fileElement.setValue(remoteFilePath)
           const sendButton = await lastWidget.$('.filesend-button')
+          await sendButton.waitForClickable()
           await expect(sendButton).toExist()
           await sendButton.click()
           await browser.pause(waiting)
@@ -263,6 +279,7 @@ module.exports = (AuthPage, isUserAuth = false) => {
           await expect(fileElement).toExist()
           await fileElement.setValue(remoteFilePath)
           const sendButton = await lastWidget.$('.filesend-button')
+          await sendButton.waitForClickable()
           await expect(sendButton).toExist()
           await sendButton.click()
           await browser.pause(waiting)
@@ -278,10 +295,12 @@ module.exports = (AuthPage, isUserAuth = false) => {
         const user2src = await AuthPage.fieldsItemPic[user2RecCount + 2].getAttribute('src')
         const user2pic = href + user2src
 
+        await AuthPage.logoutLink.waitForClickable()
         await AuthPage.logoutLink.click()
         await expect(AuthPage.authPanel).toExist()
         await AuthPage.authUsername.setValue("user1")
-        await AuthPage.authPassword.setValue("user1")
+        await AuthPage.authPassword.setValue("zuks69#bAkc")
+        await AuthPage.authLoginButton.waitForClickable()
         await AuthPage.authLoginButton.click() // Finally login succeed.
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
@@ -291,10 +310,12 @@ module.exports = (AuthPage, isUserAuth = false) => {
           await expect(AuthPage.fieldsUsername[i]).toHaveText("user1")
         }
 
+        await AuthPage.logoutLink.waitForClickable()
         await AuthPage.logoutLink.click()
         await expect(AuthPage.authPanel).toExist()
         await AuthPage.authUsername.setValue("user2")
-        await AuthPage.authPassword.setValue("user2")
+        await AuthPage.authPassword.setValue("zuks69#bAkc")
+        await AuthPage.authLoginButton.waitForClickable()
         await AuthPage.authLoginButton.click() // Finally login succeed.
         await browser.pause(waiting)
         await expect(AuthPage.auth2FAPanel).not.toExist()
@@ -303,15 +324,8 @@ module.exports = (AuthPage, isUserAuth = false) => {
         for (let i = 0; i < user2RecCount + 3; i += 1) {
           await expect(AuthPage.fieldsUsername[i]).toHaveText("user2")
         }
-
-        // console.log(user2pic)
-        // console.log(user1pic)
-        // browser.url(user2src)
-        // browser.pause(10000)
-        // browser.url(user1src)
-        // browser.pause(10000)
-
       }
+      await AuthPage.logoutLink.waitForClickable()
       await AuthPage.logoutLink.click()
     })
   })

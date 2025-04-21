@@ -384,8 +384,7 @@ abstract class OperationVisitor
      * @param string $suffix
      * @return string
      */
-    public
-    function generateAndSaveChallenge(string $user, string $generatedClientID, string $prefix, string $suffix = ""): string
+    public function generateAndSaveChallenge(string $user, string $generatedClientID, string $prefix, string $suffix = ""): string
     {
         $proxy = $this->proxy;
         $generated = IMUtil::generateChallenge();

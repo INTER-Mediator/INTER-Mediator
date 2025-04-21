@@ -437,7 +437,123 @@ span.IM_POSTMESSAGE {
     font-size: 85%;
 }
 
+#_im_oauthbutton_mynumbercard-sandbox {
+    padding: 0.75em 1em;
+    margin: 0.5em;
+    display: inline;
+    color: #0017C1 !important;
+    background: #FFFFFF;
+    font-weight: bold;
+    font-size: 16px;
+    border: 1px solid #0017C1;
+    border-radius: 0.5em;
+    text-align: center;
+    cursor: pointer;
+}
 
+#_im_oauthbutton_mynumbercard-sandbox::before {
+    content: "";
+    display: inline-block;
+    width: 1.5em;
+    height: 1.5em;
+    margin: 0 0.75em 0 0;
+    background: url(MyNumberCard-Icon_Blue.png) no-repeat;
+    background-size: contain;
+    vertical-align: middle;
+}
+
+#_im_oauthbutton_mynumbercard-sandbox:hover {
+    background: #C5D7FB;
+    color: #00118F
+}
+
+#_im_oauthbutton_mynumbercard {
+    padding: 0.75em 1em;
+    margin: 0.5em;
+    display: inline;
+    color: #0017C1 !important;
+    background: #FFFFFF;
+    font-weight: bold;
+    font-size: 16px;
+    border: 1px solid #0017C1;
+    border-radius: 0.5em;
+    text-align: center;
+    cursor: pointer;
+}
+
+#_im_oauthbutton_mynumbercard::before {
+    content: "";
+    display: inline-block;
+    width: 1.5em;
+    height: 1.5em;
+    margin: 0 0.75em 0 0;
+    background: url(MyNumberCard-Icon_Blue.png) no-repeat;
+    background-size: contain;
+    vertical-align: middle;
+}
+
+#_im_oauthbutton_mynumbercard:hover {
+    background: #C5D7FB;
+    color: #00118F
+}
+
+#_im_oauthbutton_google {
+    padding: 0 12px;
+    margin: 0.5em;
+    display: inline;
+    color: #1F1F1F !important;
+    background: #FFFFFF;
+    font-size: 16px;
+    border: 1px solid #747775;
+    border-radius: 20px;
+    text-align: center;
+    cursor: pointer;
+    height: 40px;
+}
+
+#_im_oauthbutton_google::before {
+    content: "";
+    display: inline-block;
+    width: 1.5em;
+    height: 1.5em;
+    margin: 0 10px 0 0;
+    background: url(Google-Logo.svg) no-repeat;
+    background-size: contain;
+    vertical-align: middle;
+}
+
+#_im_oauthbutton_google:hover {
+    background: #DDDDDD;
+}
+
+#_im_oauthbutton_facebook {
+    padding: 0 12px;
+    margin: 0.5em;
+    display: inline;
+    color: #FFFFFF !important;
+    background: #1877F2;
+    font-size: 16px;
+    border: none;
+    border-radius: 3px;
+    text-align: center;
+    cursor: pointer;
+    height: 40px;
+}
+
+#_im_oauthbutton_facebook::before {
+    content: "";
+    display: inline-block;
+    width: 1.5em;
+    height: 1.5em;
+    margin: 0 15px 0 0;
+    background: url(Facebook_Logo_Small.png) no-repeat;
+    background-size: contain;
+    vertical-align: middle;
+}
+
+#_im_oauthbutton_facebook:hover {
+    background: #135ab6;
+}
 /* Widget Pop-up Panel */
 ._im_widget_popup_panelback {
     position: absolute;

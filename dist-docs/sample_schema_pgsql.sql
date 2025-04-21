@@ -34,9 +34,7 @@ SET search_path TO im_sample,public;
 ALTER USER web SET search_path TO im_sample,public;
 
 /*  The schema for the "Sample_form" and "Sample_Auth" sample set. */
-CREATE
-SEQUENCE serial START
-1000;
+CREATE SEQUENCE serial START 1000;
 CREATE TABLE person
 (
     id       SERIAL PRIMARY KEY,
@@ -413,8 +411,8 @@ VALUES (2, '共用');
 CREATE TABLE chat
 (
     id        SERIAL PRIMARY KEY,
-    username  VARCHAR(16),
-    groupname VARCHAR(16),
+    username  VARCHAR(64),
+    groupname VARCHAR(64),
     postdt    TIMESTAMP,
     message   VARCHAR(800)
 );
@@ -456,7 +454,11 @@ CREATE TABLE authuser
     username     VARCHAR(64),
     hashedpasswd VARCHAR(72),
     email        VARCHAR(100),
-    realname     VARCHAR(20),
+    realname     VARCHAR(100),
+    address      VARCHAR(200),
+    birthdate    CHAR(8),
+    gender       CHAR(1),
+    sub          VARCHAR(255),
     limitdt      TIMESTAMP
 );
 CREATE INDEX authuser_username ON authuser (username);
@@ -539,7 +541,7 @@ CREATE TABLE issuedhash
     id         SERIAL PRIMARY KEY,
     user_id    INTEGER,
     clienthost VARCHAR(64),
-    hash       VARCHAR(64),
+    hash       VARCHAR(100),
     expired    TIMESTAMP
 );
 
@@ -691,7 +693,12 @@ GRANT ALL PRIVILEGES ON im_sample.testtable_id_seq TO web;
 
 /* Grant to All operations for all objects with web account */
 
-GRANT ALL PRIVILEGES ON SCHEMA im_sample TO web;
+GRANT
+ALL
+PRIVILEGES
+ON
+SCHEMA
+im_sample TO web;
 GRANT ALL PRIVILEGES ON im_sample.authcor TO web;
 GRANT ALL PRIVILEGES ON im_sample.authgroup TO web;
 GRANT ALL PRIVILEGES ON im_sample.authuser TO web;

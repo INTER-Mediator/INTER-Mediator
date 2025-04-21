@@ -17,14 +17,14 @@
 namespace INTERMediator\DB\Support;
 
 use Exception;
+use INTERMediator\Auth\SAMLAuth;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\PDO;
+use INTERMediator\DB\Support\ProxyElements\CheckAuthenticationElement;
 use INTERMediator\DB\Support\ProxyElements\CheckAuthorizationElement;
 use INTERMediator\DB\Support\ProxyElements\IsAuthAccessingElement;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
-use INTERMediator\SAMLAuth;
-use INTERMediator\DB\Support\ProxyElements\CheckAuthenticationElement;
 
 /**
  *
@@ -220,8 +220,7 @@ trait Proxy_Auth
      * Calling from Proxy::finishCommunication method to generate cookies.
      * @return void
      */
-    public
-    function handleMediaToken(): void
+    public function handleMediaToken(): void
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         if (isset($tableInfo['authentication']['media-handling']) && $tableInfo['authentication']['media-handling'] === true && !$this->suppressMediaToken
