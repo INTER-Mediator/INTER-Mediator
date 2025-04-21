@@ -87,7 +87,7 @@ class MyNumberCardAdapter extends ProviderAdapter
         if (isset($_GET['code']) && isset($_GET['state']) && isset($_GET['session_state'])) { // Success
             $code = $_GET['code'];
             $state = $_GET['state'];
-            if (!$this->checkCode($state, "@G:state@")) {
+            if (!$this->checkCode($state, "@M:state@")) {
                 throw new Exception("Failed with security issue. The state parameter isn't same as the stored one.");
             }
         } else if (isset($_GET['error']) && isset($_GET['error_description']) && isset($_GET['state'])) { // Error
