@@ -58,6 +58,7 @@ class OAuthAuth
      */
     private ?bool $isCreate = null;
     private ?ProviderAdapter $providerObj = null;
+	private ?array $userInfo = null;
 
     /**
      * @return string
@@ -100,6 +101,11 @@ class OAuthAuth
         return $this->isCreate;
     }
 
+	public function getUserInfo(): ?array 
+	{
+		return $this->userInfo;
+	}
+	
     /**
      * @param string $provider
      */
@@ -165,7 +171,7 @@ class OAuthAuth
      * @return bool
      * @throws Exception
      */
-    public function afterAuth(): bool
+    public function afterAuth(bool $generateUser=true): bool
     {
         try {
             $this->errorMessage = array();
@@ -173,6 +179,7 @@ class OAuthAuth
             $this->initiaizeAdapter();
             $userInfo = $this->providerObj->getUserInfo();
 
+			if( $generateUser){
             // Retrive the storing parameter.
             $oAuthStoring = $_COOKIE["_im_oauth_storing"] ?? "";
             if ($oAuthStoring !== "credential") {
@@ -233,6 +240,7 @@ class OAuthAuth
             if ($this->doRedirect && !$this->debugMode) {
                 $this->jsCode = "location.href = '" . $_COOKIE["_im_oauth_backurl"] . "';";
             }
+		}
         } catch (Exception $e) {
             $this->errorMessage[] = $e->getMessage();
             return false;
