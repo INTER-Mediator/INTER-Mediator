@@ -7,7 +7,7 @@
   "require": {
     "php": ">=8.1",
     "ext-mbstring": "*",
-    "ext-PDO": "*",
+    "ext-pdo": "*",
     "ext-curl": "*",
     "ext-xml": "*",
     "ext-json": "*",
@@ -16,19 +16,19 @@
     "ext-gd": "*",
     "ext-intl": "*",
     "ext-posix": "*",
-    "mouf/nodejs-installer": "*",
-    "inter-mediator/fmdataapi": "33",
-    "tecnickcom/tcpdf": "*",
-    "aws/aws-sdk-php": "*",
-    "simplesamlphp/simplesamlphp": "*",
-    "matthiasmullie/minify": "*",
+    "mouf/nodejs-installer": ">=1",
+    "inter-mediator/fmdataapi": "^33",
+    "tecnickcom/tcpdf": ">=6.9",
+    "aws/aws-sdk-php": ">=3",
+    "simplesamlphp/simplesamlphp": ">=2.4",
+    "matthiasmullie/minify": ">=1.3",
     "msyk/dropbox-api-shortlivedtoken": ">=5",
-    "league/csv": "*",
-    "symfony/mailer": "*",
-    "symfony/amazon-mailer": "*",
-    "symfony/google-mailer": "*",
-    "symfony/yaml": "*",
-    "web-token/jwt-framework": "*"
+    "league/csv": ">=9",
+    "symfony/mailer": ">=7.2",
+    "symfony/amazon-mailer": ">=7.2",
+    "symfony/google-mailer": ">=7.2",
+    "symfony/yaml": ">=6.4",
+    "web-token/jwt-framework": ">=3.4"
   },
   "extra": {
     "mouf": {
@@ -40,7 +40,7 @@
   },
   "require-dev": {
     "phpunit/phpunit": "^10 || ^11",
-    "phpstan/phpstan": "@stable"
+    "phpstan/phpstan": "^2"
   },
   "autoload": {
     "psr-4": {
@@ -70,9 +70,7 @@
     "manual": "https://inter-mediator.info/"
   },
   "scripts": {
-    "scripts": {
-      "phpstan": "vendor/bin/phpstan -c spec/phpstan.neon"
-    },
+    "phpstan": "./vendor/bin/phpstan analyse -c ./spec/phpstan.neon",
     "test": [
       "./vendor/bin/phpunit --bootstrap ./vendor/autoload.php --configuration ./spec/INTER-Mediator-UnitTest/phpunit.xml"
     ],
@@ -96,12 +94,6 @@
     "post-install-cmd": [
       "./vendor/bin/npm install",
       "rm -f __Did_you_run_composer_update.txt"
-    ],
-    "forever-list": [
-      "./node_modules/.bin/forever list"
-    ],
-    "forever-stopall": [
-      "./node_modules/.bin/forever stopall"
     ]
   },
   "config": {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0a097d9b178da99a71e1978765e9bdc5",
+    "content-hash": "3311aefb13b43f681a86e68f355e600b",
     "packages": [
         {
             "name": "async-aws/core",
@@ -8534,9 +8534,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "phpstan/phpstan": 0
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
