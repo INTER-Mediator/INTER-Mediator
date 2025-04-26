@@ -40,12 +40,12 @@ class OAuthAuth
     /**
      * When debug mode is enabled, more detailed messages will be output.
      * When true, detailed information about the authentication process and error messages will be displayed.
-     * Default value is false.
+     * The default value is false.
      * @var bool Holds the debug mode status. true=enabled, false=disabled
      */
     public bool $debugMode = false;
     /**
-     * @var array Stores error messages that occur during the OAuth process
+     * @var array<string> Stores error messages that occur during the OAuth process
      *           Each array element contains a specific error message as string
      */
     private array $errorMessage = array();
@@ -55,9 +55,9 @@ class OAuthAuth
      */
     private string $jsCode = '';
     /**
-     * @var string|null
+     * @var string
      */
-    private ?string $provider;
+    private string $provider;
     /**
      * @var bool Controls whether automatic redirection occurs after authentication
      *          When true, redirects to the original page after successful authentication
@@ -73,7 +73,7 @@ class OAuthAuth
      */
     private ?ProviderAdapter $providerObj = null;
     /**
-     * @var null|array
+     * @var null|array<string, string> User information retrieved from the provider
      */
     private ?array $userInfo = null;
     /**
@@ -128,7 +128,7 @@ class OAuthAuth
     /**
      * Get user information retrieved from the provider
      *
-     * @return array|null The user information array with the following keys:
+     * @return array<string, string>|null The user information array with the following keys:
      *                    - "username": The username of the user. The value is a string.
      *                    - "realname": The real name of the user. The value is a string.
      *                    - "email": The E-mail address of the user. The value is a string.
@@ -234,7 +234,6 @@ class OAuthAuth
      *
      * @param bool $loginStart Whether to start the login process after the authentication is successful.
      * @return bool True if the authentication is successful, false otherwise.
-     * @throws Exception
      */
     public function afterAuth(bool $loginStart = true): bool
     {
@@ -262,10 +261,10 @@ class OAuthAuth
     /**
      * Handling the OAuth user information to create a local user.
      *
-     * @return
+     * @param string|null $currentUser expecting username in the authuser table.
      * @throws Exception When the storing parameter is not "credential".
      */
-    private function userInfoToLogin($currentUser = null): void
+    private function userInfoToLogin(?string $currentUser = null): void
     {
         // Retrive the storing parameter.
         $oAuthStoring = $_COOKIE["_im_oauth_storing"] ?? "";
@@ -275,7 +274,7 @@ class OAuthAuth
         $oAuthRealm = $_COOKIE["_im_oauth_realm"] ?? "";
         // Generate the new local user relevant to the OAuth user
         $dbProxy = new Proxy(true);
-        $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : false);
+        $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : 0);
         $username = $this->userInfo["username"];
         if ($this->confirmOnly) {
             if (is_null($currentUser)) {
@@ -288,6 +287,7 @@ class OAuthAuth
             "username" => $username,
             "realname" => $this->userInfo["realname"] ?? "",
         );
+        $credential = "";
         if (!$this->confirmOnly) {
             $passwordHash = Params::getParameterValue("passwordHash", 1);
             $alwaysGenSHA2 = Params::getParameterValue("alwaysGenSHA2", false);
