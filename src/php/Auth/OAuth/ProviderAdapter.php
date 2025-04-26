@@ -107,10 +107,6 @@ abstract class ProviderAdapter
      */
     public function setClientId(string $clientId): void
     {
-        /**
-         * The client ID issued by the authorization server.
-         * @var string
-         */
         $this->clientId = $clientId;
     }
 
@@ -122,10 +118,6 @@ abstract class ProviderAdapter
      */
     public function setClientSecret(string $secret): void
     {
-        /**
-         * Client secret issued by the authorization server.
-         * @var string
-         */
         $this->clientSecret = $secret;
     }
 
@@ -139,12 +131,7 @@ abstract class ProviderAdapter
      */
     public function setRedirectURL(string $url): void
     {
-        /**
-         * The URL that the client will be redirected to after the user has granted
-         * access to the client.
-         * @var string
-         */
-        $this->redirectURL = $url;
+         $this->redirectURL = $url;
     }
 
     /**
@@ -155,10 +142,6 @@ abstract class ProviderAdapter
      */
     public function setInfoScope(string $info): void
     {
-        /**
-         * The scope for the user information to be retrieved.
-         * @var string
-         */
         $this->infoScope = $info;
     }
 
@@ -168,10 +151,6 @@ abstract class ProviderAdapter
      */
     public function setKeyFilePath(string $path): void
     {
-        /**
-         * The path to the private key file for the client.
-         * @var string
-         */
         $this->keyFilePath = $path;
     }
 

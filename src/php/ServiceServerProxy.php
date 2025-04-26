@@ -21,10 +21,6 @@ class ServiceServerProxy
     /**
      * @var bool
      */
-    //private bool $paramsQuit;
-    /**
-     * @var bool
-     */
     private bool $paramsBoot;
     /**
      * @var bool
@@ -217,7 +213,7 @@ class ServiceServerProxy
             $this->serverInfoCached = false;
         } else { // Service Server is booted.
             $this->serverInfoCached = true;
-            if (strpos($result, "Service Server is active.") === false) {
+            if (!str_contains($result, "Service Server is active.")) {
                 $this->errors[] = $this->messageHead . 'Server respond an irregular message.';
                 $this->serverInfoCached = false;
             }
@@ -252,7 +248,7 @@ class ServiceServerProxy
         if (curl_errno($ch) !== CURLE_OK || $info['http_code'] !== 200) {
             $this->messages[] = $this->messageHead . 'Absent Service Server or Communication Probrems.';
             $this->messages[] = $this->messageHead . curl_error($ch);
-            return false;
+            return null;
         }
         return $result;
     }

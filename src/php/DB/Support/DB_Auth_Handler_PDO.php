@@ -46,6 +46,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * @param string $challenge
      * @param string $clientId
      * @param string $prefix
+     * @param bool $alwaysInsert
      * @return void
      *
      * Using 'issuedhash'
@@ -159,13 +160,14 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      * @param string $clientId
      * @param bool $isDelete
      * @param string $prefix
+     * @param bool $isMulti
      * @return ?string
      *
      * Using 'issuedhash'
      * @throws Exception
      */
     public function authSupportRetrieveChallenge(
-        string $uid, string $clientId, bool $isDelete = true, string $prefix = "", $isMulti = false): ?string
+        string $uid, string $clientId, bool $isDelete = true, string $prefix = "", bool $isMulti = false): ?string
     {
         $hashTable = $this->dbSettings->getHashTable();
         if (is_null($hashTable)) {
@@ -256,9 +258,9 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
 
     /**
      * @param array $keyValues
-     * @return bool(true: create user, false: reuse user)|null in error
+     * @return bool|null true: create user, false: reuse user, null in error
      */
-    public function authSupportOAuthUserHandling(array $keyValues): bool
+    public function authSupportOAuthUserHandling(array $keyValues): ?bool
     {
         $user_id = $this->authSupportGetUserIdFromUsername($keyValues["username"]);
         $this->logger->setDebugMessage(

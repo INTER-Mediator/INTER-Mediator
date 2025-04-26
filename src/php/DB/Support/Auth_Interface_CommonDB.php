@@ -56,6 +56,7 @@ interface Auth_Interface_CommonDB
      * @param string $challenge
      * @param string $clientId
      * @param string $prefix
+     * @param bool $alwaysInsert
      * @return void
      */
     public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId, string $prefix = "", bool $alwaysInsert = false): void;
@@ -72,10 +73,11 @@ interface Auth_Interface_CommonDB
      * @param string $clientId
      * @param bool $isDelete
      * @param string $prefix
+     * @param bool $isMulti
      * @return string|null
      */
     public function authSupportRetrieveChallenge(
-        string $uid, string $clientId, bool $isDelete = true, string $prefix = "", $isMulti = false): ?string;
+        string $uid, string $clientId, bool $isDelete = true, string $prefix = "", bool $isMulti = false): ?string;
 
     /**
      * handling auth table: issuedhash
@@ -234,11 +236,11 @@ interface Auth_Interface_CommonDB
 
     /**
      * @param array $keyValues
-     * @return bool(true: create user, false: reuse user)|null in error
+     * @return bool|null true: create user, false: reuse user, ull in error
      */
-    public function authSupportOAuthUserHandling(array $keyValues): bool;
+    public function authSupportOAuthUserHandling(array $keyValues): ?bool;
 
-    /** This method merged following methods authSupportUnifyUsernameAndEmail,
+    /** This method merged the following methods authSupportUnifyUsernameAndEmail,
      * authSupportRetrieveHashedPassword and authSupportGetUserIdFromUsername
      * @param null|string $userID
      * @return array
