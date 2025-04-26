@@ -1,7 +1,7 @@
 {
   "name": "inter-mediator/inter-mediator",
   "version": "14",
-  "time": "2025-04-17",
+  "time": "2025-04-26",
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {

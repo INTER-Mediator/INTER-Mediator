@@ -78,13 +78,17 @@ use Jose\Component\Signature\Serializer\JWSSerializerManager;
  */
 
 /**
- *
+ * クライアントサイド ウェブ アプリケーション用の OAuth 2.0
+ * https://developers.google.com/identity/protocols/oauth2/javascript-implicit-flow?hl=ja
+ *「Google でログイン」のブランドの取り扱いガイドライン
+ * https://developers.google.com/identity/branding-guidelines?hl=ja
  */
 class GoogleAdapter extends ProviderAdapter
 {
 
     /**
-     *
+     * Initializes the Google OAuth adapter with default endpoint configurations
+     * Sets up essential URLs for OAuth flow including authorization, token, and user info endpoints
      */
     function __construct()
     {
@@ -97,7 +101,9 @@ class GoogleAdapter extends ProviderAdapter
     }
 
     /**
-     * @return ProviderAdapter
+     * Sets the adapter to test mode for development and testing purposes
+     *
+     * @return ProviderAdapter The current adapter instance configured for testing
      */
     public function setTestMode(): ProviderAdapter //MyNumberCardAdapter
     {
@@ -105,7 +111,10 @@ class GoogleAdapter extends ProviderAdapter
     }
 
     /**
-     * @return bool
+     * Validates the OAuth configuration and settings
+     * Ensures all required parameters and endpoints are properly configured
+     *
+     * @return bool True if the configuration is valid, false otherwise
      */
     public function validate(): bool
     {
@@ -113,8 +122,11 @@ class GoogleAdapter extends ProviderAdapter
     }
 
     /**
-     * @return string
-     * @throws Exception
+     * Generates the Google OAuth authorization request URL
+     * Creates a state parameter for CSRF protection and includes all required OAuth parameters
+     *
+     * @return string The complete authorization URL for Google OAuth
+     * @throws Exception If unable to generate the authorization URL
      */
     public function getAuthRequestURL(): string
     {
@@ -131,8 +143,12 @@ class GoogleAdapter extends ProviderAdapter
     }
 
     /**
-     * @return array
-     * @throws Exception
+     * Retrieves authenticated user information from Google
+     * Handles the OAuth callback, validates the state parameter, exchanges the code for tokens,
+     * and fetches user information from Google's userinfo endpoint
+     *
+     * @return array Array containing user information (realname, username, email)
+     * @throws Exception When authentication fails, tokens are invalid, or user info is incomplete
      */
     public function getUserInfo(): array
     {
