@@ -24,47 +24,58 @@ abstract class ProviderAdapter
      */
     public bool $debugMode = true;
     /**
+     * The name of the OAuth provider (e.g., "google", "facebook").
      * @var string
      */
     protected string $providerName = "";
     /**
+     * The base URL for the OAuth provider's endpoints.
      * @var string
      */
     protected string $baseURL = "";
     /**
+     * The URL for obtaining access tokens from the provider.
      * @var string
      */
     protected string $getTokenURL = "";
     /**
+     * The URL for retrieving user information from the provider.
      * @var string
      */
     protected string $getInfoURL = "";
     /**
+     * The client ID issued by the OAuth provider.
      * @var string|null
      */
     protected ?string $clientId = "";
     /**
+     * The client secret issued by the OAuth provider.
      * @var string|null
      */
     protected ?string $clientSecret = "";
     /**
+     * The URL where the provider will redirect after authentication.
      * @var string|null
      */
     protected ?string $redirectURL = "";
     /**
+     * The scope of information requested from the provider.
      * @var string|null
      */
     protected ?string $infoScope = "";
 
     /**
+     * The issuer URL of the authorization server.
      * @var string|null
      */
     protected ?string $issuer = "";
     /**
+     * The URL where JSON Web Key Set can be retrieved.
      * @var string|null
      */
     protected ?string $jwksURL = "";
     /**
+     * The path to the private key file for signing JWTs.
      * @var string|null
      */
     protected ?string $keyFilePath = "";
@@ -96,10 +107,6 @@ abstract class ProviderAdapter
      */
     public function setClientId(string $clientId): void
     {
-        /**
-         * The client ID issued by the authorization server.
-         * @var string
-         */
         $this->clientId = $clientId;
     }
 
@@ -111,10 +118,6 @@ abstract class ProviderAdapter
      */
     public function setClientSecret(string $secret): void
     {
-        /**
-         * Client secret issued by the authorization server.
-         * @var string
-         */
         $this->clientSecret = $secret;
     }
 
@@ -128,12 +131,7 @@ abstract class ProviderAdapter
      */
     public function setRedirectURL(string $url): void
     {
-        /**
-         * The URL that the client will be redirected to after the user has granted
-         * access to the client.
-         * @var string
-         */
-        $this->redirectURL = $url;
+         $this->redirectURL = $url;
     }
 
     /**
@@ -144,10 +142,6 @@ abstract class ProviderAdapter
      */
     public function setInfoScope(string $info): void
     {
-        /**
-         * The scope for the user information to be retrieved.
-         * @var string
-         */
         $this->infoScope = $info;
     }
 
@@ -157,10 +151,6 @@ abstract class ProviderAdapter
      */
     public function setKeyFilePath(string $path): void
     {
-        /**
-         * The path to the private key file for the client.
-         * @var string
-         */
         $this->keyFilePath = $path;
     }
 
@@ -291,7 +281,7 @@ abstract class ProviderAdapter
             curl_close($session);
         } else {
             curl_close($session);
-            throw new Exception("CURL Error[{}]: {$url}, Message: {$errorMessage}, Headers: " . var_export($header, true));
+            throw new Exception("CURL Error[{$curlError}]: {$url}, Message: {$errorMessage}, Headers: " . var_export($header, true));
         }
         if ($httpCode != 200) {
             throw new Exception("HTTP Error[{$httpCode}]: {$url}\nDescription: {$content}");

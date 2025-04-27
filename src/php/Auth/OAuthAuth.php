@@ -29,35 +29,58 @@ use INTERMediator\Params;
 class OAuthAuth
 {
     /**
-     * @var bool
+     * Indicates whether the OAuth authentication object is active and properly configured.
+     * When true, the OAuth adapter is initialized and ready to handle authentication.
+     * When false, there was an error in initialization or the adapter is not properly configured.
+     *
+     * @var bool Status of OAuth authentication process
      */
     public bool $isActive;
 
     /**
-     * @var bool
+     * When debug mode is enabled, more detailed messages will be output.
+     * When true, detailed information about the authentication process and error messages will be displayed.
+     * The default value is false.
+     * @var bool Holds the debug mode status. true=enabled, false=disabled
      */
-    public bool $debugMode = true;
+    public bool $debugMode = false;
     /**
-     * @var array
+     * @var array<string> Stores error messages that occur during the OAuth process
+     *           Each array element contains a specific error message as string
      */
     private array $errorMessage = array();
     /**
-     * @var string
+     * @var string JavaScript code to be executed after authentication
+     *            Contains redirection code or other client-side operations
      */
     private string $jsCode = '';
     /**
-     * @var string|null
+     * @var string
      */
-    private ?string $provider;
+    private string $provider;
     /**
-     * @var bool
+     * @var bool Controls whether automatic redirection occurs after authentication
+     *          When true, redirects to the original page after successful authentication
      */
     private bool $doRedirect = true;
     /**
      * @var bool|null
      */
     private ?bool $isCreate = null;
+    /**
+     * @var null|ProviderAdapter The OAuth provider adapter instance
+     *                          Handles provider-specific authentication operations
+     */
     private ?ProviderAdapter $providerObj = null;
+    /**
+     * @var null|array<string, string> User information retrieved from the provider
+     */
+    private ?array $userInfo = null;
+    /**
+     * @var bool Flag to indicate confirmation-only mode
+     *          When true, only verifies authentication without creating new user records
+     */
+    private bool $confirmOnly = false;
 
     /**
      * @return string
@@ -84,7 +107,9 @@ class OAuthAuth
     }
 
     /**
-     * @param bool $val
+     * Sets whether automatic redirection should occur after authentication. The default value is true.
+     *
+     * @param bool $val True to enable automatic redirection, false to disable
      * @return void
      */
     public function setDoRedirect(bool $val): void
@@ -101,19 +126,57 @@ class OAuthAuth
     }
 
     /**
-     * @param string $provider
+     * Get user information retrieved from the provider
+     *
+     * @return array<string, string>|null The user information array with the following keys:
+     *                    - "username": The username of the user. The value is a string.
+     *                    - "realname": The real name of the user. The value is a string.
+     *                    - "email": The E-mail address of the user. The value is a string.
+     *                    - "birthdate": The birthday of the user. The value is a string.
+     *                    - "gender": The gender of the user. The value is a string.
+     *                    Or null if the user information couldn't be retrieved.
+     */
+    public function getUserInfo(): ?array
+    {
+        return $this->userInfo;
+    }
+
+    /**
+     * Sets the flag to only confirm the user's authentication without creating a new user record.
+     *
+     * If this flag is set to true, the authentication process will only confirm the user's
+     * authentication without creating a new user record. The default value is false.
+     */
+    public function setConfirmOnly(): void
+    {
+        $this->confirmOnly = true;
+    }
+
+    /**
+     * Constructor
+     *
+     * @param string $provider The name of the provider.
      */
     public function __construct(string $provider)
     {
         $this->provider = $provider;
-        $this->initiaizeAdapter();
+        $this->initializeAdapter();
         if (!$this->providerObj) {
             $this->errorMessage[] = "Provider Adapter for {$provider} couldn't create.";
             $this->isActive = false;
         }
     }
 
-    private function initiaizeAdapter(): void
+    /**
+     * Initializes the provider adapter.
+     *
+     * This method creates an instance of the provider adapter and sets the necessary parameters from the configuration.
+     * If the adapter couldn't be created or the parameters are invalid, the method sets the error message and sets the
+     * `isActive` flag to false.
+     *
+     * @return void
+     */
+    private function initializeAdapter(): void
     {
         $this->providerObj = ProviderAdapter::createAdapter($this->provider);
         if (!$this->providerObj) {
@@ -122,7 +185,6 @@ class OAuthAuth
             return;
         }
         $oAuthInfo = Params::getParameterValue("oAuth", null);
-        $this->isActive = true;
         $this->providerObj->setDebugMode($this->debugMode);
         $this->provider = $this->providerObj->getProviderName();
         if (isset($oAuthInfo[$this->provider]["ClientID"])) {
@@ -150,88 +212,44 @@ class OAuthAuth
     }
 
     /**
-     * @return string
-     * @throws Exception
+     * @return string The URL to request the authentication of the user.
+     *
+     * Returns the URL to request the authentication of the user. The returned URL is a string.
      */
     public function getAuthRequestURL(): string
     {
-        if($this->providerObj) {
+        if ($this->providerObj && $this->isActive) {
             return $this->providerObj->getAuthRequestURL();
         }
         return "";
     }
 
     /**
-     * @return bool
-     * @throws Exception
+     * Processes the authentication flow after the user has authorized the client.
+     *
+     * This method is called after the user has authorized the client and the client has received the authorization code.
+     * It processes the authentication flow and sets the necessary parameters of the class.
+     * If the authentication is successful, it sets the `isActive` flag to true and sets the `userInfo` property with the user's information.
+     * If the authentication fails, it sets the `errorMessage` property with the error message.
+     *
+     * @param bool $loginStart Whether to start the login process after the authentication is successful.
+     * @return bool True if the authentication is successful, false otherwise.
      */
-    public function afterAuth(): bool
+    public function afterAuth(bool $loginStart = true): bool
     {
+        if (!$this->isActive){
+            $this->errorMessage[] = "OAuthAuth object is not active.";
+            return false;
+        }
         try {
             $this->errorMessage = array();
-//            $this->providerObj = ProviderAdapter::createAdapter($this->provider);
-            $this->initiaizeAdapter();
-            $userInfo = $this->providerObj->getUserInfo();
-
-            // Retrive the storing parameter.
-            $oAuthStoring = $_COOKIE["_im_oauth_storing"] ?? "";
-            if ($oAuthStoring !== "credential") {
-                $this->errorMessage[] = "The 'storing' parameter has to be 'credential.";
-                return false;
-            }
-            $oAuthRealm = $_COOKIE["_im_oauth_realm"] ?? "";
-
-            // Generate the new local user relevant to the OAuth user
-            $dbProxy = new Proxy(true);
-            $dbProxy->initialize(null, null,
-//            ['authentication' => ['authexpired' => 3600, 'storing' => $oAuthStoring]],
-                ['db-class' => 'PDO'],
-                $this->debugMode ? 2 : false);
-            $authExpired = Params::getParameterValue("authExpired", 3600);
-            $passwordHash = Params::getParameterValue("passwordHash", 1);
-            $alwaysGenSHA2 = Params::getParameterValue("alwaysGenSHA2", false);
-            $credential = IMUtil::convertHashedPassword(IMUtil::randomString(30), $passwordHash, $alwaysGenSHA2);
-            $param = array(
-                "username" => $userInfo["username"],
-                "hashedpasswd" => $credential,
-                "realname" => $userInfo["realname"] ?? "",
-            );
-            if (isset($userInfo["sub"])) {
-                $param["sub"] = $userInfo["sub"];
-            }
-            if (isset($userInfo["email"])) {
-                $param["email"] = $userInfo["email"];
-            }
-            if (isset($userInfo["address"])) {
-                $param["address"] = $userInfo["address"];
-            }
-            if (isset($userInfo["birthdate"])) {
-                $param["birthdate"] = $userInfo["birthdate"];
-            }
-            if (isset($userInfo["gender"])) {
-                $param["gender"] = $userInfo["gender"];
-            }
-            $this->isCreate = $dbProxy->dbClass->authHandler->authSupportOAuthUserHandling($param);
-
-            // Set the logging-in situation for local user to continue from log-in.
-            $generatedClientID = IMUtil::generateClientId('', $credential);
-            $challenge = IMUtil::generateChallenge();
-            $dbProxy->saveChallenge($userInfo["username"], $challenge, $generatedClientID, "+");
-            setcookie('_im_credential_token',
-                $dbProxy->generateCredential($challenge, $generatedClientID, $credential),
-                time() + $authExpired, '/', "", false, true);
-            setcookie("_im_username_{$oAuthRealm}",
-                $userInfo["username"], time() + $authExpired, '/', "", false, false);
-            setcookie("_im_clientid_{$oAuthRealm}",
-                $generatedClientID, time() + $authExpired, '/', "", false, false);
-
+            $this->isCreate = false;
+            $this->userInfo = $this->providerObj->getUserInfo();
             if ($this->debugMode) {
-                $this->errorMessage[] = "OAuthAuth::afterAuth calles authSupportOAuthUserHandling with "
-                    . var_export($param, true) . ", returns {$this->isCreate}.";
-                $this->errorMessage = array_merge($this->errorMessage, Logger::getInstance()->getDebugMessages());
+                $this->errorMessage[] = "UserInfo = " . var_export($this->userInfo, true);
             }
-            if ($this->doRedirect && !$this->debugMode) {
-                $this->jsCode = "location.href = '" . $_COOKIE["_im_oauth_backurl"] . "';";
+            if ($loginStart) {
+                $this->userInfoToLogin();
             }
         } catch (Exception $e) {
             $this->errorMessage[] = $e->getMessage();
@@ -240,5 +258,83 @@ class OAuthAuth
         return true;
     }
 
+    /**
+     * Handling the OAuth user information to create a local user.
+     *
+     * @param string|null $currentUser expecting username in the authuser table.
+     * @throws Exception When the storing parameter is not "credential".
+     */
+    private function userInfoToLogin(?string $currentUser = null): void
+    {
+        // Retrive the storing parameter.
+        $oAuthStoring = $_COOKIE["_im_oauth_storing"] ?? "";
+        if ($oAuthStoring !== "credential") {
+            throw new Exception("The 'storing' parameter has to be 'credential.'");
+        }
+        $oAuthRealm = $_COOKIE["_im_oauth_realm"] ?? "";
+        // Generate the new local user relevant to the OAuth user
+        $dbProxy = new Proxy(true);
+        $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : 0);
+        $username = $this->userInfo["username"];
+        if ($this->confirmOnly) {
+            if (is_null($currentUser)) {
+                $username = $dbProxy->dbSettings->getCurrentUser();
+            } else {
+                $username = $currentUser;
+            }
+        }
+        $param = array(
+            "username" => $username,
+            "realname" => $this->userInfo["realname"] ?? "",
+        );
+        $credential = "";
+        if (!$this->confirmOnly) {
+            $passwordHash = Params::getParameterValue("passwordHash", 1);
+            $alwaysGenSHA2 = Params::getParameterValue("alwaysGenSHA2", false);
+            $credential = IMUtil::convertHashedPassword(IMUtil::randomString(30), $passwordHash, $alwaysGenSHA2);
+            $param["hashedpasswd"] = $credential;
+        }
+
+        if (isset($this->userInfo["sub"])) {
+            $param["sub"] = $this->userInfo["sub"];
+        }
+        if (isset($this->userInfo["email"])) {
+            $param["email"] = $this->userInfo["email"];
+        }
+        if (isset($this->userInfo["address"])) {
+            $param["address"] = $this->userInfo["address"];
+        }
+        if (isset($this->userInfo["birthdate"])) {
+            $param["birthdate"] = $this->userInfo["birthdate"];
+        }
+        if (isset($this->userInfo["gender"])) {
+            $param["gender"] = $this->userInfo["gender"];
+        }
+        $this->isCreate = $dbProxy->dbClass->authHandler->authSupportOAuthUserHandling($param);
+
+        if (!$this->confirmOnly) {
+            $authExpired = Params::getParameterValue("authExpired", 3600);
+            // Set the logging-in situation for the local user to continue from log-in.
+            $generatedClientID = IMUtil::generateClientId('', $credential);
+            $challenge = IMUtil::generateChallenge();
+            $dbProxy->saveChallenge($this->userInfo["username"], $challenge, $generatedClientID, "+");
+            setcookie('_im_credential_token',
+                $dbProxy->generateCredential($challenge, $generatedClientID, $credential),
+                time() + $authExpired, '/', "", false, true);
+            setcookie("_im_username_{$oAuthRealm}",
+                $this->userInfo["username"], time() + $authExpired, '/', "", false, false);
+            setcookie("_im_clientid_{$oAuthRealm}",
+                $generatedClientID, time() + $authExpired, '/', "", false, false);
+        }
+
+        if ($this->debugMode) {
+            $this->errorMessage[] = "OAuthAuth::afterAuth calles authSupportOAuthUserHandling with "
+                . var_export($param, true) . ", returns {$this->isCreate}.";
+            $this->errorMessage = array_merge($this->errorMessage, Logger::getInstance()->getDebugMessages());
+        }
+        if ($this->doRedirect && !$this->debugMode) {
+            $this->jsCode = "location.href = '" . $_COOKIE["_im_oauth_backurl"] . "';";
+        }
+    }
 }
 

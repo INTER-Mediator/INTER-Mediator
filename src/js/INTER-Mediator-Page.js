@@ -489,6 +489,15 @@ let INTERMediatorOnPage = {
     document.cookie = cookieString
   },
 
+  setInfoToCookie(provider) {
+    INTERMediatorOnPage.setCookieDomainWide('_im_oauth_provider', provider, true)
+    INTERMediatorOnPage.setCookieDomainWide('_im_oauth_backurl', location.href, true)
+    INTERMediatorOnPage.setCookieDomainWide('_im_oauth_realm', INTERMediatorOnPage.realm, true)
+    INTERMediatorOnPage.setCookieDomainWide('_im_oauth_expired', INTERMediatorOnPage.authExpired, true)
+    INTERMediatorOnPage.setCookieDomainWide('_im_oauth_storing', INTERMediatorOnPage.authStoring, true)
+    location.href = INTERMediatorOnPage.oAuthParams[provider].AuthURL
+  },
+
   authenticating: function (doAfterAuth, doTest) {
     'use strict'
     if (doTest) {
@@ -580,7 +589,10 @@ let INTERMediatorOnPage = {
       authButton = document.getElementById('_im_authbutton')
       chgpwButton = document.getElementById('_im_changebutton')
       for (let provider in INTERMediatorOnPage.oAuthParams) {
-        oAuthButton[provider] = document.getElementById(`_im_oauthbutton-${provider}`)
+        if (INTERMediatorOnPage.oAuthParams[provider]
+          && INTERMediatorOnPage.oAuthParams[provider].Behavior !== 'not-show-on-login-panel') {
+          oAuthButton[provider] = document.getElementById(`_im_oauthbutton-${provider}`)
+        }
       }
       samlButton = document.getElementById('_im_samlbutton')
     } else {
@@ -710,12 +722,16 @@ let INTERMediatorOnPage = {
       }
       if (this.isOAuthAvailable) {
         for (let provider in INTERMediatorOnPage.oAuthParams) {
-          oAuthButton[provider] = document.createElement('BUTTON')
-          oAuthButton[provider].id = '_im_oauthbutton_' + provider.toLowerCase()
-          oAuthButton[provider].disabled = false
-          const buttonLabel = document.createTextNode(INTERMediatorOnPage.oAuthParams[provider].AuthButton)
-          oAuthButton[provider].appendChild(buttonLabel)
-          frontPanel.appendChild(oAuthButton[provider])
+          if (INTERMediatorOnPage.oAuthParams[provider]
+            && INTERMediatorOnPage.oAuthParams[provider].Behavior !== 'no-show-on-login-panel') {
+            oAuthButton[provider] = document.createElement('BUTTON')
+
+            oAuthButton[provider].id = '_im_oauthbutton_' + provider.toLowerCase()
+            oAuthButton[provider].disabled = false
+            const buttonLabel = document.createTextNode(INTERMediatorOnPage.oAuthParams[provider].AuthButton)
+            oAuthButton[provider].appendChild(buttonLabel)
+            frontPanel.appendChild(oAuthButton[provider])
+          }
         }
       }
       if (INTERMediatorOnPage.isSAML && INTERMediatorOnPage.samlWithBuiltInAuth) {
@@ -871,21 +887,19 @@ let INTERMediatorOnPage = {
     }
     if (this.isOAuthAvailable && oAuthButton) {
       for (let provider in INTERMediatorOnPage.oAuthParams) {
-        oAuthButton[provider].onclick = function (event) {
-          if (!INTERMediatorOnPage.checkUIEventDT()) { // Prevent multiple click
-            return
+        if (INTERMediatorOnPage.oAuthParams[provider]
+          && INTERMediatorOnPage.oAuthParams[provider].Behavior !== 'no-show-on-login-panel') {
+          oAuthButton[provider].onclick = function (event) {
+            if (!INTERMediatorOnPage.checkUIEventDT()) { // Prevent multiple click
+              return
+            }
+            if (!INTERMediatorOnPage.oAuthParams[provider].AuthURL) {
+              const messageNode = document.getElementById('_im_login_message')
+              messageNode.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(1059)))
+              return
+            }
+            INTERMediatorOnPage.setInfoToCookie(provider);
           }
-          if (!INTERMediatorOnPage.oAuthParams[provider].AuthURL) {
-            const messageNode = document.getElementById('_im_login_message')
-            messageNode.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(1059)))
-            return
-          }
-          INTERMediatorOnPage.setCookieDomainWide('_im_oauth_provider', provider, true)
-          INTERMediatorOnPage.setCookieDomainWide('_im_oauth_backurl', location.href, true)
-          INTERMediatorOnPage.setCookieDomainWide('_im_oauth_realm', INTERMediatorOnPage.realm, true)
-          // INTERMediatorOnPage.setCookieDomainWide('_im_oauth_expired', INTERMediatorOnPage.authExpired, true)
-          INTERMediatorOnPage.setCookieDomainWide('_im_oauth_storing', INTERMediatorOnPage.authStoring, true)
-          location.href = INTERMediatorOnPage.oAuthParams[provider].AuthURL
         }
       }
     }

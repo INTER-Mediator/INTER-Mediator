@@ -28,9 +28,9 @@ class Logger
 {
     /* Debug and Messages */
     /**
-     * @var bool
+     * @var int|bool
      */
-    private $debugLevel = false;
+    private int|bool $debugLevel = false;
     /**
      * @var array
      */
@@ -44,17 +44,17 @@ class Logger
      */
     private array $debugMessage = array();
     /**
-     * @var mixed
+     * @var bool
      */
-    private $errorMessageLogging;
+    private bool $errorMessageLogging;
     /**
-     * @var mixed
+     * @var bool
      */
-    private $warningMessageLogging;
+    private bool $warningMessageLogging;
     /**
-     * @var mixed
+     * @var bool
      */
-    private $debugMessageLogging;
+    private bool $debugMessageLogging;
 
     /**
      * @var Logger|null
@@ -84,7 +84,7 @@ class Logger
     /**
      * @return void
      */
-    public function clearLogs()
+    public function clearLogs():void
     {
         $this->errorMessage = array();
         $this->warningMessage = array();
@@ -94,7 +94,7 @@ class Logger
     /**
      * @return void
      */
-    public function clearErrorLog()
+    public function clearErrorLog():void
     {
         $this->errorMessage = array();
     }
@@ -114,7 +114,7 @@ class Logger
             if (count($bt) >= 2 && isset($bt[2]['object'])) {
                 $obj = $bt[2]['object'];
                 $ref = new ReflectionClass($obj);
-                $returnValue = strpos($ref->getNamespaceName(), $setting) === 0;
+                $returnValue = str_starts_with($ref->getNamespaceName(), $setting);
             }
         } catch (ReflectionException $e) {
         }
@@ -291,9 +291,9 @@ class Logger
     }
 
     /**
-     * @return bool
+     * @return int|bool
      */
-    public function getDebugLevel()
+    public function getDebugLevel(): int|bool
     {
         return $this->debugLevel;
     }

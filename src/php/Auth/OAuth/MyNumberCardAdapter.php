@@ -9,17 +9,48 @@ use INTERMediator\DB\Proxy;
 use INTERMediator\IMUtil;
 
 /**
+ * MyNumberCardAdapter Class for Digital Authentication Application Integration
  *
+ * This class provides OAuth2.0 authentication functionality for the Japanese Digital Authentication
+ * Application (MyNumber Card). It handles both production and sandbox environments
+ * for authentication, token management, and user information retrieval.
+ *
+ * References:
+ * デジタル認証アプリ
+ * https://services.digital.go.jp/auth-and-sign/
+ * 【民間事業者向け情報】マイナンバーカードで本人の確認を簡単に
+ * https://services.digital.go.jp/auth-and-sign/business/
+ * デジタル認証アプリ：行政機関等・民間事業者向け実装ガイドライン
+ * https://developers.digital.go.jp/documents/auth-and-sign/implement-guideline/
+ * お問い合わせ
+ * https://support.aas.digital.go.jp/hc/ja/requests/new?ticket_form_id=33975504314777*
+ * デジタル認証アプリサービスの申込書類一式について
+ * https://support.aas.digital.go.jp/hc/ja/articles/41595092319641
+ *
+ * @package INTERMediator\Auth\OAuth
  */
 class MyNumberCardAdapter extends ProviderAdapter
 {
     /**
-     * @var bool
+     * Flag to determine if the adapter is running in test/sandbox mode
+     *
+     * When true, all API endpoints will point to the sandbox environment
+     * When false, production endpoints will be used
+     *
+     * @var bool Default is true for safety
      */
     private bool $isTest = true;
 
     /**
-     * API Reference
+     * Initializes the MyNumberCard OAuth adapter with production endpoints
+     *
+     * Sets up the necessary OAuth endpoints for authentication flow:
+     * - Authorization endpoint
+     * - Token endpoint
+     * - UserInfo endpoint
+     * - JWKS endpoint
+     *
+     * API Reference:
      * https://developers.digital.go.jp/documents/auth-and-sign/authserver/
      */
     function __construct()
@@ -33,7 +64,12 @@ class MyNumberCardAdapter extends ProviderAdapter
     }
 
     /**
-     * @return $this
+     * Configures the adapter to use sandbox/test environment endpoints
+     *
+     * Updates all OAuth endpoints to use the sandbox URLs for testing purposes.
+     * This should be used during development and testing phases.
+     *
+     * @return ProviderAdapter Returns this adapter instance for method chaining
      */
     public function setTestMode(): ProviderAdapter //MyNumberCardAdapter
     {
@@ -48,7 +84,12 @@ class MyNumberCardAdapter extends ProviderAdapter
     }
 
     /**
-     * @return bool
+     * Validates the current OAuth configuration
+     *
+     * Verifies that all required OAuth parameters and endpoints are properly configured
+     * for authentication flow.
+     *
+     * @return bool True if configuration is valid, false otherwise
      */
     public function validate(): bool
     {
@@ -56,8 +97,17 @@ class MyNumberCardAdapter extends ProviderAdapter
     }
 
     /**
-     * @return string
-     * @throws Exception
+     * Generates the OAuth authorization request URL
+     *
+     * Creates a complete authorization URL with required OAuth parameters including:
+     * - response_type
+     * - scope (openid, name, address, birthdate, gender)
+     * - state for CSRF protection
+     * - nonce for replay protection
+     * - PKCE challenge for enhanced security
+     *
+     * @return string Complete authorization URL for redirect
+     * @throws Exception If security parameters cannot be generated
      */
     public function getAuthRequestURL(): string
     {
@@ -79,8 +129,22 @@ class MyNumberCardAdapter extends ProviderAdapter
     }
 
     /**
-     * @return array
-     * @throws Exception
+     * Retrieves authenticated user information from the OAuth provider
+     *
+     * Processes the OAuth callback by:
+     * 1. Validating the state parameter
+     * 2. Exchanging authorization code for tokens
+     * 3. Validating the received tokens
+     * 4. Fetching user information from the userinfo endpoint
+     *
+     * @return array User information including:
+     *               - sub (subject identifier)
+     *               - username (formatted as sub@provider)
+     *               - realname (if name scope granted)
+     *               - address (if address scope granted)
+     *               - birthdate (if birthdate scope granted)
+     *               - gender (if gender scope granted)
+     * @throws Exception On authentication failures, invalid tokens, or missing data
      */
     public function getUserInfo(): array
     {

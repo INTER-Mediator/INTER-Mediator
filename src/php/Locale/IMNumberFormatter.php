@@ -63,7 +63,7 @@ class IMNumberFormatter
     {
         /*NumberFormatter::FRACTION_DIGITS*/
         if ($attr == 8) {
-            $this->flactionDigit = $value;
+            $this->flactionDigit = intval($value);
         }
     }
 
