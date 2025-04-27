@@ -5,5 +5,3 @@ parameters:
         - INTER-Mediator-UnitTest
     fileExtensions:
         - php
-    ignoreErrors:
-        - '#Instantiated class RetrieveFM7Data not found\.#'
