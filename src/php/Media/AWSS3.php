@@ -210,7 +210,7 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
             unlink($fileInfoTemp); // Remove upload file
 
             $schemaInUrl = "https://";
-            if ($this->s3urlCustomize && strpos($result['ObjectURL'], $schemaInUrl) === 0) {
+            if ($this->s3urlCustomize && str_starts_with($result['ObjectURL'], $schemaInUrl)) {
                 $storedURL = str_replace($schemaInUrl, "s3://", $result['ObjectURL'] ?? "");
             } else {
                 $storedURL = $result['ObjectURL'];
@@ -226,3 +226,4 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
  * Aws\Result::__set_state(array(
 'data' =>
 <...>
+*/
