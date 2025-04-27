@@ -19,11 +19,28 @@ use INTERMediator\IMUtil;
 use INTERMediator\Params;
 use INTERMediator\DB\Proxy;
 
+/**
+ * Class SendSlack
+ * Messaging provider for sending messages to Slack channels via Slack API.
+ *
+ * @package INTERMediator\Messaging
+ */
 class SendSlack extends MessagingProvider
 {
+    /**
+     * @var string|null Slack API token for authentication.
+     */
     private ?string $token = null;
+
+    /**
+     * @var string|null Slack channel ID or name to send messages to.
+     */
     private ?string $channel = null;
 
+    /**
+     * SendSlack constructor.
+     * Initializes Slack token and channel from parameters if available.
+     */
     public function __construct()
     {
         $slackParameters = Params::getParameterValue("slackParameters", null);
@@ -34,12 +51,14 @@ class SendSlack extends MessagingProvider
     }
 
     /**
-     * @param Proxy $dbProxy  Proxy class's instance.
-     * @param array $contextDef  context definition array of current context.
-     * @param array $result  result of query or other db operations.
-     * @return bool (No return)
+     * Sends messages to Slack based on the given DB context and result.
+     *
+     * @param Proxy $dbProxy Proxy class's instance.
+     * @param array $contextDef Context definition array of current context.
+     * @param array $result Result of query or other db operations.
+     * @return bool True if all messages sent successfully, false if any error occurred.
      */
-    public function processing(Proxy $dbProxy, array $contextDef, array $result):bool
+    public function processing(Proxy $dbProxy, array $contextDef, array $result): bool
     {
         $options = $dbProxy->dbSettings->getOptions();
         if (isset($options['slack'])) {

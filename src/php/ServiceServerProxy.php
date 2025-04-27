@@ -6,74 +6,90 @@ use DateTime;
 use INTERMediator\DB\Logger;
 
 /**
- *
+ * ServiceServerProxy handles the connection and management of the INTER-Mediator Service Server.
+ * Provides methods for checking, starting, and communicating with the service server process.
  */
 class ServiceServerProxy
 {
     /**
+     * Host for connecting to the service server, from params.php.
      * @var string
      */
     private string $paramsHost;
     /**
+     * Port for connecting to the service server, from params.php.
      * @var int
      */
     private int $paramsPort;
     /**
+     * Whether to boot the service server with installed Node.js, from params.php.
      * @var bool
      */
     private bool $paramsBoot;
     /**
+     * Whether to prevent using the service server, from params.php.
      * @var bool
      */
     private bool $dontUse;
     /**
+     * List of error messages.
      * @var array
      */
     private array $errors = [];
     /**
+     * List of informational messages.
      * @var array
      */
     private array $messages = [];
     /**
+     * Prefix for log and message headers.
      * @var string
      */
     private string $messageHead = "[ServiceServerProxy] ";
     /**
+     * Whether to prevent automatic boot of the service server, from params.php.
      * @var bool
      */
     private bool $dontAutoBoot;
     /**
-     * @var ?string
+     * Path to the forever log file, from params.php.
+     * @var string|null
      */
     private ?string $foreverLog;
     /**
+     * Path of Key file for wss protocol, from params.php.
      * @var string
      */
     private string $serviceServerKey;  // Path of Key file for wss protocol
     /**
+     * Path of Cert file for wss protocol, from params.php.
      * @var string
      */
     private string $serviceServerCert; // Path of Cert file for wss protocol
     /**
+     * Path of CA file for wss protocol, from params.php.
      * @var string
      */
     private string $serviceServerCA; // Path of CA file for wss protocol
     /**
+     * Cached DateTime for server info.
      * @var DateTime|null
      */
     private ?DateTime $serverInfoCachedDT = null;
     /**
+     * Whether the server info is cached.
      * @var bool
      */
     private bool $serverInfoCached = false;
     /**
+     * Singleton instance of ServiceServerProxy.
      * @var ServiceServerProxy|null
      */
     static private ?ServiceServerProxy $gSSPInstance = null;
 
     /**
-     * Returns the singleton instance.
-     * @return ServiceServerProxy|null
+     * Returns the singleton instance of ServiceServerProxy.
+     * @return ServiceServerProxy|null Singleton instance.
      */
     static public function instance(): ?ServiceServerProxy
     {
@@ -84,7 +100,7 @@ class ServiceServerProxy
     }
 
     /**
-     * Constructor of this class.
+     * Constructor of this class. Initializes parameters from params.php.
      */
     private function __construct()
     {
@@ -101,6 +117,7 @@ class ServiceServerProxy
     }
 
     /**
+     * Clears the messages array.
      * @return void
      */
     public function clearMessages(): void
@@ -109,6 +126,7 @@ class ServiceServerProxy
     }
 
     /**
+     * Clears the errors array.
      * @return void
      */
     public function clearErrors(): void
@@ -117,7 +135,8 @@ class ServiceServerProxy
     }
 
     /**
-     * @return array
+     * Gets the messages array.
+     * @return array List of messages.
      */
     public function getMessages(): array
     {
@@ -125,7 +144,8 @@ class ServiceServerProxy
     }
 
     /**
-     * @return array
+     * Gets the errors array.
+     * @return array List of errors.
      */
     public function getErrors(): array
     {
@@ -133,7 +153,9 @@ class ServiceServerProxy
     }
 
     /**
-     * @return bool
+     * Checks if the service server is available and starts it if necessary.
+     * Handles server booting and waiting for activation.
+     * @return bool True if the server is available, false otherwise.
      */
     public function checkServiceServer(): bool
     {
@@ -186,8 +208,8 @@ class ServiceServerProxy
     }
 
     /**
-     * This method just checks whether the Service Server respond.
-     * @return bool
+     * Checks if the Service Server is active and responding.
+     * @return bool True if the server is active, false otherwise.
      */
     public function isActive(): bool
     {
@@ -222,9 +244,10 @@ class ServiceServerProxy
     }
 
     /**
-     * @param string $path
-     * @param array|null $postData
-     * @return string|null
+     * Calls the service server with the specified path and post data.
+     * @param string $path Path for the server request.
+     * @param array|null $postData Data to be sent with the request.
+     * @return string|null Response from the server, or null on failure.
      */
     private function callServer(string $path, ?array $postData = null): ?string
     {
@@ -254,7 +277,8 @@ class ServiceServerProxy
     }
 
     /**
-     * @param string $command
+     * Executes a command on the server.
+     * @param string $command Command to be executed.
      * @return void
      */
     private function executeCommand(string $command): void
@@ -281,7 +305,8 @@ class ServiceServerProxy
     }
 
     /**
-     * @return bool
+     * Checks if the server is startable.
+     * @return bool True if the server is startable, false otherwise.
      */
     private function isServerStartable(): bool
     {
@@ -293,6 +318,7 @@ class ServiceServerProxy
     }
 
     /**
+     * Starts the service server.
      * @return void
      */
     private function startServer(): void
@@ -320,10 +346,11 @@ class ServiceServerProxy
         $this->executeCommand("$cmd >> {$logFile} &");
     }
 
-     /**
-     * @param string $expression
-     * @param array $values
-     * @return bool
+    /**
+     * Validates an expression on the service server.
+     * @param string $expression Expression to be validated.
+     * @param array $values Values for the expression.
+     * @return bool True if the expression is valid, false otherwise.
      */
     public function validate(string $expression, array $values): bool
     {
@@ -346,10 +373,11 @@ class ServiceServerProxy
     }
 
     /**
-     * @param array $channels
-     * @param string $operation
-     * @param array $data
-     * @return bool
+     * Synchronizes data with the service server.
+     * @param array $channels Channels to be synchronized.
+     * @param string $operation Operation to be performed.
+     * @param array $data Data to be synchronized.
+     * @return bool True if the synchronization is successful, false otherwise.
      */
     public function sync(array $channels, string $operation, array $data): bool
     {
@@ -365,7 +393,8 @@ class ServiceServerProxy
     }
 
     /**
-     * @return string
+     * Gets the version code of the service server.
+     * @return string Version code.
      */
     private function getSSVersionCode(): string
     {

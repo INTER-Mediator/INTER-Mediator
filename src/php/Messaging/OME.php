@@ -53,70 +53,145 @@ use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Address;
 
+/**
+ * Class OME (Open Mail Environment)
+ * Provides methods for composing and sending emails with Japanese language support.
+ * Supports SMTP and mail() delivery, attachments, templates, and encoding handling.
+ *
+ * @package INTERMediator\Messaging
+ */
 class OME
 {
+    /**
+     * @var int The byte width for automatic line breaks in the email body.
+     */
     private int $bodyWidth = 74;
+    /**
+     * @var string The character encoding used for the email.
+     */
     private string $mailEncoding = "UTF-8";
+    /**
+     * @var string The email body content.
+     */
     private string $body = '';
+    /**
+     * @var string|null The MIME type of the email body (e.g., 'text/html').
+     */
     private ?string $bodyType = '';
+    /**
+     * @var string The subject of the email.
+     */
     private string $subject = '';
+    /**
+     * @var string The recipient(s) in the To field.
+     */
     private string $toField = '';
+    /**
+     * @var string The recipient(s) in the Cc field.
+     */
     private string $ccField = '';
+    /**
+     * @var string The recipient(s) in the Bcc field.
+     */
     private string $bccField = '';
+    /**
+     * @var string The sender address in the From field.
+     */
     private string $fromField = '';
+    /**
+     * @var string Additional email headers.
+     */
     private string $extHeaders = '';
+    /**
+     * @var string Stores the latest error message.
+     */
     private string $errorMessage = '';
+    /**
+     * @var string Additional parameters for the sendmail command.
+     */
     private string $sendmailParam = '';
+    /**
+     * @var string Temporary storage for template contents.
+     */
     private string $tmpContents = '';
+    /**
+     * @var array List of file paths for attachments.
+     */
     private array $attachments = [];
+    /**
+     * @var array|null SMTP connection information.
+     */
     private ?array $smtpInfo = null;
+    /**
+     * @var bool Whether to set the current date in the email header.
+     */
     private bool $isSetCurrentDateToHead = false;
+    /**
+     * @var bool Whether to use the sendmail parameter.
+     */
     private bool $isUseSendmailParam = false;
-
+    /**
+     * @var int Milliseconds to wait after sending mail.
+     */
     private int $waitMS;
 
+    /**
+     * OME constructor.
+     * Initializes encoding and wait time.
+     */
     function __construct()
     {
         mb_internal_encoding('UTF-8');
         $this->waitMS = Params::getParameterValue("waitAfterMail", 20);
     }
 
-    /**    エラーメッセージを取得する。
-     *
-     *    このクラスの多くの関数は、戻り値がbooleanとなっていて、それをもとにエラーかどうかを判別すできる。
-     *    戻り値がfalseである場合、この関数を使ってエラーメッセージを取得できる。
-     *
-     * @return string 日本語のエラーメッセージの文字列
+    /**
+     * Returns the latest error message.
+     * @return string Error message in Japanese.
      */
     public function getErrorMessage(): string
     {
         return $this->errorMessage;
     }
 
+    /**
+     * Sets SMTP connection information.
+     * @param array $info SMTP configuration array.
+     */
     public function setSmtpInfo(array $info): void
     {
         $this->smtpInfo = $info;
     }
 
+    /**
+     * Sets the mail encoding.
+     * @param string $info Encoding name.
+     */
     public function setMailEncoding(string $info): void
     {
         $this->mailEncoding = $info;
     }
 
+    /**
+     * Enables setting the current date in the header.
+     */
     public function setCurrentDateToHead(): void
     {
         $this->isSetCurrentDateToHead = true;
     }
 
+    /**
+     * Enables using the sendmail parameter.
+     */
     public function useSendMailParam(): void
     {
         $this->isUseSendmailParam = true;
     }
 
-    /**    メールの本文を設定する。既存の本文は置き換えられる。
-     *
-     * @param string $str メールの本文に設定する文字列
-     * @param ?string $type
+    /**
+     * Sets the email body, replacing any existing content.
+     * @param string $str The body content.
+     * @param ?string $type MIME type of the body (optional).
      */
     public function setBody(string $str, ?string $type = null): void
     {
@@ -124,51 +199,55 @@ class OME
         $this->bodyType = $type;
     }
 
+    /**
+     * Gets the email body content.
+     * @return string The current body content.
+     */
     public function getBody(): string
     {
         return $this->body;
     }
 
-    /**    メールの本文を追加する。既存の本文の後に追加する。
-     *
-     * @param string $str メールの本文に追加する文字列
+    /**
+     * Appends content to the email body.
+     * @param string $str The string to append.
      */
     public function appendBody(string $str): void
     {
         $this->body .= $str;
     }
 
-    /**    メールの件名を設定する。
-     *
-     * @param string $str メールの件名に設定する文字列
+    /**
+     * Sets the subject of the email.
+     * @param string $str The subject string.
      */
     public function setSubject(string $str): void
     {
         $this->subject = $str;
     }
 
-    /**    メールの件名を取得するする。
-     *
-     * @return string メールの件名に設定する文字列
+    /**
+     * Gets the subject of the email.
+     * @return string The subject string.
      */
     public function getSubject(): string
     {
         return $this->subject;
     }
 
-    /**    追加のヘッダを1つ設定する。ただし、Subject、To、From、Cc、Bccは該当するメソッドを使う
-     *
-     * @param string $field 追加するヘッダのフィールド
-     * @param string $value フィールドの値。日本語を含める場合は自分でエンコードを行う
+    /**
+     * Sets an extra header (other than Subject, To, From, Cc, Bcc).
+     * @param string $field Header field name.
+     * @param string $value Header value.
      */
     public function setExtraHeader(string $field, string $value): void
     {
         $this->extHeaders = "$field: $value\n";
     }
 
-    /**    sendmailコマンドに与える追加のパラメータを指定する
-     *
-     * @param string $param 追加のパラメータ。この文字列がそのままmb_send_mail関数の5つ目の引数となる
+    /**
+     * Sets additional parameters for the sendmail command.
+     * @param string $param Parameter string for mb_send_mail.
      */
     public function setSendMailParam(string $param): void
     {
@@ -190,12 +269,10 @@ class OME
         return array(trim($addr), '');
     }
 
-    /**    メールアドレスが正しい形式かどうかを判断する。
-     *
-     *    判断に使う正規表現は「^([a-z0-9_]|\-|\.)+@(([a-z0-9_]|\-)+\.)+[a-z]+$」なので、完全ではないが概ねOKかと。
-     *
-     * @param ?string $address チェックするメールアドレス。
-     * @return    boolean    正しい形式ならTRUE、そうではないときはFALSE
+    /**
+     * Checks if the email address is valid.
+     * @param ?string $address The email address to check.
+     * @return bool True if the address is valid, false otherwise.
      */
     public function checkEmail(?string $address): bool
     {
@@ -212,11 +289,12 @@ class OME
         }
     }
 
-    /**    Fromフィールドを設定する。
-     * @param string $address 送信者のアドレスで、アドレスとして正しいかどうかがチェックされる
-     * @param ?string $name 送信者名（日本語の文字列はそのまま指定可能）で、省略しても良い
-     * @param bool $isSetToParam 送信者アドレスを自動的にsendmailの-fパラメータとして与えて、Return-Pathのアドレスとして使用する場合はTRUE。既定値はFALSE
-     * @return    bool    与えたメールアドレスが正しく、引数が適切に利用されればTRUEを返す。メールアドレスが正しくないとFALSEを戻し、内部変数等には与えた引数のデータは記録されない
+    /**
+     * Sets the From field with the sender's address and name.
+     * @param string $address The sender's email address.
+     * @param ?string $name The sender's name (optional).
+     * @param bool $isSetToParam Whether to set the sender's address as the Return-Path (optional).
+     * @return bool True if the address is valid, false otherwise.
      */
     public function setFromField(string $address, ?string $name = null, bool $isSetToParam = FALSE): bool
     {
@@ -237,17 +315,20 @@ class OME
         return false;
     }
 
+    /**
+     * Gets the From field.
+     * @return string The sender's email address and name.
+     */
     public function getFromField(): string
     {
         return $this->fromField;
     }
 
-    /**    Toフィールドを設定する。すでに設定されていれば上書きされ、この引数の定義だけが残る
-     *
-     * @param string $address 送信者のアドレス
-     * @param ?string $name 送信者名
-     * @return    bool    与えたメールアドレスが正しく、引数が適切に利用されればTRUEを返す。メールアドレスが正しくないとFALSEを戻し、内部変数等には与えた引数のデータは記録されない
-     *
+    /**
+     * Sets the To field with the recipient's address and name.
+     * @param string $address The recipient's email address.
+     * @param ?string $name The recipient's name (optional).
+     * @return bool True if the address is valid, false otherwise.
      */
     public function setToField(string $address, ?string $name = null): bool
     {
@@ -265,17 +346,20 @@ class OME
         return false;
     }
 
-    // Getter of the To field.
+    /**
+     * Gets the To field.
+     * @return string The recipient's email address and name.
+     */
     public function getToField(): string
     {
         return $this->toField;
     }
 
-    /**    Toフィールドに追加する。
-     *
-     * @param string $address 送信者のアドレス
-     * @param ?string $name 送信者名。日本語の指定も可能
-     * @return bool メールアドレスを調べて不正ならfalse（アドレスは追加されない）、そうでなければtrue
+    /**
+     * Appends the To field with the recipient's address and name.
+     * @param string $address The recipient's email address.
+     * @param ?string $name The recipient's name (optional).
+     * @return bool True if the address is valid, false otherwise.
      */
     public function appendToField(string $address, ?string $name = null): bool
     {
@@ -296,17 +380,20 @@ class OME
         return false;
     }
 
-    // Getter of the Cc field.
+    /**
+     * Gets the Cc field.
+     * @return string The recipient's email address and name.
+     */
     public function getCcField(): string
     {
         return $this->ccField;
     }
 
-    /**    Ccフィールドを設定する。すでに設定されていれば上書きされ、この引数の定義だけが残る
-     *
-     * @param string $address 送信者のアドレス
-     * @param ?string $name 送信者名
-     * @return bool    メールアドレスを調べて不正ならfalse（アドレスは設定されない）、そうでなければtrue
+    /**
+     * Sets the Cc field with the recipient's address and name.
+     * @param string $address The recipient's email address.
+     * @param ?string $name The recipient's name (optional).
+     * @return bool True if the address is valid, false otherwise.
      */
     public function setCcField(string $address, ?string $name = null): bool
     {
@@ -323,11 +410,11 @@ class OME
         return false;
     }
 
-    /**    Ccフィールドに追加する。
-     *
-     * @param string $address 送信者のアドレス
-     * @param ?string $name 送信者名
-     * @return bool    メールアドレスを調べて不正ならfalse（アドレスは追加されない）、そうでなければtrue
+    /**
+     * Appends the Cc field with the recipient's address and name.
+     * @param string $address The recipient's email address.
+     * @param ?string $name The recipient's name (optional).
+     * @return bool True if the address is valid, false otherwise.
      */
     public function appendCcField(string $address, ?string $name = null): bool
     {
@@ -348,17 +435,20 @@ class OME
         return false;
     }
 
-    // Getter of the Bcc field.
+    /**
+     * Gets the Bcc field.
+     * @return string The recipient's email address and name.
+     */
     public function getBccField(): string
     {
         return $this->bccField;
     }
 
-    /**    Bccフィールドを設定する。すでに設定されていれば上書きされ、この引数の定義だけが残る
-     *
-     * @param string $address 送信者のアドレス
-     * @param ?string $name = null 送信者名
-     * @return bool メールアドレスを調べて不正ならfalse（アドレスは設定されない）、そうでなければtrue
+    /**
+     * Sets the Bcc field with the recipient's address and name.
+     * @param string $address The recipient's email address.
+     * @param ?string $name The recipient's name (optional).
+     * @return bool True if the address is valid, false otherwise.
      */
     public function setBccField(string $address, ?string $name = null): bool
     {
@@ -375,11 +465,11 @@ class OME
         return false;
     }
 
-    /**    Bccフィールドに追加する。
-     *
-     * @param string $address 送信者のアドレス
-     * @param ?string $name 送信者名
-     * @return bool メールアドレスを調べて不正ならfalse（アドレスは追加されない）、そうでなければtrue
+    /**
+     * Appends the Bcc field with the recipient's address and name.
+     * @param string $address The recipient's email address.
+     * @param ?string $name The recipient's name (optional).
+     * @return bool True if the address is valid, false otherwise.
      */
     public function appendBccField(string $address, ?string $name = null): bool
     {
@@ -400,10 +490,10 @@ class OME
         return false;
     }
 
-    /**    指定したファイルをテンプレートとして読み込む。
-     *
-     * @param string $tfile テンプレートファイル。たとえば、同一のディレクトリにあるファイルなら、ファイル名だけを記述すればよい。
-     * @return bool ファイルの中身を読み込めた場合true、ファイルがないなどのエラーの場合はfalse
+    /**
+     * Sets a template file for the email body.
+     * @param string $tfile The path to the template file.
+     * @return bool True if the file is loaded successfully, false otherwise.
      */
     public function setTemplateAsFile(string $tfile): bool
     {
@@ -416,28 +506,19 @@ class OME
         return false;
     }
 
-    /**    文字列そのものをテンプレートして設定する。
-     *
-     * @param string $str    テンプレートとして利用する文字列
+    /**
+     * Sets a template string for the email body.
+     * @param string $str The template string.
      */
     public function setTemplateAsString(string $str): void
     {
         $this->tmpContents = $str;
     }
 
-    /**    テンプレートに引数の配列の内容を差し込み、それをメールの本文とする。既存の本文は上書きされる。
-     *
-     *    テンプレート中の「@@1@@」が、$ar[0]の文字列と置き換わる。
-     *    テンプレート中の「@@2@@」が、$ar[1]の文字列と置き換わる。といった具合に置換する。
-     *
-     *    たとえば、配列の要素が5の場合、「@@6@@」や「@@7@@」などがテンプレート中に残るが、
-     *    これらは差し込みをしてから強制的に削除される。強制削除があった場合にはfalseを戻すが、
-     *    それでも差し込み自体は行われている。
-     *
-     * @param array $ar テンプレートに差し込むデータが入っている配列
-     * @return bool 差し込み処理が問題なく終わればtrue、
-     * そうでなければfalse（たとえばテンプレートに "@@x@@" などの置き換え文字列が残っている場合。
-     * それでも可能な限り置き換えを行い、置き換え文字列は削除される）
+    /**
+     * Inserts data into the template and sets the email body.
+     * @param array $ar The data to insert into the template.
+     * @return bool True if the insertion is successful, false otherwise.
      */
     public function insertToTemplate(array $ar): bool
     {
@@ -457,39 +538,37 @@ class OME
         return $returnValue;
     }
 
-    /**    本文の自動改行のバイト数を設定する。初期値は74になっている。
-     *
-     * @param int $bytes 改行を行うバイト数。0を指定すると自動改行しない。
+    /**
+     * Sets the byte width for automatic line breaks in the email body.
+     * @param int $bytes The byte width.
      */
     public function setBodyWidth(int $bytes): void
     {
         $this->bodyWidth = $bytes;
     }
 
-    /**    文字列中にコントロールコードが含まれているかを調べる
-     *
-     * @param string $str 調べる文字列
-     * @return bool 含まれていたらTRUEを返す
+    /**
+     * Checks if a string contains control characters.
+     * @param string $str The string to check.
+     * @return bool True if the string contains control characters, false otherwise.
      */
     private function checkControlCodeNothing(string $str): bool
     {
         return mb_ereg_match("/[[:cntrl:]]/", $str);
     }
 
-    /**    添付ファイルを指定する
-     * @param string $fpath 添付するファイルへのパス
+    /**
+     * Adds an attachment to the email.
+     * @param string $fpath The path to the attachment file.
      */
     public function addAttachment(string $fpath): void
     {
         $this->attachments[] = $fpath;
     }
 
-    /**    メールを送信する。
-     *
-     *    念のため、To、Cc、Bccのデータにコントロールコードが入っているかどうかをチェックしている。
-     *    コントロールコードが見つかればfalseを返し送信はしないものとする。
-     *
-     * @return bool メールが送信できればtrue、送信できなければFALSE
+    /**
+     * Sends the email.
+     * @return bool True if the email is sent successfully, false otherwise.
      * @throws TransportExceptionInterface
      */
     public function send(): bool
@@ -672,10 +751,10 @@ class OME
         return $result;
     }
 
-    /**    文字列を別メソッドで決められたバイト数ごとに分割する。ワードラップ、禁則を考慮する。（内部利用メソッド）
-     *
-     * @param string $str 処理対象の文字列
-     * @return string 分割された文字列
+    /**
+     * Divides a string into lines with a maximum byte width.
+     * @param string $str The string to divide.
+     * @return string The divided string.
      */
     private function devideWithLimitingWidth(string $str): string
     {
@@ -722,16 +801,21 @@ class OME
         return $devidedStr;
     } // End of function devideWithLimitingWidth()
 
+    /**
+     * Unifies CRLF to LF.
+     * @param string $str The string to unify.
+     * @return string The unified string.
+     */
     private function unifyCRLF(string $str): string
     {
         $strUnifiedLF = str_replace("\r", "\n", str_replace("\r\n", "\n", $str));
         return str_replace("\n", "\r\n", $strUnifiedLF);
     }
 
-    /**    引数の文字が空白かどうかのチェックを行う。ただ、これは標準の関数を利用すべきかもしれない（内部利用メソッド／devideWithLimitingWidth関数で利用）
-     *
-     * @param string $str 処理対象の文字
-     * @return bool 空白ならTRUE
+    /**
+     * Checks if a character is a space.
+     * @param string $str The character to check.
+     * @return bool True if the character is a space, false otherwise.
      */
     private function isSpace(string $str): bool
     {
@@ -743,10 +827,10 @@ class OME
         return False;
     } // End of isSpace()
 
-    /**    引数の文字が単語を構成する文字（アルファベット、あるいは数値）かどうかのチェックを行う（内部利用メソッド／devideWithLimitingWidth関数で利用）
-     *
-     * @param string $str 処理対象の文字
-     * @return bool 単語を構成する文字ならTRUE
+    /**
+     * Checks if a character is a word element.
+     * @param string $str The character to check.
+     * @return bool True if the character is a word element, false otherwise.
      */
     private function isWordElement(string $str): bool
     {
@@ -761,10 +845,10 @@ class OME
         return False;
     } // End of function isWordElement()
 
-    /**    引数が日本語の文字列かどうかを判断する（内部利用メソッド／devideWithLimitingWidth関数で利用）
-     *
-     * @param string $str 処理対象の文字
-     * @return bool 日本語ならTRUE
+    /**
+     * Checks if a character is Japanese.
+     * @param string $str The character to check.
+     * @return bool True if the character is Japanese, false otherwise.
      */
     private function isJapanese(string $str): bool
     {
@@ -773,10 +857,10 @@ class OME
         return False;
     } // End of function isJapanese()
 
-    /**    引数が日本語の行頭禁則文字かどうかを判断する（内部利用メソッド／devideWithLimitingWidth関数で利用）
-     *
-     * @param string $str 処理対象の文字
-     * @return bool 行頭禁則文字ならTRUE
+    /**
+     * Checks if a character is a Japanese line top inhibit character.
+     * @param string $str The character to check.
+     * @return bool True if the character is a Japanese line top inhibit character, false otherwise.
      */
     private function isInhibitLineTopChar(string $str): bool
     {
@@ -815,10 +899,10 @@ class OME
         return False;
     } // End of function isInhibitLineTopChar
 
-    /**    引数が日本語の行末禁則文字かどうかを判断する（内部利用メソッド／devideWithLimitingWidth関数で利用）
-     *
-     * @param string $str 処理対象の文字
-     * @return bool 行末禁則文字ならTRUE
+    /**
+     * Checks if a character is a Japanese line end inhibit character.
+     * @param string $str The character to check.
+     * @return bool True if the character is a Japanese line end inhibit character, false otherwise.
      */
     private function isInhibitLineEndChar(string $str): bool
     {
@@ -842,14 +926,11 @@ class OME
         return False;
     } // End of function isInhibitLineEndChar
 
-    /**    メールヘッダ用にMIMEに即した文字列に変換する（内部利用メソッド／devideWithLimitingWidth関数で利用）
-     *
-     *    ヘッダ文字列として利用できるように、文字列内の日本語の部分をMIMEエンコードする。
-     *    文字列の中を日本語と英語に分けて、日本語の部分だけをISO-2022-JPでエンコードする。
-     *
-     * @param string $str 処理対象の文字列
-     * @param bool $isSeparateLine  日本語と英語の境目を改行する
-     * @return string MIMEエンコードした文字列
+    /**
+     * Encodes a string for use in email headers.
+     * @param string $str The string to encode.
+     * @param bool $isSeparateLine Whether to separate lines.
+     * @return string The encoded string.
      */
     private function header_base64_encode(string $str, bool $isSeparateLine): string
     {

@@ -17,16 +17,22 @@
 namespace INTERMediator;
 
 /**
- *
+ * Params is a utility class for handling global configuration parameters for INTER-Mediator.
+ * Provides static methods to read, retrieve, and set parameters from params.php.
  */
 class Params
 {
     /**
+     * Stores all global variables loaded from params.php.
+     *
      * @var array|null
      */
     private static ?array $vars = null;
 
     /**
+     * Reads and loads the params.php file and stores its variables.
+     * This is called automatically when accessing parameters.
+     *
      * @return void
      */
     private static function readParamsPHPFile(): void
@@ -57,9 +63,12 @@ class Params
     }
 
     /**
-     * @param string|array $vName
-     * @param mixed $defValue
-     * @return mixed
+     * Retrieves the value of a parameter or an array of parameters.
+     * If the parameter does not exist, returns the default value.
+     *
+     * @param string|array $vName Name or array of names of the parameter(s).
+     * @param mixed $defValue Default value(s) to return if parameter is not set.
+     * @return mixed Parameter value(s) or default value(s).
      */
     public static function getParameterValue(string|array $vName, mixed $defValue): mixed
     {
@@ -97,7 +106,9 @@ class Params
     }
 
     /**
-     * @return array|null
+     * Returns all loaded parameter variables as an array.
+     *
+     * @return array|null Array of all variables, or null if not loaded.
      */
     public static function getVars(): ?array
     {
@@ -105,6 +116,13 @@ class Params
         return self::$vars;
     }
 
+    /**
+     * Sets a parameter variable to the specified value.
+     *
+     * @param string $varName Name of the variable to set.
+     * @param mixed $value Value to set.
+     * @return void
+     */
     public static function setVar(string $varName, mixed $value): void {
         self::readParamsPHPFile();
         self::$vars[$varName] = $value;

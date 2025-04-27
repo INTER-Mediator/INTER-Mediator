@@ -22,13 +22,15 @@ use Exception;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- *
+ * Utility class for various helper functions used in INTER-Mediator.
  */
 class IMUtil
 {
     /**
-     * @param int $subSeconds
-     * @return string
+     * Returns the current date and time string in 'Y-m-d H:i:s' format.
+     *
+     * @param int $subSeconds Number of seconds to subtract (or add if negative).
+     * @return string Current date and time as string.
      */
     public static function currentDTString(int $subSeconds = 0): string
     {
@@ -45,8 +47,10 @@ class IMUtil
     }
 
     /**
-     * @param int $subSeconds
-     * @return string
+     * Returns the current date and time string in FileMaker format ('m/d/Y H:i:s').
+     *
+     * @param int $subSeconds Number of seconds to subtract (or add if negative).
+     * @return string Current date and time as string in FileMaker format.
      */
     public static function currentDTStringFMS(int $subSeconds = 0): string
     {
@@ -63,8 +67,10 @@ class IMUtil
     }
 
     /**
-     * @param string $dtStr
-     * @return int
+     * Calculates the difference in seconds from the given date/time string to now.
+     *
+     * @param string $dtStr Date/time string.
+     * @return int Seconds from now.
      */
     public static function secondsFromNow(string $dtStr): int
     {
@@ -78,8 +84,10 @@ class IMUtil
     }
 
     /**
-     * @param string $verStr
-     * @return int|float
+     * Returns the PHP version as a float or int.
+     *
+     * @param string $verStr Optional version string to parse. If empty, uses current PHP version.
+     * @return int|float PHP version as number.
      */
     public static function phpVersion(string $verStr = ''): int|float
     {
@@ -98,7 +106,9 @@ class IMUtil
     }
 
     /**
-     * @return string
+     * Returns the path to the INTER-Mediator root directory.
+     *
+     * @return string Path to INTER-Mediator root.
      */
     public static function pathToINTERMediator(): string
     {
@@ -106,8 +116,10 @@ class IMUtil
     }
 
     /**
-     * @param $path
-     * @return string
+     * Returns the MIME type for the given file path.
+     *
+     * @param $path File path.
+     * @return string MIME type.
      */
     public static function getMIMEType($path): string
     {
@@ -168,8 +180,10 @@ class IMUtil
     }
 
     /**
-     * @param $ar
-     * @return string
+     * Combines an array of path components into a single path string.
+     *
+     * @param $ar Array of path components.
+     * @return string Combined path.
      */
     public static function combinePathComponents($ar): string
     {
@@ -194,7 +208,9 @@ class IMUtil
     }
 
     /**
-     * @return bool
+     * Checks if PHP is running on Windows.
+     *
+     * @return bool True if running on Windows, false otherwise.
      */
     public static function isPHPExecutingWindows(): bool
     {
@@ -203,7 +219,9 @@ class IMUtil
     }
 
     /**
-     * @return string
+     * Returns the home directory of the server user.
+     *
+     * @return string Home directory path.
      */
     public static function getServerUserHome(): string
     {
@@ -216,7 +234,9 @@ class IMUtil
     }
 
     /**
-     * @return string
+     * Returns the username of the server user.
+     *
+     * @return string Server username.
      */
     public static function getServerUserName(): string
     {
@@ -231,7 +251,9 @@ class IMUtil
     }
 
     /**
-     * @return bool
+     * Checks if PHP is running on a UNIX-like OS (Linux or FreeBSD).
+     *
+     * @return bool True if running on UNIX, false otherwise.
      */
     public static function isPHPExecutingUNIX(): bool
     {
@@ -240,8 +262,10 @@ class IMUtil
     }
 
     /**
-     * @param $str
-     * @return array|string
+     * Removes null bytes from a string.
+     *
+     * @param $str Input string.
+     * @return array|string String with null bytes removed.
      */
     public static function removeNull($str): array|string
     {
@@ -251,7 +275,9 @@ class IMUtil
     // Message Class Detection
 
     /**
-     * @return Message\MessageStrings|null
+     * Returns an instance of the appropriate MessageStrings class based on client language.
+     *
+     * @return Message\MessageStrings|null MessageStrings instance or null.
      */
     public static function getMessageClassInstance(): ?Message\MessageStrings
     {
@@ -286,7 +312,9 @@ class IMUtil
 // Thanks for http://q.hatena.ne.jp/1193396523
 
     /**
-     * @return bool
+     * Checks for file upload errors based on POST size and $_FILES.
+     *
+     * @return bool True if there was an upload error, false otherwise.
      */
     public static function guessFileUploadError(): bool
     {
@@ -317,8 +345,10 @@ class IMUtil
 // Example in http://php.net/manual/ja/function.ini-get.php.
 
     /**
-     * @param $val
-     * @return int
+     * Converts a PHP ini size string (e.g., '2M') to bytes.
+     *
+     * @param $val PHP ini size string.
+     * @return int Size in bytes.
      */
     public static function return_bytes($val): int
     {
@@ -338,7 +368,9 @@ class IMUtil
     }
 
     /**
-     * @return bool
+     * Protects against CSRF attacks for XMLHttpRequest or fetch requests.
+     *
+     * @return bool True if CSRF check passes, false otherwise.
      */
     public function protectCSRF(): bool
     {
@@ -405,9 +437,11 @@ class IMUtil
     }
 
     /**
-     * @param string $host
-     * @param string $webServerName
-     * @return bool
+     * Checks if the given host matches the web server name.
+     *
+     * @param string $host Host to check.
+     * @param string $webServerName Expected web server name.
+     * @return bool True if host matches, false otherwise.
      */
     public function checkHost(string $host, string $webServerName): bool
     {
@@ -439,7 +473,10 @@ class IMUtil
     }
 
     /**
-     * @param array|null $params for testing only
+     * Outputs security-related HTTP headers.
+     *
+     * @param array|null $params Optional parameters for headers (for testing).
+     * @return void
      */
     public function outputSecurityHeaders(?array $params = NULL): void
     {
@@ -475,9 +512,10 @@ class IMUtil
 
 
     /**
-     * Convert strings to JavaScript friendly strings.
-     * Contributed by Atsushi Matsuo at Jan 17, 2010
-     * @return string strings for JavaScript
+     * Converts a string to a JavaScript-friendly string.
+     *
+     * @param string|null $str Input string.
+     * @return string JavaScript-safe string.
      */
     public static function valueForJSInsert(?string $str): string
     {
@@ -497,10 +535,11 @@ class IMUtil
     }
 
     /**
-     * Create JavaScript source from array
-     * @param array $ar ar parameter array
-     * @param string $prefix prefix strings for the prefix for key
-     * @return string JavaScript source
+     * Converts an array to a JavaScript object string.
+     *
+     * @param array $ar Input array.
+     * @param string $prefix Prefix for keys.
+     * @return string JavaScript object as string.
      */
     public static function arrayToJS(array $ar, string $prefix = ""): string
     {
@@ -518,9 +557,11 @@ class IMUtil
     }
 
     /**
-     * @param string $ar
-     * @param string $prefix
-     * @return string
+     * Converts a string to a JavaScript key-value string.
+     *
+     * @param string $ar Input string.
+     * @param string $prefix Prefix for the key.
+     * @return string JavaScript key-value string.
      */
     public static function stringToJS(string $ar, string $prefix = ""): string
     {
@@ -535,11 +576,12 @@ class IMUtil
     }
 
     /**
-     * Create JavaScript source from array
-     * @param array $ar array
-     * @param string $prefix prefix strings for the prefix for key
-     * @param array|null $exarray exarray array containing excluding keys
-     * @return string JavaScript source
+     * Converts an array to a JavaScript object string, excluding specified keys.
+     *
+     * @param array $ar Input array.
+     * @param string $prefix Prefix for keys.
+     * @param array|null $exarray Keys to exclude.
+     * @return string JavaScript object as string.
      */
     public static function arrayToJSExcluding(array $ar, string $prefix, ?array $exarray): string
     {
@@ -568,10 +610,12 @@ class IMUtil
     }
 
     /**
-     * @param string $ar
-     * @param string $prefix
-     * @param array|null $exarray
-     * @return string
+     * Converts a string to a JavaScript key-value string, excluding specified keys.
+     *
+     * @param string $ar Input string.
+     * @param string $prefix Prefix for the key.
+     * @param array|null $exarray Keys to exclude.
+     * @return string JavaScript key-value string.
      */
     public static function stringToJSExcluding(string $ar, string $prefix, ?array $exarray): string
     {
@@ -586,8 +630,10 @@ class IMUtil
     }
 
     /**
-     * @param int $digit
-     * @return string
+     * Generates a random digit string of specified length.
+     *
+     * @param int $digit Number of digits.
+     * @return string Random digit string.
      */
     public static function randomDigit(int $digit): string
     {
@@ -604,8 +650,10 @@ class IMUtil
     }
 
     /**
-     * @param int $digit
-     * @return string
+     * Generates a random ASCII string of specified length.
+     *
+     * @param int $digit Length of the string.
+     * @return string Random ASCII string.
      */
     public static function randomString(int $digit): string
     {
@@ -622,8 +670,10 @@ class IMUtil
     }
 
     /**
-     * @param int $digit
-     * @return string
+     * Generates a challenge string with allowed characters.
+     *
+     * @param int $digit Length of the string.
+     * @return string Challenge string.
      */
     public static function challengeString(int $digit): string
     {
@@ -642,8 +692,11 @@ class IMUtil
     }
 
     /**
-     * @param $prefix
-     * @return string
+     * Generates a client ID using a prefix and password hash.
+     *
+     * @param string $prefix Prefix for client ID.
+     * @param string $passwordHash Password hash type.
+     * @return string Client ID.
      */
     public static function generateClientId(string $prefix, string $passwordHash): string
     {
@@ -654,7 +707,9 @@ class IMUtil
     }
 
     /**
-     * @return string
+     * Generates a random challenge string (hexadecimal).
+     *
+     * @return string Challenge string.
      */
     public static function generateChallenge(): string
     {
@@ -667,7 +722,9 @@ class IMUtil
     }
 
     /**
-     * @return string
+     * Generates a random salt for password hashing.
+     *
+     * @return string Salt string.
      */
     public static function generateSalt(): string
     {
@@ -680,11 +737,13 @@ class IMUtil
     }
 
     /**
-     * @param string $pw
-     * @param string $passwordHash
-     * @param bool $alwaysGenSHA2
-     * @param string $salt
-     * @return string
+     * Converts a password to a hashed password string.
+     *
+     * @param string $pw Plain password.
+     * @param string $passwordHash Password hash type.
+     * @param bool $alwaysGenSHA2 Whether to always use SHA256.
+     * @param string $salt Optional salt.
+     * @return string Hashed password.
      */
     public static function convertHashedPassword(string $pw, string $passwordHash, bool $alwaysGenSHA2, string $salt = ''): string
     {
@@ -702,10 +761,12 @@ class IMUtil
     }
 
     /**
-     * @param int $digit
-     * @param string $passwordHash
-     * @param bool $alwaysGenSHA2
-     * @return string
+     * Generates a credential using a random password.
+     *
+     * @param int $digit Length of the password.
+     * @param string $passwordHash Password hash type.
+     * @param bool $alwaysGenSHA2 Whether to always use SHA256.
+     * @return string Credential string.
      */
     public static function generateCredentialWithRandomPW(int $digit, string $passwordHash, bool $alwaysGenSHA2): string
     {
@@ -717,7 +778,9 @@ class IMUtil
     }
 
     /**
-     * @return string
+     * Generates a random password string.
+     *
+     * @return string Random password.
      */
     public static function generateRandomPW(): string
     {
@@ -739,8 +802,10 @@ class IMUtil
     }
 
     /**
-     * @param string $access
-     * @return string
+     * Returns the class name for a visitor based on access string.
+     *
+     * @param string $access Access type.
+     * @return string Visitor class name.
      */
     public static function getVisitorClassName(string $access): string
     {
@@ -750,9 +815,11 @@ class IMUtil
     }
 
     /**
-     * @param string $fromPath
-     * @param string $toPath
-     * @return string|null
+     * Returns the relative path from one path to another.
+     *
+     * @param string $fromPath Source path.
+     * @param string $toPath Destination path.
+     * @return string|null Relative path or null if invalid.
      */
     public static function relativePath(string $fromPath, string $toPath): ?string
     {
@@ -780,9 +847,11 @@ class IMUtil
     }
 
     /**
-     * @param string|null $checkPath
-     * @param string|null $dir
-     * @return bool
+     * Checks if a path is inside a directory.
+     *
+     * @param string|null $checkPath Path to check.
+     * @param string|null $dir Directory.
+     * @return bool True if inside, false otherwise.
      */
     public static function isInsideOf(?string $checkPath, ?string $dir): bool
     {
@@ -799,7 +868,10 @@ class IMUtil
     }
 
     /**
-     * @throws Exception
+     * Loads and parses YAML definition file content.
+     *
+     * @throws Exception If the YAML file does not exist or is outside permitted paths.
+     * @return array Parsed YAML content and file path.
      */
     public static function getYAMLDefContent(): array
     {
@@ -847,8 +919,10 @@ class IMUtil
     }
 
     /**
-     * @param string $yaml
-     * @return array|null
+     * Parses a YAML string and returns the definition array.
+     *
+     * @param string $yaml YAML string.
+     * @return array|null Parsed array or null on failure.
      */
     public static function getDefinitionFromYAML(string $yaml): ?array
     {
@@ -856,7 +930,9 @@ class IMUtil
     }
 
     /**
-     * @return bool
+     * Checks if the application is running as a web app (not CLI).
+     *
+     * @return bool True if running as web app, false otherwise.
      */
     public static function isRunAsWebApp(): bool
     {
@@ -867,8 +943,10 @@ class IMUtil
     }
 
     /**
-     * @param string|null $str
-     * @return string|null
+     * Gets a value from a profile file if available, otherwise returns the input string.
+     *
+     * @param string|null $str Input string or profile descriptor.
+     * @return string|null Value from profile or original string/null.
      */
     public static function getFromProfileIfAvailable(?string $str): string|null
     {

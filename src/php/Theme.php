@@ -17,25 +17,33 @@
 namespace INTERMediator;
 
 /**
- *
+ * Theme management class for INTER-Mediator.
+ * Handles theme file resolution and processing for static resources.
  */
 class Theme
 {
     /**
-     * @var ?string
+     * Alternate theme path if specified in configuration.
+     *
+     * @var string|null
      */
     private ?string $altThemePath;
     /**
+     * Access log level setting from configuration.
+     *
      * @var bool
      */
     private bool $accessLogLevel;
     /**
+     * Stores output messages for logging.
+     *
      * @var array
      */
     private array $outputMessage = [];
 
     /**
-     *
+     * Theme constructor.
+     * Initializes configuration from params.php.
      */
     public function __construct()
     {
@@ -45,7 +53,9 @@ class Theme
     }
 
     /**
-     * @return array
+     * Gets the result message array for access logging.
+     *
+     * @return array Output message array for logging.
      */
     public function getResultForLog(): array
     {
@@ -56,6 +66,9 @@ class Theme
     }
 
     /**
+     * Processes the theme resource request and outputs the appropriate file content with headers.
+     * Handles CSS aggregation and image resource resolution.
+     *
      * @return void
      */
     public function processing(): void
@@ -87,8 +100,11 @@ class Theme
     }
 
     /**
-     * @param string|null $themeName
-     * @return string|null
+     * Resolves the theme directory path for the given theme name.
+     * Returns null if the theme directory does not exist.
+     *
+     * @param string|null $themeName Name of the theme.
+     * @return string|null Path to the theme directory or null if not found.
      */
     private function pathToTheme(?string $themeName): ?string
     {
