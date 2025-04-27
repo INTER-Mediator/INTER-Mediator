@@ -118,10 +118,10 @@ class IMUtil
     /**
      * Returns the MIME type for the given file path.
      *
-     * @param $path File path.
+     * @param $path string File path.
      * @return string MIME type.
      */
-    public static function getMIMEType($path): string
+    public static function getMIMEType(string $path): string
     {
         $type = "application/octet-stream";
         switch (strtolower(substr($path, strrpos($path, '.') + 1))) {
@@ -182,10 +182,10 @@ class IMUtil
     /**
      * Combines an array of path components into a single path string.
      *
-     * @param $ar Array of path components.
+     * @param $ar array Array of path components.
      * @return string Combined path.
      */
-    public static function combinePathComponents($ar): string
+    public static function combinePathComponents(array $ar): string
     {
         $path = "";
         $isFirstItem = true;
@@ -264,12 +264,12 @@ class IMUtil
     /**
      * Removes null bytes from a string.
      *
-     * @param $str Input string.
+     * @param $str string Input string.
      * @return array|string String with null bytes removed.
      */
-    public static function removeNull($str): array|string
+    public static function removeNull(string $str): array|string
     {
-        return str_replace("\x00", '', $str ?? "");
+        return str_replace("\x00", '', $str);
     }
 
     // Message Class Detection
@@ -321,7 +321,7 @@ class IMUtil
         $postMaxSize = self::return_bytes(ini_get('post_max_size'));
         if ($_SERVER['REQUEST_METHOD'] == 'POST'
             && $_SERVER['CONTENT_LENGTH'] > $postMaxSize
-            && strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') === 0
+            && str_starts_with($_SERVER['CONTENT_TYPE'], 'multipart/form-data')
         ) {
             return true;
         }
@@ -347,10 +347,10 @@ class IMUtil
     /**
      * Converts a PHP ini size string (e.g., '2M') to bytes.
      *
-     * @param $val PHP ini size string.
+     * @param $val mixed PHP ini size string.
      * @return int Size in bytes.
      */
-    public static function return_bytes($val): int
+    public static function return_bytes(mixed $val): int
     {
         $val = trim($val);
         switch (strtolower($val[strlen($val) - 1])) {
@@ -464,7 +464,7 @@ class IMUtil
         }
 
         if (substr($host, -($length + 1)) === '.' . $webServerName &&
-            strpos($webServerName, '.') !== FALSE && !preg_match('/^[0-9.]+$/', $webServerName)
+            str_contains($webServerName, '.') && !preg_match('/^[0-9.]+$/', $webServerName)
         ) {
             return TRUE;
         }
@@ -543,7 +543,6 @@ class IMUtil
      */
     public static function arrayToJS(array $ar, string $prefix = ""): string
     {
-        $returnStr = '';
         $items = array();
         foreach ($ar as $key => $value) {
             $items[] = is_array($value) ? IMUtil::arrayToJS($value, $key) : IMUtil::stringToJS($value, $key);
@@ -565,7 +564,6 @@ class IMUtil
      */
     public static function stringToJS(string $ar, string $prefix = ""): string
     {
-        $returnStr = '';
         $currentKey = $prefix;
         if ($currentKey == '') {
             $returnStr = "'" . IMUtil::valueForJSInsert($ar) . "'";
@@ -855,7 +853,7 @@ class IMUtil
      */
     public static function isInsideOf(?string $checkPath, ?string $dir): bool
     {
-        if (!$checkPath || !$dir) { // Both parameter have not to falsy.
+        if (!$checkPath || !$dir) { // Both parameters have not to falsy.
             return false;
         }
         if (strlen($dir) > strlen($checkPath)) { // Apparently outside $dir.
@@ -932,7 +930,7 @@ class IMUtil
     /**
      * Checks if the application is running as a web app (not CLI).
      *
-     * @return bool True if running as web app, false otherwise.
+     * @return bool True if running as a web app, false otherwise.
      */
     public static function isRunAsWebApp(): bool
     {

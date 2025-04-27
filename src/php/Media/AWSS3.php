@@ -13,7 +13,6 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-
 namespace INTERMediator\Media;
 
 use Exception;
@@ -24,47 +23,60 @@ use INTERMediator\DB\Proxy;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
+/**
+ * AWSS3 class handles file upload and download operations with Amazon S3.
+ * Implements UploadingSupport and DownloadingSupport interfaces for integration with INTER-Mediator.
+ */
 class AWSS3 extends UploadingSupport implements DownloadingSupport
 {
     /**
-     * @var ?string
+     * AWS region for S3 operations.
+     * @var string|null
      */
     private ?string $accessRegion;
     /**
-     * @var ?string
+     * Root S3 bucket name.
+     * @var string|null
      */
     private ?string $rootBucket;
     /**
-     * @var ?string
+     * ACL to apply to uploaded S3 objects.
+     * @var string|null
      */
     private ?string $applyingACL;
     /**
+     * Whether secret credentials are supplied directly.
      * @var bool
      */
     private bool $isSuppliedSecret;
     /**
-     * @var ?string
+     * AWS access key for S3.
+     * @var string|null
      */
     private ?string $s3AccessKey;
     /**
-     * @var ?string
+     * AWS secret access key for S3.
+     * @var string|null
      */
     private ?string $s3AccessSecret;
     /**
-     * @var ?string
+     * AWS credentials profile for S3.
+     * @var string|null
      */
     private ?string $s3AccessProfile;
     /**
+     * Whether to customize S3 URL format.
      * @var bool
      */
     private bool $s3urlCustomize;
     /**
-     * @var ?string
+     * The file name of the current file being processed or retrieved.
+     * @var string|null
      */
     private ?string $fileName = null;
 
     /**
-     *
+     * AWSS3 constructor. Initializes S3 credentials and configuration from parameters.
      */
     public function __construct()
     {
@@ -79,10 +91,13 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
     }
 
     /**
-     * @param string $file
-     * @param string $target
-     * @param Proxy $dbProxyInstance
-     * @return string
+     * Retrieves the contents of a file from Amazon S3.
+     *
+     * @param string $file The file name (unused, for interface compatibility).
+     * @param string $target The S3 file path or URL.
+     * @param Proxy $dbProxyInstance The database proxy instance.
+     * @return string The file contents.
+     * @throws Exception If the file cannot be retrieved.
      */
     public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string
     {
@@ -107,35 +122,38 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
     }
 
     /**
-     * @param string $file
-     * @return string
+     * Returns the file name of the last accessed or processed file.
+     *
+     * @param string $file The file path (unused).
+     * @return string|null The file name, or null if not set.
      */
-    public function getFileName(string $file): string
+    public function getFileName(string $file): ?string
     {
         return $this->fileName;
     }
 
     /**
-     * @param Proxy $db
-     * @param ?string $url
-     * @param array|null $options
-     * @param array $files
-     * @param bool $noOutput
-     * @param array $field
-     * @param string $contextName
-     * @param ?string $keyField
-     * @param ?string $keyValue
-     * @param array|null $dataSource
-     * @param array|null $dbSpec
-     * @param int $debug
-     * @throws Exception
+     * Handles file upload processing to Amazon S3.
+     *
+     * @param Proxy $db The database proxy instance.
+     * @param string|null $url The redirect URL on error.
+     * @param array|null $options Additional options for processing.
+     * @param array $files Uploaded files array.
+     * @param bool $noOutput Whether to suppress output.
+     * @param array $field Array of target field names.
+     * @param string $contextName The context name for processing.
+     * @param string|null $keyField The key field for database update.
+     * @param string|null $keyValue The key value for database update.
+     * @param array|null $dataSource Data source definition.
+     * @param array|null $dbSpec Database specification.
+     * @param int $debug Debug level.
+     * @throws Exception If an error occurs during processing.
+     * @return void
      */
     public function processing(Proxy  $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
                                string $contextName, ?string $keyField, ?string $keyValue,
                                ?array $dataSource, ?array $dbSpec, int $debug): void
     {
-//        $dbAlt = new Proxy();
-//
         $counter = -1;
         foreach ($files as $fileInfo) {
             $counter += 1;
@@ -199,55 +217,6 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
             }
             $this->processingFile($db, $options, $storedURL, $storedURL, $targetFieldName,
                 $keyField, $keyValue, $dataSource, $dbSpec, $debug);
-//
-//            $dbProxyContext = $db->dbSettings->getDataSourceTargetArray();
-//            if (isset($dbProxyContext['file-upload'])) {
-//                foreach ($dbProxyContext['file-upload'] as $item) {
-//                    if (isset($item['field']) && !isset($item['context'])) {
-//                        $targetFieldName = $item['field'];
-//                    }
-//                }
-//            }
-//
-//            $dbAlt->initialize($dataSource, $options, $dbSpec, $debug, $contextName);
-//            $dbAlt->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
-//            $dbAlt->dbSettings->setFieldsRequired(array($targetFieldName));
-//            $dbAlt->dbSettings->setValue(array($storedURL));
-//            $dbAlt->processingRequest("update", true);
-//            $dbProxyRecord = $dbAlt->getDatabaseResult();
-//
-//            if (isset($dbProxyContext['file-upload'])) {
-//                foreach ($dbProxyContext['file-upload'] as $item) {
-//                    if (isset($item['field']) && $item['field'] == $targetFieldName) {
-//                        $dbAlt->initialize($dataSource, $options, $dbSpec, $debug, $item['context'] ?? null);
-//                        $relatedContextInfo = $dbAlt->dbSettings->getDataSourceTargetArray();
-//                        $fields = array();
-//                        $values = array();
-//                        if (isset($relatedContextInfo["query"])) {
-//                            foreach ($relatedContextInfo["query"] as $cItem) {
-//                                if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
-//                                    $fields[] = $cItem['field'];
-//                                    $values[] = $cItem['value'];
-//                                }
-//                            }
-//                        }
-//                        if (isset($relatedContextInfo["relation"])) {
-//                            foreach ($relatedContextInfo["relation"] as $cItem) {
-//                                if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
-//                                    $fields[] = $cItem['foreign-key'];
-//                                    $values[] = $dbProxyRecord[0][$cItem['join-field']];
-//                                }
-//                            }
-//                        }
-//                        $fields[] = "path";
-//                        $values[] = $storedURL;
-//                        $dbAlt->dbSettings->setFieldsRequired($fields);
-//                        $dbAlt->dbSettings->setValue($values);
-//                        $dbAlt->processingRequest("create", true, true);
-//                    }
-//                }
-//            }
-//            $dbAlt->addOutputData('dbresult', $storedURL);
         }
     }
 }
@@ -256,43 +225,4 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
  * result example:
  * Aws\Result::__set_state(array(
 'data' =>
-array (
-'Expiration' => '',
-'ETag' => '"128beb264cd57658400d28f829924e27"',
-'ServerSideEncryption' => '',
-'VersionId' => '',
-'SSECustomerAlgorithm' => '',
-'SSECustomerKeyMD5' => '',
-'SSEKMSKeyId' => '',
-'SSEKMSEncryptionContext' => '',
-'RequestCharged' => '',
-'@metadata' =>
-array (
-'statusCode' => 200,
-'effectiveUri' => 'https://inter-mediator-developping.s3.ap-northeast-1.amazonaws.com/testtable/id%3D56/text1/%E6%A5%B5%E7%AB%AF%E3%81%AA%E6%A8%AA%E9%95%B7%E7%94%BB%E5%83%8F_8931.jpg',
-'headers' =>
-array (
-'x-amz-id-2' => 'gdMCHVSJ8CH7FXXG6X8hJ63c8Aa1h6OL6WPteCfuTYF6o453j6CeVR1JIqRKzu1/cyN+oLETRDg=',
-'x-amz-request-id' => '3380586D80672D33',
-'date' => 'Thu, 01 Oct 2020 01:53:14 GMT',
-'etag' => '"128beb264cd57658400d28f829924e27"',
-'content-length' => '0',
-'server' => 'AmazonS3',
-),
-'transferStats' =>
-array (
-'http' =>
-array (
-0 =>
-array (
-),
-),
-),
-),
-'ObjectURL' => 'https://inter-mediator-developping.s3.ap-northeast-1.amazonaws.com/testtable/id%3D56/text1/%E6%A5%B5%E7%AB%AF%E3%81%AA%E6%A8%AA%E9%95%B7%E7%94%BB%E5%83%8F_8931.jpg',
-),
-'monitoringEvents' =>
-array (
-),
-))
- */
+<...>

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -17,13 +16,16 @@
 namespace INTERMediator\Locale;
 
 /**
- *
+ * IMLocaleCurrencyTable provides mappings from locale or country codes to currency codes for INTER-Mediator.
+ * It offers static methods to retrieve currency codes based on locale or country, and a static table for lookups.
  */
 class IMLocaleCurrencyTable
 {
     /**
-     * @param string $localeCode
-     * @return string
+     * Returns the currency code corresponding to a given locale code.
+     *
+     * @param string $localeCode The locale code (e.g., 'en_US', 'ja_JP', 'FR').
+     * @return string The ISO currency code (e.g., 'USD', 'JPY').
      */
     public static function getCurrencyCode(string $localeCode): string
     {
@@ -42,8 +44,10 @@ class IMLocaleCurrencyTable
     }
 
     /**
-     * @param string $cCode
-     * @return string
+     * Returns the currency code corresponding to a given country code.
+     *
+     * @param string $cCode The country code (e.g., 'US', 'JP', 'FR').
+     * @return string The ISO currency code (e.g., 'USD', 'JPY').
      */
     public static function getCountryCurrencyCode(string $cCode): string
     {
@@ -63,6 +67,7 @@ class IMLocaleCurrencyTable
      * https://www.ups.com/worldshiphelp/WS15/JPN/AppHelp/Codes/Country_Territory_and_Currency_Codes.htm
      */
     /**
+     * Static table mapping country codes to ISO currency codes.
      * @var array|string[]
      */
     private static array $localeCurrencyTable = array(

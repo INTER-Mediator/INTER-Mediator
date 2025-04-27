@@ -24,24 +24,28 @@ use INTERMediator\Locale\IMLocaleFormatTable;
 use INTERMediator\Params;
 
 /**
- *
+ * FileSystem class handles file uploads, downloads, and CSV import operations for files stored on the server filesystem.
+ * Implements UploadingSupport and DownloadingSupport interfaces for media handling.
  */
 class FileSystem extends UploadingSupport implements DownloadingSupport
 {
     /**
-     * @param Proxy $db
-     * @param ?string $url
-     * @param array|null $options
-     * @param array $files
-     * @param bool $noOutput
-     * @param array $field
-     * @param string $contextName
-     * @param ?string $keyField
-     * @param ?string $keyValue
-     * @param array|null $dataSource
-     * @param array|null $dbSpec
-     * @param int $debug
-     * @throws Exception
+     * Handles file upload processing, including CSV import if specified.
+     *
+     * @param Proxy $db The database proxy instance.
+     * @param string|null $url The redirect URL on error.
+     * @param array|null $options Additional options for processing.
+     * @param array $files Uploaded files array.
+     * @param bool $noOutput Whether to suppress output.
+     * @param array $field Array of target field names.
+     * @param string $contextName The context name for processing.
+     * @param string|null $keyField The key field for database update.
+     * @param string|null $keyValue The key value for database update.
+     * @param array|null $dataSource Data source definition.
+     * @param array|null $dbSpec Database specification.
+     * @param int $debug Debug level.
+     * @throws Exception If an error occurs during processing.
+     * @return void
      */
     public function processing(Proxy  $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
                                string $contextName, ?string $keyField, ?string $keyValue,
@@ -79,11 +83,13 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
     }
 
     /**
-     * @param string $file
-     * @param string $target
-     * @param Proxy $dbProxyInstance
-     * @return string
-     * @throws Exception
+     * Retrieves the contents of a file from a given target path.
+     *
+     * @param string $file The file name (unused).
+     * @param string $target The file path to read.
+     * @param Proxy $dbProxyInstance The database proxy instance.
+     * @return string The file contents.
+     * @throws Exception If the file does not exist.
      */
     public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string
     {
@@ -94,10 +100,12 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
     }
 
     /**
-     * @param string $file
-     * @return string
+     * Returns the base file name from a given file path, removing query parameters if present.
+     *
+     * @param string $file The file path.
+     * @return string|null The base file name.
      */
-    public function getFileName(string $file): string
+    public function getFileName(string $file): ?string
     {
         $fileName = basename($file);
         $qPos = strpos($fileName, "?");
@@ -108,8 +116,10 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
     }
 
     /**
-     * @param array $info
-     * @return array
+     * Extracts file name and temporary name from file info array.
+     *
+     * @param array $info The file info array.
+     * @return array Array containing the file name and temporary file name.
      */
     private function getFileNames(array $info): array
     {
@@ -124,9 +134,11 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
     }
 
     /**
-     * @param Proxy $db
-     * @param bool $noOutput
-     * @param string $errorMsg
+     * Outputs an error message and stops further processing.
+     *
+     * @param Proxy $db The database proxy instance.
+     * @param bool $noOutput Whether to suppress output.
+     * @param string $errorMsg The error message to output.
      * @return void
      * @throws Exception
      */
@@ -141,16 +153,18 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
     }
 
     /**
-     * @param Proxy $db
-     * @param bool $noOutput
-     * @param ?array $options
-     * @param string $contextName
-     * @param string $keyField
-     * @param string $keyValue
-     * @param string $targetFieldName
-     * @param array $filePathInfo
-     * @return array
-     * @throws Exception
+     * Determines the file path and partial path for storing an uploaded file.
+     *
+     * @param Proxy $db The database proxy instance.
+     * @param bool $noOutput Whether to suppress output.
+     * @param array|null $options Additional options for processing.
+     * @param string $contextName The context name.
+     * @param string $keyField The key field name.
+     * @param string $keyValue The key value.
+     * @param string $targetFieldName The target field name.
+     * @param array $filePathInfo Information about the file path.
+     * @return array Array containing result status, full file path, and partial file path.
+     * @throws Exception If the path is invalid or directory creation fails.
      */
     private function decideFilePath(Proxy  $db, bool $noOutput, ?array $options, string $contextName,
                                     string $keyField, string $keyValue, string $targetFieldName, array $filePathInfo): array
@@ -190,12 +204,13 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
     }
 
     /**
-     * @param string $str
-     * @param string|null $mode
-     * @return string
+     * Justifies and encodes a path component based on the specified mode.
+     *
+     * @param string $str The string to justify.
+     * @param string|null $mode The encoding mode (default, assjis, asucs4).
+     * @return string The justified path component.
      */
-    private
-    function justifyPathComponent(string $str, ?string $mode = "default"): string
+    private function justifyPathComponent(string $str, ?string $mode = "default"): string
     {
         $jStr = $str;
         switch ($mode) {
@@ -217,16 +232,19 @@ class FileSystem extends UploadingSupport implements DownloadingSupport
     }
 
     /**
-     * @param $db
-     * @param $dataSource
-     * @param $options
-     * @param $dbSpec
-     * @param $debug
-     * @param $contextName
-     * @param $fileInfoTemp
+     * Handles CSV import operation from an uploaded file.
+     *
+     * @param Proxy $db The database proxy instance.
+     * @param array|null $dataSource Data source definition.
+     * @param array|null $options Additional options for processing.
+     * @param array|null $dbSpec Database specification.
+     * @param int $debug Debug level.
+     * @param string $contextName The context name.
+     * @param string $fileInfoTemp The temporary file name of the uploaded CSV.
+     * @return void
+     * @throws Exception If an error occurs during CSV import.
      */
-    private
-    function csvImportOperation($db, $dataSource, $options, $dbSpec, $debug, $contextName, $fileInfoTemp)
+    private function csvImportOperation($db, $dataSource, $options, $dbSpec, $debug, $contextName, $fileInfoTemp)
     {
         $dbContext = $db->dbSettings->getDataSourceTargetArray();
         [$import1stLine, $importSkipLines, $importFormat, $useReplace,

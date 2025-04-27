@@ -18,7 +18,8 @@ namespace INTERMediator\Media;
 use INTERMediator\DB\Proxy;
 
 /**
- *
+ * Interface for classes that provide support for downloading media files.
+ * Implementing classes should provide methods to retrieve media content and file names.
  */
 interface DownloadingSupport
 {
@@ -32,7 +33,7 @@ interface DownloadingSupport
 
     /**
      * @param string $file
-     * @return string
+     * @return string|null
      */
-    public function getFileName(string $file): string;
+    public function getFileName(string $file): ?string;
 }

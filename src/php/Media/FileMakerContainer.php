@@ -22,16 +22,19 @@ use INTERMediator\DB\Proxy;
 use INTERMediator\Params;
 
 /**
- *
+ * FileMakerContainer handles file upload and download for FileMaker container fields.
+ * Implements UploadingSupport and DownloadingSupport interfaces for FileMaker integration.
  */
-class FileMakerContainer extends UploadingSupport implements  DownloadingSupport
+class FileMakerContainer extends UploadingSupport implements DownloadingSupport
 {
     /**
-     * @param string $file
-     * @param string $target
-     * @param Proxy $dbProxyInstance
-     * @return string
-     * @throws Exception
+     * Retrieves the contents of a file from a FileMaker container field or direct file path.
+     *
+     * @param string $file The file name (unused).
+     * @param string $target The file path or FileMaker container URL.
+     * @param Proxy $dbProxyInstance The database proxy instance.
+     * @return string The file contents.
+     * @throws Exception If the file cannot be retrieved.
      */
     public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string
     {
@@ -91,10 +94,12 @@ class FileMakerContainer extends UploadingSupport implements  DownloadingSupport
     }
 
     /**
-     * @param string $file
-     * @return string
+     * Returns the base file name from a given file path, removing query parameters if present and decoding spaces.
+     *
+     * @param string $file The file path.
+     * @return string|null The base file name.
      */
-    public function getFileName(string $file): string
+    public function getFileName(string $file): ?string
     {
         $fileName = basename($file);
         $qPos = strpos($fileName, "?");
@@ -105,19 +110,22 @@ class FileMakerContainer extends UploadingSupport implements  DownloadingSupport
     }
 
     /**
-     * @param Proxy $db
-     * @param ?string $url
-     * @param array|null $options
-     * @param array $files
-     * @param bool $noOutput
-     * @param array $field
-     * @param string $contextName
-     * @param ?string $keyField
-     * @param ?string $keyValue
-     * @param array|null $dataSource
-     * @param array|null $dbSpec
-     * @param int $debug
-     * @throws Exception
+     * Handles file upload processing for FileMaker container fields.
+     *
+     * @param Proxy $db The database proxy instance.
+     * @param string|null $url The redirect URL on error.
+     * @param array|null $options Additional options for processing.
+     * @param array $files Uploaded files array.
+     * @param bool $noOutput Whether to suppress output.
+     * @param array $field Array of target field names.
+     * @param string $contextName The context name for processing.
+     * @param string|null $keyField The key field for database update.
+     * @param string|null $keyValue The key value for database update.
+     * @param array|null $dataSource Data source definition.
+     * @param array|null $dbSpec Database specification.
+     * @param int $debug Debug level.
+     * @throws Exception If an error occurs during processing.
+     * @return void
      */
     public function processing(Proxy  $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
                                string $contextName, ?string $keyField, ?string $keyValue,
@@ -183,7 +191,7 @@ class FileMakerContainer extends UploadingSupport implements  DownloadingSupport
             $db->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
             $db->dbSettings->setFieldsRequired(array($targetFieldName));
 
-            // If the file content is base64 encoded url starting with 'data:,', decode it and store a file.
+            // If the file content is a base64 encoded url starting with 'data:,', decode it and store a file.
             $fileContent = file_get_contents($filePath, false, null, 0, 30);
             $headerTop = strpos($fileContent, "data:");
             $endOfHeader = strpos($fileContent, ",");
@@ -191,7 +199,7 @@ class FileMakerContainer extends UploadingSupport implements  DownloadingSupport
                 $tempFilePath = $filePath . ".temp";
                 rename($filePath, $tempFilePath);
                 $step = 1024;
-                if (strpos($fileContent, ";base64") !== false) {
+                if (str_contains($fileContent, ";base64")) {
                     $fw = fopen($filePath, "w");
                     $fp = fopen($tempFilePath, "r");
                     fread($fp, $endOfHeader + 1);
