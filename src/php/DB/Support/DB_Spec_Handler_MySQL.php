@@ -104,6 +104,7 @@ class DB_Spec_Handler_MySQL extends DB_Spec_Handler_PDO
             'IS NULL', //NULL value test
             'IS', //Test a value against a boolean
             '<<', //Left shift
+            '>>', //Right shift
             '<=', //Less than or equal operator
             '<', //Less than operator
             'LIKE', //Simple pattern matching

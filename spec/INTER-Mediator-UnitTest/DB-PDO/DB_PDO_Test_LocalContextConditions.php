@@ -19,9 +19,6 @@ trait DB_PDO_Test_LocalContextConditions
             $clause = $this->db_proxy->dbClass->getWhereClauseForTest('read');
             $this->assertEquals($conditionExpected, $clause, "Condition must be followed settings.");
         } catch (Exception $ex) {
-            var_dump($conditionExpected);
-            var_dump($query);
-            var_dump($clause); //$clause
             $this->assertTrue(null, "Exception in getWhereClauseForTest().");
         }
     }
