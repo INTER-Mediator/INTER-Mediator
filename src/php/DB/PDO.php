@@ -776,7 +776,7 @@ class PDO extends DBClass
         $this->notifyHandler->setQueriedEntity($this->dbSettings->getEntityAsSource());
 
         if ($this->isRequiredUpdated) {
-            $sql = $this->handler->sqlSELECTCommand() . " * FROM " . $this->handler->quotedEntityName($tableName)
+            $sql = $this->handler->sqlSELECTCommand() . " * FROM " . $tableName
                 . " WHERE " . $keyField . " = " . $this->link->quote($lastKeyValue);
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
