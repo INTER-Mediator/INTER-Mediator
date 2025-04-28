@@ -6,14 +6,16 @@ use Exception;
 use INTERMediator\FileMakerServer\RESTAPI\FMDataAPI;
 
 /**
- *
+ * Abstract base class for database classes in INTER-Mediator, providing common interface and error handling.
  */
 abstract class DBClass extends UseSharedObjects implements DBClass_Interface
 {
     /**
-     * @param array $condition
+     * Throws an exception; should only be used by FileMaker subclasses.
+     *
+     * @param array $condition The condition array.
      * @return mixed
-     * @throws Exception
+     * @throws Exception Always throws; not supported in base class.
      */
     public function normalizedCondition(array $condition)
     {
@@ -21,9 +23,11 @@ abstract class DBClass extends UseSharedObjects implements DBClass_Interface
     }
 
     /**
-     * @param string $currentOperation
+     * Throws an exception; should only be used by FileMaker subclasses.
+     *
+     * @param string $currentOperation The current operation name.
      * @return mixed
-     * @throws Exception
+     * @throws Exception Always throws; not supported in base class.
      */
     public function getWhereClauseForTest(string $currentOperation)
     {
@@ -32,9 +36,11 @@ abstract class DBClass extends UseSharedObjects implements DBClass_Interface
     }
 
     /**
-     * @param string $dsnString
+     * Throws an exception; should only be used by FileMaker subclasses.
+     *
+     * @param string $dsnString The DSN string.
      * @return mixed
-     * @throws Exception
+     * @throws Exception Always throws; not supported in base class.
      */
     public function setupWithDSN(string $dsnString)
     {
@@ -43,9 +49,11 @@ abstract class DBClass extends UseSharedObjects implements DBClass_Interface
     }
 
     /**
-     * @param string $dataSourceName
+     * Throws an exception; should only be used by FileMaker subclasses.
+     *
+     * @param string $dataSourceName The data source name.
      * @return mixed
-     * @throws Exception
+     * @throws Exception Always throws; not supported in base class.
      */
     public function getSchema(string $dataSourceName)
     {
@@ -54,10 +62,12 @@ abstract class DBClass extends UseSharedObjects implements DBClass_Interface
     }
 
     /**
-     * @param string $layoutName
-     * @param int $recordCount
+     * Throws an exception; should only be used by FileMaker subclasses.
+     *
+     * @param string $layoutName The layout name.
+     * @param int $recordCount The number of records.
      * @return mixed
-     * @throws Exception
+     * @throws Exception Always throws; not supported in base class.
      */
     public function setupFMDataAPIforDB(string $layoutName, int $recordCount)
     {
@@ -66,18 +76,22 @@ abstract class DBClass extends UseSharedObjects implements DBClass_Interface
     }
 
     /**
+     * Throws an exception; should only be used by FileMaker subclasses.
+     *
      * @return FMDataAPI
-     * @throws Exception
+     * @throws Exception Always throws; not supported in base class.
      */
-    public function getFMDataInstance(): FMDataAPI
+    public function getFMDataInstance(): ?FMDataAPI
     {
         $currentClass = get_class($this);
         throw new Exception("This '{$currentClass}' class doesn't support the getFMDataInstance method.");
     }
 
     /**
-     * @param array $tableInfo
-     * @return int
+     * Returns the record limit parameter based on table info and settings.
+     *
+     * @param array $tableInfo Table information array.
+     * @return int The limit parameter.
      */
     protected function getLimitParam(array $tableInfo): int
     {
@@ -97,5 +111,4 @@ abstract class DBClass extends UseSharedObjects implements DBClass_Interface
         }
         return $limitParam;
     }
-
 }

@@ -17,12 +17,15 @@
 namespace INTERMediator\DB\Support;
 
 /**
- *
+ * Handler for MySQL-specific specification behavior.
+ * Implements the DB_Spec_Behavior interface for MySQL backend.
  */
 class DB_Spec_Handler_MySQL extends DB_Spec_Handler_PDO
 {
     /**
-     * @return string
+     * Returns the default key name for MySQL (static method).
+     *
+     * @return string Default key name.
      */
     public static function defaultKey(): string
     {
@@ -30,7 +33,9 @@ class DB_Spec_Handler_MySQL extends DB_Spec_Handler_PDO
     }
 
     /**
-     * @return string
+     * Returns the default key name for MySQL (instance method).
+     *
+     * @return string Default key name.
      */
     public function getDefaultKey(): string
     {
@@ -38,7 +43,9 @@ class DB_Spec_Handler_MySQL extends DB_Spec_Handler_PDO
     }
 
     /**
-     * @return bool
+     * Checks if aggregation is supported (always true for MySQL).
+     *
+     * @return bool True (aggregation supported).
      */
     public function isSupportAggregation(): bool
     {
@@ -46,9 +53,11 @@ class DB_Spec_Handler_MySQL extends DB_Spec_Handler_PDO
     }
 
     /**
-     * @param string $fname
-     * @param array $fieldnames
-     * @return bool
+     * Checks if the given field name is in the provided list of field names.
+     *
+     * @param string $fname Field name to check.
+     * @param array $fieldnames Array of available field names.
+     * @return bool True if $fname is in $fieldnames, false otherwise.
      */
     public function isContainingFieldName(string $fname, array $fieldnames): bool
     {
@@ -56,7 +65,9 @@ class DB_Spec_Handler_MySQL extends DB_Spec_Handler_PDO
     }
 
     /**
-     * @return bool
+     * Checks if NULL values are acceptable (always true for MySQL).
+     *
+     * @return bool True (NULL acceptable).
      */
     public function isNullAcceptable(): bool
     {
@@ -64,8 +75,10 @@ class DB_Spec_Handler_MySQL extends DB_Spec_Handler_PDO
     }
 
     /**
-     * @param string $operator
-     * @return bool
+     * Checks if the given operator is valid for MySQL.
+     *
+     * @param string $operator Operator to check.
+     * @return bool True if the operator is valid, false otherwise.
      */
     public function isPossibleOperator(string $operator): bool
     {
@@ -86,7 +99,7 @@ class DB_Spec_Handler_MySQL extends DB_Spec_Handler_PDO
             '=', //Equal operator
             '>=', //Greater than or equal operator
             '>', //Greater than operator
-            'IS NOT NULL', //	NOT NULL value test
+            'IS NOT NULL', // NOT NULL value test
             'IS NOT', //Test a value against a boolean
             'IS NULL', //NULL value test
             'IS', //Test a value against a boolean
@@ -100,27 +113,27 @@ class DB_Spec_Handler_MySQL extends DB_Spec_Handler_PDO
             '!=', '<>', //Not equal operator
             'NOT LIKE', //Negation of simple pattern matching
             'NOT REGEXP', //Negation of REGEXP
-            'NOT', '!', //Negates value
-            '||', 'OR', //Logical OR
-            '+', //Addition operator
             'REGEXP', //Pattern matching using regular expressions
-            '>>', //Right shift
+            '+', //Addition operator
+            '||', //Logical OR
+            'OR', //Logical OR
+            'XOR', //Logical XOR
+            '*', //Multiplication operator
             'RLIKE', //Synonym for REGEXP
             'SOUNDS LIKE', //Compare sounds
-            '*', //Multiplication operator
-            '-', //Change the sign of the argument
-            'XOR', //Logical XOR
-            'IN',
+            'IN', //Check whether a value is within a set of values
+            'NOT IN', //Check whether a value is not within a set of values
         ));
     }
 
     /**
-     * @param string $specifier
-     * @return bool
+     * Checks if the given specifier is a valid order specifier for MySQL.
+     *
+     * @param string $specifier Order specifier to check.
+     * @return bool True if the specifier is valid, false otherwise.
      */
     public function isPossibleOrderSpecifier(string $specifier): bool
     {
-        return !(!in_array(strtoupper($specifier), array('ASC', 'DESC')));
+        return in_array(strtoupper($specifier), array('ASC', 'DESC'));
     }
-
 }

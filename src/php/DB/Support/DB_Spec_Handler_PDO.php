@@ -19,19 +19,22 @@ namespace INTERMediator\DB\Support;
 use INTERMediator\DB\DBClass;
 
 /**
- *
+ * Handler for PDO-based database specification behavior.
+ * Implements the DB_Spec_Behavior interface for general PDO backends (MySQL, PostgreSQL, SQLite, SQLServer).
  */
 class DB_Spec_Handler_PDO implements DB_Spec_Behavior
 {
     /**
-     * @var DBClass|null
+     * @var DBClass|null Reference to the associated DBClass object.
      */
     public ?DBClass $dbClassObj = null;
 
     /**
-     * @param DBClass|null $dbObj
-     * @param string $dsn
-     * @return DB_Spec_Handler_PDO|null
+     * Generates a handler instance based on DSN for a specific PDO backend.
+     *
+     * @param DBClass|null $dbObj Reference to DBClass object.
+     * @param string $dsn Data Source Name (DSN) string.
+     * @return DB_Spec_Handler_PDO|null Handler instance for the backend, or null if not supported.
      */
     public static function generateHandler(?DBClass $dbObj, string $dsn): ?DB_Spec_Handler_PDO
     {
@@ -59,7 +62,9 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
     }
 
     /**
-     * @return string
+     * Returns the default key name for PDO-based backends (static method).
+     *
+     * @return string Default key name.
      */
     public static function defaultKey(): string
     {
@@ -67,7 +72,9 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
     }
 
     /**
-     * @return string
+     * Returns the default key name for PDO-based backends (instance method).
+     *
+     * @return string Default key name.
      */
     public function getDefaultKey(): string
     {
@@ -75,7 +82,9 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
     }
 
     /**
-     * @return bool
+     * Checks if aggregation is supported (always true for PDO-based backends).
+     *
+     * @return bool True (aggregation supported).
      */
     public function isSupportAggregation(): bool
     {
@@ -83,9 +92,11 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
     }
 
     /**
-     * @param string $fname
-     * @param array $fieldnames
-     * @return bool
+     * Checks if the given field name is in the provided list of field names.
+     *
+     * @param string $fname Field name to check.
+     * @param array $fieldnames Array of available field names.
+     * @return bool True if $fname is in $fieldnames, false otherwise.
      */
     public function isContainingFieldName(string $fname, array $fieldnames): bool
     {
@@ -93,7 +104,9 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
     }
 
     /**
-     * @return bool
+     * Checks if NULL values are acceptable (always true for PDO-based backends).
+     *
+     * @return bool True (NULL acceptable).
      */
     public function isNullAcceptable(): bool
     {
@@ -101,8 +114,10 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
     }
 
     /**
-     * @param string $operator
-     * @return bool
+     * Checks if the given operator does not require a value (e.g., IS NULL).
+     *
+     * @param string $operator Operator to check.
+     * @return bool True if the operator does not require a value, false otherwise.
      */
     public function isOperatorWithoutValue(string $operator): bool
     {
@@ -113,8 +128,10 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
     }
 
     /**
-     * @param string $operator
-     * @return bool
+     * Checks if the given operator is valid for PDO-based backends.
+     *
+     * @param string $operator Operator to check.
+     * @return bool True if the operator is valid, false otherwise.
      */
     public function isPossibleOperator(string $operator): bool
     {
@@ -164,12 +181,13 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
     }
 
     /**
-     * @param string $specifier
-     * @return bool
+     * Checks if the given specifier is a valid order specifier for PDO-based backends.
+     *
+     * @param string $specifier Order specifier to check.
+     * @return bool True if the specifier is valid, false otherwise.
      */
     public function isPossibleOrderSpecifier(string $specifier): bool
     {
         return in_array(strtoupper($specifier), array('ASC', 'DESC'));
     }
-
 }

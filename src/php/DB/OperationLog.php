@@ -20,65 +20,80 @@ use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
 /**
- *
+ * OperationLog class for logging and managing database operation logs in INTER-Mediator.
+ * Handles log levels, recording options, and access log extension.
  */
 class OperationLog
 {
     /**
+     * Access log level.
      * @var int
      */
     private int $accessLogLevel;
     /**
+     * Database class log name.
      * @var string|null
      */
     private ?string $dbClassLog;
     /**
+     * Database user log name.
      * @var string|null
      */
     private ?string $dbUserLog;
     /**
+     * Database password log.
      * @var string|null
      */
     private ?string $dbPasswordLog;
     /**
+     * Database DSN log.
      * @var string|null
      */
     private ?string $dbDSNLog;
     /**
+     * Contexts to record.
      * @var array|null
      */
     private ?array $recordingContexts;
     /**
+     * Operations to record.
      * @var array|null
      */
     private ?array $recordingOperations;
     /**
+     * Context options.
      * @var array|null
      */
     private ?array $contextOptions;
     /**
+     * Whether to not record theme.
      * @var bool
      */
     private bool $dontRecordTheme;
     /**
+     * Whether to not record challenge.
      * @var bool
      */
     private bool $dontRecordChallenge;
     /**
+     * Whether to not record download.
      * @var bool
      */
     private bool $dontRecordDownload;
     /**
+     * Whether to not record download without GET.
      * @var bool
      */
     private bool $dontRecordDownloadNoGet;
     /**
-     * @var ?string
+     * Access log extension class name.
+     * @var string|null
      */
     private ?string $accessLogExtensionClass;
 
     /**
-     * @param array|null $options
+     * Constructor for OperationLog.
+     * @param array|null $options Context options for logging.
      */
     public function __construct(?array $options)
     {
@@ -100,13 +115,13 @@ class OperationLog
     }
 
     /**
-     * @param array|null $result
+     * Sets an entry in the operation log.
+     * @param array|null $result Result data for logging.
      * @return void
      * @throws Exception
      */
     public function setEntry(?array $result): void
     {
-
         $access = $_GET['access'] ?? ($_POST['access'] ?? (isset($_GET['theme']) ? 'theme' : 'download'));
         if (
             (!is_null($this->recordingOperations) && !in_array($access, $this->recordingOperations))
@@ -179,8 +194,9 @@ class OperationLog
     }
 
     /**
-     * @param array|null $ar
-     * @return string|null
+     * Converts an array to a string representation.
+     * @param array|null $ar Array to convert.
+     * @return string|null String representation of the array.
      */
     private function arrayToString(?array $ar): ?string
     {

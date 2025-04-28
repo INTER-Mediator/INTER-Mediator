@@ -1,5 +1,4 @@
 <?php
-
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -23,17 +22,21 @@ use DateTime;
 use DateInterval;
 
 /**
- *
+ * Handles notification and registration for PDO-based databases.
+ * Implements registration, matching, and removal of registered records using PDO as backend.
+ * Extends DB_Notification_Common and provides PDO-specific logic.
  */
 class DB_Notification_Handler_PDO extends DB_Notification_Common
 {
     /**
-     * @var \INTERMediator\DB\PDO
+     * @var \INTERMediator\DB\PDO PDO database handler instance.
      */
     protected \INTERMediator\DB\PDO $pdoDB;
 
     /**
-     * @param \INTERMediator\DB\PDO $parent
+     * Constructor.
+     *
+     * @param \INTERMediator\DB\PDO $parent Parent PDO instance.
      */
     public function __construct(\INTERMediator\DB\PDO $parent)
     {
@@ -42,7 +45,9 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
     }
 
     /**
-     * @return bool
+     * Checks if the required table for registration exists.
+     *
+     * @return bool True if the required table exists, false otherwise.
      */
     public function isExistRequiredTable(): bool
     {
@@ -69,11 +74,13 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
     }
 
     /**
-     * @param string|null $clientId
-     * @param string $entity
-     * @param string $condition
-     * @param array $pkArray
-     * @return string|null
+     * Registers a new record for a client.
+     *
+     * @param string|null $clientId Client identifier.
+     * @param string $entity Entity name.
+     * @param string $condition Query condition string.
+     * @param array $pkArray Array of primary keys.
+     * @return string|null Registration identifier or null on failure.
      */
     public function register(?string $clientId, string $entity, string $condition, array $pkArray): ?string
     {
@@ -156,9 +163,11 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
     }
 
     /**
-     * @param string|null $clientId
-     * @param array|null $tableKeys
-     * @return bool
+     * Unregisters a client from the database.
+     *
+     * @param string|null $clientId Client identifier.
+     * @param array|null $tableKeys Array of table keys.
+     * @return bool True on success, false on failure.
      */
     public function unregister(?string $clientId, ?array $tableKeys): bool
     {
@@ -204,10 +213,12 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
     }
 
     /**
-     * @param string|null $clientId
-     * @param string $entity
-     * @param array $pkArray
-     * @return array|null
+     * Finds matching registered records for a client.
+     *
+     * @param string|null $clientId Client identifier.
+     * @param string $entity Entity name.
+     * @param array $pkArray Array of primary keys.
+     * @return array|null Array of matching client identifiers or null on failure.
      */
     public function matchInRegistered(?string $clientId, string $entity, array $pkArray): ?array
     {
@@ -241,11 +252,13 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
     }
 
     /**
-     * @param string|null $clientId
-     * @param string $entity
-     * @param string $pkField
-     * @param array $pkArray
-     * @return array|null
+     * Appends a new record to the registered records for a client.
+     *
+     * @param string|null $clientId Client identifier.
+     * @param string $entity Entity name.
+     * @param string $pkField Primary key field name.
+     * @param array $pkArray Array of primary keys.
+     * @return array|null Array of matching client identifiers or null on failure.
      */
     public function appendIntoRegistered(?string $clientId, string $entity, string $pkField, array $pkArray): ?array
     {
@@ -312,10 +325,12 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
     }
 
     /**
-     * @param string|null $clientId
-     * @param string $entity
-     * @param array $pkArray
-     * @return array|null
+     * Removes a record from the registered records for a client.
+     *
+     * @param string|null $clientId Client identifier.
+     * @param string $entity Entity name.
+     * @param array $pkArray Array of primary keys.
+     * @return array|null Array of matching client identifiers or null on failure.
      */
     public function removeFromRegistered(?string $clientId, string $entity, array $pkArray): ?array
     {

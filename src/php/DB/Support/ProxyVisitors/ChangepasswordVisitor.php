@@ -6,13 +6,16 @@ use INTERMediator\DB\Support\ProxyElements\OperationElement;
 use INTERMediator\DB\Logger;
 
 /**
- *
+ * Visitor class for handling password change operations in the Proxy pattern.
+ * Implements methods for authentication, authorization, password update, and challenge handling.
  */
 class ChangepasswordVisitor extends OperationVisitor
 {
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the IsAuthAccessing operation.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool Always returns true for password change access.
      */
     public function visitIsAuthAccessing(OperationElement $e): bool
     {
@@ -20,8 +23,10 @@ class ChangepasswordVisitor extends OperationVisitor
     }
 
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the CheckAuthentication operation for password change.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool True if authentication succeeds, false otherwise.
      */
     public function visitCheckAuthentication(OperationElement $e): bool
     {
@@ -39,8 +44,10 @@ class ChangepasswordVisitor extends OperationVisitor
     }
 
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the CheckAuthorization operation for password change.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool True if authorization succeeds, false otherwise.
      */
     public function visitCheckAuthorization(OperationElement $e): bool
     {
@@ -49,7 +56,9 @@ class ChangepasswordVisitor extends OperationVisitor
     }
 
     /**
-     * @param OperationElement $e
+     * Visits the DataOperation operation to perform the password change.
+     *
+     * @param OperationElement $e The operation element being visited.
      * @return void
      */
     public function visitDataOperation(OperationElement $e): void
@@ -65,9 +74,10 @@ class ChangepasswordVisitor extends OperationVisitor
         }
     }
 
-
     /**
-     * @param OperationElement $e
+     * Visits the HandleChallenge operation for password change.
+     *
+     * @param OperationElement $e The operation element being visited.
      * @return void
      */
     public function visitHandleChallenge(OperationElement $e): void

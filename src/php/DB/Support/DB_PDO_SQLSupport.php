@@ -5,16 +5,16 @@ namespace INTERMediator\DB\Support;
 use Exception;
 
 /**
- *
+ * Trait providing SQL clause generation and utility functions for PDO-based database handlers.
+ * Includes methods for building WHERE and SORT clauses, normalizing conditions, and processing values.
  */
 trait DB_PDO_SQLSupport
 {
-    /*
-      * Generate SQL style WHERE clause.
-      */
     /**
-     * @param string $currentOperation
-     * @return string
+     * Generates a SQL-style WHERE clause for test purposes.
+     *
+     * @param string $currentOperation The current operation name.
+     * @return string SQL WHERE clause.
      * @throws Exception
      */
     public function getWhereClauseForTest(string $currentOperation): string
@@ -23,10 +23,12 @@ trait DB_PDO_SQLSupport
     }
 
     /**
-     * @param array $queryClauseArray
-     * @param string $insideOp
-     * @param string $outsideOp
-     * @return string
+     * Converts an array of query clauses into a SQL clause string.
+     *
+     * @param array $queryClauseArray Array of query clauses.
+     * @param string $insideOp Operator for terms within a clause.
+     * @param string $outsideOp Operator for combining clauses.
+     * @return string SQL clause string.
      */
     private function arrayToClause(array $queryClauseArray, string $insideOp, string $outsideOp): string
     {
@@ -38,8 +40,10 @@ trait DB_PDO_SQLSupport
     }
 
     /**
-     * @param string $term
-     * @return array
+     * Determines logical operators in a block term.
+     *
+     * @param string $term Block term string.
+     * @return array Array of operators: [fieldOp, groupOp, blockOp].
      */
     private function determineOperatorsInBlock(string $term): array
     {
@@ -53,9 +57,11 @@ trait DB_PDO_SQLSupport
     }
 
     /**
-     * @param string $value
-     * @param bool $isNumeric
-     * @return string
+     * Converts a JSON array string into a parenthesized, comma-separated SQL value list.
+     *
+     * @param string $value JSON array string.
+     * @param bool $isNumeric Whether the values are numeric.
+     * @return string SQL value list.
      */
     private function arrayToItemizedString(string $value, bool $isNumeric): string
     {
@@ -70,13 +76,15 @@ trait DB_PDO_SQLSupport
     }
 
     /**
-     * @param array $conditions
-     * @param string $primaryKey
-     * @param array $numericFields
-     * @param bool $isExtra
-     * @param string $insideOp
-     * @param string $outsideOp
-     * @return string
+     * Generates a SQL WHERE clause from conditions.
+     *
+     * @param array $conditions Array of condition arrays.
+     * @param string $primaryKey Primary key field name.
+     * @param array $numericFields Array of numeric field names.
+     * @param bool $isExtra Whether to include extra conditions.
+     * @param string $insideOp Operator for terms within a clause.
+     * @param string $outsideOp Operator for combining clauses.
+     * @return string SQL WHERE clause.
      * @throws Exception
      */
     private function generateWhereClause(array $conditions, string $primaryKey, array $numericFields,
@@ -186,18 +194,26 @@ trait DB_PDO_SQLSupport
         return $result;
     }
 
+    /**
+     * Processes a value for SQL usage.
+     *
+     * @param string $str Input string.
+     * @return string Processed value.
+     */
     private function processingValue(string $str): string
     {
         return $str;
     }
 
     /**
-     * @param string $currentOperation
-     * @param bool $includeContext
-     * @param bool $includeExtra
-     * @param string|null $signedUser
-     * @param bool $bypassAuth
-     * @return string
+     * Generates a SQL WHERE clause for the current operation.
+     *
+     * @param string $currentOperation The current operation name.
+     * @param bool $includeContext Whether to include context conditions.
+     * @param bool $includeExtra Whether to include extra conditions.
+     * @param string|null $signedUser Signed-in user.
+     * @param bool $bypassAuth Whether to bypass authorization checks.
+     * @return string SQL WHERE clause.
      * @throws Exception
      */
     private function getWhereClause(string  $currentOperation, bool $includeContext = true, bool $includeExtra = true,
@@ -294,9 +310,10 @@ trait DB_PDO_SQLSupport
         return $queryClause;
     }
 
-    /* Genrate SQL Sort and Where clause */
     /**
-     * @return string
+     * Generates a SQL ORDER BY clause for the current context.
+     *
+     * @return string SQL ORDER BY clause.
      * @throws Exception
      */
     private function getSortClause(): string
@@ -330,8 +347,10 @@ trait DB_PDO_SQLSupport
     }
 
     /**
-     * @param array $condition
-     * @return array
+     * Normalizes a condition array for SQL usage.
+     *
+     * @param array $condition Condition array.
+     * @return array Normalized condition array.
      */
     public function normalizedCondition(array $condition): array
     {

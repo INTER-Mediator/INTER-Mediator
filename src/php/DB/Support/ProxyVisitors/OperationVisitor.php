@@ -10,19 +10,24 @@ use INTERMediator\FileUploader;
 use INTERMediator\IMUtil;
 
 /**
- *
+ * Abstract base class for visitor implementations in the Proxy authentication/authorization system.
+ * Provides the visitor interface for authentication, authorization, data, and challenge operations.
+ * Also provides service methods and protected properties for subclasses.
  */
 abstract class OperationVisitor
 {
     /**
-     * Refers the Proxy object, which is calling visitor methods.
+     * Reference to the Proxy object, which is calling visitor methods.
+     *
      * @var Proxy
      */
     protected Proxy $proxy;
 
     /**
      * ==== Constructor ====
-     * @param Proxy $proxy
+     * Initializes the visitor with a reference to the Proxy object.
+     *
+     * @param Proxy $proxy The Proxy object using this visitor.
      */
     public function __construct(Proxy $proxy)
     {
@@ -33,31 +38,41 @@ abstract class OperationVisitor
     // Visitor methods
 
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the IsAuthAccessing operation.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool Result of the operation.
      */
     abstract public function visitIsAuthAccessing(OperationElement $e): bool;
 
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the CheckAuthentication operation.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool Result of the operation.
      */
     abstract public function visitCheckAuthentication(OperationElement $e): bool;
 
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the CheckAuthorization operation.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool Result of the operation.
      */
     abstract public function visitCheckAuthorization(OperationElement $e): bool;
 
     /**
-     * @param OperationElement $e
+     * Visits the DataOperation operation.
+     *
+     * @param OperationElement $e The operation element being visited.
      * @return void
      */
     abstract public function visitDataOperation(OperationElement $e): void;
 
     /**
-     * @param OperationElement $e
+     * Visits the HandleChallenge operation.
+     *
+     * @param OperationElement $e The operation element being visited.
      * @return void
      */
     abstract public function visitHandleChallenge(OperationElement $e): void;
@@ -65,21 +80,31 @@ abstract class OperationVisitor
     // ==== Service methods for the visitCheckAuthentication method. ====
 
     /**
+     * Stored challenge string for authentication checks.
+     *
      * @var string|null
      */
     protected ?string $storedChallenge;
+
     /**
+     * Stored credential string for authentication checks.
+     *
      * @var string|null
      */
     protected ?string $storedCredential;
+
     /**
+     * Stored 2FA authentication string for authentication checks.
+     *
      * @var string|null
      */
     protected ?string $stored2FAuth;
 
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Prepares and validates authentication for the CheckAuthentication operation.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool True if preparation is successful, false otherwise.
      */
     protected function prepareCheckAuthentication(OperationElement $e): bool
     {
@@ -132,8 +157,10 @@ abstract class OperationVisitor
     }
 
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Performs common authentication checks for the CheckAuthentication operation.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool True if authentication is successful, false otherwise.
      */
     protected function checkAuthenticationCommon(OperationElement $e): bool
     {
@@ -185,7 +212,9 @@ abstract class OperationVisitor
     }
 
     /**
-     * @return bool
+     * Performs authorization checks for the CheckAuthorization operation.
+     *
+     * @return bool True if authorization is successful, false otherwise.
      */
     protected function checkAuthorization(): bool
     {
@@ -223,12 +252,12 @@ abstract class OperationVisitor
         return false;
     }
 
-
     /**
-     * @return bool
+     * Performs session storage authentication checks.
+     *
+     * @return bool True if authentication is successful, false otherwise.
      */
-    protected
-    function sessionStorageCheckAuth(): bool
+    protected function sessionStorageCheckAuth(): bool
     {
         $proxy = $this->proxy;
         $hmacValue = ($proxy->hashedPassword && $this->storedChallenge)
@@ -260,15 +289,16 @@ abstract class OperationVisitor
         return false;
     }
 
-// ==== Service methods for the visitDataOperation method. ====
+    // ==== Service methods for the visitDataOperation method. ====
 
     /**
-     * @param string $access
+     * Creates or replaces data in the database.
+     *
+     * @param string $access The access type (create or replace).
      * @return void
      * @throws Exception
      */
-    protected
-    function CreateReplaceImpl(string $access): void
+    protected function CreateReplaceImpl(string $access): void
     {
         Logger::getInstance()->setDebugMessage("[processingRequest] start create processing", 2);
         $proxy = $this->proxy;
@@ -342,9 +372,11 @@ abstract class OperationVisitor
         }
     }
 
-// ==== Service methods for the visitHandleChallenge method. ====
+    // ==== Service methods for the visitHandleChallenge method. ====
 
     /**
+     * Handles the default challenge response.
+     *
      * @return void
      */
     protected function defaultHandleChallenge(): void
@@ -378,11 +410,13 @@ abstract class OperationVisitor
     }
 
     /**
-     * @param string $user
-     * @param string $generatedClientID
-     * @param string $prefix
-     * @param string $suffix
-     * @return string
+     * Generates and saves a challenge for the given user and client ID.
+     *
+     * @param string $user The user ID.
+     * @param string $generatedClientID The client ID.
+     * @param string $prefix The prefix for the challenge.
+     * @param string $suffix The suffix for the challenge.
+     * @return string The generated challenge.
      */
     public function generateAndSaveChallenge(string $user, string $generatedClientID, string $prefix, string $suffix = ""): string
     {
@@ -395,14 +429,15 @@ abstract class OperationVisitor
     }
 
     /**
-     * @param string $key
-     * @param string $challenge
-     * @param string $generatedClientID
-     * @param string $hashedPassword
+     * Sets a cookie for the given challenge.
+     *
+     * @param string $key The cookie key.
+     * @param string $challenge The challenge value.
+     * @param string $generatedClientID The client ID.
+     * @param string $hashedPassword The hashed password.
      * @return void
      */
-    protected
-    function setCookieOfChallenge(string $key, string $challenge, string $generatedClientID, string $hashedPassword): void
+    protected function setCookieOfChallenge(string $key, string $challenge, string $generatedClientID, string $hashedPassword): void
     {
         Logger::getInstance()->setDebugMessage("[setCookieOfChallenge] key={$key} value{$challenge}/{$generatedClientID}/{$hashedPassword}", 2);
         $proxy = $this->proxy;
@@ -414,14 +449,13 @@ abstract class OperationVisitor
     }
 
     /**
+     * Clears authentication cookies.
+     *
      * @return void
      */
-    protected
-    function clearAuthenticationCookies(): void
+    protected function clearAuthenticationCookies(): void
     {
         setcookie("_im_credential_token", "", time() - 3600); // Should be removed.
         setcookie("_im_credential_2FA", "", time() - 3600); // Should be removed.
     }
-
-
 }

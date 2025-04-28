@@ -1,5 +1,4 @@
 <?php
-
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -23,17 +22,23 @@ use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
 /**
- *
+ * Handles authentication support for PDO-based databases.
+ * Implements challenge/response, password management, and authorization using PDO as backend.
+ * Extends DB_Auth_Common and provides PDO-specific logic.
  */
 class DB_Auth_Handler_PDO extends DB_Auth_Common
 {
     /**
+     * PDO database handler instance.
+     *
      * @var PDO
      */
     protected PDO $pdoDB;
 
     /**
-     * @param PDO $parent
+     * Constructor.
+     *
+     * @param PDO $parent Parent PDO instance.
      */
     public function __construct(PDO $parent)
     {
@@ -42,14 +47,16 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string|null $uid
-     * @param string $challenge
-     * @param string $clientId
-     * @param string $prefix
-     * @param bool $alwaysInsert
+     * Stores a challenge for authentication.
+     *
+     * @param string|null $uid User ID.
+     * @param string $challenge Challenge string.
+     * @param string $clientId Client ID.
+     * @param string $prefix Prefix for the challenge.
+     * @param bool $alwaysInsert Always insert a new challenge, even if one exists.
      * @return void
      *
-     * Using 'issuedhash'
+     * Using 'issuedhash'.
      */
     public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId, string $prefix = "", bool $alwaysInsert = false): void
     {
@@ -117,10 +124,12 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string $uid
-     * @return ?string
+     * Checks a media token for authentication.
      *
-     * Using 'issuedhash'
+     * @param string $uid User ID.
+     * @return ?string Media token or null if not found.
+     *
+     * Using 'issuedhash'.
      * @throws Exception
      */
     public function authSupportCheckMediaToken(string $uid): ?string
@@ -156,14 +165,16 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string $uid
-     * @param string $clientId
-     * @param bool $isDelete
-     * @param string $prefix
-     * @param bool $isMulti
-     * @return ?string
+     * Retrieves a challenge for authentication.
      *
-     * Using 'issuedhash'
+     * @param string $uid User ID.
+     * @param string $clientId Client ID.
+     * @param bool $isDelete Delete the challenge after retrieval.
+     * @param string $prefix Prefix for the challenge.
+     * @param bool $isMulti Retrieve multiple challenges.
+     * @return ?string Challenge string or null if not found.
+     *
+     * Using 'issuedhash'.
      * @throws Exception
      */
     public function authSupportRetrieveChallenge(
@@ -219,9 +230,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @return bool
+     * Removes outdated challenges.
      *
-     * Using 'issuedhash'
+     * @return bool True if successful, false otherwise.
+     *
+     * Using 'issuedhash'.
      */
     public function authSupportRemoveOutdatedChallenges(): bool
     {
@@ -257,8 +270,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param array $keyValues
-     * @return bool|null true: create user, false: reuse user, null in error
+     * Handles OAuth user authentication.
+     *
+     * @param array $keyValues Key-value pairs for user authentication.
+     * @return ?bool True if user is created, false if user is reused, null on error.
      */
     public function authSupportOAuthUserHandling(array $keyValues): ?bool
     {
@@ -302,10 +317,12 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string $username
-     * @return ?string
+     * Retrieves a hashed password for a user.
      *
-     * Using 'authuser'
+     * @param string $username Username.
+     * @return ?string Hashed password or null if not found.
+     *
+     * Using 'authuser'.
      */
     public function authSupportRetrieveHashedPassword(string $username): ?string
     {
@@ -344,14 +361,16 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string $username
-     * @param string $hashedpassword
-     * @param bool $isSAML
-     * @param ?string $ldapPassword
-     * @param ?array $attrs
-     * @return bool
+     * Creates a new user.
      *
-     * Using 'authuser'
+     * @param string $username Username.
+     * @param string $hashedpassword Hashed password.
+     * @param bool $isSAML SAML authentication flag.
+     * @param ?string $ldapPassword LDAP password.
+     * @param ?array $attrs Additional attributes.
+     * @return bool True if successful, false otherwise.
+     *
+     * Using 'authuser'.
      */
     public function authSupportCreateUser(string  $username, string $hashedpassword, bool $isSAML = false,
                                           ?string $ldapPassword = null, ?array $attrs = null): bool
@@ -407,7 +426,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
                 "[authSupportCreateUser - SAML] {$sql}, SAML expiring ={$this->dbSettings->getSAMLExpiringSeconds()}");
             foreach ($result->fetchAll(\PDO::FETCH_ASSOC) as $row) {
                 if (isset($row['limitdt'])) {
-                    if (IMUtil::secondsFromNow($row['limitdt']) > $this->dbSettings->getSAMLExpiringSeconds()) {
+                    if (time() - strtotime($row['limitdt']) > $this->dbSettings->getSAMLExpiringSeconds()) {
                         $this->logger->setDebugMessage("[authSupportCreateUser - SAML] Over Limit Datetime.");
                         $timeUp = true;
                         $hpw = $row['hashedpasswd'];
@@ -466,11 +485,13 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string $username
-     * @param string $hashednewpassword
-     * @return bool
+     * Changes a user's password.
      *
-     * Using 'authuser'
+     * @param string $username Username.
+     * @param string $hashednewpassword New hashed password.
+     * @return bool True if successful, false otherwise.
+     *
+     * Using 'authuser'.
      */
     public function authSupportChangePassword(string $username, string $hashednewpassword): bool
     {
@@ -499,8 +520,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string $username
-     * @return string
+     * Gets a user ID from a username.
+     *
+     * @param string $username Username.
+     * @return string User ID.
      */
     public function authTableGetUserIdFromUsername(string $username): string
     {
@@ -508,8 +531,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string|null $username
-     * @return string
+     * Gets a user ID from a username.
+     *
+     * @param string|null $username Username.
+     * @return ?string User ID or null if not found.
      */
     public function authSupportGetUserIdFromUsername(?string $username): ?string
     {
@@ -517,9 +542,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string|null $username
-     * @param bool $isCheckLimit
-     * @return string|null
+     * Gets a user ID from a username.
+     *
+     * @param string|null $username Username.
+     * @param bool $isCheckLimit Check limit flag.
+     * @return ?string User ID or null if not found.
      */
     private function privateGetUserIdFromUsername(?string $username, bool $isCheckLimit): ?string
     {
@@ -549,10 +576,12 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string $groupid
-     * @return ?string
+     * Gets a group name from a group ID.
      *
-     * Using 'authgroup'
+     * @param string $groupid Group ID.
+     * @return ?string Group name or null if not found.
+     *
+     * Using 'authgroup'.
      */
     public function authSupportGetGroupNameFromGroupId(string $groupid): ?string
     {
@@ -575,10 +604,12 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param ?string $user
-     * @return array
+     * Gets groups for a user.
      *
-     * Using 'authcor'
+     * @param ?string $user User ID or username.
+     * @return array Groups for the user.
+     *
+     * Using 'authcor'.
      */
     public function authSupportGetGroupsOfUser(?string $user): array
     {
@@ -586,8 +617,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string $user
-     * @return array|null
+     * Gets groups for a user.
+     *
+     * @param string $user User ID or username.
+     * @return ?array Groups for the user or null if not found.
      */
     public function authTableGetGroupsOfUser(string $user): ?array
     {
@@ -595,9 +628,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string|null $user
-     * @param bool $isCheckLimit
-     * @return array|null
+     * Gets groups for a user.
+     *
+     * @param string|null $user User ID or username.
+     * @param bool $isCheckLimit Check limit flag.
+     * @return ?array Groups for the user or null if not found.
      */
     private function privateGetGroupsOfUser(?string $user, bool $isCheckLimit): ?array
     {
@@ -635,21 +670,13 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return $candidateGroups;
     }
 
-
     /**
-     * @var array
-     */
-    private array $belongGroups;
-    /**
-     * @var bool
-     */
-    private bool $firstLevel;
-
-    /**
-     * @param string|null $groupid
+     * Resolves a group.
+     *
+     * @param string|null $groupid Group ID.
      * @return void
      *
-     * Using 'authcor'
+     * Using 'authcor'.
      */
     private function resolveGroup(?string $groupid): void
     {
@@ -685,13 +712,15 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string $tableName
-     * @param string $targeting
-     * @param string $userField
-     * @param string $user
-     * @param string $keyField
-     * @param string $keyValue
-     * @return array|null Using any table.
+     * Checks media privileges.
+     *
+     * @param string $tableName Table name.
+     * @param string $targeting Targeting type.
+     * @param string $userField User field.
+     * @param string $user User ID or username.
+     * @param string $keyField Key field.
+     * @param string $keyValue Key value.
+     * @return ?array Media privileges or null if not found.
      *
      * Using any table.
      * @throws Exception
@@ -742,15 +771,12 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @var array
-     */
-    private array $userCache = []; // Cache for authSupportGetUserIdFromEmail method.
-
-    /**
-     * @param string $email
-     * @return ?string
+     * Gets a user ID from an email.
      *
-     * Using 'authuser'
+     * @param string $email Email.
+     * @return ?string User ID or null if not found.
+     *
+     * Using 'authuser'.
      */
     public function authSupportGetUserIdFromEmail(string $email): ?string
     {
@@ -777,10 +803,12 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string $userid
-     * @return ?string
+     * Gets a username from a user ID.
      *
-     * Using 'authuser'
+     * @param string $userid User ID.
+     * @return ?string Username or null if not found.
+     *
+     * Using 'authuser'.
      */
     public function authSupportGetUsernameFromUserId(string $userid): ?string
     {
@@ -803,10 +831,12 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string|null $username
-     * @return ?string
+     * Unifies a username and email.
      *
-     * Using 'authuser'
+     * @param string|null $username Username.
+     * @return ?string Unified username or null if not found.
+     *
+     * Using 'authuser'.
      */
     public function authSupportUnifyUsernameAndEmail(?string $username): ?string
     {
@@ -854,8 +884,12 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string|null $username
-     * @return string|null
+     * Gets an email from a unified username.
+     *
+     * @param string|null $username Unified username.
+     * @return ?string Email or null if not found.
+     *
+     * Using 'authuser'.
      */
     public function authSupportEmailFromUnifiedUsername(?string $username): ?string
     {
@@ -881,12 +915,14 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string $userid
-     * @param string $clienthost
-     * @param string $hash
-     * @return bool
+     * Stores an issued hash for password reset.
      *
-     * Using 'issuedhash'
+     * @param string $userid User ID.
+     * @param string $clienthost Client host.
+     * @param string $hash Hash.
+     * @return bool True if successful, false otherwise.
+     *
+     * Using 'issuedhash'.
      */
     public function authSupportStoreIssuedHashForResetPassword(string $userid, string $clienthost, string $hash): bool
     {
@@ -912,14 +948,15 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         return true;
     }
 
-
     /**
-     * @param string $userid
-     * @param string $randdata
-     * @param string $hash
-     * @return bool
+     * Checks an issued hash for password reset.
      *
-     * Using 'issuedhash'
+     * @param string $userid User ID.
+     * @param string $randdata Random data.
+     * @param string $hash Hash.
+     * @return bool True if successful, false otherwise.
+     *
+     * Using 'issuedhash'.
      */
     public function authSupportCheckIssuedHashForResetPassword(string $userid, string $randdata, string $hash): bool
     {
@@ -952,9 +989,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string $userid
-     * @param string $hash
-     * @return bool
+     * Starts user enrollment.
+     *
+     * @param string $userid User ID.
+     * @param string $hash Hash.
+     * @return bool True if successful, false otherwise.
      */
     public function authSupportUserEnrollmentStart(string $userid, string $hash): bool
     {
@@ -981,8 +1020,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string $hash
-     * @return string|null
+     * Gets the enrolling user.
+     *
+     * @param string $hash Hash.
+     * @return ?string Enrolling user ID or null if not found.
      */
     public function authSupportUserEnrollmentEnrollingUser(string $hash): ?string
     {
@@ -1015,11 +1056,13 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string $userID
-     * @param string|null $password
-     * @param string|null $rawPWField
-     * @param string|null $rawPW
-     * @return string|null
+     * Activates a user.
+     *
+     * @param string $userID User ID.
+     * @param string|null $password Password.
+     * @param string|null $rawPWField Raw password field.
+     * @param string|null $rawPW Raw password.
+     * @return ?string Activated user ID or null if not found.
      */
     public function authSupportUserEnrollmentActivateUser(
         string $userID, ?string $password, ?string $rawPWField, ?string $rawPW): ?string
@@ -1064,8 +1107,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param string $userID
-     * @return bool
+     * Checks if a user is within the SAML limit.
+     *
+     * @param string $userID User ID.
+     * @return bool True if within the limit, false otherwise.
      */
     public function authSupportIsWithinSAMLLimit(string $userID): bool
     {
@@ -1104,7 +1149,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @return bool
+     * Checks if SHA256 hash migration is possible.
+     *
+     * @return bool True if possible, false otherwise.
+     *
+     * Using 'authuser', 'issuedhash'.
      */
     public function authSupportCanMigrateSHA256Hash(): bool // authuser, issuedhash
     {
@@ -1125,8 +1174,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
-     * @param null|string $userID
-     * @return array 3 elements array as like: [UserID, username, hashedpasswd].
+     * Unifies a username and email and gets user information.
+     *
+     * @param null|string $userID User ID or username.
+     * @return array User information.
      */
     public function authSupportUnifyUsernameAndEmailAndGetInfo(?string $userID): array
     {

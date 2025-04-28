@@ -16,13 +16,15 @@
 namespace INTERMediator\DB;
 
 /**
- *
+ * NullDB class acts as a no-operation database driver for INTER-Mediator.
+ * All methods return default or null values, enabling testing or fallback without a real database.
  */
 class NullDB extends DBClass
 {
 
     /**
-     * @return array|null
+     * Read records from the database (no-op).
+     * @return array|null Always returns null.
      */
     public function readFromDB(): ?array
     {
@@ -30,7 +32,8 @@ class NullDB extends DBClass
     }
 
     /**
-     * @return int
+     * Get the count of query results (no-op).
+     * @return int Always returns 0.
      */
     public function countQueryResult(): int
     {
@@ -38,7 +41,8 @@ class NullDB extends DBClass
     }
 
     /**
-     * @return int
+     * Get the total count of records (no-op).
+     * @return int Always returns 0.
      */
     public function getTotalCount(): int
     {
@@ -46,8 +50,9 @@ class NullDB extends DBClass
     }
 
     /**
-     * @param bool $bypassAuth
-     * @return bool
+     * Update records in the database (no-op).
+     * @param bool $bypassAuth Whether to bypass authentication.
+     * @return bool Always returns false.
      */
     public function updateDB(bool $bypassAuth): bool
     {
@@ -55,8 +60,9 @@ class NullDB extends DBClass
     }
 
     /**
-     * @param bool $isReplace
-     * @return string|null
+     * Create a new record in the database (no-op).
+     * @param bool $isReplace Whether to replace existing data.
+     * @return string|null Always returns null.
      */
     public function createInDB(bool $isReplace = false): ?string
     {
@@ -64,7 +70,8 @@ class NullDB extends DBClass
     }
 
     /**
-     * @return bool
+     * Delete a record from the database (no-op).
+     * @return bool Always returns false.
      */
     public function deleteFromDB(): bool
     {
@@ -72,8 +79,9 @@ class NullDB extends DBClass
     }
 
     /**
-     * @param string $dataSourceName
-     * @return array|null
+     * Get field information (no-op).
+     * @param string $dataSourceName The data source name.
+     * @return array|null Always returns null.
      */
     public function getFieldInfo(string $dataSourceName): ?array
     {
@@ -81,7 +89,8 @@ class NullDB extends DBClass
     }
 
     /**
-     * @return bool
+     * Setup the database connection (no-op).
+     * @return bool Always returns true.
      */
     public function setupConnection(): bool
     {
@@ -89,7 +98,8 @@ class NullDB extends DBClass
     }
 
     /**
-     * @param bool $value
+     * Require updated record (no-op).
+     * @param bool $value Whether to require updated record.
      * @return void
      */
     public function requireUpdatedRecord(bool $value): void
@@ -97,7 +107,8 @@ class NullDB extends DBClass
     }
 
     /**
-     * @return array|null
+     * Get the updated record (no-op).
+     * @return array|null Always returns null.
      */
     public function getUpdatedRecord(): ?array
     {
@@ -105,7 +116,8 @@ class NullDB extends DBClass
     }
 
     /**
-     * @return array|null
+     * Get the updated record (no-op).
+     * @return array|null Always returns null.
      */
     public function updatedRecord(): ?array
     {
@@ -113,7 +125,8 @@ class NullDB extends DBClass
     }
 
     /**
-     * @param array $record
+     * Set the updated record (no-op).
+     * @param array $record The record to set.
      * @return void
      */
     public function setUpdatedRecord(array $record): void
@@ -121,8 +134,9 @@ class NullDB extends DBClass
     }
 
     /**
-     * @param string $field
-     * @param string $value
+     * Soft delete or activate a record (no-op).
+     * @param string $field The field to update.
+     * @param string $value The value to set.
      * @return void
      */
     public function softDeleteActivate(string $field, string $value): void
@@ -131,7 +145,8 @@ class NullDB extends DBClass
     }
 
     /**
-     * @return string|null
+     * Copy a record in the database (no-op).
+     * @return string|null Always returns null.
      */
     public function copyInDB(): ?string
     {
@@ -139,7 +154,8 @@ class NullDB extends DBClass
     }
 
     /**
-     * @param string|null $dsn
+     * Setup database handlers (no-op).
+     * @param string|null $dsn The data source name.
      * @return void
      */
     public function setupHandlers(?string $dsn = null): void
@@ -147,9 +163,10 @@ class NullDB extends DBClass
     }
 
     /**
-     * @param string $field
-     * @param string $value
-     * @param int $index
+     * Set data to the updated record (no-op).
+     * @param string $field The field to update.
+     * @param string $value The value to set.
+     * @param int $index The index of the record.
      * @return void
      */
     public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
@@ -157,7 +174,8 @@ class NullDB extends DBClass
     }
 
     /**
-     * @return bool
+     * Get whether to use set data to updated record (no-op).
+     * @return bool Always returns false.
      */
     public function getUseSetDataToUpdatedRecord(): bool
     {
@@ -165,6 +183,7 @@ class NullDB extends DBClass
     }
 
     /**
+     * Clear the use set data to updated record flag (no-op).
      * @return void
      */
     public function clearUseSetDataToUpdatedRecord(): void
@@ -172,9 +191,10 @@ class NullDB extends DBClass
     }
 
     /**
-     * @param string $table
-     * @param array|null $conditions
-     * @return array|null
+     * Query records for testing (no-op).
+     * @param string $table The table to query.
+     * @param array|null $conditions The query conditions.
+     * @return array|null Always returns null.
      */
     public function queryForTest(string $table, ?array $conditions = null):?array
     {
@@ -182,20 +202,19 @@ class NullDB extends DBClass
     }
 
     /**
-     * @param string $table
-     * @param array|null $conditions
-     * @return bool
+     * Delete records for testing (no-op).
+     * @param string $table The table to delete from.
+     * @param array|null $conditions The delete conditions.
+     * @return bool Always returns false.
      */
     public function deleteForTest(string $table, ?array $conditions = null): bool
     {
         return false;
     }
 
-    /*
-* Transaction
-*/
     /**
-     * @return bool
+     * Check if a transaction is available (no-op).
+     * @return bool Always returns false.
      */
     public function hasTransaction():bool
     {
@@ -203,7 +222,8 @@ class NullDB extends DBClass
     }
 
     /**
-     * @return bool
+     * Check if a transaction is in progress (no-op).
+     * @return bool Always returns false.
      */
     public function inTransaction():bool
     {
@@ -211,6 +231,7 @@ class NullDB extends DBClass
     }
 
     /**
+     * Begin a transaction (no-op).
      * @return void
      */
     public function beginTransaction():void
@@ -218,6 +239,7 @@ class NullDB extends DBClass
     }
 
     /**
+     * Commit a transaction (no-op).
      * @return void
      */
     public function commitTransaction():void
@@ -225,6 +247,7 @@ class NullDB extends DBClass
     }
 
     /**
+     * Rollback a transaction (no-op).
      * @return void
      */
     public function rollbackTransaction():void
@@ -232,6 +255,7 @@ class NullDB extends DBClass
     }
 
     /**
+     * Close the database operation (no-op).
      * @return void
      */
     public function closeDBOperation():void

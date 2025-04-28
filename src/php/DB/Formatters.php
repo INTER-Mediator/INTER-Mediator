@@ -16,17 +16,20 @@
 namespace INTERMediator\DB;
 
 /**
- *
+ * Handles field data formatting using data converters for database operations in INTER-Mediator.
  */
 class Formatters
 {
     /**
+     * Array of formatter objects for each field.
      * @var array
      */
     private array $formatter = [];
-    /* Formatter processing */
+
     /**
-     * @param $fmt
+     * Set formatter objects for fields.
+     *
+     * @param mixed $fmt Array of formatter definitions.
      * @return void
      */
     public function setFormatter($fmt)
@@ -44,9 +47,11 @@ class Formatters
     }
 
     /**
-     * @param $field
-     * @param $data
-     * @return mixed
+     * Convert field data from DB format to user format using the field's formatter.
+     *
+     * @param mixed $field Field name.
+     * @param mixed $data Data from the database.
+     * @return mixed Converted data for user display.
      */
     public function formatterFromDB($field, $data)
     {
@@ -57,9 +62,11 @@ class Formatters
     }
 
     /**
-     * @param $field
-     * @param $data
-     * @return mixed
+     * Convert field data from user format to DB format using the field's formatter.
+     *
+     * @param mixed $field Field name.
+     * @param mixed $data Data from the user.
+     * @return mixed Converted data for DB storage.
      */
     public function formatterToDB($field, $data)
     {
@@ -68,5 +75,4 @@ class Formatters
         }
         return $data;
     }
-
 }

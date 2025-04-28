@@ -21,17 +21,21 @@ use Exception;
 use INTERMediator\DB\FileMaker_DataAPI;
 
 /**
- *
+ * Handles notification and registration for FileMaker Data API backend.
+ * Implements registration, matching, and removal of registered records using FileMaker as backend.
+ * Extends DB_Notification_Common and provides FileMaker-specific logic.
  */
 class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
 {
     /**
-     * @var FileMaker_DataAPI
+     * @var FileMaker_DataAPI FileMaker Data API handler instance.
      */
     protected FileMaker_DataAPI $fmdb;
 
     /**
-     * @param FileMaker_DataAPI $parent
+     * Constructor.
+     *
+     * @param FileMaker_DataAPI $parent Parent FileMaker_DataAPI instance.
      */
     public function __construct(FileMaker_DataAPI $parent)
     {
@@ -39,14 +43,12 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
         $this->fmdb = $parent;
     }
 
-    /*
-      * FileMaker Data API doesn't have any function to inspect entities in database.
-      * So we can't implement the isExistRequiredTable method.
-      * This method is used just from NotifyServer class.
-      * Masayuki Nii 2017-07-08
-      */
     /**
-     * @return bool
+     * FileMaker Data API doesn't have any function to inspect entities in database.
+     * So we can't implement the isExistRequiredTable method.
+     * This method is used just from NotifyServer class.
+     *
+     * @return bool Always returns true.
      */
     public function isExistRequiredTable(): bool
     {
@@ -54,11 +56,13 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
     }
 
     /**
-     * @param string|null $clientId
-     * @param string $entity
-     * @param string $condition
-     * @param array $pkArray
-     * @return string|null
+     * Registers a new record for a client.
+     *
+     * @param string|null $clientId Client identifier.
+     * @param string $entity Entity name.
+     * @param string $condition Query condition string.
+     * @param array $pkArray Array of primary keys.
+     * @return string|null Registration identifier or null on failure.
      * @throws Exception
      */
     public function register(?string $clientId, string $entity, string $condition, array $pkArray): ?string
@@ -119,9 +123,11 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
     }
 
     /**
-     * @param string|null $clientId
-     * @param array|null $tableKeys
-     * @return bool
+     * Unregisters a client.
+     *
+     * @param string|null $clientId Client identifier.
+     * @param array|null $tableKeys Array of table keys.
+     * @return bool True on success, false on failure.
      */
     public function unregister(?string $clientId, ?array $tableKeys): bool
     {
@@ -165,10 +171,12 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
     }
 
     /**
-     * @param string|null $clientId
-     * @param string $entity
-     * @param array $pkArray
-     * @return array|null
+     * Matches registered records for a client.
+     *
+     * @param string|null $clientId Client identifier.
+     * @param string $entity Entity name.
+     * @param array $pkArray Array of primary keys.
+     * @return array|null Array of matching client identifiers or null on failure.
      */
     public function matchInRegistered(?string $clientId, string $entity, array $pkArray): ?array
     {
@@ -228,11 +236,13 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
     }
 
     /**
-     * @param string|null $clientId
-     * @param string $entity
-     * @param string $pkField
-     * @param array $pkArray
-     * @return array|null
+     * Appends a new record to the registered records for a client.
+     *
+     * @param string|null $clientId Client identifier.
+     * @param string $entity Entity name.
+     * @param string $pkField Primary key field name.
+     * @param array $pkArray Array of primary keys.
+     * @return array|null Array of client identifiers or null on failure.
      * @throws Exception
      */
     public function appendIntoRegistered(?string $clientId, string $entity, string $pkField, array $pkArray): ?array
@@ -285,10 +295,12 @@ class DB_Notification_Handler_FileMaker_DataAPI extends DB_Notification_Common
     }
 
     /**
-     * @param string|null $clientId
-     * @param string $entity
-     * @param array $pkArray
-     * @return array|null
+     * Removes a record from the registered records for a client.
+     *
+     * @param string|null $clientId Client identifier.
+     * @param string $entity Entity name.
+     * @param array $pkArray Array of primary keys.
+     * @return array|null Array of client identifiers or null on failure.
      */
     public function removeFromRegistered(?string $clientId, string $entity, array $pkArray): ?array
     {

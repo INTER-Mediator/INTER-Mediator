@@ -19,17 +19,20 @@ namespace INTERMediator\DB;
 use Exception;
 
 /**
- *
+ * TextFile class for handling CSV/text-based data sources in INTER-Mediator.
+ * Supports reading, writing, and managing records in text files.
  */
 class TextFile extends DBClass
 {
     /**
+     * Record count for the current operation.
      * @var int
      */
     private int $recordCount;
 
     /**
-     * @return array|null
+     * Read records from the text file data source.
+     * @return array|null Returns an array of records or null on failure.
      * @throws Exception
      */
     public function readFromDB(): ?array
@@ -138,6 +141,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Returns the record count for the current operation.
      * @return int
      */
     public function countQueryResult(): int
@@ -146,6 +150,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Get the WHERE clause for the current operation.
      * @param string $currentOperation
      * @param bool $includeContext
      * @param bool $includeExtra
@@ -209,9 +214,8 @@ class TextFile extends DBClass
         return $queryClauseArray;
     }
 
-
-    /* Genrate SQL Sort and Where clause */
     /**
+     * Get the SORT clause for the current operation.
      * @return array
      * @throws Exception
      */
@@ -245,6 +249,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Update the database with the current operation.
      * @param bool $bypassAuth
      * @return bool
      */
@@ -254,6 +259,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Delete records from the database.
      * @return bool
      */
     public function deleteFromDB(): bool
@@ -262,6 +268,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Get field information for the specified data source.
      * @param string $dataSourceName
      * @return array|null
      */
@@ -271,6 +278,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Set up the database connection.
      * @return bool
      */
     public function setupConnection(): bool
@@ -279,6 +287,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Check if the specified operator is valid.
      * @param string $operator
      * @return bool
      */
@@ -288,6 +297,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Check if the specified order specifier is valid.
      * @param string $specifier
      * @return bool
      */
@@ -297,6 +307,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Set the updated record flag.
      * @param bool $value
      * @return void
      */
@@ -306,6 +317,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Get the updated record.
      * @return array|null
      */
     public function getUpdatedRecord(): ?array
@@ -314,6 +326,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Get the updated record.
      * @return array|null
      */
     public function updatedRecord(): ?array
@@ -322,6 +335,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Set the updated record.
      * @param array $record
      * @return void
      */
@@ -330,6 +344,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Create a new record in the database.
      * @param bool $isReplace
      * @return string|null
      */
@@ -339,6 +354,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Soft delete a record.
      * @param string $field
      * @param string $value
      * @return void
@@ -348,6 +364,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Copy a record in the database.
      * @return string|null
      */
     public function copyInDB(): ?string
@@ -356,6 +373,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Get the total count of records.
      * @return int
      */
     public function getTotalCount(): int
@@ -364,6 +382,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Set up the database handlers.
      * @param string|null $dsn
      * @return void
      */
@@ -372,6 +391,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Set data to the updated record.
      * @param string $field
      * @param string $value
      * @param int $index
@@ -382,6 +402,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Query the database for testing purposes.
      * @param string $table
      * @param array|null $conditions
      * @return array|null
@@ -392,6 +413,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Delete records from the database for testing purposes.
      * @param string $table
      * @param array|null $conditions
      * @return bool
@@ -401,10 +423,8 @@ class TextFile extends DBClass
         return false;
     }
 
-    /*
-* Transaction
-*/
     /**
+     * Check if a transaction is in progress.
      * @return bool
      */
     public function hasTransaction(): bool
@@ -413,6 +433,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Check if a transaction is in progress.
      * @return bool
      */
     public function inTransaction(): bool
@@ -421,6 +442,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Begin a transaction.
      * @return void
      */
     public function beginTransaction(): void
@@ -428,6 +450,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Commit a transaction.
      * @return void
      */
     public function commitTransaction(): void
@@ -435,6 +458,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Roll back a transaction.
      * @return void
      */
     public function rollbackTransaction(): void
@@ -442,6 +466,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Get the use set data to updated record flag.
      * @return bool
      */
     public function getUseSetDataToUpdatedRecord(): bool
@@ -450,6 +475,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Clear the use set data to updated record flag.
      * @return void
      */
     public function clearUseSetDataToUpdatedRecord(): void
@@ -457,6 +483,7 @@ class TextFile extends DBClass
     }
 
     /**
+     * Close the database operation.
      * @return void
      */
     public function closeDBOperation(): void

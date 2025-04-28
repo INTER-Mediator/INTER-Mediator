@@ -7,13 +7,16 @@ use INTERMediator\IMUtil;
 use INTERMediator\DB\Logger;
 
 /**
- *
+ * Visitor class for handling challenge-based authentication operations in the Proxy pattern.
+ * Implements methods for authentication, authorization, and challenge handling for challenge access.
  */
 class ChallengeVisitor extends OperationVisitor
 {
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the IsAuthAccessing operation.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool Always returns true for challenge access.
      */
     public function visitIsAuthAccessing(OperationElement $e): bool
     {
@@ -21,8 +24,10 @@ class ChallengeVisitor extends OperationVisitor
     }
 
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the CheckAuthentication operation for challenge access.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool Always returns false for challenge access (no authentication is performed).
      */
     public function visitCheckAuthentication(OperationElement $e): bool
     {
@@ -32,8 +37,10 @@ class ChallengeVisitor extends OperationVisitor
     }
 
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the CheckAuthorization operation for challenge access.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool Always returns true for challenge access.
      */
     public function visitCheckAuthorization(OperationElement $e): bool
     {
@@ -41,16 +48,19 @@ class ChallengeVisitor extends OperationVisitor
     }
 
     /**
-     * @param OperationElement $e
+     * Visits the DataOperation operation. No operation for challenge visitor.
+     *
+     * @param OperationElement $e The operation element being visited.
      * @return void
      */
     public function visitDataOperation(OperationElement $e): void
     {
     }
 
-
     /**
-     * @param OperationElement $e
+     * Visits the HandleChallenge operation to process challenge/response for challenge access.
+     *
+     * @param OperationElement $e The operation element being visited.
      * @return void
      */
     public function visitHandleChallenge(OperationElement $e): void
