@@ -764,7 +764,7 @@ abstract class DB_PDO_Handler
      * @param string $value Value.
      * @return string SQL numeric to like operator.
      */
-    public function getSQLNumericToLikeOpe($field, $value): string
+    public function getSQLNumericToLikeOpe(string $field, string $value): string
     {
         return "{$field} LIKE {$value}";
     }

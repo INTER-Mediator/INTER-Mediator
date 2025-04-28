@@ -671,6 +671,15 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
     }
 
     /**
+     * @var array
+     */
+    private array $belongGroups;
+    /**
+     * @var bool
+     */
+    private bool $firstLevel;
+
+    /**
      * Resolves a group.
      *
      * @param string|null $groupid Group ID.
@@ -769,6 +778,11 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         }
         return null;
     }
+
+    /**
+     * @var array
+     */
+    private array $userCache = []; // Cache for authSupportGetUserIdFromEmail method.
 
     /**
      * Gets a user ID from an email.
