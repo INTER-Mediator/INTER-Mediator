@@ -1366,10 +1366,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * Set data to updated record.
      * @param string $field
-     * @param string $value
+     * @param string|null $value
      * @param int $index
      */
-    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
+    public function setDataToUpdatedRecord(string $field, ?string $value, int $index = 0): void
     {
         $this->dbClass->setDataToUpdatedRecord($field, $value, $index);
     }

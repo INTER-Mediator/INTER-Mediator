@@ -164,11 +164,11 @@ class PDO extends DBClass
     /**
      * Sets data to the updated record.
      * @param string $field
-     * @param string $value
+     * @param string|null $value
      * @param int $index
      * @return void
      */
-    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
+    public function setDataToUpdatedRecord(string $field, ?string $value, int $index = 0): void
     {
         $this->updatedRecord[$index][$field] = $value;
         $this->useSetDataToUpdatedRecord = true;

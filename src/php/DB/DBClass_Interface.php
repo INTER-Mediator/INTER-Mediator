@@ -128,11 +128,11 @@ interface DBClass_Interface
     /**
      * Set a field value in the updated record.
      * @param string $field The field name.
-     * @param string $value The value to set.
+     * @param string|null $value The value to set.
      * @param int $index The record index (default 0).
      * @return void
      */
-    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void;
+    public function setDataToUpdatedRecord(string $field, ?string $value, int $index = 0): void;
 
     /**
      * Check if setDataToUpdatedRecord is used.

@@ -165,11 +165,11 @@ class NullDB extends DBClass
     /**
      * Set data to the updated record (no-op).
      * @param string $field The field to update.
-     * @param string $value The value to set.
+     * @param string|null $value The value to set.
      * @param int $index The index of the record.
      * @return void
      */
-    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
+    public function setDataToUpdatedRecord(string $field, ?string $value, int $index = 0): void
     {
     }
 

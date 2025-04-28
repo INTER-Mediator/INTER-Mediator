@@ -160,11 +160,11 @@ class FileMaker_DataAPI extends DBClass
      * Set data to the updated record.
      *
      * @param string $field The field name.
-     * @param string $value The field value.
+     * @param string|null $value The field value.
      * @param int $index The record index (default: 0).
      * @return void
      */
-    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
+    public function setDataToUpdatedRecord(string $field, ?string $value, int $index = 0): void
     {
         $this->updatedRecord[$index][$field] = $value;
         $this->useSetDataToUpdatedRecord = true;

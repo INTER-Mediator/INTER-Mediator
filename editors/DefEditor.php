@@ -1295,7 +1295,7 @@ class DefEditor extends DBClass
         // TODO: Implement setupHandlers() method.
     }
 
-    public function setDataToUpdatedRecord(string $field, string $value, int $index = 0): void
+    public function setDataToUpdatedRecord(string $field, ?string $value, int $index = 0): void
     {
         // TODO: Implement setDataToUpdatedRecord() method.
     }
