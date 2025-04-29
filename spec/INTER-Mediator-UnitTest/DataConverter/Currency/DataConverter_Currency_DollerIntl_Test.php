@@ -12,7 +12,6 @@ class DataConverter_Currency_DollerIntl_Test extends DataConverter_Currency_Base
     public function setUp(): void
     {
         \INTERMediator\Locale\IMLocale::$localForTest = 'en_US';
-        \INTERMediator\Locale\IMLocale::$alwaysIMClasses = false;
         $this->dataconverter = new \INTERMediator\Data_Converter\Currency();
 
         $this->thSepMark = ',';

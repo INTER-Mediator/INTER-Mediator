@@ -15,7 +15,6 @@
 
 namespace INTERMediator\Data_Converter;
 
-use Exception;
 use INTERMediator\Locale\IMLocale;
 
 /**
@@ -56,12 +55,7 @@ class NumberBase
         IMLocale::setLocale(LC_ALL);
         $this->choosenLocale = IMLocale::$choosenLocale;
         $this->useMbstring = IMLocale::$useMbstring;
-        $nfClass = IMLocale::numberFormatterClassName();
-        try {
-            $this->formatter = new $nfClass($this->choosenLocale, 2 /*NumberFormatter::CURRENCY*/);
-        } catch (Exception $ex) {
-            throw new Exception("Formatter class can not instantiate it.");
-        }
+        $this->formatter = new \NumberFormatter($this->choosenLocale, 2 /*NumberFormatter::CURRENCY*/);
         $this->decimalMark = $this->formatter->getSymbol(0 /*NumberFormatter::DECIMAL_SEPARATOR_SYMBOL*/);
         $this->thSepMark = $this->formatter->getSymbol(1 /*NumberFormatter::GROUPING_SEPARATOR_SYMBOL*/);
         $this->currencyMark = $this->formatter->getTextAttribute(5 /*NumberFormatter::CURRENCY_CODE*/);

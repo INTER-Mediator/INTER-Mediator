@@ -15,7 +15,6 @@
 
 namespace INTERMediator\Locale;
 
-use Exception;
 use INTERMediator\Params;
 
 /**
@@ -24,25 +23,6 @@ use INTERMediator\Params;
  */
 class IMLocale
 {
-    /**
-     * Returns the class name to use for number formatting, depending on environment and settings.
-     *
-     * @return string The fully qualified class name for number formatting.
-     */
-    public static function numberFormatterClassName(): string
-    {
-        $cName = "INTERMediator\Locale\IMNumberFormatter";
-        if (class_exists("\NumberFormatter") && !IMLocale::$alwaysIMClasses) {
-            $cName = "\NumberFormatter"; // This class always exists after PHP 5.3.
-        }
-        return $cName;
-    }
-
-    /**
-     * If true, always use INTER-Mediator classes for formatting (for unit testing).
-     * @var bool
-     */
-    public static bool $alwaysIMClasses = false;
     /**
      * The currently chosen locale (e.g., 'en', 'ja_JP').
      * @var string
@@ -112,7 +92,7 @@ class IMLocale
         IMLocale::$choosenLocale = array_key_exists(IMLocale::$choosenLocale, IMLocale::$localeConvertTable) ?
             IMLocale::$localeConvertTable[IMLocale::$choosenLocale] : IMLocale::$choosenLocale;
 
-        // Detect server platform, Windows or Unix
+        // Detect a server platform, Windows or Unix
         $isWindows = false;
         $uname = php_uname();
         if (strpos($uname, 'Windows')) {
@@ -146,14 +126,14 @@ class IMLocale
             $lstr = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']) : 'en';
         }
 
-        // Extracting first item and cutting the priority infos.
-        if (strpos($lstr, ',') !== false) $lstr = substr($lstr, 0, strpos($lstr, ','));
-        if (strpos($lstr, ';') !== false) $lstr = substr($lstr, 0, strpos($lstr, ';'));
+        // Extracting the first item and cutting the priority information.
+        if (str_contains($lstr, ',')) $lstr = substr($lstr, 0, strpos($lstr, ','));
+        if (str_contains($lstr, ';')) $lstr = substr($lstr, 0, strpos($lstr, ';'));
 
         // Convert to the right locale identifier.
-        if (strpos($lstr, '-') !== false) {
+        if (str_contains($lstr, '-')) {
             $lstr = explode('-', $lstr);
-        } else if (strpos($lstr, '_') !== false) {
+        } else if (str_contains($lstr, '_')) {
             $lstr = explode('_', $lstr);
         } else {
             $lstr = array($lstr);

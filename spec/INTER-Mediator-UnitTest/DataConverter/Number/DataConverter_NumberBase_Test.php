@@ -29,7 +29,6 @@ class DataConverter_NumberBase_Test extends TestCase
 
     public function test_converterFromUserToDBIMLocale()
     {
-        IMLocale::$alwaysIMClasses = true;
         $expected = '100';
         $string = '100';
         $this->assertEquals($expected, $this->dataconverter->converterFromUserToDB($string));
@@ -57,7 +56,6 @@ class DataConverter_NumberBase_Test extends TestCase
 
     public function test_converterFromUserToDBIntlLocale()
     {
-        IMLocale::$alwaysIMClasses = false;
         $expected = '100';
         $string = '100';
         $this->assertEquals($expected, $this->dataconverter->converterFromUserToDB($string));

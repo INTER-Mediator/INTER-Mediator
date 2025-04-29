@@ -358,3 +358,56 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return '';
     }
 }
+/*
+SELECT c.name, t.name type, c.max_length, c.precision, c.scale, c.is_nullable, c.is_identity, c.default_object_id, c.is_computed, c.collation_name FROM sys.columns c INNER JOIN sys.types t ON c. system_type_id = t. system_type_id WHERE object_id = object_id('person')
+GO
+name       type     max_length precision scale is_nullable is_identity default_object_id is_computed collation_name
+---------- -------- ---------- --------- ----- ----------- ----------- ----------------- ----------- -----------------------------
+memo       text             16         0     0           1           0                 0           0 SQL_Latin1_General_CP1_CI_AS
+id         int               4        10     0           0           1                 0           0 NULL
+category   int               4        10     0           1           0                 0           0 NULL
+checking   int               4        10     0           1           0                 0           0 NULL
+location   int               4        10     0           1           0                 0           0 NULL
+name       varchar          20         0     0           1           0                 0           0 SQL_Latin1_General_CP1_CI_AS
+address    varchar          40         0     0           1           0                 0           0 SQL_Latin1_General_CP1_CI_AS
+mail       varchar          40         0     0           1           0                 0           0 SQL_Latin1_General_CP1_CI_AS
+(8 rows affected)
+1> select name from sys.types;
+2> GO
+name
+-----------------
+bigint
+binary
+bit
+char
+date
+datetime
+datetime2
+datetimeoffset
+decimal
+float
+geography
+geometry
+hierarchyid
+image
+int
+money
+nchar
+ntext
+numeric
+nvarchar
+real
+smalldatetime
+smallint
+smallmoney
+sql_variant
+sysname
+text
+time
+timestamp
+tinyint
+uniqueidentifier
+varbinary
+varchar
+xml
+*/

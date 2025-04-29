@@ -1,15 +1,25 @@
 <?php
 /**
- * This class provides methods to append a prefix to a string when converting from the database to the user,
- * and to remove the prefix when converting from the user to the database.
- * Useful for formatting or masking data transparently.
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-namespace INTERMediator\Data_Converter;
+ namespace INTERMediator\Data_Converter;
 
 /**
  * Class AppendPrefix
  * Adds a specified prefix to a string for display, and removes it when saving.
- */
+ * This class provides methods to append a prefix to a string when converting from the database to the user,
+ *  and to remove the prefix when converting from the user to the database.
+ *  Useful for formatting or masking data transparently.*/
 class AppendPrefix
 {
     /**
