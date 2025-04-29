@@ -8,13 +8,18 @@ use INTERMediator\DB\Support\ProxyElements\OperationElement;
 use INTERMediator\DB\Logger;
 
 /**
+ * Visitor class for handling maintenance operations in the Proxy pattern.
+ * Implements methods for authentication, authorization, schema maintenance, and challenge handling.
  *
+ * @property bool $activateGenerator Indicates if schema auto generation mode is enabled (from proxy).
  */
 class MaintenanceVisitor extends OperationVisitor
 {
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the IsAuthAccessing operation.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool Always returns false for maintenance operations (no auth access required).
      */
     public function visitIsAuthAccessing(OperationElement $e): bool
     {
@@ -22,8 +27,10 @@ class MaintenanceVisitor extends OperationVisitor
     }
 
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the CheckAuthentication operation for maintenance operations.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool True if authentication succeeds, false otherwise.
      */
     public function visitCheckAuthentication(OperationElement $e): bool
     {
@@ -31,8 +38,10 @@ class MaintenanceVisitor extends OperationVisitor
     }
 
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the CheckAuthorization operation for maintenance operations.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool True if authorization succeeds, false otherwise.
      */
     public function visitCheckAuthorization(OperationElement $e): bool
     {
@@ -41,7 +50,11 @@ class MaintenanceVisitor extends OperationVisitor
     }
 
     /**
-     * @throws Exception
+     * Visits the DataOperation operation to perform maintenance tasks (e.g., schema auto generation).
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return void
+     * @throws Exception If schema generation fails.
      */
     public function visitDataOperation(OperationElement $e): void
     {
@@ -51,9 +64,10 @@ class MaintenanceVisitor extends OperationVisitor
         }
     }
 
-
     /**
-     * @param OperationElement $e
+     * Visits the HandleChallenge operation for maintenance operations.
+     *
+     * @param OperationElement $e The operation element being visited.
      * @return void
      */
     public function visitHandleChallenge(OperationElement $e): void

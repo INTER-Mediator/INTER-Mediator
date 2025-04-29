@@ -1,5 +1,4 @@
 <?php
-
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -21,25 +20,29 @@ use INTERMediator\DB\Logger;
 use INTERMediator\DB\Settings;
 
 /**
- *
+ * Abstract base class for notification and registration handling.
+ * Provides common logic to manage queried entities, conditions, and primary keys for notification systems.
+ * Implements DB_Interface_Registering.
  */
 abstract class DB_Notification_Common implements DB_Interface_Registering
 {
     /**
-     * @var Settings|null
+     * @var Settings|null Reference to the Settings object for DB configuration.
      */
     protected ?Settings $dbSettings = null;
     /**
-     * @var DBClass|null
+     * @var DBClass|null Reference to the parent DBClass instance.
      */
     protected ?DBClass $dbClass = null;
     /**
-     * @var Logger|null
+     * @var Logger|null Logger instance for debug and error messages.
      */
     protected ?Logger $logger = null;
 
     /**
-     * @param DBClass $parent
+     * Constructor.
+     *
+     * @param DBClass $parent Parent DBClass instance for context.
      */
     public function __construct(DBClass $parent)
     {
@@ -49,20 +52,22 @@ abstract class DB_Notification_Common implements DB_Interface_Registering
     }
 
     /**
-     * @var string|null
+     * @var string|null Name of the last queried entity.
      */
     private ?string $queriedEntity = null;
     /**
-     * @var string|null
+     * @var string|null Last queried condition string.
      */
     private ?string $queriedCondition = null;
     /**
-     * @var array|null
+     * @var array|null Primary keys from the last query.
      */
     private ?array $queriedPrimaryKeys = null;
 
     /**
-     * @return string|null
+     * Gets the name of the last queried entity.
+     *
+     * @return string|null Name of the queried entity or null if not set.
      */
     public function queriedEntity(): ?string
     {
@@ -70,7 +75,9 @@ abstract class DB_Notification_Common implements DB_Interface_Registering
     }
 
     /**
-     * @return string|null
+     * Gets the last queried condition string.
+     *
+     * @return string|null The queried condition or null if not set.
      */
     public function queriedCondition(): ?string
     {
@@ -78,7 +85,9 @@ abstract class DB_Notification_Common implements DB_Interface_Registering
     }
 
     /**
-     * @return array|null
+     * Gets the primary keys from the last query.
+     *
+     * @return array|null Array of primary keys or null if not set.
      */
     public function queriedPrimaryKeys(): ?array
     {
@@ -86,7 +95,9 @@ abstract class DB_Notification_Common implements DB_Interface_Registering
     }
 
     /**
-     * @param string|null $name
+     * Sets the name of the last queried entity.
+     *
+     * @param string|null $name Name of the queried entity.
      * @return void
      */
     public function setQueriedEntity(?string $name): void
@@ -95,7 +106,9 @@ abstract class DB_Notification_Common implements DB_Interface_Registering
     }
 
     /**
-     * @param string|null $name
+     * Sets the last queried condition string.
+     *
+     * @param string|null $name The queried condition.
      * @return void
      */
     public function setQueriedCondition(?string $name): void
@@ -104,7 +117,9 @@ abstract class DB_Notification_Common implements DB_Interface_Registering
     }
 
     /**
-     * @param array|null $name
+     * Sets the primary keys from the last query.
+     *
+     * @param array|null $name Array of primary keys.
      * @return void
      */
     public function setQueriedPrimaryKeys(?array $name): void
@@ -113,7 +128,9 @@ abstract class DB_Notification_Common implements DB_Interface_Registering
     }
 
     /**
-     * @param string|null $name
+     * Adds a primary key to the list of primary keys from the last query.
+     *
+     * @param string|null $name Primary key to add.
      * @return void
      */
     public function addQueriedPrimaryKeys(?string $name): void

@@ -17,16 +17,21 @@
 namespace INTERMediator;
 
 /**
+ * Class DefinitionChecker
+ * Checks and validates INTER-Mediator definition arrays for prohibited or invalid keywords and types.
  *
+ * @package INTERMediator
  */
 class DefinitionChecker
 {
 
     /**
-     * @param array|null $dataSource
-     * @param array|null $options
-     * @param array|null $dbSpecification
-     * @return string
+     * Checks the main definitions (data source, options, db specification) for invalid or prohibited keywords.
+     *
+     * @param array|null $dataSource Data source definitions.
+     * @param array|null $options Options for INTER-Mediator.
+     * @param array|null $dbSpecification Database specification.
+     * @return string Aggregated error or warning messages.
      */
     public function checkDefinitions(?array $dataSource, ?array $options, ?array $dbSpecification): string
     {
@@ -53,8 +58,10 @@ class DefinitionChecker
     }
 
     /**
-     * @param array|null $definition
-     * @param array $prohibit
+     * Checks a single definition array against a set of prohibited keywords and types.
+     *
+     * @param array|null $definition The definition array to check.
+     * @param array $prohibit The prohibited keywords and structure.
      * @return void
      */
     public function checkDefinition(?array $definition, array $prohibit): void
@@ -63,16 +70,18 @@ class DefinitionChecker
             return;
         }
         $this->message = '';
-        $this->path = array();
+        $this->path = [];
         $this->currentProhibit = $prohibit;
         $this->moveChildren($definition);
     }
 
     /**
-     * @param array|string $items
+     * Recursively traverses the definition items and checks for prohibited or invalid values.
+     *
+     * @param array|string $items Items or values to check.
      * @return void
      */
-    private function moveChildren($items): void
+    private function moveChildren(mixed $items): void
     {
         $endPoint = $this->currentProhibit;
         $currentPath = '';
@@ -121,14 +130,14 @@ class DefinitionChecker
                 if (!is_array($items)) {
                     $this->message .= "$currentPath should be define as array. ";
                 }
-            } else if (strpos('string', $endPoint) === 0) {
+            } else if (str_starts_with('string', $endPoint)) {
                 $openParen = strpos('(', $endPoint);
                 $closeParen = strpos(')', $endPoint);
                 $possibleString = substr($endPoint, $openParen + 1, $closeParen - $openParen - 1);
                 $possibleValues = explode("|", $possibleString);
-                $possibleWilds = array();
+                $possibleWilds = [];
                 foreach ($possibleValues as $str) {
-                    if (strpos($str, '*') !== false) {
+                    if (str_contains($str, '*')) {
                         $possibleWilds[] = $str;
                     }
                 }
@@ -150,7 +159,8 @@ class DefinitionChecker
     }
 
     /**
-     *
+     * DefinitionChecker constructor.
+     * Initializes prohibited keyword structures for data sources and messaging.
      */
     function __construct()
     {
@@ -174,21 +184,21 @@ class DefinitionChecker
     }
 
     /**
-     * @var string|null
+     * @var string|null Holds the latest error or warning message.
      */
     private ?string $message;
     /**
-     * @var array
+     * @var array Path stack for recursive checking.
      */
     private array $path = [];
     /**
-     * @var array|null
+     * @var array|null Currently active prohibited keyword structure.
      */
     private ?array $currentProhibit;
     /**
-     * @var array
+     * @var array Prohibited keywords and types for database specification.
      */
-    private array $prohibitKeywordsForDBSpec = array(
+    private array $prohibitKeywordsForDBSpec = [
         'db-class' => 'string',
         'dsn' => 'string',
         'option' => 'array',
@@ -199,35 +209,31 @@ class DefinitionChecker
         'port' => 'string',
         'protocol' => 'string',
         'datatype' => 'string',
-        'external-db' => array('#' => 'string'),
+        'external-db' => ['#' => 'string'],
         'cert-verifying' => 'boolean',
-    );
+    ];
     /**
-     * @var array
+     * @var array Prohibited keywords and types for options.
      */
-    private array $prohibitKeywordsForOption = array(
+    private array $prohibitKeywordsForOption = [
         'separator' => 'string',
-        'formatter' => array(
-            '*' => array(
+        'formatter' => [
+            '*' => [
                 'field' => 'string',
                 'converter-class' => 'string',
                 'parameter' => 'string|boolean',
-            ),
-        ),
-        'local-context' => array(
-            '*' => array(
+            ],
+        ],
+        'local-context' => [
+            '*' => [
                 'key' => 'string',
                 'value' => 'string|boolean|integer',
-            ),
-        ),
-        'aliases' => array(
-            '#' => 'string',
-        ),
-        'browser-compatibility' => array(
-            '#' => 'string',
-        ),
+            ],
+        ],
+        'aliases' => ['#' => 'string'],
+        'browser-compatibility' => ['#' => 'string'],
         'transaction' => 'string(none|automatic)',
-        'authentication' => array(
+        'authentication' => [
             'user' => 'array',
             'group' => 'array',
             'user-table' => 'string',
@@ -248,21 +254,21 @@ class DefinitionChecker
             'digits-of-2FA-Code' => 'integer',
             'mail-context-2FA' => 'string',
             'expiring-seconds-2FA' => 'interger',
-        ),
+        ],
         'media-root-dir' => 'string',
 //        'media-context' => 'string',
-        'smtp' => array(
+        'smtp' => [
             'protocol' => 'string',
             'server' => 'string',
             'port' => 'integer',
             'encryption' => 'string',
             'username' => 'string',
             'password' => 'string',
-        ),
-        'slack' => array(
+        ],
+        'slack' => [
             'token' => 'string',
             'channel' => 'string',
-        ),
+        ],
         'credit-including' => 'string',
         'theme' => 'string',
         'app-locale' => 'string',
@@ -273,14 +279,14 @@ class DefinitionChecker
             'format' => 'string(CSV|TSV)',
             'use-replace' => 'boolean',
             'encoding' => 'string',
-            'convert-number' => array('*' => 'string'),
-            'convert-date' => array('*' => 'string'),
-            'convert-datetime' => array('*' => 'string'),
+            'convert-number' => ['*' => 'string'],
+            'convert-date' => ['*' => 'string'],
+            'convert-datetime' => ['*' => 'string'],
         ],
         'terms' => 'array',
-    );
+    ];
     /**
-     * @var array|string[]
+     * @var array|string[] Prohibited keywords and types for messaging.
      */
     private array $prohibitKeywordsMessaging = [
         'from' => 'string',
@@ -304,10 +310,10 @@ class DefinitionChecker
         'template-context' => 'string',
     ];
     /**
-     * @var array|array[]
+     * @var array|array[] Prohibited keywords and types for data sources.
      */
     private array $prohibitKeywordsForDataSource = [
-        '*' => array(
+        '*' => [
             'name' => 'string',
             'table' => 'string',
             'view' => 'string',
@@ -319,120 +325,120 @@ class DefinitionChecker
             'paging' => 'boolean',
             'key' => 'string',
             'sequence' => 'string',
-            'relation' => array(
-                '*' => array(
+            'relation' => [
+                '*' => [
                     'foreign-key' => 'string',
                     'join-field' => 'string',
                     'operator' => 'string',
                     'portal' => 'boolean'
-                )
-            ),
-            'query' => array(
-                '*' => array(
+                ]
+            ],
+            'query' => [
+                '*' => [
                     'field' => 'string',
                     'value' => 'scalar',
                     'operator' => 'string'
-                )
-            ),
-            'sort' => array(
-                '*' => array(
+                ]
+            ],
+            'sort' => [
+                '*' => [
                     'field' => 'string',
                     'direction' => 'string'
-                )
-            ),
-            'default-values' => array(
-                '*' => array(
+                ]
+            ],
+            'default-values' => [
+                '*' => [
                     'field' => 'string',
                     'value' => 'scalar'
-                )
-            ),
+                ]
+            ],
             'repeat-control' => 'string(insert|delete|insert-confirm|confirm-insert|delete-confirm|confirm-delete|copy|copy-*)',
             'navi-control' => 'string(step|step-hide|step-nonavi|step-hide-nonavi|step-fullnavi|step-hide-fullnavi'
                 . '|detail|detail-top|detail-bottom|detail-update|detail-top-update|detail-bottom-update'
                 . '|master|master-nonavi|master-fullnavi|master-hide|master-hide-nonavi|master-hide-fullnavi)',
             'navi-title' => 'string',
             'sync-control' => 'string(update|update-notify|create|create-notify|delete)',
-            'validation' => array(
-                '*' => array(
+            'validation' => [
+                '*' => [
                     'field' => 'string',
                     'rule' => 'string',
                     'message' => 'string',
                     'notify' => 'string(alert|inline|end-of-sibling)',
-                )
-            ),
+                ]
+            ],
             'post-repeater' => 'string',
             'post-enclosure' => 'string',
             'post-query-stored' => 'string',
             'before-move-nextstep' => 'string',
             'just-move-thisstep' => 'string',
             'just-leave-thisstep' => 'string',
-            'script' => array(
-                '*' => array(
+            'script' => [
+                '*' => [
                     'db-operation' => 'string(load|read|update|new|create|delete)',
                     'situation' => 'string(pre|presort|post)',
                     'definition' => 'string',
                     'parameter' => 'string',
-                )
-            ),
-            'global' => array(
-                '*' => array(
+                ]
+            ],
+            'global' => [
+                '*' => [
                     'db-operation' => 'string(load|read|update|new|create|delete)',
                     'field' => 'string',
                     'value' => 'scalar'
-                )
-            ),
-            'authentication' => array(
+                ]
+            ],
+            'authentication' => [
                 'media-handling' => 'boolean',
-                'all' => array(
+                'all' => [
                     'user' => 'array',
                     'group' => 'array',
                     'target' => 'string(table|field-user|field-group)',
                     'field' => 'string',
                     'noset' => 'boolean',
-                ),
-                'load' => array(
+                ],
+                'load' => [
                     'user' => 'array',
                     'group' => 'array',
                     'target' => 'string(table|field-user|field-group)',
                     'field' => 'string',
                     'noset' => 'boolean',
-                ),
-                'read' => array(
+                ],
+                'read' => [
                     'user' => 'array',
                     'group' => 'array',
                     'target' => 'string(table|field-user|field-group)',
                     'field' => 'string',
                     'noset' => 'boolean',
-                ),
-                'update' => array(
+                ],
+                'update' => [
                     'user' => 'array',
                     'group' => 'array',
                     'target' => 'string(table|field-user|field-group)',
                     'field' => 'string',
                     'noset' => 'boolean',
-                ),
-                'new' => array(
+                ],
+                'new' => [
                     'user' => 'array',
                     'group' => 'array',
                     'target' => 'string(table|field-user|field-group)',
                     'field' => 'string',
                     'noset' => 'boolean',
-                ),
-                'create' => array(
+                ],
+                'create' => [
                     'user' => 'array',
                     'group' => 'array',
                     'target' => 'string(table|field-user|field-group)',
                     'field' => 'string',
                     'noset' => 'boolean',
-                ),
-                'delete' => array(
+                ],
+                'delete' => [
                     'user' => 'array',
                     'group' => 'array',
                     'target' => 'string(table|field-user|field-group)',
                     'field' => 'string',
                     'noset' => 'boolean',
-                )
-            ),
+                ]
+            ],
             'extending-class' => 'string',
             'numeric-fields' => 'array',
             'time-fields' => 'array',
@@ -459,31 +465,31 @@ class DefinitionChecker
             'aggregation-group-by' => 'string',
             'data' => 'array',
             'appending-data' => 'array',
-            'file-upload' => array(
-                '*' => array(
+            'file-upload' => [
+                '*' => [
                     'field' => 'string',
                     'context' => 'string',
                     'container' => 'boolean|string(FileSystem|FileMakerContainer|S3|Dropbox|FileURL)',
-                )
-            ),
-            'calculation' => array(
-                '*' => array(
+                ]
+            ],
+            'calculation' => [
+                '*' => [
                     'field' => 'string',
                     'expression' => 'string',
-                )
-            ),
-            'button-names' => array(
+                ]
+            ],
+            'button-names' => [
                 'insert' => 'string',
                 'delete' => 'string',
                 'navi-detail' => 'string',
                 'navi-back' => 'string',
                 'copy' => 'string',
-            ),
-            'confirm-messages' => array(
+            ],
+            'confirm-messages' => [
                 'insert' => 'string',
                 'delete' => 'string',
                 'copy' => 'string',
-            ),
+            ],
             'ignoring-field' => 'array',
             'import' => [
                 '1st-line' => 'boolean|string',
@@ -491,10 +497,10 @@ class DefinitionChecker
                 'format' => 'string(CSV|TSV)',
                 'use-replace' => 'boolean',
                 'encoding' => 'string',
-                'convert-number' => array('*' => 'string'),
-                'convert-date' => array('*' => 'string'),
-                'convert-datetime' => array('*' => 'string'),
+                'convert-number' => ['*' => 'string'],
+                'convert-date' => ['*' => 'string'],
+                'convert-datetime' => ['*' => 'string'],
             ],
-        ), // There is additional definitions. See the constructor.
+        ], // There is additional definitions. See the constructor.
     ];
 }

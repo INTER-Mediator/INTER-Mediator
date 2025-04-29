@@ -19,12 +19,14 @@ namespace INTERMediator;
 use INTERMediator\Auth\OAuthAuth;
 
 /**
- *
+ * Class GenerateJSCode
+ * Generates JavaScript code for INTER-Mediator front-end initialization, error/debug messages, and configuration.
  */
 class GenerateJSCode
 {
     /**
-     *
+     * GenerateJSCode constructor.
+     * Starts session if not started, sets JS headers, and outputs security headers.
      */
     public function __construct()
     {
@@ -39,12 +41,14 @@ class GenerateJSCode
     }
 
     /**
-     * @param string $variable
-     * @param string $value1
-     * @param string $value2
-     * @param string $value3
-     * @param string $value4
-     * @param string $value5
+     * Outputs a JavaScript assignment statement.
+     *
+     * @param string $variable The JavaScript variable name.
+     * @param string $value1 The first value to assign.
+     * @param string $value2 Optional additional value.
+     * @param string $value3 Optional additional value.
+     * @param string $value4 Optional additional value.
+     * @param string $value5 Optional additional value.
      * @return void
      */
     public function generateAssignJS(string $variable, string $value1, string $value2 = '', string $value3 = '', string $value4 = '', string $value5 = ''): void
@@ -53,7 +57,9 @@ class GenerateJSCode
     }
 
     /**
-     * @param string $message
+     * Outputs a JavaScript debug message using INTERMediatorLog.setDebugMessage().
+     *
+     * @param string $message The debug message to output.
      * @return void
      */
     public function generateDebugMessageJS(string $message): void
@@ -64,7 +70,9 @@ class GenerateJSCode
     }
 
     /**
-     * @param string $message
+     * Outputs a JavaScript error message using INTERMediatorLog.setErrorMessage().
+     *
+     * @param string $message The error message to output.
      * @return void
      */
     public function generateErrorMessageJS(string $message): void
@@ -75,10 +83,12 @@ class GenerateJSCode
     }
 
     /**
-     * @param array|null $dataSource
-     * @param array|null $options
-     * @param array|null $dbSpecification
-     * @param int $debug
+     * Generates the initial JavaScript code for INTER-Mediator, including configuration, OAuth, theme, authentication, etc.
+     *
+     * @param array|null $dataSource Data source definitions for contexts.
+     * @param array|null $options Options for INTER-Mediator.
+     * @param array|null $dbSpecification Database specification.
+     * @param int $debug Debug mode level.
      * @return void
      */
     public function generateInitialJSCode(?array $dataSource, ?array $options, ?array $dbSpecification, int $debug): void
@@ -428,8 +438,10 @@ class GenerateJSCode
     }
 
     /**
-     * @param bool $isSocketIO
-     * @return string
+     * Combines and returns the contents of required JavaScript files as a string.
+     *
+     * @param bool $isSocketIO Whether to include Socket.IO script.
+     * @return string The combined JavaScript code.
      */
     private function combineScripts(bool $isSocketIO): string
     {
@@ -467,8 +479,10 @@ class GenerateJSCode
     }
 
     /**
-     * @param string $filename
-     * @return string
+     * Reads a JavaScript source file, optionally ignoring lines or the rest of the file based on special markers.
+     *
+     * @param string $filename The JavaScript file path.
+     * @return string The file contents, possibly truncated or with lines removed.
      */
     private function readJSSource(string $filename): string
     {

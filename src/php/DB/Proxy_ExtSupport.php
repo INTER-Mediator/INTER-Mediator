@@ -7,41 +7,50 @@ namespace INTERMediator\DB;
 use Exception;
 
 /**
- *
+ * Trait Proxy_ExtSupport provides utility methods and properties for easy DB programming support in INTER-Mediator.
+ * Includes proxy/data source management and CRUD operation helpers.
  */
 trait Proxy_ExtSupport
 {
     /**
+     * Proxy instance for extended operations.
      * @var Proxy|null
      */
     private ?Proxy $extProxy = null;
     /**
+     * Data source for extended operations.
      * @var array|null
      */
     private ?array $extDataSource = null;
     /**
+     * Options for extended operations.
      * @var array|null
      */
     private ?array $extOptions = null;
     /**
+     * DB spec for extended operations.
      * @var array|null
      */
     private ?array $extDBSpec = null;
     /**
+     * Debug level for extended operations.
      * @var int|null
      */
     private ?int $extDebug = 0;
     /**
+     * Fixed key for operations.
      * @var string|null
      */
     private ?string $fixedKey = null;
     /**
+     * Test mode flag.
      * @var bool
      */
     private bool $testMode = false;
 
     /**
-     * @return ?Proxy
+     * Get the Proxy instance for extended operations.
+     * @return Proxy|null
      * @throws Exception
      */
     public function getExtProxy(): ?Proxy
@@ -54,6 +63,7 @@ trait Proxy_ExtSupport
     }
 
     /**
+     * Set the fixed key for operations.
      * @param string|null $key
      * @return void
      */
@@ -63,6 +73,7 @@ trait Proxy_ExtSupport
     }
 
     /**
+     * Enable test mode.
      * @return void
      */
     public function setTestMode(): void
@@ -71,6 +82,7 @@ trait Proxy_ExtSupport
     }
 
     /**
+     * Initialize the proxy and operation settings.
      * @param array|null $dataSource
      * @param array|null $options
      * @param array|null $dbSpec
@@ -90,6 +102,7 @@ trait Proxy_ExtSupport
     }
 
     /**
+     * Read records from the database.
      * @param string $target
      * @param array|null $query
      * @param array|null $sort
@@ -110,6 +123,7 @@ trait Proxy_ExtSupport
     }
 
     /**
+     * Update records in the database.
      * @param string $target
      * @param array|null $query
      * @param array|null $data
@@ -130,6 +144,7 @@ trait Proxy_ExtSupport
     }
 
     /**
+     * Create new records in the database.
      * @param string $target
      * @param array|null $data
      * @param array|null $spec
@@ -148,6 +163,7 @@ trait Proxy_ExtSupport
     }
 
     /**
+     * Delete records from the database.
      * @param string $target
      * @param array|null $query
      * @param array|null $spec
@@ -166,6 +182,7 @@ trait Proxy_ExtSupport
     }
 
     /**
+     * Copy records from the database.
      * @param string $target
      * @param array|null $query
      * @param array|null $sort
@@ -179,6 +196,7 @@ trait Proxy_ExtSupport
     }
 
     /**
+     * Check if the target exists in the data source.
      * @param string $target
      * @param array|null $spec
      * @return bool
@@ -199,6 +217,7 @@ trait Proxy_ExtSupport
     }
 
     /**
+     * Initialize the proxy with the target and spec.
      * @param string $target
      * @param array|null $spec
      * @return void
@@ -219,6 +238,7 @@ trait Proxy_ExtSupport
     }
 
     /**
+     * Set up the query for the operation.
      * @param array|null $query
      * @return void
      */
@@ -240,6 +260,7 @@ trait Proxy_ExtSupport
     }
 
     /**
+     * Set up the sort for the operation.
      * @param array|null $sort
      * @return void
      */
@@ -260,6 +281,7 @@ trait Proxy_ExtSupport
     }
 
     /**
+     * Set up the data for the operation.
      * @param array|null $data
      * @return void
      */

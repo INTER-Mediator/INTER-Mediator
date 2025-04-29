@@ -20,12 +20,32 @@ use INTERMediator\DB\DBClass;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\Settings;
 
+/**
+ * Abstract base class for database authentication support.
+ * Implements common logic for authorization fields, targets, users, and challenge/response mechanisms.
+ * Provides references to DBClass, Settings, and Logger for use in subclasses.
+ * Implements Auth_Interface_CommonDB.
+ */
 abstract class DB_Auth_Common implements Auth_Interface_CommonDB
 {
+    /**
+     * @var Settings|null Reference to the Settings object for DB configuration.
+     */
     protected ?Settings $dbSettings = null;
+    /**
+     * @var DBClass|null Reference to the parent DBClass instance.
+     */
     protected ?DBClass $dbClass = null;
+    /**
+     * @var Logger|null Logger instance for debug and error messages.
+     */
     protected ?Logger $logger = null;
 
+    /**
+     * Constructor.
+     *
+     * @param DBClass|null $parent Parent DBClass instance for context.
+     */
     public function __construct(?DBClass $parent)
     {
         if ($parent) {
@@ -37,6 +57,12 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         }
     }
 
+    /**
+     * Returns an array of operation aliases for a given operation.
+     *
+     * @param string $operation The operation type.
+     * @return array Operation aliases.
+     */
     private function getOperationSeries(string $operation): array
     {
         $operations = array();
@@ -52,6 +78,12 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return $operations;
     }
 
+    /**
+     * Returns the authorization field for a given operation.
+     *
+     * @param string $operation The operation type.
+     * @return string|null The authorization field or null if not found.
+     */
     public function getFieldForAuthorization(string $operation): ?string
     {
         $operations = $this->getOperationSeries($operation);
@@ -69,6 +101,12 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return $authInfoField;
     }
 
+    /**
+     * Returns the authorization target for a given operation.
+     *
+     * @param string $operation The operation type.
+     * @return string|null The authorization target or null if not found.
+     */
     public function getTargetForAuthorization(string $operation): ?string
     {
         $operations = $this->getOperationSeries($operation);
@@ -86,6 +124,12 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return $authInfoTarget;
     }
 
+    /**
+     * Returns the no-set value for authorization for a given operation.
+     *
+     * @param string $operation The operation type.
+     * @return string|null The no-set value or null if not found.
+     */
     public function getNoSetForAuthorization(string $operation): ?string
     {
         $operations = $this->getOperationSeries($operation);
@@ -103,6 +147,12 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return $authInfoNoSet;
     }
 
+    /**
+     * Returns an array of authorized users for a given operation.
+     *
+     * @param string|null $operation The operation type or null for all operations.
+     * @return array Authorized users.
+     */
     public function getAuthorizedUsers(?string $operation = null): array
     {
         $operations = $this->getOperationSeries($operation);
@@ -123,6 +173,12 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
         return array_values(array_unique($usersArray));
     }
 
+    /**
+     * Returns an array of authorized groups for a given operation.
+     *
+     * @param string|null $operation The operation type or null for all operations.
+     * @return array Authorized groups.
+     */
     public function getAuthorizedGroups(?string $operation = null): array
     {
         $operations = $this->getOperationSeries($operation);

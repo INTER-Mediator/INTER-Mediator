@@ -1,5 +1,4 @@
 <?php
-
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -17,13 +16,17 @@
 namespace INTERMediator\Locale;
 
 /**
- *
+ * IMLocaleStringTable provides locale code to locale string mappings for INTER-Mediator.
+ * It includes a static method to retrieve a human-readable locale string from a locale code,
+ * and a static table with mappings for various locales.
  */
 class IMLocaleStringTable
 {
     /**
-     * @param string $localeCode
-     * @return string
+     * Returns a human-readable locale string for a given locale code.
+     *
+     * @param string $localeCode The locale code (e.g., 'en_US', 'ja').
+     * @return string The corresponding locale string.
      */
     public static function getLocaleString(string $localeCode): string
     {
@@ -40,6 +43,7 @@ class IMLocaleStringTable
      * https://msdn.microsoft.com/en-us/library/cc233982.aspx
      */
     /**
+     * Static table mapping locale codes to human-readable locale strings.
      * @var array|string[]
      */
     private static array $localeStrTable = array(

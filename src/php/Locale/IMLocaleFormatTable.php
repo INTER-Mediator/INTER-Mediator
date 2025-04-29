@@ -19,12 +19,15 @@ namespace INTERMediator\Locale;
 use INTERMediator\IMUtil;
 
 /**
- *
+ * IMLocaleFormatTable provides locale-specific formatting information for INTER-Mediator.
+ * It supplies methods and static tables for retrieving date, time, and currency formatting details by locale.
  */
 class IMLocaleFormatTable
 {
     /**
-     * @return array
+     * Returns the current locale's formatting information, merged with static overrides if available.
+     *
+     * @return array Associative array of formatting information for the current locale.
      */
     public static function getCurrentLocaleFormat(): array
     {
@@ -93,10 +96,12 @@ class IMLocaleFormatTable
     }
 
     /**
-     * @param string $localeCode
-     * @return array
+     * Returns formatting information for a specified locale code.
+     *
+     * @param string $localeCode The locale code (e.g., 'en_US', 'ja_JP').
+     * @return array Associative array of formatting information for the locale.
      */
-    public static function getLocaleFormat(string $localeCode):array
+    public static function getLocaleFormat(string $localeCode): array
     {
         if (!isset(IMLocaleFormatTable::$localeFormatTable[$localeCode])) {
             $localeCode = 'ja_JP';
@@ -129,6 +134,7 @@ class IMLocaleFormatTable
     }
 
     /**
+     * Static table with additional locale-specific information for days, months, and date/time formats.
      * @var array|array[]
      */
     private static array $localeInfoTable = array(
@@ -177,10 +183,11 @@ class IMLocaleFormatTable
     );
 
     /**
+     * Static table for currency and number formatting for each locale.
+     * Each entry is an array: [decimal_point, thousands_separator, currency_symbol].
      * @var array|array[]
      */
-    private
-    static array $localeFormatTable = array(
+    private static array $localeFormatTable = array(
         'ja' => array('.', ',', '￥'),
         'ja_JP' => array('.', ',', '￥'),
         'en_US' => array('.', ',', '$'),

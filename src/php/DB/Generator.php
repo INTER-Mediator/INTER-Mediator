@@ -21,55 +21,70 @@ use PDOException;
 use Exception;
 
 /**
- *
+ * Handles database schema and code generation for INTER-Mediator, including DSN parsing, schema acquisition, and SQL execution.
  */
 class Generator
 {
     /**
+     * The generator username for database access.
      * @var string
      */
     private string $generatorUser;
     /**
+     * The generator password for database access.
      * @var string
      */
     private string $generatorPassword;
     /**
+     * Logger instance for logging operations.
      * @var Logger
      */
     private Logger $logger;
     /**
+     * PDO link for database connection.
      * @var \PDO
      */
     private \PDO $link;
     /**
+     * Proxy instance for database settings and operations.
      * @var Proxy
      */
     private Proxy $proxy;
     /**
+     * DSN elements parsed from the connection string.
      * @var array
      */
     private array $dsnElements;
     /**
+     * DSN prefix (e.g., 'mysql').
      * @var string
      */
     private string $dsnPrefix;
     /**
+     * Context definition array.
      * @var array|null
      */
     private ?array $contextDef;
     /**
+     * Schema information array.
      * @var array|null
      */
     private ?array $schemaInfo;
     /**
+     * Options for generator behavior.
      * @var array|null
      */
     private ?array $options;
-
+    /**
+     * Supported database engines.
+     * @var array
+     */
     private array $supportDB = ["mysql",/* "pgsql" */];
 
     /**
-     * @param Proxy $proxy
+     * Constructor for the Generator class.
+     *
+     * @param Proxy $proxy Proxy instance for DB settings.
      */
     public function __construct(Proxy $proxy)
     {
@@ -92,7 +107,9 @@ class Generator
     }
 
     /**
-     * @return array[]
+     * Acquire schema information from the database.
+     *
+     * @return array[] The schema information array.
      */
     public function acquire(): array
     {
@@ -133,6 +150,8 @@ class Generator
     }
 
     /**
+     * Generate the database schema based on the acquired schema information.
+     *
      * @return void
      * @throws Exception
      */
@@ -234,6 +253,11 @@ class Generator
         }
     }
 
+    /**
+     * Prepare the database for schema generation.
+     *
+     * @return void
+     */
     public function prepareDatabase(): void
     {
         try {        // Establishing the connection with database
@@ -261,6 +285,8 @@ class Generator
     }
 
     /**
+     * Get the list of databases.
+     *
      * @return array
      */
     private function getDatabases(): array
@@ -284,6 +310,8 @@ class Generator
     }
 
     /**
+     * Parse the DSN string into elements.
+     *
      * @param $dsn
      * @return void
      */
@@ -305,6 +333,8 @@ class Generator
     }
 
     /**
+     * Generate the DSN string for database connection.
+     *
      * @param bool $withInitDB
      * @return string
      * @throws Exception
@@ -335,6 +365,8 @@ class Generator
     }
 
     /**
+     * Get the list of tables in the database.
+     *
      * @return array
      */
     private function getTables(): array
@@ -357,6 +389,8 @@ class Generator
     }
 
     /**
+     * Get the information of a table.
+     *
      * @param string $tableName
      * @return array
      */
@@ -382,6 +416,8 @@ class Generator
     }
 
     /**
+     * Get the list of fields for a table.
+     *
      * @return array
      */
     private function getFieldList(): array
@@ -421,6 +457,8 @@ class Generator
     }
 
     /**
+     * Generate dummy data for a table.
+     *
      * @param array $fieldList
      * @return array[]
      */
@@ -434,6 +472,8 @@ class Generator
     }
 
     /**
+     * Decide the field type based on the field name.
+     *
      * @param string $field
      * @return string
      */
@@ -479,6 +519,8 @@ class Generator
     }
 
     /**
+     * Get the system prepared schema.
+     *
      * @return string
      */
     private function systemPreparedSchema(): string

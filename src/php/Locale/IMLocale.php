@@ -1,5 +1,4 @@
 <?php
-
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -19,33 +18,67 @@ namespace INTERMediator\Locale;
 use Exception;
 use INTERMediator\Params;
 
+/**
+ * IMLocale manages locale and currency settings for INTER-Mediator.
+ * It provides methods for locale detection, setting, and conversion, and stores related configuration.
+ */
 class IMLocale
 {
-    public static function numberFormatterClassName():string
+    /**
+     * Returns the class name to use for number formatting, depending on environment and settings.
+     *
+     * @return string The fully qualified class name for number formatting.
+     */
+    public static function numberFormatterClassName(): string
     {
         $cName = "INTERMediator\Locale\IMNumberFormatter";
-        try {   // This exception handling requires just PHP 5.2. On above 5.3 or later, it doesn't need to 'try.'
-            if (class_exists("\NumberFormatter") && !IMLocale::$alwaysIMClasses) {
-                $cName = "\NumberFormatter";
-            }
-        } catch (Exception $e) {
-
+        if (class_exists("\NumberFormatter") && !IMLocale::$alwaysIMClasses) {
+            $cName = "\NumberFormatter"; // This class always exists after PHP 5.3.
         }
         return $cName;
     }
 
-    public static bool $alwaysIMClasses = false; // for unit testing
+    /**
+     * If true, always use INTER-Mediator classes for formatting (for unit testing).
+     * @var bool
+     */
+    public static bool $alwaysIMClasses = false;
+    /**
+     * The currently chosen locale (e.g., 'en', 'ja_JP').
+     * @var string
+     */
     public static string $choosenLocale = 'en';
+    /**
+     * The currently chosen ISO currency code (e.g., 'USD', 'JPY').
+     * @var string
+     */
     public static string $currencyCode = 'USD';
+    /**
+     * Whether to use multibyte string functions (for certain Asian locales).
+     * @var bool
+     */
     public static bool $useMbstring = false;
+    /**
+     * Locale override for testing purposes.
+     * @var string
+     */
     public static string $localForTest = '';
+    /**
+     * Additional options, such as 'app-locale' and 'app-currency'.
+     * @var array|null
+     */
     public static ?array $options = null;
+    /**
+     * Table for converting browser locale codes to standard locale codes.
+     * @var array
+     */
     private static array $localeConvertTable = array("ja" => "ja_JP");
 
     /**
-     * Set the locale with parameter, for UNIX and Windows OS.
-     * @param string $locType locale identifier string.
-     * @param string $localeName
+     * Set the locale and currency based on parameters, environment, and options.
+     *
+     * @param string $locType The locale category (e.g., LC_ALL).
+     * @param string $localeName Optional locale name to use.
      * @return void
      */
     public static function setLocale(string $locType, string $localeName = ''): void
@@ -75,7 +108,7 @@ class IMLocale
             }
         }
 
-        // Locale Convert Talble. Chrome requests "ja"
+        // Locale Convert Table. Chrome requests "ja"
         IMLocale::$choosenLocale = array_key_exists(IMLocale::$choosenLocale, IMLocale::$localeConvertTable) ?
             IMLocale::$localeConvertTable[IMLocale::$choosenLocale] : IMLocale::$choosenLocale;
 
@@ -101,9 +134,10 @@ class IMLocale
     }
 
     /**
-     * Get the locale string (ex. 'ja_JP') from HTTP header from a browser.
+     * Detects the locale from the browser's Accept-Language header.
+     *
      * @param string $localeString $_SERVER['HTTP_ACCEPT_LANGUAGE']
-     * @return string Most prior locale identifier
+     * @return string The detected locale code.
      */
     public static function getLocaleFromBrowser(string $localeString = ''): string
     {
@@ -130,5 +164,4 @@ class IMLocale
             $lstr = strtolower($lstr[0]) . '_' . strtoupper($lstr[1]);
         return $lstr;
     }
-
 }

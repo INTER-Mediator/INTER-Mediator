@@ -184,7 +184,7 @@ trait DB_PDO_Test_UserGroup
         $username = "testuser2";
         $password = "testuser2";
 
-        $this->db_proxy->logger->clearLogs();
+//        $this->db_proxy->logger->clearLogs();
 
         [$addUserResult, $hashedpw] = $this->db_proxy->addUser($username, $password, false, ['realname' => 'test123']);
         $this->assertTrue($addUserResult);

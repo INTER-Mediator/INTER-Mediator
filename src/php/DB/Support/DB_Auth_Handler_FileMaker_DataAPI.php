@@ -22,17 +22,39 @@ use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
 /**
+ * Handles authentication support for FileMaker Data API.
+ * Provides challenge/response, password management, authorization, group resolution, and user enrollment
+ * using FileMaker as backend. Implements INTER-Mediator's authentication logic for the FileMaker Data API.
  *
+ * @property FileMaker_DataAPI $fmdb FileMaker Data API handler instance.
+ * @property mixed $dbSettings Settings object for DB configuration (inherited).
+ * @property mixed $dbClass Parent DBClass instance (inherited).
+ * @property mixed $logger Logger instance for debug and error messages (inherited).
  */
 class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
 {
     /**
+     * FileMaker Data API handler instance.
      * @var FileMaker_DataAPI
      */
     protected FileMaker_DataAPI $fmdb;
 
     /**
-     * @param $parent
+     * Array of group IDs the user belongs to (used for group resolution).
+     * @var array
+     */
+    private array $belongGroups;
+
+    /**
+     * Indicates if currently at the first level of group resolution.
+     * @var bool
+     */
+    private bool $firstLevel;
+
+    /**
+     * Constructor for the handler.
+     *
+     * @param FileMaker_DataAPI $parent Parent FileMaker_DataAPI instance.
      */
     public function __construct($parent)
     {
@@ -41,10 +63,13 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string|null $uid
-     * @param string $challenge
-     * @param string $clientId
-     * @param string $prefix
+     * Stores a challenge for authentication.
+     *
+     * @param string|null $uid User ID.
+     * @param string $challenge Challenge string.
+     * @param string $clientId Client ID.
+     * @param string $prefix Prefix for the challenge.
+     * @param bool $alwaysInsert Always insert a new challenge, even if one exists.
      * @return void
      * @throws Exception
      */
@@ -128,8 +153,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string $uid
-     * @return string|null
+     * Checks a media token for authentication.
+     *
+     * @param string $uid User ID.
+     * @return string|null Media token or null if not found.
      * @throws Exception
      */
     public function authSupportCheckMediaToken(string $uid): ?string
@@ -178,11 +205,14 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string $uid
-     * @param string $clientId
-     * @param bool $isDelete
-     * @param string $prefix
-     * @return string|null
+     * Retrieves a challenge for authentication.
+     *
+     * @param string $uid User ID.
+     * @param string $clientId Client ID.
+     * @param bool $isDelete Delete the challenge after retrieval.
+     * @param string $prefix Prefix for the challenge.
+     * @param bool $isMulti Allow multiple challenges.
+     * @return string|null Challenge string or null if not found.
      */
     public function authSupportRetrieveChallenge(
         string $uid, string $clientId, bool $isDelete = true, string $prefix = "", $isMulti = false): ?string
@@ -241,7 +271,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @return bool
+     * Removes outdated authentication challenges from the backend.
+     *
+     * @return bool True if successful, false otherwise.
      */
     public function authSupportRemoveOutdatedChallenges(): bool
     {
@@ -299,8 +331,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string $username
-     * @return string|null
+     * Retrieves a hashed password for a user.
+     *
+     * @param string $username Username.
+     * @return string|null Hashed password or null if not found.
      */
     public function authSupportRetrieveHashedPassword(string $username): ?string
     {
@@ -355,12 +389,14 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string $username
-     * @param string $hashedpassword
-     * @param bool $isSAML
-     * @param string|null $ldapPassword
-     * @param array|null $attrs
-     * @return bool
+     * Creates a new user in the authentication system.
+     *
+     * @param string $username Username.
+     * @param string $hashedpassword Hashed password.
+     * @param bool $isSAML SAML authentication flag.
+     * @param string|null $ldapPassword LDAP password.
+     * @param array|null $attrs Additional attributes.
+     * @return bool True if successful, false otherwise.
      * @throws Exception
      */
     public function authSupportCreateUser(string  $username, string $hashedpassword, bool $isSAML = false,
@@ -389,9 +425,11 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string $username
-     * @param string $hashednewpassword
-     * @return bool
+     * Changes a user's password.
+     *
+     * @param string $username Username.
+     * @param string $hashednewpassword New hashed password.
+     * @return bool True if successful, false otherwise.
      * @throws Exception
      */
     public function authSupportChangePassword(string $username, string $hashednewpassword): bool
@@ -445,8 +483,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string|null $username
-     * @return string|null
+     * Retrieves a user ID from a username.
+     *
+     * @param string|null $username Username.
+     * @return string|null User ID or null if not found.
      */
     public function authSupportGetUserIdFromUsername(?string $username): ?string
     {
@@ -485,8 +525,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string $userid
-     * @return string|null
+     * Retrieves a username from a user ID.
+     *
+     * @param string $userid User ID.
+     * @return string|null Username or null if not found.
      */
     public function authSupportGetUsernameFromUserId(string $userid): ?string
     {
@@ -524,8 +566,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string $email
-     * @return string|null
+     * Retrieves a user ID from an email address.
+     *
+     * @param string $email Email address.
+     * @return string|null User ID or null if not found.
      */
     public function authSupportGetUserIdFromEmail(string $email): ?string
     {
@@ -563,8 +607,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string|null $username
-     * @return string|null
+     * Unifies a username and email (returns unified username or null).
+     *
+     * @param string|null $username Username.
+     * @return string|null Unified username or null if not found.
      */
     public function authSupportUnifyUsernameAndEmail(?string $username): ?string
     {
@@ -613,76 +659,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param $groupid
-     * @return string|null
-     */
-    public function authSupportGetGroupNameFromGroupId($groupid): ?string
-    {
-        $groupTable = $this->dbSettings->getGroupTable();
-        if ($groupTable == null) {
-            return null;
-        }
-
-        $this->fmdb->setupFMDataAPIforDB_Alt($groupTable, 1);
-        $conditions = array(array('id' => $groupid));
-        $result = null; // For PHPStan level 1
-        try {
-            $result = $this->fmdb->fmDataAlt->{$groupTable}->query($conditions);
-            if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
-                $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmDataAlt->getSessionToken();
-            }
-        } catch (Exception $e) {
-            $this->logger->setDebugMessage(
-                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
-                    $this->fmdb->fmDataAlt->{$groupTable}->getDebugInfo()));
-            return null;
-        }
-        $this->logger->setDebugMessage(
-            $this->fmdb->stringWithoutCredential($this->fmdb->fmDataAlt->{$groupTable}->getDebugInfo()));
-        foreach ($result as $record) {
-            return $record->groupname;
-        }
-        return null;
-    }
-
-    /**
-     * @param string|null $user
-     * @return array
-     */
-    public function authSupportGetGroupsOfUser(?string $user): array
-    {
-        $corrTable = $this->dbSettings->getCorrTable();
-        if ($corrTable == null) {
-            return array();
-        }
-
-        $userid = $this->authSupportGetUserIdFromUsername($user);
-        if (is_null($userid)) {
-            $userid = $this->authSupportGetUserIdFromEmail($user);
-        }
-        $this->firstLevel = true;
-        $this->belongGroups = array();
-        $this->resolveGroup($userid);
-        $candidateGroups = array();
-        foreach ($this->belongGroups as $groupid) {
-            if ($groupid) {
-                $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
-            }
-        }
-        return $candidateGroups;
-    }
-
-    /**
-     * @var array
-     */
-    private array $belongGroups;
-    /**
-     * @var bool
-     */
-    private bool $firstLevel;
-
-    /**
-     * @param string|null $groupid
+     * Resolves a group and its child groups recursively.
+     *
+     * @param string|null $groupid Group ID.
      * @return void
      */
     private function resolveGroup(?string $groupid): void
@@ -720,6 +699,70 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
+     * Retrieves a group name from a group ID.
+     *
+     * @param string $groupid Group ID.
+     * @return string|null Group name or null if not found.
+     */
+    public function authSupportGetGroupNameFromGroupId($groupid): ?string
+    {
+        $groupTable = $this->dbSettings->getGroupTable();
+        if ($groupTable == null) {
+            return null;
+        }
+
+        $this->fmdb->setupFMDataAPIforDB_Alt($groupTable, 1);
+        $conditions = array(array('id' => $groupid));
+        $result = null; // For PHPStan level 1
+        try {
+            $result = $this->fmdb->fmDataAlt->{$groupTable}->query($conditions);
+            if (!isset($_SESSION['X-FM-Data-Access-Token'])) {
+                $_SESSION['X-FM-Data-Access-Token'] = $this->fmdb->fmDataAlt->getSessionToken();
+            }
+        } catch (Exception $e) {
+            $this->logger->setDebugMessage(
+                $this->fmdb->stringWithoutCredential(get_class($result) . ': ' .
+                    $this->fmdb->fmDataAlt->{$groupTable}->getDebugInfo()));
+            return null;
+        }
+        $this->logger->setDebugMessage(
+            $this->fmdb->stringWithoutCredential($this->fmdb->fmDataAlt->{$groupTable}->getDebugInfo()));
+        foreach ($result as $record) {
+            return $record->groupname;
+        }
+        return null;
+    }
+
+    /**
+     * Retrieves all groups for a user.
+     *
+     * @param string|null $user User ID or username.
+     * @return array Groups for the user.
+     */
+    public function authSupportGetGroupsOfUser(?string $user): array
+    {
+        $corrTable = $this->dbSettings->getCorrTable();
+        if ($corrTable == null) {
+            return array();
+        }
+
+        $userid = $this->authSupportGetUserIdFromUsername($user);
+        if (is_null($userid)) {
+            $userid = $this->authSupportGetUserIdFromEmail($user);
+        }
+        $this->firstLevel = true;
+        $this->belongGroups = array();
+        $this->resolveGroup($userid);
+        $candidateGroups = array();
+        foreach ($this->belongGroups as $groupid) {
+            if ($groupid) {
+                $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
+            }
+        }
+        return $candidateGroups;
+    }
+
+    /**
      * @param string $userid
      * @param string $clienthost
      * @param string $hash
@@ -754,10 +797,12 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string $userid
-     * @param string $randdata
-     * @param string $hash
-     * @return bool
+     * Checks an issued hash for password reset.
+     *
+     * @param string $userid User ID.
+     * @param string $randdata Random data.
+     * @param string $hash Hash string.
+     * @return bool True if successful, false otherwise.
      */
     public function authSupportCheckIssuedHashForResetPassword(string $userid, string $randdata, string $hash): bool
     {
@@ -802,13 +847,15 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string $tableName
-     * @param string $targeting
-     * @param string $userField
-     * @param string $user
-     * @param string $keyField
-     * @param string $keyValue
-     * @return array|null
+     * Checks the media privilege for a user in a given table.
+     *
+     * @param string $tableName Table name.
+     * @param string $targeting Targeting value.
+     * @param string $userField User field name.
+     * @param string $user User value.
+     * @param string $keyField Key field name.
+     * @param string $keyValue Key value.
+     * @return array|null The media privilege data, or null if not found.
      * @throws Exception
      */
     public function authSupportCheckMediaPrivilege(
@@ -857,9 +904,11 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string $userid
-     * @param string $hash
-     * @return bool
+     * Starts user enrollment for a user.
+     *
+     * @param string $userid User ID.
+     * @param string $hash Hash string.
+     * @return bool True if successful, false otherwise.
      * @throws Exception
      */
     public function authSupportUserEnrollmentStart(string $userid, string $hash): bool
@@ -887,8 +936,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string $hash
-     * @return string|null
+     * Retrieves the enrolling user for a given hash.
+     *
+     * @param string $hash Hash string.
+     * @return string|null User ID or null if not found.
      */
     public function authSupportUserEnrollmentEnrollingUser(string $hash): ?string
     {
@@ -925,15 +976,17 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string $userID
-     * @param ?string $password
-     * @param ?string $rawPWField
-     * @param ?string $rawPW
-     * @return string|null
+     * Activates a user after enrollment.
+     *
+     * @param string $userID User ID.
+     * @param string|null $password Password.
+     * @param string|null $rawPWField Raw password field.
+     * @param string|null $rawPW Raw password value.
+     * @return string|null User ID or null if not found.
      * @throws Exception
      */
     public function authSupportUserEnrollmentActivateUser(
-        string $userID, ?string $password, ?string $rawPWField, ?string $rawPW): ?string
+        string $userID, ?string $password = null, ?string $rawPWField = null, ?string $rawPW = null): ?string
     {
         $hashTable = $this->dbSettings->getHashTable();
         $userTable = $this->dbSettings->getUserTable();
@@ -982,8 +1035,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param string $userID
-     * @return bool
+     * Checks if a user is within the SAML authentication limit.
+     *
+     * @param string $userID User ID.
+     * @return bool True if within the limit, false otherwise.
      */
     public function authSupportIsWithinSAMLLimit(string $userID): bool
     {
@@ -991,7 +1046,9 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @return bool
+     * Checks if the system can migrate SHA256 hash.
+     *
+     * @return bool True if migration is possible, false otherwise.
      */
     public function authSupportCanMigrateSHA256Hash(): bool  // authuser, issuedhash
     {
@@ -999,8 +1056,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param array $keyValues
-     * @return bool
+     * Handles OAuth user registration or update.
+     *
+     * @param array $keyValues Key-value pairs for OAuth user handling.
+     * @return bool True if successful, false otherwise.
      */
     public function authSupportOAuthUserHandling(array $keyValues): bool
     {
@@ -1009,8 +1068,10 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
     }
 
     /**
-     * @param null|string $userID
-     * @return array 3 elements array as like: [UserID, username, hashedpasswd].
+     * Retrieves unified username and email information (array: [UserID, username, hashedpasswd]).
+     *
+     * @param null|string $userID User ID.
+     * @return array Array with three elements: [UserID, username, hashedpasswd].
      */
     public function authSupportUnifyUsernameAndEmailAndGetInfo(?string $userID): array
     {

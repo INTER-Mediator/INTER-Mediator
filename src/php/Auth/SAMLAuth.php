@@ -14,31 +14,41 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+/**
+ * SAMLAuth provides authentication and attribute handling for SAML-based authentication in INTER-Mediator.
+ * It manages SAML login checks, attribute extraction, and login/logout URL generation.
+ */
 namespace INTERMediator\Auth;
 
 use INTERMediator\DB\Logger;
 use SimpleSAML\Auth\Simple;
 
 /**
- *
+ * Class SAMLAuth
+ * @package INTERMediator\Auth
  */
 class SAMLAuth
 {
     /**
+     * SimpleSAMLphp authentication object for handling SAML authentication.
      * @var Simple
      */
     private Simple $authSimple;
     /**
+     * SAML attribute extraction rules, mapping logical names to SAML attribute keys.
      * @var array|null
      */
     private ?array $samlAttrRules = null;
     /**
+     * Additional SAML attribute rules for further validation.
      * @var array|null
      */
     private ?array $samlAdditionalRules = null;
 
     /**
-     * @param string $authSource
+     * Constructor initializes the SAML authentication object with the given source.
+     *
+     * @param string $authSource The SAML authentication source name.
      */
     public function __construct(string $authSource)
     {
@@ -46,7 +56,9 @@ class SAMLAuth
     }
 
     /**
-     * @param ?array $value
+     * Sets the SAML attribute extraction rules.
+     *
+     * @param array|null $value Attribute rules to use for extraction.
      * @return void
      */
     public function setSAMLAttrRules(?array $value): void
@@ -55,7 +67,9 @@ class SAMLAuth
     }
 
     /**
-     * @param null|array $value
+     * Sets additional SAML attribute rules for further validation.
+     *
+     * @param array|null $value Additional attribute rules for validation.
      * @return void
      */
     public function setSAMLAdditionalRules(?array $value): void
@@ -64,7 +78,9 @@ class SAMLAuth
     }
 
     /**
-     * @return array
+     * Checks SAML login status and validates additional rules if present.
+     *
+     * @return array [bool $additional, string|null $user] Whether additional rules passed and the username.
      */
     public function samlLoginCheck(): array
     {
@@ -92,7 +108,9 @@ class SAMLAuth
     }
 
     /**
-     * @return array|null
+     * Returns all SAML attributes from the authentication object.
+     *
+     * @return array|null The SAML attributes, or null if unavailable.
      */
     public function getAttributes(): ?array
     {
@@ -100,7 +118,9 @@ class SAMLAuth
     }
 
     /**
-     * @return array|null
+     * Extracts values from SAML attributes according to configured rules.
+     *
+     * @return array|null Associative array of extracted attribute values, or null if no rules are set.
      */
     public function getValuesFromAttributes(): ?array
     {
@@ -114,8 +134,10 @@ class SAMLAuth
     }
 
     /**
-     * @param string|array $rule
-     * @return string
+     * Extracts a value from SAML attributes using a rule string or array.
+     *
+     * @param string|array $rule Rule or array of rules for attribute extraction.
+     * @return string The extracted value or an empty string if not found.
      */
     private function getValuesWithRule($rule): string
     {
@@ -144,8 +166,10 @@ class SAMLAuth
     }
 
     /**
-     * @param string|null $url
-     * @return string|null
+     * Returns the SAML login URL for redirecting the user to the identity provider.
+     *
+     * @param string|null $url Optional URL to redirect to after login.
+     * @return string|null The login URL.
      */
     public function samlLoginURL(?string $url = null): ?string
     {
@@ -153,8 +177,10 @@ class SAMLAuth
     }
 
     /**
-     * @param string|null $url
-     * @return string|null
+     * Returns the SAML logout URL for redirecting the user to the identity provider.
+     *
+     * @param string|null $url Optional URL to redirect to after logout.
+     * @return string|null The logout URL.
      */
     public function samlLogoutURL(?string $url = null): ?string
     {

@@ -24,37 +24,44 @@ use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
 /**
- *
+ * Dropbox class handles file uploads and downloads to/from Dropbox via Dropbox API.
+ * Implements UploadingSupport and DownloadingSupport interfaces for integration with INTER-Mediator.
  */
 class Dropbox extends UploadingSupport implements DownloadingSupport
 {
     /**
-     * @var ?string
+     * Dropbox API App Key
+     * @var string|null
      */
     private ?string $appKey;
     /**
-     * @var ?string
+     * Dropbox API App Secret
+     * @var string|null
      */
     private ?string $appSecret;
     /**
-     * @var ?string
+     * Dropbox API Refresh Token
+     * @var string|null
      */
     private ?string $refreshToken;
     /**
-     * @var ?string
+     * Path to store the Dropbox API Access Token
+     * @var string|null
      */
     private ?string $accessTokenPath;
     /**
-     * @var ?string
+     * Root directory in Dropbox for file operations
+     * @var string|null
      */
     private ?string $rootInDropbox;
     /**
-     * @var ?string
+     * The file name of the current file being processed
+     * @var string|null
      */
     private ?string $fileName = null;
 
     /**
-     *
+     * Dropbox constructor. Initializes Dropbox API credentials and settings from parameters.
      */
     public function __construct()
     {
@@ -68,11 +75,13 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
     }
 
     /**
-     * @param string $file
-     * @param string $target
-     * @param Proxy $dbProxyInstance
-     * @return string
-     * @throws Exception
+     * Retrieves the contents of a file from Dropbox.
+     *
+     * @param string $file The file name (unused, for interface compatibility).
+     * @param string $target The Dropbox file path or URL.
+     * @param Proxy $dbProxyInstance The database proxy instance.
+     * @return string The file contents.
+     * @throws Exception If the file cannot be retrieved.
      */
     public function getMedia(string $file, string $target, Proxy $dbProxyInstance): string
     {
@@ -86,34 +95,38 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
     }
 
     /**
-     * @param string $file
-     * @return string
+     * Returns the file name of the last accessed or processed file.
+     *
+     * @param string $file The file path (unused).
+     * @return string|null The file name, or null if not set.
      */
-    public function getFileName(string $file): string
+    public function getFileName(string $file): ?string
     {
         return $this->fileName;
     }
 
     /**
-     * @param Proxy $db
-     * @param ?string $url
-     * @param array|null $options
-     * @param array $files
-     * @param bool $noOutput
-     * @param array $field
-     * @param string $contextName
-     * @param ?string $keyField
-     * @param ?string $keyValue
-     * @param array|null $dataSource
-     * @param array|null $dbSpec
-     * @param int $debug
-     * @throws Exception
+     * Handles file upload processing to Dropbox.
+     *
+     * @param Proxy $db The database proxy instance.
+     * @param string|null $url The redirect URL on error.
+     * @param array|null $options Additional options for processing.
+     * @param array $files Uploaded files array.
+     * @param bool $noOutput Whether to suppress output.
+     * @param array $field Array of target field names.
+     * @param string $contextName The context name for processing.
+     * @param string|null $keyField The key field for database update.
+     * @param string|null $keyValue The key value for database update.
+     * @param array|null $dataSource Data source definition.
+     * @param array|null $dbSpec Database specification.
+     * @param int $debug Debug level.
+     * @throws Exception If an error occurs during processing.
+     * @return void
      */
     public function processing(Proxy  $db, ?string $url, ?array $options, array $files, bool $noOutput, array $field,
                                string $contextName, ?string $keyField, ?string $keyValue,
                                ?array $dataSource, ?array $dbSpec, int $debug): void
     {
-//        $dbAlt = new Proxy();
         $counter = -1;
         foreach ($files as $fileInfo) { // Single file only
             $counter += 1;
@@ -140,54 +153,6 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
             $objectPath = $this->rootInDropbox . '/' . $dirPath
                 . '/' . $filePathInfo['filename'] . '_' . $rand4Digits . '.' . $filePathInfo['extension'];
             $storedURL = "dropbox://$objectPath";
-//            $dbProxyContext = $db->dbSettings->getDataSourceTargetArray();
-//            if (isset($dbProxyContext['file-upload'])) {
-//                foreach ($dbProxyContext['file-upload'] as $item) {
-//                    if (isset($item['field']) && !isset($item['context'])) {
-//                        $targetFieldName = $item['field'];
-//                    }
-//                }
-//            }
-//
-//            $dbAlt->initialize($dataSource, $options, $dbSpec, $debug, $contextName);
-//            $dbAlt->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
-//            $dbAlt->dbSettings->setFieldsRequired(array($targetFieldName));
-//            $dbAlt->dbSettings->setValue(array($storedURL));
-//            $dbAlt->processingRequest("update", true);
-//            $dbProxyRecord = $dbAlt->getDatabaseResult();
-//
-//            if (isset($dbProxyContext['file-upload'])) {
-//                foreach ($dbProxyContext['file-upload'] as $item) {
-//                    if (isset($item['field']) && $item['field'] == $targetFieldName) {
-//                        $dbAlt->initialize($dataSource, $options, $dbSpec, $debug, $item['context'] ?? null);
-//                        $relatedContextInfo = $dbAlt->dbSettings->getDataSourceTargetArray();
-//                        $fields = array();
-//                        $values = array();
-//                        if (isset($relatedContextInfo["query"])) {
-//                            foreach ($relatedContextInfo["query"] as $cItem) {
-//                                if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
-//                                    $fields[] = $cItem['field'];
-//                                    $values[] = $cItem['value'];
-//                                }
-//                            }
-//                        }
-//                        if (isset($relatedContextInfo["relation"])) {
-//                            foreach ($relatedContextInfo["relation"] as $cItem) {
-//                                if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
-//                                    $fields[] = $cItem['foreign-key'];
-//                                    $values[] = $dbProxyRecord[0][$cItem['join-field']];
-//                                }
-//                            }
-//                        }
-//                        $fields[] = "path";
-//                        $values[] = $storedURL;
-//                        $dbAlt->dbSettings->setFieldsRequired($fields);
-//                        $dbAlt->dbSettings->setValue($values);
-//                        $dbAlt->processingRequest("create", true, true);
-//                    }
-//                }
-//            }
-//            $db->addOutputData('dbresult', $storedURL);
 
             try {
                 $tokenProvider = new AutoRefreshingDropBoxTokenService(

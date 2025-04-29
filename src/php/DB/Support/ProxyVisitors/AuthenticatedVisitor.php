@@ -7,13 +7,16 @@ use INTERMediator\DB\Support\ProxyElements\OperationElement;
 use INTERMediator\IMUtil;
 
 /**
- *
+ * Visitor class for handling authenticated operations in the Proxy pattern.
+ * Implements methods for authentication, authorization, and challenge handling.
  */
 class AuthenticatedVisitor extends OperationVisitor
 {
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the IsAuthAccessing operation.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool Always returns true for authenticated access.
      */
     public function visitIsAuthAccessing(OperationElement $e): bool
     {
@@ -21,8 +24,10 @@ class AuthenticatedVisitor extends OperationVisitor
     }
 
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the CheckAuthentication operation to verify authentication and 2FA.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool True if authentication (including 2FA) succeeds; false otherwise.
      */
     public function visitCheckAuthentication(OperationElement $e): bool
     {
@@ -49,8 +54,10 @@ class AuthenticatedVisitor extends OperationVisitor
     }
 
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the CheckAuthorization operation to verify authorization status.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool True if authorization succeeds; false otherwise.
      */
     public function visitCheckAuthorization(OperationElement $e): bool
     {
@@ -58,17 +65,20 @@ class AuthenticatedVisitor extends OperationVisitor
         return $proxy->authSucceed && $this->checkAuthorization();
     }
 
-     /**
-     * @param OperationElement $e
+    /**
+     * Visits the DataOperation operation. No operation for authenticated visitor.
+     *
+     * @param OperationElement $e The operation element being visited.
      * @return void
      */
     public function visitDataOperation(OperationElement $e): void
     {
     }
 
-
     /**
-     * @param OperationElement $e
+     * Visits the HandleChallenge operation to process challenge/response for 2FA.
+     *
+     * @param OperationElement $e The operation element being visited.
      * @return void
      */
     public function visitHandleChallenge(OperationElement $e): void

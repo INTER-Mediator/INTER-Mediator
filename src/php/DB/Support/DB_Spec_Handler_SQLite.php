@@ -17,12 +17,15 @@
 namespace INTERMediator\DB\Support;
 
 /**
- *
+ * Handler for SQLite-specific specification behavior.
+ * Implements the DB_Spec_Behavior interface for SQLite backend.
  */
 class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
 {
     /**
-     * @return string
+     * Returns the default key name for SQLite (static method).
+     *
+     * @return string Default key name.
      */
     public static function defaultKey(): string
     {
@@ -30,7 +33,9 @@ class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
     }
 
     /**
-     * @return string
+     * Returns the default key name for SQLite (instance method).
+     *
+     * @return string Default key name.
      */
     public function getDefaultKey(): string
     {
@@ -38,7 +43,9 @@ class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
     }
 
     /**
-     * @return bool
+     * Checks if aggregation is supported (always true for SQLite).
+     *
+     * @return bool True (aggregation supported).
      */
     public function isSupportAggregation(): bool
     {
@@ -46,9 +53,11 @@ class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
     }
 
     /**
-     * @param string $fname
-     * @param array $fieldnames
-     * @return bool
+     * Checks if the given field name is in the provided list of field names.
+     *
+     * @param string $fname Field name to check.
+     * @param array $fieldnames Array of available field names.
+     * @return bool True if $fname is in $fieldnames, false otherwise.
      */
     public function isContainingFieldName(string $fname, array $fieldnames): bool
     {
@@ -56,7 +65,9 @@ class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
     }
 
     /**
-     * @return bool
+     * Checks if NULL values are acceptable (always true for SQLite).
+     *
+     * @return bool True (NULL acceptable).
      */
     public function isNullAcceptable(): bool
     {
@@ -64,8 +75,10 @@ class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
     }
 
     /**
-     * @param string $operator
-     * @return bool
+     * Checks if the given operator is valid for SQLite.
+     *
+     * @param string $operator Operator to check.
+     * @return bool True if the operator is valid, false otherwise.
      */
     public function isPossibleOperator(string $operator): bool
     {
@@ -77,17 +90,19 @@ class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
             '<', '<=', '>', '>=',
             '=', '==', '!=', '<>', 'IS', 'IS NOT', 'IN', 'LIKE', 'GLOB', 'MATCH', 'REGEXP',
             'AND',
-            'IS NULL', //NULL value test
+            'IS NULL', // NULL value test
             'OR',
             'IN',
             '-', '+', '~', 'NOT',
-            'IS NOT NULL', //	NOT NULL value test
+            'IS NOT NULL', // NOT NULL value test
         ));
     }
 
     /**
-     * @param string $specifier
-     * @return bool
+     * Checks if the given specifier is a valid order specifier for SQLite.
+     *
+     * @param string $specifier Order specifier to check.
+     * @return bool True if the specifier is valid, false otherwise.
      */
     public function isPossibleOrderSpecifier(string $specifier): bool
     {

@@ -19,15 +19,33 @@ namespace INTERMediator;
 use INTERMediator\DB\DBClass;
 use INTERMediator\DB\Logger;
 
+/**
+ * NotifyServer handles client registration and notification triggers for data changes.
+ * It interacts with the database notification handler and the service server proxy to
+ * propagate create, update, and delete events to registered clients.
+ */
 class NotifyServer
 {
+    /**
+     * The database class instance used for notifications.
+     *
+     * @var DBClass
+     */
     private DBClass $dbClass;
+    /**
+     * The client ID associated with the notification session.
+     *
+     * @var string|null
+     */
     private ?string $clientId;
 
     /**
-     * @param DBClass $dbClass
-     * @param ?string $clientId
-     * @return bool
+     * Initializes the NotifyServer with a DBClass and client ID.
+     * Checks if the notification handler and required table exist.
+     *
+     * @param DBClass $dbClass Database class instance.
+     * @param string|null $clientId Client ID for this session.
+     * @return bool True if initialization successful, false otherwise.
      */
     public function initialize(DBClass $dbClass, ?string $clientId): bool
     {
@@ -42,15 +60,12 @@ class NotifyServer
     }
 
     /**
-     * @param $channels array associated clinet ids as below:
-     *   ['5099b6c0b4d47a3d312ee21458216170916d7c0f09adb374a07ea0d44c6da7b0',
-     *    '7254b1a045fddc516c5df286df33a147364b64d65a7f18e9c3c7494cb3d7cc57',]
-     * @param $operation string 'update' and so on.
-     * @param $data array associated array describes modified data as like
-     * ['entity' => '`person`',
-     * 'pkvalue' => [0 => '1',]
-     * 'field' => [0 => 'name',]
-     * 'value' => [0 => 'Masayuki Nii',],]
+     * Triggers a notification event to the service server for the specified channels and data.
+     *
+     * @param array $channels Array of client IDs to notify.
+     * @param string $operation Operation type (e.g., 'update', 'create', 'delete').
+     * @param array $data Data describing the change.
+     * @return void
      */
     private function trigger(array $channels, string $operation, array $data): void
     {
@@ -67,10 +82,12 @@ class NotifyServer
     }
 
     /**
-     * @param string $entity
-     * @param string $condition
-     * @param array $pkArray
-     * @return ?string
+     * Registers a client for notifications on a given entity and condition.
+     *
+     * @param string $entity Entity name to register for.
+     * @param string $condition Condition for registration.
+     * @param array $pkArray Primary key values for the entity.
+     * @return string|null Registration result or null on failure.
      */
     public function register(string $entity, string $condition, array $pkArray): ?string
     {
@@ -82,9 +99,11 @@ class NotifyServer
     }
 
     /**
-     * @param string|null $client
-     * @param ?array $tableKeys
-     * @return bool
+     * Unregisters a client from notifications for specific table keys.
+     *
+     * @param string|null $client Client ID to unregister.
+     * @param array|null $tableKeys Table keys to unregister.
+     * @return bool True if successfully unregistered, false otherwise.
      */
     public function unregister(?string $client, ?array $tableKeys): bool
     {
@@ -96,12 +115,15 @@ class NotifyServer
     }
 
     /**
-     * @param string|null $clientId
-     * @param string $entity
-     * @param array $pkArray
-     * @param array $field
-     * @param array $value
-     * @param bool $isNotify
+     * Handles update notifications and triggers the appropriate event.
+     *
+     * @param string|null $clientId Client ID that performed the update.
+     * @param string $entity Entity name.
+     * @param array $pkArray Primary key values.
+     * @param array $field Updated fields.
+     * @param array $value Updated values.
+     * @param bool $isNotify Whether to just notify or not.
+     * @return void
      */
     public function updated(?string $clientId, string $entity, array $pkArray, array $field, array $value, bool $isNotify): void
     {
@@ -114,12 +136,15 @@ class NotifyServer
     }
 
     /**
-     * @param string|null $clientId
-     * @param string $entity
-     * @param array $pkArray
-     * @param string $pkField
-     * @param array $record
-     * @param bool $isNotify
+     * Handles create notifications and triggers the appropriate event.
+     *
+     * @param string|null $clientId Client ID that performed the creation.
+     * @param string $entity Entity name.
+     * @param array $pkArray Primary key values.
+     * @param string $pkField Primary key field name.
+     * @param array $record Created record data.
+     * @param bool $isNotify Whether to just notify or not.
+     * @return void
      */
     public function created(?string $clientId, string $entity, array $pkArray, string $pkField, array $record, bool $isNotify): void
     {
@@ -132,9 +157,12 @@ class NotifyServer
     }
 
     /**
-     * @param string|null $clientId
-     * @param string $entity
-     * @param array $pkArray
+     * Handles delete notifications and triggers the appropriate event.
+     *
+     * @param string|null $clientId Client ID that performed the deletion.
+     * @param string $entity Entity name.
+     * @param array $pkArray Primary key values.
+     * @return void
      */
     public function deleted(?string $clientId, string $entity, array $pkArray): void
     {

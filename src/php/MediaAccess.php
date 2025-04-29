@@ -19,50 +19,70 @@ use Exception;
 use INTERMediator\DB\Proxy;
 
 /**
- *
+ * MediaAccess handles secure access and delivery of media files (images, PDFs, etc.)
+ * for INTER-Mediator. It performs authentication, authorization, and context-aware
+ * record checking before serving the requested file.
  */
 class MediaAccess
 {
     /**
+     * Content disposition for the media file (inline or attachment).
+     *
      * @var string
      */
     private string $disposition = "inline";    // default disposition.
     /**
-     * @var ?string
+     * Target key field extracted from the request (set by analyzeTarget).
+     *
+     * @var string|null
      */
     private ?string $targetKeyField;    // set with the analyzeTarget method.
     /**
-     * @var ?string
+     * Target key value extracted from the request (set by analyzeTarget).
+     *
+     * @var string|null
      */
     private ?string $targetKeyValue;  // set with the analyzeTarget method.
     /**
-     * @var ?string
+     * Target context name extracted from the request (set by analyzeTarget).
+     *
+     * @var string|null
      */
     private ?string $targetContextName = null;  // set with the analyzeTarget method.
     /**
-     * @var ?string
+     * Authenticated user from cookie (set by checkAuthentication).
+     *
+     * @var string|null
      */
     private ?string $cookieUser = null;    // set with the checkAuthentication method.
     /**
+     * Access log level setting.
+     *
      * @var int
      */
     private int $accessLogLevel;
     /**
+     * Output message array for logging.
+     *
      * @var array
      */
     private array $outputMessage = [];
     /**
+     * Whether an exception was thrown during processing.
+     *
      * @var bool
      */
     private bool $thrownException = false;
 
     /**
-     * @var ?Proxy
+     * Database proxy instance for DB operations.
+     *
+     * @var Proxy|null
      */
     private ?Proxy $dbProxyInstance = null;
 
     /**
-     *
+     * MediaAccess constructor. Initializes access log level.
      */
     public function __construct()
     {
@@ -70,7 +90,9 @@ class MediaAccess
     }
 
     /**
-     * @return array
+     * Gets the result message array for access logging.
+     *
+     * @return array Output message array for logging.
      */
     public function getResultForLog(): array
     {
@@ -83,6 +105,8 @@ class MediaAccess
     }
 
     /**
+     * Sets the content disposition to attachment (download).
+     *
      * @return void
      */
     public function asAttachment(): void
@@ -91,7 +115,9 @@ class MediaAccess
     }
 
     /**
-     * @param string $message
+     * Handles error logging and sets error messages in the logger.
+     *
+     * @param string $message Error message to log.
      * @return void
      */
     private function errorHandling(string $message): void
@@ -101,11 +127,14 @@ class MediaAccess
     }
 
     /**
-     * @param Proxy $dbProxyInstance
-     * @param ?array $options
-     * @param string $file
+     * Main processing method for serving media files.
+     * Handles authentication, authorization, and file delivery.
+     *
+     * @param Proxy $dbProxyInstance Database proxy instance.
+     * @param array|null $options Options for media access.
+     * @param string $file Requested file path or URL.
      * @return void
-     * @throws Exception
+     * @throws Exception If processing fails.
      */
     public function processing(Proxy $dbProxyInstance, ?array $options, string $file): void
     {
@@ -224,10 +253,12 @@ class MediaAccess
     }
 
     /**
-     * @param bool $isURL
-     * @param string $target
-     * @return string
-     * @throws Exception
+     * Determines the class name for media processing based on the URL scheme.
+     *
+     * @param bool $isURL Whether the target is a URL.
+     * @param string $target Target URL or file path.
+     * @return string Class name for media processing.
+     * @throws Exception If the URL scheme is unknown.
      */
     private function getClassNameForMedia(bool $isURL, string $target): string
     {
@@ -248,8 +279,10 @@ class MediaAccess
     }
 
     /**
-     * @param string $file
-     * @return bool
+     * Checks if the target URL has a known schema.
+     *
+     * @param string $file Target URL or file path.
+     * @return bool Whether the target URL has a known schema.
      */
     private function isPossibleSchema(string $file): bool
     {
@@ -263,8 +296,10 @@ class MediaAccess
     }
 
     /**
-     * @param $code int any error code, but supported just 204, 401 and 500.
-     * @throws Exception happens anytime.
+     * Exits the script with an error code and sets the corresponding HTTP header.
+     *
+     * @param int $code Error code (204, 401, or 500).
+     * @throws Exception Always thrown.
      */
     private function exitAsError(int $code): void
     {
@@ -288,10 +323,12 @@ class MediaAccess
     }
 
     /**
-     * @param Proxy $dbProxyInstance
-     * @param string $file
-     * @param bool $isURL
-     * @return array
+     * Checks if the target URL is a FileMaker media URL and adjusts it accordingly.
+     *
+     * @param Proxy $dbProxyInstance Database proxy instance.
+     * @param string $file Target URL or file path.
+     * @param bool $isURL Whether the target is a URL.
+     * @return array Adjusted target URL and whether it is a URL.
      */
     private function checkForFileMakerMedia(Proxy $dbProxyInstance, string $file, bool $isURL): array
     {
@@ -327,10 +364,12 @@ class MediaAccess
     }
 
     /**
-     * @param Proxy $dbProxyInstance
-     * @param ?array $options
-     * @return ?string 'context_auth', 'no_auth', 'field_user', 'field_group'
-     * @throws Exception
+     * Checks the authentication and authorization for media access.
+     *
+     * @param Proxy $dbProxyInstance Database proxy instance.
+     * @param array|null $options Options for media access.
+     * @return string|null Authentication result ('context_auth', 'no_auth', 'field_user', 'field_group').
+     * @throws Exception If authentication fails.
      */
     private function checkAuthentication(Proxy $dbProxyInstance, ?array $options): ?string
     {
@@ -387,8 +426,10 @@ class MediaAccess
     }
 
     /**
-     * @param string $target
-     * @return bool
+     * Analyzes the target URL and extracts context name and key fields.
+     *
+     * @param string $target Target URL or file path.
+     * @return bool Whether the target URL contains context name and key fields.
      */
     private function analyzeTarget(string $target): bool
     {
@@ -424,7 +465,9 @@ class MediaAccess
     }
 
     /**
-     * @param string $content
+     * Outputs the image content with proper headers and security settings.
+     *
+     * @param string $content Image content.
      * @return void
      */
     private function outputImage(string $content): void

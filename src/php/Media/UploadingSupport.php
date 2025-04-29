@@ -19,22 +19,26 @@ use Exception;
 use INTERMediator\DB\Proxy;
 
 /**
- *
+ * Abstract class for supporting file upload processing in INTER-Mediator.
+ * Provides a method to handle file upload and database update operations.
  */
 abstract class UploadingSupport
 {
     /**
-     * @param Proxy $db
-     * @param array|null $options
-     * @param string $filePath
-     * @param string $filePartialPath
-     * @param string $targetFieldName
-     * @param string|null $keyField
-     * @param string|null $keyValue
-     * @param array|null $dataSource
-     * @param array|null $dbSpec
-     * @param int $debug
-     * @throws Exception
+     * Processes an uploaded file and updates the database record accordingly.
+     *
+     * @param Proxy $db The database proxy instance for performing operations.
+     * @param array|null $options Additional options for processing.
+     * @param string $filePath The full path to the uploaded file.
+     * @param string $filePartialPath The relative path to the uploaded file to be stored in the database.
+     * @param string $targetFieldName The name of the database field to update with the file path.
+     * @param string|null $keyField The key field name for identifying the record to update.
+     * @param string|null $keyValue The key value for identifying the record to update.
+     * @param array|null $dataSource The data source definition for related context.
+     * @param array|null $dbSpec The database specification array.
+     * @param int $debug Debug level.
+     * @throws Exception If an error occurs during processing.
+     * @return void
      */
     public function processingFile(Proxy  $db, ?array $options, string $filePath, string $filePartialPath,
                                    string $targetFieldName, ?string $keyField, ?string $keyValue,

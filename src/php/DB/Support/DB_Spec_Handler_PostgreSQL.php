@@ -16,12 +16,15 @@
 namespace INTERMediator\DB\Support;
 
 /**
- *
+ * Handler for PostgreSQL-specific specification behavior.
+ * Implements the DB_Spec_Behavior interface for PostgreSQL backend.
  */
 class DB_Spec_Handler_PostgreSQL extends DB_Spec_Handler_PDO
 {
     /**
-     * @return string
+     * Returns the default key name for PostgreSQL (static method).
+     *
+     * @return string Default key name.
      */
     public static function defaultKey(): string
     {
@@ -29,7 +32,9 @@ class DB_Spec_Handler_PostgreSQL extends DB_Spec_Handler_PDO
     }
 
     /**
-     * @return string
+     * Returns the default key name for PostgreSQL (instance method).
+     *
+     * @return string Default key name.
      */
     public function getDefaultKey(): string
     {
@@ -37,7 +42,9 @@ class DB_Spec_Handler_PostgreSQL extends DB_Spec_Handler_PDO
     }
 
     /**
-     * @return bool
+     * Checks if aggregation is supported (always true for PostgreSQL).
+     *
+     * @return bool True (aggregation supported).
      */
     public function isSupportAggregation(): bool
     {
@@ -45,9 +52,11 @@ class DB_Spec_Handler_PostgreSQL extends DB_Spec_Handler_PDO
     }
 
     /**
-     * @param string $fname
-     * @param array $fieldnames
-     * @return bool
+     * Checks if the given field name is in the provided list of field names.
+     *
+     * @param string $fname Field name to check.
+     * @param array $fieldnames Array of available field names.
+     * @return bool True if $fname is in $fieldnames, false otherwise.
      */
     public function isContainingFieldName(string $fname, array $fieldnames): bool
     {
@@ -55,7 +64,9 @@ class DB_Spec_Handler_PostgreSQL extends DB_Spec_Handler_PDO
     }
 
     /**
-     * @return bool
+     * Checks if NULL values are acceptable (always true for PostgreSQL).
+     *
+     * @return bool True (NULL acceptable).
      */
     public function isNullAcceptable(): bool
     {
@@ -63,28 +74,32 @@ class DB_Spec_Handler_PostgreSQL extends DB_Spec_Handler_PDO
     }
 
     /**
-     * @param string $operator
-     * @return bool
+     * Checks if the given operator does not require a value (e.g., IS NULL).
+     *
+     * @param string $operator Operator to check.
+     * @return bool True if the operator does not require a value, false otherwise.
      */
     public function isOperatorWithoutValue(string $operator): bool
     {
-        return in_array(strtoupper($operator), array(
-            'IS NOT NULL', //	NOT NULL value test
-            'IS NULL', //NULL value test
-            'NOTNULL', //	NOT NULL value test
-            'ISNULL', //NULL value test
+        return in_array(strtoupper($operator), [
+            'IS NOT NULL', // NOT NULL value test
+            'IS NULL', // NULL value test
+            'NOTNULL', // NOT NULL value test
+            'ISNULL', // NULL value test
             'IS TRUE',
             'IS NOT TRUE',
             'IS FALSE',
             'IS NOT FALSE',
             'IS UNKNOWN',
             'IS NOT UNKNOWN',
-        ));
+        ]);
     }
 
     /**
-     * @param string $operator
-     * @return bool
+     * Checks if the given operator is valid for PostgreSQL.
+     *
+     * @param string $operator Operator to check.
+     * @return bool True if the operator is valid, false otherwise.
      */
     public function isPossibleOperator(string $operator): bool
     {
@@ -145,11 +160,13 @@ class DB_Spec_Handler_PostgreSQL extends DB_Spec_Handler_PDO
     }
 
     /**
-     * @param string $specifier
-     * @return bool
+     * Checks if the given specifier is a valid order specifier for PostgreSQL.
+     *
+     * @param string $specifier Order specifier to check.
+     * @return bool True if the specifier is valid, false otherwise.
      */
     public function isPossibleOrderSpecifier(string $specifier): bool
     {
-        return in_array(strtoupper($specifier), array('ASC', 'DESC'));
+        return in_array(strtoupper($specifier), array('ASC', 'DESC', 'USING'));
     }
 }

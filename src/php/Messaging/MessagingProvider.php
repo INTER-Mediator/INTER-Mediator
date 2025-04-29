@@ -21,19 +21,31 @@ use INTERMediator\DB\Proxy;
 use INTERMediator\IMUtil;
 
 /**
- * Interface MessagingProvider
+ * Abstract Class MessagingProvider
+ * Base class for all messaging providers in INTER-Mediator.
+ * Defines the interface and common utility functions for messaging.
+ *
  * @package INTERMediator\Messaging
  */
 abstract class MessagingProvider
 {
     /**
-     * @param $dbProxy Proxy class's instance.
-     * @param $contextDef array The context definition array of current context.
-     * @param $result array The result of query or other db operations.
-     * @return bool for warning messsage, no messege error or succed return null.
+     * Processes a messaging request.
+     *
+     * @param Proxy $dbProxy Proxy class's instance.
+     * @param array $contextDef The context definition array of current context.
+     * @param array $result The result of query or other db operations.
+     * @return bool True if processing succeeds, false otherwise.
      */
     public abstract function processing(Proxy $dbProxy, array $contextDef, array $result): bool;
 
+    /**
+     * Sets a warning message using the logger and message class.
+     *
+     * @param int $num Message number or code.
+     * @param string $message The warning message.
+     * @return void
+     */
     protected function setWarningMessage(int $num, string $message): void
     {
         $messageClass = IMUtil::getMessageClassInstance();
@@ -42,6 +54,14 @@ abstract class MessagingProvider
         $logger->setWarningMessage("{$headMsg} {$message}");
     }
 
+    /**
+     * Performs modern templating for message bodies, replacing placeholders with actual values from the record.
+     *
+     * @param array $record The record containing field values.
+     * @param string|null $tempStr The template string with placeholders (e.g., @@field@@).
+     * @param bool $ignoreField If true, does not replace with field value directly.
+     * @return string The processed string with placeholders replaced.
+     */
     public function modernTemplating(array $record, ?string $tempStr, bool $ignoreField = false): string
     {
         $bodyStr = $tempStr ?? "";

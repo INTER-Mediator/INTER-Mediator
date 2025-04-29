@@ -16,234 +16,271 @@
 namespace INTERMediator\DB\Support;
 
 /**
- *
+ * Interface for common database authentication support.
+ * Provides methods for handling authorization fields, targets, users, groups,
+ * and challenge/response mechanisms for authentication tables.
  */
 interface Auth_Interface_CommonDB
 {
     /**
-     * @param string $operation
-     * @return string|null
+     * Returns the field name used for authorization for a given operation.
+     *
+     * @param string $operation The operation type (e.g., 'select', 'update').
+     * @return string|null The field name, or null if not set.
      */
     public function getFieldForAuthorization(string $operation): ?string;
 
     /**
-     * @param string $operation
-     * @return string|null
+     * Returns the target value used for authorization for a given operation.
+     *
+     * @param string $operation The operation type.
+     * @return string|null The target value, or null if not set.
      */
     public function getTargetForAuthorization(string $operation): ?string;
 
     /**
-     * @param string $operation
-     * @return string|null
+     * Returns the value for 'no set' authorization for a given operation.
+     *
+     * @param string $operation The operation type.
+     * @return string|null The value, or null if not set.
      */
     public function getNoSetForAuthorization(string $operation): ?string;
 
     /**
-     * @param string|null $operation
-     * @return array
+     * Returns a list of authorized users for a given operation.
+     *
+     * @param string|null $operation The operation type, or null for all.
+     * @return array List of authorized users.
      */
     public function getAuthorizedUsers(?string $operation = null): array;
 
     /**
-     * @param string|null $operation
-     * @return array
+     * Returns a list of authorized groups for a given operation.
+     *
+     * @param string|null $operation The operation type, or null for all.
+     * @return array List of authorized groups.
      */
     public function getAuthorizedGroups(?string $operation = null): array;
 
     /**
-     * handling auth table: issuedhash
-     * @param string|null $uid
-     * @param string $challenge
-     * @param string $clientId
-     * @param string $prefix
-     * @param bool $alwaysInsert
+     * Stores a challenge in the issuedhash authentication table.
+     *
+     * @param string|null $uid The user ID.
+     * @param string $challenge The challenge string.
+     * @param string $clientId The client identifier.
+     * @param string $prefix Optional prefix for the challenge.
+     * @param bool $alwaysInsert Whether to always insert a new challenge.
      * @return void
      */
     public function authSupportStoreChallenge(?string $uid, string $challenge, string $clientId, string $prefix = "", bool $alwaysInsert = false): void;
 
     /**
-     * handling auth table: issuedhash
-     * @return bool
+     * Removes outdated challenges from the issuedhash authentication table.
+     *
+     * @return bool True if successful, false otherwise.
      */
     public function authSupportRemoveOutdatedChallenges(): bool;
 
     /**
-     * handling auth table: issuedhash
-     * @param string $uid
-     * @param string $clientId
-     * @param bool $isDelete
-     * @param string $prefix
-     * @param bool $isMulti
-     * @return string|null
+     * Retrieves a challenge from the issuedhash authentication table.
+     *
+     * @param string $uid The user ID.
+     * @param string $clientId The client identifier.
+     * @param bool $isDelete Whether to delete the challenge after retrieval.
+     * @param string $prefix Optional prefix for the challenge.
+     * @param bool $isMulti Whether to support multiple challenges.
+     * @return string|null The challenge string, or null if not found.
      */
     public function authSupportRetrieveChallenge(
         string $uid, string $clientId, bool $isDelete = true, string $prefix = "", bool $isMulti = false): ?string;
 
     /**
-     * handling auth table: issuedhash
-     * @param string $uid
-     * @return string|null
+     * Checks the media token for a user in the issuedhash authentication table.
+     *
+     * @param string $uid The user ID.
+     * @return string|null The media token, or null if not found.
      */
     public function authSupportCheckMediaToken(string $uid): ?string;
 
     /**
-     * handling auth table: authuser
-     * @param string $username
-     * @return string|null
+     * Retrieves the hashed password for a user from the authuser authentication table.
+     *
+     * @param string $username The username.
+     * @return string|null The hashed password, or null if not found.
      */
     public function authSupportRetrieveHashedPassword(string $username): ?string;
 
     /**
-     * handling auth table: authuser
-     * @param string $username
-     * @param string $hashedpassword
-     * @param bool $isSAML
-     * @param string|null $ldapPassword
-     * @param array|null $attrs
-     * @return bool
+     * Creates a new user in the authuser authentication table.
+     *
+     * @param string $username The username.
+     * @param string $hashedpassword The hashed password.
+     * @param bool $isSAML Whether SAML authentication is used.
+     * @param string|null $ldapPassword Optional LDAP password.
+     * @param array|null $attrs Optional attributes.
+     * @return bool True if successful, false otherwise.
      */
     public function authSupportCreateUser(string $username, string $hashedpassword, bool $isSAML = false,
                                           string|null $ldapPassword = null, ?array $attrs = null): bool;
 
     /**
-     * handling auth table: authuser
-     * @param string $username
-     * @param string $hashednewpassword
-     * @return bool
+     * Changes the password for a user in the authuser authentication table.
+     *
+     * @param string $username The username.
+     * @param string $hashednewpassword The new hashed password.
+     * @return bool True if successful, false otherwise.
      */
     public function authSupportChangePassword(string $username, string $hashednewpassword): bool;
 
     /**
-     * handling auth table: (any tables)
-     * @param string $tableName
-     * @param string $targeting
-     * @param string $userField
-     * @param string $user
-     * @param string $keyField
-     * @param string $keyValue
-     * @return array|null
+     * Checks the media privilege for a user in a given table.
+     *
+     * @param string $tableName The table name.
+     * @param string $targeting The targeting value.
+     * @param string $userField The user field name.
+     * @param string $user The user value.
+     * @param string $keyField The key field name.
+     * @param string $keyValue The key value.
+     * @return array|null The media privilege data, or null if not found.
      */
     public function authSupportCheckMediaPrivilege(string $tableName, string $targeting, string $userField,
                                                    string $user, string $keyField, string $keyValue): ?array;
 
     /**
-     * handling auth table: authuser
-     * @param string $email
-     * @return string|null
+     * Retrieves the user ID from an email address in the authuser authentication table.
+     *
+     * @param string $email The email address.
+     * @return string|null The user ID, or null if not found.
      */
     public function authSupportGetUserIdFromEmail(string $email): ?string;
 
     /**
-     * handling auth table: authuser
-     * @param string|null $username
-     * @return string|null
+     * Retrieves the user ID from a username in the authuser authentication table.
+     *
+     * @param string|null $username The username.
+     * @return string|null The user ID, or null if not found.
      */
     public function authSupportGetUserIdFromUsername(?string $username): ?string;
 
     /**
-     * handling auth table: authuser
-     * @param string $userid
-     * @return string|null
+     * Retrieves the username from a user ID in the authuser authentication table.
+     *
+     * @param string $userid The user ID.
+     * @return string|null The username, or null if not found.
      */
     public function authSupportGetUsernameFromUserId(string $userid): ?string;
 
     /**
-     * handling auth table: authgroup
-     * @param string $groupid
-     * @return string|null
+     * Retrieves the group name from a group ID in the authgroup authentication table.
+     *
+     * @param string $groupid The group ID.
+     * @return string|null The group name, or null if not found.
      */
     public function authSupportGetGroupNameFromGroupId(string $groupid): ?string;
 
     /**
-     * handling auth table: authuser, authcor, authgroup
-     * @param string|null $user
-     * @return array
+     * Retrieves the groups for a user in the authuser and authgroup authentication tables.
+     *
+     * @param string|null $user The user value.
+     * @return array The groups for the user.
      */
     public function authSupportGetGroupsOfUser(?string $user): array;
 
     /**
-     * handling auth table: authuser
-     * @param string|null $username
-     * @return string|null
+     * Unifies a username and email address in the authuser authentication table.
+     *
+     * @param string|null $username The username.
+     * @return string|null The unified username, or null if not found.
      */
     public function authSupportUnifyUsernameAndEmail(?string $username): ?string;
 
     /**
-     * handling auth table: authuser
-     * @param string|null $username
-     * @return string|null
+     * Retrieves the email address from a unified username in the authuser authentication table.
+     *
+     * @param string|null $username The unified username.
+     * @return string|null The email address, or null if not found.
      */
     public function authSupportEmailFromUnifiedUsername(?string $username): ?string;
 
     /**
-     * handling auth table: issuedhash
-     * @param string $userid
-     * @param string $clienthost
-     * @param string $hash
-     * @return bool
+     * Stores an issued hash for a user in the issuedhash authentication table.
+     *
+     * @param string $userid The user ID.
+     * @param string $clienthost The client host.
+     * @param string $hash The hash value.
+     * @return bool True if successful, false otherwise.
      */
     public function authSupportStoreIssuedHashForResetPassword(
         string $userid, string $clienthost, string $hash): bool;
 
     /**
-     * handling auth table: issuedhash
-     * @param string $userid
-     * @param string $randdata
-     * @param string $hash
-     * @return bool
+     * Checks the issued hash for a user in the issuedhash authentication table.
+     *
+     * @param string $userid The user ID.
+     * @param string $randdata The random data.
+     * @param string $hash The hash value.
+     * @return bool True if successful, false otherwise.
      */
     public function authSupportCheckIssuedHashForResetPassword(
         string $userid, string $randdata, string $hash): bool;
 
     /**
-     * handling auth table: issuedhash
-     * @param string $userid
-     * @param string $hash
-     * @return bool
+     * Starts the user enrollment process for a user in the issuedhash authentication table.
+     *
+     * @param string $userid The user ID.
+     * @param string $hash The hash value.
+     * @return bool True if successful, false otherwise.
      */
     public function authSupportUserEnrollmentStart(string $userid, string $hash): bool;
 
     /**
-     * handling auth table: issuedhash
-     * @param string $hash
-     * @return string|null
+     * Retrieves the enrolling user from the issuedhash authentication table.
+     *
+     * @param string $hash The hash value.
+     * @return string|null The enrolling user, or null if not found.
      */
     public function authSupportUserEnrollmentEnrollingUser(string $hash): ?string;
 
     /**
-     * handling auth table: authuser
-     * @param string $userID
-     * @param string|null $password
-     * @param string|null $rawPWField
-     * @param string|null $rawPW
-     * @return string|null
+     * Activates a user in the authuser authentication table.
+     *
+     * @param string $userID The user ID.
+     * @param string|null $password The password.
+     * @param string|null $rawPWField The raw password field.
+     * @param string|null $rawPW The raw password.
+     * @return string|null The activation result, or null if not found.
      */
     public function authSupportUserEnrollmentActivateUser(
         string $userID, ?string $password, ?string $rawPWField, ?string $rawPW): ?string;
 
     /**
-     * handling auth table: authuser
-     * @param string $userID
-     * @return bool
+     * Checks if a user is within the SAML limit in the authuser authentication table.
+     *
+     * @param string $userID The user ID.
+     * @return bool True if within the limit, false otherwise.
      */
     public function authSupportIsWithinSAMLLimit(string $userID): bool;
 
     /**
-     * handling auth table: authuser, issuedhash
-     * @return bool
+     * Checks if the SHA256 hash can be migrated in the authuser and issuedhash authentication tables.
+     *
+     * @return bool True if migratable, false otherwise.
      */
     public function authSupportCanMigrateSHA256Hash(): bool;
 
     /**
-     * @param array $keyValues
-     * @return bool|null true: create user, false: reuse user, ull in error
+     * Handles OAuth user authentication.
+     *
+     * @param array $keyValues The key-value pairs.
+     * @return bool|null True if create user, false if reuse user, null in error.
      */
     public function authSupportOAuthUserHandling(array $keyValues): ?bool;
 
-    /** This method merged the following methods authSupportUnifyUsernameAndEmail,
-     * authSupportRetrieveHashedPassword and authSupportGetUserIdFromUsername
-     * @param null|string $userID
-     * @return array
+    /**
+     * Unifies a username and email address, retrieves the hashed password, and gets the user ID.
+     *
+     * @param string|null $userID The user ID.
+     * @return array The unified data.
      */
     public function authSupportUnifyUsernameAndEmailAndGetInfo(?string $userID): array;
 

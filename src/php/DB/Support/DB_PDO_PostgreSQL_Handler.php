@@ -1,5 +1,4 @@
 <?php
-
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -19,48 +18,52 @@ namespace INTERMediator\DB\Support;
 use Exception;
 
 /**
- *
+ * PostgreSQL-specific handler for PDO database operations.
+ * Implements SQL command generation and schema inspection for PostgreSQL databases.
+ * Extends DB_PDO_Handler with PostgreSQL-specific logic.
  */
 class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
 {
     /**
-     * @var array
+     * @var array Table information for schema inspection.
      */
     protected array $tableInfo = array();
     /**
-     * @var string
+     * @var string Field name for column field.
      */
     public string $fieldNameForField = 'column_name';
     /**
-     * @var string
+     * @var string Field name for column type.
      */
     protected string $fieldNameForType = 'data_type';
     /**
-     * @var string
+     * @var string Field name for nullable property.
      */
     protected string $fieldNameForNullable = 'is_nullable';
     /**
-     * @var array|string[]
+     * @var array|string[] List of numeric field types.
      */
     protected array $numericFieldTypes = ['smallint', 'integer', 'bigint', 'decimal', 'numeric',
         'real', 'double precision', 'smallserial', 'serial', 'bigserial', 'money',];
     /**
-     * @var array|string[]
+     * @var array|string[] List of time field types.
      */
     protected array $timeFieldTypes = ['datetime', 'datetime without time zone',
         'time', 'time without time zone', 'timestamp', 'timestamp without time zone'];
     /**
-     * @var array|string[]
+     * @var array|string[] List of date field types.
      */
     protected array $dateFieldTypes = ['datetime', 'datetime without time zone',
         'date', 'date without time zone', 'timestamp', 'timestamp without time zone',];
     /**
-     * @var array|string[]
+     * @var array|string[] List of boolean field types.
      */
     protected array $booleanFieldTypes = ['boolean'];
 
     /**
-     * @return string
+     * Returns the SQL SELECT command for PostgreSQL.
+     *
+     * @return string SQL SELECT command.
      */
     public function sqlSELECTCommand(): string
     {
@@ -68,8 +71,10 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @param string $param
-     * @return string
+     * Returns the SQL LIMIT command for PostgreSQL.
+     *
+     * @param string $param Limit parameter.
+     * @return string SQL LIMIT command.
      */
     public function sqlLimitCommand(string $param): string
     {
@@ -77,8 +82,10 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @param string $param
-     * @return string
+     * Returns the SQL OFFSET command for PostgreSQL.
+     *
+     * @param string $param Offset parameter.
+     * @return string SQL OFFSET command.
      */
     public function sqlOffsetCommand(string $param): string
     {
@@ -86,7 +93,9 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @return string
+     * Returns the SQL DELETE command for PostgreSQL.
+     *
+     * @return string SQL DELETE command.
      */
     public function sqlDELETECommand(): string
     {
@@ -94,7 +103,9 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @return string
+     * Returns the SQL UPDATE command for PostgreSQL.
+     *
+     * @return string SQL UPDATE command.
      */
     public function sqlUPDATECommand(): string
     {
@@ -102,9 +113,11 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @param string $tableRef
-     * @param string $setClause
-     * @return string
+     * Returns the SQL INSERT command for PostgreSQL.
+     *
+     * @param string $tableRef Table reference.
+     * @param string $setClause SET clause.
+     * @return string SQL INSERT command.
      */
     public function sqlINSERTCommand(string $tableRef, string $setClause): string
     {
@@ -112,11 +125,13 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @param string $tableName
-     * @param array $setColumnNames
-     * @param string $keyField
-     * @param array $setValues
-     * @return string
+     * Returns the SQL SET clause for PostgreSQL.
+     *
+     * @param string $tableName Table name.
+     * @param array $setColumnNames Column names.
+     * @param string $keyField Key field.
+     * @param array $setValues Values.
+     * @return string SQL SET clause.
      * @throws Exception
      */
     public function sqlSETClause(string $tableName, array $setColumnNames, string $keyField, array $setValues): string
@@ -126,24 +141,10 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
             '(' . implode(',', $setNames) . ') VALUES(' . implode(',', $setValuesConv) . ')';
     }
 
-//    public function getNullableFields($tableName)
-//    {
-//        try {
-//            $result = $this->getTableInfo($tableName);
-//        } catch (Exception $ex) {
-//            throw $ex;
-//        }
-//        $fieldArray = [];
-//        foreach ($result as $row) {
-//            if ($row[$this->fieldNameForNullable] === "YES") {
-//                $fieldArray[] = $row[$this->fieldNameForField];
-//            }
-//        }
-//        return $fieldArray;
-//    }
-
     /**
-     * @return string
+     * Returns the date reset value for not-null fields.
+     *
+     * @return string Date reset value.
      */
     public function dateResetForNotNull(): string
     {
@@ -151,8 +152,10 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @param string $info
-     * @return bool
+     * Checks if a field is nullable.
+     *
+     * @param string $info Field information.
+     * @return bool True if the field is nullable, false otherwise.
      */
     protected function checkNullableField(string $info): bool
     {
@@ -160,8 +163,10 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @param string $tableName
-     * @return string|null
+     * Returns the auto-increment field for a table.
+     *
+     * @param string $tableName Table name.
+     * @return string|null Auto-increment field, or null if not found.
      * @throws Exception
      */
     protected function getAutoIncrementField(string $tableName): ?string
@@ -180,8 +185,10 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @param string $tableName
-     * @return string
+     * Returns the SQL to retrieve table information.
+     *
+     * @param string $tableName Table name.
+     * @return string SQL to retrieve table information.
      */
     public function getTableInfoSQL(string $tableName): string
     {
@@ -200,39 +207,15 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return $sql;
     }
 
-    /*
-# SELECT column_name, column_default, is_nullable, data_type, character_maximum_length,numeric_precision, numeric_scale FROM information_schema.columns WHERE table_schema='im_sample' AND table_name='testtable';
- column_name |                   column_default                   | is_nullable |          data_type          | character_maximum_length | numeric_precision | numeric_scale
--------------+----------------------------------------------------+-------------+-----------------------------+--------------------------+-------------------+---------------
- id          | nextval('im_sample.testtable_id_seq'::regclass)    | NO          | integer                     |                          |                32 |             0
- num1        | 0                                                  | NO          | integer                     |                          |                32 |             0
- num2        |                                                    | YES         | integer                     |                          |                32 |             0
- num3        |                                                    | YES         | integer                     |                          |                32 |             0
- dt1         | CURRENT_TIMESTAMP                                  | NO          | timestamp without time zone |                          |                   |
- dt2         |                                                    | YES         | timestamp without time zone |                          |                   |
- dt3         |                                                    | YES         | timestamp without time zone |                          |                   |
- date1       | CURRENT_TIMESTAMP                                  | NO          | date                        |                          |                   |
- date2       |                                                    | YES         | date                        |                          |                   |
- time1       | CURRENT_TIMESTAMP                                  | NO          | time without time zone      |                          |                   |
- time2       |                                                    | YES         | time without time zone      |                          |                   |
- ts1         | CURRENT_TIMESTAMP                                  | NO          | timestamp without time zone |                          |                   |
- ts2         | '2001-01-01 00:00:00'::timestamp without time zone | YES         | timestamp without time zone |                          |                   |
- vc1         | ''::character varying                              | NO          | character varying           |                      100 |                   |
- vc2         |                                                    | YES         | character varying           |                      100 |                   |
- vc3         |                                                    | YES         | character varying           |                      100 |                   |
- text1       | ''::text                                           | NO          | text                        |                          |                   |
- text2       |                                                    | YES         | text                        |                          |                   |
-(18 rows)
- */
-
-
     /**
-     * @param string $tableName
-     * @param string $keyField
-     * @param string|null $assocField
-     * @param string|null $assocValue
-     * @param array|null $defaultValues
-     * @return array
+     * Returns the field lists for a copy operation.
+     *
+     * @param string $tableName Table name.
+     * @param string $keyField Key field.
+     * @param string|null $assocField Associated field.
+     * @param string|null $assocValue Associated value.
+     * @param array|null $defaultValues Default values.
+     * @return array Field lists.
      * @throws Exception
      */
     protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
@@ -265,9 +248,11 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @param string $value
-     * @param array $row
-     * @return string
+     * Sets a value for a field.
+     *
+     * @param string $value Value.
+     * @param array $row Field information.
+     * @return string Set value.
      */
     protected function setValue(string $value, array $row): string
     {
@@ -278,8 +263,10 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @param string $entityName
-     * @return string|null
+     * Returns the quoted entity name.
+     *
+     * @param string $entityName Entity name.
+     * @return string|null Quoted entity name, or null if not found.
      */
     public function quotedEntityName(string $entityName): ?string
     {
@@ -296,18 +283,20 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @return void
+     * Optional operation in setup.
      */
     public function optionalOperationInSetup(): void
     {
     }
 
     /**
-     * @param string $userTable
-     * @param string $hashTable
-     * @return array|null
+     * Checks if the auth support can migrate SHA256 hash.
+     *
+     * @param string $userTable User table.
+     * @param string $hashTable Hash table.
+     * @return array|null Migration result, or null if not applicable.
      */
-    public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable): ?array // authuser, issuedhash
+    public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable): ?array
     {
         $checkFieldDefinition = function (string $type, int $len, int $min): bool {
             $fDef = strtolower($type);
@@ -349,15 +338,25 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @param $field
-     * @param $value
-     * @return string
+     * Returns the SQL for numeric to like operation.
+     *
+     * @param string $field Field.
+     * @param string $value Value.
+     * @return string SQL for numeric to like operation.
      */
-    public function getSQLNumericToLikeOpe($field, $value): string
+    public function getSQLNumericToLikeOpe(string $field, string $value): string
     {
         return "CAST({$field} AS TEXT) LIKE {$value}";
     }
 
+    /**
+     * Returns the SQL to create a user.
+     *
+     * @param string $dbName Database name.
+     * @param string $userEntity User entity.
+     * @param string $password Password.
+     * @return string SQL to create a user.
+     */
     public function sqlCREATEUSERCommand(string $dbName, string $userEntity, string $password): string
     {
         $quotedDB = $this->quotedEntityName($dbName);
@@ -371,7 +370,9 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @return string SQL command returns database list
+     * Returns the SQL to list databases.
+     *
+     * @return string SQL to list databases.
      */
     public function sqlLISTDATABASECommand(): string
     {
@@ -379,11 +380,12 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @return string The field name for database name in the result of database list
+     * Returns the column name for database list.
+     *
+     * @return string Column name for database list.
      */
     public function sqlLISTDATABASEColumn(): string
     {
         return "datname";
     }
-
 }

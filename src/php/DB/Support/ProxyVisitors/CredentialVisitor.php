@@ -9,13 +9,16 @@ use INTERMediator\Messaging\MessagingProxy;
 use INTERMediator\Params;
 
 /**
- *
+ * Visitor class for handling credential-based authentication operations in the Proxy pattern.
+ * Implements methods for authentication, authorization, challenge handling, and 2FA support.
  */
 class CredentialVisitor extends OperationVisitor
 {
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the IsAuthAccessing operation.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool Always returns true for credential access.
      */
     public function visitIsAuthAccessing(OperationElement $e): bool
     {
@@ -23,8 +26,10 @@ class CredentialVisitor extends OperationVisitor
     }
 
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the CheckAuthentication operation for credential access.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool True if authentication succeeds, false otherwise.
      */
     public function visitCheckAuthentication(OperationElement $e): bool
     {
@@ -37,8 +42,10 @@ class CredentialVisitor extends OperationVisitor
     }
 
     /**
-     * @param OperationElement $e
-     * @return bool
+     * Visits the CheckAuthorization operation for credential access.
+     *
+     * @param OperationElement $e The operation element being visited.
+     * @return bool True if authorization succeeds, false otherwise.
      */
     public function visitCheckAuthorization(OperationElement $e): bool
     {
@@ -46,18 +53,20 @@ class CredentialVisitor extends OperationVisitor
         return $proxy->authSucceed && $this->checkAuthorization();
     }
 
-
     /**
-     * @param OperationElement $e
+     * Visits the DataOperation operation. No operation for credential visitor.
+     *
+     * @param OperationElement $e The operation element being visited.
      * @return void
      */
     public function visitDataOperation(OperationElement $e): void
     {
     }
 
-
     /**
-     * @param OperationElement $e
+     * Visits the HandleChallenge operation to process challenge/response for credential access and 2FA.
+     *
+     * @param OperationElement $e The operation element being visited.
      * @return void
      */
     public function visitHandleChallenge(OperationElement $e): void
@@ -99,7 +108,6 @@ class CredentialVisitor extends OperationVisitor
                 'session-storage':
                     $challenge = $this->generateAndSaveChallenge($proxy->signedUser, $proxy->generatedClientID, "#");
                     $proxy->outputOfProcessing['challenge'] = "{$challenge}{$userSalt}";
-                    break;
             }
         } else {
             $this->clearAuthenticationCookies();

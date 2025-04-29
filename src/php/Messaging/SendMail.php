@@ -17,16 +17,41 @@ namespace INTERMediator\Messaging;
 
 use INTERMediator\DB\Proxy;
 use INTERMediator\Params;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
+/**
+ * Class SendMail
+ * Messaging provider for sending emails using SMTP or the mail() function.
+ * Supports both legacy and modern email sending architectures.
+ *
+ * @package INTERMediator\Messaging
+ */
 class SendMail extends MessagingProvider
 {
+    /**
+     * @var bool Determines if compatibility mode (legacy email sending) is enabled.
+     */
     private bool $isCompatible;
 
+    /**
+     * SendMail constructor.
+     * Initializes compatibility mode from parameters.
+     */
     public function __construct()
     {
         $this->isCompatible = Params::getParameterValue("sendMailCompatibilityMode", false);
     }
 
+    /**
+     * Sends emails based on the provided parameters and result set.
+     * Handles both legacy and new email architectures, supports attachments and storing sent mail data.
+     *
+     * @param Proxy $dbProxy A Proxy class's instance for logging and settings.
+     * @param array $sendMailParam Parameters for email sending (recipients, subject, body, etc.).
+     * @param array $result Result set from database operations.
+     * @return bool True if all emails sent successfully, false if any error occurred.
+     * @throws TransportExceptionInterface
+     */
     public function processing(Proxy $dbProxy, array $sendMailParam, array $result): bool
     {
         $smtpConfig = $dbProxy->dbSettings->getSmtpConfiguration();
@@ -34,7 +59,7 @@ class SendMail extends MessagingProvider
             $this->isCompatible = false;
         }
         $returnValue = true;
-        for ($i = 0; $i < (is_array($result) ? count($result) : 0); $i++) {
+        for ($i = 0; $i < count($result); $i++) {
             $isErrorThisRecord = false;
             $ome = new OME();
 
@@ -117,7 +142,7 @@ class SendMail extends MessagingProvider
                     if (isset($sendMailParam['body-fields'])) {
                         foreach (explode(',', $sendMailParam['body-fields']) as $fieldName) {
                             $fieldName = trim($fieldName);
-                            if (substr($fieldName, 0, 1) == '@') {
+                            if (str_starts_with($fieldName, '@')) {
                                 $dataArray[] = substr($fieldName, 1);
                             } else if (isset($result[$i][$fieldName])) {
                                 $dataArray[] = $result[$i][$fieldName];
@@ -212,7 +237,7 @@ class SendMail extends MessagingProvider
                 $ome->setFromField(trim($this->modernTemplating($result[$i], $mailSeed['from'])));
                 $ome->setSubject($this->modernTemplating($result[$i], $mailSeed['subject']));
                 $bodyString = $this->modernTemplating($result[$i], $mailSeed['body']);
-                $type = (strpos($bodyString, '<html>') === 0) ? 'text/html' : false;
+                $type = (str_starts_with($bodyString, '<html>')) ? 'text/html' : false;
 
                 $ome->setBody($bodyString, $type);
             }

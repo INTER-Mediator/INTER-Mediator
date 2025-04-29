@@ -1,5 +1,4 @@
 <?php
-
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -19,47 +18,51 @@ namespace INTERMediator\DB\Support;
 use Exception;
 
 /**
- *
+ * SQLite-specific handler for PDO database operations.
+ * Implements SQL command generation and schema inspection for SQLite databases.
+ * Extends DB_PDO_Handler with SQLite-specific logic.
  */
 class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 {
     /**
-     * @var array
+     * @var array Table information for schema inspection.
      */
     protected array $tableInfo = array();
     /**
-     * @var string
+     * @var string Field name for column field.
      */
     public string $fieldNameForField = 'name';
     /**
-     * @var string
+     * @var string Field name for column type.
      */
     protected string $fieldNameForType = 'type';
     /**
-     * @var string
+     * @var string Field name for nullable property.
      */
     protected string $fieldNameForNullable = 'notnull';
     /**
-     * @var array|string[]
+     * @var array|string[] List of numeric field types.
      */
     protected array $numericFieldTypes = array('integer', 'int', 'real', 'numeric',
         'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2', 'int8',
         'double', 'double precision', 'float', 'decimal', 'boolean');
     /**
-     * @var array|string[]
+     * @var array|string[] List of time field types.
      */
     protected array $timeFieldTypes = ['datetime', 'time', 'timestamp'];
     /**
-     * @var array|string[]
+     * @var array|string[] List of date field types.
      */
     protected array $dateFieldTypes = ['datetime', 'date', 'timestamp'];
     /**
-     * @var array
+     * @var array List of boolean field types.
      */
     protected array $booleanFieldTypes = [];
 
     /**
-     * @return string
+     * Returns the SQL SELECT command for SQLite.
+     *
+     * @return string SQL SELECT command.
      */
     public function sqlSELECTCommand(): string
     {
@@ -67,8 +70,10 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @param string $param
-     * @return string
+     * Returns the SQL LIMIT command for SQLite.
+     *
+     * @param string $param Limit parameter.
+     * @return string SQL LIMIT command.
      */
     public function sqlLimitCommand(string $param): string
     {
@@ -76,8 +81,10 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @param string $param
-     * @return string
+     * Returns the SQL OFFSET command for SQLite.
+     *
+     * @param string $param Offset parameter.
+     * @return string SQL OFFSET command.
      */
     public function sqlOffsetCommand(string $param): string
     {
@@ -85,7 +92,9 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @return string
+     * Returns the SQL DELETE command for SQLite.
+     *
+     * @return string SQL DELETE command.
      */
     public function sqlDELETECommand(): string
     {
@@ -93,7 +102,9 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @return string
+     * Returns the SQL UPDATE command for SQLite.
+     *
+     * @return string SQL UPDATE command.
      */
     public function sqlUPDATECommand(): string
     {
@@ -101,9 +112,11 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @param string $tableRef
-     * @param string $setClause
-     * @return string
+     * Returns the SQL INSERT command for SQLite.
+     *
+     * @param string $tableRef Table reference.
+     * @param string $setClause Set clause.
+     * @return string SQL INSERT command.
      */
     public function sqlINSERTCommand(string $tableRef, string $setClause): string
     {
@@ -111,9 +124,11 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @param string $tableRef
-     * @param string $setClause
-     * @return string
+     * Returns the SQL REPLACE command for SQLite.
+     *
+     * @param string $tableRef Table reference.
+     * @param string $setClause Set clause.
+     * @return string SQL REPLACE command.
      */
     public function sqlREPLACECommand(string $tableRef, string $setClause): string
     {
@@ -121,12 +136,14 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @param string $tableName
-     * @param array $setColumnNames
-     * @param string $keyField
-     * @param array $setValues
-     * @return string
-     * @throws Exception
+     * Returns the SQL SET clause for SQLite.
+     *
+     * @param string $tableName Table name.
+     * @param array $setColumnNames Set column names.
+     * @param string $keyField Key field.
+     * @param array $setValues Set values.
+     * @return string SQL SET clause.
+     * @throws Exception If an error occurs.
      */
     public function sqlSETClause(string $tableName, array $setColumnNames, string $keyField, array $setValues): string
     {
@@ -136,7 +153,9 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @return string
+     * Returns the default date value for non-nullable date fields.
+     *
+     * @return string Default date value.
      */
     public function dateResetForNotNull(): string
     {
@@ -144,8 +163,10 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @param string $info
-     * @return bool
+     * Checks if a field is nullable.
+     *
+     * @param string $info Field information.
+     * @return bool True if the field is nullable, false otherwise.
      */
     protected function checkNullableField(string $info): bool
     {
@@ -153,80 +174,38 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
     }
 
     /**
-     * @param string $tableName
-     * @return string|null
+     * Returns the auto-increment field for a table.
+     *
+     * @param string $tableName Table name.
+     * @return string|null Auto-increment field or null if not found.
      */
     protected function getAutoIncrementField(string $tableName): ?string
     {
-//        if ($this->dbClassObj->link) {
-//            $seqCount = $this->dbClassObj->link->query('SELECT COUNT(*) FROM sqlite_sequence WHERE name=' . $tableName);
-//            $row = $seqCount->fetch(\PDO::FETCH_NUM);
-//            if($row && isset($row[0])) {
-//                if($row[0]>0) {
-//                    return null; // OMG
-//                }
-//            }
-//        }
-        return '_CANCEL_THE_INCR_FIELD_DETECT_';
         // SQLite doesn't support to create a record with non AUTOINCREMENT field as the primary key.
+        return '_CANCEL_THE_INCR_FIELD_DETECT_';
     }
 
     /**
-     * @param string $tableName
-     * @return string
+     * Returns the SQL command to retrieve table information.
+     *
+     * @param string $tableName Table name.
+     * @return string SQL command.
      */
     public function getTableInfoSQL(string $tableName): string
     {
         return "PRAGMA table_info({$tableName})";
     }
 
-    /*
-sqlite> .mode column
-sqlite> PRAGMA table_info(testtable);
-cid  name   type          notnull  dflt_value             pk
----  -----  ------------  -------  ---------------------  --
-0    id     INTEGER       0                               1
-1    num1   INT           1        0                      0
-2    num2   INT           0                               0
-3    num3   INT           0                               0
-4    dt1    DateTime      1        CURRENT_TIMESTAMP      0
-5    dt2    DateTime      0                               0
-6    dt3    DateTime      0                               0
-7    date1  Date          1        CURRENT_TIMESTAMP      0
-8    date2  Date          0                               0
-9    time1  Time          1        CURRENT_TIMESTAMP      0
-10   time2  Time          0                               0
-11   ts1    Timestamp     1        CURRENT_TIMESTAMP      0
-12   ts2    Timestamp     0        '2001-01-01 00:00:00'  0
-13   vc1    VARCHAR(100)  1        ''                     0
-14   vc2    VARCHAR(100)  0                               0
-15   vc3    VARCHAR(100)  0                               0
-16   text1  TEXT          1        ''                     0
-17   text2  TEXT          0                               0
-
-    https://stackoverflow.com/questions/20979239/how-to-tell-if-a-sqlite-column-is-autoincrement
-
-sqlite> SELECT COUNT(*) FROM sqlite_sequence WHERE name='testtable';
-1
-sqlite> SELECT * FROM sqlite_sequence WHERE name='testtable';
-testtable|106
-sqlite> SELECT COUNT(*) FROM sqlite_sequence WHERE name='person';
-1
-sqlite> SELECT * FROM sqlite_sequence;
-person|90
-contact|52
-contact_way|6
-
-       */
-
     /**
-     * @param string $tableName
-     * @param string $keyField
-     * @param string|null $assocField
-     * @param string|null $assocValue
-     * @param array|null $defaultValues
-     * @return array
-     * @throws Exception
+     * Returns the field lists for copying data.
+     *
+     * @param string $tableName Table name.
+     * @param string $keyField Key field.
+     * @param string|null $assocField Associated field.
+     * @param string|null $assocValue Associated value.
+     * @param array|null $defaultValues Default values.
+     * @return array Field lists.
+     * @throws Exception If an error occurs.
      */
     protected function getFieldListsForCopy(string $tableName, string $keyField, ?string $assocField, ?string $assocValue,
                                             ?array $defaultValues): array
@@ -258,8 +237,10 @@ contact_way|6
     }
 
     /**
-     * @param string $entityName
-     * @return string|null
+     * Returns the quoted entity name.
+     *
+     * @param string $entityName Entity name.
+     * @return string|null Quoted entity name or null if not found.
      */
     public function quotedEntityName(string $entityName): ?string
     {
@@ -277,19 +258,20 @@ contact_way|6
     }
 
     /**
-     * @return void
+     * Performs optional operations during setup.
      */
     public function optionalOperationInSetup(): void
     {
     }
 
-
     /**
-     * @param string $userTable
-     * @param string $hashTable
-     * @return array|null
+     * Checks if the authentication support can migrate SHA256 hash.
+     *
+     * @param string $userTable User table.
+     * @param string $hashTable Hash table.
+     * @return array|null Migration result or null if not applicable.
      */
-    public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable): ?array  // authuser, issuedhash
+    public function authSupportCanMigrateSHA256Hash(string $userTable, string $hashTable): ?array
     {
         $checkFieldDefinition = function (string $type, int $min): bool {
             $fDef = strtolower($type);
@@ -333,18 +315,36 @@ contact_way|6
         return $returnValue;
     }
 
+    /**
+     * Returns the SQL command to list databases.
+     *
+     * @return string SQL command.
+     */
     public function sqlLISTDATABASECommand(): string
     {
         // schema generation does not support.
         return '';
     }
 
+    /**
+     * Returns the SQL column to list databases.
+     *
+     * @return string SQL column.
+     */
     public function sqlLISTDATABASEColumn(): string
     {
         // schema generation does not support.
         return '';
     }
 
+    /**
+     * Returns the SQL command to create a user.
+     *
+     * @param string $dbName Database name.
+     * @param string $userEntity User entity.
+     * @param string $password Password.
+     * @return string SQL command.
+     */
     public function sqlCREATEUSERCommand(string $dbName, string $userEntity, string $password): string
     {
         // schema generation does not support.

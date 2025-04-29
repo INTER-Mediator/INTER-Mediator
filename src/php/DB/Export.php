@@ -10,43 +10,52 @@ use League\Csv\Writer;
 use League\Csv\CharsetConverter;
 
 /**
- *
+ * Handles exporting context data to CSV files with configurable options in INTER-Mediator.
  */
 class Export
 {
     /**
+     * Array mapping field names to column names for export.
      * @var array
      */
     protected array $keysAndLabels = []; // array of field name => column name
 
     /**
+     * Prefix for the exported file name.
      * @var string
      */
     protected string $fileNamePrefix = "Exported-";
     /**
+     * File extension for the exported file.
      * @var string
      */
     protected string $fileExtension = "csv";
     /**
+     * Character encoding for the export.
      * @var string
      */
     protected string $encoding = "UTF-8";
     /**
+     * Field separator for CSV.
      * @var string
      */
     protected string $fieldSeparator = ',';
     /**
+     * Quote character for CSV fields.
      * @var string
      */
     protected string $quote = '"';
     /**
+     * End-of-line character for CSV export.
      * @var string
      */
     protected string $endOfLine = "\n";
 
     /**
-     * @param array $contextData
-     * @param array|null $options
+     * Processes export of context data to CSV and outputs the file to the browser.
+     *
+     * @param array $contextData The data to export.
+     * @param array|null $options Optional export options.
      * @return void
      * @throws CannotInsertRecord
      * @throws Exception
@@ -89,5 +98,4 @@ class Export
         $writer->insertAll($contextData);
         echo $writer->toString();
     }
-
 }

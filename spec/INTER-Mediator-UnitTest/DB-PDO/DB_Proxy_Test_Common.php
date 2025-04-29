@@ -178,7 +178,7 @@ abstract class DB_Proxy_Test_Common extends TestCase
 
         $this->dbProxySetupForAccess("person", 1, $classNum);
 
-        $this->db_proxy->logger->clearLogs();
+//        $this->db_proxy->logger->clearLogs();
 
         $this->setTestMode();
         $this->setFixedKey('id');
@@ -193,12 +193,12 @@ abstract class DB_Proxy_Test_Common extends TestCase
         $addressValue = random_int(10000000, 99999999);
         $testResult = $this->dbCreate("testtable", ['vc1' => $nameValue, 'vc2' => $addressValue],
             $isPgsql ? $dataSrcPgsql : $dataSrcOthers);
-        var_dump($testResult);
+        //var_dump($testResult);
 
-        $msg = $this->db_proxy->logger->getErrorMessages();
-        var_dump($msg);
-        $msg = $this->db_proxy->logger->getDebugMessages();
-        var_dump($msg);
+//        $msg = $this->db_proxy->logger->getErrorMessages();
+        //var_dump($msg);
+//        $msg = $this->db_proxy->logger->getDebugMessages();
+        //var_dump($msg);
 
         $this->assertNotNull($testResult, "Update record should be exists.");
         $this->assertTrue(count($testResult) == 1, "It should be just one record.");

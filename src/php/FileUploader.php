@@ -18,20 +18,53 @@ namespace INTERMediator;
 
 use INTERMediator\DB\Proxy;
 
+/**
+ * Class FileUploader
+ * Handles file upload processing, error handling, and integration with INTER-Mediator database proxies.
+ *
+ * @package INTERMediator
+ */
 class FileUploader
 {
+    /**
+     * @var Proxy|null Database proxy instance for communication with the backend.
+     */
     private ?Proxy $db;
+
+    /**
+     * @var string|null URL to redirect after processing.
+     */
     private ?string $url = NULL;
+
+    /**
+     * @var int Access log level for logging purposes.
+     */
     private int $accessLogLevel;
+
+    /**
+     * @var array Output messages for logging or response.
+     */
     private array $outputMessage = [];
 
+    /**
+     * @var array|null Database result after processing (e.g., for CSV uploads).
+     */
     public ?array $dbresult = null;
 
+    /**
+     * FileUploader constructor.
+     * Initializes access log level from parameters.
+     */
     public function __construct()
     {
         $this->accessLogLevel = Params::getParameterValue("accessLogLevel", false);
     }
 
+    /**
+     * Gets the log result for the current upload process.
+     *
+     * @return array Output message array if access log level is sufficient, otherwise empty array.
+     */
     public function getResultForLog(): array
     {
         if ($this->accessLogLevel < 1) {
@@ -42,16 +75,27 @@ class FileUploader
         return $this->outputMessage;
     }
 
+    /**
+     * Finalizes communication with the database proxy.
+     *
+     * @return void
+     */
     public function finishCommunication(): void
     {
         $this->db->finishCommunication();
     }
 
-    /*
-            array(6) { ["_im_redirect"]=> string(54) "http://localhost/im/Sample_webpage/fileupload_MySQL.html" ["_im_contextname"]=> string(4) "chat" ["_im_field"]=> string(7) "message" ["_im_keyfield"]=> string(2) "id" ["_im_keyvalue"]=> string(2) "38" ["access"]=> string(10) "uploadfile" } array(1) { ["_im_uploadfile"]=> array(5) { ["name"]=> string(16) "ac0600_aoiro.pdf" ["type"]=> string(15) "application/pdf" ["tmp_name"]=> string(26) "/private/var/tmp/phpkk9RXn" ["error"]=> int(0) ["size"]=> int(77732) } }
-
-    */
-
+    /**
+     * Handles file upload errors and outputs error messages as JSON if needed.
+     *
+     * @param array|null $dataSource Data source definitions.
+     * @param array|null $options Options for INTER-Mediator.
+     * @param array|null $dbSpec Database specification.
+     * @param int $debug Debug mode level.
+     * @param string|null $contextName Context name for the upload.
+     * @param bool $noOutput If true, suppresses output.
+     * @return void
+     */
     public function processingAsError(?array $dataSource, ?array $options, ?array $dbSpec, int $debug, ?string $contextName, bool $noOutput): void
     {
         $this->db = new Proxy();
@@ -98,6 +142,15 @@ class FileUploader
         }
     }
 
+    /**
+     * Main entry point for handling a file upload request from POST/FILES.
+     *
+     * @param array|null $dataSource Data source definitions.
+     * @param array|null $options Options for INTER-Mediator.
+     * @param array|null $dbSpec Database specification.
+     * @param int $debug Debug mode level.
+     * @return void
+     */
     public function processing(?array $dataSource, ?array $options, ?array $dbSpec, int $debug): void
     {
         $contextName = $_POST["_im_contextname"];
@@ -115,6 +168,21 @@ class FileUploader
         $this->db->exportOutputDataAsJSON();
     }
 
+    /**
+     * Handles file upload processing with explicit parameters and file data.
+     *
+     * @param array|null $dataSource Data source definitions.
+     * @param array|null $options Options for INTER-Mediator.
+     * @param array|null $dbSpec Database specification.
+     * @param int $debug Debug mode level.
+     * @param string|null $contextName Context name for the upload.
+     * @param string|null $keyField Key field name for the record.
+     * @param string|null $keyValue Key value for the record.
+     * @param array|null $field Field(s) for the upload.
+     * @param array|null $files Uploaded file(s) data.
+     * @param bool $noOutput If true, suppresses output.
+     * @return void
+     */
     public function processingWithParameters(?array  $dataSource, ?array $options, ?array $dbSpec, int $debug,
                                              ?string $contextName, ?string $keyField, ?string $keyValue, ?array $field,
                                              ?array  $files, bool $noOutput): void
@@ -156,7 +224,11 @@ class FileUploader
         }
     }
 
-    //
+    /**
+     * Outputs the upload progress for APC-enabled servers as an HTML page.
+     *
+     * @return void
+     */
     public function processInfo(): void
     {
         if (function_exists('apc_fetch')) {
@@ -176,6 +248,12 @@ class FileUploader
         }
     }
 
+    /**
+     * Validates and returns a redirect URL if it is safe, otherwise returns NULL.
+     *
+     * @param string|null $url The URL to validate.
+     * @return string|null The validated URL or NULL if invalid.
+     */
     protected function getRedirectUrl(?string $url): ?string
     {
         if (strpos(strtolower($url), '%0a') !== false || strpos(strtolower($url), '%0d') !== false) {
@@ -211,6 +289,13 @@ class FileUploader
         return NULL;
     }
 
+    /**
+     * Checks if the given URL matches the allowed web server name.
+     *
+     * @param string|null $url The URL to check.
+     * @param string|null $webServerName The allowed web server name.
+     * @return bool True if the URL is allowed, false otherwise.
+     */
     protected function checkRedirectUrl(?string $url, ?string $webServerName): bool
     {
         if (strpos($url, 'http://') === 0 || strpos($url, 'https://') === 0) {
@@ -225,10 +310,11 @@ class FileUploader
         return FALSE;
     }
 
-
     /**
-     * @param string $dbclass
-     * @return string
+     * Determines the media handler class name based on the database class and context definition.
+     *
+     * @param string $dbclass The database class name.
+     * @return string The media handler class name.
      */
     private function getClassNameForMedia(string $dbclass): string
     {
