@@ -11,7 +11,6 @@ class DataConverter_Currency_PoundIM_Test  extends DataConverter_Currency_Base_T
     public function setUp(): void
     {
         \INTERMediator\Locale\IMLocale::$localForTest = 'en_GB';
-        \INTERMediator\Locale\IMLocale::$alwaysIMClasses = true;
         $this->dataconverter = new \INTERMediator\Data_Converter\Currency();
 
         $this->thSepMark = ',';

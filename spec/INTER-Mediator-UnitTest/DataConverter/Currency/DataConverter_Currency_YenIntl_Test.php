@@ -14,7 +14,6 @@ class DataConverter_Currency_YenIntl_Test extends DataConverter_Currency_Base_Te
     public function setUp(): void
     {
         IMLocale::$localForTest = 'ja';
-        IMLocale::$alwaysIMClasses = false;
         $this->dataconverter = new Currency();
 
         $this->thSepMark = ',';

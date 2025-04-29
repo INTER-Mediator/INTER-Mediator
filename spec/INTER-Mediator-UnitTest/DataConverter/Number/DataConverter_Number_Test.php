@@ -27,7 +27,6 @@ class DataConverter_Number_Test extends TestCase
 
     public function test_converterFromDBtoUserIMLocale()
     {
-        IMLocale::$alwaysIMClasses = true;
 
         $expected = '100';
         $string = '100';
@@ -64,7 +63,6 @@ class DataConverter_Number_Test extends TestCase
 
     public function test_converterFromDBtoUserIntlLocale()
     {
-        IMLocale::$alwaysIMClasses = false;
 
         $expected = '100';
         $string = '100';

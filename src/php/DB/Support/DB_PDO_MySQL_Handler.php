@@ -330,6 +330,18 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
     /**
      * Handles special error handling for MySQL.
      *
+     *  As far as MySQL goes, in case of raising up the warning of violating constraints of foreign keys.
+     *  it happens any kind of warning, but errorCode returns 00000 which means no error. There is no other way
+     *  to call SHOW WARNINGS. Other db engines don't do anything here.
+     *  Sample of SHOW WARNINGS
+     *  mysql> show warnings;
+     * +---------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+     * | Level   | Code | Message                                                                                                                                                                                                           |
+     * +---------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+     * | Warning | 1452 | Cannot add or update a child row: a foreign key constraint fails (`embryoscope`.`transferembryo`, CONSTRAINT `transferembryo_ibfk_2` FOREIGN KEY (`embryoID`) REFERENCES `embryo` (`embryoID`) ON DELETE CASCADE) |
+     * +---------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+     * 1 row in set (0.00 sec)
+     *
      * @param string $sql SQL command.
      */
     public function specialErrorHandling(string $sql): void
@@ -412,3 +424,49 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "Database";
     }
 }
+/*
+mysql> show columns from testtable;
++---------+--------------+------+-----+---------------------+----------------+
+| Field   | Type         | Null | Key | Default             | Extra          |
++---------+--------------+------+-----+---------------------+----------------+
+| id      | int          | NO   | PRI | NULL                | auto_increment |
+| num1    | int          | NO   |     | 0                   |                |
+| num2    | int          | YES  |     | NULL                |                |
+| num3    | int          | YES  |     | NULL                |                |
+| dt1     | datetime     | NO   |     | 2001-01-01 00:00:00 |                |
+| dt2     | datetime     | YES  |     | NULL                |                |
+| dt3     | datetime     | YES  |     | NULL                |                |
+| date1   | date         | NO   |     | 2001-01-01          |                |
+| date2   | date         | YES  |     | NULL                |                |
+| time1   | time         | NO   |     | 00:00:00            |                |
+| time2   | time         | YES  |     | NULL                |                |
+| ts1     | timestamp    | NO   |     | 2001-01-01 00:00:00 |                |
+| ts2     | timestamp    | YES  |     | 2001-01-01 00:00:00 |                |
+| vc1     | varchar(100) | NO   |     |                     |                |
+| vc2     | varchar(100) | YES  |     | NULL                |                |
+| vc3     | varchar(100) | YES  |     | NULL                |                |
+| text1   | text         | YES  |     | NULL                |                |
+| text2   | text         | YES  |     | NULL                |                |
+| float1  | float        | NO   |     | 0                   |                |
+| float2  | float        | YES  |     | NULL                |                |
+| double1 | double       | NO   |     | 0                   |                |
+| double2 | double       | YES  |     | NULL                |                |
+| bool1   | tinyint(1)   | NO   |     | 0                   |                |
+| bool2   | tinyint(1)   | YES  |     | NULL                |                |
++---------+--------------+------+-----+---------------------+----------------+
+mysql> show columns from item_display;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| id          | int         | NO   |     | 0       |       |
+| invoice_id  | int         | YES  |     | NULL    |       |
+| product_id  | int         | YES  |     | NULL    |       |
+| category_id | int         | YES  |     | NULL    |       |
+| name        | varchar(20) | YES  |     | NULL    |       |
+| qty         | int         | YES  |     | NULL    |       |
+| unitprice   | float       | YES  |     | NULL    |       |
+| amount      | double      | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+8 rows in set (0.00 sec)
+In case of calculation field of a view, the type column is going to be ''.
+*/
