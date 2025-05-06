@@ -41,8 +41,9 @@ if (!$authObj->isActive) {
 }
 $err = "No Error";
 if ($authObj->afterAuth()) { // Checking whether the authentication is successful.
+    $authObj->userInfoToLogin(); // Set up user and automatic login.
     $jsCode = $authObj->javaScriptCode(); // jsCode value has to be set on the script tag element.
-    if ($authObj->debugMode) {
+    if ($authObj->debugMode || strlen($authObj->errorMessages()) > 0) {
         $err = $authObj->errorMessages();
     }
     if ($authObj->isCreate()) {

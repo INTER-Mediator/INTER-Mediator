@@ -103,10 +103,10 @@ class MyNumberCardAdapter extends ProviderAdapter
         if (!$this->infoScope) {
             $this->infoScope = 'openid name address birthdate gender'; // Default scope string
         }
-        $state = strtr(IMUtil::randomString(32),";","S"); // Remove ';'. Semicolon doesn't include in redirect URI.
+        $state = strtr(IMUtil::randomString(32), ";", "S"); // Remove ';'. Semicolon doesn't include in redirect URI.
         $this->storeCode($state, "@M:state@");
         $this->storeProviderName($state);
-        $this->storeBackURL($_SERVER['HTTP_REFERER'],$state);
+        $this->storeBackURL($_SERVER['HTTP_REFERER'], $state);
         $nonce = IMUtil::randomString(32);
         $verifier = IMUtil::challengeString(64);
         $this->storeCode($verifier, "@M:verifier@", $state);
