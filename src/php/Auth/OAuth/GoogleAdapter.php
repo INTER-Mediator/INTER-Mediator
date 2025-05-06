@@ -130,11 +130,15 @@ class GoogleAdapter extends ProviderAdapter
      */
     public function getAuthRequestURL(): string
     {
+        file_put_contents("/tmp/1.txt", var_export($_SERVER,true));
+
         if (!$this->infoScope) {
             $this->infoScope = 'openid profile email'; // Default scope string
         }
         $state = IMUtil::randomString(32);
         $this->storeCode($state, "@G:state@");
+        $this->storeProviderName($state);
+        $this->storeBackURL($_SERVER['HTTP_REFERER'],$state);
         return $this->baseURL . '?response_type=code'
             . '&scope=' . urlencode($this->infoScope)
             . '&redirect_uri=' . urlencode($this->redirectURL)
@@ -155,8 +159,8 @@ class GoogleAdapter extends ProviderAdapter
         if (!isset($_GET["state"])) {
             throw new Exception("Failed with security issue. The state parameter doesn't exist in the request.");
         }
-        $state = $_GET["state"];
-        if (!$this->checkCode($state, "@G:state@")) {
+        $this->stateValue = $_GET["state"];
+        if (!$this->checkCode($this->stateValue, "@G:state@")) {
             throw new Exception("Failed with security issue. The state parameter isn't same as the stored one.");
         }
         if (!isset($_GET['code'])) {

@@ -32,16 +32,6 @@ use INTERMediator\IMUtil;
 class MyNumberCardAdapter extends ProviderAdapter
 {
     /**
-     * Flag to determine if the adapter is running in test/sandbox mode
-     *
-     * When true, all API endpoints will point to the sandbox environment
-     * When false, production endpoints will be used
-     *
-     * @var bool Default is true for safety
-     */
-    private bool $isTest = true;
-
-    /**
      * Initializes the MyNumberCard OAuth adapter with production endpoints
      *
      * Sets up the necessary OAuth endpoints for authentication flow:
@@ -73,7 +63,6 @@ class MyNumberCardAdapter extends ProviderAdapter
      */
     public function setTestMode(): ProviderAdapter //MyNumberCardAdapter
     {
-        $this->isTest = true;
         $this->providerName = 'MyNumberCard-Sandbox';
         $this->baseURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/auth';
         $this->getTokenURL = "https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/token";
@@ -93,7 +82,7 @@ class MyNumberCardAdapter extends ProviderAdapter
      */
     public function validate(): bool
     {
-        return $this->validate_impl(false);
+        return $this->validate_impl(false) && $this->keyFilePath;
     }
 
     /**
@@ -114,8 +103,10 @@ class MyNumberCardAdapter extends ProviderAdapter
         if (!$this->infoScope) {
             $this->infoScope = 'openid name address birthdate gender'; // Default scope string
         }
-        $state = strtr(IMUtil::randomString(32),";","S"); // Remove ';'. Semicolon doesn't include in redirect URI.
+        $state = strtr(IMUtil::randomString(32), ";", "S"); // Remove ';'. Semicolon doesn't include in redirect URI.
         $this->storeCode($state, "@M:state@");
+        $this->storeProviderName($state);
+        $this->storeBackURL($_SERVER['HTTP_REFERER'], $state);
         $nonce = IMUtil::randomString(32);
         $verifier = IMUtil::challengeString(64);
         $this->storeCode($verifier, "@M:verifier@", $state);

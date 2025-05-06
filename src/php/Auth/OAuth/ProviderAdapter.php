@@ -80,6 +80,8 @@ abstract class ProviderAdapter
      */
     protected ?string $keyFilePath = "";
 
+    protected ?string $stateValue = null;
+
     /**
      * Sets the debug mode. If true, debug messages will be printed to the log.
      *
@@ -131,7 +133,7 @@ abstract class ProviderAdapter
      */
     public function setRedirectURL(string $url): void
     {
-         $this->redirectURL = $url;
+        $this->redirectURL = $url;
     }
 
     /**
@@ -185,6 +187,47 @@ abstract class ProviderAdapter
     public abstract function getAuthRequestURL(): string;
 
     /**
+     * Stores the provider name associated with the given state.
+     * The provider name is stored in the internal database.
+     * This method is going to be called from the implementing getAuthRequestURL() method.
+     *
+     * @param string $state The state value to associate with the provider name.
+     * @return void
+     */
+    protected function storeProviderName(string $state): void
+    {
+        $this->storeCode($this->providerName, "@provider@", $state);
+    }
+
+    /**
+     * Stores the back URL associated with the given state.
+     * The back URL is the URL that the user was redirected from to the provider's site.
+     * The URL is stored in the internal database.
+     * This method is going to be called from the implementing getAuthRequestURL() method.
+     *
+     * @param string $url The URL to store with the given state.
+     * @param string $state The state value to associate with the back URL.
+     * @return void
+     */
+    protected function storeBackURL(string $url, string $state): void
+    {
+        $this->storeCode($url, "@backurl@",$state);
+    }
+
+    /**
+     * Retrieves the back URL stored with the given state.
+     *
+     * The back URL is the URL that the user was redirected from to the provider's site.
+     * The returned URL is a string.
+     *
+     * @return string|null The back URL associated with the state, or null if no such state exists.
+     */
+    public function getBackURL(): ?string
+    {
+        return $this->retrieveCode($this->stateValue, "@backurl@")[0] ?? null;
+    }
+
+    /**
      * Returns a user information array from the provider.
      *
      * The return value is an array with the following keys:
@@ -232,6 +275,18 @@ abstract class ProviderAdapter
         }
         // Return null if the provider is not supported
         return null;
+    }
+
+    public static function createAdapterFromState(string $state): ProviderAdapter|null
+    {
+        $providerName = ProviderAdapter::retrieveCodeStatic($state, "@provider@")[0] ?? "";
+        if (strlen($providerName) == 0 || $providerName == null) {
+            $providerName = $_COOKIE["_im_oauth_provider"] ?? "";
+            if (strlen($providerName) == 0 || $providerName == null) {
+                return null;
+            }
+        }
+        return self::createAdapter($providerName);
     }
 
     /**
@@ -460,6 +515,21 @@ abstract class ProviderAdapter
             0, substr($key, 0, 64), true, $prefix, true);
         // Split the retrieved challenge into an array
         return explode("\n", $challenges);
+    }
+
+    /**
+     * Retrieves the stored authorization code from the internal database.
+     * This method is static, so it can be called without an instance of the class.
+     *
+     * @param string $key The key used to store the challenge.
+     *                     If null, use the client ID.
+     * @param string $prefix The prefix used to store the challenge.
+     * @return array The retrieved authorization code.
+     */
+    protected static function retrieveCodeStatic($key, $prefix): array
+    {
+        $tempObject = new GoogleAdapter();
+        return $tempObject->retrieveCode($key, $prefix);
     }
 
     /**

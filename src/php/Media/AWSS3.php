@@ -114,7 +114,7 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
         $objectSpec = ['Bucket' => $this->rootBucket, 'Key' => $urlPath,];
         $result = $s3->getObject($objectSpec);
         if (interface_exists($result['Body'], 'Psr\Http\Message\StreamInterface')) {
-            $content = $result['Body']->getContents();
+            $content = $result['Body']->getContents(); // @phpstan-ignore method.nonObject
         } else {
             $content = $result['Body'];
         }

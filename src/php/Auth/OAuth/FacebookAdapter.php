@@ -88,6 +88,8 @@ class FacebookAdapter extends ProviderAdapter
     {
         $state = IMUtil::randomString(32);
         $this->storeCode($state, "@F:state@");
+        $this->storeProviderName($state);
+        $this->storeBackURL($_SERVER['HTTP_REFERER'],$state);
         return $this->baseURL . '?redirect_uri=' . urlencode($this->redirectURL)
             . '&client_id=' . urlencode($this->clientId)
             . '&state=' . urlencode($state);
@@ -107,8 +109,8 @@ class FacebookAdapter extends ProviderAdapter
         if (!isset($_GET["state"])) {
             throw new Exception("Failed with security issue. The state parameter doesn't exist in the request.");
         }
-        $state = $_GET["state"];
-        if(!$this->checkCode($state, "@F:state@")){
+        $this->stateValue = $_GET["state"];
+        if(!$this->checkCode($this->stateValue, "@F:state@")){
             throw new Exception("Failed with security issue. The state parameter isn't same as the stored one.");
         }
         $input_token = $_GET['code'] ?? "";

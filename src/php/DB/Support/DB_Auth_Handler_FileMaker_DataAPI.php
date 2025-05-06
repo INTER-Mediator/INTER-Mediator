@@ -192,8 +192,8 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         $this->logger->setDebugMessage(
             $this->fmdb->stringWithoutCredential($this->fmdb->fmDataAuth->{$hashTable}->getDebugInfo()));
         foreach ($result as $record) {
-            $expiredDT = new DateTime($record->expired);
-            $hashValue = $record->hash;
+            $expiredDT = new DateTime($record->expired); // @phpstan-ignore property.notFound
+            $hashValue = $record->hash;  // @phpstan-ignore property.notFound
             $currentDT = new DateTime();
             $seconds = $currentDT->format("U") - $expiredDT->format("U");
             if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
@@ -519,7 +519,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         $this->logger->setDebugMessage(
             $this->fmdb->stringWithoutCredential($this->fmdb->fmDataAlt->{$userTable}->getDebugInfo()));
         foreach ($result as $record) {
-            return $record->id;
+            return $record->id; // @phpstan-ignore property.notFound
         }
         return null;
     }
@@ -560,7 +560,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         $this->logger->setDebugMessage(
             $this->fmdb->stringWithoutCredential($this->fmdb->fmData->{$userTable}->getDebugInfo()));
         foreach ($result as $record) {
-            return $record->username;
+            return $record->username; // @phpstan-ignore property.notFound
         }
         return null;
     }
@@ -601,7 +601,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         $this->logger->setDebugMessage(
             $this->fmdb->stringWithoutCredential($this->fmdb->fmDataAlt->{$userTable}->getDebugInfo()));
         foreach ($result as $record) {
-            return $record->id;
+            return $record->id; // @phpstan-ignore property.notFound
         }
         return null;
     }
@@ -896,7 +896,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
         foreach ($result as $record) {
             $record = array('recordId' => $record->getRecordId(), 'modId' => $record->getModId());
             foreach ($record as $field => $value) {
-                $record[$field] = $record->{$field};
+                $record[$field] = $record->{$field}; // @phpstan-ignore-line
             }
             $array[] = $record;
         }
