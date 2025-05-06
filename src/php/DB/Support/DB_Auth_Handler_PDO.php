@@ -277,16 +277,15 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      */
     public function authSupportOAuthUserHandling(array $keyValues): ?bool
     {
-        $user_id = $this->authSupportGetUserIdFromUsername($keyValues["username"]);
-        $this->logger->setDebugMessage(
-            "[authSupportOAuthUserHandling] start with user id=" . $user_id . " from " . $keyValues["username"]);
-
         $userTable = $this->dbSettings->getUserTable();
         if (!$this->pdoDB->setupConnection()) { //Establish the connection
             $this->pdoDB->errorMessageStore("PDO class can't set up a connection.");
             return false;
         }
 
+        $user_id = $this->authSupportGetUserIdFromUsername($keyValues["username"]);
+        $this->logger->setDebugMessage(
+            "[authSupportOAuthUserHandling] start with user id=" . $user_id . " from " . $keyValues["username"]);
         // $currentDTFormat = $this->pdoDB->link->quote(IMUtil::currentDTString());
         $keys = []; // array("limitdt");
         $values = []; // array($currentDTFormat);
@@ -308,11 +307,10 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         }
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->pdoDB->errorMessageStore('[authSupportOAuthUserHandling] ' . $sql);
+            $this->pdoDB->errorMessageStore("[authSupportOAuthUserHandling] {$sql}");
             return $returnValue;
         }
-        $this->logger->setDebugMessage("[authSupportOAuthUserHandling] {
-                $sql}");
+        $this->logger->setDebugMessage("[authSupportOAuthUserHandling] {$sql}");
         return $returnValue;
     }
 
@@ -343,7 +341,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             . $this->pdoDB->link->quote($signedUser);
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->pdoDB->errorMessageStore('Select:' . $sql);
+            $this->pdoDB->errorMessageStore("[authSupportRetrieveHashedPassword] Failed: {$sql}");
             return null;
         }
         $this->logger->setDebugMessage("[authSupportRetrieveHashedPassword] {$sql}");

@@ -81,6 +81,7 @@ class OAuthAuth
      *          When true, only verifies authentication without creating new user records
      */
     private bool $confirmOnly = false;
+    public string $generatedPassword;
 
     /**
      * @return string
@@ -252,29 +253,24 @@ class OAuthAuth
      * @param string|null $currentUser expecting username in the authuser table.
      * @throws Exception When the storing parameter is not "credential".
      */
-    private function userInfoToLogin(?string $currentUser = null): void
+    public function userInfoToLogin(?string $currentUser = null): void
     {
         $oAuthRealm = Params::getParameterValue("authRealm", "");
         // Generate the new local user relevant to the OAuth user
         $dbProxy = new Proxy(true);
         $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : 0);
-        $username = $this->userInfo["username"];
-        if ($this->confirmOnly) {
-            if (is_null($currentUser)) {
-                $username = $dbProxy->dbSettings->getCurrentUser();
-            } else {
-                $username = $currentUser;
-            }
-        }
-        $param = array(
+        $username = !is_null($currentUser) ? $currentUser
+            : ($this->confirmOnly ? $dbProxy->dbSettings->getCurrentUser() : $this->userInfo["username"]);
+        $param = [
             "username" => $username,
             "realname" => $this->userInfo["realname"] ?? "",
-        );
+        ];
         $credential = "";
         if (!$this->confirmOnly) {
             $passwordHash = Params::getParameterValue("passwordHash", 1);
             $alwaysGenSHA2 = Params::getParameterValue("alwaysGenSHA2", false);
-            $credential = IMUtil::convertHashedPassword(IMUtil::randomString(30), $passwordHash, $alwaysGenSHA2);
+            $this->generatedPassword = IMUtil::randomString(30);
+            $credential = IMUtil::convertHashedPassword($this->generatedPassword, $passwordHash, $alwaysGenSHA2);
             $param["hashedpasswd"] = $credential;
         }
 
