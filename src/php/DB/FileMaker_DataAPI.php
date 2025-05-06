@@ -453,10 +453,10 @@ class FileMaker_DataAPI extends DBClass
      * Get schema.
      *
      * @param string $dataSourceName The data source name.
-     * @return array|false The schema or false.
+     * @return array|bool The schema or false.
      * @throws Exception
      */
-    public function getSchema(string $dataSourceName): ?array
+    public function getSchema(string $dataSourceName): array|bool
     {
         $this->fieldInfo = null;
 

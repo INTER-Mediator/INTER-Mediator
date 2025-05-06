@@ -665,7 +665,7 @@ abstract class DB_PDO_Handler
      * @param string $tableName Table name.
      * @return string SQL to get table information.
      */
-    protected abstract function getTableInfoSQL(string $tableName): string;
+    public abstract function getTableInfoSQL(string $tableName): string;
 
     /**
      * Returns the field lists for copying records.

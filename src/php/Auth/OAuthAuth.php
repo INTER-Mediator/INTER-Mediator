@@ -71,7 +71,7 @@ class OAuthAuth
      * @var null|ProviderAdapter The OAuth provider adapter instance
      *                          Handles provider-specific authentication operations
      */
-    private ?ProviderAdapter $providerObj = null;
+    private ?ProviderAdapter $providerObj;
     /**
      * @var null|array<string, string> User information retrieved from the provider
      */
@@ -159,7 +159,8 @@ class OAuthAuth
      *  If the adapter couldn't be created or the parameters are invalid, the method sets the error message and sets the
      *  `isActive` flag to false.
      *
-     * @param string $provider The name of the provider.
+     * @param string $providerOrState The name of the provider or the state value.
+     * @param bool $isProviderName If it's true, $providerOrState is the provider name. The default is false.
      */
     public function __construct(string $providerOrState, bool $isProviderName = false)
     {
@@ -253,12 +254,7 @@ class OAuthAuth
      */
     private function userInfoToLogin(?string $currentUser = null): void
     {
-        // Retrive the storing parameter.
-//        $oAuthStoring = $_COOKIE["_im_oauth_storing"] ?? "";
-//        if ($oAuthStoring !== "credential") {
-//            throw new Exception("The 'storing' parameter has to be 'credential.'");
-//        }
-        $oAuthRealm = Params::getParameterValue("authRealm", "");;
+        $oAuthRealm = Params::getParameterValue("authRealm", "");
         // Generate the new local user relevant to the OAuth user
         $dbProxy = new Proxy(true);
         $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : 0);
