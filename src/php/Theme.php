@@ -71,8 +71,13 @@ class Theme
      *
      * @return void
      */
-    public function processing(): void
+    public function processing(?string $deffile): void
     {
+        $docRootPath = $_SERVER['DOCUMENT_ROOT'];
+        $deffilePath = null;
+        if (!is_null($deffile) && str_starts_with($deffile, $docRootPath)) {
+            $deffilePath = substr($deffile, strlen($docRootPath));
+        }
         $themeNameInRequest = $_GET['theme'];
         $selfInRequest = $_SERVER["SCRIPT_NAME"];
 
@@ -84,8 +89,11 @@ class Theme
             foreach ($cssFiles as $aFile) {
                 $fContent .= file_get_contents($aFile);
             }
-            $fContent = preg_replace("/url\(([^)]+)\)/",
-                "url({$selfInRequest}?theme={$themeNameInRequest}" . '&type=images&name=$1)', $fContent);
+            $replacingURL = "{$selfInRequest}?theme={$themeNameInRequest}&type=images&name=$1";
+            if (!is_null($deffilePath)) {
+                $replacingURL .= "&deffile={$deffilePath}";
+            }
+            $fContent = preg_replace("/url\(([^)]+)\)/", "url({$replacingURL})", $fContent);
             $fpath = "something.css";
         } else {
             $fName = str_replace('..', '', $_GET['name'] ?? "");

@@ -105,7 +105,7 @@ function IM_Entry(?array $dataSource, ?array $options, ?array $dbSpecification, 
     $resultLog = [];
     if (isset($_GET['theme'])) {    // Get theme data
         $themeManager = new Theme();
-        $themeManager->processing();
+        $themeManager->processing($origin);
         $resultLog = $themeManager->getResultForLog();
     } else if (!isset($_POST['access']) && isset($_GET['uploadprocess'])) { // Upload progress
         $fileUploader = new FileUploader();

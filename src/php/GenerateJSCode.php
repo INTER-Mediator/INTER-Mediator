@@ -171,7 +171,7 @@ class GenerateJSCode
                 if (isset($info['Behavior'])){
                     $clientOAuthParams[$provider]['Behavior'] = $info['Behavior'];
                 }
-                $authObj = new OAuthAuth($provider);
+                $authObj = new OAuthAuth($provider, true);
                 $clientOAuthParams[$provider]['AuthURL'] = $authObj->getAuthRequestURL();
             }
         }

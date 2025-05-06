@@ -155,35 +155,23 @@ class OAuthAuth
     /**
      * Constructor
      *
+     *  Initializes the provider adapter. This method creates an instance of the provider adapter and sets the necessary parameters from the configuration.
+     *  If the adapter couldn't be created or the parameters are invalid, the method sets the error message and sets the
+     *  `isActive` flag to false.
+     *
      * @param string $provider The name of the provider.
      */
-    public function __construct(string $provider)
+    public function __construct(string $providerOrState, bool $isProviderName = false)
     {
-        $this->provider = $provider;
-        $this->initializeAdapter();
+        $this->isActive = false;
+        $this->providerObj = $isProviderName
+            ? ProviderAdapter::createAdapter($providerOrState)
+            : ProviderAdapter::createAdapterFromState($providerOrState);
         if (!$this->providerObj) {
-            $this->errorMessage[] = "Provider Adapter for {$provider} couldn't create.";
-            $this->isActive = false;
-        }
-    }
-
-    /**
-     * Initializes the provider adapter.
-     *
-     * This method creates an instance of the provider adapter and sets the necessary parameters from the configuration.
-     * If the adapter couldn't be created or the parameters are invalid, the method sets the error message and sets the
-     * `isActive` flag to false.
-     *
-     * @return void
-     */
-    private function initializeAdapter(): void
-    {
-        $this->providerObj = ProviderAdapter::createAdapter($this->provider);
-        if (!$this->providerObj) {
-            $this->errorMessage[] = "Provider Adapter for {$this->provider} couldn't create.";
-            $this->isActive = false;
+            $this->errorMessage[] = "Provider Adapter for {$providerOrState} couldn't create.";
             return;
         }
+        $this->provider = $this->providerObj->getProviderName();
         $oAuthInfo = Params::getParameterValue("oAuth", null);
         $this->providerObj->setDebugMode($this->debugMode);
         $this->provider = $this->providerObj->getProviderName();
@@ -203,7 +191,6 @@ class OAuthAuth
             $this->providerObj->setKeyFilePath($oAuthInfo[$this->provider]["KeyFilePath"] ?? null);
         }
         if (!$this->providerObj->validate()) {
-            $this->isActive = false;
             $this->errorMessage[] = "Wrong Paramters.";
             $this->provider = "unspecified";
             return;
@@ -237,7 +224,7 @@ class OAuthAuth
      */
     public function afterAuth(bool $loginStart = true): bool
     {
-        if (!$this->isActive){
+        if (!$this->isActive) {
             $this->errorMessage[] = "OAuthAuth object is not active.";
             return false;
         }
@@ -267,11 +254,11 @@ class OAuthAuth
     private function userInfoToLogin(?string $currentUser = null): void
     {
         // Retrive the storing parameter.
-        $oAuthStoring = $_COOKIE["_im_oauth_storing"] ?? "";
-        if ($oAuthStoring !== "credential") {
-            throw new Exception("The 'storing' parameter has to be 'credential.'");
-        }
-        $oAuthRealm = $_COOKIE["_im_oauth_realm"] ?? "";
+//        $oAuthStoring = $_COOKIE["_im_oauth_storing"] ?? "";
+//        if ($oAuthStoring !== "credential") {
+//            throw new Exception("The 'storing' parameter has to be 'credential.'");
+//        }
+        $oAuthRealm = Params::getParameterValue("authRealm", "");;
         // Generate the new local user relevant to the OAuth user
         $dbProxy = new Proxy(true);
         $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : 0);
@@ -333,7 +320,7 @@ class OAuthAuth
             $this->errorMessage = array_merge($this->errorMessage, Logger::getInstance()->getDebugMessages());
         }
         if ($this->doRedirect && !$this->debugMode) {
-            $this->jsCode = "location.href = '" . $_COOKIE["_im_oauth_backurl"] . "';";
+            $this->jsCode = "location.href = '" . $this->providerObj->getBackURL() . "';";
         }
     }
 }

@@ -22,7 +22,10 @@ $pathToIM = "../../";   // Modify this to match your directories.
 
 require_once("{$pathToIM}/INTER-Mediator.php"); // Loading INTER-Mediator and relevant libraries.
 
-$authObj = new \INTERMediator\Auth\OAuthAuth($_COOKIE["_im_oauth_provider"] ?? "");
+use INTERMediator\Auth\OAuthAuth;
+
+$reqState = $_GET["state"];
+$authObj = new OAuthAuth($_GET["state"]);
 //$authObj->debugMode = true; // or comment here
 //$authObj->setDoRedirect(true);
 if (is_null($authObj)) {
@@ -31,12 +34,14 @@ if (is_null($authObj)) {
 }
 $jsCode = "";
 if (!$authObj->isActive) {
-    echo "Missing parameters for OAuth authentication. " . ($_GET['error_description'] ?? "");
+    echo "Missing parameters for OAuth authentication. "
+        . ($_GET['error_description'] ?? "")
+        . $authObj->errorMessages();
     exit;
 }
 $err = "No Error";
-if ($authObj->afterAuth()) {
-    $jsCode = $authObj->javaScriptCode();
+if ($authObj->afterAuth()) { // Checking whether the authentication is successful.
+    $jsCode = $authObj->javaScriptCode(); // jsCode value has to be set on the script tag element.
     if ($authObj->debugMode) {
         $err = $authObj->errorMessages();
     }
@@ -48,8 +53,9 @@ if ($authObj->afterAuth()) {
 }
 header("Content-Type: text/html; charset=UTF-8");
 ?>
-<html>
+<html lang="ja">
 <head>
+    <title>OAuth Redirected Page</title>
     <script type="text/javascript" src="../../INTER-Mediator.php"></script>
     <script type="text/javascript"><?php echo $jsCode; ?></script>
 </head>

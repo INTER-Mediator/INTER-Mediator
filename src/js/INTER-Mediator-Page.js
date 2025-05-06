@@ -151,10 +151,7 @@ let INTERMediatorOnPage = {
       return true
     }
     const diff = now.getTime() - prevEventDT.getTime()
-    if (diff > 500) {
-      return true
-    }
-    return false
+    return diff > 500;
   },
 
   /**
@@ -487,15 +484,6 @@ let INTERMediatorOnPage = {
       cookieString += ';secure;'
     }
     document.cookie = cookieString
-  },
-
-  setInfoToCookie(provider) {
-    INTERMediatorOnPage.setCookieDomainWide('_im_oauth_provider', provider, true)
-    INTERMediatorOnPage.setCookieDomainWide('_im_oauth_backurl', location.href, true)
-    INTERMediatorOnPage.setCookieDomainWide('_im_oauth_realm', INTERMediatorOnPage.realm, true)
-    INTERMediatorOnPage.setCookieDomainWide('_im_oauth_expired', INTERMediatorOnPage.authExpired, true)
-    INTERMediatorOnPage.setCookieDomainWide('_im_oauth_storing', INTERMediatorOnPage.authStoring, true)
-    location.href = INTERMediatorOnPage.oAuthParams[provider].AuthURL
   },
 
   authenticating: function (doAfterAuth, doTest) {
@@ -898,7 +886,7 @@ let INTERMediatorOnPage = {
               messageNode.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(1059)))
               return
             }
-            INTERMediatorOnPage.setInfoToCookie(provider);
+            location.href = INTERMediatorOnPage.oAuthParams[provider].AuthURL
           }
         }
       }
