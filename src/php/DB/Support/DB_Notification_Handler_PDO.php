@@ -241,7 +241,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->pdoDB->errorMessageStore("Select: {$sql}");
+            $this->pdoDB->errorMessageStore("ERROR in SELECT: {$sql}");
             return null;
         }
         $targetClients = array();
@@ -283,7 +283,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->pdoDB->errorMessageStore("Select:{$sql}");
+            $this->pdoDB->errorMessageStore("ERROR in SELECT:{$sql}");
             return null;
         }
         $targetClients = [];
@@ -297,7 +297,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
                 $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
                 $resultContent = $this->pdoDB->link->query($sql);
                 if ($resultContent === false) {
-                    $this->pdoDB->errorMessageStore("Select:{$sql}");
+                    $this->pdoDB->errorMessageStore("ERROR in SELECT:{$sql}");
                     return null;
                 }
                 $conditionToContent[$row['conditions']] = [];
@@ -343,7 +343,7 @@ class DB_Notification_Handler_PDO extends DB_Notification_Common
         $this->logger->setDebugMessage("[DB_Notification_Handler_PDO] {$sql}");
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->pdoDB->errorMessageStore("Select:{$sql}");
+            $this->pdoDB->errorMessageStore("ERROR in SELECT:{$sql}");
             return null;
         }
         $targetClients = array();

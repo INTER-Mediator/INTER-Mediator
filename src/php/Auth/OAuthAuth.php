@@ -282,7 +282,7 @@ class OAuthAuth
             }
             $this->isCreate = $dbProxy->dbClass->authHandler->authSupportOAuthUserHandling($param);
 
-            if($isSetLogin) {
+            if ($isSetLogin) {
                 $authExpired = Params::getParameterValue("authExpired", 3600);
                 // Set the logging-in situation for the local user to continue from log-in.
                 $generatedClientID = IMUtil::generateClientId('', $credential);
@@ -303,7 +303,8 @@ class OAuthAuth
                 $this->errorMessage = array_merge($this->errorMessage, Logger::getInstance()->getDebugMessages());
             }
             if ($this->doRedirect && !$this->debugMode) {
-                $this->jsCode = "location.href = '" . $this->providerObj->getBackURL() . "';";
+                $backURL = $this->providerObj->getBackURL();
+                $this->jsCode = $backURL ? ("location.href = '{$backURL}';") : "";
             }
         } catch (Exception $e) {
             $this->errorMessage[] = $e->getMessage();

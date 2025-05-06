@@ -24,7 +24,6 @@ require_once("{$pathToIM}/INTER-Mediator.php"); // Loading INTER-Mediator and re
 
 use INTERMediator\Auth\OAuthAuth;
 
-$reqState = $_GET["state"];
 $authObj = new OAuthAuth($_GET["state"]);
 //$authObj->debugMode = true; // or comment here
 //$authObj->setDoRedirect(true);
