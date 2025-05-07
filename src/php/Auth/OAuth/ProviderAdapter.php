@@ -211,7 +211,7 @@ abstract class ProviderAdapter
      */
     protected function storeBackURL(string $url, string $state): void
     {
-        $this->storeCode($url, "@backurl@",$state);
+        $this->storeCode($url, "@backurl@", $state);
     }
 
     /**
@@ -277,15 +277,21 @@ abstract class ProviderAdapter
         return null;
     }
 
+    /**
+     * Create an instance of ProviderAdapter based on the state value.
+     *
+     * This method is used to create an instance of ProviderAdapter from the state value.
+     * The state value is used to determine which provider to use.
+     * If the provider name is not found in the state value, the method looks for the provider name in the _im_oauth_provider cookie.
+     * If the provider name is not found in the cookie, the method returns null.
+     *
+     * @param string $state The state value
+     * @return ProviderAdapter|null The instance of ProviderAdapter or null if the provider is not supported
+     */
     public static function createAdapterFromState(string $state): ProviderAdapter|null
     {
-        $providerName = ProviderAdapter::retrieveCodeStatic($state, "@provider@")[0] ?? "";
-        if (strlen($providerName) == 0 || $providerName == null) {
-            $providerName = $_COOKIE["_im_oauth_provider"] ?? "";
-            if (strlen($providerName) == 0 || $providerName == null) {
-                return null;
-            }
-        }
+        $candidates = ProviderAdapter::retrieveCodeStatic($state, "@provider@");
+        $providerName = $candidates[0] ?? "";
         return self::createAdapter($providerName);
     }
 

@@ -636,7 +636,7 @@ class OME
             if ($user == '' || $pass == '') {
                 $userPart = "";
             }
-            if ($host == 'default' || strpos($host, 'default?') === 0) {
+            if ($host == 'default' || str_starts_with($host, 'default?')) {
                 $portPart = "";
             }
             $url = "{$protocol}://{$userPart}{$host}{$portPart}";
@@ -645,7 +645,7 @@ class OME
             $email->subject($this->subject);
             if ($this->fromField != null) {
                 $addArray = $this->recepientsAddressArray(explode(',', $this->fromField));
-                if (strlen($this->fromField) > 0 && count($addArray) > 0) {
+                if (count($addArray) > 0) {
                     $email->from($addArray[0]);
                 }
             }
@@ -671,9 +671,9 @@ class OME
                 }
                 $recipientsInfo .= "[BCC]{$this->bccField}";
             }
-            $this->bodyType = ($this->bodyType === false) ? 'text/plain' : $this->bodyType;
+            $this->bodyType = !$this->bodyType ? 'text/plain' : $this->bodyType;
             $targetTerm = "##image##";
-            if (strpos($this->body, $targetTerm) !== false && $this->bodyType == 'text/html') {
+            if (str_contains($this->body, $targetTerm) && $this->bodyType == 'text/html') {
                 $imagePos = strpos($this->body, $targetTerm);
                 $counter = 1;
                 foreach ($this->attachments as $path) {

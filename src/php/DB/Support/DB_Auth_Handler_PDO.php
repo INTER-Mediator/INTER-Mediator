@@ -150,7 +150,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             . "WHERE user_id={$uid} and clienthost={$this->pdoDB->link->quote('_im_media')}";
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->pdoDB->errorMessageStore('Select:' . $sql);
+            $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
             return null;
         }
         $this->logger->setDebugMessage("[authSupportCheckMediaToken] {$sql}");
@@ -261,7 +261,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             . " WHERE clienthost IS NOT NULL AND expired < {$currentDTStr}";
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->pdoDB->errorMessageStore('Select:' . $sql);
+            $this->pdoDB->errorMessageStore('ERROR in DELETE:' . $sql);
             return false;
         }
         $this->logger->setDebugMessage("[authSupportRemoveOutdatedChallenges] {$sql}");
@@ -417,7 +417,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
                 . $this->pdoDB->link->quote($username);
             $result = $this->pdoDB->link->query($sql);
             if ($result === false) {
-                $this->pdoDB->errorMessageStore('Select:' . $sql);
+                $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
                 return false;
             }
             $this->logger->setDebugMessage(
@@ -558,7 +558,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             . $this->pdoDB->link->quote($username);
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->pdoDB->errorMessageStore('Select:' . $sql);
+            $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
             return null;
         }
         $this->logger->setDebugMessage("[privateGetUserIdFromUsername] {$sql}");
@@ -591,7 +591,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             . $this->pdoDB->link->quote($groupid);
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->pdoDB->errorMessageStore('Select:' . $sql);
+            $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
             return null;
         }
         $this->logger->setDebugMessage("[authSupportGetGroupNameFromGroupId] {$sql}");
@@ -687,7 +687,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
      */
     private function resolveGroup(?string $groupid): void
     {
-        if (!$groupid || strlen($groupid) < 1) {
+        if (!$groupid) {
             return;
         }
         $corrTable = $this->dbSettings->getCorrTable();
@@ -703,7 +703,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         }
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->logger->setDebugMessage('Select:' . $sql);
+            $this->logger->setDebugMessage('ERROR in SELECT:' . $sql);
             return;
         }
         $this->logger->setDebugMessage("[resolveGroup] {$sql}");
@@ -803,7 +803,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             . $this->pdoDB->link->quote($email);
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->pdoDB->errorMessageStore('Select:' . $sql);
+            $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
             return null;
         }
         $this->logger->setDebugMessage("[authSupportGetUserIdFromEmail] {$sql}");
@@ -832,7 +832,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             . $this->pdoDB->link->quote($userid);
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->pdoDB->errorMessageStore('Select:' . $sql);
+            $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
             return null;
         }
         $this->logger->setDebugMessage("[authSupportGetUsernameFromUserId] {$sql}");
@@ -865,7 +865,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
                 . $this->pdoDB->link->quote($username);
             $result = $this->pdoDB->link->query($sql);
             if ($result === false) {
-                $this->pdoDB->errorMessageStore('Select:' . $sql);
+                $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
                 return null;
             }
             $this->logger->setDebugMessage("[authSupportUnifyUsernameAndEmail] {$sql}");
@@ -879,7 +879,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             $this->pdoDB->link->quote($username) . " or email = " . $this->pdoDB->link->quote($username);
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->pdoDB->errorMessageStore('Select:' . $sql);
+            $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
             return null;
         }
         $this->logger->setDebugMessage("[authSupportUnifyUsernameAndEmail] {$sql}");
@@ -916,7 +916,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             $this->pdoDB->link->quote($username);
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->pdoDB->errorMessageStore('Select:' . $sql);
+            $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
             return null;
         }
         $this->logger->setDebugMessage("[authSupportEmailFromUnifiedUsername] {$sql}");
@@ -984,7 +984,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             . " and clienthost = " . $this->pdoDB->link->quote($randdata);
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->pdoDB->errorMessageStore('Select:' . $sql);
+            $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
             return false;
         }
         $this->logger->setDebugMessage("[authSupportCheckIssuedHashForResetPassword] {$sql}");
@@ -1024,7 +1024,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         $sql = $this->pdoDB->handler->sqlINSERTCommand($tableRef, "VALUES({$setArray})");
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->pdoDB->errorMessageStore('Select:' . $sql);
+            $this->pdoDB->errorMessageStore('ERROR in INSERT:' . $sql);
             return false;
         }
         $this->logger->setDebugMessage("[authSupportUserEnrollmentStart] {$sql}");
@@ -1053,7 +1053,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             " and clienthost IS NULL and expired > " . $this->pdoDB->link->quote($currentDTFormat);
         $resultHash = $this->pdoDB->link->query($sql);
         if ($resultHash === false) {
-            $this->pdoDB->errorMessageStore('Select:' . $sql);
+            $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
             return null;
         }
         $this->logger->setDebugMessage("[authSupportUserEnrollmentEnrollingUser] {$sql}");
@@ -1136,7 +1136,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
         $sql = "{$this->pdoDB->handler->sqlSELECTCommand()}* FROM {$userTable} WHERE id = " . $userID;
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->pdoDB->errorMessageStore('Select:' . $sql);
+            $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
             return false;
         }
         $this->logger->setDebugMessage("[authSupportIsWithinSAMLLimit] {$sql}");
@@ -1206,7 +1206,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
                 . $this->pdoDB->link->quote($userID);
             $result = $this->pdoDB->link->query($sql);
             if ($result === false) {
-                $this->pdoDB->errorMessageStore('Select:' . $sql);
+                $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
                 return [null, null, null];
             }
             $this->logger->setDebugMessage("[authSupportUnifyUsernameAndEmail] {$sql}");
@@ -1220,7 +1220,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common
             $this->pdoDB->link->quote($userID) . " or email = " . $this->pdoDB->link->quote($userID);
         $result = $this->pdoDB->link->query($sql);
         if ($result === false) {
-            $this->pdoDB->errorMessageStore('Select:' . $sql);
+            $this->pdoDB->errorMessageStore('ERROR in SELECT:' . $sql);
             return [null, null, null];
         }
         $this->logger->setDebugMessage("[authSupportUnifyUsernameAndEmail] {$sql}");

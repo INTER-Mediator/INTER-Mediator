@@ -59,9 +59,9 @@ class FileMaker_DataAPI extends DBClass
     private int $mainTableTotalCount = 0;
     /**
      * Field information for the current layout.
-     * @var array|null
+     * @var null So far this property is always null. It's used for setting field list but it doesn't.
      */
-    private ?array $fieldInfo = null;
+    private mixed $fieldInfo;
     /**
      * The most recently updated record.
      * @var array|null
@@ -819,26 +819,24 @@ class FileMaker_DataAPI extends DBClass
             }
         }
 
-        $recordArray = array();
+        $recordArray = [];
         if (!is_null($result)) {
             foreach ($result as $record) {
-                $dataArray = array();
+                $dataArray = [];
                 if (!$usePortal) {
-                    $dataArray = $dataArray + array(
-                            'recordId' => $record->getRecordId(),
-                        );
+                    $dataArray = $dataArray + ['recordId' => $record->getRecordId()];
                 }
                 foreach ($result->getFieldNames() as $fieldName) {
-                    $dataArray = $dataArray + array(
+                    $dataArray = $dataArray + [
                             $fieldName => $this->formatter->formatterFromDB(
                                 $this->getFieldForFormatter($tableName, $fieldName), strval($record->{$fieldName})
                             )
-                        );
+                        ];
                 }
 
-                $relatedsetArray = array();
+                $relatedsetArray = [];
                 if (count($portalNames) >= 1) {
-                    $relatedArray = array();
+                    $relatedArray = [];
                     foreach ($portalNames as $portalName) {
                         foreach ($result->{$portalName} as $portalRecord) {
                             $recId = $portalRecord->getRecordId();
@@ -847,26 +845,26 @@ class FileMaker_DataAPI extends DBClass
                                     $dotPos = strpos($relatedFieldName, '::');
                                     $tableOccurrence = substr($relatedFieldName, 0, $dotPos);
                                     if (!isset($relatedArray[$tableOccurrence][$recId])) {
-                                        $relatedArray[$tableOccurrence][$recId] = array('recordId' => $recId);
+                                        $relatedArray[$tableOccurrence][$recId] = ['recordId' => $recId];
                                     }
                                     if ($relatedFieldName !== 'recordId') {
-                                        $relatedArray[$tableOccurrence][$recId] += array(
+                                        $relatedArray[$tableOccurrence][$recId] += [
                                             $relatedFieldName =>
                                                 $this->formatter->formatterFromDB(
                                                     "{$tableOccurrence}{$this->dbSettings->getSeparator()}{$relatedFieldName}",
                                                     $portalRecord->{$relatedFieldName}
                                                 )
-                                        );
+                                        ];
                                     }
                                 }
                             }
                         }
-                        $relatedsetArray = array($relatedArray);
+                        $relatedsetArray = [$relatedArray];
                     }
                 }
 
                 foreach ($relatedsetArray as $j => $relatedset) {
-                    $dataArray = $dataArray + array($j => $relatedset);
+                    $dataArray = $dataArray + [$j => $relatedset];
                 }
                 if ($usePortal) {
                     $recordArray = $dataArray;
@@ -882,7 +880,7 @@ class FileMaker_DataAPI extends DBClass
         }
 
         $token = $this->fmData->getSessionToken();
-        if (in_array($layout, array($this->dbSettings->getUserTable(), $this->dbSettings->getHashTable()))) {
+        if (in_array($layout, [$this->dbSettings->getUserTable(), $this->dbSettings->getHashTable()])) {
             if (!isset($_SESSION['X-FM-Data-Access-Token-Auth'])) {
                 $_SESSION['X-FM-Data-Access-Token-Auth'] = $token;
             }

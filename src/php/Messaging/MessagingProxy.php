@@ -27,9 +27,9 @@ use INTERMediator\DB\Proxy;
 class MessagingProxy extends MessagingProvider
 {
     /**
-     * @var MessagingProvider|null The actual messaging provider instance used for processing.
+     * @var MessagingProvider The actual messaging provider instance used for processing.
      */
-    private ?MessagingProvider $msgProvider;
+    private MessagingProvider $msgProvider;
 
     /**
      * MessagingProxy constructor.

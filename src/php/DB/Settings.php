@@ -74,9 +74,9 @@ class Settings
      */
     private ?array $dbSpec = null;
     /**
-     * @var string|null
+     * @var string
      */
-    private ?string $dataSourceName = '';
+    private string $dataSourceName = '';
     /**
      * @var int
      */

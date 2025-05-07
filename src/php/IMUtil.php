@@ -92,10 +92,7 @@ class IMUtil
     public static function phpVersion(string $verStr = ''): int|float
     {
         $vString = explode('.', $verStr == '' ? phpversion() : $verStr);
-        $vNum = 0;
-        if (isset($vString[0])) {
-            $vNum += intval($vString[0]);
-        }
+        $vNum = intval($vString[0]);
         if (isset($vString[1])) {
             $vNum += intval($vString[1]) / 10;
         }
@@ -194,7 +191,7 @@ class IMUtil
             $isSepStart = (substr($item, 0, 1) == DIRECTORY_SEPARATOR);
             if (($isSepTerminate && !$isSepStart) || (!$isSepTerminate && $isSepStart)) {
                 $path .= $item;
-            } elseif ($isSepTerminate && $isSepStart) {
+            } elseif ($isSepTerminate) {
                 $path .= substr($item, 1);
             } else {
                 if (!$isFirstItem || !self::isPHPExecutingWindows()) {
@@ -492,12 +489,7 @@ class IMUtil
             is_null($params)
                 ? Params::getParameterValue('accessControlAllowOrigin', '')
                 : $params['accessControlAllowOrigin']));
-        if (empty($xFrameOptions)) {
-            $xFrameOptions = 'SAMEORIGIN';
-        }
-        if ($xFrameOptions !== '') {
-            header("X-Frame-Options: {$xFrameOptions}");
-        }
+        header("X-Frame-Options: " . (empty($xFrameOptions) ? "SAMEORIGIN" : $xFrameOptions));
         if (empty($contentSecurityPolicy)) {
             $contentSecurityPolicy = '';
         }
@@ -868,8 +860,8 @@ class IMUtil
     /**
      * Loads and parses YAML definition file content.
      *
-     * @throws Exception If the YAML file does not exist or is outside permitted paths.
      * @return array Parsed YAML content and file path.
+     * @throws Exception If the YAML file does not exist or is outside permitted paths.
      */
     public static function getYAMLDefContent(): array
     {

@@ -27,14 +27,9 @@ use INTERMediator\DB\Proxy;
 class FileUploader
 {
     /**
-     * @var Proxy|null Database proxy instance for communication with the backend.
+     * @var Proxy Database proxy instance for communication with the backend.
      */
-    private ?Proxy $db;
-
-    /**
-     * @var string|null URL to redirect after processing.
-     */
-    private ?string $url = NULL;
+    private Proxy $db;
 
     /**
      * @var int Access log level for logging purposes.
@@ -162,9 +157,6 @@ class FileUploader
         $this->processingWithParameters($dataSource, $options, $dbSpec, $debug,
             $contextName, $keyField, $keyValue, $field, $files, false);
         $this->db->finishCommunication();
-        if (!is_null($this->url)) {
-            header('Location: ' . $this->url);
-        }
         $this->db->exportOutputDataAsJSON();
     }
 
@@ -198,16 +190,12 @@ class FileUploader
         $className = $this->getClassNameForMedia($dbClass); // Decided media class name
 
         if (count($files) < 1) { // If no file is uploaded.
-            if (!is_null($this->url)) {
-                header('Location: ' . $this->url);
-            } else {
-                $messages = IMUtil::getMessageClassInstance();
-                $this->db->logger->setErrorMessage($messages->getMessageAs(3202));
-                $this->db->processingRequest("nothing");
-                if (!$noOutput) {
-                    $this->db->finishCommunication();
-                    $this->db->exportOutputDataAsJSON();
-                }
+            $messages = IMUtil::getMessageClassInstance();
+            $this->db->logger->setErrorMessage($messages->getMessageAs(3202));
+            $this->db->processingRequest("nothing");
+            if (!$noOutput) {
+                $this->db->finishCommunication();
+                $this->db->exportOutputDataAsJSON();
             }
             return;
         }
@@ -215,7 +203,7 @@ class FileUploader
         $className = "INTERMediator\\Media\\{$className}"; // Instantiated media class object.
         $this->db->logger->setDebugMessage("Instantiate the class '{$className}'", 2);
         $mediaClassObj = new $className();
-        $mediaClassObj->processing($this->db, $this->url, $options, $files, $noOutput, $field,
+        $mediaClassObj->processing($this->db, null, $options, $files, $noOutput, $field,
             $contextName, $keyField, $keyValue, $dataSource, $dbSpec, $debug);
         if ($field[0] == "_im_csv_upload") {    // CSV File uploading
             if (isset($this->db->outputOfProcessing['dbresult'])) { // For CSV importing
@@ -256,18 +244,18 @@ class FileUploader
      */
     protected function getRedirectUrl(?string $url): ?string
     {
-        if (strpos(strtolower($url), '%0a') !== false || strpos(strtolower($url), '%0d') !== false) {
+        if (str_contains(strtolower($url), '%0a') || strpos(strtolower($url), '%0d') !== false) {
             return NULL;
         }
 
-        if (strpos($url, 'http://' . php_uname('n') . '/') === 0 ||
-            strpos($url, 'https://' . php_uname('n') . '/') === 0
+        if (str_starts_with($url, 'http://' . php_uname('n') . '/') ||
+            str_starts_with($url, 'https://' . php_uname('n') . '/')
         ) {
             return $url;
         }
 
         if (isset($_SERVER['SERVER_ADDR']) &&
-            strpos($url, 'http://' . $_SERVER['SERVER_ADDR'] . '/') === 0
+            str_starts_with($url, 'http://' . $_SERVER['SERVER_ADDR'] . '/')
         ) {
             return $url;
         }
@@ -325,8 +313,7 @@ class FileUploader
             isset($contextDef['file-upload'])) {
             foreach ($contextDef['file-upload'] as $item) {
                 if (isset($item['container'])
-                    && (((boolean)$item['container'] === TRUE)
-                        || ($item['container'] === 'FileMaker'))) {
+                    && (($item['container'] === TRUE) || ($item['container'] === 'FileMaker'))) {
                     $className = "FileMakerContainer";
                     break;
                 }

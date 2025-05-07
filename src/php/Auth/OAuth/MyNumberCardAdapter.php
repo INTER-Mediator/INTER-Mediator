@@ -141,8 +141,8 @@ class MyNumberCardAdapter extends ProviderAdapter
     {
         if (isset($_GET['code']) && isset($_GET['state']) && isset($_GET['session_state'])) { // Success
             $code = $_GET['code'];
-            $state = $_GET['state'];
-            if (!$this->checkCode($state, "@M:state@")) {
+            $this->stateValue = $_GET["state"];
+            if (!$this->checkCode($this->stateValue, "@M:state@")) {
                 throw new Exception("Failed with security issue. The state parameter isn't same as the stored one.");
             }
         } else if (isset($_GET['error']) && isset($_GET['error_description']) && isset($_GET['state'])) { // Error
@@ -150,7 +150,7 @@ class MyNumberCardAdapter extends ProviderAdapter
         } else {
             throw new Exception("Error: This isn't a valid access");
         }
-        $storedVerifiers = $this->retrieveCode($state, "@M:verifier@");
+        $storedVerifiers = $this->retrieveCode($this->stateValue, "@M:verifier@");
         if (count($storedVerifiers) < 1) {
             throw new Exception("Verifier value isn't stored.");
         }

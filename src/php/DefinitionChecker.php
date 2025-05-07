@@ -78,7 +78,7 @@ class DefinitionChecker
     /**
      * Recursively traverses the definition items and checks for prohibited or invalid values.
      *
-     * @param array|string $items Items or values to check.
+     * @param mixed $items Items or values to check.
      * @return void
      */
     private function moveChildren(mixed $items): void
@@ -184,17 +184,17 @@ class DefinitionChecker
     }
 
     /**
-     * @var string|null Holds the latest error or warning message.
+     * @var string Holds the latest error or warning message.
      */
-    private ?string $message;
+    private string $message;
     /**
      * @var array Path stack for recursive checking.
      */
     private array $path = [];
     /**
-     * @var array|null Currently active prohibited keyword structure.
+     * @var array Currently active prohibited keyword structure.
      */
-    private ?array $currentProhibit;
+    private array $currentProhibit;
     /**
      * @var array Prohibited keywords and types for database specification.
      */

@@ -110,9 +110,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     private bool $alwaysGenSHA2;
     /**
      * Original access string.
-     * @var string|null
+     * @var string
      */
-    private ?string $originalAccess;
+    private string $originalAccess;
     /**
      * Client sync available flag.
      * @var bool
@@ -173,16 +173,6 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
      * @var string
      */
     public string $authStoring;
-    /**
-     * Auth expired.
-     * @var int
-     */
-    private int $authExpired;
-    /**
-     * Realm string.
-     * @var string
-     */
-    private string $realm;
     /**
      * Required 2FA flag.
      * @var bool

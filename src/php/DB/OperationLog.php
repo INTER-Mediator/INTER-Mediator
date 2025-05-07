@@ -128,7 +128,7 @@ class OperationLog
             || ($this->dontRecordTheme && $access == 'theme')
             || ($this->dontRecordChallenge && $access == 'challenge')
             || ($this->dontRecordDownload && $access == 'download')
-            || ($this->dontRecordDownloadNoGet && $access == 'download' && (!is_array($_GET) || count($_GET) == 0))
+            || ($this->dontRecordDownloadNoGet && $access == 'download' && (count($_GET) == 0))
         ) {
             return;
         }
@@ -209,9 +209,7 @@ class OperationLog
                 $v = $this->arrayToString($v);
             }
             if ($this->accessLogLevel < 2 && preg_match("/(value_[0-9]+)/", $k, $matches)) {
-                if (is_array($matches) && count($matches) > 1) {
-                    $v = '***';
-                }
+                $v = "***";
             }
             $result[] = str_replace(["\n", "\r", "\t"], ['', '', ''], "{$k} => {$v}");
         }

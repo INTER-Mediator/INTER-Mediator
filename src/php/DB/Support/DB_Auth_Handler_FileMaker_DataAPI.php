@@ -618,7 +618,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common
             return $username;
         }
         $userTable = $this->dbSettings->getUserTable();
-        if (is_null($userTable) || $username === 0 || $username === '') {
+        if (is_null($userTable) ||$username === '') {
             return null;
         }
         $this->fmdb->setupFMDataAPIforDB_Alt($userTable, 55555);
