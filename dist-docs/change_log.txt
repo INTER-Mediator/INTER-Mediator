@@ -38,6 +38,8 @@ Ver.14 (in Development)
 - The cross-table sample in sample/Practices directory was updated.
 - MyNumberCard authentication is available as a part of OAuth authentication.
 - OAuth features are refactored.
+- INTERMediatorOnPage.userNameJustASCIIUpper and INTERMediatorOnPage.userNameJustASCIILower are introduced. These are
+  forcing capitalization of INTERMediatorOnPage.userNameJustASCII.
 - [BUG FIX] The cross table feature and search/sort controls with ex. _@addorder didn't compatible. In case of any
   cross table exists, whole page is going to update after click the search/sort controls.
 

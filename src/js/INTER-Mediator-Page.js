@@ -110,6 +110,8 @@ let INTERMediatorOnPage = {
   isRequired2FA: false,
   authedUser: null,
   userNameJustASCII: true,
+  userNameJustASCIIUpper: false,
+  userNameJustASCIILower: false,
   includingParts: [],
   serviceServerStatus: false,
   serviceServerURL: null,
@@ -801,6 +803,10 @@ let INTERMediatorOnPage = {
       const inputPassword = document.getElementById('_im_password').value
       if (INTERMediatorOnPage.userNameJustASCII) {
         inputUsername = INTERMediatorLib.justfyUsername(inputUsername)
+      } else  if (INTERMediatorOnPage.userNameJustASCIIUpper) {
+        inputUsername = INTERMediatorLib.justfyUsername(inputUsername, true)
+      } else  if (INTERMediatorOnPage.userNameJustASCIILower) {
+        inputUsername = INTERMediatorLib.justfyUsername(inputUsername, false, true)
       }
 
       if (inputUsername === '' || inputPassword === '') {

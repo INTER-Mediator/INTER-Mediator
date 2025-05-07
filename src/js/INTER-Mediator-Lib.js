@@ -1103,7 +1103,7 @@ const INTERMediatorLib = {
     }
   },
 
-  justfyUsername: function (uname) {
+  justfyUsername: function (uname, isUpper = false, isLower = false) {
     const allHankaku = uname.replaceAll(/[Ａ-Ｚａ-ｚ０-９]/g, (s) => {
       return String.fromCharCode(s.charCodeAt(0) - 0xFEE0)
     });
@@ -1112,6 +1112,11 @@ const INTERMediatorLib = {
       if (allHankaku.charCodeAt(i) <= 127) {
         modUsername += allHankaku.charAt(i)
       }
+    }
+    if (isUpper) {
+      modUsername = modUsername.toUpperCase()
+    } else if (isLower) {
+      modUsername = modUsername.toLowerCase()
     }
     return modUsername
   }
