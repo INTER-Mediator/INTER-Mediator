@@ -27,13 +27,13 @@ jobs:
 
       - name: Run PHPStan
         if: matrix.level == matrix.current-level
-        run: ./vendor/bin/phpstan analyse --memory-limit 1024M src spec/INTER-Mediator-UnitTest --level "${{ matrix.level }}"
+        run: ./vendor/bin/phpstan analyse  -c ./spec/phpstan.neon --memory-limit 1024M --level "${{ matrix.level }}"
 
       - name: Run PHPStan
         if: matrix.level > matrix.current-level && github.event_name != 'pull_request'
         continue-on-error: true
         run: |
-          ./vendor/bin/phpstan analyse -c spec/phpstan.neon --memory-limit 1024M src spec/INTER-Mediator-UnitTest --level "${{ matrix.level }}"
+          ./vendor/bin/phpstan analyse -c spec/phpstan.neon --memory-limit 1024M --level "${{ matrix.level }}"
           exit 0
 
       - uses: actions/checkout@v4
