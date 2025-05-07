@@ -347,7 +347,7 @@ class FileMaker_DataAPI extends DBClass
      * @param string|null $str The input string.
      * @return string The string with only return characters.
      */
-    private function stringReturnOnly(?string $str): string // @phpstan-ignore method.unused
+    private function stringReturnOnly(?string $str): string
     {
         return str_replace("\n\r", "\r", str_replace("\n", "\r", $str ?? ""));
     }
