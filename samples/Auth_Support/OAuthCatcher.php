@@ -27,10 +27,6 @@ use INTERMediator\Auth\OAuthAuth;
 $authObj = new OAuthAuth($_GET["state"]);
 //$authObj->debugMode = true; // or comment here
 //$authObj->setDoRedirect(true);
-if (is_null($authObj)) {
-    echo "Couldn't authenticate with parameters you supplied.";
-    exit;
-}
 $jsCode = "";
 if (!$authObj->isActive) {
     echo "Missing parameters for OAuth authentication. "

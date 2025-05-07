@@ -237,15 +237,15 @@ class Logger
         $returnData = array();
         foreach ($this->errorMessage as $oneError) {
             $returnData[] = "INTERMediatorLog.setErrorMessage({$q}"
-                . str_replace("\n", " ", addslashes($oneError) ?? "") . "{$q});";
+                . str_replace("\n", " ", addslashes($oneError)) . "{$q});";
         }
         foreach ($this->warningMessage as $oneError) {
             $returnData[] = "INTERMediatorLog.setWarningMessage({$q}"
-                . str_replace("\n", " ", addslashes($oneError) ?? "") . "{$q});";
+                . str_replace("\n", " ", addslashes($oneError)) . "{$q});";
         }
         foreach ($this->debugMessage as $oneError) {
             $returnData[] = "INTERMediatorLog.setDebugMessage({$q}"
-                . str_replace("\n", " ", addslashes($oneError) ?? "") . "{$q});";
+                . str_replace("\n", " ", addslashes($oneError)) . "{$q});";
         }
         return $returnData;
     }

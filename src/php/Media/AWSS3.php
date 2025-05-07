@@ -103,7 +103,7 @@ class AWSS3 extends UploadingSupport implements DownloadingSupport
     {
         $startOfPath = strpos($target, "/", 5);
         $urlPath = substr($target, $startOfPath + 1);
-        $this->fileName = str_replace("+", "%20", urlencode(basename($urlPath)) ?? "");
+        $this->fileName = str_replace("+", "%20", urlencode(basename($urlPath)));
         $clientArgs = ['version' => 'latest', 'region' => $this->accessRegion];
         if ($this->s3AccessProfile) {
             $clientArgs['profile'] = $this->s3AccessProfile;

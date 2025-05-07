@@ -67,9 +67,9 @@ class Generator
     private ?array $contextDef;
     /**
      * Schema information array.
-     * @var array|null
+     * @var array
      */
-    private ?array $schemaInfo;
+    private array $schemaInfo;
     /**
      * Options for generator behavior.
      * @var array|null
@@ -186,7 +186,7 @@ class Generator
         // Merge infomation of the 'dummy' table
         $detectedTables = array_keys($this->schemaInfo['tables']);
         foreach ($this->schemaInfo['tables'] as $table => $info) {
-            if ($table != $this->options['dummy-table'] ?? 'dummy') {
+            if ($table != ($this->options['dummy-table'] ?? 'dummy')) {
                 $tableName = '__';
                 if (in_array(($info['contextDef-source'] ?? '__'), $detectedTables)) {
                     $tableName = $info['contextDef-source'];
@@ -205,7 +205,7 @@ class Generator
         $existingTables = $this->getTables();
         $sql = "";
         foreach ($this->schemaInfo['tables'] as $table => $info) {
-            if ($table != $this->options['dummy-table'] ?? 'dummy') { // Name is not "dummy".
+            if ($table != ($this->options['dummy-table'] ?? 'dummy')) { // Name is not "dummy".
                 if (in_array($table, $existingTables)) { // The table is already defined.
                     $definedFields = $this->getTableInfo($table);
                     $this->logger->setDebugMessage("[Schema Generator] definedFields" . var_export($definedFields, true), 2);

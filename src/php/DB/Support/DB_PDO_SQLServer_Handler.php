@@ -181,7 +181,7 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
      */
     protected function checkNullableField(string $info): bool
     {
-        return $info === 0;
+        return $info === "0";
     }
 
     /**

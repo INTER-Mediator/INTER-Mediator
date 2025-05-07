@@ -636,7 +636,7 @@ class OME
             if ($user == '' || $pass == '') {
                 $userPart = "";
             }
-            if ($host == 'default' || strpos($host, 'default?') === 0) {
+            if ($host == 'default' || str_starts_with($host, 'default?')) {
                 $portPart = "";
             }
             $url = "{$protocol}://{$userPart}{$host}{$portPart}";
@@ -645,7 +645,7 @@ class OME
             $email->subject($this->subject);
             if ($this->fromField != null) {
                 $addArray = $this->recepientsAddressArray(explode(',', $this->fromField));
-                if (strlen($this->fromField) > 0 && count($addArray) > 0) {
+                if (count($addArray) > 0) {
                     $email->from($addArray[0]);
                 }
             }
@@ -671,9 +671,9 @@ class OME
                 }
                 $recipientsInfo .= "[BCC]{$this->bccField}";
             }
-            $this->bodyType = ($this->bodyType === false) ? 'text/plain' : $this->bodyType;
+            $this->bodyType = !$this->bodyType ? 'text/plain' : $this->bodyType;
             $targetTerm = "##image##";
-            if (strpos($this->body, $targetTerm) !== false && $this->bodyType == 'text/html') {
+            if (str_contains($this->body, $targetTerm) && $this->bodyType == 'text/html') {
                 $imagePos = strpos($this->body, $targetTerm);
                 $counter = 1;
                 foreach ($this->attachments as $path) {
@@ -715,7 +715,7 @@ class OME
         return $resultMail;
     }
 
-    private function recepientsArray(array $ar): array
+    private function recepientsArray(array $ar): array // @phpstan-ignore method.unused
     {
         mb_regex_encoding('UTF-8');
         $result = [];
@@ -806,7 +806,7 @@ class OME
      * @param string $str The string to unify.
      * @return string The unified string.
      */
-    private function unifyCRLF(string $str): string
+    private function unifyCRLF(string $str): string // @phpstan-ignore method.unused
     {
         $strUnifiedLF = str_replace("\r", "\n", str_replace("\r\n", "\n", $str));
         return str_replace("\n", "\r\n", $strUnifiedLF);

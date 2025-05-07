@@ -55,7 +55,7 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
                     foreach ($header as $line) {
                         if ($line) {
                             $h = explode(': ', $line);
-                            if (isset($h[0]) && isset($h[1]) && $h[0] == 'Set-Cookie') {
+                            if (isset($h[1]) && $h[0] == 'Set-Cookie') {
                                 $sessionKey = str_replace(
                                     '; HttpOnly', '', str_replace('X-FMS-Session-Key=', '', $h[1])
                                 );

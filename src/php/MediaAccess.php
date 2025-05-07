@@ -192,7 +192,7 @@ class MediaAccess
                         $tableName = $dbProxyInstance->dbSettings->getEntityForRetrieve();
                         $contextRecord = $dbProxyInstance->dbClass->authHandler->authSupportCheckMediaPrivilege(
                             $tableName, $authResult, $authInfoField, $this->cookieUser, $this->targetKeyField, $this->targetKeyValue);
-                        if (!$contextRecord || count($contextRecord) < 1) {
+                        if (!$contextRecord) {
                             $this->exitAsError(401);
                         }
                         $contextRecord = [$contextRecord];
@@ -368,10 +368,10 @@ class MediaAccess
      *
      * @param Proxy $dbProxyInstance Database proxy instance.
      * @param array|null $options Options for media access.
-     * @return string|null Authentication result ('context_auth', 'no_auth', 'field_user', 'field_group').
+     * @return string Authentication result ('context_auth', 'no_auth', 'field_user', 'field_group').
      * @throws Exception If authentication fails.
      */
-    private function checkAuthentication(Proxy $dbProxyInstance, ?array $options): ?string
+    private function checkAuthentication(Proxy $dbProxyInstance, ?array $options): string
     {
         $contextDef = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
         $isContextAuth = (isset($contextDef['authentication']) && (isset($contextDef['authentication']['all'])
@@ -409,20 +409,17 @@ class MediaAccess
                 $isOptionAuth = true; // Follow the below process if the target isn't specified.
             }
         }
-        if ($isOptionAuth) { // If the option setting has authentication keyed value.
-            $authorizedUsers = $dbProxyInstance->dbClass->authHandler->getAuthorizedUsers("read");
-            $authorizedGroups = $dbProxyInstance->dbClass->authHandler->getAuthorizedGroups("read");
-            if (count($authorizedGroups) != 0 || count($authorizedUsers) != 0) {
-                $belongGroups = $dbProxyInstance->dbClass->authHandler->authSupportGetGroupsOfUser($_COOKIE[$cookieNameUser]);
-                if (!in_array($_COOKIE[$cookieNameUser], $authorizedUsers)
-                    && count(array_intersect($belongGroups, $authorizedGroups)) == 0
-                ) {
-                    $this->exitAsError(400);
-                }
+        $authorizedUsers = $dbProxyInstance->dbClass->authHandler->getAuthorizedUsers("read");
+        $authorizedGroups = $dbProxyInstance->dbClass->authHandler->getAuthorizedGroups("read");
+        if (count($authorizedGroups) != 0 || count($authorizedUsers) != 0) {
+            $belongGroups = $dbProxyInstance->dbClass->authHandler->authSupportGetGroupsOfUser($_COOKIE[$cookieNameUser]);
+            if (!in_array($_COOKIE[$cookieNameUser], $authorizedUsers)
+                && count(array_intersect($belongGroups, $authorizedGroups)) == 0
+            ) {
+                $this->exitAsError(400);
             }
-            return 'context_auth';
         }
-        return 'no_auth';
+        return 'context_auth';
     }
 
     /**

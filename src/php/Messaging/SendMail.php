@@ -70,7 +70,7 @@ class SendMail extends MessagingProvider
                 $ome->setBodyWidth($sendMailParam['body-wrap']);
             }
 
-            if (isset($smtpConfig) && is_array($smtpConfig)) {
+            if (isset($smtpConfig)) {
                 if (isset($smtpConfig['password'])) {
                     $ome->setSmtpInfo(array(
                         'host' => $smtpConfig['server'] ?? 'default',

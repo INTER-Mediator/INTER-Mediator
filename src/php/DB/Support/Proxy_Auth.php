@@ -48,10 +48,10 @@ trait Proxy_Auth
         $emailAsAliasOfUserName = Params::getParameterValue('emailAsAliasOfUserName', false);
         $this->authStoring = $options['authentication']['storing']
             ?? Params::getParameterValue("authStoring", 'credential');
-        $this->authExpired = $options['authentication']['authexpired']
-            ?? Params::getParameterValue("authExpired", 3600);
-        $this->realm = $options['authentication']['realm']
-            ?? Params::getParameterValue("authRealm", '');
+//        $this->authExpired = $options['authentication']['authexpired']
+//            ?? Params::getParameterValue("authExpired", 3600);
+//        $this->realm = $options['authentication']['realm']
+//            ?? Params::getParameterValue("authRealm", '');
         $this->required2FA = $options['authentication']['is-required-2FA']
             ?? Params::getParameterValue("isRequired2FA", '');
         $this->digitsOf2FACode = $options['authentication']['digits-of-2FA-Code']

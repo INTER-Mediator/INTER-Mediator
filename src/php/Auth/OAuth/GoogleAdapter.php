@@ -130,13 +130,13 @@ class GoogleAdapter extends ProviderAdapter
      */
     public function getAuthRequestURL(): string
     {
-         if (!$this->infoScope) {
+        if (!$this->infoScope) {
             $this->infoScope = 'openid profile email'; // Default scope string
         }
         $state = IMUtil::randomString(32);
         $this->storeCode($state, "@G:state@");
         $this->storeProviderName($state);
-        $this->storeBackURL($_SERVER['HTTP_REFERER'],$state);
+        $this->storeBackURL($_SERVER['HTTP_REFERER'], $state);
         return $this->baseURL . '?response_type=code'
             . '&scope=' . urlencode($this->infoScope)
             . '&redirect_uri=' . urlencode($this->redirectURL)
@@ -178,15 +178,11 @@ class GoogleAdapter extends ProviderAdapter
         $id_token = $response->id_token;
         $access_token = $response->access_token;
         $payloadIDToken = $this->checkIDToken($id_token, $access_token);
-        $userInfo = $payloadIDToken ? [
+        $userInfo = [
             "realname" => $payloadIDToken->name,
             "username" => "{$payloadIDToken->sub}@{$this->providerName}",
             "email" => $payloadIDToken->email,
-        ] : null;
-        if (!isset($userInfo["realname"]) || !isset($userInfo["email"]) || !isset($userInfo["username"])) {
-            throw new Exception("User information couldn't get as like: "
-                . var_export($userInfo, true));
-        }
+        ];
         return $userInfo;
     }
 }
