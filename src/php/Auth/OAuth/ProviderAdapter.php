@@ -292,11 +292,6 @@ abstract class ProviderAdapter
     {
         $candidates = ProviderAdapter::retrieveCodeStatic($state, "@provider@");
         $providerName = $candidates[0] ?? "";
-
-        file_put_contents("/var/www/4.txt", "#".var_export($candidates,true)."}#{$providerName}#{$state}");
-        file_put_contents("/var/www/1.txt", var_export(\INTERMediator\DB\Logger::getInstance()->getDebugMessages(),true));
-        file_put_contents("/var/www/2.txt", var_export(\INTERMediator\DB\Logger::getInstance()->getErrorMessages(),true));
-
         return self::createAdapter($providerName);
     }
 

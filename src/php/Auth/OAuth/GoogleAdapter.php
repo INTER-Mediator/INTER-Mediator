@@ -130,9 +130,7 @@ class GoogleAdapter extends ProviderAdapter
      */
     public function getAuthRequestURL(): string
     {
-        file_put_contents("/tmp/1.txt", var_export($_SERVER,true));
-
-        if (!$this->infoScope) {
+         if (!$this->infoScope) {
             $this->infoScope = 'openid profile email'; // Default scope string
         }
         $state = IMUtil::randomString(32);
