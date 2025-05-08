@@ -656,7 +656,7 @@ let INTERMediatorOnPage = {
         INTERMediatorLib.removeChildNodes(messageNode)
       }
 
-      const inputUsername = document.getElementById('_im_username').value
+      const inputUsername = INTERMediatorLib.justfyUsername(document.getElementById('_im_username').value, true)
       const inputPassword = document.getElementById('_im_password').value
 
       if (inputUsername === '' || inputPassword === '') {

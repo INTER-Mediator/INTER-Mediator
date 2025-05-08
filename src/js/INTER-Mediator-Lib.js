@@ -1117,7 +1117,26 @@ const INTERMediatorLib = {
     } else {
       return `${url}?${key}=${value}`
     }
+  },
+
+  justfyUsername: function (uname, isUpper = false, isLower = false) {
+    const allHankaku = uname.replaceAll(/[Ａ-Ｚａ-ｚ０-９]/g, (s) => {
+      return String.fromCharCode(s.charCodeAt(0) - 0xFEE0)
+    });
+    let modUsername = ""
+    for (let i = 0; i < allHankaku.length; i += 1) {
+      if (allHankaku.charCodeAt(i) <= 127) {
+        modUsername += allHankaku.charAt(i)
+      }
+    }
+    if (isUpper) {
+      modUsername = modUsername.toUpperCase()
+    } else if (isLower) {
+      modUsername = modUsername.toLowerCase()
+    }
+    return modUsername
   }
+
 }
 
 // @@IM@@IgnoringRestOfFile

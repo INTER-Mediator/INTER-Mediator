@@ -1,6 +1,6 @@
 {
   "name": "inter-mediator/inter-mediator",
-  "version": "11",
+  "version": "11.1",
   "time": "2023-07-27",
   "repositories": [
     {
@@ -29,7 +29,7 @@
     "setasign/fpdi": "*",
     "smalot/pdfparser": "*",
     "aws/aws-sdk-php": "*",
-    "simplesamlphp/simplesamlphp": "2.0.4",
+    "simplesamlphp/simplesamlphp": "^1",
     "matthiasmullie/minify": "*",
     "msyk/dropbox-api-shortlivedtoken": ">=5",
     "league/csv": "*",
@@ -41,7 +41,7 @@
   "extra": {
     "mouf": {
       "nodejs": {
-        "version": "18.16.0",
+        "version": "^16",
         "includeBinInPath": true
       }
     }
