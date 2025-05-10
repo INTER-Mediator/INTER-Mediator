@@ -258,23 +258,34 @@ abstract class ProviderAdapter
      */
     public static function createAdapter(string $provider): ProviderAdapter|null
     {
+        $providerName = $provider;
+        if(str_contains($providerName, "_")) {
+            $providerName = substr($providerName, 0, strpos($providerName, "_"));
+        }
+        $adapter = null;
         // Switch based on the provider name
-        switch (strtolower($provider)) {
+        switch (strtolower($providerName)) {
             case "google":
                 // Create an instance of GoogleAdapter
-                return new GoogleAdapter();
+                $adapter= new GoogleAdapter();
+                break;
             case "facebook":
                 // Create an instance of FacebookAdapter
-                return new FacebookAdapter();
+                $adapter= new FacebookAdapter();
+                break;
             case "mynumbercard-sandbox":
                 // Create an instance of MyNumberCardAdapter and set it to test mode
-                return (new MyNumberCardAdapter())->setTestMode();
+                $adapter= (new MyNumberCardAdapter())->setTestMode();
+                break;
             case "mynumbercard":
                 // Create an instance of MyNumberCardAdapter
-                return new MyNumberCardAdapter();
+                $adapter= new MyNumberCardAdapter();
+                break;
         }
-        // Return null if the provider is not supported
-        return null;
+        if (!is_null($adapter)) {
+            $adapter->providerName = $provider;
+        }
+        return $adapter;
     }
 
     /**
