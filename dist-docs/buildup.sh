@@ -176,10 +176,6 @@ if [ -e "${minifyjsDir}" ]; then
 fi
 rm  "${buildPath}/src/js/temp.js"
 
-# Copy "lib" path php contents.
-/bin/echo "PROCESSING: ${originalPath}/src/lib"
-cp -prf "${originalPath}/src/lib/CWPKit"        "${buildPath}/src/lib"
-
 if [ $choice = 1 ]; then
     /bin/echo "PROCESSING: ${originalPath}/README.md"
     cp -p   "${originalPath}/README.md" "${buildPath}"
