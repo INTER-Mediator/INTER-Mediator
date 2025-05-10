@@ -198,14 +198,14 @@ $oAuth = [
 //        'ClientID' => 'code_code_code',
 //        'Scope' => 'openid name address birthdate gender',
 //        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
-//        'JWSFile' => '/var/www/file.pem',
+//        'KeyFilePath' => '/var/www/file.pem',
 //    ],
 //    'MyNumberCard' => [
 //        'AuthButton' => 'マイナンバーカードで認証',
 //        'ClientID' => 'code_code_code',
 //        'Scope' => 'openid name address birthdate gender',
 //        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
-//        'JWSPath' => '/var/www/file.pem',
+//        'KeyFilePath' => '/var/www/file.pem',
 //    ],
 //    'Google' => [
 //        'AuthButton' => 'Sign in with Google',

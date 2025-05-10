@@ -186,7 +186,7 @@ class OAuthAuth
             $this->providerObj->setKeyFilePath($oAuthInfo[$this->provider]["KeyFilePath"] ?? null);
         }
         if (!$this->providerObj->validate()) {
-            $this->errorMessage[] = "Wrong Paramters.";
+            $this->errorMessage[] = "Wrong OAuth Paramters for '{$this->provider}'.";
             $this->provider = "unspecified";
             return;
         }

@@ -92,7 +92,7 @@ class GoogleAdapter extends ProviderAdapter
      */
     function __construct()
     {
-        $this->providerName = 'Google';
+//        $this->providerName = 'Google';
         $this->baseURL = "https://accounts.google.com/o/oauth2/v2/auth";// 'https://accounts.google.com/o/oauth2/auth';
         $this->getTokenURL = "https://oauth2.googleapis.com/token";
         $this->getInfoURL = "https://openidconnect.googleapis.com/v1/userinfo"; //'https://www.googleapis.com/oauth2/v3/userinfo';

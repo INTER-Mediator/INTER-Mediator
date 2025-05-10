@@ -715,8 +715,8 @@ let INTERMediatorOnPage = {
           if (INTERMediatorOnPage.oAuthParams[provider]
             && INTERMediatorOnPage.oAuthParams[provider].Behavior !== 'no-show-on-login-panel') {
             oAuthButton[provider] = document.createElement('BUTTON')
-
-            oAuthButton[provider].id = '_im_oauthbutton_' + provider.toLowerCase()
+            const classOfProvider = (provider.indexOf("_") > -1) ? provider.substring(0, provider.indexOf("_")) : provider
+            oAuthButton[provider].id = '_im_oauthbutton_' + classOfProvider.toLowerCase()
             oAuthButton[provider].disabled = false
             const buttonLabel = document.createTextNode(INTERMediatorOnPage.oAuthParams[provider].AuthButton)
             oAuthButton[provider].appendChild(buttonLabel)
@@ -803,9 +803,9 @@ let INTERMediatorOnPage = {
       const inputPassword = document.getElementById('_im_password').value
       if (INTERMediatorOnPage.userNameJustASCII) {
         inputUsername = INTERMediatorLib.justfyUsername(inputUsername)
-      } else  if (INTERMediatorOnPage.userNameJustASCIIUpper) {
+      } else if (INTERMediatorOnPage.userNameJustASCIIUpper) {
         inputUsername = INTERMediatorLib.justfyUsername(inputUsername, true)
-      } else  if (INTERMediatorOnPage.userNameJustASCIILower) {
+      } else if (INTERMediatorOnPage.userNameJustASCIILower) {
         inputUsername = INTERMediatorLib.justfyUsername(inputUsername, false, true)
       }
 

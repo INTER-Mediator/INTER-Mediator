@@ -47,7 +47,7 @@ class FacebookAdapter extends ProviderAdapter
      */
     function __construct()
     {
-        $this->providerName = 'Facebook';
+//        $this->providerName = 'Facebook';
         $this->baseURL = 'https://www.facebook.com/v21.0/dialog/oauth';
         $this->getTokenURL = "https://graph.facebook.com/v21.0/oauth/access_token";
         $this->getInfoURL = "https://graph.facebook.com/me";
