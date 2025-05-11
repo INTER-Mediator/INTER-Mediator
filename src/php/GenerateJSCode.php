@@ -17,6 +17,7 @@
 namespace INTERMediator;
 
 use INTERMediator\Auth\OAuthAuth;
+use INTERMediator\DB\Logger;
 
 /**
  * Class GenerateJSCode
@@ -168,11 +169,16 @@ class GenerateJSCode
                     $isOAuthAvailable = true;
                 }
                 $clientOAuthParams[$provider] = ['AuthButton' => $info['AuthButton']];
-                if (isset($info['Behavior'])){
+                if (isset($info['Behavior'])) {
                     $clientOAuthParams[$provider]['Behavior'] = $info['Behavior'];
                 }
                 $authObj = new OAuthAuth($provider, true);
                 $clientOAuthParams[$provider]['AuthURL'] = $authObj->getAuthRequestURL();
+                $errorMessage = $authObj->errorMessages();
+                if (!empty($errorMessage)) {
+                    unset($clientOAuthParams[$provider]);
+                    $this->generateErrorMessageJS($errorMessage);
+                }
             }
         }
         if (!is_null($oAuth)) {
@@ -185,7 +191,7 @@ class GenerateJSCode
                     $q, $info['AuthButton'], $q);
                 $this->generateAssignJS("INTERMediatorOnPage.oAuthParams[{$q}{$provider}{$q}][{$q}AuthURL{$q}]",
                     $q, $info['AuthURL'], $q);
-                if(isset($info['Behavior'])) {
+                if (isset($info['Behavior'])) {
                     $this->generateAssignJS("INTERMediatorOnPage.oAuthParams[{$q}{$provider}{$q}][{$q}Behavior{$q}]",
                         $q, $info['Behavior'], $q);
                 }

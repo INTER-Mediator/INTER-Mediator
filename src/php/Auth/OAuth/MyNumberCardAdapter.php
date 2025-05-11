@@ -45,7 +45,7 @@ class MyNumberCardAdapter extends ProviderAdapter
      */
     function __construct()
     {
-        $this->providerName = 'MyNumberCard';
+//        $this->providerName = 'MyNumberCard';
         $this->baseURL = 'https://auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/auth';
         $this->getTokenURL = "https://auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/token";
         $this->getInfoURL = 'https://auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/userinfo';
@@ -63,7 +63,7 @@ class MyNumberCardAdapter extends ProviderAdapter
      */
     public function setTestMode(): ProviderAdapter //MyNumberCardAdapter
     {
-        $this->providerName = 'MyNumberCard-Sandbox';
+//        $this->providerName = 'MyNumberCard-Sandbox';
         $this->baseURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/auth';
         $this->getTokenURL = "https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/token";
         $this->getInfoURL = 'https://sb-auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/userinfo';
