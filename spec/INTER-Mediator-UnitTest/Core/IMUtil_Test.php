@@ -325,6 +325,9 @@ class IMUtil_Test extends TestCase
         $fileContent = [
             "[Tochigi]",
             "aaaa = bbbb",
+            "bbbb = BBBB",
+            "a1 = bbBB",
+            "a2 = BBbb",
             "",
             "[Gunma]",
             "aaaaa",
@@ -354,6 +357,16 @@ class IMUtil_Test extends TestCase
         $this->assertEquals("4567", IMUtil::getFromProfileIfAvailable($profDesc));
         $profDesc = "Profile|aws|Ibaragi|big_city";
         $this->assertEquals("1919", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Tochigi|aaaa";
+        $this->assertEquals("bbbb", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Tochigi|bbbb";
+        $this->assertEquals("BBBB", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Tochigi|aAaA";
+        $this->assertEquals("bbbb", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Tochigi|a1";
+        $this->assertEquals("bbBB", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Tochigi|A2";
+        $this->assertEquals("BBbb", IMUtil::getFromProfileIfAvailable($profDesc));
         $profDesc = "Profile|aws|Gunma|noone-knows";
         $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
         $profDesc = "Profile|aws|Tokyo|noone-knows";
