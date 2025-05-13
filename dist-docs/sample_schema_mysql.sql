@@ -862,6 +862,15 @@ SET id=7,
 #
 # % dist-docs/passwdgen.sh '--password=mig2'
 # '','mig2','b7d863d29021fc96de261da6a5dfb6c4c28d3d43c75ad5ddddea4ec8716bdaf074675473'
+#
+# The dist-docs/passwdgen2.sh is quite faster than above and shows 3 kinds of hashes.
+#
+# % dist-docs/passwdgen2.sh 123456
+# Input Values: password = 123456 , salt = ^N_* (5e4e5f2a) -- random salt generated
+# Version 1 Hash Value = bc3bcf676e96ea16e888e31829e4920d2c079b2d5e4e5f2a
+# Version 2m Hash Value = 9191796213a1e16448e1e43ef17340e73a5738c55ac5abf0c2d60c10b7d4ad2d5e4e5f2a
+# Version 2 Hash Value = 013c325a6fddd183146d3acf6a490012f2de8609ea73f94d2ad7df9d9918913a5e4e5f2a
+
 
 # The user mig2m is originally SHA-1 hashed password with password 'mig2m' and salt 'HASH' as like first line.
 # The SHA-1 hash value converted with the same salt and re-hashed with SHA-256 as like third line.

@@ -224,22 +224,24 @@ class IMUtil_Test extends TestCase
             $this->assertContains('X-Frame-Options: ALLOW-FROM http://inter-mediator.com/', $headers);
             $this->assertContains('Content-Security-Policy: frame-ancestors https://inter-mediator.com http://inter-mediator.info', $headers);
             $this->assertContains('Access-Control-Allow-Origin: *', $headers);
-        } else {
-            $this->assertTrue(true, "Preventing Risky warning.");
         }
     }
 
     public function test_randomString()
     {
         $testName = "Check randamString function in INTER-Mediator.php.";
-        $this->assertTrue(is_string(IMUtil::randomString(10)), $testName);
-        $this->assertTrue(strlen(IMUtil::randomString(10)) === 10, $testName);
-        $this->assertTrue(is_string(IMUtil::randomString(100)), $testName);
-        $this->assertTrue(strlen(IMUtil::randomString(100)) === 100, $testName);
-        $this->assertTrue(is_string(IMUtil::randomString(1000)), $testName);
-        $this->assertTrue(strlen(IMUtil::randomString(1000)) === 1000, $testName);
-        $this->assertTrue(is_string(IMUtil::randomString(0)), $testName);
-        $this->assertTrue(strlen(IMUtil::randomString(0)) === 0, $testName);
+        $str = IMUtil::randomString(10);
+        $this->assertIsString($str, $testName);
+        $this->assertTrue(strlen($str) === 10, $testName);
+        $str = IMUtil::randomString(100);
+        $this->assertIsString($str, $testName);
+        $this->assertTrue(strlen($str) === 100, $testName);
+        $str = IMUtil::randomString(1000);
+        $this->assertIsString($str, $testName);
+        $this->assertTrue(strlen($str) === 1000, $testName);
+        $str = IMUtil::randomString(0);
+        $this->assertIsString($str, $testName);
+        $this->assertTrue(strlen($str) === 0, $testName);
     }
 
     public function test_DateTimeString()
@@ -321,6 +323,9 @@ class IMUtil_Test extends TestCase
         $fileContent = [
             "[Tochigi]",
             "aaaa = bbbb",
+            "bbbb = BBBB",
+            "a1 = bbBB",
+            "a2 = BBbb",
             "",
             "[Gunma]",
             "aaaaa",
@@ -350,6 +355,16 @@ class IMUtil_Test extends TestCase
         $this->assertEquals("4567", IMUtil::getFromProfileIfAvailable($profDesc));
         $profDesc = "Profile|aws|Ibaragi|big_city";
         $this->assertEquals("1919", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Tochigi|aaaa";
+        $this->assertEquals("bbbb", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Tochigi|bbbb";
+        $this->assertEquals("BBBB", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Tochigi|aAaA";
+        $this->assertEquals("bbbb", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Tochigi|a1";
+        $this->assertEquals("bbBB", IMUtil::getFromProfileIfAvailable($profDesc));
+        $profDesc = "Profile|aws|Tochigi|A2";
+        $this->assertEquals("BBbb", IMUtil::getFromProfileIfAvailable($profDesc));
         $profDesc = "Profile|aws|Gunma|noone-knows";
         $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
         $profDesc = "Profile|aws|Tokyo|noone-knows";

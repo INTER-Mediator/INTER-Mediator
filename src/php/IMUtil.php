@@ -977,25 +977,26 @@ class IMUtil
         if ($targetFile === "") {
             return $str;
         }
-        $fileContents = array_map(function ($elm) {
-            return strtolower(trim($elm));
-        }, explode("\n", str_replace("\r", "\n", file_get_contents($targetFile))));
+        $fileContents = explode("\n",
+            str_replace("\r", "\n", file_get_contents($targetFile)));
         $targetValue = "";
-        $sectionCandidate = "[{$section}]";
+        $sectionCandidate = strtolower("[{$section}]");
         $inTargetSection = false;
         foreach ($fileContents as $line) {
             if (preg_match("/^\[.+]$/", $line)) {
                 $inTargetSection = false;
             }
-            if ($line === $sectionCandidate) {
+            if (strtolower($line) === $sectionCandidate) {
                 $inTargetSection = true;
             } else if ($inTargetSection) {
-                $lineComps = array_values(array_filter(array_map(function ($elm) {
-                    return strtolower(trim($elm));
-                }, explode(" ", str_replace("\t", " ", $line))), function ($elm) {
-                    return strlen($elm) > 0;
-                }));
-                if (count($lineComps) == 3 && $lineComps[0] === $key && $lineComps[1] === "=") {
+                $lineComps = array_values(array_filter(
+                    explode(" ", str_replace("\t", " ", $line)),
+                    function ($elm) {
+                        return strlen($elm) > 0;
+                    }));
+                if (count($lineComps) == 3
+                    && strtolower($lineComps[0]) === strtolower($key)
+                    && $lineComps[1] === "=") {
                     $targetValue = $lineComps[2];
                     break;
                 }
