@@ -5,3 +5,4 @@ parameters:
         - INTER-Mediator-UnitTest
     fileExtensions:
         - php
+    reportUnmatchedIgnoredErrors: false
