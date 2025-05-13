@@ -162,7 +162,7 @@ class IMUtil_Test extends TestCase
     {
         $params = array();
 
-        if (function_exists('xdebug_get_headers') && false) {
+        if (function_exists('xdebug_get_headers') && getenv('GITHUB_ACTIONS') !== 'true') {
             ob_start();
             $this->util->outputSecurityHeaders();
             $headers = xdebug_get_headers();
@@ -232,18 +232,14 @@ class IMUtil_Test extends TestCase
     public function test_randomString()
     {
         $testName = "Check randamString function in INTER-Mediator.php.";
-        $str = IMUtil::randomString(10);
-        $this->assertTrue(is_string($str), $testName);
-        $this->assertTrue(strlen($str) == 10, $testName);
-        $str = IMUtil::randomString(100);
-        $this->assertTrue(is_string($str), $testName);
-        $this->assertTrue(strlen($str) == 100, $testName);
-        $str = IMUtil::randomString(1000);
-        $this->assertTrue(is_string($str), $testName);
-        $this->assertTrue(strlen($str) == 1000, $testName);
-        $str = IMUtil::randomString(0);
-        $this->assertTrue(is_string($str), $testName);
-        $this->assertTrue(strlen($str) == 0, $testName);
+        $this->assertTrue(is_string(IMUtil::randomString(10)), $testName);
+        $this->assertTrue(strlen(IMUtil::randomString(10)) === 10, $testName);
+        $this->assertTrue(is_string(IMUtil::randomString(100)), $testName);
+        $this->assertTrue(strlen(IMUtil::randomString(100)) === 100, $testName);
+        $this->assertTrue(is_string(IMUtil::randomString(1000)), $testName);
+        $this->assertTrue(strlen(IMUtil::randomString(1000)) === 1000, $testName);
+        $this->assertTrue(is_string(IMUtil::randomString(0)), $testName);
+        $this->assertTrue(strlen(IMUtil::randomString(0)) === 0, $testName);
     }
 
     public function test_DateTimeString()
