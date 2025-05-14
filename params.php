@@ -206,6 +206,7 @@ $oAuth = [
 //        'Scope' => 'openid name address birthdate gender',
 //        'RedirectURL' => 'http://localhost:9000/samples/Auth_Support/OAuthCatcher.php',
 //        'KeyFilePath' => '/var/www/file.pem',
+//    'Behavior' => 'no-show-on-login-panel',
 //    ],
 //    'Google' => [
 //        'AuthButton' => 'Sign in with Google',

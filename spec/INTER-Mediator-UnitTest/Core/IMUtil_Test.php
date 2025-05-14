@@ -393,4 +393,31 @@ class IMUtil_Test extends TestCase
         $profDesc = "dfas3j5fd#'ajds*;dkalj";
         $this->assertEquals($profDesc, IMUtil::getFromProfileIfAvailable($profDesc));
     }
+
+    public function test_GeneratePassword()
+    {
+        $seed = "2345678abcdefghijkmnoprstuvwxyzABCDEFGHJKLMNPRSTUVWXYZ";
+        $seedPunctuation = "#$%&";
+
+        $genPW = IMUtil::generatePassword(4);
+        $this->assertEquals(4, strlen($genPW));
+        for ($i = 0; $i < strlen($genPW) - 1; $i++) {
+            $this->assertTrue(str_contains($seed, $genPW[$i]));
+        }
+        $this->assertTrue(str_contains($seedPunctuation, $genPW[strlen($genPW) - 1]));
+
+        $genPW = IMUtil::generatePassword(10);
+        $this->assertEquals(10, strlen($genPW));
+        for ($i = 0; $i < strlen($genPW) - 1; $i++) {
+            $this->assertTrue(str_contains($seed, $genPW[$i]));
+        }
+        $this->assertTrue(str_contains($seedPunctuation, $genPW[strlen($genPW) - 1]));
+
+        $genPW = IMUtil::generatePassword(15);
+        $this->assertEquals(15, strlen($genPW));
+        for ($i = 0; $i < strlen($genPW) - 1; $i++) {
+            $this->assertTrue(str_contains($seed, $genPW[$i]));
+        }
+        $this->assertTrue(str_contains($seedPunctuation, $genPW[strlen($genPW) - 1]));
+    }
 }
