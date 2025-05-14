@@ -162,7 +162,7 @@ class IMUtil_Test extends TestCase
     {
         $params = array();
 
-        if (function_exists('xdebug_get_headers') && false) {
+        if (function_exists('xdebug_get_headers') && getenv('GITHUB_ACTIONS') !== 'true' && getenv('XDEBUG_MODE') !== false && getenv('XDEBUG_MODE') !== 'off') {
             ob_start();
             $this->util->outputSecurityHeaders();
             $headers = xdebug_get_headers();
@@ -225,7 +225,8 @@ class IMUtil_Test extends TestCase
             $this->assertContains('Content-Security-Policy: frame-ancestors https://inter-mediator.com http://inter-mediator.info', $headers);
             $this->assertContains('Access-Control-Allow-Origin: *', $headers);
         } else {
-            $this->assertTrue(true, "Preventing Risky warning.");
+            /** @phpstan-ignore-next-line function.alreadyNarrowedType */
+            $this->assertTrue(true, "This test did not perform any assertions because xdebug is not available.");
         }
     }
 
@@ -233,17 +234,17 @@ class IMUtil_Test extends TestCase
     {
         $testName = "Check randamString function in INTER-Mediator.php.";
         $str = IMUtil::randomString(10);
-        $this->assertTrue(is_string($str), $testName);
-        $this->assertTrue(strlen($str) == 10, $testName);
+        $this->assertTrue(is_string($str), $testName); // @phpstan-ignore-line function.alreadyNarrowedType
+        $this->assertTrue(strlen($str) === 10, $testName);
         $str = IMUtil::randomString(100);
-        $this->assertTrue(is_string($str), $testName);
-        $this->assertTrue(strlen($str) == 100, $testName);
+        $this->assertTrue(is_string($str), $testName); // @phpstan-ignore-line function.alreadyNarrowedType
+        $this->assertTrue(strlen($str) === 100, $testName);
         $str = IMUtil::randomString(1000);
-        $this->assertTrue(is_string($str), $testName);
-        $this->assertTrue(strlen($str) == 1000, $testName);
+        $this->assertTrue(is_string($str), $testName); // @phpstan-ignore-line function.alreadyNarrowedType
+        $this->assertTrue(strlen($str) === 1000, $testName);
         $str = IMUtil::randomString(0);
-        $this->assertTrue(is_string($str), $testName);
-        $this->assertTrue(strlen($str) == 0, $testName);
+        $this->assertTrue(is_string($str), $testName); // @phpstan-ignore-line function.alreadyNarrowedType
+        $this->assertTrue(strlen($str) === 0, $testName);
     }
 
     public function test_DateTimeString()
@@ -311,7 +312,9 @@ class IMUtil_Test extends TestCase
         $user = IMUtil::getServerUserName();
         $home = IMUtil::getServerUserHome();
 
+        /** @phpstan-ignore-next-line function.alreadyNarrowedType */
         $this->assertNotNull($user, "IMUtil::getServerUserName has to return any strings.");
+        /** @phpstan-ignore-next-line function.alreadyNarrowedType */
         $this->assertNotNull($home, "IMUtil::getServerUserHome has to return any strings.");
     }
 
