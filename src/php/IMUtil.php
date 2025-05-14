@@ -739,10 +739,10 @@ class IMUtil
         $seedPunctuation = "#$%&";
         $str = '';
         for ($i = 0; $i < $digit - 1; $i++) {
-            $n = rand(0, strlen($seed));
+            $n = rand(0, strlen($seed) - 1);
             $str .= substr($seed, $n, 1);
         }
-        $n = rand(0, strlen($seedPunctuation));
+        $n = rand(0, strlen($seedPunctuation) - 1);
         $str .= substr($seedPunctuation, $n, 1);
         return $str;
     }
