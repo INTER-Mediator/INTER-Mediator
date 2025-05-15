@@ -727,6 +727,27 @@ class IMUtil
     }
 
     /**
+     * Generates a random password string of specified length.
+     * The password consists of alphanumeric characters and ends with a punctuation character.
+     *
+     * @param int $digit Length of the password to generate.
+     * @return string Generated password.
+     */
+    public static function generatePassword(int $digit): string
+    {
+        $seed = "2345678abcdefghijkmnoprstuvwxyzABCDEFGHJKLMNPRSTUVWXYZ";
+        $seedPunctuation = "#$%&";
+        $str = '';
+        for ($i = 0; $i < $digit - 1; $i++) {
+            $n = rand(0, strlen($seed) - 1);
+            $str .= substr($seed, $n, 1);
+        }
+        $n = rand(0, strlen($seedPunctuation) - 1);
+        $str .= substr($seedPunctuation, $n, 1);
+        return $str;
+    }
+
+    /**
      * Converts a password to a hashed password string.
      *
      * @param string $pw Plain password.
