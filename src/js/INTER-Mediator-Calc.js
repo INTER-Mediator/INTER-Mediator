@@ -53,46 +53,41 @@ const IMLibCalc = {
    */
   updateCalculationInfo: function (contextObj, keyingValue, nodeId, nInfo, currentRecord) {
     'use strict'
-    let calcDef, exp, field, elements, i, index, objectKey, itemIndex, values, referes,
-      calcDefField, atPos, fieldLength
-
-    calcDef = contextObj.getContextDef().calculation
-    for (index in calcDef) {
+    const calcDef = contextObj.getContextDef().calculation
+    for (const index in calcDef) {
       if (calcDef.hasOwnProperty(index)) {
-        atPos = calcDef[index].field.indexOf(INTERMediator.separator)
-        fieldLength = calcDef[index].field.length
-        calcDefField = calcDef[index].field.substring(0, atPos >= 0 ? atPos : fieldLength)
+        const atPos = calcDef[index].field.indexOf(INTERMediator.separator)
+        const fieldLength = calcDef[index].field.length
+        const calcDefField = calcDef[index].field.substring(0, atPos >= 0 ? atPos : fieldLength)
         if (calcDefField === nInfo.field) {
+          const exp = calcDef[index].expression
+          const field = calcDef[index].field
           try {
-            exp = calcDef[index].expression
-            field = calcDef[index].field
-            elements = Parser.parse(exp).variables()
-            objectKey = nodeId +
-              (nInfo.target.length > 0 ? (INTERMediator.separator + nInfo.target) : '')
+            const elements = Parser.parse(exp).variables()
+            const objectKey = nodeId + (nInfo.target.length > 0 ? (INTERMediator.separator + nInfo.target) : '')
+            if (elements && objectKey) {
+              const values = {}
+              const referes = {}
+              for (let i = 0; i < elements.length; i++) {
+                const itemIndex = elements[i]
+                if (itemIndex) {
+                  values[itemIndex] = currentRecord[itemIndex]
+                  referes[itemIndex] = undefined
+                }
+                contextObj.setValue(keyingValue, itemIndex, currentRecord[itemIndex], nodeId, nInfo.target, null)
+              }
+              IMLibCalc.calculateRequiredObject[objectKey] = {
+                'field': field,
+                'expression': exp,
+                'nodeInfo': nInfo,
+                'values': values,
+                'referes': referes
+              }
+            }
           } catch (ex) {
             INTERMediatorLog.setErrorMessage(ex,
               INTERMediatorLib.getInsertedString(
                 INTERMediatorOnPage.getMessages()[1036], [field, exp]))
-          }
-          if (elements && objectKey) {
-            values = {}
-            referes = {}
-            for (i = 0; i < elements.length; i++) {
-              itemIndex = elements[i]
-              if (itemIndex) {
-                values[itemIndex] = currentRecord[itemIndex]
-                referes[itemIndex] = undefined
-              }
-              contextObj.setValue(
-                keyingValue, itemIndex, currentRecord[itemIndex], nodeId, nInfo.target, null)
-            }
-            IMLibCalc.calculateRequiredObject[objectKey] = {
-              'field': field,
-              'expression': exp,
-              'nodeInfo': nInfo,
-              'values': values,
-              'referes': referes
-            }
           }
         }
       }
@@ -104,19 +99,16 @@ const IMLibCalc = {
    */
   updateCalculationFields: function () {
     'use strict'
-    let nodeId, exp, nInfo, valuesArray, leafNodes, calcObject, ix, refersArray, key, fName, vArray
-    let val, targetNode, field, valueSeries, targetElement, i, hasReferes, contextInfo, idValue, record
-
     IMLibCalc.setUndefinedToAllValues()
     IMLibNodeGraph.clear()
-    for (nodeId in IMLibCalc.calculateRequiredObject) {
+    for (const nodeId in IMLibCalc.calculateRequiredObject) {
       if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
-        calcObject = IMLibCalc.calculateRequiredObject[nodeId]
+        const calcObject = IMLibCalc.calculateRequiredObject[nodeId]
         if (calcObject) {
-          hasReferes = false
-          for (field in calcObject.referes) {
+          let hasReferes = false
+          for (const field in calcObject.referes) {
             if (calcObject.referes.hasOwnProperty(field)) {
-              for (ix = 0; ix < calcObject.referes[field].length; ix++) {
+              for (let ix = 0; ix < calcObject.referes[field].length; ix++) {
                 IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix])
                 hasReferes = false
               }
@@ -129,91 +121,68 @@ const IMLibCalc = {
       }
     }
 
+    let leafNodes
     do {
       leafNodes = IMLibNodeGraph.getLeafNodesWithRemoving()
-      for (i = 0; i < leafNodes.length; i++) {
-        calcObject = IMLibCalc.calculateRequiredObject[leafNodes[i]]
-        // calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(leafNodes[i])
+      for (const leafNode of leafNodes) {
+        const calcObject = IMLibCalc.calculateRequiredObject[leafNode]
         if (calcObject) {
-          idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator) ? leafNodes[i].split(IMLibCalc.regexpForSeparator)[0] : leafNodes[i]
-          targetNode = document.getElementById(idValue)
-          exp = calcObject.expression
-          nInfo = calcObject.nodeInfo
-          valuesArray = calcObject.values
-          refersArray = calcObject.referes
-          contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nInfo.target)
+          const idValue = leafNode.match(IMLibCalc.regexpForSeparator) ? leafNode.split(IMLibCalc.regexpForSeparator)[0] : leafNode
+          const targetNode = document.getElementById(idValue)
+          const exp = calcObject.expression
+          const nInfo = calcObject.nodeInfo
+          const valuesArray = calcObject.values
+          const refersArray = calcObject.referes
+          const contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nInfo.target)
           if (contextInfo && contextInfo.context) {
-            record = contextInfo.context.getContextRecord(idValue)
-          } else {
-            record = null
-          }
-          for (field in valuesArray) {
-            fName = field.substr(field.indexOf('@') + 1)
-            if (valuesArray.hasOwnProperty(field)) {
-              vArray = []
-              if (field.indexOf('@') < 0) { // In the same context
-                vArray.push((record && record[fName]) ? record[fName] : null)
-              } else {  // Other context
-                const expCName = field.substr(0, field.indexOf('@'))
-                if (expCName === '_') { // Local Context
-                  if (IMLibLocalContext.store.hasOwnProperty(fName)) {
-                    vArray.push(IMLibLocalContext.store[fName])
-                  }
-                } else {
-                  let hasRelation = false
-                  const contexts = IMLibContextPool.getContextFromName(expCName)
-                  for (const context of contexts) {
-                    if (record && context.contextDefinition.relation && context.contextDefinition.relation[0]) {
-                      const fValue = record[context.contextDefinition.relation[0]['join-field']]
-                      const fField = context.contextDefinition.relation[0]['foreign-key']
-                      if (IMLibCalc.isIncludeInRecord(context.store, fField, fValue)) {
-                        for (key in context.store) {    // Collect field data from all records
-                          if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
-                            vArray.push(context.store[key][fName])
-                            hasRelation = true
-                          }
-                        }
-                      }
+            const record = (contextInfo && contextInfo.context) ? contextInfo.context.getContextRecord(idValue) : null
+            for (const field in valuesArray) {
+              const fName = field.substring(field.indexOf('@') + 1)
+              if (valuesArray.hasOwnProperty(field)) {
+                const vArray = []
+                if (field.indexOf('@') < 0) { // In the same context
+                  vArray.push((record && record[fName]) ? record[fName] : null)
+                } else {  // Other context
+                  const expCName = field.substring(0, field.indexOf('@'))
+                  if (expCName === '_') { // Local Context
+                    if (IMLibLocalContext.store.hasOwnProperty(fName)) {
+                      vArray.push(IMLibLocalContext.store[fName])
                     }
-                  }
-                  if (!hasRelation) {
-                    const context = IMLibContextPool.contextFromName(expCName)
-                    if(context) {
-                      for (key in context.store) {    // Collect field data from all records
-                        if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
-                          vArray.push(context.store[key][fName])
-                          hasRelation = true
-                        }
+                  } else { // Other Context
+                    const neighborContext = IMLibContextPool.getNearestContext(targetNode, expCName)
+                    for (const key in neighborContext.store) {    // Collect field data from all records
+                      if (neighborContext.store.hasOwnProperty(key) && neighborContext.store[key][fName]) {
+                        vArray.push(neighborContext.store[key][fName])
                       }
                     }
                   }
                 }
+                valuesArray[field] = vArray
               }
-              valuesArray[field] = vArray
             }
-          }
-          for (field in valuesArray) {
-            if (valuesArray.hasOwnProperty(field)) {
-              valueSeries = []
-              for (ix = 0; ix < valuesArray[field].length; ix++) {
-                if (typeof(valuesArray[field][ix]) === 'undefined') {
-                  if (record[field]) {
-                    valueSeries.push(record[field])
-                  } else if (refersArray[field][ix]) {
-                    targetElement = document.getElementById(refersArray[field][ix])
-                    valueSeries.push(IMLibElement.getValueFromIMNode(targetElement))
+            for (const field in valuesArray) {
+              if (valuesArray.hasOwnProperty(field)) {
+                const valueSeries = []
+                for (let ix = 0; ix < valuesArray[field].length; ix++) {
+                  if (typeof (valuesArray[field][ix]) === 'undefined') {
+                    if (record[field]) {
+                      valueSeries.push(record[field])
+                    } else if (refersArray[field][ix]) {
+                      const targetElement = document.getElementById(refersArray[field][ix])
+                      valueSeries.push(IMLibElement.getValueFromIMNode(targetElement))
+                    }
+                  } else {
+                    valueSeries.push(valuesArray[field][ix])
                   }
-                } else {
-                  valueSeries.push(valuesArray[field][ix])
                 }
+                calcObject.values[field] = valueSeries
               }
-              calcObject.values[field] = valueSeries
             }
+            const val = Parser.evaluate(exp, valuesArray)
+            IMLibElement.setValueToIMNode(targetNode, nInfo.target, val, true)
+            if (contextInfo && contextInfo.context && contextInfo.record && contextInfo.field)
+              contextInfo.context.setValue(contextInfo.record, contextInfo.field, val, null, targetNode, false)
           }
-          val = Parser.evaluate(exp, valuesArray)
-          IMLibElement.setValueToIMNode(targetNode, nInfo.target, val, true)
-          if (contextInfo && contextInfo.context && contextInfo.record && contextInfo.field)
-            contextInfo.context.setValue(contextInfo.record, contextInfo.field, val, nodeId, targetNode, false)
         }
       }
     } while (leafNodes.length > 0)
@@ -224,18 +193,6 @@ const IMLibCalc = {
     }
   },
 
-  isIncludeInRecord: function (obj, key, value) {
-    if (value === '' || value === null || isNaN(value) || typeof value === 'undefined') {
-      return false
-    }
-    for (const index of Object.keys(obj)) {
-      if (obj[index] && obj[index] && obj[index][key] === value) {
-        return true
-      }
-    }
-    return false
-  },
-
   /**
    * On updating, the updatedNodeId should be set to the updating node id.
    * On deleting, parameter doesn't be required.
@@ -243,28 +200,17 @@ const IMLibCalc = {
    */
   recalculation: function (updatedNodeId) {
     'use strict'
-    let nodeId, newValueAdded, leafNodes, calcObject, ix, updatedValue, isRecalcAll = false
-    let newValue, field, i, updatedNodeIds, updateNodeValues, cachedIndex, nInfo, valuesArray
-    let refersArray, valueSeries, targetElement, contextInfo, record, idValue, key, fName, vArray
-
-    if (typeof updatedNodeId === 'undefined') {
-      isRecalcAll = true
-      updatedNodeIds = []
-      updateNodeValues = []
-    } else {
-      newValue = IMLibElement.getValueFromIMNode(document.getElementById(updatedNodeId))
-      updatedNodeIds = [updatedNodeId]
-      updateNodeValues = [newValue]
-    }
-
+    const isRecalcAll = (typeof updatedNodeId === 'undefined')
+    const updatedNodeIds = isRecalcAll ? [] : [updatedNodeId]
+    const updateNodeValues = isRecalcAll ? [] : [IMLibElement.getValueFromIMNode(document.getElementById(updatedNodeId))]
     IMLibCalc.setUndefinedToAllValues()
     IMLibNodeGraph.clear()
-    for (nodeId in IMLibCalc.calculateRequiredObject) {
+    for (const nodeId in IMLibCalc.calculateRequiredObject) {
       if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
-        calcObject = IMLibCalc.calculateRequiredObject[nodeId]
-        for (field in calcObject.referes) {
+        const calcObject = IMLibCalc.calculateRequiredObject[nodeId]
+        for (const field in calcObject.referes) {
           if (calcObject.referes.hasOwnProperty(field)) {
-            for (ix = 0; ix < calcObject.referes[field].length; ix++) {
+            for (let ix = 0; ix < calcObject.referes[field].length; ix++) {
               IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix])
             }
           }
@@ -272,25 +218,23 @@ const IMLibCalc = {
       }
     }
 
+    let leafNodes
     do {
       leafNodes = IMLibNodeGraph.getLeafNodesWithRemoving()
-      for (i = 0; i < leafNodes.length; i++) {
-        calcObject = IMLibCalc.calculateRequiredObject[leafNodes[i]]
+      for (let i = 0; i < leafNodes.length; i++) {
+        const calcObject = IMLibCalc.calculateRequiredObject[leafNodes[i]]
         if (calcObject) {
-          idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator) ? leafNodes[i].split(IMLibCalc.regexpForSeparator)[0] : leafNodes[i]
-          nInfo = calcObject.nodeInfo
-          valuesArray = calcObject.values
-          refersArray = calcObject.referes
-          contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nInfo.target)
-          if (contextInfo && contextInfo.context) {
-            record = contextInfo.context.getContextRecord(idValue)
-          } else {
-            record = null
-          }
-          for (field in valuesArray) {
-            fName = field.substr(field.indexOf('@') + 1)
+          const idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator) ? leafNodes[i].split(IMLibCalc.regexpForSeparator)[0] : leafNodes[i]
+          const targetNode = document.getElementById(idValue)
+          const nInfo = calcObject.nodeInfo
+          const valuesArray = calcObject.values
+          const refersArray = calcObject.referes
+          const contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nInfo.target)
+          const record = (contextInfo && contextInfo.context) ? contextInfo.context.getContextRecord(idValue) : null
+          for (const field in valuesArray) {
+            const fName = field.substr(field.indexOf('@') + 1)
             if (valuesArray.hasOwnProperty(field)) {
-              vArray = []
+              const vArray = []
               if (field.indexOf('@') < 0) { // In the same context
                 vArray.push((record && record[fName]) ? record[fName] : null)
               } else {  // Other context
@@ -299,30 +243,11 @@ const IMLibCalc = {
                   if (IMLibLocalContext.store.hasOwnProperty(fName)) {
                     vArray.push(IMLibLocalContext.store[fName])
                   }
-                } else {
-                  let hasRelation = false
-                  const contexts = IMLibContextPool.getContextFromName(expCName)
-                  for (const context of contexts) {
-                    if (record && context.contextDefinition.relation && context.contextDefinition.relation[0]) {
-                      const fValue = record[context.contextDefinition.relation[0]['join-field']]
-                      const fField = context.contextDefinition.relation[0]['foreign-key']
-                      if (IMLibCalc.isIncludeInRecord(context.store, fField, fValue)) {
-                        for (key in context.store) {    // Collect field data from all records
-                          if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
-                            vArray.push(context.store[key][fName])
-                            hasRelation = true
-                          }
-                        }
-                      }
-                    }
-                  }
-                  if (!hasRelation) {
-                    const context = IMLibContextPool.contextFromName(expCName)
-                    for (key in context.store) {    // Collect field data from all records
-                      if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
-                        vArray.push(context.store[key][fName])
-                        hasRelation = true
-                      }
+                } else { // Other Context
+                  const neighborContext = IMLibContextPool.getNearestContext(targetNode, expCName)
+                  for (const key in neighborContext.store) {    // Collect field data from all records
+                    if (neighborContext.store.hasOwnProperty(key) && neighborContext.store[key][fName]) {
+                      vArray.push(neighborContext.store[key][fName])
                     }
                   }
                 }
@@ -330,15 +255,15 @@ const IMLibCalc = {
               valuesArray[field] = vArray
             }
           }
-          for (field in valuesArray) {
+          for (const field in valuesArray) {
             if (valuesArray.hasOwnProperty(field)) {
-              valueSeries = []
-              for (ix = 0; ix < valuesArray[field].length; ix++) {
-                if (typeof(valuesArray[field][ix]) === 'undefined') {
+              const valueSeries = []
+              for (let ix = 0; ix < valuesArray[field].length; ix++) {
+                if (typeof (valuesArray[field][ix]) === 'undefined') {
                   if (record[field]) {
                     valueSeries.push(record[field])
                   } else if (refersArray[field][ix]) {
-                    targetElement = document.getElementById(refersArray[field][ix])
+                    const targetElement = document.getElementById(refersArray[field][ix])
                     valueSeries.push(IMLibElement.getValueFromIMNode(targetElement))
                   }
                 } else {
@@ -348,14 +273,13 @@ const IMLibCalc = {
               calcObject.values[field] = valueSeries
             }
           }
-          if (isRecalcAll) {
-            newValueAdded = true
-          } else {
+          let newValueAdded = true
+          if (!isRecalcAll) {
             newValueAdded = false
-            for (field in calcObject.referes) {
+            for (const field in calcObject.referes) {
               if (calcObject.referes.hasOwnProperty(field)) {
-                for (ix = 0; ix < calcObject.referes[field].length; ix++) {
-                  cachedIndex = updatedNodeIds.indexOf(calcObject.referes[field][ix])
+                for (let ix = 0; ix < calcObject.referes[field].length; ix++) {
+                  const cachedIndex = updatedNodeIds.indexOf(calcObject.referes[field][ix])
                   if (cachedIndex >= 0) {
                     calcObject.values[field][ix] = updateNodeValues[cachedIndex]
                     newValueAdded = true
@@ -365,7 +289,7 @@ const IMLibCalc = {
             }
           }
           if (newValueAdded) {
-            updatedValue = Parser.evaluate(calcObject.expression, calcObject.values)
+            const updatedValue = Parser.evaluate(calcObject.expression, calcObject.values)
             IMLibElement.setValueToIMNode(document.getElementById(idValue), nInfo.target, updatedValue, true)
             updatedNodeIds.push(idValue)
             updateNodeValues.push(updatedValue)
@@ -376,13 +300,11 @@ const IMLibCalc = {
         }
       }
     } while (leafNodes.length > 0)
-
     if (IMLibNodeGraph.nodes.length > 0) {
       INTERMediatorLog.setErrorMessage(new Error('Expressions are cyclic.'),
         INTERMediatorLib.getInsertedString(
           INTERMediatorOnPage.getMessages()[1037], []))
     }
-
   },
 
   /**
