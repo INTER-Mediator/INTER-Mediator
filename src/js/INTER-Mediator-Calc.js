@@ -124,7 +124,7 @@ const IMLibCalc = {
     let leafNodes
     do {
       leafNodes = IMLibNodeGraph.getLeafNodesWithRemoving()
-      for (const leafNode of  leafNodes) {
+      for (const leafNode of leafNodes) {
         const calcObject = IMLibCalc.calculateRequiredObject[leafNode]
         if (calcObject) {
           const idValue = leafNode.match(IMLibCalc.regexpForSeparator) ? leafNode.split(IMLibCalc.regexpForSeparator)[0] : leafNode
@@ -149,41 +149,12 @@ const IMLibCalc = {
                       vArray.push(IMLibLocalContext.store[fName])
                     }
                   } else { // Other Context
-                    const neighborContext = IMLibContextPool.getNearestContext(targetNode,expCName)
+                    const neighborContext = IMLibContextPool.getNearestContext(targetNode, expCName)
                     for (const key in neighborContext.store) {    // Collect field data from all records
                       if (neighborContext.store.hasOwnProperty(key) && neighborContext.store[key][fName]) {
                         vArray.push(neighborContext.store[key][fName])
                       }
                     }
-                    // let hasRelation = false
-                    // const contexts = IMLibContextPool.getContextFromName(expCName)
-                    // for (const context of contexts) {
-                    //   if (record && context.contextDefinition.relation && context.contextDefinition.relation[0]) {
-                    //     const fValue = record[context.contextDefinition.relation[0]['join-field']]
-                    //     const fField = context.contextDefinition.relation[0]['foreign-key']
-                    //     if (IMLibCalc.isIncludeInRecord(context.store, fField, fValue)) {
-                    //       for (const key in context.store) {    // Collect field data from all records
-                    //         if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
-                    //           vArray.push(context.store[key][fName])
-                    //           hasRelation = true
-                    //         }
-                    //       }
-                    //     }
-                    //   }
-                    // }
-                    // if (!hasRelation) {
-                    //   const context = IMLibContextPool.contextFromName(expCName)
-                    //   if (context) {
-                    //     for (const key in context.store) {    // Collect field data from all records
-                    //       if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
-                    //         vArray.push(context.store[key][fName])
-                    //         hasRelation = true
-                    //       }
-                    //     }
-                    //   }
-                    // }
-
-                    // ----- End of Other Context
                   }
                 }
                 valuesArray[field] = vArray
@@ -220,18 +191,6 @@ const IMLibCalc = {
         INTERMediatorLib.getInsertedString(
           INTERMediatorOnPage.getMessages()[1037], []))
     }
-  },
-
-  isIncludeInRecord: function (obj, key, value) {
-    if (value === '' || value === null || isNaN(value) || typeof value === 'undefined') {
-      return false
-    }
-    for (const index of Object.keys(obj)) {
-      if (obj[index] && obj[index] && obj[index][key] === value) {
-        return true
-      }
-    }
-    return false
   },
 
   /**
@@ -285,37 +244,12 @@ const IMLibCalc = {
                     vArray.push(IMLibLocalContext.store[fName])
                   }
                 } else { // Other Context
-                  const neighborContext = IMLibContextPool.getNearestContext(targetNode,expCName)
+                  const neighborContext = IMLibContextPool.getNearestContext(targetNode, expCName)
                   for (const key in neighborContext.store) {    // Collect field data from all records
                     if (neighborContext.store.hasOwnProperty(key) && neighborContext.store[key][fName]) {
                       vArray.push(neighborContext.store[key][fName])
                     }
                   }
-                  // let hasRelation = false
-                  // const contexts = IMLibContextPool.getContextFromName(expCName)
-                  // for (const context of contexts) {
-                  //   if (record && context.contextDefinition.relation && context.contextDefinition.relation[0]) {
-                  //     const fValue = record[context.contextDefinition.relation[0]['join-field']]
-                  //     const fField = context.contextDefinition.relation[0]['foreign-key']
-                  //     if (IMLibCalc.isIncludeInRecord(context.store, fField, fValue)) {
-                  //       for (const key in context.store) {    // Collect field data from all records
-                  //         if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
-                  //           vArray.push(context.store[key][fName])
-                  //           hasRelation = true
-                  //         }
-                  //       }
-                  //     }
-                  //   }
-                  // }
-                  // if (!hasRelation) {
-                  //   const context = IMLibContextPool.contextFromName(expCName)
-                  //   for (const key in context.store) {    // Collect field data from all records
-                  //     if (context.store.hasOwnProperty(key) && context.store[key][fName]) {
-                  //       vArray.push(context.store[key][fName])
-                  //       hasRelation = true
-                  //     }
-                  //   }
-                  // }
                 }
               }
               valuesArray[field] = vArray
