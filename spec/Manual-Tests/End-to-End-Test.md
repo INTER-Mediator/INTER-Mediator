@@ -20,6 +20,7 @@ The below ones have to tested manually.
 
 - wdio-search-chrome.conf.js
 - wdio-sync-chrome.conf.js
+- wdio-others-firefox.conf.js
 - wdio-search-firefox.conf.js
 - wdio-sync-firefox.conf.js
 - wdio-edge.conf.js
