@@ -1,4 +1,4 @@
-name: e2e-test-firefox
+name: e2e-test-form-firefox
 
 on:
   push:
