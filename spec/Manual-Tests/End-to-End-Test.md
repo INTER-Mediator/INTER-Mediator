@@ -6,6 +6,23 @@ Although some of end-to-end tests with Webdriver.io are running on GitHUb Action
 others don't work on GitHub Actions because unexpected errors.
 In this document, we report the result of end-to-end tests rest of GitHUb Actions by running manually.
 
+## Test Suite Description
+
+Test Suites of INTER-Mediator are located in /spec/run directory.
+The below configuration files are tested on GitHub Actions every time to commit.
+
+- wdio-form-chrome.conf.js
+- wdio-auth-chrome.conf.js
+- wdio-firefox.conf.js
+
+The below ones have to tested manually.
+
+- wdio-search-chrome.conf.js
+- wdio-edge.conf.js
+- wdio-sync-chrome.conf.js
+- wdio-sync-edge.conf.js
+- wdio-sync-firefox.conf.js
+
 ## Latest Test Record
 
 The format of below is: [commit code from git log], [Version from composer.json], [Passed Test], [Environment], [Checker name], [Result].
