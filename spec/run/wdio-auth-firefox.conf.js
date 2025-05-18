@@ -22,10 +22,22 @@ exports.config = {
   //
   specs: [
     // './test/specs/**/*.js'
-    './test/specs/sync_mysql.e2e.js',
-    './test/specs/sync_postgresql.e2e.js',
-    './test/specs/sync_sqlite.e2e.js',
-  ],
+     './test/specs/auth_page_credential_basic_mysql.e2e.js',
+    './test/specs/auth_page_credential_basic_postgresql.e2e.js',
+    './test/specs/auth_page_credential_basic_sqlite.e2e.js',
+    './test/specs/auth_page_session-storage_mysql.e2e.js',
+    './test/specs/auth_page_session-storage_postgresql.e2e.js',
+    './test/specs/auth_page_session-storage_sqlite.e2e.js',
+    './test/specs/auth_page_credential_2fa_mysql.e2e.js',
+    './test/specs/auth_page_credential_2fa_postgresql.e2e.js',
+    './test/specs/auth_page_credential_2fa_sqlite.e2e.js',
+    './test/specs/auth_page_credential_email_mysql.e2e.js',
+    './test/specs/auth_page_credential_email_postgresql.e2e.js',
+    './test/specs/auth_page_credential_email_sqlite.e2e.js',
+    './test/specs/auth_page_credential_usergroup_mysql.e2e.js',
+    './test/specs/auth_page_credential_usergroup_postgresql.e2e.js',
+    './test/specs/auth_page_credential_usergroup_sqlite.e2e.js',
+    ],
   // Patterns to exclude.
   exclude: [],
   //
@@ -44,7 +56,7 @@ exports.config = {
   // and 30 processes will get spawned. The property handles how many capabilities
   // from the same test should run tests.
   //
-  maxInstances: 5,
+  maxInstances: 3,
   //
   // If you have trouble getting all important capabilities together, check out the
   // Sauce Labs platform configurator - a great tool to configure your capabilities:
@@ -58,9 +70,9 @@ exports.config = {
     maxInstances: 3, // This is prefer for setting to 1 here
     //
     browserName: 'firefox',
-    // 'moz:firefoxOptions': {
-    //   args: ['-headless']
-    // }
+    'moz:firefoxOptions': {
+      args: ['-headless']
+    }
   }
     // If outputDir is provided WebdriverIO can capture driver session logs
     // it is possible to configure which logTypes to include/exclude.

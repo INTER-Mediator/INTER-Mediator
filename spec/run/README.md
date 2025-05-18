@@ -32,7 +32,7 @@ npx wdio wdio-edge.conf.js
 Just run the test with Firefox
 
 ```
-npx wdio wdio-firefox.conf.js 
+npx wdio wdio-auth-firefox.conf.js 
 ```
 
 Just run the test with Safari. This test works on the /spec/run-safari directory.

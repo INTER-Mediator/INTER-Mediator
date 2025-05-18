@@ -1,4 +1,4 @@
-name: e2e-test-firefox
+name: e2e-test-auth-firefox
 
 on:
   push:
@@ -103,9 +103,9 @@ jobs:
       - name: Boot the web server with php server mode
         run: |
           GHPORTNUM=`expr 9000 + \`echo -n ${{ matrix.php-versions }} | sed -e "s/\.//g"\``
-          mv "spec/run/wdio-firefox.conf.js" "spec/run/wdio-firefox.conf.js.bak"
-          cat "spec/run/wdio-firefox.conf.js.bak" | sed -e "s/9000/`echo -n ${GHPORTNUM}`/" > "spec/run/wdio-firefox.conf.js"
+          mv "spec/run/wdio-auth-firefox.conf.js" "spec/run/wdio-auth-firefox.conf.js.bak"
+          cat "spec/run/wdio-auth-firefox.conf.js.bak" | sed -e "s/9000/`echo -n ${GHPORTNUM}`/" > "spec/run/wdio-auth-firefox.conf.js"
           php -S "localhost:${GHPORTNUM}" &
 
       - name: Starting End-to-End Tests with Firefox
-        run: cd spec/run;npx wdio wdio-firefox.conf.js
+        run: cd spec/run;npx wdio wdio-auth-firefox.conf.js

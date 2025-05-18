@@ -1,0 +1,111 @@
+name: e2e-test-form-firefox
+
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  run:
+    runs-on: ${{ matrix.operating-system }}
+#    continue-on-error: true
+    strategy:
+      matrix:
+        operating-system: [ 'ubuntu-latest' ]
+#        operating-system: [ubuntu-latest, macos-latest, windows-latest]
+        php-versions: [ '8.1', '8.2', '8.3', '8.4' ]
+    name: End-to-End Test for Firefox on ${{ matrix.operating-system }} with PHP ${{ matrix.php-versions }}
+    services:
+      mysql: # https://qiita.com/sayama0402/items/e863ffb597ce87bf2e2f
+        image: mysql:8.0
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: EeLeBui7%Eesa4oto
+        options: --health-cmd "mysqladmin ping -h localhost" --health-interval 20s --health-timeout 10s --health-retries 10
+
+      postgres:
+        image: postgres:16
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: EeLeBui7%Eesa4oto
+          POSTGRES_DB: test_db
+#        volumes:
+#          - /home/runner/work/INTER-Mediator/INTER-Mediator/dist-docs/sample_schema_pgsql.sql:/docker-entrypoint-initdb.d/sample_schema_pgsql.sql
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: intl #optional
+          ini-values: "post_max_size=256M" #optional
+      - name: Print Env Varialbles
+        run: printenv
+      - name: PHP Module Checking
+        run: php -m
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+      - name: Update dependencies
+        run: composer update
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Setup MySQL
+        run: |
+          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./dist-docs/sample_schema_mysql.sql
+          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto < ./spec/run/additionals_mysql.sql
+          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "CREATE USER IF NOT EXISTS 'web'@'%' IDENTIFIED BY 'password';"
+          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO 'web'@'%';"
+          mysql -h 127.0.0.1 --port 3306 -u root --password=EeLeBui7%Eesa4oto -e "GRANT SHOW VIEW ON TABLE test_db.* TO 'web'@'%';"
+
+      - name: Setup PostgreSQL
+        run: |
+          psql --quiet postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./dist-docs/sample_schema_pgsql.sql
+          psql --quiet postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./spec/run/additionals_postgresql.sql
+
+#      - name: Check MySQL
+#        run: mysql -h 127.0.0.1 --port 3306 -u web --password=password -e "select * from person;" test_db
+
+      - name: Setup SQLite
+        run: |
+          touch sample.sq3
+          sqlite3 sample.sq3 < ./dist-docs/sample_schema_sqlite.sql
+          sqlite3 sample.sq3 < ./spec/run/additionals_sqlite.sql
+          chmod 777 sample.sq3
+#          chown www-data sample.sq3
+      - name: Modify params.php file
+        run: |
+          echo "" >> params.php
+          echo "\$defaultTimezone = 'UTC';" >> params.php
+          echo "\$followingTimezones = true;" >> params.php
+          echo "" >> params.php
+
+        # E2E test with WebdriverIO
+      - name: Setup Firefox
+        uses: browser-actions/setup-firefox@latest
+
+      - name: Setup WebdriverIO
+        run: cd spec/run;npm update
+
+      - name: Boot the web server with php server mode
+        run: |
+          GHPORTNUM=`expr 9000 + \`echo -n ${{ matrix.php-versions }} | sed -e "s/\.//g"\``
+          mv "spec/run/wdio-form-firefox.conf.js" "spec/run/wdio-form-firefox.conf.js.bak"
+          cat "spec/run/wdio-form-firefox.conf.js.bak" | sed -e "s/9000/`echo -n ${GHPORTNUM}`/" > "spec/run/wdio-form-firefox.conf.js"
+          php -S "localhost:${GHPORTNUM}" &
+
+      - name: Starting End-to-End Tests with Firefox
+        run: cd spec/run;npx wdio wdio-form-firefox.conf.js
