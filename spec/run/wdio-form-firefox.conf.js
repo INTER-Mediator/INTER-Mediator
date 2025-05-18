@@ -21,40 +21,24 @@ exports.config = {
   // will be called from there.
   //
   specs: [
-    // './test/specs/**/*.js'
     './test/specs/form_page_mysql.e2e.js',
     './test/specs/form_page_postgresql.e2e.js',
     './test/specs/form_page_sqlite.e2e.js',
-    // './test/specs/md_page_mysql.e2e.js', // Separated page test goes to error, why??
-    // './test/specs/md_page_postgresql.e2e.js',
-    // './test/specs/md_page_sqlite.e2e.js',
-    './test/specs/auth_page_credential_basic_mysql.e2e.js',
-    './test/specs/auth_page_credential_basic_postgresql.e2e.js',
-    './test/specs/auth_page_credential_basic_sqlite.e2e.js',
-    './test/specs/auth_page_session-storage_mysql.e2e.js',
-    './test/specs/auth_page_session-storage_postgresql.e2e.js',
-    './test/specs/auth_page_session-storage_sqlite.e2e.js',
-    './test/specs/auth_page_credential_2fa_mysql.e2e.js',
-    './test/specs/auth_page_credential_2fa_postgresql.e2e.js',
-    './test/specs/auth_page_credential_2fa_sqlite.e2e.js',
-    './test/specs/auth_page_credential_email_mysql.e2e.js',
-    './test/specs/auth_page_credential_email_postgresql.e2e.js',
-    './test/specs/auth_page_credential_usergroup_mysql.e2e.js',
-    './test/specs/auth_page_credential_usergroup_postgresql.e2e.js',
-    './test/specs/auth_page_credential_usergroup_sqlite.e2e.js',
-    './test/specs/auth_page_credential_email_sqlite.e2e.js',
+    './test/specs/search_page_mysql.e2e.js',
+    './test/specs/search_page_postgresql.e2e.js',
+    './test/specs/search_page_sqlite.e2e.js',
+    './test/specs/md_page_mysql.e2e.js',
+    './test/specs/md_page_postgresql.e2e.js',
+    './test/specs/md_page_sqlite.e2e.js',
+    './test/specs/calc_lookup_page_mysql.e2e.js',
+    './test/specs/calc_lookup_page_postgresql.e2e.js',
+    './test/specs/calc_lookup_page_sqlite.e2e.js',
+    './test/specs/media_mysql.e2e.js',
+    './test/specs/media_postgresql.e2e.js',
+    './test/specs/media_sqlite.e2e.js',
     './test/specs/editing_page_mysql.e2e.js',
     './test/specs/editing_page_postgresql.e2e.js',
     './test/specs/editing_page_sqlite.e2e.js',
-    // './test/specs/search_page_mysql.e2e.js',
-    // './test/specs/search_page_postgresql.e2e.js',
-    // './test/specs/search_page_sqlite.e2e.js',
-    // './test/specs/calc_lookup_page_mysql.e2e.js',
-    // './test/specs/calc_lookup_page_postgresql.e2e.js',
-    // './test/specs/calc_lookup_page_sqlite.e2e.js',
-    // './test/specs/media_mysql.e2e.js',
-    // './test/specs/media_postgresql.e2e.js',
-    // './test/specs/media_sqlite.e2e.js',
   ],
   // Patterns to exclude.
   exclude: [],
@@ -85,12 +69,9 @@ exports.config = {
     // maxInstances can get overwritten per capability. So if you have an in-house Selenium
     // grid with only 5 firefox instances available you can make sure that not more than
     // 5 instances get started at a time.
-    maxInstances: 3, // This is prefer for setting to 1 here
+    maxInstances: 3, //
     //
     browserName: 'firefox',
-    'moz:firefoxOptions': {
-      args: ['-headless']
-    }
   }
     // If outputDir is provided WebdriverIO can capture driver session logs
     // it is possible to configure which logTypes to include/exclude.
@@ -144,7 +125,7 @@ exports.config = {
   // Services take over a specific job you don't want to take care of. They enhance
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
-  //services: ['geckodriver'],
+  //services: ['chromedriver'],
 
   // Framework you want to run your specs with.
   // The following are supported: Mocha, Jasmine, and Cucumber
