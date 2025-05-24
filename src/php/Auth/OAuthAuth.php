@@ -251,9 +251,8 @@ class OAuthAuth
             // Generate the new local user relevant to the OAuth user
             $dbProxy = new Proxy(true);
             $dbProxy->initialize(null, null, ['db-class' => 'PDO'], $this->debugMode ? 2 : 0);
-            $username = is_null($currentUser) ? $this->userInfo["username"] : $currentUser;
             $param = [
-                "username" => $username,
+                "username" => is_null($currentUser) ? $this->userInfo["username"] : $currentUser,
                 "realname" => $this->userInfo["realname"] ?? "",
             ];
             $passwordHash = Params::getParameterValue("passwordHash", 1);
@@ -287,12 +286,12 @@ class OAuthAuth
                 // Set the logging-in situation for the local user to continue from log-in.
                 $generatedClientID = IMUtil::generateClientId('', $credential);
                 $challenge = IMUtil::generateChallenge();
-                $dbProxy->saveChallenge($this->userInfo["username"], $challenge, $generatedClientID, "+");
+                $dbProxy->saveChallenge($param["username"], $challenge, $generatedClientID, "+");
                 setcookie('_im_credential_token',
                     $dbProxy->generateCredential($challenge, $generatedClientID, $credential),
                     time() + $authExpired, '/', "", false, true);
                 setcookie("_im_username_{$oAuthRealm}",
-                    $this->userInfo["username"], time() + $authExpired, '/', "", false, false);
+                    $param["username"], time() + $authExpired, '/', "", false, false);
                 setcookie("_im_clientid_{$oAuthRealm}",
                     $generatedClientID, time() + $authExpired, '/', "", false, false);
             }

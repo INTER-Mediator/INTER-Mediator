@@ -20,8 +20,8 @@ The below ones have to tested manually.
 
 - wdio-search-chrome.conf.js
 - wdio-sync-chrome.conf.js
-- wdio-others-firefox.conf.js
-- wdio-search-firefox.conf.js
+- wdio-others-firefox.conf.js (These tests can't run on Firefox)
+- wdio-search-firefox.conf.js (These tests can't run on Firefox)
 - wdio-sync-firefox.conf.js
 - wdio-edge.conf.js
 - wdio-sync-edge.conf.js
@@ -63,7 +63,7 @@ The test 'wdio-auth-chrome.conf.js' and 'wdio-auth-firefox.conf.js' are running 
   PHP 8.4.4 (Homebrew based)+MySQL 8.4.4/PostgreSQL 14.17/SQLite 3.43.2+Edge (136.0.3240.76) on mac,
   by Masayuki Nii <nii@msyk.net>, OK
 
-
+## Results in those days
 
 - commit defe0266d3a6fa4a91690c9784fb3ba02fc9adb0 (Fri Sep 13 10:57:39 2024 +0900)
   INTER-Mediator Ver.13 (2024-07-26),
