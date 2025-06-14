@@ -16,7 +16,7 @@ Enter password:
 */
 SET NAMES 'utf8mb4';
 # Create db user.
-# DROP USER IF EXISTS 'web'@'localhost';
+DROP USER IF EXISTS 'web'@'localhost';
 CREATE USER IF NOT EXISTS 'web'@'localhost' IDENTIFIED BY 'password';
 
 # Grant to All operations for all objects with web account.
@@ -1027,6 +1027,11 @@ VALUES (995, '@@mail@@', 'msyk@msyk.net', null, 'msyk@msyk.net', '認証コー�
 INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
 VALUES (996, '@@email@@', null, null, 'info@msyk.net', 'テストメールです', CONCAT(
         'テストメールです。\n\n宛先：@@email@@\n\n',
+        '___________________________________\ninfo@msyk.net - Masayuki Nii'));
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (997, 'msyk@msyk.net', null, null, 'msyk@msyk.net', 'テストメールです', CONCAT(
+        'AWS SMSからのテストメールです。\n\n宛先：msyk@msyk.net\n\n',
         '___________________________________\ninfo@msyk.net - Masayuki Nii'));
 
 # Storing Sent Mail
