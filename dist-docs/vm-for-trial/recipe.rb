@@ -177,7 +177,7 @@ if node[:platform] == 'ubuntu'
   execute 'apt update' do
     command 'apt update'
   end
-  
+
   if node[:virtualization][:system] != 'docker'
     execute 'apt upgrade' do
       command 'apt upgrade --assume-yes'
@@ -193,8 +193,14 @@ if node[:platform] == 'redhat' || node[:platform] == 'ubuntu'
   package 'openssh-server' do
     action :install
   end
-  service 'sshd' do
-    action [ :enable, :start ]
+  if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 24
+    service 'ssh' do
+      action [ :enable, :start ]
+    end
+  else
+    service 'sshd' do
+      action [ :enable, :start ]
+    end
   end
 end
 
@@ -231,7 +237,7 @@ if node[:platform] == 'alpine'
   if node[:virtualization][:system] == 'docker'
     user "postgres" do
       action :create
-    end  
+    end
   end
   execute 'yes ********* | sudo passwd postgres' do
     command 'yes im4135dev | sudo passwd postgres'
@@ -250,13 +256,13 @@ if node[:platform] == 'alpine'
         owner 'postgres'
         group 'postgres'
       end
-    end    
+    end
     service 'postgresql' do
       action [ :enable ]
     end
     execute 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/11/data -l /var/log/postgresql/postgresql.log"' do
       command 'sudo su - postgres -c "pg_ctl start -D /var/lib/postgresql/11/data -l /var/log/postgresql/postgresql.log"'
-    end  
+    end
   end
 else
   service 'postgresql' do
@@ -280,7 +286,7 @@ if node[:platform] == 'alpine'
       owner 'mysql'
       group 'mysql'
     end
-  end  
+  end
   file '/etc/mysql/my.cnf' do
     content <<-EOF
 [mysqld]
@@ -318,7 +324,7 @@ EOF
     end
     execute 'mysqladmin -u root password "*********"' do
       command 'mysqladmin -u root password "im4135dev"'
-    end  
+    end
   else
     service 'mariadb' do
       action [ :enable ]
@@ -861,7 +867,7 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
     end
     execute 'sed -i "s/^LoadModule lbmethod_/#LoadModule lbmethod_/" /etc/apache2/conf.d/proxy.conf' do
       command 'sed -i "s/^LoadModule lbmethod_/#LoadModule lbmethod_/" /etc/apache2/conf.d/proxy.conf'
-    end  
+    end
   end
   if node[:virtualization][:system] == 'docker' && node[:platform] == 'alpine'
     directory '/run/apache2/' do
@@ -873,7 +879,7 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
       content <<-EOF
 LoadModule slotmem_shm_module modules/mod_slotmem_shm.so
 EOF
-    end  
+    end
     service 'apache2' do
       action [ :enable ]
     end
@@ -1028,7 +1034,7 @@ else
       end
       execute 'smbd' do
         command 'smbd'
-      end  
+      end
     end
   end
 end
@@ -1636,7 +1642,7 @@ RewriteRule ^/fmi/xml/(.*)  http://192.168.56.1/fmi/xml/$1 [P,L]
 EOF
   end
 end
-  
+
 if node[:platform] == 'alpine'
   execute 'cat /etc/php7/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php7/php.ini.tmp && mv /etc/php7/php.ini.tmp /etc/php7/php.ini' do
     command 'cat /etc/php7/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php7/php.ini.tmp && mv /etc/php7/php.ini.tmp /etc/php7/php.ini'
@@ -2090,8 +2096,8 @@ export DISPLAY=:99.0
 #/usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &
 /usr/bin/Xvfb :99 -screen 0 1024x768x24 -extension RANDR > /dev/null 2>&1 &
 /bin/sleep 5
-firefox http://localhost:1111/capture > /dev/null &
-#chromium-browser --no-sandbox --headless --remote-debugging-port=9222 http://localhost:1111/capture > /dev/null &
+#firefox http://localhost:1111/capture > /dev/null &
+google-chrome-stable --no-sandbox --headless --remote-debugging-port=9222 http://localhost:1111/capture > /dev/null &
 exit 0
 EOF
   end
@@ -2213,30 +2219,73 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem install rspec -N' do
       command 'gem install rspec -N'
     end
-    execute 'gem install bundler -v 2.4.22 -N' do
-      command 'gem install bundler -v 2.4.22 -N'
+    execute 'gem install bundler -N' do
+      command 'gem install bundler -N'
     end
-    execute 'gem install ffi -v 1.16.3 -N' do
-      command 'gem install ffi -v 1.16.3 -N'
+    execute 'gem install ffi -N' do
+      command 'gem install ffi -N'
     end
-    execute 'gem install childprocess -v "1.0.1" -N' do
-      command 'gem install childprocess -v "1.0.1" -N'
+    execute 'gem install childprocess -N' do
+      command 'gem install childprocess -N'
     end
-    execute 'gem install selenium-webdriver -v "3.142.2" -N' do
-      command 'gem install selenium-webdriver -v "3.142.2" -N'
+    execute 'gem install selenium-webdriver -N' do
+      command 'gem install selenium-webdriver -N'
     end
   end
-  package 'firefox' do
+
+  if node[:platform_version].to_f < 24
+    package 'firefox' do
+      action :install
+    end
+    execute 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz > /tmp/geckodriver-v0.36.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.36.0-linux64.tar.gz' do
+      command 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz > /tmp/geckodriver-v0.36.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.36.0-linux64.tar.gz'
+    end
+  end
+
+  package 'libasound2t64' do
     action :install
   end
-  execute 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz > /tmp/geckodriver-v0.33.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.33.0-linux64.tar.gz' do
-    command 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz > /tmp/geckodriver-v0.33.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.33.0-linux64.tar.gz'
-  end
-  package 'chromium-browser' do
+  package 'libatk-bridge2.0-0' do
     action :install
+  end
+  package 'libatk1.0-0' do
+    action :install
+  end
+  package 'libatspi2.0-0' do
+    action :install
+  end
+  package 'libcairo2' do
+    action :install
+  end
+  package 'libgtk-3-0' do
+    action :install
+  end
+  package 'libnspr4' do
+    action :install
+  end
+  package 'libnss3' do
+    action :install
+  end
+  package 'libpango-1.0-0' do
+    action :install
+  end
+  package 'libxdamage1' do
+    action :install
+  end
+  package 'libxkbcommon0' do
+    action :install
+  end
+  package 'fonts-liberation' do
+    action :install
+  end
+  execute 'wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb' do
+    command 'wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb'
+  end
+  execute 'dpkg -i google-chrome-stable_current_amd64.deb' do
+    command 'dpkg -i google-chrome-stable_current_amd64.deb'
   end
   execute 'npm install -g chromedriver --unsafe-perm' do
-      command 'npm install -g chromedriver --unsafe-perm'
+    command 'npm install -g chromedriver --unsafe-perm'
   end
 end
 
