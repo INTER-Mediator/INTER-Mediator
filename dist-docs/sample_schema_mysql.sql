@@ -1024,6 +1024,11 @@ VALUES (995, '@@mail@@', 'msyk@msyk.net', null, 'msyk@msyk.net', '認証コー�
         'ログインを行った画面に入力可能なパネルが表示されています。上記の認証コードを入力してください。\n\n',
         '___________________________________\ninfo@msyk.net - Masayuki Nii'));
 
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (996, '@@email@@', null, null, 'info@msyk.net', 'テストメールです', CONCAT(
+        'テストメールです。\n\n宛先：@@email@@\n\n',
+        '___________________________________\ninfo@msyk.net - Masayuki Nii'));
+
 # Storing Sent Mail
 CREATE TABLE maillog
 (
