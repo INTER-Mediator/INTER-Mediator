@@ -1025,13 +1025,23 @@ VALUES (995, '@@mail@@', 'msyk@msyk.net', null, 'msyk@msyk.net', '認証コー�
         '___________________________________\ninfo@msyk.net - Masayuki Nii'));
 
 INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
-VALUES (996, '@@email@@', null, null, 'info@msyk.net', 'テストメールです', CONCAT(
+VALUES (1301, '@@email@@', null, null, 'info@msyk.net', 'テストメールです', CONCAT(
         'テストメールです。\n\n宛先：@@email@@\n\n',
         '___________________________________\ninfo@msyk.net - Masayuki Nii'));
 
 INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
-VALUES (997, 'msyk@msyk.net', null, null, 'msyk@msyk.net', 'テストメールです', CONCAT(
-        'AWS SMSからのテストメールです。\n\n宛先：msyk@msyk.net\n\n',
+VALUES (1302, 'msyk@msyk.net', null, null, 'msyk@msyk.net', 'テストメールです', CONCAT(
+        'AWS SMS/SMTPからのテストメールです。\n\n宛先：msyk@msyk.net\n\n',
+        '___________________________________\ninfo@msyk.net - Masayuki Nii'));
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (1303, 'msyk@msyk.net', null, null, 'msyk@msyk.net', 'テストメールです', CONCAT(
+        'AWS SMS/APIからのテストメールです。\n\n宛先：msyk@msyk.net\n\n',
+        '___________________________________\ninfo@msyk.net - Masayuki Nii'));
+
+INSERT INTO mailtemplate(id, to_field, bcc_field, cc_field, from_field, subject, body)
+VALUES (1304, 'msyk.nii83@gmail.com', null, null, 'msyk.nii83@gmail.com', 'テストメールです', CONCAT(
+        'Gmailからのテストメールです。\n\n宛先：msyk@msyk.net\n\n',
         '___________________________________\ninfo@msyk.net - Masayuki Nii'));
 
 # Storing Sent Mail
