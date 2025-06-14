@@ -529,6 +529,9 @@ class Settings
         if (isset($config["server"])) {
             $this->smtpConfiguration["server"] = $config["server"];
         }
+        if (isset($config["protocol"])) {
+            $this->smtpConfiguration["protocol"] = $config["protocol"];
+        }
         if (isset($config["port"])) {
             $this->smtpConfiguration["port"] = $config["port"];
         }
