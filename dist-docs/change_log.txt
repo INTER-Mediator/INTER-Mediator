@@ -19,6 +19,8 @@ Ver.14 (in Development)
 - Charting feature is implemented with chart.js. The new html attribute data-im-widget-alone has to be used for charging,
   and the value should be as like "chartjs@saleslog|bar|customer|数量,単価|qty,unitprice". The sample is
   /sample/Sample_webpage/char_MySQL.*.
+- Authentication with My Number Card is implemented as a provider for OAuth2. The sample code is another repository:
+  https://github.com/INTER-Mediator/IMTesting_MyNumberCard.
 - GitHub Action php-legacy.yml was deleted. Also the INTER-Mediator-UnitTest_Legacy the unit test with PHP 7 was removed.
 - Any sensitive information as like a password or a key can store on any place other than repository. The variable $profileRoot
   of the params.php file specifies any path, and home directory are search path. For example, the ~/.im/credentials file
