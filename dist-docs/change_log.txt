@@ -41,8 +41,11 @@ Ver.14 (in Development)
 - INTERMediatorOnPage.userNameJustASCIIUpper and INTERMediatorOnPage.userNameJustASCIILower are introduced. These are
   forcing capitalization of INTERMediatorOnPage.userNameJustASCII.
 - Twe Manual-Test procedures are added. These are for OAuth and MyNumberCard authentications.
+- Until this version, testing applications (IMTesting_OAuth, IMTesting_MyNumberCard, IMTesting_SAML
+  and IMTesting_Messaging) are developed for manual testing. Check the descriptions of spec/Manual-Tests directory.
 - [BUG FIX] The cross table feature and search/sort controls with ex. _@addorder didn't compatible. In case of any
   cross table exists, whole page is going to update after click the search/sort controls.
+- [BUG FIX] Sending mail with AWS SES API didn't work. It fixed.
 
 Ver.13 (October 26, 2024)
 - In the INTERMediator_DBAdapter, Codes using XMLHttpRequest are replaced with fetch function.
