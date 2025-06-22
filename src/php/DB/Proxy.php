@@ -1055,6 +1055,9 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->logger->setDebugMessage(
             "[finishCommunication]getRequireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
         $this->outputOfProcessing['usenull'] = false;
+        if($this->dbClass->getSortKeys()) {
+            $this->addOutputData('sortKeys', $this->dbClass->getSortKeys());
+        }
         if (!$notFinish && $this->dbSettings->getRequireAuthorization()) {
             (new HandleChallengeElement())->acceptHandleChallenge($this->visitor);
             $this->handleMediaToken(); // Calling the method in the Support\Proxy_Auth trait.

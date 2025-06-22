@@ -38,18 +38,17 @@ const IMLibUI = {
    */
   valueChange: function (idValue, validationOnly) {
     'use strict'
-    let changedObj, contextInfo, linkInfo, nodeInfo
     let returnValue = true
 
-    changedObj = document.getElementById(idValue)
+    const changedObj = document.getElementById(idValue)
     if (!changedObj) {
       return false
     }
     if (!IMLibUI.validation(changedObj)) { // Validation error.
       //changedObj.focus()
-      linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj)
-      nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]) // Suppose to be the first definition.
-      contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target)
+      const linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj)
+      const nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]) // Suppose to be the first definition.
+      const contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target)
       window.setTimeout((function () {
         let originalObj = changedObj
         let originalContextInfo = contextInfo
@@ -75,17 +74,15 @@ const IMLibUI = {
 
     // After validating, update nodes and database.
     async function valueChangeImpl(idValue, completeTask) {
-      let changedObj, objType, i, newValue, result, linkInfo, nodeInfo,
-        contextInfo, parentContext, targetField, targetNode, targetSpec
       let returnValue = true
       try {
-        changedObj = document.getElementById(idValue)
-        linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj)
-        nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]) // Suppose to be the first definition.
-        contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target)
+        const changedObj = document.getElementById(idValue)
+        const linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj)
+        const nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]) // Suppose to be the first definition.
+        const contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target)
         if (!contextInfo) { // In the case of local context
-          targetNode = document.getElementById(idValue)
-          targetSpec = targetNode.getAttribute('data-im')
+          const targetNode = document.getElementById(idValue)
+          const targetSpec = targetNode.getAttribute('data-im')
           if (targetSpec && targetSpec.split(INTERMediator.separator)[0] === IMLibLocalContext.contextName) {
             IMLibLocalContext.updateFromNodeValue(idValue)
             if (IMLibUI.recalculationOnValueChange) {
@@ -97,7 +94,7 @@ const IMLibUI = {
           throw 'unfinished'
         }
 
-        objType = changedObj.getAttribute('type')
+        const objType = changedObj.getAttribute('type')
         if (objType === 'radio' && !changedObj.checked) {
           completeTask()
           return true
@@ -106,12 +103,10 @@ const IMLibUI = {
         if (!contextInfo) {
           throw 'unfinished'
         }
-        newValue = IMLibElement.getValueFromIMNode(changedObj)
-        if (contextInfo.context.parentContext) {
-          parentContext = contextInfo.context.parentContext
-        } else { // for FileMaker Portal Access Mode
-          parentContext = IMLibContextPool.getContextFromName(contextInfo.context.sourceName)[0]
-        }
+        const newValue = IMLibElement.getValueFromIMNode(changedObj)
+        const parentContext = contextInfo.context.parentContext ? contextInfo.context.parentContext
+          : IMLibContextPool.getContextFromName(contextInfo.context.sourceName)[0]// for FileMaker Portal Access Mode
+        let result
         if (parentContext) {
           result = parentContext.isValueUndefined(
             Object.keys(parentContext.store)[0], contextInfo.field, contextInfo.record)
@@ -138,60 +133,55 @@ const IMLibUI = {
         await contextInfo.context.updateFieldValue(
           idValue,
           (function () {
-            let idValueCapt2 = idValue
-            let contextInfoCapt = contextInfo
-            let newValueCapt = newValue
-            let completeTaskCapt = completeTask
+            const idValueCapt = idValue
+            const contextInfoCapt = contextInfo
+            const newValueCapt = newValue
+            const completeTaskCapt = completeTask
             return async function (result) {
-              let updateRequiredContext, currentValue, associatedNode, field, node, children, delNodes,
-                recordObj, keepProp
               let keyField = contextInfoCapt.context.getKeyField()
+              const keepProp = INTERMediator.partialConstructing
+              INTERMediator.partialConstructing = false
               if (result && result.dbresult) {
-                recordObj = result.dbresult[0]
-                keepProp = INTERMediator.partialConstructing
-                INTERMediator.partialConstructing = false
-                for (field in recordObj) {
-                  if (recordObj.hasOwnProperty(field)) {
-                    contextInfoCapt.context.setValue(
-                      keyField + '=' + recordObj[keyField], field, recordObj[field])
-                  }
+                const keying = keyField + '=' + result.dbresult[0][keyField]
+                for (const [field, value] of Object.entries(result.dbresult[0])) {
+                  contextInfoCapt.context.setValue(keying, field, value)
                 }
               }
               INTERMediator.partialConstructing = keepProp
-              updateRequiredContext = IMLibContextPool.dependingObjects(idValueCapt2)
-              for (i = 0; i < updateRequiredContext.length; i++) {
-                updateRequiredContext[i].foreignValue = {}
-                updateRequiredContext[i].foreignValue[contextInfoCapt.field] = newValueCapt
-                if (updateRequiredContext[i]) {
-                  await INTERMediator.constructMain(updateRequiredContext[i])
-                  associatedNode = updateRequiredContext[i].enclosureNode
+              const updateRequiredContext = IMLibContextPool.dependingObjects(idValueCapt)
+              if (updateRequiredContext) {
+                for (const context of updateRequiredContext) {
+                  context.foreignValue = {}
+                  context.foreignValue[contextInfoCapt.field] = newValueCapt
+                  await INTERMediator.constructMain(context)
+                  const associatedNode = context.enclosureNode
                   if (INTERMediatorLib.isPopupMenu(associatedNode)) {
-                    currentValue = contextInfo.context.getContextValue(associatedNode.id, '')
+                    const currentValue = contextInfo.context.getContextValue(associatedNode.id, '')
                     IMLibElement.setValueToIMNode(associatedNode, '', currentValue, false)
                   }
                 }
               }
-              node = document.getElementById(idValueCapt2)
+              const node = document.getElementById(idValueCapt)
               if (node && node.tagName === 'SELECT') {
-                children = node.childNodes
-                for (i = 0; i < children.length; i++) {
-                  if (children[i].nodeType === 1) {
-                    if (children[i].tagName === 'OPTION' &&
-                      children[i].getAttribute('data-im-element') === 'auto-generated') {
-                      delNodes = []
-                      delNodes.push(children[i].getAttribute('id'))
+                // const children = node.childNodes
+                for (const cNode of node.childNodes) {
+                  if (cNode.nodeType === 1) {
+                    if (cNode.tagName === 'OPTION' &&
+                      cNode.getAttribute('data-im-element') === 'auto-generated') {
+                      const delNodes = []
+                      delNodes.push(cNode.getAttribute('id'))
                       IMLibElement.deleteNodes(delNodes)
                     }
                   }
                 }
               }
-              contextInfoCapt.context.updateContextAsLookup(idValueCapt2, newValueCapt)
+              contextInfoCapt.context.updateContextAsLookup(idValueCapt, newValueCapt)
               IMLibQueue.setTask((completeTask) => {
                 if (IMLibUI.recalculationOnValueChange) {
                   IMLibCalc.recalculation()
                 }
                 if (INTERMediatorOnPage.doAfterValueChange) {
-                  INTERMediatorOnPage.doAfterValueChange(idValueCapt2)
+                  INTERMediatorOnPage.doAfterValueChange(idValueCapt)
                 }
                 INTERMediatorOnPage.hideProgress()
                 INTERMediatorLog.flushMessage()
@@ -204,8 +194,8 @@ const IMLibUI = {
             }
           })(),
           (function () {
-            let targetFieldCapt = targetField
-            let completeTaskCapt = completeTask
+            const targetFieldCapt = changedObj.getAttribute("data-im")
+            const completeTaskCapt = completeTask
             return function () {
               window.alert(INTERMediatorLib.getInsertedString(
                 INTERMediatorOnPage.getMessages()[1003], [targetFieldCapt]))
@@ -216,7 +206,7 @@ const IMLibUI = {
             }
           })(),
           function () {
-            let response = window.confirm(INTERMediatorOnPage.getMessages()[1024])
+            const response = window.confirm(INTERMediatorOnPage.getMessages()[1024])
             if (!response) {
               INTERMediatorOnPage.hideProgress()
             }
