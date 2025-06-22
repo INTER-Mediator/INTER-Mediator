@@ -1781,4 +1781,8 @@ class FileMaker_DataAPI extends DBClass
     {
     }
 
+    public function getSortKeys(): array
+    {
+        return [];
+    }
 }
