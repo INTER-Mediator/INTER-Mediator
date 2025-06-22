@@ -14,10 +14,10 @@ abstract class DBClass extends UseSharedObjects implements DBClass_Interface
      * Throws an exception; should only be used by FileMaker subclasses.
      *
      * @param array $condition The condition array.
-     * @return mixed
+     * @return null|array
      * @throws Exception Always throws; not supported in base class.
      */
-    public function normalizedCondition(array $condition)
+    public function normalizedCondition(array $condition): null|array
     {
         throw new Exception("Don't use normalizedCondition method on DBClass instance without FileMaker ones.");
     }

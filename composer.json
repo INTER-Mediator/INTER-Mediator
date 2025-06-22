@@ -1,6 +1,6 @@
 {
   "name": "inter-mediator/inter-mediator",
-  "version": "16",
+  "version": "15",
   "time": "2025-06-21",
   "minimum-stability": "stable",
   "prefer-stable": true,

@@ -176,7 +176,7 @@ class PageEditor extends DBClass
     {
     }
 
-    public function normalizedCondition(array $condition)
+    public function normalizedCondition(array $condition): null|array
     {
     }
 }

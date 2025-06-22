@@ -1346,7 +1346,7 @@ class DefEditor extends DBClass
     {
     }
 
-    public function normalizedCondition(array $condition)
+    public function normalizedCondition(array $condition): null|array
     {
     }
 

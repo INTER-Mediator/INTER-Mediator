@@ -362,7 +362,7 @@ trait DB_PDO_SQLSupport
      * @param array $condition Condition array.
      * @return array Normalized condition array.
      */
-    public function normalizedCondition(array $condition): array
+    public function normalizedCondition(array $condition): null|array
     {
         if (!isset($condition['field'])) {
             $condition['field'] = '';

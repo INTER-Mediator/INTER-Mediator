@@ -1055,7 +1055,7 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
         $this->logger->setDebugMessage(
             "[finishCommunication]getRequireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
         $this->outputOfProcessing['usenull'] = false;
-        if($this->dbClass->getSortKeys()) {
+        if ($this->dbClass->getSortKeys()) {
             $this->addOutputData('sortKeys', $this->dbClass->getSortKeys());
         }
         if (!$notFinish && $this->dbSettings->getRequireAuthorization()) {
@@ -1464,10 +1464,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
     /**
      * Normalized condition.
      * @param array $condition
-     * @return mixed
+     * @return null|array
      * @throws Exception
      */
-    public function normalizedCondition(array $condition)
+    public function normalizedCondition(array $condition): null|array
     {
         throw new Exception("Don't use normalizedCondition method on DBClass instance without FileMaker ones.");
     }
@@ -1499,5 +1499,10 @@ class Proxy extends UseSharedObjects implements Proxy_Interface
             $access = "nothing";
         }
         return $access;
+    }
+
+    public function getSortKeys(): array
+    {
+        return $this->dbClass->getSortKeys();
     }
 }
