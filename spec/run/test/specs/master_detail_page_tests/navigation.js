@@ -85,7 +85,6 @@ module.exports = (mdPage) => {
       expect(await mdPage.getDetailTableStyleDisplay()).not.toBe('none')
 
       browser.pause(waiting) // Wait for the field
-      await mdPage.detailFieldTown.waitForStable() // Wait for the field
       const value = "######"
       await mdPage.detailFieldTown.setValue(value) // Set a value to the field
       browser.pause(waiting)
