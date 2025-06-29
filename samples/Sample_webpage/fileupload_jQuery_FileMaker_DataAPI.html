@@ -14,11 +14,23 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator - Sample - Uploading a file / FileMaker Data API</title>
+    <!-- Loading JQuery -->
+    <script src="../../node_modules/jquery/dist/jquery.min.js"></script> <!-- Don't use 'slim' -->
+    <!-- Loading Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <!-- Loading JQuery UI FileUpload -->
+    <link rel="stylesheet" href="../../node_modules/blueimp-file-upload/css/jquery.fileupload.css">
+    <script src="../../node_modules/jquery-ui/dist/jquery-ui.min.js"></script>
+    <script src="../../node_modules/blueimp-file-upload/js/jquery.fileupload.js"></script>
+    <!-- Loading INTER-Mediator -->
     <script type="text/javascript" src="include_FileMaker_DataAPI.php"></script>
-    <script src="../../node_modules/inter-mediator-plugin-fileupload/index.js"></script>
+    <script src="../../node_modules/inter-mediator-plugin-jqueryfileupload/index.js"></script>
     <script type="text/javascript">
-        IMParts_Catalog.fileupload.progressSupported = true;
+      INTERMediatorLog.suppressDebugMessageOnPage = true
+      //INTERMediatorLog.errorMessageByAlert = true
     </script>
+
 </head>
 <body>
 <header>
@@ -44,7 +56,7 @@
             <td>
                 <div data-im="testtable@dt1"></div>
             </td>
-            <td data-im="testtable@vc1" data-im-widget="fileupload"></td>
+            <td data-im="testtable@vc1" data-im-widget="jquery_fileupload"></td>
             <td><img src="" data-im="testtable@vc1@#src"></td>
             <td></td>
         </tr>

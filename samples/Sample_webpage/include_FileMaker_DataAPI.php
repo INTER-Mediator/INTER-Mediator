@@ -19,6 +19,7 @@ IM_Entry(
     array(
         array(
             'records' => 10000,
+            'key' => 'id',
             'name' => 'testtable',
             'sort' => array(
                 array('field' => 'dt1', 'direction' => 'desc'),
@@ -32,6 +33,7 @@ IM_Entry(
             ),
         ),
         array(
+            'key' => 'id',
             'name' => 'fileupload',
             'repeat-control'=>'delete',
         ),
@@ -47,7 +49,7 @@ IM_Entry(
     ),
     array(
         'db-class' => 'FileMaker_DataAPI',
-        'server' => 'localserver',
+//        'server' => 'localserver',
     ),
     false
 );
