@@ -261,4 +261,9 @@ class NullDB extends DBClass
     public function closeDBOperation():void
     {
     }
+
+    public function getSortKeys(): array
+    {
+        return [];
+    }
 }

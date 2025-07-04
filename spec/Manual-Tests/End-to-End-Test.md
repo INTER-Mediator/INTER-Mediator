@@ -20,6 +20,7 @@ The below ones have to tested manually.
 
 - wdio-search-chrome.conf.js
 - wdio-sync-chrome.conf.js
+- wdio-form-md-chrome.conf.js
 - wdio-others-firefox.conf.js (These tests can't run on Firefox)
 - wdio-search-firefox.conf.js (These tests can't run on Firefox)
 - wdio-sync-firefox.conf.js

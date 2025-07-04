@@ -121,6 +121,8 @@ class PDO extends DBClass
      */
     private string $defaultTimezone;
 
+    private array $sortKeys = [];
+
     /**
      * PDO constructor. Initializes timezone and suppression flags from parameters.
      */
@@ -359,6 +361,7 @@ class PDO extends DBClass
             $queryClause = "WHERE {$queryClause}";
         }
         $sortClause = $this->getSortClause();
+        $this->sortKeys = $this->getSortKeys();
         $isAggregate = ($this->dbSettings->getAggregationSelect() != null);
         $tableName = $this->dbSettings->getEntityForRetrieve();
         $viewOrTableName = $isAggregate ? $this->dbSettings->getAggregationFrom()

@@ -10,7 +10,10 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   https://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.14 (in Development)
+Ver.15 (in Development)
+- In case of affecting the order of records with editing field data, the list is going to update after modification.
+
+Ver.14 (June 16, 2025)
 - From this version, minimum supporting PHP version is 8.1.
 - Add support for PHP 8.4.
 - FX.php has code that using deprecated way in PHP 8.4, and various adjustments would be needed to make it work with

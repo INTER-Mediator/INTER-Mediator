@@ -17,36 +17,39 @@
     <title>Step Operation Sample - INTER-Mediator</title>
     <link rel="stylesheet" href="mobile.css"/>
     <script type="text/javascript" src="../../index.php"></script>
-<!--    <script type="text/javascript" src="mobile_MySQL.php"></script>-->
+    <!--    <script type="text/javascript" src="mobile_MySQL.php"></script>-->
     <script type="text/javascript">
-        INTERMediatorOnPage.doAfterConstruct = function () {
-          INTERMediatorLog.suppressDebugMessageOnPage = true
-          document.getElementById('container').style.display = "block";
-        };
+      INTERMediatorOnPage.doBeforeConstruct = function () {
+        INTERMediatorLog.suppressDebugMessageOnPage = true
+      };
 
-        INTERMediatorOnPage.nextStepFromEdit = function () {
-          return false
-        };
+      INTERMediatorOnPage.doAfterConstruct = function () {
+        document.getElementById('container').style.display = "block";
+      };
 
-        INTERMediatorOnPage.nextStepFromList = function () {
-          const lastRecord = IMLibPageNavigation.getStepLastSelectedRecord()
-          const lastSelection = lastRecord['id'];
-          if (! lastRecord['vc1']) {
-            INTERMediator.clearCondition('memoedit');
-            INTERMediator.addCondition('memoedit', {field: 'id', operator: '=', value: lastSelection});
-            return "memoedit"
-          }
-          INTERMediator.clearCondition('memoview');
-          INTERMediator.addCondition('memoview', {field: 'id', operator: '=', value: lastSelection});
-          return "memoview"
-        };
+      INTERMediatorOnPage.nextStepFromEdit = function () {
+        return false
+      };
 
-        INTERMediatorOnPage.editPageStart = function () {
-          const context = IMLibContextPool.contextFromName('memoedit')
-          const key = Object.keys(context.binding)[0]
-          const target = document.getElementById(context.binding[key]['vc1'][0]['id'])
-          target.focus()
+      INTERMediatorOnPage.nextStepFromList = function () {
+        const lastRecord = IMLibPageNavigation.getStepLastSelectedRecord()
+        const lastSelection = lastRecord['id'];
+        if (!lastRecord['vc1']) {
+          INTERMediator.clearCondition('memoedit');
+          INTERMediator.addCondition('memoedit', {field: 'id', operator: '=', value: lastSelection});
+          return "memoedit"
         }
+        INTERMediator.clearCondition('memoview');
+        INTERMediator.addCondition('memoview', {field: 'id', operator: '=', value: lastSelection});
+        return "memoview"
+      };
+
+      INTERMediatorOnPage.editPageStart = function () {
+        const context = IMLibContextPool.contextFromName('memoedit')
+        const key = Object.keys(context.binding)[0]
+        const target = document.getElementById(context.binding[key]['vc1'][0]['id'])
+        target.focus()
+      }
     </script>
 </head>
 <body>

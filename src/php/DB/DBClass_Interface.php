@@ -21,7 +21,7 @@ namespace INTERMediator\DB;
 interface DBClass_Interface
 {
     /**
-     * Setup the database connection.
+     * Set up the database connection.
      * @return bool True on success, false otherwise.
      */
     public function setupConnection(): bool;
@@ -80,9 +80,9 @@ interface DBClass_Interface
     /**
      * Normalize a condition array (FileMaker only).
      * @param array $condition The condition array.
-     * @return mixed
+     * @return null|array
      */
-    public function normalizedCondition(array $condition);
+    public function normalizedCondition(array $condition): null|array;
 
     /**
      * Activate soft delete on a field with a value.
@@ -114,9 +114,9 @@ interface DBClass_Interface
 
     /**
      * Get the updated record (compatibility method).
-     * @return mixed
+     * @return null|array
      */
-    public function updatedRecord();
+    public function updatedRecord(): null|array;
 
     /**
      * Set the updated record data.
@@ -197,4 +197,6 @@ interface DBClass_Interface
      * @return void
      */
     public function closeDBOperation(): void;
+
+    public function getSortKeys(): array;
 }

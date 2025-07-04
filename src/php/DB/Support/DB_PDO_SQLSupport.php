@@ -319,10 +319,12 @@ trait DB_PDO_SQLSupport
     private function getSortClause(): string
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $sortClause = array();
+        $sortClause = [];
+        $this->sortKeys = [];
         if (count($this->dbSettings->getExtraSortKey()) > 0) {
             foreach ($this->dbSettings->getExtraSortKey() as $condition) {
                 $escapedField = $this->handler->quotedEntityName($condition['field']);
+                $this->sortKeys[] = $condition['field'];
                 if (isset($condition['direction'])) {
                     if (!$this->specHandler->isPossibleOrderSpecifier($condition['direction'])) {
                         throw new Exception("Invalid Sort Specifier.");
@@ -339,11 +341,19 @@ trait DB_PDO_SQLSupport
                     throw new Exception("Invalid Sort Specifier.");
                 }
                 $escapedField = $this->handler->quotedEntityName($condition['field']);
+                $this->sortKeys[] = $condition['field'];
                 $direction = $condition['direction'] ?? "";
                 $sortClause[] = "{$escapedField} {$direction}";
             }
         }
         return implode(',', $sortClause);
+    }
+
+    private array $sortKeys = [];
+
+    public function getSortKeys(): array
+    {
+        return $this->sortKeys;
     }
 
     /**
@@ -352,7 +362,7 @@ trait DB_PDO_SQLSupport
      * @param array $condition Condition array.
      * @return array Normalized condition array.
      */
-    public function normalizedCondition(array $condition): array
+    public function normalizedCondition(array $condition): null|array
     {
         if (!isset($condition['field'])) {
             $condition['field'] = '';

@@ -237,7 +237,8 @@ const INTERMediator_DBAdapter = {
           newPasswordResult: jsonObject.changePasswordResult ?? null,
           registeredId: jsonObject.registeredid ?? '',
           nullAcceptable: jsonObject.usenull,
-          succeed_2FA: jsonObject.succeed_2FA
+          succeed_2FA: jsonObject.succeed_2FA,
+          sortKeys: jsonObject.sortKeys ?? [],
         })
       }
       INTERMediatorLog.flushMessage()

@@ -50,49 +50,59 @@ const IMLibContextPool = {
       return null
     }
     if (portal) {
-      for (let i = 0; i < this.poolingContexts.length; i += 1) {
-        if (this.poolingContexts[i].viewName === viewName &&
-          typeof (this.poolingContexts[i].binding[recKey]) !== 'undefined' &&
-          typeof (this.poolingContexts[i].binding[recKey][key]) !== 'undefined' &&
-          typeof (this.poolingContexts[i].binding[recKey][key][portal]) !== 'undefined' &&
-          typeof (this.poolingContexts[i].store[recKey]) !== 'undefined' &&
-          typeof (this.poolingContexts[i].store[recKey][key]) !== 'undefined' &&
-          typeof (this.poolingContexts[i].store[recKey][key][portal]) !== 'undefined') {
-          this.poolingContexts[i].store[recKey][key][portal] = value
-          const targetNodes = this.poolingContexts[i].binding[recKey][key][portal]
-          for (let j = 0; j < targetNodes.length; j++) {
-            const refNode = document.getElementById(targetNodes[j].id)
+      for (const pContext of this.poolingContexts) {
+        if (isItTargetContextPortal(pContext, viewName, recKey, key, portal)) {
+          pContext.store[recKey][key][portal] = value
+          for (const targetNode of pContext.binding[recKey][key][portal]) {
+            const refNode = document.getElementById(targetNode.id)
             if (refNode) {
-              IMLibElement.setValueToIMNode(refNode, targetNodes[j].target, value, true)
-              result.push(targetNodes[j].id)
+              IMLibElement.setValueToIMNode(refNode, targetNode.target, value, true)
+              if (result.indexOf(pContext) < 0) {
+                result.push(pContext)
+              }
             }
           }
         }
       }
     } else {
-      for (let i = 0; i < this.poolingContexts.length; i += 1) {
-        if (this.poolingContexts[i].viewName === viewName &&
-          typeof (this.poolingContexts[i].binding[recKey]) !== 'undefined' &&
-          typeof (this.poolingContexts[i].binding[recKey][key]) !== 'undefined' &&
-          typeof (this.poolingContexts[i].store[recKey]) !== 'undefined' &&
-          typeof (this.poolingContexts[i].store[recKey][key]) !== 'undefined') {
-          this.poolingContexts[i].store[recKey][key] = value
-          const targetNodes = this.poolingContexts[i].binding[recKey][key]
-          for (let j = 0; j < targetNodes.length; j++) {
-            const refNode = document.getElementById(targetNodes[j].id)
-            calcKey = targetNodes[j].id
-            if (targetNodes[j].target && targetNodes[j].target.length > 0) {
-              calcKey += INTERMediator.separator + targetNodes[j].target
+      for (const pContext of this.poolingContexts) {
+        if (isItTargetContext(pContext, viewName, recKey, key)) {
+          pContext.store[recKey][key] = value
+          for (const targetNode of pContext.binding[recKey][key]) {
+            const refNode = document.getElementById(targetNode.id)
+            calcKey = targetNode.id
+            if (targetNode.target && targetNode.target.length > 0) {
+              calcKey += INTERMediator.separator + targetNode.target
             }
             if (refNode && !(calcKey in IMLibCalc.calculateRequiredObject)) {
-              IMLibElement.setValueToIMNode(refNode, targetNodes[j].target, value, true)
-              result.push(targetNodes[j].id)
+              IMLibElement.setValueToIMNode(refNode, targetNode.target, value, true)
+              if (result.indexOf(pContext) < 0) {
+                result.push(pContext)
+              }
             }
           }
         }
       }
     }
     return result
+
+    function isItTargetContext(context, viewName, recKey, key) {
+      return (context.viewName === viewName &&
+        typeof (context.binding[recKey]) !== 'undefined' &&
+        typeof (context.binding[recKey][key]) !== 'undefined' &&
+        typeof (context.store[recKey]) !== 'undefined' &&
+        typeof (context.store[recKey][key]) !== 'undefined')
+    }
+
+    function isItTargetContextPortal(context, viewName, recKey, key, portal) {
+      return (context.viewName === viewName &&
+        typeof (context.binding[recKey]) !== 'undefined' &&
+        typeof (context.binding[recKey][key]) !== 'undefined' &&
+        typeof (context.binding[recKey][key][portal]) !== 'undefined' &&
+        typeof (context.store[recKey]) !== 'undefined' &&
+        typeof (context.store[recKey][key]) !== 'undefined' &&
+        typeof (context.store[recKey][key][portal]) !== 'undefined')
+    }
   },
 
   getContextInfoFromId: function (idValue, target) {
@@ -149,20 +159,67 @@ const IMLibContextPool = {
     const contextInfo = IMLibContextPool.getContextInfoFromId(idValue, target)
     const value = IMLibElement.getValueFromIMNode(document.getElementById(idValue))
     if (contextInfo) {
-      contextInfo.context.setValue(
+      const updatingContexts = contextInfo.context.setValue(
         contextInfo.record, contextInfo.field, value, false, target, contextInfo.portal)
       //contextInfo.context.updateContext(idValue, target, contextInfo, value)
+      let uniqueArray = []
+      for (const context of updatingContexts) {
+        if (uniqueArray.indexOf(context) < 0) {
+          if (context.sortKeys && context.sortKeys.indexOf(contextInfo.field) >= 0) {
+            uniqueArray.push(context)
+          }
+          const contextDef = context.getContextDef()
+          if (contextDef['navi-control'] && contextDef['navi-control'].match(/master/)) {
+            uniqueArray = ['*']
+          }
+        }
+      }
+      if (uniqueArray.length > 0) {
+        IMLibQueue.setTask((complate) => {
+          if (uniqueArray[0] === '*') {
+            INTERMediator.constructMain()
+          } else {
+            for (const context of uniqueArray) {
+              INTERMediator.constructMain(context)
+            }
+          }
+          complate()
+        }, false, true)
+      }
+      console.log(uniqueArray)
     }
   },
 
-  getContextFromEnclosure: function (enclosureNode) {
+  getDetailContext: function () {
+    'use strict'
+    for (const context of this.poolingContexts) {
+      const contextDef = context.getContextDef()
+      if (contextDef['navi-control'] && contextDef['navi-control'].match(/detail/)) {
+        return context
+      }
+    }
+    return null
+  },
+
+  getContext: function (contextName) {
     'use strict'
     for (let i = 0; i < this.poolingContexts.length; i += 1) {
-      if (this.poolingContexts[i].enclosureNode === enclosureNode) {
+      if (this.poolingContexts[i].contextName === contextName) {
         return this.poolingContexts[i]
       }
     }
+    return null
   },
+
+  getContextFromEnclosure:
+    function (enclosureNode) {
+      'use strict'
+      for (let i = 0; i < this.poolingContexts.length; i += 1) {
+        if (this.poolingContexts[i].enclosureNode === enclosureNode) {
+          return this.poolingContexts[i]
+        }
+      }
+    },
 
   contextFromEnclosureId: function (idValue) {
     'use strict'
@@ -253,21 +310,23 @@ const IMLibContextPool = {
 
   childContexts: null,
 
-  removeContextsFromPool: function (contexts) {
-    'use strict'
-    let regIds = []
-    let delIds = []
-    for (let i = 0; i < this.poolingContexts.length; i += 1) {
-      if (contexts.indexOf(this.poolingContexts[i]) > -1) {
-        regIds.push(this.poolingContexts[i].registeredId)
-        delIds.push(i)
+  removeContextsFromPool:
+
+    function (contexts) {
+      'use strict'
+      let regIds = []
+      let delIds = []
+      for (let i = 0; i < this.poolingContexts.length; i += 1) {
+        if (contexts.indexOf(this.poolingContexts[i]) > -1) {
+          regIds.push(this.poolingContexts[i].registeredId)
+          delIds.push(i)
+        }
       }
-    }
-    for (let i = delIds.length - 1; i > -1; i--) {
-      this.poolingContexts.splice(delIds[i], 1)
-    }
-    return regIds
-  },
+      for (let i = delIds.length - 1; i > -1; i--) {
+        this.poolingContexts.splice(delIds[i], 1)
+      }
+      return regIds
+    },
 
   removeRecordFromPool: function (repeaterIdValue) {
     'use strict'
@@ -432,6 +491,7 @@ const IMLibContextPool = {
     }
     IMLibCalc.recalculation()
   },
+
   updateOnAnotherClientCreated: async function (info) {
     const entityName = info.entity
     for (let i = 0; i < this.poolingContexts.length; i += 1) {

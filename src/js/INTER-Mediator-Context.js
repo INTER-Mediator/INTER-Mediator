@@ -54,6 +54,7 @@ class IMLibContext {
     this.count = 0
     this.totalCount = 0
     this.resultCount = 0
+    this.sortKeys = null
     /*
      * Initialize this object
      */
@@ -729,6 +730,9 @@ class IMLibContext {
         }
       }
     }
+    if (records.sortKeys) {
+      this.sortKeys =records.sortKeys
+    }
   }
 
   getDataAtLastRecord(key = false) {
@@ -797,7 +801,7 @@ class IMLibContext {
 
   setValue(recKey, key, value, nodeId, target, portal) {
     'use strict'
-    let updatedNodeIds = null
+    let updatedContexts = []
     if (portal) {
       /* eslint no-console: ["error", {allow: ["error"]}] */
       console.error('Using the portal parameter in IMLibContext.setValue')
@@ -843,19 +847,18 @@ class IMLibContext {
           if (typeof (this.contextInfo[nodeId]) === 'undefined') {
             this.contextInfo[nodeId] = {}
           }
-          this.contextInfo[nodeId][target ? target : '_im_no_target'] =
-            {context: this, record: recKey, field: key}
+          this.contextInfo[nodeId][target ? target : '_im_no_target'] = {context: this, record: recKey, field: key}
           if (portal) {
             this.contextInfo[nodeId][target ? target : '_im_no_target'].portal = portal
           }
         } else {
           if (INTERMediator.partialConstructing) {
-            updatedNodeIds = IMLibContextPool.synchronize(this, recKey, key, value, target, portal)
+            updatedContexts = IMLibContextPool.synchronize(this, recKey, key, value, target, portal)
           }
         }
       }
     }
-    return updatedNodeIds
+    return updatedContexts
   }
 
   getValue(recKey, key = false, portal = false) {

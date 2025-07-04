@@ -29,7 +29,7 @@ db_password = password
 */
 
 // FileMaker_FX/DataAPI are aware of below:
-$dbServer = '10.211.56.2'; //'127.0.0.1'; //
+$dbServer = '10.211.61.3'; //'127.0.0.1'; //
 $dbPort = '80';
 //$dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
@@ -79,7 +79,7 @@ $dbOption = array();
 
 /* Security
  * ===================
- * For putting the sensitive information to outside of repository, Profile is one of the solutions.
+ * For putting the sensitive information to the outside of repository, Profile is one of the solutions.
  * You can specify the path to arbitrary place to store the profile file.
  */
 //$profileRoot = "path to profile's root directory.";

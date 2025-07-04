@@ -1561,9 +1561,9 @@ class FileMaker_DataAPI extends DBClass
      * Normalize condition.
      *
      * @param array $condition The condition array.
-     * @return array The normalized condition array.
+     * @return null|array The normalized condition array.
      */
-    public function normalizedCondition(array $condition): array
+    public function normalizedCondition(array $condition): null|array
     {
         if (!isset($condition['field'])) {
             $condition['field'] = '';
@@ -1781,4 +1781,8 @@ class FileMaker_DataAPI extends DBClass
     {
     }
 
+    public function getSortKeys(): array
+    {
+        return [];
+    }
 }
