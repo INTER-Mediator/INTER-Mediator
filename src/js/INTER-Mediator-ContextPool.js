@@ -162,31 +162,40 @@ const IMLibContextPool = {
       const updatingContexts = contextInfo.context.setValue(
         contextInfo.record, contextInfo.field, value, false, target, contextInfo.portal)
       //contextInfo.context.updateContext(idValue, target, contextInfo, value)
-      let uniqueArray = []
-      for (const context of updatingContexts) {
-        if (uniqueArray.indexOf(context) < 0) {
-          if (context.sortKeys && context.sortKeys.indexOf(contextInfo.field) >= 0) {
-            uniqueArray.push(context)
-          }
-          const contextDef = context.getContextDef()
-          if (contextDef['navi-control'] && contextDef['navi-control'].match(/master/)) {
-            uniqueArray = ['*']
-          }
-        }
-      }
-      if (uniqueArray.length > 0) {
-        IMLibQueue.setTask((complate) => {
-          if (uniqueArray[0] === '*') {
-            INTERMediator.constructMain()
-          } else {
-            for (const context of uniqueArray) {
-              INTERMediator.constructMain(context)
+      const masterContext = IMLibContextPool.getMasterContext()
+      if (masterContext) {
+        const masterContextDef = masterContext.getContextDef()
+        let uniqueArray = []
+        if (masterContextDef && !masterContextDef['navi-control'].match(/hide/)) {
+          for (const context of updatingContexts) {
+            if (uniqueArray.indexOf(context) < 0) {
+              if (context.sortKeys && context.sortKeys.indexOf(contextInfo.field) >= 0) {
+                uniqueArray.push(context)
+              }
+              // const contextDef = context.getContextDef()
+              // if (contextDef['navi-control'] && contextDef['navi-control'].match(/master/)) {
+              //   uniqueArray = ['*']
+              // }
             }
           }
-          complate()
-        }, false, true)
+        }
+        if (uniqueArray.length > 0) {
+          IMLibQueue.setTask((complate) => {
+            if (uniqueArray[0] === '*') {
+              INTERMediator.constructMain()
+            } else {
+              for (const context of uniqueArray) {
+                INTERMediator.constructMain(context)
+              }
+            }
+            complate()
+          }, false, true)
+          IMLibQueue.setTask((complate) => {
+            IMLibPageNavigation.moveDetail(contextInfo.record)
+            complate()
+          }, false, true)
+        }
       }
-      console.log(uniqueArray)
     }
   },
 
@@ -300,9 +309,11 @@ const IMLibContextPool = {
   getChildContexts: function (parentContext) {
     'use strict'
     let childContexts = []
-    for (let i = 0; i < this.poolingContexts.length; i += 1) {
-      if (this.poolingContexts[i].parentContext === parentContext) {
-        childContexts.push(this.poolingContexts[i])
+    if (this.poolingContexts) {
+      for (let i = 0; i < this.poolingContexts.length; i += 1) {
+        if (this.poolingContexts[i].parentContext === parentContext) {
+          childContexts.push(this.poolingContexts[i])
+        }
       }
     }
     return childContexts
@@ -310,12 +321,11 @@ const IMLibContextPool = {
 
   childContexts: null,
 
-  removeContextsFromPool:
-
-    function (contexts) {
-      'use strict'
-      let regIds = []
-      let delIds = []
+  removeContextsFromPool: function (contexts) {
+    'use strict'
+    let regIds = []
+    let delIds = []
+    if (this.poolingContexts) {
       for (let i = 0; i < this.poolingContexts.length; i += 1) {
         if (contexts.indexOf(this.poolingContexts[i]) > -1) {
           regIds.push(this.poolingContexts[i].registeredId)
@@ -325,8 +335,9 @@ const IMLibContextPool = {
       for (let i = delIds.length - 1; i > -1; i--) {
         this.poolingContexts.splice(delIds[i], 1)
       }
-      return regIds
-    },
+    }
+    return regIds
+  },
 
   removeRecordFromPool: function (repeaterIdValue) {
     'use strict'
