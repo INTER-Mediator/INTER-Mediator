@@ -12,6 +12,9 @@ Also the Migration Guide (Japanese) might be informative:
 
 Ver.15 (in Development)
 - In case of affecting the order of records with editing field data, the list is going to update after modification.
+- New prompt for the related table adding are added to /dist-docs/prompts.
+- [Bug Fix]On version 12, INTERMediator.clearCondition method clears page number of pagination in any case.
+  INTERMediator.clearCondition should be cleared any parameter, just clears all conditions.
 
 Ver.14 (June 16, 2025)
 - From this version, minimum supporting PHP version is 8.1.

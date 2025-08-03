@@ -21,6 +21,7 @@ Windsurfを利用して、INTER-Mediatorのアプリケーションを、全く�
 - Composerでのインストールでは、以下のプラグインの許可が必要です。
   - ```mouf/nodejs-installer```
   - ```simplesamlphp/composer-module-installer```
+  - ```simplesamlphp/composer-xmlprovider-installer```
 - インストール後に、vendor/inter-mediator/inter-mediatorに移動して、```npm install```コマンドを実行します。
 - その後に、```vendor/inter-mediator/inter-mediator/dist-docs/generateminifyjshere.sh``` スクリプトを実行します。
 
