@@ -2055,7 +2055,6 @@ const INTERMediator = {
     } else { // In case of no parameter.
       INTERMediator.additionalCondition = {}
       IMLibLocalContext.archive()
-      INTERMediator.startFrom = 0
     }
   },
 

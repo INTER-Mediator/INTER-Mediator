@@ -16,10 +16,11 @@ Please create a web application for an address book using INTER-Mediator. Please
 # Installing INTER-Mediator
 - INTER-Mediator can be installed via Composer. The identifier is `inter-mediator/inter-mediator`. Specify the version as "dev-master".
 - For Composer installation, you need to allow the following plugins:
-  - `mouf/nodejs-installer`
-  - `simplesamlphp/composer-module-installer`
-- After installation, move to vendor/inter-mediator/inter-mediator and run the `npm install` command.
-- Then, run the `vendor/inter-mediator/inter-mediator/dist-docs/generateminifyjshere.sh` script.
+  - ```mouf/nodejs-installer```
+  - ```simplesamlphp/composer-module-installer```
+  - ```simplesamlphp/composer-xmlprovider-installer```
+- After installation, move to vendor/inter-mediator/inter-mediator and run the ```npm install``` command.
+- Then, run the ```vendor/inter-mediator/inter-mediator/dist-docs/generateminifyjshere.sh``` script.
 
 # Post-Installation Tasks for INTER-Mediator
 - Create a lib directory at the project root.
