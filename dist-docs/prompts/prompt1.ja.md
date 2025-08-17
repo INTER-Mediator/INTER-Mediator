@@ -24,6 +24,7 @@ Windsurfを利用して、INTER-Mediatorのアプリケーションを、全く�
   - ```simplesamlphp/composer-xmlprovider-installer```
 - インストール後に、vendor/inter-mediator/inter-mediatorに移動して、```npm install```コマンドを実行します。
 - その後に、```vendor/inter-mediator/inter-mediator/dist-docs/generateminifyjshere.sh``` スクリプトを実行します。
+- 後々のアップデート作業のため、composer.jsonファイルには、installあるいはupdate実行後のスクリプトを定義して、```npm install```あるいは```npm update```コマンドの実行とgenerateminifyjshere.shスクリプトの実行が行われるようにしておきます。
 
 # INTER-Mediatorインストール後の作業
 - プロジェクトのルートにlibディレクトリを作成してください。
@@ -32,7 +33,7 @@ Windsurfを利用して、INTER-Mediatorのアプリケーションを、全く�
   - \$dbClass変数は、'PDO'を代入します。
   - \$dbUser変数は、データベースに接続する場合のユーザ名を指定します。
   - \$dbPassword変数は、データベースに接続する場合のパスワードを指定します。
-  - \$dbDSN変数は、PDOでの接続に必要な接続文字列を指定します。
+  - \$dbDSN変数は、PDOでの接続に必要な接続文字列を指定します。SQLiteの場合は、'sqlite:'で始まる文字列を指定しますが、:以降はSQLiteのデータベースファイルへの絶対パスを記述します。
   - \$dbOption変数は、要素のない配列を代入します。
 
 # 定義ファイルの作成

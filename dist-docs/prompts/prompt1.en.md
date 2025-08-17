@@ -29,7 +29,7 @@ Please create a web application for an address book using INTER-Mediator. Please
   - Assign 'PDO' to the $dbClass variable.
   - Specify the username for database connection in the $dbUser variable.
   - Specify the password for database connection in the $dbPassword variable.
-  - Specify the connection string required for PDO in the $dbDSN variable.
+  - Specify the connection string required for PDO in the $dbDSN variable. For SQLite, specify a string starting with 'sqlite:', followed by the absolute path to the SQLite database file.
   - Assign an empty array to the $dbOption variable.
 
 # Creating the Definition File
