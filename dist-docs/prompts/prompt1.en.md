@@ -2,10 +2,21 @@
 
 2024-12-31 Masayuki Nii (nii@msyk.net)
 
-This is a prompt for creating an INTER-Mediator application from scratch using Windsurf. Provide the string after the "Prompt Example" section below, and try copying and executing it as is. It seems best to input it with the markup intact. Of course, you can also modify the prompt itself as needed. Currently, it will create an SQLite database and automatically generate a user interface for list and detail pages.
+This is a prompt for creating an INTER-Mediator application from scratch using Windsurf.
+Provide the string after the "Prompt Example" section below, and try copying and executing it as is.
+It seems best to input it with the markup intact.
+Of course, you can also modify the prompt itself as needed. Currently, it will create an SQLite database and automatically generate a user interface for list and detail pages.
+
+On the Windsurf platform, I tested several models.
+Using Sonet 4, Gemini Pro 2.5, and GPT-5 (medium reasoning),
+I successfully created a working application by following the provided instructions.
+In contrast, the free SWE-1 model generated a site that appeared promising but had many non-functional components.
+Date of test: August 24, 2025.
 
 # Prompt Example
-Please create a web application for an address book using INTER-Mediator. Please set up a search box in the list view. For information about INTER-Mediator, refer to the following.
+Please create a web application for an address book using INTER-Mediator.
+Please set up a search box in the list view.
+For information about INTER-Mediator, refer to the following.
 
 ---
 # Database Schema Definition
@@ -55,6 +66,7 @@ Please create a web application for an address book using INTER-Mediator. Please
 - In the BODY tag, create a table. This table will be called the "list table".
   - In the list table, include all fields of the created table in one row.
   - For each row in the list table, insert empty TD tags at the beginning and end.
+  - For the table header, insert empty TH tag at both the beginning and the end.
   - In the list table, make the field contents non-editable by displaying them inside SPAN tags within the TD tags.
   - In the SPAN tags inside the TD cells of the list table, set the data-im attribute as follows: the value is the list context name specified in the definition file, followed by "@", and then the field name.
   - No attributes are required for the TR tags in the list table.
