@@ -64,6 +64,7 @@ I want to add contact records as related information to the created application.
 - In the script file, assign an anonymous function to `INTERMediatorOnPage.doBeforeConstruct`. This function will be called the "startup execution function".
 - Inside the startup execution function, set `INTERMediatorLog.suppressDebugMessageOnPage` to `true`.
 - Inside the startup execution function, use the URL parameters. The parameters can be retrieved with `INTERMediatorOnPage.getURLParametersAsArray()`.
+- First, call INTERMediator.clearCondition() with no arguments. This clears all conditions at once.
 - Save the value of the `id` key of the parameters in a variable. The variable name will be `id_value`.
 - If there is a value for the "id" key in the parameters, call `INTERMediator.clearCondition()` and then `INTERMediator.addCondition()`.
 - For the argument of `clearCondition`, specify the string specified for the `name` key of the associative array of the original table in the definition file.
@@ -71,7 +72,6 @@ I want to add contact records as related information to the created application.
   - For the "field" key, specify the field name of the foreign key field when defined as the original table as a string.
   - For the "operator" key, specify an equal sign.
   - For the "value" key, specify the value of the global variable `id_value`.
-- Furthermore, for the argument of `clearCondition`, specify the string specified for the `name` key of the associative array of the related table in the definition file.
 - For `addCondition`, specify two arguments. For the first argument, specify the string specified for the `name` key of the associative array of the related table in the definition file. For the next argument, specify a JavaScript object with the following content:
   - For the "field" key, specify the field name of the foreign key field when defined as the related table as a string.
   - For the "operator" key, specify an equal sign.
@@ -82,6 +82,6 @@ I want to add contact records as related information to the created application.
 # Modification of the Existing Page File
 - In the existing page file, add a button inside the first `TD` tag of the list table.
 - The button name should be something that suggests the related table, such as "Contact".
-- When the button is clicked, it transitions to the newly created page file. Prepare a function for that, and specify only "$" as the argument to the function.
+- When the button is clicked, it navigates to the newly created page file. Prepare a function for this, and set the button's onclick attribute to only call that function. Specify only $ as the argument for the function.
 - In the function called by clicking, assign a URL to `location.href`. The URL is the "newly created page file name" with "?id=argument" appended.
 - For the `data-im` attribute of the button, add a target specification. Specify `id` for the second section and the string "$onclick" for the third section.
