@@ -115,7 +115,7 @@ class RESTAPI
          * @param string $validStatement The valid inclusion statement.
          * @return string|null The modified source code.
          */
-        function changeIncludeIMPath($src, $validStatement)
+        $changeIncludeIMPath = function($src, $validStatement)
         {
             $includeFunctions = array('require_once', 'include_once', 'require', 'include');
             foreach ($includeFunctions as $targetFunction) {
@@ -124,7 +124,7 @@ class RESTAPI
                     return preg_replace($pattern, $validStatement, $src);
                 }
             }
-        }
+        };
 
         $fileContent = file_get_contents($path);
         if ($fileContent === false) {
@@ -134,7 +134,7 @@ class RESTAPI
         $convert = str_replace("<?php", "",
             str_replace("?>", "",
                 str_replace("IM_Entry", "\\INTERMediator\\IM_Dummy_Entry_RESTAPI",
-                    changeIncludeIMPath(
+                    $changeIncludeIMPath(
                         $fileContent,
                         "require_once('$IMRoot/INTER-Mediator.php');"
                     ) ?? "")));
