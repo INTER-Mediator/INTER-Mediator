@@ -798,6 +798,7 @@ CREATE TABLE authuser
     sub             VARCHAR(255),
     limitdt         DATETIME,
     initialPassword VARCHAR(30),
+    accessToken     VARCHAR(64),
     PRIMARY KEY (id)
 ) CHARACTER SET utf8mb4,
   COLLATE utf8mb4_unicode_ci
@@ -814,37 +815,44 @@ INSERT authuser
 SET id=1,
     `username`='user1',
     hashedpasswd='d83eefa0a9bd7190c94e7911688503737a99db0154455354',
-    email='user1@msyk.net';
+    email='user1@msyk.net',
+    accessToken='b10e7da88d2d4b624604efda92730cf61367f41e3f81b34e53194105e99c7dbd';
 INSERT authuser
 SET id=2,
     `username`='user2',
     hashedpasswd='5115aba773983066bcf4a8655ddac8525c1d3c6354455354',
-    email='user2@msyk.net';
+    email='user2@msyk.net',
+    accessToken='f9b73706b337feee318b3527a464f39108016e9facab848f42e37426594ebafe';
 INSERT authuser
 SET id=3,
     `username`='user3',
     hashedpasswd='d1a7981108a73e9fbd570e23ecca87c2c5cb967554455354',
-    email='user3@msyk.net';
+    email='user3@msyk.net',
+    accessToken='7b216afd67d3e4b153520ba24961421d014b2bb7d1a88e70047ca8fd9f9211bc';
 INSERT authuser
 SET id=4,
     `username`='user4',
     hashedpasswd='8c1b394577d0191417e8d962c5f6e3ca15068f8254455354',
-    email='user4@msyk.net';
+    email='user4@msyk.net',
+    accessToken='c972efb826a8a343a8e270a3325131ff069ecdb8c870b856a66850da19942c7a';
 INSERT authuser
 SET id=5,
     `username`='user5',
     hashedpasswd='ee403ef2642f2e63dca12af72856620e6a24102d54455354',
-    email='user5@msyk.net';
+    email='user5@msyk.net',
+    accessToken='b7ff8c95ca93a392879d09a7aabcca00bc92ec391678d7e7c0c751ce31ae1192';
 INSERT authuser
 SET id=6,
     `username`='mig2m',
     hashedpasswd='cd85a299c154c4714b23ce4b63618527289296ba6642c2685651ad8b9f20ce02285d7b34',
-    email='mig2m@msyk.net';
+    email='mig2m@msyk.net',
+    accessToken='e9c18ff869b3490c735a4b8d9c497e9abb138099105b4c0aaa46919af7980250';
 INSERT authuser
 SET id=7,
     `username`='mig2',
     hashedpasswd='b7d863d29021fc96de261da6a5dfb6c4c28d3d43c75ad5ddddea4ec8716bdaf074675473',
-    email='mig2@msyk.net';
+    email='mig2@msyk.net',
+    accessToken='0e9ab52d44807dcaf42b80372f0d45ee8c40a5e9d1027c6531bd8b11f71e1c38';
 
 # The user1 has the password 'user1'. It's salted with the string 'TEXT'.
 # All users have the password the same as user name. All are salted with 'TEXT'
