@@ -158,7 +158,7 @@ class RESTAPI
 
     /**
      * Processes the API request.
-     * @throws Exception
+     * @throws \Exception
      */
     public function processing(): void
     {
@@ -237,7 +237,7 @@ class RESTAPI
                     $result = $this->dbUpdate($this->targetContextName, $query, $bodyData);
                     break;
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->errorAndExit($e->getMessage());
         }
         http_response_code(200);
