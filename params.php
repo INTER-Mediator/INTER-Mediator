@@ -79,8 +79,8 @@ $dbOption = array();
 
 /* Security
  * ===================
- * For putting the sensitive information to the outside of repository, Profile is one of the solutions.
- * You can specify the path to arbitrary place to store the profile file.
+ * For putting sensitive information outside the repository, Profile is one of the solutions.
+ * You can specify the path to an arbitrary place to store the profile file.
  */
 //$profileRoot = "path to profile's root directory.";
 
@@ -102,15 +102,14 @@ $webServerName = array('');
 
 /* Customize the Content-Security-Policy header
  *
- * The Content-Security-Policy header contains with the value of variable $contentSecurityPolicy.
- * If this variable isn't specified or "", the Content-Security-Policy header doesn't contain.
- * See below about Content-Security-Policy header.
- * https://developer.mozilla.org/ja/docs/Web/Security/CSP/Using_Content_Security_Policy
+ * The Content-Security-Policy header is set to the value of the $contentSecurityPolicy variable.
+ * If this variable is not specified or is an empty string, the Content-Security-Policy header will not be included.
+ * See below for more information about the Content-Security-Policy header.
  */
-//$contentSecurityPolicy = "";
+//$contentSecurityPolicy = "default-src 'self';";
 
 /* Append the Access-Control-Allow-Origin header
- * This header will be appended other server url than the origin.
+ * This header will be appended for another server url than the origin.
  */
 //$accessControlAllowOrigin = "http://localhost:9000";
 

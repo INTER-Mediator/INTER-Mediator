@@ -20,8 +20,10 @@ SQL Server をインストールし、Ubuntu でデータベースを作成
 https://docs.microsoft.com/ja-jp/sql/linux/quickstart-install-connect-ubuntu
 */
 -- Create Database
-DROP DATABASE IF EXISTS test_db;
-CREATE DATABASE test_db COLLATE Japanese_CI_AI;
+DROP
+DATABASE IF EXISTS test_db;
+CREATE
+DATABASE test_db COLLATE Japanese_CI_AI;
 GO
 -- Set Current Database to test_db
 USE test_db;
@@ -33,7 +35,8 @@ CREATE
 LOGIN web WITH PASSWORD='password', CHECK_POLICY=OFF;
 GO
 -- Grant to All operations for all objects with web account
-CREATE USER web;
+CREATE
+USER web;
 GRANT DELETE, INSERT, REFERENCES, SELECT, UPDATE TO web;
 GO
 
@@ -48,27 +51,30 @@ CREATE TABLE person
     category INT,
     checking INT,
     location INT,
-    memo NTEXT,
+    memo     NTEXT,
     PRIMARY KEY (id)
 );
-INSERT person(name, address, mail)
+INSERT
+person(name, address, mail)
 VALUES ('Masayuki Nii', 'Saitama, Japan', 'msyk@msyk.net');
-INSERT person(name, address, mail)
+INSERT
+person(name, address, mail)
 VALUES ('Someone', 'Tokyo, Japan', 'msyk@msyk.net');
-INSERT person(name, address, mail)
+INSERT
+person(name, address, mail)
 VALUES ('Anyone', 'Osaka, Japan', 'msyk@msyk.net');
 GO
 
 CREATE TABLE contact
 (
-    id        INTEGER IDENTITY(1,1),
-    person_id INTEGER,
+    id          INTEGER IDENTITY(1,1),
+    person_id   INTEGER,
     description NTEXT,
-    datetime  DATETIME,
-    summary   NVARCHAR(50),
-    important INTEGER,
-    way       INTEGER default 4,
-    kind      INTEGER,
+    datetime    DATETIME,
+    summary     NVARCHAR(50),
+    important   INTEGER,
+    way         INTEGER default 4,
+    kind        INTEGER,
     PRIMARY KEY (id)
 );
 INSERT INTO contact (person_id, datetime, summary, way, kind)
@@ -256,7 +262,7 @@ CREATE TABLE asset
     productinfo NVARCHAR(20),
     purchase    DATE,
     discard     DATE,
-    memo NTEXT,
+    memo        NTEXT,
     PRIMARY KEY (asset_id)
 );
 CREATE INDEX asset_purchase ON asset (purchase);
@@ -268,7 +274,7 @@ CREATE TABLE rent
     staff_id INT,
     rentdate DATE,
     backdate DATE,
-    memo NTEXT,
+    memo     NTEXT,
     PRIMARY KEY (rent_id)
 );
 CREATE INDEX rent_rentdate ON rent (rentdate);
@@ -280,7 +286,7 @@ CREATE TABLE staff
     staff_id INTEGER,
     name     NVARCHAR(20),
     section  NVARCHAR(20),
-    memo NTEXT,
+    memo     NTEXT,
     PRIMARY KEY (staff_id)
 );
 CREATE TABLE category
@@ -436,25 +442,33 @@ CREATE TABLE authuser
     email        NVARCHAR(100),
     realname     NVARCHAR(20),
     limitdt      DATETIME,
+    accessToken  NVARCHAR(64),
     PRIMARY KEY (id)
 );
 CREATE INDEX authuser_username ON authuser (username);
 CREATE INDEX authuser_email ON authuser (email);
 CREATE INDEX authuser_limitdt ON authuser (limitdt);
-INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('user1', 'd83eefa0a9bd7190c94e7911688503737a99db0154455354', 'user1@msyk.net');
-INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('user2', '5115aba773983066bcf4a8655ddac8525c1d3c6354455354', 'user2@msyk.net');
-INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('user3', 'd1a7981108a73e9fbd570e23ecca87c2c5cb967554455354', 'user3@msyk.net');
-INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('user4', '8c1b394577d0191417e8d962c5f6e3ca15068f8254455354', 'user4@msyk.net');
-INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('user5', 'ee403ef2642f2e63dca12af72856620e6a24102d54455354', 'user5@msyk.net');
-INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('mig2m', 'cd85a299c154c4714b23ce4b63618527289296ba6642c2685651ad8b9f20ce02285d7b34', 'mig2m@msyk.net');
-INSERT INTO authuser(username, hashedpasswd, email)
-VALUES ('mig2', 'fcc2ab4678963966614b5544a40f4b814ba3da41b3b69df6622e51b74818232864235970', 'mig2@msyk.net');
+INSERT INTO authuser(username, hashedpasswd, email, accessToken)
+VALUES ('user1', 'd83eefa0a9bd7190c94e7911688503737a99db0154455354', 'user1@msyk.net',
+        'b10e7da88d2d4b624604efda92730cf61367f41e3f81b34e53194105e99c7dbd');
+INSERT INTO authuser(username, hashedpasswd, email, accessToken)
+VALUES ('user2', '5115aba773983066bcf4a8655ddac8525c1d3c6354455354', 'user2@msyk.net',
+        'f9b73706b337feee318b3527a464f39108016e9facab848f42e37426594ebafe');
+INSERT INTO authuser(username, hashedpasswd, email, accessToken)
+VALUES ('user3', 'd1a7981108a73e9fbd570e23ecca87c2c5cb967554455354', 'user3@msyk.net',
+        '7b216afd67d3e4b153520ba24961421d014b2bb7d1a88e70047ca8fd9f9211bc');
+INSERT INTO authuser(username, hashedpasswd, email, accessToken)
+VALUES ('user4', '8c1b394577d0191417e8d962c5f6e3ca15068f8254455354', 'user4@msyk.net',
+        'c972efb826a8a343a8e270a3325131ff069ecdb8c870b856a66850da19942c7a');
+INSERT INTO authuser(username, hashedpasswd, email, accessToken)
+VALUES ('user5', 'ee403ef2642f2e63dca12af72856620e6a24102d54455354', 'user5@msyk.net',
+        'b7ff8c95ca93a392879d09a7aabcca00bc92ec391678d7e7c0c751ce31ae1192');
+INSERT INTO authuser(username, hashedpasswd, email, accessToken)
+VALUES ('mig2m', 'cd85a299c154c4714b23ce4b63618527289296ba6642c2685651ad8b9f20ce02285d7b34', 'mig2m@msyk.net',
+        'e9c18ff869b3490c735a4b8d9c497e9abb138099105b4c0aaa46919af7980250');
+INSERT INTO authuser(username, hashedpasswd, email, accessToken)
+VALUES ('mig2', 'b7d863d29021fc96de261da6a5dfb6c4c28d3d43c75ad5ddddea4ec8716bdaf074675473', 'mig2@msyk.net',
+        '0e9ab52d44807dcaf42b80372f0d45ee8c40a5e9d1027c6531bd8b11f71e1c38');
 /*
 # The user1 has the password 'user1'. It's salted with the string 'NTEXT'.
 # All users have the password the same as user name. All are salted with 'NTEXT'
@@ -7897,2553 +7911,3826 @@ CREATE TABLE customer
     id   INT PRIMARY KEY,
     name VARCHAR(70)
 );
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (1, 'Artichokes ', 957);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (2, 'Asparagus ', 103);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (3, 'Aubergine ', 294);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (4, 'Beans ', 245);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (5, 'Bok Choy ', 533);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (6, 'Broccoli ', 1025);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (7, 'Brussels Sprouts ', 776);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (8, 'Cabbage ', 492);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (9, 'Capsicum ', 578);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (10, 'Carrot ', 460);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (11, 'Cauliflower ', 565);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (12, 'Celeriac ', 462);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (13, 'Celery ', 536);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (14, 'Corn ', 739);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (15, 'Courgette ', 251);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (16, 'Cucumber ', 472);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (17, 'Dram sticks ', 164);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (18, 'Fennel ', 662);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (19, 'Garlic ', 484);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (20, 'Leek ', 708);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (21, 'Lettuce ', 964);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (22, 'Mushroom ', 347);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (23, 'Okra ', 1046);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (24, 'Olive ', 781);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (25, 'Onion ', 810);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (26, 'Parsnip ', 336);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (27, 'Peppers ', 297);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (28, 'Potato ', 232);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (29, 'Pumpkin ', 639);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (30, 'Peas ', 373);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (31, 'Rhubarb ', 574);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (32, 'Shallots ', 331);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (33, 'Spinach ', 409);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (34, 'Squash ', 190);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (35, 'Sweet Potato ', 650);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (36, 'Tomato ', 361);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (37, 'Turnip ', 471);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (38, 'Swede ', 528);
-INSERT item_master(id, name, unitprice)
+INSERT
+item_master(id, name, unitprice)
 VALUES (39, 'Yam', 790);
 
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1, 'African glass catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (2, 'African lungfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (3, 'Aholehole Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (4, 'Airbreathing catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (5, 'Airsac catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (6, 'Alaska blackfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (7, 'Albacore Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (8, 'Alewife Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (9, 'Alfonsino Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (10, 'Algae eater Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (11, 'Alligatorfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (12, 'Amago Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (13, 'American sole Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (14, 'Amur pike Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (15, 'Anchovy Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (16, 'Anemonefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (17, 'Angelfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (18, 'Angler Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (19, 'Angler catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (20, 'Anglerfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (21, 'Antarctic cod Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (22, 'Antarctic icefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (23, 'Antenna codlet Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (24, 'Arapaima Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (25, 'Archerfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (26, 'Arctic char Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (27, 'Armored gurnard Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (28, 'Armored searobin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (29, 'Armorhead Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (30, 'Armorhead catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (31, 'Armoured catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (32, 'Arowana Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (33, 'Arrowtooth eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (34, 'Aruana Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (35, 'Asian carps Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (36, 'Asiatic glassfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (37, 'Atka mackerel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (38, 'Atlantic cod Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (39, 'Atlantic eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (40, 'Atlantic herring Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (41, 'Atlantic salmon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (42, 'Atlantic saury Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (43, 'Atlantic silverside Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (44, 'Atlantic trout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (45, 'Australasian salmon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (46, 'Australian grayling Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (47, 'Australian herring Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (48, 'Australian lungfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (49, 'Australian prowfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (50, 'Ayu Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (51, 'Alooh Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (52, 'Baikal oilfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (53, 'Bala shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (54, 'Ballan wrasse Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (55, 'Bamboo shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (56, 'Banded killifish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (57, 'Bandfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (58, 'Bango Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (59, 'Bangus Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (60, 'Banjo catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (61, 'Barb Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (62, 'Barbel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (63, 'Barbeled dragonfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (64, 'Barbeled houndshark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (65, 'Barbelless catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (66, 'Barfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (67, 'Barracuda Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (68, 'Barracudina Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (69, 'Barramundi Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (70, 'Barred danio Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (71, 'Barreleye Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (72, 'Basking shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (73, 'Bass Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (74, 'Basslet Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (75, 'Batfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (76, 'Bat ray Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (77, 'Beachsalmon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (78, 'Beaked salmon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (79, 'Beaked sandfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (80, 'Beardfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (81, 'Beluga sturgeon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (82, 'Bengal danio Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (83, 'Bent-tooth Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (84, 'Betta Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (85, 'Bichir Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (86, 'Bigeye Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (87, 'Bigeye squaretail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (88, 'Bighead carp Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (89, 'Bigmouth buffalo Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (90, 'Bigscale Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (91, 'Bigscale fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (92, 'Bigscale pomfret Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (93, 'Billfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (94, 'Bitterling Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (95, 'Black angelfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (96, 'Black bass Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (97, 'Black dragonfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (98, 'Blackchin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (99, 'Blackfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (100, 'Blacktip reef shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (101, 'Black mackerel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (102, 'Black pickerel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (103, 'Black prickleback Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (104, 'Black scalyfin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (105, 'Black sea bass Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (106, 'Black scabbardfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (107, 'Blacksmelt Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (108, 'Black swallower Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (109, 'Black tetra Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (110, 'Black triggerfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (111, 'Bleak Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (112, 'Blenny Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (113, 'Blind goby Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (114, 'Blind shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (115, 'Blobfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (116, 'Blowfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (117, 'Blue catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (118, 'Blue danio Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (119, 'Blue-redstripe danio Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (120, 'Blue eye Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (121, 'Bluefin tuna Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (122, 'Bluefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (123, 'Bluegill Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (124, 'Blue gourami Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (125, 'Blue shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (126, 'Blue triggerfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (127, 'Blue whiting Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (128, 'Bluntnose knifefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (129, 'Bluntnose minnow Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (130, 'Boafish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (131, 'Boarfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (132, 'Bobtail snipe eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (133, 'Bocaccio Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (134, 'Boga Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (135, 'Bombay duck Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (136, 'Bonefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (137, 'Bonito Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (138, 'Bonnetmouth Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (139, 'Bonytail chub Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (140, 'Bonytongue Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (141, 'Bottlenose Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (142, 'Bowfin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (143, 'Boxfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (144, 'Bramble shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (145, 'Bream Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (146, 'Bristlemouth Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (147, 'Bristlenose catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (148, 'Broadband dogfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (149, 'Brook lamprey Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (150, 'Brook trout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (151, 'Brotula Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (152, 'Brown trout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (153, 'Buffalofish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (154, 'Bullhead Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (155, 'Bullhead shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (156, 'Bull shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (157, 'Bull trout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (158, 'Burbot Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (159, 'Buri Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (160, 'Burma danio Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (161, 'Burrowing goby Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (162, 'Butterfly ray Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (163, 'Butterflyfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (164, 'California flyingfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (165, 'California halibut Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (166, 'California smoothtongue Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (167, 'Canary rockfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (168, 'Candiru Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (169, 'Candlefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (170, 'Capelin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (171, 'Cardinalfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (172, 'Carp Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (173, 'Carpetshark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (174, 'Carpsucker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (175, 'Catalufa Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (176, 'Catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (177, 'Catla Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (178, 'Cat shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (179, 'Cavefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (180, 'Celebes rainbowfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (181, 'Central mudminnow Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (182, 'Cepalin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (183, 'Chain pickerel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (184, 'Channel bass Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (185, 'Channel catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (186, 'Char Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (187, 'Cherry salmon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (188, 'Chimaera Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (189, 'Chinook salmon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (190, 'Cherubfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (191, 'Chub Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (192, 'Chubsucker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (193, 'Chum salmon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (194, 'Cichlid Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (195, 'Cisco Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (196, 'Climbing catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (197, 'Climbing gourami Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (198, 'Climbing perch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (199, 'Clingfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (200, 'Clownfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (201, 'Clown loach Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (202, 'Clown triggerfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (203, 'Cobbler Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (204, 'Cobia Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (205, 'Cod Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (206, 'Cod icefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (207, 'Codlet Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (208, 'Codling Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (209, 'Coelacanth Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (210, 'Coffinfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (211, 'Coho salmon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (212, 'Coley Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (213, 'Collared carpetshark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (214, 'Collared dogfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (215, 'Colorado squawfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (216, 'Combfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (217, 'Combtail gourami Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (218, 'Combtooth blenny Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (219, 'Common carp Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (220, 'Common tunny Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (221, 'Conger eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (222, 'Convict blenny Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (223, 'Convict cichlid Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (224, 'Cookie-cutter shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (225, 'Coolie loach Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (226, 'Cornish Spaktailed Bream Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (227, 'Cornetfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (228, 'Cowfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (229, 'Cownose ray Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (230, 'Cow shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (231, 'Crappie Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (232, 'Creek chub Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (233, 'Crestfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (234, 'Crevice kelpfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (235, 'Croaker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (236, 'Crocodile icefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (237, 'Crocodile shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (238, 'Crucian carp Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (239, 'Cuchia Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (240, 'Cuckoo wrasse Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (241, 'Cusk-eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (242, 'Cuskfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (243, 'Cutlassfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (244, 'Cutthroat eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (245, 'Cutthroat trout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (246, 'Dab Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (247, 'Dace Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (248, 'Daggertooth pike conger Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (249, 'Damselfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (250, 'Danio Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (251, 'Darter Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (252, 'Dartfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (253, 'Dealfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (254, 'Death Valley pupfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (255, 'Deep sea anglerfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (256, 'Deep sea bonefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (257, 'Deep sea eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (258, 'Deep sea smelt Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (259, 'Deepwater cardinalfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (260, 'Deepwater flathead Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (261, 'Deepwater stingray Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (262, 'Delta smelt Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (263, 'Demoiselle Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (264, 'Denticle herring Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (265, 'Desert pupfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (266, 'Devario Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (267, 'Devil ray Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (268, 'Dhufish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (269, 'Discus Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (270, 'diVer: New Zealand sand diver or Long-finned sand diver Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (271, 'Dogfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (272, 'Dogfish shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (273, 'Dogteeth tetra Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (274, 'Dojo loach Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (275, 'Dolly Varden trout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (276, 'Dorab Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (277, 'Dorado Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (278, 'Dory Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (279, 'Dottyback Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (280, 'Dragonet Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (281, 'Dragonfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (282, 'Dragon goby Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (283, 'Driftfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (284, 'Driftwood catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (285, 'Drum Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (286, 'Duckbill Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (287, 'Duckbilled barracudina Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (288, 'Duckbill eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (289, 'Dusky grouper Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (290, 'Dwarf gourami Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (291, 'Dwarf loach Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (292, 'Eagle ray Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (293, 'Earthworm eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (294, 'Eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (295, 'Eelblenny Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (296, 'Eel cod Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (297, 'Eel-goby Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (298, 'Eelpout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (299, 'Eeltail catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (300, 'Elasmobranch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (301, 'Electric catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (302, 'Electric eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (303, 'Electric knifefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (304, 'Electric ray Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (305, 'Electric stargazer Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (306, 'Elephant fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (307, 'Elephantnose fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (308, 'Elver Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (309, 'Emperor Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (310, 'Emperor angelfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (311, 'Emperor bream Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (312, 'Escolar Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (313, 'Eucla cod Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (314, 'Eulachon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (315, 'European chub Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (316, 'European eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (317, 'European flounder Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (318, 'European minnow Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (319, 'European perch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (320, 'False brotula Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (321, 'False cat shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (322, 'False moray Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (323, 'False trevally Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (324, 'Fangtooth Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (325, 'Fathead sculpin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (326, 'Featherback Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (327, 'Featherfin knifefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (328, 'Fierasfer Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (329, 'Fire Goby Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (330, 'Filefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (331, 'Finback cat shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (332, 'Fingerfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (333, 'Fire bar danio Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (334, 'Firefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (335, 'Flabby whalefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (336, 'Flagblenny Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (337, 'Flagfin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (338, 'Flagfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (339, 'Flagtail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (340, 'Flashlight fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (341, 'Flatfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (342, 'Flathead Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (343, 'Flathead catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (344, 'Flat loach Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (345, 'Flier Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (346, 'Flounder Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (347, 'Flying characin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (348, 'Flying gurnard Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (349, 'Flyingfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (350, 'Footballfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (351, 'Forehead brooder Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (352, 'Four-eyed fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (353, 'French angelfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (354, 'Freshwater eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (355, 'Freshwater flyingfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (356, 'Freshwater hatchetfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (357, 'Freshwater herring Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (358, 'Freshwater shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (359, 'Frigate mackerel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (360, 'Frilled shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (361, 'Frogfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (362, 'Frogmouth catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (363, 'Fusilier fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (364, 'Galjoen fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (365, 'Ganges shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (366, 'Gar Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (367, 'Garden eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (368, 'Garibaldi Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (369, 'Garpike Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (370, 'Ghost carp Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (371, 'Ghost fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (372, 'Ghost flathead Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (373, 'Ghost knifefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (374, 'Ghost pipefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (375, 'Ghoul Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (376, 'Giant danio Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (377, 'Giant gourami Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (378, 'Giant sea bass Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (379, 'Giant wels Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (380, 'Gianttail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (381, 'Gibberfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (382, 'Gila trout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (383, 'Gizzard shad Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (384, 'Glass catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (385, 'Glassfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (386, 'Glass knifefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (387, 'Glowlight danio Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (388, 'Goatfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (389, 'Goblin shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (390, 'Goby Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (391, 'Golden dojo Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (392, 'Golden loach Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (393, 'Golden shiner Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (394, 'Golden trout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (395, 'Goldeye Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (396, 'Goldfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (397, 'Goldspotted killifish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (398, 'Gombessa Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (399, 'Goosefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (400, 'Gopher rockfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (401, 'Gouramie Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (402, 'Grass carp Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (403, 'Graveldiver Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (404, 'Gray eel-catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (405, 'Grayling Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (406, 'Gray mullet Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (407, 'Gray reef shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (408, 'Great white shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (409, 'Green swordtail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (410, 'Greeneye Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (411, 'Greenling Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (412, 'Grenadier Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (413, 'Grideye Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (414, 'Ground shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (415, 'Grouper Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (416, 'Grunion Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (417, 'Grunt Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (418, 'Grunter Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (419, 'Grunt sculpin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (420, 'Gudgeon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (421, 'Guitarfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (422, 'Gulf menhaden Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (423, 'Gulper eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (424, 'Gulper Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (425, 'Gunnel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (426, 'Guppy Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (427, 'Gurnard Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (428, 'Haddock Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (429, 'Hagfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (430, 'Hairtail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (431, 'Hake Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (432, 'Half-gill Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (433, 'Halfbeak Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (434, 'Halfmoon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (435, 'Halibut Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (436, 'Halosaur Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (437, 'Hamlet Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (438, 'Hammerhead shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (439, 'Hammerjaw Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (440, 'Handfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (441, 'Hardhead catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (442, 'Harelip sucker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (443, 'Hatchetfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (444, 'Hawkfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (445, 'Herring Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (446, 'Herring smelt Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (447, 'Hillstream loach Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (448, 'Hog sucker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (449, 'Hoki Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (450, 'Horn shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (451, 'Horsefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (452, 'Houndshark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (453, 'Huchen Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (454, 'Humuhumu-nukunuku-apua‘a Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (455, 'Hussar Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (456, 'Icefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (457, 'Ide Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (458, 'Ilisha Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (459, 'Inanga Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (460, 'Inconnu Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (461, 'Indian mul Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (462, 'Jack Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (463, 'Jackfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (464, 'Jack Dempsey Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (465, 'Japanese eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (466, 'Javelin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (467, 'Jawfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (468, 'Jellynose fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (469, 'Jewelfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (470, 'Jewel tetra Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (471, 'Jewfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (472, 'John dory Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (473, 'Kafue pike Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (474, 'Kahawai Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (475, 'Kaluga Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (476, 'Kanyu Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (477, 'Kelp perch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (478, 'Kelpfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (479, 'Killifish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (480, 'King of herring Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (481, 'Kingfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (482, 'King-of-the-salmon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (483, 'Kissing gourami Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (484, 'Knifefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (485, 'Knifejaw Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (486, 'Koi Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (487, 'Kokanee Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (488, 'Kokopu Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (489, 'Kuhli loach Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (490, 'Labyrinth fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (491, 'Ladyfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (492, 'Lagena Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (493, 'Lake chub Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (494, 'Lake trout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (495, 'Lake whitefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (496, 'Lampfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (497, 'Lamprey Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (498, 'Lancetfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (499, 'Lanternfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (500, 'Large-eye bream Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (501, 'Largemouth bass Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (502, 'Largenose fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (503, 'Leaffish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (504, 'Leatherjacket Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (505, 'Lefteye flounder Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (506, 'Lemon shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (507, 'Lemon sole Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (508, 'Lenok Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (509, 'Leopard danio Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (510, 'Lightfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (511, 'Lighthousefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (512, 'Limia Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (513, 'Lined sole Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (514, 'Ling Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (515, 'Ling cod Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (516, 'Lionfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (517, 'Livebearer Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (518, 'Lizardfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (519, 'Loach Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (520, 'Loach catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (521, 'Loach goby Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (522, 'Loach minnow Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (523, 'Longfin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (524, 'Longfin dragonfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (525, 'Longfin escolar Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (526, 'Longfin smelt Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (527, 'Long-finned char Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (528, 'Long-finned pike Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (529, 'Longjaw mudsucker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (530, 'Longneck eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (531, 'Longnose chimaera Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (532, 'Longnose dace Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (533, 'Longnose lancetfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (534, 'Longnose sucker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (535, 'Longnose whiptail catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (536, 'Long-whiskered catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (537, 'Lookdown catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (538, 'Loosejaw Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (539, 'Lost River sucker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (540, 'Louvar Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (541, 'Loweye catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (542, 'Luderick Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (543, 'Luminous hake Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (544, 'Lumpsucker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (545, 'Lungfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (546, 'Lyretail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (547, 'Mackerel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (548, 'Mackerel shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (549, 'Madtom Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (550, 'Mahi-mahi Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (551, 'Mahseer Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (552, 'Mail-cheeked fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (553, 'Mako shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (554, 'Mandarin fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (555, 'Manefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (556, 'Man-of-war fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (557, 'Manta Ray Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (558, 'Marblefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (559, 'Marine hatchetfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (560, 'Marlin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (561, 'Masu salmon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (562, 'Medaka Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (563, 'Medusafish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (564, 'Megamouth shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (565, 'Menhaden Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (566, 'Merluccid hake Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (567, 'Mexican blind cavefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (568, 'Mexican golden trout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (569, 'Midshipman Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (570, 'Milkfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (571, 'Minnow Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (572, 'Modoc sucker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (573, 'Mojarra Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (574, 'Mola Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (575, 'Molly Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (576, 'Molly Miller Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (577, 'Monkeyface prickleback Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (578, 'Monkfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (579, 'Mooneye Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (580, 'Moonfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (581, 'Moorish idol Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (582, 'Mora Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (583, 'Moray eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (584, 'Morid cod Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (585, 'Morwong Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (586, 'Moses sole Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (587, 'Mosquitofish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (588, 'Mosshead warbonnet Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (589, 'Mouthbrooder Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (590, 'Mozambique tilapia Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (591, 'Mrigal Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (592, 'Mudfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (593, 'Mudminnow Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (594, 'Mud minnow Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (595, 'Mudskipper Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (596, 'Mudsucker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (597, 'Mullet Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (598, 'Mummichog Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (599, 'Murray cod Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (600, 'Muskellunge Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (601, 'Mustache triggerfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (602, 'Mustard eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (603, 'Naked-back knifefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (604, 'Nase Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (605, 'Needlefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (606, 'Neon tetra Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (607, 'New World rivuline Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (608, 'New Zealand smelt Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (609, 'Nibble Fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (610, 'Noodlefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (611, 'North American darter Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (612, 'North American freshwater catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (613, 'North Pacific daggertooth Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (614, 'Northern anchovy Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (615, 'Northern clingfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (616, 'Northern lampfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (617, 'Northern pearleye Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (618, 'Northern pike Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (619, 'Northern sea robin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (620, 'Northern squawfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (621, 'Northern Stargazer Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (622, 'Norwegian Atlantic salmon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (623, 'Nurseryfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (624, 'Nurse shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (625, 'Oarfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (626, 'Ocean perch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (627, 'Ocean sunfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (628, 'Oceanic flyingfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (629, 'Oceanic whitetip shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (630, 'Oilfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (631, 'Oldwife Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (632, 'Old World knifefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (633, 'Old World rivuline Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (634, 'Olive flounder Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (635, 'Opah Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (636, 'Opaleye Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (637, 'Orange roughy Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (638, 'Orangespine unicorn fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (639, 'Orangestriped triggerfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (640, 'Orbicular batfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (641, 'Orbicular velvetfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (642, 'Oregon chub Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (643, 'Oriental loach Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (644, 'Owens pupfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (645, 'Pacific albacore Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (646, 'Pacific argentine Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (647, 'Pacific cod Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (648, 'Pacific hake Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (649, 'Pacific herring Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (650, 'Pacific lamprey Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (651, 'Pacific salmon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (652, 'Pacific saury Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (653, 'Pacific trout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (654, 'Pacific viperfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (655, 'Paddlefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (656, 'Panga Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (657, 'Paperbone Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (658, 'Paradise fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (659, 'Parasitic catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (660, 'Parrotfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (661, 'Peacock flounder Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (662, 'Peamouth Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (663, 'Pearleye Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (664, 'Pearlfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (665, 'Pearl danio Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (666, 'Pearl perch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (667, 'Pejerrey Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (668, 'Peladillo Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (669, 'Pelagic cod Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (670, 'Pelican eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (671, 'Pelican gulper Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (672, 'Pencil catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (673, 'Pencilfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (674, 'Pencilsmelt Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (675, 'Perch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (676, "Peter's elephantnose fish Food, Co.");
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (677, 'Pickerel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (678, 'Pigfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (679, 'Pike characid Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (680, 'Pike conger Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (681, 'Pike eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (682, 'Pike Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (683, 'Pikeblenny Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (684, 'Pikehead Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (685, 'Pikeperch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (686, 'Pilchard Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (687, 'Pilot fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (688, 'Pineconefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (689, 'Pink salmon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (690, 'Píntano Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (691, 'Pipefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (692, 'Piranha Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (693, 'Pirarucu Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (694, 'Pirate perch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (695, 'Plaice Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (696, 'Platy Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (697, 'Platyfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (698, 'Pleco Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (699, 'Plownose chimaera Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (700, 'Plunderfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (701, 'Poacher Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (702, 'Pollyfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (703, 'Pollock Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (704, 'Pomfret Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (705, 'Pompano Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (706, 'Pompano dolphinfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (707, 'Ponyfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (708, 'Poolfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (709, 'Popeye catafula Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (710, 'Porbeagle shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (711, 'Porcupinefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (712, 'Porgy Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (713, 'Port Jackson shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (714, 'Powen Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (715, 'Priapumfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (716, 'Prickleback Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (717, 'Pricklefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (718, 'Prickly shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (719, 'Prowfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (720, 'Pufferfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (721, 'Pumpkinseed Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (722, 'Pupfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (723, 'Pygmy sunfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (724, 'Queen danio Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (725, 'Queen parrotfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (726, 'Queen triggerfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (727, 'Quillback Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (728, 'Quillfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (729, 'Rabbitfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (730, 'Raccoon butterfly fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (731, 'Ragfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (732, 'Rainbow trout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (733, 'Rainbowfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (734, 'Rasbora Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (735, 'Ratfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (736, 'Rattail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (737, 'Ray Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (738, 'Razorback sucker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (739, 'Razorfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (740, 'Red salmon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (741, 'Red snapper Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (742, 'Redfin perch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (743, 'Redfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (744, 'Redhorse sucker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (745, 'Redlip blenny Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (746, 'Redmouth whalefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (747, 'Redside Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (748, 'Redtooth triggerfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (749, 'Red velvetfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (750, 'Red whalefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (751, 'Reedfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (752, 'Reef triggerfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (753, 'Regal whiptail catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (754, 'Remora Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (755, 'Requiem shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (756, 'Ribbon eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (757, 'Ribbon sawtail fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (758, 'Ribbonbearer Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (759, 'Ribbonfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (760, 'Rice eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (761, 'Ricefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (762, 'Ridgehead Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (763, 'Riffle dace Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (764, 'Righteye flounder Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (765, 'Rio Grande perch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (766, 'River loach Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (767, 'River shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (768, 'River stingray Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (769, 'Rivuline Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (770, 'Roach Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (771, 'Roanoke bass Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (772, 'Rock bass Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (773, 'Rock beauty Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (774, 'Rock cod Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (775, 'Rocket danio Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (776, 'Rockfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (777, 'Rockling Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (778, 'Rockweed gunnel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (779, 'Rohu Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (780, 'Ronquil Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (781, 'Roosterfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (782, 'Ropefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (783, 'Rough pomfret Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (784, 'Rough scad Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (785, 'Rough sculpin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (786, 'Roughy Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (787, 'Roundhead Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (788, 'Round herring Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (789, 'Round stingray Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (790, 'Round whitefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (791, 'Rudd Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (792, 'Rudderfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (793, 'Ruffe Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (794, 'Russian sturgeon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (795, 'Sábalo Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (796, 'Sabertooth Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (797, 'Saber-toothed blenny Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (798, 'Sabertooth fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (799, 'Sablefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (800, 'Sacramento blackfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (801, 'Sacramento splittail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (802, 'Sailback scorpionfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (803, 'Sailbearer Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (804, 'Sailfin silverside Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (805, 'Sailfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (806, 'Salamanderfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (807, 'Salmon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (808, 'Salmon shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (809, 'Sandbar shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (810, 'Sandburrower Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (811, 'Sand dab Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (812, 'Sparkle Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (813, 'Sand diver Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (814, 'Sand eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (815, 'Sandfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (816, 'Sand goby Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (817, 'Sand knifefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (818, 'Sand lance Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (819, 'Sandperch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (820, 'Sandroller Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (821, 'Sand stargazer Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (822, 'Sand tiger Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (823, 'Sand tilefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (824, 'Sarcastic fringehead Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (825, 'Sardine Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (826, 'Sargassum fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (827, 'Sauger Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (828, 'Saury Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (829, 'Sawfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (830, 'Saw shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (831, 'Sawtooth eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (832, 'Scabbard fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (833, 'Scaleless black dragonfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (834, 'Scaly dragonfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (835, 'Scat Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (836, 'Scissor-tail rasbora Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (837, 'Scorpionfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (838, 'Sculpin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (839, 'Scup Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (840, 'Scythe butterfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (841, 'Sea bass Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (842, 'Sea bream Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (843, 'Sea catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (844, 'Sea chub Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (845, 'Sea devil Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (846, 'Sea dragon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (847, 'Seahorse Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (848, 'Sea lamprey Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (849, 'Seamoth Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (850, 'Sea raven Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (851, 'Searobin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (852, 'Sea snail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (853, 'Sea toad Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (854, 'Sevan trout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (855, 'Seatrout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (856, 'Sergeant major Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (857, 'Shad Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (858, 'Shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (859, 'Sharksucker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (860, 'Canthigaster rostrata Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (861, 'Sheatfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (862, 'Shingle Fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (863, 'Sheepshead Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (864, 'Sheepshead minnow Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (865, 'Shell-ear Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (866, 'Shiner Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (867, 'Shortnose chimaera Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (868, 'Shortnose greeneye Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (869, 'Shortnose sucker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (870, 'Shovelnose sturgeon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (871, 'Shrimpfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (872, 'Siamese fighting fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (873, 'Sillago Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (874, 'Silver carp Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (875, 'Silver dollar Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (876, 'Silver driftfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (877, 'Silver hake Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (878, 'Silverside Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (879, 'Sind danio Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (880, 'Sixgill ray Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (881, 'Sixgill shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (882, 'Skate Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (883, 'Skilfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (884, 'Skipjack tuna Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (885, 'Skipping goby Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (886, 'Slender barracudina Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (887, 'Slender mola Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (888, 'Slender snipe eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (889, 'Sleeper Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (890, 'Sleeper shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (891, 'Slickhead Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (892, 'Slimehead Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (893, 'Slimy mackerel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (894, 'Slimy sculpin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (895, 'Slipmouth Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (896, 'Smalleye squaretail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (897, 'Smalltooth sawfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (898, 'Smelt Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (899, 'Smelt-whiting Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (900, 'Smooth dogfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (901, 'Smoothtongue Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (902, 'Snailfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (903, 'Snake eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (904, 'Snakehead Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (905, 'Snake mackerel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (906, 'Snake mudhead Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (907, 'Snapper Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (908, 'Snipe eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (909, 'Snipefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (910, 'Snoek Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (911, 'Snook Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (912, 'Snubnose eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (913, 'Snubnose parasitic eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (914, 'Soapfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (915, 'Sockeye salmon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (916, 'Soldierfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (917, 'Sole Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (918, 'South American darter Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (919, 'South American Lungfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (920, 'Southern Dolly Varden Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (921, 'Southern flounder Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (922, 'Southern grayling Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (923, 'Southern hake Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (924, 'Southern sandfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (925, 'Southern smelt Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (926, 'Spadefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (927, 'Spaghetti eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (928, 'Spanish mackerel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (929, 'Spearfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (930, 'Speckled trout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (931, 'Spiderfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (932, 'Spikefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (933, 'Spinefoot Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (934, 'Spiny-back Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (935, 'Spiny basslet Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (936, 'Spiny dogfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (937, 'Spiny dwarf catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (938, 'Spiny eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (939, 'Spinyfin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (940, 'Splitfin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (941, 'Spookfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (942, 'Spotted danio Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (943, 'Spotted dogfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (944, 'Sprat Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (945, 'Springfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (946, 'Squarehead catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (947, 'Squaretail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (948, 'Squawfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (949, 'Squeaker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (950, 'Squirrelfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (951, 'Staghorn sculpin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (952, 'Stargazer Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (953, 'Starry flounder Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (954, 'Steelhead Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (955, 'Stickleback Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (956, 'Stingfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (957, 'Stingray Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (958, 'Stonecat Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (959, 'Stonefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (960, 'Stoneroller minnow Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (961, 'Straptail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (962, 'Stream catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (963, 'Streamer fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (964, 'Striped bass Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (965, 'Striped burrfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (966, 'Sturgeon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (967, 'Sucker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (968, 'Suckermouth armored catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (969, 'Summer flounder Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (970, 'Sundaland noodlefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (971, 'Sunfish (opah) Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (972, 'Sunfish (mola mola) Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (973, 'Surf sardine Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (974, 'Surfperch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (975, 'Surgeonfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (976, 'Swallower Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (977, 'Swamp-eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (978, 'Swampfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (979, 'Sweeper Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (980, 'Swordfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (981, 'Swordtail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (982, 'Tadpole cod Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (983, 'Tadpole fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (984, 'Tailor Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (985, 'Taimen Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (986, 'Tang Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (987, 'Tapetail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (988, 'Tarpon Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (989, 'Tarwhine Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (990, 'Telescopefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (991, 'Temperate bass Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (992, 'Temperate ocean-bass Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (993, 'Temperate perch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (994, 'Tench Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (995, 'Tenpounder Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (996, 'Tenuis Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (997, 'Tetra Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (998, 'Thorny catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (999, 'Thornfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1000, 'Thornyhead Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1001, 'Threadfin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1002, 'Threadfin bream Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1003, 'Threadsail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1004, 'Threadtail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1005, 'Three spot gourami Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1006, 'Threespine stickleback Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1007, 'Three-toothed puffer Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1008, 'Thresher shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1009, 'Tidewater goby Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1010, 'Tiger barb Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1011, 'Tigerperch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1012, 'Tiger shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1013, 'Tiger shovelnose catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1014, 'Tilapia Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1015, 'Tilefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1016, 'Titan triggerfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1017, 'Toadfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1018, 'Tommy ruff Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1019, 'Tompot blenny Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1020, 'Tonguefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1021, 'Tope Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1022, 'Topminnow Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1023, 'Torpedo Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1024, 'Torrent catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1025, 'Torrent fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1026, 'Trahira Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1027, 'Treefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1028, 'Trevally Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1029, 'Trench Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1030, 'Triggerfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1031, 'Triplefin blenny Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1032, 'Triplespine Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1033, 'Tripletail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1034, 'Tripod fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1035, 'Trout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1036, 'Trout cod Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1037, 'Trout-perch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1038, 'Trumpeter Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1039, 'Trumpetfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1040, 'Trunkfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1041, 'Tubeblenny Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1042, 'Tube-eye Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1043, 'Tube-snout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1044, 'Tubeshoulder Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1045, 'Tui chub Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1046, 'Tuna Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1047, 'Turbot Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1048, 'Turkeyfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1049, 'Unicorn fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1050, 'Upside-down catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1051, 'Velvet-belly shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1052, 'Velvet catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1053, 'Velvetfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1054, 'Vendace Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1055, 'Vimba Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1056, 'Viperfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1057, 'Wahoo Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1058, 'Walking catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1059, 'Wallago Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1060, 'Walleye Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1061, 'Walleye pollock Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1062, 'Walu Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1063, 'Warbonnet Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1064, 'Warmouth Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1065, 'Warty angler Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1066, 'Waryfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1067, 'Wasp fish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1068, 'Weasel shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1069, 'Weatherfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1070, 'Weever Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1071, 'Weeverfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1072, 'Wels catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1073, 'Whale catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1074, 'Whalefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1075, 'Whale shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1076, 'Whiff Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1077, 'Whiptail gulper Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1078, 'Whitebait Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1079, 'White croaker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1080, 'Whitefish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1081, 'White marlin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1082, 'White shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1083, 'Whitetip reef shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1084, 'Whiting Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1085, 'Wobbegong Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1086, 'Wolf-eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1087, 'Wolffish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1088, 'Wolf-herring Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1089, 'Woody sculpin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1090, 'Worm eel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1091, 'Wormfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1092, 'Wrasse Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1093, 'Wrymouth Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1094, 'X-ray tetra Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1095, 'Yellow-and-black triplefin Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1096, 'Yellowbanded perch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1097, 'Yellow bass Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1098, 'Yellow-edged moray Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1099, 'Yellow-eye mullet Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1100, 'Yellowhead jawfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1101, 'Yellowfin croaker Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1102, 'Yellowfin cutthroat trout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1103, 'Yellowfin grouper Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1104, 'Yellowfin pike Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1105, 'Yellowfin surgeonfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1106, 'Yellowfin tuna Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1107, 'Yellow jack Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1108, 'Yellowmargin triggerfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1109, 'Yellow moray Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1110, 'Yellow perch Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1111, 'Yellowtail Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1112, 'Yellowtail amberjack Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1113, 'Yellowtail barracuda Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1114, 'Yellowtail clownfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1115, 'Yellowtail horse mackerel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1116, 'Yellowtail kingfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1117, 'Yellowtail snapper Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1118, 'Yellow tang Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1119, 'Yellow weaver Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1120, 'Yellowbelly tail catfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1121, 'Zander Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1122, 'Zebra bullhead shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1123, 'Zebra danio Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1124, 'Zebrafish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1125, 'Zebra lionfish Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1126, 'Zebra loach Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1127, 'Zebra oto Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1128, 'Zebra pleco Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1129, 'Zebra shark Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1130, 'Zebra tilapia Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1131, 'Ziege Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1132, 'Zingel Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1133, 'Zebra trout Food, Co.');
-INSERT customer(id, name)
+INSERT
+customer(id, name)
 VALUES (1134, 'Zebra turkeyfish Food, Co.');
 
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 00:00:00', 'Swede ', 'Madtom Food, Co.', 7, 38, 549, 528, 3696);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 00:04:45', 'Olive ', 'Old World knifefish Food, Co.', 16, 24, 632, 781, 12496);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 00:14:10', 'Peas ', 'Darter Food, Co.', 8, 30, 251, 373, 2984);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 00:27:02', 'Shallots ', 'Lampfish Food, Co.', 46, 32, 496, 331, 15226);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 00:49:21', 'Yam', 'Ratfish Food, Co.', 20, 39, 735, 790, 15800);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 01:02:15', 'Squash ', 'Green swordtail Food, Co.', 36, 34, 409, 190, 6840);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 01:12:20', 'Swede ', 'Cutthroat trout Food, Co.', 16, 38, 245, 528, 8448);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 01:37:52', 'Peas ', 'Frogfish Food, Co.', 84, 30, 361, 373, 31332);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 01:51:49', 'Tomato ', 'Combtail gourami Food, Co.', 45, 36, 217, 361, 16245);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 01:57:17', 'Carrot ', 'Lemon sole Food, Co.', 57, 10, 507, 460, 26220);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 02:13:52', 'Cabbage ', 'Cuskfish Food, Co.', 40, 8, 242, 492, 19680);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 02:39:36', 'Lettuce ', 'Ridgehead Food, Co.', 68, 21, 762, 964, 65552);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 02:59:45', 'Cucumber ', 'Sweeper Food, Co.', 78, 16, 979, 472, 36816);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 03:23:51', 'Aubergine ', 'Combtooth blenny Food, Co.', 68, 3, 218, 294, 19992);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 03:39:47', 'Mushroom ', 'Muskellunge Food, Co.', 71, 22, 600, 347, 24637);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 03:57:46', 'Peppers ', 'Lake whitefish Food, Co.', 93, 27, 495, 297, 27621);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 04:14:29', 'Tomato ', 'Quillback Food, Co.', 100, 36, 727, 361, 36100);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 04:42:10', 'Sweet Potato ', 'Piranha Food, Co.', 36, 35, 692, 650, 23400);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 04:55:42', 'Sweet Potato ', 'Eel Food, Co.', 18, 35, 294, 650, 11700);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 05:01:56', 'Cucumber ', 'Bluefin tuna Food, Co.', 81, 16, 121, 472, 38232);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 05:26:32', 'Olive ', 'Mosquitofish Food, Co.', 16, 24, 587, 781, 12496);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 05:31:29', 'Garlic ', 'Mojarra Food, Co.', 4, 19, 573, 484, 1936);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 05:48:00', 'Brussels Sprouts ', 'Sevan trout Food, Co.', 14, 7, 854, 776, 10864);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 05:54:16', 'Yam', 'Monkfish Food, Co.', 86, 39, 578, 790, 67940);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 06:18:03', 'Courgette ', 'Cow shark Food, Co.', 97, 15, 230, 251, 24347);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 06:40:03', 'Onion ', 'Australian prowfish Food, Co.', 83, 25, 49, 810, 67230);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 06:51:40', 'Olive ', 'Porgy Food, Co.', 90, 24, 712, 781, 70290);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 06:52:59', 'Sweet Potato ', 'Atlantic cod Food, Co.', 6, 35, 38, 650, 3900);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 07:09:00', 'Bok Choy ', 'Sundaland noodlefish Food, Co.', 21, 5, 970, 533, 11193);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 07:25:52', 'Parsnip ', 'Blacktip reef shark Food, Co.', 95, 26, 100, 336, 31920);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 07:47:33', 'Bok Choy ', 'Pacific cod Food, Co.', 64, 5, 647, 533, 34112);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 07:53:15', 'Celery ', 'Lined sole Food, Co.', 47, 13, 513, 536, 25192);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 08:16:55', 'Turnip ', 'Smalltooth sawfish Food, Co.', 56, 37, 897, 471, 26376);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 08:25:53', 'Potato ', 'Cownose ray Food, Co.', 74, 28, 229, 232, 17168);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 08:36:02', 'Spinach ', 'Cichlid Food, Co.', 85, 33, 194, 409, 34765);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 08:55:22', 'Olive ', 'Fierasfer Food, Co.', 22, 24, 328, 781, 17182);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 09:18:53', 'Garlic ', 'Summer flounder Food, Co.', 43, 19, 969, 484, 20812);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 09:47:06', 'Courgette ', 'Lyretail Food, Co.', 22, 15, 546, 251, 5522);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 10:13:23', 'Sweet Potato ', 'Dottyback Food, Co.', 22, 35, 279, 650, 14300);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 10:22:15', 'Olive ', 'Zebra trout Food, Co.', 39, 24, 1133, 781, 30459);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 10:34:01', 'Aubergine ', 'Walu Food, Co.', 57, 3, 1062, 294, 16758);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 10:38:06', 'Carrot ', 'Barramundi Food, Co.', 10, 10, 69, 460, 4600);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 10:52:33', 'Brussels Sprouts ', 'Fire bar danio Food, Co.', 78, 7, 333, 776, 60528);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 11:15:31', 'Spinach ', 'Parrotfish Food, Co.', 48, 33, 660, 409, 19632);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 11:24:12', 'Turnip ', 'Blenny Food, Co.', 7, 37, 112, 471, 3297);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 11:29:35', 'Tomato ', 'Deep sea bonefish Food, Co.', 42, 36, 256, 361, 15162);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 11:56:55', 'Okra ', 'Black mackerel Food, Co.', 67, 23, 101, 1046, 70082);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 12:14:49', 'Cabbage ', 'Lionfish Food, Co.', 63, 8, 516, 492, 30996);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 12:31:50', 'Squash ', 'Mudfish Food, Co.', 38, 34, 592, 190, 7220);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 12:38:35', 'Courgette ', 'Clown loach Food, Co.', 22, 15, 201, 251, 5522);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 12:48:54', 'Onion ', 'Bangus Food, Co.', 37, 25, 59, 810, 29970);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 13:14:24', 'Mushroom ', 'Weever Food, Co.', 88, 22, 1070, 347, 30536);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 13:34:12', 'Garlic ', 'Yellow-edged moray Food, Co.', 73, 19, 1098, 484, 35332);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 13:40:30', 'Cauliflower ', 'Tidewater goby Food, Co.', 16, 11, 1009, 565, 9040);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 13:42:58', 'Broccoli ', 'Spotted dogfish Food, Co.', 89, 6, 943, 1025, 91225);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 13:52:37', 'Dram sticks ', 'Beluga sturgeon Food, Co.', 41, 17, 81, 164, 6724);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 14:10:07', 'Corn ', 'Flatfish Food, Co.', 15, 14, 341, 739, 11085);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 14:30:17', 'Celery ', 'Sandbar shark Food, Co.', 11, 13, 809, 536, 5896);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 14:42:31', 'Peppers ', 'Common tunny Food, Co.', 88, 27, 220, 297, 26136);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 14:58:36', 'Mushroom ', 'Rohu Food, Co.', 87, 22, 779, 347, 30189);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 15:01:20', 'Okra ', 'Squirrelfish Food, Co.', 84, 23, 950, 1046, 87864);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 15:06:33', 'Spinach ', 'Southern sandfish Food, Co.', 90, 33, 924, 409, 36810);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 15:10:16', 'Onion ', 'Zebra tilapia Food, Co.', 88, 25, 1130, 810, 71280);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 15:32:41', 'Capsicum ', 'Devil ray Food, Co.', 20, 9, 267, 578, 11560);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 16:01:08', 'Asparagus ', 'Blue danio Food, Co.', 24, 2, 118, 103, 2472);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 16:13:19', 'Pumpkin ', 'Sandperch Food, Co.', 6, 29, 819, 639, 3834);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 16:28:45', 'Spinach ', 'Jewel tetra Food, Co.', 64, 33, 470, 409, 26176);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 16:53:37', 'Pumpkin ', 'Oilfish Food, Co.', 51, 29, 630, 639, 32589);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 16:57:16', 'Sweet Potato ', 'Sandburrower Food, Co.', 5, 35, 810, 650, 3250);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 17:00:58', 'Cabbage ', 'Whiff Food, Co.', 12, 8, 1076, 492, 5904);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 17:14:04', 'Onion ', 'Eel cod Food, Co.', 63, 25, 296, 810, 51030);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 17:25:44', 'Peas ', 'Glass knifefish Food, Co.', 26, 30, 386, 373, 9698);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 17:53:06', 'Cucumber ', 'Rough pomfret Food, Co.', 15, 16, 783, 472, 7080);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 18:03:35', 'Aubergine ', 'Chimaera Food, Co.', 90, 3, 188, 294, 26460);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 18:05:16', 'Yam', 'Hammerjaw Food, Co.', 39, 39, 439, 790, 30810);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 18:09:41', 'Tomato ', 'Northern lampfish Food, Co.', 18, 36, 616, 361, 6498);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 18:13:50', 'Olive ', 'Cowfish Food, Co.', 26, 24, 228, 781, 20306);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 18:23:39', 'Cabbage ', 'Goldspotted killifish Food, Co.', 73, 8, 397, 492, 35916);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 18:29:46', 'Bok Choy ', 'Old World knifefish Food, Co.', 34, 5, 632, 533, 18122);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 18:35:10', 'Carrot ', 'Crocodile icefish Food, Co.', 73, 10, 236, 460, 33580);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 18:39:23', 'Celeriac ', 'Mozambique tilapia Food, Co.', 39, 12, 590, 462, 18018);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 19:04:22', 'Peppers ', 'Atlantic herring Food, Co.', 1, 27, 40, 297, 297);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 19:10:06', 'Celery ', 'Ridgehead Food, Co.', 12, 13, 762, 536, 6432);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 19:10:49', 'Cabbage ', 'Ghoul Food, Co.', 84, 8, 375, 492, 41328);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 19:30:12', 'Carrot ', 'Flashlight fish Food, Co.', 46, 10, 340, 460, 21160);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 19:48:35', 'Garlic ', 'Pygmy sunfish Food, Co.', 94, 19, 723, 484, 45496);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 20:02:15', 'Shallots ', 'Dwarf loach Food, Co.', 14, 32, 291, 331, 4634);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 20:20:09', 'Pumpkin ', 'Blue-redstripe danio Food, Co.', 46, 29, 119, 639, 29394);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 20:32:12', 'Artichokes ', 'Rio Grande perch Food, Co.', 33, 1, 765, 957, 31581);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 20:42:44', 'Peppers ', 'Bluegill Food, Co.', 55, 27, 123, 297, 16335);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 20:48:21', 'Asparagus ', 'Freshwater eel Food, Co.', 25, 2, 354, 103, 2575);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 21:13:25', 'Carrot ', 'Grunt Food, Co.', 1, 10, 417, 460, 460);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 21:41:35', 'Brussels Sprouts ', 'Warmouth Food, Co.', 45, 7, 1064, 776, 34920);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 22:02:29', 'Cucumber ', 'Canthigaster rostrata Food, Co.', 4, 16, 860, 472, 1888);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 22:24:34', 'Peppers ', 'Deep sea anglerfish Food, Co.', 41, 27, 255, 297, 12177);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 22:36:34', 'Capsicum ', 'Triplefin blenny Food, Co.', 90, 9, 1031, 578, 52020);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 22:51:40', 'Shallots ', 'Bala shark Food, Co.', 55, 32, 53, 331, 18205);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 23:03:16', 'Carrot ', 'Oriental loach Food, Co.', 9, 10, 643, 460, 4140);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 23:29:13', 'Carrot ', 'Cepalin Food, Co.', 5, 10, 182, 460, 2300);
-INSERT saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
+INSERT
+saleslog(dt, item, customer, qty, item_id, customer_id, unitprice, total)
 VALUES ('2010-1-1 23:52:34', 'Courgette ', 'Snubnose parasitic eel Food, Co.', 5, 15, 913, 251, 1255);
 GO
 EXIT
