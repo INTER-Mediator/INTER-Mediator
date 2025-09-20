@@ -14,10 +14,10 @@ composer update --with-all-dependencies
 mv spec/tempfile '__Did_you_run_composer_update.txt'
 
 cd spec/run
-npm update
+npm install --before 2025-09-14
 
 cd ../run-safari
-npm update
+npm install --before 2025-09-14
 
 # brew unlink php@7.4
 # brew link php

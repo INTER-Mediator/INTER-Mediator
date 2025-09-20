@@ -10,7 +10,7 @@
 
 # How to install the JSDoc (Node and npm are already installed)
 # 1. Set your current directory to the parent of INTER-Mediator directory.
-# 2. Do the "npm install jsdoc" command.
+# 2. Do the "npm install jsdoc --before 2025-09-14" command.
 
 jsDocRelativePath="./node_modules/.bin/jsdoc"
 jsDocOutput="./jsdoc-out/"

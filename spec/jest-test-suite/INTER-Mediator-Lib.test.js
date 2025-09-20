@@ -7,7 +7,7 @@
  * [Preparation]
  * - Install Node.js locally.
  * - Set the current directory to the INTER-Mediator dirctory.
- * - Execute command 'npm install'
+ * - Execute command 'npm install --before 2025-09-14'
  *
  * [At the start of your development]
  * - Set the current directory to the INTER-Mediator dirctory.
