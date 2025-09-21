@@ -101,7 +101,7 @@ jobs:
         uses: browser-actions/setup-edge@latest
 
       - name: Setup WebdriverIO
-        run: cd spec/run;npm update
+        run: cd spec/run;npm install --before 2025-09-14
 
       - name: Boot the web server with php server mode
         run: |

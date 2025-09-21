@@ -30,7 +30,7 @@ For information about INTER-Mediator, refer to the following.
   - ```mouf/nodejs-installer```
   - ```simplesamlphp/composer-module-installer```
   - ```simplesamlphp/composer-xmlprovider-installer```
-- After installation, move to vendor/inter-mediator/inter-mediator and run the ```npm install``` command.
+- After installation, move to vendor/inter-mediator/inter-mediator and run the ```npm install --before 2025-09-14``` command.
 - Then, run the ```vendor/inter-mediator/inter-mediator/dist-docs/generateminifyjshere.sh``` script.
 
 # Post-Installation Tasks for INTER-Mediator

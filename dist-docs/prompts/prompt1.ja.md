@@ -25,9 +25,9 @@ Windsurf上で、実際に試したところ、モデルとして、Sonet 4、Ge
   - ```mouf/nodejs-installer```
   - ```simplesamlphp/composer-module-installer```
   - ```simplesamlphp/composer-xmlprovider-installer```
-- インストール後に、vendor/inter-mediator/inter-mediatorに移動して、```npm install```コマンドを実行します。
+- インストール後に、vendor/inter-mediator/inter-mediatorに移動して、```npm install --before 2025-09-14```コマンドを実行します。
 - その後に、```vendor/inter-mediator/inter-mediator/dist-docs/generateminifyjshere.sh``` スクリプトを実行します。
-- 後々のアップデート作業のため、composer.jsonファイルには、installあるいはupdate実行後のスクリプトを定義して、```npm install```あるいは```npm update```コマンドの実行とgenerateminifyjshere.shスクリプトの実行が行われるようにしておきます。
+- 後々のアップデート作業のため、composer.jsonファイルには、installあるいはupdate実行後のスクリプトを定義して、```npm install --before 2025-09-14```の実行とgenerateminifyjshere.shスクリプトの実行が行われるようにしておきます。
 
 # INTER-Mediatorインストール後の作業
 - プロジェクトのルートにlibディレクトリを作成してください。
