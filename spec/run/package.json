@@ -38,7 +38,6 @@
   },
   "scripts": {
     "test": "npx wdio run ./run/wdio.conf.js",
-    "postinstall": "npmpd",
     "wdio": "npx wdio run wdio.conf.js"
   },
   "devDependencies": {

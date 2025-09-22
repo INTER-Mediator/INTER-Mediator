@@ -3,10 +3,10 @@
 Installation and starting tests are below. The last command can the end-to-end test with WebdriverIO.
 ```
 cd spec/run
-npm install --before 2025-09-14
+pnpm install --frozen-lockfile
 npm run wdio
 ```
-After setup with the command ```npm install --before 2025-09-14```, you can test with this command on the root of this repository:
+After setup with the command ```pnpm install --frozen-lockfile```, you can test with this command on the root of this repository:
 ```
 composer wdio-test
 ```
