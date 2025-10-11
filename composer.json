@@ -33,7 +33,7 @@
   "extra": {
     "mouf": {
       "nodejs": {
-        "version": "^24",
+        "version": "22",
         "includeBinInPath": true
       }
     }
