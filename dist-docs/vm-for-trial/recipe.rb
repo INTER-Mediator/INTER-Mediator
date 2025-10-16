@@ -2284,8 +2284,8 @@ elsif node[:platform] == 'ubuntu'
   execute 'dpkg -i google-chrome-stable_current_amd64.deb' do
     command 'dpkg -i google-chrome-stable_current_amd64.deb'
   end
-  execute 'npm install -g chromedriver --unsafe-perm --before 2025-09-19' do
-    command 'npm install -g chromedriver --unsafe-perm --before 2025-09-19'
+  execute 'npm install -g chromedriver --unsafe-perm --before `date +"%Y-%m-%d" --date "7 days"`' do
+    command 'npm install -g chromedriver --unsafe-perm --before `date +"%Y-%m-%d" --date "7 days"`'
   end
 end
 
