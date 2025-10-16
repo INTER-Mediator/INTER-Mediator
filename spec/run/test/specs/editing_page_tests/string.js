@@ -40,6 +40,7 @@ module.exports = (EditingPage) => {
       await expect(EditingPage.fieldVc1Checkbox).not.toBeSelected() // Checking initial value
       await EditingPage.fieldVc1Checkbox.click() // ON
       await browser.pause(waiting)
+      await expect(EditingPage.fieldVc1Checkbox).toBeSelected()
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
       await EditingPage.navigatorUpdateButton.waitForClickable()
@@ -49,6 +50,7 @@ module.exports = (EditingPage) => {
       await EditingPage.fieldVc1Checkbox.waitForClickable()
       await EditingPage.fieldVc1Checkbox.click() // OFF
       await browser.pause(waiting)
+      await expect(EditingPage.fieldVc1Checkbox).not.toBeSelected()
       await EditingPage.navigatorUpdateButton.waitForClickable()
       await EditingPage.navigatorUpdateButton.click()
       await EditingPage.navigatorUpdateButton.waitForClickable()
