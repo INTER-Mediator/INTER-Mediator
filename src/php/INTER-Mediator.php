@@ -22,7 +22,7 @@ use IntlDateFormatter;
 // Setup autoloader
 $imRoot = dirname(__FILE__, 3) . DIRECTORY_SEPARATOR;
 $autoLoad = $imRoot . 'vendor/autoload.php';
-if (file_exists($autoLoad)) { // If vendor is inside INTER-Mediator
+if (file_exists($autoLoad)) { // If the vendor is inside INTER-Mediator
     require($autoLoad);
 } else { // If INTER-Mediator is installed with composer.json
     $vendorRoot = dirname($imRoot, 2) . DIRECTORY_SEPARATOR;
@@ -42,10 +42,10 @@ spl_autoload_register(function (string $className): bool {
     }
     $paramPath = Params::getParameterValue("loadFrom", false);
     $searchDirs = [
-        // Load from the file located on the same directory as the definition file.
+        // Load from the file located in the same directory as the definition file.
         dirname($_SERVER['SCRIPT_FILENAME']) . "/" . implode('/', $comps) . ".php",
         dirname($_SERVER['SCRIPT_FILENAME']) . "/{$className}.php",
-        // Load from the file located on the same directory as the page file.
+        // Load from the file located in the same directory as the page file.
         $refPath . "/" . implode('/', $comps) . ".php",
         $refPath . "/{$className}.php",
         // Load from the specific directory with params.php
@@ -131,7 +131,7 @@ function IM_Entry(?array $dataSource, ?array $options, ?array $dbSpecification, 
             $fileUploader->processing($dataSource, $options, $dbSpecification, $debug);
         }
         $resultLog = $fileUploader->getResultForLog();
-    } else if (!isset($_POST['access']) && !isset($_GET['media'])) {    // Download JS module to client
+    } else if (!isset($_POST['access']) && !isset($_GET['media'])) {    // Download JS module to a client
         if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             $db = new DB\Proxy();
             $db->initialize($dataSource, $options, $dbSpecification, $debug, '');
@@ -167,7 +167,7 @@ function IM_Entry(?array $dataSource, ?array $options, ?array $dbSpecification, 
         ServiceServerProxy::instance()->checkServiceServer();
         $dbInstance = new DB\Proxy();
         $isInitialized = $dbInstance->initialize($dataSource, $options, $dbSpecification, $debug);
-        $dbInstance->logger->setDebugMessage("Definition File: {$origin}", 1);
+        $dbInstance->logger->setDebugMessage("Definition File: {$origin}");
         $dbInstance->logger->setErrorMessages(ServiceServerProxy::instance()->getErrors());
         $dbInstance->logger->setDebugMessages(ServiceServerProxy::instance()->getMessages());
         if (!$isInitialized) {

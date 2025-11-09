@@ -501,6 +501,6 @@ class DefinitionChecker
                 'convert-date' => ['*' => 'string'],
                 'convert-datetime' => ['*' => 'string'],
             ],
-        ], // There is additional definitions. See the constructor.
+        ], // There are additional definitions. See the constructor.
     ];
 }

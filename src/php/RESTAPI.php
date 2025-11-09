@@ -2,18 +2,19 @@
 
 namespace INTERMediator;
 
+use Exception;
 use INTERMediator\DB\Proxy;
 use INTERMediator\DB\Proxy_ExtSupport;
 use Symfony\Component\Yaml\Yaml;
 
 /**
  * A placeholder entry point for REST API.
- * @param array $dataSource The data source definitions.
+ * @param null|array $dataSource The data source definitions.
  * @param array|null $options The option definitions.
- * @param array $dbSpecification The database connection specifications.
- * @param bool $debug If true, enables debug mode.
+ * @param null|array $dbSpecification The database connection specifications.
+ * @param null|bool $debug If true, enables debug mode.
  */
-function IM_Dummy_Entry_RESTAPI($dataSource, $options, $dbSpecification, $debug = false): void
+function IM_Dummy_Entry_RESTAPI(?array $dataSource, ?array $options, ?array $dbSpecification, ?bool $debug = false): void
 {
     global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
     $globalDataSource = $dataSource;
@@ -55,7 +56,7 @@ class RESTAPI
     /**
      * @var string|null The path to the definition file.
      */
-    private string|null $pathToDefFile = null;
+    private string|null $pathToDefFile;
 
     /**
      * RESTAPI constructor.
@@ -88,7 +89,7 @@ class RESTAPI
      * Outputs an error message and terminates the script.
      * @param string $message The error message.
      */
-    private function errorAndExit(string $message)
+    private function errorAndExit(string $message): void
     {
         header("Content-type: application/json; charset=UTF-8");
         http_response_code(400);
@@ -115,8 +116,7 @@ class RESTAPI
          * @param string $validStatement The valid inclusion statement.
          * @return string|null The modified source code.
          */
-        $changeIncludeIMPath = function($src, $validStatement)
-        {
+        $changeIncludeIMPath = function (?string $src, string $validStatement) {
             $includeFunctions = array('require_once', 'include_once', 'require', 'include');
             foreach ($includeFunctions as $targetFunction) {
                 $pattern = '/' . $targetFunction . '\\(.+INTER-Mediator.php.+\\);/';
@@ -124,6 +124,7 @@ class RESTAPI
                     return preg_replace($pattern, $validStatement, $src);
                 }
             }
+            return $src;
         };
 
         $fileContent = file_get_contents($path);
@@ -158,7 +159,7 @@ class RESTAPI
 
     /**
      * Processes the API request.
-     * @throws \Exception
+     * @throws Exception
      */
     public function processing(): void
     {
@@ -189,7 +190,7 @@ class RESTAPI
         }
         // Checking just existing "authetication" keyed value
         if (isset($targetContextDef["authentication"]) or isset($this->options["authentication"])) {
-            // Authentication with accessToken field of authuser table.
+            // Authentication with accessToken field of the authuser table.
             $token = substr($_SERVER['HTTP_AUTHORIZATION'] ?? "", 7);
             $authResult = $this->dbRead("authuser", ["accessToken" => $token]);
             $isAuthSucceed = (count($authResult) === 1);
@@ -205,7 +206,7 @@ class RESTAPI
         }
         $sign = "_operator";
         foreach ($_GET as $key => $value) {
-            if (substr($key, -strlen($sign)) !== $sign) { // The key doesn't end with _operator.
+            if (!str_ends_with($key, $sign)) { // The key doesn't end with _operator.
                 $query[] = ["field" => $key, "operator" => $_GET[$key . $sign] ?? "=", "value" => $value];
             }
         }
@@ -237,7 +238,7 @@ class RESTAPI
                     $result = $this->dbUpdate($this->targetContextName, $query, $bodyData);
                     break;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->errorAndExit($e->getMessage());
         }
         http_response_code(200);
@@ -249,8 +250,9 @@ class RESTAPI
      * Gets information about a context.
      * @param array $contextDef The context definition.
      * @return array An array containing context information.
+     * @throws Exception
      */
-    private function contextInfo(array $contextDef)
+    private function contextInfo(array $contextDef): array
     {
         $name = $contextDef["name"];
         $readEntity = $contextDef["view"] ?? $contextDef["name"] ?? false;
@@ -288,7 +290,7 @@ class RESTAPI
         $pathToScript = $_SERVER["SCRIPT_FILENAME"];
         $path = IMUtil::relativePath($pathToScript, $pathToCSS);
 
-        echo "<html><head><title>INTER-Mediator API Specifications</title>";
+        echo "<html lang='en'><head><title>INTER-Mediator API Specifications</title>";
         echo "<link rel='stylesheet' href='$path' /></head><body>";
         echo "<h1>API Information</h1>";
         echo "<div>API URL: $url/&lt;context-name&gt;[/&lt;primary-key-value&gt;]</div>";
@@ -302,13 +304,17 @@ class RESTAPI
         echo "<h1>Available Contexts</h1><table class='context-table'>";
         echo "<tr><th>Context Name</th><th>Authentication</th><th>Read</th><th>Create</th><th>Update</th><th>Delete</th></tr>";
         foreach ($this->dataSource as $contextDef) {
-            [$contextName, $auth, $read, $create, $update, $delete] = $this->contextInfo($contextDef);
-            $authMark = ($auth || isset($this->options["authentication"])) ? "Required" : "-";
-            $readMark = $read ? "OK" : "-";
-            $createMark = $create ? "OK" : "-";
-            $updateMark = $update ? "OK" : "-";
-            $deleteMark = $delete ? "OK" : "-";
-            echo "<tr><th>$contextName</th><td>$authMark</td><td>$readMark</td><td>$createMark</td><td>$updateMark</td><td>$deleteMark</td></tr>";
+            try {
+                [$contextName, $auth, $read, $create, $update, $delete] = $this->contextInfo($contextDef);
+                $authMark = ($auth || isset($this->options["authentication"])) ? "Required" : "-";
+                $readMark = $read ? "OK" : "-";
+                $createMark = $create ? "OK" : "-";
+                $updateMark = $update ? "OK" : "-";
+                $deleteMark = $delete ? "OK" : "-";
+                echo "<tr><th>$contextName</th><td>$authMark</td><td>$readMark</td><td>$createMark</td><td>$updateMark</td><td>$deleteMark</td></tr>";
+            } catch (Exception $e) {
+                echo "<tr><th>{$contextDef['name']}</th><td colspan='5'>{$e->getMessage()}</td></tr>";
+            }
         }
         echo "</table>";
         echo <<<EOL

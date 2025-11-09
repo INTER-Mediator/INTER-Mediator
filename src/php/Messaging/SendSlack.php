@@ -54,7 +54,7 @@ class SendSlack extends MessagingProvider
      * Sends messages to Slack based on the given DB context and result.
      *
      * @param Proxy $dbProxy Proxy class's instance.
-     * @param array $contextDef Context definition array of current context.
+     * @param array $contextDef Context definition array of the current context.
      * @param array $result Result of query or other db operations.
      * @return bool True if all messages sent successfully, false if any error occurred.
      */

@@ -23,7 +23,7 @@ namespace INTERMediator;
 class Theme
 {
     /**
-     * Alternate theme path if specified in configuration.
+     * Alternate theme path if specified in the configuration.
      *
      * @var string|null
      */
@@ -69,6 +69,7 @@ class Theme
      * Processes the theme resource request and outputs the appropriate file content with headers.
      * Handles CSS aggregation and image resource resolution.
      *
+     * @param string|null $deffile
      * @return void
      */
     public function processing(?string $deffile): void

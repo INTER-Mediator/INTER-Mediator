@@ -47,15 +47,15 @@ class MessagingProxy extends MessagingProvider
     /**
      * Processes the messaging request by delegating to the actual provider.
      *
-     * @param Proxy $dbProxy Proxy class's instance for logging and settings.
-     * @param array $contextDef Context definition array of current context.
+     * @param Proxy $dbProxy Proxy class's an instance for logging and settings.
+     * @param array $contextDef Context definition array of the current context.
      * @param array $result Result set from database operations.
      * @return bool True if processing succeeds, false otherwise.
      */
     public function processing(Proxy $dbProxy, array $contextDef, array $result): bool
     {
         $className = get_class($this->msgProvider);
-        $dbProxy->logger->setDebugMessage("[Messaging\\MessagingProxy] Processing with {$className} class.", 1);
+        $dbProxy->logger->setDebugMessage("[Messaging\\MessagingProxy] Processing with {$className} class.");
         $dbProxy->logger->setDebugMessage("[Messaging\\MessagingProxy] context definition: "
             . str_replace("\n", "", substr(var_export($contextDef, true), 0, 5000)), 2);
         $dbProxy->logger->setDebugMessage("[Messaging\\MessagingProxy] processing with: "

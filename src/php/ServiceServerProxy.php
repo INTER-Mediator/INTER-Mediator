@@ -57,10 +57,10 @@ class ServiceServerProxy
      */
     private ?string $foreverLog;
     /**
-     * Path of Key file for wss protocol, from params.php.
+     * Path of a Key file for wss protocol, from params.php.
      * @var string
      */
-    private string $serviceServerKey;  // Path of Key file for wss protocol
+    private string $serviceServerKey;  // Path of a Key file for wss protocol
     /**
      * Path of Cert file for wss protocol, from params.php.
      * @var string
@@ -117,7 +117,7 @@ class ServiceServerProxy
     }
 
     /**
-     * Clears the messages array.
+     * Clears the message array.
      * @return void
      */
     public function clearMessages(): void
@@ -126,7 +126,7 @@ class ServiceServerProxy
     }
 
     /**
-     * Clears the errors array.
+     * Clears the error array.
      * @return void
      */
     public function clearErrors(): void
@@ -135,7 +135,7 @@ class ServiceServerProxy
     }
 
     /**
-     * Gets the messages array.
+     * Gets the message array.
      * @return array List of messages.
      */
     public function getMessages(): array
@@ -144,7 +144,7 @@ class ServiceServerProxy
     }
 
     /**
-     * Gets the errors array.
+     * Gets the error array.
      * @return array List of errors.
      */
     public function getErrors(): array
@@ -171,7 +171,7 @@ class ServiceServerProxy
                 return false;
             }
             $isStartCLI = false;
-            if (php_sapi_name() == 'cli') { // It's executing with command line interface.
+            if (php_sapi_name() == 'cli') { // It's executing with a command line interface.
                 $message = $this->messageHead . "[ServiceServerProxy] php_sapi_name() returns=" . php_sapi_name();
                 $this->messages[] = $message;
                 $isStartCLI = true; // Do nothing; that is no try to boot the service server.
@@ -244,7 +244,7 @@ class ServiceServerProxy
     }
 
     /**
-     * Calls the service server with the specified path and post data.
+     * Calls the service server with the specified path and post-data.
      * @param string $path Path for the server request.
      * @param array|null $postData Data to be sent with the request.
      * @return string|null Response from the server, or null on failure.
@@ -365,7 +365,7 @@ class ServiceServerProxy
         if (!$result) {
             return false;
         }
-        if (strpos($result, 'true') === false && strpos($result, 'false') === false) {
+        if (!str_contains($result, 'true') && !str_contains($result, 'false')) {
             $this->errors[] = $this->messageHead . 'Server respond an irregular message.';
             return false;
         }

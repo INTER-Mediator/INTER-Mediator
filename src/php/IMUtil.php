@@ -67,7 +67,7 @@ class IMUtil
     }
 
     /**
-     * Calculates the difference in seconds from the given date/time string to now.
+     * Calculates the difference in seconds from the given date/time string now.
      *
      * @param string $dtStr Date/time string.
      * @return int Seconds from now.
@@ -86,8 +86,8 @@ class IMUtil
     /**
      * Returns the PHP version as a float or int.
      *
-     * @param string $verStr Optional version string to parse. If empty, uses current PHP version.
-     * @return int|float PHP version as number.
+     * @param string $verStr Optional version string to parse. If empty, use the current PHP version.
+     * @return int|float PHP version as a number.
      */
     public static function phpVersion(string $verStr = ''): int|float
     {
@@ -241,7 +241,7 @@ class IMUtil
             $homeDir = get_current_user();
         } else {
             // https://stackoverflow.com/questions/7771586/how-to-check-what-user-php-is-running-as
-            // get_current_user doesn't work on the ubuntu 18 of EC2. It returns the user logs in with ssh.
+            // get_current_user doesn't work on ubuntu 18 of EC2. It returns the user logs in with ssh.
             $homeDir = posix_getpwuid(posix_geteuid())["name"];
         }
         return $homeDir;
@@ -531,7 +531,7 @@ class IMUtil
      *
      * @param array $ar Input array.
      * @param string $prefix Prefix for keys.
-     * @return string JavaScript object as string.
+     * @return string JavaScript object as a string.
      */
     public static function arrayToJS(array $ar, string $prefix = ""): string
     {
@@ -571,7 +571,7 @@ class IMUtil
      * @param array $ar Input array.
      * @param string $prefix Prefix for keys.
      * @param array|null $exarray Keys to exclude.
-     * @return string JavaScript object as string.
+     * @return string JavaScript object as a string.
      */
     public static function arrayToJSExcluding(array $ar, string $prefix, ?array $exarray): string
     {
@@ -620,7 +620,7 @@ class IMUtil
     }
 
     /**
-     * Generates a random digit string of specified length.
+     * Generates a random digit string of a specified length.
      *
      * @param int $digit Number of digits.
      * @return string Random digit string.
@@ -727,7 +727,7 @@ class IMUtil
     }
 
     /**
-     * Generates a random password string of specified length.
+     * Generates a random password string of a specified length.
      * The password consists of alphanumeric characters and ends with a punctuation character.
      *
      * @param int $digit Length of the password to generate.
@@ -813,7 +813,7 @@ class IMUtil
     }
 
     /**
-     * Returns the class name for a visitor based on access string.
+     * Returns the class name for a visitor based on an access string.
      *
      * @param string $access Access type.
      * @return string Visitor class name.
@@ -890,11 +890,11 @@ class IMUtil
         $docRoot = $_SERVER['DOCUMENT_ROOT'];
         $ref = parse_url($_SERVER['HTTP_REFERER'] ?? '', PHP_URL_PATH);
         $possibleDirs = [$docRoot, $docRoot . dirname($ref), $defPoolPath,];
-        if (isset($_GET['deffile'])) { // The yaml file path is set on the deffile parameter
+        if (isset($_GET['deffile'])) { // The YAML file path is set on the deffile parameter
             $filePath = $_GET['deffile'];
             $possibleDirs[] = $docRoot;
             $possibleExts = [''];
-        } else { // The yaml file has the same name of the page file
+        } else { // The YAML file has the same name as the page file
             $filePath = basename($ref);
             $dotPos = strrpos($filePath, '.');
             if ($dotPos !== false) {

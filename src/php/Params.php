@@ -66,7 +66,7 @@ class Params
      * Retrieves the value of a parameter or an array of parameters.
      * If the parameter does not exist, returns the default value.
      *
-     * @param string|array $vName Name or array of names of the parameter(s).
+     * @param string|array $vName Name or array of names in the parameter(s).
      * @param mixed $defValue Default value(s) to return if parameter is not set.
      * @return mixed Parameter value(s) or default value(s).
      */
@@ -75,8 +75,8 @@ class Params
         /*
          * The IDE try to let us modify the code "isset(self::$vars[$vName]) ? self::$vars[$vName] : $defValue" to
          * "self::$vars[$vName] ?? $defValue", but you don't modify like that. The variable in the params.php file
-         * should be the boolean value false. In that case (i.e., the self::$vars[$vName] is false) the former code
-         * returns self::$vars[$vName], but the later one does $defValue. We expect that the false value return false.
+         * should be the boolean value false. In that case (i.e., the self::$vars[$vName] is false), the former code
+         * returns self::$vars[$vName], but the later one does $defValue. We expect that the false value returns false.
          * So please don't modify with the ?? Operator.
          */
         self::readParamsPHPFile();
