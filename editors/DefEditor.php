@@ -1265,7 +1265,7 @@ class DefEditor extends DBClass
     }
 
 
-    public function updatedRecord()
+    public function updatedRecord(): ?array
     {
         return $this->updatedRecord;
     }
