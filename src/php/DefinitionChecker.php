@@ -186,7 +186,7 @@ class DefinitionChecker
     /**
      * @var string Holds the latest error or warning message.
      */
-    private string $message;
+    private string $message = '';
     /**
      * @var array Path stack for recursive checking.
      */
