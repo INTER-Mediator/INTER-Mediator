@@ -17,7 +17,6 @@
 namespace INTERMediator;
 
 use INTERMediator\Auth\OAuthAuth;
-use INTERMediator\DB\Logger;
 
 /**
  * Class GenerateJSCode
@@ -27,7 +26,7 @@ class GenerateJSCode
 {
     /**
      * GenerateJSCode constructor.
-     * Starts session if not started, sets JS headers, and outputs security headers.
+     * Starts a session if not started, sets JS headers, and outputs security headers.
      */
     public function __construct()
     {
@@ -201,9 +200,9 @@ class GenerateJSCode
         // Generate the link to the definition file editor
         $relativeToDefFile = '';
         $editorPath = realpath($pathToIM . $ds . 'editors');
-        if ($editorPath) { // In case of core only build.
+        if ($editorPath) { // In the case of core only build.
             $defFilePath = realpath($documentRoot . $_SERVER['SCRIPT_NAME']);
-            while (strpos($defFilePath, $editorPath) !== 0 && strlen($editorPath) > 1) {
+            while (!str_starts_with($defFilePath, $editorPath) && strlen($editorPath) > 1) {
                 $editorPath = dirname($editorPath);
                 $relativeToDefFile .= '..' . $ds;
             }

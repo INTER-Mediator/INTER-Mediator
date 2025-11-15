@@ -84,4 +84,8 @@ I want to add contact records as related information to the created application.
 - The button name should be something that suggests the related table, such as "Contact".
 - When the button is clicked, it navigates to the newly created page file. Prepare a function for this, and set the button's onclick attribute to only call that function. Specify only $ as the argument for the function.
 - In the function called by clicking, assign a URL to `location.href`. The URL is the "newly created page file name" with "?id=argument" appended.
-- For the `data-im` attribute of the button, add a target specification. Specify `id` for the second section and the string "$onclick" for the third section.
+- Specify the button’s data-im attribute as a string in the following format.
+  The first section specifies the context name.
+  The second section specifies “id.”
+  The third section specifies the string “$onclick.”
+  Concatenate these sections using “@” as the separator to form the value of the data-im attribute.

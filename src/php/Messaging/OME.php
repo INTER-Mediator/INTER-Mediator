@@ -15,8 +15,8 @@
 /**
  * ###########OME.php/The character set of this file is UTF-8################
  * #
- * #  OME( Open Mail Envrionment ) for PHP   http://mac-ome.jp
- * #  by Masayuki Nii ( msyk@msyk.net )
+ * # OME(Open Mail Envrionment) for PHP http://mac-ome.jp
+ * # by Masayuki Nii (msyk@msyk.net)
  * @package OME
  */
 
@@ -46,7 +46,6 @@ use Exception;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
-use Symfony\Component\Mailer\Exception\ExceptionInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport;
@@ -136,7 +135,7 @@ class OME
     private int $waitMS;
 
     /**
-     * OME constructor.
+     * The constructor of the OME class
      * Initializes encoding and wait time.
      */
     function __construct()
@@ -860,7 +859,7 @@ class OME
     /**
      * Checks if a character is a Japanese line top inhibit character.
      * @param string $str The character to check.
-     * @return bool True if the character is a Japanese line top inhibit character, false otherwise.
+     * @return bool True, if the character is a Japanese line, top inhibits character, false otherwise.
      */
     private function isInhibitLineTopChar(string $str): bool
     {
@@ -902,7 +901,7 @@ class OME
     /**
      * Checks if a character is a Japanese line end inhibit character.
      * @param string $str The character to check.
-     * @return bool True if the character is a Japanese line end inhibit character, false otherwise.
+     * @return bool True, if the character is a Japanese line end inhibit character, false otherwise.
      */
     private function isInhibitLineEndChar(string $str): bool
     {

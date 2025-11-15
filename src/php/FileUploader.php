@@ -16,6 +16,7 @@
 
 namespace INTERMediator;
 
+use Exception;
 use INTERMediator\DB\Proxy;
 
 /**
@@ -58,7 +59,7 @@ class FileUploader
     /**
      * Gets the log result for the current upload process.
      *
-     * @return array Output message array if access log level is sufficient, otherwise empty array.
+     * @return array Output message array if access log level is enough, otherwise empty array.
      */
     public function getResultForLog(): array
     {
@@ -90,6 +91,7 @@ class FileUploader
      * @param string|null $contextName Context name for the upload.
      * @param bool $noOutput If true, suppresses output.
      * @return void
+     * @throws Exception
      */
     public function processingAsError(?array $dataSource, ?array $options, ?array $dbSpec, int $debug, ?string $contextName, bool $noOutput): void
     {
@@ -145,6 +147,7 @@ class FileUploader
      * @param array|null $dbSpec Database specification.
      * @param int $debug Debug mode level.
      * @return void
+     * @throws Exception
      */
     public function processing(?array $dataSource, ?array $options, ?array $dbSpec, int $debug): void
     {
@@ -174,6 +177,7 @@ class FileUploader
      * @param array|null $files Uploaded file(s) data.
      * @param bool $noOutput If true, suppresses output.
      * @return void
+     * @throws Exception
      */
     public function processingWithParameters(?array  $dataSource, ?array $options, ?array $dbSpec, int $debug,
                                              ?string $contextName, ?string $keyField, ?string $keyValue, ?array $field,
@@ -221,7 +225,7 @@ class FileUploader
     {
         if (function_exists('apc_fetch')) {
             $onloadScript = "window.onload=function(){setInterval(\"location.reload()\",500);};";
-            echo "<html><head><script>{$onloadScript}</script></head><body style='margin:0;padding:0'>";
+            echo "<html lang='en'><head><script>{$onloadScript}</script></head><body style='margin:0;padding:0'>";
             echo "<div style='width:160px;border:1px solid #555555;padding:1px;background-color:white;'>";
             $status = apc_fetch('upload_' . $_GET['uploadprocess']);
             if ($status === false) {
@@ -244,7 +248,7 @@ class FileUploader
      */
     protected function getRedirectUrl(?string $url): ?string
     {
-        if (str_contains(strtolower($url), '%0a') || strpos(strtolower($url), '%0d') !== false) {
+        if (str_contains(strtolower($url), '%0a') || str_contains(strtolower($url), '%0d')) {
             return NULL;
         }
 
@@ -286,7 +290,7 @@ class FileUploader
      */
     protected function checkRedirectUrl(?string $url, ?string $webServerName): bool
     {
-        if (strpos($url, 'http://') === 0 || strpos($url, 'https://') === 0) {
+        if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
             $parsedUrl = parse_url($url);
 
             $util = new IMUtil();

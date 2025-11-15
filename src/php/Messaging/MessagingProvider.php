@@ -33,7 +33,7 @@ abstract class MessagingProvider
      * Processes a messaging request.
      *
      * @param Proxy $dbProxy Proxy class's instance.
-     * @param array $contextDef The context definition array of current context.
+     * @param array $contextDef The context definition array of the current context.
      * @param array $result The result of query or other db operations.
      * @return bool True if processing succeeds, false otherwise.
      */
@@ -59,7 +59,7 @@ abstract class MessagingProvider
      *
      * @param array $record The record containing field values.
      * @param string|null $tempStr The template string with placeholders (e.g., @@field@@).
-     * @param bool $ignoreField If true, does not replace with field value directly.
+     * @param bool $ignoreField If true, does not replace it with field value directly.
      * @return string The processed string with placeholders replaced.
      */
     public function modernTemplating(array $record, ?string $tempStr, bool $ignoreField = false): string
@@ -69,7 +69,7 @@ abstract class MessagingProvider
             $bodyStr = $record[$tempStr];
         }
         if (strlen($bodyStr) > 5) {
-            $startPos = strpos($bodyStr, '@@', 0);
+            $startPos = strpos($bodyStr, '@@');
             $endPos = strpos($bodyStr, '@@', $startPos + 2);
             while ($startPos !== false && $endPos !== false) {
                 $fieldName = trim(substr($bodyStr, $startPos + 2, $endPos - $startPos - 2));

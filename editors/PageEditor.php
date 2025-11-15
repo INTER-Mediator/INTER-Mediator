@@ -104,7 +104,8 @@ class PageEditor extends DBClass
         return $this->updatedRecord;
     }
 
-    public function updatedRecord(){
+    public function updatedRecord(): ?array
+    {
         return $this->updatedRecord;
     }
 

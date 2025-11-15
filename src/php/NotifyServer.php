@@ -22,7 +22,7 @@ use INTERMediator\DB\Logger;
 /**
  * NotifyServer handles client registration and notification triggers for data changes.
  * It interacts with the database notification handler and the service server proxy to
- * propagate create, update, and delete events to registered clients.
+ * propagate, create, update, and delete events to registered clients.
  */
 class NotifyServer
 {
@@ -92,10 +92,7 @@ class NotifyServer
     public function register(string $entity, string $condition, array $pkArray): ?string
     {
         $this->dbClass->logger->setDebugMessage("[NotifyServer] register", 2);
-        if ($this->dbClass->notifyHandler) {
-            return $this->dbClass->notifyHandler->register($this->clientId, $entity, $condition, $pkArray);
-        }
-        return null;
+        return $this->dbClass->notifyHandler?->register($this->clientId, $entity, $condition, $pkArray);
     }
 
     /**
@@ -136,7 +133,7 @@ class NotifyServer
     }
 
     /**
-     * Handles create notifications and triggers the appropriate event.
+     * Handles create notifications and trigger the appropriate event.
      *
      * @param string|null $clientId Client ID that performed the creation.
      * @param string $entity Entity name.
@@ -157,7 +154,7 @@ class NotifyServer
     }
 
     /**
-     * Handles delete notifications and triggers the appropriate event.
+     * Handles delete notifications and trigger the appropriate event.
      *
      * @param string|null $clientId Client ID that performed the deletion.
      * @param string $entity Entity name.

@@ -142,7 +142,7 @@ class MediaAccess
         $this->thrownException = false;
         $contextRecord = null;
         try {
-            // If the $file ('media'parameter) isn't specified, it doesn't respond an error.
+            // If the $file ('media'parameter) isn't specified, it doesn't respond to an error.
             if (strlen($file) === 0) {
                 $erMessage = "[INTER-Mediator] The value of the 'media' key in url isn't specified.";
                 echo $erMessage;
@@ -160,20 +160,20 @@ class MediaAccess
                 $this->exitAsError(200); // The file accessing requires the media-root-dir keyed value.
             }
             /*
-             * If the FileMaker's object field is storing a PDF, the $file could be "http://server:16000/..."
-             * style URL. In case of an image, $file is just the path info as like above.
+             * If the FileMaker's object field is storing a PDF, the $file could be "http://server:16000/..." style URL.
+             * In the case of an image, $file is just the path info as like above.
              */
             list($file, $isURL) = $this->checkForFileMakerMedia($dbProxyInstance, $file, $isURL);
             // Set the target variable
             $file = IMUtil::removeNull($file);
-            if (strpos($file, '../') !== false) { // Stop for security reason.
+            if (str_contains($file, '../')) { // Stop for security reason.
                 $erMessage = "[INTER-Mediator] The '..' path component isn't permitted.";
                 echo $erMessage;
                 $this->errorHandling($erMessage);
                 $this->exitAsError(200);
             }
             $target = $isURL ? $file : "{$mediaRootDir}/{$file}";
-            // Analyze the target variable if it contains context name and key parameters.
+            // Analyze the target variable if it contains a context name and key parameters.
             $analyzeResult = $this->analyzeTarget($target);  // Check the context name and key fields.
             if ($analyzeResult) {
                 $dbProxyInstance->dbSettings->setDataSourceName($this->targetContextName);
@@ -183,7 +183,7 @@ class MediaAccess
             //if (isset($options['media-context'])) { // media-context is removed. This comment is for my memo.
             $this->cookieUser = null;
             $authResult = $this->checkAuthentication($dbProxyInstance, $options);
-            // Authentication error or authorization error rise an exception within checkAuthentication
+            // Authentication error or authorization error raise an exception within checkAuthentication
             if ($analyzeResult) { // Get the relevant relation to the context.
                 switch ($authResult) {
                     case  'field_user':
@@ -212,8 +212,8 @@ class MediaAccess
             $isNoRec = !is_array($contextRecord) || (count($contextRecord) === 0);
             $isOneRec = is_array($contextRecord) && (count($contextRecord) === 1);
             // $condition = !$isOneRec && (!$isClass || ($isClass && $isNoRec));
-            // In case of the "class:" schema, the record set can have 1 or more than 1 record.
-            // In case of not class: schema, the record set has to have just 1 record.
+            // In the case of the "class:" schema, the record set can have 1 or more than 1 record.
+            // In the case of not class: schema, the record set has to have just 1 record.
             $isNoTarget = !$this->targetContextName;
             $condition = ($isClass && !$isNoRec && !$isNoTarget)
                 || (!$isClass && ((!$isNoRec && $isOneRec && !$isNoTarget) || ($isNoRec && !$isOneRec && $isNoTarget)));
@@ -225,7 +225,7 @@ class MediaAccess
                 $this->exitAsError(500);
             }
 
-            // Responding the contents
+            // Responding to the contents
             $dq = '"';
 
             if (stripos($target, 'class://') === 0) { // class url is special handling.
@@ -288,7 +288,7 @@ class MediaAccess
     {
         $schema = ["https:", "http:", "class:", "s3:", "dropbox:", "file:"];
         foreach ($schema as $scheme) {
-            if (strpos($file, $scheme) === 0) {
+            if (str_starts_with($file, $scheme)) {
                 return true;
             }
         }
@@ -332,8 +332,8 @@ class MediaAccess
      */
     private function checkForFileMakerMedia(Proxy $dbProxyInstance, string $file, bool $isURL): array
     {
-        if (strpos($file, '/fmi/xml/cnt/') === 0 ||
-            strpos($file, '/Streaming_SSL/MainDB') === 0) {
+        if (str_starts_with($file, '/fmi/xml/cnt/') ||
+            str_starts_with($file, '/Streaming_SSL/MainDB')) {
             // FileMaker's container field storing an image.
             $urlHost = $dbProxyInstance->dbSettings->getDbSpecProtocol() . "://"
                 . urlencode($dbProxyInstance->dbSettings->getDbSpecUser()) . ":"
@@ -350,7 +350,7 @@ class MediaAccess
             $get_array = $get_array + $_GET;
             foreach ($get_array as $key => $value) {
                 if ($key !== 'media' && $key !== 'attach') {
-                    if (strpos($path, '?') !== false) {
+                    if (str_contains($path, '?')) {
                         $path .= '&';
                     } else {
                         $path .= '?';
@@ -380,7 +380,7 @@ class MediaAccess
         if (!$isContextAuth && !$isOptionAuth) { // No authentication
             return 'no_auth';
         }
-        // Check the authentication credential on cookie
+        // Check the authentication credential on a cookie
         $cookieNameUser = "_im_username";
         $cookieNameToken = "_im_mediatoken";
         if (isset($options['authentication']['realm'])) {
@@ -395,7 +395,7 @@ class MediaAccess
         if (!$dbProxyInstance->checkMediaToken($cValueUser, $cValueToken)) {
             $this->exitAsError(401);
         }
-        if ($isContextAuth) { // If the context definition has authentication keyed value.
+        if ($isContextAuth) { // If the context definition has an authentication keyed value.
             $authInfoTarget = $dbProxyInstance->dbClass->authHandler->getTargetForAuthorization("read");
             if ($authInfoTarget == 'field-user') {
                 if (!$this->targetContextName) {
@@ -442,7 +442,7 @@ class MediaAccess
         $indexKeying = -1;
         foreach ($pathComponents as $index => $dname) {
             $decodedComponent = urldecode($dname);
-            if (strpos($decodedComponent, '=') !== false) {
+            if (str_contains($decodedComponent, '=')) {
                 $indexKeying = $index;
                 $fieldComponents = explode('=', $decodedComponent);
                 $this->targetKeyField = $fieldComponents[0];
