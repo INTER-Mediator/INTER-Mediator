@@ -35,7 +35,7 @@ const INTERMediatorLog = {
    * @public
    * @type {boolean}
    */
-  suppressDebugMessageOnPage: false,
+  suppressDebugMessageOnPage: true,
   /**
    * The error messages are suppressed if it's true. This can temporally stop messages.
    * The default value of false.

@@ -16,6 +16,8 @@ Ver.15 (in Development)
 - The new class RESTAPI can publish the Web API from a definition file. The sample usage is in the sample/Sample_API.
 - [Bug Fix]On version 12, INTERMediator.clearCondition method clears page number of pagination in any case.
   INTERMediator.clearCondition should be cleared any parameter, just clears all conditions.
+- The default value of the INTERMediatorLog.suppressDebugMessageOnPage is changed from false to true.
+  The debug messages on the page is going to be deprecated.
 
 Ver.14 (June 16, 2025)
 - From this version, minimum supporting PHP version is 8.1.
