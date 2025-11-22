@@ -52,9 +52,9 @@ class Number extends NumberBase
      */
     function converterFromDBtoUser(?string $str): string
     {
-        if ($this->isZeroNoString && (double)$str == 0) {
+        if ($this->isZeroNoString && (float)$str == 0) {
             return "";
         }
-        return number_format((double)$str, $this->d, $this->decimalMark, $this->thSepMark);
+        return number_format((float)$str, $this->d, $this->decimalMark, $this->thSepMark);
     }
 }
