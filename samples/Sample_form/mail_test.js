@@ -1,7 +1,3 @@
-INTERMediatorOnPage.doBeforeConstruct = function () {
-  INTERMediatorLog.suppressDebugMessageOnPage = true
-}
-
 INTERMediatorOnPage.doAfterConstruct = function () {
   document.getElementById('wrapper').style.display = 'block'
 }

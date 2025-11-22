@@ -7,9 +7,6 @@
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
-INTERMediatorOnPage.doBeforeConstruct = function () {
-  INTERMediatorLog.suppressDebugMessageOnPage = true
-}
 
 INTERMediatorOnPage.syncBeforeInsert = (info) => {
   console.log(info)
