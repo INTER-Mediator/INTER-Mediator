@@ -350,9 +350,7 @@ abstract class ProviderAdapter
         $header = curl_getinfo($session);
         if (!$curlError) {
             $httpCode = $header['http_code'];
-            curl_close($session);
         } else {
-            curl_close($session);
             throw new Exception("CURL Error[{$curlError}]: {$url}, Message: {$errorMessage}, Headers: " . var_export($header, true));
         }
         if ($httpCode != 200) {

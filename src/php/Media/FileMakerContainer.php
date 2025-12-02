@@ -49,7 +49,6 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
                     $content = curl_exec($session);
                     $headerSize = curl_getinfo($session, CURLINFO_HEADER_SIZE);
                     $headers = substr($content, 0, $headerSize);
-                    curl_close($session);
                     $sessionKey = '';
                     $header = explode("\r\n", $headers);
                     foreach ($header as $line) {
@@ -69,7 +68,6 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
                     curl_setopt($session, CURLOPT_HTTPHEADER, $headers);
                     curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
                     $content = curl_exec($session);
-                    curl_close($session);
                 } else {
                     throw new Exception("CURL doesn't installed here.");
                 }
@@ -85,7 +83,6 @@ class FileMakerContainer extends UploadingSupport implements DownloadingSupport
                 curl_setopt($session, CURLOPT_HEADER, false);
                 curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
                 $content = curl_exec($session);
-                curl_close($session);
             } else {
                 throw new Exception("CURL doesn't installed here.");
             }
