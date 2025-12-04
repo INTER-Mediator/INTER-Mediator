@@ -25,9 +25,9 @@
     "msyk/dropbox-api-shortlivedtoken": ">=5",
     "league/csv": ">=9",
     "symfony/mailer": "^7.2.0",
-    "symfony/amazon-mailer": "^7.2.0",
-    "symfony/google-mailer": "^7.2.0",
-    "symfony/mime": "^7.2.0",
+    "symfony/amazon-mailer": "^7.4.0",
+    "symfony/google-mailer": "^7.4.0",
+    "symfony/mime": "^7.4.0",
     "symfony/yaml": ">=6.4",
     "web-token/jwt-framework": ">=3.4"
   },

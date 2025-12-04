@@ -13,8 +13,8 @@ jobs:
     strategy:
       matrix:
         operating-system: [ 'ubuntu-latest' ]
-#        operating-system: [ubuntu-latest, macos-latest, windows-latest]
-        php-versions: [ '8.1', '8.2', '8.3', '8.4' ]
+        #        operating-system: [ubuntu-latest, macos-latest, windows-latest]
+        php-versions: [ '8.2', '8.3', '8.4','8.5' ]
     name: End-to-End Test for Chrome on ${{ matrix.operating-system }} with PHP ${{ matrix.php-versions }}
     services:
       mysql: # https://qiita.com/sayama0402/items/e863ffb597ce87bf2e2f
@@ -33,8 +33,8 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: EeLeBui7%Eesa4oto
           POSTGRES_DB: test_db
-#        volumes:
-#          - /home/runner/work/INTER-Mediator/INTER-Mediator/dist-docs/sample_schema_pgsql.sql:/docker-entrypoint-initdb.d/sample_schema_pgsql.sql
+        #        volumes:
+        #          - /home/runner/work/INTER-Mediator/INTER-Mediator/dist-docs/sample_schema_pgsql.sql:/docker-entrypoint-initdb.d/sample_schema_pgsql.sql
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
@@ -75,8 +75,8 @@ jobs:
           psql --quiet postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./dist-docs/sample_schema_pgsql.sql
           psql --quiet postgresql://postgres:EeLeBui7%25Eesa4oto@127.0.0.1:5432/test_db < ./spec/run/additionals_postgresql.sql
 
-    #      - name: Check MySQL
-#        run: mysql -h 127.0.0.1 --port 3306 -u web --password=password -e "select * from person;" test_db
+      #      - name: Check MySQL
+      #        run: mysql -h 127.0.0.1 --port 3306 -u web --password=password -e "select * from person;" test_db
 
       - name: Setup SQLite
         run: |
@@ -84,7 +84,7 @@ jobs:
           sqlite3 sample.sq3 < ./dist-docs/sample_schema_sqlite.sql
           sqlite3 sample.sq3 < ./spec/run/additionals_sqlite.sql
           chmod 777 sample.sq3
-#          chown www-data sample.sq3
+      #          chown www-data sample.sq3
       - name: Modify params.php file
         run: |
           echo "" >> params.php
