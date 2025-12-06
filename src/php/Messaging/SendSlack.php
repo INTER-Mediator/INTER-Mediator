@@ -105,7 +105,6 @@ class SendSlack extends MessagingProvider
                 $this->setWarningMessage(1055, curl_error($ch));
                 $returnValue = false;
             }
-            curl_close($ch);
         }
         return $returnValue;
     }

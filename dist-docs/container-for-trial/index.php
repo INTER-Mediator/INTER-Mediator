@@ -111,7 +111,6 @@ if (file_exists('/etc/redhat-release')) {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_TIMEOUT, 1);
             $xml = curl_exec($ch);
-            curl_close($ch);
             libxml_use_internal_errors(true);
             $parsedData = simplexml_load_string($xml);
             $output = '';

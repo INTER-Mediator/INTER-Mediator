@@ -592,25 +592,25 @@ elsif node[:platform] == 'ubuntu'
     action :install
   end
   if node[:platform_version].to_f >= 20
-    package 'php8.1' do
+    package 'php8.4' do
       action :install
     end
-    package 'php8.1-cli' do
+    package 'php8.4-cli' do
       action :install
     end
-    package 'libapache2-mod-php8.1' do
+    package 'libapache2-mod-php8.4' do
       action :install
     end
-    package 'php8.1-xml' do
+    package 'php8.4-xml' do
       action :install
     end
-    package 'php8.1-mbstring' do
+    package 'php8.4-mbstring' do
       action :install
     end
-    package 'php8.1-bcmath' do
+    package 'php8.4-bcmath' do
       action :install
     end
-    package 'php8.1-ldap' do
+    package 'php8.4-ldap' do
       action :install
     end
   elsif node[:platform_version].to_f >= 18
@@ -665,8 +665,8 @@ elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 8
   execute 'dnf install -y https://rpms.remirepo.net/enterprise/remi-release-8.rpm' do
     command 'dnf install -y https://rpms.remirepo.net/enterprise/remi-release-8.rpm'
   end
-  execute 'dnf -y module reset php && dnf -y module enable php:remi-8.1' do
-    command 'dnf -y module reset php && dnf -y module enable php:remi-8.1'
+  execute 'dnf -y module reset php && dnf -y module enable php:remi-8.4' do
+    command 'dnf -y module reset php && dnf -y module enable php:remi-8.4'
   end
   execute 'dnf -y install php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap php-intl' do
     command 'dnf -y install php php-mbstring php-mysqlnd php-pdo php-pgsql php-xml php-bcmath php-process php-zip php-gd php-ldap php-intl'
@@ -734,7 +734,7 @@ if node[:platform] == 'ubuntu'
       action :install
     end
   else
-    package 'php8.1-mysql' do
+    package 'php8.4-mysql' do
       action :install
     end
   end
@@ -767,7 +767,7 @@ if node[:platform] == 'ubuntu'
       action :install
     end
   else
-    package 'php8.1-pgsql' do
+    package 'php8.4-pgsql' do
       action :install
     end
   end
@@ -791,7 +791,7 @@ if node[:platform] == 'ubuntu'
       action :install
     end
   else
-    package 'php8.1-sqlite3' do
+    package 'php8.4-sqlite3' do
       action :install
     end
   end
@@ -842,16 +842,16 @@ if node[:platform] == 'ubuntu'
       action :install
     end
   else
-    package 'php8.1-curl' do
+    package 'php8.4-curl' do
       action :install
     end
-    package 'php8.1-gd' do
+    package 'php8.4-gd' do
       action :install
     end
-    package 'php8.1-xmlrpc' do
+    package 'php8.4-xmlrpc' do
       action :install
     end
-    package 'php8.1-intl' do
+    package 'php8.4-intl' do
       action :install
     end
   end
@@ -1662,8 +1662,8 @@ if node[:platform] == 'ubuntu'
       command 'cat /etc/php/8.0/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/8.0/apache2/php.ini.tmp && mv /etc/php/8.0/apache2/php.ini.tmp /etc/php/8.0/apache2/php.ini'
     end
   else
-    execute 'cat /etc/php/8.1/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/8.1/apache2/php.ini.tmp && mv /etc/php/8.1/apache2/php.ini.tmp /etc/php/8.1/apache2/php.ini' do
-      command 'cat /etc/php/8.1/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/8.1/apache2/php.ini.tmp && mv /etc/php/8.1/apache2/php.ini.tmp /etc/php/8.1/apache2/php.ini'
+    execute 'cat /etc/php/8.4/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/8.4/apache2/php.ini.tmp && mv /etc/php/8.4/apache2/php.ini.tmp /etc/php/8.4/apache2/php.ini' do
+      command 'cat /etc/php/8.4/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/8.4/apache2/php.ini.tmp && mv /etc/php/8.4/apache2/php.ini.tmp /etc/php/8.4/apache2/php.ini'
     end
   end
 end
