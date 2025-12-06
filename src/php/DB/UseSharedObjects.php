@@ -27,54 +27,44 @@ use INTERMediator\DB\Support\DB_Spec_Behavior;
  */
 abstract class UseSharedObjects
 {
-    /**
-     * Settings object for DB configuration.
+    /** Settings object for DB configuration.
      * @var Settings|null
      */
     public ?Settings $dbSettings = null;
-    /**
-     * Logger instance.
+    /** Logger instance.
      * @var Logger|null
      */
     public ?Logger $logger = null;
-    /**
-     * Formatter instance.
+    /** Formatter instance.
      * @var Formatters|null
      */
     public ?Formatters $formatter = null;
-    /**
-     * DBClass instance.
+    /** DBClass instance.
      * @var DBClass|null
      */
     public ?DBClass $dbClass = null;
-    /**
-     * Proxy object instance.
+    /** Proxy object instance.
      * @var Proxy|null
      */
     public ?Proxy $proxyObject = null;
-    /**
-     * PDO handler instance.
+    /** PDO handler instance.
      * @var DB_PDO_Handler|null
      */
     public ?DB_PDO_Handler $handler = null;    // Handle for each database engine. Uses just PDO.
-    /**
-     * DB authentication handler.
+    /** DB authentication handler.
      * @var DB_Auth_Common|null
      */
     public ?DB_Auth_Common $authHandler = null;
-    /**
-     * DB notification handler.
+    /** DB notification handler.
      * @var DB_Notification_Common|null
      */
     public ?DB_Notification_Common $notifyHandler = null;
-    /**
-     * DB specification behavior handler.
+    /** DB specification behavior handler.
      * @var DB_Spec_Behavior|null
      */
     public ?DB_Spec_Behavior $specHandler = null;
 
-    /**
-     * Set up shared objects for the current context.
+    /** Set up shared objects for the current context.
      * @param Proxy|null $obj Proxy instance to share objects from, or null to create new ones.
      * @return void
      */
@@ -94,8 +84,7 @@ abstract class UseSharedObjects
         }
     }
 
-    /**
-     * Set the settings object.
+    /** Set the settings object.
      * @param Settings $dbSettings
      * @return void
      */
@@ -104,8 +93,7 @@ abstract class UseSharedObjects
         $this->dbSettings = $dbSettings;
     }
 
-    /**
-     * Set the logger object.
+    /** Set the logger object.
      * @param Logger $logger
      * @return void
      */
@@ -114,8 +102,7 @@ abstract class UseSharedObjects
         $this->logger = $logger;
     }
 
-    /**
-     * Set the formatter object.
+    /** Set the formatter object.
      * @param Formatters $formatter
      * @return void
      */

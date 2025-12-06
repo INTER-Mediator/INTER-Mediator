@@ -22,9 +22,7 @@ namespace INTERMediator\DB\Support;
  */
 class DB_Spec_Handler_FileMaker_DataAPI implements DB_Spec_Behavior
 {
-    /**
-     * Returns the default key name for FileMaker Data API (static method).
-     *
+    /** Returns the default key name for FileMaker Data API (static method).
      * @return string Default key name.
      */
     public static function defaultKey(): string
@@ -32,9 +30,7 @@ class DB_Spec_Handler_FileMaker_DataAPI implements DB_Spec_Behavior
         return "recordId";
     }
 
-    /**
-     * Returns the default key name for FileMaker Data API (instance method).
-     *
+    /** Returns the default key name for FileMaker Data API (instance method).
      * @return string Default key name.
      */
     public function getDefaultKey(): string
@@ -42,9 +38,7 @@ class DB_Spec_Handler_FileMaker_DataAPI implements DB_Spec_Behavior
         return "recordId";
     }
 
-    /**
-     * Checks if aggregation is supported (always false for FileMaker Data API).
-     *
+    /** Checks if aggregation is supported (always false for FileMaker Data API).
      * @return bool False (aggregation not supported).
      */
     public function isSupportAggregation(): bool
@@ -52,9 +46,7 @@ class DB_Spec_Handler_FileMaker_DataAPI implements DB_Spec_Behavior
         return false;
     }
 
-    /**
-     * Checks if the given field name is in the provided list of field names, with FileMaker-specific rules.
-     *
+    /** Checks if the given field name is in the provided list of field names, with FileMaker-specific rules.
      * @param string $fname Field name to check.
      * @param array $fieldnames Array of available field names.
      * @return bool True if $fname is in $fieldnames or matches FileMaker conventions, false otherwise.
@@ -79,9 +71,7 @@ class DB_Spec_Handler_FileMaker_DataAPI implements DB_Spec_Behavior
         return false;
     }
 
-    /**
-     * Checks if NULL values are acceptable (always false for FileMaker Data API).
-     *
+    /** Checks if NULL values are acceptable (always false for FileMaker Data API).
      * @return bool False (NULL not acceptable).
      */
     public function isNullAcceptable(): bool
@@ -89,9 +79,7 @@ class DB_Spec_Handler_FileMaker_DataAPI implements DB_Spec_Behavior
         return false;
     }
 
-    /**
-     * Checks if the given operator does not require a value (always false for FileMaker Data API).
-     *
+    /** Checks if the given operator does not require a value (always false for FileMaker Data API).
      * @param string $operator Operator to check.
      * @return bool False (all operators require a value).
      */
@@ -100,9 +88,7 @@ class DB_Spec_Handler_FileMaker_DataAPI implements DB_Spec_Behavior
         return false;
     }
 
-    /**
-     * Checks if the given operator is valid for FileMaker Data API.
-     *
+    /** Checks if the given operator is valid for FileMaker Data API.
      * @param string $operator Operator to check.
      * @return bool True if the operator is valid, false otherwise.
      */
@@ -113,9 +99,7 @@ class DB_Spec_Handler_FileMaker_DataAPI implements DB_Spec_Behavior
         )));
     }
 
-    /**
-     * Checks if the given specifier is a valid order specifier for FileMaker Data API.
-     *
+    /** Checks if the given specifier is a valid order specifier for FileMaker Data API.
      * @param string $specifier Order specifier to check.
      * @return bool True if the specifier is valid, false otherwise.
      */

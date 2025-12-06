@@ -430,8 +430,7 @@ const INTERMediatorLib = {
     }
     return null
 
-    /**
-     * Check the pair of nodes in argument is valid for repeater/enclosure.
+    /** Check the pair of nodes in argument is valid for repeater/enclosure.
      */
 
     function isRepeaterOfEnclosure(repeater, enclosure) {

@@ -10,23 +10,17 @@ use INTERMediator\DB\Proxy;
  */
 abstract class OperationLogExtension
 {
-    /**
-     * Reference to the Proxy object for database operations.
-     *
+    /** Reference to the Proxy object for database operations.
      * @var Proxy
      */
     protected Proxy $proxy;
 
-    /**
-     * Result array containing operation results or null if not set.
-     *
+    /** Result array containing operation results or null if not set.
      * @var array|null
      */
     protected ?array $result;
 
-    /**
-     * Constructor for OperationLogExtension.
-     *
+    /** Constructor for OperationLogExtension.
      * @param Proxy $proxy Proxy object for database operations.
      * @param array|null $result Result array for operation results (optional).
      */
@@ -36,16 +30,12 @@ abstract class OperationLogExtension
         $this->result = $result;
     }
 
-    /**
-     * Returns an array of additional field names to be included in the operation log.
-     *
+    /** Returns an array of additional field names to be included in the operation log.
      * @return array List of field names to be added to the log.
      */
     public abstract function extendingFields(): array;
 
-    /**
-     * Returns the value for a given field name to be included in the operation log.
-     *
+    /** Returns the value for a given field name to be included in the operation log.
      * @param string $field Name of the field for which to retrieve the value.
      * @return string Value to be logged for the specified field.
      */

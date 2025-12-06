@@ -31,15 +31,12 @@ use INTERMediator\IMUtil;
  */
 class MyNumberCardAdapter extends ProviderAdapter
 {
-    /**
-     * Initializes the MyNumberCard OAuth adapter with production endpoints
-     *
+    /** Initializes the MyNumberCard OAuth adapter with production endpoints
      * Sets up the necessary OAuth endpoints for authentication flow:
      * - Authorization endpoint
      * - Token endpoint
      * - UserInfo endpoint
      * - JWKS endpoint
-     *
      * API Reference:
      * https://developers.digital.go.jp/documents/auth-and-sign/authserver/
      */
@@ -53,12 +50,9 @@ class MyNumberCardAdapter extends ProviderAdapter
         $this->jwksURL = "https://auth-and-sign.go.jp/api/realms/main/protocol/openid-connect/certs";
     }
 
-    /**
-     * Configures the adapter to use sandbox/test environment endpoints
-     *
+    /** Configures the adapter to use sandbox/test environment endpoints
      * Updates all OAuth endpoints to use the sandbox URLs for testing purposes.
      * This should be used during development and testing phases.
-     *
      * @return ProviderAdapter Returns this adapter instance for method chaining
      */
     public function setTestMode(): ProviderAdapter //MyNumberCardAdapter
@@ -72,12 +66,9 @@ class MyNumberCardAdapter extends ProviderAdapter
         return $this;
     }
 
-    /**
-     * Validates the current OAuth configuration
-     *
+    /** Validates the current OAuth configuration
      * Verifies that all required OAuth parameters and endpoints are properly configured
      * for authentication flow.
-     *
      * @return bool True if configuration is valid, false otherwise
      */
     public function validate(): bool
@@ -85,16 +76,13 @@ class MyNumberCardAdapter extends ProviderAdapter
         return $this->validate_impl(false) && $this->keyFilePath;
     }
 
-    /**
-     * Generates the OAuth authorization request URL
-     *
+    /** Generates the OAuth authorization request URL
      * Creates a complete authorization URL with required OAuth parameters including:
      * - response_type
      * - scope (openid, name, address, birthdate, gender)
      * - state for CSRF protection
      * - nonce for replay protection
      * - PKCE challenge for enhanced security
-     *
      * @return string Complete authorization URL for redirect
      * @throws Exception If security parameters cannot be generated
      */
@@ -119,15 +107,12 @@ class MyNumberCardAdapter extends ProviderAdapter
             . '&code_challenge_method=S256&acr_values=aal3 crl';
     }
 
-    /**
-     * Retrieves authenticated user information from the OAuth provider
-     *
+    /** Retrieves authenticated user information from the OAuth provider
      * Processes the OAuth callback by:
      * 1. Validating the state parameter
      * 2. Exchanging authorization code for tokens
      * 3. Validating the received tokens
      * 4. Fetching user information from the userinfo endpoint
-     *
      * @return array User information including:
      *               - sub (subject identifier)
      *               - username (formatted as sub@provider)

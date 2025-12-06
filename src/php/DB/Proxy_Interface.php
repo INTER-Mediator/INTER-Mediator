@@ -21,8 +21,7 @@ namespace INTERMediator\DB;
  */
 interface Proxy_Interface extends DBClass_Interface, Auth_Interface_Communication
 {
-    /**
-     * Initialize the proxy with data source, options, DB spec, debug level, and target.
+    /** Initialize the proxy with data source, options, DB spec, debug level, and target.
      * @param array|null $dataSource Data source definition.
      * @param array|null $options Options for proxy operation.
      * @param array|null $dbSpec Database specification.
@@ -32,8 +31,7 @@ interface Proxy_Interface extends DBClass_Interface, Auth_Interface_Communicatio
      */
     function initialize(?array $dataSource, ?array $options, ?array $dbSpec, ?int $debug, ?string $target = null): bool;
 
-    /**
-     * Process an incoming request.
+    /** Process an incoming request.
      * @param string|null $access Access type.
      * @param bool $bypassAuth Whether to bypass authentication.
      * @param bool $ignoreFiles Whether to ignore file operations.
@@ -41,14 +39,12 @@ interface Proxy_Interface extends DBClass_Interface, Auth_Interface_Communicatio
      */
     public function processingRequest(?string $access = null, bool $bypassAuth = false, bool $ignoreFiles = false): void;
 
-    /**
-     * Finish communication for the current request.
+    /** Finish communication for the current request.
      * @return void
      */
     public function finishCommunication(): void;
 
-    /**
-     * Export output data as JSON.
+    /** Export output data as JSON.
      * @return void
      */
     public function exportOutputDataAsJSON(): void;

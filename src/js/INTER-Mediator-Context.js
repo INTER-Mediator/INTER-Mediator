@@ -55,8 +55,7 @@ class IMLibContext {
     this.totalCount = 0
     this.resultCount = 0
     this.sortKeys = null
-    /*
-     * Initialize this object
+    /* Initialize this object
      */
     this.setTable(this)
   }

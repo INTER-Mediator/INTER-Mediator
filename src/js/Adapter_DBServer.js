@@ -154,7 +154,7 @@ const INTERMediator_DBAdapter = {
       cache: "no-cache",
       body: fData ? fData : (accessURL + authParams)
     }
-    await fetch(new Request(appPath, initParam)).then((response) => {
+    await fetch(appPath, initParam).then((response) => {
       if (!response.ok) {
         throw 'Communication Error'
       }
@@ -167,69 +167,27 @@ const INTERMediator_DBAdapter = {
       if (jsonObject.errorMessages && jsonObject.errorMessages.length > 0) {
         throw 'Communication Error'
       }
-
+      // Logging
       INTERMediator_DBAdapter.logging_comResult(responseText)
+      // Store the challenge.
       INTERMediator_DBAdapter.store_challenge(jsonObject.challenge ?? null,
         accessURL.match(/access=challenge/)
         || (INTERMediatorOnPage.isRequired2FA && (accessURL.match(/access=credential/)
           || accessURL.match(/access=authenticated/))))
+      // Store the clientId.
       if (jsonObject.clientid) {
         INTERMediatorOnPage.clientId(jsonObject.clientid)
         INTERMediatorOnPage.authedClientId = jsonObject.clientid ?? null
       }
-      if (INTERMediatorOnPage.isSAML) {
-        if (jsonObject.samluser) {
-          INTERMediatorOnPage.authUser(jsonObject.samluser)
-          if (INTERMediatorOnPage.authStoring !== 'credential') {
-            INTERMediatorOnPage.authHashedPassword(jsonObject.temppw)
-            INTERMediatorOnPage.authHashedPassword2m(jsonObject.temppw)
-            INTERMediatorOnPage.authHashedPassword2(jsonObject.temppw)
-          }
-        }
-        if (jsonObject.samlloginurl) {
-          INTERMediatorOnPage.loginURL = jsonObject.samlloginurl
-        }
-        if (jsonObject.samllogouturl) {
-          INTERMediatorOnPage.logoutURL = jsonObject.samllogouturl
-        }
-        if (jsonObject.samladditionalfail) {
-          IMLibQueue.setTask((complete) => {
-            complete()
-            if (confirm(INTERMediatorLib.getInsertedStringFromErrorNumber(2027))) {
-              location.href = jsonObject.samladditionalfail
-            }
-          }, false, true)
-        }
-      }
-      if (accessURL.indexOf('access=changepassword&newpass=') !== 0
-        && accessURL.indexOf('access=authenticated') !== 0
-        && accessURL.indexOf('access=challenge') !== 0) {
-        if (jsonObject.requireAuth) {
-          INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
-          INTERMediatorOnPage.clearCredentials()
-          if (INTERMediatorOnPage.isSAML && !INTERMediatorOnPage.samlWithBuiltInAuth) {
-            if (!jsonObject.samladditionalfail) {
-              location.href = INTERMediatorOnPage.loginURL
-            }
-          }
-          if (INTERMediatorOnPage.updatingWithSynchronize > 0 || INTERMediator.partialConstructing) {
-            location.reload() // It might stop here.
-          }
-          if (authAgainProc) {
-            authAgainProc()
-          } else if (!accessURL.match(/access=challenge/)) {
-            INTERMediator.constructMain()
-          }
-          return
-        }
-        if (!accessURL.match(/access=challenge/)) {
-          INTERMediatorOnPage.authCount = 0
-        }
-      }
-      INTERMediatorOnPage.authedUser = jsonObject.authUser ?? null
-      INTERMediatorOnPage.succeedCredential = !jsonObject.requireAuth ?? false
+      // Store the SAML information if it is SAML authentication.
+      this.extractSamlSpecialInfos(jsonObject)
+      // Authentication checking.
+      this.authenticationChecking(accessURL, jsonObject, authAgainProc)
+      // Executing the successProc.
       if (successProc) {
-        successProc({
+        successProc(jsonObject)
+        /* Original paramater
+        {
           dbresult: jsonObject.dbresult ?? null,
           resultCount: jsonObject.resultCount ?? 0,
           totalCount: jsonObject.totalCount ?? null,
@@ -239,16 +197,81 @@ const INTERMediator_DBAdapter = {
           nullAcceptable: jsonObject.usenull,
           succeed_2FA: jsonObject.succeed_2FA,
           sortKeys: jsonObject.sortKeys ?? [],
-        })
+        }
+         */
       }
       INTERMediatorLog.flushMessage()
     }).catch(reason => {
+      if (reason === 'DoNothingException') {
+        return
+      }
       INTERMediatorLog.setErrorMessage('Communication Error: ' + reason)
       if (failedProc) {
         failedProc(new Error('_im_communication_error_'))
       }
       INTERMediatorLog.flushMessage()
     })
+  },
+
+  // Use this function to extract the result from the server response in the server_access_async method.
+  extractSamlSpecialInfos(jsonObject) {
+    if (INTERMediatorOnPage.isSAML) {
+      if (jsonObject.samluser) {
+        INTERMediatorOnPage.authUser(jsonObject.samluser)
+        if (INTERMediatorOnPage.authStoring !== 'credential') {
+          INTERMediatorOnPage.authHashedPassword(jsonObject.temppw)
+          INTERMediatorOnPage.authHashedPassword2m(jsonObject.temppw)
+          INTERMediatorOnPage.authHashedPassword2(jsonObject.temppw)
+        }
+      }
+      if (jsonObject.samlloginurl) {
+        INTERMediatorOnPage.loginURL = jsonObject.samlloginurl
+      }
+      if (jsonObject.samllogouturl) {
+        INTERMediatorOnPage.logoutURL = jsonObject.samllogouturl
+      }
+      if (jsonObject.samladditionalfail) {
+        IMLibQueue.setTask((complete) => {
+          complete()
+          if (confirm(INTERMediatorLib.getInsertedStringFromErrorNumber(2027))) {
+            location.href = jsonObject.samladditionalfail
+          }
+        }, false, true)
+      }
+    }
+  },
+
+  // Use this function to extract the result from the server response in the server_access_async method.
+  authenticationChecking: function (accessURL, jsonObject, authAgainProc) {
+    if (accessURL.indexOf('access=changepassword&newpass=') !== 0
+      && accessURL.indexOf('access=authenticated') !== 0
+      && accessURL.indexOf('access=challenge') !== 0) {
+      if (jsonObject.requireAuth) {
+        INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.')
+        INTERMediatorOnPage.clearCredentials()
+        if (INTERMediatorOnPage.isSAML && !INTERMediatorOnPage.samlWithBuiltInAuth) {
+          if (!jsonObject.samladditionalfail) {
+            location.href = INTERMediatorOnPage.loginURL // It might stop here.
+          }
+        }
+        if (INTERMediatorOnPage.updatingWithSynchronize > 0 || INTERMediator.partialConstructing) {
+          location.reload() // It might stop here.
+        }
+        if (authAgainProc) {
+          authAgainProc()
+        } else if (!accessURL.match(/access=challenge/)) {
+          INTERMediator.constructMain() // It might stop here.
+        }
+        //return false
+        throw 'DoNothingException'
+      }
+      if (!accessURL.match(/access=challenge/)) {
+        INTERMediatorOnPage.authCount = 0
+      }
+    }
+    INTERMediatorOnPage.authedUser = jsonObject.authUser ?? null
+    INTERMediatorOnPage.succeedCredential = !jsonObject.requireAuth ?? false
+    return true
   },
 
   changePassword: async function (username, oldpassword, newpassword, doSucceed, doFail) {
@@ -278,7 +301,7 @@ const INTERMediator_DBAdapter = {
     }
     const params = 'access=changepassword&newpass=' + INTERMediatorLib.generatePasswordHash(newpassword)
     return INTERMediator_DBAdapter.server_access_async(params, 1029, 1030, (result) => {
-      if (result.newPasswordResult) {
+      if (result.changePasswordResult) {
         if (INTERMediatorOnPage.passwordHash < 1.1) {
           INTERMediatorOnPage.authHashedPassword(
             INTERMediatorLib.generatePasswrdHashV1(newpassword, INTERMediatorOnPage.authUserSalt))

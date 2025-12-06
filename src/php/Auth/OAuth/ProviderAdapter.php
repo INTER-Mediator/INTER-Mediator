@@ -19,72 +19,58 @@ use Jose\Component\Signature\Serializer\JWSSerializerManager;
  */
 abstract class ProviderAdapter
 {
-    /**
-     * @var bool
+    /** @var bool
      */
     public bool $debugMode = true;
-    /**
-     * The name of the OAuth provider (e.g., "google", "facebook").
+    /** The name of the OAuth provider (e.g., "google", "facebook").
      * @var string
      */
     protected string $providerName = "";
-    /**
-     * The base URL for the OAuth provider's endpoints.
+    /** The base URL for the OAuth provider's endpoints.
      * @var string
      */
     protected string $baseURL = "";
-    /**
-     * The URL for obtaining access tokens from the provider.
+    /** The URL for obtaining access tokens from the provider.
      * @var string
      */
     protected string $getTokenURL = "";
-    /**
-     * The URL for retrieving user information from the provider.
+    /** The URL for retrieving user information from the provider.
      * @var string
      */
     protected string $getInfoURL = "";
-    /**
-     * The client ID issued by the OAuth provider.
+    /** The client ID issued by the OAuth provider.
      * @var string|null
      */
     protected ?string $clientId = "";
-    /**
-     * The client secret issued by the OAuth provider.
+    /** The client secret issued by the OAuth provider.
      * @var string|null
      */
     protected ?string $clientSecret = "";
-    /**
-     * The URL where the provider will redirect after authentication.
+    /** The URL where the provider will redirect after authentication.
      * @var string|null
      */
     protected ?string $redirectURL = "";
-    /**
-     * The scope of information requested from the provider.
+    /** The scope of information requested from the provider.
      * @var string|null
      */
     protected ?string $infoScope = "";
 
-    /**
-     * The issuer URL of the authorization server.
+    /** The issuer URL of the authorization server.
      * @var string|null
      */
     protected ?string $issuer = "";
-    /**
-     * The URL where JSON Web Key Set can be retrieved.
+    /** The URL where JSON Web Key Set can be retrieved.
      * @var string|null
      */
     protected ?string $jwksURL = "";
-    /**
-     * The path to the private key file for signing JWTs.
+    /** The path to the private key file for signing JWTs.
      * @var string|null
      */
     protected ?string $keyFilePath = "";
 
     protected ?string $stateValue = null;
 
-    /**
-     * Sets the debug mode. If true, debug messages will be printed to the log.
-     *
+    /** Sets the debug mode. If true, debug messages will be printed to the log.
      * @param bool $debugMode The debug mode flag.
      * @return void
      */
@@ -93,17 +79,14 @@ abstract class ProviderAdapter
         $this->debugMode = $debugMode;
     }
 
-    /**
-     * @return string The provider name, such as "google", "facebook", "mynumbercard-sandbox", or "mynumbercard".
+    /** @return string The provider name, such as "google", "facebook", "mynumbercard-sandbox", or "mynumbercard".
      */
     public function getProviderName(): string
     {
         return $this->providerName;
     }
 
-    /**
-     * Sets the client ID issued by the authorization server.
-     *
+    /** Sets the client ID issued by the authorization server.
      * @param string $clientId Client ID issued by the authorization server.
      * @return void
      */
@@ -112,9 +95,7 @@ abstract class ProviderAdapter
         $this->clientId = $clientId;
     }
 
-    /**
-     * Sets the client secret issued by the authorization server.
-     *
+    /** Sets the client secret issued by the authorization server.
      * @param string $secret Client secret issued by the authorization server.
      * @return void
      */
@@ -123,10 +104,8 @@ abstract class ProviderAdapter
         $this->clientSecret = $secret;
     }
 
-    /**
-     * Sets the URL that the client will be redirected to after the user has granted
+    /** Sets the URL that the client will be redirected to after the user has granted
      * access to the client.
-     *
      * @param string $url The URL that the client will be redirected to after the user has granted
      * access to the client.
      * @return void
@@ -136,9 +115,7 @@ abstract class ProviderAdapter
         $this->redirectURL = $url;
     }
 
-    /**
-     * Sets the scope for the user information to be retrieved.
-     *
+    /** Sets the scope for the user information to be retrieved.
      * @param string $info The scope for the user information to be retrieved.
      * @return void
      */
@@ -147,8 +124,7 @@ abstract class ProviderAdapter
         $this->infoScope = $info;
     }
 
-    /**
-     * @param string $path The path to the private key file for the client.
+    /** @param string $path The path to the private key file for the client.
      * @return void
      */
     public function setKeyFilePath(string $path): void
@@ -156,14 +132,12 @@ abstract class ProviderAdapter
         $this->keyFilePath = $path;
     }
 
-    /**
-     * Validates the adapter configuration.
+    /** Validates the adapter configuration.
      * @return bool True if the adapter is properly configured, false otherwise.
      */
     public abstract function validate(): bool;
 
-    /**
-     * Checks if the adapter is properly configured. This supposed to be called from the validate() method.
+    /** Checks if the adapter is properly configured. This supposed to be called from the validate() method.
      * @param bool $isRequireSecret Whether the client secret is required.
      * @return bool True if the adapter is properly configured, false otherwise.
      */
@@ -178,19 +152,15 @@ abstract class ProviderAdapter
         return false;
     }
 
-    /**
-     * @return string
-     *
+    /** @return string
      * Returns the URL to request the authentication of the user.
      * The returned URL is a string.
      */
     public abstract function getAuthRequestURL(): string;
 
-    /**
-     * Stores the provider name associated with the given state.
+    /** Stores the provider name associated with the given state.
      * The provider name is stored in the internal database.
      * This method is going to be called from the implementing getAuthRequestURL() method.
-     *
      * @param string $state The state value to associate with the provider name.
      * @return void
      */
@@ -199,12 +169,10 @@ abstract class ProviderAdapter
         $this->storeCode($this->providerName, "@provider@", $state);
     }
 
-    /**
-     * Stores the back URL associated with the given state.
+    /** Stores the back URL associated with the given state.
      * The back URL is the URL that the user was redirected from to the provider's site.
      * The URL is stored in the internal database.
      * This method is going to be called from the implementing getAuthRequestURL() method.
-     *
      * @param string $url The URL to store with the given state.
      * @param string $state The state value to associate with the back URL.
      * @return void
@@ -214,12 +182,9 @@ abstract class ProviderAdapter
         $this->storeCode($url, "@backurl@", $state);
     }
 
-    /**
-     * Retrieves the back URL stored with the given state.
-     *
+    /** Retrieves the back URL stored with the given state.
      * The back URL is the URL that the user was redirected from to the provider's site.
      * The returned URL is a string.
-     *
      * @return string|null The back URL associated with the state, or null if no such state exists.
      */
     public function getBackURL(): ?string
@@ -227,32 +192,25 @@ abstract class ProviderAdapter
         return $this->retrieveCode($this->stateValue, "@backurl@")[0] ?? null;
     }
 
-    /**
-     * Returns a user information array from the provider.
-     *
+    /** Returns a user information array from the provider.
      * The return value is an array with the following keys:
      * - "username": The username of the user. The value is a string.
      * - "realname": The real name of the user. The value is a string.
      * - "email": The E-mail address of the user. The value is a string.
      * - "birthdate": The birthday of the user. The value is a string.
      * - "gender": The gender of the user. The value is a string.
-     *
      * @return array User information array
      * @throws Exception Throws an exception if user information couldn't be retrieved
      */
     public abstract function getUserInfo(): array;
 
-    /**
-     * @return ProviderAdapter
-     *
+    /** @return ProviderAdapter
      * Sets the adapter to test mode and changes some properties of the adapter.
      * The actual behavior depends on the implementation of the adapter.
      */
     public abstract function setTestMode(): ProviderAdapter;
 
-    /**
-     * Create an instance of ProviderAdapter based on the provider name.
-     *
+    /** Create an instance of ProviderAdapter based on the provider name.
      * @param string $provider The name of the provider. Supported providers are "google", "facebook", "mynumbercard-sandbox", and "mynumbercard".
      * @return ProviderAdapter|null The instance of ProviderAdapter or null if the provider is not supported
      */
@@ -288,14 +246,11 @@ abstract class ProviderAdapter
         return $adapter;
     }
 
-    /**
-     * Create an instance of ProviderAdapter based on the state value.
-     *
+    /** Create an instance of ProviderAdapter based on the state value.
      * This method is used to create an instance of ProviderAdapter from the state value.
      * The state value is used to determine which provider to use.
      * If the provider name is not found in the state value, the method looks for the provider name in the _im_oauth_provider cookie.
      * If the provider name is not found in the cookie, the method returns null.
-     *
      * @param string $state The state value
      * @return ProviderAdapter|null The instance of ProviderAdapter or null if the provider is not supported
      */
@@ -306,9 +261,7 @@ abstract class ProviderAdapter
         return self::createAdapter($providerName);
     }
 
-    /**
-     * Performs a HTTP request to the specified URL.
-     *
+    /** Performs a HTTP request to the specified URL.
      * @param string $url The URL to request
      * @param bool $isPost Whether to use a POST request or a GET request
      * @param array|null $params The parameters to send with the request
@@ -366,9 +319,7 @@ abstract class ProviderAdapter
         return $response;
     }
 
-    /**
-     * Creates a JSON Web Token (JWT) from a payload.
-     *
+    /** Creates a JSON Web Token (JWT) from a payload.
      * @param string $payload The JSON payload to sign
      * @return string The signed JWT
      */
@@ -393,9 +344,7 @@ abstract class ProviderAdapter
         return $serializer->serialize($jws, 0);
     }
 
-    /**
-     * Verify the ID token with the JWK set.
-     *
+    /** Verify the ID token with the JWK set.
      * @param string $token The ID token to verify
      * @param string $access_token The access token to compare with
      * @return object The payload of the ID token
@@ -450,13 +399,10 @@ abstract class ProviderAdapter
         return $payloadIDToken;
     }
 
-    /**
-     * Encodes a string with base64url, which is a URL-safe variation of Base64.
+    /** Encodes a string with base64url, which is a URL-safe variation of Base64.
      * @see https://tools.ietf.org/html/rfc4648#section-5
-     *
      * The main difference between base64url and regular base64 is that
      * base64url uses - and _ instead of + and / respectively.
-     *
      * @param string $data The string to be encoded
      * @return string The base64url encoded string
      */
@@ -472,8 +418,7 @@ abstract class ProviderAdapter
         return $encoded;
     }
 
-    /**
-     * Decodes a base64url encoded string.
+    /** Decodes a base64url encoded string.
      * @param string $data The base64url encoded string
      * @return string The decoded string
      */
@@ -485,15 +430,12 @@ abstract class ProviderAdapter
         return base64_decode($data);
     }
 
-    /**
-     * Stores the authorization code issued by the authorization server
+    /** Stores the authorization code issued by the authorization server
      * into the internal database.
-     *
      * @param string $code Authorization code issued by the authorization server
      * @param string $prefix Prefix for the challenge to be stored
      * @param string|null $key Key to be used for storing the challenge.
      *                         If null, use the client ID.
-     *
      * @return void
      */
     protected function storeCode(string $code, string $prefix, ?string $key = null): void
@@ -511,9 +453,7 @@ abstract class ProviderAdapter
             0, $code, substr($key, 0, 64), $prefix, true);
     }
 
-    /**
-     * Retrieves the stored authorization code from the internal database.
-     *
+    /** Retrieves the stored authorization code from the internal database.
      * @param string $key The key used to store the challenge.
      *                     If null, use the client ID.
      * @param string $prefix The prefix used to store the challenge.
@@ -532,10 +472,8 @@ abstract class ProviderAdapter
         return explode("\n", $challenges);
     }
 
-    /**
-     * Retrieves the stored authorization code from the internal database.
+    /** Retrieves the stored authorization code from the internal database.
      * This method is static, so it can be called without an instance of the class.
-     *
      * @param string $key The key used to store the challenge.
      *                     If null, use the client ID.
      * @param string $prefix The prefix used to store the challenge.
@@ -547,9 +485,7 @@ abstract class ProviderAdapter
         return $tempObject->retrieveCode($key, $prefix);
     }
 
-    /**
-     * Checks if the given code is stored in the internal database.
-     *
+    /** Checks if the given code is stored in the internal database.
      * @param string $code Authorization code issued by the authorization server
      * @param string $prefix Prefix for the challenge to be stored
      * @return bool True if the code is stored, false otherwise

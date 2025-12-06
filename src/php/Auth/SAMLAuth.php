@@ -29,25 +29,20 @@ use SimpleSAML\Auth\Simple;
  */
 class SAMLAuth
 {
-    /**
-     * SimpleSAMLphp authentication object for handling SAML authentication.
+    /** SimpleSAMLphp authentication object for handling SAML authentication.
      * @var Simple
      */
     private Simple $authSimple;
-    /**
-     * SAML attribute extraction rules, mapping logical names to SAML attribute keys.
+    /** SAML attribute extraction rules, mapping logical names to SAML attribute keys.
      * @var array|null
      */
     private ?array $samlAttrRules = null;
-    /**
-     * Additional SAML attribute rules for further validation.
+    /** Additional SAML attribute rules for further validation.
      * @var array|null
      */
     private ?array $samlAdditionalRules = null;
 
-    /**
-     * Constructor initializes the SAML authentication object with the given source.
-     *
+    /** Constructor initializes the SAML authentication object with the given source.
      * @param string $authSource The SAML authentication source name.
      */
     public function __construct(string $authSource)
@@ -55,9 +50,7 @@ class SAMLAuth
         $this->authSimple = new Simple($authSource);
     }
 
-    /**
-     * Sets the SAML attribute extraction rules.
-     *
+    /** Sets the SAML attribute extraction rules.
      * @param array|null $value Attribute rules to use for extraction.
      * @return void
      */
@@ -66,9 +59,7 @@ class SAMLAuth
         $this->samlAttrRules = $value;
     }
 
-    /**
-     * Sets additional SAML attribute rules for further validation.
-     *
+    /** Sets additional SAML attribute rules for further validation.
      * @param array|null $value Additional attribute rules for validation.
      * @return void
      */
@@ -77,9 +68,7 @@ class SAMLAuth
         $this->samlAdditionalRules = $value;
     }
 
-    /**
-     * Checks SAML login status and validates additional rules if present.
-     *
+    /** Checks SAML login status and validates additional rules if present.
      * @return array [bool $additional, string|null $user] Whether additional rules passed and the username.
      */
     public function samlLoginCheck(): array
@@ -107,9 +96,7 @@ class SAMLAuth
         return [$additional, $user];
     }
 
-    /**
-     * Returns all SAML attributes from the authentication object.
-     *
+    /** Returns all SAML attributes from the authentication object.
      * @return array|null The SAML attributes, or null if unavailable.
      */
     public function getAttributes(): ?array
@@ -117,9 +104,7 @@ class SAMLAuth
         return $this->authSimple->getAttributes();
     }
 
-    /**
-     * Extracts values from SAML attributes according to configured rules.
-     *
+    /** Extracts values from SAML attributes according to configured rules.
      * @return array|null Associative array of extracted attribute values, or null if no rules are set.
      */
     public function getValuesFromAttributes(): ?array
@@ -133,9 +118,7 @@ class SAMLAuth
         return $extArray;
     }
 
-    /**
-     * Extracts a value from SAML attributes using a rule string or array.
-     *
+    /** Extracts a value from SAML attributes using a rule string or array.
      * @param string|array $rule Rule or array of rules for attribute extraction.
      * @return string The extracted value or an empty string if not found.
      */
@@ -165,9 +148,7 @@ class SAMLAuth
         return $returnValue;
     }
 
-    /**
-     * Returns the SAML login URL for redirecting the user to the identity provider.
-     *
+    /** Returns the SAML login URL for redirecting the user to the identity provider.
      * @param string|null $url Optional URL to redirect to after login.
      * @return string|null The login URL.
      */
@@ -176,9 +157,7 @@ class SAMLAuth
         return $this->authSimple->getLoginURL($url);
     }
 
-    /**
-     * Returns the SAML logout URL for redirecting the user to the identity provider.
-     *
+    /** Returns the SAML logout URL for redirecting the user to the identity provider.
      * @param string|null $url Optional URL to redirect to after logout.
      * @return string|null The logout URL.
      */

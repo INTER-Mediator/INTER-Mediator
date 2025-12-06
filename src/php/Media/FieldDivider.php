@@ -10,50 +10,40 @@ use Iterator;
 
 class FieldDivider implements Iterator
 {
-    /**
-     * The input data string to be divided into fields.
+    /** The input data string to be divided into fields.
      * @var string
      */
     private string $data;
-    /**
-     * The current parsing position in the data string.
+    /** The current parsing position in the data string.
      * @var int
      */
     private int $pos;
-    /**
-     * The current field key (index).
+    /** The current field key (index).
      * @var int
      */
     private int $key;
-    /**
-     * The separator string used to divide fields (default is comma).
+    /** The separator string used to divide fields (default is comma).
      * @var string
      */
     private string $sep;
-    /**
-     * ASCII code of the separator character.
+    /** ASCII code of the separator character.
      * @var int
      */
     private int $sepCode;
-    /**
-     * ASCII code for the single quote (').
+    /** ASCII code for the single quote (').
      * @var int
      */
     private int $sqCode;
-    /**
-     * ASCII code for double quote (").
+    /** ASCII code for double quote (").
      * @var int
      */
     private int $dqCode;
-    /**
-     * ASCII code for backslash (\).
+    /** ASCII code for backslash (\).
      * @var int
      */
     private int $bsCode;
 
-    /**
-     * Constructor initializes the FieldDivider with a data string and optional separator.
-     *
+    /** Constructor initializes the FieldDivider with a data string and optional separator.
      * @param string $d The input data string.
      * @param string $sp The field separator (default: ',').
      */
@@ -69,9 +59,7 @@ class FieldDivider implements Iterator
         $this->key = 0;
     }
 
-    /**
-     * Finds the position of the next field separator, considering quotes and escapes.
-     *
+    /** Finds the position of the next field separator, considering quotes and escapes.
      * @return array Tuple of (start position, end position, next position) for the next field.
      */
     private function getNextLinePosition(): array
@@ -113,9 +101,7 @@ class FieldDivider implements Iterator
         }
     }
 
-    /**
-     * Removes escape characters from a string.
-     *
+    /** Removes escape characters from a string.
      * @param string $str The string to process.
      * @return string The string with escape characters removed.
      */
@@ -133,9 +119,7 @@ class FieldDivider implements Iterator
         return $result;
     }
 
-    /**
-     * Returns the current field value in the iteration.
-     *
+    /** Returns the current field value in the iteration.
      * @return string|null The current field value, or null if none.
      */
     #[\ReturnTypeWillChange]
@@ -150,9 +134,7 @@ class FieldDivider implements Iterator
         return null;
     }
 
-    /**
-     * Moves the iterator to the next field.
-     *
+    /** Moves the iterator to the next field.
      * @return void
      */
     public function next(): void
@@ -161,9 +143,7 @@ class FieldDivider implements Iterator
         list($startPos, $endPos, $this->pos) = $this->getNextLinePosition();
     }
 
-    /**
-     * Returns the current field index (key).
-     *
+    /** Returns the current field index (key).
      * @return int The current field index.
      */
     #[\ReturnTypeWillChange]
@@ -172,9 +152,7 @@ class FieldDivider implements Iterator
         return $this->key;
     }
 
-    /**
-     * Checks if the current position is valid for iteration.
-     *
+    /** Checks if the current position is valid for iteration.
      * @return bool True if valid, false otherwise.
      */
     public function valid(): bool
@@ -185,9 +163,7 @@ class FieldDivider implements Iterator
         return strlen($this->data) > $this->pos;
     }
 
-    /**
-     * Resets the iterator to the first field.
-     *
+    /** Resets the iterator to the first field.
      * @return void
      */
     public function rewind(): void

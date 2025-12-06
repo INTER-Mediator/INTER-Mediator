@@ -8,19 +8,19 @@ In this document, we report the result of end-to-end tests rest of GitHUb Action
 
 ## Test Suite Description
 
-Test Suites of INTER-Mediator are located in /spec/run directory.
+Test Suites of INTER-Mediator are located in the /spec/run directory.
 The below configuration files are tested on GitHub Actions every time to commit.
 
 - wdio-form-chrome.conf.js
 - wdio-auth-chrome.conf.js
-- wdio-form-firefox.conf.js
 - wdio-auth-firefox.conf.js
 
-The below ones have to tested manually.
+The below ones have to be tested manually.
 
 - wdio-search-chrome.conf.js
 - wdio-sync-chrome.conf.js
 - wdio-form-md-chrome.conf.js
+- wdio-form-firefox.conf.js
 - wdio-others-firefox.conf.js (These tests can't run on Firefox)
 - wdio-search-firefox.conf.js (These tests can't run on Firefox)
 - wdio-sync-firefox.conf.js
@@ -35,7 +35,7 @@ The test is identified by .conf.js files in the /spec/run directory.
 The test 'wdio-auth-chrome.conf.js' and 'wdio-auth-firefox.conf.js' are running on GitHub Actions.
 
 - commit 0b8d433f0985f68b0729cb4a31ad508460ff2fc8 (Sun May 18 10:15:22 2025 +0900)
-  INTER-Mediator Ver.14 (2025-05-18),
+  INTER-Mediator Ver. 14 (2025-05-18),
   wdio-search-chrome.conf.js,
   PHP 8.4.4 (Homebrew based)+MySQL 8.4.4/PostgreSQL 14.17/SQLite 3.43.2+Chrome (136.0.7103.114) on mac,
   by Masayuki Nii <nii@msyk.net>, OK

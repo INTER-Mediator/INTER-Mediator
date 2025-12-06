@@ -27,39 +27,31 @@ class RESTAPI
 {
     use Proxy_ExtSupport;
 
-    /**
-     * @var array The data source definitions.
+    /** @var array The data source definitions.
      */
     private array $dataSource;
-    /**
-     * @var array The option definitions.
+    /** @var array The option definitions.
      */
     private array $options;
-    /**
-     * @var array The database connection specifications.
+    /** @var array The database connection specifications.
      */
     private array $dbSpecification;
 
-    /**
-     * @var bool If true, shows API information.
+    /** @var bool If true, shows API information.
      */
     private bool $isInformation;
-    /**
-     * @var string|null The name of the target context.
+    /** @var string|null The name of the target context.
      */
     private string|null $targetContextName = null;
-    /**
-     * @var string|null The key value of the target record.
+    /** @var string|null The key value of the target record.
      */
     private string|null $targetKeyValue = null;
 
-    /**
-     * @var string|null The path to the definition file.
+    /** @var string|null The path to the definition file.
      */
     private string|null $pathToDefFile;
 
-    /**
-     * RESTAPI constructor.
+    /** RESTAPI constructor.
      * @param string $path The path to the definition file.
      */
     public function __construct(string $path)
@@ -85,8 +77,7 @@ class RESTAPI
         }
     }
 
-    /**
-     * Outputs an error message and terminates the script.
+    /** Outputs an error message and terminates the script.
      * @param string $message The error message.
      */
     private function errorAndExit(string $message): void
@@ -102,8 +93,7 @@ class RESTAPI
         exit;
     }
 
-    /**
-     * Parses a PHP definition file.
+    /** Parses a PHP definition file.
      * @param string $path The path to the PHP definition file.
      */
     private function parseFromPHPFile(string $path): void
@@ -145,8 +135,7 @@ class RESTAPI
         $this->dbSpecification = $globalDBSpecs;
     }
 
-    /**
-     * Parses a YAML definition file.
+    /** Parses a YAML definition file.
      * @param string $path The path to the YAML definition file.
      */
     private function parseFromYAMLFile(string $path): void
@@ -157,8 +146,7 @@ class RESTAPI
         $this->dbSpecification = $parsed["connection"];
     }
 
-    /**
-     * Processes the API request.
+    /** Processes the API request.
      * @throws Exception
      */
     public function processing(): void
@@ -246,8 +234,7 @@ class RESTAPI
         echo json_encode($result);
     }
 
-    /**
-     * Gets information about a context.
+    /** Gets information about a context.
      * @param array $contextDef The context definition.
      * @return array An array containing context information.
      * @throws Exception
@@ -269,8 +256,7 @@ class RESTAPI
         return [$name, $auth, $readResult, $updateResult, $updateResult, $updateResult];
     }
 
-    /**
-     * Generates and outputs API information as an HTML page.
+    /** Generates and outputs API information as an HTML page.
      */
     private function apiInformation(): void
     {

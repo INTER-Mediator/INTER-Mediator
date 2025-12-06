@@ -22,9 +22,7 @@ namespace INTERMediator\DB\Support;
  */
 class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
 {
-    /**
-     * Returns the default key name for SQLite (static method).
-     *
+    /** Returns the default key name for SQLite (static method).
      * @return string Default key name.
      */
     public static function defaultKey(): string
@@ -32,9 +30,7 @@ class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
         return "id";
     }
 
-    /**
-     * Returns the default key name for SQLite (instance method).
-     *
+    /** Returns the default key name for SQLite (instance method).
      * @return string Default key name.
      */
     public function getDefaultKey(): string
@@ -42,9 +38,7 @@ class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
         return "id";
     }
 
-    /**
-     * Checks if aggregation is supported (always true for SQLite).
-     *
+    /** Checks if aggregation is supported (always true for SQLite).
      * @return bool True (aggregation supported).
      */
     public function isSupportAggregation(): bool
@@ -52,9 +46,7 @@ class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
         return true;
     }
 
-    /**
-     * Checks if the given field name is in the provided list of field names.
-     *
+    /** Checks if the given field name is in the provided list of field names.
      * @param string $fname Field name to check.
      * @param array $fieldnames Array of available field names.
      * @return bool True if $fname is in $fieldnames, false otherwise.
@@ -64,9 +56,7 @@ class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
         return in_array($fname, $fieldnames);
     }
 
-    /**
-     * Checks if NULL values are acceptable (always true for SQLite).
-     *
+    /** Checks if NULL values are acceptable (always true for SQLite).
      * @return bool True (NULL acceptable).
      */
     public function isNullAcceptable(): bool
@@ -74,9 +64,7 @@ class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
         return true;
     }
 
-    /**
-     * Checks if the given operator is valid for SQLite.
-     *
+    /** Checks if the given operator is valid for SQLite.
      * @param string $operator Operator to check.
      * @return bool True if the operator is valid, false otherwise.
      */
@@ -98,9 +86,7 @@ class DB_Spec_Handler_SQLite extends DB_Spec_Handler_PDO
         ));
     }
 
-    /**
-     * Checks if the given specifier is a valid order specifier for SQLite.
-     *
+    /** Checks if the given specifier is a valid order specifier for SQLite.
      * @param string $specifier Order specifier to check.
      * @return bool True if the specifier is valid, false otherwise.
      */

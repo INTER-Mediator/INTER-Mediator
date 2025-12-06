@@ -22,9 +22,7 @@ namespace INTERMediator\Locale;
  */
 class IMLocaleStringTable
 {
-    /**
-     * Returns a human-readable locale string for a given locale code.
-     *
+    /** Returns a human-readable locale string for a given locale code.
      * @param string $localeCode The locale code (e.g., 'en_US', 'ja').
      * @return string The corresponding locale string.
      */
@@ -38,12 +36,10 @@ class IMLocaleStringTable
         return IMLocaleStringTable::$localeStrTable[$localeCode];
     }
 
-    /*
-     * This table is generated from Microsoft site:
+    /* This table is generated from Microsoft site:
      * https://msdn.microsoft.com/en-us/library/cc233982.aspx
      */
-    /**
-     * Static table mapping locale codes to human-readable locale strings.
+    /** Static table mapping locale codes to human-readable locale strings.
      * @var array|string[]
      */
     private static array $localeStrTable = array(

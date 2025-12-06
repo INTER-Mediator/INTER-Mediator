@@ -22,33 +22,26 @@ use INTERMediator\Locale\IMLocale;
  */
 class NumberBase
 {
-    /**
-     * @var string
+    /** @var string
      */
     protected string $decimalMark;
-    /**
-     * @var string
+    /** @var string
      */
     protected string $thSepMark;
-    /**
-     * @var string
+    /** @var string
      */
     protected string $currencyMark;
-    /**
-     * @var bool
+    /** @var bool
      */
     protected bool $useMbstring;
-    /**
-     * @var string
+    /** @var string
      */
     protected string $choosenLocale;
-    /**
-     * @var object
+    /** @var object
      */
     protected object $formatter;
 
     /**
-     *
      */
     public function __construct()
     {
@@ -61,8 +54,7 @@ class NumberBase
         $this->currencyMark = $this->formatter->getTextAttribute(5 /*NumberFormatter::CURRENCY_CODE*/);
     }
 
-    /**
-     * @param string $str
+    /** @param string $str
      * @return string
      */
     public function converterFromUserToDB(string $str): string

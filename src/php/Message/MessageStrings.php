@@ -27,9 +27,7 @@ use INTERMediator\Params;
 class MessageStrings
 {
 
-    /**
-     * Retrieves the terms for the current language, optionally merging with provided options.
-     *
+    /** Retrieves the terms for the current language, optionally merging with provided options.
      * @param array|null $options Optional array of additional terms to merge.
      * @return array The merged terms for the current language.
      */
@@ -51,9 +49,7 @@ class MessageStrings
         return $termList;
     }
 
-    /**
-     * Retrieves the message strings for the current language, optionally merging with alternative messages.
-     *
+    /** Retrieves the message strings for the current language, optionally merging with alternative messages.
      * @return array<int, string> The list of message strings indexed by message code.
      */
     public function getMessages(): array
@@ -74,9 +70,7 @@ class MessageStrings
         return $this->messages;
     }
 
-    /**
-     * Retrieves a specific message string with optional placeholder replacements.
-     *
+    /** Retrieves a specific message string with optional placeholder replacements.
      * @param int $num The message code to retrieve.
      * @param array|null $appending Optional array of values to replace placeholders (e.g., @1@) in the message.
      * @return string The message string with placeholders replaced.
@@ -94,8 +88,7 @@ class MessageStrings
         return $msg;
     }
 
-    /**
-     * @var array<int, string> List of message strings indexed by message code.
+    /** @var array<int, string> List of message strings indexed by message code.
      */
     public array $messages = array(
         1 => 'Record #',

@@ -24,9 +24,7 @@ use INTERMediator\DB\Proxy;
  */
 abstract class UploadingSupport
 {
-    /**
-     * Processes an uploaded file and updates the database record accordingly.
-     *
+    /** Processes an uploaded file and updates the database record accordingly.
      * @param Proxy $db The database proxy instance for performing operations.
      * @param array|null $options Additional options for processing.
      * @param string $filePath The full path to the uploaded file.

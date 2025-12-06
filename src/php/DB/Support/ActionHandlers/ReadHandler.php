@@ -1,9 +1,8 @@
 <?php
 
-namespace INTERMediator\DB\Support\ProxyVisitors;
+namespace INTERMediator\DB\Support\ActionHandlers;
 
 use INTERMediator\DB\Generator;
-use INTERMediator\DB\Support\ProxyElements\OperationElement;
 use INTERMediator\DB\Logger;
 
 /**
@@ -14,56 +13,48 @@ use INTERMediator\DB\Logger;
  * @property bool $activateGenerator Indicates if schema auto generation mode is enabled (from proxy).
  * @property bool $suppressMediaToken Indicates if media token output should be suppressed (from proxy).
  */
-class ReadVisitor extends OperationVisitor
+class ReadHandler extends ActionHandler
 {
-    /**
-     * Visits the IsAuthAccessing operation.
+    /** Visits the IsAuthAccessing operation.
      *
-     * @param OperationElement $e The operation element being visited.
      * @return bool Always returns false for read operations (no auth access required).
      */
-    public function visitIsAuthAccessing(OperationElement $e): bool
+    public function isAuthAccessing(): bool
     {
         return false;
     }
 
-    /**
-     * Visits the CheckAuthentication operation for read operations.
-     *
-     * @param OperationElement $e The operation element being visited.
-     * @return bool True if authentication succeeds or bypassAuth is enabled, false otherwise.
+    /** Visits the CheckAuthentication operation for read operations.
+     * 
+     * @return bool True, if authentication succeeds or bypassAuth is enabled, false otherwise.
      */
-    public function visitCheckAuthentication(OperationElement $e): bool
+    public function checkAuthentication(): bool
     {
         if ($this->proxy->bypassAuth) {
             return true;
         }
-        return $this->prepareCheckAuthentication($e) && $this->checkAuthenticationCommon($e);
+        return $this->prepareCheckAuthentication() && $this->checkAuthenticationCommon();
     }
 
-    /**
-     * Visits the CheckAuthorization operation for read operations.
-     *
-     * @param OperationElement $e The operation element being visited.
-     * @return bool True if authorization succeeds or bypassAuth is enabled, false otherwise.
+    /** Visits the CheckAuthorization operation for read operations.
+     * 
+     * @return bool True, if authorization succeeds or bypassAuth is enabled, false otherwise.
      */
-    public function visitCheckAuthorization(OperationElement $e): bool
+    public function checkAuthorization(): bool
     {
         $proxy = $this->proxy;
         if ($proxy->bypassAuth) {
             return true;
         }
-        return $proxy->authSucceed && $this->checkAuthorization();
+        return $proxy->authSucceed && $this->checkAuthorizationImpl();
     }
 
-    /**
-     * Visits the DataOperation operation to perform the read in the database.
+    /** Visits the DataOperation operation to perform the read in the database.
      * Handles schema auto generation and normal data reading with field protection.
-     *
-     * @param OperationElement $e The operation element being visited.
+     * 
      * @return void
      */
-    public function visitDataOperation(OperationElement $e): void
+    public function dataOperation(): void
     {
         Logger::getInstance()->setDebugMessage("[processingRequest] start read processing", 2);
         $tableInfo = $this->proxy->dbSettings->getDataSourceTargetArray();
@@ -90,13 +81,11 @@ class ReadVisitor extends OperationVisitor
         }
     }
 
-    /**
-     * Visits the HandleChallenge operation for read operations.
-     *
-     * @param OperationElement $e The operation element being visited.
+    /** Visits the HandleChallenge operation for read operations.
+     * 
      * @return void
      */
-    public function visitHandleChallenge(OperationElement $e): void
+    public function handleChallenge(): void
     {
         if ($this->proxy->bypassAuth) {
             return;

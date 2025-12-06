@@ -24,8 +24,7 @@ use INTERMediator\Auth\OAuthAuth;
  */
 class GenerateJSCode
 {
-    /**
-     * GenerateJSCode constructor.
+    /** GenerateJSCode constructor.
      * Starts a session if not started, sets JS headers, and outputs security headers.
      */
     public function __construct()
@@ -40,9 +39,7 @@ class GenerateJSCode
         $util->outputSecurityHeaders();
     }
 
-    /**
-     * Outputs a JavaScript assignment statement.
-     *
+    /** Outputs a JavaScript assignment statement.
      * @param string $variable The JavaScript variable name.
      * @param string $value1 The first value to assign.
      * @param string $value2 Optional additional value.
@@ -56,9 +53,7 @@ class GenerateJSCode
         echo "{$variable}={$value1}{$value2}{$value3}{$value4}{$value5};\n";
     }
 
-    /**
-     * Outputs a JavaScript debug message using INTERMediatorLog.setDebugMessage().
-     *
+    /** Outputs a JavaScript debug message using INTERMediatorLog.setDebugMessage().
      * @param string $message The debug message to output.
      * @return void
      */
@@ -69,9 +64,7 @@ class GenerateJSCode
             . str_replace("\n", " ", addslashes($message)) . "{$q});\n";
     }
 
-    /**
-     * Outputs a JavaScript error message using INTERMediatorLog.setErrorMessage().
-     *
+    /** Outputs a JavaScript error message using INTERMediatorLog.setErrorMessage().
      * @param string $message The error message to output.
      * @return void
      */
@@ -82,9 +75,7 @@ class GenerateJSCode
             . str_replace("\n", " ", addslashes($message)) . "{$q});";
     }
 
-    /**
-     * Generates the initial JavaScript code for INTER-Mediator, including configuration, OAuth, theme, authentication, etc.
-     *
+    /** Generates the initial JavaScript code for INTER-Mediator, including configuration, OAuth, theme, authentication, etc.
      * @param array|null $dataSource Data source definitions for contexts.
      * @param array|null $options Options for INTER-Mediator.
      * @param array|null $dbSpecification Database specification.
@@ -442,9 +433,7 @@ class GenerateJSCode
             $q, Params::getParameterValue('authPanelExp2FA', ""), $q);
     }
 
-    /**
-     * Combines and returns the contents of required JavaScript files as a string.
-     *
+    /** Combines and returns the contents of required JavaScript files as a string.
      * @param bool $isSocketIO Whether to include Socket.IO script.
      * @return string The combined JavaScript code.
      */
@@ -483,9 +472,7 @@ class GenerateJSCode
         return $content;
     }
 
-    /**
-     * Reads a JavaScript source file, optionally ignoring lines or the rest of the file based on special markers.
-     *
+    /** Reads a JavaScript source file, optionally ignoring lines or the rest of the file based on special markers.
      * @param string $filename The JavaScript file path.
      * @return string The file contents, possibly truncated or with lines removed.
      */

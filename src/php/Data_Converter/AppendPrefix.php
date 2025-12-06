@@ -22,15 +22,12 @@
  *  Useful for formatting or masking data transparently.*/
 class AppendPrefix
 {
-    /**
-     * The prefix string to append or remove during conversion.
+    /** The prefix string to append or remove during conversion.
      * @var string
      */
     private string $appendStr;
 
-    /**
-     * Constructor sets the prefix string to use for conversions.
-     *
+    /** Constructor sets the prefix string to use for conversions.
      * @param string $str The prefix to append or remove. Defaults to an empty string.
      */
     function __construct(string $str = '')
@@ -38,9 +35,7 @@ class AppendPrefix
         $this->appendStr = $str;
     }
 
-    /**
-     * Converts a value from database format to user format by appending the prefix.
-     *
+    /** Converts a value from database format to user format by appending the prefix.
      * @param string|null $str The original value from the database.
      * @return string The value with the prefix appended.
      */
@@ -49,9 +44,7 @@ class AppendPrefix
         return $this->appendStr . $str;
     }
 
-    /**
-     * Converts a value from user format to database format by removing the prefix if present.
-     *
+    /** Converts a value from user format to database format by removing the prefix if present.
      * @param string $str The value from the user.
      * @return string The value with the prefix removed, or the original value if the prefix is not present.
      */

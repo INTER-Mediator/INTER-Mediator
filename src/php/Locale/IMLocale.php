@@ -23,40 +23,32 @@ use INTERMediator\Params;
  */
 class IMLocale
 {
-    /**
-     * The currently chosen locale (e.g., 'en', 'ja_JP').
+    /** The currently chosen locale (e.g., 'en', 'ja_JP').
      * @var string
      */
     public static string $choosenLocale = 'en';
-    /**
-     * The currently chosen ISO currency code (e.g., 'USD', 'JPY').
+    /** The currently chosen ISO currency code (e.g., 'USD', 'JPY').
      * @var string
      */
     public static string $currencyCode = 'USD';
-    /**
-     * Whether to use multibyte string functions (for certain Asian locales).
+    /** Whether to use multibyte string functions (for certain Asian locales).
      * @var bool
      */
     public static bool $useMbstring = false;
-    /**
-     * Locale override for testing purposes.
+    /** Locale override for testing purposes.
      * @var string
      */
     public static string $localForTest = '';
-    /**
-     * Additional options, such as 'app-locale' and 'app-currency'.
+    /** Additional options, such as 'app-locale' and 'app-currency'.
      * @var array|null
      */
     public static ?array $options = null;
-    /**
-     * Table for converting browser locale codes to standard locale codes.
+    /** Table for converting browser locale codes to standard locale codes.
      * @var array
      */
     private static array $localeConvertTable = array("ja" => "ja_JP");
 
-    /**
-     * Set the locale and currency based on parameters, environment, and options.
-     *
+    /** Set the locale and currency based on parameters, environment, and options.
      * @param string $locType The locale category (e.g., LC_ALL).
      * @param string $localeName Optional locale name to use.
      * @return void
@@ -113,9 +105,7 @@ class IMLocale
         }
     }
 
-    /**
-     * Detects the locale from the browser's Accept-Language header.
-     *
+    /** Detects the locale from the browser's Accept-Language header.
      * @param string $localeString $_SERVER['HTTP_ACCEPT_LANGUAGE']
      * @return string The detected locale code.
      */

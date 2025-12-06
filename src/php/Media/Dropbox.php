@@ -29,39 +29,32 @@ use INTERMediator\Params;
  */
 class Dropbox extends UploadingSupport implements DownloadingSupport
 {
-    /**
-     * Dropbox API App Key
+    /** Dropbox API App Key
      * @var string|null
      */
     private ?string $appKey;
-    /**
-     * Dropbox API App Secret
+    /** Dropbox API App Secret
      * @var string|null
      */
     private ?string $appSecret;
-    /**
-     * Dropbox API Refresh Token
+    /** Dropbox API Refresh Token
      * @var string|null
      */
     private ?string $refreshToken;
-    /**
-     * Path to store the Dropbox API Access Token
+    /** Path to store the Dropbox API Access Token
      * @var string|null
      */
     private ?string $accessTokenPath;
-    /**
-     * Root directory in Dropbox for file operations
+    /** Root directory in Dropbox for file operations
      * @var string|null
      */
     private ?string $rootInDropbox;
-    /**
-     * The file name of the current file being processed
+    /** The file name of the current file being processed
      * @var string|null
      */
     private ?string $fileName = null;
 
-    /**
-     * Dropbox constructor. Initializes Dropbox API credentials and settings from parameters.
+    /** Dropbox constructor. Initializes Dropbox API credentials and settings from parameters.
      */
     public function __construct()
     {
@@ -74,9 +67,7 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
         $this->rootInDropbox = Params::getParameterValue('rootInDropbox', '/');
     }
 
-    /**
-     * Retrieves the contents of a file from Dropbox.
-     *
+    /** Retrieves the contents of a file from Dropbox.
      * @param string $file The file name (unused, for interface compatibility).
      * @param string $target The Dropbox file path or URL.
      * @param Proxy $dbProxyInstance The database proxy instance.
@@ -94,9 +85,7 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
         return $client->download($urlPath);
     }
 
-    /**
-     * Returns the file name of the last accessed or processed file.
-     *
+    /** Returns the file name of the last accessed or processed file.
      * @param string $file The file path (unused).
      * @return string|null The file name, or null if not set.
      */
@@ -105,9 +94,7 @@ class Dropbox extends UploadingSupport implements DownloadingSupport
         return $this->fileName;
     }
 
-    /**
-     * Handles file upload processing to Dropbox.
-     *
+    /** Handles file upload processing to Dropbox.
      * @param Proxy $db The database proxy instance.
      * @param string|null $url The redirect URL on error.
      * @param array|null $options Additional options for processing.

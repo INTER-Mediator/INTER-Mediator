@@ -27,28 +27,23 @@ use INTERMediator\DB\Proxy;
  */
 class FileUploader
 {
-    /**
-     * @var Proxy Database proxy instance for communication with the backend.
+    /** @var Proxy Database proxy instance for communication with the backend.
      */
     private Proxy $db;
 
-    /**
-     * @var int Access log level for logging purposes.
+    /** @var int Access log level for logging purposes.
      */
     private int $accessLogLevel;
 
-    /**
-     * @var array Output messages for logging or response.
+    /** @var array Output messages for logging or response.
      */
     private array $outputMessage = [];
 
-    /**
-     * @var array|null Database result after processing (e.g., for CSV uploads).
+    /** @var array|null Database result after processing (e.g., for CSV uploads).
      */
     public ?array $dbresult = null;
 
-    /**
-     * FileUploader constructor.
+    /** FileUploader constructor.
      * Initializes access log level from parameters.
      */
     public function __construct()
@@ -56,9 +51,7 @@ class FileUploader
         $this->accessLogLevel = Params::getParameterValue("accessLogLevel", false);
     }
 
-    /**
-     * Gets the log result for the current upload process.
-     *
+    /** Gets the log result for the current upload process.
      * @return array Output message array if access log level is enough, otherwise empty array.
      */
     public function getResultForLog(): array
@@ -71,9 +64,7 @@ class FileUploader
         return $this->outputMessage;
     }
 
-    /**
-     * Finalizes communication with the database proxy.
-     *
+    /** Finalizes communication with the database proxy.
      * @return void
      */
     public function finishCommunication(): void
@@ -81,9 +72,7 @@ class FileUploader
         $this->db->finishCommunication();
     }
 
-    /**
-     * Handles file upload errors and outputs error messages as JSON if needed.
-     *
+    /** Handles file upload errors and outputs error messages as JSON if needed.
      * @param array|null $dataSource Data source definitions.
      * @param array|null $options Options for INTER-Mediator.
      * @param array|null $dbSpec Database specification.
@@ -139,9 +128,7 @@ class FileUploader
         }
     }
 
-    /**
-     * Main entry point for handling a file upload request from POST/FILES.
-     *
+    /** Main entry point for handling a file upload request from POST/FILES.
      * @param array|null $dataSource Data source definitions.
      * @param array|null $options Options for INTER-Mediator.
      * @param array|null $dbSpec Database specification.
@@ -163,9 +150,7 @@ class FileUploader
         $this->db->exportOutputDataAsJSON();
     }
 
-    /**
-     * Handles file upload processing with explicit parameters and file data.
-     *
+    /** Handles file upload processing with explicit parameters and file data.
      * @param array|null $dataSource Data source definitions.
      * @param array|null $options Options for INTER-Mediator.
      * @param array|null $dbSpec Database specification.
@@ -216,9 +201,7 @@ class FileUploader
         }
     }
 
-    /**
-     * Outputs the upload progress for APC-enabled servers as an HTML page.
-     *
+    /** Outputs the upload progress for APC-enabled servers as an HTML page.
      * @return void
      */
     public function processInfo(): void
@@ -240,9 +223,7 @@ class FileUploader
         }
     }
 
-    /**
-     * Validates and returns a redirect URL if it is safe, otherwise returns NULL.
-     *
+    /** Validates and returns a redirect URL if it is safe, otherwise returns NULL.
      * @param string|null $url The URL to validate.
      * @return string|null The validated URL or NULL if invalid.
      */
@@ -281,9 +262,7 @@ class FileUploader
         return NULL;
     }
 
-    /**
-     * Checks if the given URL matches the allowed web server name.
-     *
+    /** Checks if the given URL matches the allowed web server name.
      * @param string|null $url The URL to check.
      * @param string|null $webServerName The allowed web server name.
      * @return bool True if the URL is allowed, false otherwise.
@@ -302,9 +281,7 @@ class FileUploader
         return FALSE;
     }
 
-    /**
-     * Determines the media handler class name based on the database class and context definition.
-     *
+    /** Determines the media handler class name based on the database class and context definition.
      * @param string $dbclass The database class name.
      * @return string The media handler class name.
      */

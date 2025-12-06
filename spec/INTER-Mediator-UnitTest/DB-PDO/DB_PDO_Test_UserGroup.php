@@ -42,7 +42,7 @@ trait DB_PDO_Test_UserGroup
 //        $this->db_proxy->dbSettings->setCurrentUser($username);
 //        $this->db_proxy->access = "read";
 //        $this->db_proxy->authUser = $username;
-//        $visitorClasName = IMUtil::getVisitorClassName($this->db_proxy->access);
+//        $visitorClasName = IMUtil::getActionHandlerClassName($this->db_proxy->access);
 //        $visitor = new $visitorClasName($this->db_proxy);
 //        $process = new CheckAuthenticationElement();
 //        $process->acceptCheckAuthentication($visitor);
@@ -165,7 +165,7 @@ trait DB_PDO_Test_UserGroup
 //        $this->db_proxy->setClientId_forTest($clientId);
 //        $this->db_proxy->setHashedPassword_forTest($hpw);
 //
-//        $visitorClasName = IMUtil::getVisitorClassName("read");
+//        $visitorClasName = IMUtil::getActionHandlerClassName("read");
 //        $visitor = new $visitorClasName($this->db_proxy);
 //        $process = new CheckAuthenticationElement();
 //        $this->db_proxy->signedUser = $username;

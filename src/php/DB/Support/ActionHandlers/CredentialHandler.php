@@ -1,9 +1,8 @@
 <?php
 
-namespace INTERMediator\DB\Support\ProxyVisitors;
+namespace INTERMediator\DB\Support\ActionHandlers;
 
 use INTERMediator\DB\Logger;
-use INTERMediator\DB\Support\ProxyElements\OperationElement;
 use INTERMediator\IMUtil;
 use INTERMediator\Messaging\MessagingProxy;
 use INTERMediator\Params;
@@ -12,28 +11,24 @@ use INTERMediator\Params;
  * Visitor class for handling credential-based authentication operations in the Proxy pattern.
  * Implements methods for authentication, authorization, challenge handling, and 2FA support.
  */
-class CredentialVisitor extends OperationVisitor
+class CredentialHandler extends ActionHandler
 {
-    /**
-     * Visits the IsAuthAccessing operation.
-     *
-     * @param OperationElement $e The operation element being visited.
+    /** Visits the IsAuthAccessing operation.
+     * 
      * @return bool Always returns true for credential access.
      */
-    public function visitIsAuthAccessing(OperationElement $e): bool
+    public function isAuthAccessing(): bool
     {
         return true;
     }
 
-    /**
-     * Visits the CheckAuthentication operation for credential access.
-     *
-     * @param OperationElement $e The operation element being visited.
+    /** Visits the CheckAuthentication operation for credential access.
+     * 
      * @return bool True if authentication succeeds, false otherwise.
      */
-    public function visitCheckAuthentication(OperationElement $e): bool
+    public function checkAuthentication(): bool
     {
-        $result = $this->prepareCheckAuthentication($e);
+        $result = $this->prepareCheckAuthentication();
         if ($result) {
             $result = $this->sessionStorageCheckAuth();
             // Hash Auth checking. Here comes not only 'session-storage' but also 'credential'.
@@ -41,35 +36,29 @@ class CredentialVisitor extends OperationVisitor
         return $result;
     }
 
-    /**
-     * Visits the CheckAuthorization operation for credential access.
-     *
-     * @param OperationElement $e The operation element being visited.
+    /** Visits the CheckAuthorization operation for credential access.
+     * 
      * @return bool True if authorization succeeds, false otherwise.
      */
-    public function visitCheckAuthorization(OperationElement $e): bool
+    public function checkAuthorization(): bool
     {
         $proxy = $this->proxy;
-        return $proxy->authSucceed && $this->checkAuthorization();
+        return $proxy->authSucceed && $this->checkAuthorizationImpl();
     }
 
-    /**
-     * Visits the DataOperation operation. No operation for credential visitor.
-     *
-     * @param OperationElement $e The operation element being visited.
+    /** Visits the DataOperation operation. No operation for a credential visitor.
+     * 
      * @return void
      */
-    public function visitDataOperation(OperationElement $e): void
+    public function dataOperation(): void
     {
     }
 
-    /**
-     * Visits the HandleChallenge operation to process challenge/response for credential access and 2FA.
-     *
-     * @param OperationElement $e The operation element being visited.
+    /** Visits the HandleChallenge operation to process challenge/response for credential access and 2FA.
+     * 
      * @return void
      */
-    public function visitHandleChallenge(OperationElement $e): void
+    public function handleChallenge(): void
     {
         $proxy = $this->proxy;
         Logger::getInstance()->setDebugMessage("[handleChallenge] access={$proxy->access}, succeed={$proxy->authSucceed}", 2);

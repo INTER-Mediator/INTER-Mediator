@@ -10,9 +10,7 @@ use Exception;
  */
 trait DB_PDO_SQLSupport
 {
-    /**
-     * Generates a SQL-style WHERE clause for test purposes.
-     *
+    /** Generates a SQL-style WHERE clause for test purposes.
      * @param string $currentOperation The current operation name.
      * @return string SQL WHERE clause.
      * @throws Exception
@@ -22,9 +20,7 @@ trait DB_PDO_SQLSupport
         return $this->getWhereClause($currentOperation);
     }
 
-    /**
-     * Converts an array of query clauses into a SQL clause string.
-     *
+    /** Converts an array of query clauses into a SQL clause string.
      * @param array $queryClauseArray Array of query clauses.
      * @param string $insideOp Operator for terms within a clause.
      * @param string $outsideOp Operator for combining clauses.
@@ -39,9 +35,7 @@ trait DB_PDO_SQLSupport
         return implode($outsideOp, $oneClause);
     }
 
-    /**
-     * Determines logical operators in a block term.
-     *
+    /** Determines logical operators in a block term.
      * @param string $term Block term string.
      * @return array Array of operators: [fieldOp, groupOp, blockOp].
      */
@@ -56,9 +50,7 @@ trait DB_PDO_SQLSupport
         return [$fieldOp, $groupOp, $blockOp];
     }
 
-    /**
-     * Converts a JSON array string into a parenthesized, comma-separated SQL value list.
-     *
+    /** Converts a JSON array string into a parenthesized, comma-separated SQL value list.
      * @param string $value JSON array string.
      * @param bool $isNumeric Whether the values are numeric.
      * @return string SQL value list.
@@ -75,9 +67,7 @@ trait DB_PDO_SQLSupport
         return $escapedValue;
     }
 
-    /**
-     * Generates a SQL WHERE clause from conditions.
-     *
+    /** Generates a SQL WHERE clause from conditions.
      * @param array $conditions Array of condition arrays.
      * @param string $primaryKey Primary key field name.
      * @param array $numericFields Array of numeric field names.
@@ -194,9 +184,7 @@ trait DB_PDO_SQLSupport
         return $result;
     }
 
-    /**
-     * Processes a value for SQL usage.
-     *
+    /** Processes a value for SQL usage.
      * @param string $str Input string.
      * @return string Processed value.
      */
@@ -205,9 +193,7 @@ trait DB_PDO_SQLSupport
         return $str;
     }
 
-    /**
-     * Generates a SQL WHERE clause for the current operation.
-     *
+    /** Generates a SQL WHERE clause for the current operation.
      * @param string $currentOperation The current operation name.
      * @param bool $includeContext Whether to include context conditions.
      * @param bool $includeExtra Whether to include extra conditions.
@@ -310,9 +296,7 @@ trait DB_PDO_SQLSupport
         return $queryClause;
     }
 
-    /**
-     * Generates a SQL ORDER BY clause for the current context.
-     *
+    /** Generates a SQL ORDER BY clause for the current context.
      * @return string SQL ORDER BY clause.
      * @throws Exception
      */
@@ -356,9 +340,7 @@ trait DB_PDO_SQLSupport
         return $this->sortKeys;
     }
 
-    /**
-     * Normalizes a condition array for SQL usage.
-     *
+    /** Normalizes a condition array for SQL usage.
      * @param array $condition Condition array.
      * @return array Normalized condition array.
      */

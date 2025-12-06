@@ -21,25 +21,20 @@ use Iterator;
  */
 class LineDivider implements Iterator
 {
-    /**
-     * The data string to be split into lines.
+    /** The data string to be split into lines.
      * @var string
      */
     private string $data;
-    /**
-     * The current position in the data string.
+    /** The current position in the data string.
      * @var int
      */
     private int $pos;
-    /**
-     * The current line key (index).
+    /** The current line key (index).
      * @var int
      */
     private int $key;
 
-    /**
-     * Constructor.
-     *
+    /** Constructor.
      * @param string $d The data string to be split into lines.
      */
     function __construct($d)
@@ -49,9 +44,7 @@ class LineDivider implements Iterator
         $this->key = 0;
     }
 
-    /**
-     * Finds the start and end positions of the next line in the data string.
-     *
+    /** Finds the start and end positions of the next line in the data string.
      * @return array Array containing start and end positions of the next line, or -1 if not found.
      */
     private function getNextLinePosition(): array
@@ -80,9 +73,7 @@ class LineDivider implements Iterator
         }
     }
 
-    /**
-     * Returns the current line as a string.
-     *
+    /** Returns the current line as a string.
      * @return string The current line.
      */
     #[\ReturnTypeWillChange]
@@ -96,9 +87,7 @@ class LineDivider implements Iterator
         }
     }
 
-    /**
-     * Moves to the next line.
-     *
+    /** Moves to the next line.
      * @return void
      */
     public function next(): void
@@ -107,9 +96,7 @@ class LineDivider implements Iterator
         list($prevCRLF, $this->pos) = $this->getNextLinePosition();
     }
 
-    /**
-     * Returns the current line index.
-     *
+    /** Returns the current line index.
      * @return int The current line index.
      */
     #[\ReturnTypeWillChange]
@@ -118,9 +105,7 @@ class LineDivider implements Iterator
         return $this->key;
     }
 
-    /**
-     * Checks if the current position is valid (not at the end of the data).
-     *
+    /** Checks if the current position is valid (not at the end of the data).
      * @return bool True if valid, false otherwise.
      */
     public function valid(): bool
@@ -131,9 +116,7 @@ class LineDivider implements Iterator
         return strlen($this->data) > $this->pos;
     }
 
-    /**
-     * Rewinds the iterator to the beginning.
-     *
+    /** Rewinds the iterator to the beginning.
      * @return void
      */
     public function rewind(): void

@@ -23,8 +23,7 @@ namespace INTERMediator\Message;
  */
 class MessageStrings_ja extends MessageStrings
 {
-    /**
-     * @var array<int, string> List of Japanese message strings indexed by message code.
+    /** @var array<int, string> List of Japanese message strings indexed by message code.
      */
     public array $messages = array(
         1 => 'レコード番号',

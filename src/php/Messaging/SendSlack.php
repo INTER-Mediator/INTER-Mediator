@@ -27,18 +27,15 @@ use INTERMediator\DB\Proxy;
  */
 class SendSlack extends MessagingProvider
 {
-    /**
-     * @var string|null Slack API token for authentication.
+    /** @var string|null Slack API token for authentication.
      */
     private ?string $token = null;
 
-    /**
-     * @var string|null Slack channel ID or name to send messages to.
+    /** @var string|null Slack channel ID or name to send messages to.
      */
     private ?string $channel = null;
 
-    /**
-     * SendSlack constructor.
+    /** SendSlack constructor.
      * Initializes Slack token and channel from parameters if available.
      */
     public function __construct()
@@ -50,9 +47,7 @@ class SendSlack extends MessagingProvider
         }
     }
 
-    /**
-     * Sends messages to Slack based on the given DB context and result.
-     *
+    /** Sends messages to Slack based on the given DB context and result.
      * @param Proxy $dbProxy Proxy class's instance.
      * @param array $contextDef Context definition array of the current context.
      * @param array $result Result of query or other db operations.

@@ -24,215 +24,164 @@ use INTERMediator\NotifyServer;
  */
 class Settings
 {
-    /**
-     * @var string|null
+    /** @var string|null
      */
     private ?string $dbSpecServer = null;
-    /**
-     * @var string|null
+    /** @var string|null
      */
     private ?string $dbSpecPort = null;
-    /**
-     * @var string|null
+    /** @var string|null
      */
     private ?string $dbSpecUser = null;
-    /**
-     * @var string|null
+    /** @var string|null
      */
     private ?string $dbSpecPassword = null;
-    /**
-     * @var string|null
+    /** @var string|null
      */
     private ?string $dbSpecDatabase = null;
-    /**
-     * @var string|null
+    /** @var string|null
      */
     private ?string $dbSpecDataType = null;
-    /**
-     * @var string|null
+    /** @var string|null
      */
     private ?string $dbSpecProtocol = null;
-    /**
-     * @var string|null
+    /** @var string|null
      */
     private ?string $dbSpecDSN = null;
-    /**
-     * @var array|null
+    /** @var array|null
      */
     private ?array $dbSpecOption = null;
 
-    /**
-     * @var array|null
+    /** @var array|null
      */
     private ?array $dataSource = null;
-    /**
-     * @var array|null
+    /** @var array|null
      */
     private ?array $options = null;
-    /**
-     * @var array|null
+    /** @var array|null
      */
     private ?array $dbSpec = null;
-    /**
-     * @var string
+    /** @var string
      */
     private string $dataSourceName = '';
-    /**
-     * @var int
+    /** @var int
      */
     private int $recordCount = 0;
-    /**
-     * @var int
+    /** @var int
      */
     private int $start = 0;
-    /**
-     * @var string|null
+    /** @var string|null
      */
     private ?string $separator = null;
 
-    /**
-     * @var array
+    /** @var array
      */
     private array $extraCriteria = array();
-    /**
-     * @var array
+    /** @var array
      */
     private array $extraSortKey = array();
-    /**
-     * @var array
+    /** @var array
      */
     private array $fieldsRequired = array();
-    /**
-     * @var array
+    /** @var array
      */
     private array $fieldsValues = array();
-    /**
-     * @var array
+    /** @var array
      */
     private array $foreignFieldAndValue = array();
-    /**
-     * @var DBClass|null
+    /** @var DBClass|null
      */
     private ?DBClass $currentDataAccess = null;
 
-    /**
-     * @var string|null
+    /** @var string|null
      */
     private ?string $currentUser = null;
-    /**
-     * @var array|null
+    /** @var array|null
      */
     private ?array $authentication = null;
-    /**
-     * @var string|null
+    /** @var string|null
      */
     private ?string $accessUser = null;
-    /**
-     * @var string|null
+    /** @var string|null
      */
     private ?string $accessPassword = null;
-    /**
-     * @var bool
+    /** @var bool
      */
     private bool $primaryKeyOnly = false;
-    /**
-     * @var bool
+    /** @var bool
      */
     private bool $isDBNative = false;
-    /**
-     * @var bool
+    /** @var bool
      */
     private bool $requireAuthorization = false;
-    /**
-     * @var bool
+    /** @var bool
      */
     private bool $requireAuthentication = false;
 
-    /**
-     * @var bool
+    /** @var bool
      */
     private bool $emailAsAccount = false;
-    /**
-     * @var array|null
+    /** @var array|null
      */
     private ?array $smtpConfiguration = null;
-    /**
-     * @var array|null
+    /** @var array|null
      */
     private ?array $associated = null;
-    /**
-     * @var NotifyServer|null
+    /** @var NotifyServer|null
      */
     public ?NotifyServer $notifyServer = null;
-    /**
-     * @var string
+    /** @var string
      */
     public string $registerTableName = "registeredcontext";
-    /**
-     * @var string
+    /** @var string
      */
     public string $registerPKTableName = "registeredpks";
-    /**
-     * @var int
+    /** @var int
      */
     private int $params_samlExpiringSeconds;
-    /**
-     * @var string|null
+    /** @var string|null
      */
     private ?string $params_mediaRoot;
-    /**
-     * @var bool
+    /** @var bool
      */
     private bool $isSAML = false;
-    /**
-     * @var string|null
+    /** @var string|null
      */
     private ?string $samlAuthSource = '';
-    /**
-     * @var array|null
+    /** @var array|null
      */
     private ?array $samlAttrRules = null;
-    /**
-     * @var array|null
+    /** @var array|null
      */
     private ?array $samlAdditionalRules = null;
 
-    /**
-     * @var string|null
+    /** @var string|null
      */
     private ?string $aggregation_select = null;
-    /**
-     * @var string|null
+    /** @var string|null
      */
     private ?string $aggregation_from = null;
-    /**
-     * @var string|null
+    /** @var string|null
      */
     private ?string $aggregation_group_by = null;
 
-    /**
-     * @var array
+    /** @var array
      */
     private array $attachedFiles = [];
-    /**
-     * @var array|null
+    /** @var array|null
      */
     private ?array $attachedFields = null;
-    /**
-     * @var bool
+    /** @var bool
      */
     private bool $certVerifying = true;
-    /**
-     * @var int
+    /** @var int
      */
     private int $timezoneOffset = 0;
-    /**
-     * @var int
+    /** @var int
      */
     private int $expiringSeconds2FA = 100000;
 
-    /**
-     * Get the expiring seconds for 2FA.
+    /** Get the expiring seconds for 2FA.
      * @return int Expiring seconds for 2FA.
      */
     public function getExpiringSeconds2FA(): int
@@ -240,8 +189,7 @@ class Settings
         return $this->expiringSeconds2FA;
     }
 
-    /**
-     * Set the expiring seconds for 2FA.
+    /** Set the expiring seconds for 2FA.
      * @param int $n Expiring seconds for 2FA.
      * @return void
      */
@@ -250,13 +198,11 @@ class Settings
         $this->expiringSeconds2FA = $n;
     }
 
-    /**
-     * @var string
+    /** @var string
      */
     private string $parentOfTarget = '';
 
-    /**
-     * Set the parent of the target.
+    /** Set the parent of the target.
      * @param string $cName Parent of the target.
      * @return void
      */
@@ -265,8 +211,7 @@ class Settings
         $this->parentOfTarget = $cName;
     }
 
-    /**
-     * Get the parent of the target.
+    /** Get the parent of the target.
      * @return string Parent of the target.
      */
     public function getParentOfTarget(): string
@@ -274,8 +219,7 @@ class Settings
         return $this->parentOfTarget;
     }
 
-    /**
-     * Set the client timezone offset.
+    /** Set the client timezone offset.
      * @param int $offset Client timezone offset.
      * @return void
      */
@@ -284,8 +228,7 @@ class Settings
         $this->timezoneOffset = $offset;
     }
 
-    /**
-     * Get the client timezone offset.
+    /** Get the client timezone offset.
      * @return int Client timezone offset.
      */
     public function getClientTZOffset(): int
@@ -293,8 +236,7 @@ class Settings
         return $this->timezoneOffset;
     }
 
-    /**
-     * Set the SAML additional rules.
+    /** Set the SAML additional rules.
      * @param array|null $value SAML additional rules array.
      * @return void
      */
@@ -303,8 +245,7 @@ class Settings
         $this->samlAdditionalRules = $value;
     }
 
-    /**
-     * Get the SAML additional rules.
+    /** Get the SAML additional rules.
      * @return array|null SAML additional rules array.
      */
     public function getSAMLAdditionalRules(): ?array
@@ -312,8 +253,7 @@ class Settings
         return $this->samlAdditionalRules;
     }
 
-    /**
-     * Set the SAML attribute rules.
+    /** Set the SAML attribute rules.
      * @param array|null $value SAML attribute rules array.
      * @return void
      */
@@ -322,8 +262,7 @@ class Settings
         $this->samlAttrRules = $value;
     }
 
-    /**
-     * Get the SAML attribute rules.
+    /** Get the SAML attribute rules.
      * @return array|null SAML attribute rules array.
      */
     public function getSAMLAttrRules(): ?array
@@ -331,8 +270,7 @@ class Settings
         return $this->samlAttrRules;
     }
 
-    /**
-     * Set the SAML authentication source.
+    /** Set the SAML authentication source.
      * @param string|null $value SAML authentication source.
      * @return void
      */
@@ -341,8 +279,7 @@ class Settings
         $this->samlAuthSource = $value;
     }
 
-    /**
-     * Get the SAML authentication source.
+    /** Get the SAML authentication source.
      * @return string|null SAML authentication source.
      */
     public function getSAMLAuthSource(): ?string
@@ -350,8 +287,7 @@ class Settings
         return $this->samlAuthSource;
     }
 
-    /**
-     * Set whether SAML is enabled.
+    /** Set whether SAML is enabled.
      * @param bool $value True to enable SAML, false otherwise.
      * @return void
      */
@@ -360,8 +296,7 @@ class Settings
         $this->isSAML = $value;
     }
 
-    /**
-     * Get whether SAML is enabled.
+    /** Get whether SAML is enabled.
      * @return bool True if SAML is enabled, false otherwise.
      */
     public function getIsSaml(): bool
@@ -369,8 +304,7 @@ class Settings
         return $this->isSAML;
     }
 
-    /**
-     * Set whether to verify certificates.
+    /** Set whether to verify certificates.
      * @param bool $value True to verify certificates, false otherwise.
      * @return void
      */
@@ -379,8 +313,7 @@ class Settings
         $this->certVerifying = $value;
     }
 
-    /**
-     * Get whether certificates are verified.
+    /** Get whether certificates are verified.
      * @return bool True if certificates are verified, false otherwise.
      */
     public function getCertVerifying(): bool
@@ -388,8 +321,7 @@ class Settings
         return $this->certVerifying;
     }
 
-    /**
-     * Set attached files for a context.
+    /** Set attached files for a context.
      * @param string $contextName The context name.
      * @param array $files Array of attached files.
      * @return void
@@ -404,8 +336,7 @@ class Settings
         }
     }
 
-    /**
-     * Get attached files for a context.
+    /** Get attached files for a context.
      * @param string $contextName The context name.
      * @return array|null Array of attached files or null if not set.
      */
@@ -417,8 +348,7 @@ class Settings
         return null;
     }
 
-    /**
-     * Get attached fields.
+    /** Get attached fields.
      * @return array|null Array of attached fields or null if not set.
      */
     public function getAttachedFields(): ?array
@@ -426,15 +356,13 @@ class Settings
         return $this->attachedFields;
     }
 
-    /**
-     * Settings constructor.
+    /** Settings constructor.
      */
     function __construct()
     {
     }
 
-    /**
-     * Get the aggregation SELECT clause.
+    /** Get the aggregation SELECT clause.
      * @return string|null Aggregation SELECT clause.
      */
     public function getAggregationSelect(): ?string
@@ -442,8 +370,7 @@ class Settings
         return $this->aggregation_select;
     }
 
-    /**
-     * Set the aggregation SELECT clause.
+    /** Set the aggregation SELECT clause.
      * @param string|null $value Aggregation SELECT clause.
      * @return void
      */
@@ -452,8 +379,7 @@ class Settings
         $this->aggregation_select = $value;
     }
 
-    /**
-     * Get the aggregation FROM clause.
+    /** Get the aggregation FROM clause.
      * @return string|null Aggregation FROM clause.
      */
     public function getAggregationFrom(): ?string
@@ -461,8 +387,7 @@ class Settings
         return $this->aggregation_from;
     }
 
-    /**
-     * Set the aggregation FROM clause.
+    /** Set the aggregation FROM clause.
      * @param string|null $value Aggregation FROM clause.
      * @return void
      */
@@ -471,8 +396,7 @@ class Settings
         $this->aggregation_from = $value;
     }
 
-    /**
-     * Get the aggregation GROUP BY clause.
+    /** Get the aggregation GROUP BY clause.
      * @return string|null Aggregation GROUP BY clause.
      */
     public function getAggregationGroupBy(): ?string
@@ -480,8 +404,7 @@ class Settings
         return $this->aggregation_group_by;
     }
 
-    /**
-     * Set the aggregation GROUP BY clause.
+    /** Set the aggregation GROUP BY clause.
      * @param string|null $value Aggregation GROUP BY clause.
      * @return void
      */
@@ -490,8 +413,7 @@ class Settings
         $this->aggregation_group_by = $value;
     }
 
-    /**
-     * Add an associated context/field/value tuple.
+    /** Add an associated context/field/value tuple.
      * @param string|null $name Associated context name.
      * @param string|null $field Associated field name.
      * @param string|null $value Associated value.
@@ -505,8 +427,7 @@ class Settings
         $this->associated[] = array("name" => $name, "field" => $field, "value" => $value);
     }
 
-    /**
-     * Get the associated array.
+    /** Get the associated array.
      * @return array|null Associated array.
      */
     public function getAssociated(): ?array
@@ -514,8 +435,7 @@ class Settings
         return $this->associated;
     }
 
-    /**
-     * Set SMTP configuration.
+    /** Set SMTP configuration.
      * @param array|null $config SMTP configuration array.
      * @return void
      */
@@ -543,8 +463,7 @@ class Settings
         }
     }
 
-    /**
-     * Get SMTP configuration.
+    /** Get SMTP configuration.
      * @return array|null SMTP configuration array.
      */
     public function getSmtpConfiguration(): ?array
@@ -552,8 +471,7 @@ class Settings
         return $this->smtpConfiguration;
     }
 
-    /**
-     * Set the data source name.
+    /** Set the data source name.
      * @param string $dataSourceName Data source name.
      * @return void
      */
@@ -562,8 +480,7 @@ class Settings
         $this->dataSourceName = $dataSourceName;
     }
 
-    /**
-     * Check if a context exists.
+    /** Check if a context exists.
      * @param string $contextName Context name.
      * @return bool True if context exists, false otherwise.
      */
@@ -580,8 +497,7 @@ class Settings
         return false;
     }
 
-    /**
-     * Get the data source name.
+    /** Get the data source name.
      * @return string Data source name.
      */
     public function getDataSourceName(): string
@@ -589,8 +505,7 @@ class Settings
         return $this->dataSourceName;
     }
 
-    /**
-     * Set the fields required.
+    /** Set the fields required.
      * @param array|null $fieldsRequired Fields required array.
      * @return void
      */
@@ -599,8 +514,7 @@ class Settings
         $this->fieldsRequired = $fieldsRequired;
     }
 
-    /**
-     * Get the fields required.
+    /** Get the fields required.
      * @return array|null Fields required array.
      */
     public function getFieldsRequired(): ?array
@@ -608,8 +522,7 @@ class Settings
         return $this->fieldsRequired;
     }
 
-    /**
-     * Get the value.
+    /** Get the value.
      * @return array|null Value array.
      */
     public function getValue(): ?array
@@ -617,8 +530,7 @@ class Settings
         return $this->fieldsValues;
     }
 
-    /**
-     * Get the values with fields.
+    /** Get the values with fields.
      * @return array|null Values with fields array.
      */
     public function getValuesWithFields(): ?array
@@ -635,8 +547,7 @@ class Settings
         return $result;
     }
 
-    /**
-     * Add a value with field.
+    /** Add a value with field.
      * @param string|null $field Field name.
      * @param string|null $value Field value.
      * @return void
@@ -647,8 +558,7 @@ class Settings
         $this->fieldsRequired[] = $field;
     }
 
-    /**
-     * Set the foreign field and value.
+    /** Set the foreign field and value.
      * @param array|null $foreignFieldAndValue Foreign field and value array.
      * @return void
      */
@@ -657,8 +567,7 @@ class Settings
         $this->foreignFieldAndValue = $foreignFieldAndValue;
     }
 
-    /**
-     * Get the foreign field and value.
+    /** Get the foreign field and value.
      * @return array|null Foreign field and value array.
      */
     public function getForeignFieldAndValue(): ?array
@@ -666,8 +575,7 @@ class Settings
         return $this->foreignFieldAndValue;
     }
 
-    /**
-     * Set whether the database is native.
+    /** Set whether the database is native.
      * @param bool $isDBNative True if database is native, false otherwise.
      * @return void
      */
@@ -676,8 +584,7 @@ class Settings
         $this->isDBNative = $isDBNative;
     }
 
-    /**
-     * Get whether the database is native.
+    /** Get whether the database is native.
      * @return bool True if database is native, false otherwise.
      */
     public function isDBNative(): bool
@@ -685,8 +592,7 @@ class Settings
         return $this->isDBNative;
     }
 
-    /**
-     * Set whether authentication is required.
+    /** Set whether authentication is required.
      * @param bool $requireAuthentication True to require authentication, false otherwise.
      * @return void
      */
@@ -695,8 +601,7 @@ class Settings
         $this->requireAuthentication = $requireAuthentication;
     }
 
-    /**
-     * Get whether authentication is required.
+    /** Get whether authentication is required.
      * @return bool True if authentication is required, false otherwise.
      */
     public function getRequireAuthentication(): bool
@@ -704,8 +609,7 @@ class Settings
         return $this->requireAuthentication;
     }
 
-    /**
-     * Set whether authorization is required.
+    /** Set whether authorization is required.
      * @param bool $requireAuthorization True to require authorization, false otherwise.
      * @return void
      */
@@ -714,8 +618,7 @@ class Settings
         $this->requireAuthorization = $requireAuthorization;
     }
 
-    /**
-     * Get whether authorization is required.
+    /** Get whether authorization is required.
      * @return bool True if authorization is required, false otherwise.
      */
     public function getRequireAuthorization(): bool
@@ -723,8 +626,7 @@ class Settings
         return $this->requireAuthorization;
     }
 
-    /**
-     * Set whether to use primary key only.
+    /** Set whether to use primary key only.
      * @param bool $primaryKeyOnly True to use primary key only, false otherwise.
      * @return void
      */
@@ -733,8 +635,7 @@ class Settings
         $this->primaryKeyOnly = $primaryKeyOnly;
     }
 
-    /**
-     * Get whether to use primary key only.
+    /** Get whether to use primary key only.
      * @return bool True if using primary key only, false otherwise.
      */
     public function getPrimaryKeyOnly(): bool
@@ -742,8 +643,7 @@ class Settings
         return $this->primaryKeyOnly;
     }
 
-    /**
-     * Set whether to use email as account.
+    /** Set whether to use email as account.
      * @param bool $emailAsAccount True to use email as account, false otherwise.
      * @return void
      */
@@ -752,8 +652,7 @@ class Settings
         $this->emailAsAccount = $emailAsAccount;
     }
 
-    /**
-     * Get whether to use email as account.
+    /** Get whether to use email as account.
      * @return bool True if using email as account, false otherwise.
      */
     public function getEmailAsAccount(): bool
@@ -761,8 +660,7 @@ class Settings
         return $this->emailAsAccount;
     }
 
-    /**
-     * Get the current data access.
+    /** Get the current data access.
      * @return DBClass Current data access.
      */
     public function getCurrentDataAccess(): DBClass
@@ -770,8 +668,7 @@ class Settings
         return $this->currentDataAccess;
     }
 
-    /**
-     * Set the current data access.
+    /** Set the current data access.
      * @param DBClass $dbaccess Current data access.
      * @return void
      */
@@ -780,8 +677,7 @@ class Settings
         $this->currentDataAccess = $dbaccess;
     }
 
-    /**
-     * Set the database specification server.
+    /** Set the database specification server.
      * @param string|null $str Database specification server.
      * @return void
      */
@@ -790,8 +686,7 @@ class Settings
         $this->dbSpecServer = $str;
     }
 
-    /**
-     * Get the database specification server.
+    /** Get the database specification server.
      * @return string|null Database specification server.
      */
     public function getDbSpecServer(): ?string
@@ -799,8 +694,7 @@ class Settings
         return $this->dbSpecServer;
     }
 
-    /**
-     * Set the database specification port.
+    /** Set the database specification port.
      * @param string|null $str Database specification port.
      * @return void
      */
@@ -809,8 +703,7 @@ class Settings
         $this->dbSpecPort = $str;
     }
 
-    /**
-     * Get the database specification port.
+    /** Get the database specification port.
      * @return string|null Database specification port.
      */
     public function getDbSpecPort(): ?string
@@ -818,8 +711,7 @@ class Settings
         return $this->dbSpecPort;
     }
 
-    /**
-     * Set the database specification user.
+    /** Set the database specification user.
      * @param string|null $str Database specification user.
      * @return void
      */
@@ -828,8 +720,7 @@ class Settings
         $this->dbSpecUser = $str;
     }
 
-    /**
-     * Get the database specification user.
+    /** Get the database specification user.
      * @return string|null Database specification user.
      */
     public function getDbSpecUser(): ?string
@@ -837,8 +728,7 @@ class Settings
         return $this->dbSpecUser;
     }
 
-    /**
-     * Set the database specification password.
+    /** Set the database specification password.
      * @param string|null $str Database specification password.
      * @return void
      */
@@ -847,8 +737,7 @@ class Settings
         $this->dbSpecPassword = $str;
     }
 
-    /**
-     * Get the database specification password.
+    /** Get the database specification password.
      * @return string|null Database specification password.
      */
     public function getDbSpecPassword(): ?string
@@ -856,8 +745,7 @@ class Settings
         return $this->dbSpecPassword;
     }
 
-    /**
-     * Set the database specification data type.
+    /** Set the database specification data type.
      * @param string|null $str Database specification data type.
      * @return void
      */
@@ -866,8 +754,7 @@ class Settings
         $this->dbSpecDataType = $str;
     }
 
-    /**
-     * Get the database specification data type.
+    /** Get the database specification data type.
      * @return string|null Database specification data type.
      */
     public function getDbSpecDataType(): ?string
@@ -875,8 +762,7 @@ class Settings
         return is_null($this->dbSpecDataType) ? "FMPro12" : $this->dbSpecDataType;
     }
 
-    /**
-     * Set the database specification database.
+    /** Set the database specification database.
      * @param string|null $str Database specification database.
      * @return void
      */
@@ -885,8 +771,7 @@ class Settings
         $this->dbSpecDatabase = $str;
     }
 
-    /**
-     * Get the database specification database.
+    /** Get the database specification database.
      * @return string|null Database specification database.
      */
     public function getDbSpecDatabase(): ?string
@@ -894,8 +779,7 @@ class Settings
         return $this->dbSpecDatabase;
     }
 
-    /**
-     * Set the database specification protocol.
+    /** Set the database specification protocol.
      * @param string|null $str Database specification protocol.
      * @return void
      */
@@ -904,8 +788,7 @@ class Settings
         $this->dbSpecProtocol = $str;
     }
 
-    /**
-     * Get the database specification protocol.
+    /** Get the database specification protocol.
      * @return string|null Database specification protocol.
      */
     public function getDbSpecProtocol(): ?string
@@ -913,8 +796,7 @@ class Settings
         return $this->dbSpecProtocol;
     }
 
-    /**
-     * Set the database specification DSN.
+    /** Set the database specification DSN.
      * @param string|null $str Database specification DSN.
      * @return void
      */
@@ -923,8 +805,7 @@ class Settings
         $this->dbSpecDSN = $str;
     }
 
-    /**
-     * Get the database specification DSN.
+    /** Get the database specification DSN.
      * @return string|null Database specification DSN.
      */
     public function getDbSpecDSN(): ?string
@@ -932,8 +813,7 @@ class Settings
         return $this->dbSpecDSN;
     }
 
-    /**
-     * Set the database specification option.
+    /** Set the database specification option.
      * @param array|null $options Database specification option array.
      * @return void
      */
@@ -942,8 +822,7 @@ class Settings
         $this->dbSpecOption = $options;
     }
 
-    /**
-     * Get the database specification option.
+    /** Get the database specification option.
      * @return array|null Database specification option array.
      */
     public function getDbSpecOption(): ?array
@@ -951,8 +830,7 @@ class Settings
         return $this->dbSpecOption;
     }
 
-    /**
-     * Get the access user.
+    /** Get the access user.
      * @return string|null Access user.
      */
     public function getAccessUser(): ?string
@@ -960,8 +838,7 @@ class Settings
         return $this->accessUser ?? $this->dbSpecUser;
     }
 
-    /**
-     * Get the access password.
+    /** Get the access password.
      * @return string|null Access password.
      */
     public function getAccessPassword(): ?string
@@ -969,8 +846,7 @@ class Settings
         return $this->accessPassword ?? $this->dbSpecPassword;
     }
 
-    /**
-     * Set the user and password for access.
+    /** Set the user and password for access.
      * @param string|null $user User for access.
      * @param string|null $pass Password for access.
      * @return void
@@ -983,8 +859,7 @@ class Settings
 
     /* Call on INTER-Mediator.php */
 
-    /**
-     * Set the authentication.
+    /** Set the authentication.
      * @param array|null $authentication Authentication array.
      * @return void
      */
@@ -996,8 +871,7 @@ class Settings
         $this->authentication = $authentication;
     }
 
-    /**
-     * Get the authentication.
+    /** Get the authentication.
      * @return array|null Authentication array.
      */
     public function getAuthentication(): ?array
@@ -1005,8 +879,7 @@ class Settings
         return $this->authentication;
     }
 
-    /**
-     * Get an authentication item.
+    /** Get an authentication item.
      * @param string|null $key Authentication item key.
      * @return float|int|mixed|string|null Authentication item value.
      */
@@ -1026,8 +899,7 @@ class Settings
         };
     }
 
-    /**
-     * Get the user table.
+    /** Get the user table.
      * @return string|null User table.
      */
     public function getUserTable(): ?string
@@ -1035,8 +907,7 @@ class Settings
         return $this->getAuthenticationItem('user-table');
     }
 
-    /**
-     * Get the group table.
+    /** Get the group table.
      * @return string|null Group table.
      */
     public function getGroupTable(): ?string
@@ -1044,8 +915,7 @@ class Settings
         return $this->getAuthenticationItem('group-table');
     }
 
-    /**
-     * Get the corresponding table.
+    /** Get the corresponding table.
      * @return string|null Corresponding table.
      */
     public function getCorrTable(): ?string
@@ -1053,8 +923,7 @@ class Settings
         return $this->getAuthenticationItem('corresponding-table');
     }
 
-    /**
-     * Get the hash table.
+    /** Get the hash table.
      * @return string|null Hash table.
      */
     public function getHashTable(): ?string
@@ -1062,8 +931,7 @@ class Settings
         return $this->getAuthenticationItem('challenge-table');
     }
 
-    /**
-     * Get the expiring seconds.
+    /** Get the expiring seconds.
      * @return int Expiring seconds.
      */
     public function getExpiringSeconds(): int
@@ -1071,8 +939,7 @@ class Settings
         return $this->getAuthenticationItem('authexpired');
     }
 
-    /**
-     * Set the SAML expiring seconds.
+    /** Set the SAML expiring seconds.
      * @param int $sec SAML expiring seconds.
      * @return void
      */
@@ -1081,8 +948,7 @@ class Settings
         $this->params_samlExpiringSeconds = $sec;
     }
 
-    /**
-     * Get the SAML expiring seconds.
+    /** Get the SAML expiring seconds.
      * @return int SAML expiring seconds.
      */
     public function getSAMLExpiringSeconds(): int
@@ -1090,8 +956,7 @@ class Settings
         return $this->params_samlExpiringSeconds;
     }
 
-    /**
-     * Set the current user.
+    /** Set the current user.
      * @param string|null $str Current user.
      * @return void
      */
@@ -1100,8 +965,7 @@ class Settings
         $this->currentUser = $str;
     }
 
-    /**
-     * Get the current user.
+    /** Get the current user.
      * @return string|null Current user.
      */
     public function getCurrentUser(): ?string
@@ -1109,8 +973,7 @@ class Settings
         return $this->currentUser;
     }
 
-    /**
-     * Set the data source.
+    /** Set the data source.
      * @param array|null $src Data source array.
      * @return void
      */
@@ -1119,8 +982,7 @@ class Settings
         $this->dataSource = $src;
     }
 
-    /**
-     * Get the data source.
+    /** Get the data source.
      * @return array|null Data source array.
      */
     public function getDataSource(): ?array
@@ -1128,8 +990,7 @@ class Settings
         return $this->dataSource;
     }
 
-    /**
-     * Get the data source definition.
+    /** Get the data source definition.
      * @param string|null $dataSourceName Data source name.
      * @return array|null Data source definition array.
      */
@@ -1143,8 +1004,7 @@ class Settings
         return null;
     }
 
-    /**
-     * Set the options.
+    /** Set the options.
      * @param array|null $src Options array.
      * @return void
      */
@@ -1153,8 +1013,7 @@ class Settings
         $this->options = $src;
     }
 
-    /**
-     * Get the options.
+    /** Get the options.
      * @return array|null Options array.
      */
     public function getOptions(): ?array
@@ -1162,8 +1021,7 @@ class Settings
         return $this->options;
     }
 
-    /**
-     * Set the database specification.
+    /** Set the database specification.
      * @param array|null $src Database specification array.
      * @return void
      */
@@ -1172,8 +1030,7 @@ class Settings
         $this->dbSpec = $src;
     }
 
-    /**
-     * Get the database specification.
+    /** Get the database specification.
      * @return array|null Database specification array.
      */
     public function getDbSpec(): ?array
@@ -1181,8 +1038,7 @@ class Settings
         return $this->dbSpec;
     }
 
-    /**
-     * Set the separator.
+    /** Set the separator.
      * @param string|null $sep Separator.
      * @return void
      */
@@ -1191,8 +1047,7 @@ class Settings
         $this->separator = $sep;
     }
 
-    /**
-     * Get the separator.
+    /** Get the separator.
      * @return string|null Separator.
      */
     public function getSeparator(): ?string
@@ -1200,8 +1055,7 @@ class Settings
         return $this->separator;
     }
 
-    /**
-     * Add a target field.
+    /** Add a target field.
      * @param string|null $field Target field.
      * @return void
      */
@@ -1210,8 +1064,7 @@ class Settings
         $this->fieldsRequired[] = $field;
     }
 
-    /**
-     * Get the field of index.
+    /** Get the field of index.
      * @param int $ix Index.
      * @return string|null Field of index.
      */
@@ -1220,8 +1073,7 @@ class Settings
         return $this->fieldsRequired[$ix];
     }
 
-    /**
-     * Add a value.
+    /** Add a value.
      * @param string|null $value Value.
      * @return void
      */
@@ -1230,8 +1082,7 @@ class Settings
         $this->fieldsValues[] = $value;
     }
 
-    /**
-     * Set the value.
+    /** Set the value.
      * @param array|null $values Value array.
      * @return void
      */
@@ -1240,8 +1091,7 @@ class Settings
         $this->fieldsValues = $values;
     }
 
-    /**
-     * Get the value of field.
+    /** Get the value of field.
      * @param string|null $targetField Target field.
      * @return string|null Value of field.
      */
@@ -1257,8 +1107,7 @@ class Settings
         return null;
     }
 
-    /**
-     * Set the start.
+    /** Set the start.
      * @param string|null $st Start.
      * @return void
      */
@@ -1267,8 +1116,7 @@ class Settings
         $this->start = intval(mb_ereg_replace('[^0-9]', '', $st));
     }
 
-    /**
-     * Get the start.
+    /** Get the start.
      * @return int Start.
      */
     public function getStart(): int
@@ -1276,8 +1124,7 @@ class Settings
         return $this->start;
     }
 
-    /**
-     * Get the record count.
+    /** Get the record count.
      * @return int Record count.
      */
     public function getRecordCount(): int
@@ -1285,8 +1132,7 @@ class Settings
         return $this->recordCount;
     }
 
-    /**
-     * Set the record count.
+    /** Set the record count.
      * @param string|null $sk Record count.
      * @return void
      */
@@ -1295,8 +1141,7 @@ class Settings
         $this->recordCount = intval(mb_ereg_replace('[^0-9]', '', $sk));
     }
 
-    /**
-     * Get the extra criteria.
+    /** Get the extra criteria.
      * @return array|null Extra criteria array.
      */
     public function getExtraCriteria(): ?array
@@ -1304,8 +1149,7 @@ class Settings
         return $this->extraCriteria;
     }
 
-    /**
-     * Unset the extra criteria.
+    /** Unset the extra criteria.
      * @param int $index Index.
      * @return void
      */
@@ -1314,8 +1158,7 @@ class Settings
         unset($this->extraCriteria[$index]);
     }
 
-    /**
-     * Add an extra criteria.
+    /** Add an extra criteria.
      * @param string|null $field Field.
      * @param string|null $operator Operator.
      * @param string|null $value Value.
@@ -1326,8 +1169,7 @@ class Settings
         $this->extraCriteria[] = array('field' => $field, 'operator' => $operator, 'value' => $value);
     }
 
-    /**
-     * Get the criteria value.
+    /** Get the criteria value.
      * @param string|null $targetField Target field.
      * @return string|null Criteria value.
      */
@@ -1341,8 +1183,7 @@ class Settings
         return null;
     }
 
-    /**
-     * Get the criteria operator.
+    /** Get the criteria operator.
      * @param string|null $targetField Target field.
      * @return string|null Criteria operator.
      */
@@ -1356,8 +1197,7 @@ class Settings
         return null;
     }
 
-    /**
-     * Add an extra sort key.
+    /** Add an extra sort key.
      * @param string|null $field Field.
      * @param string|null $direction Direction.
      * @return void
@@ -1367,8 +1207,7 @@ class Settings
         $this->extraSortKey[] = array('field' => $field, 'direction' => $direction);
     }
 
-    /**
-     * Get the extra sort key.
+    /** Get the extra sort key.
      * @return array|null Extra sort key array.
      */
     public function getExtraSortKey(): ?array
@@ -1376,8 +1215,7 @@ class Settings
         return $this->extraSortKey;
     }
 
-    /**
-     * Add a foreign value.
+    /** Add a foreign value.
      * @param string|null $field Field.
      * @param string|null $value Value.
      * @return void
@@ -1387,8 +1225,7 @@ class Settings
         $this->foreignFieldAndValue[] = array('field' => $field, 'value' => $value);
     }
 
-    /**
-     * Get the foreign keys value.
+    /** Get the foreign keys value.
      * @param string|null $targetField Target field.
      * @return string|null Foreign keys value.
      */
@@ -1402,8 +1239,7 @@ class Settings
         return null;
     }
 
-    /**
-     * Set the media root.
+    /** Set the media root.
      * @param string|null $value Media root.
      * @return void
      */
@@ -1412,8 +1248,7 @@ class Settings
         $this->params_mediaRoot = $value;
     }
 
-    /**
-     * Get the media root.
+    /** Get the media root.
      * @return string|null Media root.
      */
     public function getMediaRoot(): ?string
@@ -1421,8 +1256,7 @@ class Settings
         return $this->params_mediaRoot;
     }
 
-    /**
-     * Set the global in context.
+    /** Set the global in context.
      * @param string|null $contextName Context name.
      * @param string|null $operation Operation.
      * @param string|null $field Field.
@@ -1446,8 +1280,7 @@ class Settings
     }
 
     /* get the information for the 'name'. */
-    /**
-     * Get the data source target array.
+    /** Get the data source target array.
      * @return array|null Data source target array.
      */
     public function getDataSourceTargetArray(): ?array
@@ -1463,8 +1296,7 @@ class Settings
         return null;
     }
 
-    /**
-     * Get the entity for retrieve.
+    /** Get the entity for retrieve.
      * @return string|null Entity for retrieve.
      */
     public function getEntityForRetrieve(): ?string
@@ -1479,8 +1311,7 @@ class Settings
         return $dsrc['name'];
     }
 
-    /**
-     * Get the entity for count.
+    /** Get the entity for count.
      * @return string|null Entity for count.
      */
     public function getEntityForCount(): ?string
@@ -1498,8 +1329,7 @@ class Settings
         return $dsrc['name'];
     }
 
-    /**
-     * Get the entity for update.
+    /** Get the entity for update.
      * @return string|null Entity for update.
      */
     public function getEntityForUpdate(): ?string
@@ -1514,8 +1344,7 @@ class Settings
         return $dsrc['name'];
     }
 
-    /**
-     * Get the entity as source.
+    /** Get the entity as source.
      * @return string|null Entity as source.
      */
     public function getEntityAsSource(): ?string

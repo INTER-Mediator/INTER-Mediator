@@ -21,8 +21,7 @@ namespace INTERMediator\Data_Converter;
  */
 class MarkdownString extends HTMLString
 {
-    /**
-     * @param ?string $str
+    /** @param ?string $str
      * @return string
      */
     public function converterFromDBtoUser(?string $str): string
@@ -35,8 +34,7 @@ class MarkdownString extends HTMLString
         return $this->replaceLinkToATag($str);
     }
 
-    /**
-     * @param string $str
+    /** @param string $str
      * @return string
      */
     public function taggingAsMarkdown(string $str): string

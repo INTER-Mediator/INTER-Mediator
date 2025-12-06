@@ -22,27 +22,20 @@ namespace INTERMediator;
  */
 class Theme
 {
-    /**
-     * Alternate theme path if specified in the configuration.
-     *
+    /** Alternate theme path if specified in the configuration.
      * @var string|null
      */
     private ?string $altThemePath;
-    /**
-     * Access log level setting from configuration.
-     *
+    /** Access log level setting from configuration.
      * @var bool
      */
     private bool $accessLogLevel;
-    /**
-     * Stores output messages for logging.
-     *
+    /** Stores output messages for logging.
      * @var array
      */
     private array $outputMessage = [];
 
-    /**
-     * Theme constructor.
+    /** Theme constructor.
      * Initializes configuration from params.php.
      */
     public function __construct()
@@ -52,9 +45,7 @@ class Theme
         $this->altThemePath = Params::getParameterValue("altThemePath", null);
     }
 
-    /**
-     * Gets the result message array for access logging.
-     *
+    /** Gets the result message array for access logging.
      * @return array Output message array for logging.
      */
     public function getResultForLog(): array
@@ -65,10 +56,8 @@ class Theme
         return $this->outputMessage;
     }
 
-    /**
-     * Processes the theme resource request and outputs the appropriate file content with headers.
+    /** Processes the theme resource request and outputs the appropriate file content with headers.
      * Handles CSS aggregation and image resource resolution.
-     *
      * @param string|null $deffile
      * @return void
      */
@@ -108,10 +97,8 @@ class Theme
         echo $fContent;
     }
 
-    /**
-     * Resolves the theme directory path for the given theme name.
+    /** Resolves the theme directory path for the given theme name.
      * Returns null if the theme directory does not exist.
-     *
      * @param string|null $themeName Name of the theme.
      * @return string|null Path to the theme directory or null if not found.
      */

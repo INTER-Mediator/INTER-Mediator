@@ -26,49 +26,40 @@ use ReflectionException;
  */
 class Logger
 {
-    /**
-     * Debug level (int or bool).
+    /** Debug level (int or bool).
      * @var int|bool
      */
     private int|bool $debugLevel = false;
-    /**
-     * Array of error messages.
+    /** Array of error messages.
      * @var array
      */
     private array $errorMessage = array();
-    /**
-     * Array of warning messages.
+    /** Array of warning messages.
      * @var array
      */
     private array $warningMessage = array();
-    /**
-     * Array of debug messages.
+    /** Array of debug messages.
      * @var array
      */
     private array $debugMessage = array();
-    /**
-     * Whether error message logging is enabled.
+    /** Whether error message logging is enabled.
      * @var bool
      */
     private bool $errorMessageLogging;
-    /**
-     * Whether warning message logging is enabled.
+    /** Whether warning message logging is enabled.
      * @var bool
      */
     private bool $warningMessageLogging;
-    /**
-     * Whether debug message logging is enabled.
+    /** Whether debug message logging is enabled.
      * @var bool
      */
     private bool $debugMessageLogging;
-    /**
-     * Singleton instance of Logger.
+    /** Singleton instance of Logger.
      * @var Logger|null
      */
     private static ?Logger $instance = null;
 
-    /**
-     * Get the singleton Logger instance.
+    /** Get the singleton Logger instance.
      * @return Logger
      */
     public static function getInstance(): Logger
@@ -79,8 +70,7 @@ class Logger
         return self::$instance;
     }
 
-    /**
-     * Logger constructor (private for singleton pattern).
+    /** Logger constructor (private for singleton pattern).
      */
     private function __construct()
     {
@@ -88,8 +78,7 @@ class Logger
             = Params::getParameterValue(["errorMessageLogging", "warningMessageLogging", "debugMessageLogging",], false);
     }
 
-    /**
-     * Clear all logs (error, warning, debug).
+    /** Clear all logs (error, warning, debug).
      * @return void
      */
     public function clearLogs(): void
@@ -99,8 +88,7 @@ class Logger
         $this->debugMessage = array();
     }
 
-    /**
-     * Clear error logs only.
+    /** Clear error logs only.
      * @return void
      */
     public function clearErrorLog(): void
@@ -108,8 +96,7 @@ class Logger
         $this->errorMessage = array();
     }
 
-    /**
-     * Get the namespace of the caller if the setting is true or matches the namespace.
+    /** Get the namespace of the caller if the setting is true or matches the namespace.
      * @param bool $setting
      * @return bool
      */
@@ -131,8 +118,7 @@ class Logger
         return $returnValue;
     }
 
-    /**
-     * Set a debug message with a specified level.
+    /** Set a debug message with a specified level.
      * @param string $str
      * @param int $level
      * @return void
@@ -148,8 +134,7 @@ class Logger
         }
     }
 
-    /**
-     * Set multiple debug messages with a specified level.
+    /** Set multiple debug messages with a specified level.
      * @param array $msgs
      * @param int $level
      * @return void
@@ -167,8 +152,7 @@ class Logger
         }
     }
 
-    /**
-     * Set a warning message.
+    /** Set a warning message.
      * @param string $str
      * @return void
      */
@@ -181,8 +165,7 @@ class Logger
         }
     }
 
-    /**
-     * Set multiple warning messages.
+    /** Set multiple warning messages.
      * @param array $msgs
      * @return void
      */
@@ -197,8 +180,7 @@ class Logger
         }
     }
 
-    /**
-     * Set an error message.
+    /** Set an error message.
      * @param string $str
      * @return void
      */
@@ -211,8 +193,7 @@ class Logger
         }
     }
 
-    /**
-     * Set multiple error messages.
+    /** Set multiple error messages.
      * @param array $msgs
      * @return void
      */
@@ -227,8 +208,7 @@ class Logger
         }
     }
 
-    /**
-     * Get messages for JavaScript output.
+    /** Get messages for JavaScript output.
      * @return array
      */
     public function getMessagesForJS(): array
@@ -250,8 +230,7 @@ class Logger
         return $returnData;
     }
 
-    /**
-     * Get error messages.
+    /** Get error messages.
      * @return array
      */
     public function getErrorMessages(): array
@@ -259,8 +238,7 @@ class Logger
         return $this->errorMessage;
     }
 
-    /**
-     * Get warning messages.
+    /** Get warning messages.
      * @return array
      */
     public function getWarningMessages(): array
@@ -268,8 +246,7 @@ class Logger
         return $this->warningMessage;
     }
 
-    /**
-     * Get debug messages.
+    /** Get debug messages.
      * @return array
      */
     public function getDebugMessages(): array
@@ -277,8 +254,7 @@ class Logger
         return $this->debugMessage;
     }
 
-    /**
-     * Get all error messages as a string.
+    /** Get all error messages as a string.
      * @return string
      */
     public function getAllErrorMessages(): string
@@ -290,8 +266,7 @@ class Logger
         return $returnData;
     }
 
-    /**
-     * Set debug mode.
+    /** Set debug mode.
      * @param $val
      * @return void
      */
@@ -304,8 +279,7 @@ class Logger
         }
     }
 
-    /**
-     * Get debug messages.
+    /** Get debug messages.
      * @return array
      */
     public function getDebugMessage(): array
@@ -313,8 +287,7 @@ class Logger
         return $this->debugMessage;
     }
 
-    /**
-     * Get debug level.
+    /** Get debug level.
      * @return int|bool
      */
     public function getDebugLevel(): int|bool

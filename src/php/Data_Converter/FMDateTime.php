@@ -25,17 +25,14 @@ use INTERMediator\Locale\IMLocale;
 class FMDateTime
 {
 
-    /**
-     * @var string
+    /** @var string
      */
     private string $tz = 'Asia/Tokyo'; // Should be custimizable.
-    /**
-     * @var string
+    /** @var string
      */
     private string $fmt;
 
     /**
-     *
      * @param string $format
      */
     public function __construct(string $format = '')
@@ -45,8 +42,7 @@ class FMDateTime
         date_default_timezone_set($this->tz);
     }
 
-    /**
-     * @param ?string $str
+    /** @param ?string $str
      * @return string
      * @throws Exception
      */
@@ -80,8 +76,7 @@ class FMDateTime
         return date(($this->fmt == '') ? $fmt : $this->fmt, $dtObj->format('U'));
     }
 
-    /**
-     * @param string $str
+    /** @param string $str
      * @return string
      */
     public function converterFromUserToDB(string $str): string
@@ -103,8 +98,7 @@ class FMDateTime
         return $dt;
     }
 
-    /**
-     * @param string $d
+    /** @param string $d
      * @return array
      * @throws Exception
      */

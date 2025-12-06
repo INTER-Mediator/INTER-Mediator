@@ -24,9 +24,7 @@ use INTERMediator\IMUtil;
  */
 class IMLocaleFormatTable
 {
-    /**
-     * Returns the current locale's formatting information, merged with static overrides if available.
-     *
+    /** Returns the current locale's formatting information, merged with static overrides if available.
      * @return array Associative array of formatting information for the current locale.
      */
     public static function getCurrentLocaleFormat(): array
@@ -95,9 +93,7 @@ class IMLocaleFormatTable
         return $info;
     }
 
-    /**
-     * Returns formatting information for a specified locale code.
-     *
+    /** Returns formatting information for a specified locale code.
      * @param string $localeCode The locale code (e.g., 'en_US', 'ja_JP').
      * @return array Associative array of formatting information for the locale.
      */
@@ -133,8 +129,7 @@ class IMLocaleFormatTable
         );
     }
 
-    /**
-     * Static table with additional locale-specific information for days, months, and date/time formats.
+    /** Static table with additional locale-specific information for days, months, and date/time formats.
      * @var array|array[]
      */
     private static array $localeInfoTable = array(
@@ -182,8 +177,7 @@ class IMLocaleFormatTable
         ),
     );
 
-    /**
-     * Static table for currency and number formatting for each locale.
+    /** Static table for currency and number formatting for each locale.
      * Each entry is an array: [decimal_point, thousands_separator, currency_symbol].
      * @var array|array[]
      */

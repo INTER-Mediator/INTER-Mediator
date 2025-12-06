@@ -86,8 +86,7 @@ use Jose\Component\Signature\Serializer\JWSSerializerManager;
 class GoogleAdapter extends ProviderAdapter
 {
 
-    /**
-     * Initializes the Google OAuth adapter with default endpoint configurations
+    /** Initializes the Google OAuth adapter with default endpoint configurations
      * Sets up essential URLs for OAuth flow including authorization, token, and user info endpoints
      */
     function __construct()
@@ -100,9 +99,7 @@ class GoogleAdapter extends ProviderAdapter
         $this->jwksURL = 'https://www.googleapis.com/oauth2/v3/certs';
     }
 
-    /**
-     * Sets the adapter to test mode for development and testing purposes
-     *
+    /** Sets the adapter to test mode for development and testing purposes
      * @return ProviderAdapter The current adapter instance configured for testing
      */
     public function setTestMode(): ProviderAdapter //MyNumberCardAdapter
@@ -110,10 +107,8 @@ class GoogleAdapter extends ProviderAdapter
         return $this;
     }
 
-    /**
-     * Validates the OAuth configuration and settings
+    /** Validates the OAuth configuration and settings
      * Ensures all required parameters and endpoints are properly configured
-     *
      * @return bool True if the configuration is valid, false otherwise
      */
     public function validate(): bool
@@ -121,10 +116,8 @@ class GoogleAdapter extends ProviderAdapter
         return $this->validate_impl(true);
     }
 
-    /**
-     * Generates the Google OAuth authorization request URL
+    /** Generates the Google OAuth authorization request URL
      * Creates a state parameter for CSRF protection and includes all required OAuth parameters
-     *
      * @return string The complete authorization URL for Google OAuth
      * @throws Exception If unable to generate the authorization URL
      */
@@ -144,11 +137,9 @@ class GoogleAdapter extends ProviderAdapter
             . '&state=' . urlencode($state);
     }
 
-    /**
-     * Retrieves authenticated user information from Google
+    /** Retrieves authenticated user information from Google
      * Handles the OAuth callback, validates the state parameter, exchanges the code for tokens,
      * and fetches user information from Google's userinfo endpoint
-     *
      * @return array Array containing user information (realname, username, email)
      * @throws Exception When authentication fails, tokens are invalid, or user info is incomplete
      */
