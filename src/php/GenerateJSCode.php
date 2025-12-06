@@ -361,10 +361,6 @@ class GenerateJSCode
 
         $authStoringValue = $options['authentication']['storing']
             ?? Params::getParameterValue("authStoring", 'credential');
-        if (strtolower($authStoringValue) === "passkey") {
-            $authStoringValue = "credential";
-            $this->generateAssignJS("INTERMediatorOnPage.isPasskey", "true");
-        }
         $this->generateAssignJS("INTERMediatorOnPage.authStoring", $q, $authStoringValue, $q);
         $authExpiredValue = $options['authentication']['authexpired']
             ?? Params::getParameterValue("authExpired", 3600);

@@ -20,6 +20,9 @@ use Exception;
 use INTERMediator\Auth\SAMLAuth;
 use INTERMediator\DB\Logger;
 use INTERMediator\DB\PDO;
+use INTERMediator\DB\Support\ProxyElements\CheckAuthenticationElement;
+use INTERMediator\DB\Support\ProxyElements\CheckAuthorizationElement;
+use INTERMediator\DB\Support\ProxyElements\IsAuthAccessingElement;
 use INTERMediator\IMUtil;
 use INTERMediator\Params;
 
@@ -44,10 +47,6 @@ trait Proxy_Auth
         $emailAsAliasOfUserName = Params::getParameterValue('emailAsAliasOfUserName', false);
         $this->authStoring = $options['authentication']['storing']
             ?? Params::getParameterValue("authStoring", 'credential');
-        if (strtolower($this->authStoring) === "passkey") {
-            $this->authStoring = "credential";
-            $this->isPasskey = true;
-        }
 //        $this->authExpired = $options['authentication']['authexpired']
 //            ?? Params::getParameterValue("authExpired", 3600);
 //        $this->realm = $options['authentication']['realm']

@@ -155,7 +155,7 @@ $browserCompatibility = array(
 
 /* Authorization
  * =================== */
-$authStoring = 'passkey'; // 'session-storage' or 'credential' or 'passkey'
+$authStoring = 'credential'; // 'session-storage' or 'credential'
 $authExpired = 3600;
 $authRealm = 'INTER-Mediator_Samples';
 //$passwordHash = '2';  // '2m' supports SHA-256 and Wrapping SHA-1 with SHA-256, '2' supports SHA-256 password hash only,
