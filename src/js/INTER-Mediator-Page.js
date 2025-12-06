@@ -118,6 +118,7 @@ let INTERMediatorOnPage = {
   systemInfo: null,
   oAuthParams: null,
   uiEventDT: null,
+  isPasskey: false,
 
   get authCount() {
     this._authCount = IMLibLocalContext.getValue('_im_authcount')
