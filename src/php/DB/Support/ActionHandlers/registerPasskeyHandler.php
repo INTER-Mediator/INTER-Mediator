@@ -10,6 +10,7 @@ class RegisterPasskeyHandler extends ActionHandler
      */
     public function isAuthAccessing(): bool
     {
+        return false;
     }
 
     /** Visits the CheckAuthentication operation.
@@ -18,6 +19,7 @@ class RegisterPasskeyHandler extends ActionHandler
      */
     public function checkAuthentication(): bool
     {
+        return false;
     }
 
     /** Visits the CheckAuthorization operation.
@@ -26,6 +28,7 @@ class RegisterPasskeyHandler extends ActionHandler
      */
     public function checkAuthorization(): bool
     {
+        return false;
     }
 
     /** Visits the DataOperation operation.
